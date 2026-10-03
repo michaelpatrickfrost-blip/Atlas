@@ -45,8 +45,25 @@ export const CUSTOMER_CAPABILITIES = {
 } as const;
 
 export const SALES_CAPABILITIES = {
+  prospectRead: "sales.prospect.read",
+  prospectCreate: "sales.prospect.create",
+  prospectManage: "sales.prospect.manage",
+  prospectAssign: "sales.prospect.assign",
+
   opportunityRead: "sales.opportunity.read",
+  opportunityCreate: "sales.opportunity.create",
   opportunityManage: "sales.opportunity.manage",
+  opportunityClose: "sales.opportunity.close",
+
+  pipelineManage: "sales.pipeline.manage",
+
+  activityManage: "sales.activity.manage",
+
+  forecastRead: "sales.forecast.read",
+  forecastManage: "sales.forecast.manage",
+
+  reportRead: "sales.report.read",
+
   quoteRead: "sales.quote.read",
   quoteCreate: "sales.quote.create",
   quoteApprove: "sales.quote.approve",
@@ -76,8 +93,16 @@ export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: st
       CUSTOMER_CAPABILITIES.addressesManage,
       CUSTOMER_CAPABILITIES.commercialRead,
       CUSTOMER_CAPABILITIES.creditRead,
+      SALES_CAPABILITIES.prospectRead,
+      SALES_CAPABILITIES.prospectCreate,
+      SALES_CAPABILITIES.prospectManage,
       SALES_CAPABILITIES.opportunityRead,
+      SALES_CAPABILITIES.opportunityCreate,
       SALES_CAPABILITIES.opportunityManage,
+      SALES_CAPABILITIES.opportunityClose,
+      SALES_CAPABILITIES.activityManage,
+      SALES_CAPABILITIES.forecastRead,
+      SALES_CAPABILITIES.reportRead,
       SALES_CAPABILITIES.quoteRead,
       SALES_CAPABILITIES.quoteCreate,
       SALES_CAPABILITIES.orderRead,
@@ -96,8 +121,19 @@ export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: st
       CUSTOMER_CAPABILITIES.commercialRead,
       CUSTOMER_CAPABILITIES.commercialManage,
       CUSTOMER_CAPABILITIES.creditRead,
+      SALES_CAPABILITIES.prospectRead,
+      SALES_CAPABILITIES.prospectCreate,
+      SALES_CAPABILITIES.prospectManage,
+      SALES_CAPABILITIES.prospectAssign,
       SALES_CAPABILITIES.opportunityRead,
+      SALES_CAPABILITIES.opportunityCreate,
       SALES_CAPABILITIES.opportunityManage,
+      SALES_CAPABILITIES.opportunityClose,
+      SALES_CAPABILITIES.pipelineManage,
+      SALES_CAPABILITIES.activityManage,
+      SALES_CAPABILITIES.forecastRead,
+      SALES_CAPABILITIES.forecastManage,
+      SALES_CAPABILITIES.reportRead,
       SALES_CAPABILITIES.quoteRead,
       SALES_CAPABILITIES.quoteCreate,
       SALES_CAPABILITIES.quoteApprove,

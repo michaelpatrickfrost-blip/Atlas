@@ -30,6 +30,11 @@ model Organisation {
   opportunities Opportunity[]
   quotes        Quote[]
   salesOrders   SalesOrder[]
+  prospects       Prospect[]
+  pipelines       Pipeline[]
+  salesTeams      SalesTeam[]
+  lossReasons     LossReason[]
+  salesActivities SalesActivity[]
 
   @@map("organisations")
 }
@@ -163,6 +168,8 @@ model Party {
   opportunities Opportunity[]
   quotes        Quote[]
   salesOrders   SalesOrder[]
+  prospects       Prospect[]
+  salesActivities SalesActivity[]
 
   @@unique([organisationId, customerCode])
   @@index([organisationId])
@@ -211,6 +218,8 @@ model Contact {
   party                     Party                      @relation(fields: [partyId], references: [id], onDelete: Cascade)
   communicationDestinations CommunicationDestination[]
   addresses                 Address[]
+  opportunityStakeholders   OpportunityStakeholder[]
+  opportunitiesAsPrimaryContact Opportunity[]
 
   @@index([partyId])
   @@map("contacts")
@@ -605,33 +614,389 @@ model Activity {
   @@map("activities")
 }
 
-// ---------- Sales module (reference implementation) ----------
+// ---------- Sales & CRM (reference implementation) ----------
+//
+// See docs/modules/SALES_CRM.md for the full architecture: the
+// Prospect→Opportunity→Customer journey, configurable pipelines, the
+// work-prioritisation engine behind Today, stage/value history, forecast
+// categories, and what's deliberately deferred (sequences, email/calendar/
+// telephony integration, AI, full custom reporting).
 
-enum OpportunityStage {
-  NEW
-  QUALIFIED
-  PROPOSAL
+model SalesTeam {
+  id             String   @id @default(cuid())
+  organisationId String
+  name           String
+  managerUserId  String?
+  createdAt      DateTime @default(now())
+
+  organisation Organisation  @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  members      SalesTeamMember[]
+  opportunities Opportunity[]
+  prospects     Prospect[]
+
+  @@map("sales_teams")
+}
+
+model SalesTeamMember {
+  teamId String
+  userId String
+
+  team SalesTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@id([teamId, userId])
+  @@map("sales_team_members")
+}
+
+// A configurable sales process. Businesses may run several (New Business,
+// Renewals, Enterprise, ...) side by side — see §38 of the brief.
+model Pipeline {
+  id             String   @id @default(cuid())
+  organisationId String
+  key            String
+  name           String
+  isDefault      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  organisation  Organisation    @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  stages        PipelineStage[]
+  opportunities Opportunity[]
+
+  @@unique([organisationId, key])
+  @@map("sales_pipelines")
+}
+
+// Won/Lost are terminal OpportunityStatus values, not ordinary draggable
+// stages (§39) — PipelineStage only models the open, in-process stages.
+model PipelineStage {
+  id                String   @id @default(cuid())
+  pipelineId        String
+  key               String
+  name              String
+  order             Int
+  defaultProbability Int     @default(0) // 0-100
+  guidance          String?
+  typicalDurationDays Int?
+
+  pipeline      Pipeline      @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  opportunities Opportunity[]
+
+  @@unique([pipelineId, key])
+  @@index([pipelineId, order])
+  @@map("sales_pipeline_stages")
+}
+
+enum OpportunityStatus {
+  OPEN
   WON
   LOST
 }
 
+enum ForecastCategory {
+  PIPELINE
+  BEST_CASE
+  COMMIT
+  CLOSED
+  OMITTED
+}
+
+enum RecurringPeriod {
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+}
+
+model LossReason {
+  id             String   @id @default(cuid())
+  organisationId String
+  key            String
+  label          String
+  createdAt      DateTime @default(now())
+
+  organisation Organisation  @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  opportunities Opportunity[]
+
+  @@unique([organisationId, key])
+  @@map("sales_loss_reasons")
+}
+
+enum OpportunityStakeholderRole {
+  DECISION_MAKER
+  ECONOMIC_BUYER
+  CHAMPION
+  TECHNICAL_BUYER
+  USER
+  PROCUREMENT
+  LEGAL
+  INFLUENCER
+  BLOCKER
+  OTHER
+}
+
+// The buying committee (§42) — one contact may hold more than one role.
+model OpportunityStakeholder {
+  id            String                       @id @default(cuid())
+  opportunityId String
+  contactId     String
+  roles         OpportunityStakeholderRole[]
+  createdAt     DateTime                     @default(now())
+
+  opportunity Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  contact     Contact     @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@unique([opportunityId, contactId])
+  @@map("sales_opportunity_stakeholders")
+}
+
+enum MilestoneStatus {
+  PENDING
+  DONE
+}
+
+// A lightweight Deal Plan (§46) — ordered milestones, nothing more
+// elaborate. Optional; most opportunities will have none.
+model OpportunityMilestone {
+  id            String          @id @default(cuid())
+  opportunityId String
+  label         String
+  dueDate       DateTime?
+  status        MilestoneStatus @default(PENDING)
+  order         Int
+  createdAt     DateTime        @default(now())
+
+  opportunity Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@index([opportunityId, order])
+  @@map("sales_opportunity_milestones")
+}
+
+enum OpportunityChangeType {
+  STAGE
+  VALUE
+  CLOSE_DATE
+  OWNER
+  FORECAST_CATEGORY
+}
+
+// Deal change history (§50) — stored at the moment of change, never
+// reconstructed later. Powers stage age, close-date slippage and pipeline
+// inspection.
+model OpportunityChangeEvent {
+  id            String                 @id @default(cuid())
+  opportunityId String
+  type          OpportunityChangeType
+  fromValue     String?
+  toValue       String?
+  changedByUserId String?
+  createdAt     DateTime               @default(now())
+
+  opportunity Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@index([opportunityId, createdAt])
+  @@map("sales_opportunity_change_events")
+}
+
 model Opportunity {
-  id             String           @id @default(cuid())
+  id             String   @id @default(cuid())
   organisationId String
   partyId        String
+  prospectId     String?  @unique
   name           String
-  stage          OpportunityStage @default(NEW)
-  valueAmount    Int // minor units
-  valueCurrency  String           @default("GBP")
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+
+  pipelineId String
+  stageId    String
+  status     OpportunityStatus @default(OPEN)
+  stageEnteredAt DateTime @default(now())
+
+  valueAmount          Int // minor units
+  valueCurrency        String  @default("GBP")
+  recurringValueAmount Int?
+  recurringPeriod      RecurringPeriod?
+
+  probability       Int? // 0-100; defaults from stage, overridable
+  forecastCategory  ForecastCategory @default(PIPELINE)
+  expectedCloseDate DateTime?
+  actualCloseDate   DateTime?
+
+  // The next-action principle (§36) — every open opportunity should have one.
+  nextActionNote String?
+  nextActionAt   DateTime?
+
+  ownerUserId String
+  teamId      String?
+  territory   String?
+
+  source            String?
+  campaign          String?
+  primaryContactId  String?
+
+  // Freeform qualification Q&A (guided-selling playbooks are deferred — see
+  // docs/modules/SALES_CRM.md — this is the honest placeholder for their
+  // structured output).
+  qualificationNotes Json?
+  useCase            String?
+  painPoint          String?
+
+  lossReasonId String?
+  lossNotes    String?
+  competitor   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organisation   Organisation  @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  party          Party         @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  prospect       Prospect?     @relation(fields: [prospectId], references: [id])
+  pipeline       Pipeline      @relation(fields: [pipelineId], references: [id])
+  stage          PipelineStage @relation(fields: [stageId], references: [id])
+  team           SalesTeam?    @relation(fields: [teamId], references: [id])
+  primaryContact Contact?      @relation(fields: [primaryContactId], references: [id])
+  lossReason     LossReason?   @relation(fields: [lossReasonId], references: [id])
+
+  quotes        Quote[]
+  stakeholders  OpportunityStakeholder[]
+  milestones    OpportunityMilestone[]
+  changeEvents  OpportunityChangeEvent[]
+  activities    SalesActivity[]
+
+  @@index([organisationId, status])
+  @@index([organisationId, pipelineId, stageId])
+  @@index([organisationId, ownerUserId])
+  @@map("sales_opportunities")
+}
+
+enum ProspectLifecycleStage {
+  NEW
+  CONTACTED
+  QUALIFIED
+  NURTURE
+  DISQUALIFIED
+  CONVERTED
+}
+
+// Someone/some organisation we may want to sell to — deliberately distinct
+// from Opportunity (a genuine potential sale) and from the canonical
+// Customer (Party). See §9 and docs/modules/SALES_CRM.md §Prospect boundary.
+model Prospect {
+  id             String   @id @default(cuid())
+  organisationId String
+
+  // Identity. partyId is set once the prospect is linked to (or created as)
+  // a canonical Party — never a separate prospect-only company record once
+  // that link exists.
+  partyId      String?
+  companyName  String
+  contactFirstName String?
+  contactSurname   String?
+  jobTitle     String?
+  email        String?
+  phone        String?
+  website      String?
+  country      String?
+
+  ownerUserId String?
+  teamId      String?
+  territory   String?
+
+  // Origin — original source is never overwritten; see §11.
+  source          String?
+  sourceDetail    String?
+  campaign        String?
+  referrer        String?
+  originalSource  String?
+  utmSource       String?
+  utmMedium       String?
+  utmCampaign     String?
+  utmContent      String?
+  utmTerm         String?
+
+  lifecycleStage ProspectLifecycleStage @default(NEW)
+
+  // Explainable scoring (§16-20) — each dimension stored independently with
+  // its contributing factors, never a single opaque number.
+  fitScore        Int?
+  fitFactors        Json?
+  engagementScore Int?
+  engagementFactors Json?
+  intentScore     Int?
+  intentFactors     Json?
+  priorityScore   Int?
+
+  estimatedValueAmount   Int?
+  estimatedValueCurrency String? @default("GBP")
+  timeframe              String?
+  notes                  String?
+
+  isTargetAccount Boolean @default(false)
+  accountTier     String?
+
+  disqualifiedReason String?
+  nurtureReason      String?
+  nextReviewAt       DateTime?
+
+  nextActivityAt   DateTime?
+  firstContactedAt DateTime?
+  lastContactedAt  DateTime?
+  assignedAt       DateTime?
+  convertedAt      DateTime?
+  disqualifiedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
-  party        Party        @relation(fields: [partyId], references: [id], onDelete: Cascade)
-  quotes       Quote[]
+  party        Party?       @relation(fields: [partyId], references: [id])
+  team         SalesTeam?   @relation(fields: [teamId], references: [id])
+  opportunity  Opportunity?
+  activities   SalesActivity[]
 
-  @@index([organisationId, stage])
-  @@map("sales_opportunities")
+  @@index([organisationId, lifecycleStage])
+  @@index([organisationId, ownerUserId])
+  @@map("sales_prospects")
+}
+
+enum SalesActivityType {
+  CALL
+  EMAIL
+  MEETING
+  TASK
+  FOLLOW_UP
+  DEMO
+  SITE_VISIT
+  PROPOSAL
+  OTHER
+}
+
+// A unified activity log for prospecting and opportunity work (§35-36).
+// Distinct from the shared Atlas Activity feed (core/activity) — that's a
+// read-only rendered timeline; SalesActivity is the working record sellers
+// complete/schedule against, and completing one may write an Atlas Activity
+// entry for the customer-facing timeline.
+model SalesActivity {
+  id             String            @id @default(cuid())
+  organisationId String
+  type           SalesActivityType
+  subject        String
+  notes          String?
+  ownerUserId    String
+
+  partyId       String?
+  prospectId    String?
+  opportunityId String?
+
+  dueAt       DateTime?
+  completedAt DateTime?
+  outcome     String?
+
+  createdAt DateTime @default(now())
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  party        Party?       @relation(fields: [partyId], references: [id])
+  prospect     Prospect?    @relation(fields: [prospectId], references: [id])
+  opportunity  Opportunity? @relation(fields: [opportunityId], references: [id])
+
+  @@index([organisationId, ownerUserId, dueAt])
+  @@index([organisationId, completedAt])
+  @@map("sales_activities")
 }
 
 enum QuoteStatus {

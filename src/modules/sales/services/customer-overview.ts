@@ -5,22 +5,23 @@ import { SALES_CAPABILITIES } from "@/core/permissions/capabilities";
 import { formatMoney } from "@/core/shared/money";
 
 /** Sales' contribution to a customer's Overview: 12-month sales, open
- *  quotes/orders, and quick actions. Customer Master never hardcodes this —
- *  it only calls this provider when Sales is enabled and the user can see it
- *  (§41). */
+ *  quotes/orders, pipeline value, next action and relationship signal (§103).
+ *  Customer Master never hardcodes this — it only calls this provider when
+ *  Sales is enabled and the user can see it (§41). */
 export const salesCustomerOverviewProvider: CustomerOverviewProvider = async ({ organisationId, session, partyId }) => {
   if (!can(session, SALES_CAPABILITIES.opportunityRead)) return null;
 
   const since = new Date();
   since.setMonth(since.getMonth() - 12);
 
-  const [orders, openQuotes, confirmedOrders] = await Promise.all([
+  const [orders, openQuotes, confirmedOrders, openOpportunities] = await Promise.all([
     db.salesOrder.findMany({
       where: { organisationId, partyId, createdAt: { gte: since } },
       select: { totalAmount: true, totalCurrency: true },
     }),
     db.quote.count({ where: { organisationId, partyId, status: { in: ["DRAFT", "SENT"] } } }),
     db.salesOrder.findMany({ where: { organisationId, partyId, status: "CONFIRMED" }, select: { totalAmount: true, totalCurrency: true } }),
+    db.opportunity.findMany({ where: { organisationId, partyId, status: "OPEN" }, select: { valueAmount: true, valueCurrency: true, nextActionAt: true } }),
   ]);
 
   const twelveMonthSales = orders.reduce((sum, order) => sum + order.totalAmount, 0);
@@ -29,11 +30,14 @@ export const salesCustomerOverviewProvider: CustomerOverviewProvider = async ({ 
   // module exists yet to supply a real "unpaid" figure — this is the honest
   // proxy available today; see docs/CUSTOMER_MASTER.md §Credit).
   const exposure = confirmedOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+  const openPipelineValue = openOpportunities.reduce((sum, o) => sum + o.valueAmount, 0);
+  const hasOverdueNextAction = openOpportunities.some((o) => !o.nextActionAt || o.nextActionAt < new Date());
 
   return {
     moduleId: "sales",
     metrics: [
       { label: "Sales (12m)", value: formatMoney(twelveMonthSales, currency) },
+      { label: "Open pipeline", value: formatMoney(openPipelineValue, currency), href: "/sales/pipeline" },
       { label: "Open quotations", value: String(openQuotes), href: "/sales/quotes" },
       { label: "Open orders", value: String(confirmedOrders.length), href: "/sales/orders" },
     ],
@@ -45,6 +49,7 @@ export const salesCustomerOverviewProvider: CustomerOverviewProvider = async ({ 
       ? [
           { label: "View quotes", href: "/sales/quotes" },
           { label: "View orders", href: "/sales/orders" },
+          ...(openOpportunities.length > 0 && hasOverdueNextAction ? [{ label: "Needs next action", href: "/sales/pipeline" }] : []),
         ]
       : [],
   };

@@ -5,50 +5,9 @@ import { db } from "@/core/db/client";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { SALES_CAPABILITIES } from "@/core/permissions/capabilities";
-import { writeAudit } from "@/core/audit/log";
 import { writeActivity } from "@/core/activity/log";
 import { emit, DOMAIN_EVENTS } from "@/core/events/bus";
 import { formatMoney } from "@/core/shared/money";
-import type { OpportunityStage } from "@/generated/prisma/client";
-
-export async function moveOpportunityStage(opportunityId: string, stage: OpportunityStage) {
-  const session = await requireSession();
-  assertCapability(session, SALES_CAPABILITIES.opportunityManage);
-
-  const before = await db.opportunity.findFirstOrThrow({
-    where: { id: opportunityId, organisationId: session.organisationId },
-  });
-
-  const after = await db.opportunity.update({
-    where: { id: opportunityId },
-    data: { stage },
-  });
-
-  await writeAudit({
-    organisationId: session.organisationId,
-    actorUserId: session.userId,
-    action: "opportunity.stage_changed",
-    entityType: "Opportunity",
-    entityId: opportunityId,
-    before: { stage: before.stage },
-    after: { stage: after.stage },
-  });
-
-  if (stage === "WON") {
-    await writeActivity({
-      organisationId: session.organisationId,
-      type: DOMAIN_EVENTS.salesOpportunityWon,
-      summary: `${session.userName} won ${after.name}`,
-      entityType: "Opportunity",
-      entityId: opportunityId,
-      partyId: after.partyId,
-      metadata: { valueAmount: after.valueAmount, valueCurrency: after.valueCurrency },
-    });
-    await emit(DOMAIN_EVENTS.salesOpportunityWon, { opportunityId, organisationId: session.organisationId });
-  }
-
-  revalidatePath("/sales/pipeline");
-}
 
 export async function sendQuote(quoteId: string) {
   const session = await requireSession();

@@ -34,6 +34,7 @@ Read `docs/ARCHITECTURE.md` for the full picture. This file is a map, not a text
   — demo organisation/data.
 - `docs/` — ARCHITECTURE, MODULE_SPEC (read before building a module),
   CUSTOMER_MASTER, DESIGN_SYSTEM, DATA_MODEL, PERMISSIONS, LOCAL_DEVELOPMENT.
+  `docs/modules/` — per-module architecture docs (e.g. SALES_CRM.md).
 
 ## Module rule
 

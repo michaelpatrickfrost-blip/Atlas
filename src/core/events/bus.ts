@@ -25,7 +25,22 @@ export async function emit(eventName: string, payload: unknown): Promise<void> {
 /** Known domain events. Modules import from here rather than inventing string literals
  *  inline, so the full event surface is discoverable in one place. */
 export const DOMAIN_EVENTS = {
+  salesProspectCreated: "sales.prospect.created",
+  salesProspectAssigned: "sales.prospect.assigned",
+  salesProspectQualified: "sales.prospect.qualified",
+  salesProspectDisqualified: "sales.prospect.disqualified",
+  salesProspectNurtured: "sales.prospect.nurtured",
+  salesProspectConverted: "sales.prospect.converted",
+
+  salesOpportunityCreated: "sales.opportunity.created",
+  salesOpportunityStageChanged: "sales.opportunity.stage_changed",
+  salesOpportunityValueChanged: "sales.opportunity.value_changed",
+  salesOpportunityCloseDateChanged: "sales.opportunity.close_date_changed",
   salesOpportunityWon: "sales.opportunity.won",
+  salesOpportunityLost: "sales.opportunity.lost",
+
+  salesActivityCompleted: "sales.activity.completed",
+
   salesQuoteSent: "sales.quote.sent",
   salesOrderConfirmed: "sales.order.confirmed",
 

@@ -27,7 +27,7 @@ export default async function HomePage() {
     getRecentActivity(session.organisationId, 8),
     db.salesOrder.findMany({ where: { organisationId: session.organisationId }, select: { totalAmount: true, createdAt: true } }),
     db.opportunity.aggregate({
-      where: { organisationId: session.organisationId, stage: "WON" },
+      where: { organisationId: session.organisationId, status: "WON" },
       _sum: { valueAmount: true },
     }),
   ]);

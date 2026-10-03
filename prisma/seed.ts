@@ -183,11 +183,208 @@ async function main() {
     },
   });
 
+  // ---------- Sales & CRM: pipeline, loss reasons, prospects, opportunities ----------
+
+  const pipeline = await db.pipeline.upsert({
+    where: { organisationId_key: { organisationId: organisation.id, key: "new_business" } },
+    create: { organisationId: organisation.id, key: "new_business", name: "New Business", isDefault: true },
+    update: {},
+  });
+
+  const stageDefs = [
+    { key: "qualified", name: "Qualified", order: 0, defaultProbability: 10, typicalDurationDays: 5 },
+    { key: "discovery", name: "Discovery", order: 1, defaultProbability: 25, typicalDurationDays: 7 },
+    { key: "proposal", name: "Proposal", order: 2, defaultProbability: 50, typicalDurationDays: 7 },
+    { key: "negotiation", name: "Negotiation", order: 3, defaultProbability: 75, typicalDurationDays: 10 },
+    { key: "commit", name: "Commit", order: 4, defaultProbability: 90, typicalDurationDays: 5 },
+  ];
+  const stages = [];
+  for (const stageDef of stageDefs) {
+    stages.push(
+      await db.pipelineStage.upsert({
+        where: { pipelineId_key: { pipelineId: pipeline.id, key: stageDef.key } },
+        create: { pipelineId: pipeline.id, ...stageDef },
+        update: {},
+      }),
+    );
+  }
+  const [qualifiedStage, discoveryStage, proposalStage, negotiationStage, commitStage] = stages;
+
+  const lossReasonDefs = [
+    { key: "price", label: "Price" },
+    { key: "competitor", label: "Competitor" },
+    { key: "no_decision", label: "No decision" },
+    { key: "timing", label: "Timing" },
+    { key: "product_fit", label: "Product fit" },
+  ];
+  const lossReasons = new Map<string, Awaited<ReturnType<typeof db.lossReason.upsert>>>();
+  for (const def of lossReasonDefs) {
+    lossReasons.set(
+      def.key,
+      await db.lossReason.upsert({
+        where: { organisationId_key: { organisationId: organisation.id, key: def.key } },
+        create: { organisationId: organisation.id, ...def },
+        update: {},
+      }),
+    );
+  }
+
   const opportunity = await db.opportunity.create({
-    data: { organisationId: organisation.id, partyId: northbridge.id, name: "Northbridge — site fit-out", stage: "WON", valueAmount: 2800000 },
+    data: {
+      organisationId: organisation.id,
+      partyId: northbridge.id,
+      name: "Northbridge — site fit-out",
+      pipelineId: pipeline.id,
+      stageId: commitStage.id,
+      status: "WON",
+      probability: 100,
+      forecastCategory: "CLOSED",
+      valueAmount: 2800000,
+      ownerUserId: user.id,
+      expectedCloseDate: new Date("2026-09-20"),
+      actualCloseDate: new Date("2026-09-18"),
+    },
   });
   await db.opportunity.create({
-    data: { organisationId: organisation.id, partyId: harrow.id, name: "Harrow — annual contract", stage: "PROPOSAL", valueAmount: 1200000 },
+    data: {
+      organisationId: organisation.id,
+      partyId: harrow.id,
+      name: "Harrow — annual contract",
+      pipelineId: pipeline.id,
+      stageId: proposalStage.id,
+      probability: 50,
+      forecastCategory: "BEST_CASE",
+      valueAmount: 1200000,
+      ownerUserId: user.id,
+      expectedCloseDate: new Date("2026-10-24"),
+      nextActionNote: "Send proposal review deck",
+      nextActionAt: new Date("2026-10-04T10:00:00"),
+    },
+  });
+
+  // Dalton: a long-stalled opportunity (no recent movement, past close date)
+  // to exercise stale-deal detection on Today and the opportunity record.
+  await db.opportunity.create({
+    data: {
+      organisationId: organisation.id,
+      partyId: dalton.id,
+      name: "Dalton — fleet expansion",
+      pipelineId: pipeline.id,
+      stageId: negotiationStage.id,
+      probability: 75,
+      forecastCategory: "PIPELINE",
+      valueAmount: 640000,
+      ownerUserId: user.id,
+      expectedCloseDate: new Date("2026-09-15"),
+      stageEnteredAt: new Date("2026-08-20"),
+    },
+  });
+
+  // A representative spread of additional prospects and opportunities so
+  // list/kanban/report views aren't tested with three records alone (§123).
+  const prospectCompanies = [
+    "Ashcroft Logistics", "Bellwood Partners", "Caldera Group", "Dunmore Retail", "Eastgate Manufacturing",
+    "Fernwood Estates", "Greymoor Facilities", "Hartley & Sons", "Ironbridge Civils", "Juniper Hospitality",
+    "Kestrel Energy", "Larchwood Care", "Millbrook Foods", "Norwood Transport", "Oakridge Developments",
+    "Pinefield Security", "Quayside Marine", "Ravenscroft Legal", "Silverdale Health", "Thornbury Education",
+  ];
+  const sources = ["Website enquiry", "Referral", "Outbound", "Trade show", "Existing customer", "Campaign"];
+  for (let i = 0; i < prospectCompanies.length; i++) {
+    const stageOptions = ["NEW", "NEW", "CONTACTED", "CONTACTED", "QUALIFIED", "NURTURE"] as const;
+    const lifecycleStage = stageOptions[i % stageOptions.length];
+    await db.prospect.create({
+      data: {
+        organisationId: organisation.id,
+        companyName: prospectCompanies[i],
+        contactFirstName: ["Alex", "Jamie", "Morgan", "Taylor", "Casey"][i % 5],
+        contactSurname: ["Reid", "Ngata", "Okafor", "Lindqvist", "Patel"][i % 5],
+        email: `contact@${prospectCompanies[i].toLowerCase().replace(/[^a-z]/g, "")}.example`,
+        source: sources[i % sources.length],
+        originalSource: sources[i % sources.length],
+        lifecycleStage,
+        ownerUserId: user.id,
+        estimatedValueAmount: 50000 + (i % 7) * 35000,
+        fitScore: 40 + (i % 6) * 10,
+        fitFactors: [
+          { label: "Industry match", points: 15 },
+          { label: "UK account", points: 10 },
+        ],
+        engagementScore: lifecycleStage === "NURTURE" ? 10 : 30 + (i % 5) * 12,
+        engagementFactors: [{ label: "Replied to outreach", points: lifecycleStage === "NURTURE" ? 0 : 20 }],
+        assignedAt: new Date(),
+        createdAt: new Date(Date.now() - i * 2 * 24 * 60 * 60 * 1000),
+      },
+    });
+  }
+
+  const openStages = [qualifiedStage, discoveryStage, proposalStage, negotiationStage, commitStage];
+  const forecastByStageIndex = ["PIPELINE", "PIPELINE", "BEST_CASE", "COMMIT", "COMMIT"] as const;
+  for (let i = 0; i < 15; i++) {
+    const party = i % 3 === 0 ? northbridge : i % 3 === 1 ? harrow : dalton;
+    const stageIndex = i % openStages.length;
+    const stage = openStages[stageIndex];
+    const daysAgo = 2 + (i % 20);
+    await db.opportunity.create({
+      data: {
+        organisationId: organisation.id,
+        partyId: party.id,
+        name: `${party.name} — opportunity ${i + 1}`,
+        pipelineId: pipeline.id,
+        stageId: stage.id,
+        probability: stage.defaultProbability,
+        forecastCategory: forecastByStageIndex[stageIndex],
+        valueAmount: 20000 + (i % 9) * 15000,
+        ownerUserId: user.id,
+        stageEnteredAt: new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000),
+        expectedCloseDate: new Date(Date.now() + (30 - daysAgo) * 24 * 60 * 60 * 1000),
+        nextActionAt: i % 4 === 0 ? undefined : new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+        nextActionNote: i % 4 === 0 ? undefined : "Follow up call",
+      },
+    });
+  }
+
+  // A handful of lost opportunities so win/loss and loss-reason reports have
+  // real data.
+  const reasonKeys = ["price", "competitor", "no_decision", "timing"];
+  for (let i = 0; i < 6; i++) {
+    const party = i % 2 === 0 ? harrow : dalton;
+    await db.opportunity.create({
+      data: {
+        organisationId: organisation.id,
+        partyId: party.id,
+        name: `${party.name} — lost deal ${i + 1}`,
+        pipelineId: pipeline.id,
+        stageId: negotiationStage.id,
+        status: "LOST",
+        forecastCategory: "OMITTED",
+        valueAmount: 15000 + i * 8000,
+        ownerUserId: user.id,
+        actualCloseDate: new Date(Date.now() - i * 5 * 24 * 60 * 60 * 1000),
+        lossReasonId: lossReasons.get(reasonKeys[i % reasonKeys.length])!.id,
+      },
+    });
+  }
+
+  // Overdue and due-today activities so Today has real work in it.
+  await db.salesActivity.create({
+    data: {
+      organisationId: organisation.id,
+      type: "CALL",
+      subject: "Call James Richardson",
+      ownerUserId: user.id,
+      partyId: northbridge.id,
+      dueAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+    },
+  });
+  await db.salesActivity.create({
+    data: {
+      organisationId: organisation.id,
+      type: "FOLLOW_UP",
+      subject: "Follow up on proposal",
+      ownerUserId: user.id,
+      partyId: harrow.id,
+      dueAt: new Date(),
+    },
   });
 
   const quote = await db.quote.create({

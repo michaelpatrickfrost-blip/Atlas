@@ -1,12 +1,8 @@
 import { db } from "@/core/db/client";
 
-export function listOpportunities(organisationId: string) {
-  return db.opportunity.findMany({
-    where: { organisationId },
-    include: { party: true },
-    orderBy: { updatedAt: "desc" },
-  });
-}
+// Opportunity queries/commands live in opportunities.ts — this file is for
+// quotes/orders only, which still use Atlas's existing commercial-document
+// model directly.
 
 export function listQuotes(organisationId: string) {
   return db.quote.findMany({

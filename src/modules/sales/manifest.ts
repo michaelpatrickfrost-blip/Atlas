@@ -8,22 +8,25 @@ import { salesCustomerOverviewProvider } from "@/modules/sales/services/customer
 export const salesManifest: ModuleManifest = {
   id: "sales",
   name: "Sales",
-  description: "Pipeline, quotes and orders.",
+  description: "Prospecting, pipeline, forecasting and reporting.",
   icon: Handshake,
-  version: "0.1.0",
+  version: "0.2.0",
   minimumCoreVersion: "0.1.0",
   dependencies: [],
   capabilities: Object.values(SALES_CAPABILITIES),
-  rootPath: "/sales",
+  rootPath: "/sales/today",
   accessCapability: SALES_CAPABILITIES.opportunityRead,
   status: "installed",
-  // Customers live in Customer Master (/customers) — Sales contributes to a
-  // customer's Overview via customerOverviewProvider rather than owning its
-  // own customer list/record pages. See docs/CUSTOMER_MASTER.md.
+  // Navigation deliberately stays to five items (§5) — Leads/Tasks/Calls/
+  // Sequences/Playbooks/Territories/Teams/Products/Settings all exist but are
+  // reached contextually (from Today, Prospect, an opportunity, or Sales
+  // settings), never as permanent top-level menu items.
   navigation: [
+    { label: "Today", href: "/sales/today", capability: SALES_CAPABILITIES.opportunityRead },
+    { label: "Prospect", href: "/sales/prospect", capability: SALES_CAPABILITIES.prospectRead },
     { label: "Pipeline", href: "/sales/pipeline", capability: SALES_CAPABILITIES.opportunityRead },
-    { label: "Quotes", href: "/sales/quotes", capability: SALES_CAPABILITIES.quoteRead },
-    { label: "Orders", href: "/sales/orders", capability: SALES_CAPABILITIES.orderRead },
+    { label: "Forecast", href: "/sales/forecast", capability: SALES_CAPABILITIES.forecastRead },
+    { label: "Reports", href: "/sales/reports", capability: SALES_CAPABILITIES.reportRead },
   ],
   attentionProvider: salesAttentionProvider,
   searchProvider: salesSearchProvider,

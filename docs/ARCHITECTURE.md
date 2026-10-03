@@ -7,8 +7,9 @@ PostgreSQL via Prisma.
 
 - **Core** (`src/core/`) owns platform concerns: organisations, users,
   authentication, memberships, roles/permissions, the module registry and
-  lifecycle, shared entities (Party/Address/ContactMethod), audit, activity,
-  attention, search, navigation, shared UI primitives.
+  lifecycle, **Customer Master** (the canonical `Party` identity — see
+  `docs/CUSTOMER_MASTER.md`), audit, activity, attention, search, navigation,
+  shared UI primitives.
 - **Modules** (`src/modules/`) own business capabilities (Sales today; Stock,
   Finance, Purchasing, People, Payroll, Projects, Manufacturing, Service,
   Fleet, Marketing as stubs). A module declares a manifest, owns its own
@@ -37,13 +38,18 @@ PostgreSQL via Prisma.
 module (`setModuleEnabled`) checks its declared dependencies are already
 enabled; this is enforced server-side, not just in the Apps screen UI.
 
-## Shared data model
+## Customer Master
 
-See `docs/DATA_MODEL.md`. The short version: a real-world company or person is
-one `Party` row; every module relates its own records to that `Party` rather
-than inventing its own customer table. A customer's record page
-(`src/app/(app)/sales/customers/[partyId]/page.tsx`) is the canonical example
-of rendering one entity through multiple modules' data.
+See `docs/CUSTOMER_MASTER.md`. A real-world company or person is one `Party`
+row, owned by Core — not Sales, not any module — because every module that
+deals with customers depends on it. Modules relate their own records to
+`Party` rather than inventing their own customer table, and contribute to a
+customer's record (metrics, actions, credit exposure) through a
+`customerOverviewProvider` on their manifest, the same typed-contract pattern
+as attention/search. The customer record page
+(`src/app/(app)/customers/[partyId]/page.tsx`) is the canonical example of
+rendering one entity through multiple modules' data, each section gated by
+its own capability.
 
 ## Cross-module communication
 

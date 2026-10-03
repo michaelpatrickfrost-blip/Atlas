@@ -16,21 +16,26 @@ multiple memberships (multiple orgs); a membership can have multiple roles.
 
 ## Shared entities
 
-- **Party** — any real-world company or person a business deals with
-  (`kind: COMPANY | PERSON`). This is the one customer/supplier/contact
-  concept in Atlas. Modules relate their own records to a `Party` rather than
-  inventing `SalesCustomer`, `FinanceCustomer`, etc. Today Sales'
-  `Opportunity`, `Quote` and `SalesOrder` all reference `Party` — Finance,
-  Service and others would do the same later rather than adding their own
-  customer table.
-- **Address**, **ContactMethod** — attached to a `Party`.
+- **Party — the Customer Master.** Any real-world company or person a
+  business deals with (`kind: COMPANY | PERSON`). This is the one
+  customer/supplier/contact identity in Atlas — see
+  [`docs/CUSTOMER_MASTER.md`](./CUSTOMER_MASTER.md) for the full model
+  (`Contact`, `Address`, `CommunicationDestination`,
+  `CustomerCommercialSettings`, `CustomerCreditProfile`, `PaymentTerm`,
+  `TaxRegistration`, `BankAccount`, `DirectDebitMandate`, `Document`, `Note`).
+  Modules relate their own records to a `Party` rather than inventing
+  `SalesCustomer`, `FinanceCustomer`, etc. — Sales' `Opportunity`, `Quote` and
+  `SalesOrder` all reference `Party` this way.
 - **ModuleState** — per-org enable/disable flag for a module id. The module
   catalogue itself (capabilities, nav, manifest) lives in code, not the
-  database.
+  database. Customer Master itself is Core, not a module — it has no
+  `ModuleState` row.
 - **AuditEntry** — who did what to which entity, with before/after JSON.
   Written via `writeAudit()`; never store secrets/sensitive payloads here.
 - **Activity** — human-readable feed entry, written via `writeActivity()`,
-  rendered on Home and (eventually) record pages.
+  rendered on Home. Carries an optional `partyId` (independent of
+  `entityType`/`entityId`) so it can also power the unified customer Activity
+  tab without Customer Master knowing each module's entity shape.
 
 ## Money
 
@@ -56,14 +61,12 @@ language from `docs/DESIGN_SYSTEM.md`.
    column).
 4. Run `npm run db:migrate` and commit the generated migration.
 
-## Known deferred infrastructure
+## Local development
 
-This environment has no reachable PostgreSQL instance (no local Postgres,
-Docker, or `npx prisma dev` support — the latter needs Node 22+ for its
-bundled SQLite dependency; this environment runs Node 20). `npx prisma
-generate` runs and the schema/client compile correctly, but `prisma migrate
-dev` and the seed script have not been executed against a live database in
-this environment. Set `DATABASE_URL` to a real Postgres instance and run:
+See [`docs/LOCAL_DEVELOPMENT.md`](./LOCAL_DEVELOPMENT.md) — `npm run dev:all`
+runs a real local Postgres (no Docker/Homebrew/cloud DB needed) and applies
+migrations automatically. For a shared/staging/production Postgres instance,
+set `DATABASE_URL` and run:
 
 ```bash
 npm run db:migrate

@@ -1,6 +1,7 @@
 import type { Session } from "@/core/auth/session";
 import type { SearchResult } from "@/core/modules/types";
 import { getNavigableModules, getModuleNavigation } from "@/core/modules/runtime";
+import { searchCustomers } from "@/core/customers/search";
 
 /**
  * Powers the ⌘K command palette. Combines static navigation matches with each
@@ -27,11 +28,12 @@ export async function searchAtlas(session: Session, query: string): Promise<Sear
       }));
   });
 
-  const providerResults = await Promise.all(
-    modules
+  const [customerResults, ...providerResults] = await Promise.all([
+    searchCustomers(session, trimmed),
+    ...modules
       .filter((module) => module.searchProvider)
       .map((module) => module.searchProvider!({ organisationId: session.organisationId, session, query: trimmed })),
-  );
+  ]);
 
-  return [...navigationMatches, ...providerResults.flat()].slice(0, 20);
+  return [...navigationMatches, ...customerResults, ...providerResults.flat()].slice(0, 20);
 }

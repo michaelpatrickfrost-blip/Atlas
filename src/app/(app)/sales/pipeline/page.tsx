@@ -4,6 +4,7 @@ import { SALES_CAPABILITIES } from "@/core/permissions/capabilities";
 import { listOpportunities } from "@/modules/sales/services/queries";
 import { formatMoney } from "@/core/shared/money";
 import { EmptyState } from "@/components/ui/empty-state";
+import Link from "next/link";
 import type { OpportunityStage } from "@/generated/prisma/client";
 
 const STAGES: { key: OpportunityStage; label: string }[] = [
@@ -38,7 +39,9 @@ export default async function PipelinePage() {
               {items.map((opportunity) => (
                 <div key={opportunity.id} className="rounded-[var(--radius-atlas-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
                   <p className="truncate text-sm font-medium text-[var(--color-ink)]">{opportunity.name}</p>
-                  <p className="truncate text-xs text-[var(--color-ink-muted)]">{opportunity.party.name}</p>
+                  <Link href={`/customers/${opportunity.partyId}`} className="truncate text-xs text-[var(--color-atlas-blue)] hover:underline">
+                    {opportunity.party.name}
+                  </Link>
                   <p className="mt-2 text-sm text-[var(--color-ink)]">{formatMoney(opportunity.valueAmount, opportunity.valueCurrency)}</p>
                 </div>
               ))}

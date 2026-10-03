@@ -1,15 +1,18 @@
 import Link from "next/link";
-import { Home as HomeIcon, LayoutGrid, Settings } from "lucide-react";
+import { Home as HomeIcon, LayoutGrid, Settings, Users } from "lucide-react";
 import type { ModuleManifest } from "@/core/modules/types";
 import { IconChip } from "@/components/ui/icon-chip";
 import { accentColorForModule } from "@/core/shared/module-colors";
 
 /** Shared nav markup used by both the desktop sidebar and the mobile drawer —
- *  one source of truth so the two never drift apart. */
-export function NavLinks({ modules }: { modules: ModuleManifest[] }) {
+ *  one source of truth so the two never drift apart. Customers is Core (not a
+ *  module) so it's shown whenever the viewer has customers.read, independent
+ *  of the module list. */
+export function NavLinks({ modules, showCustomers }: { modules: ModuleManifest[]; showCustomers: boolean }) {
   return (
     <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto">
       <NavLink href="/home" label="Home" icon={<HomeIcon size={16} className="shrink-0" />} />
+      {showCustomers && <NavLink href="/customers" label="Customers" icon={<Users size={16} className="shrink-0" />} />}
 
       {modules.length > 0 && <div className="my-3 h-px shrink-0 bg-[var(--color-border)]" />}
 

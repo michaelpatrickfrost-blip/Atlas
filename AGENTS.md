@@ -18,25 +18,32 @@ Read `docs/ARCHITECTURE.md` for the full picture. This file is a map, not a text
 - `src/core/` — platform: auth (`auth/`), permissions (`permissions/`), the module
   registry and runtime (`modules/`), events (`events/`), audit (`audit/`), activity
   (`activity/`), attention aggregation (`attention/`), search aggregation (`search/`),
-  the Prisma client singleton (`db/`), shared value types (`shared/`).
+  **Customer Master** (`customers/` — the canonical customer identity; see
+  `docs/CUSTOMER_MASTER.md`), the Prisma client singleton (`db/`), shared value types
+  (`shared/`).
 - `src/modules/<module-id>/` — one directory per module (manifest, domain/services,
   pages). `src/modules/sales/` is the reference implementation — copy its shape for
   a new module. `src/modules/stubs.ts` lists future modules not yet built.
+- `src/app/(app)/customers/` — Customer Master's own routes (list, quick-create,
+  5-tab record page). Not under any module's route tree — Customer Master is Core.
 - `src/app/(app)/` — authenticated routes, wrapped by the shell (sidebar/topbar/⌘K).
 - `src/app/(auth)/` — sign-in.
 - `src/components/ui/` — design system primitives (Button, Card, DataTable, StatusPill,
   EmptyState). `src/components/shell/` — sidebar, topbar, command palette.
 - `prisma/schema.prisma` — the one data model, shared across modules. `prisma/seed.ts`
   — demo organisation/data.
-- `docs/` — ARCHITECTURE, MODULE_SPEC (read before building a module), DESIGN_SYSTEM,
-  DATA_MODEL, PERMISSIONS.
+- `docs/` — ARCHITECTURE, MODULE_SPEC (read before building a module),
+  CUSTOMER_MASTER, DESIGN_SYSTEM, DATA_MODEL, PERMISSIONS, LOCAL_DEVELOPMENT.
 
 ## Module rule
 
 **Never build a new module's business entity as a standalone "Customer"/"Product"
-copy.** Attach to the shared `Party` (and other core entities) — see
-`docs/DATA_MODEL.md`. A module may add its own tables (like Sales' `Opportunity`,
-`Quote`), but relates them to core entities rather than re-inventing them.
+copy.** Attach to the shared `Party` (Customer Master — see
+`docs/CUSTOMER_MASTER.md` and `docs/DATA_MODEL.md`). A module may add its own
+tables (like Sales' `Opportunity`, `Quote`), but relates them to `Party` rather
+than re-inventing a customer concept. If the module should show on a customer's
+record, implement `customerOverviewProvider` — don't add routes under
+`src/app/(app)/customers/`, which belongs to Core.
 
 Core (`src/core/**`) must never import from `src/modules/**`. Modules register
 themselves into `src/core/modules/registry.ts` — that's the only wiring point.

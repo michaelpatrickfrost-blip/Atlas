@@ -72,7 +72,11 @@ restrained and functional (drawer/modal transitions), never decorative.
 
 ## Record page pattern
 
-See `src/app/(app)/sales/customers/[partyId]/page.tsx`: identity + status
-pill, a metrics row, then sections per contributing module. Only sections
-with actual data (and capability) render — this is the template every future
-module's record view should follow for shared entities like `Party`.
+See `src/app/(app)/customers/[partyId]/page.tsx` (the Customer Master record
+— `docs/CUSTOMER_MASTER.md`): a persistent header (identity, status pill,
+module-contributed quick actions), a small set of top-level tabs
+(Overview/People & Places/Commercial/Finance & Tax/Activity — never more
+without a genuine need), and within Overview a metrics row built from
+whatever modules contribute. Only sections with actual data (and capability)
+render — this is the template any future record view should follow for
+shared entities.

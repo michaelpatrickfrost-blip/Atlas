@@ -119,6 +119,17 @@ Implement `AttentionProvider`/`SearchProvider` (both in
 Home or in ⌘K. Core calls these automatically for every enabled, accessible
 module — no wiring beyond returning them from the manifest.
 
+## Contributing to a customer record
+
+If the module relates its entities to `Party` (most will — see
+[`docs/CUSTOMER_MASTER.md`](./CUSTOMER_MASTER.md)), implement
+`customerOverviewProvider` to contribute metrics, quick actions, and
+optionally a `creditExposure` figure to that customer's Overview tab. See
+`src/modules/sales/services/customer-overview.ts` for the reference
+implementation. Customer Master calls this for every enabled, accessible
+module exactly like attention/search — never hardcode a module's presence
+into Customer Master itself.
+
 ## Settings
 
 A module's own configuration UI lives at `src/app/(app)/<module-id>/settings`

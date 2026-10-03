@@ -2,6 +2,8 @@ import type { Session } from "@/core/auth/session";
 import { getNavigableModules } from "@/core/modules/runtime";
 import { NavLinks } from "@/components/shell/nav-links";
 import { Avatar } from "@/components/ui/avatar";
+import { can } from "@/core/permissions/check";
+import { CUSTOMER_CAPABILITIES } from "@/core/permissions/capabilities";
 
 /** Desktop sidebar. Hidden below `md`; the mobile drawer (`MobileNav`) in the
  *  topbar renders the same `NavLinks` for small screens instead of duplicating
@@ -15,7 +17,7 @@ export async function Sidebar({ session }: { session: Session }) {
         <span className="text-[15px] font-semibold tracking-tight text-[var(--color-ink)]">Atlas</span>
       </div>
 
-      <NavLinks modules={modules} />
+      <NavLinks modules={modules} showCustomers={can(session, CUSTOMER_CAPABILITIES.read)} />
 
       <div className="mt-3 flex min-w-0 items-center gap-2 border-t border-[var(--color-border)] px-2 pt-3">
         <Avatar name={session.userName} size="sm" />

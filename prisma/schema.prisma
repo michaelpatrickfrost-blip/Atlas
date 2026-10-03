@@ -107,28 +107,66 @@ model ModuleState {
   @@map("module_states")
 }
 
-// ---------- Core: shared party / contact model ----------
-
+// ---------- Core: Customer Master (canonical Party + extensions) ----------
+//
 // A Party is any real-world actor a business deals with: a company or a person.
 // Modules attach their own records (Opportunity, Quote, Invoice, Ticket, ...) to a
-// Party rather than each inventing their own "Customer" copy.
+// Party rather than each inventing their own "Customer" copy — see docs/CUSTOMER_MASTER.md
+// for the full architecture (one identity, module-contributed Overview sections,
+// capability-gated sensitive data, duplicate detection, multi-company deferral).
+//
+// Identity lives on Party itself. Commercial/credit configuration is split into
+// their own 1:1 tables so each is independently section-editable (never one giant
+// edit form) and so a future multi-company override can attach per-company rows
+// without touching identity.
 model Party {
-  id             String   @id @default(cuid())
+  id             String         @id @default(cuid())
   organisationId String
   kind           PartyKind
-  name           String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  name           String // legal name
+  tradingName    String?
+  customerCode   String // e.g. "C000184", unique per org, assigned at creation
+  status         CustomerStatus @default(PROSPECT)
+  customerGroup  String?
+  parentPartyId  String?
+
+  website                String?
+  industry               String?
+  registrationNumber     String?
+  countryOfRegistration  String?
+  relationshipStartDate  DateTime?
+  accountManagerUserId   String? // soft reference to User.id — see docs/CUSTOMER_MASTER.md
+  territory              String?
+  tags                   String[]
+  preferredLanguage      String?
+  preferredCurrency      String  @default("GBP")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
-  addresses    Address[]
-  contacts     ContactMethod[]
+  parent       Party?       @relation("PartyHierarchy", fields: [parentPartyId], references: [id])
+  children     Party[]      @relation("PartyHierarchy")
+
+  contacts                 Contact[]
+  addresses                Address[]
+  communicationDestinations CommunicationDestination[]
+  taxRegistrations         TaxRegistration[]
+  bankAccounts             BankAccount[]
+  directDebitMandates      DirectDebitMandate[]
+  documents                Document[]
+  notes                    Note[]
+  commercialSettings       CustomerCommercialSettings?
+  creditProfile            CustomerCreditProfile?
+  activities               Activity[]
 
   opportunities Opportunity[]
   quotes        Quote[]
   salesOrders   SalesOrder[]
 
+  @@unique([organisationId, customerCode])
   @@index([organisationId])
+  @@index([organisationId, status])
   @@map("parties")
 }
 
@@ -137,36 +175,390 @@ enum PartyKind {
   PERSON
 }
 
-model Address {
-  id        String   @id @default(cuid())
+enum CustomerStatus {
+  PROSPECT
+  ACTIVE
+  ON_HOLD
+  INACTIVE
+  CLOSED
+}
+
+// A person associated with a Party. One person, many roles — never duplicated
+// per function (§9).
+model Contact {
+  id             String        @id @default(cuid())
+  partyId        String
+  title          String?
+  firstName      String
+  middleName     String?
+  surname        String
+  preferredName  String?
+  jobTitle       String?
+  department     String?
+  email          String?
+  alternativeEmail String?
+  phone          String?
+  mobile         String?
+  preferredContactMethod ContactPreferredMethod?
+  language       String?
+  notes          String?
+  status         ContactStatus @default(ACTIVE)
+  isPrimary      Boolean       @default(false)
+  roles          ContactRole[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  party                     Party                      @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  communicationDestinations CommunicationDestination[]
+  addresses                 Address[]
+
+  @@index([partyId])
+  @@map("contacts")
+}
+
+enum ContactPreferredMethod {
+  EMAIL
+  PHONE
+  MOBILE
+}
+
+enum ContactStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ContactRole {
+  PRIMARY
+  SALES
+  ACCOUNTS_PAYABLE
+  PURCHASING
+  OPERATIONS
+  DELIVERY
+  TECHNICAL
+  EXECUTIVE
+  OTHER
+}
+
+// Which contact/email a given document type goes to — not every document goes
+// to the same inbox (§10). Falls back to the contact marked primary when unset.
+model CommunicationDestination {
+  id        String                 @id @default(cuid())
   partyId   String
+  purpose   CommunicationPurpose
+  contactId String?
+  email     String?
+  createdAt DateTime               @default(now())
+
+  party   Party    @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  contact Contact? @relation(fields: [contactId], references: [id])
+
+  @@index([partyId, purpose])
+  @@map("communication_destinations")
+}
+
+enum CommunicationPurpose {
+  ORDERS
+  INVOICES
+  STATEMENTS
+  CREDIT_CONTROL
+  DELIVERY
+}
+
+model Address {
+  id        String      @id @default(cuid())
+  partyId   String
+  type      AddressType @default(OTHER)
+  label     String?
+  locationName String?
   line1     String
   line2     String?
   city      String?
   region    String?
   postcode  String?
   country   String?
-  createdAt DateTime @default(now())
+  telephone String?
+  contactId String?
+  deliveryInstructions String?
+  active    Boolean     @default(true)
+  isDefaultBilling  Boolean @default(false)
+  isDefaultDelivery Boolean @default(false)
+  createdAt DateTime    @default(now())
 
-  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  party   Party    @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  contact Contact? @relation(fields: [contactId], references: [id])
 
+  @@index([partyId])
   @@map("addresses")
 }
 
-enum ContactMethodKind {
-  EMAIL
-  PHONE
+enum AddressType {
+  REGISTERED
+  BILLING
+  DELIVERY
+  SITE
+  SERVICE
+  OFFICE
+  OTHER
 }
 
-model ContactMethod {
-  id      String            @id @default(cuid())
-  partyId String
-  kind     ContactMethodKind
-  value    String
+// ---------- Customer Master: Commercial ----------
+
+model CustomerCommercialSettings {
+  partyId String @id
+
+  secondaryAccountManagerUserId String?
+  customerSegment                String?
+  priceList                      String?
+  discountGroup                  String?
+  pricingAgreementReference      String?
+
+  customerPoRequired       Boolean @default(false)
+  poFormatRules             String?
+  orderReferenceRequired    Boolean @default(false)
+  partialShipmentAllowed    Boolean @default(true)
+  backordersAllowed         Boolean @default(true)
+
+  defaultDeliveryAddressId String?
+  deliveryMethod            String?
+  shippingTerms              String?
+  preferredWarehouse         String?
+  shippingAccountReference   String?
+
+  quoteTemplate                  String?
+  orderConfirmationPreference    String?
+  invoiceDeliveryPreference      String?
+
+  updatedAt DateTime @updatedAt
 
   party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
 
-  @@map("contact_methods")
+  @@map("customer_commercial_settings")
+}
+
+// ---------- Customer Master: Credit & payment ----------
+
+model PaymentTerm {
+  id             String          @id @default(cuid())
+  organisationId String
+  key            String
+  name           String
+  days           Int?
+  type           PaymentTermType @default(NET)
+  createdAt      DateTime        @default(now())
+
+  creditProfiles CustomerCreditProfile[]
+
+  @@unique([organisationId, key])
+  @@map("payment_terms")
+}
+
+enum PaymentTermType {
+  DUE_ON_RECEIPT
+  NET
+  END_OF_MONTH
+  CUSTOM
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  DIRECT_DEBIT
+  CARD
+  CASH
+  CHEQUE
+  ACCOUNT
+  OTHER
+}
+
+// Customer-level credit configuration. Calculated exposure (open invoices + open
+// orders) is NOT stored here — it's supplied by Finance/Sales through their own
+// queries, never duplicated into Customer Master (§16).
+model CustomerCreditProfile {
+  partyId String @id
+
+  creditLimitAmount   Int     @default(0)
+  creditLimitCurrency String  @default("GBP")
+  onHold              Boolean @default(false)
+  holdReason          String?
+  holdDate            DateTime?
+  holdSetByUserId     String?
+  reviewDate          DateTime?
+  riskRating          String?
+  insuranceLimitAmount Int?
+  collectionsStatus   String?
+  statementFrequency  String?
+  reminderPolicy      String?
+  paymentTermId       String?
+  paymentMethod       PaymentMethod?
+
+  updatedAt DateTime @updatedAt
+
+  party       Party        @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  paymentTerm PaymentTerm? @relation(fields: [paymentTermId], references: [id])
+
+  @@map("customer_credit_profiles")
+}
+
+// ---------- Customer Master: Tax ----------
+
+// A customer may hold several tax registrations across jurisdictions. Format
+// validation and external verification are tracked separately (§19–20) — Atlas
+// never claims a number is verified unless a real check (manual or service) was
+// actually recorded.
+model TaxRegistration {
+  id                 String               @id @default(cuid())
+  partyId            String
+  jurisdiction       String // ISO country/region code, e.g. "GB", "XI"
+  registrationType   String // e.g. "VAT", "GST"
+  number             String
+  normalizedNumber   String // whitespace/case-normalised, used for matching/search
+  effectiveDate      DateTime?
+  expiryDate         DateTime?
+  validationStatus   TaxValidationStatus @default(NOT_VERIFIED)
+  validationDate     DateTime?
+  validationSource   String? // "manual" today; a future service name once integrated
+  verifiedLegalName  String?
+  verifiedAddress    String?
+  notes              String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
+
+  @@index([partyId])
+  @@index([normalizedNumber])
+  @@map("tax_registrations")
+}
+
+enum TaxValidationStatus {
+  NOT_VERIFIED
+  MANUALLY_VERIFIED
+  VERIFIED_BY_SERVICE
+  FAILED
+}
+
+// ---------- Customer Master: Bank & Direct Debit ----------
+//
+// Sensitive. Raw values are stored (this environment has no KMS/secrets
+// infrastructure to encrypt at rest — see docs/CUSTOMER_MASTER.md §Security for
+// the honest limitation and what a production deployment must add). Every read
+// path masks by default; only a capability-gated, audited reveal action returns
+// the full value. Never included in global search results or bulk exports.
+model BankAccount {
+  id             String                 @id @default(cuid())
+  partyId        String
+  accountHolder  String
+  bankName       String?
+  label          String?
+  country        String
+  currency       String
+  sortCode       String?
+  accountNumber  String?
+  iban           String?
+  bic            String?
+  purpose        BankAccountPurpose     @default(OTHER)
+  active         Boolean                @default(true)
+  isDefault      Boolean                @default(false)
+  verifiedStatus BankVerificationStatus @default(NOT_VERIFIED)
+  verifiedDate   DateTime?
+  notes          String?
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+
+  party           Party                @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  directDebitMandates DirectDebitMandate[]
+
+  @@index([partyId])
+  @@map("bank_accounts")
+}
+
+enum BankAccountPurpose {
+  DIRECT_DEBIT
+  REFUND
+  REMITTANCE
+  OTHER
+}
+
+enum BankVerificationStatus {
+  NOT_VERIFIED
+  VERIFIED
+}
+
+model DirectDebitMandate {
+  id                 String               @id @default(cuid())
+  partyId            String
+  bankAccountId      String
+  scheme             DirectDebitScheme
+  mandateReference   String
+  status             DirectDebitStatus    @default(PENDING)
+  agreedDate         DateTime?
+  effectiveDate      DateTime?
+  firstCollectionDate DateTime?
+  lastCollectionDate DateTime?
+  cancellationDate   DateTime?
+  cancellationReason String?
+  notes              String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  party       Party       @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  bankAccount BankAccount @relation(fields: [bankAccountId], references: [id])
+
+  @@unique([partyId, mandateReference])
+  @@map("direct_debit_mandates")
+}
+
+enum DirectDebitScheme {
+  BACS
+  SEPA_CORE
+  SEPA_B2B
+}
+
+enum DirectDebitStatus {
+  PENDING
+  ACTIVE
+  CANCELLED
+  FAILED
+}
+
+// ---------- Customer Master: Documents & notes ----------
+
+model Document {
+  id             String             @id @default(cuid())
+  organisationId String
+  partyId        String?
+  type           String // e.g. "VAT certificate", "Signed terms"
+  date           DateTime?
+  expiryDate     DateTime?
+  description    String?
+  uploadedByUserId String?
+  visibility     DocumentVisibility @default(ALL)
+  url            String? // external storage reference — no file upload infra yet
+  createdAt      DateTime           @default(now())
+
+  party Party? @relation(fields: [partyId], references: [id], onDelete: Cascade)
+
+  @@index([partyId])
+  @@map("documents")
+}
+
+enum DocumentVisibility {
+  ALL
+  RESTRICTED
+}
+
+model Note {
+  id             String   @id @default(cuid())
+  partyId        String
+  body           String
+  pinned         Boolean  @default(false)
+  restricted     Boolean  @default(false)
+  authorUserId   String?
+  createdAt      DateTime @default(now())
+
+  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
+
+  @@index([partyId])
+  @@map("notes")
 }
 
 // ---------- Core: audit & activity ----------
@@ -197,12 +589,19 @@ model Activity {
   summary        String
   entityType     String?
   entityId       String?
+  // Optional link to the customer this activity relates to, independent of
+  // entityType/entityId (which point at the Opportunity/Quote/Order/etc. that
+  // generated it). This is what powers the unified customer Activity timeline
+  // (§29) without Customer Master needing to know every module's entity shape.
+  partyId        String?
   metadata       Json?
   createdAt      DateTime @default(now())
 
   organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  party        Party?       @relation(fields: [partyId], references: [id], onDelete: Cascade)
 
   @@index([organisationId, createdAt])
+  @@index([partyId, createdAt])
   @@map("activities")
 }
 

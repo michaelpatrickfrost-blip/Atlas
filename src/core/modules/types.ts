@@ -38,6 +38,40 @@ export type SearchProvider = (ctx: {
   query: string;
 }) => Promise<SearchResult[]>;
 
+/** A module's contribution to a customer record's Overview — metrics and quick
+ *  actions. Customer Master (src/core/customers) calls every enabled, accessible
+ *  module's provider and renders the result; it never hardcodes "Sales" or
+ *  "Finance" logic itself. A module that isn't enabled simply contributes
+ *  nothing — Customer Master keeps working either way. See
+ *  docs/CUSTOMER_MASTER.md §Module extension points. */
+export type CustomerOverviewMetric = {
+  label: string;
+  value: string;
+  href?: string;
+};
+
+export type CustomerOverviewAction = {
+  label: string;
+  href: string;
+};
+
+export type CustomerOverviewContribution = {
+  moduleId: string;
+  metrics: CustomerOverviewMetric[];
+  actions: CustomerOverviewAction[];
+  /** This module's contribution to credit exposure (e.g. open orders), in minor
+   *  units. Customer Master sums these across modules to compute "available
+   *  credit" (§16) — it never stores or computes exposure itself. Omit when the
+   *  module has nothing to add. */
+  creditExposure?: { amountMinorUnits: number; currency: string };
+};
+
+export type CustomerOverviewProvider = (ctx: {
+  organisationId: string;
+  session: Session;
+  partyId: string;
+}) => Promise<CustomerOverviewContribution | null>;
+
 /** The machine-readable contract every module declares. See docs/MODULE_SPEC.md. */
 export type ModuleManifest = {
   id: string;
@@ -59,6 +93,7 @@ export type ModuleManifest = {
   status: "available" | "installed" | "coming_soon";
   attentionProvider?: AttentionProvider;
   searchProvider?: SearchProvider;
+  customerOverviewProvider?: CustomerOverviewProvider;
   /** Lazily-loaded home widget contributed to module-relevant surfaces (optional, future use). */
   widget?: ComponentType;
 };

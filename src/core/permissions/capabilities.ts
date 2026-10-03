@@ -11,9 +11,40 @@ export const CORE_CAPABILITIES = {
   rolesManage: "core.roles.manage",
 } as const;
 
+/** Customer Master — the canonical customer identity, owned by Core (every
+ *  module depends on it; it is not an installable module). See
+ *  docs/CUSTOMER_MASTER.md. Sensitive sections (credit, tax, bank) have their
+ *  own read/manage capabilities so a salesperson's role need not grant them. */
+export const CUSTOMER_CAPABILITIES = {
+  read: "customers.read",
+  create: "customers.create",
+  edit: "customers.edit",
+  archive: "customers.archive",
+
+  contactsManage: "customers.contacts.manage",
+  addressesManage: "customers.addresses.manage",
+
+  commercialRead: "customers.commercial.read",
+  commercialManage: "customers.commercial.manage",
+
+  creditRead: "customers.credit.read",
+  creditManage: "customers.credit.manage",
+
+  taxRead: "customers.tax.read",
+  taxManage: "customers.tax.manage",
+
+  bankRead: "customers.bank.read",
+  bankReveal: "customers.bank.reveal",
+  bankManage: "customers.bank.manage",
+
+  documentsRead: "customers.documents.read",
+  documentsManage: "customers.documents.manage",
+
+  restrictedNotesRead: "customers.restricted_notes.read",
+  restrictedNotesManage: "customers.restricted_notes.manage",
+} as const;
+
 export const SALES_CAPABILITIES = {
-  customerRead: "sales.customer.read",
-  customerManage: "sales.customer.manage",
   opportunityRead: "sales.opportunity.read",
   opportunityManage: "sales.opportunity.manage",
   quoteRead: "sales.quote.read",
@@ -30,6 +61,7 @@ export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: st
     name: "Administrator",
     capabilities: [
       ...Object.values(CORE_CAPABILITIES),
+      ...Object.values(CUSTOMER_CAPABILITIES),
       ...Object.values(SALES_CAPABILITIES),
     ],
   },
@@ -37,7 +69,13 @@ export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: st
     key: "sales_user",
     name: "Sales User",
     capabilities: [
-      SALES_CAPABILITIES.customerRead,
+      CUSTOMER_CAPABILITIES.read,
+      CUSTOMER_CAPABILITIES.create,
+      CUSTOMER_CAPABILITIES.edit,
+      CUSTOMER_CAPABILITIES.contactsManage,
+      CUSTOMER_CAPABILITIES.addressesManage,
+      CUSTOMER_CAPABILITIES.commercialRead,
+      CUSTOMER_CAPABILITIES.creditRead,
       SALES_CAPABILITIES.opportunityRead,
       SALES_CAPABILITIES.opportunityManage,
       SALES_CAPABILITIES.quoteRead,
@@ -49,8 +87,15 @@ export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: st
     key: "sales_manager",
     name: "Sales Manager",
     capabilities: [
-      SALES_CAPABILITIES.customerRead,
-      SALES_CAPABILITIES.customerManage,
+      CUSTOMER_CAPABILITIES.read,
+      CUSTOMER_CAPABILITIES.create,
+      CUSTOMER_CAPABILITIES.edit,
+      CUSTOMER_CAPABILITIES.archive,
+      CUSTOMER_CAPABILITIES.contactsManage,
+      CUSTOMER_CAPABILITIES.addressesManage,
+      CUSTOMER_CAPABILITIES.commercialRead,
+      CUSTOMER_CAPABILITIES.commercialManage,
+      CUSTOMER_CAPABILITIES.creditRead,
       SALES_CAPABILITIES.opportunityRead,
       SALES_CAPABILITIES.opportunityManage,
       SALES_CAPABILITIES.quoteRead,
@@ -58,6 +103,23 @@ export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: st
       SALES_CAPABILITIES.quoteApprove,
       SALES_CAPABILITIES.orderRead,
       SALES_CAPABILITIES.orderManage,
+    ],
+  },
+  {
+    key: "finance_manager",
+    name: "Finance Manager",
+    capabilities: [
+      CUSTOMER_CAPABILITIES.read,
+      CUSTOMER_CAPABILITIES.commercialRead,
+      CUSTOMER_CAPABILITIES.creditRead,
+      CUSTOMER_CAPABILITIES.creditManage,
+      CUSTOMER_CAPABILITIES.taxRead,
+      CUSTOMER_CAPABILITIES.taxManage,
+      CUSTOMER_CAPABILITIES.bankRead,
+      CUSTOMER_CAPABILITIES.bankReveal,
+      CUSTOMER_CAPABILITIES.bankManage,
+      CUSTOMER_CAPABILITIES.documentsRead,
+      CUSTOMER_CAPABILITIES.documentsManage,
     ],
   },
 ];

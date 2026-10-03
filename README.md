@@ -45,6 +45,8 @@ npm test              # unit tests (vitest)
 - [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — Core + Modules, request
   flow, multi-tenancy, events
 - [`docs/MODULE_SPEC.md`](./docs/MODULE_SPEC.md) — how to build a new module
+- [`docs/CUSTOMER_MASTER.md`](./docs/CUSTOMER_MASTER.md) — the canonical
+  customer identity (Customer 360)
 - [`docs/DESIGN_SYSTEM.md`](./docs/DESIGN_SYSTEM.md) — visual language and UI
   primitives
 - [`docs/DATA_MODEL.md`](./docs/DATA_MODEL.md) — shared entities, tenancy,

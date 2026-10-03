@@ -41,6 +41,7 @@ export async function moveOpportunityStage(opportunityId: string, stage: Opportu
       summary: `${session.userName} won ${after.name}`,
       entityType: "Opportunity",
       entityId: opportunityId,
+      partyId: after.partyId,
       metadata: { valueAmount: after.valueAmount, valueCurrency: after.valueCurrency },
     });
     await emit(DOMAIN_EVENTS.salesOpportunityWon, { opportunityId, organisationId: session.organisationId });
@@ -64,6 +65,7 @@ export async function sendQuote(quoteId: string) {
     summary: `Quote ${quote.reference} sent — ${formatMoney(quote.totalAmount, quote.totalCurrency)}`,
     entityType: "Quote",
     entityId: quote.id,
+    partyId: quote.partyId,
   });
 
   revalidatePath("/sales/quotes");
@@ -98,6 +100,7 @@ export async function confirmSalesOrderFromQuote(quoteId: string) {
     summary: `Sales order ${order.reference} confirmed — ${formatMoney(order.totalAmount, order.totalCurrency)}`,
     entityType: "SalesOrder",
     entityId: order.id,
+    partyId: order.partyId,
   });
   await emit(DOMAIN_EVENTS.salesOrderConfirmed, { orderId: order.id, organisationId: session.organisationId });
 

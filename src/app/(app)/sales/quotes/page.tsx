@@ -5,6 +5,7 @@ import { listQuotes } from "@/modules/sales/services/queries";
 import { DataTable } from "@/components/ui/table";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
 import { formatMoney } from "@/core/shared/money";
+import Link from "next/link";
 import type { QuoteStatus } from "@/generated/prisma/client";
 
 const STATUS_TONE: Record<QuoteStatus, StatusTone> = {
@@ -26,7 +27,14 @@ export default async function QuotesPage() {
       emptyLabel="No quotes yet."
       columns={[
         { header: "Reference", render: (row) => row.reference },
-        { header: "Customer", render: (row) => row.party.name },
+        {
+          header: "Customer",
+          render: (row) => (
+            <Link href={`/customers/${row.partyId}`} className="text-[var(--color-atlas-blue)] hover:underline">
+              {row.party.name}
+            </Link>
+          ),
+        },
         { header: "Status", render: (row) => <StatusPill label={row.status} tone={STATUS_TONE[row.status]} /> },
         { header: "Total", render: (row) => formatMoney(row.totalAmount, row.totalCurrency), align: "right" },
       ]}

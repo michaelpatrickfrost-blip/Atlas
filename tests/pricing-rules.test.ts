@@ -1,0 +1,12 @@
+import {describe,it,expect} from 'vitest';
+import {selectPriceRule,calculateRulePrice,type PriceRule} from '@/core/pricing/rules';
+const make=(values:Partial<PriceRule>):PriceRule=>({id:'rule',scope:'ALL',productId:null,categoryCode:null,method:'FIXED',minimumQuantity:1,unitPriceAmount:100,percentage:0,adjustmentAmount:0,priority:0,active:true,validFrom:null,validTo:null,...values});
+const product={id:'p1',categoryCode:'CAT-1',basePriceAmount:1000,baseCurrency:'GBP'};
+describe('pricing rules',()=>{
+ it('prefers a product over category and global rules regardless of priority',()=>{const rules=[make({id:'all',priority:100}),make({id:'category',scope:'CATEGORY',categoryCode:'CAT-1',priority:200}),make({id:'product',scope:'PRODUCT',productId:'p1'})];expect(selectPriceRule(rules,product,1,new Date())?.id).toBe('product');});
+ it('uses the largest applicable quantity break and ignores expired/inactive rules',()=>{const rules=[make({id:'one'}),make({id:'ten',minimumQuantity:10}),make({id:'fifty',minimumQuantity:50}),make({id:'expired',minimumQuantity:20,validTo:'2026-01-01'}),make({id:'inactive',minimumQuantity:20,active:false})];expect(selectPriceRule(rules,product,25,new Date('2026-10-03'))?.id).toBe('ten');});
+ it('never matches another category or product',()=>{expect(selectPriceRule([make({scope:'CATEGORY',categoryCode:'other'}),make({scope:'PRODUCT',productId:'other'})],product,1,new Date())).toBeUndefined();});
+ it('converts standard prices using an explicit rate before percentage discount',()=>{expect(calculateRulePrice(make({method:'PERCENT',percentage:10}),{currency:'EUR',baseCurrency:'GBP',exchangeRate:1.2},product)).toBe(1080);});
+ it('supports discounts and markups in currency minor units',()=>{expect(calculateRulePrice(make({method:'AMOUNT',adjustmentAmount:-200}),{currency:'GBP',baseCurrency:'GBP',exchangeRate:1},product)).toBe(800);expect(calculateRulePrice(make({method:'PERCENT',percentage:-20}),{currency:'GBP',baseCurrency:'GBP',exchangeRate:1},product)).toBe(1200);});
+ it('rejects missing FX and negative results rather than relabelling currencies',()=>{expect(()=>calculateRulePrice(make({method:'PERCENT'}),{currency:'USD',baseCurrency:'EUR',exchangeRate:1},product)).toThrow('exchange rate');expect(()=>calculateRulePrice(make({method:'AMOUNT',adjustmentAmount:-2000}),{currency:'GBP',baseCurrency:'GBP',exchangeRate:1},product)).toThrow('invalid price');});
+});

@@ -1,0 +1,5 @@
+import {requireSession} from '@/core/auth/session';
+import {executeReadQuery} from '@/server/data-api/read-query';
+import {assertDesktopRequest} from '@/server/data-api/request';
+import {encodeWire,decodeWire} from '@/core/desktop/wire';
+export async function POST(request:Request){try{assertDesktopRequest(request);const session=await requireSession();const text=await request.text();if(text.length>100000)return Response.json({error:'Query too large.'},{status:413});const data=JSON.parse(text),args=decodeWire(data.args);if(!args||typeof args!=='object'||Array.isArray(args))throw new Error('Invalid query.');const value=await executeReadQuery(session,String(data.model),String(data.method),args as Record<string,unknown>);return Response.json({value:await encodeWire(value)},{headers:{'Cache-Control':'private, no-store'}});}catch(error){const message=error instanceof Error?error.message:'Data query failed.';return Response.json({error:message},{status:message.includes('FORBIDDEN')?403:message.includes('UNAUTHENTICATED')?401:400});}}

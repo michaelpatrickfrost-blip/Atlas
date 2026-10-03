@@ -1,0 +1,2 @@
+import type {Prisma} from '@/generated/prisma/client';
+export function commercialSnapshot(order:object):Prisma.InputJsonValue{const excluded=new Set(['party','holds','approvals','changeEvents','priceList','paymentTerm','quote','revisions']);const record=Object.fromEntries(Object.entries(order).filter(([key])=>!excluded.has(key)));if(Array.isArray(record.lines))record.lines=record.lines.map(l=>Object.fromEntries(Object.entries(l).filter(([key])=>key!=='product')));return JSON.parse(JSON.stringify(record));}

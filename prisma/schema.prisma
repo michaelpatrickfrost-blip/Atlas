@@ -14,14 +14,33 @@ datasource db {
 // ---------- Core: tenancy & identity ----------
 
 model Organisation {
+  salesPolicy Json @default("{}")
+  outboxEvents DomainOutbox[]
+  allowProductCreation Boolean @default(true)
+  allowCustomerCreation Boolean @default(true)
+  quotationTemplates SalesQuotationTemplate[]
   id        String   @id @default(cuid())
   name      String
   slug      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  status String @default("ACTIVE")
+  subscriptionStatus String @default("TRIAL")
+  trialEndsAt DateTime?
+  planName String @default("All apps trial")
+
   memberships  Membership[]
   moduleStates ModuleState[]
+  projects Project[]
+  chatMessages ChatMessage[]
+  dashboards Dashboard[]
+  warehouses Warehouse[]
+  inventoryBalances InventoryBalance[]
+  inventoryMovements InventoryMovement[]
+  kpis Kpi[]
+  projectTasks ProjectTask[]
+  meetings Meeting[]
   parties      Party[]
   auditEntries AuditEntry[]
   activities   Activity[]
@@ -35,8 +54,23 @@ model Organisation {
   salesTeams      SalesTeam[]
   lossReasons     LossReason[]
   salesActivities SalesActivity[]
+  products        Product[]
+  priceLists      PriceList[]
 
   @@map("organisations")
+  salesSavedViews SalesSavedView[]
+  salesWorkingDrafts SalesWorkingDraft[]
+
+  employees Employee[]
+  employeeTasks EmployeeTask[]
+  appraisals Appraisal[]
+  oneToOnes OneToOne[]
+  absenceRecords AbsenceRecord[]
+  rotaShifts RotaShift[]
+  payrollRuns PayrollRun[]
+  payslips Payslip[]
+  customerTradingLinks CustomerTradingLink[]
+
 }
 
 model User {
@@ -47,7 +81,9 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  platformAdmin PlatformAdministrator?
   memberships Membership[]
+  employeeProfiles Employee[]
 
   @@map("users")
 }
@@ -57,6 +93,7 @@ model Membership {
   id             String   @id @default(cuid())
   organisationId String
   userId         String
+  active Boolean @default(true)
   createdAt      DateTime @default(now())
 
   organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
@@ -103,6 +140,7 @@ model ModuleState {
   organisationId String
   moduleId       String
   enabled        Boolean  @default(false)
+  entitled Boolean @default(false)
   installedAt    DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -124,6 +162,23 @@ model ModuleState {
 // their own 1:1 tables so each is independently section-editable (never one giant
 // edit form) and so a future multi-company override can attach per-company rows
 // without touching identity.
+model CustomerTradingLink {
+  id String @id @default(cuid())
+  organisationId String
+  accountId String
+  tradingAccountId String
+  active Boolean @default(true)
+  notes String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+  account Party @relation("TradingSource",fields:[accountId],references:[id],onDelete:Cascade)
+  tradingAccount Party @relation("TradingTarget",fields:[tradingAccountId],references:[id],onDelete:Cascade)
+  @@unique([organisationId,accountId,tradingAccountId])
+  @@index([organisationId,tradingAccountId,active])
+  @@map("customer_trading_links")
+}
+
 model Party {
   id             String         @id @default(cuid())
   organisationId String
@@ -132,6 +187,7 @@ model Party {
   tradingName    String?
   customerCode   String // e.g. "C000184", unique per org, assigned at creation
   status         CustomerStatus @default(PROSPECT)
+  hierarchyRole String @default("CUSTOMER")
   customerGroup  String?
   parentPartyId  String?
 
@@ -152,6 +208,7 @@ model Party {
   organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
   parent       Party?       @relation("PartyHierarchy", fields: [parentPartyId], references: [id])
   children     Party[]      @relation("PartyHierarchy")
+  projects Project[]
 
   contacts                 Contact[]
   addresses                Address[]
@@ -170,11 +227,17 @@ model Party {
   salesOrders   SalesOrder[]
   prospects       Prospect[]
   salesActivities SalesActivity[]
+  customerProducts CustomerProduct[]
 
   @@unique([organisationId, customerCode])
   @@index([organisationId])
   @@index([organisationId, status])
   @@map("parties")
+  tradingLinks CustomerTradingLink[] @relation("TradingSource")
+  suppliedForAccounts CustomerTradingLink[] @relation("TradingTarget")
+  pricedQuotes Quote[] @relation("QuotePricingAccount")
+  pricedOrders SalesOrder[] @relation("OrderPricingAccount")
+
 }
 
 enum PartyKind {
@@ -318,6 +381,7 @@ model CustomerCommercialSettings {
   secondaryAccountManagerUserId String?
   customerSegment                String?
   priceList                      String?
+  defaultPriceList PriceList? @relation("CustomerDefaultPriceList", fields: [priceList], references: [id], onDelete: SetNull)
   discountGroup                  String?
   pricingAgreementReference      String?
 
@@ -356,6 +420,8 @@ model PaymentTerm {
   createdAt      DateTime        @default(now())
 
   creditProfiles CustomerCreditProfile[]
+  quotes Quote[]
+  salesOrders    SalesOrder[]
 
   @@unique([organisationId, key])
   @@map("payment_terms")
@@ -612,6 +678,118 @@ model Activity {
   @@index([organisationId, createdAt])
   @@index([partyId, createdAt])
   @@map("activities")
+}
+
+// ---------- Core: Product Master ----------
+//
+// A minimal shared product catalogue — Core-owned (like Party/Customer
+// Master) because Sales, future Stock, Purchasing and Manufacturing all need
+// the same identity. Physical/inventory attributes belong to a future Stock
+// module extending this table, not duplicating it. See
+// docs/modules/SALES_ORDER_PROCESSING.md §Product relationship.
+
+enum ProductKind {
+  PRODUCT
+  SERVICE
+  CHARGE
+}
+
+model Product {
+  id             String      @id @default(cuid())
+  organisationId String
+  categoryCode String?
+  code           String // SKU
+  name           String
+  description    String?
+  kind           ProductKind @default(PRODUCT)
+  unitOfMeasure  String      @default("each")
+  basePriceAmount Int
+  baseCurrency    String     @default("GBP")
+  taxCategory     String?
+  active          Boolean    @default(true)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  customerProducts CustomerProduct[]
+  priceListEntries PriceListEntry[]
+  quoteLines QuoteLine[]
+  orderLines       SalesOrderLine[]
+  inventoryBalances InventoryBalance[]
+  inventoryMovements InventoryMovement[]
+
+  @@unique([organisationId, code])
+  @@index([organisationId, active])
+  @@map("products")
+}
+
+// Customer-specific product data (§15) — never a second product catalogue,
+// just a relationship record layered on the canonical Product + Party.
+model CustomerProduct {
+  id                     String  @id @default(cuid())
+  partyId                String
+  productId              String
+  customerProductCode    String?
+  customerDescription    String?
+  contractedPriceAmount  Int?
+  contractedPriceCurrency String? @default("GBP")
+  packQuantity           Int?
+  preferredDeliveryUnit  String?
+
+  party   Party   @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([partyId, productId])
+  @@map("customer_products")
+}
+
+// ---------- Core: Pricing ----------
+//
+// A reusable, explainable pricing engine (§16) — see src/core/pricing/.
+// Every resolved price states its source (contract, price list, or
+// standard) rather than being a mystery calculation.
+
+model PriceList {
+  id             String   @id @default(cuid())
+  organisationId String
+  key            String
+  name           String
+  currency       String   @default("GBP")
+  baseCurrency String @default("GBP")
+  exchangeRate Float @default(1)
+  createdAt      DateTime @default(now())
+
+  organisation Organisation     @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  entries      PriceListEntry[]
+  customerDefaults CustomerCommercialSettings[] @relation("CustomerDefaultPriceList")
+  quotes Quote[]
+  orders       SalesOrder[]
+
+  @@unique([organisationId, key])
+  @@map("price_lists")
+}
+
+model PriceListEntry {
+  id          String    @id @default(cuid())
+  priceListId String
+  productId   String?
+  scope String @default("PRODUCT")
+  method String @default("FIXED")
+  categoryCode String?
+  percentage Float @default(0)
+  adjustmentAmount Int @default(0)
+  priority Int @default(0)
+  active Boolean @default(true)
+  unitPriceAmount Int
+  minimumQuantity Int   @default(1)
+  validFrom   DateTime?
+  validTo     DateTime?
+
+  priceList PriceList @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+  product   Product?   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([priceListId, productId, minimumQuantity])
+  @@map("price_list_entries")
 }
 
 // ---------- Sales & CRM (reference implementation) ----------
@@ -1007,12 +1185,33 @@ enum QuoteStatus {
 }
 
 model Quote {
+  ownerUserId String?
+  tags String[] @default([])
   id             String      @id @default(cuid())
   organisationId String
+  pricingPartyId String?
+  pricingParty Party? @relation("QuotePricingAccount",fields:[pricingPartyId],references:[id])
+  financeInstructions String?
+  deliveryInstructions String?
   partyId        String
   opportunityId  String?
   reference      String
   status         QuoteStatus @default(DRAFT)
+  revision       Int @default(1)
+  customerNotes  String?
+  externalReference String?
+  invoiceAddressSnapshot Json?
+  deliveryAddressSnapshot Json?
+  priceListId String?
+  priceList PriceList? @relation(fields:[priceListId],references:[id])
+  paymentTermId String?
+  paymentTerm PaymentTerm? @relation(fields:[paymentTermId],references:[id])
+  expiryDate DateTime?
+  customerPoReference String?
+  netAmount Int @default(0)
+  taxAmount Int @default(0)
+  projectId String?
+  project Project? @relation(fields: [projectId], references: [id])
   totalAmount    Int
   totalCurrency  String      @default("GBP")
   createdAt      DateTime    @default(now())
@@ -1029,8 +1228,19 @@ model Quote {
 }
 
 model QuoteLine {
+  lineNumber Int @default(0)
+  type OrderLineType @default(PRODUCT)
+  optional Boolean @default(false)
+  unitOfMeasure String @default("each")
+  taxCategory String?
+  priceSource String?
   id          String @id @default(cuid())
   quoteId     String
+  productId String?
+  product Product? @relation(fields:[productId],references:[id])
+  discountPercent Float @default(0)
+  netAmount Int @default(0)
+  taxAmount Int @default(0)
   description String
   quantity    Int
   unitAmount  Int
@@ -1041,28 +1251,747 @@ model QuoteLine {
   @@map("sales_quote_lines")
 }
 
-enum SalesOrderStatus {
+// ---------- Sales Order Processing ----------
+//
+// See docs/modules/SALES_ORDER_PROCESSING.md. Sales owns the commercial
+// promise only (what was ordered, on what terms) — never physical stock,
+// warehouse movements, accounting journals or payment allocation. Those
+// belong to future Logistics/Finance modules, which this schema and the
+// provider interfaces in src/core/{availability,logistics,finance}/types.ts
+// are shaped to receive without restructuring Sales.
+
+enum CommercialOrderStatus {
+  DRAFT
+  PENDING_APPROVAL
   CONFIRMED
-  FULFILLED
+  ON_HOLD
   CANCELLED
+  CLOSED
+}
+
+enum OrderType {
+  STANDARD
+  PROJECT
+  BLANKET
+  CALL_OFF
+  SAMPLE
+  REPLACEMENT
+  INTERNAL
+}
+
+enum OrderLineType {
+  SECTION
+  NOTE
+  PRODUCT
+  SERVICE
+  CHARGE
+  DISCOUNT
+  TEXT
 }
 
 model SalesOrder {
-  id             String           @id @default(cuid())
+  revisions SalesOrderRevision[]
+  tags String[] @default([])
+  id             String                @id @default(cuid())
   organisationId String
+  pricingPartyId String?
+  pricingParty Party? @relation("OrderPricingAccount",fields:[pricingPartyId],references:[id])
+  financeInstructions String?
   partyId        String
-  quoteId        String?          @unique
-  reference      String
-  status         SalesOrderStatus @default(CONFIRMED)
-  totalAmount    Int
-  totalCurrency  String           @default("GBP")
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  reference      String // human-readable order number, e.g. "SO-10482"
+  commercialStatus CommercialOrderStatus @default(DRAFT)
+  orderType      OrderType             @default(STANDARD)
+  revision       Int                   @default(1)
+
+  // Origin — CRM retains its own history; Sales only preserves the link
+  // (§4). Converting an opportunity never rewrites it into an order.
+  quoteId       String? @unique
+  opportunityId String?
+
+  ownerUserId String
+  teamId      String?
+
+  customerPoReference  String?
+  contractReference    String?
+  projectReference     String?
+  externalReference    String?
+
+  currency        String  @default("GBP")
+  priceListId     String?
+  paymentTermId   String?
+  incoterms       String?
+  deliveryTerms   String?
+  allowPartialDelivery Boolean @default(true)
+
+  orderDate            DateTime  @default(now())
+  confirmationDate     DateTime?
+  requestedDeliveryDate DateTime?
+  promisedDeliveryDate  DateTime?
+  latestAcceptableDate  DateTime?
+  expiryDate            DateTime?
+
+  // Immutable snapshots taken at confirmation — later changes to the
+  // customer's live address must not rewrite what this order actually
+  // shipped to (§5).
+  invoiceAddressSnapshot  Json?
+  deliveryAddressSnapshot Json?
+  orderContactId    String?
+  invoiceContactId  String?
+  deliveryContactId String?
+
+  netAmount      Int @default(0)
+  discountAmount Int @default(0)
+  taxAmount      Int @default(0)
+  grossAmount    Int @default(0)
+
+  internalNotes      String?
+  customerNotes      String?
+  deliveryInstructions String?
+
+  cancelledAt DateTime?
+  closedAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
   party        Party        @relation(fields: [partyId], references: [id], onDelete: Cascade)
   quote        Quote?       @relation(fields: [quoteId], references: [id])
+  priceList    PriceList?   @relation(fields: [priceListId], references: [id])
+  paymentTerm  PaymentTerm? @relation(fields: [paymentTermId], references: [id])
+
+  lines        SalesOrderLine[]
+  holds        OrderHold[]
+  changeEvents OrderChangeEvent[]
+  approvals    OrderApproval[]
 
   @@unique([organisationId, reference])
+  @@index([organisationId, commercialStatus])
   @@map("sales_orders")
+}
+
+model SalesOrderLine {
+  id            String        @id @default(cuid())
+  orderId       String
+  lineNumber    Int
+  type          OrderLineType @default(PRODUCT)
+
+  productId             String?
+  descriptionSnapshot   String
+  customerProductReference String?
+
+  orderedQuantity   Int     @default(1)
+  cancelledQuantity Int     @default(0)
+  unitOfMeasure     String  @default("each")
+
+  unitPriceAmount Int
+  priceSource     String? // e.g. "Northbridge 2026 Contract Price", "Standard price" — see pricing engine
+  discountPercent Float?  @default(0)
+  netAmount       Int
+  taxCategory     String?
+  taxAmount       Int     @default(0)
+
+  requestedDeliveryDate DateTime?
+  promisedDeliveryDate  DateTime?
+  warehousePreference   String?
+  projectReference      String?
+  notes                 String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order   SalesOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product?   @relation(fields: [productId], references: [id])
+
+  @@unique([orderId, lineNumber])
+  @@map("sales_order_lines")
+}
+
+enum OrderHoldType {
+  CREDIT
+  PRICING_APPROVAL
+  CUSTOMER_REQUEST
+  COMPLIANCE
+  STOCK_REVIEW
+  DELIVERY_ISSUE
+  MANUAL
+}
+
+// Reusable order holds (§30). The commercial order may continue to exist
+// while operational release is blocked — a hold never deletes or hides the
+// order itself.
+model OrderHold {
+  id               String        @id @default(cuid())
+  orderId          String
+  type             OrderHoldType
+  reason           String?
+  blockingScope     String? // e.g. "fulfilment", "all" — free text today, no enforcement engine yet
+  releaseAuthority  String?
+  createdByUserId   String
+  createdAt         DateTime      @default(now())
+  releasedByUserId  String?
+  releasedAt        DateTime?
+
+  order SalesOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("sales_order_holds")
+}
+
+enum OrderChangeType {
+  CUSTOMER
+  QUANTITY
+  PRICE
+  PRODUCT
+  REQUESTED_DATE
+  DELIVERY_ADDRESS
+  REFERENCE
+  STATUS
+  CANCELLATION
+  PRICE_OVERRIDE
+}
+
+// Amendment history for confirmed orders (§36-37) — a change is recorded,
+// never silently applied. Lets a future Logistics/Finance module know when
+// confirmed commercial data it already acted on has since changed.
+model OrderChangeEvent {
+  id              String          @id @default(cuid())
+  orderId         String
+  lineId          String?
+  type            OrderChangeType
+  fromValue       String?
+  toValue         String?
+  reason          String?
+  changedByUserId String
+  createdAt       DateTime        @default(now())
+
+  order SalesOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt])
+  @@map("sales_order_change_events")
+}
+
+enum OrderApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// Approval requests raised by order confirmation rules (§43) — e.g. order
+// value or discount above a threshold. No configurable rule engine yet;
+// thresholds are fixed in src/modules/sales/services/order-approval-rules.ts,
+// documented as a known simplification.
+model OrderApproval {
+  revision Int @default(1)
+  decisionReason String?
+  id              String              @id @default(cuid())
+  orderId         String
+  reason          String
+  status          OrderApprovalStatus @default(PENDING)
+  requestedByUserId String
+  requestedAt       DateTime            @default(now())
+  decidedByUserId   String?
+  decidedAt         DateTime?
+
+  order SalesOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("sales_order_approvals")
+}
+
+
+model Project {
+ id String @id @default(cuid())
+ organisationId String
+ partyId String
+ name String
+ reference String
+ status String @default("PLANNED")
+ notes String?
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ party Party @relation(fields:[partyId],references:[id])
+ quotes Quote[]
+ tasks ProjectTask[]
+ meetings Meeting[]
+ @@unique([organisationId,reference])
+ @@index([organisationId,status])
+ @@map("projects")
+}
+
+
+model ChatMessage {
+ id String @id @default(cuid())
+ organisationId String
+ authorUserId String
+ body String
+ createdAt DateTime @default(now())
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ @@index([organisationId,createdAt])
+ @@map("chat_messages")
+}
+model Dashboard {
+ id String @id @default(cuid())
+ organisationId String
+ userId String
+ name String
+ widgets String[]
+ updatedAt DateTime @updatedAt
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ @@unique([organisationId,userId,name])
+ @@map("dashboards")
+}
+
+model Warehouse {
+ id String @id @default(cuid())
+ organisationId String
+ name String
+ code String
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ balances InventoryBalance[]
+ movements InventoryMovement[]
+ @@unique([organisationId,code])
+ @@map("warehouses")
+}
+model InventoryBalance {
+ id String @id @default(cuid())
+ organisationId String
+ warehouseId String
+ productId String
+ quantity Int @default(0)
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ warehouse Warehouse @relation(fields:[warehouseId],references:[id])
+ product Product @relation(fields:[productId],references:[id])
+ @@unique([warehouseId,productId])
+ @@index([organisationId])
+ @@map("inventory_balances")
+}
+model InventoryMovement {
+ id String @id @default(cuid())
+ organisationId String
+ warehouseId String
+ productId String
+ delta Int
+ reason String
+ reference String?
+ requestKey String
+ actorUserId String
+ createdAt DateTime @default(now())
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ warehouse Warehouse @relation(fields:[warehouseId],references:[id])
+ product Product @relation(fields:[productId],references:[id])
+ @@unique([organisationId,requestKey])
+ @@index([organisationId,createdAt])
+ @@map("inventory_movements")
+}
+model Kpi {
+ id String @id @default(cuid())
+ organisationId String
+ name String
+ teamName String
+ ownerUserId String
+ unit String @default("count")
+ direction String @default("AT_LEAST")
+ target Float
+ current Float @default(0)
+ startsAt DateTime
+ endsAt DateTime
+ notes String?
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ updates KpiUpdate[]
+ @@index([organisationId,endsAt])
+ @@map("kpis")
+}
+model KpiUpdate {
+ id String @id @default(cuid())
+ kpiId String
+ value Float
+ note String?
+ actorUserId String
+ createdAt DateTime @default(now())
+ kpi Kpi @relation(fields:[kpiId],references:[id],onDelete:Cascade)
+ @@map("kpi_updates")
+}
+model ProjectTask {
+ id String @id @default(cuid())
+ organisationId String
+ projectId String?
+ meetingId String?
+ title String
+ assigneeUserId String
+ status String @default("TODO")
+ priority String @default("NORMAL")
+ dueAt DateTime?
+ createdAt DateTime @default(now())
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ project Project? @relation(fields:[projectId],references:[id])
+ meeting Meeting? @relation(fields:[meetingId],references:[id])
+ @@index([organisationId,status])
+ @@map("project_tasks")
+}
+model Meeting {
+ id String @id @default(cuid())
+ organisationId String
+ projectId String?
+ title String
+ startsAt DateTime
+ notes String?
+ organiserUserId String
+ attendeeUserIds String[]
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ project Project? @relation(fields:[projectId],references:[id])
+ tasks ProjectTask[]
+ @@index([organisationId,startsAt])
+ @@map("meetings")
+}
+
+// Owner grants are independent of tenant-editable roles.
+model PlatformAdministrator {
+ userId String @id
+ createdAt DateTime @default(now())
+ user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+ @@map("platform_administrators")
+}
+
+// Templates contain catalogue references, never a duplicate product/customer identity.
+model SalesQuotationTemplate {
+  id String @id @default(cuid())
+  organisationId String
+  name String
+  notes String?
+  validityDays Int @default(30)
+  lines Json
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+  @@unique([organisationId,name])
+  @@map("sales_quotation_templates")
+}
+
+model SalesOrderRevision {
+  id String @id @default(cuid())
+  orderId String
+  revision Int
+  snapshot Json
+  reason String
+  createdByUserId String
+  createdAt DateTime @default(now())
+  order SalesOrder @relation(fields:[orderId],references:[id],onDelete:Cascade)
+  @@unique([orderId,revision])
+  @@map("sales_order_revisions")
+}
+
+// Core delivery envelope: downstream modules consume transactionally committed events.
+model DomainOutbox {
+  id String @id @default(cuid())
+  organisationId String
+  eventKey String @unique
+  eventName String
+  payload Json
+  status String @default("PENDING")
+  attempts Int @default(0)
+  createdAt DateTime @default(now())
+  publishedAt DateTime?
+  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+  @@index([status,createdAt])
+  @@map("domain_outbox")
+}
+
+model SalesSavedView {
+ id String @id @default(cuid())
+ organisationId String
+ ownerUserId String
+ mode String
+ name String
+ definition Json
+ archived Boolean @default(false)
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ @@unique([organisationId,ownerUserId,mode,name])
+ @@map("sales_saved_views")
+}
+
+// Editable, personal working quotations; never an authoritative confirmed sale.
+model SalesWorkingDraft {
+ captureVersion BigInt @default(0)
+ id String @id
+ organisationId String
+ ownerUserId String
+ mode String
+ title String
+ payload Json
+ archived Boolean @default(false)
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ @@index([organisationId,ownerUserId,archived])
+ @@map("sales_working_drafts")
+}
+
+// ---------- HR (People) module ----------
+// Employee is the HR module's own identity for internal staff — distinct from
+// Party (Customer Master, for customers/suppliers). An Employee may optionally
+// link to a User (a login account) but the HR record is authoritative for
+// employment data and survives even where no login exists (e.g. not yet onboarded).
+
+enum EmployeeStatus {
+  ONBOARDING
+  ACTIVE
+  ON_LEAVE
+  OFFBOARDING
+  LEFT
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  FIXED_TERM
+  CONTRACTOR
+  APPRENTICE
+}
+
+model Employee {
+  id             String         @id @default(cuid())
+  organisationId String
+  userId         String?
+  managerId      String?
+
+  employeeNumber String
+  firstName      String
+  lastName       String
+  preferredName  String?
+  email          String
+  phone          String?
+  dateOfBirth    DateTime?
+
+  jobTitle       String
+  department     String?
+  employmentType EmploymentType @default(FULL_TIME)
+  status         EmployeeStatus @default(ONBOARDING)
+
+  startDate      DateTime
+  endDate        DateTime?
+  leaveReason    String?
+
+  annualSalaryMinorUnits Int?
+  currency               String @default("GBP")
+  annualLeaveDaysEntitlement Int @default(25)
+
+  address        String?
+  emergencyContactName  String?
+  emergencyContactPhone String?
+  notes          String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  linkedUser   User?        @relation(fields: [userId], references: [id])
+  manager      Employee?    @relation("EmployeeManager", fields: [managerId], references: [id])
+  reports      Employee[]   @relation("EmployeeManager")
+
+  onboardingTasks EmployeeTask[]
+  appraisals      Appraisal[]
+  oneToOnes       OneToOne[]
+  absences        AbsenceRecord[]
+  shifts          RotaShift[]
+  payslips        Payslip[]
+
+  @@unique([organisationId, employeeNumber])
+  @@index([organisationId])
+  @@index([organisationId, status])
+  @@map("hr_employees")
+}
+
+enum EmployeeTaskPhase {
+  ONBOARDING
+  OFFBOARDING
+}
+
+model EmployeeTask {
+  id             String            @id @default(cuid())
+  organisationId String
+  employeeId     String
+  phase          EmployeeTaskPhase
+  title          String
+  category       String?
+  dueDate        DateTime?
+  completedAt    DateTime?
+  assignedToUserId String?
+  notes          String?
+  createdAt      DateTime          @default(now())
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  employee     Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([organisationId, employeeId, phase])
+  @@map("hr_employee_tasks")
+}
+
+enum AppraisalStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+enum AppraisalRating {
+  EXCEEDS
+  MEETS
+  DEVELOPING
+  UNSATISFACTORY
+}
+
+model Appraisal {
+  id             String          @id @default(cuid())
+  organisationId String
+  employeeId     String
+  reviewerUserId String
+  cycle          String // e.g. "2026 H1 review"
+  scheduledAt    DateTime
+  completedAt    DateTime?
+  status         AppraisalStatus @default(SCHEDULED)
+  rating         AppraisalRating?
+  strengths      String?
+  areasForGrowth String?
+  goals          String?
+  notes          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  employee     Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([organisationId, employeeId])
+  @@map("hr_appraisals")
+}
+
+enum OneToOneStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+model OneToOne {
+  id             String         @id @default(cuid())
+  organisationId String
+  employeeId     String
+  managerUserId  String
+  scheduledAt    DateTime
+  completedAt    DateTime?
+  status         OneToOneStatus @default(SCHEDULED)
+  talkingPoints  String?
+  actionPoints   String?
+  notes          String?
+  createdAt      DateTime       @default(now())
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  employee     Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([organisationId, employeeId])
+  @@map("hr_one_to_ones")
+}
+
+enum AbsenceType {
+  SICKNESS
+  HOLIDAY
+  UNPAID
+  COMPASSIONATE
+  MATERNITY_PATERNITY
+  OTHER
+}
+
+// Sickness episodes feed the Bradford Factor (S^2 * D over a rolling 12 months),
+// computed on read in src/modules/people/domain/bradford-factor.ts — never stored,
+// so the score is always correct for "today" regardless of when it's viewed.
+model AbsenceRecord {
+  id               String      @id @default(cuid())
+  organisationId   String
+  employeeId       String
+  type             AbsenceType
+  startDate        DateTime
+  endDate          DateTime
+  reason           String?
+  certifiedByDoctor Boolean    @default(false)
+  notes            String?
+  createdAt        DateTime    @default(now())
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  employee     Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([organisationId, employeeId, type])
+  @@map("hr_absence_records")
+}
+
+enum RotaShiftStatus {
+  SCHEDULED
+  CONFIRMED
+  CANCELLED
+}
+
+model RotaShift {
+  id             String          @id @default(cuid())
+  organisationId String
+  employeeId     String
+  startsAt       DateTime
+  endsAt         DateTime
+  role           String?
+  location       String?
+  status         RotaShiftStatus @default(SCHEDULED)
+  notes          String?
+  createdAt      DateTime        @default(now())
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  employee     Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([organisationId, startsAt])
+  @@map("hr_rota_shifts")
+}
+
+enum PayrollRunStatus {
+  DRAFT
+  FINALISED
+  PAID
+}
+
+model PayrollRun {
+  id             String           @id @default(cuid())
+  organisationId String
+  periodLabel    String
+  periodStart    DateTime
+  periodEnd      DateTime
+  status         PayrollRunStatus @default(DRAFT)
+  finalisedAt    DateTime?
+  paidAt         DateTime?
+  createdAt      DateTime         @default(now())
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  payslips     Payslip[]
+
+  @@unique([organisationId, periodLabel])
+  @@index([organisationId])
+  @@map("hr_payroll_runs")
+}
+
+model Payslip {
+  id                  String     @id @default(cuid())
+  organisationId      String
+  payrollRunId        String
+  employeeId          String
+  grossMinorUnits      Int
+  deductionsMinorUnits Int @default(0)
+  netMinorUnits        Int
+  currency             String @default("GBP")
+  notes                String?
+  createdAt            DateTime @default(now())
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  payrollRun   PayrollRun   @relation(fields: [payrollRunId], references: [id], onDelete: Cascade)
+  employee     Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([payrollRunId, employeeId])
+  @@index([organisationId])
+  @@map("hr_payslips")
 }

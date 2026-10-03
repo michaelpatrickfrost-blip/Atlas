@@ -1,0 +1,3 @@
+CREATE TABLE "sales_saved_views" ("id" TEXT NOT NULL,"organisationId" TEXT NOT NULL,"ownerUserId" TEXT NOT NULL,"mode" TEXT NOT NULL,"name" TEXT NOT NULL,"definition" JSONB NOT NULL,"archived" BOOLEAN NOT NULL DEFAULT false,"createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,"updatedAt" TIMESTAMP(3) NOT NULL,CONSTRAINT "sales_saved_views_pkey" PRIMARY KEY ("id"));
+CREATE UNIQUE INDEX "sales_saved_views_organisationId_ownerUserId_mode_name_key" ON "sales_saved_views"("organisationId","ownerUserId","mode","name");
+ALTER TABLE "sales_saved_views" ADD CONSTRAINT "sales_saved_views_organisationId_fkey" FOREIGN KEY ("organisationId") REFERENCES "organisations"("id") ON DELETE CASCADE ON UPDATE CASCADE;

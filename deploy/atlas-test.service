@@ -1,0 +1,22 @@
+[Unit]
+Description=Atlas private test application
+After=network.target atlas-test-db.service
+Requires=atlas-test-db.service
+[Service]
+User=atlas-test
+Group=atlas-test
+WorkingDirectory=/opt/atlas-test/current
+EnvironmentFile=/etc/atlas-test/application.env
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3100
+Restart=on-failure
+RestartSec=5
+MemoryMax=768M
+CPUQuota=100%
+TasksMax=128
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/opt/atlas-test/current/.next/cache /var/lib/atlas-test
+[Install]
+WantedBy=multi-user.target

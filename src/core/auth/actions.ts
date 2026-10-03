@@ -20,9 +20,9 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
     return { error: "Incorrect email or password." };
   }
 
-  const membership = user.memberships[0];
+  const membership = user.memberships.find(m => m.active && m.organisation.status === "ACTIVE");
   if (!membership) {
-    return { error: "This account has no organisation to sign in to." };
+    return { error: "This account has no active workspace access. Contact your administrator." };
   }
 
   await createSessionCookie({ userId: user.id, organisationId: membership.organisationId });

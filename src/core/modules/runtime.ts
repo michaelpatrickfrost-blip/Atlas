@@ -5,8 +5,9 @@ import type { Session } from "@/core/auth/session";
 import { can } from "@/core/permissions/check";
 
 export async function getEnabledModuleIds(organisationId: string): Promise<Set<string>> {
-  const states = await db.moduleState.findMany({ where: { organisationId, enabled: true } });
-  return new Set(states.map((state) => state.moduleId));
+  const states = await db.moduleState.findMany({ where: { organisationId, }  });
+  const enabled = new Set(states.filter((state) => state.enabled && state.entitled).map((state) => state.moduleId));
+  return enabled;
 }
 
 /** Modules enabled for this org AND accessible to this user, in catalogue order.
@@ -15,7 +16,7 @@ export async function getEnabledModuleIds(organisationId: string): Promise<Set<s
 export async function getNavigableModules(session: Session): Promise<ModuleManifest[]> {
   const enabled = await getEnabledModuleIds(session.organisationId);
   return getImplementedModules().filter(
-    (module) => enabled.has(module.id) && can(session, module.accessCapability),
+    (module) => module.launcherVisible!==false && enabled.has(module.id) && can(session, module.accessCapability),
   );
 }
 
@@ -25,7 +26,15 @@ export function getModuleNavigation(module: ModuleManifest, session: Session): M
 }
 
 export async function setModuleEnabled(organisationId: string, moduleId: string, enabled: boolean) {
+  const requestedModule = getModule(moduleId);
+  if (!requestedModule || requestedModule.status === "coming_soon") throw new Error("This app is not available yet.");
+  if (!enabled) {
+    const enabledIds = await getEnabledModuleIds(organisationId);
+    if (MODULE_CATALOGUE.some((entry) => enabledIds.has(entry.id) && entry.dependencies.includes(moduleId))) throw new Error("Disable dependent apps first.");
+  }
   if (enabled) {
+    const licence = await db.moduleState.findUnique({where:{organisationId_moduleId:{organisationId,moduleId}}});
+    if (!licence?.entitled) throw new Error("This app is not included in your company account. Contact your Atlas administrator.");
     const enabledIds = await getEnabledModuleIds(organisationId);
     const entry = getModule(moduleId);
     if (!entry) throw new Error(`Unknown module "${moduleId}"`);
@@ -47,6 +56,7 @@ export async function getModuleStatesForOrg(organisationId: string) {
   const stateByModuleId = new Map(states.map((state) => [state.moduleId, state.enabled]));
   return MODULE_CATALOGUE.map((module) => ({
     module,
-    enabled: stateByModuleId.get(module.id) ?? false,
+    enabled: (stateByModuleId.get(module.id) ?? false) && (states.find(s=>s.moduleId===module.id)?.entitled??false),
+    entitled: states.find(s=>s.moduleId===module.id)?.entitled??false,
   }));
 }

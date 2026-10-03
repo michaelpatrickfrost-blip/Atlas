@@ -10,9 +10,10 @@ PostgreSQL via Prisma.
   lifecycle, **Customer Master** (the canonical `Party` identity — see
   `docs/CUSTOMER_MASTER.md`), audit, activity, attention, search, navigation,
   shared UI primitives.
-- **Modules** (`src/modules/`) own business capabilities (Sales today; Stock,
-  Finance, Purchasing, People, Payroll, Projects, Manufacturing, Service,
-  Fleet, Marketing as stubs). A module declares a manifest, owns its own
+- **Modules** (`src/modules/`) own business capabilities (Sales, CRM, Projects,
+  HR — `people`, including onboarding/offboarding, appraisals, absence, rotas
+  and payroll — built today; Stock, Finance, Purchasing, Manufacturing,
+  Service, Fleet, Marketing remain stubs). A module declares a manifest, owns its own
   database tables, and contributes navigation, pages, capabilities, an
   attention provider and a search provider through typed contracts — it never
   reaches into another module's internals, and Core never contains
@@ -21,9 +22,9 @@ PostgreSQL via Prisma.
 ## Request flow
 
 1. `src/app/(app)/layout.tsx` resolves the session (`getSession()`), redirects
-   to `/login` if absent, and renders the shell (`Sidebar`, `Topbar`).
-2. `Sidebar` calls `getNavigableModules(session)` — the enabled, accessible
-   modules for this org/user — to build primary navigation. No module is
+   to `/login` if absent, and renders the shell (`Topbar`, icon-launcher home and app switcher).
+2. The launcher and app switcher call `getNavigableModules(session)` — the enabled, accessible
+   modules for this org/user — to build app navigation. No module is
    hardcoded into the shell.
 3. A module's own layout (e.g. `src/app/(app)/sales/layout.tsx`) renders its
    secondary navigation via `getModuleNavigation(manifest, session)`.
@@ -58,6 +59,8 @@ emit named domain events (`DOMAIN_EVENTS` in that file) rather than calling
 into each other's services directly. This is intentionally simple — Atlas is
 one application today — but the event names and payload shapes are the
 contract that would carry over to a real queue later.
+
+Confirmed Sales mutations now also write Core DomainOutbox records transactionally. These are durable pending records; no background dispatcher/consumer is installed yet. See [Sales delivery map](modules/SALES_ORDER_PROCESSING.md) for retry/idempotency/projection work before downstream integration.
 
 ## Multi-tenancy
 

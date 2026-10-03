@@ -1,3 +1,4 @@
+import { CustomerHierarchy } from "./hierarchy";
 import { notFound } from "next/navigation";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
@@ -45,6 +46,7 @@ export default async function CustomerRecordPage({
         onHold={customer.creditProfile?.onHold ?? false}
         hasVerifiedTaxRegistration={customer.taxRegistrations.some((r) => r.validationStatus === "MANUALLY_VERIFIED" || r.validationStatus === "VERIFIED_BY_SERVICE")}
       />
+      <CustomerHierarchy partyId={partyId} session={session} />
       <CustomerTabs partyId={partyId} active={activeTab} />
 
       {activeTab === "overview" && (

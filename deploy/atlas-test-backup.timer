@@ -1,0 +1,8 @@
+[Unit]
+Description=Daily Atlas test backup
+[Timer]
+OnCalendar=daily
+Persistent=true
+RandomizedDelaySec=900
+[Install]
+WantedBy=timers.target

@@ -12,7 +12,8 @@
     "db:migrate": "prisma migrate dev",
     "db:local": "node scripts/local-postgres.mjs",
     "dev:all": "node scripts/dev-all.mjs",
-    "dev:all:no-open": "ATLAS_SKIP_OPEN=1 node scripts/dev-all.mjs"
+    "dev:all:no-open": "ATLAS_SKIP_OPEN=1 node scripts/dev-all.mjs",
+    "desktop:build": "bash scripts/build-mac-client.sh"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",
@@ -21,9 +22,11 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "dotenv": "^18.0.5",
+    "exceljs": "^4.4.0",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.51.0",
     "next": "16.3.8",
+    "pdf-lib": "^1.17.1",
     "pg": "^8.23.1",
     "prisma": "^7.10.0",
     "react": "19.2.8",

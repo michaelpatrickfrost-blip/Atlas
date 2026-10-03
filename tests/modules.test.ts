@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { getImplementedModules, getMissingDependencies, getModule, MODULE_CATALOGUE } from "@/core/modules/registry";
 
 describe("module registry", () => {
-  it("registers sales as implemented and every stub as coming_soon", () => {
+  it("registers CRM, Sales and Projects as implemented and every stub as coming_soon", () => {
     const implemented = getImplementedModules();
-    expect(implemented.map((m) => m.id)).toEqual(["sales"]);
+    expect(implemented.map((m) => m.id)).toEqual(["crm", "sales", "projects", "stock", "kpis", "products", "pricing", "people"]);
   });
 
   it("every module id in the catalogue is unique", () => {

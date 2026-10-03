@@ -1,3 +1,7 @@
+import { db } from "@/core/db/client";
+import { ActionForm } from "@/components/ui/action-form";
+import { Button } from "@/components/ui/button";
+import { saveOrderingPreferences } from "@/core/customers/commercial-actions";
 import { Card } from "@/components/ui/card";
 import { can } from "@/core/permissions/check";
 import { CUSTOMER_CAPABILITIES } from "@/core/permissions/capabilities";
@@ -11,13 +15,14 @@ type Customer = NonNullable<Awaited<ReturnType<typeof getCustomer>>>;
  *  Ordering) are wired to a command in this vertical slice; Pricing/Delivery/
  *  Documents fields exist on the schema (CustomerCommercialSettings) for a
  *  future module to populate and are shown read-only when present. */
-export function Commercial({ customer, session }: { customer: Customer; session: Session }) {
+export async function Commercial({ customer, session }: { customer: Customer; session: Session }) {
   if (!can(session, CUSTOMER_CAPABILITIES.commercialRead)) {
     return <p className="text-sm text-[var(--color-ink-muted)]">You don&apos;t have permission to view commercial settings.</p>;
   }
 
   const canManage = can(session, CUSTOMER_CAPABILITIES.commercialManage);
   const settings = customer.commercialSettings;
+  const lists = await db.priceList.findMany({where:{organisationId:session.organisationId},orderBy:{name:"asc"},select:{id:true,name:true,currency:true}});
 
   return (
     <div className="flex flex-col gap-6">
@@ -40,21 +45,20 @@ export function Commercial({ customer, session }: { customer: Customer; session:
         {canManage && (
           <details className="mt-3 rounded-[var(--radius-atlas-md)] border border-dashed border-[var(--color-border)] p-4">
             <summary className="cursor-pointer text-sm font-medium text-[var(--color-atlas-blue)]">Edit ordering settings</summary>
-            <p className="mt-2 text-xs text-[var(--color-ink-faint)]">
-              Editing is scoped to this vertical slice&apos;s reference implementation — the underlying
-              `updateCommercialSettings` command and capability are wired; the full edit form is a
-              natural next addition.
-            </p>
+            <ActionForm action={saveOrderingPreferences} className="mt-4 grid gap-4 sm:grid-cols-2">
+              <input type="hidden" name="partyId" value={customer.id}/>
+              <label className="text-sm sm:col-span-2">Default pricelist<select name="priceList" defaultValue={settings?.priceList??""} className="mt-2 block w-full rounded-xl border border-[var(--color-border)] bg-white p-3"><option value="">Standard product prices</option>{lists.map(l=><option key={l.id} value={l.id}>{l.name} · {l.currency}</option>)}</select></label>
+              <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="customerPoRequired" defaultChecked={settings?.customerPoRequired??false}/>Customer PO required</label>
+              <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="orderReferenceRequired" defaultChecked={settings?.orderReferenceRequired??false}/>Order reference required</label>
+              <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="partialShipmentAllowed" defaultChecked={settings?.partialShipmentAllowed??true}/>Allow partial shipments</label>
+              <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="backordersAllowed" defaultChecked={settings?.backordersAllowed??true}/>Allow backorders</label>
+              <Button type="submit" variant="primary" className="justify-self-start">Save preferences</Button>
+            </ActionForm>
           </details>
         )}
       </section>
 
-      {!settings?.priceList && !settings?.discountGroup && (
-        <p className="text-sm text-[var(--color-ink-faint)]">
-          Pricing, delivery and document preferences will appear here once a Finance or Stock module
-          populates them.
-        </p>
-      )}
+      <Card className="p-4 text-sm"><Field label="Default pricelist" value={lists.find(l=>l.id===settings?.priceList)?.name??"Standard product prices"}/><p className="mt-3 text-xs text-[var(--color-ink-muted)]">New quotations and orders select this list. Customer contract prices take precedence; saved document prices remain unchanged.</p></Card>
     </div>
   );
 }

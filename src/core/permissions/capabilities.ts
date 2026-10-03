@@ -6,8 +6,15 @@
  */
 
 export const CORE_CAPABILITIES = {
+  productsRead: "core.products.read",
+  productsManage: "core.products.manage",
+  pricingRead: "core.pricing.read",
+  pricingManage: "core.pricing.manage",
   modulesManage: "core.modules.manage",
   usersManage: "core.users.manage",
+  auditRead: "core.audit.read",
+  chatRead: "core.chat.read",
+  chatWrite: "core.chat.write",
   rolesManage: "core.roles.manage",
 } as const;
 
@@ -67,8 +74,45 @@ export const SALES_CAPABILITIES = {
   quoteRead: "sales.quote.read",
   quoteCreate: "sales.quote.create",
   quoteApprove: "sales.quote.approve",
+
   orderRead: "sales.order.read",
-  orderManage: "sales.order.manage",
+  orderCreate: "sales.order.create",
+  orderEditDraft: "sales.order.edit_draft",
+  orderConfirm: "sales.order.confirm",
+  orderAmend: "sales.order.amend",
+  orderCancel: "sales.order.cancel",
+  orderPriceOverride: "sales.order.price_override",
+  orderHoldRead: "sales.order.hold.read",
+  orderHoldManage: "sales.order.hold.manage",
+  orderApprovalRequest: "sales.order.approval.request",
+  orderApprovalApprove: "sales.order.approval.approve",
+} as const;
+
+/** HR (People) module — employee records, onboarding/offboarding, appraisals,
+ *  one-to-ones, absence/sickness (Bradford Factor), rotas and payroll. Payroll and
+ *  absence are split into their own read/manage pairs since they carry pay and
+ *  health data a line manager often shouldn't edit even if they can see the team. */
+export const HR_CAPABILITIES = {
+  employeeRead: "people.employee.read",
+  employeeManage: "people.employee.manage",
+
+  onboardingManage: "people.onboarding.manage",
+  offboardingManage: "people.offboarding.manage",
+
+  appraisalRead: "people.appraisal.read",
+  appraisalManage: "people.appraisal.manage",
+
+  oneToOneRead: "people.one_to_one.read",
+  oneToOneManage: "people.one_to_one.manage",
+
+  absenceRead: "people.absence.read",
+  absenceManage: "people.absence.manage",
+
+  rotaRead: "people.rota.read",
+  rotaManage: "people.rota.manage",
+
+  payrollRead: "people.payroll.read",
+  payrollManage: "people.payroll.manage",
 } as const;
 
 /** Standard roles seeded for every new organisation. Orgs may edit/add roles later. */
@@ -78,14 +122,25 @@ export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: st
     name: "Administrator",
     capabilities: [
       ...Object.values(CORE_CAPABILITIES),
+      "projects.read", "projects.manage", "stock.read", "stock.manage", "kpis.read", "kpis.manage",
       ...Object.values(CUSTOMER_CAPABILITIES),
       ...Object.values(SALES_CAPABILITIES),
+      ...Object.values(HR_CAPABILITIES),
+    ],
+  },
+  {
+    key: "hr_manager",
+    name: "HR Manager",
+    capabilities: [
+      "core.chat.read", "core.chat.write",
+      ...Object.values(HR_CAPABILITIES),
     ],
   },
   {
     key: "sales_user",
     name: "Sales User",
     capabilities: [
+      "core.chat.read", "core.chat.write",
       CUSTOMER_CAPABILITIES.read,
       CUSTOMER_CAPABILITIES.create,
       CUSTOMER_CAPABILITIES.edit,
@@ -106,12 +161,19 @@ export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: st
       SALES_CAPABILITIES.quoteRead,
       SALES_CAPABILITIES.quoteCreate,
       SALES_CAPABILITIES.orderRead,
+      SALES_CAPABILITIES.orderCreate,
+      SALES_CAPABILITIES.orderEditDraft,
+      SALES_CAPABILITIES.orderConfirm,
+      SALES_CAPABILITIES.orderAmend,
+      SALES_CAPABILITIES.orderHoldRead,
+      SALES_CAPABILITIES.orderApprovalRequest,
     ],
   },
   {
     key: "sales_manager",
     name: "Sales Manager",
     capabilities: [
+      "core.chat.read", "core.chat.write",
       CUSTOMER_CAPABILITIES.read,
       CUSTOMER_CAPABILITIES.create,
       CUSTOMER_CAPABILITIES.edit,
@@ -138,13 +200,23 @@ export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: st
       SALES_CAPABILITIES.quoteCreate,
       SALES_CAPABILITIES.quoteApprove,
       SALES_CAPABILITIES.orderRead,
-      SALES_CAPABILITIES.orderManage,
+      SALES_CAPABILITIES.orderCreate,
+      SALES_CAPABILITIES.orderEditDraft,
+      SALES_CAPABILITIES.orderConfirm,
+      SALES_CAPABILITIES.orderAmend,
+      SALES_CAPABILITIES.orderCancel,
+      SALES_CAPABILITIES.orderPriceOverride,
+      SALES_CAPABILITIES.orderHoldRead,
+      SALES_CAPABILITIES.orderHoldManage,
+      SALES_CAPABILITIES.orderApprovalRequest,
+      SALES_CAPABILITIES.orderApprovalApprove,
     ],
   },
   {
     key: "finance_manager",
     name: "Finance Manager",
     capabilities: [
+      "core.chat.read", "core.chat.write",
       CUSTOMER_CAPABILITIES.read,
       CUSTOMER_CAPABILITIES.commercialRead,
       CUSTOMER_CAPABILITIES.creditRead,

@@ -42,7 +42,18 @@ export const DOMAIN_EVENTS = {
   salesActivityCompleted: "sales.activity.completed",
 
   salesQuoteSent: "sales.quote.sent",
+  salesQuoteAccepted: "sales.quote.accepted",
+
+  salesOrderCreated: "sales.order.created",
   salesOrderConfirmed: "sales.order.confirmed",
+  salesOrderAmended: "sales.order.amended",
+  salesOrderCancelled: "sales.order.cancelled",
+  salesOrderClosed: "sales.order.closed",
+  salesOrderHoldAdded: "sales.order.hold_added",
+  salesOrderHoldReleased: "sales.order.hold_released",
+  salesOrderLineAdded: "sales.order.line_added",
+  salesOrderLineChanged: "sales.order.line_changed",
+  salesOrderLineCancelled: "sales.order.line_cancelled",
 
   customerCreated: "customer.created",
   customerUpdated: "customer.updated",

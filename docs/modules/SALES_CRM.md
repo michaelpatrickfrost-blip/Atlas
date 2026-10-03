@@ -1,4 +1,6 @@
-# Sales & CRM
+> CRM now lives in `src/modules/crm/`. Sales owns commercial transactions; see [Sales delivery map](SALES_ORDER_PROCESSING.md). The new [CRM specification](CRM_FUNCTIONAL_SPEC.md) supersedes this historical scope.
+
+# CRM (historical foundation notes)
 
 Atlas's Sales module. Covers the full Prospect → Opportunity → Customer
 journey: prospecting, configurable pipelines, a work-prioritisation engine

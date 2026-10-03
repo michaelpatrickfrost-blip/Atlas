@@ -24,9 +24,9 @@ export function MobileNav({ children }: { children: ReactNode }) {
       {open && (
         <div role="dialog" aria-modal="true" aria-label="Navigation" className="fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/30" onClick={() => setOpen(false)} />
-          <div className="relative flex h-full w-64 max-w-[80vw] flex-col bg-[var(--color-surface)] px-3 py-4 shadow-xl">
+          <div className="atlas-drawer-enter relative flex h-full w-64 max-w-[80vw] flex-col bg-[#101d37] px-3 py-4 shadow-xl">
             <div className="flex items-center justify-between px-2 pb-6">
-              <span className="text-[15px] font-semibold tracking-tight text-[var(--color-ink)]">Atlas</span>
+              <span className="text-[15px] font-semibold tracking-tight text-white">Atlas</span>
               <button onClick={() => setOpen(false)} aria-label="Close navigation" className="flex size-7 items-center justify-center rounded-[var(--radius-atlas-sm)] text-[var(--color-ink-muted)] hover:bg-[var(--color-surface-sunken)]">
                 <X size={16} />
               </button>

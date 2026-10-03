@@ -1,0 +1,4 @@
+ALTER TABLE "sales_order_approvals" ADD COLUMN "revision" INTEGER NOT NULL DEFAULT 1, ADD COLUMN "decisionReason" TEXT;
+CREATE TABLE "sales_working_drafts" ("captureVersion" BIGINT NOT NULL DEFAULT 0,"id" TEXT NOT NULL,"organisationId" TEXT NOT NULL,"ownerUserId" TEXT NOT NULL,"mode" TEXT NOT NULL,"title" TEXT NOT NULL,"payload" JSONB NOT NULL,"archived" BOOLEAN NOT NULL DEFAULT false,"createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,"updatedAt" TIMESTAMP(3) NOT NULL,CONSTRAINT "sales_working_drafts_pkey" PRIMARY KEY ("id"));
+CREATE INDEX "sales_working_drafts_organisationId_ownerUserId_archived_idx" ON "sales_working_drafts"("organisationId","ownerUserId","archived");
+ALTER TABLE "sales_working_drafts" ADD CONSTRAINT "sales_working_drafts_organisationId_fkey" FOREIGN KEY ("organisationId") REFERENCES "organisations"("id") ON DELETE CASCADE ON UPDATE CASCADE;

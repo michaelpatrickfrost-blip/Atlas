@@ -35,15 +35,23 @@ function stub(partial: Pick<ModuleManifest, "id" | "name" | "description" | "ico
 export const stockStub = stub({ id: "stock", name: "Stock", description: "Products, warehouses, inventory and movements.", icon: Boxes, dependencies: [] });
 export const financeStub = stub({ id: "finance", name: "Finance", description: "Invoices, bills, payments and reporting.", icon: Wallet, dependencies: [] });
 export const purchasingStub = stub({ id: "purchasing", name: "Purchasing", description: "Suppliers, RFQs, purchase orders and receipts.", icon: Truck, dependencies: ["stock"] });
-export const peopleStub = stub({ id: "people", name: "People", description: "Employees, departments, leave and records.", icon: Users, dependencies: [] });
+export const peopleStub = stub({ id: "people", name: "HR", description: "Employees, departments, leave and records.", icon: Users, dependencies: [] });
 export const payrollStub = stub({ id: "payroll", name: "Payroll", description: "Payroll, deductions and statutory processes.", icon: Banknote, dependencies: ["people"] });
 export const projectsStub = stub({ id: "projects", name: "Projects", description: "Projects, tasks, time and profitability.", icon: FolderKanban, dependencies: [] });
-export const manufacturingStub = stub({ id: "manufacturing", name: "Manufacturing", description: "BOMs, work centres and production orders.", icon: Factory, dependencies: ["stock"] });
-export const serviceStub = stub({ id: "service", name: "Service", description: "Tickets, SLAs and customer support.", icon: LifeBuoy, dependencies: [] });
+export const manufacturingStub = stub({ id: "manufacturing", name: "Production Planning", description: "BOMs, work centres, capacity and production orders.", icon: Factory, dependencies: ["stock"] });
+export const serviceStub = stub({ id: "service", name: "Customer Service", description: "Cases, complaints, SLAs and resolutions.", icon: LifeBuoy, dependencies: [] });
 export const fleetStub = stub({ id: "fleet", name: "Fleet", description: "Vehicles, maintenance and operating records.", icon: Car, dependencies: [] });
 export const marketingStub = stub({ id: "marketing", name: "Marketing", description: "Campaigns, audiences and automation.", icon: Megaphone, dependencies: [] });
 
+export const logisticsStub = stub({id:"logistics",name:"Logistics",description:"Allocation, picking, shipments and delivery tracking.",icon:Truck,dependencies:["stock"]});
+export const schedulingStub = stub({id:"scheduling",name:"Scheduling & Hours",description:"Rotas, availability, time capture and approvals.",icon:FolderKanban,dependencies:["people"]});
+export const qualityStub = stub({id:"quality",name:"Quality",description:"Inspections, nonconformance and corrective actions.",icon:LifeBuoy,dependencies:[]});
+export const safetyStub = stub({id:"safety",name:"Health & Safety",description:"Risk assessments, incidents and training compliance.",icon:LifeBuoy,dependencies:["people"]});
 export const stubModules: ModuleManifest[] = [
+  logisticsStub,
+  schedulingStub,
+  qualityStub,
+  safetyStub,
   stockStub,
   financeStub,
   purchasingStub,

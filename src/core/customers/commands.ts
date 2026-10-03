@@ -1,5 +1,6 @@
 "use server";
 
+import {assertRecordCreationAllowed} from "@/core/policies/record-creation";
 import { revalidatePath } from "next/cache";
 import { db } from "@/core/db/client";
 import { requireSession } from "@/core/auth/session";
@@ -35,6 +36,7 @@ export type QuickCreateInput = {
 export async function createCustomer(input: QuickCreateInput) {
   const session = await requireSession();
   assertCapability(session, CUSTOMER_CAPABILITIES.create);
+  await assertRecordCreationAllowed(session.organisationId,"customers");
 
   const customerCode = await nextCustomerCode(session.organisationId);
 

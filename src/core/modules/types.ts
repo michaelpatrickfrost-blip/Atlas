@@ -86,6 +86,8 @@ export type ModuleManifest = {
   capabilities: string[];
   /** Root path for this module's primary nav entry, e.g. "/sales". */
   rootPath: string;
+  /** Shared sub-apps can be reached from their owning workspace without a launcher tile. */
+  launcherVisible?: boolean;
   /** Capability required to see this module in navigation and the Apps screen "open" action. */
   accessCapability: string;
   navigation: ModuleNavItem[];

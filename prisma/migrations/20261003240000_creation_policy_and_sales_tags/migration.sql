@@ -1,0 +1,3 @@
+ALTER TABLE organisations ADD COLUMN "allowProductCreation" BOOLEAN NOT NULL DEFAULT true, ADD COLUMN "allowCustomerCreation" BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE sales_quotes ADD COLUMN tags TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];
+ALTER TABLE sales_orders ADD COLUMN tags TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];

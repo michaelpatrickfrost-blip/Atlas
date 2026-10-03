@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeOpportunityReasons } from "@/modules/sales/services/work-queue";
+import { computeOpportunityReasons } from "@/modules/crm/services/work-queue";
 
 const now = new Date("2026-10-03T12:00:00Z");
 

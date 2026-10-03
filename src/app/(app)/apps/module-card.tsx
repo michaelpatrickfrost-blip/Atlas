@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { IconChip } from "@/components/ui/icon-chip";
@@ -9,20 +11,22 @@ import type { ModuleManifest } from "@/core/modules/types";
 export function ModuleCard({
   module,
   enabled,
+  entitled,
   missingDependencies,
 }: {
   module: ModuleManifest;
   enabled: boolean;
+  entitled: boolean;
   missingDependencies: string[];
 }) {
   const comingSoon = module.status === "coming_soon";
-  const blocked = missingDependencies.length > 0;
+  const blocked = missingDependencies.length > 0 || !entitled;
 
   return (
-    <Card className="flex flex-col gap-3 p-4">
+    <Card className="group flex min-h-56 flex-col gap-4 p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
       <div className="flex min-w-0 items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2.5">
-          <IconChip icon={module.icon} color={accentColorForModule(module.id)} />
+          <div className="rounded-2xl p-1" style={{background:`linear-gradient(140deg, var(--color-accent-${accentColorForModule(module.id)}-soft), white)`}}><IconChip icon={module.icon} color={accentColorForModule(module.id)} size="lg" /></div>
           <span className="truncate font-medium text-[var(--color-ink)]">{module.name}</span>
         </div>
         {enabled && <StatusPill label="Installed" tone="success" />}
@@ -31,7 +35,7 @@ export function ModuleCard({
 
       {blocked && (
         <p className="text-xs text-[var(--color-ink-faint)]">
-          Requires: {missingDependencies.join(", ")}
+          {!entitled ? "Contact your Atlas administrator to add this app." : `Requires: ${missingDependencies.join(", ")}`}
         </p>
       )}
 
@@ -40,11 +44,11 @@ export function ModuleCard({
           Coming soon
         </Button>
       ) : enabled ? (
-        <form action={toggleModuleAction.bind(null, module.id, false)} className="self-start">
+        <div className="flex items-center justify-between gap-3"><Link href={module.rootPath} className="flex items-center gap-2 rounded-xl bg-[var(--color-atlas-blue)] px-4 py-2 text-sm font-medium text-white">Open {module.name}<ArrowUpRight size={15}/></Link><form action={toggleModuleAction.bind(null, module.id, false)}>
           <Button variant="secondary" type="submit">
-            Disable
+            Disable app
           </Button>
-        </form>
+        </form></div>
       ) : (
         <form action={toggleModuleAction.bind(null, module.id, true)} className="self-start">
           <Button variant="primary" type="submit" disabled={blocked}>

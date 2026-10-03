@@ -1,0 +1,9 @@
+"use client";
+import {useRef,useId,useSyncExternalStore} from "react";
+import {createPortal} from "react-dom";
+import {X,Plus} from "lucide-react";
+const subscribe=()=>()=>{};
+export function CreateDialog({title,label,children,iconOnly=false}:{title:string;label:string;children:React.ReactNode;iconOnly?:boolean}) {
+ const ref=useRef<HTMLDialogElement>(null),id=useId(),mounted=useSyncExternalStore(subscribe,()=>true,()=>false);
+ return <><button type="button" onClick={()=>ref.current?.showModal()} aria-label={label} className={iconOnly?'flex size-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-blue-50 hover:text-blue-600':'inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700'}>{iconOnly?<span className="grid grid-cols-3 gap-0.5">{Array.from({length:9},(_,i)=><span key={i} className="size-1 rounded-sm bg-current"/>)}</span>:<><Plus size={16}/>{label}</>}</button>{mounted&&createPortal(<dialog ref={ref} aria-labelledby={id} className="atlas-dialog m-auto max-h-[88vh] w-[calc(100%-2rem)] max-w-3xl overflow-y-auto rounded-3xl border border-slate-200 bg-white p-0 text-slate-900 shadow-2xl" onClick={event=>{if(event.target===ref.current){const bounds=ref.current.getBoundingClientRect();if(event.clientX<bounds.left||event.clientX>bounds.right||event.clientY<bounds.top||event.clientY>bounds.bottom)ref.current.close();}if((event.target as HTMLElement).closest('a'))ref.current?.close();}}><div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-6 py-5"><h2 id={id} className="text-lg font-semibold tracking-tight">{title}</h2><button type="button" onClick={()=>ref.current?.close()} aria-label="Close dialog" className="rounded-lg p-2 text-slate-500 hover:bg-slate-100"><X size={18}/></button></div><div className="p-6">{children}</div></dialog>,document.body)}</>;
+}

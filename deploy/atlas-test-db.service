@@ -1,0 +1,21 @@
+[Unit]
+Description=Atlas isolated test PostgreSQL
+After=network.target
+[Service]
+User=atlas-test
+Group=atlas-test
+WorkingDirectory=/opt/atlas-test
+EnvironmentFile=/etc/atlas-test/database.env
+ExecStart=/usr/bin/node /opt/atlas-test/scripts/test-postgres.mjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=60
+MemoryMax=512M
+CPUQuota=50%
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/atlas-test
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,23 @@
+import {z} from 'zod';
+import type {Session} from '@/core/auth/session';
+import {assertCapability} from '@/core/permissions/check';
+import {assertModuleEnabled} from '@/core/modules/access';
+import {db} from '@/core/db/client';
+import type {DocumentDraft} from '../components/document-types';
+const payloadSchema=z.object({mode:z.enum(['order','quote']),documentId:z.string().optional(),version:z.string().optional(),partyId:z.string().default(''),priceListId:z.string().optional(),invoiceAddressId:z.string().optional(),deliveryAddressId:z.string().optional(),paymentTermId:z.string().optional(),opportunityId:z.string().optional(),projectId:z.string().optional(),documentDate:z.string().optional(),customerPoReference:z.string().max(150).optional(),externalReference:z.string().max(150).optional(),tags:z.string().max(1500).optional(),notes:z.string().max(5000).optional(),pricingPartyId:z.string().optional(),deliveryInstructions:z.string().max(5000).optional(),financeInstructions:z.string().max(5000).optional(),lines:z.string().max(50000)}).strict();
+export async function persistWorkingDraft(session:Session,id:string,input:unknown,version:number){
+ const payload=payloadSchema.parse(input);assertCapability(session,payload.mode==='order'?'sales.order.create':'sales.quote.create');await assertModuleEnabled(session,'sales');
+ if(!Number.isSafeInteger(version)||version<1)throw new Error('Invalid draft version.');
+ if(!z.uuid().safeParse(id).success)throw new Error('Invalid working draft identifier.');
+ const lines=z.array(z.object({productId:z.string(),type:z.enum(['PRODUCT','TEXT','SECTION','NOTE']).default('PRODUCT'),description:z.string().max(2000).optional(),quantity:z.number().finite().min(0).max(1000000),discount:z.number().finite().min(0).max(100),optional:z.boolean().optional(),unitAmount:z.number().int().min(0).max(2147483647).nullable().optional(),overrideReason:z.string().max(1000).optional(),id:z.string().optional()}).strict()).max(200).parse(JSON.parse(payload.lines));
+ const party=payload.partyId?await db.party.findFirstOrThrow({where:{id:payload.partyId,organisationId:session.organisationId},select:{name:true}}):null;
+ const productIds=[...new Set(lines.map(l=>l.productId).filter(Boolean))];if(productIds.length&&await db.product.count({where:{id:{in:productIds},organisationId:session.organisationId}})!==productIds.length)throw new Error('A draft product is unavailable in this company.');
+ const existing=await db.salesWorkingDraft.findFirst({where:{id,organisationId:session.organisationId,ownerUserId:session.userId}});if(existing?.archived)return {savedAt:existing.updatedAt.toISOString()};
+ if(existing&&existing.mode!==payload.mode)throw new Error('This working quotation belongs to a different document workflow.');
+ const title=party?.name??payload.customerPoReference??'Untitled working quotation';
+ await db.salesWorkingDraft.upsert({where:{id},create:{id,organisationId:session.organisationId,ownerUserId:session.userId,mode:payload.mode,payload,title,captureVersion:BigInt(version)},update:{}});
+ await db.salesWorkingDraft.updateMany({where:{id,organisationId:session.organisationId,ownerUserId:session.userId,archived:false,captureVersion:{lt:BigInt(version)}},data:{payload,title,captureVersion:BigInt(version)}});
+ const draft=await db.salesWorkingDraft.findFirstOrThrow({where:{id,organisationId:session.organisationId,ownerUserId:session.userId}});
+ return {savedAt:draft.updatedAt.toISOString()};
+}
+export async function resumeWorkingDraft(session:Session,id:string):Promise<DocumentDraft>{const row=await db.salesWorkingDraft.findFirstOrThrow({where:{id,organisationId:session.organisationId,ownerUserId:session.userId,archived:false}});const p=payloadSchema.parse(row.payload);return {id:p.documentId??'',reference:'Working quotation',version:p.version??'',partyId:p.partyId,priceListId:p.priceListId??null,invoiceAddressId:p.invoiceAddressId??'',deliveryAddressId:p.deliveryAddressId??'',paymentTermId:p.paymentTermId??null,opportunityId:p.opportunityId??null,projectId:p.projectId??null,documentDate:p.documentDate??'',customerPoReference:p.customerPoReference??'',externalReference:p.externalReference??'',notes:p.notes??'',pricingPartyId:p.pricingPartyId??null,deliveryInstructions:p.deliveryInstructions??'',financeInstructions:p.financeInstructions??'',tags:(p.tags??'').split(',').filter(Boolean),lines:JSON.parse(p.lines)};}

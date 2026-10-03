@@ -4,6 +4,14 @@ A modular ERP / business operating system. See [`AGENTS.md`](./AGENTS.md) for
 the repository map and [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) for
 the full architecture.
 
+## Shared project memory
+
+Claude Code, Codex and Cursor use the same repository context. Start at
+[.ai/PROJECT_MEMORY.md](.ai/PROJECT_MEMORY.md), then read the current handoff and
+decisions. AGENTS.md, CLAUDE.md and .cursor/rules/atlas-memory.mdc route tools to
+that shared context. Update memory with significant implementation changes; keep
+parallel editing in separate Git worktrees and merge the documentation with code.
+
 ## Getting started (offline, on this Mac)
 
 ```bash

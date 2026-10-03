@@ -1,0 +1,14 @@
+---
+description: Shared Atlas project context and handoff protocol
+alwaysApply: true
+---
+
+Read and follow AGENTS.md. Before substantial planning, review or edits, read
+.ai/PROJECT_MEMORY.md, .ai/CURRENT_STATE.md and .ai/DECISIONS.md, then the relevant
+linked topic docs. Inspect implementation and existing diffs. Apply AGENTS.md's mandatory memory update gate for EVERY task that changes project
+files, including minor fixes and documentation. Before the final response, commit
+or PR, update .ai/CURRENT_STATE.md with date, changes, paths, actual checks, gaps
+and next step; reconcile affected docs and record lasting decisions with reasons.
+Identify the memory update in the final response. Changed work is not ready for
+handoff without its memory update. The repository is the shared memory across Cursor, Claude Code and Codex.
+Do not maintain a competing Cursor-specific architecture or overwrite others' work.

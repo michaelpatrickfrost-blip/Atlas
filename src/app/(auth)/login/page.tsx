@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { LoginForm } from "@/app/(auth)/login/login-form";
 
 export default function LoginPage() {
@@ -9,6 +10,7 @@ export default function LoginPage() {
           <p className="mt-1 text-sm text-[var(--color-ink-muted)]">Sign in to your business.</p>
         </div>
         <LoginForm />
+        <p className="mt-6 text-center text-sm text-[var(--color-ink-muted)]">New company? <Link href="/signup" className="text-[var(--color-atlas-blue)]">Create a workspace</Link></p>
       </div>
     </div>
   );

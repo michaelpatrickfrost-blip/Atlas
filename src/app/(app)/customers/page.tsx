@@ -47,14 +47,14 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
     status: customer.status,
     location: customer.addresses[0] ? [customer.addresses[0].city, customer.addresses[0].country].filter(Boolean).join(", ") : "—",
     accountManager: customer.accountManagerUserId ? (managerNameById.get(customer.accountManagerUserId) ?? "—") : "—",
-    sales12m: customer.salesOrders.reduce((sum, order) => sum + order.totalAmount, 0),
+    sales12m: customer.salesOrders.reduce((sum, order) => sum + order.grossAmount, 0),
     onHold: customer.creditProfile?.onHold ?? false,
   }));
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold tracking-tight text-[var(--color-ink)]">Customers</h1>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        {can(session,"core.pricing.read")&&<Link href="/pricing" className="text-sm text-blue-600">Customer pricelists →</Link>}<Link href="/customers/map" className="mb-3 inline-block text-sm text-[var(--color-atlas-blue)]">Explore customer map →</Link><h1 className="text-2xl font-semibold tracking-tight text-[var(--color-ink)]">Customers</h1>
         {can(session, CUSTOMER_CAPABILITIES.create) && (
           <Link href="/customers/new">
             <Button variant="primary">Add customer</Button>

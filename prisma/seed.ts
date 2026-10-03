@@ -43,8 +43,14 @@ async function main() {
 
   await db.moduleState.upsert({
     where: { organisationId_moduleId: { organisationId: organisation.id, moduleId: "sales" } },
-    create: { organisationId: organisation.id, moduleId: "sales", enabled: true },
-    update: { enabled: true },
+    create: { organisationId: organisation.id, moduleId: "sales", enabled: true, entitled: true },
+    update: { enabled: true, entitled: true },
+  });
+
+  await db.moduleState.upsert({
+    where: { organisationId_moduleId: { organisationId: organisation.id, moduleId: "people" } },
+    create: { organisationId: organisation.id, moduleId: "people", enabled: true, entitled: true },
+    update: { enabled: true, entitled: true },
   });
 
   const [netThirty, dueOnReceipt] = await Promise.all([
@@ -400,10 +406,10 @@ async function main() {
   });
 
   await db.salesOrder.create({
-    data: { organisationId: organisation.id, partyId: northbridge.id, reference: "SO-1842", status: "CONFIRMED", totalAmount: 842000 },
+    data: { organisationId: organisation.id, partyId: northbridge.id, reference: "SO-1842", commercialStatus: "CONFIRMED", ownerUserId: user.id, grossAmount: 842000 },
   });
   await db.salesOrder.create({
-    data: { organisationId: organisation.id, partyId: dalton.id, reference: "SO-1850", status: "CONFIRMED", totalAmount: 1180000 },
+    data: { organisationId: organisation.id, partyId: dalton.id, reference: "SO-1850", commercialStatus: "CONFIRMED", ownerUserId: user.id, grossAmount: 1180000 },
   });
 
   await db.activity.createMany({
@@ -418,6 +424,95 @@ async function main() {
 
   await db.note.create({
     data: { partyId: northbridge.id, body: "All deliveries require 24 hours' notice.", pinned: true, authorUserId: user.id },
+  });
+
+  // ---- HR (People) module demo data ----
+  const sophie = await db.employee.upsert({
+    where: { organisationId_employeeNumber: { organisationId: organisation.id, employeeNumber: "EMP-00000001" } },
+    create: {
+      organisationId: organisation.id,
+      employeeNumber: "EMP-00000001",
+      userId: user.id,
+      firstName: "Sophie",
+      lastName: "Green",
+      email: "demo@atlas.app",
+      jobTitle: "Operations Director",
+      department: "Leadership",
+      employmentType: "FULL_TIME",
+      status: "ACTIVE",
+      startDate: new Date("2021-03-01"),
+      annualSalaryMinorUnits: 7_200_000,
+    },
+    update: {},
+  });
+
+  const jordan = await db.employee.upsert({
+    where: { organisationId_employeeNumber: { organisationId: organisation.id, employeeNumber: "EMP-00000002" } },
+    create: {
+      organisationId: organisation.id,
+      employeeNumber: "EMP-00000002",
+      managerId: sophie.id,
+      firstName: "Jordan",
+      lastName: "Pike",
+      email: "jordan.pike@atlas.app",
+      jobTitle: "Site Supervisor",
+      department: "Operations",
+      employmentType: "FULL_TIME",
+      status: "ACTIVE",
+      startDate: new Date("2022-06-13"),
+      annualSalaryMinorUnits: 3_800_000,
+    },
+    update: {},
+  });
+
+  const priya = await db.employee.upsert({
+    where: { organisationId_employeeNumber: { organisationId: organisation.id, employeeNumber: "EMP-00000003" } },
+    create: {
+      organisationId: organisation.id,
+      employeeNumber: "EMP-00000003",
+      managerId: sophie.id,
+      firstName: "Priya",
+      lastName: "Shah",
+      email: "priya.shah@atlas.app",
+      jobTitle: "Finance Administrator",
+      department: "Finance",
+      employmentType: "PART_TIME",
+      status: "ONBOARDING",
+      startDate: new Date(),
+      annualSalaryMinorUnits: 2_600_000,
+    },
+    update: {},
+  });
+
+  await db.employeeTask.createMany({
+    data: [
+      { organisationId: organisation.id, employeeId: priya.id, phase: "ONBOARDING", title: "Send offer letter and contract for signature", category: "Documentation", completedAt: new Date() },
+      { organisationId: organisation.id, employeeId: priya.id, phase: "ONBOARDING", title: "Right to work check", category: "Compliance" },
+      { organisationId: organisation.id, employeeId: priya.id, phase: "ONBOARDING", title: "Create IT accounts and equipment", category: "IT" },
+    ],
+  });
+
+  await db.absenceRecord.createMany({
+    data: [
+      { organisationId: organisation.id, employeeId: jordan.id, type: "SICKNESS", startDate: new Date(Date.now() - 20 * 86_400_000), endDate: new Date(Date.now() - 19 * 86_400_000), reason: "Flu", certifiedByDoctor: false },
+      { organisationId: organisation.id, employeeId: jordan.id, type: "SICKNESS", startDate: new Date(Date.now() - 45 * 86_400_000), endDate: new Date(Date.now() - 44 * 86_400_000), reason: "Migraine", certifiedByDoctor: false },
+      { organisationId: organisation.id, employeeId: jordan.id, type: "HOLIDAY", startDate: new Date(Date.now() + 30 * 86_400_000), endDate: new Date(Date.now() + 35 * 86_400_000), reason: "Annual leave" },
+    ],
+  });
+
+  await db.appraisal.create({
+    data: { organisationId: organisation.id, employeeId: jordan.id, reviewerUserId: user.id, cycle: "2026 H1 review", scheduledAt: new Date(Date.now() + 14 * 86_400_000) },
+  });
+
+  await db.oneToOne.create({
+    data: { organisationId: organisation.id, employeeId: jordan.id, managerUserId: user.id, scheduledAt: new Date(Date.now() + 7 * 86_400_000), talkingPoints: "Progress on site fit-out, workload check-in." },
+  });
+
+  await db.rotaShift.createMany({
+    data: [
+      { organisationId: organisation.id, employeeId: jordan.id, startsAt: new Date(Date.now() + 86_400_000), endsAt: new Date(Date.now() + 86_400_000 + 8 * 3_600_000), role: "Site Supervisor", location: "Northbridge site" },
+      { organisationId: organisation.id, employeeId: priya.id, startsAt: new Date(Date.now() + 2 * 86_400_000), endsAt: new Date(Date.now() + 2 * 86_400_000 + 6 * 3_600_000), role: "Finance", location: "Head office" },
+    ],
   });
 
   console.log("Seeded demo organisation:", organisation.slug);

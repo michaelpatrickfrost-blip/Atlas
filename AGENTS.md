@@ -8,6 +8,49 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+# Shared project memory
+
+The repository itself is the shared memory for Codex, Claude Code and Cursor.
+Before planning, reviewing or changing Atlas:
+
+1. Read `.ai/PROJECT_MEMORY.md` and `.ai/CURRENT_STATE.md`.
+2. Read `.ai/DECISIONS.md` and the relevant topic guides linked from memory.
+3. Inspect the actual implementation and Git diff before proposing changes.
+4. Follow this file's architecture, security and verification rules.
+
+## Mandatory memory update gate
+
+Every task that changes tracked project content (code, schema, configuration,
+scripts, dependencies, UI, documentation or agent instructions) MUST update
+`.ai/CURRENT_STATE.md` before the final handoff, commit or pull request. This
+includes small fixes and unfinished/blocked work; do not wait for a major feature.
+Read-only tasks must update memory when they uncover a new confirmed issue,
+correct a stale fact or establish a lasting decision. Pure questions need no update.
+
+Before handing back changed work:
+
+1. Review the task's final diff and reconcile affected shared documentation.
+2. Update CURRENT_STATE.md: date, what changed, relevant paths, checks actually
+   run and results (or explicitly not run), blockers and next step.
+3. Record lasting decisions with rationale in `.ai/DECISIONS.md`; update
+   `.ai/PROJECT_MEMORY.md` only when enduring product/context changes.
+4. Update relevant topic docs and delivery checkpoints when behaviour changes;
+   remove or supersede stale claims rather than keeping contradictory entries.
+5. Include memory changes with the implementation in the same handoff/commit/PR,
+   and identify the memory update in the final response. If it could not be saved,
+   state why and do not claim the handoff is complete.
+
+Keep updates concise and factual. A memory-only task records its own change once;
+it does not require recursive updates. Preserve concurrent contributors' entries.
+
+Never claim a check passed unless it was run; distinguish implemented, documented,
+verified and planned work. Correct stale documentation when code contradicts it,
+while reporting unintended code violations rather than silently blessing them.
+Do not keep essential project knowledge only in chat or tool-specific memory.
+Do not overwrite another contributor's changes. For parallel editing, use separate
+Git worktrees and merge the memory updates with the implementation. Never store
+secrets, tokens, private customer data or environment credentials in memory.
+
 # Atlas
 
 Modular ERP/business-OS. Core owns platform concerns; modules own business capabilities.

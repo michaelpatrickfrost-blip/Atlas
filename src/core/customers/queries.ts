@@ -30,7 +30,7 @@ export async function listCustomers(
     include: {
       creditProfile: true,
       addresses: { where: { type: "BILLING" }, take: 1 },
-      salesOrders: { select: { totalAmount: true, totalCurrency: true } },
+      salesOrders: { select: { grossAmount: true, currency: true } },
     },
     orderBy: { name: "asc" },
   });

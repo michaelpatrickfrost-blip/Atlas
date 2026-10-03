@@ -1,3 +1,4 @@
+import {createDesktopReadClient} from "@/core/desktop/data-client";
 import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
@@ -5,7 +6,8 @@ import { PrismaPg } from "@prisma/adapter-pg";
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 function createClient() {
-  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+  if(process.env.ATLAS_RUNTIME==="desktop")return createDesktopReadClient();
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL, max: 8 });
   return new PrismaClient({ adapter });
 }
 

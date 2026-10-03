@@ -3,54 +3,9 @@ import type { CustomerOverviewProvider } from "@/core/modules/types";
 import { can } from "@/core/permissions/check";
 import { SALES_CAPABILITIES } from "@/core/permissions/capabilities";
 import { formatMoney } from "@/core/shared/money";
-
-/** Sales' contribution to a customer's Overview: 12-month sales, open
- *  quotes/orders, pipeline value, next action and relationship signal (§103).
- *  Customer Master never hardcodes this — it only calls this provider when
- *  Sales is enabled and the user can see it (§41). */
-export const salesCustomerOverviewProvider: CustomerOverviewProvider = async ({ organisationId, session, partyId }) => {
-  if (!can(session, SALES_CAPABILITIES.opportunityRead)) return null;
-
-  const since = new Date();
-  since.setMonth(since.getMonth() - 12);
-
-  const [orders, openQuotes, confirmedOrders, openOpportunities] = await Promise.all([
-    db.salesOrder.findMany({
-      where: { organisationId, partyId, createdAt: { gte: since } },
-      select: { totalAmount: true, totalCurrency: true },
-    }),
-    db.quote.count({ where: { organisationId, partyId, status: { in: ["DRAFT", "SENT"] } } }),
-    db.salesOrder.findMany({ where: { organisationId, partyId, status: "CONFIRMED" }, select: { totalAmount: true, totalCurrency: true } }),
-    db.opportunity.findMany({ where: { organisationId, partyId, status: "OPEN" }, select: { valueAmount: true, valueCurrency: true, nextActionAt: true } }),
-  ]);
-
-  const twelveMonthSales = orders.reduce((sum, order) => sum + order.totalAmount, 0);
-  const currency = orders[0]?.totalCurrency ?? confirmedOrders[0]?.totalCurrency ?? "GBP";
-  // Committed exposure: confirmed orders not yet invoiced (no Finance/invoicing
-  // module exists yet to supply a real "unpaid" figure — this is the honest
-  // proxy available today; see docs/CUSTOMER_MASTER.md §Credit).
-  const exposure = confirmedOrders.reduce((sum, order) => sum + order.totalAmount, 0);
-  const openPipelineValue = openOpportunities.reduce((sum, o) => sum + o.valueAmount, 0);
-  const hasOverdueNextAction = openOpportunities.some((o) => !o.nextActionAt || o.nextActionAt < new Date());
-
-  return {
-    moduleId: "sales",
-    metrics: [
-      { label: "Sales (12m)", value: formatMoney(twelveMonthSales, currency) },
-      { label: "Open pipeline", value: formatMoney(openPipelineValue, currency), href: "/sales/pipeline" },
-      { label: "Open quotations", value: String(openQuotes), href: "/sales/quotes" },
-      { label: "Open orders", value: String(confirmedOrders.length), href: "/sales/orders" },
-    ],
-    creditExposure: exposure > 0 ? { amountMinorUnits: exposure, currency } : undefined,
-    // Sales doesn't yet have quote/order creation forms (out of scope for this
-    // vertical slice) — link to the existing list views rather than a dead
-    // route, honestly reflecting what's actually built.
-    actions: can(session, SALES_CAPABILITIES.quoteCreate)
-      ? [
-          { label: "View quotes", href: "/sales/quotes" },
-          { label: "View orders", href: "/sales/orders" },
-          ...(openOpportunities.length > 0 && hasOverdueNextAction ? [{ label: "Needs next action", href: "/sales/pipeline" }] : []),
-        ]
-      : [],
-  };
+export const salesCustomerOverviewProvider: CustomerOverviewProvider = async ({organisationId,session,partyId}) => {
+ if (!can(session,SALES_CAPABILITIES.orderRead)) return null;
+ const orders = await db.salesOrder.findMany({where:{organisationId,partyId,commercialStatus:"CONFIRMED"},select:{grossAmount:true,currency:true}});
+ const totals = orders.reduce<Record<string,number>>((s,o)=>{s[o.currency]=(s[o.currency]??0)+o.grossAmount;return s;},{});
+ return {moduleId:"sales",metrics:[{label:"Open orders",value:String(orders.length),href:"/sales/orders"},...Object.entries(totals).map(([currency,amount])=>({label:`Committed orders (${currency})`,value:formatMoney(amount,currency)}))],actions:[{label:"View orders",href:"/sales/orders"}],creditExposure:Object.keys(totals).length===1 ? {amountMinorUnits:Object.values(totals)[0],currency:Object.keys(totals)[0]} : undefined};
 };

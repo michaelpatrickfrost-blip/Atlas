@@ -1,0 +1,1 @@
+export function assertDesktopRequest(request:Request){if(request.headers.get('x-atlas-client')!=='desktop')throw new Error('FORBIDDEN: use the Atlas data client.');const origin=request.headers.get('origin');if(origin&&origin!==new URL(request.url).origin)throw new Error('FORBIDDEN: unexpected origin.');}

@@ -1,14 +1,27 @@
+import {CreateDialog} from "@/components/ui/create-dialog";
+import { ActionForm } from "@/components/ui/action-form";
+import Link from "next/link";
 import { requireSession } from "@/core/auth/session";
-
+import { can } from "@/core/permissions/check";
+import { CORE_CAPABILITIES, CUSTOMER_CAPABILITIES } from "@/core/permissions/capabilities";
+import { MODULE_CATALOGUE } from "@/core/modules/registry";
+import { db } from "@/core/db/client";
+import { saveRole, saveMemberRoles, createUser } from "./actions";
+import { Button } from "@/components/ui/button";
 export default async function SettingsPage() {
-  const session = await requireSession();
-
-  return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-2">
-      <h1 className="text-2xl font-semibold tracking-tight text-[var(--color-ink)]">Settings</h1>
-      <p className="text-sm text-[var(--color-ink-muted)]">
-        Signed in to {session.organisationName}. Organisation, role and billing settings land here as Atlas grows.
-      </p>
-    </div>
-  );
+ const session = await requireSession();
+ const editRoles = can(session, CORE_CAPABILITIES.rolesManage), editUsers = can(session, CORE_CAPABILITIES.usersManage);
+ const [roles, members] = await Promise.all([
+  editRoles || editUsers ? db.role.findMany({where:{organisationId:session.organisationId},orderBy:{name:"asc"}}) : [],
+  editUsers ? db.membership.findMany({where:{organisationId:session.organisationId},include:{user:{select:{name:true,email:true}},roles:true}}) : [],
+ ]);
+ const groups = [{name:"Workspace",capabilities:Object.values(CORE_CAPABILITIES)}, {name:"Customers",capabilities:Object.values(CUSTOMER_CAPABILITIES)}, ...MODULE_CATALOGUE.filter(m => m.status !== "coming_soon").map(m => ({name:m.name,capabilities:m.capabilities}))];
+ return <div className="mx-auto max-w-5xl space-y-8"><div><p className="text-xs text-[var(--color-ink-muted)]">{session.organisationName}</p><h1 className="mt-2 text-3xl font-semibold tracking-tight">Workspace settings</h1><p className="mt-2 text-sm text-[var(--color-ink-muted)]">Make Atlas work for your team.</p></div>
+ {can(session,CORE_CAPABILITIES.auditRead) && <Link href="/settings/audit" className="inline-flex text-sm text-[var(--color-atlas-blue)]">View audit trail →</Link>}
+ <Link href="/settings/imports" className="inline-flex text-sm text-[var(--color-atlas-blue)]">CSV templates & imports →</Link>
+ <div className="grid gap-4 sm:grid-cols-2"><Link href="/profile" className="rounded-2xl border border-[var(--color-border)] bg-white p-6"><h2 className="font-semibold">Your profile →</h2><p className="mt-2 text-sm text-[var(--color-ink-muted)]">Personal details and account access.</p></Link>{can(session,CORE_CAPABILITIES.modulesManage) && <Link href="/apps" className="rounded-2xl border border-[var(--color-border)] bg-white p-6"><h2 className="font-semibold">Apps & modules →</h2><p className="mt-2 text-sm text-[var(--color-ink-muted)]">Enable the apps your business needs.</p></Link>}</div>
+ {editUsers && <CreateDialog title="Add a company user" label="New user"><ActionForm action={createUser} className="mt-5 grid gap-4 sm:grid-cols-2"><label className="text-sm">Full name<input required name="name" maxLength={100} className="mt-2 block w-full border border-[var(--color-border)] p-3"/></label><label className="text-sm">Email<input required name="email" type="email" className="mt-2 block w-full border border-[var(--color-border)] p-3"/></label><label className="text-sm sm:col-span-2">Initial password<input required name="password" type="password" autoComplete="new-password" minLength={12} maxLength={128} className="mt-2 block w-full border border-[var(--color-border)] p-3"/></label><fieldset className="flex flex-wrap gap-4 sm:col-span-2"><legend className="mb-3 text-sm">Assign roles</legend>{roles.map(role=><label key={role.id} className="flex items-center gap-2 text-xs"><input type="checkbox" name="roleId" value={role.id}/>{role.name}</label>)}</fieldset><Button type="submit" variant="primary" className="justify-self-start">Create user</Button></ActionForm></CreateDialog>}
+ {editUsers && <section><h2 className="mb-4 text-lg font-semibold">People & access</h2><div className="divide-y divide-[var(--color-border)] rounded-2xl border border-[var(--color-border)] bg-white">{members.map(member => <ActionForm key={member.id} action={saveMemberRoles} className="flex flex-wrap items-center gap-4 p-5"><input type="hidden" name="membershipId" value={member.id}/><div className="min-w-48 flex-1"><p className="text-sm font-medium">{member.user.name}{member.id===session.membershipId ? " · You" : ""}</p><p className="text-xs text-[var(--color-ink-muted)]">{member.user.email}</p></div><fieldset disabled={member.id===session.membershipId} className="flex flex-wrap gap-3">{roles.map(role => <label key={role.id} className="flex items-center gap-2 text-xs"><input type="checkbox" name="roleId" value={role.id} defaultChecked={member.roles.some(r => r.roleId===role.id)}/>{role.name}</label>)}</fieldset><Button type="submit" disabled={member.id===session.membershipId}>Save access</Button></ActionForm>)}</div></section>}
+ {editRoles && <section><h2 className="mb-2 text-lg font-semibold">Roles & permissions</h2><p className="mb-4 text-sm text-[var(--color-ink-muted)]">Open a role to choose what its members can read and change. Access is combined across their roles.</p><div className="space-y-3">{roles.map(role => <details key={role.id} className="rounded-2xl border border-[var(--color-border)] bg-white"><summary className="cursor-pointer p-5 text-sm font-semibold">{role.name} <span className="ml-2 font-normal text-[var(--color-ink-muted)]">{role.capabilities.length} permissions</span></summary><ActionForm action={saveRole} className="space-y-5 border-t border-[var(--color-border)] p-5"><input type="hidden" name="roleId" value={role.id}/>{groups.map(group => <fieldset key={group.name}><legend className="mb-3 text-sm font-medium">{group.name}</legend><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{group.capabilities.map(cap => <label key={cap} className="flex items-start gap-2 text-xs text-[var(--color-ink-muted)]"><input type="checkbox" name="capability" value={cap} defaultChecked={role.capabilities.includes(cap)}/>{cap.split(".").slice(1).join(" · ").replaceAll("_"," ")}</label>)}</div></fieldset>)}<Button type="submit" variant="primary">Save permissions</Button></ActionForm></details>)}</div></section>}
+ </div>;
 }

@@ -1,0 +1,18 @@
+[Unit]
+Description=Atlas test database backup
+After=atlas-test-db.service
+[Service]
+Type=oneshot
+User=atlas-test
+Group=atlas-test
+WorkingDirectory=/opt/atlas-test/current
+EnvironmentFile=/etc/atlas-test/application.env
+ExecStart=/usr/bin/node scripts/backup-test.mjs
+UMask=0077
+MemoryMax=256M
+CPUQuota=25%
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/backups/atlas-test

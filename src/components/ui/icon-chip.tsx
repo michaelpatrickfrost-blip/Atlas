@@ -8,8 +8,8 @@ const ICON_SIZE = { sm: 14, md: 18, lg: 22 } as const;
  *  anywhere else a module needs to be recognisable at a glance. */
 export function IconChip({
   icon: Icon,
-  color,
   size = "md",
+  color,
 }: {
   icon: LucideIcon;
   color: AccentColor;
@@ -20,7 +20,7 @@ export function IconChip({
       className={`flex shrink-0 items-center justify-center rounded-[var(--radius-atlas-sm)] ${SIZE_CLASSES[size]}`}
       style={{ background: `var(--color-accent-${color}-soft)`, color: `var(--color-accent-${color})` }}
     >
-      <Icon size={ICON_SIZE[size]} strokeWidth={2} />
+      <Icon size={ICON_SIZE[size]} strokeWidth={1.6} />
     </div>
   );
 }

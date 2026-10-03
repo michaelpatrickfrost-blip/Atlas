@@ -1,0 +1,304 @@
+// Atlas core data model.
+// Core owns platform concerns (org, users, auth, permissions, audit, activity).
+// Modules own business entities but share Party/Organisation/Currency concepts.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- Core: tenancy & identity ----------
+
+model Organisation {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships  Membership[]
+  moduleStates ModuleState[]
+  parties      Party[]
+  auditEntries AuditEntry[]
+  activities   Activity[]
+
+  // Sales module entities (tenant-scoped)
+  opportunities Opportunity[]
+  quotes        Quote[]
+  salesOrders   SalesOrder[]
+
+  @@map("organisations")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  memberships Membership[]
+
+  @@map("users")
+}
+
+// A user's membership of an org, carrying the roles that grant capabilities.
+model Membership {
+  id             String   @id @default(cuid())
+  organisationId String
+  userId         String
+  createdAt      DateTime @default(now())
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roles        RoleOnMembership[]
+
+  @@unique([organisationId, userId])
+  @@map("memberships")
+}
+
+// A role bundles capability strings. Roles are org-scoped so an org can customise them,
+// but modules/seed data create a standard set per org on creation.
+model Role {
+  id             String   @id @default(cuid())
+  organisationId String
+  key            String // e.g. "admin", "sales_manager"
+  name           String
+  capabilities   String[] // e.g. ["sales.quote.read", "sales.quote.approve"]
+  createdAt      DateTime @default(now())
+
+  memberships RoleOnMembership[]
+
+  @@unique([organisationId, key])
+  @@map("roles")
+}
+
+model RoleOnMembership {
+  membershipId String
+  roleId       String
+
+  membership Membership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([membershipId, roleId])
+  @@map("roles_on_memberships")
+}
+
+// ---------- Core: module registry ----------
+
+// Persisted enable/disable state per org. The module catalogue itself (manifest,
+// capabilities, nav, routes) lives in code — see src/modules/registry.ts.
+model ModuleState {
+  id             String   @id @default(cuid())
+  organisationId String
+  moduleId       String
+  enabled        Boolean  @default(false)
+  installedAt    DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+
+  @@unique([organisationId, moduleId])
+  @@map("module_states")
+}
+
+// ---------- Core: shared party / contact model ----------
+
+// A Party is any real-world actor a business deals with: a company or a person.
+// Modules attach their own records (Opportunity, Quote, Invoice, Ticket, ...) to a
+// Party rather than each inventing their own "Customer" copy.
+model Party {
+  id             String   @id @default(cuid())
+  organisationId String
+  kind           PartyKind
+  name           String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  addresses    Address[]
+  contacts     ContactMethod[]
+
+  opportunities Opportunity[]
+  quotes        Quote[]
+  salesOrders   SalesOrder[]
+
+  @@index([organisationId])
+  @@map("parties")
+}
+
+enum PartyKind {
+  COMPANY
+  PERSON
+}
+
+model Address {
+  id        String   @id @default(cuid())
+  partyId   String
+  line1     String
+  line2     String?
+  city      String?
+  region    String?
+  postcode  String?
+  country   String?
+  createdAt DateTime @default(now())
+
+  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
+}
+
+enum ContactMethodKind {
+  EMAIL
+  PHONE
+}
+
+model ContactMethod {
+  id      String            @id @default(cuid())
+  partyId String
+  kind     ContactMethodKind
+  value    String
+
+  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
+
+  @@map("contact_methods")
+}
+
+// ---------- Core: audit & activity ----------
+
+model AuditEntry {
+  id             String   @id @default(cuid())
+  organisationId String
+  actorUserId    String?
+  action         String // e.g. "quote.approved"
+  entityType     String // e.g. "Quote"
+  entityId       String
+  before         Json?
+  after          Json?
+  createdAt      DateTime @default(now())
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+
+  @@index([organisationId, entityType, entityId])
+  @@map("audit_entries")
+}
+
+// A shared activity feed. Modules emit activities through the event bus; Home and
+// record pages render them without Core knowing module-specific shapes.
+model Activity {
+  id             String   @id @default(cuid())
+  organisationId String
+  type           String // e.g. "sales_order.confirmed"
+  summary        String
+  entityType     String?
+  entityId       String?
+  metadata       Json?
+  createdAt      DateTime @default(now())
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+
+  @@index([organisationId, createdAt])
+  @@map("activities")
+}
+
+// ---------- Sales module (reference implementation) ----------
+
+enum OpportunityStage {
+  NEW
+  QUALIFIED
+  PROPOSAL
+  WON
+  LOST
+}
+
+model Opportunity {
+  id             String           @id @default(cuid())
+  organisationId String
+  partyId        String
+  name           String
+  stage          OpportunityStage @default(NEW)
+  valueAmount    Int // minor units
+  valueCurrency  String           @default("GBP")
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  party        Party        @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  quotes       Quote[]
+
+  @@index([organisationId, stage])
+  @@map("sales_opportunities")
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  DECLINED
+}
+
+model Quote {
+  id             String      @id @default(cuid())
+  organisationId String
+  partyId        String
+  opportunityId  String?
+  reference      String
+  status         QuoteStatus @default(DRAFT)
+  totalAmount    Int
+  totalCurrency  String      @default("GBP")
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  party        Party        @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  opportunity  Opportunity? @relation(fields: [opportunityId], references: [id])
+  lines        QuoteLine[]
+  salesOrder   SalesOrder?
+
+  @@unique([organisationId, reference])
+  @@map("sales_quotes")
+}
+
+model QuoteLine {
+  id          String @id @default(cuid())
+  quoteId     String
+  description String
+  quantity    Int
+  unitAmount  Int
+  currency    String @default("GBP")
+
+  quote Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@map("sales_quote_lines")
+}
+
+enum SalesOrderStatus {
+  CONFIRMED
+  FULFILLED
+  CANCELLED
+}
+
+model SalesOrder {
+  id             String           @id @default(cuid())
+  organisationId String
+  partyId        String
+  quoteId        String?          @unique
+  reference      String
+  status         SalesOrderStatus @default(CONFIRMED)
+  totalAmount    Int
+  totalCurrency  String           @default("GBP")
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  party        Party        @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  quote        Quote?       @relation(fields: [quoteId], references: [id])
+
+  @@unique([organisationId, reference])
+  @@map("sales_orders")
+}

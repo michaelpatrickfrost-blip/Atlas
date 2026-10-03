@@ -1,0 +1,35 @@
+import { requireSession } from "@/core/auth/session";
+import { assertCapability } from "@/core/permissions/check";
+import { SALES_CAPABILITIES } from "@/core/permissions/capabilities";
+import { listQuotes } from "@/modules/sales/services/queries";
+import { DataTable } from "@/components/ui/table";
+import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
+import { formatMoney } from "@/core/shared/money";
+import type { QuoteStatus } from "@/generated/prisma/client";
+
+const STATUS_TONE: Record<QuoteStatus, StatusTone> = {
+  DRAFT: "neutral",
+  SENT: "warning",
+  ACCEPTED: "success",
+  DECLINED: "danger",
+};
+
+export default async function QuotesPage() {
+  const session = await requireSession();
+  assertCapability(session, SALES_CAPABILITIES.quoteRead);
+
+  const quotes = await listQuotes(session.organisationId);
+
+  return (
+    <DataTable<(typeof quotes)[number]>
+      rows={quotes}
+      emptyLabel="No quotes yet."
+      columns={[
+        { header: "Reference", render: (row) => row.reference },
+        { header: "Customer", render: (row) => row.party.name },
+        { header: "Status", render: (row) => <StatusPill label={row.status} tone={STATUS_TONE[row.status]} /> },
+        { header: "Total", render: (row) => formatMoney(row.totalAmount, row.totalCurrency), align: "right" },
+      ]}
+    />
+  );
+}

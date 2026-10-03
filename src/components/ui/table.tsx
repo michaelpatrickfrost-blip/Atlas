@@ -26,15 +26,15 @@ export function DataTable<Row extends { id: string }>(props: {
   }
 
   return (
-    <div className="overflow-hidden rounded-[var(--radius-atlas-md)] border border-[var(--color-border)] bg-[var(--color-surface)]">
-      <table className="w-full border-collapse text-sm">
+    <div className="overflow-x-auto rounded-[var(--radius-atlas-md)] border border-[var(--color-border)] bg-[var(--color-surface)]">
+      <table className="w-full min-w-[640px] border-collapse text-sm">
         <thead>
           <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface-sunken)]">
             {columns.map((column) => (
               <th
                 key={column.header}
                 style={{ width: column.width }}
-                className={`px-4 py-2.5 text-xs font-medium uppercase tracking-wide text-[var(--color-ink-faint)] ${column.align === "right" ? "text-right" : "text-left"}`}
+                className={`whitespace-nowrap px-4 py-2.5 text-xs font-medium uppercase tracking-wide text-[var(--color-ink-faint)] ${column.align === "right" ? "text-right" : "text-left"}`}
               >
                 {column.header}
               </th>
@@ -47,9 +47,9 @@ export function DataTable<Row extends { id: string }>(props: {
             return (
               <tr key={row.id} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-surface-sunken)]">
                 {columns.map((column, index) => (
-                  <td key={column.header} className={`px-4 py-3 text-[var(--color-ink)] ${column.align === "right" ? "text-right" : "text-left"}`}>
+                  <td key={column.header} className={`max-w-xs truncate px-4 py-3 text-[var(--color-ink)] ${column.align === "right" ? "text-right" : "text-left"}`}>
                     {index === 0 && href ? (
-                      <a href={href} className="block focus-visible:outline-2 focus-visible:outline-[var(--color-atlas-blue)]">
+                      <a href={href} className="block truncate focus-visible:outline-2 focus-visible:outline-[var(--color-atlas-blue)]">
                         {column.render(row)}
                       </a>
                     ) : (

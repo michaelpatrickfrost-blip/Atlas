@@ -34,7 +34,7 @@ export default async function CustomerRecordPage({ params }: { params: Promise<{
         <p className="text-sm text-[var(--color-ink-muted)]">Customer · {customer.kind === "COMPANY" ? "Company" : "Person"}</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
         <Metric label="Lifetime sales" value={formatMoney(lifetimeSales, "GBP")} />
         <Metric label="Open orders" value={String(openOrders)} />
         <Metric label="Opportunities" value={String(customer.opportunities.length)} />

@@ -25,11 +25,11 @@ export default async function PipelinePage() {
   }
 
   return (
-    <div className="grid grid-cols-5 gap-4">
+    <div className="flex gap-4 overflow-x-auto pb-2">
       {STAGES.map((stage) => {
         const items = opportunities.filter((opportunity) => opportunity.stage === stage.key);
         return (
-          <div key={stage.key} className="flex flex-col gap-2">
+          <div key={stage.key} className="flex w-64 shrink-0 flex-col gap-2">
             <div className="flex items-center justify-between px-1">
               <span className="text-sm font-medium text-[var(--color-ink-muted)]">{stage.label}</span>
               <span className="text-xs text-[var(--color-ink-faint)]">{items.length}</span>
@@ -37,8 +37,8 @@ export default async function PipelinePage() {
             <div className="flex flex-col gap-2">
               {items.map((opportunity) => (
                 <div key={opportunity.id} className="rounded-[var(--radius-atlas-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
-                  <p className="text-sm font-medium text-[var(--color-ink)]">{opportunity.name}</p>
-                  <p className="text-xs text-[var(--color-ink-muted)]">{opportunity.party.name}</p>
+                  <p className="truncate text-sm font-medium text-[var(--color-ink)]">{opportunity.name}</p>
+                  <p className="truncate text-xs text-[var(--color-ink-muted)]">{opportunity.party.name}</p>
                   <p className="mt-2 text-sm text-[var(--color-ink)]">{formatMoney(opportunity.valueAmount, opportunity.valueCurrency)}</p>
                 </div>
               ))}

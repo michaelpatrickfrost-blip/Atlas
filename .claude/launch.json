@@ -4,7 +4,7 @@
     {
       "name": "atlas-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": ["run", "dev:all:no-open"],
       "port": 3000
     }
   ]

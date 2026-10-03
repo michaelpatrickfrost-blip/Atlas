@@ -44,13 +44,15 @@ themselves into `src/core/modules/registry.ts` — that's the only wiring point.
 ## Canonical commands
 
 ```bash
-npm run dev          # start the app (needs DATABASE_URL — see .env)
-npm run build        # production build; must succeed before calling work done
-npm run lint          # eslint
-npx tsc --noEmit      # typecheck
-npm test              # vitest
-npm run db:migrate    # prisma migrate dev (requires a reachable Postgres)
-npm run db:seed       # seed the demo organisation (Northbridge Group / demo@atlas.app / atlas-demo)
+npm run dev:all       # fully offline: local Postgres + schema + seed + dev server + browser
+                       # (or double-click Atlas.app on the Desktop — see docs/LOCAL_DEVELOPMENT.md)
+npm run dev            # just the app (needs DATABASE_URL pointing at a running Postgres)
+npm run build          # production build; must succeed before calling work done
+npm run lint            # eslint
+npx tsc --noEmit        # typecheck
+npm test                # vitest
+npm run db:migrate      # prisma migrate dev (requires a reachable Postgres)
+npm run db:seed         # seed the demo organisation (Northbridge Group / demo@atlas.app / atlas-demo)
 ```
 
 ## Conventions that differ from defaults

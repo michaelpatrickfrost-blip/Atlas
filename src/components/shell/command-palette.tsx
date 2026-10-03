@@ -67,11 +67,11 @@ export function CommandPalette() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex w-72 items-center gap-2 rounded-[var(--radius-atlas-sm)] border border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-3 py-1.5 text-sm text-[var(--color-ink-faint)] transition-colors hover:border-[var(--color-border-strong)]"
+        className="flex w-full min-w-0 max-w-96 items-center gap-2 rounded-[var(--radius-atlas-sm)] border border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-3 py-1.5 text-sm text-[var(--color-ink-faint)] transition-colors hover:border-[var(--color-border-strong)]"
       >
-        <Search size={15} />
-        <span className="flex-1 text-left">Search Atlas or type a command...</span>
-        <kbd className="rounded border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-1.5 py-0.5 text-xs">⌘K</kbd>
+        <Search size={15} className="shrink-0" />
+        <span className="min-w-0 flex-1 truncate text-left">Search Atlas or type a command...</span>
+        <kbd className="hidden shrink-0 rounded border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-1.5 py-0.5 text-xs sm:inline">⌘K</kbd>
       </button>
 
       {open && (
@@ -79,7 +79,7 @@ export function CommandPalette() {
           role="dialog"
           aria-modal="true"
           aria-label="Search Atlas"
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/30 pt-[12vh]"
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/30 px-4 pt-[12vh]"
           onClick={closePalette}
         >
           <div

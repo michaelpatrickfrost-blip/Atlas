@@ -9,7 +9,7 @@ export default async function SalesLayout({ children }: { children: React.ReactN
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-6">
-      <div className="flex items-center gap-1 border-b border-[var(--color-border)] pb-3">
+      <div className="flex items-center gap-1 overflow-x-auto border-b border-[var(--color-border)] pb-3">
         {navItems.map((item) => (
           <Link
             key={item.href}

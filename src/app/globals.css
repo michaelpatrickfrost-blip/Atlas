@@ -30,6 +30,22 @@
 
   --radius-atlas-sm: 6px;
   --radius-atlas-md: 10px;
+  --radius-atlas-lg: 14px;
+
+  /* Module accent palette — cycled per module so Apps/sidebar read at a glance,
+     never used for status (status uses the Status tokens above). */
+  --color-accent-blue: #2156f3;
+  --color-accent-blue-soft: #eaf0ff;
+  --color-accent-violet: #7c4dff;
+  --color-accent-violet-soft: #f1ecff;
+  --color-accent-teal: #0e9f8e;
+  --color-accent-teal-soft: #e3f7f5;
+  --color-accent-amber: #d97a0b;
+  --color-accent-amber-soft: #fdf1e2;
+  --color-accent-rose: #e0486b;
+  --color-accent-rose-soft: #fdeaef;
+  --color-accent-indigo: #4f5fe0;
+  --color-accent-indigo-soft: #ecedfd;
 }
 
 @theme inline {

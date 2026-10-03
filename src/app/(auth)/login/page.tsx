@@ -1,17 +1,11 @@
 import Link from "next/link";
 import { LoginForm } from "@/app/(auth)/login/login-form";
+import { AuthFrame } from "@/components/shell/auth-frame";
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[var(--color-app-bg)] px-4">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <span className="text-xl font-semibold tracking-tight text-[var(--color-ink)]">Atlas</span>
-          <p className="mt-1 text-sm text-[var(--color-ink-muted)]">Sign in to your business.</p>
-        </div>
-        <LoginForm />
-        <p className="mt-6 text-center text-sm text-[var(--color-ink-muted)]">New company? <Link href="/signup" className="text-[var(--color-atlas-blue)]">Create a workspace</Link></p>
-      </div>
-    </div>
+    <AuthFrame title="Welcome back." subtitle="Sign in to your company workspace." footer={<>New company? <Link href="/signup" className="font-semibold text-indigo-600">Create a workspace</Link></>}>
+      <LoginForm />
+    </AuthFrame>
   );
 }

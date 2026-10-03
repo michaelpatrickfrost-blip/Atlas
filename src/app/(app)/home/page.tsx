@@ -1,13 +1,71 @@
 import Link from "next/link";
-import {Users,Settings,MessageCircle,ArrowUpRight,ShieldCheck} from "lucide-react";
-import {requireSession} from "@/core/auth/session";
-import {getNavigableModules} from "@/core/modules/runtime";
-import {getAttentionItems} from "@/core/attention/aggregate";
-import {can} from "@/core/permissions/check";
-import {CORE_CAPABILITIES,CUSTOMER_CAPABILITIES} from "@/core/permissions/capabilities";
-import {accentColorForModule} from "@/core/shared/module-colors";
-export default async function HomePage(){
- const session=await requireSession();const [modules,attention]=await Promise.all([getNavigableModules(session),getAttentionItems(session)]);
- const apps=[...(can(session,CUSTOMER_CAPABILITIES.read)?[{id:'customers',name:'Customers',description:'Accounts & relationships',rootPath:'/customers',icon:Users}]:[]),...modules,...(can(session,CORE_CAPABILITIES.chatRead)?[{id:'chat',name:'Team chat',description:'Stay connected',rootPath:'/chat',icon:MessageCircle}]:[]),...(can(session,CORE_CAPABILITIES.usersManage)?[{id:'settings',name:'Company admin',description:'People & permissions',rootPath:'/settings',icon:Settings}]:[]),...(can(session,'atlas.companies.manage')?[{id:'platform',name:'Atlas console',description:'Company accounts',rootPath:'/atlas',icon:ShieldCheck}]:[])];
- return <div className="mx-auto max-w-6xl py-4 sm:py-10"><div className="mb-9 flex flex-wrap items-end justify-between gap-5"><div><p className="mb-3 text-[11px] font-semibold uppercase tracking-[.18em] text-blue-600">{session.organisationName}</p><h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Your business, beautifully connected.</h1><p className="mt-3 text-sm text-slate-500">Welcome back, {session.userName.split(' ')[0]}. Where would you like to work?</p></div>{can(session,CORE_CAPABILITIES.modulesManage)&&<Link href="/apps" className="rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-600 hover:border-blue-300">Manage apps →</Link>}</div><section aria-label="Business apps" className="rounded-[28px] border border-white bg-white/75 p-4 shadow-[0_8px_40px_#26377508] sm:p-8"><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">{apps.map(app=>{const Icon=app.icon,color=`var(--color-accent-${accentColorForModule(app.id)})`;return <Link key={app.id} href={app.rootPath} className="group flex min-h-40 flex-col items-center rounded-2xl p-4 text-center transition duration-200 hover:-translate-y-1 hover:bg-white hover:shadow-lg"><div className="flex size-[68px] items-center justify-center rounded-[21px] text-white shadow-[0_8px_18px_#223c6b18] ring-1 ring-white/20 transition group-hover:scale-105" style={{background:`linear-gradient(145deg,color-mix(in srgb,${color},white 18%),${color})`}}><Icon size={29} strokeWidth={1.6}/></div><h2 className="mt-4 text-sm font-semibold text-slate-800">{app.name}</h2><p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-slate-400">{app.description}</p></Link>;})}</div></section><section className="mt-8 rounded-2xl border border-slate-200/70 bg-white p-6"><div className="flex justify-between"><h2 className="text-sm font-semibold">Your attention, in one place</h2><span className="rounded-full bg-blue-50 px-3 py-1 text-[11px] text-blue-600">{attention.length} items</span></div><div className="mt-4 divide-y divide-slate-100">{attention.map(item=><Link key={item.id} href={item.href} className="flex items-center gap-3 py-3 text-sm text-slate-600 hover:text-blue-600"><span className={`size-2 rounded-full ${item.severity==='critical'?'bg-rose-500':item.severity==='warning'?'bg-amber-500':'bg-blue-500'}`}/><span className="flex-1">{item.label}</span><ArrowUpRight size={15}/></Link>)}{!attention.length&&<p className="py-4 text-sm text-slate-400">You’re all caught up.</p>}</div></section></div>;
+import { Settings, ShieldCheck, Users } from "lucide-react";
+import { requireSession } from "@/core/auth/session";
+import { getNavigableModules } from "@/core/modules/runtime";
+import { getAttentionItems } from "@/core/attention/aggregate";
+import { can } from "@/core/permissions/check";
+import { CORE_CAPABILITIES, CUSTOMER_CAPABILITIES } from "@/core/permissions/capabilities";
+
+function greeting(name: string) {
+  const hour = Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hourCycle: "h23", timeZone: "Europe/London" }).format(new Date()));
+  const hello = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  return `${hello}, ${name}.`;
+}
+
+export default async function HomePage() {
+  const session = await requireSession();
+  const [modules, attention] = await Promise.all([getNavigableModules(session), getAttentionItems(session)]);
+  const apps = [
+    ...(can(session, CUSTOMER_CAPABILITIES.read) ? [{ id: "customers", name: "Customers", description: "Accounts and relationships", rootPath: "/customers", icon: Users }] : []),
+    ...modules.map((module) => ({ id: module.id, name: module.name, description: module.description, rootPath: module.rootPath, icon: module.icon })),
+    ...(can(session, CORE_CAPABILITIES.usersManage) ? [{ id: "settings", name: "Company admin", description: "People, brand and permissions", rootPath: "/settings", icon: Settings }] : []),
+    ...(can(session, "atlas.companies.manage") ? [{ id: "platform", name: "Atlas console", description: "Company accounts", rootPath: "/atlas", icon: ShieldCheck }] : []),
+  ];
+  const first = session.userName.split(" ")[0];
+  return (
+    <div className="mx-auto flex max-w-5xl flex-col gap-8">
+      <header className="flex flex-wrap items-end justify-between gap-6 pt-2">
+        <div>
+          <p className="text-sm text-[#6e6e73]">{session.organisationName}</p>
+          <h1 className="mt-1 text-4xl font-semibold tracking-tight text-[#1d1d1f] sm:text-5xl">{greeting(first)}</h1>
+        </div>
+        {can(session, CORE_CAPABILITIES.modulesManage) && (
+          <Link href="/apps" className="rounded-full bg-[#1d1d1f] px-5 py-2.5 text-sm font-medium text-white">Manage apps</Link>
+        )}
+      </header>
+      <section aria-label="Business apps" className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {apps.map((app) => {
+          const Icon = app.icon;
+          return (
+            <Link key={app.id} href={app.rootPath} className="group flex items-start gap-4 rounded-3xl border border-black/[0.04] bg-white p-5 shadow-[0_1px_1px_rgba(0,0,0,0.04),0_18px_40px_-24px_rgba(0,0,0,0.28)] transition hover:-translate-y-0.5">
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#0a3d8f] text-white">
+                <Icon size={22} strokeWidth={2.25} color="#ffffff" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[15px] font-semibold text-[#1d1d1f]">{app.name}</span>
+                <span className="mt-1 line-clamp-2 text-sm leading-snug text-[#6e6e73]">{app.description}</span>
+              </span>
+            </Link>
+          );
+        })}
+      </section>
+      <section className="rounded-3xl border border-black/[0.04] bg-white p-6 shadow-[0_1px_1px_rgba(0,0,0,0.04),0_18px_40px_-24px_rgba(0,0,0,0.28)]">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold tracking-tight text-[#1d1d1f]">Needs you</h2>
+          <span className="rounded-full bg-[#0071e3] px-2.5 py-0.5 text-xs font-medium text-white">{attention.length}</span>
+        </div>
+        <div className="mt-2">
+          {attention.map((item) => (
+            <Link key={item.id} href={item.href} className="flex items-center justify-between gap-4 border-b border-black/[0.06] py-3.5 text-sm text-[#1d1d1f] last:border-b-0">
+              <span>{item.label}</span>
+              <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-medium ${item.severity === "critical" ? "bg-[#d12b45]/10 text-[#d12b45]" : item.severity === "warning" ? "bg-[#b26a08]/10 text-[#b26a08]" : "bg-black/[0.05] text-[#6e6e73]"}`}>
+                {item.severity === "critical" ? "Urgent" : item.severity === "warning" ? "Review" : "Open"}
+              </span>
+            </Link>
+          ))}
+          {!attention.length && <p className="py-6 text-sm text-[#6e6e73]">Nothing waiting.</p>}
+        </div>
+      </section>
+    </div>
+  );
 }

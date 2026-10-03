@@ -2,10 +2,10 @@
 
 ## Philosophy
 
-Precise, bold, quiet, premium, fast. The application itself is the visual
-identity — not decorative imagery, not a generic admin-template look. Dense
-screens should still feel calm: prefer borders, spacing and hierarchy before
-reaching for a floating card.
+Precise, bold, quiet, premium, fast. Atlas should feel like a finished product:
+a dark company rail, a luminous workspace, icon-led navigation and soft elevated
+surfaces. Dense screens stay calm. Company logos live on the organisation and
+appear in the shell. Do not invent a second visual language per module.
 
 ## Foundation (tokens — `src/app/globals.css`)
 
@@ -22,7 +22,7 @@ reaching for a floating card.
 
 ## Typography
 
-Geist Sans. Page titles are confident (`text-2xl font-semibold
+Plus Jakarta Sans. The Atlas wordmark is `public/brand/atlas-logo.png`. Page titles are confident (`text-2xl font-semibold
 tracking-tight`), body copy readable at `text-sm`, tabular data uses
 `font-feature-settings: "tnum"` (set globally on `body`) for aligned numerals.
 
@@ -44,10 +44,9 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
 
 ## Shell (`src/components/shell/`)
 
-- **Sidebar** — Atlas identity, Home, enabled+accessible modules, then
-  Apps/Settings. Built from `getNavigableModules`, never hand-edited per
-  module.
-- **Topbar** — command palette trigger + user/sign-out.
+- **Sidebar** — company logo and name, Workspace, enabled apps with icons, then
+  Manage apps and Company admin. Built from `getNavigableModules`.
+- **Topbar** — search, back, chat, profile and sign-out on a glass bar.
 - **CommandPalette** — ⌘K / Ctrl+K. Debounced query against `/api/search`,
   which aggregates navigation matches and each module's `searchProvider`.
 

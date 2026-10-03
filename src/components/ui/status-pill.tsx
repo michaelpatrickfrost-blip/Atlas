@@ -9,11 +9,10 @@ const TONE_CLASSES: Record<StatusTone, string> = {
   neutral: "bg-[var(--color-status-neutral-soft)] text-[var(--color-status-neutral)]",
 };
 
-/** Concise status label with meaningful colour. Red is reserved for genuine problems —
- *  callers must pick `tone` deliberately rather than defaulting to danger. */
 export function StatusPill({ label, tone }: { label: string; tone: StatusTone }) {
   return (
-    <span className={clsx("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium", TONE_CLASSES[tone])}>
+    <span className={clsx("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide", TONE_CLASSES[tone])}>
+      <span className="size-1.5 rounded-full bg-current" />
       {label}
     </span>
   );

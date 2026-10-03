@@ -17,7 +17,7 @@ export function IconChip({
 }) {
   return (
     <div
-      className={`flex shrink-0 items-center justify-center rounded-[var(--radius-atlas-sm)] ${SIZE_CLASSES[size]}`}
+      className={`flex shrink-0 items-center justify-center rounded-2xl shadow-sm ${SIZE_CLASSES[size]}`}
       style={{ background: `var(--color-accent-${color}-soft)`, color: `var(--color-accent-${color})` }}
     >
       <Icon size={ICON_SIZE[size]} strokeWidth={1.6} />

@@ -67,7 +67,7 @@ export function CommandPalette() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex w-full min-w-0 max-w-96 items-center gap-2 rounded-[var(--radius-atlas-sm)] border border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-3 py-1.5 text-sm text-[var(--color-ink-faint)] transition-colors hover:border-[var(--color-border-strong)]"
+        className="flex h-10 w-full min-w-0 items-center gap-3 rounded-full border border-white/80 bg-white/70 px-4 text-sm text-[#6e6e73] shadow-sm backdrop-blur-xl transition hover:bg-white"
       >
         <Search size={15} className="shrink-0" />
         <span className="min-w-0 flex-1 truncate text-left">Search Atlas or type a command...</span>
@@ -79,11 +79,11 @@ export function CommandPalette() {
           role="dialog"
           aria-modal="true"
           aria-label="Search Atlas"
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/30 px-4 pt-[12vh]"
+          className="fixed inset-0 z-50 flex items-start justify-center bg-[#0b1020]/45 px-4 pt-[12vh] backdrop-blur-md"
           onClick={closePalette}
         >
           <div
-            className="w-full max-w-lg overflow-hidden rounded-[var(--radius-atlas-md)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-xl"
+            className="w-full max-w-xl overflow-hidden rounded-[28px] border border-white/70 bg-white shadow-[var(--shadow-atlas-lg)]"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center gap-2 border-b border-[var(--color-border)] px-4 py-3">

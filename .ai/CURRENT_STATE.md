@@ -1,5 +1,50 @@
 # Atlas current state
 
+## CRM + Sales Projects Architecture (Foundation) — 4 October 2026
+
+Implemented comprehensive SalesProject architecture as first-class CRM concept, distinct from Internal Projects. Enables complex, multi-organisation project-based selling (facility/infrastructure/construction/development) alongside normal transactional opportunities.
+
+**Schema (prisma/schema.prisma):**
+- `SalesProject`: main commercial project (reference, name, stage, potential/quoted/awarded/ordered values, target award/start/completion dates, probability, next action, tags)
+- `SalesProjectOrganisation`: many-to-many link with Party, role-based (END_CLIENT, CONTRACTOR, MERCHANT, etc.), primary flag
+- `SalesProjectStakeholder`: many-to-many link with Contact, role-based, influence/sentiment tracking
+- New enums: SalesProjectStage (13 stages: IDENTIFIED→COMPLETED), SalesProjectOrganisationRole, SalesProjectStakeholderRole
+- Updated: Quote, SalesOrder, SalesActivity to add `salesProjectId` foreign key
+- Relations: Organisation, SalesTeam, CrmIndustry, Party, Contact all updated with back-relations
+
+**Services (src/modules/crm/services/):**
+- `sales-projects-queries.ts`: list/get/search projects, generate reference
+- `sales-projects-commands.ts`: create/update projects, add organisations/stakeholders, link quotes/orders
+
+**Routes (src/app/(app)/crm/projects/):**
+- `page.tsx`: list view with stage badges, values, org count, drill-through to detail
+- `new/page.tsx`: create project form (name, description, potential value), server action in `new/actions.ts`
+- `[projectId]/page.tsx`: 360 detail page: header with status, 5-metric strip (potential/quoted/awarded/ordered/remaining), key dates, organisations, stakeholders, quotes, orders, sidebar (next action, description, quick stats)
+
+**Navigation:**
+- CRM manifest: added "Projects" tab between Pipeline and Forecast
+
+**Key design constraints:**
+- SalesProject does NOT require a primary customer (multiple orgs with roles; customer can be added later)
+- Normal opportunities remain transactional and simple
+- Internal Projects (execution management) completely separate concept
+- Quote/order provenance tracked to project; commercial vs. execution status split
+- Activities linked to projects with next-action priority
+
+**Blocked by:**
+- Local Postgres not running; migration not applied to local DB
+- `npm run build` fails on pre-existing document-composer.tsx JSX error (unrelated)
+- Schema check blocked pending `sales_projects_foundation` migration
+- Prisma client generated cleanly
+
+**Next steps:**
+1. Start local Postgres and apply migration: `npm run db:migrate`
+2. Release schema to remote data-service
+3. Fix document-composer.tsx build error (pre-existing)
+4. Test: create project → add organisations/stakeholders → link quotes/orders
+5. Wire "Create Sales Project" from Customer 360 (prefill with customer as primary org)
+6. Desktop build and deployment to Mac app
+
 ## Delete and Reverse Buttons with Confirmation Dialogs — 4 October 2026
 
 Added comprehensive delete and reverse functionality across Orders, Customers, and other modules with user confirmation to prevent accidental deletions.

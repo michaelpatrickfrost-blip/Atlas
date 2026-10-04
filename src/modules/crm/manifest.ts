@@ -24,6 +24,7 @@ export const crmManifest: ModuleManifest = {
     { label: "Today", href: "/crm/today", capability: SALES_CAPABILITIES.opportunityRead },
     { label: "Prospect", href: "/crm/prospect", capability: SALES_CAPABILITIES.prospectRead },
     { label: "Pipeline", href: "/crm/pipeline", capability: SALES_CAPABILITIES.opportunityRead },
+    { label: "Projects", href: "/crm/projects", capability: SALES_CAPABILITIES.opportunityRead },
     { label: "Forecast", href: "/crm/forecast", capability: SALES_CAPABILITIES.forecastRead },
     { label: "Reports", href: "/crm/reports", capability: SALES_CAPABILITIES.reportRead },
   ],

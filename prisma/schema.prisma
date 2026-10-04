@@ -207,6 +207,7 @@ model Organisation {
 
   // Sales module entities (tenant-scoped)
   opportunities Opportunity[]
+  salesProjects SalesProject[]
   quotes        Quote[]
   salesOrders   SalesOrder[]
   salesAgreements SalesAgreement[]
@@ -431,6 +432,7 @@ model Party {
   activities               Activity[]
 
   opportunities Opportunity[]
+  salesProjectOrganisations SalesProjectOrganisation[]
   quotes        Quote[]
   salesOrders   SalesOrder[]
   salesAgreements SalesAgreement[]
@@ -499,6 +501,7 @@ model Contact {
   communicationDestinations CommunicationDestination[]
   addresses                 Address[]
   opportunityStakeholders   OpportunityStakeholder[]
+  salesProjectStakeholders  SalesProjectStakeholder[]
   opportunitiesAsPrimaryContact Opportunity[]
 
   @@index([partyId])
@@ -1267,9 +1270,10 @@ model SalesTeam {
   managerUserId  String?
   createdAt      DateTime @default(now())
 
-  organisation Organisation  @relation(fields: [organisationId], references: [id], onDelete: Cascade)
-  members      SalesTeamMember[]
+  organisation  Organisation  @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  members       SalesTeamMember[]
   opportunities Opportunity[]
+  salesProjects SalesProject[]
   prospects     Prospect[]
 
   @@map("sales_teams")
@@ -1516,6 +1520,7 @@ model CrmIndustry {
   organisation  Organisation  @relation(fields: [organisationId], references: [id], onDelete: Cascade)
   prospects     Prospect[]
   opportunities Opportunity[]
+  salesProjects SalesProject[]
 
   @@unique([organisationId, name])
   @@index([organisationId])
@@ -1641,9 +1646,10 @@ model SalesActivity {
   notes          String?
   ownerUserId    String
 
-  partyId       String?
-  prospectId    String?
-  opportunityId String?
+  partyId         String?
+  prospectId      String?
+  opportunityId   String?
+  salesProjectId  String?
 
   dueAt       DateTime?
   completedAt DateTime?
@@ -1651,14 +1657,182 @@ model SalesActivity {
 
   createdAt DateTime @default(now())
 
-  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
-  party        Party?       @relation(fields: [partyId], references: [id])
-  prospect     Prospect?    @relation(fields: [prospectId], references: [id])
-  opportunity  Opportunity? @relation(fields: [opportunityId], references: [id])
+  organisation  Organisation   @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  party         Party?         @relation(fields: [partyId], references: [id])
+  prospect      Prospect?      @relation(fields: [prospectId], references: [id])
+  opportunity   Opportunity?   @relation(fields: [opportunityId], references: [id])
+  salesProject  SalesProject?  @relation(fields: [salesProjectId], references: [id])
 
   @@index([organisationId, ownerUserId, dueAt])
   @@index([organisationId, completedAt])
+  @@index([organisationId, salesProjectId])
   @@map("sales_activities")
+}
+
+// Sales Project stages (configurable per organisation, but sensible defaults)
+enum SalesProjectStage {
+  IDENTIFIED
+  QUALIFIED
+  SPECIFICATION
+  ESTIMATING
+  QUOTING
+  NEGOTIATION
+  PREFERRED
+  AWARDED
+  LIVE
+  COMPLETED
+  LOST
+  CANCELLED
+  DORMANT
+}
+
+// SalesProjectOrganisationRole — who plays what role in this commercial project
+enum SalesProjectOrganisationRole {
+  END_CLIENT
+  DEVELOPER
+  OWNER
+  SPECIFIER
+  CONSULTANT
+  ARCHITECT
+  ENGINEER
+  MAIN_CONTRACTOR
+  SUBCONTRACTOR
+  DISTRIBUTOR
+  MERCHANT
+  BUYING_CUSTOMER
+  INVOICE_CUSTOMER
+  FRAMEWORK_HOLDER
+  DELIVERY_RECIPIENT
+  OTHER
+}
+
+// Sales Project: a commercial container for project-based selling
+// Unlike internal Project (execution), this is purely commercial/CRM
+model SalesProject {
+  id             String              @id @default(cuid())
+  organisationId String
+  reference      String              // e.g. "SP-00184"
+  name           String
+  description    String?
+
+  stage          SalesProjectStage   @default(IDENTIFIED)
+  stageEnteredAt DateTime            @default(now())
+
+  ownerUserId    String              // Sales owner
+  teamId         String?
+
+  // Commercial values
+  potentialValueAmount   Int?        // What we're trying to win (minor units)
+  potentialValueCurrency String      @default("GBP")
+
+  quotedValueAmount      Int?        // What we've quoted
+  quotedValueCurrency    String      @default("GBP")
+
+  awardedValueAmount     Int?        // What's been awarded
+  awardedValueCurrency   String      @default("GBP")
+
+  orderedValueAmount     Int?        // What's been ordered
+  orderedValueCurrency   String      @default("GBP")
+
+  remainingValueAmount   Int?        // Still to be converted
+  remainingValueCurrency String      @default("GBP")
+
+  probability            Int?        // Forecast confidence 0-100
+  expectedValueAmount    Int?        // Weighted value
+
+  // Key dates
+  targetAwardDate        DateTime?
+  expectedStartDate      DateTime?
+  expectedCompletionDate DateTime?
+
+  // Next action (§29)
+  nextActionNote         String?
+  nextActionAt           DateTime?
+
+  // Classification
+  industryId             String?
+  tags                   String[]    @default([])
+  notes                  String?
+
+  // Tracking
+  lastActivityAt         DateTime?
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+
+  organisation           Organisation              @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  team                   SalesTeam?                @relation(fields: [teamId], references: [id])
+  industry               CrmIndustry?              @relation(fields: [industryId], references: [id], onDelete: SetNull)
+
+  // Links to commercial records
+  organisations          SalesProjectOrganisation[]
+  stakeholders           SalesProjectStakeholder[]
+  quotes                 Quote[]
+  orders                 SalesOrder[]
+  activities             SalesActivity[]
+
+  @@unique([organisationId, reference])
+  @@index([organisationId, stage])
+  @@index([organisationId, ownerUserId])
+  @@index([organisationId, targetAwardDate])
+  @@map("sales_projects")
+}
+
+// Link organisations to a sales project with role-based clarity
+model SalesProjectOrganisation {
+  id                String                          @id @default(cuid())
+  salesProjectId    String
+  partyId           String
+  roles             SalesProjectOrganisationRole[]  @default([])
+  isPrimary         Boolean                         @default(false)  // Primary commercial contact
+  notes             String?
+  createdAt         DateTime                        @default(now())
+
+  salesProject      SalesProject   @relation(fields: [salesProjectId], references: [id], onDelete: Cascade)
+  party             Party          @relation(fields: [partyId], references: [id], onDelete: Cascade)
+
+  @@unique([salesProjectId, partyId])
+  @@index([salesProjectId])
+  @@map("sales_project_organisations")
+}
+
+// Stakeholders: who at each organisation is involved in this project
+enum SalesProjectStakeholderRole {
+  DECISION_MAKER
+  BUYER
+  ESTIMATOR
+  ENGINEER
+  SPECIFIER
+  COMMERCIAL_MANAGER
+  QUANTITY_SURVEYOR
+  SITE_MANAGER
+  ACCOUNTS_PAYABLE
+  INFLUENCER
+  CHAMPION
+  BLOCKER
+  OTHER
+}
+
+model SalesProjectStakeholder {
+  id                String                        @id @default(cuid())
+  salesProjectId    String
+  contactId         String
+  roles             SalesProjectStakeholderRole[] @default([])
+
+  // Relationship & influence
+  influence         String?         // STRONG, MODERATE, WEAK
+  relationshipStrength String?      // STRONG, MODERATE, WEAK
+  sentiment         String?         // POSITIVE, NEUTRAL, NEGATIVE
+
+  lastContactAt     DateTime?
+  notes             String?
+  createdAt         DateTime        @default(now())
+
+  salesProject      SalesProject    @relation(fields: [salesProjectId], references: [id], onDelete: Cascade)
+  contact           Contact         @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@unique([salesProjectId, contactId])
+  @@index([salesProjectId])
+  @@map("sales_project_stakeholders")
 }
 
 enum QuoteStatus {
@@ -1693,6 +1867,7 @@ model Quote {
   invoiceAssignmentId String?
   invoiceAssignment CustomerInvoiceTemplate? @relation("QuoteInvoiceTemplate", fields: [invoiceAssignmentId], references: [id], onDelete: SetNull)
   opportunityId  String?
+  salesProjectId String?
   reference      String
   status         QuoteStatus @default(DRAFT)
   kind           QuoteKind   @default(STANDARD)
@@ -1717,14 +1892,16 @@ model Quote {
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
-  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
-  party        Party        @relation(fields: [partyId], references: [id], onDelete: Cascade)
-  opportunity  Opportunity? @relation(fields: [opportunityId], references: [id])
-  lines        QuoteLine[]
-  salesOrder   SalesOrder?
-  agreement    SalesAgreement?
+  organisation   Organisation   @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  party          Party          @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  opportunity    Opportunity?   @relation(fields: [opportunityId], references: [id])
+  salesProject   SalesProject?  @relation(fields: [salesProjectId], references: [id])
+  lines          QuoteLine[]
+  salesOrder     SalesOrder?
+  agreement      SalesAgreement?
 
   @@unique([organisationId, reference])
+  @@index([organisationId, salesProjectId])
   @@map("sales_quotes")
 }
 
@@ -1864,10 +2041,11 @@ model SalesOrder {
 
   // Origin — CRM retains its own history; Sales only preserves the link
   // (§4). Converting an opportunity never rewrites it into an order.
-  quoteId       String? @unique
-  opportunityId String?
-  projectId     String?
-  agreementId   String?
+  quoteId         String? @unique
+  opportunityId   String?
+  projectId       String?
+  salesProjectId  String?
+  agreementId     String?
 
   ownerUserId String
   teamId      String?
@@ -1919,25 +2097,27 @@ model SalesOrder {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
-  party        Party        @relation(fields: [partyId], references: [id], onDelete: Cascade)
-  quote        Quote?       @relation(fields: [quoteId], references: [id])
-  project      Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  agreement    SalesAgreement? @relation(fields: [agreementId], references: [id], onDelete: Restrict)
-  priceList    PriceList?   @relation(fields: [priceListId], references: [id])
-  paymentTerm  PaymentTerm? @relation(fields: [paymentTermId], references: [id])
+  organisation  Organisation       @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  party         Party              @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  quote         Quote?             @relation(fields: [quoteId], references: [id])
+  project       Project?           @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  salesProject  SalesProject?      @relation(fields: [salesProjectId], references: [id], onDelete: SetNull)
+  agreement     SalesAgreement?    @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  priceList     PriceList?         @relation(fields: [priceListId], references: [id])
+  paymentTerm   PaymentTerm?       @relation(fields: [paymentTermId], references: [id])
 
-  lines        SalesOrderLine[]
-  fulfilments  FulfilmentRequirement[]
-  holds        OrderHold[]
-  changeEvents OrderChangeEvent[]
-  approvals    OrderApproval[]
+  lines         SalesOrderLine[]
+  fulfilments   FulfilmentRequirement[]
+  holds         OrderHold[]
+  changeEvents  OrderChangeEvent[]
+  approvals     OrderApproval[]
 
   @@unique([id, organisationId])
   @@unique([organisationId, reference])
   @@index([organisationId, commercialStatus])
   @@index([organisationId, agreementId])
   @@index([organisationId, projectId])
+  @@index([organisationId, salesProjectId])
   @@map("sales_orders")
 }
 

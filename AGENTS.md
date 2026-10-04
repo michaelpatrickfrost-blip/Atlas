@@ -150,6 +150,11 @@ themselves into `src/core/modules/registry.ts` — that's the only wiring point.
 
 ## Canonical commands
 
+See `docs/DEPLOY.md` for the full deploy procedure (desktop build/install,
+what to do when the release schema gate or the build itself fails in this
+shared repo). The short version: `npm run build` then
+`scripts/deploy-mac-client.sh <short-name>`.
+
 ```bash
 npm run dev:all       # fully offline: local Postgres + schema + seed + dev server + browser
                        # (or double-click Atlas.app on the Desktop — see docs/LOCAL_DEVELOPMENT.md)

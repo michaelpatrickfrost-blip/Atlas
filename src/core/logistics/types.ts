@@ -118,6 +118,8 @@ export type StockCommand = {
   sourceId?: string;
   shipmentId?: string;
   receiptId?: string;
+  manufacturingOrderId?: string;
+  workOrderId?: string;
 };
 
 export type StockCommandResult = { requestKey: string; movementIds: string[]; replayed: boolean };

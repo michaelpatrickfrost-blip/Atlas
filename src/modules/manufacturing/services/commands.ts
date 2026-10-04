@@ -11,6 +11,7 @@ import { nextOrderNumber } from "./numbers";
 import { canTransitionOrder, canTransitionWorkOrder, readyToRelease } from "../domain/lifecycle";
 import { forwardSchedule } from "../domain/scheduling";
 import { releasedAssignment } from "../domain/plant";
+import { backflushOnCompletion } from "./stock";
 
 /** §57-58: create a Planned Production Order. Firming/MRP-origin orders are a later phase —
  * this covers the manual "create production order" path only. */
@@ -197,6 +198,7 @@ export async function completeWorkOrder(workOrderId: string, goodQuantity: numbe
   const workOrder = await workOrderOrThrow(session.organisationId, workOrderId);
   if (workOrder.lastRequestKey === requestKey) return workOrder;
   if (!canTransitionWorkOrder(workOrder.status, "COMPLETE")) throw new Error(`This step cannot complete from ${workOrder.status}.`);
+  await backflushOnCompletion(session, workOrder, goodQuantity, scrapQuantity, requestKey);
   const updated = await db.manufacturingWorkOrder.updateMany({
     where: { id: workOrderId, organisationId: session.organisationId, version: workOrder.version },
     data: {

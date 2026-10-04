@@ -2442,6 +2442,8 @@ model InventoryMovement {
  organisationId String
  shipmentId String?
  receiptId String?
+ manufacturingOrderId String?
+ workOrderId String?
  warehouseId String
  productId String
  delta Int
@@ -3699,6 +3701,7 @@ enum ManufacturingOrderStatus {
 // snapshotted by reference to the ProductDefinition used at release so later edits
 // to the live definition never rewrite history for an order already running.
 model ManufacturingOrder {
+ warehouseId String?
  id String @id @default(cuid())
  organisationId String
  orderNumber String

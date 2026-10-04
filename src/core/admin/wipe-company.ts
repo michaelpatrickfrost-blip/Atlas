@@ -6,7 +6,7 @@ export async function wipeCompany(organisationId: string) {
   const userIds = members.map((m) => m.userId);
   await db.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT set_config('atlas.test_wipe','on',true)`;
-    const tables = await tx.$queryRaw<{ table_name: string }[]>`SELECT table_name FROM information_schema.columns WHERE table_schema='public' AND column_name='organisationId' AND table_name NOT IN ('organisations','_prisma_migrations')`;
+    const tables = await tx.$queryRaw<{ table_name: string }[]>`SELECT c.table_name FROM information_schema.columns c JOIN information_schema.tables t ON t.table_schema=c.table_schema AND t.table_name=c.table_name WHERE c.table_schema='public' AND t.table_type='BASE TABLE' AND c.column_name='organisationId' AND c.table_name NOT IN ('organisations','_prisma_migrations')`;
     let pending = tables.map((t) => t.table_name);
     while (pending.length) {
       let progress = false;

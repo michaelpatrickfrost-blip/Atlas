@@ -14,6 +14,7 @@ datasource db {
 // ---------- Core: tenancy & identity ----------
 
 model Organisation {
+  isTest Boolean @default(false)
   qualitySequences QualitySequence[]
   qualitySpecifications QualitySpecification[]
   qualityCharacteristics QualityCharacteristic[]

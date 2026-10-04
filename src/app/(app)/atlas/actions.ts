@@ -8,14 +8,15 @@ import {STANDARD_ROLES} from '@/core/permissions/capabilities';
 import {createRecoveryCredential} from '@/core/auth/recovery';
 import {revalidatePath} from 'next/cache';
 import bcrypt from 'bcryptjs';
+import {wipeCompany} from '@/core/admin/wipe-company';
 export async function updateCompanyAccount(form:FormData){
  const session=await requireSession();
  assertCapability(session,'atlas.companies.manage');
- const organisationId=String(form.get('organisationId')),status=String(form.get('status')),subscriptionStatus=String(form.get('subscriptionStatus')),name=String(form.get('name')??'').trim(),planName=String(form.get('planName')??'').trim(),trial=String(form.get('trialEndsAt')??''),trialEndsAt=trial?new Date(`${trial}T23:59:59.999Z`):null;
+ const organisationId=String(form.get('organisationId')),status=String(form.get('status')),subscriptionStatus=String(form.get('subscriptionStatus')),name=String(form.get('name')??'').trim(),planName=String(form.get('planName')??'').trim(),trial=String(form.get('trialEndsAt')??''),trialEndsAt=trial?new Date(`${trial}T23:59:59.999Z`):null,isTest=form.get('isTest')==='on';
  if(!name||name.length>150||!planName||planName.length>100||!['ACTIVE','SUSPENDED'].includes(status)||!['TRIAL','ACTIVE','PAST_DUE','CANCELLED'].includes(subscriptionStatus)||(trialEndsAt&&isNaN(trialEndsAt.getTime())))throw new Error('Enter valid account details.');
  if(organisationId===session.organisationId&&status==='SUSPENDED')throw new Error('You cannot suspend your current workspace.');
  const before=await db.organisation.findUniqueOrThrow({where:{id:organisationId}});
- await db.$transaction(async tx=>{await tx.organisation.update({where:{id:organisationId},data:{name,status,subscriptionStatus,planName,trialEndsAt}});await tx.auditEntry.create({data:{organisationId,actorUserId:session.userId,action:'atlas.company.updated',entityType:'Organisation',entityId:organisationId,before:{name:before.name,status:before.status,subscriptionStatus:before.subscriptionStatus},after:{name,status,subscriptionStatus,planName}}});});
+ await db.$transaction(async tx=>{await tx.organisation.update({where:{id:organisationId},data:{name,status,subscriptionStatus,planName,trialEndsAt,isTest}});await tx.auditEntry.create({data:{organisationId,actorUserId:session.userId,action:'atlas.company.updated',entityType:'Organisation',entityId:organisationId,before:{name:before.name,status:before.status,subscriptionStatus:before.subscriptionStatus,isTest:before.isTest},after:{name,status,subscriptionStatus,planName,isTest}}});});
  revalidatePath('/atlas');revalidatePath(`/atlas/${organisationId}`);
 }
 export async function saveCompanyEntitlements(form:FormData){
@@ -35,7 +36,21 @@ export async function createCompanyAccount(form:FormData){
  if(!name||name.length>150||!ownerName||ownerName.length>100||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||email.length>254)throw new Error('Enter the company, administrator name and a valid email.');
  if(await db.user.findUnique({where:{email}}))throw new Error('This account already exists. A verified invitation flow is needed to join it to another company.');
  const credential=createRecoveryCredential(),passwordHash=await bcrypt.hash(randomBytes(32).toString('hex'),12);
- const organisationId=await db.$transaction(async tx=>{const organisation=await tx.organisation.create({data:{name,slug:`company-${crypto.randomUUID()}`,trialEndsAt:new Date(Date.now()+14*86400000)}}),user=await tx.user.create({data:{name:ownerName,email,passwordHash}}),membership=await tx.membership.create({data:{organisationId:organisation.id,userId:user.id}});for(const role of STANDARD_ROLES){const created=await tx.role.create({data:{organisationId:organisation.id,key:role.key,name:role.name,capabilities:role.capabilities}});if(role.key==='admin')await tx.roleOnMembership.create({data:{membershipId:membership.id,roleId:created.id}});}await tx.passwordReset.create({data:{membershipId:membership.id,tokenHash:credential.tokenHash,expiresAt:credential.expiresAt}});await tx.moduleState.createMany({data:getImplementedModules().map(m=>({organisationId:organisation.id,moduleId:m.id,entitled:true,enabled:true}))});await tx.auditEntry.create({data:{organisationId:organisation.id,actorUserId:session.userId,action:'atlas.company.created',entityType:'Organisation',entityId:organisation.id,after:{name,administratorUserId:user.id}}});return organisation.id;});
+ const organisationId=await db.$transaction(async tx=>{const organisation=await tx.organisation.create({data:{name,slug:`company-${crypto.randomUUID()}`,isTest:form.get('isTest')==='on',trialEndsAt:new Date(Date.now()+14*86400000)}}),user=await tx.user.create({data:{name:ownerName,email,passwordHash}}),membership=await tx.membership.create({data:{organisationId:organisation.id,userId:user.id}});for(const role of STANDARD_ROLES){const created=await tx.role.create({data:{organisationId:organisation.id,key:role.key,name:role.name,capabilities:role.capabilities}});if(role.key==='admin')await tx.roleOnMembership.create({data:{membershipId:membership.id,roleId:created.id}});}await tx.passwordReset.create({data:{membershipId:membership.id,tokenHash:credential.tokenHash,expiresAt:credential.expiresAt}});await tx.moduleState.createMany({data:getImplementedModules().map(m=>({organisationId:organisation.id,moduleId:m.id,entitled:true,enabled:true}))});await tx.auditEntry.create({data:{organisationId:organisation.id,actorUserId:session.userId,action:'atlas.company.created',entityType:'Organisation',entityId:organisation.id,after:{name,administratorUserId:user.id}}});return organisation.id;});
  revalidatePath('/atlas');
  return {organisationId,code:credential.code,expiresAt:credential.expiresAt.toISOString()};
+}
+
+export async function deleteTestCompany(form:FormData){
+ const session=await requireSession();
+ assertCapability(session,'atlas.companies.manage');
+ const organisationId=String(form.get('organisationId')??''),typedName=String(form.get('confirmName')??'').trim();
+ const org=await db.organisation.findUnique({where:{id:organisationId}});
+ if(!org)throw new Error('Company not found.');
+ if(!org.isTest)throw new Error('Only companies marked as Test can be deleted. Mark it as a test company first, or suspend it.');
+ if(org.id===session.organisationId)throw new Error('Switch to another company before deleting this one.');
+ if(typedName!==org.name)throw new Error('Type the company name exactly to confirm.');
+ await wipeCompany(organisationId);
+ console.info(`atlas.company.deleted org=${organisationId} name=${JSON.stringify(org.name)} by=${session.userId}`);
+ revalidatePath('/atlas');
 }

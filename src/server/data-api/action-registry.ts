@@ -7,6 +7,7 @@ import {toggleModuleAction as action4} from "@/app/(app)/apps/actions";
 import {updateCompanyAccount as action5} from "@/app/(app)/atlas/actions";
 import {saveCompanyEntitlements as action6} from "@/app/(app)/atlas/actions";
 import {createCompanyAccount as action7} from "@/app/(app)/atlas/actions";
+import {deleteTestCompany as deleteTestCompanyAction} from "@/app/(app)/atlas/actions";
 import {importCompanySetup as action8} from "@/app/(app)/atlas/setup-actions";
 import {createCompanyUser as action9} from "@/app/(app)/atlas/setup-actions";
 import {setCompanyUserStatus as action10} from "@/app/(app)/atlas/setup-actions";
@@ -626,6 +627,7 @@ export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>={
 "src/app/(app)/atlas/actions:updateCompanyAccount":action5 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/atlas/actions:saveCompanyEntitlements":action6 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/atlas/actions:createCompanyAccount":action7 as (...args:never[])=>Promise<unknown>,
+"src/app/(app)/atlas/actions:deleteTestCompany":deleteTestCompanyAction as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/atlas/setup-actions:importCompanySetup":action8 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/atlas/setup-actions:createCompanyUser":action9 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/atlas/setup-actions:setCompanyUserStatus":action10 as (...args:never[])=>Promise<unknown>,

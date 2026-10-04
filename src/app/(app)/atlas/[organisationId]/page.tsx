@@ -7,7 +7,7 @@ import { getImplementedModules } from "@/core/modules/registry";
 import { ActionForm } from "@/components/ui/action-form";
 import { Button } from "@/components/ui/button";
 import { CreateDialog } from "@/components/ui/create-dialog";
-import { updateCompanyAccount, saveCompanyEntitlements } from "../actions";
+import { updateCompanyAccount, saveCompanyEntitlements, deleteTestCompany } from "../actions";
 import { setCompanyUserStatus } from "../setup-actions";
 import { ConsoleNav } from "../console-nav";
 import { NewCompanyUserForm } from "../account-forms";
@@ -57,6 +57,7 @@ export default async function CompanyAccount({ params, searchParams }: { params:
             <label className="block text-xs">Subscription status<select name="subscriptionStatus" defaultValue={org.subscriptionStatus} className={input}>{["TRIAL", "ACTIVE", "PAST_DUE", "CANCELLED"].map((status) => <option key={status}>{status}</option>)}</select></label>
             <label className="block text-xs">Plan name<input required name="planName" defaultValue={org.planName} className={input} /></label>
             <label className="block text-xs">Trial ends<input name="trialEndsAt" type="date" defaultValue={org.trialEndsAt?.toISOString().slice(0, 10)} className={input} /></label>
+            <label className="flex items-center gap-2 text-xs"><input type="checkbox" name="isTest" defaultChecked={org.isTest} /> Test company — can be wiped and deleted, including finance records</label>
             <p className="text-xs text-slate-400">Subscription fields record the account you manage. Charging and automatic expiry are separate.</p>
             <Button type="submit" variant="primary">Save account</Button>
           </ActionForm>
@@ -117,6 +118,17 @@ export default async function CompanyAccount({ params, searchParams }: { params:
         <h2 className="mb-4 font-semibold">Account history</h2>
         {audit.length ? audit.map((entry) => <p key={entry.id} className="border-t border-slate-100 py-3 text-xs text-slate-500">{entry.createdAt.toLocaleString("en-GB")} · {entry.action}</p>) : <p className="text-sm text-slate-400">No owner changes yet.</p>}
       </section>
+      {org.isTest && (
+        <section className="rounded-2xl border border-rose-200 bg-rose-50 p-6">
+          <h2 className="mb-2 font-semibold text-rose-900">Delete this test company</h2>
+          <p className="mb-4 text-xs text-rose-800">Permanently removes this company, all its records (including finance), and users who belong to no other company. This cannot be undone. Type the company name to confirm.</p>
+          <ActionForm action={deleteTestCompany} className="flex flex-wrap items-end gap-3">
+            <input type="hidden" name="organisationId" value={org.id} />
+            <label className="block flex-1 text-xs">Company name<input required name="confirmName" autoComplete="off" placeholder={org.name} className={input} /></label>
+            <Button type="submit" variant="primary">Delete permanently</Button>
+          </ActionForm>
+        </section>
+      )}
     </div>
   );
 }

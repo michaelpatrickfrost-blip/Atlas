@@ -31,6 +31,7 @@ export function NewCompanyForm() {
       <label className="text-sm">Company name<input required name="name" maxLength={150} className={input} /></label>
       <label className="text-sm">Administrator name<input required name="ownerName" maxLength={100} className={input} /></label>
       <label className="text-sm sm:col-span-2">Administrator email<input required name="email" type="email" maxLength={254} className={input} /></label>
+      <label className="flex items-center gap-2 text-sm sm:col-span-2"><input type="checkbox" name="isTest" /> Test company (can be wiped and deleted later)</label>
       <p className="text-xs text-slate-500 sm:col-span-2">Creates the company with its own records, roles and apps. The administrator sets their own password with a one-time setup code. Use an email that is not already an Atlas sign-in.</p>
       <button disabled={pending} className="rounded-xl bg-blue-600 px-5 py-3 text-sm text-white sm:col-span-2">{pending ? "Creating…" : "Create company account"}</button>
       {error && <p role="alert" className="text-xs text-rose-600 sm:col-span-2">{error}</p>}

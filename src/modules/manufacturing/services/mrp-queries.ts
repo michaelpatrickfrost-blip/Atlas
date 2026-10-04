@@ -51,14 +51,15 @@ export async function getMaterialShortages(organisationId: string, limit = 50): 
 
   for (const suggestion of suggestions) {
     // Check if there's actually a shortage
-    const inventory = await db.stockBalance.findFirst({
+    const inventory = await db.inventoryBalance.aggregate({
       where: {
         organisationId,
         productId: suggestion.productId,
       },
+      _sum: { quantity: true },
     });
 
-    const available = inventory ? Number(inventory.quantity) : 0;
+    const available = inventory._sum.quantity ?? 0;
     const required = Number(suggestion.quantity);
 
     if (available < required) {
@@ -125,18 +126,18 @@ export async function buildPlannerCockpit(organisationId: string): Promise<Plann
   // Get demand 7/30 days
   const demand7 = await db.salesOrderLine.findMany({
     where: {
-      organisationId,
+      order: { organisationId },
       requestedDeliveryDate: { gte: now, lte: sevenDaysOut },
     },
-    select: { quantity: true, requestedDeliveryDate: true },
+    select: { orderedQuantity: true, cancelledQuantity: true, requestedDeliveryDate: true },
   });
 
   const demand30 = await db.salesOrderLine.findMany({
     where: {
-      organisationId,
+      order: { organisationId },
       requestedDeliveryDate: { gte: now, lte: thirtyDaysOut },
     },
-    select: { quantity: true, requestedDeliveryDate: true },
+    select: { orderedQuantity: true, cancelledQuantity: true, requestedDeliveryDate: true },
   });
 
   // Group demand by day
@@ -146,7 +147,7 @@ export async function buildPlannerCockpit(organisationId: string): Promise<Plann
       const date = line.requestedDeliveryDate
         ? line.requestedDeliveryDate.toISOString().split("T")[0]
         : "unknown";
-      grouped.set(date, (grouped.get(date) || 0) + Number(line.quantity));
+      grouped.set(date, (grouped.get(date) || 0) + (line.orderedQuantity - line.cancelledQuantity));
     }
 
     return Array.from(grouped.entries())
@@ -213,18 +214,18 @@ export async function getNetRequirementsForProduct(organisationId: string, produ
   const def = await db.productDefinition.findFirst({
     where: { organisationId, productId },
     include: {
-      bomLines: { include: { component: true } },
+      lines: { include: { component: true } },
       operations: true,
     },
   });
 
-  if (!def || def.bomLines.length === 0) {
+  if (!def || def.lines.length === 0) {
     return null; // No BOM
   }
 
   // For each component, get planned orders
   const requirements = await Promise.all(
-    def.bomLines.map(async (line) => ({
+    def.lines.map(async (line) => ({
       component: line.component,
       quantityPerUnit: line.quantityPerUnit,
       plannedOrders: await getPlannedOrdersForProduct(organisationId, line.componentProductId),

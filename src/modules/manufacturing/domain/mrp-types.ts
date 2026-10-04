@@ -1,5 +1,4 @@
 // Comprehensive MRP/Planning domain model
-import type { Decimal } from "@prisma/client/runtime/library";
 
 // ===== DEMAND MODEL =====
 

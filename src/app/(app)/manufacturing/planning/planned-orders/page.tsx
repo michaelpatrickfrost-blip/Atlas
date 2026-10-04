@@ -5,7 +5,8 @@ import { getLatestMrpRun } from "@/modules/manufacturing/services/mrp-queries";
 import { db } from "@/core/db/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { firmPlannedOrderAction, dismissPlannedOrderAction } from "../actions";
+import { firmPlannedOrderForm, dismissPlannedOrderForm } from "../form-actions";
+import { StatusPill } from "@/components/ui/status-pill";
 import { BarChart3, Zap, Package } from "lucide-react";
 
 export default async function PlannedOrdersPage() {
@@ -160,32 +161,22 @@ function SuggestionRow({ suggestion, status }: { suggestion: any; status: "PENDI
         {suggestion.neededBy ? new Date(suggestion.neededBy).toLocaleDateString() : "—"}
       </td>
       <td className="py-3 pr-4">
-        <Badge
-          variant={
-            suggestion.kind === "MAKE"
-              ? "default"
-              : suggestion.kind === "BUY"
-                ? "secondary"
-                : "outline"
-          }
-        >
-          {suggestion.kind}
-        </Badge>
+        <StatusPill label={suggestion.kind} tone={suggestion.kind === "MAKE" ? "success" : suggestion.kind === "BUY" ? "warning" : "neutral"} />
       </td>
       <td className="py-3 pr-4 text-muted-foreground">
         {demandCount} {demandCount === 1 ? "line" : "lines"}
       </td>
       {status === "PENDING" && (
         <td className="py-3 pr-4 space-x-2">
-          <form action={firmPlannedOrderAction} className="inline">
+          <form action={firmPlannedOrderForm} className="inline">
             <input type="hidden" name="suggestionId" value={suggestion.id} />
-            <Button type="submit" size="sm" variant="default">
+            <Button type="submit" variant="primary">
               Firm
             </Button>
           </form>
-          <form action={dismissPlannedOrderAction} className="inline">
+          <form action={dismissPlannedOrderForm} className="inline">
             <input type="hidden" name="suggestionId" value={suggestion.id} />
-            <Button type="submit" size="sm" variant="ghost">
+            <Button type="submit" variant="ghost">
               Dismiss
             </Button>
           </form>

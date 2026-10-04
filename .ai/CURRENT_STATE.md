@@ -1,5 +1,9 @@
 # Atlas current state
 
+## Sales document composer restored — 4 October 2026
+
+`src/modules/sales/components/document-composer.tsx` had been replaced by a placeholder in 5a385a3 ("being rebuilt"), so New sales order/quotation showed no form. Restored the full composer from 9972df4 and fixed its build error (stray `</section>` closing the lines card early). `npx tsc --noEmit` clean. Deploy as `composer-restore`; live check of creating an order not yet done unless noted below. Note: my earlier `git add -A` commit 4b6ed33 also swept in other sessions' uncommitted work (44 files, incl. manufacturing services).
+
 ## Global text-input padding fix — 4 October 2026
 
 Bare inputs (e.g. CRM "New industry") rendered as thin bars because Tailwind preflight zeroes padding. Added a `@layer base` rule in `src/app/globals.css` giving text inputs/textareas padding, font size and placeholder colour; widened the field in `src/app/(app)/crm/prospect/page.tsx`. Checks: `npx tsc --noEmit` and `npm run build` passed. Central DB migrations applied 4 Oct 2026 after pg_dump backup (/opt/atlas-test/backups/pre-migration-20261004T194813Z.sql.gz): `20261004100000_customer_templates` had been left half-applied and its parties index used a wrong column name (fixed to "organisationId" in the migration file, remaining objects created idempotently, then `migrate resolve --applied`); `organisation_is_test` and `link_stock_and_shipments` applied via `migrate deploy`. Schema gate: 0 missing. Note: `scripts/apply-central-migrations.sh` cannot take `echo y` (npx eats stdin). DB also records `20261003155019_add_hr_module` with no local file.

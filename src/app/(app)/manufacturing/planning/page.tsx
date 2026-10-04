@@ -3,7 +3,7 @@ import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { MANUFACTURING_CAPABILITIES } from "@/core/permissions/capabilities";
 import { buildPlannerCockpit, getMaterialShortages, getLatestMrpRun } from "@/modules/manufacturing/services/mrp-queries";
-import { runMrpAction, firmPlannedOrderAction } from "./actions";
+import { runMrpForm } from "./form-actions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, TrendingUp, Zap } from "lucide-react";
@@ -28,8 +28,8 @@ export default async function PlanningCockpitPage() {
             {latestRun ? `Last run: ${latestRun.startedAt.toLocaleString()}` : "No planning run executed yet"}
           </p>
         </div>
-        <form action={runMrpAction} method="POST">
-          <Button type="submit" size="lg">
+        <form action={runMrpForm}>
+          <Button type="submit" variant="primary">
             Run MRP
           </Button>
         </form>
@@ -152,7 +152,7 @@ function MetricCard({ label, value, variant = "default", icon: Icon }: MetricCar
 
   return (
     <Card className={colors[variant]}>
-      <CardContent className="pt-6">
+      <div className="p-6">
         <div className="flex items-end gap-2">
           <div>
             <div className="text-3xl font-bold">{value}</div>
@@ -160,7 +160,7 @@ function MetricCard({ label, value, variant = "default", icon: Icon }: MetricCar
           </div>
           {Icon && <Icon className="h-5 w-5 mb-1 opacity-50" />}
         </div>
-      </CardContent>
+      </div>
     </Card>
   );
 }

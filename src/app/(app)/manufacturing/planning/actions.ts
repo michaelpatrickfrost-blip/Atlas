@@ -34,7 +34,7 @@ export async function runMrpAction() {
  */
 export async function firmPlannedOrderAction(suggestionId: string) {
   const session = await requireSession();
-  assertCapability(session, MANUFACTURING_CAPABILITIES.orderManage);
+  assertCapability(session, MANUFACTURING_CAPABILITIES.orderCreate);
 
   const suggestion = await db.manufacturingSupplySuggestion.findUnique({
     where: { id: suggestionId },

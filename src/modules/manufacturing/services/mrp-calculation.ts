@@ -72,14 +72,24 @@ async function loadDemand(organisationId: string, start: Date, end: Date): Promi
     },
   });
 
+  const shippedRows = await db.fulfilmentLine.findMany({
+    where: { organisationId, salesOrderLineId: { in: orders.flatMap((order) => order.lines.map((line) => line.id)) } },
+    select: { salesOrderLineId: true, shippedQuantity: true },
+  });
+  const shipped = new Map<string, number>();
+  for (const row of shippedRows) shipped.set(row.salesOrderLineId, (shipped.get(row.salesOrderLineId) ?? 0) + row.shippedQuantity);
+
   for (const order of orders) {
     for (const line of order.lines) {
+      if (!line.productId) continue;
+      const open = line.orderedQuantity - line.cancelledQuantity - (shipped.get(line.id) ?? 0);
+      if (open <= 0) continue;
       demand.push({
         id: line.id,
         demandType: DemandType.FIRM,
         source: DemandSource.SALES_ORDER,
         productId: line.productId,
-        quantity: line.quantity - (line.deliveredQuantity || 0),
+        quantity: open,
         requiredDate: line.requestedDeliveryDate || new Date(),
         sourceId: order.id,
         sourceLineId: line.id,
@@ -119,13 +129,13 @@ async function loadInventory(organisationId: string): Promise<Map<string, Invent
   const inventory = new Map<string, InventoryState>();
 
   // Load stock balances
-  const balances = await db.stockBalance.findMany({
+  const balances = await db.inventoryBalance.findMany({
     where: { organisationId },
-    include: { location: { include: { warehouse: true } } },
+    include: { warehouse: true },
   });
 
   for (const balance of balances) {
-    const siteId = balance.location?.warehouse?.siteId || "DEFAULT";
+    const siteId = balance.warehouse?.siteId || "DEFAULT";
     const key = `${balance.productId}-${siteId}`;
 
     if (!inventory.has(key)) {
@@ -142,6 +152,18 @@ async function loadInventory(organisationId: string): Promise<Map<string, Invent
 
     const state = inventory.get(key)!;
     state.onHand += Number(balance.quantity);
+  }
+
+  // Stock already reserved for fulfilments is not available to plan against
+  const warehouses = await db.warehouse.findMany({ where: { organisationId }, select: { id: true, siteId: true } });
+  const siteOf = new Map(warehouses.map((warehouse) => [warehouse.id, warehouse.siteId || "DEFAULT"]));
+  const reservations = await db.stockReservation.findMany({
+    where: { organisationId, status: "ACTIVE" },
+    select: { productId: true, warehouseId: true, quantity: true },
+  });
+  for (const reservation of reservations) {
+    const state = inventory.get(`${reservation.productId}-${siteOf.get(reservation.warehouseId) ?? "DEFAULT"}`);
+    if (state) state.allocated += reservation.quantity;
   }
 
   // Load quality holds
@@ -174,7 +196,7 @@ async function loadBomDefinitions(organisationId: string): Promise<Map<string, P
   const definitions = await db.productDefinition.findMany({
     where: { organisationId },
     include: {
-      bomLines: true,
+      lines: true,
       operations: true,
     },
   });
@@ -183,7 +205,7 @@ async function loadBomDefinitions(organisationId: string): Promise<Map<string, P
     boms.set(def.productId, {
       definitionId: def.id,
       productId: def.productId,
-      bomComponents: def.bomLines.map((line) => ({
+      bomComponents: def.lines.map((line) => ({
         componentProductId: line.componentProductId,
         quantityPerUnit: Number(line.quantityPerUnit),
         scrapPercent: Number(line.scrapPercent || 0),

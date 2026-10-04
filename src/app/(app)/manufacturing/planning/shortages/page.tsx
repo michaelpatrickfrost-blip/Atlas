@@ -150,7 +150,7 @@ function ShortageRow({ shortage }: { shortage: any }) {
           {shortage.suggestedActions && shortage.suggestedActions.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
               {shortage.suggestedActions.map((action: any, idx: number) => (
-                <Button key={idx} size="sm" variant="outline">
+                <Button key={idx} variant="secondary">
                   {action.action === "EXPEDITE_SUPPLY" && "📦 Expedite"}
                   {action.action === "REDUCE_DEMAND" && "📉 Reduce Demand"}
                   {action.action === "SUBSTITUTE" && "🔄 Substitute"}

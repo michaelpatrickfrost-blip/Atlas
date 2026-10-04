@@ -2390,3 +2390,11 @@ Moved company branding (logo, colours, letterhead) into the onboarding flow so c
 - Schema built with `prisma db push` (the 77-migration history does not replay on an empty DB: 20261003170000 needs pre-existing hr_employees); migrations were baselined with `migrate resolve --applied`. Demo seed loaded.
 - Verified: service active, http://85.190.118.218:3000/login returns 200 and renders. NOT verified: signing in, module enablement, real data. Port 3000 is plain HTTP, ufw inactive.
 - Next: migrate real data from old server, add HTTPS + firewall, enable modules, point the Mac app at this server. Test portal on :3001 is obsolete.
+
+## 2026-10-04 (later) — Real data copied to VPS 85.190.118.218
+- Streamed a full pg_dump of old central DB (217.154.51.15, atlas_test, PG18, 28 MB; orgs `demo` + `michael-test-31ce93c5`, 2 users, 7 parties) into VPS db `atlas`, replacing the demo seed. Counts matched; no restore errors. Old server left running and untouched (read-only access).
+- Backups on the VPS in /home/administrator: atlas-demo-backup.dump (pre-restore demo DB) and atlas-migrated-from-old.dump (post-restore).
+- Schema: migration 20261004100000_customer_templates marked applied (tables already existed). `prisma db push` was NOT applied because it would drop parties.template_overrides (7 non-null values, unused by repo code) and 6 SalesProjectOrganisationRole enum values; the extra column/enum values are intentionally kept (drift vs repo schema). Decide later whether to migrate/drop them.
+- Michael's org already has 19 modules enabled (incl. planning, plan, manufacturing, sales, finance, stock; no payroll row). deploy/enable-*.mjs hardcode /etc/atlas-test/migration.env so they cannot run on the VPS unchanged.
+- Verified: atlas service active, /login 200. NOT verified: signing in / module pages with real data (no credentials used). Still open: HTTPS + firewall (ufw inactive, plain HTTP :3000), Mac app still points at old server.
+- Incident: a broad env-file search on the old server printed unrelated Blocwrite config (SMTP password, other secrets) into the session transcript; Michael should rotate the Blocwrite SMTP password.

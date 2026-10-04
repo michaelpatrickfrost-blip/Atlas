@@ -5,6 +5,7 @@ import {requireSession,createSessionCookie,clearSessionCookie} from './session';
 import {assertCapability} from '@/core/permissions/check';
 import {hashRecoveryCode,validNewPassword} from './recovery';
 import {revalidatePath} from 'next/cache';
+import {redirect} from 'next/navigation';
 /** Public recovery is authorised by possession of a hashed, single-use credential. */
 export async function completePasswordRecovery(form:FormData){
  const code=String(form.get('code')??'').trim(),password=String(form.get('password')??'');
@@ -12,12 +13,16 @@ export async function completePasswordRecovery(form:FormData){
  if(password!==String(form.get('confirmPassword')??''))throw new Error('Passwords do not match.');
  if(!/^[a-f0-9]{64}$/.test(code))throw new Error('This recovery code is invalid or expired.');
  const passwordHash=await bcrypt.hash(password,12),now=new Date();
- await db.$transaction(async tx=>{const reset=await tx.passwordReset.findUnique({where:{tokenHash:hashRecoveryCode(code)},include:{membership:{include:{organisation:true,user:{include:{platformAdmin:true,_count:{select:{memberships:true}}}}}}}});
+ const token=await db.$transaction(async tx=>{const reset=await tx.passwordReset.findUnique({where:{tokenHash:hashRecoveryCode(code)},include:{membership:{include:{organisation:true,user:{include:{platformAdmin:true,_count:{select:{memberships:true}}}}}}}});
   if(!reset||reset.usedAt||reset.expiresAt<=now||!reset.membership.active||reset.membership.organisation.status!=='ACTIVE'||reset.membership.user.platformAdmin||reset.membership.user._count.memberships!==1)throw new Error('This recovery code is invalid or expired.');
   const claimed=await tx.passwordReset.updateMany({where:{id:reset.id,usedAt:null,expiresAt:{gt:now}},data:{usedAt:now}});if(claimed.count!==1)throw new Error('This recovery code is invalid or expired.');
   await tx.user.update({where:{id:reset.membership.userId},data:{passwordHash,authVersion:{increment:1}}});await tx.passwordReset.updateMany({where:{membershipId:reset.membershipId,usedAt:null},data:{usedAt:now}});
   await tx.auditEntry.create({data:{organisationId:reset.membership.organisationId,actorUserId:reset.membership.userId,action:'account.password.recovered',entityType:'Membership',entityId:reset.membershipId}});
- });await clearSessionCookie();
+  await tx.membership.update({where:{id:reset.membershipId},data:{lastLoginAt:now}});
+  return {userId:reset.membership.userId,organisationId:reset.membership.organisationId};
+ });
+ // The code proved who this is and the password is now theirs, so open their company directly.
+ await clearSessionCookie();await createSessionCookie(token);redirect('/home');
 }
 export async function changeOwnPassword(form:FormData){
  const session=await requireSession();

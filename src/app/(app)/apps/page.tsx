@@ -17,11 +17,10 @@ export default async function AppsPage() {
   const comingSoon = states.filter((entry) => entry.module.status === "coming_soon");
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-10">
-      <div className="rounded-3xl border border-[#dce5fb] bg-[linear-gradient(115deg,#eef3ff,#f7f5ff_55%,#ffffff)] p-8">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-[.16em] text-[#66789e]">Your business, connected</p>
-        <h1 className="text-3xl font-semibold tracking-tight text-[var(--color-ink)]">A space for every part of your business</h1>
-        <p className="mt-1 text-sm text-[var(--color-ink-muted)]">Open your apps, shape your workspace, and expand as your team grows.</p>
+    <div className="mx-auto flex max-w-5xl flex-col gap-8">
+      <div>
+        <h1 className="text-xl font-semibold tracking-tight text-[var(--color-ink)]">Manage apps</h1>
+        <p className="mt-1 text-sm text-[var(--color-ink-muted)]">Turn apps on or off for this company. Turning one off keeps its records.</p>
       </div>
 
       <Section title="Installed" entries={installed} enabledIds={enabledIds} />

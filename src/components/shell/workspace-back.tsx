@@ -7,9 +7,8 @@ export function WorkspaceBack() {
   const path = usePathname();
   if (path === "/home") return null;
   return (
-    <button type="button" aria-label="Back to previous screen" title="Back to previous screen" onClick={() => (window.history.length > 1 ? router.back() : router.push("/home"))} className="flex shrink-0 items-center gap-2 rounded-full border border-slate-200/80 bg-white px-3 py-2 text-xs font-medium text-slate-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-700">
+    <button type="button" aria-label="Back to previous screen" title="Back" onClick={() => (window.history.length > 1 ? router.back() : router.push("/home"))} className="flex size-9 shrink-0 items-center justify-center rounded-full text-[#6e6e73] hover:bg-black/[0.05] hover:text-[#1d1d1f]">
       <ArrowLeft size={15} />
-      <span className="hidden sm:inline">Back</span>
     </button>
   );
 }

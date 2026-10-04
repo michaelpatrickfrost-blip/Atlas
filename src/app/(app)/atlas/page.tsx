@@ -19,10 +19,9 @@ export default async function AtlasConsole({ searchParams }: { searchParams: Pro
   });
   return (
     <div className="mx-auto max-w-6xl space-y-6">
-      <div className="rounded-3xl bg-[#12213c] p-8 text-white">
-        <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-blue-300">Atlas owner console</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight">Company accounts</h1>
-        <p className="mt-3 max-w-2xl text-sm text-slate-300">Create a business, give its people access, then load customers, prices, stock locations and employees from templates. Company records stay inside that workspace.</p>
+      <div>
+        <h1 className="text-xl font-semibold tracking-tight">Company accounts</h1>
+        <p className="mt-1 max-w-2xl text-sm text-slate-500">Create a company, add its people, then load its opening records from templates. Each company has its own records and its own sign-ins.</p>
       </div>
       <ConsoleNav current="companies" />
       <div className="flex flex-wrap items-center justify-between gap-4">

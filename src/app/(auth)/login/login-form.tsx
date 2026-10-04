@@ -14,7 +14,7 @@ export function LoginForm() {
   }, initialState);
 
   return (
-    <form action={formAction} className="flex flex-col gap-4 rounded-[28px] border border-white bg-white p-6 shadow-[var(--shadow-atlas-lg)]">
+    <form action={formAction} className="flex flex-col gap-4 rounded-2xl border border-black/[0.06] bg-white p-5">
       <label className="flex flex-col gap-1 text-sm">
         <span className="text-[var(--color-ink-muted)]">Email</span>
         <input
@@ -40,8 +40,7 @@ export function LoginForm() {
       <Button type="submit" variant="primary" className="mt-2" disabled={pending}>
         {pending ? "Signing in…" : "Sign in"}
       </Button>
-      <Link href="/reset-password" className="text-center text-xs text-blue-600">Use a setup or recovery code</Link>
-      <p className="text-center text-xs text-[var(--color-ink-faint)]">Demo credentials are pre-filled.</p>
+      <Link href="/reset-password" className="text-center text-[13px] text-[#0071e3]">Use a setup or recovery code</Link>
     </form>
   );
 }

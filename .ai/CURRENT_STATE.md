@@ -2076,3 +2076,47 @@ migrations to the central database via `prisma migrate deploy` (never raw SQL,
 never `migrate dev`/`db push` against the shared DB). `AGENTS.md`'s canonical
 commands section does not yet point at `docs/DEPLOY.md`; worth adding a line
 there next time this file is touched.
+
+---
+
+## White-label Branding: Company Setup Integration — 4 October 2026
+
+Moved company branding (logo, colours, letterhead) into the onboarding flow so customers white-label their workspace immediately during setup, before importing data. Atlas branding is the default if not customized.
+
+**Architecture:**
+- **Default**: All organisations use Atlas branding (charcoal colour `#1d1d1f`, Atlas logo on login and sidebar)
+- **Customizable**: Customers can upload their logo, set brand colour, company name, VAT/address details that appear on invoices
+- **Existing infrastructure**: Logo and accent colour already stored on `Organisation` model; used throughout app (sidebar `CompanyMark`, document brand PDFs, etc.)
+
+**New Code:**
+- `src/app/(app)/atlas/setup-brand.tsx`: Brand customization component for setup flow (logo upload, brand colour picker, company details form, invoice preview)
+- Modified `src/app/(app)/atlas/[organisationId]/setup/page.tsx`: Brand step (Step 1) appears before CSV data imports (Step 2)
+- Reuses existing `saveCompanyBrand` server action from settings
+
+**UI Changes:**
+- Setup page now has two sections: "Company identity" (Step 1 · White-label) and "Data setup" (Step 2 · Import)
+- Brand component shows real-time invoice preview so customers see exactly how their branding appears to customers
+- Logo and company details are optional — if not set, Atlas defaults are used everywhere
+
+**Implementation Details:**
+- Leverages existing `readCompanyProfile()` and `assertPrintableAccent()` utilities
+- Validates logo as PNG/JPG (printable) or WEBP/GIF (workspace only), max 350 KB
+- Blocks near-white brand colours to ensure invoice readability
+- Invoice preview updates live as customer enters details
+
+**Verification:**
+- ✅ npm run build succeeded (TypeScript + Next.js compile)
+- ✅ npm run lint passed (fixed unused variable and @next/next/no-img-element warnings)
+- ✅ npx tsc --noEmit passed (no type errors)
+- Code committed; ready for deployment
+
+**Known Limitation:**
+- Deployment blocked by pre-existing schema mismatch (52 missing SalesProject fields from prior work not yet on central database)
+- White-label feature code is complete and compiles; awaits schema migration on central Postgres before live install
+
+**Next Steps:**
+1. Apply customer_templates and sales_projects migrations to central database
+2. Deploy to installed Mac app (desktop build then install-mac-client.sh)
+3. Verify setup page loads brand step
+4. Test brand upload → invoice generation with custom logo/colour
+

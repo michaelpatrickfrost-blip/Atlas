@@ -1111,6 +1111,12 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": true
     },
+    "salesProjects": {
+      "type": "SalesProject",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "quotes": {
       "type": "Quote",
       "list": true,
@@ -2025,6 +2031,12 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": true
     },
+    "salesProjectOrganisations": {
+      "type": "SalesProjectOrganisation",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "quotes": {
       "type": "Quote",
       "list": true,
@@ -2069,6 +2081,24 @@ export const MODEL_FIELDS = {
     },
     "commercialAgreements": {
       "type": "CommercialAgreement",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "templateCode": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "templateOverrides": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "templateAssignments": {
+      "type": "CustomerTemplateAssignment",
       "list": true,
       "nullable": false,
       "relation": true
@@ -2275,6 +2305,12 @@ export const MODEL_FIELDS = {
     },
     "opportunityStakeholders": {
       "type": "OpportunityStakeholder",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "salesProjectStakeholders": {
+      "type": "SalesProjectStakeholder",
       "list": true,
       "nullable": false,
       "relation": true
@@ -4785,6 +4821,12 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": true
     },
+    "salesProjects": {
+      "type": "SalesProject",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "prospects": {
       "type": "Prospect",
       "list": true,
@@ -5468,6 +5510,12 @@ export const MODEL_FIELDS = {
       "list": true,
       "nullable": false,
       "relation": true
+    },
+    "salesProjects": {
+      "type": "SalesProject",
+      "list": true,
+      "nullable": false,
+      "relation": true
     }
   },
   "Prospect": {
@@ -5869,6 +5917,12 @@ export const MODEL_FIELDS = {
       "nullable": true,
       "relation": false
     },
+    "salesProjectId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
     "dueAt": {
       "type": "DateTime",
       "list": false,
@@ -5915,6 +5969,384 @@ export const MODEL_FIELDS = {
       "type": "Opportunity",
       "list": false,
       "nullable": true,
+      "relation": true
+    },
+    "salesProject": {
+      "type": "SalesProject",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    }
+  },
+  "SalesProject": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "reference": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "name": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "description": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "stage": {
+      "type": "SalesProjectStage",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "stageEnteredAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "ownerUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "teamId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "potentialValueAmount": {
+      "type": "Int",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "potentialValueCurrency": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "quotedValueAmount": {
+      "type": "Int",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "quotedValueCurrency": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "awardedValueAmount": {
+      "type": "Int",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "awardedValueCurrency": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "orderedValueAmount": {
+      "type": "Int",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "orderedValueCurrency": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "remainingValueAmount": {
+      "type": "Int",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "remainingValueCurrency": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "probability": {
+      "type": "Int",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "expectedValueAmount": {
+      "type": "Int",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "targetAwardDate": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "expectedStartDate": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "expectedCompletionDate": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "nextActionNote": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "nextActionAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "industryId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "tags": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "notes": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "lastActivityAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "team": {
+      "type": "SalesTeam",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "industry": {
+      "type": "CrmIndustry",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "organisations": {
+      "type": "SalesProjectOrganisation",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "stakeholders": {
+      "type": "SalesProjectStakeholder",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "quotes": {
+      "type": "Quote",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "orders": {
+      "type": "SalesOrder",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "activities": {
+      "type": "SalesActivity",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "SalesProjectOrganisation": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "salesProjectId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "partyId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "roles": {
+      "type": "SalesProjectOrganisationRole",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "isPrimary": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "notes": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "salesProject": {
+      "type": "SalesProject",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "party": {
+      "type": "Party",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "SalesProjectStakeholder": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "salesProjectId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "contactId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "roles": {
+      "type": "SalesProjectStakeholderRole",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "influence": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "relationshipStrength": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "sentiment": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "lastContactAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "notes": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "salesProject": {
+      "type": "SalesProject",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "contact": {
+      "type": "Contact",
+      "list": false,
+      "nullable": false,
       "relation": true
     }
   },
@@ -5986,6 +6418,12 @@ export const MODEL_FIELDS = {
       "relation": true
     },
     "opportunityId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "salesProjectId": {
       "type": "String",
       "list": false,
       "nullable": true,
@@ -6143,6 +6581,12 @@ export const MODEL_FIELDS = {
     },
     "opportunity": {
       "type": "Opportunity",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "salesProject": {
+      "type": "SalesProject",
       "list": false,
       "nullable": true,
       "relation": true
@@ -6617,6 +7061,12 @@ export const MODEL_FIELDS = {
       "nullable": true,
       "relation": false
     },
+    "salesProjectId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
     "agreementId": {
       "type": "String",
       "list": false,
@@ -6871,6 +7321,12 @@ export const MODEL_FIELDS = {
     },
     "project": {
       "type": "Project",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "salesProject": {
+      "type": "SalesProject",
       "list": false,
       "nullable": true,
       "relation": true
@@ -28317,6 +28773,278 @@ export const MODEL_FIELDS = {
     },
     "ncr": {
       "type": "NonConformance",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "CustomerTemplate": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "code": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "name": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "description": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "status": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdBy": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "updatedBy": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "modules": {
+      "type": "CustomerTemplateModule",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "changes": {
+      "type": "CustomerTemplateChange",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "assignments": {
+      "type": "CustomerTemplateAssignment",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "parties": {
+      "type": "Party",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "CustomerTemplateModule": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "templateId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "module": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "configuration": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "changedBy": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "changedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "template": {
+      "type": "CustomerTemplate",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "changes": {
+      "type": "CustomerTemplateChange",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "CustomerTemplateChange": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "templateId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "templateModuleId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "changeType": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "featureCode": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "oldValue": {
+      "type": "Json",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "newValue": {
+      "type": "Json",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "changedBy": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "changedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "template": {
+      "type": "CustomerTemplate",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "module": {
+      "type": "CustomerTemplateModule",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    }
+  },
+  "CustomerTemplateAssignment": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "templateId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "partyId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "assignedBy": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "assignedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "removedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "template": {
+      "type": "CustomerTemplate",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "party": {
+      "type": "Party",
       "list": false,
       "nullable": false,
       "relation": true

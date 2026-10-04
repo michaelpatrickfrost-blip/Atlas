@@ -9,7 +9,7 @@ function CodeReady({ title, code, expiresAt, href, hrefLabel }: { title: string;
   return (
     <div className="space-y-4 rounded-2xl border border-blue-200 bg-blue-50 p-5">
       <h3 className="text-sm font-semibold text-blue-900">{title}</h3>
-      <p className="text-xs leading-relaxed text-blue-800">Shown only here. Share it directly with this person. They choose “Use a setup or recovery code” on the Atlas sign-in screen. Email delivery is not configured.</p>
+      <p className="text-xs leading-relaxed text-blue-800">Shown only here. Give it to this person. On the sign-in screen they choose “Use a setup or recovery code”, enter it and set a password, which signs them in. To test it yourself, copy the code, sign out and do the same.</p>
       <code className="block break-all rounded-xl bg-white p-4 text-xs text-slate-700">{code}</code>
       <p className="text-xs text-blue-700">Expires {new Date(expiresAt).toLocaleString("en-GB")} · single use.</p>
       <div className="flex flex-wrap gap-3">
@@ -31,7 +31,7 @@ export function NewCompanyForm() {
       <label className="text-sm">Company name<input required name="name" maxLength={150} className={input} /></label>
       <label className="text-sm">Administrator name<input required name="ownerName" maxLength={100} className={input} /></label>
       <label className="text-sm sm:col-span-2">Administrator email<input required name="email" type="email" maxLength={254} className={input} /></label>
-      <p className="text-xs text-slate-500 sm:col-span-2">Creates an isolated workspace with the implemented apps for a 14-day trial. The administrator sets their own password with a one-time setup code. Subscription charging is not connected.</p>
+      <p className="text-xs text-slate-500 sm:col-span-2">Creates the company with its own records, roles and apps. The administrator sets their own password with a one-time setup code. Use an email that is not already an Atlas sign-in.</p>
       <button disabled={pending} className="rounded-xl bg-blue-600 px-5 py-3 text-sm text-white sm:col-span-2">{pending ? "Creating…" : "Create company account"}</button>
       {error && <p role="alert" className="text-xs text-rose-600 sm:col-span-2">{error}</p>}
     </form>

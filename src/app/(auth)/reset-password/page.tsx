@@ -1,5 +1,13 @@
-import Link from 'next/link';
-import {ActionForm} from '@/components/ui/action-form';
-import {completePasswordRecovery} from '@/core/auth/security-actions';
-export const metadata={title:'Set your Atlas password',referrer:'no-referrer'};
-export default function PasswordRecovery(){return <div className="w-full max-w-md space-y-5"><div><h1 className="text-2xl font-semibold tracking-tight">Set your password</h1><p className="mt-2 text-sm text-slate-500">Use the setup or recovery code provided by your company administrator. Codes expire after 30 minutes and work once.</p></div><ActionForm action={completePasswordRecovery} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-6"><label className="block text-sm">Recovery code<input name="code" required autoComplete="off" maxLength={64} className="mt-2 w-full rounded-xl border border-slate-200 p-3 font-mono text-xs"/></label><label className="block text-sm">New password<input name="password" type="password" required minLength={12} maxLength={128} autoComplete="new-password" className="mt-2 w-full rounded-xl border border-slate-200 p-3"/></label><label className="block text-sm">Confirm password<input name="confirmPassword" type="password" required minLength={12} maxLength={128} autoComplete="new-password" className="mt-2 w-full rounded-xl border border-slate-200 p-3"/></label><p className="text-xs text-slate-500">Use at least 12 characters. After saving, sign in with your new password.</p><button className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-medium text-white">Save password</button></ActionForm><Link className="block text-center text-sm text-blue-600" href="/login">Return to sign in →</Link></div>;}
+import Link from "next/link";
+import { AuthFrame } from "@/components/shell/auth-frame";
+import { ResetForm } from "./reset-form";
+
+export const metadata = { title: "Set your Atlas password", referrer: "no-referrer" };
+
+export default function PasswordRecovery() {
+  return (
+    <AuthFrame title="Set your password" subtitle="Enter the setup or recovery code you were given. A code works once and expires after 30 minutes." footer={<Link className="text-[#0071e3]" href="/login">Back to sign in</Link>}>
+      <ResetForm />
+    </AuthFrame>
+  );
+}

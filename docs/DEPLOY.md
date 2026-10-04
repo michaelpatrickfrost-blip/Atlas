@@ -5,6 +5,26 @@ Atlas application runs from the installed Mac app; the remote host only stores
 shared business data via Postgres. A deploy ships a new build of the Mac app —
 it never ships the app to the server.
 
+## VPS deploy (current live target as of 2026-10-04)
+
+Michael directed the full Atlas app onto the VPS (https://atlassystem.online,
+85.190.118.218), superseding the data-only-server wording below for that host
+(see `.ai/DECISIONS.md`). Commit your work on `main`, then:
+
+```bash
+npm run deploy:vps
+```
+
+`scripts/deploy-vps.sh` pushes `main`, then over SSH on the VPS: takes a
+`pg_dump` backup (`~/backups`, last 10 kept), `git pull --ff-only`, `npm ci`,
+`prisma generate`, `prisma migrate deploy`, builds, restarts the `atlas`
+systemd service and checks `/login`. It refuses to run with uncommitted
+changes or off `main`. Login is SSH key only — no password is stored in the
+repo; on a new Mac run `ssh-copy-id -i ~/.ssh/id_ed25519.pub administrator@85.190.118.218` once.
+Overrides: `ATLAS_VPS_HOST`, `ATLAS_VPS_DIR`, `ATLAS_VPS_URL`.
+
+The Mac-app procedure below is unchanged and still applies to the installed app.
+
 ## The one command
 
 ```bash

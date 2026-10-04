@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "deploy:vps": "scripts/deploy-vps.sh",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",

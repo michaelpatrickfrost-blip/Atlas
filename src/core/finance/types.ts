@@ -1,14 +1,8 @@
-/**
- * Contracts for a future Finance module. Sales must never write directly to
- * accounting tables or invent invoice/payment data (§27, §54). See
- * docs/modules/SALES_ORDER_PROCESSING.md §Finance contract.
- *
- * CreditProvider is the one exception that has a real implementation today
- * (src/modules/sales/services/credit-check.ts) — it's backed directly by
- * Customer Master's own CustomerCreditProfile (limit, hold) rather than a
- * Finance module, because that data already exists and is real. The other
- * three provider types have no implementation; the order record simply
- * hides its Finance tab until a real Finance module registers one.
+/** Legacy credit/projection types retained for Sales compatibility. Finance is now
+ * registered. The live connections use exact BigInt amounts and source identities
+ * in core/finance/connections.ts; these older numeric projection interfaces are
+ * not evidence of an implemented provider. Sales' credit check still needs the
+ * reconciled Finance exposure policy; Customer Master's limits/holds remain real.
  */
 
 export type CreditCheckResult = {

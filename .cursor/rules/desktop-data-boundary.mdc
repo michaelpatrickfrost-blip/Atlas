@@ -1,0 +1,17 @@
+---
+description: Atlas software deploys to the Mac; the server stores data only
+alwaysApply: true
+---
+
+# Desktop software, server data
+
+Every prompt: Atlas software is deployed to the Desktop/Mac. The remote server is for shared data only, never for Atlas software.
+
+- Ship UI, routes and the application runtime in the installed Mac app: `/Users/michael/Applications/Atlas.app`, built from this repo with `npm run desktop:build`.
+- The server may keep the database, backups and the minimal secured data service. Do not deploy the Atlas UI, pages or full application there.
+- A Mac window that only displays a remotely hosted Atlas app does not meet this rule.
+- Do not store business records in a local database or persistent cache on the Mac.
+- Finished work is live in the installed app, and checked there, before handoff.
+- An app is not done until `/Users/michael/Applications/Atlas.app` opens it and the page loads its records. Build with `npm run desktop:build`, install that bundle over the Applications app (the Desktop icon points there), and confirm the screen. An error page is not done.
+
+Read AGENTS.md “Required deployment boundary” and `docs/DESKTOP_DATA_BOUNDARY.md` before a release.

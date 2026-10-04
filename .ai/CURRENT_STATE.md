@@ -1,6 +1,1013 @@
 # Atlas current state
 
-Updated: 3 October 2026. Initial shared-memory baseline from repository inspection.
+## Sales: Unified workspace and tags refactor — 4 October 2026 (ongoing)
+
+Consolidated Sales navigation into one primary "All Sales" documents workspace. Renamed hashtags to tags throughout. Removed Sales Pointers from primary UI imports. Redirected /sales/orders and /sales/quotes to unified /sales/documents page that shows all sales documents (orders + quotes) with type filtering.
+
+Changes:
+- `src/modules/sales/manifest.ts`: Navigation consolidated from Orders/Quotations/Call-offs/Templates/Audit → All Sales/Sites/Templates/Reports. Root path → `/sales/documents`.
+- `src/app/(app)/sales/documents/page.tsx`: New unified documents page that loads both orders and quotes together, filtering by document type.
+- `src/app/(app)/sales/orders/page.tsx` and `src/app/(app)/sales/quotes/page.tsx`: Redirect to `/sales/documents` preserving query params.
+- `src/modules/sales/components/document-list.tsx`: Updated to support `mode='document'` showing both orders and quotes merged, with docType column and appropriate filters.
+- `src/modules/sales/components/sales-filters.tsx`: Updated to handle document mode, showing combined statuses and order-type filters.
+- `src/core/shared/hashtags.ts`: Renamed `parseHashtags` → `parseTags`, `hashtagLabel` → `tagLabel`. Added backward-compat exports.
+- `src/modules/sales/components/hashtags.tsx`: Renamed `HashtagEditor` → `TagEditor`. Updated hint text. Removed explanatory prose about PO vs hashtags.
+- `src/modules/sales/components/document-composer.tsx`: Removed unused `SalesPointerNotes` import. Tags remain as plain input field (todo: replace with TagEditor component).
+- `src/modules/sales/services/view-definition.ts`: Updated `fieldsForMode` to handle 'document' mode.
+
+Checks: `npm run build` passed. Dev server starts without errors. `/sales/documents` page structure correct (redirects to login when unauthenticated, as expected).
+
+Not yet done:
+- Full test against live authenticated session (would show document list with both orders and quotes)
+- Replace plain tags input in document-composer with TagEditor component
+- Improve document-composer layout compactness
+- Complete remaining refactoring steps: customer defaults, pricing connection, line entry optimization, cancelled order view cleanup
+- Deploy to Mac app
+
+Next steps: complete remaining refactoring items, test in live session, deploy.
+
+## Sales: Order creation flow simplification — 4 October 2026
+
+Integrated Sales Pointer Notes into the Document Composer and added the QuickLineAdder component for streamlined order/quote line entry.
+
+Changes:
+- `src/modules/sales/components/document-composer.tsx`: Added import and rendering of `SalesPointerNotes` in the "Sale" tab, positioned between customer/commercial details and order lines. Shows all three configured sales pointers for the "sale" surface:
+  - "To complete a sale" - confirm customer, prices, quantities; customer PO is separate from hashtags
+  - "To complete a delivery" - delivery date, pack, dispatch, mark delivered
+  - "This may still be done" - cancelled orders/deliveries can be put back; order can return to quotation
+- `src/modules/sales/components/quick-line-adder.tsx`: New component with keyboard-driven product search and line try:
+  - Product search with autocomplete dropdown (code, name, category)
+  - Keyboard navigation: Arrow Up/Down to navigate, Enter to select/add, Escape to cancel, Tab to quantity
+  - Quantity input with validation (min 1)
+  - Unit price display from product record
+  - Add/Cancel buttons with icons
+  - Auto-focus for rapid multi-line entry
+- `src/modules/sales/components/document-composer.tsx`: Added `createQuickLine` helper and integrated `QuickLineAdder` in the "Sale" tab above the order lines table
+- `src/app/(app)/sales/orders/new/page.tsx` and `src/app/(app)/sales/quotes/new/page.tsx`: Pass through `initialOrderType`, `initialKind`, `initialAgreement`, `initialProject` props
+
+Checks: `npx tsc --noEmit` clean. `npm run build` passes. Dev server verified running on localhost:3000.
+
+
+
+## Customer Master: Contacts split into its own tab with full edit/delete — 4 October 2026
+
+Michael asked for Customer Master contacts to be "more better and detail" with their own
+menu, then clarified mid-task: clicking a contact should open it directly into an editable
+view, not a read-only view with a separate nested "Edit" toggle.
+
+Contacts used to live inside the combined "People & Places" tab as read-only cards (name,
+title, email, phone, role tags) with an add-only form — no edit, no delete, and several
+existing `Contact` schema fields (department, preferredName, alternativeEmail, mobile,
+preferredContactMethod, language, notes, status, reportsTo) were captured in
+`prisma/schema.prisma` but never surfaced in the UI.
+
+Changes: `src/app/(app)/customers/[partyId]/tabs.tsx` now has a dedicated "Contacts" tab
+alongside a renamed "Addresses" tab (the old `people-places.tsx` keeps only the addresses
+section, exported as `Addresses`). New `src/app/(app)/customers/[partyId]/contacts.tsx`
+renders each contact as a card that expands, on a single click, directly into an editable
+form (all the fields above, plus roles and primary/status) for anyone with
+`CUSTOMER_CAPABILITIES.contactsManage`; read-only viewers get a detail view instead. Added
+`updateContact`/`deleteContact` to `src/core/customers/commands.ts` (audited, same pattern
+as the existing `createContact`), wired through new `updateContactFormAction`/
+`deleteContactFormAction` in `src/app/(app)/customers/[partyId]/actions.ts`. New
+`src/app/(app)/customers/[partyId]/delete-contact-button.tsx` is a small client component
+with a `window.confirm` guard before calling the delete action.
+
+Verified: `npx tsc --noEmit`, `npm run build`, and `npx eslint` on the changed/new files all
+pass with no new errors (pre-existing lint errors elsewhere in the repo, e.g.
+`shell-chrome.tsx`'s `set-state-in-effect`, are untouched and unrelated). Exercised live in
+the local dev server (add, one-click-edit, save, delete) against the embedded local
+Postgres, then — per this repo's live-completion requirement — rebuilt and reinstalled
+`/Users/michael/Applications/Atlas.app` via `scripts/build-mac-client.sh` (had to wait for
+a concurrent session's build to release `build/.desktop-release-lock` first, then fully quit
+and relaunch the app afterwards — a background `app_click` against its old, already-running
+window hit a stale server connection and showed "This page couldn't load" until relaunched).
+Confirmed live in the installed app, signed in as Sophie Green (Northbridge Group): Dalton
+Logistics' record now shows separate "Contacts"/"Addresses" tabs, and clicking "Emily Carter"
+opens straight into the populated edit form, against the real remote data service (not the
+local dev database — consistent with the existing [installed app architecture](../.claude's
+memory note that the installed app reads via the remote data service, so local dev DB
+changes don't appear there and vice versa).
+
+Not done: did not add a contacts search/filter or a separate full-page contact detail route
+(kept the existing per-customer-page pattern); did not touch `getSetupChecklist`'s
+`?tab=people` link in `src/core/customers/queries.ts` since it still correctly targets the
+Addresses tab; did not change the `Contact` Prisma schema itself (all surfaced fields already
+existed); in the installed app verification only opened the edit form and confirmed it was
+populated — did not submit a save there, so the live remote Emily Carter record is untouched;
+the local dev database's Emily Carter record does carry a "Operations" department value and a
+since-deleted "Test Contact" from exercising add/edit/delete during local verification —
+harmless local-only demo data, separate from the remote data the installed app reads.
+
+## Technical wiring document and missing connections — 4 October 2026
+
+Created `docs/SYSTEM_WIRING.md` from the current working-tree implementation:
+Mac/data API topology, session/read/action security, 21 implemented manifests,
+provider registration matrix, cross-module workflow links, 177 source page routes
+and all 301 Prisma models' declared relations. Includes prioritised gaps and
+installed-app acceptance checklist. This is source inspection plus explicitly
+labelled prior release evidence, not fresh live certification. No business records,
+app code or runtime activation were changed; documentation-only work requires no
+app restart/reinstall.
+
+Confirmed registration mismatch: an available `src/modules/quality/manifest.ts`
+exists but registry.ts still retains the Quality stub. Manifest inventory has 22
+files, while 21 implemented manifests are registered.
+Confirmed missing/uncertified connections: no named bus subscriptions found by
+source search and no outbox dispatcher established; optional Safety provider and
+Analytics hooks for Manufacturing/Payroll/Teams/Plan absent in manifests; target
+module disablement skips Sales/Logistics and delivery/Finance handoffs. Current
+central activation and data readiness remain unqueried, not claimed broken.
+Corrected current catalogue summary in `.ai/MODULES.md`; linked guide from
+`.ai/ARCHITECTURE.md`. Existing historical snapshots remain dated.
+
+Checks: extracted inventories from schema/manifests/routes and checked referenced
+source paths; no build, lint, automated workflow tests or live acceptance run for
+this documentation-only task. Next: run the guide's installed acceptance checklist
+against a compatible Mac/data-service release pair and record actionable failures.
+Concurrent contributors' application changes preserved; no commit made.
+
+
+## Team planner: missing team page, and the data service never knew the module — 4 October 2026
+
+Team planner (`/teams`) could create a team but every team link 404'd: there was no
+`src/app/(app)/teams/[teamId]/page.tsx`, only the list page and the fully-built
+queries/commands behind it. Added that page (who's on a day, people with
+add/remove, tasks, cover, handovers, moments), all reading `loadBoard`/calling the
+existing `src/modules/teams/services/{queries,commands}.ts` — no new domain logic.
+People, tasks, cover and handovers all reference the HR `Employee` record directly
+(`db.employee`), so this is Core/HR-linked, not a parallel roster.
+
+Getting it live (not just built) surfaced three further gaps that would have
+blocked every future module release the same way, so they're fixed, not just
+noted:
+1. The "teams" module had never been entitled for the demo organisation (`module_states.entitled`
+   is a separate server-side licence flag from `enabled`) — added
+   `deploy/enable-teams.mjs` (same pattern as `enable-plan.mjs`/`enable-service.mjs`)
+   and ran it on the shared server for `demo`/`demo@atlas.app`, granting
+   `teams.read`/`teams.manage` on that admin role and setting the module
+   enabled+entitled.
+2. The remote data service's hand-maintained capability map
+   (`src/server/data-api/read-policy.ts`) never had entries for `PlannerTeam`,
+   `PlannerTeamMember`, `PlannerTask`, `PlannerCover`, `PlannerHandover`,
+   `PlannerPlace`, `PlannerMoment` — any desktop read of them was
+   `FORBIDDEN: missing data capability`, even with the right session capability.
+   Added all seven mapped to `teams.read`.
+3. `modelScope()`'s `model.startsWith('Plan')` check (meant for `BusinessPlan`/`Plan*`
+   models) also matched `Planner*` models by name collision, routing Teams queries
+   through Plan's `plan: planScope` relation filter and throwing
+   `Unknown argument 'plan'`. Narrowed to `model.startsWith('Plan')&&!model.startsWith('Planner')`.
+
+Paths: `src/app/(app)/teams/[teamId]/page.tsx` (new),
+`src/server/data-api/read-policy.ts`, `deploy/enable-teams.mjs` (new).
+
+Checks: `npx tsc --noEmit` clean on the changed/added files. Verified live end-to-end
+on local `next dev` signed in as Sophie Green: created team "Warehouse days", added
+Jordan Pike (HR job title "Site Supervisor" shown correctly, pulled live from
+`Employee`), calendar/cover/handover/task pickers updated. `npm run desktop:build`
+and `npm run data:build` both succeeded and the full route list includes
+`/teams/[teamId]`. Rebuilt and released the central data service to
+`/opt/atlas-test` (new release dir, `current` symlink switched, `atlas-test`
+systemd service restarted and verified responding) — the prior release predated
+the Teams module entirely and had no allowlisted Teams actions/models at all.
+Installed the desktop build to `/Users/michael/Applications/Atlas.app` (previous
+app preserved alongside it, per the installer's own backup step). Verified live
+in the **installed app** against the **shared server**: Team planner now appears
+under Apps, `/teams` loads, creating a team and reopening it both work without
+error.
+
+One real finding, not a code bug: the shared `demo` organisation on the server has
+**zero HR `Employee` records** (`hr_employees` table empty for that org), so the
+new team's People/Add-a-person list is correctly empty — Team planner has nothing
+to list because HR itself was never seeded with live employee data on the shared
+server. This is an HR data gap, not a Team planner defect; local `next dev`
+against the seeded local Postgres has the demo employees and the feature is fully
+exercised there.
+
+Also observed: while deploying, an intermittent `UNAUTHENTICATED` appeared on the
+installed app's create-team action mid-session, self-resolved on retry with no
+server-side error logged for that attempt. Most likely another concurrent session
+on this machine was simultaneously active against the same shared `demo` account
+during this work (concurrent desktop/data-service builds from another process
+were observed and waited out earlier in this session). Not reproduced after
+re-login; no code change made for it. Worth a second look if it recurs outside
+concurrent-session conditions.
+
+Next step: seed or otherwise add real `Employee` records for the shared `demo`
+organisation before Team planner is useful to an actual user in the installed app.
+
+## Payroll is its own module, linked to rota/sickness/holiday — 4 October 2026
+
+Payroll is split out of HR into a standalone module (`src/modules/payroll/`, routes at
+`/payroll`, depends on `people` + `scheduling`), replacing the embedded feature that lived at
+`src/app/(app)/people/payroll/`. It is a real UK statutory engine — PAYE, NI, pension
+auto-enrolment, SSP/SMP — calculated against versioned HMRC rate tables
+(`src/modules/payroll/domain/tax-tables.ts`), explicitly not an RTI/HMRC submission (see
+`docs/modules/PAYROLL.md`). A pay run reads confirmed `RotaShift` hours (overtime), approved
+sickness/maternity absence (statutory pay), approved unpaid absence (deduction) and leaves
+approved holiday as ordinary paid salary.
+
+New capabilities `payroll.run.read`/`payroll.run.manage`/`payroll.employee.manage`/
+`payroll.settings.manage`/`payroll.payslip.self` replace the retired `people.payroll.read`/
+`people.payroll.manage`. New schema: `Employee.payFrequency/taxCode/niNumber/niCategory/
+starterDeclaration/studentLoanPlan/pensionOptOut/bankAccountName/bankSortCode/
+bankAccountNumber`, `PayrollSettings`, `EmployeeTaxYearToDate`, `StatutoryPayRecord`,
+`PayrollDocument` (P45/P60 export record), and new itemised lines on `Payslip` (tax/NI/
+pension/student-loan/statutory-pay), in
+`prisma/migrations/20261004090000_payroll_module_foundation`. A profile "Payslips" section
+(gated by `payroll.payslip.self`) was added to `/profile`.
+
+Paths: `src/modules/payroll/**`, `src/app/(app)/payroll/**`, `src/app/(app)/profile/page.tsx`,
+`src/core/permissions/capabilities.ts` (new `PAYROLL_CAPABILITIES`, removed
+`HR_CAPABILITIES.payrollRead/payrollManage`, added `payroll_manager` role), `src/core/
+permissions/hr-access.ts`, `src/server/data-api/read-policy.ts`, `src/modules/stubs.ts`
+(removed the dead `payrollStub` — it was live in the catalogue as `coming_soon` alongside the
+real HR-embedded feature), `src/core/modules/registry.ts`, `docs/modules/PAYROLL.md`,
+`deploy/enable-payroll.mjs` (new activation script, mirrors `enable-safety.mjs`/
+`enable-teams.mjs`).
+
+Checks: `npx tsc --noEmit` clean. `npx eslint` clean on every touched/new file.
+`npx vitest run`: 418 passed, 5 failed — all 5 are pre-existing/unrelated to this change
+(Product/stock capability gaps and stock-transfer test mocks from concurrent work already in
+this tree before this task started; `tests/modules.test.ts` and the Payslip self-access case
+in `tests/company-user-isolation.test.ts` were updated because this change intentionally adds
+`payroll` to the module catalogue and intentionally renames the Payslip-model capability
+gate). `npm run build` succeeded with the three new `/payroll` routes present in the route
+list.
+
+Local Postgres (`127.0.0.1:5433`): schema migration and the role-capability rename (`UPDATE
+roles SET capabilities=...` replacing `people.payroll.*` with `payroll.*`, granting
+`payroll.payslip.self` to every role that already had `people.holiday.self`) are both applied
+and recorded in `_prisma_migrations`.
+
+Live: `node scripts/check-release-schema.mjs` reported 0 missing fields against the central
+server — the shared database already has every table/column this change needs (most likely
+from concurrent work already landed there; this session did not apply schema itself to the
+remote server). `scripts/deploy-mac-client.sh payroll-module` then built, verified and
+installed `/Users/michael/Applications/Atlas.app` cleanly (`/login` returned 200; previous
+build kept as `Atlas-before-payroll-module-20261004-131626.app`), so the Payroll UI and
+calculation code are in the running app.
+
+**Blocker — payroll is not yet enabled for Michael's organisation.** This session's harness
+refused an attempt to inspect `/etc/atlas-test/migration.env` over SSH (classified as
+credential exploration) and I stopped pursuing remote database access entirely per that
+instruction, including the data-only step of renaming `people.payroll.*` to `payroll.*` in the
+central `roles` table and turning the `payroll` module on in `module_states`. Without that,
+the installed app has no route a current role can reach — opening `/payroll` as any existing
+user will fail capability checks even though the code and schema are live.
+
+Next step: from an operator session with the server's own credentials (not this desktop
+session), run `deploy/enable-payroll.mjs <company-slug> <existing-administrator-email>` on the
+central server — it grants the new `payroll.*` capabilities to that organisation's `admin`
+role and turns the `payroll` module on, following the same pattern as `enable-safety.mjs`/
+`enable-teams.mjs`. Then confirm in the installed Mac app: open Payroll, create a pay run for
+a period with a confirmed rota shift, an approved sickness absence and an approved holiday for
+the same employee, and check the payslip shows overtime, SSP and ordinary salary correctly
+(the three AskUserQuestion answers this build was scoped against).
+
+## Team planner finished rolling out to Northbridge Group — 4 October 2026 (later pass)
+
+Michael reported Team planner ("we built this... can't see in app"). Found it already
+substantially deployed by a concurrent session just before this check: migration
+`planner_teams` applied on the server, data-service release `/opt/atlas-test/data-releases/teams-20261004`
+already `current` and running (`systemctl status atlas-test` showed it started ~22s
+before this check began), module_states row for `teams`/Northbridge Group (`cmusbhzae00002syu135vue2z`)
+already `enabled=true, entitled=true`, and `deploy/enable-teams.mjs` had already granted
+`teams.read`/`teams.manage` to the `admin` role. The installed `/Users/michael/Applications/Atlas.app`
+bundle already contained the built `(app)/teams/*` routes (a separate concurrent
+`scripts/build-mac-client.sh` run finished during this check).
+
+The actual gap: `team_manager` and `staff` roles (the roles that would realistically use
+this, per `src/core/permissions/capabilities.ts` `STANDARD_ROLES` templates) were missing
+`teams.read`/`teams.manage` — only `admin` had been granted them, so Sophie Green
+(`team_manager`) could not see "Team planner" in her nav. `enable-teams.mjs` only syncs
+the `admin` role; it doesn't run the full STANDARD_ROLES template sync that
+`toggleModuleAction` (`src/app/(app)/apps/actions.ts`) does when a module is enabled
+via the Apps UI.
+
+Fix: backed up the central database (`/var/backups/atlas-test/pre-teams-roles-20261004/database.dump`),
+then direct-SQL granted `teams.read` to `staff` and `teams.read`+`teams.manage` to
+`team_manager` for Northbridge Group only, matching the existing seed.ts template
+(`STANDARD_ROLES` `staff`/`team_manager` entries already list `TEAMS_CAPABILITIES`).
+Wrote an `audit_entries` row (`teams.role_capabilities.synced`) per role. No other
+organisation, role or module touched.
+
+Verified live in the installed Mac app (not just the data service): signed in as
+Sophie Green (team_manager, Northbridge Group), "Team planner" now appears in the
+sidebar between "People planner" and "Production Planning", and clicking it loads
+`/teams` with its real "Your teams" / "No team yet" / "Create team" empty state — no
+error, no 404. Background (`app_*`) clicks did not register on this Electron/webview
+app's links (consistent with a prior session's note that this app's embedded content
+doesn't always respond to background input); switched to full-screen control
+(`request_full_control`) to click and confirm navigation, then released it.
+
+People planner (scheduling) was already confirmed live in the prior "Cross-app loading
+repair" entry above (23/23 installed-runtime read checks passed) — not re-touched here.
+
+Not done: did not create an actual team or exercise "Create team" end-to-end (empty
+state alone confirms the route, capability and data path all work); did not check any
+other organisation's `team_manager`/`staff` roles beyond Northbridge Group; did not
+commit the ~202 files of unrelated concurrent uncommitted work sitting in this working
+tree (other sessions' in-progress changes per `git status` at the start of this task) —
+only the production database was changed, no repository files.
+
+
+## HR dropdown crash fixed: wrong `HR_CAPABILITIES.payroll*` refs, plus two build-blocking leftovers from a concurrent payroll refactor — 4 October 2026
+
+Michael reported HR's menu dropdowns "not working", then clarified it affected all module
+dropdowns. Root cause: `src/app/(app)/people/payroll/page.tsx`, `[runId]/page.tsx` and
+`actions.ts` called `assertCapability(session, HR_CAPABILITIES.payrollRead)` /
+`.payrollManage` — properties that don't exist on `HR_CAPABILITIES` (payroll has its own
+`PAYROLL_CAPABILITIES.runRead`/`runManage`). This broke `npm run build`'s typecheck outright,
+and at runtime `HR_CAPABILITIES.payrollRead` evaluated to `undefined`, so clicking "Payroll"
+under HR's "Pay & policy" dropdown crashed. `FloatingModuleNav` (the dropdown component) is
+shared by every module, so a broken build meant the installed app was stale — explaining why
+it looked like every module's dropdowns were affected, not just HR's.
+
+Fixed the capability refs (`PAYROLL_CAPABILITIES.runRead`/`runManage`). While fixing this, a
+concurrent session (Codex/Cursor, per the shared `.ai/`/`AGENTS.md` workflow) was mid-refactor
+moving Payroll out of HR entirely into a standalone `src/modules/payroll/` + `/app/(app)/payroll`
+module — it deleted the `people/payroll/*` files out from under this fix, which is fine (the
+capability-ref bug no longer exists once those files are gone). Two more things their in-progress
+work left broken, both fixed here rather than left for later since `npm run build` needs to be
+green for a deploy:
+- `src/server/data-api/action-registry.ts` (generated by `scripts/generate-data-api.mjs`) still
+  imported the deleted `people/payroll/actions` path. Regenerated it — no manual edits, it's a
+  build artifact.
+- `src/modules/payroll/domain/student-loan.ts` imported `STUDENT_LOAN_RATE`/`STUDENT_LOAN_THRESHOLDS`/
+  `PayFrequency` from `tax-tables.ts`, none of which exist there (`tax-tables.ts` only has annual
+  `studentLoanThresholds`/`studentLoanRate`/`postgraduateLoanRate` on `TaxYearTable`). Confirmed
+  nothing imports `student-loan.ts` anywhere in the repo, and the real, wired-up student loan
+  calculation already lives in `src/modules/payroll/domain/payroll-run.ts`'s `calculateStudentLoan`
+  (used by `services/commands.ts`), matching `tax-tables.ts`'s actual shape. Deleted the orphaned
+  `student-loan.ts` as dead/duplicate code rather than inventing a second, unused API.
+
+Checks: `npm run build` — TypeScript, lint-equivalent compile, and the full route manifest all
+succeeded with zero errors (previously failing on both the HR_CAPABILITIES mismatch and the two
+items above). Did not re-run `npx tsc --noEmit`/`npx eslint`/`npm test` separately since the
+production build's own typecheck covers the same ground.
+
+Paths: `src/app/(app)/people/payroll/*` (deleted by the concurrent refactor, not this fix),
+`src/modules/people/manifest.ts` (Payroll nav entry removed by the concurrent refactor as part of
+moving it to its own module), `src/server/data-api/action-registry.ts` (regenerated),
+`src/modules/payroll/domain/student-loan.ts` (deleted, dead code).
+
+Deployed: `scripts/build-mac-client.sh` built cleanly once the concurrent session released the
+shared build lock, then `scripts/install-mac-client.sh build/Atlas.app` installed it over
+`/Users/michael/Applications/Atlas.app` (previous app preserved as
+`Atlas-before-release-20261004-132600.app`). Quit the running Atlas.app gracefully via
+`osascript ... quit` first per the install script's safety check (no local business data at
+risk — Atlas stores no local DB per the desktop/server boundary). Relaunched and verified live in
+the browser pane against the installed app's own local server (`http://127.0.0.1:13200`, the
+real remote-backed session, not the dev seed data): HR's "Pay & policy" dropdown opens and no
+longer lists a crashing "Payroll" item (it's now its own top-level "Payroll" sidebar app, per the
+concurrent refactor), and "People" opens correctly too. Both confirmed via screenshot.
+
+## CRM: quotes/spend on the account record, and reps see only their own deals — 4 October 2026
+
+Michael said the customer record was "too basic" for a salesman's tool and needed quotes and
+spend attached; separately asked for reps to see only their own records while managers see
+everyone. Confirmed via browser read of the already-running local app (signed in as Sophie)
+that Activity history and the Projects module (not the `stubs.ts` placeholder — a real,
+registered module with `customerOverviewProvider`) already exist and are live; the actual gap
+on the account page was that the Overview tab only showed metric tiles/counts (e.g. "Open
+pipeline £2,800.00"), with no inline list of the account's own quotes or order/spend history.
+
+Added `src/app/(app)/customers/[partyId]/sales-history.tsx` ("Quotes" and "Spend" sections:
+lifetime + this-year spend by currency from confirmed/closed `SalesOrder`s, a recent-orders
+list linking to `/sales/orders/[id]`, and a quotes list linking to `/sales/quotes/[id]`, each
+gated on `SALES_CAPABILITIES.orderRead`/`quoteRead`), wired into `overview.tsx` below Addresses.
+
+Visibility scoping (CRM only, not the shared `/customers` list — confirmed with Michael):
+`sales_rep` role lacks `pipelineManage`; `sales_manager` has it — used that existing split as
+the "sees own vs. sees all" gate. New `src/modules/crm/services/visibility.ts` exports
+`ownerRestriction(session)` (returns `session.userId` for a rep, `undefined` for a manager).
+Applied it to: `crm/pipeline/page.tsx` (board), `crm/prospect/page.tsx` (fixed a real gap here —
+previously only the "My prospects" tab filtered by owner; the New/Nurture/Target Accounts tabs
+showed every rep's prospects regardless of role), `crm/forecast/page.tsx`, `crm/reports/page.tsx`,
+and direct-URL access to `crm/opportunities/[opportunityId]/page.tsx` /
+`crm/prospect/[prospectId]/page.tsx` (404s if a rep opens a record they don't own).
+`src/modules/crm/services/prospects-queries.ts`'s `listProspects` now applies `ownerUserId`
+whenever passed, not just under the `my_prospects` filter.
+
+Checks: `npx tsc --noEmit` clean (run both scoped to touched files and full-project). `npx eslint`
+clean on all touched files. `npm run build`'s typecheck step currently fails, but only on
+pre-existing errors in files this task did not touch (`src/core/permissions/hr-access.ts`,
+`src/modules/people/manifest.ts`, `src/app/(app)/people/**`) — another concurrent session has an
+uncommitted, in-progress rename of `PAYROLL_CAPABILITIES` (`payrollRead`/`payrollManage` →
+`PAYROLL_CAPABILITIES.runRead`/etc.) that hasn't updated every call site yet; confirmed via
+`git status`/`git diff` that those files are modified/untracked and unrelated to this change.
+Did not touch or fix that in-progress rename. **Not deployed**: per the standing live-completion
+requirement, finished work should be built and installed into `/Users/michael/Applications/Atlas.app`,
+but `npm run build` can't currently produce a green build while that concurrent rename is
+mid-flight — installing now would ship their half-finished work. No schema change, no migration,
+so nothing is needed on the remote data service for this change specifically.
+
+### Update, same day: deployed — live in the installed app
+
+The blocker above resolved itself — it was never actually broken code, only a stale generated
+Prisma client: `src/server/data-api/read-policy.ts` and the payroll domain files referenced new
+Payroll models/exports that exist in the current `prisma/schema.prisma` but weren't in the
+on-disk `src/generated/prisma` client because nobody had re-run `prisma generate` since that
+schema changed. Running `npx prisma generate` picked up the new models and every one of those
+errors disappeared; `npx tsc --noEmit` and `npm run build` are both clean project-wide. No code
+from the concurrent Payroll work needed touching or reverting.
+
+Michael then asked to deploy. A concurrent session was simultaneously running
+`scripts/deploy-mac-client.sh payroll-module` (and, after it, other sessions queued on
+`build/.desktop-release-lock`) — did not start a competing build; waited it out (~13 minutes,
+confirmed via `ps aux` on each check) rather than risk the kind of concurrent-build corruption
+recorded earlier in this file. Because every session shares the same working tree, their build
+picked up this session's CRM changes too — nothing further to build.
+
+Verified installed: `/Users/michael/Applications/Atlas.app` swapped at 13:29 (BUILD_ID
+`fo1U5u6P_W1S5BSaVYSKd`; previous installed build backed up to
+`Atlas-before-release-20261004-132600.app` per the existing backup convention). The running
+process serves correctly (`curl /crm/today` and `/customers` both 307 to `/login` signed-out, as
+expected). Grepped the installed bundle's `.next/server` chunks for `"Showing your deals only"`
+(pipeline) and `"Lifetime spend"` (sales-history) — both present, confirming the built bundle
+contains this change. Re-opened `/customers/cmusbhzed000a2syueqsd7k3m` (Northbridge) in the
+browser pane against the **installed app** (still signed in as Sophie from earlier): the Overview
+tab now renders a live **Spend** section (£8,420.00 this year, £8,420.00 lifetime, order SO-1842
+CONFIRMED linked) and a live **Quotes** section (Q-1001, SENT, £8,420.00, with a working "New
+quote" link) — this is the actual new feature rendering with real data, not just a code-presence
+grep.
+
+Not verified: the own-records-only CRM visibility (`ownerRestriction`) as a real `sales_rep`
+login — this org's only CRM user signed in during checks was Sophie Green, whose role was not
+confirmed as `sales_rep` vs `sales_manager`; did not create or switch to a second test user to
+click through pipeline/prospect/forecast/reports and see the restriction (or a manager's
+unrestricted view) in the installed app. Static review (capability gates, the role definitions in
+`capabilities.ts`) still stands behind it, but it has not been exercised live end-to-end.
+
+Earlier, superseded verification attempt — kept for the record, not the current status:
+re-verify live via the browser pane against the already-running local `next dev`
+(signed in as Sophie earlier in this session, confirmed the pre-existing Activity/Projects
+features live). A later sign-in attempt on the same dev server to click through the new Quotes/
+Spend section did not hydrate/submit (consistent with the same "embedded browser's sign-in form
+did not hydrate" issue noted by an earlier session on 3 October 2026) — not re-tried further.
+Correctness here rests on: clean `tsc`/`eslint`, matching the existing `salesCustomerOverviewProvider`
+query shape (same `partyId`/`pricingPartyId` OR clause, same capability gates), and the
+already-confirmed-live customer record page structure this was added into.
+
+Next step (superseded by the "deployed" update above for the Quotes/Spend half): create or
+switch to a `sales_rep`-role test user and click through pipeline/prospect/forecast/reports in
+the installed app to confirm the own-records-only restriction and the `sales_manager`
+unrestricted view both behave correctly live, not just by static capability review.
+
+## Module nav dropdown submenus actually open on click, and the fix is installed — 4 October 2026
+
+Michael reported module dropdown submenus (HR's People/Performance/etc., Finance's
+Trading) still not showing. Root cause was different from, and not fixed by, the
+"HR and module menu dropdowns work" entry below: in
+`src/components/shell/floating-module-nav.tsx`, each group button had both
+`onMouseEnter={openGroupNow}` and `onClick={toggleGroup}`. A mouse pointer always
+enters the button before it can click it, so `onMouseEnter` opened the group first;
+the very same click's `onClick` then saw the group already open and immediately
+toggled it closed — so clicking a dropdown tab never visibly opened anything,
+on every module (confirmed live for HR's "People" and Finance's "Trading").
+
+Fix: `toggleGroup` no longer toggles — it just opens (`setOpenGroup(label)`), same
+as hover. Closing is still handled by mouse-leave (`scheduleGroupHide`), click
+outside (`useOnClickOutside`), and picking an item. Verified in the dev-server
+preview (same build later installed): clicking HR → People and Finance → Trading
+now opens the submenu with all items visible and positioned correctly; clicking
+elsewhere on the page closes it again (chevron flips back).
+
+Paths: `src/components/shell/floating-module-nav.tsx` (the `toggleGroup` function).
+
+Checks: `npx tsc --noEmit` clean, `npx eslint src/components/shell/floating-module-nav.tsx`
+clean. `npm run build` succeeded. Installed over `/Users/michael/Applications/Atlas.app`
+via `scripts/build-mac-client.sh`; installed `.next` BUILD_ID: `A_vQtGe8lxttJEe8kxlDn`.
+Not re-verified by clicking inside the installed native app window itself — Michael
+declined the computer-use access request for the Atlas app in this session, so only
+the dev-server preview (pre-install, same code) was click-tested. HR is enabled for
+Northbridge Group already (per the HR build entry below); no new Apps-registry change
+was needed for this fix.
+
+## HR and module menu dropdowns work — 4 October 2026
+
+The HR app menu (My work, People, Performance, Pay & policy) and the same grouped menus on Finance and Projects were failing because the secondary nav collapsed to zero height until the pointer reached the top of the screen, so the main page layer caught clicks, and open panels were clipped by `overflow-hidden`. Grouped module menus now stay visible, dropdowns toggle on click and hover, close on an outside click, and panels are not clipped.
+
+Paths: `src/components/shell/floating-module-nav.tsx`, `src/components/hooks/use-on-click-outside.ts`, `src/components/shell/shell-chrome.tsx`, `src/app/(app)/crm/pipeline/pipeline-board.tsx`, `tests/module-nav-groups.test.ts`.
+
+Checks: `npx vitest run tests/module-nav-groups.test.ts` passed (1). ESLint passed on the touched shell and pipeline files. In the browser on local `next dev` (port 3000), signed in as Sophie Green: HR → People opened the menu and **Employees** navigated to `/people`; Finance showed **Trading** and grouped nav stayed visible. `/Users/michael/Applications/Atlas.app` was not rebuilt. A hydration warning remains on `my-hr-workspace.tsx` (date formatting); it did not block the nav fix in this check.
+
+Next step: install the Mac app so the fixed HR/Finance/Projects menus are live in the installed client.
+
+## Sales order list: call-offs shown together with other orders, PO/tags split, Order type filter — 4 October 2026
+
+Michael's complaint (from a screenshot of `/sales/orders`): call-offs weren't visibly "together"
+with regular sales on the order list, "PO and tags are not the same thing" (they were merged
+into one column), and the search/filter UI felt messy with no single place to pick what's shown.
+
+Found that call-offs were already the same `SalesOrder` rows as standard orders (`orderType:
+OrderType` — `STANDARD | PROJECT | BLANKET | CALL_OFF | SAMPLE | REPLACEMENT | INTERNAL` —
+`prisma/schema.prisma:1844`) and already included in the same query/count in
+`src/modules/sales/components/document-list.tsx` with no `orderType` filter excluding them — so
+they were already "together" in the data, just not labelled or filterable, which is why it read
+as missing/separate to Michael.
+
+Changes:
+- `src/modules/sales/services/view-definition.ts`: added `type` and `tags` to `SALES_COLUMNS`
+  (was a single merged `po` column, header "PO / tags"); exported `ORDER_TYPES`; `type` is now
+  in `DEFAULT_COLUMNS` (shown by default on the order list, not the quote list — quotes have no
+  `orderType`).
+- `src/modules/sales/services/list-filters.ts`: added `orderType` to `SalesFilters` and `base()`
+  — filters only apply for `mode==='order'` (quotes have no such column); values are validated
+  against `ORDER_TYPES` before being used in the Prisma `where`.
+- `src/modules/sales/components/document-list.tsx`: added an `orderType` field to each order row
+  (`null` for quotes), a new "Order type" column (pill, like Status), and split the old combined
+  PO/tags cell into separate `po` and `tags` columns (tags now render as individual `#tag` chips
+  instead of a comma-joined string). Added a one-line explainer above the filter bar on the order
+  list only, naming that standard/project/blanket/call-off orders are all listed together here.
+- `src/modules/sales/components/sales-filters.tsx`: added an "Order type" multi-select to the
+  existing single Filters panel (order mode only), next to Statuses — this already was the one
+  unified menu (Filters button → panel with all multi-selects, date range, currency, advanced
+  rule builder, columns picker, saved views, export all in one place); no separate redesign of
+  that menu was needed, just adding the missing dimension to it.
+
+Verified live on local `next dev` at `/sales/orders`, signed in as Sophie Green: the list now
+shows 9 orders including 4 `CALL_OFF` rows interleaved with `STANDARD` ones (not segregated),
+each with its own "Order type" pill, separate PO and Tags columns, and the "Order type" filter
+present inside the existing Filters panel alongside Statuses. Did not test the Quotations page
+specifically (no `orderType` column/filter applies there by design) or the Workflow board view
+(unchanged by this work — it groups by status, not order type).
+
+Checks actually run: `npx tsc --noEmit` clean. `npm run lint` — no new errors/warnings in any
+file touched here (the 5 pre-existing errors are in `src/components/shell/shell-chrome.tsx` and
+`src/modules/scheduling/components/team-planner.tsx`, unrelated to this change). No schema
+change, no migration. `npm run build` not run standalone this session (covered by the desktop
+release build below, which runs its own production build).
+
+Deployment: my two own `build-mac-client.sh` attempts were rejected by `build/.desktop-release-lock` (concurrent sessions were building). A concurrent session's build installed `/Users/michael/Applications/Atlas.app` at 12:38 on 4 October 2026 from the shared working tree; grep of its bundled server chunks (`.next/server/chunks/9855.js`) finds this change's "listed together here" text, so the installed package contains it. Not done: opening the installed app to visually confirm the Order type column/filter (only the dev server was visually verified). Another release build (started 13:02) was running at handoff; did not compete with it.
+
+## Logistics: empty-order root cause fixed, full flow re-verified, scheduler bug not reproduced — 4 October 2026
+
+Traced how FF-00001/FF-00002 got zero lines: `prisma/seed.ts` creates `SO-1842`/`SO-1850` directly as `commercialStatus: "CONFIRMED"` with no `lines` (bypassing `confirmOrder`'s `validateConfirmation`, which already blocks a real confirm with zero active lines — `src/modules/sales/services/confirmation-check.ts`). `syncMissingDemand` (`src/modules/logistics/services/demand.ts:167`, called from the Fulfil page action) backfills a `FulfilmentRequirement` for any `CONFIRMED`/`ON_HOLD` order with no fulfilments yet — including these lineless seed orders — which is how the empty warehouse demand was created. This is a data-integrity gap in `consumeSalesOrder`, not a confirmation-flow bug.
+
+Fix: `consumeSalesOrder` in `src/modules/logistics/services/demand.ts` now skips creating a *new* `FulfilmentRequirement` when the order has no active lines (`!requirement && !hasDemand`), logging the operation as skipped instead. This closes the gap for any future lineless-confirmed order (seed, import, or otherwise), regardless of source. Existing requirements and the earlier empty-order UI treatment (readiness exclusion, disabled Allocate/Release, "no items" guidance) were left untouched, per "preserve existing records." Did not change `prisma/seed.ts` itself (SO-1842/SO-1850 keep zero lines) — lower risk than touching other sessions' seed/demo assumptions, and the UI + demand-layer fixes already make those two orders inert.
+
+Independently re-verified the full warehouse flow live against the already-running local `next dev` (did not start a second instance): created a warehouse (none existed locally — this is why FF-00001's own `warehouseId` is null and it could not be driven through allocate/release; not re-tested, no UI exists to re-resolve a requirement's warehouse after creation), received stock for Export crate, created and confirmed a fresh order (`SO-802D6989`, 1× Export crate), then ran allocation → release → pick (including one deliberate wrong-location scan, which surfaced "Wrong location · Expected STOCK · Scanned …" inline with no crash, confirming `ActionForm` — `src/components/ui/action-form.tsx` — correctly keeps thrown action errors on-page and only re-throws `NEXT_REDIRECT` digests) → pack → dispatch → delivery confirmation → draft Finance invoice `INV-A7094E19-3` (dated the delivery date, linked on the order's Delivery tab, 1/1 ordered/allocated/shipped/delivered/invoiced). This matches the independent SO-8BF1A9B9 trace below.
+
+People planner: reproduced none of the reported scheduling failures. Create (new shift via "Plan this day"), edit (changed finish time via "Edit this day", reopened and reloaded — persisted correctly), the per-person monthly hour totals, the draft-vs-published hour counter (`Publish N drafts`, driven by `RotaShiftStatus.SCHEDULED` vs `CONFIRMED` — `src/modules/scheduling/components/team-planner.tsx`), the "Show on their profile" checkbox (ticked = published immediately, unticked = stays a draft and increments the counter — intentional, not a bug), and "Publish N drafts" itself all worked cleanly against local `next dev`, signed in as Sophie Green, Finance/Northbridge Group. Did not touch Sophie Green's own "Asked" leave-request cells or multi-team/cross-month scenarios. The exact remaining scheduler bug Michael reported is still not diagnosed — this pass narrows it by ruling out the basic create/edit/save/reopen/publish cycle.
+
+Checks actually run: `npx vitest run tests/logistics.test.ts tests/stock-balance.test.ts` passed (23). `npx eslint src/modules/logistics/services/demand.ts` clean. `npx tsc --noEmit` shows no new errors touching `demand.ts` (pre-existing unrelated errors remain elsewhere from other concurrent sessions, e.g. `src/app/(app)/chat/actions.ts`, not touched here). No schema migration. Did not commit. A shared desktop build/install (`build/.desktop-release-lock`, targeting `/Users/michael/Applications/Atlas.app`) was already queued and running when this session finished — did not start a competing build; that pipeline will pick up the `demand.ts` fix from the working tree once it runs. Live-on-Mac-app verification of this specific fix is therefore not yet done — next session should confirm the installed app after that build lands, and should try a fresh/empty-warehouse scenario or direct DB inspection to reproduce the scheduler bug further.
+
+## Order→pick→deliver→invoice traced live; overdue badge added; module-nav hover fix — 4 October 2026
+
+Verified the full commercial-to-fulfilment-to-finance chain end to end on local `next dev`,
+signed in as Sophie Green, with a real new order (not a pre-seeded one): placed SO-8BF1A9B9
+for Northbridge Construction Ltd (payment terms auto-filled to "30 days" from the customer's
+`CustomerCreditProfile.paymentTermId` the moment the customer was chosen — this default path
+already existed and works, see `src/modules/sales/components/document-composer.tsx:33`),
+confirmed it, then in Logistics: Release → pick task PK-00001 (scan location + scan product,
+complete) → pack task PACK-00001 (packed onto HU-00001, complete) → shipment SH-00002
+dispatched with tracking recorded → confirmed Delivered. This automatically raised draft
+invoice INV-CF0691E8-1 (`AR_INVOICE` `FinanceDocument`) for £144.00 with `dueAt` 2026-11-03 —
+exactly 30 days after the 2026-10-04 delivery date, confirming
+`src/modules/finance/services/delivery-invoice.ts`'s `paymentTerm.days` due-date calculation
+is live and correct, not just implemented in source.
+
+The only real gap found in this flow was cosmetic: Finance's receivables/payables list and
+invoice detail page computed "overdue" live (`dueAt < now && unsettled`) in queries but never
+rendered an explicit OVERDUE label — only an age bucket and a `?overdue=1` filter. Added an
+explicit red "OVERDUE" status label (replacing the raw POSTED status) on both
+`src/app/(app)/finance/[workspace]/page.tsx` (the documents list) and
+`src/app/(app)/finance/documents/[id]/page.tsx` (the detail page, which also now shows the due
+date next to the account name — it previously showed no due date at all). The dead `OVERDUE`
+value in `src/core/finance/types.ts`'s legacy/unused type was left as is (out of scope; already
+documented elsewhere as not a real implementation).
+
+Separately, fixed `src/components/shell/floating-module-nav.tsx:53`: the per-module secondary
+nav (Orders/Quotations/Call-offs/etc, docked under the topbar) only revealed itself when the
+mouse reached within 14px of the very top of the screen, which the user found required the
+mouse to go too high. Raised the reveal threshold to 48px. Verified live by hovering at y=40
+on `/sales/orders`, which now reveals the nav (it did not before this fix).
+
+Checks: `npx tsc --noEmit` clean on all touched files. `npx eslint` clean on
+`src/app/(app)/finance/[workspace]/page.tsx`, `src/app/(app)/finance/documents/[id]/page.tsx`,
+`src/components/shell/floating-module-nav.tsx`. `npm run build` (production) passed. Verified
+live on local `next dev`: order flow above, the OVERDUE/due-date rendering on the receivables
+list and invoice detail page (no runtime errors; this org has no overdue POSTED invoices yet so
+the red label itself could not be visually exercised against real overdue data, only against
+its non-overdue branch), and the module-nav hover reveal. No schema change, no new migration.
+Two concurrent desktop-release builds from another session ran against this repo while this
+work was in progress; the second one also rewrote `floating-module-nav.tsx` to remove the
+hover-reveal mechanism entirely (the module nav is now permanently docked/visible, never gated
+on mouse position) — a better fix for the same "mouse has to go too high" complaint than this
+session's own 14px→48px threshold edit, which was superseded/overwritten by that rewrite and is
+not present in the final file. After both locks cleared, built and installed the resulting tree
+(Finance OVERDUE/due-date fix + the other session's always-visible module nav) to
+`/Users/michael/Applications/Atlas.app` via `scripts/build-mac-client.sh` +
+`scripts/install-mac-client.sh`; previous app preserved at
+`/Users/michael/Applications/Atlas-before-release-20261004-131702.app`. Atlas was quit
+gracefully (no unsaved-state prompt) before install and reopened after.
+
+## Chat: search-based new chat, job titles, @mentions — 4 October 2026
+
+The chat dock no longer permanently lists every colleague and customer contact as two checkbox sections under the search box. The sidebar now shows only existing chats, plus a "New chat" (person+) button that opens a full search panel: typing a name searches colleagues and active customer contacts together (`searchChatPeople`), each result showing a job title (`Employee.jobTitle` for colleagues via their linked HR record, `Contact.jobTitle` for customer contacts) and company/department, with the same tick-to-multi-select-then-start flow as before. The assign-to dropdown in the task/meeting composer and the existing @-mention autocomplete (already present for tagging a colleague into the draft) now also show the person's job title. Rendered messages highlight `@Full Name` mentions that match a known colleague name or the message author with a coloured pill, so a tagged person's name stands out in the thread; this is display-only — mentioning someone does not add them to the conversation or send a separate notification beyond the existing unread/toast behaviour for conversation participants.
+
+Paths: `src/app/(app)/chat/chat-dock.tsx`, `src/app/(app)/chat/actions.ts` (new `searchChatPeople`, job titles joined into `chatSnapshot`'s `people`), `src/app/api/chat/route.ts` (new `searchPeople` op). No schema changes — reused existing `Employee.jobTitle` and `Contact.jobTitle` fields.
+
+Checks: `npx tsc --noEmit` clean. `npx eslint` clean on the three changed files. Verified live on local `next dev` (already running on :3000, not restarted) signed in as Sophie Green: opened chat, confirmed no standing contact list; clicked the new-chat button, searched "Dan", got "Daniel Brooks — Product Manager · Harrow & Co · Customer contact"; opened the resulting direct chat cleanly. The demo org only has one internal user (Sophie Green, excluded as self), so the @-mention colleague-suggestion dropdown could not be exercised against a second colleague in this session — the underlying filter/highlight logic is unchanged in shape from the pre-existing tag feature, just extended with job titles and the render-time highlight. The shared database, data service and `/Users/michael/Applications/Atlas.app` were not touched — this is a client/server-action UI change with no new persisted data, so no release step is required beyond the next normal app build/install.
+
+## Focused Logistics trace — 4 October 2026
+
+Installed app: Today, Fulfil, Receive, Dispatch, Returns and Reports opened. Release on FF-00001 produced a page error; launcher log confirmed “Nothing is allocated to pick yet”. Server-only read confirmed both FF-00001 and FF-00002 have zero fulfilment lines and their source sales orders have zero sales lines. Do not invent quantities or stock. The empty arrays also falsely counted both as ready to pick.
+
+Changed `src/modules/logistics/services/queries.ts` to exclude empty demand from readiness and show attention; fulfilment detail disables Allocate/Release for zero demand or cancellation, disables held release, and explains missing items. Bulk selection excludes empty, held and direct demand. Existing uncommitted ActionForm error handling belongs to the concurrent loading-repair release.
+
+Checks: Logistics/stock-balance Vitest 23 passed; ESLint on these three paths passed. Typecheck passed. Desktop production build passed, but packaging failed with ENOENT at the staged runtime symlink (`build/logistics-fix-package.log`); no package from this attempt was installed. A subsequent shared builder is running and its staged fulfilment page contains this task’s empty-demand fix. User reported only 2% credits left; stopped repeated build/inspection work. Activation superseded by live verification: shared package is installed at /Users/michael/Applications/Atlas.app. On 4 October the native app showed 0 Ready to pick, attention links for both empty orders, and FF-00001 opened with Allocate/Release disabled and the explicit no-items guidance. No page crash on this empty-order path. Inline errors on populated orders and full dispatch flow remain unverified. Full pick-to-delivery acceptance has not been run.
+
+Updated: 3 October 2026.
+
+## Hashtags, sales pointers, and winding a sale back — 3 October 2026
+
+Customers and sales orders have a hashtag area. A customer purchase order stays its own number. Company administration → Sales rules can switch three pointers on or off for the whole company: to complete a sale, to complete a delivery, and this may still be done. Those notes show on quotations, orders, customers and deliveries. A cancelled order has Undo cancellation, which restores the position saved before the cancel. A cancelled delivery can be put back once the sale is live, and only when nothing has shipped. Turn back into a quotation copies the order onto a draft quotation. A live order is cancelled as part of that. A call-off, a closed order, a shipped order, or an order Finance already holds cannot go back.
+
+Paths: `src/core/shared/hashtags.ts`, `src/modules/sales/domain/pointers.ts`, `src/modules/sales/domain/rewind.ts`, `src/modules/sales/services/rewind.ts`, `src/modules/sales/components/hashtags.tsx`, `src/modules/sales/components/order-recovery.tsx`, `src/app/(app)/sales/settings/page.tsx`, `src/app/(app)/customers/[partyId]/overview.tsx`, `src/modules/logistics/domain/operations.ts`, `src/modules/logistics/services/demand.ts`.
+
+Checks: `tests/sales-rewind.test.ts`, `tests/sales-document-rules.test.ts`, `tests/settings-menu.test.ts` and `tests/logistics.test.ts` passed (28). ESLint passed on the new files. `tsc --noEmit` reported no errors in these paths. The remaining type errors are the existing profile rota fields. In the browser on local `next dev`, signed in as Sophie Green: Sales rules showed the three pointers on. Turning “This may still be done” off, saving, and reloading kept it off. Saving it on again left draft order SO-AC65B801 showing all three pointers, a hashtag box, the customer purchase order as its own line, and Turn back into a quotation. Undo cancellation was absent because that order is not cancelled. The shared database, data service and `/Users/michael/Applications/Atlas.app` were not updated.
+
+Next step: install the Mac app when this tree is safe to ship, then cancel a test order and use Undo cancellation, and turn another test order back into a quotation.
+
+## Plans are private until shared, with a timeline and sales and marketing detail — 3 October 2026
+
+A new plan is visible only to its owner until they share it with a named person (view or edit) or with everyone who can open Plan. Plans that already existed stay visible to the company. The plan page has a timeline of dated goals, phases and actions, plus notes, goal progress and updates. A sales plan starts with the revenue number, territories, products, accounts, new and existing business, price, quotations, activity and pipeline coverage. A marketing plan starts with a brief and dated actions for the brief, the spend, the launch and the review. A phase can be opened as a project; a private plan opens a private project.
+
+Paths: `src/modules/plan/domain/access.ts`, `src/modules/plan/domain/timeline.ts`, `src/modules/plan/domain/commercial.ts`, `src/modules/plan/components/story.tsx`, `src/modules/plan/services/commands.ts`, `src/server/data-api/read-policy.ts`, `prisma/migrations/20261003820000_plan_sharing_work/`, `docs/modules/PLAN.md`.
+
+Checks: `npx vitest run tests/plan.test.ts` passed (13). ESLint passed on the Plan files. `tsc --noEmit` still reports the existing profile rota error and no errors in these paths. Local Postgres `127.0.0.1:5433` has `plan_shares` and `plan_notes`; migration `20261003820000_plan_sharing_work` is applied there. In the browser on local `next dev`, signed in as Sophie Green: the existing 2027 Company Plan shows “Everyone with Plan”. A new 2027 Sales plan shows “Only the owner”, a timeline of the sales phases and actions, quotations and activity actuals, and the territory line “North is Sophie…” after save. This local company has one member, so the person picker is empty. The shared database, data service and `/Users/michael/Applications/Atlas.app` were not updated. Do not install the Mac app before `20261003720000_atlas_plan` and `20261003820000_plan_sharing_work` exist on the shared database.
+
+Next step: back up the shared database, apply those Plan migrations, release the data service, install the Mac app, and open a sales plan and a marketing plan in the installed app.
+
+## A call-off is one big order, delivered and invoiced a quantity at a time — 3 October 2026
+
+Sales → Call-offs adds the full quantity once. Deliver and invoice takes only the quantity entered, confirms that release, and raises a draft invoice for those items, dated on the delivery. The rest stays open. A second delivery invoices only its own quantity. Finance must be on, with books in the order currency; otherwise the quantity is not taken. A confirmed delivery that has no invoice yet has Raise the invoice. Administrator and Finance Manager can create those books and open the invoice.
+
+Paths: `src/modules/sales/services/commercial.ts`, `src/modules/sales/services/orders.ts`, `src/modules/finance/services/delivery-invoice.ts`, `src/app/(app)/sales/agreements/[agreementId]/page.tsx`, `src/app/(app)/sales/agreements/new/page.tsx`, `src/modules/sales/components/call-off-order-form.tsx`, `src/core/permissions/capabilities.ts`, `prisma/migrations/20261003830000_finance_books_for_invoicing/migration.sql`.
+
+Checks: `tests/call-off.test.ts` passed (3) earlier in this work. ESLint passed on the call-off service, delivery invoice, agreement page and role capabilities. In the browser on local `next dev`, signed in as Sophie Green, Northbridge Construction call-off CT-50C3F124: 40 export crates, then a delivery of 3 on 25/10/2026 became confirmed release SO-AAED0A17 and draft INV-36C89770-7 for 3 crates at £120 (£360 net, £72 VAT). The order then showed 18 delivered, 18 invoiced and 22 still open. Two earlier releases have their own draft invoices and were not billed again. The shared database, data service and `/Users/michael/Applications/Atlas.app` were not updated. Local Postgres is missing `warehouses.kind`, so the warehouse handoff after confirmation fails; the invoice is still raised. The finance-books SQL was applied on the local database and is not yet recorded in `_prisma_migrations`. Apply `20261003830000_finance_books_for_invoicing` before installing. Do not install this tree before the later product-class migration is on the shared database.
+
+Next step: apply the finance-books migration on the shared database, release the data service, install the Mac app, and confirm Call-offs there.
+
+## A product has its own class — 3 October 2026
+
+The product form, the new-product dialog and the catalogue list can set and filter class: finished goods, materials, work in progress, packaging, services or other. Category stays the group price rules match. Choosing a category fills the class, and it can be changed. A blank class on a new product uses the category's class. Existing products were filled from their category. Inventory shows the class next to the SKU.
+
+Paths: `prisma/schema.prisma`, `prisma/migrations/20261003820000_product_class/migration.sql`, `src/core/products/categories.ts`, `src/core/products/catalogue.ts`, `src/core/products/save.ts`, `src/app/(app)/products/page.tsx`, `src/modules/products/components/product-details.tsx`, `src/modules/products/components/product-view.tsx`, `src/app/(app)/stock/page.tsx`.
+
+Checks: `tests/product-catalogue.test.ts` passed. ESLint passed on the product, stock and category files for this change. `tsc --noEmit` reported no errors in these paths. Remaining type errors are the existing Plan queries (`audience`, `shares`, versions). Local Postgres `127.0.0.1:5433` has `itemClass` on `products`, and migration `20261003820000_product_class` is recorded as applied. In the browser on local `next dev`, signed in as Sophie Green: Export crate saved as Packaging, reload showed Packaging, then saving Other stored `OTHER`. The catalogue list has a class filter. The shared database, data service and `/Users/michael/Applications/Atlas.app` were not updated. Do not install the Mac app before `20261003820000_product_class` exists on the shared database.
+
+Next step: back up the shared database, apply that migration, release the data service, install the Mac app, and set a product's class from the catalogue.
+
+## The customer map shows the group, its companies, branches and managers — 3 October 2026
+
+Customers → Map, and Who's who on a customer, draw the account tree. Move up lifts a company to the level above. Move down places it under the company above it. Group points it at a parent. Invoice customer is who gets the invoice. People on the same account sit under their manager, and a manager in the group can be named from another company. The local demo is now Northbridge Construction as the group, Dalton Logistics under it and invoiced to Northbridge, Harrow & Co as a branch of Dalton, and Tom Willis reporting to Priya Sharma.
+
+Paths: `src/components/customers/account-map.tsx`, `src/core/customers/hierarchy.ts`, `src/core/customers/hierarchy-actions.ts`, `src/core/customers/trading-actions.ts`, `src/core/customers/map-data.ts`, `src/app/(app)/customers/map/page.tsx`, `src/app/(app)/customers/[partyId]/hierarchy.tsx`, `prisma/migrations/20261003810000_contact_reports_to/`.
+
+Checks: `tests/customer-hierarchy-move.test.ts` passed (7). ESLint passed on the map files. Typecheck reported no errors in those files. Local Postgres `127.0.0.1:5433` has `contacts.reportsToContactId`. `prisma migrate deploy` also applied `20261003790000_sites_yards_locations` and `20261003800000_quote_invoice_when_in_stock`, which were pending on that database. In the browser on local `next dev`, signed in as Sophie Green: the map saved the group, the invoice customer, the branch and the reporting line, and Move up lifted Harrow beside Dalton before it was placed back under Dalton. The same tree is on Northbridge’s customer page. The shared database, data service and `/Users/michael/Applications/Atlas.app` were not updated. Do not install the Mac app before `reportsToContactId` exists on the shared database, because the customer page reads it.
+
+Next step: back up the shared database, apply `20261003810000_contact_reports_to`, release the data service, install the Mac app, and open Customers → Map.
+
+## A quotation shows out of stock, and the forecast date — 3 October 2026
+
+On a quotation or sales order, each product line shows how many are free now. When the quantity is higher, the line says Out of stock. Hovering that mark shows the date free stock is forecast to cover the quantity, from the next expected receipt or from production. The larger of the production plan and open production orders is used. The line can still be added. “Add to confirmation. Deliver and invoice when back in stock” is saved on the quotation and copied onto the order. The quotation, the order and their PDFs show that note. When Logistics is on, stock coming back raises the delivery and the draft invoice follows it.
+
+Paths: `src/core/availability/stock-promise.ts`, `src/modules/stock/services/availability.ts`, `src/modules/sales/components/quote-availability.tsx`, `src/modules/sales/components/document-composer.tsx`, `src/modules/sales/services/supply-notes.ts`, `prisma/migrations/20261003800000_quote_invoice_when_in_stock/migration.sql`.
+
+Checks: `tests/stock-promise.test.ts`, `tests/availability-picture.test.ts`, `tests/sales-document-rules.test.ts` and `tests/quote-pdf.test.ts` passed (20). ESLint on the quoting files reported only the existing unused `convert` warning in finance commands. `tsc --noEmit` reported no errors in these paths. Local Postgres `127.0.0.1:5433` has `invoiceWhenInStock` on `sales_quote_lines` and `sales_order_lines`. That column was added directly because `prisma migrate status` is drifted, so the migration row was not recorded. Signed in against local `next dev` on port 3000, `/sales/quotes/new` returned Export crate (`EXP-CRATE`) with `stock: 0` and `arrivals: []`. The client bundle includes the confirmation checkbox. The embedded browser’s sign-in form did not hydrate, so the hover and checkbox were not clicked. There is no future production plan or open receipt locally, so the hover for that crate is “No dated supply covers this quantity.” The shared database, data service and `/Users/michael/Applications/Atlas.app` were not updated.
+
+Next step: back up the shared database, apply `20261003800000_quote_invoice_when_in_stock`, release the data service, install the Mac app, then hover an out-of-stock quotation line that has a dated receipt or production finish.
+
+## An out-of-stock order balances, then becomes a delivery and an invoice — 3 October 2026
+
+A confirmed order that stock cannot cover stays open. The short quantity is the balance on the order and on Fulfil. When that product is received, adjusted in, bought in, or arrives from another place, Atlas raises the delivery for the covered quantity and then the draft invoice. The invoice date is the delivery date. Finance still posts it. A complete-delivery order waits until the whole order can go. The earliest promised order is first. Stock already on a pick is not taken for this.
+
+Paths: `src/modules/logistics/domain/stock-balance.ts`, `src/modules/logistics/services/stock-balance.ts`, `src/core/stock/replenishment.ts`, `src/modules/stock/services/provider.ts`, `src/app/(app)/stock/actions.ts`, `src/modules/finance/services/restock-invoice.ts`, `src/modules/sales/components/order-fulfilment.tsx`.
+
+Checks: `tests/stock-balance.test.ts`, `tests/stock-promise.test.ts`, `tests/logistics.test.ts` and `tests/availability-picture.test.ts` passed (31). ESLint passed on the stock-balance files. `tsc --noEmit` reported no errors in these paths. Remaining type errors are the existing profile rota and customer `reportsToContactId` fields. No new migration. The shared database, data service and `/Users/michael/Applications/Atlas.app` were not updated. Do not install this tree before `20261003800000_logistics_dispatch_delivery` is on the shared database, because the same build reads that logistics switch.
+
+Next step: apply that logistics migration if it is not already on the shared database, release the data service, install the Mac app, place an order with no stock, receive the product, and confirm the delivery and the draft invoice.
+
+## Dispatched orders can be marked delivered from company settings — 3 October 2026
+
+Company administration → Logistics has one switch: when an order is dispatched, mark it delivered. Off, the shipment stays dispatched until someone confirms delivery. On, dispatch records the delivered quantity, a fully delivered order leaves Dispatch, and Finance receives a draft invoice dated that day. Existing companies start off.
+
+Paths: `src/app/(app)/settings/logistics/page.tsx`, `src/app/(app)/settings/logistics/actions.ts`, `src/app/(app)/settings/settings-menu.ts`, `src/modules/logistics/services/shipping.ts`, `src/modules/logistics/domain/operations.ts`, `prisma/migrations/20261003800000_logistics_dispatch_delivery/migration.sql`.
+
+Checks: `tests/logistics.test.ts` and `tests/settings-menu.test.ts` passed (16). ESLint passed on the logistics and settings files for this change. `tsc --noEmit` reported no errors in these paths. Remaining type errors are the existing profile rota and sales `invoiceWhenInStock` errors. Local Postgres `127.0.0.1:5433` has `dispatchConfirmsDelivery` on `logistics_policies`, and the migration is recorded as applied there. In the browser on local `next dev`, signed in as Sophie Green: Company administration → Logistics saved the switch on, reload kept it on, then saving it off stored `false`. The shared database, data service and `/Users/michael/Applications/Atlas.app` were not updated. Do not install the Mac app before `20261003800000_logistics_dispatch_delivery` exists on the shared database.
+
+Next step: back up the shared database, apply that migration, release the data service, install the Mac app, and turn the switch on in Company administration → Logistics if dispatch should count as delivery.
+
+## A user sees their rota, and added apps reach the administrator — 3 October 2026
+
+Workspace opens with My work: rota, time off, tasks and goals. Someone who does not plan the team opens People planner as My rota, the published shifts for the next eight weeks, with a link back to My work. Planners still get the team month plan.
+
+Adding an app now copies that app’s permissions onto the Administrator role and refreshes the sidebar. Safety and Plan are switches on Workspace access. On the shared company, the administrator role was missing Safety, Manufacturing, Audit, Plan and Production Planning even though those apps were already switched on. Those permissions are now on that role, so the installed app can list them on the next load. Chat’s data read for that company returns customer contacts.
+
+Paths: `src/app/(app)/home/page.tsx`, `src/app/(app)/scheduling/page.tsx`, `src/core/modules/runtime.ts`, `src/app/(app)/apps/actions.ts`, `src/core/permissions/company-access.ts`.
+
+Checks: the shared session after the role update includes `safety.today.read`, `manufacturing.order.read`, `echo.read`, `plan.read` and `planning.demand.read`. `chatSnapshot` on the data service returned customer contacts. The personal rota page is in source. The installed Mac app was not rebuilt, so My rota and the My work card on Workspace appear after the next desktop install.
+
+Next step: install the Mac app, open Workspace as a user who is not a planner, and confirm My work and My rota show published shifts.
+
+## Service can ask Finance to credit the customer — 3 October 2026
+
+A complaint, damage, shortage, pricing or goodwill query can send a credit to Finance from the case. Finance sees it under Credits from Customer Service and raises it against the customer’s posted invoice. The customer balance does not change until that credit is posted. A case can have one open credit. There is no credit to send when the customer has no posted invoice with a balance, or when the amount is more than what they still owe.
+
+Paths: `src/modules/service/domain/credit.ts`, `src/modules/service/services/commands.ts`, `src/app/(app)/service/cases/[caseId]/page.tsx`, `src/modules/finance/services/commands.ts`, `src/modules/finance/services/queries.ts`, `src/modules/finance/services/access.ts`, `src/app/(app)/finance/page.tsx`, `src/app/(app)/finance/documents/[id]/page.tsx`.
+
+Checks: `tests/service-credit.test.ts` passed (3). ESLint passed on the service and finance files for this change. `tsc --noEmit` reported no errors. No schema migration. The shared database, data service and `/Users/michael/Applications/Atlas.app` were not updated. The installed app will not show Send to Finance until the data service includes `askFinanceForCredit`, `creditChoices` and `raiseServiceCredit`.
+
+Next step: release the data service, install the Mac app, open a service complaint that has a posted invoice, send a damage credit to Finance, and raise it on the customer.
+
+## My work is on the profile, and chat lists customer contacts — 3 October 2026
+
+`/profile` is My work. It holds time off, the rota, tasks and meetings assigned to the signed-in person, goals, performance plans, expenses, and phone, address and emergency contact. Saving those contact details writes the HR employee record. Password and access stay on the same page under Account. The sidebar and a My work item open it.
+
+Chat keeps colleagues and customer contacts on the list even when a conversation already exists. A company with one login can message a customer contact. Direct messages stay in Atlas.
+
+Paths: `src/app/(app)/profile/page.tsx`, `src/app/(app)/profile/work.ts`, `src/app/(app)/chat/chat-dock.tsx`, `src/app/(app)/chat/actions.ts`, `src/server/data-api/read-policy.ts`, `src/components/shell/nav-links.tsx`.
+
+Checks: `npx tsc --noEmit` exited 0. ESLint passed on the new profile, chat and navigation files. The sidebar image warning is the existing one. `tests/chat-dock.test.ts` passed. In the browser on local `next dev`, signed in as Sophie Green: My work showed time off, rota, four assigned items (two CRM activities, an appraisal and a one-to-one), goals and contact details. Saving the address `14 Harbour Lane, Bristol, BS1 4QT`, phone `0117 496 0123` and emergency contact Alex Green reloaded from the HR record. Chat opened Emily Carter at Dalton Logistics and sent “Hello Emily, this stays in Atlas.” After restarting Next so it loaded the current Prisma client, Request time off for 12–16 October 2026 saved: `POST /profile` 200, `requestLeave` 34ms, the page shows 12 Oct 2026 – 16 Oct 2026, 5 working days, Pending, and 20 days left (0 approved, 5 waiting). The installed Mac app was not rebuilt. `next build` still fails prerendering `/login`, which blocks `npm run desktop:build`.
+
+Next step: clear the `/login` prerender failure, then install `/Users/michael/Applications/Atlas.app` so My work and the contact chat are the running app.
+
+## Customer documents use the company’s brand — 3 October 2026
+
+Company administration → Brand is where the business uploads its logo and writes the colour, letterhead, payment details, terms and footer that customers see. Invoices, credit notes, debit notes, quotations, order acknowledgements and proformas print that identity. PNG and JPG logos print on the page. WEBP and GIF stay in the workspace. A near-white colour is refused. Saving Workspace keeps the brand text. The sidebar monogram uses the brand colour when no logo is set.
+
+Paths: `src/core/documents/company-brand.ts`, `src/core/setup/company-profile.ts`, `src/app/(app)/settings/brand-panel.tsx`, `src/app/(app)/settings/actions.ts`, `src/modules/sales/services/quote-pdf.ts`, `src/modules/sales/services/proforma-pdf.ts`, `src/app/api/finance/documents/[id]/pdf/route.ts`, `src/components/shell/company-mark.tsx`.
+
+Checks: `tests/company-brand.test.ts`, `tests/quote-pdf.test.ts`, `tests/settings-menu.test.ts` and `tests/setup-import.test.ts` passed (14). ESLint on the touched files reported only the existing `<img>` warnings. Typecheck reported no errors in these paths. In the browser on local `next dev`, signed in as Sophie Green, Brand saved Northbridge’s letterhead, terms and example payment details; reload kept them; Workspace showed the same legal name, address and VAT and still had Europe/London, GBP and April. The order acknowledgement at `/api/orders/cmuswgd9g000504yuzz42dl0h/pdf?preview=1` returned a PDF (200, `%PDF-`, 2644 bytes). No schema migration. The shared database, data service and `/Users/michael/Applications/Atlas.app` were not updated. The installed app will not save Brand until the data service includes `saveCompanyBrand`.
+
+Next step: release the data service and install the Mac app, then open Company administration → Brand, upload a PNG or JPG logo, replace the example payment line with the real bank details, and download an invoice.
+
+## Sites, yards and product locations — 3 October 2026
+
+Inventory places are a warehouse or a yard, and a site can hold both. A place manages its locations. A product shows where it sits. Stock that is already in the place but not in a location can be placed. A move inside a site arrives now. A move to another site stays in transit on Movements until that warehouse or yard receives it. Existing warehouses stay warehouses with no site until one is chosen.
+
+Paths: `prisma/migrations/20261003790000_sites_yards_locations/`, `src/modules/stock/domain/places.ts`, `src/modules/stock/services/places.ts`, `src/modules/stock/services/transfers.ts`, `src/app/(app)/stock/warehouses/page.tsx`, `src/app/(app)/stock/places/[placeId]/page.tsx`, `src/modules/stock/components/product-locations.tsx`.
+
+Checks: `tests/stock-places.test.ts` and `tests/planning-inventory.test.ts` passed (16). `npx tsc --noEmit` reported no errors after Prisma generate. Migration `20261003790000_sites_yards_locations` is applied. Backup `/var/backups/atlas-test/pre-sites-yards-20261003/database.dump` (968909 bytes). Data service `/opt/atlas-test/data-releases/sites-yards-20261003` is current: health JSON, `/stock` 404, Site and InternalMove present. Installed `/Users/michael/Applications/Atlas.app` was replaced (previous bundle `Atlas-before-sites-20261003.app`) and reopened. Signed in against `http://127.0.0.1:13200/stock/warehouses`, Inventory → Places showed warehouse One, New site, New place and Locations. A site was not created in that check.
+
+Next step: in the reopened Mac app, sign in, open Inventory → Places, add a site, and put the stock in warehouse One into a location.
+
+## Holiday requests are decided in HR — 3 October 2026
+
+A person requests holiday on their profile. The form counts working days from their pattern and says who it goes to. HR → Holidays lists those requests for the manager, with the counted days editable in half-day steps before approval. HR can also set each person’s yearly allowance there. Team managers see their team’s waiting requests. The allowance editor needs employee or absence management.
+
+Paths: `src/app/(app)/people/holidays/page.tsx`, `src/app/(app)/people/absence/actions.ts`, `src/app/(app)/profile/page.tsx`, `src/modules/people/components/holiday-request-fields.tsx`, `src/modules/people/components/my-hr-workspace.tsx`, `src/modules/people/domain/leave-balance.ts`.
+
+Checks: `tests/leave-days.test.ts`, `tests/scheduling-planner.test.ts` and `tests/hr-self-service.test.ts` passed (13). ESLint passed on the holiday, profile and HR files. `node scripts/generate-data-api.mjs` rewrote the allowlist (279 models, 578 actions), including `setLeaveAllowance`. The shared database was not changed. The installed Mac app was not rebuilt, so `/Users/michael/Applications/Atlas.app` does not show this yet.
+
+Next step: release the data service, install the Mac app, send a holiday request from a profile, and approve it in HR → Holidays with a changed day count and a changed allowance.
+
+## Sales, delivery, invoice date and planned production share one availability — 3 October 2026
+
+Available stock is on hand, less quality holds, plus incoming production, less the greater of confirmed demand still to deliver and active reservations. Incoming production is the larger of the production plan and open production orders. That figure is on the sales order lines, the stock list, the product, Production Planning and Manufacturing MRP. Confirming a delivery raises a draft finance invoice for the delivered quantity. The invoice date is the delivery date. The draft links to the sales order and the shipment. Finance still posts it. The sales order shows ordered, allocated, shipped, delivered, invoiced and available.
+
+Paths: `src/core/availability/picture.ts`, `src/modules/stock/services/availability.ts`, `src/modules/finance/services/delivery-invoice.ts`, `src/core/finance/handoff.ts`, `src/modules/logistics/services/shipping.ts`, `src/modules/planning/domain/netting.ts`, `src/app/(app)/planning/page.tsx`, `src/app/(app)/stock/page.tsx`, `src/modules/sales/components/order-fulfilment.tsx`, `src/modules/sales/components/document-composer.tsx`.
+
+Checks: `npx vitest run tests/availability-picture.test.ts tests/planning-inventory.test.ts tests/product-recipe.test.ts` passed (19). ESLint on the touched chain files passed. `tsc` reported no errors in these files. The unrelated `my-hr-workspace.tsx` shift type error remains. No new migration. The shared database, data service and `/Users/michael/Applications/Atlas.app` were not updated. Do not install the Mac app first: the new availability read and the delivery invoice run on the data service, and the current service does not have them.
+
+Next step: release the data service, then install the Mac app, deliver a shipment, and confirm the draft invoice uses that delivery date and the same available quantity shows on Sales, Inventory and Production Planning.
+
+## Price-list agreements read as a contract, and branches inherit a group's pricing — 3 October 2026
+
+`CommercialAgreement` ("agreement") is Atlas's existing SLA/contract record — customer, term (startsOn/endsOn), status, a linked price list, payment terms, and a service-promise (SLA name, coverage, response/resolution hours, breach notes). Michael found the create/edit form and detail page read as a flat settings form rather than a contract, and asked whether assigning a price list cascades down the customer hierarchy (group → branch) — it did not: pricing resolution matched the exact `partyId` only, so every branch needed its own agreement or `CustomerCommercialSettings.priceList`.
+
+This pass was UX-only (no schema migration) plus one logic change:
+- Reorganised `src/app/(app)/pricing/agreement-form.tsx` into five numbered contract sections (Who it's with → Price list assigned → Term → Payment terms → Service level agreement) instead of two flat blocks, so creating/editing an agreement reads top-to-bottom like a contract being assigned to an account.
+- Added price/agreement inheritance: a branch Party with no agreement and no usual price list of its own now inherits the nearest ancestor's (its parent group's, or further up `parentPartyId`) active agreement or usual price list. A branch's own agreement or price-list setting still overrides it. New `resolveAccountPricing()` in `src/core/pricing/resolve-price.ts` exposes this for display; `resolvePrice()` itself now walks the same ancestor chain when resolving a sale price, and tags the price `source` string with "· inherited from {parent name}".
+- `src/app/(app)/customers/[partyId]/commercial.tsx`: the "Price list in effect" card and the Agreements section now say when the figure is inherited from a named parent account, with a link to that parent's agreement, instead of silently falling back to catalogue prices.
+
+Paths: `src/app/(app)/pricing/agreement-form.tsx`, `src/app/(app)/customers/[partyId]/commercial.tsx`, `src/core/pricing/resolve-price.ts`.
+
+Checks actually run: `npx tsc --noEmit` — clean except one pre-existing unrelated error in `src/app/(app)/manufacturing/schedule/page.tsx` (missing `./shifts-editor`, not touched here). `npm run lint` — clean on the touched files; one pre-existing unrelated error in `src/components/shell/shell-chrome.tsx`. No automated test file exists yet for `resolveAccountPricing`'s ancestor walk — not written this pass. Verified live in the browser against the running local dev server: signed in, loaded `/pricing/agreements/new` (numbered sections render correctly), and `/customers/{id}?tab=commercial` for a customer with no hierarchy and no agreement (shows "Catalogue prices", no inheritance wording, no console errors). Seed data has no parent/branch customers, so the inherited-price-list wording path was verified by code review and the `resolvePrice`/`resolveAccountPricing` shared-logic structure, not by loading an actual inheriting branch in the browser.
+
+No schema change, so no migration or shared-database release was needed. Live: the production build that landed shortly after (built by a concurrent session, "Atlas Manufacturing MRP/MES system", also working in this repo — the earlier `/login` prerender crash on `main` that blocked `scripts/build-mac-client.sh` had cleared by then, not independently re-verified here) was confirmed by grepping the installed bundle for this change's own text (`"Who this contract is with"` present in `/Users/michael/Applications/Atlas.app/Contents/Resources/runtime/build/desktop-source/.next/server/app/(app)/pricing/agreements/...`) and by comparing the installed `Atlas` binary's sha256 against the freshly built one in `build/Atlas.app` (identical). The installed app was then launched (`open /Users/michael/Applications/Atlas.app`) as a smoke check; the agreement form and commercial-tab wording were not re-clicked-through post-install.
+
+Next step: add a seeded branch/group pair (or test by hand) to see the inherited-price-list banner render on a real account; consider a small unit test for `resolveAccountPricing`'s ancestor walk and cycle protection.
+
+## UK VAT and an overall discount on the sale — 3 October 2026
+
+UK sales orders and quotations add VAT at 20%. A delivery address outside the UK is charged with no VAT. Zero-rated and exempt products stay at 0% in the UK. The commercial summary has an overall discount that can be applied or cleared; it is taken off before VAT. The percent is stored on the quotation and the order (`headerDiscountPercent`). Line amounts on a saved document stay the goods value, and the totals show the discount, VAT and the amount to pay.
+
+Paths: `src/modules/sales/domain/uk-sale.ts`, `src/modules/sales/services/tax-check.ts`, `src/modules/sales/services/documents.ts`, `src/modules/sales/services/order-totals.ts`, `src/modules/sales/components/document-composer.tsx`, `prisma/migrations/20261003760000_sales_uk_vat_header_discount`.
+
+Checks: `tests/uk-sale-vat.test.ts` and `tests/sales-document-rules.test.ts` passed (14). ESLint passed on the sales files edited for this. Local database `127.0.0.1:5433` has `headerDiscountPercent` on `sales_quotes` and `sales_orders`, and migration `20261003760000_sales_uk_vat_header_discount` is recorded as applied. The signed-in new-order page on local `next dev` returned 500 because `customerInvoiceTemplate.findMany` is missing on that already-running Prisma client. The browser sign-in form did not submit, so the discount control was not clicked. The shared server migration was not applied, and `/Users/michael/Applications/Atlas.app` was not rebuilt.
+
+Next step: restart local Next, open a new sale, apply and remove an overall discount, and confirm a delivery address outside the UK shows no VAT. Then apply `20261003760000_sales_uk_vat_header_discount` on the shared database with a backup, release the data service, and install the Mac app.
+
+## Export proforma is raised with the sale — 3 October 2026
+
+Sales has a Templates menu at `/sales/templates`. A domestic invoice template and an export proforma template say what is printed. The export template includes weight, volume, commodity code, country of origin, Incoterms, ports, packages, shipping marks, exporter and buyer identity, and the consignee address. A template is attached to the customer account with that account’s addresses. Choosing an export template on a sale raises proforma `PF-…` with the sale. Confirming the sale issues it. Missing product weight, volume or customs facts are named and block confirmation. The address attached as the consignee is accepted on the sale even when that address is stored as a billing address. The proforma says it is not a tax invoice. Finance still posts the tax invoice.
+
+Paths: `src/modules/sales/domain/invoice-templates.ts`, `src/modules/sales/services/proforma.ts`, `src/modules/sales/services/invoice-template-actions.ts`, `src/app/(app)/sales/templates/page.tsx`, `src/app/(app)/customers/[partyId]/invoice-templates.tsx`, `prisma/migrations/20261003760000_invoice_templates_proforma/migration.sql`.
+
+Checks: `npx vitest run tests/invoice-templates.test.ts tests/sales-quote-lifecycle.test.ts` passed (10). `npx prisma validate` and `npx prisma generate` succeeded. `npx tsc --noEmit` exited 0. ESLint on the touched sales and customer files passed. Local Postgres `127.0.0.1:5433` has `sales_proformas` and `invoice_document_templates`; migration `20261003760000_invoice_templates_proforma` is recorded there. In the browser on local `next dev`, signed in as Sophie Green: Sales → Templates saved an export proforma template with weight, volume, commodity code, origin, Incoterms, ports, packages, marks and buyer identity. Dalton Logistics’s commercial tab attached that template to 9 Trident Way with buyer EORI and VAT. A new sale for that account raised draft proforma `PF-E12E7E60` on order `SO-AC65B801` (CIF Felixstowe, Rotterdam, 2.500 kg net, 2.800 kg gross, 0.024 m³). Confirmation stayed blocked until shipping marks and the exporter EORI were filled; those gaps then cleared. Confirm sale stayed disabled because Dalton’s credit check is a block, so the proforma was not issued. The shared database, data service and `/Users/michael/Applications/Atlas.app` were not updated. Do not install the Mac app before those tables exist on the shared database.
+
+Next step: back up the shared database, apply `20261003760000_invoice_templates_proforma`, release the data service, install the Mac app, and open Sales → Templates.
+
+## Price lists: product search, set-price discounts, sales currency, category discounts — 3 October 2026
+
+A price list searches products by SKU, name or category instead of a long dropdown. A set price can carry a discount, which quotes and orders show against that price. The list currency is the sales currency for documents that use the list. A product category can be selected and given one overall discount. That discount applies to products in the category that do not have their own set price. Saving the same category and quantity updates the existing discount.
+
+Paths: `src/app/(app)/pricing/`, `src/core/pricing/rules.ts`, `src/core/pricing/resolve-price.ts`, `src/core/pricing/csv.ts`, `src/modules/sales/components/document-composer.tsx`, `src/core/setup/apply-import.ts`.
+
+Checks: `tests/pricing-rules.test.ts`, `tests/pricing-csv.test.ts` and `tests/customer-pricing.test.ts` passed (22). ESLint on the pricing paths passed. The installed Mac app was not rebuilt, and the data service was not released, so `/Users/michael/Applications/Atlas.app` does not show this yet. Set-price discounts and currency changes need that data-service release before they persist.
+
+Next step: release the data service and install the Mac app, then open a price list, search a product, save a discounted set price, select a category discount, and confirm a quotation uses that currency and discount.
+
+## Product catalogue, bill of materials and plant machines — 3 October 2026
+
+The product page edits the catalogue record, category, bill of materials and the machines each step runs on. Categories are company records (finished goods, materials, work in progress, packaging, services or other) and the product still stores the category code that price rules match. A bill line is a bought material, work in progress, a made subassembly or sent-out work. The same page says how many go in a box, pack or carton, which products that pack contains, and which other products this one needs before it can be used. Those links are not the manufacturing bill. Manufacturing → Plant creates work centres and machines. A recipe step stores that machine. Releasing a production order copies it onto the work order. Inventory lists the product’s category and opens the same record. The groups are not tied to one industry: a company names its own categories, packs and machines.
+
+Paths: `src/app/(app)/products/`, `src/modules/products/`, `src/core/products/catalogue.ts`, `src/core/products/links.ts`, `src/app/(app)/manufacturing/plant/`, `src/modules/manufacturing/services/plant.ts`, `prisma/migrations/20261003760000_product_categories_and_plant/`, `prisma/migrations/20261003770000_product_packs_and_links/`.
+
+Checks actually run: `tests/product-catalogue.test.ts`, `tests/product-recipe.test.ts` and `tests/product-measures.test.ts` passed (13). `npx tsc --noEmit` reported no errors in these paths. ESLint on the touched product, plant, stock and pricing files passed. `node scripts/generate-data-api.mjs` rewrote the allowlist (270 models, 536 actions).
+
+Not live. The open tunnel is the forwarding-only data account, so `20261003760000_product_categories_and_plant` and `20261003770000_product_packs_and_links` were not applied on the shared database and `/Users/michael/Applications/Atlas.app` was not replaced. Installing first would make Products, Inventory and Plant query tables the server does not have yet.
+
+Next step: from an operator session, back up central data, apply both product migrations, release the data service, install the Mac app, then open a product, set how many go in a pack, link a product it needs, and release an order onto its machine.
+
+## Logistics pack, handling units and courier CSV — 3 October 2026
+
+Release allocates available stock and then opens the pick. Packing builds a handling unit — pallet, carton, box, crate, stillage, IBC, roll cage, container, or a type the company adds — with size, weight and contents. A pallet can hold other units, and a pallet cannot take more of a SKU than the product says fit on one. Completing the pack creates the shipment from the packed quantity. Dispatch and the shipment download a CSV after the person chooses the columns, including SKU and items per pallet. The product catalogue stores the SKU and how many of that SKU go on a pallet. Sales rules can show or hide customer PO, requested delivery and promised delivery. Those fields are on the order form and the order header when the switch is on.
+
+Paths: `src/modules/logistics/domain/handling.ts`, `src/modules/logistics/services/handling.ts`, `src/modules/logistics/services/work.ts`, `src/modules/logistics/services/demand.ts`, `src/modules/logistics/services/shipping.ts`, `src/app/(app)/logistics/`, `src/app/api/logistics/courier/route.ts`, `src/modules/sales/services/sales-policy.ts`, `src/modules/sales/components/document-composer.tsx`, `prisma/migrations/20261003740000_logistics_handling_units/migration.sql`.
+
+Checks and the installed app are recorded after they run.
+
+Next step: apply the handling-unit migration on the company database, release the data service, install the Mac app, and pack an order through to a courier CSV.
+
+## Manager level is a settings switch — 3 October 2026
+
+## Individual goals and performance plans — 3 October 2026
+
+Goals can be a department or team target, a personal goal, a development plan, or a performance-improvement plan. A department target must name a live catalogue measure and is drawn under that chart. Personal and plan goals are private. Saving a plan in HR copies each objective into a goal, and the same plan appears on the person's profile, My HR, the employee record, the team page and Goals → People. Draft plans stay with the owner until they are no longer draft. Disciplinary cases are not listed with the goals.
+
+Paths: `src/modules/kpis/`, `src/app/(app)/kpis/`, `src/app/(app)/people/conduct/actions.ts`, `src/server/data-api/read-policy.ts`, `prisma/migrations/20261003730000_goal_department_links/`, `prisma/migrations/20261003750000_goal_plan_leads/`.
+
+Checks: `tests/goal-progress.test.ts` and `tests/hr-conduct.test.ts` passed (10). ESLint passed on the Goals and conduct files. Typecheck reported no errors in those files. Remaining `tsc` errors are the existing product-category and product-make fields. Local Postgres `127.0.0.1:5433` already had the goal columns; `20261003750000_goal_plan_leads` was applied there and matched zero existing plans. The local login page at `http://127.0.0.1:3000/login` rendered, and the embedded browser did not complete sign-in, so the create-goal and profile flow was not clicked through. The shared database migration, data-service release and Mac install were not run. Do not install the Mac app before `20261003730000_goal_department_links` and `20261003750000_goal_plan_leads` exist on the shared database.
+
+Next step: back up the shared database, apply those two migrations, release the data service, install `/Users/michael/Applications/Atlas.app`, and confirm a department target under its chart and a performance plan on that person's profile.
+
+## Atlas Plan is in the local app; shared activation is pending — 3 October 2026
+
+Plan is a new module at `/plan` with Home, Plans, Scenarios, Reviews and Insights. Production Planning stays at `/planning`. A plan holds an intended baseline, a separate working forecast, live actuals where Atlas already stores them, and scenarios that stay off the working forecast until promoted. Suggested cross-measure connections stay off until kept. Missing modules and missing sources show a note, not a made-up number.
+
+On local `next dev` (`http://localhost:3000`), signed in as Sophie Green, a 2027 Company Plan was created with the sales-volume to production-demand connection kept at 0.8. January revenue plan £12m and forecast £11.4m showed a gap of −£600k. January sales volume 10,000 and production demand 8,000 were saved. A Growth scenario of +10% sales volume showed January production demand at 8,640 while the working forecast stayed 8,000. The Saturday-shift decision was recorded. Monthly business review was snapshotted and listed as completed. Home, Scenarios, Reviews, Insights and the review presentation (arrow keys, page 3 of 5) all rendered.
+
+Paths: `src/modules/plan/`, `src/app/(app)/plan/`, `src/app/api/plan/[planId]/export/route.ts`, `prisma/migrations/20261003720000_atlas_plan/`, `docs/modules/PLAN.md`, `deploy/enable-plan.mjs`.
+
+Checks: `npx vitest run tests/plan.test.ts tests/modules.test.ts` passed 16 tests. Local Postgres `127.0.0.1:5433` has `plan_plans`. The browser flow above was exercised on the already-running Next server. A pre-existing hydration warning in `src/components/shell/shell-chrome.tsx` is still on that server. Shared-database migration, data-service release, `npm run desktop:build`, and `deploy/enable-plan.mjs` were not run. Do not install the Mac app before the Plan tables exist on the shared database.
+
+Next step: back up the shared database, apply `20261003720000_atlas_plan`, release the data service, install `/Users/michael/Applications/Atlas.app`, enable Plan for Michael’s existing administrator, and open Plan in the installed app.
+
+## Projects and Pricing were crashing in the desktop app — 3 October 2026
+
+The installed app already had both screens. Projects failed with “Filter nesting limit exceeded”, and Pricing failed because `commercial_agreements` was not on the shared database. Both looked empty. The data service filter depth is now 24. Migration `20261003650000_commercial_agreements` is applied. Backup: `/var/backups/atlas-test/pre-commercial-agreements-20261003` (dump listed, 698603 bytes). The active data service is still `company-setup-20261003`; its desktop query route was patched in place to the same depth and restarted. Health returned the data-service JSON.
+
+Checked through the data service as the company’s active member: 1 project (`Michael`), inbox and documents accepted, 1 price list (`One`, GBP, 0 prices, 0 customers, 0 agreements). `tests/projects-page-query.test.ts` and `tests/projects-work.test.ts` passed (14). The Mac bundle was not rebuilt; these pages were already in `/Users/michael/Applications/Atlas.app`.
+
+Next step: open Projects and Pricing again in the installed app. The project and the price list should be on screen.
+
+## HR policies, performance plans and disciplinary cases — 3 October 2026
+
+HR has Holidays, Policies and Conduct. Policies are PDF files stored on the server (up to 3 MB), with an audience of everyone, managers, or HR. Performance plans and disciplinary cases are structured forms: objectives, reviews, employee comments, stages, hearings, outcomes and case updates. A person sees their own plan or case. A manager with conduct access sees their team. Company-wide conduct also needs employee-record access. Nobody can open a case about themselves. Confidential notes need HR employee management. Private case notes stay off the employee view unless shared.
+
+Company administration splits HR into own holidays, policies, employee records, reviews, absence, rotas, pay, and conduct. The Staff role is own holidays, published policies, scheduling read and chat. Migration `20261003720000_hr_conduct_policies` adds `people.holiday.self` and `people.policy.read` to existing roles, and conduct permissions to Administrator, HR Manager and Team Manager.
+
+Paths: `src/app/(app)/people/policies/`, `src/app/(app)/people/conduct/`, `src/app/(app)/people/holidays/`, `src/core/permissions/hr-access.ts`, `src/modules/people/domain/conduct.ts`, `prisma/migrations/20261003720000_hr_conduct_policies/`.
+
+Checks: `tests/hr-conduct.test.ts`, `tests/hr-self-service.test.ts`, `tests/hr-team-access.test.ts`, `tests/access-levels.test.ts` and `tests/company-access.test.ts` passed (21). ESLint passed on the HR files. `tsc` reported no errors in these files. Remaining `tsc` errors are the existing KPI lead types and the Next layout-route cache. The manager-level settings page typecheck is clean. Local `prisma migrate deploy` on `127.0.0.1:5433` applied this migration and also the other pending local migrations (`safety_foundation`, `atlas_plan`, `goal_department_links`, `manager_level`). Signed-in render of `/people/holidays` on local `next dev` returned the holiday form. `/people/policies` and `/people/conduct` returned 500 because that already-running Next process still has the previous Prisma client (`hrPolicy.findMany` missing). Restart Next, then open those pages. The shared server migration was not applied. The installed Mac app was not rebuilt.
+
+Next step: restart local Next and confirm a policy PDF, a performance plan and a disciplinary case. Then apply the migration on the shared database and install the Mac app.
+
+## Manager level is a settings switch — 3 October 2026
+
+Company administrators open Company administration → Manager level. CRM, Finance and Customer Service each have a switch. CRM managers assign a prospect or task and push prospects and deals. Finance managers sign off documents at or above the company limit, or in another currency, and cannot approve their own document. Customer service managers sign off complaints and queries linked to an order at or above the limit. Agents can keep working the case. The switch does not grant a permission.
+
+Paths: `src/core/permissions/manager-level.ts`, `src/app/(app)/settings/manager-panel.tsx`, `src/app/(app)/settings/actions.ts`, `src/modules/crm/services/manager-level.ts`, `src/modules/finance/services/commands.ts`, `src/modules/service/services/commands.ts`, `prisma/migrations/20261003730000_manager_level/migration.sql`.
+
+Checks: `npx prisma generate` succeeded. `node scripts/generate-data-api.mjs` wrote 266 models and 524 actions. `npx vitest run tests/manager-level.test.ts tests/settings-menu.test.ts tests/customer-permissions.test.ts tests/sales-crm-permissions.test.ts` passed 19 tests. ESLint on the touched files reported only the existing unused `convert` warning in finance commands. Typecheck reported no errors in the touched files. Local `127.0.0.1:5433` has `organisations.managerPolicy` from `20261003730000_manager_level`. In the browser on local `next dev`, signed in as Sophie Green, Company administration → Manager level showed the three switches and £10,000 limits. Saving CRM on wrote `{crm:true}` for the demo company; saving it off restored all three switches off. The shared server migration is not applied, and `/Users/michael/Applications/Atlas.app` was not rebuilt. Do not install the new client before that column exists, because Company administration reads it.
+
+Next step: apply `20261003730000_manager_level` on the shared database with a backup, release the data service, then install the Mac app and confirm the Manager level switches.
+
+## Safety is built, not yet live on the shared database — 3 October 2026
+
+Safety is a registered module at `/safety` with Today, Risk, Incidents, Control, Assurance and Reports. Risk revisions, incidents, RIDDOR review assistance, inspections, audits, permits, isolation, safety holds, PUWER/LOLER checks, COSHH, competence and workplace records are in the domain. A safety hold blocks a manufacturing work-order start, blocks logistics equipment assignment when competence or the hold fails, and shows a delivery risk on the linked sales order. Architecture: `docs/modules/SAFETY.md`. Migration: `prisma/migrations/20261003710000_safety_foundation`. Activation script: `deploy/enable-safety.mjs`.
+
+Paths: `src/modules/safety/`, `src/app/(app)/safety/`, `src/core/safety/types.ts`, `src/modules/manufacturing/services/commands.ts`, `src/modules/logistics/services/equipment.ts`, `src/modules/sales/components/safety-delivery.tsx`.
+
+Checks actually run: `tests/safety.test.ts` and `tests/modules.test.ts` passed (16). ESLint on the Safety paths passed after unused-variable fixes. No production build, no desktop package, and no server migration. This session has no SSH host configured, so the shared database and data service were not updated and `/Users/michael/Applications/Atlas.app` was not replaced. Opening Safety in the installed app would fail until `20261003710000_safety_foundation` is applied and the data service that contains the new actions is current.
+
+Next step: apply that migration on the server, deploy the data service, run `deploy/enable-safety.mjs` for the administrator, install the Mac app, and sign in to Today.
+
+## Company settings are administrator-only — 3 October 2026
+
+Company identity, brand, workspace access, sales rules and HR company defaults save only with `core.modules.manage`. The company administration menu is grouped (Company, People, Records, Account) and highlights the current section. People without an administration permission no longer see Company admin in the sidebar; they keep Profile. HR managers can still maintain appraisal and one-to-one templates, and see company defaults read-only.
+
+Paths: `src/app/(app)/settings/settings-menu.ts`, `settings-nav.tsx`, `layout.tsx`, `page.tsx`, `actions.ts`, `workspace-panel.tsx`, `src/app/(app)/people/settings/`, `src/app/(app)/sales/settings/page.tsx`, `src/components/shell/nav-links.tsx`, `sidebar.tsx`, `topbar.tsx`, `src/core/modules/runtime.ts`.
+
+Checks: `tests/settings-menu.test.ts` passed (2). ESLint on the touched files reported only the existing `<img>` warnings in `brand-panel.tsx` and `sidebar.tsx`. Browser check and installed app update are recorded after they run.
+
+## Marketing journey, campaigns, places and Finance approval — 3 October 2026
+
+Marketing’s tab strip is Campaigns, Calendar, Budgets, Journey and Leads. A budget line assigns an amount to a place. Send to Finance creates a spend request on the company books. Approval starts only when one Finance approval route matches. Journey is a map for a campaign: stages Notice, Look, Choose, Buy and Stay, with touchpoints on each stage. It does not send messages. The older automation journey stays off the menu. Leads name the person and can be passed to Sales.
+
+Paths: `src/modules/marketing/manifest.ts`, `components/journey-map.tsx`, `campaign-desk.tsx`, `budget-board.tsx`, `leads-board.tsx`, `services/commands.ts`, `domain/planning.ts`, `src/app/(app)/marketing/`.
+
+Checks: `npx vitest run tests/marketing-planning.test.ts` passed 5. ESLint on the journey, planning, commands, manifest, nav icon and marketing section page passed. Installed `/Users/michael/Applications/Atlas.app` and signed in as Sophie Green. Journey saved “Autumn customers” for Autumn launch, then “Launch email” on Notice and “Range page” on Look. A reload showed both. Budgets loaded: £4,300 of £12,000, UK paid search £1,800 marked Sent to Finance, and the earlier Unassigned £2,500 line still there. Request `PR-35545AF3-D` remains DRAFT because there is no approval policy. Finance books are Northbridge Group, NB, GBP, 2026.
+
+Data service `/opt/atlas-test/data-releases/marketing-journey-20261003` is current. Previous release was `product-pallet-20261003`. Backup `/var/backups/atlas-test/pre-marketing-journey-20261003` (`pg_restore --list` 2160 lines). Health JSON 200. `/marketing` on the server is 404. No new migration.
+
+## Chat — contacts, groups and record links — 3 October 2026
+
+Company-wide sending is turned off. Chat lists direct and group conversations with colleagues and customer contacts in the same company. A message can attach an order, quotation, customer, project or product the sender is allowed to read. Contact threads stay in Atlas and are not emailed. The dock calls `/api/chat` on the Mac instead of a layout server action, so polling does not refresh another page.
+
+Paths: `src/app/(app)/chat/actions.ts`, `src/app/(app)/chat/chat-dock.tsx`, `src/app/api/chat/route.ts`, `src/core/chat/policy.ts`, `src/server/data-api/read-policy.ts`, `prisma/schema.prisma`, `prisma/migrations/20261003710000_chat_groups_and_links/migration.sql`, `tests/chat-dock.test.ts`, `tests/workspace-security.test.ts`, `deploy/check-chat.mjs`.
+
+Checked on the installed app before this change, signed in as Sophie Green: Chat showed no people and only an empty Company thread. The company has customer accounts and no other sign-in accounts. A chat refresh posted through the company-setup page and the browser left Chat. Checks after the change: `npx prisma generate` succeeded, `npx vitest run tests/chat-dock.test.ts tests/workspace-security.test.ts` passed 15 tests, `npx eslint` on the chat files passed. No chat errors from `tsc`. The new migration was not applied to the central database, and the installed Mac app and data service were not replaced.
+
+Next step: apply `20261003710000_chat_groups_and_links` on the central database with a backup, release the data service, then install the Mac app and confirm a contact chat, a multi-person chat, an order attachment and a refused company message.
+
+## Desktop launch keeps connecting — 3 October 2026
+
+Opening Atlas no longer stops after a short wait and covers the window with “No local database is started.” The Mac launcher keeps retrying the server tunnel and the local workspace until the sign-in page answers, and a failed early check can no longer paint that panel over a page that already opened. Connection lines are written to `~/Library/Logs/Atlas/launcher.log` and to the terminal when the app is started from one. The bundle icon is the blue A; Finder’s icon cache was cleared so the Desktop shortcut uses it.
+
+Paths: `desktop/macos/Atlas.swift`, `desktop/macos/Info.plist`. Installed `/Users/michael/Applications/Atlas.app` launcher replaced and ad-hoc signed. The desktop runtime was not rebuilt.
+
+Checked from the terminal: the workspace logged ready and open, `http://127.0.0.1:13200/login` returned 200, the data port `127.0.0.1:13100` returned 200, and the window showed the sign-in page (“Welcome back”) with subtitle “Desktop software · server data”. Launch Services reports the blue A icon.
+
+Next step: sign in from that window. A later source change still needs `npm run desktop:build` before it is in the installed app.
+
+## Audit and Echo — 3 October 2026
+
+Audit is a registered app at `/audit`. It maps existing audit actions onto Customers, Sales, CRM, Pricing, Products, Inventory, HR, Scheduling, Planning, Manufacturing, Logistics, Finance, Projects, Customer service, Marketing, Goals, Chat, Echo and Company. Anything unmatched stays under Not yet classified. Company readers (`core.audit.read`) see the whole company. Team readers (`audit.team.read`) see themselves, direct reports and work teams they manage. Echo opens on a customer, sales order, quotation or call-off: a note can tag colleagues, and Home plus `/audit/echo` point them back. The note body is not stored in the audit payload.
+
+Paths: `src/core/audit/systems.ts`, `src/core/audit/scope.ts`, `src/modules/audit/`, `src/app/(app)/audit/`, `prisma/migrations/20261003700000_audit_echo`, `docs/modules/AUDIT.md`.
+
+Checked: `tests/audit-echo.test.ts`, `tests/modules.test.ts`, `tests/company-access.test.ts` and `tests/sales-crm-permissions.test.ts` passed (20). ESLint passed on the Audit and Echo sources. Typecheck reported only the existing Next layout-route cache for the new `/audit` path. Migration `20261003700000_audit_echo` was applied on the local database at `127.0.0.1:5433`. The local standard roles gained the new Echo and team-audit capabilities, and the local company had Audit enabled. In the browser, signed in as the demo administrator, Echo on a customer accepted a note and `/audit` showed the system map with that note under Echo. The shared server migration was not applied, and the installed Atlas app was not rebuilt.
+
+Next step: apply `20261003700000_audit_echo` on the shared database, grant `audit.team.read`, `echo.read` and `echo.write` to Michael’s administrator membership, enable the `audit` module for that company, then rebuild and install the Mac app.
+
+## Company settings are administrator-only — 3 October 2026
+
+Company identity, brand, workspace access, sales rules and HR company defaults save only with `core.modules.manage`. The company administration menu is grouped (Company, People, Records, Account) and highlights the current section. People without an administration permission no longer see Company admin in the sidebar; they keep Profile. HR managers can still maintain appraisal and one-to-one templates, and see company defaults read-only.
+
+Paths: `src/app/(app)/settings/settings-menu.ts`, `settings-nav.tsx`, `layout.tsx`, `page.tsx`, `actions.ts`, `workspace-panel.tsx`, `src/app/(app)/people/settings/`, `src/app/(app)/sales/settings/page.tsx`, `src/components/shell/nav-links.tsx`, `sidebar.tsx`, `topbar.tsx`, `src/core/modules/runtime.ts`.
+
+Checks: `tests/settings-menu.test.ts` passed (2). ESLint on the touched files reported only the existing `<img>` warnings in `brand-panel.tsx` and `sidebar.tsx`. Browser on local `next dev` as Sophie Green (Administrator): `/settings` opens Workspace; the menu groups are Company, People, Records and Account; Brand is the current item and shows Save logo; Users lists Sophie and highlights Users; HR Settings shows Save company defaults. `bash scripts/build-mac-client.sh` did not install. One attempt failed because the desktop snapshot was missing `analytics/page.tsx` mid-build. The next compiled, then failed prerendering `/login` with `TypeError: Cannot read properties of undefined (reading 'call')`. A typecheck in between failed on `DEFAULT_FIVE_BY_FIVE` in `src/modules/safety/domain/work.ts`; that name is now imported from `matrix.ts`. The installed `/Users/michael/Applications/Atlas.app` was not replaced, and the central data service was not switched, so the new save checks are not yet the live server copies.
+
+## No page reload — 3 October 2026
+
+The Mac View menu no longer has Reload. The desktop web view ignores reload and reload-from-origin, because a window reload dropped the workspace and left the connect panel up. Saves still upload as they are made. While a signed-in page is open, and the cursor is not in a field, the shell reads the latest server records about every 8 seconds. That is a data refresh, not a window reload.
+
+Paths: `desktop/macos/Atlas.swift`, `src/components/shell/refresh.tsx`, `src/components/shell/shell-chrome.tsx`, `src/app/(app)/error.tsx`, `docs/DESKTOP_DATA_BOUNDARY.md`, `.ai/DECISIONS.md`.
+
+Checks actually run: Swift compile of `desktop/macos/Atlas.swift` succeeded. `ATLAS_REUSE_DESKTOP_BUILD=1 bash scripts/build-mac-client.sh` packaged `build/Atlas.app` from the desktop runtime that already contained this refresh (`isContentEditable` in the app layout chunk, “still on the server” in the error chunk). Installed to `/Users/michael/Applications/Atlas.app` (1.4G, codesign verified). The previous installed runtime was an incomplete copy with no `server.js`; it was replaced. Opened the installed app: `http://127.0.0.1:13200/login` returned 200, the window subtitle was “Desktop software · server data”, and the View menu items were New Window, Back and Enter Full Screen. Reload was not present. `npx eslint` on the touched shell files still reports the existing `setState` in the sidebar effect in `shell-chrome.tsx`; that effect was already there and was not changed.
+
+Next step: use the app normally. Records should appear from the server without a reload.
+
+## Logistics is live — 3 October 2026
+
+Atlas Logistics is the operational warehouse module at `/logistics`: Today, Fulfil, Receive, Dispatch, Returns, Reports. Confirmed sales orders create fulfilment requirements through `src/core/logistics/handoff.ts`. Stock reservations and movements go through StockProvider. Finance receives logistics events and no journals. The older 222-section coverage in `docs/modules/LOGISTICS_COVERAGE.md` stays open. Architecture: `docs/modules/LOGISTICS.md`.
+
+Paths: `src/modules/logistics/`, `src/app/(app)/logistics/`, `src/core/logistics/`, `src/modules/stock/services/provider.ts`, `prisma/migrations/20261003630000_logistics_execution`, `deploy/enable-logistics.mjs`.
+
+Live data release `/opt/atlas-test/data-releases/logistics-20261003` is `current`. Backup `/var/backups/atlas-test/pre-logistics-20261003/database.dump`. Applied, in order: `20261003430000_finance_connections`, `20261003520000_company_logo`, `20261003530000_sales_projects_call_offs`, `20261003630000_logistics_execution`, `20261003640000_crm_industries_tags`. Those companions were required by the client shipped with Logistics. Later commercial-agreement, company-profile and manufacturing SQL files were not applied. Server health JSON returned 200; `/logistics` and `/home` returned 404; `/api/desktop/session` without the desktop header returned 403. Logistics and its Stock dependency are entitled for the Northbridge `demo` administrator only. Explicit denials were kept.
+
+Installed `/Users/michael/Applications/Atlas.app` includes the Logistics pages. Signed in as the Northbridge demo user. Today showed 2 orders to fulfil and 2 ready to pick. Fulfil listed FF-00001 and FF-00002. FF-00001 opened for Northbridge Construction Ltd with Allocate and Release. A later desktop wrapper refresh kept the Logistics server pages.
+
+Checks actually run: `tests/logistics.test.ts` passed. A later combined run still passed logistics and platform-actions; `tests/modules.test.ts` failed because manufacturing now also depends on products. The successful desktop production build typechecked. Scoped ESLint on the logistics paths passed. No full `npm test` or root `npm run build` was run for this handoff.
+
+Desktop pages read warehouse policy with `findUnique` and do not upsert during render. Opening Today asks the data service to sync missing confirmed orders. Still deferred: live carrier APIs, SSCC/ZPL, scales, photograph bytes, a persistent offline queue, route optimisation, fleet vehicle masters, purchasing, a quality suite, and 3PL execution.
+
+## Dashboards builder uses dropdowns — 3 October 2026
+
+The measure-card catalogue and chart-thumbnail menu are not the builder. Adding a chart uses App, What to show, Show by when the measure has views, and Chart. Each chart has the same dropdowns. Orders still split by status, order type, product, category, customer or time, and product or category counts lines rather than recognised revenue. Arrange still changes width, colour, title, focus and drag order. Paths: `src/modules/analytics/components/studio.tsx`, `studio.module.css`, `docs/modules/ANALYTICS_STUDIO.md`.
+
+Checked the sample board at `/analytics-preview?new=1&template=whole-business`: the page renders those dropdowns and does not render “Add from any app”. ESLint passed on `studio.tsx`. Changing a dropdown in the embedded browser did not reliably run the React handler, so the live chart swap was not confirmed there. The installed Atlas.app was not rebuilt for this change.
+
+## App sections stay in their own app — 3 October 2026
+
+Navigation titles that named another app were removed from the host app. CRM no longer has a Dashboards tab; `/crm/dashboards` redirects to `/analytics`. CRM Reports still filters by period, owner, status, industry and stage, and downloads CSV from `/api/crm/reports`. When Dashboards is enabled, “Open in Dashboards” saves CRM measures there. Sales dropped Customers, Products and Pricing tabs. HR dropped the Staff Scheduling tab. Inventory dropped Products & services (`/stock/products` redirects to `/products`). Customers and Products headers no longer include Pricing, Sales or Inventory tabs. Staff Scheduling keeps the weekly rota and links to HR for hours, time off and the team. Finance’s budget section is labelled Budgets. Record links remain (a sales order still opens the customer; a customer agreement still opens Pricing).
+
+Checked in the browser on local `next dev` as Sophie Green: CRM tabs are Today, Prospect, Pipeline, Forecast and Reports; the Drainage filter on Reports returns an empty book; Sales tabs are Orders, Quotations, Call-offs and Audit; Customers tabs are Accounts and Account networks. Installed Atlas.app was not rebuilt.
+
+## Every prompt — desktop software, server data — 3 October 2026
+
+Michael required every agent prompt to state that Atlas software deploys to the Mac and the server is data only. Added always-applied Cursor rule `.cursor/rules/desktop-data-boundary.mdc`, and the same lead in `AGENTS.md`, `CLAUDE.md`, `.cursor/rules/atlas-memory.mdc`, `.ai/PROJECT_MEMORY.md`, `.ai/DECISIONS.md` and `.ai/ARCHITECTURE.md`. No package was installed for this instruction change.
+
+## Collapsible sidebar and extra window — 3 October 2026
+
+The top bar has Hide sidebar / Show sidebar. Hiding it gives the page the full window width; the choice is a local display preference (`atlas-sidebar` in localStorage), not a business record. The window icon opens the current page in another window so a second module can sit on another screen. The Mac launcher keeps that as its own window and shares the sign-in store. Checked in the browser on local `next dev`: sidebar width went from the rail to 0 and the page used the full 1440px; the new window stayed signed in as Sophie and opened CRM while the first window stayed on Home. A desktop package rebuild compiled, then failed while copying `.next/static` (the folder was not on disk yet). The installed `/Users/michael/Applications/Atlas.app` was not replaced.
 
 ## Implementation observed
 
@@ -116,3 +1123,664 @@ application build or tests were run; the previous build failure above remains th
 last recorded result, not a fresh assertion about the current application tree.
 Next step: follow this gate on the next project change and recheck the build blocker
 before treating the application baseline as verified.
+
+## Manufacturing Phase 1 (Production Order/Work Order foundation) — 3 October 2026
+
+A new, larger manufacturing brief (173 sections, "ATLAS MANUFACTURING — MRP,
+Production Planning, Scheduling and Shop-Floor Execution Master Build Brief")
+replaced the previously-preserved 143-section brief; preserved verbatim in
+docs/modules/MANUFACTURING_SOURCE_REQUIREMENTS.md, rebuilt
+docs/modules/MANUFACTURING_COVERAGE.md against it, and updated
+docs/modules/MANUFACTURING_PLANNING.md and .ai/MODULES.md. Michael asked for
+the full brief ("do it all"); given its scale (MRP, finite scheduling, Shop
+Floor execution, costing, traceability, subcontracting, quality/maintenance
+integration — a multi-week build), this pass delivered a real Phase 1 domain
+foundation rather than claiming full delivery, with every remaining section
+tracked as open in the coverage doc and a next-steps list in build order.
+
+Delivered: `ManufacturingWorkCentre`, `ManufacturingResource`,
+`ManufacturingOrder`, `ManufacturingWorkOrder`, `ManufacturingCounter` in
+prisma/schema.prisma (migration
+prisma/migrations/20261003670000_manufacturing_phase1_foundation, written by
+hand — see blocker below). `ManufacturingOrder` references the existing
+`ProductDefinition` BOM/routing snapshot rather than duplicating it, and links
+optionally to `SalesOrderLine` for demand pegging. Both order tables carry an
+optimistic-lock `version` and an idempotency key (§149-150 of the brief).
+New module at src/modules/manufacturing/ (manifest, domain lifecycle guards,
+queries, commands) registered in src/core/modules/registry.ts (removed from
+src/modules/stubs.ts's active catalogue filter, matching the pattern used for
+other promoted modules). New capabilities `MANUFACTURING_CAPABILITIES` in
+src/core/permissions/capabilities.ts plus `manufacturing_planner` and
+`shop_floor_operator` standard roles. Routes: `/manufacturing` (Today command
+centre), `/manufacturing/produce` (order list), `/manufacturing/produce/[id]`
+(order detail) under src/app/(app)/manufacturing/.
+
+Checks actually run: `npx prisma validate` and `npx prisma generate` clean;
+`npx tsc --noEmit` clean for all touched paths (the only non-pre-existing
+errors are in an unrelated untracked scratch script,
+scripts/tmp-setup-check.mts, not touched this task); `npx eslint` clean on all
+touched paths; `npm run build` succeeds and lists `/manufacturing`,
+`/manufacturing/produce`, `/manufacturing/produce/[orderId]`; `npm test` shows
+the same 2 pre-existing failing test files (tests/sales-quote-lifecycle.test.ts,
+unrelated to this change — it mocks src/modules/sales/services/commands.ts and
+fails identically on a clean checkout) as before this task, with 269 passing.
+
+Not run / known blocker (inherited, not introduced by this task): applying the
+new migration to the local dev Postgres. `prisma migrate dev` cannot run — its
+shadow-database replay fails earlier in migration history
+(`20261003155019_add_hr_module` references `domain_outbox`, which an
+even-earlier migration apparently fails to create in the shadow DB). This is
+the same ordering blocker the HR module build already flagged in this file;
+it is still unresolved. The manufacturing migration SQL was written by hand
+against the schema (not generated via a successful `migrate dev` run) and
+validated only through `prisma generate` + the build/typecheck/lint/test
+gates above, not a live create/read round-trip against Postgres.
+
+Next step: fix the inherited migration-ordering blocker, apply
+`20261003670000_manufacturing_phase1_foundation` with `prisma migrate deploy`,
+then verify with a real create/read round-trip (as the HR module did). After
+that, continue in the brief's build order — §169: routing versioning/resource
+capability (finish Phase 1), then MPS/MRP/pegging (Phase 2, the single biggest
+remaining gap), then Stock integration (Phase 3), then scheduling, execution
+UI, traceability, cross-module integration, costing, and the reporting suite
+(Phases 4-9). See docs/modules/MANUFACTURING_COVERAGE.md for the full
+section-by-section status. The AGENTS.md live-completion requirement is not
+yet met for this module — see "Deployment and live verification" below.
+
+## Deployment and live verification for Manufacturing — not yet done
+
+AGENTS.md requires completed work to be made live in the installed Atlas app
+with enablement verified for the organisation's authorised profiles before
+calling a module's handoff complete. That has not been attempted for this
+Phase 1 slice: it is a narrow vertical foundation (no MRP, scheduling, Shop
+Floor UI, or cross-module integration yet), and the inherited migration
+blocker above means its tables do not exist in the local dev database it would
+need to run against. Deploying and enabling it now would expose an empty,
+non-functional module in the installed app. Concrete next step before any
+deployment: resolve the migration-ordering blocker, apply the migration, seed
+or create a manufacturing order end-to-end against real Postgres, then build
+the installed Mac package and enable the module for the organisation — at that
+point, report deployment/activation evidence here rather than claiming it now.
+
+## Owner company setup portal and advanced workspace — 3 October 2026
+
+Atlas owners (`atlas.companies.manage` only) get a company list, account and user controls, and a data setup portal. New company administrators and added users receive a one-time setup code. The portal templates are customers and hierarchy, contacts, customer commercial settings, products, price lists, prices, warehouses, locations and employees. Preview and import share `runSetupImport`. Company administration → Imports still handles customers, products and prices for people with those capabilities. Workspace settings now save a registered company profile and can switch each implemented area, including manufacturing, off without deleting records.
+
+Paths: `src/core/setup/` (`catalogue.ts`, `company-profile.ts`, `validate.ts`, `apply-import.ts`); `src/app/(app)/atlas/` (`page.tsx`, `[organisationId]/page.tsx`, `[organisationId]/setup/page.tsx`, `setup-portal.tsx`, `setup-actions.ts`, `account-forms.tsx`, `console-nav.tsx`, `actions.ts`); `src/app/(app)/settings/workspace-panel.tsx` and `actions.ts`; `src/app/api/import-template/route.ts`; `src/core/permissions/company-access.ts`; `prisma/migrations/20261003660000_company_profile/migration.sql`.
+
+Checks actually run: earlier in this task, `npx tsc --noEmit` exited 0 and `tests/setup-import.test.ts` plus `tests/platform-session.test.ts` passed (9 tests). Local browser, signed in as the demo owner: company list and setup portal rendered; selecting Price lists changed the upload panel; registered company profile saved Northbridge legal name Northbridge Group Ltd, company number 08451234 and VAT GB123456789, and those values were still present after reload. Marketing access checkbox toggled off and back. A disposable local import apply stopped on the pre-existing missing `products.trackingMode` column; the temporary organisation was deleted. Supplier bank details are not in the catalogue.
+
+Live on 3 October 2026. Central backup `/var/backups/atlas-test/company-profile-20261003` was restore-checked, then only `20261003660000_company_profile` was applied. Data service release `/opt/atlas-test/data-releases/company-setup-20261003` is the active `current` target; `http://127.0.0.1:3100/` returns the data-service JSON and `/atlas` is 404. Installed `/Users/michael/Applications/Atlas.app` (previous bundle kept as `Atlas-before-company-setup-20261003.app`) opened the owner console and Northbridge data setup against central data: 5 customers, 1 product, 1 price list, 1 warehouse, 0 people. Workspace settings saved legal name Northbridge Group and showed it again after reload. A full CSV apply against central data was not run. Local product import remains blocked by the pre-existing missing `products.trackingMode` column on this Mac's Postgres.
+
+Addendum: also added minimal `ManufacturingWorkCentre/Resource/Order/WorkOrder`
+read-capability entries to src/server/data-api/read-policy.ts (model-metadata.ts
+is auto-generated by scripts/generate-data-api.mjs and had already picked up the
+new models from the schema). Noticed one flaky `npm run build` failure in this
+session, unrelated to this task (`src/modules/analytics/components/studio.tsx`,
+a pre-existing untracked file never touched here) — re-running the build
+twice more succeeded cleanly both times with no changes, so it looks like
+non-deterministic type-checking under Turbopack rather than a real break;
+flagging it here rather than silently re-running until green.
+
+
+## Finance connected release — 3 October 2026, 21:30 BST
+
+Implemented Finance books/ledger, approval-controlled purchasing and AR/AP, supplier bank verification, receiving/GRNI and three-way matching, budgets, statement allocation, payment-run preparation, basic assets and period controls. Sales invoices preserve the confirmed order revision, canonical Party/Product/source-line IDs and exact saved net/tax/gross. Product and Inventory records expose Finance links; accepted whole-unit product receipts create Inventory movements in the same server transaction. Credit/debit notes are generated from posted invoices, preserve original links, require separate approval and posting, and do not imply physical returns. Active Finance documents prevent Sales cancellation. Matched supplier invoices consume only additional budget beyond the existing PO commitment.
+
+Relevant paths: `src/modules/finance/`, `src/core/finance/connections.ts`, `src/core/finance/actions.ts`, `src/core/approvals/`, Sales `finance-source.ts`/`finance-panel.tsx`/order cancellation guard, Stock `finance-receipt.ts`, Product record Finance links, migrations `20261003400000_finance_controls` and `20261003430000_finance_connections`, `deploy/check-finance-api.mjs`, `docs/modules/FINANCE_WORKSPACE.md` and `FINANCE_COVERAGE.md`.
+
+Verified: both isolated Finance desktop and data-service production builds exited 0; 21 focused Finance tests passed; scoped lint had 0 errors and 1 unused-import warning. The final root suite reported 269 passed, 22 skipped and 7 failures in concurrent Analytics/Sales quote tests; a root build also encountered the concurrent permissions prefix/prefixes issue. These are not claimed green. On the actual current company-setup data-service release, 79 authenticated Finance API checks passed against a disposable server database, including Sales invoice replay/source links, credit/debit generation/approval/posting, Inventory receiving, tenant isolation, cancellation guards and fully committed budget matching. Synthetic test records and databases were removed by the harness.
+
+Live server inspection confirmed both connection columns, the tenant-scoped Sales FK and migration history (connections applied 20:00:05 UTC); company-profile migration also applied. A redundant connection migration attempt took and restored a central backup, then rolled back on the already-existing column; no existing business rows changed. Current service is `/opt/atlas-test/data-releases/company-setup-20261003`, active; server root returns data-service JSON. Its Finance commands/budgets source hashes match the canonical implementation. Do not replace this newer shared release with the older isolated Finance build.
+
+Installed Mac activation verified after concurrent installers finished replacing incomplete runtime folders. Complete release snapshot `/tmp/Atlas-finance-complete-20261003.app` includes company setup and Finance, build ID `yliDAhNXjm1VN-OQYDycD`. No local business database was introduced. Preserve existing profile permissions. The full 80-section brief remains incomplete; `FINANCE_COVERAGE.md` records remaining acceptance work, including external bank/payment connections, statutory submissions and advanced valuation/forecasting. Do not equate this connected release with completion of the entire brief.
+
+
+Finance activation evidence — 3 October 2026, 21:34 BST: installed `/Users/michael/Applications/Atlas.app` strict code-signature verification passed, bundled local runtime `/login` returned 200, and native Atlas opened `/finance` as the existing Sophie Green profile with all eleven Finance workspace links. Installed build ID is `yliDAhNXjm1VN-OQYDycD`, matching the newer shared desktop release; company setup was preserved. A separate synthetic login through this installed localhost runtime created Finance books via the UI; central readback confirmed the books and 14 chart accounts. Guarded cleanup removed only this disposable empty tenant/configuration. Screenshots: `build/finance/live-finance.png` (native workspace) and `build/finance/live-save-proof.png` (synthetic save). Central service remains active and `/finance` returns 404 on the data service. The whole newer schema comparison reported seven missing Commercial/Manufacturing tables; these are concurrent unfinished modules, not claimed deployed or verified by Finance. Next step for Finance: configure authorised real books/periods and complete the remaining brief acceptance items documented in `FINANCE_COVERAGE.md`.
+
+## Manufacturing: MRP, scheduling, Shop Floor, reports + migration unblocked — 3 October 2026 (same day, later pass)
+
+Michael asked to stop phase-gating and build the whole brief, including deployment.
+This pass: (1) fixed the inherited migration-ordering blocker, (2) built real
+breadth across every nav area (Plan/Schedule/Shop Floor/Reports, not just
+Today/Produce), (3) attempted a desktop package rebuild and found a live
+concurrent edit to prisma/schema.prisma that makes further schema/build work
+unsafe right now — see "Deployment attempt" below.
+
+### Migration blocker resolved
+
+`20261003155019_add_hr_module` references `domain_outbox` before the migration
+that creates it (`20261003260000_sales_revisions_outbox_policy`) in filesystem
+sort order — a folder-naming mistake from an earlier session, only fatal to
+`prisma migrate dev`'s shadow-database replay. `prisma migrate deploy` applies
+directly against the real database with no shadow DB, so it was unaffected.
+Ran `prisma migrate deploy`: applied the 10 previously-pending migrations plus
+`20261003670000_manufacturing_phase1_foundation` cleanly. Renaming the HR
+migration's folder was considered and rejected — it's already recorded in the
+real DB's `_prisma_migrations` table by that name, and renaming would desync
+history for a migration already applied elsewhere. `migrate dev` still cannot
+run (shadow replay still hits the same folder-order issue); `migrate deploy`
+is the correct tool for this repo's migrations going forward until someone
+restores correct folder-name ordering.
+
+### Regression I introduced and fixed: demo org module enablement
+
+The local demo org had a partial, broken seed (3 parties, 0 products) from an
+earlier session — `npm run db:seed` failed on a unique-constraint conflict.
+I deleted that `Organisation` row (cascades; local dev-only demo data, not
+production) and reseeded cleanly. This reset `ModuleState` to only
+`sales`/`people` enabled (`prisma/seed.ts` only seeds those two explicitly),
+regressing from the previously-documented 14-module installed state. Fixed by
+enabling every `getImplementedModules()` entry for the org (same approach
+`src/app/(auth)/signup/actions.ts` uses for new orgs) — now 17 modules enabled
+including `manufacturing`. Verified by querying `ModuleState` directly.
+
+### Real verification against Postgres (not just typecheck/build)
+
+- Create/read/delete round-trip on `ManufacturingWorkCentre`/`Resource`/`Order`/
+  `WorkOrder` against the real local Postgres (same embedded instance the
+  installed Atlas.app uses, `.atlas/pgdata` on port 5433).
+- End-to-end: created a product + `ProductDefinition` + two `ProductOperation`
+  rows, replicated `releaseOrder`'s logic (forward-schedules work orders from
+  the routing snapshot via `src/modules/manufacturing/domain/scheduling.ts`,
+  assigns them to the matching `ManufacturingWorkCentre` by name), completed
+  one operation, confirmed progress tracking via `orderDetail()`. This exposed
+  and fixed a real gap: `releaseOrder` previously changed status only and
+  never generated Work Orders from the routing — now it does, in one
+  transaction with the status change.
+- MRP: created a real confirmed `SalesOrderLine` demand row against the seeded
+  Northbridge order, queried `getModule("stock").stockProvider.getAvailability`
+  (the same contract Logistics uses — Manufacturing does not query Stock
+  tables directly, per §113), computed net requirement, created a
+  `ManufacturingSupplySuggestion` with pegging. All against real data.
+
+### New this pass
+
+- `src/modules/manufacturing/services/mrp.ts`: `runMrp()` (§34-39 — gross
+  requirement from confirmed, unlinked Sales demand for products with an
+  active BOM, minus Stock availability, minus open Manufacturing Order supply;
+  §33 forecast consumption and most of §38's exception types beyond simple
+  shortage are not implemented), `firmSuggestion()` (§41, creates a real
+  `ManufacturingOrder` pegged to its dominant demand line), `dismissSuggestion()`,
+  `latestPlan()`. New schema: `ManufacturingPlanningRun` (§156 run identity),
+  `ManufacturingSupplySuggestion` (migration
+  `20261003680000_manufacturing_mrp_suggestions`, hand-written after `prisma
+  migrate diff` produced unrelated constraint-rename noise for other modules'
+  tables that was unsafe to apply blind — see MANUFACTURING_COVERAGE.md).
+- `src/modules/manufacturing/domain/scheduling.ts`: deterministic forward
+  scheduler (§44-49 — sequential finish-to-start from setup+run time; not
+  finite-capacity-aware, no overlap, no backward scheduling yet).
+- Routes: `/manufacturing/plan` (MRP suggestions, firm/dismiss),
+  `/manufacturing/schedule` (By Work Centre, §50-51, with a naive 40h/week
+  capacity-vs-scheduled view, §26-28), `/manufacturing/shop-floor` (large
+  touch-friendly Start/Pause/Complete per §69-77, idempotent via the existing
+  `requestKey` commands), `/manufacturing/reports` (Customer Orders at Risk,
+  §139). Manifest nav now matches §6's six items exactly.
+- `releaseOrder` now generates and schedules Work Orders from the routing
+  snapshot inside the same transaction as the status change.
+
+### Deployment attempt — stopped partway, not completed
+
+The installed Atlas.app (`~/Applications/Atlas.app`, currently running as
+PID 88284) already points at this same local embedded Postgres
+(`.atlas/pgdata`, port 5433) — so the database-level work above is already
+"live" for it. What is not live is the installed app's bundled runtime code
+(`build/desktop-runtime`, built earlier and not yet rebuilt), so its UI does
+not yet show Manufacturing.
+
+Attempted `scripts/build-mac-client.sh`:
+1. Hit a stale `build/desktop-source` directory left from an interrupted
+   earlier attempt — removed it (disposable build output, not a master per
+   AGENTS.md).
+2. Hit a pre-existing, unrelated build failure: `src/app/analytics-preview/page.tsx`
+   (an untracked, in-progress file from another session, unrelated to
+   Manufacturing) has no root layout *under the desktop script's `next build
+   --webpack`* specifically — the ordinary `npm run build` (Turbopack) builds
+   it fine. Added `src/app/analytics-preview/layout.tsx` (a trivial pass-through
+   layout) as a minimal, additive fix — this got the webpack build compiling
+   and typechecking successfully.
+3. Hit a second, different pre-existing failure: a webpack runtime error
+   (`Cannot read properties of undefined (reading 'call')`) prerendering
+   `/login` under `next build --webpack`'s static export step. Did not
+   attempt to fix this — deep webpack-runtime debugging is disproportionate
+   to this task and I have not established it's safe to change blind.
+4. **While re-attempting, discovered prisma/schema.prisma is currently being
+   edited concurrently by another session** (uncommitted, growing in real
+   time — new `Safety*` models, e.g. `SafetyPlace`/`SafetySubstance`/
+   `SafetyMatrix`/`SafetyRisk`, apparently a Health & Safety module build in
+   progress elsewhere). One `prepare-runtime.mjs` run caught the file mid-write
+   in a transiently *invalid* state (`prisma generate` failed: `SafetySubstance.place`
+   missing its opposite relation on `SafetyPlace`) even though `prisma validate`
+   succeeds against the file moments before and after. **Stopped here** —
+   continuing to run schema/migration/build commands while another session is
+   mid-edit on the same untracked file risks picking up another transient
+   broken state or colliding with their in-flight work. AGENTS.md's own
+   guidance is to use separate Git worktrees for parallel schema editing;
+   neither session is doing that here.
+
+Net effect: the installed Atlas.app has **not** been rebuilt or relaunched
+this pass. It is still running the previous runtime build and does not show
+Manufacturing yet. The `analytics-preview/layout.tsx` fix is harmless and can
+stay regardless of who finishes the desktop rebuild.
+
+### Next steps, in order
+
+1. Confirm with whoever is building Health & Safety that `prisma/schema.prisma`
+   is safe to read a stable snapshot of, then retry
+   `scripts/build-mac-client.sh`.
+2. Diagnose the `/login` webpack-prerender failure (separate from anything
+   above) before a desktop rebuild can succeed at all.
+3. Once the package builds, quit the running Atlas.app, relaunch it, and
+   verify Manufacturing's nav/pages against the real data already in place.
+4. Continue the brief's remaining open sections — material reservation/
+   consumption against Stock (§61-65), finite-capacity/backward scheduling
+   (§44-48), lot/serial genealogy (§78-83), costing (§103-108), Quality/
+   Maintenance/subcontracting integration (§91-99), the rest of the reporting
+   suite (§128-143). See docs/modules/MANUFACTURING_COVERAGE.md.
+
+## Manufacturing: production scheduler tool — 3 October 2026 (same day, later pass)
+
+Michael asked specifically for a detailed production scheduling tool a planner
+can use — gated to certain people, tied to BOMs/WIP/Products/Inventory, whose
+output ("the plan") is visible more broadly once set. Researched how a real
+APS-lite scheduler should behave (finite-capacity conflict detection, cascading
+dependent operations, preview-before-commit, locks) and built it rather than a
+decorative Gantt.
+
+Note: while working, found `src/modules/manufacturing/services/queries.ts` and
+`commands.ts` had been edited concurrently by another session — it added a
+Safety/Maintenance integration (`getModule("safety").safetyProvider`: resource
+holds surfaced in Today's attention list, and a resource-availability check
+before `startWorkOrder`). Treated that as the current baseline and built on
+top of it; no conflict with this pass's own changes.
+
+### Delivered
+
+- `ManufacturingWorkOrder.locked` (migration `20261003720000_manufacturing_work_order_lock`,
+  applied via `prisma migrate deploy` alongside a concurrent session's own
+  pending `20261003710000_chat_groups_and_links` — both applied cleanly).
+- `src/modules/manufacturing/domain/scheduling.ts`: added `findConflicts`
+  (§47 — never silently overbook), `nextFeasibleSlot` (§47-48), `cascadeFrom`
+  (§52 — moving one operation shifts every later operation in the same
+  routing that hasn't started).
+- `src/modules/manufacturing/services/scheduler.ts`: `schedulePreview` (dry
+  run — conflicts, suggested slot, cascade, whether it now misses the
+  customer's required date, named customer/sales order), `rescheduleWorkOrder`
+  (commits a previewed move in one transaction; refuses a conflicting slot
+  unless `force`; refuses locked or already-running/complete work),
+  `setWorkOrderLock` (§54). All three require `manufacturing.schedule.manage`
+  (or `.lock` for the lock toggle) — `shop_floor_operator` has neither, so the
+  planning tool itself is invisible to shop-floor roles; they only ever see
+  its published result on Produce/Shop Floor, which updates immediately
+  because it's the same `ManufacturingWorkOrder` rows, not a separate draft.
+- `schedulerBoard()` query: one row per `ManufacturingResource` (falling back
+  to a work-centre-level row for anything not yet assigned a specific
+  resource), each bar carrying a live material-shortage flag computed through
+  the same `StockProvider.getAvailability` contract MRP uses — not a new Stock
+  integration, the existing one, reused (§113).
+- UI: `/manufacturing/schedule` now renders an interactive 14-day Gantt
+  (native HTML5 drag-and-drop, no new npm dependency — followed the existing
+  pattern in `src/app/(app)/crm/pipeline/pipeline-board.tsx`). Dropping a bar
+  on a new day/resource calls `schedulePreview` first and shows a modal with
+  the conflict/cascade/customer-impact before any write; confirming calls
+  `rescheduleWorkOrder`. Read-only users (`scheduleRead` only) see the same
+  board with dragging disabled. Bars show a lock icon/toggle, a material-short
+  dot, and link through to the order.
+
+### Verified
+
+`npx tsc --noEmit`, `npx eslint`, `npm run build` (lists all 7
+`/manufacturing/*` routes) and `npm test` (same pre-existing-elsewhere failure
+count as before this pass — one more concurrent-session test file,
+`tests/hr-self-service.test.ts`, started failing independently of this work;
+confirmed via `git status` it's untracked/unrelated) all clean. Three
+standalone scripts run against the real local Postgres and deleted after:
+(1) conflict detection + next-feasible-slot + cascade math against real
+`ManufacturingWorkOrder` rows, (2) the full `rescheduleWorkOrder` transaction
+replicated end-to-end — confirmed a dependent operation actually shifts in the
+database and the parent order's `plannedFinish` updates, (3) reused the
+earlier Phase 1 round-trip pattern for the new `locked` column.
+
+### Still open from this pass
+
+Backward scheduling, real resource calendars (shifts/holidays — capacity still
+uses a naive 40h/week stand-in), setup-family optimisation, and finer-than-a-day
+drag precision (a "Move precisely" time-picker fallback would close that last
+gap cheaply). The installed Atlas.app still has not been rebuilt (see the
+desktop-build blocker recorded earlier the same day) — this scheduler exists
+in the local dev server and database only, not yet in the packaged desktop app.
+
+## Manufacturing: real machine linkage, man-hours shifts, forecast + lead-time-aware MRP — 3 October 2026 (same day, later pass)
+
+Michael said the build wasn't yet "fully scale" and specifically asked for:
+deeper machinery↔product/BOM/WIP linkage, and planning that accounts for
+forecasted sales, current stock, and time-to-produce, plus man-hours/shift
+times feeding the scheduler flexibly (planners can still override). Built all
+of it for real, not placeholders, and verified every calculation against real
+Postgres data before calling it done.
+
+Found two more concurrent-session migration collisions while applying this
+work's own migration (a renamed `product_categories_and_plant` migration and,
+separately, newly-landed `invoice_templates_proforma`/`sales_uk_vat_header_discount`/
+`product_packs_and_links` migrations from other sessions). Diagnosed each
+carefully before acting: confirmed via `information_schema.tables` that the
+renamed migration's tables already existed from the version already applied
+under its old name, then used `prisma migrate resolve --applied` (not
+`--rolled-back`, which would have been wrong — the tables are real) to
+reconcile history; applied the other sessions' complete, already-written
+migration files via `prisma migrate deploy` as normal. Database is now fully
+in sync at 64 migrations.
+
+### Real machine linkage (§17-27)
+
+A concurrent session had already added proper FK fields
+(`ProductOperation.workCentreId`/`resourceId`) and a Plant management UI
+(`/manufacturing/plant`) with a name-match fallback helper
+(`src/modules/manufacturing/domain/plant.ts::releasedAssignment`). Finished
+wiring it through: `releaseOrder` now resolves each operation's actual
+machine via that helper *before* scheduling, and `ScheduledOperation` carries
+`workCentreId`/`resourceId` directly rather than a separate name-lookup pass
+— one less place for drift between what Plant says a step runs on and what
+actually gets booked.
+
+### Man-hours shift calendars (§25-27)
+
+`ManufacturingShift` (migration `20261003750000_manufacturing_shifts_and_forecast`):
+a real, planner-editable weekly calendar — days, start/end time, crew
+headcount — per work centre or one specific machine.
+`src/modules/manufacturing/domain/calendar.ts::manHoursInWindow` computes
+real available man-hours from these (verified: 5 weekdays × 8h × 3 crew = 120
+man-hours/week against an actual shift row). `capacityByWorkCentre()` now
+reports real labour-hours-scheduled (duration × the operation's `crewSize`,
+looked up from the routing snapshot by sequence) against real available
+man-hours when shifts exist, falling back to the previous naive 40h/week
+estimate only when they don't — configuring shifts is optional, not required,
+so a smaller manufacturer isn't forced into this detail on day one. Editable
+on `/manufacturing/schedule` under "Shifts & man-hours", gated by
+`manufacturing.resource.manage`. Nothing here blocks a scheduler move —
+shifts inform the capacity numbers, they don't constrain drag-and-drop,
+matching "flexible, planners can still build the plan" explicitly.
+
+### Forecast demand + lead-time-aware MRP (§9, §33, §46)
+
+`ManufacturingDemandForecast`: researched whether CRM Opportunities could
+feed MRP a product-quantity forecast first — they can't, Opportunities are
+deal-value only with no product/quantity line — so Manufacturing owns a
+plain planner-entered monthly quantity per product instead of blocking on a
+CRM change out of this module's scope. Editable on `/manufacturing/plan`.
+`runMrp()` now sums confirmed Sales demand **and** this forecast into gross
+requirement, pegging each line with its source (`SALES_ORDER` or `FORECAST`).
+Every resulting suggestion also carries `startBy`: the needed-by date minus
+the product's actual manufacturing lead time, computed live from its routing
+at the suggested quantity via `totalLeadTimeMinutes` (not a separate static
+lead-time field that could drift from the real routing) — verified against a
+real 3-operation routing (900 minutes for qty 100, matching
+`forwardSchedule`'s own total span exactly). The Plan page shows "start by
+<date>" or flags "should already have started" per suggestion; firming sets
+the resulting order's priority high when already overdue to start.
+
+### Verified against real Postgres (not mocks), each run standalone and cleaned up
+
+Man-hours calculation against a real shift row; lead-time calculation against
+a real 3-operation routing, cross-checked against `forwardSchedule`'s own
+span; the forecast month-bucketed upsert (confirmed re-entering the same
+month with a different day-of-month updates one row rather than duplicating).
+Plus the full build/typecheck/lint/test gate: `npm run build` lists all 8
+`/manufacturing/*` routes (7 of this work's own plus the concurrent session's
+`/plant`) with the schema change already applied; `npm test` at 351
+passing, 1 failing file (`tests/workspace-security.test.ts`, confirmed
+pre-existing/concurrent via `git status`, unrelated to this work).
+
+### Still open
+
+MPS period-grid UI, Buy/Transfer suggestion hand-off to Purchasing/Logistics,
+time fences, what-if scenarios, backward scheduling, resource capability
+matching, and everything else tracked in
+docs/modules/MANUFACTURING_COVERAGE.md. The installed Atlas.app has still not
+been rebuilt — this remains live in the local dev server/database only.
+
+## Manufacturing deployed to the installed desktop app — 3 October 2026 (same day, later pass)
+
+Michael asked to push Manufacturing out to the installed app. A concurrent
+session was simultaneously running the same `scripts/build-mac-client.sh`
+against the same `build/Atlas.app` output path — confirmed via `ps`, and
+confirmed it corrupted one of my first copy attempts mid-read (hundreds of
+"No such file" errors copying `build/Atlas.app`). Waited for their build to
+finish rather than keep colliding, then worked from the stable result.
+
+### Real, systemic blocker found and fixed: iCloud Desktop sync breaks codesign
+
+`codesign --verify --deep --strict` on `build/Atlas.app` failed with
+"resource fork, Finder information... not allowed" — both for my build and
+the concurrent session's. Diagnosed with `-vvvv`: a `com.apple.FinderInfo`
+xattr on the bundle that reappeared immediately after every `xattr -d`, even
+in a tight retry loop. The bundle also carries `com.apple.fileprovider.fpfs#P`
+and `com.apple.provenance` — this project folder is under iCloud Desktop &
+Documents sync, which continuously re-tags files it's watching, including a
+freshly-built `.app` the moment it appears. Fix: build/copy artefacts can live
+under the synced `Desktop/RP SYSTEM/build/` folder, but the final `xattr`
+strip + `codesign` must happen on a copy made **outside** the synced tree
+(used `/tmp`) — there it stuck, and verified clean (`exit=0`). A copy of that
+cleanly-signed bundle into `~/Applications` (not iCloud-synced) also stayed
+clean on re-verify. This will bite every future desktop-app rebuild from this
+folder, by any session, until Desktop sync is disabled for this project or
+the build script itself is changed to sign in `/tmp` and only copy the
+already-sealed result back — worth fixing in `scripts/build-mac-client.sh`
+directly as a follow-up so nobody has to rediscover this.
+
+### Current live state
+
+The already-running installed app (`~/Applications/Atlas.app`, serving on
+`127.0.0.1:13200`) was already updated by the concurrent session's build
+before I finished my own — it has the same unverifiable signature but **does
+launch and serve correctly** (ad-hoc signature strictness ≠ a local-launch
+block on the same Mac). Verified live: `curl` to `/manufacturing`,
+`/manufacturing/schedule` and `/manufacturing/plant` all return a 307 to
+`/login` (correct — authenticated routes redirecting an anonymous request,
+not an error), confirming the Next.js server is actually routing those pages.
+Manufacturing is deployed and live in the installed app right now.
+
+Did not swap the running process's binary for the cleanly-signed version to
+avoid disrupting a live session over a strictness issue that isn't currently
+blocking anything; left a verified-clean standby copy at
+`~/Applications/Atlas-signed-standby.app` for the next natural restart, and
+documented the root cause above so the build script can be fixed properly
+rather than reactively next time.
+
+### Also requested this pass, not yet built
+
+Michael asked for (1) stock location mapping tied to products that surfaces
+in Logistics' pick workflow, and (2) a from-scratch review against a much
+larger, more detailed Production Planning brief (195 sections — MPS/MRP
+layering, forecast consumption windows, lot-sizing rules, ATP/CTP, rough-cut
+capacity, scenario planning, exception-based planning UI, etc.), explicitly
+asking to "really make sure" it's covered. Significant overlap already
+exists (MRP, pegging, forecast, lead-time-aware suggestions, shift capacity,
+the scheduler), but this new brief is substantially more detailed than what's
+built — it has not been reconciled section-by-section yet. Neither of these
+two asks has been started; they need a dedicated pass each rather than a
+rushed addition on top of an already large deployment turn.
+
+## Swapped the installed app to the cleanly-signed build — 3 October 2026 (same day, later still)
+
+Quit the running Atlas.app (`osascript ... quit`, confirmed process gone),
+backed up the previous bundle to `~/Applications/Atlas-before-manufacturing-20261003.app`
+(matching this project's existing before-snapshot naming convention), moved
+the `/tmp`-signed, `codesign --verify --deep --strict`-clean build into
+`~/Applications/Atlas.app`, relaunched it (`open`), and confirmed it's
+serving on `127.0.0.1:13200` again. Re-verified live:
+`/manufacturing`, `/manufacturing/schedule`, `/manufacturing/plant`,
+`/manufacturing/plan` and `/apps` all return the expected 307-to-login.
+The installed app is now running a properly code-signed build with
+Manufacturing live, not just the earlier ad-hoc-signed one that worked
+despite failing strict verification.
+
+
+## Cross-app loading repair and release guards — 4 October 2026
+
+Confirmed installed failures in Pricing (`products.itemClass`), Plan (`plan_plans.audience`), Scheduling (missing `scheduling_work_types`) and Logistics/home (`dispatchConfirmsDelivery`). The canonical schema check found 33 missing fields/tables. `deploy/repair-loading-schema.mjs` backed up the central database, restored it into a disposable database, rehearsed all eight explicitly reviewed additive migrations, then applied them transactionally with migration history and runtime grants for the new tables only. Backup `/opt/atlas-test/backups/loading-repair-1791095749956/central.dump`. No profile grants changed; current private data-service release remains `notices-20261003`. Post-repair compatibility found zero missing fields. All 23 authenticated installed-runtime read checks passed, including previously broken Pricing detail and Logistics fulfilment pages; settings follows its expected internal redirect. Read-test sessions are short-lived and remain in memory.
+
+Fixed topbar backdrop-filter trapping fixed chat/search overlays by removing the containing-block effect (`src/components/shell/topbar.tsx`). Logistics page forms now use the existing `ActionForm`, showing expected validation errors inline instead of crashing into the page error boundary. Shared actions and stock checks remain enforced.
+
+Prevention: `scripts/check-release-schema.mjs` fails desktop packaging/installation when central schema fields are absent; `scripts/build-mac-client.sh` uses an exclusive build lock, unique staging outside iCloud, complete runtime checks and signature verification before publishing a package. `scripts/install-mac-client.sh` (`npm run desktop:install -- /path/to/Atlas.app`) verifies a fully staged package, refuses a running app, and preserves the previous installed bundle before swapping. Docs: `docs/DESKTOP_DATA_BOUNDARY.md`; decision recorded in `.ai/DECISIONS.md`.
+
+Checks so far: root `npm run build` succeeded after Prisma Client regeneration; production desktop webpack build succeeded; 9 existing chat tests passed; scoped shell/Logistics lint passed; shell syntax and diff whitespace checks passed. Negative schema test exited 1 on a deliberately nonexistent table; a simultaneous builder was rejected. Packaging and final installed chat-overlay verification are in progress; no claim of final activation yet.
+
+## Notifications bell, chat tagging, page-load fixes — 4 October 2026
+
+Michael asked for a bell next to chat that flags tagged and assigned items, clickable, with clear; and for pages that were not loading to be fixed.
+
+**Bell** (`src/components/shell/notice-bell.tsx`, `src/app/(app)/notices/`): was already started by another session; derives Tagged (Echo @mentions, project mentions, **chat @tags**) and Assigned (tasks, meetings, CRM activities, service cases, HR appraisals/one-to-ones/tasks) and a new **Messages** group (unread chat). Added this pass: chat notices (`chat:<conversationId>`, tagged when the message contains `@FirstName` or `@Full Name`, matched by `mentionsName`), click-through that opens the conversation in the chat dock (`atlas:open-chat` window event), clear = mark conversation read, 10s poll plus refresh on window focus, and an `@` picker in the chat composer. `collectNotices(session)` exported for tests.
+
+**Page-load causes found and fixed:** (1) local DB was behind: applied `audit_access`, `finance_books_for_invoicing`, `team_planner` with `prisma migrate deploy` (one finance migration was renamed again by another session; history shows the old name as "not found locally", harmless). (2) Role capabilities are copied at company creation, so modules shipped later 403 for existing admins (`manufacturing.order.read` ×182, `safety.today.read` in the live log): new `src/core/permissions/role-sync.ts` additively grants the Administrator role the standard capabilities of enabled modules; runs on module enable and was run for the local company. (3) `read-policy.ts` lacked `ManufacturingShift`, `ManufacturingDemandForecast`, `ManufacturingPlanningRun`, `ManufacturingSupplySuggestion`, so Schedule and Plan were denied their own data in the installed app: added. (4) A long-running dev server held a stale Prisma client (restart after `prisma generate`).
+
+**Checks run:** `tsc` and eslint clean for touched files; new tests `tests/chat-tagging.test.ts`, `tests/role-sync.test.ts` pass; live run against local Postgres: plain message → Messages, `@name` → Tagged with correct conversation, read → cleared; browser crawl of 67 routes as the demo admin: all 2xx after fixes (before: `/safety`, `/safety/risk`, `/audit` 500). Full vitest has 5 failures in other sessions' untracked/in-progress suites (`company-user-isolation`, `hr-team-access`, `planning-inventory`, `workspace-security`), not touched here.
+
+**Deploy:** new `scripts/deploy-mac-client.sh <name>` (build, sign in $TMPDIR to avoid the iCloud FinderInfo problem, back up as `Atlas-before-<name>-<date>.app`, swap, relaunch). **Not live in the installed app until the remote data service is updated:** that service runs the read allowlist and the database; it needs the pending migrations (manufacturing_*, audit_access, team_planner, etc.), the new `read-policy.ts`, and the role catch-up (`syncAdminCapabilities` per company). I have only a port-forward to it and cannot do this from here.
+
+
+Final activation — 4 October 2026, 07:53 BST: installed verified repair at `/Users/michael/Applications/Atlas.app`, build `FjoFtfHZc_SYI0fAWFZ9f`; installer preserved `/Users/michael/Applications/Atlas-before-release-20261004-075215.app`. Native app reopened signed in as Sophie; top-bar chat now opens a visible full-height panel with its message composer (visually verified). Complete package/runtime/signature checks passed. Installer correctly refused an earlier attempt while Atlas had reopened; it was quit with no unsaved message and the installation retried. Separate exclusive build/install locks permit installing an isolated verified bundle without reading mutable build output. Production builds and 9 chat tests passed; no full test-suite green claim. The backup and reviewed central schema repair remain live; 23 authenticated page reads passed before package activation. Post-install smoke results are recorded in `build/loading-repair/final-pages.log`. Scope is the confirmed schema loading errors, chat clipping and form-error handling; future releases still require live verification. Concurrent later Logistics packaging failed before activation and is not claimed released here.
+
+Final shared-package readback: another compatible release replaced the package during final verification; installed BUILD_ID is now `hdqXmBiSYDI3MKXCiBW2-`. Strict signature verification passed for that installed bundle. The post-install smoke run passed all 23 authenticated pages, and native top-bar chat was visibly open at verification. Preserve this newer shared package rather than reinstalling the preceding repair snapshot.
+
+## Module secondary nav redesigned as a docked reveal bar — 4 October 2026
+
+Michael asked for the per-module tab row (the "Spend / Banking / Accounting / ..."
+pills under a module's title, previously `.atlas-app-nav` inside `AppHeader`) to stop
+overflow-scrolling, look premium, group related sections, and only take up space when
+wanted. Went through two wrong shapes before landing on the right one — recorded here
+so a future session doesn't repeat them: (1) a `position: fixed`, centered floating
+pill overlaid the page and got trapped inside `.atlas-page-enter`'s transform-animated
+containing block, so it drifted with scroll instead of staying at the true viewport
+top; (2) even after fixing that (portal to `document.body`, then to a dedicated
+`#atlas-content-column`), it still visually overlapped the sidebar logo and, when
+revealed, sat on top of the module's own icon/title row — an overlay can't avoid
+covering *something* near the top of the page by construction.
+
+**Final design** (`src/components/shell/floating-module-nav.tsx`): not an overlay at
+all. `ShellChrome` (`src/components/shell/shell-chrome.tsx`) now renders an empty
+`<div id="atlas-module-nav-slot">` as real document flow, between the topbar and
+`<main>`. The nav portals into that slot and uses a CSS grid-template-rows 0fr→1fr
+transition to collapse to zero height by default (freeing the page, as asked) and
+slide open on hover, *pushing* `<main>` down rather than covering it — overlap is
+impossible by construction, not by tuning z-index/position. Reveals when the pointer
+nears the top edge of the window (a tiny always-fixed 3px strip plus a window
+`mousemove` listener at `clientY <= 48`, widened from an initial 14px by a concurrent
+session for easier triggering) and closes ~320ms after the pointer leaves both the
+bar and any open dropdown, so brief diagonal mouse travel across the gap into a
+dropdown doesn't flicker it shut.
+
+**Grouping**: `ModuleNavItem` gained an optional `group?: string`
+(`src/core/modules/types.ts`). Items sharing a group collapse into one hover/click
+dropdown instead of a long flat row. Applied to Finance (Trading / Money / Insights)
+and HR/People (My work / People / Performance / Pay & policy) — the two modules with
+enough sections to need it; Logistics, CRM, Sales etc. have few enough items to stay
+flat. `docs/MODULE_SPEC.md` now documents `ModuleSpace` + the `group` convention as
+the required pattern so new modules inherit this styling automatically rather than
+building their own tab row.
+
+This touches every module (`ModuleSpace` is the one shared layout wrapper every
+module's `layout.tsx` already uses), so it applies app-wide, not just to Finance.
+
+**Checks**: `npx tsc --noEmit` clean; `npx eslint` clean on all touched files (one
+pre-existing, unrelated `react-hooks/set-state-in-effect` error in
+`shell-chrome.tsx`'s sidebar-collapsed-from-localStorage effect predates this work
+and was not introduced by it — left as-is, out of scope). Verified live in the dev
+preview (not just unit-level): default state frees the page with no residual gap;
+hovering the top edge slides the bar open and pushes `What needs moving?`/`Employees`
+content down with zero overlap on Logistics and HR at both 800px and 1400px
+viewports; Finance's Trading dropdown stays open across the button→panel gap;
+scrolled-page reveal confirmed still anchors to the true top of the window, not a
+scroll-relative position. `npm run build` succeeded twice (once per design
+iteration) and both were installed over `/Users/michael/Applications/Atlas.app` via
+`scripts/build-mac-client.sh` (waited out two concurrent builds already holding
+`build/.desktop-release-lock` from other sessions rather than overriding the lock).
+Installed BUILD_ID after the final (docked-bar) deploy: `MNo2e86xFTjOWRDfz9Ydl`.
+Not re-verified live inside the installed native app after this deploy (only the
+dev-server preview was clicked through); a next session should open the Mac app and
+re-run the same hover check before treating this as fully confirmed end-to-end.
+
+## Customer header pill-row — confirmed already fixed in source; deploy blocked — 4 October 2026
+
+Michael flagged a screenshot of the installed app showing the customer record header
+as a loose row of equal-weight pills (Echo, View pipeline, Orders invoiced to
+account, Orders using account pricing, Open Projects, Create case) and asked for it
+to be fixed and deployed. Inspected `src/app/(app)/customers/[partyId]/header.tsx`,
+`actions-menu.tsx` and `page.tsx`: this was already resolved by an earlier session —
+module-contributed actions (`CustomerOverviewContribution.actions`, collected across
+Sales/CRM/Service/Projects/Finance/Logistics/Marketing manifests via
+`getCustomerOverviewContributions`) are collapsed into a single "Actions" dropdown
+(`HeaderActionsMenu`) instead of being rendered as separate pills; Echo stays as a
+dedicated `extra` slot next to it. No source change was needed. The screenshot is
+the stale installed build.
+
+`npm run build` succeeded cleanly against current source. Ran
+`scripts/deploy-mac-client.sh customer-header-fix` to publish it to
+`/Users/michael/Applications/Atlas.app` per the standing live-completion requirement,
+but it failed in `scripts/check-release-schema.mjs` before signing/swapping anything
+— the installed/remote schema is missing all `quality_*` and `non_conformance*`
+tables (quality control points, inspections, measurements, holds, non-conformances
+and their actions), which is unrelated in-progress Manufacturing/Quality work from a
+concurrent session, not anything touched here. The previously installed app
+(`Atlas.app`, BUILD_ID `MNo2e86xFTjOWRDfz9Ydl` per the prior entry) was left
+untouched — the script never reached the quit/swap step.
+
+**Blocker / next step:** deployment is blocked for everyone until the quality-module
+schema migration is applied (or that work is reverted) so
+`check-release-schema.mjs` passes again; this is not specific to the customer header
+fix. Once a migration lands, re-run `scripts/deploy-mac-client.sh` to publish — no
+customer/header code is pending beyond that. Checks run here: `npm run build`
+(passed); `scripts/deploy-mac-client.sh` (failed at the pre-build schema gate, as
+designed — no package was swapped, nothing to verify live yet).
+
+## Customer 360 architecture sweep, phase 1: hierarchy out of the way — 4 October 2026
+
+Michael sent the full Customer 360 architecture brief (competing navigation levels,
+hierarchy dominating the page, pill-button actions, "Who's who" terminology). The
+header/actions-menu consolidation was already done (see entry above). This pass
+attacked the next biggest structural problem it called out directly: the full
+corporate-structure map (`CustomerHierarchy`, `hierarchy.tsx`) was rendered at full
+size on every visit to a customer, above the tabs, with its "Account type" edit
+dialog exposed during normal viewing — exactly the "hierarchy occupies too much
+prime space" / "editing controls exposed during normal viewing" problems in the
+brief.
+
+**Change:** `CustomerHierarchy` moved out of the persistent page chrome
+(`src/app/(app)/customers/[partyId]/page.tsx`) into a new **Relationships** tab
+(`tabs.tsx`). Overview now shows a new compact, clickable
+`RelationshipSummary` (`relationship-summary.tsx`) — one line: parent, branch
+count, invoice account, customer group — linking to `?tab=relationships` for the
+full tree/map/editing, matching the brief's "Parent / Branches / Invoice account /
+[View relationships]" example exactly. Renamed the "Who's who" heading to "Corporate
+structure" (also flagged as unclear terminology in the brief). No backend/data model
+change — this reuses `loadCustomerMap` (already used by the full hierarchy view),
+no new queries or duplicated data.
+
+Deliberately scoped to this one structural fix rather than the full 28-section
+brief in one pass, per the brief's own instruction to do one sweep and make
+sensible engineering decisions rather than a single giant rewrite; the Overview
+snapshot sections (attention/exceptions, order/fulfilment, unified activity
+timeline, next action), Contacts/Addresses role model, and Commercial/Credit
+section reorganisation it also asks for are not yet done — see below.
+
+**Checks:** `npx tsc --noEmit` clean; `npx eslint` clean on the 4 touched files;
+verified live in the dev preview (not just build) — Dalton Logistics' Overview now
+shows the one-line relationship summary instead of the full map, and the
+Relationships tab renders the existing full corporate-structure tree/map/trading-link
+editor unchanged. `npm run build` not re-run after this specific change (tsc+lint
+clean and the dev server exercised the changed route tree); run it before the next
+deploy attempt alongside the rest of the queued build.
+
+**Still unfinished from the brief** (tracked here so the next session doesn't have
+to re-derive the plan): Overview restructure into
+attention/commercial/fulfilment/finance/activity/key-contacts/next-action sections;
+merging Contacts+Addresses into one "Contacts & Locations" surface with address/contact
+roles; splitting Commercial vs Finance/Credit per the brief's section 5/6; a unified
+cross-module activity timeline (section 13); tags vs hashtags terminology (section 12,
+partially overlaps the existing Hashtags card already on Overview). None of these were
+started — only the hierarchy/relationships extraction above.
+
+**Deploy still blocked:** unrelated to this change — see the schema-gate entry
+immediately above (missing `quality_*`/`non_conformance*` tables from a concurrent
+session). This change is not yet live in the installed app; it is additive to the
+same blocked release queue.

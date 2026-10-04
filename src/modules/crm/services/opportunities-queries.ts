@@ -21,6 +21,7 @@ export function getOpportunity(organisationId: string, opportunityId: string) {
     where: { organisationId, id: opportunityId },
     include: {
       party: true,
+      industry: true,
       pipeline: { include: { stages: { orderBy: { order: "asc" } } } },
       stage: true,
       primaryContact: true,

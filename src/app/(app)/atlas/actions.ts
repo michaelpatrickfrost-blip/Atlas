@@ -1,9 +1,11 @@
 "use server";
+import {randomBytes} from 'node:crypto';
 import {requireSession} from '@/core/auth/session';
 import {assertCapability} from '@/core/permissions/check';
 import {db} from '@/core/db/client';
 import {getImplementedModules} from '@/core/modules/registry';
 import {STANDARD_ROLES} from '@/core/permissions/capabilities';
+import {createRecoveryCredential} from '@/core/auth/recovery';
 import {revalidatePath} from 'next/cache';
 import bcrypt from 'bcryptjs';
 export async function updateCompanyAccount(form:FormData){
@@ -29,10 +31,11 @@ export async function saveCompanyEntitlements(form:FormData){
 export async function createCompanyAccount(form:FormData){
  const session=await requireSession();
  assertCapability(session,'atlas.companies.manage');
- const name=String(form.get('name')??'').trim(),ownerName=String(form.get('ownerName')??'').trim(),email=String(form.get('email')??'').trim().toLowerCase(),password=String(form.get('password')??'');
- if(!name||name.length>150||!ownerName||ownerName.length>100||!/^\S+@\S+\.\S+$/.test(email)||password.length<12||password.length>128)throw new Error('Enter company, administrator name, email and a 12–128 character initial password.');
+ const name=String(form.get('name')??'').trim(),ownerName=String(form.get('ownerName')??'').trim(),email=String(form.get('email')??'').trim().toLowerCase();
+ if(!name||name.length>150||!ownerName||ownerName.length>100||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||email.length>254)throw new Error('Enter the company, administrator name and a valid email.');
  if(await db.user.findUnique({where:{email}}))throw new Error('This account already exists. A verified invitation flow is needed to join it to another company.');
- const passwordHash=await bcrypt.hash(password,12);
- await db.$transaction(async tx=>{const organisation=await tx.organisation.create({data:{name,slug:`company-${crypto.randomUUID()}`,trialEndsAt:new Date(Date.now()+14*86400000)}}),user=await tx.user.create({data:{name:ownerName,email,passwordHash}}),membership=await tx.membership.create({data:{organisationId:organisation.id,userId:user.id}});for(const role of STANDARD_ROLES){const created=await tx.role.create({data:{organisationId:organisation.id,key:role.key,name:role.name,capabilities:role.capabilities}});if(role.key==='admin')await tx.roleOnMembership.create({data:{membershipId:membership.id,roleId:created.id}});}await tx.moduleState.createMany({data:getImplementedModules().map(m=>({organisationId:organisation.id,moduleId:m.id,entitled:true,enabled:true}))});await tx.auditEntry.create({data:{organisationId:organisation.id,actorUserId:session.userId,action:'atlas.company.created',entityType:'Organisation',entityId:organisation.id,after:{name,administratorUserId:user.id}}});});
+ const credential=createRecoveryCredential(),passwordHash=await bcrypt.hash(randomBytes(32).toString('hex'),12);
+ const organisationId=await db.$transaction(async tx=>{const organisation=await tx.organisation.create({data:{name,slug:`company-${crypto.randomUUID()}`,trialEndsAt:new Date(Date.now()+14*86400000)}}),user=await tx.user.create({data:{name:ownerName,email,passwordHash}}),membership=await tx.membership.create({data:{organisationId:organisation.id,userId:user.id}});for(const role of STANDARD_ROLES){const created=await tx.role.create({data:{organisationId:organisation.id,key:role.key,name:role.name,capabilities:role.capabilities}});if(role.key==='admin')await tx.roleOnMembership.create({data:{membershipId:membership.id,roleId:created.id}});}await tx.passwordReset.create({data:{membershipId:membership.id,tokenHash:credential.tokenHash,expiresAt:credential.expiresAt}});await tx.moduleState.createMany({data:getImplementedModules().map(m=>({organisationId:organisation.id,moduleId:m.id,entitled:true,enabled:true}))});await tx.auditEntry.create({data:{organisationId:organisation.id,actorUserId:session.userId,action:'atlas.company.created',entityType:'Organisation',entityId:organisation.id,after:{name,administratorUserId:user.id}}});return organisation.id;});
  revalidatePath('/atlas');
+ return {organisationId,code:credential.code,expiresAt:credential.expiresAt.toISOString()};
 }

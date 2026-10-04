@@ -20,6 +20,8 @@ export async function checkForDuplicatesAction(input: {
 }
 
 export async function createCustomerAction(input: QuickCreateInput) {
+  const session=await requireSession();
+  assertCapability(session,CUSTOMER_CAPABILITIES.create);
   const customer = await createCustomer(input);
   redirect(`/customers/${customer.id}`);
 }

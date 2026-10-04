@@ -47,6 +47,8 @@ export const myModuleManifest: ModuleManifest = {
   status: "installed",            // "available" | "installed" | "coming_soon"
   navigation: [
     { label: "Vehicles", href: "/fleet/vehicles", capability: FLEET_CAPABILITIES.vehicleRead },
+    // 7+ items? Give related ones the same `group: "Label"` — ModuleSpace collapses
+    // them into one dropdown in the floating nav instead of a long flat row.
   ],
   attentionProvider: fleetAttentionProvider, // optional
   searchProvider: fleetSearchProvider,       // optional
@@ -59,10 +61,19 @@ module by name — do not import a module elsewhere in `src/core`.
 
 ## Routes & navigation
 
-Pages live under `src/app/(app)/<module-id>/`. A module's layout renders its
-own secondary nav using `getModuleNavigation(manifest, session)` (filters by
-capability automatically). Primary (sidebar) navigation is generated from
-`getNavigableModules(session)` — **never edit the sidebar to add a module.**
+Pages live under `src/app/(app)/<module-id>/`. A module's layout wraps its
+pages in `<ModuleSpace module={myModuleManifest}>` (`src/components/shell/module-space.tsx`)
+— copy an existing module's `layout.tsx`, don't hand-build this. `ModuleSpace`
+reads `module.navigation` (filtered by capability via `getModuleNavigation`)
+and renders it as the shared **floating module nav**: a glass pill that
+reveals when the pointer nears the top of the screen, sits flush with the
+module's icon/title, and tucks away otherwise. This is Atlas's one nav
+treatment — every module gets it automatically and should not build its own
+tab row. Group related nav items with a shared `group: "Label"` string on
+each `ModuleNavItem` so they collapse into one dropdown instead of a long
+flat row (see Finance's or HR's manifest for worked examples). Primary
+(sidebar) navigation is generated from `getNavigableModules(session)` —
+**never edit the sidebar to add a module.**
 
 ## Permissions
 

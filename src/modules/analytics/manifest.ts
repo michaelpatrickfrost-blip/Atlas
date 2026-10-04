@@ -1,0 +1,3 @@
+import { ChartNoAxesCombined } from "lucide-react";
+import type { ModuleManifest } from "@/core/modules/types";
+export const analyticsManifest: ModuleManifest = { id:"analytics", name:"Dashboards", description:"Live boards across every app, with a full-screen view for monitors.", icon:ChartNoAxesCombined, version:"0.2.0", minimumCoreVersion:"0.1.0", dependencies:[], capabilities:["analytics.dashboard.read","analytics.dashboard.manage"], rootPath:"/analytics", previewPath:"/analytics-preview", accessCapability:"analytics.dashboard.read", status:"available", navigation:[{label:"Dashboards",href:"/analytics"}] };

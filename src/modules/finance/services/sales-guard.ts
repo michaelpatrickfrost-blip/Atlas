@@ -1,0 +1,2 @@
+import type {Session} from '@/core/auth/session';import type {Prisma} from '@/generated/prisma/client';
+export async function guardSalesCancellation(session:Session,tx:Prisma.TransactionClient,orderId:string){const exists=await tx.financeDocument.count({where:{organisationId:session.organisationId,salesOrderId:orderId,status:{not:'CANCELLED'}}});if(exists)throw new Error('Finance documents exist for this order. Review or void unposted documents; posted invoices require linked credit/return resolution before commercial cancellation.');}

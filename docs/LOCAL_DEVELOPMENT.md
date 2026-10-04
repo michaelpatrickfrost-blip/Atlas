@@ -1,5 +1,13 @@
 # Local Development (fully offline)
 
+> **Superseded deployment target — 3 October 2026:** The user requires Atlas
+> software/UI/application runtime on the Desktop/Mac and shared user data stored
+> only on the server. Remote hosting of the Atlas UI/full application and the
+> hosted thin-client target below are historical, not the approved architecture.
+> See AGENTS.md, .ai/ARCHITECTURE.md and [desktop/data runtime](DESKTOP_DATA_BOUNDARY.md). Minimal secured data access must retain
+> server-side tenant/capability enforcement. Current deployment compliance is unverified.
+
+
 Atlas runs entirely on this Mac with no cloud database, Docker, or Homebrew
 install required.
 

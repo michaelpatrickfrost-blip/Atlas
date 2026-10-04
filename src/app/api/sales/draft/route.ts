@@ -7,7 +7,8 @@ export async function POST(request:Request){
  const data=await request.json();
  assertCapability(session,data.payload?.mode==='order'?'sales.order.create':'sales.quote.create');
  if(process.env.ATLAS_RUNTIME==='desktop')return forwardDesktopRequest('/api/sales/draft',data);
- if(request.headers.get('origin')!==new URL(request.url).origin)return new Response('Invalid origin',{status:403});
+ const origin=request.headers.get('origin'),host=request.headers.get('host')??new URL(request.url).host;
+ if(!origin||!URL.canParse(origin)||new URL(origin).host!==host)return Response.json({error:'Invalid request origin.'},{status:403});
  if(JSON.stringify(data).length>65000)return new Response('Working draft is too large',{status:413});
  try{return Response.json(await persistWorkingDraft(session,String(data.id??''),data.payload,Number(data.version)));}catch(e){return Response.json({error:e instanceof Error?e.message:'Could not save draft.'},{status:400});}
 }

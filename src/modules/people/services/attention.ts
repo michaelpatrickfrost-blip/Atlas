@@ -10,16 +10,16 @@ export const peopleAttentionProvider: AttentionProvider = async ({ organisationI
   const now = new Date();
 
   const [overdueOnboarding, overdueAppraisals, activeEmployees] = await Promise.all([
-    db.employeeTask.count({
+    can(session, HR_CAPABILITIES.onboardingManage) ? db.employeeTask.count({
       where: { organisationId, phase: "ONBOARDING", completedAt: null, dueDate: { lt: now } },
-    }),
-    db.appraisal.count({
+    }) : Promise.resolve(0),
+    can(session, HR_CAPABILITIES.appraisalRead) ? db.appraisal.count({
       where: { organisationId, status: "SCHEDULED", scheduledAt: { lt: now } },
-    }),
+    }) : Promise.resolve(0),
     can(session, HR_CAPABILITIES.absenceRead)
       ? db.employee.findMany({
           where: { organisationId, status: { not: "LEFT" } },
-          select: { id: true, firstName: true, lastName: true, absences: { where: { type: "SICKNESS" }, select: { startDate: true, endDate: true } } },
+          select: { id: true, firstName: true, lastName: true, absences: { where: { type: "SICKNESS", status: "APPROVED" }, select: { startDate: true, endDate: true } } },
         })
       : Promise.resolve([]),
   ]);
@@ -53,6 +53,54 @@ export const peopleAttentionProvider: AttentionProvider = async ({ organisationI
       href: "/people/absence",
       severity: "critical",
     });
+  }
+
+  // Personal reminders for this user as a manager — the "push to managers" path:
+  // auto-generated reviews land here and in /people/my-team, not in an inbox.
+  const weekAhead = new Date(now.getTime() + 7 * 86_400_000);
+  const [myAppraisalsDue, myOneToOnesDue] = await Promise.all([
+    can(session, HR_CAPABILITIES.appraisalRead) ? db.appraisal.count({ where: { organisationId, reviewerUserId: session.userId, status: "SCHEDULED", scheduledAt: { lt: weekAhead } } }) : Promise.resolve(0),
+    can(session, HR_CAPABILITIES.oneToOneRead) ? db.oneToOne.count({ where: { organisationId, managerUserId: session.userId, status: "SCHEDULED", scheduledAt: { lt: weekAhead } } }) : Promise.resolve(0),
+  ]);
+  if (myAppraisalsDue > 0) {
+    items.push({
+      id: "people.my_team.appraisals_due",
+      label: `${myAppraisalsDue} appraisal${myAppraisalsDue === 1 ? "" : "s"} due this week for your team`,
+      href: "/people/my-team",
+      severity: "info",
+    });
+  }
+  if (myOneToOnesDue > 0) {
+    items.push({
+      id: "people.my_team.one_to_ones_due",
+      label: `${myOneToOnesDue} one-to-one${myOneToOnesDue === 1 ? "" : "s"} due this week for your team`,
+      href: "/people/my-team",
+      severity: "info",
+    });
+  }
+
+  if (can(session, HR_CAPABILITIES.expenseApprove)) {
+    const pendingExpenses = await db.expenseClaim.count({ where: { organisationId, status: "PENDING" } });
+    if (pendingExpenses > 0) {
+      items.push({
+        id: "people.expenses.pending",
+        label: `${pendingExpenses} expense claim${pendingExpenses === 1 ? "" : "s"} awaiting approval`,
+        href: "/people/expenses",
+        severity: "warning",
+      });
+    }
+  }
+
+  if (can(session, HR_CAPABILITIES.absenceManage)) {
+    const pendingLeave = await db.absenceRecord.count({ where: { organisationId, status: "PENDING" } });
+    if (pendingLeave > 0) {
+      items.push({
+        id: "people.absence.pending_requests",
+        label: `${pendingLeave} leave request${pendingLeave === 1 ? "" : "s"} awaiting approval`,
+        href: "/people/absence",
+        severity: "warning",
+      });
+    }
   }
 
   return items;

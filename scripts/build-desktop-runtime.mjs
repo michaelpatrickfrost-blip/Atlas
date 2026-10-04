@@ -1,0 +1,20 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
+const root=process.cwd(),stage=path.join(root,'build/desktop-source');
+execFileSync(process.execPath,['scripts/prepare-runtime.mjs','desktop'],{stdio:'inherit'});
+execFileSync(process.execPath,[path.join(root,'node_modules/next/dist/bin/next'),'build','--webpack'],{cwd:stage,stdio:'inherit',env:{...process.env,ATLAS_RUNTIME:'desktop',ATLAS_DATA_API_URL:'http://127.0.0.1:13100'}});
+const runtime=path.join(root,'build/desktop-runtime');fs.rmSync(runtime,{recursive:true,force:true});
+fs.cpSync(path.join(stage,'.next/standalone'),runtime,{recursive:true});
+// Staging symlinks must never escape the installed app. Materialise dependencies.
+const bundledModules=path.join(runtime,'node_modules');
+fs.rmSync(bundledModules,{recursive:true,force:true});
+fs.cpSync(path.join(root,'node_modules'),bundledModules,{recursive:true,dereference:true});
+const app=path.join(runtime,'build/desktop-source');
+fs.rmSync(path.join(app,'node_modules'),{recursive:true,force:true});
+fs.symlinkSync('../../node_modules',path.join(app,'node_modules'),'dir');
+if(!fs.existsSync(path.join(app,'server.js')))throw new Error('Standalone desktop runtime missing.');
+fs.cpSync(path.join(stage,'.next/static'),path.join(app,'.next/static'),{recursive:true});
+fs.cpSync(path.join(stage,'public'),path.join(app,'public'),{recursive:true});
+fs.copyFileSync(process.execPath,path.join(runtime,'node'));fs.chmodSync(path.join(runtime,'node'),0o755);
+console.log(`Built local desktop application runtime: ${runtime}`);

@@ -1,10 +1,13 @@
 import Link from "next/link";
-import { Settings, ShieldCheck, Users } from "lucide-react";
+import { Briefcase, Settings, ShieldCheck, Users } from "lucide-react";
 import { requireSession } from "@/core/auth/session";
-import { getNavigableModules } from "@/core/modules/runtime";
+import { getNavigableModules, getEnabledModuleIds } from "@/core/modules/runtime";
 import { getAttentionItems } from "@/core/attention/aggregate";
 import { can } from "@/core/permissions/check";
 import { CORE_CAPABILITIES, CUSTOMER_CAPABILITIES } from "@/core/permissions/capabilities";
+import { canOpenCompanyAdmin } from "@/app/(app)/settings/settings-menu";
+import { GoalMeter } from "@/modules/kpis/components/goal-meter";
+import { loadGoalWorkspace } from "@/modules/kpis/services/workspace";
 
 function greeting(name: string) {
   const hour = Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hourCycle: "h23", timeZone: "Europe/London" }).format(new Date()));
@@ -14,11 +17,14 @@ function greeting(name: string) {
 
 export default async function HomePage() {
   const session = await requireSession();
-  const [modules, attention] = await Promise.all([getNavigableModules(session), getAttentionItems(session)]);
+  const [modules, attention, enabled] = await Promise.all([getNavigableModules(session), getAttentionItems(session), getEnabledModuleIds(session.organisationId)]);
+  const goalBoard = enabled.has("kpis") ? await loadGoalWorkspace(session).catch(() => null) : null;
+  const highlights = goalBoard?.goals.filter((goal) => goal.status === "ACTIVE").slice(0, 4) ?? [];
   const apps = [
+    { id: "my-work", name: "My work", description: "Your rota, time off, tasks and goals", rootPath: "/profile", icon: Briefcase },
     ...(can(session, CUSTOMER_CAPABILITIES.read) ? [{ id: "customers", name: "Customers", description: "Accounts and relationships", rootPath: "/customers", icon: Users }] : []),
     ...modules.map((module) => ({ id: module.id, name: module.name, description: module.description, rootPath: module.rootPath, icon: module.icon })),
-    ...(can(session, CORE_CAPABILITIES.usersManage) ? [{ id: "settings", name: "Company admin", description: "People, brand and permissions", rootPath: "/settings", icon: Settings }] : []),
+    ...(canOpenCompanyAdmin(session) ? [{ id: "settings", name: "Company admin", description: "People, brand and permissions", rootPath: "/settings", icon: Settings }] : []),
     ...(can(session, "atlas.companies.manage") ? [{ id: "platform", name: "Atlas console", description: "Company accounts", rootPath: "/atlas", icon: ShieldCheck }] : []),
   ];
   const first = session.userName.split(" ")[0];
@@ -49,6 +55,10 @@ export default async function HomePage() {
           );
         })}
       </section>
+      {highlights.length > 0 && <section className="rounded-3xl border border-black/[0.04] bg-white p-6 shadow-[0_1px_1px_rgba(0,0,0,0.04),0_18px_40px_-24px_rgba(0,0,0,0.28)]">
+        <div className="flex items-center justify-between gap-3"><h2 className="text-lg font-semibold tracking-tight text-[#1d1d1f]">Goals</h2><Link href="/kpis" className="text-sm font-medium text-[#0071e3]">Open scorecards</Link></div>
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">{highlights.map((goal) => <Link key={goal.id} href={goal.planId ? `/kpis/plans/${goal.planId}` : `/kpis/${goal.id}`} className="rounded-2xl bg-[#f5f5f7] p-4"><p className="text-xs text-[#6e6e73]">{goal.visibility === "COMPANY" ? goal.department || goal.teamName : goal.personName || "Personal"}{goal.metricName ? ` · ${goal.metricName}` : ""}</p><div className="mt-2"><GoalMeter name={goal.name} actual={goal.actual} target={goal.target} elapsed={goal.elapsed} verdict={goal.verdict} unit={goal.unit} currency={goal.currency} summary={goal.summary} status={goal.status} /></div></Link>)}</div>
+      </section>}
       <section className="rounded-3xl border border-black/[0.04] bg-white p-6 shadow-[0_1px_1px_rgba(0,0,0,0.04),0_18px_40px_-24px_rgba(0,0,0,0.28)]">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-lg font-semibold tracking-tight text-[#1d1d1f]">Needs you</h2>

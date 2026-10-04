@@ -1,3 +1,4 @@
+import { ownerRestriction } from "@/modules/crm/services/visibility";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { requireSession } from "@/core/auth/session";
@@ -10,6 +11,7 @@ import { formatMoney } from "@/core/shared/money";
 import { Card } from "@/components/ui/card";
 import { StatusPill } from "@/components/ui/status-pill";
 import { Button } from "@/components/ui/button";
+import { ActionForm } from "@/components/ui/action-form";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
   updateValueFormAction,
@@ -23,6 +25,10 @@ import {
   logOpportunityActivityFormAction,
 } from "@/app/(app)/crm/opportunities/[opportunityId]/actions";
 import { MilestoneToggle } from "@/app/(app)/crm/opportunities/[opportunityId]/milestone-toggle";
+import { projectScope } from "@/core/permissions/work-access";
+import { commitmentView } from "@/modules/sales/services/call-off-balance";
+import { CommercialLinks } from "@/modules/sales/components/commercial-links";
+import { deliverAndInvoiceCallOff } from "@/modules/sales/services/commercial";
 
 const inputClass = "rounded-[var(--radius-atlas-sm)] border border-[var(--color-border-strong)] px-3 py-2 text-sm outline-none focus:border-[var(--color-atlas-blue)]";
 const FORECAST_LABEL: Record<string, string> = { PIPELINE: "Pipeline", BEST_CASE: "Best Case", COMMIT: "Commit", CLOSED: "Closed", OMITTED: "Omitted" };
@@ -36,8 +42,15 @@ export default async function OpportunityRecordPage({ params }: { params: Promis
   const { opportunityId } = await params;
   const opportunity = await getOpportunity(session.organisationId, opportunityId);
   if (!opportunity) notFound();
+  const ownerOnly = ownerRestriction(session);
+  if (ownerOnly && opportunity.ownerUserId !== ownerOnly) notFound();
 
   const canManage = can(session, SALES_CAPABILITIES.opportunityManage);
+  const [dealProjects, agreements, linkableProjects] = await Promise.all([
+    db.project.findMany({ where: { organisationId: session.organisationId, opportunityId: opportunity.id }, select: { id: true, name: true, reference: true } }),
+    can(session, SALES_CAPABILITIES.orderRead) ? db.salesAgreement.findMany({ where: { organisationId: session.organisationId, OR: [{ opportunityId: opportunity.id }, { partyId: opportunity.partyId, status: "ACTIVE" }] }, include: { lines: true, callOffs: { where: { commercialStatus: { not: "CANCELLED" } }, include: { lines: true } } }, orderBy: { updatedAt: "desc" } }) : Promise.resolve([]),
+    can(session, "projects.read") ? db.project.findMany({ where: { AND: [projectScope(session), { partyId: opportunity.partyId }] }, select: { id: true, name: true } }) : Promise.resolve([]),
+  ]);
   const canClose = can(session, SALES_CAPABILITIES.opportunityClose);
 
   const [availableContacts, lossReasons, owner] = await Promise.all([
@@ -55,15 +68,15 @@ export default async function OpportunityRecordPage({ params }: { params: Promis
   if (opportunity.expectedCloseDate && opportunity.expectedCloseDate < now && opportunity.status === "OPEN") needsAttention.push(`Expected close date passed — ${opportunity.expectedCloseDate.toLocaleDateString("en-GB")}`);
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-6">
-      <section className="rounded-2xl border border-[var(--color-border)] bg-white p-5"><div className="flex items-center justify-between"><h2 className="text-sm font-semibold">Linked quotations</h2>{can(session,SALES_CAPABILITIES.quoteCreate) && <Link href={`/sales/quotes/new?customer=${opportunity.partyId}&opportunity=${opportunity.id}`} className="text-sm text-[var(--color-atlas-blue)]">Create quotation →</Link>}</div>{can(session,SALES_CAPABILITIES.quoteRead) ? <div className="mt-3 flex flex-wrap gap-4">{opportunity.quotes.map(q=><Link key={q.id} href={`/sales/quotes/${q.id}`} className="text-sm text-[var(--color-atlas-blue)]">{q.reference} · {q.status}</Link>)}{!opportunity.quotes.length && <p className="text-xs text-[var(--color-ink-muted)]">No quotations linked yet.</p>}</div>:<p className="mt-3 text-xs text-[var(--color-ink-muted)]">Sales access is required to view quotations.</p>}</section>
-      <div className="border-b border-[var(--color-border)] pb-5">
+    <div className="mx-auto flex max-w-4xl flex-col gap-8">
+      <div>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-[var(--color-ink)]">{opportunity.name}</h1>
             <Link href={`/customers/${opportunity.partyId}`} className="text-sm text-[var(--color-atlas-blue)] hover:underline">
               {opportunity.party.name}
             </Link>
+            <h1 className="mt-1 text-[1.75rem] font-semibold tracking-tight text-[var(--color-ink)]">{opportunity.name}</h1>
+            {(opportunity.industry || opportunity.tags.length > 0) && <p className="mt-1 text-sm text-[var(--color-ink-muted)]">{[opportunity.industry?.name, opportunity.tags.join(", ")].filter(Boolean).join(" · ")}</p>}
           </div>
           {opportunity.status === "OPEN" && canClose && (
             <div className="flex gap-2">
@@ -71,7 +84,7 @@ export default async function OpportunityRecordPage({ params }: { params: Promis
                 <Button type="submit" variant="primary">Mark won</Button>
               </form>
               <details className="relative">
-                <summary className="inline-flex cursor-pointer list-none items-center justify-center rounded-[var(--radius-atlas-sm)] border border-[var(--color-border-strong)] px-3.5 py-2 text-sm font-medium text-[var(--color-ink)] hover:border-[var(--color-ink-faint)]">
+                <summary className="crm-plain inline-flex cursor-pointer list-none items-center justify-center rounded-[var(--radius-atlas-sm)] border border-[var(--color-border-strong)] bg-white px-3.5 py-2 text-sm font-medium text-[var(--color-ink)] hover:border-[var(--color-ink-faint)]">
                   Mark lost
                 </summary>
                 <form action={loseFormAction.bind(null, opportunity.id)} className="absolute right-0 z-10 mt-2 flex w-72 flex-col gap-2 rounded-[var(--radius-atlas-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-3 shadow-lg">
@@ -91,13 +104,49 @@ export default async function OpportunityRecordPage({ params }: { params: Promis
           {opportunity.status !== "OPEN" && <StatusPill label={opportunity.status} tone={opportunity.status === "WON" ? "success" : "danger"} />}
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white sm:grid-cols-4">
           <HeaderStat label={opportunity.stage.name} value={formatMoney(opportunity.valueAmount, opportunity.valueCurrency)} />
           <HeaderStat label="Expected close" value={opportunity.expectedCloseDate?.toLocaleDateString("en-GB") ?? "Not set"} />
           <HeaderStat label="Owner" value={owner?.name ?? "—"} />
           <HeaderStat label="Forecast" value={FORECAST_LABEL[opportunity.forecastCategory]} />
         </div>
       </div>
+
+      <section>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">Quotations</h2>
+          {can(session, SALES_CAPABILITIES.quoteCreate) && <Link href={`/sales/quotes/new?customer=${opportunity.partyId}&opportunity=${opportunity.id}`} className="text-sm text-[var(--color-atlas-blue)]">Create quotation</Link>}
+        </div>
+        {can(session, SALES_CAPABILITIES.quoteRead) ? (
+          <div className="flex flex-wrap gap-4">
+            {opportunity.quotes.map((quote) => <Link key={quote.id} href={`/sales/quotes/${quote.id}`} className="text-sm text-[var(--color-atlas-blue)]">{quote.reference} · {quote.status}</Link>)}
+            {!opportunity.quotes.length && <p className="text-sm text-[var(--color-ink-muted)]">No quotations linked yet.</p>}
+          </div>
+        ) : <p className="text-sm text-[var(--color-ink-muted)]">Sales access is required to view quotations.</p>}
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">Projects and call-offs</h2>
+        {dealProjects.map((project) => <Link key={project.id} href={`/projects/${project.id}`} className="block text-sm text-[var(--color-atlas-blue)]">{project.reference} · {project.name}</Link>)}
+        <CommercialLinks target="opportunity" recordId={opportunity.id} partyId={opportunity.partyId} opportunityId={opportunity.id} projects={linkableProjects} canLink={can(session, "projects.read") || can(session, "projects.manage")} canCreateQuote={can(session, SALES_CAPABILITIES.quoteCreate)} canCreateOrder={can(session, SALES_CAPABILITIES.orderCreate)} />
+        {agreements.map((agreement) => {
+          const open = commitmentView(agreement.lines, agreement.callOffs);
+          const remaining = agreement.lines.reduce((sum, line) => sum + (open.get(line.id)?.remaining ?? 0), 0);
+          return <div key={agreement.id} className="rounded-2xl border border-[var(--color-border)] bg-white p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <Link href={`/sales/agreements/${agreement.id}`} className="text-sm text-[var(--color-atlas-blue)]">{agreement.reference} · {remaining} still open</Link>
+              <span className="text-xs text-[var(--color-ink-muted)]">{agreement.status}</span>
+            </div>
+            {can(session, SALES_CAPABILITIES.orderCreate) && can(session, SALES_CAPABILITIES.orderConfirm) && agreement.status === "ACTIVE" && remaining > 0 && <ActionForm action={deliverAndInvoiceCallOff} className="mt-4 space-y-3">
+              <input type="hidden" name="agreementId" value={agreement.id} />
+              <input type="hidden" name="opportunityId" value={opportunity.id} />
+              {agreement.lines.map((line) => <label key={line.id} className="grid gap-2 text-sm sm:grid-cols-[1fr_7rem] sm:items-center">{line.description}<input name={`qty:${line.id}`} type="number" min={0} max={open.get(line.id)?.remaining ?? 0} defaultValue={0} className={inputClass} /></label>)}
+              <label className="block text-xs text-[var(--color-ink-muted)]">Delivery date<input type="date" name="requestedDeliveryDate" required className={`${inputClass} mt-1`} /></label>
+              <Button type="submit">Deliver and invoice</Button>
+            </ActionForm>}
+          </div>;
+        })}
+      </section>
 
       {needsAttention.length > 0 && opportunity.status === "OPEN" && (
         <Card className="flex flex-col gap-1 border-[var(--color-status-warning)]/30 bg-[var(--color-status-warning-soft)] p-4">
@@ -295,9 +344,9 @@ export default async function OpportunityRecordPage({ params }: { params: Promis
 
 function HeaderStat({ label, value }: { label: string; value: string }) {
   return (
-    <div>
-      <p className="truncate text-lg font-semibold text-[var(--color-ink)]">{value}</p>
-      <p className="truncate text-xs text-[var(--color-ink-muted)]">{label}</p>
+    <div className="border-b border-r border-[var(--color-border)] px-4 py-4">
+      <p className="truncate text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">{label}</p>
+      <p className="mt-1 truncate text-lg font-semibold tracking-tight text-[var(--color-ink)]">{value}</p>
     </div>
   );
 }

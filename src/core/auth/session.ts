@@ -1,3 +1,5 @@
+import {auditSessionCapabilities, parseAuditAccess} from "@/core/audit/access";
+import {applyCompanyAccessRestrictions} from "@/core/permissions/company-access";
 import {getRemoteSession} from "@/core/desktop/data-client";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
@@ -13,6 +15,8 @@ function sessionSecret() {
 export type SessionToken = {
   userId: string;
   organisationId: string;
+  authVersion?: number;
+  sessionVersion?: number;
 };
 
 /** Current request's session, resolved to membership + role capabilities. Null when signed out. */
@@ -27,7 +31,8 @@ export type Session = {
 };
 
 export async function createSessionCookie(token: SessionToken) {
-  const jwtToken = jwt.sign(token, sessionSecret(), { expiresIn: "30d" });
+  const membership = await db.membership.findUniqueOrThrow({where:{organisationId_userId:{organisationId:token.organisationId,userId:token.userId}},include:{user:true}});
+  const jwtToken = jwt.sign({...token,authVersion:membership.user.authVersion,sessionVersion:membership.sessionVersion}, sessionSecret(), { expiresIn: "30d" });
   const store = await cookies();
   store.set(SESSION_COOKIE, jwtToken, {
     httpOnly: true,
@@ -68,6 +73,7 @@ export async function getSession(): Promise<Session | null> {
   });
   if (!membership || !membership.active || membership.organisation.status !== "ACTIVE") return null;
 
+  if((token.authVersion??0)!==(membership.user.authVersion??0)||(token.sessionVersion??0)!==(membership.sessionVersion??0))return null;
   const capabilities = new Set<string>(["core.profile.self"]);
   for (const roleOnMembership of membership.roles) {
     for (const capability of roleOnMembership.role.capabilities) {
@@ -75,7 +81,10 @@ export async function getSession(): Promise<Session | null> {
     }
   }
 
+  for(const cap of membership.grantedCapabilities??[])if(!cap.startsWith("atlas."))capabilities.add(cap);
+  for(const cap of membership.deniedCapabilities??[])capabilities.delete(cap);
   if (membership.user.platformAdmin) capabilities.add("atlas.companies.manage");
+  for (const capability of auditSessionCapabilities(parseAuditAccess(membership.organisation.auditAccess), membership.userId)) capabilities.add(capability);
   return {
     userId: membership.userId,
     userName: membership.user.name,
@@ -83,7 +92,7 @@ export async function getSession(): Promise<Session | null> {
     organisationId: membership.organisationId,
     organisationName: membership.organisation.name,
     membershipId: membership.id,
-    capabilities,
+    capabilities:applyCompanyAccessRestrictions(capabilities,membership.organisation.restrictedAccessAreas),
   };
 }
 

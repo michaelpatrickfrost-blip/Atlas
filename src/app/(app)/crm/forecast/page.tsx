@@ -1,3 +1,4 @@
+import { ownerRestriction } from "@/modules/crm/services/visibility";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { SALES_CAPABILITIES } from "@/core/permissions/capabilities";
@@ -25,8 +26,9 @@ export default async function ForecastPage() {
   const session = await requireSession();
   assertCapability(session, SALES_CAPABILITIES.forecastRead);
 
+  const ownerOnly = ownerRestriction(session);
   const opportunities = await db.opportunity.findMany({
-    where: { organisationId: session.organisationId, status: "OPEN" },
+    where: { organisationId: session.organisationId, status: "OPEN", ...(ownerOnly ? { ownerUserId: ownerOnly } : {}) },
     include: { party: true, stage: true },
   });
 
@@ -43,30 +45,30 @@ export default async function ForecastPage() {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-[var(--color-ink)]">Forecast</h1>
-        <p className="mt-1 text-sm text-[var(--color-ink-muted)]">Organisation-wide, open opportunities by forecast category.</p>
+        <h1 className="text-[1.75rem] font-semibold tracking-tight text-[var(--color-ink)]">Forecast</h1>
+        <p className="mt-1 text-sm text-[var(--color-ink-muted)]">{ownerOnly ? "Your open opportunities by forecast category." : "Organisation-wide, open opportunities by forecast category."}</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white sm:grid-cols-4">
         {byCategory.map((category) => (
-          <Card key={category.key} className="p-4">
-            <p className="text-xl font-semibold text-[var(--color-ink)]">{formatMoney(category.total, "GBP")}</p>
-            <p className="text-sm text-[var(--color-ink-muted)]">{category.label}</p>
-            <p className="mt-1 text-xs text-[var(--color-ink-faint)]">{category.items.length} opportunities</p>
-          </Card>
+          <div key={category.key} className="border-b border-r border-[var(--color-border)] p-5">
+            <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">{category.label}</p>
+            <p className="mt-2 text-2xl font-semibold tracking-tight text-[var(--color-ink)]">{formatMoney(category.total, "GBP")}</p>
+            <p className="mt-1 text-xs text-[var(--color-ink-muted)]">{category.items.length} open</p>
+          </div>
         ))}
       </div>
 
-      <Card className="flex items-center justify-between p-4">
-        <div>
-          <p className="text-sm text-[var(--color-ink-muted)]">Commit + Closed</p>
-          <p className="text-xl font-semibold text-[var(--color-ink)]">{formatMoney(commitPlusClosed, "GBP")}</p>
+      <div className="grid gap-px overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-border)] sm:grid-cols-2">
+        <div className="bg-white p-5">
+          <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">Commit + closed</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight text-[var(--color-ink)]">{formatMoney(commitPlusClosed, "GBP")}</p>
         </div>
-        <div className="text-right">
-          <p className="text-sm text-[var(--color-ink-muted)]">Stage-weighted pipeline</p>
-          <p className="text-xl font-semibold text-[var(--color-ink)]">{formatMoney(totalWeighted, "GBP")}</p>
+        <div className="bg-white p-5">
+          <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">Stage-weighted pipeline</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight text-[var(--color-ink)]">{formatMoney(totalWeighted, "GBP")}</p>
         </div>
-      </Card>
+      </div>
 
       {byCategory.map((category) => (
         <section key={category.key}>

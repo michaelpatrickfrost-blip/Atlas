@@ -1,0 +1,5 @@
+'use client';
+import {useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {Button} from '@/components/ui/button';
+export function ActionForm({action,children,label='Save',className=''}:{action:(form:FormData)=>Promise<unknown>;children:React.ReactNode;label?:string;className?:string}){const [error,setError]=useState(''),[pending,setPending]=useState(false),[done,setDone]=useState(false),router=useRouter();return <form className={`space-y-3 ${className}`} action={async form=>{setError('');setDone(false);setPending(true);try{await action(form);setDone(true);router.refresh();}catch(e){setError(e instanceof Error?e.message:'Action failed.');}finally{setPending(false);}}}>{children}{error&&<p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}{done&&<p role="status" className="text-sm text-emerald-700">Saved to the central server.</p>}<Button type="submit" variant="primary" disabled={pending}>{pending?'Saving…':label}</Button></form>;}

@@ -54,7 +54,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        {can(session,"core.pricing.read")&&<Link href="/pricing" className="text-sm text-blue-600">Customer pricelists →</Link>}<Link href="/customers/map" className="mb-3 inline-block text-sm text-[var(--color-atlas-blue)]">Explore customer map →</Link><h1 className="text-2xl font-semibold tracking-tight text-[var(--color-ink)]">Customers</h1>
+<h1 className="text-2xl font-semibold tracking-tight text-[var(--color-ink)]">Customers</h1>
         {can(session, CUSTOMER_CAPABILITIES.create) && (
           <Link href="/customers/new">
             <Button variant="primary">Add customer</Button>
@@ -62,15 +62,15 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
         )}
       </div>
 
-      <form className="flex items-center gap-3">
+      <form className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3">
         <input
           type="search"
           name="q"
           defaultValue={params.q}
           placeholder="Search by name, code, registration number..."
-          className="w-full max-w-sm rounded-[var(--radius-atlas-sm)] border border-[var(--color-border-strong)] px-3 py-1.5 text-sm outline-none focus:border-[var(--color-atlas-blue)]"
+          className="min-w-48 flex-1 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-[var(--color-atlas-blue)]"
         />
-        {filter && <input type="hidden" name="filter" value={filter} />}
+        {filter && <input type="hidden" name="filter" value={filter} />}<button className="rounded-xl bg-blue-600 px-4 py-3 text-xs font-medium text-white">Search</button>
       </form>
 
       <div className="flex items-center gap-1 overflow-x-auto">

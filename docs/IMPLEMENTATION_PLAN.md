@@ -1,5 +1,13 @@
 # Atlas delivery checklist
 
+> **Superseded deployment target — 3 October 2026:** The user requires Atlas
+> software/UI/application runtime on the Desktop/Mac and shared user data stored
+> only on the server. Remote hosting of the Atlas UI/full application and the
+> hosted thin-client target below are historical, not the approved architecture.
+> See AGENTS.md, .ai/ARCHITECTURE.md and [desktop/data runtime](DESKTOP_DATA_BOUNDARY.md). Minimal secured data access must retain
+> server-side tenant/capability enforcement. Current deployment compliance is unverified.
+
+
 Updated 3 October 2026. This is the working delivery tracker, not a declaration that Atlas is a complete ERP. Checkboxes describe specific accepted workflows. A module's catalogue entry or schema alone never earns a tick.
 
 ## Current position and first delivery batch
@@ -21,10 +29,10 @@ Updated 3 October 2026. This is the working delivery tracker, not a declaration 
 | CRM | Separate app, stage movement and curated dashboards exist | Pipeline usability, qualification rules, accurate reporting and full record lifecycle |
 | Sales | Product-backed document composer and order record foundations exist | Quote revisions, PO/tax confirmation rules, complete conversion and stock allocation |
 | Inventory | Warehouse balances and movement ledger exist | Concurrent adjustments, reservations, transfers and counts |
-| Projects / Meetings / KPIs | Project, task, meeting and manual scorecard foundations exist | Board/timeline usability, timezone correctness, assigned actions and automatic metrics |
+| Projects / Meetings / KPIs | Broad canonical work-management workspace and existing scorecard foundations; Projects source/build/synthetic evidence in PROJECTS_WORKSPACE.md | Full 256-section acceptance, advanced collaboration/workflow/capacity, live ERP/Finance processing and installed desktop activation |
 | Logistics / Finance / Purchasing | Planned | Fulfilment contracts, accounting design and reconciled end-to-end transactions |
-| HR / Scheduling / Production | Planned | Resource calendars, demand model, MRP and finite-capacity scheduler |
-| Service / Quality / Safety / Marketing | Planned | Connected operational records, approvals, restricted access and reporting |
+| HR / Scheduling / Production | Partial foundations; acceptance open | Resource calendars, demand model, MRP and finite-capacity scheduler |
+| Service / Quality / Safety / Marketing | Service and Marketing source foundations; Quality/Safety planned | Marketing planning, consent and CRM handoff implemented; external delivery and complete acceptance remain pending |
 | Mac / paid add-ons | Private SSH Mac client and isolated test server running; entitlement foundation exists | Notarised distribution, billing and production release verification |
 
 **Next batch:** finish the visual system and customer/catalogue/pricing/Sales journey before opening another major module. Start with app menus, rounded controls, consistent spacing and mobile tables; then verify imports and customer defaults; then enforce confirmation rules and connect inventory reservations. Follow with Logistics and Finance so an order can become a delivered, correctly invoiced transaction.
@@ -42,7 +50,7 @@ Research and remaining acceptance journeys: [ODOO_MODULE_GAP_ANALYSIS.md](./ODOO
 
 ## Design direction
 
-Icon-launcher home, crisp white workspaces and blue accents; no permanent sidebar. Rounded controls and bars, consistent top menus, clear active states, compact document layouts and short transitions. Desktop, tablet and phone are all supported targets. Projects takes inspiration from Monday; commercial documents follow the functional structure of the supplied Odoo screen with Atlas styling.
+Icon-launcher home, crisp white workspaces and blue accents; no permanent sidebar. Rounded controls and bars, consistent top menus, clear active states, compact document layouts and short transitions. Desktop, tablet and phone are all supported targets. Projects uses Linear-like precision, Notion-like calm and Atlas business depth, per the full Projects brief; commercial documents follow the functional structure of the supplied Odoo screen with Atlas styling.
 
 ## Delivery order
 
@@ -74,7 +82,7 @@ Icon-launcher home, crisp white workspaces and blue accents; no permanent sideba
 - [ ] Interactive customer landscape: connected cards, collapse/expand, search and customer-type filters.
 - [ ] Canonical customer, contacts, delivery sites, invoice addresses, tax, bank and credit sections.
 - [ ] Attach a default business pricelist and ordering rules to a customer.
-- [ ] CSV template, validation, preview and transactional customer import, including parent/branch codes.
+- [x] CSV template, validation, preview and transactional customer import, including parent/branch codes. Atlas owners use the company setup portal; company administrators keep the customers file under Company administration → Imports.
 - [ ] Improve quick-create into a polished full-record flow; capture all required data without a giant form.
 - [ ] Complete account-manager editing, hierarchy roll-ups, duplicate merge and document management.
 
@@ -83,7 +91,7 @@ Icon-launcher home, crisp white workspaces and blue accents; no permanent sideba
 - [ ] Products app: shared SKU/product code, catalogue/category code, product/service type, units, standard price and tax category.
 - [ ] Pricing app: independent pricelists, currencies, date validity and quantity breaks.
 - [ ] Explain price source: customer contract → selected/default pricelist → standard price.
-- [ ] Product and pricelist CSV templates, preview, validation and imports.
+- [x] Product and pricelist CSV templates, preview, validation and imports. The owner portal also covers price lists, warehouses, locations and employees.
 - [ ] Add complete product records, categories, variants, multiple units, customer-specific codes and supplier references.
 - [ ] Add image/document uploads, archived products, duplicate/code policies and import job/error exports.
 - [ ] Add margin guidance, approved overrides, discount groups and price version history.
@@ -110,7 +118,7 @@ Icon-launcher home, crisp white workspaces and blue accents; no permanent sideba
 - [ ] Enforce required PO/reference rules, supported tax treatment and valid confirmation transitions.
 - [ ] Complete quote editing, revisions, templates, PDFs, controlled send/sign/acceptance and expiry.
 - [ ] Complete order amendment, partial cancellation, returns authorisation, blanket/call-off orders and commercial reporting.
-- [ ] Customer contract pricing, stock reservations and allocation visibility; commercial/fulfilment/invoice/payment/credit states remain separate.
+- [ ] Customer contract pricing now lives on Pricing agreements (assigned list, special prices, payment terms and a service promise) and on the customer Commercial tab. Stock reservations and allocation visibility remain open; commercial/fulfilment/invoice/payment/credit states remain separate.
 
 ## 6. Inventory and Logistics
 
@@ -124,18 +132,26 @@ Icon-launcher home, crisp white workspaces and blue accents; no permanent sideba
 
 ## 7. Projects, meetings and team work
 
-- [ ] Customer project records with status, notes and linked quotations.
-- [ ] Monday-style task table with owner, due date, project, meeting linkage and status updates.
-- [ ] Meetings with agenda, attendees and linked assigned actions.
-- [ ] Add board/table/calendar/timeline views, drag-and-drop, dependencies, milestones, files and comments.
-- [ ] Add capacity, time logging, budget/actuals, profitability, recurring tasks and notifications.
-- [ ] Locate the earlier project-management reference before transplanting any design. NEW PROGRAME currently appears to be Vocal Clinic Pro.
+Michael requests all 256 [Projects requirements](modules/PROJECTS_SOURCE_REQUIREMENTS.md)
+as one scope without delivery phase gates. The new broad workspace extends the
+existing records; [implementation and verification](modules/PROJECTS_WORKSPACE.md)
+and [open coverage](modules/PROJECTS_COVERAGE.md) supersede the former basic
+customer-project/Monday-style plan. Source/build/synthetic browser/database evidence
+is not full acceptance or installed desktop activation.
+
+- [ ] Accept every requirement and all supplied permission/dependency/view/workload/ERP/automation/budget/update/document scenarios.
+- [ ] Complete configurable workflows/roles, external collaboration/forms, rich simultaneous editing and full view/bulk/drag interactions.
+- [ ] Complete working calendars/leave-aware capacity/resource forecasting, multi-stage approvals, nested portfolio/goals and advanced templates.
+- [ ] Deliver real Finance cost/billing and Procurement/Manufacturing/Logistics/Service providers, durable event processing and reconciliation.
+- [ ] Verify compatible desktop/data packages, protected central migration and installed Mac/server-data operation while preserving unsaved work.
 
 ## 8. Goals & KPIs
 
-- [ ] Separate KPI app: team, owner, unit, target, direction, period, progress and update history.
-- [ ] Filter scorecards by team and audit progress updates.
-- [ ] Add automatic metric sources, calculation definitions, baseline/thresholds, weighting, roll-ups and recurring periods.
+3 October: a department or team target can use a catalogue measure and show under that chart on a dashboard. Personal goals, development plans and performance-improvement plans stay private. Saving a plan in HR writes the same goals onto the person's profile and into Goals. Disciplinary cases stay in HR and are not listed on the scorecard. The shared database and installed Mac app do not have this release yet.
+
+- [x] Separate KPI app: team, owner, unit, target, direction, period, progress and update history. Department targets link to a live measure. Personal and plan goals are private to the person, their manager and HR.
+- [ ] Filter scorecards by team. Progress updates are audited; a dedicated team filter is not a separate screen.
+- [ ] Add calculation definitions, baseline/thresholds, weighting, roll-ups and recurring periods beyond the live measure and the straight-line pace.
 - [ ] Add team scoreboards, review meetings, trend charts, data freshness and permission-controlled dashboard sharing.
 
 ## 9. Finance and Purchasing
@@ -153,6 +169,11 @@ Finance scope is researched against primary product documentation and UK digital
 - [ ] Reconcile every report to the ledger and every stock/invoice event to its source document before release.
 
 ## 10. HR and Scheduling & Hours
+
+3 October: source foundations now include self-service holiday/contacts, direct-team
+approvals, private manager/HR notes, actual timesheets and the separate Scheduling
+weekly board/bulk shifts/tasks. See [delivery and release limits](modules/STAFF_SCHEDULING.md).
+The broader checklist remains open; no live migration/activation or full acceptance.
 
 - [ ] HR: employee records, departments, contracts, leave, policies, skills, training and restricted-data permissions.
 - [ ] Scheduling: availability, shifts, rotations, leave, skills/certification constraints and overtime rules.
@@ -173,9 +194,11 @@ Finance scope is researched against primary product documentation and UK digital
 ## 12. Service, Quality, Health & Safety and Marketing
 
 - [ ] Customer Service: cases, complaints, inbox, ownership, SLAs, escalation, communication and resolution.
+  Case and department-ticket source foundation now exists; full acceptance remains open.
+  See [Customer Service delivery](modules/CUSTOMER_SERVICE.md) and [all 241 requirements](modules/CUSTOMER_SERVICE_COVERAGE.md).
 - [ ] Quality: inspections, specifications, nonconformance, CAPA, traceability, supplier issues and holds/releases.
 - [ ] Health & Safety: risks, incidents, near misses, inspections, training compliance, actions and restricted records.
-- [ ] Marketing: audiences, consent, campaigns, journeys, assets, scheduling, attribution and reporting.
+- [ ] Marketing: source foundation includes strategy plans, budget allocations, channel calendar, audiences, consent, campaigns, content, versioned journey steps, CRM handoff and order attribution. External delivery, automatic scheduling and full brief completion remain pending; see docs/modules/MARKETING.md.
 - [ ] Explicitly authorised sending and provider integrations; no pretend email/SMS delivery.
 
 ## 13. Mac app and central server
@@ -184,7 +207,7 @@ Shared-data rules and the isolated Blocwrite-host proposal: [TEST_SERVER_AND_LIN
 
 - [x] Inspect server capacity and provision Atlas test hosting with an independent database, credentials, storage and service; protect Blocwrite from deployment and resource interference.
 
-- [ ] Package a native macOS client pointing at the hosted HTTPS Atlas service; preserve mobile/browser access.
+- [ ] Package Atlas software/UI/runtime on the Desktop/Mac, with server-only user-data persistence and secured data access; verify no remote Atlas UI/full-app dependency or local business-data store.
 - [x] Keep database credentials and tenant authorization on the server. The client is never the security boundary.
 - [ ] Add server selection, environment labelling, reconnect/error states, secure session handling and external-link controls.
 - [ ] Sign/notarise, install/update and test Intel/Apple Silicon; document distribution and support.
@@ -208,3 +231,33 @@ These sources inform the proposed scope; they do not establish that Atlas alread
 ## Sales specification delivery and next module
 
 The current Sales batch and remaining six-phase scope are tracked in [SALES_ORDER_PROCESSING.md](modules/SALES_ORDER_PROCESSING.md). The user’s complete Sales and CRM specifications are preserved verbatim in docs/modules. CRM is next after the Sales verification/deployment gate; it stays independent of commercial order processing.
+
+## Connected manufacturing target — 3 October 2026
+
+Dedicated Planning and Manufacturing execution follow the complete
+[manufacturing delivery gates](modules/MANUFACTURING_PLANNING.md), retaining all
+[supplied requirements](modules/MANUFACTURING_SOURCE_REQUIREMENTS.md). Earlier
+combined Production Planning references describe the domain, not final app packaging.
+All new manufacturing gates remain open. The complete replacement source contains
+sections 1–143; [section coverage](modules/MANUFACTURING_COVERAGE.md) tracks every
+numbered requirement. Manufacturing phase order follows source sections 125–131:
+foundation → production → financial manufacturing → planning → scheduling →
+quality/maintenance/subcontract/genealogy → advanced workspaces and ATP/CTP.
+
+## Logistics delivery source — 3 October 2026
+
+- [ ] Implement and accept all [222 Logistics requirements](modules/LOGISTICS_COVERAGE.md), following source phases 198–207.
+- [ ] Deliver the mandatory [Sales and Finance connections](modules/LOGISTICS_INTEGRATION.md), including partial fulfilment, holds/cancellation guards, valuation events, returns and freight reconciliation.
+- [ ] Verify transactional events, idempotent consumers, replay, tenant/capability gates and reconciled operational/financial projections using server data and the desktop runtime.
+
+The source is preserved verbatim in [LOGISTICS_SOURCE_REQUIREMENTS.md](modules/LOGISTICS_SOURCE_REQUIREMENTS.md). Documentation and existing provider types do not complete these gates.
+
+## Production Planning and Inventory starting slice — 3 October 2026
+
+Registered Production Planning (`/planning`) now has Sales/stock coverage, saved
+product targets for annual/monthly/weekly/custom windows and team/person work
+assignment. Inventory adds warehouse/product views, search, movement pagination,
+atomic transfers and CSV exports. This is a starting slice, not accepted full
+MPS/MRP/BOM/WIP/capacity scheduling. [Research and required acceptance](modules/PLANNING_RESEARCH.md)
+records the user's industrial-planner requirement. All broad manufacturing gates
+remain open. See CURRENT_STATE.md for fresh checks and activation evidence.

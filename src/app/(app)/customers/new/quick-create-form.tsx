@@ -10,7 +10,7 @@ import type { DuplicateCandidate } from "@/core/customers/duplicate-detection";
 /** Quick create: company name, country, primary contact, email/phone, account
  *  manager — nothing more (§34). Debounced duplicate check runs as the name is
  *  typed; it never blocks creation, only warns (§8). */
-export function QuickCreateForm() {
+export function QuickCreateForm({accounts=[],initialParent}:{accounts?:{id:string;name:string;customerCode:string}[];initialParent?:string}) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -42,6 +42,9 @@ export function QuickCreateForm() {
   async function handleSubmit(formData: FormData) {
     setSubmitting(true);
     await createCustomerAction({
+      parentPartyId:String(formData.get("parentPartyId")??"")||undefined,
+      hierarchyRole:String(formData.get("hierarchyRole")??"CUSTOMER") as "GROUP"|"CUSTOMER"|"BRANCH",
+      customerGroup:String(formData.get("customerGroup")??"")||undefined,
       name: String(formData.get("name")),
       kind: (formData.get("kind") as "COMPANY" | "PERSON") ?? "COMPANY",
       country: String(formData.get("country") || "") || undefined,
@@ -56,7 +59,7 @@ export function QuickCreateForm() {
 
   return (
     <form action={handleSubmit} className="flex flex-col gap-5 rounded-[var(--radius-atlas-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Company name" name="name" required value={name} onChange={handleNameChange} />
         <label className="flex flex-col gap-1 text-sm">
           <span className="text-[var(--color-ink-muted)]">Type</span>
@@ -67,15 +70,15 @@ export function QuickCreateForm() {
         </label>
       </div>
 
-      <Field label="Country" name="country" />
+      <Field label="Country" name="country" /><details open={!!initialParent} className="rounded-xl border border-slate-200 p-4"><summary className="cursor-pointer text-sm font-medium">Account structure <span className="ml-2 text-xs font-normal text-slate-400">Optional</span></summary><p className="mt-3 text-xs leading-relaxed text-slate-500">Leave this account independent, or attach it to any group, business or branch. You can change the structure later.</p><div className="mt-4 grid gap-4 sm:grid-cols-2"><label className="text-xs">Parent account<select name="parentPartyId" defaultValue={initialParent??''} className="mt-2 w-full rounded-xl border border-slate-200 bg-white p-3"><option value="">Independent account</option>{accounts.map(a=><option key={a.id} value={a.id}>{a.name} · {a.customerCode}</option>)}</select></label><label className="text-xs">Account level<select name="hierarchyRole" defaultValue={initialParent?'BRANCH':'CUSTOMER'} className="mt-2 w-full rounded-xl border border-slate-200 bg-white p-3"><option value="CUSTOMER">Business / account</option><option value="GROUP">Group</option><option value="BRANCH">Branch / location</option></select></label><Field label="Customer type" name="customerGroup"/></div></details>
 
       <div className="h-px bg-[var(--color-border)]" />
 
-      <div className="grid grid-cols-2 gap-4">
-        <Field label="Primary contact — first name" name="contactFirstName" required />
-        <Field label="Primary contact — surname" name="contactSurname" required />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Primary contact — first name" name="contactFirstName" />
+        <Field label="Primary contact — surname" name="contactSurname" />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Email" name="contactEmail" type="email" value={email} onChange={handleEmailChange} />
         <Field label="Telephone" name="contactPhone" type="tel" />
       </div>

@@ -87,9 +87,8 @@ page's initial server-rendered payload).
 name/trading name, registration number, normalised tax number, and contact
 email domain. It never merges automatically — it surfaces candidates with an
 "Open existing" link and a "Create anyway" override, both in the quick-create
-form (`src/app/(app)/customers/new/quick-create-form.tsx`). There's no merge
-function yet; `Party.parentPartyId`/`children` exists so a future controlled
-merge (or a parent/subsidiary hierarchy) has a place to attach to.
+form (`src/app/(app)/customers/new/quick-create-form.tsx`). There is no merge function yet. `Party.parentPartyId`/`children` supports the
+customer ownership hierarchy; linking accounts does not merge their records.
 
 ## Multi-company
 
@@ -122,3 +121,32 @@ access at all.
 - A real VAT/company-registration verification service integration
 - Customer merge, uninstall/data-deletion flows
 - Multi-company overrides (see above)
+
+## Building customer hierarchies
+
+Customers → Map, and the Who's who section on a customer, show the group, the
+businesses inside it, the branches under those, and the people on each account.
+People who report to someone on the same account sit underneath that manager.
+A person who reports to someone at another company in the group is labelled
+with that manager and company.
+
+**Move up** lifts an account to its grandparent, or makes it independent when
+its parent is already at the top. **Move down** places it under the account
+drawn above it at the same level. Its own branches and people move with it.
+**Group** points the account at a parent. **Invoice customer** is who receives
+the invoice; choosing this account means it is invoiced itself. **Reports to**
+points a person at a manager in the same group. Linking an existing account
+still uses **Build hierarchy**. **Account type** keeps the free-text customer
+category.
+
+Cycle-producing choices are excluded in the builder and in the manager list.
+Saving a parent, a move or a manager checks the company, the edit or contact
+capability, and cycles, then writes an audit row. The invoice customer is the
+account’s trading link. The map and the customer record load the first 500
+accounts.
+
+Module overview providers fail independently: a failed contribution displays an
+explicit “summary unavailable” metric without a fabricated zero or module actions.
+Other summaries, shared customer details and hierarchy remain accessible. This is
+resilience to unavailable/incompatible module data, not proof of that module’s
+working server integration.

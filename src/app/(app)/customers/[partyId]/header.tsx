@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
-import { Button } from "@/components/ui/button";
 import type { CustomerStatus } from "@/generated/prisma/client";
 import type { CustomerOverviewContribution } from "@/core/modules/types";
+import { HeaderActionsMenu } from "@/app/(app)/customers/[partyId]/actions-menu";
 
 const STATUS_TONE: Record<CustomerStatus, StatusTone> = {
   PROSPECT: "neutral",
@@ -18,17 +17,19 @@ export function CustomerHeader({
   contributions,
   onHold,
   hasVerifiedTaxRegistration,
+  extra,
 }: {
   customer: { id: string; name: string; customerCode: string; status: CustomerStatus; countryOfRegistration: string | null };
   accountManagerName: string | null;
   contributions: CustomerOverviewContribution[];
   onHold: boolean;
   hasVerifiedTaxRegistration: boolean;
+  extra?: React.ReactNode;
 }) {
   const actions = contributions.flatMap((contribution) => contribution.actions);
 
   return (
-    <div className="flex flex-col gap-4 border-b border-[var(--color-border)] pb-5 sm:flex-row sm:items-start sm:justify-between">
+    <div className="flex flex-col gap-3 border-b border-[var(--color-border)] pb-5 sm:flex-row sm:items-center sm:justify-between">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="truncate text-2xl font-semibold tracking-tight text-[var(--color-ink)]">{customer.name}</h1>
@@ -42,13 +43,10 @@ export function CustomerHeader({
         </div>
       </div>
 
-      {actions.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {actions.map((action) => (
-            <Link key={action.href + action.label} href={action.href}>
-              <Button variant="secondary">{action.label}</Button>
-            </Link>
-          ))}
+      {(actions.length > 0 || extra) && (
+        <div className="flex shrink-0 items-center gap-2">
+          {extra}
+          <HeaderActionsMenu actions={actions} />
         </div>
       )}
     </div>

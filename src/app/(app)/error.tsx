@@ -13,7 +13,7 @@ export default function AppError({ error }: { error: Error & { message: string }
   return (
     <EmptyState
       title={isForbidden ? "You don't have permission to view this." : "Something went wrong."}
-      description={isForbidden ? "Ask an administrator for access if you think this is a mistake." : "Try reloading the page."}
+      description={isForbidden ? "Ask an administrator for access if you think this is a mistake." : "Your records are still on the server. Open the page again from the sidebar."}
     />
   );
 }

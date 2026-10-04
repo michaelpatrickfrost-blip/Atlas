@@ -1,0 +1,160 @@
+
+> atlas@0.1.0 desktop:build
+> bash scripts/build-mac-client.sh
+
+Loaded Prisma config from prisma7.config.ts.
+
+Prisma schema loaded from prisma/schema.prisma.
+
+✔ Generated Prisma Client (7.10.0) to ./src/generated/prisma in 1.11s
+
+Data API: 162 model descriptors, 322 allowlisted actions.
+Prepared desktop: /Users/michael/Desktop/RP SYSTEM/build/desktop-source
+▲ Next.js 16.3.8 (webpack)
+✓ Running next.config.mjs took 20ms
+- Experiments (use with caution):
+  ⨯ isrFlushToDisk
+  · serverActions
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 72s
+  Running TypeScript ...
+
+  We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+  	- include was updated to add '.next/dev/types/**/*.ts'
+
+  Finished TypeScript in 11.6s ...
+  Collecting page data using 9 workers ...
+  Generating static pages using 9 workers (0/87) ...
+  Generating static pages using 9 workers (21/87) 
+  Generating static pages using 9 workers (43/87) 
+  Generating static pages using 9 workers (65/87) 
+✓ Generating static pages using 9 workers (87/87) in 949ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /analytics
+├ ƒ /analytics-preview
+├ ƒ /api/import-template
+├ ƒ /api/orders/[orderId]/pdf
+├ ƒ /api/planning/export
+├ ƒ /api/projects
+├ ƒ /api/projects/[projectId]/[command]
+├ ƒ /api/quotes/[quoteId]/pdf
+├ ƒ /api/sales/draft
+├ ƒ /api/sales/export
+├ ƒ /api/search
+├ ƒ /api/stock/export
+├ ƒ /apps
+├ ƒ /atlas
+├ ƒ /atlas/[organisationId]
+├ ƒ /chat
+├ ƒ /crm/dashboards
+├ ƒ /crm/forecast
+├ ƒ /crm/opportunities/[opportunityId]
+├ ƒ /crm/pipeline
+├ ƒ /crm/prospect
+├ ƒ /crm/prospect/[prospectId]
+├ ƒ /crm/prospect/new
+├ ƒ /crm/reports
+├ ƒ /crm/today
+├ ƒ /customers
+├ ƒ /customers/[partyId]
+├ ƒ /customers/map
+├ ƒ /customers/new
+├ ƒ /finance
+├ ƒ /finance/[workspace]
+├ ƒ /finance/documents/[id]
+├ ƒ /finance/documents/new
+├ ƒ /home
+├ ƒ /kpis
+├ ○ /login
+├ ƒ /marketing
+├ ƒ /marketing/[section]
+├ ƒ /people
+├ ƒ /people/[employeeId]
+├ ƒ /people/absence
+├ ƒ /people/appraisals
+├ ƒ /people/expenses
+├ ƒ /people/me
+├ ƒ /people/my-team
+├ ƒ /people/my-team/[employeeId]
+├ ƒ /people/offboarding
+├ ƒ /people/onboarding
+├ ƒ /people/one-to-ones
+├ ƒ /people/payroll
+├ ƒ /people/payroll/[runId]
+├ ƒ /people/rotas
+├ ƒ /people/settings
+├ ƒ /people/timesheets
+├ ƒ /people/workspace
+├ ƒ /planning
+├ ƒ /planning/plans
+├ ƒ /planning/plans/[planId]
+├ ƒ /planning/teams
+├ ƒ /pricing
+├ ƒ /pricing/[priceListId]
+├ ƒ /products
+├ ƒ /profile
+├ ƒ /projects
+├ ƒ /projects/[projectId]
+├ ƒ /projects/documents/[documentId]
+├ ƒ /projects/meetings
+├ ƒ /projects/tasks
+├ ƒ /projects/tasks/[taskId]
+├ ƒ /projects/work/[section]
+├ ○ /reset-password
+├ ƒ /sales/audit
+├ ƒ /sales/forecast
+├ ƒ /sales/opportunities/[opportunityId]
+├ ƒ /sales/orders
+├ ƒ /sales/orders/[orderId]
+├ ƒ /sales/orders/[orderId]/edit
+├ ƒ /sales/orders/new
+├ ƒ /sales/pipeline
+├ ƒ /sales/prospect
+├ ƒ /sales/prospect/[prospectId]
+├ ƒ /sales/prospect/new
+├ ƒ /sales/quotes
+├ ƒ /sales/quotes/[quoteId]
+├ ƒ /sales/quotes/[quoteId]/edit
+├ ƒ /sales/quotes/new
+├ ƒ /sales/reporting
+├ ƒ /sales/reports
+├ ƒ /sales/settings
+├ ƒ /sales/today
+├ ƒ /scheduling
+├ ƒ /scheduling/team
+├ ƒ /scheduling/team/[employeeId]
+├ ƒ /scheduling/time-off
+├ ƒ /scheduling/timesheets
+├ ƒ /service
+├ ƒ /service/cases
+├ ƒ /service/cases/[caseId]
+├ ƒ /service/cases/new
+├ ƒ /service/queues
+├ ƒ /service/tickets
+├ ƒ /settings
+├ ƒ /settings/audit
+├ ƒ /settings/groups
+├ ƒ /settings/imports
+├ ƒ /settings/users/[membershipId]
+├ ○ /signup
+├ ƒ /stock
+├ ƒ /stock/items/[productId]
+├ ƒ /stock/movements
+├ ƒ /stock/products
+└ ƒ /stock/warehouses
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+Built local desktop application runtime: /Users/michael/Desktop/RP SYSTEM/build/desktop-runtime
+build/Atlas.app: replacing existing signature
+Built build/Atlas.app

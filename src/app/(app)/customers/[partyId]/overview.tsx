@@ -8,6 +8,11 @@ import { CUSTOMER_CAPABILITIES } from "@/core/permissions/capabilities";
 import type { Session } from "@/core/auth/session";
 import type { CustomerOverviewContribution } from "@/core/modules/types";
 import type { getCustomer, getSetupChecklist } from "@/core/customers/queries";
+import { ActionForm } from "@/components/ui/action-form";
+import { saveCustomerHashtags } from "@/core/customers/commands";
+import { HashtagEditor } from "@/modules/sales/components/hashtags";
+import { SalesPointerPanel } from "@/modules/sales/components/sales-pointer-panel";
+import { CustomerSalesHistory } from "./sales-history";
 
 type Customer = NonNullable<Awaited<ReturnType<typeof getCustomer>>>;
 
@@ -52,6 +57,21 @@ export function CustomerOverview({
         </Card>
       )}
 
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card className="p-5">
+          <h2 className="text-sm font-medium text-[var(--color-ink-muted)]">Hashtags</h2>
+          {can(session, CUSTOMER_CAPABILITIES.edit) ? (
+            <ActionForm action={saveCustomerHashtags.bind(null, customer.id)} className="mt-3 space-y-3">
+              <HashtagEditor initial={customer.tags} hint="Hashtags group this customer. A purchase order on an order is a different number." />
+              <button type="submit" className="rounded-xl bg-[var(--color-atlas-blue)] px-4 py-2 text-xs font-medium text-white">Save hashtags</button>
+            </ActionForm>
+          ) : (
+            <p className="mt-3 text-sm text-[var(--color-ink)]">{customer.tags.length ? customer.tags.map((tag) => `#${tag.replaceAll(" ", "-")}`).join(" ") : "No hashtags"}</p>
+          )}
+        </Card>
+        <SalesPointerPanel surface="customer" />
+      </div>
+
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="flex flex-col gap-6 lg:col-span-2">
           {allMetrics.length > 0 && (
@@ -93,6 +113,8 @@ export function CustomerOverview({
               <AddressCard label="Delivery" address={deliveryAddress} />
             </div>
           </section>
+
+          <CustomerSalesHistory partyId={customer.id} session={session} />
         </div>
 
         <div className="flex flex-col gap-6">

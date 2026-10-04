@@ -9,6 +9,7 @@ import { CUSTOMER_CAPABILITIES } from "@/core/permissions/capabilities";
 import { writeAudit } from "@/core/audit/log";
 import { writeActivity } from "@/core/activity/log";
 import { emit, DOMAIN_EVENTS } from "@/core/events/bus";
+import { parseHashtags } from "@/core/shared/hashtags";
 import { nextCustomerCode } from "@/core/customers/code";
 import { normalizeTaxNumber } from "@/core/customers/tax";
 import { maskBankAccount } from "@/core/customers/bank";
@@ -24,6 +25,9 @@ import type {
 
 export type QuickCreateInput = {
   name: string;
+  parentPartyId?: string;
+  hierarchyRole?: "GROUP"|"CUSTOMER"|"BRANCH";
+  customerGroup?: string;
   kind: PartyKind;
   country?: string;
   contactFirstName: string;
@@ -38,20 +42,26 @@ export async function createCustomer(input: QuickCreateInput) {
   assertCapability(session, CUSTOMER_CAPABILITIES.create);
   await assertRecordCreationAllowed(session.organisationId,"customers");
 
+  if(!input.name.trim()||input.name.length>200)throw new Error("Enter a customer name up to 200 characters.");
+  if(input.hierarchyRole&&!['GROUP','CUSTOMER','BRANCH'].includes(input.hierarchyRole))throw new Error('Invalid account level.');
+  if(input.parentPartyId)await db.party.findFirstOrThrow({where:{id:input.parentPartyId,organisationId:session.organisationId}});
   const customerCode = await nextCustomerCode(session.organisationId);
 
   const party = await db.party.create({
     data: {
       organisationId: session.organisationId,
       kind: input.kind,
-      name: input.name,
+      name: input.name.trim(),
+      parentPartyId:input.parentPartyId||null,
+      hierarchyRole:input.hierarchyRole??"CUSTOMER",
+      customerGroup:input.customerGroup?.trim().slice(0,100)||null,
       customerCode,
       status: "PROSPECT",
       countryOfRegistration: input.country,
       accountManagerUserId: input.accountManagerUserId,
       relationshipStartDate: new Date(),
       contacts: {
-        create: [
+        create: input.contactFirstName?.trim()||input.contactSurname?.trim() ? [
           {
             firstName: input.contactFirstName,
             surname: input.contactSurname,
@@ -60,7 +70,7 @@ export async function createCustomer(input: QuickCreateInput) {
             isPrimary: true,
             roles: ["PRIMARY"],
           },
-        ],
+        ]:[],
       },
       creditProfile: { create: {} },
     },
@@ -116,6 +126,7 @@ export type CreateContactInput = {
   firstName: string;
   surname: string;
   jobTitle?: string;
+  department?: string;
   email?: string;
   phone?: string;
   mobile?: string;
@@ -139,6 +150,7 @@ export async function createContact(input: CreateContactInput) {
       firstName: input.firstName,
       surname: input.surname,
       jobTitle: input.jobTitle,
+      department: input.department,
       email: input.email,
       phone: input.phone,
       mobile: input.mobile,
@@ -159,6 +171,93 @@ export async function createContact(input: CreateContactInput) {
 
   revalidatePath(`/customers/${input.partyId}`);
   return contact;
+}
+
+export type UpdateContactInput = {
+  contactId: string;
+  partyId: string;
+  title?: string;
+  firstName: string;
+  surname: string;
+  preferredName?: string;
+  jobTitle?: string;
+  department?: string;
+  email?: string;
+  alternativeEmail?: string;
+  phone?: string;
+  mobile?: string;
+  preferredContactMethod?: "EMAIL" | "PHONE" | "MOBILE";
+  notes?: string;
+  status?: "ACTIVE" | "INACTIVE";
+  roles: ContactRole[];
+  isPrimary?: boolean;
+};
+
+export async function updateContact(input: UpdateContactInput) {
+  const session = await requireSession();
+  assertCapability(session, CUSTOMER_CAPABILITIES.contactsManage);
+
+  await assertOwnedByOrg(session.organisationId, input.partyId);
+  const before = await db.contact.findFirstOrThrow({ where: { id: input.contactId, partyId: input.partyId } });
+
+  if (input.isPrimary) {
+    await db.contact.updateMany({ where: { partyId: input.partyId, id: { not: input.contactId } }, data: { isPrimary: false } });
+  }
+
+  const contact = await db.contact.update({
+    where: { id: input.contactId },
+    data: {
+      title: input.title,
+      firstName: input.firstName,
+      surname: input.surname,
+      preferredName: input.preferredName,
+      jobTitle: input.jobTitle,
+      department: input.department,
+      email: input.email,
+      alternativeEmail: input.alternativeEmail,
+      phone: input.phone,
+      mobile: input.mobile,
+      preferredContactMethod: input.preferredContactMethod,
+      notes: input.notes,
+      status: input.status,
+      roles: input.roles,
+      isPrimary: input.isPrimary ?? false,
+    },
+  });
+
+  await writeAudit({
+    organisationId: session.organisationId,
+    actorUserId: session.userId,
+    action: "customer.contact.updated",
+    entityType: "Contact",
+    entityId: contact.id,
+    before: { firstName: before.firstName, surname: before.surname, jobTitle: before.jobTitle },
+    after: { firstName: contact.firstName, surname: contact.surname, jobTitle: contact.jobTitle },
+  });
+
+  revalidatePath(`/customers/${input.partyId}`);
+  return contact;
+}
+
+export async function deleteContact(contactId: string, partyId: string) {
+  const session = await requireSession();
+  assertCapability(session, CUSTOMER_CAPABILITIES.contactsManage);
+
+  await assertOwnedByOrg(session.organisationId, partyId);
+  const contact = await db.contact.findFirstOrThrow({ where: { id: contactId, partyId } });
+
+  await db.contact.delete({ where: { id: contactId } });
+
+  await writeAudit({
+    organisationId: session.organisationId,
+    actorUserId: session.userId,
+    action: "customer.contact.deleted",
+    entityType: "Contact",
+    entityId: contactId,
+    before: { firstName: contact.firstName, surname: contact.surname },
+  });
+
+  revalidatePath(`/customers/${partyId}`);
 }
 
 export type CreateAddressInput = {
@@ -529,6 +628,24 @@ export async function createNote(partyId: string, body: string, pinned: boolean,
 
   revalidatePath(`/customers/${partyId}`);
   return note;
+}
+
+export async function saveCustomerHashtags(partyId: string, formData: FormData) {
+  const session = await requireSession();
+  assertCapability(session, CUSTOMER_CAPABILITIES.edit);
+  await assertOwnedByOrg(session.organisationId, partyId);
+  const tags = parseHashtags(String(formData.get("tags") ?? ""));
+  await db.party.updateMany({ where: { id: partyId, organisationId: session.organisationId }, data: { tags } });
+  await writeAudit({
+    organisationId: session.organisationId,
+    actorUserId: session.userId,
+    action: "customer.hashtags_updated",
+    entityType: "Party",
+    entityId: partyId,
+    after: { tags },
+  });
+  revalidatePath(`/customers/${partyId}`);
+  revalidatePath("/customers");
 }
 
 // ---------- Shared guard ----------

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import ts from 'typescript';
-const root=process.cwd(),schema=fs.readFileSync('prisma/schema.prisma','utf8'),blocks=[...schema.matchAll(/model (\w+) \{([\s\S]*?)\n\}/g)],names=new Set(blocks.map(m=>m[1])),models={};
+const schema=fs.readFileSync('prisma/schema.prisma','utf8'),blocks=[...schema.matchAll(/model (\w+) \{([\s\S]*?)\n\}/g)],names=new Set(blocks.map(m=>m[1])),models={};
 for(const [,name,body]of blocks){const fields={};for(const line of body.split('\n')){const match=line.match(/^\s*(\w+)\s+(\w+)(\[\]|\?)?/);if(!match)continue;const [,key,type,suffix]=match;fields[key]={type,list:suffix==='[]',nullable:suffix==='?',relation:names.has(type)};}models[name]=fields;}
 fs.writeFileSync('src/server/data-api/model-metadata.ts','// Generated from the application schema.\nexport const MODEL_FIELDS = '+JSON.stringify(models,null,2)+' as const;\n');
 const actions=[];

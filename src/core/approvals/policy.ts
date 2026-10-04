@@ -1,0 +1,5 @@
+import {z} from 'zod';
+export const stagesSchema=z.array(z.array(z.string().min(1)).min(1).max(20)).min(1).max(20);
+export const conditionsSchema=z.partialRecord(z.enum(['department','category','site','projectId','partyId','capex','recurring','entityId','budgetStatus','employee','supplierStatus','contractStatus','product','riskScore','legalEntity','currency','varianceStatus']),z.union([z.string(),z.boolean()]));
+export function matchesConditions(conditions:unknown,context:Record<string,unknown>){return Object.entries(conditionsSchema.parse(conditions)).every(([key,value])=>context[key]===value);}
+export function routePolicy<T extends {minAmount:bigint;maxAmount:bigint|null;currency:string;conditions:unknown}>(policies:T[],amount:bigint,currency:string,context:Record<string,unknown>){const matching=policies.filter(p=>p.currency===currency&&amount>=p.minAmount&&(p.maxAmount===null||amount<=p.maxAmount)&&matchesConditions(p.conditions,context));if(matching.length!==1)throw new Error(matching.length?'Approval policies overlap; resolve the control conflict.':'No approval policy matches this request. Configure an explicit route.');return matching[0];}

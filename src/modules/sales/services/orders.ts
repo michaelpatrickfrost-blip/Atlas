@@ -1,5 +1,7 @@
-import {salesHandoff} from './handoff';
 "use server";
+import {guardFinancialCancellation} from '@/core/finance/connections';
+import {assertSalesTradingLink} from './trading-check';
+import {salesHandoff} from './handoff';
 import { assertModuleEnabled } from "@/core/modules/access";
 
 import {commercialSnapshot} from "./revisions";
@@ -209,6 +211,8 @@ export async function confirmOrder(orderId: string) {
 
   if(["ON_HOLD","INACTIVE","CLOSED"].includes(order.party.status))throw new Error("This customer account is unavailable for new sales.");
   validateConfirmation({...order,commercialSettings:order.party.commercialSettings});
+  const {prepareExportProforma,issueExportProforma}=await import("./proforma");
+  await prepareExportProforma(session.organisationId,orderId);
   for(const line of order.lines.filter(l=>!['SECTION','NOTE'].includes(l.type))){const tax=await resolveStandardUkVat({sellingOrganisationId:session.organisationId,partyId:order.partyId,deliveryCountry:(order.deliveryAddressSnapshot as {country?:string}|null)?.country??null,productTaxCategory:line.taxCategory,transactionDate:new Date(),netAmount:line.netAmount});if(tax.treatment==='UNDETERMINED')throw new Error('Tax treatment needs review before this order can be confirmed.');if(tax.amount!==line.taxAmount)throw new Error('Tax totals are out of date. Edit and save the draft before confirming.');}
 
   const policy=await db.organisation.findUniqueOrThrow({where:{id:session.organisationId},select:{salesPolicy:true}});
@@ -230,6 +234,9 @@ export async function confirmOrder(orderId: string) {
     return { confirmed: false, reason: approvalReason };
   }
 
+  if(order.orderType==="BLANKET")throw new Error("A blanket commitment is a call-off agreement, not a sales order.");
+  if(order.orderType==="CALL_OFF"&&!order.agreementId)throw new Error("Choose the call-off agreement before confirming.");
+  await assertSalesTradingLink(session.organisationId,order.partyId,order.pricingPartyId);
   const credit = await checkOrderCredit(orderId);
   if (credit.status === "HOLD") {
     await db.orderHold.create({
@@ -250,7 +257,9 @@ export async function confirmOrder(orderId: string) {
   }
 
   const confirmed=await db.$transaction(async tx=>{
+   if(order.orderType==='CALL_OFF'&&order.agreementId){const {assertCallOffCapacity,lockAgreement}=await import('./call-off-balance');await lockAgreement(tx,session.organisationId,order.agreementId);await assertCallOffCapacity(tx,{organisationId:session.organisationId,agreementId:order.agreementId,partyId:order.partyId,pricingPartyId:order.pricingPartyId,currency:order.currency,orderId,lines:order.lines});}
    const confirmed=await tx.salesOrder.update({where:{id:orderId,organisationId:session.organisationId,updatedAt:order.updatedAt,commercialStatus:order.commercialStatus},data:{commercialStatus:'CONFIRMED',confirmationDate:new Date()}});
+   await issueExportProforma(tx,session.organisationId,orderId);
    await tx.salesOrderRevision.create({data:{orderId,revision:confirmed.revision,snapshot:commercialSnapshot({...confirmed,lines:order.lines}),reason:'Order confirmation',createdByUserId:session.userId}});
    await tx.orderChangeEvent.create({data:{orderId,type:'STATUS',fromValue:order.commercialStatus,toValue:'CONFIRMED',changedByUserId:session.userId}});
    await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:'order.confirmed',entityType:'SalesOrder',entityId:orderId,before:{status:order.commercialStatus},after:{status:'CONFIRMED',reference:confirmed.reference,grossAmount:confirmed.grossAmount,revision:confirmed.revision}}});
@@ -266,6 +275,22 @@ export async function confirmOrder(orderId: string) {
     partyId: confirmed.partyId,
   });
   await emit(DOMAIN_EVENTS.salesOrderConfirmed, { orderId, organisationId: session.organisationId });
+  if (order.orderType === "CALL_OFF") {
+    const { handoffDeliveredShipment } = await import("@/core/finance/handoff");
+    await handoffDeliveredShipment(session, {
+      shipmentId: `call-off-release:${orderId}`,
+      shipmentReference: confirmed.reference,
+      deliveredAt: order.requestedDeliveryDate ?? new Date(),
+      lines: order.lines.flatMap((line) => line.orderedQuantity > line.cancelledQuantity && !["SECTION", "NOTE"].includes(line.type) ? [{ salesOrderId: orderId, salesOrderLineId: line.id, quantity: line.orderedQuantity - line.cancelledQuantity }] : []),
+    });
+  }
+  const { handoffSalesOrder } = await import("@/core/logistics/handoff");
+  await handoffSalesOrder({ kind: "confirmed", organisationId: session.organisationId, orderId, eventKey: `sales.order.confirmed:${orderId}:${confirmed.revision}`, actorUserId: session.userId });
+  const restockProducts = order.lines.filter((line) => line.invoiceWhenInStock && line.productId).map((line) => line.productId!);
+  if (restockProducts.length) {
+    const { invoiceWhenBackInStock } = await import("@/modules/finance/services/restock-invoice");
+    await invoiceWhenBackInStock(session, restockProducts);
+  }
 
   revalidatePath("/sales/orders");
   revalidatePath(`/sales/orders/${orderId}`);
@@ -402,7 +427,7 @@ export async function cancelOrder(orderId: string, reason: string) {
   if(!reason.trim())throw new Error('Enter a cancellation reason.');
   await db.$transaction(async tx=>{
     const order=await tx.salesOrder.findFirstOrThrow({where:{id:orderId,organisationId:session.organisationId},include:{lines:true}});
-    if(['CANCELLED','CLOSED'].includes(order.commercialStatus))throw new Error('This order is already cancelled or closed.');
+    await guardFinancialCancellation(session,tx,orderId);if(['CANCELLED','CLOSED'].includes(order.commercialStatus))throw new Error('This order is already cancelled or closed.');
     const changed=await tx.salesOrder.updateMany({where:{id:orderId,organisationId:session.organisationId,updatedAt:order.updatedAt},data:{commercialStatus:'CANCELLED',cancelledAt:new Date(),revision:{increment:1},netAmount:0,taxAmount:0,grossAmount:0,discountAmount:0}});
     if(changed.count!==1)throw new Error('This order changed. Reload before cancelling.');
     if(!await tx.salesOrderRevision.findUnique({where:{orderId_revision:{orderId,revision:order.revision}}}))await tx.salesOrderRevision.create({data:{orderId,revision:order.revision,snapshot:commercialSnapshot(order),reason:'Commercial position before cancellation',createdByUserId:session.userId}});
@@ -412,8 +437,11 @@ export async function cancelOrder(orderId: string, reason: string) {
     await tx.orderChangeEvent.create({data:{orderId,type:'CANCELLATION',changedByUserId:session.userId,fromValue:order.commercialStatus,toValue:'CANCELLED',reason}});
     await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:'order.cancelled',entityType:'SalesOrder',entityId:orderId,before:{grossAmount:order.grossAmount,status:order.commercialStatus},after:{reason,status:'CANCELLED',revision:cancelled.revision}}});
     await tx.domainOutbox.create({data:{organisationId:session.organisationId,eventKey:`sales.order.cancelled:${orderId}:${cancelled.revision}`,eventName:'sales.order.cancelled',payload:{orderId,revision:cancelled.revision,reason}}});
-  });
+  },{isolationLevel:'Serializable'});
   await emit(DOMAIN_EVENTS.salesOrderCancelled, { orderId, organisationId: session.organisationId });
+  const cancelledOrder = await db.salesOrder.findFirst({ where: { id: orderId, organisationId: session.organisationId }, select: { revision: true } });
+  const { handoffSalesOrder } = await import("@/core/logistics/handoff");
+  await handoffSalesOrder({ kind: "cancelled", organisationId: session.organisationId, orderId, eventKey: `sales.order.cancelled:${orderId}:${cancelledOrder?.revision ?? 0}`, actorUserId: session.userId });
 
   revalidatePath("/sales/orders");
   revalidatePath(`/sales/orders/${orderId}`);
@@ -430,8 +458,10 @@ export async function cancelLineRemaining(lineId: string, orderId: string, cance
   await assertModuleEnabled(session, "sales");
   await assertOwnedByOrg(session.organisationId, orderId);
 
+  const cancellable=await db.salesOrder.findFirstOrThrow({where:{id:orderId,organisationId:session.organisationId}});if(cancellable.commercialStatus!=='DRAFT')throw new Error('Confirmed line cancellation requires a revision and fulfilment/Finance review; use the guarded whole-order cancellation.');
   const line = await db.salesOrderLine.findFirstOrThrow({ where: { id: lineId, orderId } });
-  const shippedQuantity = 0; // no Logistics module yet — see docstring
+  const { shippedQuantityForLine } = await import("@/core/logistics/handoff");
+  const shippedQuantity = await shippedQuantityForLine(session.organisationId, orderId, lineId);
   const maxCancellable = line.orderedQuantity - line.cancelledQuantity - shippedQuantity;
   if (cancelQuantity > maxCancellable) {
     throw new Error(`VALIDATION: maximum cancellable quantity is ${maxCancellable}`);
@@ -459,6 +489,8 @@ export async function addHold(orderId: string, type: OrderHoldType, reason: stri
 
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "order.hold_added", entityType: "SalesOrder", entityId: orderId, after: { type, reason } });
   await emit(DOMAIN_EVENTS.salesOrderHoldAdded, { orderId, type });
+  const { handoffSalesOrder } = await import("@/core/logistics/handoff");
+  await handoffSalesOrder({ kind: "hold_added", organisationId: session.organisationId, orderId, eventKey: `sales.order.hold_added:${orderId}:${type}:${Date.now()}`, actorUserId: session.userId });
 
   revalidatePath(`/sales/orders/${orderId}`);
 }
@@ -479,6 +511,8 @@ export async function releaseHold(holdId: string, orderId: string) {
 
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "order.hold_released", entityType: "SalesOrder", entityId: orderId });
   await emit(DOMAIN_EVENTS.salesOrderHoldReleased, { orderId, holdId });
+  const { handoffSalesOrder } = await import("@/core/logistics/handoff");
+  await handoffSalesOrder({ kind: "hold_released", organisationId: session.organisationId, orderId, eventKey: `sales.order.hold_released:${holdId}`, actorUserId: session.userId });
 
   revalidatePath(`/sales/orders/${orderId}`);
 }

@@ -1,0 +1,14 @@
+/** Monetary arithmetic stays in integer minor units, including intermediate products. */
+export const currencyDigits: Record<string, number> = { GBP:2, EUR:2, USD:2, CAD:2, AUD:2, CHF:2, JPY:0, KWD:3, BHD:3 };
+export function digits(currency:string){const n=currencyDigits[currency];if(n===undefined)throw new Error(`Currency ${currency} requires an explicit supported exponent.`);return n;}
+export function decimalUnits(value:string,precision:number):bigint {
+ const m=value.trim().match(/^(-?)(\d+)(?:\.(\d+))?$/);if(!m|| (m[3]?.length??0)>precision)throw new Error(`Enter a decimal with at most ${precision} fractional digits.`);
+ return (m[1]?-1n:1n)*(BigInt(m[2])*10n**BigInt(precision)+BigInt((m[3]??'').padEnd(precision,'0')||'0'));
+}
+export function minor(value:string,currency='GBP'){return decimalUnits(value,digits(currency));}
+export function roundRatio(n:bigint,d:bigint):bigint{if(d<=0n)throw new Error('Invalid divisor.');return n<0n?-roundRatio(-n,d):(n+d/2n)/d;}
+export function money(amount:bigint,currency='GBP'){const n=digits(currency),sign=amount<0n?'-':'',a=amount<0n?-amount:amount;const units=(a/10n**BigInt(n)).toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');return `${sign}${currency==='GBP'?'£':currency==='EUR'?'€':currency==='USD'?'$':currency+' '}${units}${n?'.'+(a%10n**BigInt(n)).toString().padStart(n,'0'):''}`;}
+export function convert(amount:bigint,rate:string,from:string,to:string){const r=decimalUnits(rate,12);if(r<=0n)throw new Error('Exchange rate must be positive.');return roundRatio(amount*r*10n**BigInt(digits(to)),10n**BigInt(12+digits(from)));}
+export function lineAmounts(quantity:string,unitPrice:bigint,taxRateBps:number){const q=decimalUnits(quantity,6);if(q<=0n||unitPrice<0n||!Number.isInteger(taxRateBps)||taxRateBps<0||taxRateBps>10000)throw new Error('Invalid quantity, price or tax rate.');const net=roundRatio(q*unitPrice,1000000n),tax=roundRatio(net*BigInt(taxRateBps),10000n);return {net,tax,gross:net+tax};}
+export function assertBalanced(lines:readonly {debit:bigint;credit:bigint}[]){if(lines.length<2)throw new Error('A journal needs at least two lines.');let debit=0n,credit=0n;for(const l of lines){if(l.debit<0n||l.credit<0n||(l.debit>0n&&l.credit>0n))throw new Error('Each line must have one non-negative debit or credit.');debit+=l.debit;credit+=l.credit;}if(debit===0n||debit!==credit)throw new Error('Journal debits and credits must balance exactly.');return debit;}
+export function allocate(total:bigint,weights:bigint[]){const sum=weights.reduce((s,n)=>s+n,0n);if(total<0n||weights.some(n=>n<0n)||sum<=0n)throw new Error('Invalid allocation.');const rows=weights.map((w,index)=>({index,value:total*w/sum,remainder:total*w%sum}));let extra=total-rows.reduce((s,r)=>s+r.value,0n);for(const row of [...rows].sort((a,b)=>a.remainder===b.remainder?a.index-b.index:a.remainder>b.remainder?-1:1)){if(extra--<=0n)break;row.value++;}return rows.map(r=>r.value);}

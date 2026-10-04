@@ -2,7 +2,9 @@ import Link from "next/link";
 
 const TABS = [
   { key: "overview", label: "Overview" },
-  { key: "people", label: "People & Places" },
+  { key: "contacts", label: "Contacts" },
+  { key: "people", label: "Addresses" },
+  { key: "relationships", label: "Relationships" },
   { key: "commercial", label: "Commercial" },
   { key: "finance", label: "Finance & Tax" },
   { key: "activity", label: "Activity" },

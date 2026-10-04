@@ -1,3 +1,7 @@
+import type { SafetyProvider } from "@/core/safety/types";
+import type { AnalyticsProvider } from "@/core/analytics/types";
+import type { FulfilmentProjectionProvider, SalesLogisticsConsumer, StockProvider } from "@/core/logistics/types";
+import type { PlanningDemandProvider, PlanningInventoryProvider } from "@/core/planning/types";
 import type { ComponentType } from "react";
 import type { LucideIcon } from "lucide-react";
 import type { Session } from "@/core/auth/session";
@@ -8,6 +12,10 @@ export type ModuleNavItem = {
   href: string;
   /** Capability required to see this item. Omit for items available to anyone with module access. */
   capability?: string;
+  /** Visible when the user has any listed capability. */
+  anyOf?: string[];
+  /** Groups this item under a labelled dropdown in the floating module nav. Omit to render it as a standalone pill. */
+  group?: string;
 };
 
 /** A contribution to the Home "Needs your attention" list. Modules implement the
@@ -73,7 +81,28 @@ export type CustomerOverviewProvider = (ctx: {
 }) => Promise<CustomerOverviewContribution | null>;
 
 /** The machine-readable contract every module declares. See docs/MODULE_SPEC.md. */
+export type StaffRosterProvider = (session: Session, manage: boolean) => Promise<Array<{
+  id: string; firstName: string; lastName: string; jobTitle: string; department: string | null;
+  userId: string | null; contractedWeeklyHours: number | null; workingDays: number[];
+}>>;
+
 export type ModuleManifest = {
+  salesInvoiceGenerator?: (id:string,form:FormData)=>Promise<{id:string}>;
+  salesCancellationGuard?: (session:Session,tx:import('@/generated/prisma/client').Prisma.TransactionClient,id:string)=>Promise<void>;
+  salesFinanceSourceProvider?: (session:Session,tx:import('@/generated/prisma/client').Prisma.TransactionClient,id:string)=>Promise<import('@/core/finance/connections').SalesFinanceSource>;
+  salesFinanceProjectionProvider?: (id:string)=>Promise<import('@/core/finance/connections').SalesFinanceProjection|null>;
+  financeReceiptConsumer?: (session:Session,tx:import('@/generated/prisma/client').Prisma.TransactionClient,input:import('@/core/finance/connections').StockReceiptInput)=>Promise<unknown>;
+  deliveryInvoiceConsumer?: (session:Session,request:import('@/core/finance/handoff').DeliveredInvoiceRequest)=>Promise<void>;
+  expensePostingSourceProvider?: (claimId:string)=>Promise<import('@/core/finance/expense-source').ApprovedExpenseSource>;
+  stockProvider?: StockProvider;
+  stockReplenishedConsumer?: (actor: import("@/core/logistics/types").LogisticsActor, input: { productId: string; warehouseId: string; requestKey: string }) => Promise<void>;
+  safetyProvider?: SafetyProvider;
+  fulfilmentProjectionProvider?: FulfilmentProjectionProvider;
+  salesLogisticsConsumer?: SalesLogisticsConsumer;
+  staffRosterProvider?: StaffRosterProvider;
+  analyticsProvider?: AnalyticsProvider;
+  planningDemandProvider?: PlanningDemandProvider;
+  planningInventoryProvider?: PlanningInventoryProvider;
   id: string;
   name: string;
   description: string;
@@ -88,8 +117,12 @@ export type ModuleManifest = {
   rootPath: string;
   /** Shared sub-apps can be reached from their owning workspace without a launcher tile. */
   launcherVisible?: boolean;
+  /** Public sample-only preview; never reads tenant records. */
+  previewPath?: string;
   /** Capability required to see this module in navigation and the Apps screen "open" action. */
   accessCapability: string;
+  /** When set, any one of these capabilities opens the module. */
+  accessAnyOf?: string[];
   navigation: ModuleNavItem[];
   /** Status shown on the Apps & Modules screen for modules not yet implemented. */
   status: "available" | "installed" | "coming_soon";

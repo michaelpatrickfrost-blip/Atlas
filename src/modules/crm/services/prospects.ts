@@ -12,6 +12,7 @@ import { emit, DOMAIN_EVENTS } from "@/core/events/bus";
 import { findPossibleDuplicates } from "@/core/customers/duplicate-detection";
 import { nextCustomerCode } from "@/core/customers/code";
 import { getDefaultPipeline } from "@/modules/crm/services/pipelines";
+import { assertCrmPush } from "@/modules/crm/services/manager-level";
 import type { ProspectLifecycleStage } from "@/generated/prisma/client";
 
 // Queries live in prospects-queries.ts — this file is commands only (every
@@ -89,8 +90,11 @@ export async function assignProspect(prospectId: string, ownerUserId: string) {
   assertCapability(session, SALES_CAPABILITIES.prospectAssign);
   await assertModuleEnabled(session, "crm");
 
+  const prospect = await db.prospect.findFirst({ where: { id: prospectId, organisationId: session.organisationId }, select: { id: true } });
+  if (!prospect) throw new Error("Prospect unavailable.");
+  await db.membership.findFirstOrThrow({ where: { organisationId: session.organisationId, userId: ownerUserId, active: true } });
   await db.prospect.update({
-    where: { id: prospectId },
+    where: { id: prospect.id },
     data: { ownerUserId, assignedAt: new Date() },
   });
 
@@ -112,6 +116,7 @@ export async function setProspectLifecycleStage(prospectId: string, stage: Prosp
   const session = await requireSession();
   assertCapability(session, SALES_CAPABILITIES.prospectManage);
   await assertModuleEnabled(session, "crm");
+  await assertCrmPush(session);
 
   const data: Parameters<typeof db.prospect.update>[0]["data"] = { lifecycleStage: stage };
   if (stage === "DISQUALIFIED") {
@@ -158,8 +163,9 @@ export async function convertProspect(prospectId: string, opts: { existingPartyI
   await assertModuleEnabled(session, "crm");
   assertCapability(session, SALES_CAPABILITIES.opportunityCreate);
   await assertModuleEnabled(session, "crm");
+  await assertCrmPush(session);
 
-  const prospect = await db.prospect.findFirstOrThrow({ where: { id: prospectId, organisationId: session.organisationId } });
+  const prospect = await db.prospect.findFirstOrThrow({ where: { id: prospectId, organisationId: session.organisationId }, include: { industry: true } });
 
   let partyId = opts.existingPartyId ?? prospect.partyId ?? undefined;
   if (!partyId) {
@@ -173,6 +179,8 @@ export async function convertProspect(prospectId: string, opts: { existingPartyI
         customerCode,
         status: "PROSPECT",
         countryOfRegistration: prospect.country,
+        industry: prospect.industry?.name,
+        tags: prospect.tags,
         accountManagerUserId: prospect.ownerUserId,
         relationshipStartDate: new Date(),
         contacts: prospect.contactFirstName
@@ -194,6 +202,17 @@ export async function convertProspect(prospectId: string, opts: { existingPartyI
       },
     });
     partyId = party.id;
+  } else if (prospect.industry || prospect.tags.length) {
+    const party = await db.party.findFirst({ where: { id: partyId, organisationId: session.organisationId }, select: { industry: true, tags: true } });
+    if (party) {
+      await db.party.update({
+        where: { id: partyId },
+        data: {
+          industry: party.industry || prospect.industry?.name,
+          tags: [...new Set([...party.tags, ...prospect.tags])],
+        },
+      });
+    }
   }
 
   const pipeline = await getDefaultPipeline(session.organisationId);
@@ -215,6 +234,8 @@ export async function convertProspect(prospectId: string, opts: { existingPartyI
       territory: prospect.territory,
       source: prospect.originalSource ?? prospect.source,
       campaign: prospect.campaign,
+      industryId: prospect.industryId,
+      tags: prospect.tags,
     },
   });
 
@@ -236,4 +257,61 @@ export async function convertProspect(prospectId: string, opts: { existingPartyI
   revalidatePath("/customers");
 
   return opportunity;
+}
+
+function cleanIndustryName(value: string) {
+  const name = value.trim().replace(/\s+/g, " ");
+  if (name.length < 2 || name.length > 60) throw new Error("Industry names need 2 to 60 characters.");
+  return name;
+}
+
+function cleanTag(value: string) {
+  return value.trim().replace(/\s+/g, " ").slice(0, 32);
+}
+
+async function industryForCompany(organisationId: string, name: string) {
+  const existing = await db.crmIndustry.findFirst({ where: { organisationId, name: { equals: name, mode: "insensitive" } } });
+  return existing ?? db.crmIndustry.create({ data: { organisationId, name } });
+}
+
+export async function createIndustry(formData: FormData) {
+  const session = await requireSession();
+  assertCapability(session, SALES_CAPABILITIES.prospectManage);
+  await assertModuleEnabled(session, "crm");
+  await industryForCompany(session.organisationId, cleanIndustryName(String(formData.get("name") ?? "")));
+  revalidatePath("/crm/prospect");
+  revalidatePath("/crm/reports");
+}
+
+export async function saveProspectGrouping(prospectId: string, formData: FormData) {
+  const session = await requireSession();
+  assertCapability(session, SALES_CAPABILITIES.prospectManage);
+  await assertModuleEnabled(session, "crm");
+  const prospect = await db.prospect.findFirst({ where: { id: prospectId, organisationId: session.organisationId }, include: { opportunity: { select: { id: true } } } });
+  if (!prospect) throw new Error("Prospect not found.");
+
+  const typed = String(formData.get("newIndustry") ?? "");
+  const selected = String(formData.get("industryId") ?? "");
+  let industryId: string | null = null;
+  if (typed.trim()) {
+    industryId = (await industryForCompany(session.organisationId, cleanIndustryName(typed))).id;
+  } else if (selected) {
+    const industry = await db.crmIndustry.findFirst({ where: { id: selected, organisationId: session.organisationId } });
+    if (!industry) throw new Error("Choose an industry from this company.");
+    industryId = industry.id;
+  }
+
+  const remove = String(formData.get("removeTag") ?? "");
+  const add = cleanTag(String(formData.get("tag") ?? ""));
+  const tags = prospect.tags.filter((tag) => tag !== remove);
+  if (add && !tags.some((tag) => tag.toLowerCase() === add.toLowerCase())) {
+    if (tags.length >= 12) throw new Error("A prospect can have up to 12 tags.");
+    tags.push(add);
+  }
+
+  await db.prospect.update({ where: { id: prospect.id }, data: { industryId, tags } });
+  if (prospect.opportunity) await db.opportunity.update({ where: { id: prospect.opportunity.id }, data: { industryId, tags } });
+  revalidatePath("/crm/prospect");
+  revalidatePath(`/crm/prospect/${prospect.id}`);
+  revalidatePath("/crm/reports");
 }

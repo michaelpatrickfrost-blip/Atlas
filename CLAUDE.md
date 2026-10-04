@@ -1,5 +1,8 @@
 # Atlas — Claude Code entry point
 
+Desktop software, server data: deploy Atlas to the installed Mac app. The remote
+server stores shared data only and must not host Atlas software.
+
 @AGENTS.md
 
 Use the repository's shared memory, not a separate Claude-specific project history.

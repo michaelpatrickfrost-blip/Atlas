@@ -30,13 +30,12 @@ describe('workspace security boundaries',()=>{
   await expect(moveOpportunityStage('opp-a','stage-a')).rejects.toThrow('disabled');
   expect(state.db.opportunity.findFirst).not.toHaveBeenCalled();
  });
- it('scopes chat messages to the authenticated company and author',async()=>{
+ it('does not send a company message, even when a foreign organisation is supplied',async()=>{
   const form=new FormData();form.set('body','Team update');form.set('organisationId','foreign-org');
-  await postMessage(form);
-  expect(state.db.chatMessage.create).toHaveBeenCalledWith({data:{organisationId:'org-a',authorUserId:'user-a',body:'Team update'}});
+  await expect(postMessage(form)).rejects.toThrow('Company messages are turned off');
+  expect(state.db.chatMessage.create).not.toHaveBeenCalled();
  });
- it('rejects missing chat capability and empty messages',async()=>{
-  await expect(postMessage(new FormData())).rejects.toThrow('Write a message');
+ it('rejects chat when the person cannot write',async()=>{
   state.session.capabilities.clear();
   const form=new FormData();form.set('body','hello');
   await expect(postMessage(form)).rejects.toThrow('FORBIDDEN');

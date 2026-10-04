@@ -3,6 +3,8 @@ description: Shared Atlas project context and handoff protocol
 alwaysApply: true
 ---
 
+Desktop software, server data: deploy Atlas to the installed Mac app. The remote server stores shared data only and must not host Atlas software. See `.cursor/rules/desktop-data-boundary.mdc`.
+
 Read and follow AGENTS.md. Before substantial planning, review or edits, read
 .ai/PROJECT_MEMORY.md, .ai/CURRENT_STATE.md and .ai/DECISIONS.md, then the relevant
 linked topic docs. Inspect implementation and existing diffs. Apply AGENTS.md's mandatory memory update gate for EVERY task that changes project

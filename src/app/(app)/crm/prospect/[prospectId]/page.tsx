@@ -1,8 +1,13 @@
+import { ownerRestriction } from "@/modules/crm/services/visibility";
 import { notFound } from "next/navigation";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
 import { SALES_CAPABILITIES } from "@/core/permissions/capabilities";
-import { getProspect } from "@/modules/crm/services/prospects-queries";
+import { db } from "@/core/db/client";
+import { crmPushAllowed } from "@/core/permissions/manager-level";
+import { crmManagerPolicy } from "@/modules/crm/services/manager-level";
+import { getProspect, listIndustries } from "@/modules/crm/services/prospects-queries";
+import { saveProspectGrouping } from "@/modules/crm/services/prospects";
 import { Card } from "@/components/ui/card";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
 import { Button } from "@/components/ui/button";
@@ -14,6 +19,8 @@ import {
   nurtureFormAction,
   logProspectActivityFormAction,
   convertProspectFormAction,
+  assignProspectFormAction,
+  assignProspectTaskFormAction,
 } from "@/app/(app)/crm/prospect/[prospectId]/actions";
 import type { ProspectLifecycleStage } from "@/generated/prisma/client";
 
@@ -35,10 +42,15 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
   assertCapability(session, SALES_CAPABILITIES.prospectRead);
 
   const { prospectId } = await params;
-  const prospect = await getProspect(session.organisationId, prospectId);
+  const [prospect, industries, policy] = await Promise.all([getProspect(session.organisationId, prospectId), listIndustries(session.organisationId), crmManagerPolicy(session.organisationId)]);
   if (!prospect) notFound();
+  const ownerOnly = ownerRestriction(session);
+  if (ownerOnly && prospect.ownerUserId !== ownerOnly) notFound();
 
   const canManage = can(session, SALES_CAPABILITIES.prospectManage);
+  const canPush = canManage && crmPushAllowed(policy, session.capabilities);
+  const canAssign = can(session, SALES_CAPABILITIES.prospectAssign);
+  const colleagues = canAssign ? await db.membership.findMany({ where: { organisationId: session.organisationId, active: true }, select: { userId: true, user: { select: { name: true } } }, orderBy: { user: { name: "asc" } }, take: 200 }) : [];
   const active = prospect.lifecycleStage !== "CONVERTED" && prospect.lifecycleStage !== "DISQUALIFIED";
 
   return (
@@ -50,12 +62,13 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
             <StatusPill label={prospect.lifecycleStage.replace("_", " ")} tone={STAGE_TONE[prospect.lifecycleStage]} />
           </div>
           <p className="mt-1 text-sm text-[var(--color-ink-muted)]">
-            {prospect.contactFirstName && `${prospect.contactFirstName} ${prospect.contactSurname} · `}
-            {prospect.source ?? "No source recorded"}
+            {prospect.industry?.name ?? "No industry"}
+            {prospect.tags.length > 0 && ` · ${prospect.tags.join(", ")}`}
+            {prospect.contactFirstName && ` · ${prospect.contactFirstName} ${prospect.contactSurname}`}
           </p>
         </div>
 
-        {canManage && active && prospect.lifecycleStage !== "QUALIFIED" && (
+        {canPush && active && prospect.lifecycleStage !== "QUALIFIED" && (
           <div className="flex flex-wrap gap-2">
             <form action={qualifyFormAction.bind(null, prospect.id)}>
               <Button type="submit" variant="primary">Qualify</Button>
@@ -64,7 +77,11 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
         )}
       </div>
 
-      {prospect.lifecycleStage === "QUALIFIED" && canManage && (
+      {policy.crm && canManage && !canPush && active && (
+        <Card className="p-4 text-sm text-[var(--color-ink-muted)]">A sales manager assigns the next task and pushes this prospect.</Card>
+      )}
+
+      {prospect.lifecycleStage === "QUALIFIED" && canPush && (
         <Card className="flex flex-col gap-3 p-4">
           <p className="text-sm font-medium text-[var(--color-ink)]">Convert to opportunity</p>
           <form action={convertProspectFormAction.bind(null, prospect.id)} className="flex flex-wrap items-end gap-3">
@@ -114,6 +131,32 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
             </Card>
           </section>
 
+          {canAssign && active && (
+            <section>
+              <h2 className="mb-3 text-sm font-medium text-[var(--color-ink-muted)]">Manager</h2>
+              <Card className="flex flex-col gap-4 p-4">
+                <form action={assignProspectFormAction.bind(null, prospect.id)} className="flex flex-col gap-2">
+                  <label className="flex flex-col gap-1 text-xs text-[var(--color-ink-muted)]">Prospect owner
+                    <select name="ownerUserId" defaultValue={prospect.ownerUserId ?? ""} className={inputClass}>
+                      {colleagues.map((member) => <option key={member.userId} value={member.userId}>{member.user.name}</option>)}
+                    </select>
+                  </label>
+                  <Button type="submit" variant="secondary">Assign prospect</Button>
+                </form>
+                <form action={assignProspectTaskFormAction.bind(null, prospect.id)} className="flex flex-col gap-2 border-t border-[var(--color-border)] pt-4">
+                  <label className="flex flex-col gap-1 text-xs text-[var(--color-ink-muted)]">Task for
+                    <select name="ownerUserId" defaultValue={prospect.ownerUserId ?? ""} className={inputClass}>
+                      {colleagues.map((member) => <option key={member.userId} value={member.userId}>{member.user.name}</option>)}
+                    </select>
+                  </label>
+                  <input name="subject" placeholder="Task" required className={inputClass} />
+                  <input name="dueAt" type="date" className={inputClass} />
+                  <Button type="submit" variant="secondary">Assign task</Button>
+                </form>
+              </Card>
+            </section>
+          )}
+
           {canManage && active && (
             <section>
               <h2 className="mb-3 text-sm font-medium text-[var(--color-ink-muted)]">Log activity</h2>
@@ -153,6 +196,29 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
         </div>
 
         <div className="flex flex-col gap-6">
+          {canManage && (
+            <section>
+              <h2 className="mb-3 text-sm font-medium text-[var(--color-ink-muted)]">Industry and tags</h2>
+              <Card className="flex flex-col gap-3 p-4">
+                <form action={saveProspectGrouping.bind(null, prospect.id)} className="flex flex-col gap-3">
+                  <label className="text-xs text-[var(--color-ink-muted)]">Industry
+                    <select name="industryId" defaultValue={prospect.industryId ?? ""} className={`${inputClass} mt-1 w-full`}>
+                      <option value="">None</option>
+                      {industries.map((industry) => <option key={industry.id} value={industry.id}>{industry.name}</option>)}
+                    </select>
+                  </label>
+                  <input name="newIndustry" placeholder="Or create one, such as drainage" className={inputClass} />
+                  <div className="flex flex-wrap gap-2">
+                    {prospect.tags.map((tag) => (
+                      <button key={tag} type="submit" name="removeTag" value={tag} className="rounded-full bg-[#eef1f6] px-2.5 py-1 text-xs text-[#1d1d1f]">{tag} ×</button>
+                    ))}
+                  </div>
+                  <input name="tag" placeholder="Add a tag" className={inputClass} />
+                  <Button type="submit" variant="secondary">Save grouping</Button>
+                </form>
+              </Card>
+            </section>
+          )}
           <section>
             <h2 className="mb-3 text-sm font-medium text-[var(--color-ink-muted)]">Scoring</h2>
             <Card className="flex flex-col gap-3 p-4">
@@ -162,7 +228,7 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
             </Card>
           </section>
 
-          {canManage && active && (
+          {canPush && active && (
             <section>
               <h2 className="mb-3 text-sm font-medium text-[var(--color-ink-muted)]">Not ready to buy?</h2>
               <Card className="flex flex-col gap-4 p-4">

@@ -1,5 +1,13 @@
 # Atlas Architecture
 
+> **Superseded deployment target — 3 October 2026:** The user requires Atlas
+> software/UI/application runtime on the Desktop/Mac and shared user data stored
+> only on the server. Remote hosting of the Atlas UI/full application and the
+> hosted thin-client target below are historical, not the approved architecture.
+> See AGENTS.md, .ai/ARCHITECTURE.md and [desktop/data runtime](DESKTOP_DATA_BOUNDARY.md). Minimal secured data access must retain
+> server-side tenant/capability enforcement. Current deployment compliance is unverified.
+
+
 ## Shape
 
 Atlas is **Core + Modules**, built on Next.js (App Router, TypeScript) and
@@ -11,9 +19,10 @@ PostgreSQL via Prisma.
   `docs/CUSTOMER_MASTER.md`), audit, activity, attention, search, navigation,
   shared UI primitives.
 - **Modules** (`src/modules/`) own business capabilities (Sales, CRM, Projects,
-  HR — `people`, including onboarding/offboarding, appraisals, absence, rotas
-  and payroll — built today; Stock, Finance, Purchasing, Manufacturing,
-  Service, Fleet, Marketing remain stubs). A module declares a manifest, owns its own
+  HR — `people`, Staff Scheduling, Production Planning, Inventory, KPIs,
+  Products, Pricing, Analytics, Customer Service, Finance and Marketing have source foundations;
+  Purchasing, Payroll, Manufacturing execution, Logistics, Quality, Health & Safety
+  and Fleet remain planned/stub domains). A module declares a manifest, owns its own
   database tables, and contributes navigation, pages, capabilities, an
   attention provider and a search provider through typed contracts — it never
   reaches into another module's internals, and Core never contains
@@ -80,3 +89,12 @@ Full accounting, payroll calculation, MRP, warehouse management, tax engines,
 bank integrations, marketing automation, natural-language commands. The
 module stubs in `src/modules/stubs.ts` and the `coming_soon` status on the
 Apps screen represent this honestly — nothing is faked.
+
+## Customer Service
+
+`service` provides a source foundation for one Case engine attached to Core Party
+and separate Department Tickets. Completion of internal work preserves customer
+case ownership/status. Read scopes also enforce case security and queue membership;
+commands are forwarded to the central data service. See
+[Customer Service delivery](modules/CUSTOMER_SERVICE.md) for remaining workflows,
+full source coverage and activation limits.

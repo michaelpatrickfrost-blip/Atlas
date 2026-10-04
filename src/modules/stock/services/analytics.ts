@@ -1,0 +1,11 @@
+import { db } from "@/core/db/client";
+import { timeSeries } from "@/core/analytics/buckets";
+import type { AnalyticsProvider } from "@/core/analytics/types";
+import { assertCapability } from "@/core/permissions/check";
+export const stockAnalytics: AnalyticsProvider = [{
+ id:"stock.positions", name:"Stock positions", subject:"Inventory", definition:"Number of product and warehouse balances by warehouse. Counts positions, not units or inventory valuation.", grain:"One product per warehouse", capability:"stock.read", href:"/stock", snapshot:true,
+ query:async(session)=>{assertCapability(session,"stock.read");const [rows,warehouses]=await Promise.all([db.inventoryBalance.groupBy({by:["warehouseId"],where:{organisationId:session.organisationId},_count:{_all:true}}),db.warehouse.findMany({where:{organisationId:session.organisationId},select:{id:true,name:true}})]);return rows.map(r=>({label:warehouses.find(w=>w.id===r.warehouseId)?.name??"Warehouse",value:r._count._all}));}
+},
+{id:"stock.movements",name:"Stock movements",subject:"Inventory",definition:"Movement records in the selected period by reason. Counts movements, not units or valuation.",grain:"One inventory movement",capability:"stock.read",href:"/stock/movements",snapshot:false,query:async(session,since)=>{assertCapability(session,"stock.read");const rows=await db.inventoryMovement.groupBy({by:["reason"],where:{organisationId:session.organisationId,createdAt:since?{gte:since}:undefined},_count:{_all:true}});return rows.map(r=>({label:r.reason,value:r._count._all}));}},
+{id:"stock.movements.trend",name:"Movements over time",subject:"Inventory",definition:"Stock movements in the selected period, by week or by month on longer ranges. Latest 8,000 movements. Counts records, not units or valuation.",grain:"One inventory movement",capability:"stock.read",href:"/stock/movements",snapshot:false,shape:"trend",query:async(session,since)=>{assertCapability(session,"stock.read");const rows=await db.inventoryMovement.findMany({where:{organisationId:session.organisationId,...(since?{createdAt:{gte:since}}:{})},select:{createdAt:true},orderBy:{createdAt:"desc"},take:8000});return timeSeries(rows.map(row=>row.createdAt),since);}},
+];

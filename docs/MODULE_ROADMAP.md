@@ -1,12 +1,20 @@
 # Atlas module architecture and delivery plan
 
+> **Superseded deployment target — 3 October 2026:** The user requires Atlas
+> software/UI/application runtime on the Desktop/Mac and shared user data stored
+> only on the server. Remote hosting of the Atlas UI/full application and the
+> hosted thin-client target below are historical, not the approved architecture.
+> See AGENTS.md, .ai/ARCHITECTURE.md and [desktop/data runtime](DESKTOP_DATA_BOUNDARY.md). Minimal secured data access must retain
+> server-side tenant/capability enforcement. Current deployment compliance is unverified.
+
+
 Atlas is a modular ERP for smaller businesses: sophisticated business rules with a short, clear path through everyday work. Each app owns a workspace, business records, capabilities, events and customer overview contributions. A shared customer remains one Party across every app.
 
 ## Product structure
 
 Core owns companies, accounts, memberships, roles, permissions, module entitlements, audit, chat, search, dashboards and Customer Master. Each company has its own organisationId; membership and capabilities are resolved on the server. Module access requires both an enabled app and an authorised user. User accounts and employee records are separate concepts.
 
-CRM owns prospects, opportunities, relationships, activities, pipeline, forecasting and CRM reporting. Sales owns quotations and commercial orders. Projects owns customer project records; project execution is an extension of that app, not a second customer database.
+CRM owns prospects, opportunities, relationships, activities, pipeline, forecasting and CRM reporting. Sales owns quotations and commercial orders. Projects owns personal and shared work/project execution and links to canonical Party records; it does not create another customer database.
 
 The CRM capability namespace remains `sales.prospect.*`, `sales.opportunity.*`, etc. for compatibility with existing roles. This is a stored permission identifier, not a reason to combine the two workspaces again. Any future rename needs an explicit migration for roles.
 
@@ -19,10 +27,11 @@ The CRM capability namespace remains `sales.prospect.*`, `sales.opportunity.*`, 
 | Projects | Customer projects, delivery milestones, tasks, budgets, actuals | Overview, Work, Schedule, Costs | Party, quote/order linkage, time entries, purchasing costs |
 | Marketing | Campaigns, audiences, consent, journeys, assets, attribution | Overview, Campaigns, Audiences, Results | Consented Party/contact channels; prospect source; campaign touch events. No sending provider until configured |
 | HR | Employees, departments, employment, leave, policies, skills | People, Leave, Organisation, Records | Membership is separate; availability to Scheduling; training status to Safety; approved hours to Payroll |
-| Scheduling & Hours | Shifts, assignments, availability, timesheets, breaks, approvals | Schedule, My hours, Approvals | Employee/skill/leave constraints; project/work-centre allocations; approved time export |
+| Staff Scheduling (source foundation) | Shifts, assignments, availability, breaks and tasks; HR owns actual timesheets/approvals | Schedule, My hours, Approvals | Employee/skill/leave constraints; project/work-centre allocations; approved time export |
 | Stock | Products, variants, units, warehouses, bins, lots, serials, inventory movements | Availability, Products, Movements, Counts | Canonical Product; reservation/availability interface; lot traceability |
-| Logistics | Allocations, pick waves, packing, shipments, carriers, proof of delivery, returns | Dispatch, Shipments, Exceptions | Commercial order contract; stock reservations; partial shipment events; delivery status to Service |
-| Production Planning | BOM versions, routes, work centres, capacity, work orders, material demand, planning runs | Plan, Production, Capacity, Materials | Confirmed demand; Product/BOM; stock consumption/output; schedule constraints; inspection results |
+| Logistics (operational module) | Fulfilment requirements, warehouse work, packages, shipments, loads, receipts, returns | Today, Fulfil, Receive, Dispatch, Returns, Reports | Sales handoff and fulfilment projection; StockProvider; Finance events; carrier, purchasing, fleet and route contracts |
+| Planning (dedicated app; starting slice implemented) | Demand, forecasts, MPS, MRP, pegging, capacity, finite scheduling and scenarios | Demand, Plan, Materials, Capacity, Schedule | Shared Product/BOM/routing; demand/supply providers; resource calendars; controlled proposal conversion |
+| Manufacturing (existing stub; execution target) | Production/work orders, release snapshots, MES, material consumption, outputs, WIP and costing | Production, Shop Floor, Engineering, Costs | Planning proposals; shared engineering versions; stock commands; Quality; Finance posting |
 | Customer Service | Cases, complaints, SLA clocks, communications, resolution, escalation | Inbox, My cases, Escalations, Results | Party/contact; quote/order/shipment context; quality investigation; return request |
 | Quality | Specifications, inspections, nonconformance, corrective/preventive actions, supplier quality | Checks, Issues, Actions, Trends | Product/lot/work order; complaint investigation; hold/release decisions with auditable approval |
 | Health & Safety | Risk assessments, incidents, near misses, training, corrective actions, inspections | Today, Risks, Incidents, Compliance | Employee/location/equipment links; training constraints on scheduling; restricted incident permissions |
@@ -80,4 +89,66 @@ Each stage must deliver a usable vertical slice: create → validate → transit
 
 ## Current implementation limits
 
-Projects currently records customer projects, notes, status, linked quotations, basic assigned tasks and meetings. It does not yet provide a full timeline scheduler, dependencies, capacity planning or profitability. Internal chat is one company-wide feed with short polling, without direct messages, attachments, notifications or search. Saved dashboards select curated CRM metrics, not arbitrary SQL or a general report designer. Upcoming catalogue modules are planned, not implemented. Paid subscriptions and entitlements are not yet connected.
+Projects now extends the existing Project/ProjectTask engine with a broad work-management workspace, dependencies, calendar-day forecasts, private work, document history, approvals, workload estimates, templates and internal rules. Advanced scheduling/collaboration and financial/ERP integration remain open; see PROJECTS_WORKSPACE.md for verified evidence and limits. Internal chat is a top-bar dock for direct messages and chats with several colleagues or customer contacts. It can create personal tasks, follow-ups, requests and meetings in Projects, and attach orders, quotations, customers, projects and products. Contact chats stay in Atlas and are not emailed. Company-wide messages are not sent. Chat search across history remains open. Saved dashboards select curated CRM metrics, not arbitrary SQL or a general report designer. Upcoming catalogue modules are planned, not implemented. Paid subscriptions and entitlements are not yet connected.
+
+## Manufacturing scope clarification — 3 October 2026
+
+[Connected manufacturing and dedicated Planning](modules/MANUFACTURING_PLANNING.md)
+owns the detailed target and delivery gates; [supplied requirements](modules/MANUFACTURING_SOURCE_REQUIREMENTS.md)
+preserve every received section. This supersedes the combined Production Planning
+row: Planning and Manufacturing execution are separate app targets. The runtime
+manufacturing stub remains unchanged until implementation. Production scheduling
+is separate from HR rotas. All supplied scope remains required; none is delivered
+by this architecture update.
+
+The complete replacement attachment contains sections 1–143.
+[Section coverage](modules/MANUFACTURING_COVERAGE.md) assigns every requirement
+an owner and acceptance gate; phases now follow source sections 125–131.
+
+## Analytics Studio — 3 October 2026 foundation
+
+Analytics is now registered at `/analytics`, with private configurable visuals and
+module-contributed permission-aware metrics. Full [Analytics brief](modules/ANALYTICS_SOURCE_REQUIREMENTS.md),
+[delivery boundaries](modules/ANALYTICS_STUDIO.md) and [coverage](modules/ANALYTICS_COVERAGE.md)
+track the broader platform; no full reporting/sharing/export completion is claimed.
+
+## Logistics integration requirement — 3 October 2026
+
+Logistics must link to Sales and Finance. The [complete brief](modules/LOGISTICS_SOURCE_REQUIREMENTS.md),
+[mandatory integration contract](modules/LOGISTICS_INTEGRATION.md) and
+[222-section coverage](modules/LOGISTICS_COVERAGE.md) define the target.
+Sales owns demand and commercial status; Logistics owns physical execution and
+fulfilment projections; Finance owns accounting, invoicing and posting policy.
+The operational module is registered at `/logistics` and documented in
+[LOGISTICS.md](modules/LOGISTICS.md). Sales handoff, Stock commands and Finance
+events are in place. The 222-section coverage gates remain open. Live carrier
+APIs, fleet masters, purchasing and route optimisation are contracts only.
+
+Runtime starting slice and remaining engine gaps: [planning research](modules/PLANNING_RESEARCH.md)
+and [implementation evidence](modules/MANUFACTURING_PLANNING.md#implemented-starting-slice--3-october-2026).
+
+## Staff Scheduling foundation — 3 October 2026
+
+A separate `scheduling` app now depends on HR, sharing Employee/RotaShift through
+the typed HR roster contract. HR holds private notes, leave and actual timesheets.
+[Scope and activation gates](modules/STAFF_SCHEDULING.md) distinguish source code
+from migrated/deployed/accepted functionality; advanced scheduling remains open.
+
+## Customer Service source foundation — 3 October 2026
+
+The [241-section brief](modules/CUSTOMER_SERVICE_SOURCE_REQUIREMENTS.md) is the
+authoritative target. Separate customer Cases and department Tickets preserve
+Customer Service ownership and shared ERP references. `/service` registers the
+case/department foundation, with no live activation claim.
+[Delivery limits](modules/CUSTOMER_SERVICE.md) and [coverage](modules/CUSTOMER_SERVICE_COVERAGE.md)
+keep all nine source phases and acceptance scenarios open. No stock return or
+credit transaction is performed by this case engine.
+
+## Projects scope — 3 October 2026
+
+The full 256-section [Projects brief](modules/PROJECTS_SOURCE_REQUIREMENTS.md) is
+one user-requested scope, with no delivery phase gates. Existing Project/ProjectTask
+now support a broad connected workspace; full acceptance remains unfinished.
+See [implementation/evidence/limits](modules/PROJECTS_WORKSPACE.md) and
+[all-section coverage](modules/PROJECTS_COVERAGE.md). Do not infer installed desktop
+activation, live Finance/ERP processing or full collaboration from route presence.

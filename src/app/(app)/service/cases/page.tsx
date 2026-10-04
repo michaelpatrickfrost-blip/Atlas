@@ -1,0 +1,15 @@
+import Link from 'next/link';
+import { requireSession } from '@/core/auth/session';
+import { assertCapability } from '@/core/permissions/check';
+import { caseList } from '@/modules/service/services/queries';
+import { DataTable } from '@/components/ui/table';
+import { StatusPill } from '@/components/ui/status-pill';
+import { label, CASE_STATUSES, CASE_TYPES } from '@/modules/service/domain/workflow';
+import { inputClass } from '@/modules/service/components/fields';
+export default async function Cases({searchParams}:{searchParams:Promise<Record<string,string|undefined>>}) {
+ const session=await requireSession();assertCapability(session,'service.case.read');const params=await searchParams;
+ const cases=await caseList(session,{q:params.q,type:params.type,mine:params.mine==='1',status:params.status,partyId:params.partyId,overdue:params.overdue==='1'});
+ return <div className="space-y-5"><div className="flex items-center justify-between"><div><h2 className="text-2xl font-semibold">{params.mine?'My Work':params.type?label(params.type):'Cases'}</h2><p className="text-sm text-slate-500">Customer Service owns the relationship. Departments own their investigations.</p></div>{session.capabilities.has('service.case.create')&&<Link className="atlas-primary-button" href="/service/cases/new">New case</Link>}</div>
+ <form className="flex flex-wrap items-end gap-3"><label className="text-xs">Search<input className={inputClass} name="q" defaultValue={params.q} placeholder="Case number or subject"/></label><label className="text-xs">Status<select className={inputClass} name="status" defaultValue={params.status??''}><option value="">All statuses</option>{CASE_STATUSES.map(s=><option key={s} value={s}>{label(s)}</option>)}</select></label><label className="text-xs">Type<select className={inputClass} name="type" defaultValue={params.type??''}><option value="">All types</option>{CASE_TYPES.map(s=><option key={s} value={s}>{label(s)}</option>)}</select></label>{params.overdue&&<input type="hidden" name="overdue" value="1"/>}{params.mine&&<input type="hidden" name="mine" value="1"/>}{params.partyId&&<input type="hidden" name="partyId" value={params.partyId}/>}<button className="atlas-primary-button">Apply</button></form>
+ <DataTable rows={cases} getHref={c=>`/service/cases/${c.id}`} emptyLabel="No cases match these filters." columns={[{header:'Case',render:c=><div><span className="font-medium">{c.number}</span><p className="text-slate-500">{c.subject}</p></div>},{header:'Type',render:c=>label(c.type)},{header:'Status',render:c=><StatusPill label={label(c.status)} tone={c.status==='CLOSED'?'success':'neutral'}/>},{header:'Priority / severity',render:c=>`${label(c.priority)} · ${c.severity}`},{header:'Customer promise',render:c=>c.customerUpdateDueAt?<span className={c.customerUpdateDueAt<new Date()?'text-red-700':''}>{c.customerUpdateDueAt.toLocaleString('en-GB',{timeZone:'Europe/London'})}</span>:'—'}]}/><p className="text-xs text-slate-500">Showing up to 100 cases, most recently updated first. Narrow the filters for larger queues.</p></div>;
+}

@@ -1,0 +1,7 @@
+import type { InputHTMLAttributes, SelectHTMLAttributes } from 'react';
+import { label } from '../domain/workflow';
+export const inputClass='w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-2 focus:outline-blue-500';
+export function Field({title,...props}:InputHTMLAttributes<HTMLInputElement>&{title:string}) {return <label className="block space-y-1 text-xs font-medium text-slate-600"><span>{title}</span><input {...props} className={inputClass}/></label>;}
+export function Select({title,options,...props}:SelectHTMLAttributes<HTMLSelectElement>&{title:string;options:readonly string[]}) {return <label className="block space-y-1 text-xs font-medium text-slate-600"><span>{title}</span><select {...props} className={inputClass}>{options.map(o=><option key={o} value={o}>{label(o)}</option>)}</select></label>;}
+export function TextArea({title,name,required=false,defaultValue='',maxLength=20000}:{title:string;name:string;required?:boolean;defaultValue?:string;maxLength?:number}) {return <label className="block space-y-1 text-xs font-medium text-slate-600"><span>{title}</span><textarea className={inputClass} rows={4} name={name} required={required} defaultValue={defaultValue} maxLength={maxLength}/></label>;}
+export function RecordVersion({id,version,ticket=false}:{id:string;version:number;ticket?:boolean}) {return <><input type="hidden" name={ticket?'ticketId':'caseId'} value={id}/><input type="hidden" name="version" value={version}/></>;}

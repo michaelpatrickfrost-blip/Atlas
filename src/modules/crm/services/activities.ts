@@ -19,6 +19,7 @@ export type LogActivityInput = {
   opportunityId?: string;
   dueAt?: Date;
   completedNow?: boolean;
+  assigneeUserId?: string;
 };
 
 export async function logActivity(input: LogActivityInput) {
@@ -30,13 +31,19 @@ export async function logActivity(input: LogActivityInput) {
   if(input.partyId) await db.party.findFirstOrThrow({where:{id:input.partyId,organisationId:session.organisationId}});
   if(input.prospectId) await db.prospect.findFirstOrThrow({where:{id:input.prospectId,organisationId:session.organisationId}});
   if(input.opportunityId) await db.opportunity.findFirstOrThrow({where:{id:input.opportunityId,organisationId:session.organisationId}});
+  let ownerUserId = session.userId;
+  if (input.assigneeUserId && input.assigneeUserId !== session.userId) {
+    assertCapability(session, SALES_CAPABILITIES.prospectAssign);
+    await db.membership.findFirstOrThrow({ where: { organisationId: session.organisationId, userId: input.assigneeUserId, active: true } });
+    ownerUserId = input.assigneeUserId;
+  }
   const activity = await db.salesActivity.create({
     data: {
       organisationId: session.organisationId,
       type: input.type,
       subject: input.subject,
       notes: input.notes,
-      ownerUserId: session.userId,
+      ownerUserId,
       partyId: input.partyId,
       prospectId: input.prospectId,
       opportunityId: input.opportunityId,

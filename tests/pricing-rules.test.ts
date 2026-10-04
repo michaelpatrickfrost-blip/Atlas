@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {selectPriceRule,calculateRulePrice,type PriceRule} from '@/core/pricing/rules';
+import {selectPriceRule,calculateRulePrice,commercialPrice,type PriceRule} from '@/core/pricing/rules';
 const make=(values:Partial<PriceRule>):PriceRule=>({id:'rule',scope:'ALL',productId:null,categoryCode:null,method:'FIXED',minimumQuantity:1,unitPriceAmount:100,percentage:0,adjustmentAmount:0,priority:0,active:true,validFrom:null,validTo:null,...values});
 const product={id:'p1',categoryCode:'CAT-1',basePriceAmount:1000,baseCurrency:'GBP'};
 describe('pricing rules',()=>{
@@ -9,4 +9,6 @@ describe('pricing rules',()=>{
  it('converts standard prices using an explicit rate before percentage discount',()=>{expect(calculateRulePrice(make({method:'PERCENT',percentage:10}),{currency:'EUR',baseCurrency:'GBP',exchangeRate:1.2},product)).toBe(1080);});
  it('supports discounts and markups in currency minor units',()=>{expect(calculateRulePrice(make({method:'AMOUNT',adjustmentAmount:-200}),{currency:'GBP',baseCurrency:'GBP',exchangeRate:1},product)).toBe(800);expect(calculateRulePrice(make({method:'PERCENT',percentage:-20}),{currency:'GBP',baseCurrency:'GBP',exchangeRate:1},product)).toBe(1200);});
  it('rejects missing FX and negative results rather than relabelling currencies',()=>{expect(()=>calculateRulePrice(make({method:'PERCENT'}),{currency:'USD',baseCurrency:'EUR',exchangeRate:1},product)).toThrow('exchange rate');expect(()=>calculateRulePrice(make({method:'AMOUNT',adjustmentAmount:-2000}),{currency:'GBP',baseCurrency:'GBP',exchangeRate:1},product)).toThrow('invalid price');});
+ it('keeps a set price and takes the discount off it',()=>{const rule=make({method:'FIXED',unitPriceAmount:2500,percentage:10,scope:'PRODUCT',productId:'p1'});expect(commercialPrice(rule,{currency:'EUR',baseCurrency:'GBP',exchangeRate:1},product)).toEqual({unitPriceAmount:2500,discountPercent:10});expect(calculateRulePrice(rule,{currency:'EUR',baseCurrency:'GBP',exchangeRate:1},product)).toBe(2250);});
+ it('keeps the catalogue price when a category discount is selected',()=>{const rule=make({method:'PERCENT',percentage:10,scope:'CATEGORY',categoryCode:'CAT-1'});expect(commercialPrice(rule,{currency:'GBP',baseCurrency:'GBP',exchangeRate:1},product)).toEqual({unitPriceAmount:1000,discountPercent:10});});
 });

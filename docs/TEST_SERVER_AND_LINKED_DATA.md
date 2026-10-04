@@ -1,5 +1,13 @@
 # Atlas linked data and isolated test hosting
 
+> **Superseded deployment target — 3 October 2026:** The user requires Atlas
+> software/UI/application runtime on the Desktop/Mac and shared user data stored
+> only on the server. Remote hosting of the Atlas UI/full application and the
+> hosted thin-client target below are historical, not the approved architecture.
+> See AGENTS.md, .ai/ARCHITECTURE.md and [desktop/data runtime](DESKTOP_DATA_BOUNDARY.md). Minimal secured data access must retain
+> server-side tenant/capability enforcement. Current deployment compliance is unverified.
+
+
 Updated 3 October 2026.
 
 ## Decision
@@ -11,7 +19,7 @@ Atlas modules share one Atlas PostgreSQL database and canonical identities. Atla
 - Organisation is the tenant boundary. Every business query and relation assignment is checked against the authenticated organisation.
 - Party is the shared customer/group/branch/contact identity. CRM, Sales, Projects, Service and Finance reference it rather than copying customer records.
 - Product is the shared catalogue identity. Pricing, order lines, inventory, purchasing and production reference it.
-- Pricelists are business-wide records assigned to customer accounts; customer contract, selected/default list and standard price follow a defined precedence.
+- Price lists are business-wide records assigned to customer accounts. An active Pricing agreement can name the list, carry special product prices and record the service promise. Resolution order is agreement special price, customer-product price, the agreement list or the customer's usual list, then the catalogue price. Sales call-off agreements remain the quantity commitment.
 - Preserve document origin: opportunity → quotation → order → reservation → shipment/return → invoice/credit → payment/allocation. Project, warehouse, product and Party identifiers stay attached throughout.
 - Versioned price, tax and address snapshots preserve what was agreed on a document. Updating a customer address or product price must not silently rewrite historical documents.
 - Customer pages aggregate related module records under permissions; dashboards calculate from source records with explicit definitions, currency, tenant and period filters.

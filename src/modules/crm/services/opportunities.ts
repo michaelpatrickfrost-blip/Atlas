@@ -11,6 +11,7 @@ import { writeActivity } from "@/core/activity/log";
 import { emit, DOMAIN_EVENTS } from "@/core/events/bus";
 import { formatMoney } from "@/core/shared/money";
 import { getDefaultPipeline } from "@/modules/crm/services/pipelines";
+import { assertCrmPush } from "@/modules/crm/services/manager-level";
 import type { ForecastCategory, OpportunityStakeholderRole } from "@/generated/prisma/client";
 
 // Queries live in opportunities-queries.ts — this file is commands only
@@ -93,6 +94,7 @@ export async function moveOpportunityStage(opportunityId: string, stageId: strin
   assertCapability(session, SALES_CAPABILITIES.opportunityManage);
   await assertModuleEnabled(session, "crm");
   await assertOwnedByOrg(session.organisationId, opportunityId);
+  await assertCrmPush(session);
 
   const before = await db.opportunity.findUniqueOrThrow({ where: { id: opportunityId }, include: { stage: true } });
   const newStage = await db.pipelineStage.findFirstOrThrow({ where: { id: stageId, pipelineId: before.pipelineId, pipeline: { organisationId: session.organisationId } } });

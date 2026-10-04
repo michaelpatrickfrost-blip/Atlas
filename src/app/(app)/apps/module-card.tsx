@@ -39,6 +39,7 @@ export function ModuleCard({
         </p>
       )}
 
+      {module.previewPath && <Link href={module.previewPath} className="flex items-center gap-1 text-xs font-medium text-[var(--color-atlas-blue)]">Preview design <ArrowUpRight size={13}/></Link>}
       {comingSoon ? (
         <Button variant="ghost" disabled className="self-start">
           Coming soon

@@ -3,8 +3,6 @@ import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { SALES_CAPABILITIES } from "@/core/permissions/capabilities";
 import { getWorkQueue } from "@/modules/crm/services/work-queue";
-import { Card } from "@/components/ui/card";
-import { StatusPill } from "@/components/ui/status-pill";
 import { EmptyState } from "@/components/ui/empty-state";
 
 function greeting(): string {
@@ -25,9 +23,9 @@ export default async function TodayPage() {
   const normal = items.filter((item) => item.priority === "normal");
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-[var(--color-ink)]">
+        <h1 className="text-[1.75rem] font-semibold tracking-tight text-[var(--color-ink)]">
           {greeting()}, {session.userName.split(" ")[0]}.
         </h1>
         <p className="mt-1 text-sm text-[var(--color-ink-muted)]">
@@ -41,7 +39,7 @@ export default async function TodayPage() {
         <>
           {high.length > 0 && (
             <section>
-              <h2 className="mb-3 text-xs font-medium uppercase tracking-wide text-[var(--color-ink-faint)]">Priority</h2>
+              <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">Needs you first</h2>
               <div className="flex flex-col gap-2">
                 {high.map((item) => (
                   <WorkItemCard key={item.id} item={item} />
@@ -52,7 +50,7 @@ export default async function TodayPage() {
 
           {normal.length > 0 && (
             <section>
-              <h2 className="mb-3 text-xs font-medium uppercase tracking-wide text-[var(--color-ink-faint)]">Today</h2>
+              <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">Also today</h2>
               <div className="flex flex-col gap-2">
                 {normal.map((item) => (
                   <WorkItemCard key={item.id} item={item} />
@@ -68,17 +66,13 @@ export default async function TodayPage() {
 
 function WorkItemCard({ item }: { item: Awaited<ReturnType<typeof getWorkQueue>>[number] }) {
   return (
-    <Link href={item.href}>
-      <Card className="flex items-center justify-between gap-3 p-4 hover:border-[var(--color-border-strong)]">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            {item.priority === "high" && <StatusPill label="High" tone="danger" />}
-            <p className="truncate font-medium text-[var(--color-ink)]">{item.title}</p>
-          </div>
-          {item.subtitle && <p className="truncate text-sm text-[var(--color-ink-muted)]">{item.subtitle}</p>}
-          <p className="mt-1 text-xs text-[var(--color-ink-faint)]">{item.reason}</p>
-        </div>
-      </Card>
+    <Link href={item.href} className="group flex items-start gap-4 border-b border-[var(--color-border)] py-4">
+      <span className={`mt-2 size-1.5 shrink-0 rounded-full ${item.priority === "high" ? "bg-[var(--color-status-warning)]" : "bg-[var(--color-border-strong)]"}`} aria-hidden />
+      <span className="min-w-0">
+        <span className="block truncate text-sm font-medium text-[var(--color-ink)] group-hover:text-[var(--color-atlas-blue)]">{item.title}</span>
+        {item.subtitle && <span className="mt-0.5 block truncate text-sm text-[var(--color-ink-muted)]">{item.subtitle}</span>}
+        <span className="mt-1 block text-xs text-[var(--color-ink-faint)]">{item.reason}</span>
+      </span>
     </Link>
   );
 }

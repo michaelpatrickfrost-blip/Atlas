@@ -2,7 +2,8 @@ import { db } from "@/core/db/client";
 import { getImplementedModules, getModule, MODULE_CATALOGUE } from "@/core/modules/registry";
 import type { ModuleManifest, ModuleNavItem } from "@/core/modules/types";
 import type { Session } from "@/core/auth/session";
-import { can } from "@/core/permissions/check";
+import { can, canAny } from "@/core/permissions/check";
+import { syncAdminCapabilities } from "@/core/permissions/role-sync";
 
 export async function getEnabledModuleIds(organisationId: string): Promise<Set<string>> {
   const states = await db.moduleState.findMany({ where: { organisationId, }  });
@@ -13,16 +14,26 @@ export async function getEnabledModuleIds(organisationId: string): Promise<Set<s
 /** Modules enabled for this org AND accessible to this user, in catalogue order.
  *  This is what populates primary navigation — installing a module never requires
  *  editing navigation code. */
+export function canOpenModule(session: Session, module: ModuleManifest) {
+  if (module.accessAnyOf?.length) return canAny(session, module.accessAnyOf);
+  return can(session, module.accessCapability);
+}
+
 export async function getNavigableModules(session: Session): Promise<ModuleManifest[]> {
   const enabled = await getEnabledModuleIds(session.organisationId);
   return getImplementedModules().filter(
-    (module) => module.launcherVisible!==false && enabled.has(module.id) && can(session, module.accessCapability),
-  );
+    (module) => module.launcherVisible!==false && enabled.has(module.id) && canOpenModule(session, module),
+  ).map((module) => module.id === "scheduling" && !can(session, "scheduling.manage") && !can(session, "people.rota.manage")
+    ? { ...module, name: "My rota", description: "Your published shifts, hours and team." }
+    : module);
 }
 
 /** A module's secondary navigation, filtered to items the user can see. */
 export function getModuleNavigation(module: ModuleManifest, session: Session): ModuleNavItem[] {
-  return module.navigation.filter((item) => !item.capability || can(session, item.capability));
+  return module.navigation.filter((item) => {
+    if (item.anyOf?.length) return canAny(session, item.anyOf);
+    return !item.capability || can(session, item.capability);
+  });
 }
 
 export async function setModuleEnabled(organisationId: string, moduleId: string, enabled: boolean) {
@@ -49,6 +60,7 @@ export async function setModuleEnabled(organisationId: string, moduleId: string,
     create: { organisationId, moduleId, enabled },
     update: { enabled },
   });
+  if (enabled) await syncAdminCapabilities(organisationId);
 }
 
 export async function getModuleStatesForOrg(organisationId: string) {

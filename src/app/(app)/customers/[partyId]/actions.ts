@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import {
   createContact,
+  updateContact,
+  deleteContact,
   createAddress,
   createTaxRegistration,
   markTaxRegistrationManuallyVerified,
@@ -14,7 +16,7 @@ import {
   createNote,
   updateCustomerStatus,
 } from "@/core/customers/commands";
-import type { AddressType, ContactRole, DirectDebitScheme } from "@/generated/prisma/client";
+import type { AddressType, ContactPreferredMethod, ContactRole, ContactStatus, DirectDebitScheme } from "@/generated/prisma/client";
 
 /** Thin FormData -> typed-command adapters so record-page forms can post
  *  directly to server actions without a client-side state layer. */
@@ -25,11 +27,39 @@ export async function createContactFormAction(partyId: string, formData: FormDat
     firstName: String(formData.get("firstName")),
     surname: String(formData.get("surname")),
     jobTitle: String(formData.get("jobTitle") || "") || undefined,
+    department: String(formData.get("department") || "") || undefined,
     email: String(formData.get("email") || "") || undefined,
     phone: String(formData.get("phone") || "") || undefined,
+    mobile: String(formData.get("mobile") || "") || undefined,
     roles: (formData.getAll("roles") as ContactRole[]).length > 0 ? (formData.getAll("roles") as ContactRole[]) : ["OTHER"],
     isPrimary: formData.get("isPrimary") === "on",
   });
+}
+
+export async function updateContactFormAction(contactId: string, partyId: string, formData: FormData) {
+  await updateContact({
+    contactId,
+    partyId,
+    title: String(formData.get("title") || "") || undefined,
+    firstName: String(formData.get("firstName")),
+    surname: String(formData.get("surname")),
+    preferredName: String(formData.get("preferredName") || "") || undefined,
+    jobTitle: String(formData.get("jobTitle") || "") || undefined,
+    department: String(formData.get("department") || "") || undefined,
+    email: String(formData.get("email") || "") || undefined,
+    alternativeEmail: String(formData.get("alternativeEmail") || "") || undefined,
+    phone: String(formData.get("phone") || "") || undefined,
+    mobile: String(formData.get("mobile") || "") || undefined,
+    preferredContactMethod: (String(formData.get("preferredContactMethod") || "") || undefined) as ContactPreferredMethod | undefined,
+    notes: String(formData.get("notes") || "") || undefined,
+    status: (String(formData.get("status") || "ACTIVE") as ContactStatus),
+    roles: (formData.getAll("roles") as ContactRole[]).length > 0 ? (formData.getAll("roles") as ContactRole[]) : ["OTHER"],
+    isPrimary: formData.get("isPrimary") === "on",
+  });
+}
+
+export async function deleteContactFormAction(contactId: string, partyId: string) {
+  await deleteContact(contactId, partyId);
 }
 
 export async function createAddressFormAction(partyId: string, formData: FormData) {

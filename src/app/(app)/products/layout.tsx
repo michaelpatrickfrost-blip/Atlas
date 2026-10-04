@@ -1,19 +1,14 @@
-import { Boxes, Package, ShoppingBag, Tags } from "lucide-react";
+import { Package } from "lucide-react";
 import { requireSession } from "@/core/auth/session";
-import { assertCapability, can } from "@/core/permissions/check";
+import { assertCapability } from "@/core/permissions/check";
 import { ActiveLink } from "@/components/shell/active-link";
 import { AppHeader } from "@/components/shell/app-header";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
 
 export default async function CatalogueLayout({ children }: { children: React.ReactNode }) {
   const session = await requireSession();
   assertCapability(session, "core.products.read");
-  const enabled = await getEnabledModuleIds(session.organisationId);
   const links = [
     { label: "Catalogue", href: "/products", icon: Package },
-    ...(can(session, "core.pricing.read") ? [{ label: "Pricing", href: "/pricing", icon: Tags }] : []),
-    ...(enabled.has("stock") && can(session, "stock.read") ? [{ label: "Stock & availability", href: "/stock", icon: Boxes }] : []),
-    ...(can(session, "sales.order.read") ? [{ label: "Sales orders", href: "/sales/orders", icon: ShoppingBag }] : []),
   ];
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6">

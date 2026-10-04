@@ -37,9 +37,9 @@ export default async function OnboardingPage() {
                   <span className="text-xs text-[var(--color-ink-muted)]">{done}/{e.onboardingTasks.length} complete{overdue > 0 ? ` · ${overdue} overdue` : ""}</span>
                 </div>
                 <ul className="space-y-1.5">
-                  {e.onboardingTasks.filter((t) => !t.completedAt).slice(0, 6).map((t) => (
+                  {e.onboardingTasks.filter((t) => !t.completedAt).map((t) => (
                     <li key={t.id} className="flex items-center justify-between gap-3 text-sm">
-                      <span>{t.title}{t.category ? <span className="ml-2 text-xs text-[var(--color-ink-faint)]">{t.category}</span> : null}</span>
+                      <span>{t.title}{t.dueDate && <span className="mt-1 block text-xs text-[var(--color-ink-muted)]">Due {t.dueDate.toLocaleDateString("en-GB")}</span>}{t.category ? <span className="ml-2 text-xs text-[var(--color-ink-faint)]">{t.category}</span> : null}</span>
                       <form action={completeEmployeeTask.bind(null, t.id)}><Button type="submit" className="text-xs">Done</Button></form>
                     </li>
                   ))}

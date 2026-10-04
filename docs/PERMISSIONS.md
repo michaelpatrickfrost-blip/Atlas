@@ -44,8 +44,7 @@ access. See [`docs/CUSTOMER_MASTER.md`](./CUSTOMER_MASTER.md).
 every new organisation by `prisma/seed.ts`: `admin` (every capability),
 `sales_user`, `sales_manager`, `finance_manager` (credit/tax/bank read+manage,
 bank reveal, but no commercial.manage — the inverse shape to `sales_user`).
-Organisations can edit role capabilities later (no UI for that yet — direct
-`Role.capabilities` update).
+Company administration provides reusable role presets and granular controls, individual membership grants/denials, and company restrictions. See [Company administration](COMPANY_ADMINISTRATION.md).
 
 ## Enforcement points
 
@@ -71,3 +70,13 @@ Organisations can edit role capabilities later (no UI for that yet — direct
 `src/app/(app)/error.tsx` catches this (and `UNAUTHENTICATED` from
 `requireSession`) and renders a plain-language `EmptyState` rather than a
 stack trace.
+
+Membership grants are applied after role unions, then individual denials. Company workspace restrictions apply last. Session versions revoke older JWTs after suspension, recovery, or explicit session revocation. Management-group oversight scopes employees without granting capabilities.
+
+## Manager level
+
+Company administrators turn a manager level on per app under Company administration → Manager level. The switch does not grant a permission. It decides when an existing manager permission is required:
+
+- CRM: `sales.pipeline.manage` is required to push a prospect or move a deal. `sales.prospect.assign` assigns the prospect and tasks.
+- Finance: at or above the company limit, or in another currency, the approval route must include someone with `finance.approval.decide`. That person cannot approve their own document.
+- Customer Service: `service.case.approve` is required to resolve or close a complaint, or a query linked to an order at or above the limit. Agents can keep working the case.

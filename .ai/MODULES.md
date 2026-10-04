@@ -1,12 +1,16 @@
 # Module memory map
 
 The authoritative runtime catalogue is src/core/modules/registry.ts. Registered
-foundations: CRM, Sales, Projects, Stock (Inventory), KPIs, Products and Pricing.
+foundations: CRM, Sales, Projects, Stock (Inventory), KPIs, Products, Pricing, People, Staff Scheduling, Production Planning, Plan, Analytics, Customer Service, Marketing, Finance, Logistics, Manufacturing, Safety, Audit, Payroll and Team planner.
 Customer Master belongs to Core. Registered foundations are not complete ERP apps.
+Safety is the workplace-risk module at `/safety`. See [Safety](../docs/modules/SAFETY.md).
 
-Planned/stub apps include Logistics, Scheduling & Hours, Quality, Health & Safety,
-Finance, Purchasing, HR, Payroll, Production Planning, Customer Service, Fleet and
-Marketing. Read src/modules/stubs.ts for actual IDs/dependencies and check the
+Audit maps existing change records by system and shows a manager their team.
+Echo is the note-and-mention panel on a customer, order, quotation or call-off.
+See [Audit and Echo](../docs/modules/AUDIT.md).
+
+Current remaining catalogue stubs are Quality and Fleet. Payroll and Manufacturing have
+registered implementations; full workflow acceptance remains separate from registration. Read src/modules/stubs.ts for actual IDs/dependencies and check the
 registry for which stubs are replaced by implemented manifests.
 
 - [Module roadmap](../docs/MODULE_ROADMAP.md): boundaries and dependencies.
@@ -17,3 +21,86 @@ registry for which stubs are replaced by implemented manifests.
 
 A specification is a target, not evidence of delivery. Before building a module read
 docs/MODULE_SPEC.md, inspect the existing services, and reuse shared data/contracts.
+
+Analytics is now an available registered foundation at `/analytics`, with typed
+module metric contributions and private Dashboard Studio. See
+[Analytics delivery](../docs/modules/ANALYTICS_STUDIO.md) for scope and activation
+limits; full requirement acceptance remains open.
+
+Logistics must integrate with both Sales and Finance. The complete
+[222-section brief](../docs/modules/LOGISTICS_SOURCE_REQUIREMENTS.md),
+[integration contract](../docs/modules/LOGISTICS_INTEGRATION.md) and
+[open coverage](../docs/modules/LOGISTICS_COVERAGE.md) retain required scope.
+Logistics is a registered module at `/logistics`. It consumes confirmed Sales orders through a handoff, requests Stock reservations and movements, and publishes Finance events. It does not post journals or copy inventory truth. See [Logistics](../docs/modules/LOGISTICS.md). The older 222-section source coverage remains open. The shared product keeps net and gross weight, size, volume, pack and pallet counts, origin, commodity code and hazard.
+
+Plan (`/plan`) is the connected planning layer: targets, forecasts, scenarios, reviews and live actuals. It is not Production Planning (`/planning`), which remains the product-demand and stock-coverage workbench. See [Plan](../docs/modules/PLAN.md).
+
+Production Planning is a limited runtime foundation, not full MRP/finite scheduling.
+Read [planning research](../docs/modules/PLANNING_RESEARCH.md) and the manufacturing
+delivery gates. Saved product-target plans and team assignments are intentions,
+not WIP/production orders or stock receipts. A product's versioned make/buy/WIP
+recipe, category, standard cost and order coverage live on the product record.
+A recipe step points at a work centre and machine from Manufacturing → Plant; see
+[manufacturing planning](../docs/modules/MANUFACTURING_PLANNING.md). Shop-floor
+quantities and finance journals remain open.
+
+Manufacturing (`manufacturing`, `/manufacturing`) is a registered module.
+Plant holds the work centres and machines a product step can run on. Today,
+Plan, Schedule, Produce, Shop Floor and Reports cover the production-order spine.
+MRP, a real production calendar, costing, traceability and most cross-module
+provider contracts remain open; see
+[coverage](../docs/modules/MANUFACTURING_COVERAGE.md) for the row-by-row status
+and [source](../docs/modules/MANUFACTURING_SOURCE_REQUIREMENTS.md) for the full
+brief. Its Phase 1 migration is written but not yet applied to the local dev
+database — see the inherited migration-ordering blocker in CURRENT_STATE.md.
+
+Staff Scheduling is a separate HR-dependent app at `/scheduling`; HR owns My HR,
+holidays, company policy PDFs, performance plans, disciplinary cases, My Team, confidential notes and timesheets. Access is split so Staff can have holidays and policies without payroll or conduct. Source foundation/release limits:
+[Staff Scheduling](../docs/modules/STAFF_SCHEDULING.md). Central workflows and the installed planner/hours budgets are live
+and enabled; acceptance is recorded in CURRENT_STATE.
+
+Customer Service (`service`, `/service`) is a limited case/departmental-work
+foundation, with shared Party identity, independent ownership and guarded
+resolution. The [241-section source](../docs/modules/CUSTOMER_SERVICE_SOURCE_REQUIREMENTS.md),
+[delivery limits](../docs/modules/CUSTOMER_SERVICE.md) and
+[coverage](../docs/modules/CUSTOMER_SERVICE_COVERAGE.md) retain the full target.
+Email delivery, attachments, SLA/OLA engines, surveys and later integrations are
+open. The limited foundation is live in the installed Mac app and private central
+data service as of 3 October 2026; see delivery evidence and remaining acceptance.
+
+Projects now has a broad work-management implementation, not complete brief acceptance.
+The user requests all 256 sections without staged delivery gates. See
+[Projects workspace](../docs/modules/PROJECTS_WORKSPACE.md) and
+[open coverage](../docs/modules/PROJECTS_COVERAGE.md). Source migration/package/UI
+verification is separate from central data migration and installed Mac activation.
+
+Finance now has a preserved [80-section brief](../docs/modules/FINANCE_SOURCE_REQUIREMENTS.md),
+[acceptance map](../docs/modules/FINANCE_COVERAGE.md) and
+[inspected starting point/constraints](../docs/modules/FINANCE_WORKSPACE.md).
+Finance has a registered runtime foundation at `/finance` and owns purchasing;
+the competing Purchasing catalogue stub is retired by the registry. Historical
+Purchasing module-state rows are retained. Initial catalogue observations did not
+verify Finance schema or workflows; see CURRENT_STATE.md for release evidence.
+All 80 full-brief acceptance gates remain open.
+
+## Installed catalogue omission audit — 3 October 2026
+
+Native Atlas Apps at `127.0.0.1:13200/apps` shows 14 installed module entries:
+CRM, Sales, Projects, Inventory, Goals & KPIs, Products, Pricing, HR, Staff
+Scheduling, Production Planning, Analytics, Customer Service, Marketing and Finance.
+Customer Master is Core and is not a separate module-catalogue entry.
+
+Six entries remain Coming soon: Logistics, Quality, Health & Safety,
+Payroll, Manufacturing execution and Fleet. None is a completed standalone app.
+HR payroll does not establish completion of the separate Payroll catalogue target. Planning is distinct from Manufacturing execution.
+This was a point-in-time audit; both Logistics and Manufacturing have since been
+registered (see their entries above) — this paragraph is retained as that day's
+snapshot, not a current claim.
+
+Logistics source and coverage contain consecutive sections 1–222 with no omissions
+or duplicates. Every Logistics acceptance gate remains open. Required next work
+is runtime implementation plus connected Sales/Finance acceptance and compatible
+Mac installation/central-data release; enabling its stub would not deliver it.
+Installed catalogue presence is evidence of enablement, not workflow completion
+or access for every profile. Preserve the full coverage maps for implemented apps
+as well: their unfinished requirements must not disappear behind Installed labels.

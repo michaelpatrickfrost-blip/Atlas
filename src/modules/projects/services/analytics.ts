@@ -1,0 +1,12 @@
+import {db} from '@/core/db/client';
+import type {AnalyticsProvider} from '@/core/analytics/types';
+import {assertCapability} from '@/core/permissions/check';
+import {projectScope,taskScope} from '@/core/permissions/work-access';
+const metric={subject:'Projects',capability:'projects.read',snapshot:true};
+export const projectsAnalytics:AnalyticsProvider=[
+ {...metric,id:'projects.status',name:'Project portfolio',definition:'Visible projects by workflow status.',grain:'One project',href:'/projects',query:async session=>{assertCapability(session,'projects.read');const rows=await db.project.groupBy({by:['status'],where:projectScope(session),_count:{_all:true}});return rows.map(r=>({label:r.status.replaceAll('_',' '),value:r._count._all}));}},
+ {...metric,id:'projects.tasks',name:'Project tasks',definition:'Visible canonical tasks by workflow status.',grain:'One task',href:'/projects/tasks',query:async session=>{assertCapability(session,'projects.read');const rows=await db.projectTask.groupBy({by:['status'],where:taskScope(session),_count:{_all:true}});return rows.map(r=>({label:r.status.replaceAll('_',' '),value:r._count._all}));}},
+ {...metric,id:'projects.health',name:'Project health',definition:'Visible active projects by owner-set health.',grain:'One project',href:'/projects',query:async session=>{assertCapability(session,'projects.read');const rows=await db.project.groupBy({by:['health'],where:{AND:[projectScope(session),{archivedAt:null,status:{notIn:['COMPLETED','CANCELLED']}}]},_count:{_all:true}});return rows.map(r=>({label:r.health.replaceAll('_',' '),value:r._count._all}));}},
+ {...metric,id:'projects.overdue',name:'Overdue work',definition:'Visible unfinished tasks whose due date has passed.',grain:'One task',href:'/projects/tasks',query:async session=>{assertCapability(session,'projects.read');return [{label:'Overdue tasks',value:await db.projectTask.count({where:{AND:[taskScope(session),{status:{notIn:['DONE','CANCELLED']},dueAt:{lt:new Date()}}]}})}];}},
+ {...metric,id:'projects.effort',name:'Estimated effort',definition:'Visible unfinished task estimates in hours; excludes private work without access and unestimated tasks.',grain:'One task',href:'/projects/work/workload',query:async session=>{assertCapability(session,'projects.read');const rows=await db.projectTask.groupBy({by:['priority'],where:{AND:[taskScope(session),{status:{notIn:['DONE','CANCELLED']}}]},_sum:{estimatedMinutes:true}});return rows.map(r=>({label:r.priority,value:(r._sum.estimatedMinutes??0)/60}));}},
+];

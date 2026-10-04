@@ -1,4 +1,5 @@
 "use server";
+import {projectScope} from "@/core/permissions/work-access";
 import { assertModuleEnabled } from "@/core/modules/access";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
@@ -15,7 +16,7 @@ export async function createQuote(form:FormData) {
  const customer=await db.party.findFirstOrThrow({where:{id:partyId,organisationId:session.organisationId},include:{addresses:true,parent:true,children:true}});
  const opportunityId=String(form.get("opportunityId")??"")||null, projectId=String(form.get("projectId")??"")||null;
  if(opportunityId) await db.opportunity.findFirstOrThrow({where:{id:opportunityId,partyId,organisationId:session.organisationId}});
- if(projectId) await db.project.findFirstOrThrow({where:{id:projectId,partyId,organisationId:session.organisationId}});
+ if(projectId) await db.project.findFirstOrThrow({where:{AND:[projectScope(session),{id:projectId,partyId}]}});
  const allowed=[partyId,...customer.children.filter(c=>c.organisationId===session.organisationId).map(c=>c.id),...(customer.parent?.organisationId===session.organisationId ? [customer.parent.id]:[])];
  const addresses=await db.address.findMany({where:{partyId:{in:allowed},active:true,party:{organisationId:session.organisationId}}});
  function address(field:string,kind:"BILLING"|"DELIVERY") {

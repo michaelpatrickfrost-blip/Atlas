@@ -1,3 +1,4 @@
+import {reportSummary} from '@/modules/sales/services/report-summary';
 import {prepareSalesFilters} from '@/modules/sales/services/account-filters';
 import {requireSession} from '@/core/auth/session';
 import {assertCapability} from '@/core/permissions/check';
@@ -19,11 +20,10 @@ export async function GET(request:Request){
  try{
  const effective=await prepareSalesFilters(session.organisationId,filters);
  if(kind==='analysis'){
- const groups=await db.salesOrder.groupBy({by:['currency','commercialStatus','partyId','ownerUserId'],where:orderWhere(session.organisationId,effective),_sum:{netAmount:true,taxAmount:true,grossAmount:true},_count:{_all:true}});
+ const groups=await db.salesOrder.groupBy({by:['currency','commercialStatus','partyId','pricingPartyId','ownerUserId'],where:orderWhere(session.organisationId,effective),_sum:{netAmount:true,taxAmount:true,grossAmount:true},_count:{_all:true}});
  if(groups.length>5000)return new Response('Narrow your filters to export up to 5,000 groups.',{status:422});
- const [parties,members]=await Promise.all([db.party.findMany({where:{organisationId:session.organisationId},select:{id:true,name:true}}),db.membership.findMany({where:{organisationId:session.organisationId},include:{user:{select:{id:true,name:true}}}})]),names=new Map([...parties,...members.map(m=>m.user)].map(r=>[r.id,r.name])),summary=new Map<string,ExportRow>();
- for(const g of groups){const label=filters.group==='customer'?names.get(g.partyId)??'Customer':filters.group==='person'?names.get(g.ownerUserId)??'Former member':g.commercialStatus.replaceAll('_',' '),key=g.currency+'|'+label;const row=summary.get(key)??{group:label,currency:g.currency,count:0,net:0,tax:0,total:0};row.count=Number(row.count)+g._count._all;row.net=Number(row.net)+(g._sum.netAmount??0)/100;row.tax=Number(row.tax)+(g._sum.taxAmount??0)/100;row.total=Number(row.total)+(g._sum.grossAmount??0)/100;summary.set(key,row);}
- rows=[...summary.values()];columns=[{key:'group',label:'Group'},{key:'currency',label:'Currency'},{key:'count',label:'Orders',type:'number'},{key:'net',label:'Net',type:'money'},{key:'tax',label:'Tax',type:'money'},{key:'total',label:'Commercial order value',type:'money'}];
+ const [parties,members]=await Promise.all([db.party.findMany({where:{organisationId:session.organisationId},select:{id:true,name:true,parentPartyId:true,customerGroup:true}}),db.membership.findMany({where:{organisationId:session.organisationId},include:{user:{select:{id:true,name:true}}}})]);
+ rows=reportSummary(groups,parties,members.map(m=>m.user),filters.group??'status').map(r=>({group:r.label,currency:r.currency,count:r.count,net:r.net/100,tax:r.tax/100,total:r.gross/100}));columns=[{key:'group',label:'Group'},{key:'currency',label:'Currency'},{key:'count',label:'Orders',type:'number'},{key:'net',label:'Net',type:'money'},{key:'tax',label:'Tax',type:'money'},{key:'total',label:'Commercial order value',type:'money'}];
  }else{
  const [orders,quotes,members]=await Promise.all([kind==='order'?db.salesOrder.findMany({where:orderWhere(session.organisationId,effective),include:{party:true,pricingParty:true,_count:{select:{lines:true}}},orderBy:{updatedAt:'desc'},take:5001}):[],kind==='quote'?db.quote.findMany({where:quoteWhere(session.organisationId,effective),include:{party:true,pricingParty:true,_count:{select:{lines:true}}},orderBy:{updatedAt:'desc'},take:5001}):[],db.membership.findMany({where:{organisationId:session.organisationId},include:{user:{select:{id:true,name:true}}}})]);
  if(orders.length+quotes.length>5000)return new Response('Narrow your filters to export up to 5,000 documents.',{status:422});const names=new Map(members.map(m=>[m.userId,m.user.name]));

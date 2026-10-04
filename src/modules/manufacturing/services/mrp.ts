@@ -1,0 +1,213 @@
+"use server";
+
+import { db } from "@/core/db/client";
+import { requireSession } from "@/core/auth/session";
+import { assertCapability } from "@/core/permissions/check";
+import { writeAudit } from "@/core/audit/log";
+import { writeActivity } from "@/core/activity/log";
+import { MANUFACTURING_CAPABILITIES as C } from "@/core/permissions/capabilities";
+import { getModule } from "@/core/modules/registry";
+import { OPEN_PRODUCTION_ORDER_STATUSES } from "../domain/lifecycle";
+import { nextOrderNumber } from "./numbers";
+import { totalLeadTimeMinutes } from "../domain/scheduling";
+import { readAvailability } from "@/modules/stock/services/availability";
+
+/** One demand line pegged by a suggestion (§37). Stored as JSON so it survives
+ * edits to the underlying sales order line or forecast row. */
+type PegLine = { sourceType: "SALES_ORDER" | "FORECAST" | "SAFETY_STOCK"; sourceId: string; label: string; quantity: number };
+
+async function stockProvider() {
+  const provider = getModule("stock")?.stockProvider;
+  if (!provider) throw new Error("Inventory is not available — cannot run MRP without it.");
+  return provider;
+}
+
+/** §34: gross requirements − available supply − existing inventory = net requirement,
+ * then one MAKE suggestion per product in shortage. Gross requirement is confirmed
+ * Sales demand (§29) PLUS planner-entered forecast demand (§33) for the same product —
+ * CRM Opportunities carry deal value, not product/quantity lines, so there is nothing
+ * upstream yet to consume automatically (see MANUFACTURING_COVERAGE.md); Manufacturing's
+ * own forecast (`ManufacturingDemandForecast`) stands in for that until it exists.
+ * `startBy` factors in the actual manufacturing lead time (§9) computed from the live
+ * routing at the suggested quantity — not a static field that could drift from it — so
+ * a suggestion says not just "make 500 by 18 Oct" but "start by 14 Oct to make it".
+ * §38's full exception taxonomy beyond simple shortage remains open. */
+export async function runMrp() {
+  const session = await requireSession();
+  assertCapability(session, C.planManage);
+  const organisationId = session.organisationId;
+  const startedAt = new Date();
+  const warnings: string[] = [];
+
+  const [demandLines, forecastRows] = await Promise.all([
+    db.salesOrderLine.findMany({
+      where: {
+        order: { organisationId, commercialStatus: "CONFIRMED" },
+        productId: { not: null },
+        manufacturingOrders: { none: {} },
+      },
+      include: { order: { select: { reference: true, partyId: true, party: { select: { name: true } } } }, product: { select: { id: true, name: true, definitions: { where: { status: "ACTIVE" }, take: 1, orderBy: { version: "desc" } } } } },
+      take: 2000,
+    }).catch(() => []),
+    db.manufacturingDemandForecast.findMany({
+      where: { organisationId, periodStart: { gte: new Date() } },
+      include: { product: { select: { id: true, name: true, definitions: { where: { status: "ACTIVE" }, take: 1, orderBy: { version: "desc" } } } } },
+      take: 2000,
+    }),
+  ]);
+
+  const chain = await readAvailability();
+  const manufacturable = demandLines.filter((line) => line.productId && line.product?.definitions.length);
+  const manufacturableForecast = forecastRows.filter((row) => row.product.definitions.length);
+  if ((demandLines.length || forecastRows.length) && !manufacturable.length && !manufacturableForecast.length) warnings.push("Demand exists, but none of those products have an active BOM/routing yet.");
+
+  const byProduct = new Map<string, { productId: string; pegs: PegLine[]; demandQuantity: number; definitionId: string; earliestDemand: Date | null }>();
+  for (const line of manufacturable) {
+    const key = line.productId!;
+    const entry = byProduct.get(key) ?? { productId: key, pegs: [], demandQuantity: 0, definitionId: line.product!.definitions[0].id, earliestDemand: null };
+    const outstanding = Math.max(0, line.orderedQuantity - line.cancelledQuantity - (chain.deliveredByLine[line.id] ?? 0));
+    if (outstanding <= 0) continue;
+    const due = line.promisedDeliveryDate ?? line.requestedDeliveryDate ?? null;
+    entry.demandQuantity += outstanding;
+    entry.pegs.push({ sourceType: "SALES_ORDER", sourceId: line.id, label: `${line.order.reference} · ${line.order.party.name}`, quantity: outstanding });
+    if (due && (!entry.earliestDemand || due < entry.earliestDemand)) entry.earliestDemand = due;
+    byProduct.set(key, entry);
+  }
+  for (const row of manufacturableForecast) {
+    const key = row.productId;
+    const entry = byProduct.get(key) ?? { productId: key, pegs: [], demandQuantity: 0, definitionId: row.product.definitions[0].id, earliestDemand: null };
+    const quantity = Number(row.quantity);
+    entry.demandQuantity += quantity;
+    entry.pegs.push({ sourceType: "FORECAST", sourceId: row.id, label: `Forecast · ${row.periodStart.toLocaleDateString("en-GB", { month: "short", year: "numeric" })}`, quantity });
+    if (!entry.earliestDemand || row.periodStart < entry.earliestDemand) entry.earliestDemand = row.periodStart;
+    byProduct.set(key, entry);
+  }
+
+  const stock = await stockProvider();
+  const pictures = new Map(chain.products.map((row) => [row.productId, row]));
+  const openSupply = await db.manufacturingOrder.groupBy({
+    by: ["productId"],
+    where: { organisationId, status: { in: OPEN_PRODUCTION_ORDER_STATUSES } },
+    _sum: { quantity: true },
+  });
+  const openSupplyByProduct = new Map(openSupply.map((row) => [row.productId, Number(row._sum.quantity ?? 0)]));
+
+  const run = await db.manufacturingPlanningRun.create({
+    data: { organisationId, triggeredByUserId: session.userId, productCount: byProduct.size, warnings },
+  });
+
+  let suggestionCount = 0;
+  for (const entry of byProduct.values()) {
+    const availability = await stock.getAvailability({ organisationId, userId: session.userId }, { productId: entry.productId });
+    const picture = pictures.get(entry.productId);
+    const free = picture ? Math.max(0, picture.onHand - picture.held) : availability.available;
+    const supply = picture?.incoming ?? openSupplyByProduct.get(entry.productId) ?? 0;
+    const net = entry.demandQuantity - free - supply;
+    if (net <= 0) continue;
+    const neededBy = entry.earliestDemand;
+    const startBy = await suggestedStartDate(entry.definitionId, net, neededBy);
+    await db.manufacturingSupplySuggestion.create({
+      data: {
+        organisationId,
+        runId: run.id,
+        kind: "MAKE",
+        productId: entry.productId,
+        quantity: net,
+        neededBy,
+        startBy,
+        pegging: entry.pegs as never,
+      },
+    });
+    suggestionCount += 1;
+  }
+
+  await db.manufacturingPlanningRun.update({ where: { id: run.id }, data: { finishedAt: new Date(), suggestionCount } });
+  await writeActivity({ organisationId, type: "manufacturing.plan.generated", summary: `MRP run found ${suggestionCount} shortage${suggestionCount === 1 ? "" : "s"}`, entityType: "ManufacturingPlanningRun", entityId: run.id });
+  return { runId: run.id, suggestionCount, durationMs: Date.now() - startedAt.getTime(), warnings };
+}
+
+/** §9, §46: "when do we need to start" — the customer/forecast date minus the
+ * product's actual manufacturing lead time, computed from its live routing at
+ * the suggested quantity (not a separate static lead-time field that could
+ * silently drift from the real routing). */
+async function suggestedStartDate(definitionId: string, quantity: number, neededBy: Date | null): Promise<Date | null> {
+  if (!neededBy) return null;
+  const operations = await db.productOperation.findMany({ where: { definitionId } });
+  if (!operations.length) return neededBy;
+  const leadMinutes = totalLeadTimeMinutes(operations.map((op) => ({ setupMinutes: Number(op.setupMinutes), runMinutesPerUnit: Number(op.runMinutesPerUnit) })), quantity);
+  return new Date(neededBy.getTime() - leadMinutes * 60_000);
+}
+
+/** §41, §157: firm a MAKE suggestion into a real, explainable Production Order.
+ * Pegs the resulting order to the single largest demand line when one dominates,
+ * so the order detail page can still show "why" even though a suggestion can
+ * cover several sales orders at once. */
+export async function firmSuggestion(suggestionId: string) {
+  const session = await requireSession();
+  assertCapability(session, C.planFirm);
+  const suggestion = await db.manufacturingSupplySuggestion.findFirst({ where: { id: suggestionId, organisationId: session.organisationId } });
+  if (!suggestion) throw new Error("This suggestion no longer exists.");
+  if (suggestion.status !== "PENDING") throw new Error("This suggestion has already been actioned.");
+  if (suggestion.kind !== "MAKE") throw new Error("Only Make suggestions can be firmed into a Production Order here — Buy/Transfer suggestions are handed to Purchasing/Logistics.");
+
+  const pegs = (suggestion.pegging as unknown as PegLine[]) ?? [];
+  const largestPeg = pegs.slice().sort((a, b) => b.quantity - a.quantity)[0];
+  const product = await db.product.findFirst({ where: { id: suggestion.productId, organisationId: session.organisationId }, include: { definitions: { where: { status: "ACTIVE" }, take: 1, orderBy: { version: "desc" } } } });
+  if (!product) throw new Error("Product no longer exists.");
+
+  const order = await db.$transaction(async (tx) => {
+    const orderNumber = await nextOrderNumber(tx, session.organisationId);
+    const created = await tx.manufacturingOrder.create({
+      data: {
+        organisationId: session.organisationId,
+        orderNumber,
+        productId: product.id,
+        definitionId: product.definitions[0]?.id ?? null,
+        quantity: suggestion.quantity,
+        requiredDate: suggestion.neededBy,
+        priority: suggestion.startBy && suggestion.startBy < new Date() ? 10 : 0,
+        sourceSalesOrderLineId: largestPeg?.sourceType === "SALES_ORDER" ? largestPeg.sourceId : null,
+        notes: `Firmed from MRP run ${suggestion.runId}. Should have started ${suggestion.startBy?.toLocaleDateString("en-GB") ?? "n/a"} to meet the need date. Pegged demand: ${pegs.map((p) => `${p.label} (${p.quantity})`).join("; ") || "safety stock"}.`,
+        createdByUserId: session.userId,
+      },
+    });
+    await tx.manufacturingSupplySuggestion.update({ where: { id: suggestion.id }, data: { status: "FIRMED", resultingOrderId: created.id } });
+    return created;
+  });
+
+  await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "manufacturing.order.firmed", entityType: "ManufacturingOrder", entityId: order.id, after: { orderNumber: order.orderNumber, fromSuggestion: suggestion.id } });
+  await writeActivity({ organisationId: session.organisationId, type: "manufacturing.order.firmed", summary: `${order.orderNumber} firmed from the plan`, entityType: "ManufacturingOrder", entityId: order.id });
+  return order;
+}
+
+export async function dismissSuggestion(suggestionId: string) {
+  const session = await requireSession();
+  assertCapability(session, C.planManage);
+  const updated = await db.manufacturingSupplySuggestion.updateMany({ where: { id: suggestionId, organisationId: session.organisationId, status: "PENDING" }, data: { status: "DISMISSED" } });
+  if (!updated.count) throw new Error("This suggestion is no longer pending.");
+}
+
+export async function latestPlan(organisationId: string) {
+  const run = await db.manufacturingPlanningRun.findFirst({ where: { organisationId }, orderBy: { startedAt: "desc" } });
+  if (!run) return { run: null, suggestions: [] };
+  const suggestions = await db.manufacturingSupplySuggestion.findMany({
+    where: { runId: run.id, status: "PENDING" },
+    include: { product: { select: { name: true, code: true } } },
+    orderBy: [{ neededBy: "asc" }],
+  });
+  return {
+    run,
+    suggestions: suggestions.map((s) => ({
+      id: s.id,
+      kind: s.kind,
+      productId: s.productId,
+      product: s.product.name,
+      productCode: s.product.code,
+      quantity: Number(s.quantity),
+      neededBy: s.neededBy,
+      startBy: s.startBy,
+      overdueToStart: Boolean(s.startBy && s.startBy < new Date()),
+      pegging: (s.pegging as unknown as PegLine[]) ?? [],
+    })),
+  };
+}

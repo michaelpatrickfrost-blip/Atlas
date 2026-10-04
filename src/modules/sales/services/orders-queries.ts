@@ -28,12 +28,15 @@ export function getOrder(organisationId: string, orderId: string) {
       pricingParty:true,
       revisions:{orderBy:{revision:"desc"}},
       quote: true,
+      project: true,
+      agreement: true,
       priceList: true,
       paymentTerm: true,
       lines: { include: { product: true }, orderBy: { lineNumber: "asc" } },
       holds: { orderBy: { createdAt: "desc" } },
       approvals: { orderBy: { requestedAt: "desc" } },
       changeEvents: { orderBy: { createdAt: "desc" }, take: 30 },
+      proforma: true,
     },
   });
 }

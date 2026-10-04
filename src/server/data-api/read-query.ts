@@ -7,8 +7,10 @@ type Field={type:string;list:boolean;relation:boolean;nullable:boolean};
 function fields(model:ModelName){return MODEL_FIELDS[model] as Record<string,Field>;}
 const methods=new Set(['findMany','findFirst','findFirstOrThrow','findUnique','findUniqueOrThrow','count','groupBy','aggregate']);
 const argumentKeys=new Set(['where','select','include','orderBy','take','skip','distinct','by','_sum','_count','_avg','_min','_max','having']);
+// Project and document visibility nests team membership inside task and inbox filters.
+// A depth of 10 rejected the Projects home screen before any rows were read.
 function cleanCondition(session:Session,model:ModelName,value:unknown,depth=0):unknown{
- if(depth>10)throw new Error('Filter nesting limit exceeded.');if(Array.isArray(value))return value.map(v=>cleanCondition(session,model,v,depth+1));if(!value||typeof value!=='object')return value;
+ if(depth>24)throw new Error('Filter nesting limit exceeded.');if(Array.isArray(value))return value.map(v=>cleanCondition(session,model,v,depth+1));if(!value||typeof value!=='object')return value;
  const result:Args={};for(const [key,condition]of Object.entries(value)){if(['AND','OR','NOT'].includes(key)){result[key]=cleanCondition(session,model,condition,depth+1);continue;}const field=fields(model)[key];if(!field){if(key.includes('_')&&condition&&typeof condition==='object'){for(const [part,v]of Object.entries(condition))if(fields(model)[part])result[part]=v;else throw new Error('Invalid unique lookup.');continue;}throw new Error('Invalid filter field.');}
  if(deniedScalar(session,model,key))throw new Error('FORBIDDEN: protected field cannot be filtered or aggregated.');
  if(field.relation){const related=field.type as ModelName;if(!canReadModel(session,related))throw new Error('FORBIDDEN: related data is restricted.');if(condition===null){result[key]=null;continue;}const conditions=condition as Args;
@@ -17,7 +19,7 @@ function cleanCondition(session:Session,model:ModelName,value:unknown,depth=0):u
  }else result[key]=condition;
  }return result;
 }
-export type ReadPlan={model:ModelName;args:Args;children:Record<string,ReadPlan>;injected:string[];original:Args};
+export type ReadPlan={model:ModelName;args:Args;children:Record<string,ReadPlan>;injected:string[];original:Args;required?:boolean};
 export function planRead(session:Session,model:ModelName,input:Args,depth=0,nested=false,records=true):ReadPlan{
  if(!canReadModel(session,model))throw new Error('FORBIDDEN: missing data capability.');if(depth>6)throw new Error('Relation nesting limit exceeded.');
  const args:Args={...input},children:Record<string,ReadPlan>={},injected:string[]=[];
@@ -26,8 +28,8 @@ export function planRead(session:Session,model:ModelName,input:Args,depth=0,nest
  if(args.orderBy)cleanCondition(session,model,args.orderBy);
  for(const key of ['by','distinct'])if(args[key])for(const field of (Array.isArray(args[key])?args[key]:[args[key]]) as string[])if(!fields(model)[field]||deniedScalar(session,model,field))throw new Error('FORBIDDEN: invalid grouping field.');
  for(const projection of ['_sum','_avg','_min','_max','_count'])if(args[projection])for(const key of Object.keys(args[projection] as Args))if(key!=='_all'&&(!fields(model)[key]||deniedScalar(session,model,key)))throw new Error('FORBIDDEN: invalid aggregate field.');
- for(const projection of ['select','include']){if(!args[projection])continue;const values={...args[projection] as Args};for(const [key,value]of Object.entries(values)){if(!value)continue;if(key==='_count'){if(typeof value==='object'){const counts={...(value as {select?:Args}).select};for(const count of Object.keys(counts)){const related=fields(model)[count];if(!related?.relation||!canReadModel(session,related.type as ModelName))delete counts[count];}if(Object.keys(counts).length)values[key]={select:counts};else delete values[key];}else delete values[key];continue;}
- const field=fields(model)[key];if(!field)throw new Error('Invalid selected field.');if(field.relation){const related=field.type as ModelName;if(!canReadModel(session,related)){delete values[key];continue;}const plan=planRead(session,related,value===true?{}:value as Args,depth+1,true);if(field.list){plan.args.where={AND:[modelScope(session,related),plan.args.where??{}]};plan.args.take=Math.min(Number(plan.args.take??500),500);}else if(plan.args.where)throw new Error('Filter single related records through the parent query.');children[key]=plan;values[key]=plan.args;}
+ for(const projection of ['select','include']){if(!args[projection])continue;const values={...args[projection] as Args};for(const [key,value]of Object.entries(values)){if(!value)continue;if(key==='_count'){if(typeof value==='object'){const counts={...(value as {select?:Args}).select};for(const count of Object.keys(counts)){const related=fields(model)[count];if(!related?.relation||!canReadModel(session,related.type as ModelName))delete counts[count];else counts[count]={where:{AND:[modelScope(session,related.type as ModelName),typeof counts[count]==='object'?cleanCondition(session,related.type as ModelName,(counts[count] as Args).where??{}):{}]}};}if(Object.keys(counts).length)values[key]={select:counts};else delete values[key];}else delete values[key];continue;}
+ const field=fields(model)[key];if(!field)throw new Error('Invalid selected field.');if(field.relation){const related=field.type as ModelName;if(!canReadModel(session,related)){delete values[key];continue;}const plan=planRead(session,related,value===true?{}:value as Args,depth+1,true);if(field.list){plan.args.where={AND:[modelScope(session,related),plan.args.where??{}]};plan.args.take=Math.min(Number(plan.args.take??500),500);}else if(field.nullable)plan.args.where={AND:[modelScope(session,related),plan.args.where??{}]};else{if(plan.args.where)throw new Error('Required relation projections do not support filters.');plan.required=true;if(plan.args.select&&'id' in fields(related)&&!(plan.args.select as Args).id){(plan.args.select as Args).id=true;plan.injected.push('id');}}children[key]=plan;values[key]=plan.args;}
  else if(deniedScalar(session,model,key)&&model!=='BankAccount')delete values[key];}
  args[projection]=values;}
  const parent=PARENT_SCOPE[model];if(records&&parent){const projection=args.select?'select':'include',values={...args[projection] as Args};if(!values[parent]){values[parent]={select:{organisationId:true}};injected.push(parent);}else{const existing=values[parent];if(existing!==true&&(existing as Args).select)values[parent]={...existing as Args,select:{...(existing as Args).select as Args,organisationId:true}};}args[projection]=values;}
@@ -38,9 +40,28 @@ export function planRead(session:Session,model:ModelName,input:Args,depth=0,nest
  return {model,args,children,injected,original:input};
 }
 function sanitise(session:Session,plan:ReadPlan,value:unknown):unknown{if(Array.isArray(value))return value.map(v=>sanitise(session,plan,v)).filter(v=>v!==null);if(!value||typeof value!=='object'||value instanceof Date)return value;const row={...value as Args},parent=PARENT_SCOPE[plan.model];if(row.organisationId&&row.organisationId!==session.organisationId&&!(plan.model==='Organisation'&&session.capabilities.has('atlas.companies.manage')))return null;if(parent&&row[parent]&&typeof row[parent]==='object'&&(row[parent] as Args).organisationId!==session.organisationId)return null;
- for(const [key,child]of Object.entries(plan.children))if(key in row)row[key]=sanitise(session,child,row[key]);for(const key of plan.injected)delete row[key];for(const key of Object.keys(row))if(deniedScalar(session,plan.model,key)){if(plan.model==='BankAccount'&&typeof row[key]==='string')row[key]='••••'+String(row[key]).slice(-4);else delete row[key];}
+ for(const [key,child]of Object.entries(plan.children))if(key in row){if(child.required&&row[key]===null)return null;row[key]=sanitise(session,child,row[key]);if(child.required&&row[key]===null)return null;}for(const key of plan.injected)delete row[key];for(const key of Object.keys(row))if(deniedScalar(session,plan.model,key)){if(plan.model==='BankAccount'&&typeof row[key]==='string')row[key]='••••'+String(row[key]).slice(-4);else delete row[key];}
  if(plan.model==='OrderHold'&&row.type==='CREDIT'&&!session.capabilities.has('customers.credit.read'))row.reason='Credit review required';return row;}
+// Required to-one relations reject nested `where` in Prisma. Verify their IDs
+// against the same tenant/capability scope before any projection leaves the service.
+async function scopeRequiredRelations(session:Session,plan:ReadPlan,value:unknown):Promise<unknown>{
+ const rows=Array.isArray(value)?value:[value];
+ for(const [key,child]of Object.entries(plan.children)){
+  let projected=rows.flatMap(row=>row&&typeof row==='object'&&!Array.isArray(row)?[(row as Args)[key]]:[]).flatMap(item=>Array.isArray(item)?item:[item]).filter(item=>item&&typeof item==='object');
+  if(child.required&&projected.length){
+   if(!('id' in fields(child.model)))throw new Error('FORBIDDEN: unscoped required relation.');
+   const ids=[...new Set(projected.map(item=>(item as Args).id))];
+   const delegate=child.model[0].toLowerCase()+child.model.slice(1);
+   const client=db as unknown as Record<string,{findMany:(args:Args)=>Promise<Array<{id:string}>>}>;
+   const allowed=new Set((await client[delegate].findMany({where:{AND:[modelScope(session,child.model),{id:{in:ids}}]},select:{id:true}})).map(row=>row.id));
+   for(const row of rows)if(row&&typeof row==='object'&&!Array.isArray(row)){const item=(row as Args)[key];if(item&&typeof item==='object'&&!allowed.has(String((item as Args).id)))(row as Args)[key]=null;}
+   projected=projected.filter(item=>allowed.has(String((item as Args).id)));
+  }
+  await scopeRequiredRelations(session,child,projected);
+ }
+ return value;
+}
 export async function executeReadQuery(session:Session,delegate:string,method:string,input:Args){if(!methods.has(method))throw new Error('FORBIDDEN: only read operations are allowed.');const model=resolveModel(delegate),plan=planRead(session,model,input,0,false,!['count','groupBy','aggregate'].includes(method));if(method==='findMany'&&plan.args.take===undefined)plan.args.take=5000;const operation=method==='findUnique'?'findFirst':method==='findUniqueOrThrow'?'findFirstOrThrow':method;
  // The delegate/method are validated allowlists; no SQL or mutations are accepted.
- const client=db as unknown as Record<string,Record<string,(args:Args)=>Promise<unknown>>>;const result=await client[delegate][operation](plan.args);return ['count','groupBy','aggregate'].includes(method)?result:sanitise(session,plan,result);
+ const client=db as unknown as Record<string,Record<string,(args:Args)=>Promise<unknown>>>;const result=await client[delegate][operation](plan.args);return ['count','groupBy','aggregate'].includes(method)?result:sanitise(session,plan,await scopeRequiredRelations(session,plan,result));
 }

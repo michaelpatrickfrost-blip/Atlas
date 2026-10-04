@@ -1,3 +1,4 @@
+import { crmAnalytics } from "./services/analytics";
 import { crmCustomerOverviewProvider } from "./customer-overview";
 import { Handshake } from "lucide-react";
 import type { ModuleManifest } from "@/core/modules/types";
@@ -6,6 +7,7 @@ import { salesAttentionProvider } from "@/modules/crm/services/attention";
 import { salesSearchProvider } from "@/modules/crm/services/search";
 
 export const crmManifest: ModuleManifest = {
+ analyticsProvider: crmAnalytics,
   id: "crm",
   name: "CRM",
   description: "Prospecting, pipeline, forecasting and reporting.",
@@ -17,12 +19,8 @@ export const crmManifest: ModuleManifest = {
   rootPath: "/crm/today",
   accessCapability: SALES_CAPABILITIES.opportunityRead,
   status: "installed",
-  // Navigation deliberately stays to five items (§5) — Leads/Tasks/Calls/
-  // Sequences/Playbooks/Territories/Teams/Products/Settings all exist but are
-  // reached contextually (from Today, Prospect, an opportunity, or Sales
-  // settings), never as permanent top-level menu items.
+  // Each tab is a CRM section. Dashboards is its own app; reports can link there.
   navigation: [
-    { label: "Dashboards", href: "/crm/dashboards", capability: SALES_CAPABILITIES.reportRead },
     { label: "Today", href: "/crm/today", capability: SALES_CAPABILITIES.opportunityRead },
     { label: "Prospect", href: "/crm/prospect", capability: SALES_CAPABILITIES.prospectRead },
     { label: "Pipeline", href: "/crm/pipeline", capability: SALES_CAPABILITIES.opportunityRead },

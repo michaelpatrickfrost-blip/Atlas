@@ -14,7 +14,12 @@ export async function createShift(form: FormData) {
   const startsAt = new Date(String(form.get("startsAt") ?? ""));
   const endsAt = new Date(String(form.get("endsAt") ?? ""));
   if (isNaN(startsAt.getTime()) || isNaN(endsAt.getTime()) || endsAt <= startsAt) throw new Error("Enter a valid start and end time.");
-  await db.employee.findFirstOrThrow({ where: { id: employeeId, organisationId: session.organisationId } });
+  const employee = await db.employee.findFirstOrThrow({ where: { id: employeeId, organisationId: session.organisationId } });
+  if (["LEFT", "OFFBOARDING"].includes(employee.status)) throw new Error("Cannot schedule a shift for a leaver.");
+  const overlap = await db.rotaShift.count({ where: { organisationId: session.organisationId, employeeId, status: { not: "CANCELLED" }, startsAt: { lt: endsAt }, endsAt: { gt: startsAt } } });
+  if (overlap) throw new Error("This employee already has an overlapping shift.");
+  const absence = await db.absenceRecord.count({ where: { organisationId: session.organisationId, employeeId, status: "APPROVED", startDate: { lt: endsAt }, endDate: { gte: new Date(Date.UTC(startsAt.getUTCFullYear(), startsAt.getUTCMonth(), startsAt.getUTCDate())) } } });
+  if (absence) throw new Error("This employee has approved absence during this shift.");
   await db.rotaShift.create({
     data: {
       organisationId: session.organisationId,

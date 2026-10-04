@@ -1,5 +1,13 @@
 # Atlas
 
+> **Superseded deployment target — 3 October 2026:** The user requires Atlas
+> software/UI/application runtime on the Desktop/Mac and shared user data stored
+> only on the server. Remote hosting of the Atlas UI/full application and the
+> hosted thin-client target below are historical, not the approved architecture.
+> See AGENTS.md and .ai/ARCHITECTURE.md. Minimal secured data access must retain
+> server-side tenant/capability enforcement. Current deployment compliance is unverified.
+
+
 A modular ERP / business operating system. See [`AGENTS.md`](./AGENTS.md) for
 the repository map and [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) for
 the full architecture.

@@ -14,7 +14,19 @@ export async function getCustomerOverviewContributions(
   const results = await Promise.all(
     modules
       .filter((module) => module.customerOverviewProvider)
-      .map((module) => module.customerOverviewProvider!({ organisationId: session.organisationId, session, partyId })),
+      .map(async (module): Promise<CustomerOverviewContribution | null> => {
+        try {
+          return await module.customerOverviewProvider!({ organisationId: session.organisationId, session, partyId });
+        } catch {
+          // A module data-service mismatch must not make the shared customer
+          // identity and hierarchy inaccessible. Never report failed reads as zero.
+          return {
+            moduleId: module.id,
+            metrics: [{ label: `${module.name} summary unavailable`, value: "Unavailable" }],
+            actions: [],
+          };
+        }
+      }),
   );
   return results.filter((contribution): contribution is CustomerOverviewContribution => contribution !== null);
 }

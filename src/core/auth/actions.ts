@@ -25,6 +25,7 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
     return { error: "This account has no active workspace access. Contact your administrator." };
   }
 
+  await db.membership.update({where:{id:membership.id,organisationId:membership.organisationId},data:{lastLoginAt:new Date()}});
   await createSessionCookie({ userId: user.id, organisationId: membership.organisationId });
   redirect("/home");
 }

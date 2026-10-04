@@ -13,7 +13,10 @@
     "db:local": "node scripts/local-postgres.mjs",
     "dev:all": "node scripts/dev-all.mjs",
     "dev:all:no-open": "ATLAS_SKIP_OPEN=1 node scripts/dev-all.mjs",
-    "desktop:build": "bash scripts/build-mac-client.sh"
+    "desktop:build": "bash scripts/build-mac-client.sh",
+    "desktop:install": "bash scripts/install-mac-client.sh",
+    "desktop:runtime": "node scripts/build-desktop-runtime.mjs",
+    "data:build": "node scripts/build-data-service.mjs"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",

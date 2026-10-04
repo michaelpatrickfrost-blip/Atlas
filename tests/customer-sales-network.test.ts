@@ -1,0 +1,14 @@
+import {describe,it,expect} from 'vitest';
+import {hierarchyAccountIds,descendantAccountIds} from '@/core/customers/hierarchy';
+import {reportSummary} from '@/modules/sales/services/report-summary';
+import {orderWhere} from '@/modules/sales/services/list-filters';
+import {salesHandoff} from '@/modules/sales/services/handoff';
+describe('customer networks and sales reporting',()=>{
+ const accounts=[{id:'g',name:'Group',parentPartyId:null,customerGroup:null},{id:'a',name:'Same name',parentPartyId:'g',customerGroup:'Trade'},{id:'b',name:'Same name',parentPartyId:'a',customerGroup:'Trade'},{id:'flat',name:'Independent',parentPartyId:null,customerGroup:null}];
+ it('supports independent accounts and arbitrary depth without imposing a group',()=>{expect(hierarchyAccountIds(accounts,'flat')).toEqual(['flat']);expect(hierarchyAccountIds(accounts,'b').sort()).toEqual(['a','b','g']);expect(descendantAccountIds(accounts,['a']).sort()).toEqual(['a','b']);expect(hierarchyAccountIds(accounts,'foreign')).toEqual([]);});
+ it('terminates safely on legacy circular parents',()=>{expect(hierarchyAccountIds([{id:'a',parentPartyId:'b'},{id:'b',parentPartyId:'a'}],'a').sort()).toEqual(['a','b']);});
+ const group=(partyId:string,pricingPartyId:string|null=null)=>({partyId,pricingPartyId,ownerUserId:'u',currency:'GBP',commercialStatus:'CONFIRMED',_count:{_all:1},_sum:{netAmount:100,taxAmount:20,grossAmount:120}});
+ it('keeps distinct accounts with the same name separate and groups their ownership tree',()=>{expect(reportSummary([group('a'),group('b')],accounts,[],'customer')).toHaveLength(2);expect(reportSummary([group('a'),group('b')],accounts,[],'accountGroup')).toMatchObject([{label:'Group',count:2,gross:240,drill:{customer:'g',customerScope:'descendants'}}]);});
+ it('reports negotiated-price beneficiaries separately from billed accounts',()=>{expect(reportSummary([group('flat','a'),group('b')],accounts,[],'pricing')).toHaveLength(2);expect(orderWhere('tenant',{beneficiary:'a'})).toMatchObject({organisationId:'tenant',AND:[{OR:[{pricingPartyId:{in:['a']}},{pricingPartyId:null,partyId:{in:['a']}}]}]});});
+ it('carries delivery and finance instructions without confusing billing and pricing',()=>{const event=salesHandoff({id:'o',organisationId:'tenant',revision:2,partyId:'merchant',pricingPartyId:'beneficiary',currency:'GBP',paymentTermId:null,invoiceAddressSnapshot:{line1:'Billing'},deliveryAddressSnapshot:{line1:'Site'},customerPoReference:'PO',requestedDeliveryDate:new Date('2026-10-05'),promisedDeliveryDate:null,deliveryInstructions:'Side gate',financeInstructions:'Use job reference',allowPartialDelivery:false});expect(event).toMatchObject({schemaVersion:1,billingAccountId:'merchant',pricingAccountId:'beneficiary',delivery:{instructions:'Side gate',allowPartial:false},finance:{instructions:'Use job reference',invoicePolicy:'REVIEW_REQUIRED'}});});
+});

@@ -8,6 +8,62 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+## Every prompt — desktop software, server data
+
+Deploy Atlas to the Desktop/Mac. The remote server stores shared data only and
+must not run Atlas software. Finished work goes live in the installed Mac app.
+Cursor loads `.cursor/rules/desktop-data-boundary.mdc` on every prompt.
+
+## Required deployment boundary — 3 October 2026
+
+User requirement: Atlas software, UI and application runtime belong on the user's
+Desktop/Mac. The remote server stores shared user/business data; it must not host
+the Atlas UI or full Atlas application. Apply this to every module, including HR,
+CRM, Sales and Manufacturing. A desktop wrapper displaying a remotely hosted Atlas
+application does not satisfy this requirement.
+
+Persist user/business records, attachments and backups on the server only. Do not
+introduce a local business database, offline record store or persistent business-data
+cache. Local software files and minimal connection/session settings are separate
+from business records; review browser caches/logs/exports against this boundary.
+Transient data needed to display a record is not an authoritative local datastore.
+
+A minimal authenticated data-access service may be needed to protect the remote
+database and enforce tenant/capability checks; it must not grow into a hosted Atlas
+application. Do not put shared database credentials into the desktop package or
+remove server-enforced access controls. The precise data-service/runtime split is
+an implementation task, not a claim that the current build already meets the target.
+
+Older hosted-web-app/private-SSH thin-client plans are superseded as target
+architecture. Preserve historical deployment evidence, clearly labelled, and inspect
+actual runtime/package/network/storage behaviour before claiming compliance.
+Do not deploy the Atlas application to the remote server. Any retirement of an
+existing remote application must preserve all user data and backups.
+
+## Live completion requirement — 3 October 2026
+
+Michael requires completed apps and app changes to be made live, not left only in
+source code, a build or a design preview. This applies to every app worked on from
+now onwards, including current work and subsequent fixes. Deployment and live
+verification are required task steps before a completed handoff, not an optional
+follow-up to offer the user. Treat this as standing authorization to
+perform the necessary compatible release, installed Mac package update and app
+activation within the deployment boundary above. Verify the installed app opens
+the delivered feature and its authorised server-data reads/writes work before
+calling it complete. A page that errors is not live. Install the built bundle
+over `/Users/michael/Applications/Atlas.app` (the Desktop icon points there).
+Enable the completed module for Michael’s organisation as
+part of release, including Production and Marketing when ready, and verify its
+Apps entry/navigation is available to authorised profiles. Do not leave a finished
+module disabled after deployment. Preserve existing profile permissions; activation is not
+authorization to expose additional source data or grant every user access.
+
+Preserve unsaved work and central records before switching runtimes. If a concrete
+blocker prevents safe activation, finish safe release preparation, record the
+blocker and next step in CURRENT_STATE.md, and clearly report that activation is
+pending. Ask only for missing information or a genuinely necessary decision;
+do not repeatedly request permission for already-authorised activation.
+
 # Shared project memory
 
 The repository itself is the shared memory for Codex, Claude Code and Cursor.
@@ -123,3 +179,22 @@ npm run db:seed         # seed the demo organisation (Northbridge Group / demo@a
 - Session is a signed JWT in an httpOnly cookie (`src/core/auth/session.ts`).
 - See `docs/PERMISSIONS.md` for the full capability/role model.
 
+
+## One editable project and one shared save location
+
+Claude Code, Codex and Cursor must edit this same Atlas repository and save shared
+context in its .ai/ directory. On Michael's Mac the working project is
+`/Users/michael/Desktop/RP SYSTEM`. Resolve the root from this repository's AGENTS.md
+when opened elsewhere. Do not create separate Claude/Cursor/Codex copies of Atlas,
+parallel handbooks or external source-file folders. Explicit Git worktrees are the
+exception for parallel work; merge their code and memory back into this repository.
+Generated build/ staging/package files are disposable outputs, never editable masters.
+Atlas modules share the same central server data store via the secured data service;
+never create per-module/local business databases or silently fall back to local storage.
+
+## User-requested CSV exports
+
+Explicit CSV downloads from Planning, Inventory, Sales, Logistics and Audit may be saved to a
+user-chosen location. This supersedes the blanket native-download prohibition;
+authoritative shared records remain server-side, and no local database, offline
+store or automatic business-data cache is permitted. See `.ai/PROJECT_MEMORY.md`.

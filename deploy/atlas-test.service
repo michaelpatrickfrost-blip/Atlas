@@ -1,13 +1,16 @@
 [Unit]
-Description=Atlas private test application
+Description=Atlas private central data service (desktop UI runs on Mac)
 After=network.target atlas-test-db.service
 Requires=atlas-test-db.service
 [Service]
 User=atlas-test
 Group=atlas-test
-WorkingDirectory=/opt/atlas-test/current
+WorkingDirectory=/opt/atlas-test/current/data-service-build
 EnvironmentFile=/etc/atlas-test/application.env
-ExecStart=/usr/bin/node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3100
+Environment=ATLAS_RUNTIME=data-service
+Environment=HOSTNAME=127.0.0.1
+Environment=PORT=3100
+ExecStart=/usr/bin/node /opt/atlas-test/current/data-service-build/server.js
 Restart=on-failure
 RestartSec=5
 MemoryMax=768M
@@ -17,6 +20,6 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectHome=true
 ProtectSystem=strict
-ReadWritePaths=/opt/atlas-test/current/.next/cache /var/lib/atlas-test
+ReadWritePaths=/opt/atlas-test/current/data-service-build/.next/cache /var/lib/atlas-test
 [Install]
 WantedBy=multi-user.target

@@ -7,6 +7,7 @@ import { teamsManifest } from "@/modules/teams/manifest";
 import { analyticsManifest } from "@/modules/analytics/manifest";
 import { planningManifest } from "@/modules/planning/manifest";
 import { planManifest } from "@/modules/plan/manifest";
+// import { ticketingManifest } from "@/modules/tickets/manifest"; // Disabled due to schema issues
 import type { ModuleManifest } from "@/core/modules/types";
 import { salesManifest } from "@/modules/sales/manifest";
 import { crmManifest } from "@/modules/crm/manifest";
@@ -28,7 +29,7 @@ import { stubModules } from "@/modules/stubs";
  * This is the single place a new module registers itself. Per-organisation
  * enable/disable state lives in the database (ModuleState) — see runtime.ts.
  */
-export const MODULE_CATALOGUE: ModuleManifest[] = [crmManifest, salesManifest, projectsManifest, stockManifest, kpisManifest, productsManifest, pricingManifest, peopleManifest, schedulingManifest, payrollManifest, teamsManifest, planningManifest, planManifest, analyticsManifest, serviceManifest, marketingManifest, financeManifest, logisticsManifest, manufacturingManifest, safetyManifest, auditManifest, qualityManifest, ...stubModules.filter(m => !["projects","stock","people","scheduling","payroll","service","marketing","finance","purchasing","logistics","manufacturing","safety","quality"].includes(m.id))];
+export const MODULE_CATALOGUE: ModuleManifest[] = [crmManifest, salesManifest, projectsManifest, stockManifest, kpisManifest, productsManifest, pricingManifest, peopleManifest, schedulingManifest, payrollManifest, teamsManifest, planningManifest, planManifest, analyticsManifest, serviceManifest, marketingManifest, financeManifest, logisticsManifest, manufacturingManifest, safetyManifest, auditManifest, qualityManifest, /* ticketingManifest disabled */, ...stubModules.filter(m => !["projects","stock","people","scheduling","payroll","service","marketing","finance","purchasing","logistics","manufacturing","safety","quality","tickets"].includes(m.id))];
 
 export function getModule(moduleId: string): ModuleManifest | undefined {
   return MODULE_CATALOGUE.find((entry) => entry.id === moduleId);

@@ -8,14 +8,15 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus } from "lucide-react";
 
 interface Props {
-  params: { projectId: string };
+  params: Promise<{ projectId: string }>;
 }
 
 export default async function SalesProjectDetailPage({ params }: Props) {
+  const { projectId } = await params;
   const session = await requireSession();
   await assertCapability(session, SALES_CAPABILITIES.opportunityRead);
 
-  const project = await getSalesProject(params.projectId, session.organisationId);
+  const project = await getSalesProject(projectId, session.organisationId);
   if (!project) {
     notFound();
   }

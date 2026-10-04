@@ -279,6 +279,16 @@ export const MANUFACTURING_CAPABILITIES = {
   routingManage: "manufacturing.routing.manage", resourceManage: "manufacturing.resource.manage",
 } as const;
 
+export const TICKETING_CAPABILITIES = {
+  queueRead: "tickets.queue.read",
+  queueManage: "tickets.queue.manage",
+  ticketRead: "tickets.ticket.read",
+  ticketCreate: "tickets.ticket.create",
+  ticketManage: "tickets.ticket.manage",
+  ticketReply: "tickets.ticket.reply",
+  ticketWatch: "tickets.ticket.watch",
+} as const;
+
 export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: string[] }> = [
   {
     key: "admin",
@@ -297,6 +307,7 @@ export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: st
       ...Object.values(SCHEDULING_CAPABILITIES),
       ...Object.values(TEAMS_CAPABILITIES),
       ...Object.values(SERVICE_CAPABILITIES),
+      ...Object.values(TICKETING_CAPABILITIES),
       "finance.overview.read",
       "finance.receivables.read",
       "finance.configure",

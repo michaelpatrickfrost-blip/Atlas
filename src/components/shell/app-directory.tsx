@@ -16,7 +16,7 @@ export async function AppDirectory({ session }: { session: Session }) {
   const modules = await getNavigableModules(session);
   const groups = new Map<string, Entry[]>(APP_AREAS.map((area) => [area, []]));
   if (can(session, CUSTOMER_CAPABILITIES.read)) groups.get("Customers")!.push({ id: "customers", name: "Customers", href: "/customers", icon: Users });
-  for (const module of modules) groups.get(areaForModule(module.id))!.push({ id: module.id, name: module.name, href: module.rootPath, icon: module.icon });
+  for (const app of modules) groups.get(areaForModule(app.id))!.push({ id: app.id, name: app.name, href: app.rootPath, icon: app.icon });
   const company: Entry[] = [
     { id: "my-work", name: "My work", href: "/profile", icon: Briefcase },
     ...(canOpenCompanyAdmin(session) ? [{ id: "settings", name: "Company admin", href: "/settings", icon: Settings }] : []),

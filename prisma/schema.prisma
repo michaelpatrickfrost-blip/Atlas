@@ -4608,6 +4608,31 @@ model MarketingAudienceMember {
 }
 
 model MarketingCampaign {
+  objective String @default("")
+  businessGoal String @default("")
+  targetMarket String @default("")
+  persona String @default("")
+  productId String?
+  positioning String @default("")
+  message String @default("")
+  offer String @default("")
+  cta String @default("")
+  channels String[] @default([])
+  targetPipelineMinor Int @default(0)
+  targetRevenueMinor Int @default(0)
+  targetCustomers Int @default(0)
+  targetLeads Int @default(0)
+  risks String @default("")
+  dependencies String @default("")
+  teamName String @default("")
+  brand String @default("DEFAULT")
+  region String @default("")
+  language String @default("en")
+  utmCampaign String @default("")
+  isProgramme Boolean @default(false)
+  brief Json @default("{}")
+  launchedAt DateTime?
+  completedAt DateTime?
   id String @id @default(cuid())
   organisationId String
   organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict)
@@ -4640,6 +4665,26 @@ model MarketingCampaign {
 }
 
 model MarketingContent {
+  persona String @default("")
+  journeyStage String @default("")
+  productId String?
+  topic String @default("")
+  language String @default("en")
+  summary String @default("")
+  url String @default("")
+  reviewAt DateTime?
+  copyrightOwner String @default("")
+  licence String @default("")
+  territory String @default("")
+  permittedUse String @default("")
+  restrictions String @default("")
+  parentId String?
+  requiresTechnicalApproval Boolean @default(false)
+  technicalApprovedBy String?
+  brief Json @default("{}")
+  views Int @default(0)
+  downloads Int @default(0)
+  dueAt DateTime?
   id String @id @default(cuid())
   organisationId String
   organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict)
@@ -4785,6 +4830,10 @@ model MarketingJourneyEnrolment {
 }
 
 model MarketingLead {
+  assignedAt DateTime?
+  firstActionAt DateTime?
+  recycleReason String?
+  mqlAt DateTime @default(now())
   id String @id @default(cuid())
   organisationId String
   organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict)
@@ -4824,6 +4873,11 @@ model MarketingProgram {
 }
 
 model MarketingTouch {
+  channel String @default("")
+  contentId String?
+  activityId String?
+  kind String @default("INTERACTION")
+  utm Json @default("{}")
   id String @id @default(cuid())
   organisationId String
   organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict)
@@ -7598,3 +7652,593 @@ enum TicketPriority {
 // }
 
 // ---------- Customer Templates: flexible per-customer module configuration
+
+
+// ===== Platform: durable events, company email/social (IT), automations, contracts, CSAT =====
+model AutomationEvent {
+  id String @id @default(cuid())
+  organisationId String
+  name String
+  entityType String?
+  entityId String?
+  payload Json @default("{}")
+  occurredAt DateTime @default(now())
+  processedAt DateTime?
+  @@index([organisationId,name,occurredAt])
+  @@index([organisationId,occurredAt])
+  @@map("automation_events")
+}
+
+model Automation {
+  id String @id @default(cuid())
+  organisationId String
+  name String
+  description String @default("")
+  enabled Boolean @default(false)
+  triggerType String @default("EVENT")
+  triggerEvent String?
+  schedule Json @default("{}")
+  conditions Json @default("[]")
+  steps Json @default("[]")
+  ownerUserId String
+  templateKey String?
+  version Int @default(1)
+  lastRunAt DateTime?
+  runCount Int @default(0)
+  failCount Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  runs AutomationRun[]
+  @@unique([id,organisationId])
+  @@index([organisationId,enabled,triggerEvent])
+  @@map("automations")
+}
+
+model AutomationRun {
+  id String @id @default(cuid())
+  organisationId String
+  automationId String
+  eventId String?
+  idempotencyKey String
+  status String @default("RUNNING")
+  dryRun Boolean @default(false)
+  cursor Int @default(0)
+  context Json @default("{}")
+  results Json @default("[]")
+  error String?
+  resumeAt DateTime?
+  attempts Int @default(0)
+  startedAt DateTime @default(now())
+  finishedAt DateTime?
+  automation Automation @relation(fields:[automationId,organisationId],references:[id,organisationId],onDelete:Cascade)
+  @@unique([organisationId,idempotencyKey])
+  @@index([organisationId,status,resumeAt])
+  @@index([organisationId,automationId,startedAt])
+  @@map("automation_runs")
+}
+
+model EmailAccount {
+  id String @id @default(cuid())
+  organisationId String
+  scope String @default("COMPANY")
+  ownerUserId String?
+  label String
+  fromName String @default("")
+  fromEmail String
+  replyTo String @default("")
+  smtpHost String
+  smtpPort Int @default(587)
+  smtpSecurity String @default("STARTTLS")
+  smtpUser String
+  passwordEnc String @db.Text
+  imapHost String @default("")
+  imapPort Int @default(993)
+  imapSecurity String @default("SSL")
+  signatureHtml String @default("") @db.Text
+  dailyLimit Int @default(500)
+  isDefault Boolean @default(false)
+  active Boolean @default(true)
+  status String @default("UNVERIFIED")
+  lastError String?
+  lastVerifiedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([id,organisationId])
+  @@index([organisationId,scope,ownerUserId])
+  @@map("email_accounts")
+}
+
+model EmailTemplate {
+  id String @id @default(cuid())
+  organisationId String
+  name String
+  category String @default("GENERAL")
+  subject String
+  preheader String @default("")
+  blocks Json @default("[]")
+  brand String @default("DEFAULT")
+  active Boolean @default(true)
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([id,organisationId])
+  @@index([organisationId,category])
+  @@map("email_templates")
+}
+
+model EmailMessage {
+  id String @id @default(cuid())
+  organisationId String
+  accountId String?
+  templateId String?
+  messageClass String @default("TRANSACTIONAL")
+  toEmail String
+  toName String @default("")
+  cc String[] @default([])
+  subject String
+  html String @db.Text
+  text String @default("") @db.Text
+  attachments Json @default("[]")
+  calendar Json?
+  status String @default("QUEUED")
+  scheduledAt DateTime @default(now())
+  sentAt DateTime?
+  error String?
+  providerMessageId String?
+  partyId String?
+  contactId String?
+  entityType String?
+  entityId String?
+  campaignId String?
+  automationRunId String?
+  createdByUserId String?
+  openToken String @default(cuid())
+  openedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([organisationId,status,scheduledAt])
+  @@index([organisationId,partyId,createdAt])
+  @@index([organisationId,entityType,entityId])
+  @@map("email_messages")
+}
+
+model SocialAccount {
+  id String @id @default(cuid())
+  organisationId String
+  platform String
+  label String
+  credentialsEnc String @db.Text
+  status String @default("UNVERIFIED")
+  lastError String?
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([id,organisationId])
+  @@index([organisationId,platform])
+  @@map("social_accounts")
+}
+
+model ContractDocument {
+  id String @id @default(cuid())
+  organisationId String
+  reference String
+  title String
+  bodyHtml String @db.Text
+  partyId String?
+  contactId String?
+  quoteId String?
+  orderId String?
+  status String @default("DRAFT")
+  tokenHash String @unique
+  expiresAt DateTime?
+  sentAt DateTime?
+  viewedAt DateTime?
+  signedAt DateTime?
+  signerName String?
+  signerEmail String?
+  signerIp String?
+  declinedReason String?
+  contentHash String @default("")
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([organisationId,reference])
+  @@index([organisationId,status])
+  @@map("contract_documents")
+}
+
+model CsatSurvey {
+  id String @id @default(cuid())
+  organisationId String
+  name String
+  question String
+  followUpQuestion String @default("Anything we could do better?")
+  thanksText String @default("Thank you for your feedback.")
+  scale Int @default(5)
+  context String @default("GENERAL")
+  active Boolean @default(true)
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  responses CsatResponse[]
+  @@unique([id,organisationId])
+  @@map("csat_surveys")
+}
+
+model CsatResponse {
+  id String @id @default(cuid())
+  organisationId String
+  surveyId String
+  token String @unique
+  partyId String?
+  contactId String?
+  email String?
+  entityType String?
+  entityId String?
+  score Int?
+  comment String?
+  sentAt DateTime @default(now())
+  respondedAt DateTime?
+  automationRunId String?
+  survey CsatSurvey @relation(fields:[surveyId,organisationId],references:[id,organisationId],onDelete:Cascade)
+  @@index([organisationId,surveyId,respondedAt])
+  @@index([organisationId,partyId])
+  @@map("csat_responses")
+}
+
+// ===== Marketing: operating model additions =====
+model MarketingSetting {
+  id String @id @default(cuid())
+  organisationId String @unique
+  settings Json @default("{}")
+  updatedAt DateTime @updatedAt
+  @@map("marketing_settings")
+}
+
+model MarketingBudgetLine {
+  id String @id @default(cuid())
+  organisationId String
+  campaignId String
+  category String
+  label String @default("")
+  month String @default("")
+  plannedMinor Int @default(0)
+  committedMinor Int @default(0)
+  actualMinor Int @default(0)
+  forecastMinor Int @default(0)
+  source String @default("MANUAL")
+  sourceRef String?
+  approvedBy String?
+  approvedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([organisationId,campaignId])
+  @@map("marketing_budget_lines")
+}
+
+model MarketingActivity {
+  id String @id @default(cuid())
+  organisationId String
+  campaignId String
+  name String
+  channel String @default("")
+  kind String @default("TASK")
+  status String @default("PLANNED")
+  startAt DateTime?
+  endAt DateTime?
+  phase String @default("")
+  ownerUserId String?
+  contentId String?
+  messageId String?
+  socialPostId String?
+  eventId String?
+  notes String @default("")
+  costMinor Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([organisationId,campaignId])
+  @@index([organisationId,startAt])
+  @@map("marketing_activities")
+}
+
+model MarketingSegment {
+  id String @id @default(cuid())
+  organisationId String
+  name String
+  description String @default("")
+  mode String @default("DYNAMIC")
+  entity String @default("PEOPLE")
+  rules Json @default("{}")
+  purpose String @default("")
+  ownerUserId String
+  lastCount Int @default(0)
+  lastAccountCount Int @default(0)
+  lastCountAt DateTime?
+  staticPartyIds String[] @default([])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  snapshots MarketingSegmentSnapshot[]
+  @@unique([id,organisationId])
+  @@index([organisationId])
+  @@map("marketing_segments")
+}
+
+model MarketingSegmentSnapshot {
+  id String @id @default(cuid())
+  organisationId String
+  segmentId String
+  takenAt DateTime @default(now())
+  partyIds String[] @default([])
+  contactCount Int @default(0)
+  note String @default("")
+  segment MarketingSegment @relation(fields:[segmentId,organisationId],references:[id,organisationId],onDelete:Cascade)
+  @@index([organisationId,segmentId])
+  @@map("marketing_segment_snapshots")
+}
+
+model MarketingTargetAccount {
+  id String @id @default(cuid())
+  organisationId String
+  partyId String
+  listName String @default("Target accounts")
+  tier String @default("B")
+  strategicValue String @default("")
+  ownerUserId String?
+  notes String @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([organisationId,partyId,listName])
+  @@index([organisationId,listName])
+  @@map("marketing_target_accounts")
+}
+
+model MarketingBrandKit {
+  id String @id @default(cuid())
+  organisationId String
+  brand String @default("DEFAULT")
+  displayName String @default("")
+  colours Json @default("{}")
+  typography String @default("")
+  tone String @default("")
+  boilerplate String @default("")
+  legalCopy String @default("")
+  dos String @default("")
+  donts String @default("")
+  senderName String @default("")
+  updatedAt DateTime @updatedAt
+  @@unique([organisationId,brand])
+  @@map("marketing_brand_kits")
+}
+
+model MarketingForm {
+  id String @id @default(cuid())
+  organisationId String
+  name String
+  slug String @unique
+  campaignId String?
+  fields Json @default("[]")
+  consentText String @default("")
+  routing Json @default("{}")
+  thanksMessage String @default("Thank you, we will be in touch.")
+  redirectUrl String @default("")
+  status String @default("DRAFT")
+  views Int @default(0)
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  submissions MarketingFormSubmission[]
+  @@unique([id,organisationId])
+  @@index([organisationId])
+  @@map("marketing_forms")
+}
+
+model MarketingFormSubmission {
+  id String @id @default(cuid())
+  organisationId String
+  formId String
+  data Json @default("{}")
+  utm Json @default("{}")
+  email String?
+  partyId String?
+  contactId String?
+  prospectId String?
+  outcome String @default("RECEIVED")
+  createdAt DateTime @default(now())
+  form MarketingForm @relation(fields:[formId,organisationId],references:[id,organisationId],onDelete:Cascade)
+  @@index([organisationId,formId,createdAt])
+  @@map("marketing_form_submissions")
+}
+
+model MarketingLandingPage {
+  id String @id @default(cuid())
+  organisationId String
+  name String
+  slug String @unique
+  campaignId String?
+  formId String?
+  brand String @default("DEFAULT")
+  blocks Json @default("[]")
+  seoTitle String @default("")
+  seoDescription String @default("")
+  status String @default("DRAFT")
+  views Int @default(0)
+  conversions Int @default(0)
+  publishedAt DateTime?
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([organisationId])
+  @@map("marketing_landing_pages")
+}
+
+model MarketingLink {
+  id String @id @default(cuid())
+  organisationId String
+  code String @unique
+  destination String
+  campaignId String?
+  activityId String?
+  contentId String?
+  source String
+  medium String
+  campaignName String
+  utmContent String @default("")
+  utmTerm String @default("")
+  clicks Int @default(0)
+  createdBy String
+  createdAt DateTime @default(now())
+  @@index([organisationId,campaignId])
+  @@map("marketing_links")
+}
+
+model MarketingEventPlan {
+  id String @id @default(cuid())
+  organisationId String
+  name String
+  kind String @default("WEBINAR")
+  campaignId String?
+  venue String @default("")
+  startsAt DateTime
+  endsAt DateTime?
+  capacity Int @default(0)
+  agenda String @default("")
+  speakers String @default("")
+  sponsors String @default("")
+  status String @default("PLANNED")
+  budgetMinor Int @default(0)
+  actualCostMinor Int @default(0)
+  checkInCode String @default(cuid())
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  attendees MarketingEventAttendee[]
+  @@unique([id,organisationId])
+  @@index([organisationId,startsAt])
+  @@map("marketing_event_plans")
+}
+
+model MarketingEventAttendee {
+  id String @id @default(cuid())
+  organisationId String
+  eventId String
+  name String
+  email String @default("")
+  company String @default("")
+  partyId String?
+  contactId String?
+  prospectId String?
+  status String @default("REGISTERED")
+  checkedInAt DateTime?
+  interest String @default("")
+  productId String?
+  notes String @default("")
+  ownerUserId String?
+  source String @default("REGISTRATION")
+  createdAt DateTime @default(now())
+  event MarketingEventPlan @relation(fields:[eventId,organisationId],references:[id,organisationId],onDelete:Cascade)
+  @@index([organisationId,eventId])
+  @@map("marketing_event_attendees")
+}
+
+model MarketingKnowledge {
+  id String @id @default(cuid())
+  organisationId String
+  kind String
+  title String
+  productId String?
+  body String @default("") @db.Text
+  data Json @default("{}")
+  source String @default("")
+  reviewedAt DateTime?
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([organisationId,kind])
+  @@map("marketing_knowledge")
+}
+
+model MarketingAttributionModel {
+  id String @id @default(cuid())
+  organisationId String
+  name String
+  kind String
+  version Int @default(1)
+  effectiveFrom DateTime @default(now())
+  rules Json @default("{}")
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  @@index([organisationId,active])
+  @@map("marketing_attribution_models")
+}
+
+model MarketingCampaignSnapshot {
+  id String @id @default(cuid())
+  organisationId String
+  campaignId String
+  takenAt DateTime @default(now())
+  model String @default("")
+  metrics Json @default("{}")
+  note String @default("")
+  createdBy String
+  @@index([organisationId,campaignId,takenAt])
+  @@map("marketing_campaign_snapshots")
+}
+
+model MarketingPaidSpend {
+  id String @id @default(cuid())
+  organisationId String
+  campaignId String?
+  provider String
+  account String @default("")
+  externalCampaign String @default("")
+  day DateTime
+  spendMinor Int @default(0)
+  impressions Int @default(0)
+  clicks Int @default(0)
+  conversions Int @default(0)
+  importedBy String
+  createdAt DateTime @default(now())
+  @@unique([organisationId,provider,externalCampaign,day])
+  @@index([organisationId,campaignId,day])
+  @@map("marketing_paid_spend")
+}
+
+model MarketingSocialPost {
+  id String @id @default(cuid())
+  organisationId String
+  campaignId String?
+  contentId String?
+  caption String @db.Text
+  linkUrl String?
+  mediaUrls String[] @default([])
+  hashtags String[] @default([])
+  status String @default("DRAFT")
+  scheduledAt DateTime?
+  publishedAt DateTime?
+  lastError String?
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  targets MarketingSocialPostTarget[]
+  @@unique([id,organisationId])
+  @@index([organisationId,status,scheduledAt])
+  @@map("marketing_social_posts")
+}
+
+model MarketingSocialPostTarget {
+  id String @id @default(cuid())
+  organisationId String
+  postId String
+  platform String
+  accountId String?
+  publishMode String @default("api")
+  captionOverride String?
+  status String @default("PENDING")
+  externalId String?
+  permalink String?
+  lastError String?
+  publishedAt DateTime?
+  post MarketingSocialPost @relation(fields:[postId,organisationId],references:[id,organisationId],onDelete:Cascade)
+  @@unique([postId,platform])
+  @@index([organisationId,status])
+  @@map("marketing_social_post_targets")
+}

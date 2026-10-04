@@ -1,5 +1,21 @@
 # Atlas current state
 
+## IN PROGRESS — Marketing rebuild, Automations, company Email/Social (IT), CSAT, contracts — 4/5 October 2026
+
+Michael's standing instruction: execute `docs/plans/MARKETING_AUTOMATION_EMAIL_PLAN.md` end to end, no questions, then `npm run deploy:vps`. If a session resumes, **continue that plan from the first unchecked step below**; do not re-plan.
+
+Done so far
+- [x] Plan written (`docs/plans/MARKETING_AUTOMATION_EMAIL_PLAN.md`).
+- [x] Schema + migration `20261005090000_marketing_automation_email_platform` (additive): AutomationEvent/Automation/AutomationRun, EmailAccount/EmailTemplate/EmailMessage, SocialAccount, ContractDocument, CsatSurvey/CsatResponse, Marketing* additions (settings, budget lines, activities, segments, target accounts, brand kit, forms, landing pages, links/UTM, event plans/attendees, knowledge, attribution models, snapshots, paid spend, social posts) and new columns on MarketingCampaign/Content/Lead/Touch. `nodemailer` added. NOT yet applied to the VPS database (deploy script runs `prisma migrate deploy`).
+
+Remaining, in order
+- [ ] A: `src/core/security/secrets.ts`; durable `emit()` in `src/core/events/bus.ts`; scheduler tick (`src/instrumentation.ts`, `/api/cron/tick`).
+- [ ] B: `sendEmail()` service, IT settings pages (email accounts, social accounts), template maker, capabilities, settings menu.
+- [ ] E: email dialog on Sales/CRM, contracts + public `/sign/[token]`, quote acceptance link.
+- [ ] D: Automations module (engine, catalogue, builder UI, smart suggestions, NL builder, dry-run/backfill), CSAT module (own section) + `/csat/[token]`, calendar invites (.ics).
+- [ ] C: Marketing UI/logic (Today, Campaigns, Audience, Content, Growth, Insights), social scheduler port from `~/Desktop/CODEX/lib/social-scheduler`, attribution/funnel/budget logic + tests.
+- [ ] F: ERP chain check script and fixes. G: read-policy/action registry regen (`node scripts/generate-data-api.mjs`), role capability sync, enable modules for Michael's org, tsc/eslint/vitest/build, commit, `npm run deploy:vps`, live checks.
+
 ## Live target is the VPS — 4 October 2026
 
 Michael confirmed the live app is https://atlassystem.online (VPS), not the Mac app, and wants every finished change deployed there with `npm run deploy:vps`. Ran it for the input-padding and restored sales composer changes: no pending migrations, service healthy, /login 200. The earlier Mac app install and old-server (217.154.51.15) migrations were not the live target. Feature-level check of New sales order on the VPS not done.

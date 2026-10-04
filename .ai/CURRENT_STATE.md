@@ -1,5 +1,9 @@
 # Atlas current state
 
+## Global text-input padding fix — 4 October 2026
+
+Bare inputs (e.g. CRM "New industry") rendered as thin bars because Tailwind preflight zeroes padding. Added a `@layer base` rule in `src/app/globals.css` giving text inputs/textareas padding, font size and placeholder colour; widened the field in `src/app/(app)/crm/prospect/page.tsx`. Checks: `npx tsc --noEmit` and `npm run build` passed. Deploy BLOCKED: release schema gate reports central DB missing committed migrations (organisations.isTest, inventory_movements.shipmentId/receiptId, stock_reservations.fulfilmentLineId, logistics_shipment_sources.salesOrderId). Next: back up and run `prisma migrate deploy` per docs/DEPLOY.md, then redeploy.
+
 ## CSV templates & bulk import for Sales and Customers — live — 4 October 2026, 19:10 BST
 
 Michael requested CSV download templates and upload capability for Sales orders, quotes, and customers. Built comprehensive import/export system for getting data into Atlas.
@@ -2427,3 +2431,8 @@ Moved company branding (logo, colours, letterhead) into the onboarding flow so c
 - Gaps: no FK between shipments and sales orders (only via fulfilment sources); stock reservations/inventory movements are not FK-linked to orders, shipments or receipts (soft references only, so integrity is code-enforced).
 - Evidence the chain has only partly run on real data: 2 orders -> 2 fulfilments -> 2 finance documents exist, but sales_order_lines=0, logistics_shipments=0, stock_reservations=0, stock_positions=0, inventory_movements=1, price_list_entries=0. The ship -> stock issue -> invoice hand-offs have never been exercised with data. NOT yet tested end to end; "everything connects" is unproven.
 - Next: scripted end-to-end scenario in a throwaway Test company (customer, price list + entries, product, stock receipt, quote -> order -> reserve -> fulfil -> ship -> stock issue -> invoice), fix each break, add to tests.
+
+## 2026-10-04 (ERP links enforced) — supersedes the "Gaps" bullet in the connectivity audit above
+- Migration 20261004210000_link_stock_and_shipments (applied on VPS, deployed 4dc6629): logistics_shipment_sources.salesOrderId (NOT NULL, composite FKs to sales_orders and to the owning fulfilment, and (fulfilmentLineId, requirementId) must belong together); view logistics_shipment_orders (shipment <-> sales order; many-to-many on purpose because a shipment can combine orders); logistics_fulfilment_lines FKs to sales_order_lines and products; stock_reservations.fulfilmentLineId (auto-filled by trigger from sourceType='FULFILMENT_LINE'/sourceId) and inventory_movements.shipmentId / receiptId, all composite FKs including organisationId so cross-company references are impossible; NO ACTION on delete so history cannot be orphaned.
+- Code: StockCommand gained shipmentId/receiptId (src/core/logistics/types.ts); stock provider writes them on its 5 movement creates; logistics passes shipmentId on dispatch (shipping.ts) and receiptId on receive (inbound.ts); all 3 ShipmentSource creators set salesOrderId. tsc clean.
+- Verified on the live DB: bad shipment/receipt/fulfilment-line references are rejected by the new constraints (rolled-back inserts); an unlinked movement is still accepted. NOT verified: the full ship/receive flow with real data (tables are empty). Still no FK on stock_reservations.sourceId for other source types, and receipts' purchase source is text (no purchasing tables). Next: end-to-end scenario in a Test company.

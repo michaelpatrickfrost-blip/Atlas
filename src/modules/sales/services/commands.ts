@@ -27,6 +27,12 @@ export async function changeQuoteStatus(quoteId:string,form:FormData){
  const status=String(form.get('status'));if(!['DRAFT','DECLINED'].includes(status))throw new Error('Choose a valid quotation action.');
  await db.$transaction(async tx=>{const quote=await tx.quote.findFirstOrThrow({where:{id:quoteId,organisationId:session.organisationId},include:{salesOrder:true}});if(quote.salesOrder||quote.status==='ACCEPTED')throw new Error('An accepted quotation is locked. Duplicate it to prepare a new quotation.');const changed=await tx.quote.updateMany({where:{id:quote.id,organisationId:session.organisationId,updatedAt:quote.updatedAt},data:{status:status as 'DRAFT'|'DECLINED'}});if(changed.count!==1)throw new Error('This quotation changed. Reload it.');await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:'quote.status_changed',entityType:'Quote',entityId:quoteId,before:{status:quote.status},after:{status}}});});revalidatePath(`/sales/quotes/${quoteId}`);revalidatePath('/sales/quotes');
 }
+export async function deleteQuote(quoteId:string){
+ const session=await requireSession();
+ assertCapability(session,'sales.quote.create');
+ await assertModuleEnabled(session,'sales');
+ await db.$transaction(async tx=>{const quote=await tx.quote.findFirstOrThrow({where:{id:quoteId,organisationId:session.organisationId},include:{salesOrder:true}});if(quote.status==='ACCEPTED'||quote.salesOrder)throw new Error('An accepted or converted quotation cannot be deleted.');await tx.quoteLine.deleteMany({where:{quoteId}});await tx.quote.delete({where:{id:quoteId}});await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:'quote.deleted',entityType:'Quote',entityId:quoteId,before:{reference:quote.reference,status:quote.status},after:{}}});});revalidatePath('/sales/quotes');
+}
 export async function duplicateDocument(mode:'quote'|'order',id:string){
  const session=await requireSession();
  assertCapability(session,mode==='quote'?'sales.quote.create':'sales.order.create');

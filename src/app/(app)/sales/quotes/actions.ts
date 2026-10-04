@@ -8,6 +8,7 @@ import { db } from "@/core/db/client";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { writeAudit } from "@/core/audit/log";
+import { deleteQuote } from "@/modules/sales/services/commands";
 export async function createQuote(form:FormData) {
  const session=await requireSession();
  assertCapability(session,SALES_CAPABILITIES.quoteCreate);
@@ -37,4 +38,9 @@ export async function createQuote(form:FormData) {
  await writeAudit({organisationId:session.organisationId,actorUserId:session.userId,action:"quote.created",entityType:"Quote",entityId:quote.id});
  revalidatePath("/sales/quotes");
  redirect(`/sales/quotes/${quote.id}`);
+}
+
+export async function deleteQuoteForm(quoteId: string) {
+ await deleteQuote(quoteId);
+ redirect('/sales/quotes');
 }

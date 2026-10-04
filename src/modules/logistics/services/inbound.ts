@@ -27,7 +27,7 @@ export async function receiveLine(session: Session, lineId: string, input: { qua
   if (line.productId) {
     const provider = await stock();
     const status = input.condition === "DAMAGED" || input.condition === "QUARANTINE" ? "QUARANTINE" : "AVAILABLE";
-    await provider.receiveStock(session, { requestKey: input.requestKey, productId: line.productId, warehouseId: line.receipt.warehouseId, quantity: input.quantity, lotCode: input.lotCode, serials: input.serials, status, reason: `Received · ${line.receipt.reference}`, reference: line.receipt.sourceReference });
+    await provider.receiveStock(session, { requestKey: input.requestKey, productId: line.productId, warehouseId: line.receipt.warehouseId, quantity: input.quantity, lotCode: input.lotCode, serials: input.serials, status, reason: `Received · ${line.receipt.reference}`, reference: line.receipt.sourceReference, receiptId: line.receipt.id });
   }
   await db.receiptLine.update({ where: { id: line.id }, data: { receivedQuantity: { increment: input.quantity }, lotCode: input.lotCode, serials: input.serials ?? [], condition: input.condition, discrepancy, status: discrepancy ? "DISCREPANCY" : "RECEIVED" } });
   await db.expectedReceipt.update({ where: { id: line.receiptId }, data: { status: discrepancy ? "DISCREPANCY" : "RECEIVING" } });

@@ -210,7 +210,7 @@ export const stockProvider: StockProvider = {
       for (const serial of command.serials ?? []) {
         await tx.stockSerial.updateMany({ where: { organisationId: actor.organisationId, productId: command.productId, serial, status: "ON_HAND" }, data: { status: "SHIPPED" } });
       }
-      const movement = await tx.inventoryMovement.create({ data: { organisationId: actor.organisationId, warehouseId: command.warehouseId, productId: command.productId, delta: -command.quantity, reason: command.reason, reference: command.reference, requestKey: command.requestKey, actorUserId: actor.userId } });
+      const movement = await tx.inventoryMovement.create({ data: { organisationId: actor.organisationId, warehouseId: command.warehouseId, productId: command.productId, delta: -command.quantity, reason: command.reason, shipmentId: command.shipmentId ?? null, receiptId: command.receiptId ?? null, reference: command.reference, requestKey: command.requestKey, actorUserId: actor.userId } });
       return { requestKey: command.requestKey, movementIds: [movement.id], replayed: false };
     });
   },
@@ -229,14 +229,14 @@ export const stockProvider: StockProvider = {
       await changePosition(tx, actor, { warehouseId: toWarehouse, locationId: to.id, productId: command.productId, lotId: lot, status: toStatus, delta: command.quantity });
       const ids: string[] = [];
       if (toWarehouse === command.warehouseId) {
-        const movement = await tx.inventoryMovement.create({ data: { organisationId: actor.organisationId, warehouseId: command.warehouseId, productId: command.productId, delta: 0, reason: command.reason, reference: command.reference, requestKey: command.requestKey, actorUserId: actor.userId } });
+        const movement = await tx.inventoryMovement.create({ data: { organisationId: actor.organisationId, warehouseId: command.warehouseId, productId: command.productId, delta: 0, reason: command.reason, shipmentId: command.shipmentId ?? null, receiptId: command.receiptId ?? null, reference: command.reference, requestKey: command.requestKey, actorUserId: actor.userId } });
         ids.push(movement.id);
       }
       if (toWarehouse !== command.warehouseId) {
         await changeBalance(tx, actor, command.warehouseId, command.productId, -command.quantity);
         await changeBalance(tx, actor, toWarehouse, command.productId, command.quantity);
-        const out = await tx.inventoryMovement.create({ data: { organisationId: actor.organisationId, warehouseId: command.warehouseId, productId: command.productId, delta: -command.quantity, reason: command.reason, reference: command.reference, requestKey: `${command.requestKey}:out`, actorUserId: actor.userId } });
-        const incoming = await tx.inventoryMovement.create({ data: { organisationId: actor.organisationId, warehouseId: toWarehouse, productId: command.productId, delta: command.quantity, reason: command.reason, reference: command.reference, requestKey: `${command.requestKey}:in`, actorUserId: actor.userId } });
+        const out = await tx.inventoryMovement.create({ data: { organisationId: actor.organisationId, warehouseId: command.warehouseId, productId: command.productId, delta: -command.quantity, reason: command.reason, shipmentId: command.shipmentId ?? null, receiptId: command.receiptId ?? null, reference: command.reference, requestKey: `${command.requestKey}:out`, actorUserId: actor.userId } });
+        const incoming = await tx.inventoryMovement.create({ data: { organisationId: actor.organisationId, warehouseId: toWarehouse, productId: command.productId, delta: command.quantity, reason: command.reason, shipmentId: command.shipmentId ?? null, receiptId: command.receiptId ?? null, reference: command.reference, requestKey: `${command.requestKey}:in`, actorUserId: actor.userId } });
         ids.push(out.id, incoming.id);
       }
       return { requestKey: command.requestKey, movementIds: ids, replayed: false };
@@ -281,6 +281,6 @@ async function receive(tx: Tx, actor: LogisticsActor, command: StockCommand, sta
       update: { status: "ON_HAND", warehouseId: command.warehouseId, locationId: place.id },
     });
   }
-  const movement = await tx.inventoryMovement.create({ data: { organisationId: actor.organisationId, warehouseId: command.warehouseId, productId: command.productId, delta: command.quantity, reason: command.reason, reference: command.reference, requestKey: command.requestKey, actorUserId: actor.userId } });
+  const movement = await tx.inventoryMovement.create({ data: { organisationId: actor.organisationId, warehouseId: command.warehouseId, productId: command.productId, delta: command.quantity, reason: command.reason, shipmentId: command.shipmentId ?? null, receiptId: command.receiptId ?? null, reference: command.reference, requestKey: command.requestKey, actorUserId: actor.userId } });
   return { requestKey: command.requestKey, movementIds: [movement.id], replayed: false };
 }

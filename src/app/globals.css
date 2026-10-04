@@ -144,7 +144,7 @@ button, summary { transition: background-color 160ms ease, border-color 160ms ea
 @media (max-width: 639px) {
   h1 { overflow-wrap: anywhere; }
   table { min-width: 580px; }
-  main { scrollbar-gutter: stable; }
+  main { scrollbar-gutter: auto; }
 }
 
 @keyframes atlas-drawer-in { from { transform: translateX(-24px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -227,3 +227,7 @@ summary::after {
 details[open] > summary::after { transform: rotate(180deg); }
 .atlas-dialog::backdrop { background: rgba(8, 12, 24, 0.55); backdrop-filter: blur(8px); }
 .atlas-dialog[open] { animation: atlas-page-in 180ms ease-out; }
+
+/* Mobile: one scroll container (main); stop the page behind it rubber-banding or scrolling sideways. */
+html, body { overflow-x: hidden; overscroll-behavior: none; }
+main { -webkit-overflow-scrolling: touch; padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }

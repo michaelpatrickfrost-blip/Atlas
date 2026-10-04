@@ -22,7 +22,7 @@ export async function createShipment(session: Session, requirementId: string, li
       const cap = line && line.packedQuantity > 0 ? Math.min(line.pickedQuantity, line.packedQuantity) : line?.pickedQuantity ?? 0;
       const open = cap - (line?.shippedQuantity ?? 0);
       if (!line || row.quantity <= 0 || row.quantity > open) throw new Error("A shipment line is larger than the picked quantity still to ship.");
-      await tx.shipmentSource.create({ data: { organisationId: session.organisationId, shipmentId: shipment.id, requirementId, fulfilmentLineId: line.id, quantity: row.quantity } });
+      await tx.shipmentSource.create({ data: { organisationId: session.organisationId, shipmentId: shipment.id, requirementId, salesOrderId: requirement.salesOrderId, fulfilmentLineId: line.id, quantity: row.quantity } });
     }
     return shipment.id;
   });
@@ -81,7 +81,7 @@ export async function dispatchShipment(session: Session, shipmentId: string, req
   const provider = await stock();
   for (const source of shipment.sources) {
     if (!source.line.productId || !source.requirement.warehouseId) continue;
-    await provider.shipStock(session, { requestKey: `${requestKey}:${source.id}`, productId: source.line.productId, warehouseId: source.requirement.warehouseId, quantity: source.quantity, lotCode: null, serials: [], reason: `Shipped · ${shipment.reference}`, reference: shipment.reference, sourceId: source.fulfilmentLineId });
+    await provider.shipStock(session, { requestKey: `${requestKey}:${source.id}`, productId: source.line.productId, warehouseId: source.requirement.warehouseId, quantity: source.quantity, lotCode: null, serials: [], reason: `Shipped · ${shipment.reference}`, reference: shipment.reference, sourceId: source.fulfilmentLineId, shipmentId: shipment.id });
   }
   await db.$transaction(async (tx) => {
     await tx.shipment.update({ where: { id: shipment.id }, data: { status: "DISPATCHED", dispatchedAt: new Date(), trackingNumber: shipment.trackingNumber ?? `${shipment.carrierCode}-${shipment.reference}` } });

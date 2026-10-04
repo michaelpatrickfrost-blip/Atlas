@@ -215,7 +215,7 @@ export async function recordDirectShipment(session: Session, requirementId: stri
     for (const line of requirement.lines) {
       const quantity = Math.max(0, line.orderedQuantity - line.cancelledQuantity - line.shippedQuantity);
       if (quantity <= 0) continue;
-      await tx.shipmentSource.create({ data: { organisationId: session.organisationId, shipmentId: shipment.id, requirementId, fulfilmentLineId: line.id, quantity } });
+      await tx.shipmentSource.create({ data: { organisationId: session.organisationId, shipmentId: shipment.id, requirementId, salesOrderId: requirement.salesOrderId, fulfilmentLineId: line.id, quantity } });
       await tx.fulfilmentLine.update({ where: { id: line.id }, data: { shippedQuantity: line.shippedQuantity + quantity } });
     }
     await tx.fulfilmentRequirement.update({ where: { id: requirement.id }, data: { status: "SHIPPED" } });

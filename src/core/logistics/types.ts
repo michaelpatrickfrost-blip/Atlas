@@ -116,6 +116,8 @@ export type StockCommand = {
   reference: string;
   sourceType?: string;
   sourceId?: string;
+  shipmentId?: string;
+  receiptId?: string;
 };
 
 export type StockCommandResult = { requestKey: string; movementIds: string[]; replayed: boolean };

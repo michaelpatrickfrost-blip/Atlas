@@ -132,7 +132,7 @@ export async function releaseBalancedStock(actor: LogisticsActor, input: { produ
         },
       });
       for (const row of rows) {
-        await tx.shipmentSource.create({ data: { organisationId: actor.organisationId, shipmentId: shipment.id, requirementId, fulfilmentLineId: row.id, quantity: row.deliver } });
+        await tx.shipmentSource.create({ data: { organisationId: actor.organisationId, shipmentId: shipment.id, requirementId, salesOrderId: requirement.salesOrderId, fulfilmentLineId: row.id, quantity: row.deliver } });
       }
       return shipment.id;
     });

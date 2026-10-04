@@ -2440,6 +2440,8 @@ model InventoryBalance {
 model InventoryMovement {
  id String @id @default(cuid())
  organisationId String
+ shipmentId String?
+ receiptId String?
  warehouseId String
  productId String
  delta Int
@@ -5488,6 +5490,7 @@ model StockPosition {
 model StockReservation {
  id String @id @default(cuid())
  organisationId String
+ fulfilmentLineId String?
  productId String
  warehouseId String
  locationId String?
@@ -5791,6 +5794,7 @@ model Shipment {
 model ShipmentSource {
  id String @id @default(cuid())
  organisationId String
+ salesOrderId String
  shipmentId String
  requirementId String
  fulfilmentLineId String

@@ -2398,3 +2398,7 @@ Moved company branding (logo, colours, letterhead) into the onboarding flow so c
 - Michael's org already has 19 modules enabled (incl. planning, plan, manufacturing, sales, finance, stock; no payroll row). deploy/enable-*.mjs hardcode /etc/atlas-test/migration.env so they cannot run on the VPS unchanged.
 - Verified: atlas service active, /login 200. NOT verified: signing in / module pages with real data (no credentials used). Still open: HTTPS + firewall (ufw inactive, plain HTTP :3000), Mac app still points at old server.
 - Incident: a broad env-file search on the old server printed unrelated Blocwrite config (SMTP password, other secrets) into the session transcript; Michael should rotate the Blocwrite SMTP password.
+
+## 2026-10-04 (later still) — VPS modules failed with UNAUTHENTICATED
+- Cause: src/core/auth/session.ts marks the session cookie `secure` in production, so over plain HTTP (VPS :3000) the browser dropped it and every page threw UNAUTHENTICATED.
+- Stopgap: ATLAS_PRIVATE_TUNNEL=1 added to /opt/atlas/.env.local (only affects that cookie flag) and atlas restarted; /login 200. Sign-in/modules NOT verified by me (no credentials used). Proper fix: HTTPS with a domain, then remove the flag. Passwords currently cross the network unencrypted.

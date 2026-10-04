@@ -17,6 +17,25 @@ export const CORE_CAPABILITIES = {
   chatRead: "core.chat.read",
   chatWrite: "core.chat.write",
   rolesManage: "core.roles.manage",
+  /** Company IT: shared mailboxes, social accounts and connections. */
+  itManage: "core.it.manage",
+  /** Send email from Sales, CRM and records using an available mailbox. */
+  emailSend: "core.email.send",
+  /** Connect and use a personal mailbox. */
+  emailPersonal: "core.email.personal",
+  contractManage: "core.contract.manage",
+} as const;
+
+export const AUTOMATION_CAPABILITIES = {
+  read: "automations.rule.read",
+  manage: "automations.rule.manage",
+  run: "automations.rule.run",
+  templates: "automations.template.manage",
+} as const;
+
+export const CSAT_CAPABILITIES = {
+  read: "csat.result.read",
+  manage: "csat.survey.manage",
 } as const;
 
 /** Team audit is narrower than company-wide `core.audit.read`. Echo is the
@@ -198,6 +217,7 @@ export const MARKETING_CAPABILITIES = {
  consentView:'marketing.consent.view',consentManage:'marketing.consent.manage',contentRead:'marketing.content.read',contentCreate:'marketing.content.create',contentApprove:'marketing.content.approve',
  journeyRead:'marketing.journey.read',journeyManage:'marketing.journey.manage',journeyPublish:'marketing.journey.publish',emailRead:'marketing.email.read',emailCreate:'marketing.email.create',emailApprove:'marketing.email.approve',emailSend:'marketing.email.send',
  leadRead:'marketing.lead.read',leadManage:'marketing.lead.manage',eventIngest:'marketing.event.ingest',experimentManage:'marketing.experiment.manage',reportRead:'marketing.report.read',budgetManage:'marketing.budget.manage',programRead:'marketing.program.read',programManage:'marketing.program.manage',admin:'marketing.admin.manage',
+ budgetRead:'marketing.budget.read',budgetApprove:'marketing.budget.approve',audienceManage:'marketing.audience.manage',audienceExport:'marketing.audience.export',contentPublish:'marketing.content.publish',analyticsRead:'marketing.analytics.read',attributionRead:'marketing.attribution.read',socialManage:'marketing.social.manage',formManage:'marketing.form.manage',eventManage:'marketing.event.manage',
 } as const;
 
 // §151-152 of docs/modules/MANUFACTURING_SOURCE_REQUIREMENTS.md.
@@ -318,6 +338,8 @@ export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: st
       ...Object.values(SAFETY_CAPABILITIES),
       ...Object.values(PLAN_CAPABILITIES),
       ...Object.values(QUALITY_CAPABILITIES),
+      ...Object.values(AUTOMATION_CAPABILITIES),
+      ...Object.values(CSAT_CAPABILITIES),
     ],
   },
   {
@@ -394,6 +416,7 @@ export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: st
     key: "sales_user",
     name: "Sales User",
     capabilities: [
+      CORE_CAPABILITIES.emailSend, CORE_CAPABILITIES.emailPersonal,
       "analytics.dashboard.read", "analytics.dashboard.manage",
       "core.chat.read", "core.chat.write",
       ECHO_CAPABILITIES.read, ECHO_CAPABILITIES.write,
@@ -431,6 +454,7 @@ export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: st
     key: "sales_manager",
     name: "Sales Manager",
     capabilities: [
+      CORE_CAPABILITIES.emailSend, CORE_CAPABILITIES.emailPersonal, CORE_CAPABILITIES.contractManage,
       "analytics.dashboard.read", "analytics.dashboard.manage",
       "core.chat.read", "core.chat.write",
       AUDIT_CAPABILITIES.teamRead, ECHO_CAPABILITIES.read, ECHO_CAPABILITIES.write,

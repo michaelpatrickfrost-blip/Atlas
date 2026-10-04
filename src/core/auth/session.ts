@@ -63,17 +63,23 @@ export async function getSession(): Promise<Session | null> {
   }
 
   if(typeof token.userId!=="string" || typeof token.organisationId!=="string") return null;
-  const membership = await db.membership.findUnique({
-    where: { organisationId_userId: { organisationId: token.organisationId, userId: token.userId } },
-    include: {
-      user: {include:{platformAdmin:true}},
-      organisation: true,
-      roles: { include: { role: true } },
-    },
-  });
+  const membership = await loadMembership(token.organisationId, token.userId);
   if (!membership || !membership.active || membership.organisation.status !== "ACTIVE") return null;
 
   if((token.authVersion??0)!==(membership.user.authVersion??0)||(token.sessionVersion??0)!==(membership.sessionVersion??0))return null;
+  return sessionFromMembership(membership);
+}
+
+async function loadMembership(organisationId: string, userId: string) {
+  return db.membership.findUnique({
+    where: { organisationId_userId: { organisationId, userId } },
+    include: { user: {include:{platformAdmin:true}}, organisation: true, roles: { include: { role: true } } },
+  });
+}
+
+type LoadedMembership = NonNullable<Awaited<ReturnType<typeof loadMembership>>>;
+
+function sessionFromMembership(membership: LoadedMembership): Session {
   const capabilities = new Set<string>(["core.profile.self"]);
   for (const roleOnMembership of membership.roles) {
     for (const capability of roleOnMembership.role.capabilities) {
@@ -94,6 +100,14 @@ export async function getSession(): Promise<Session | null> {
     membershipId: membership.id,
     capabilities:applyCompanyAccessRestrictions(capabilities,membership.organisation.restrictedAccessAreas),
   };
+}
+
+/** A person's session without a browser request, for work done on their behalf (Automations, scheduled jobs).
+ *  Same capabilities as when they sign in; null if they have left or the company is suspended. */
+export async function sessionForUser(organisationId: string, userId: string): Promise<Session | null> {
+  const membership = await loadMembership(organisationId, userId);
+  if (!membership || !membership.active || membership.organisation.status !== "ACTIVE") return null;
+  return sessionFromMembership(membership);
 }
 
 export async function requireSession(): Promise<Session> {

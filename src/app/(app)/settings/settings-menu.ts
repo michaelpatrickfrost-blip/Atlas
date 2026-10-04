@@ -10,7 +10,14 @@ export function settingsLinks(session: Session): SettingsLink[] {
   const roles = can(session, "core.roles.manage");
   const imports = can(session, "customers.create") || can(session, "core.products.manage") || can(session, "core.pricing.manage");
   const audit = can(session, "core.audit.read");
+  const it = can(session, "core.it.manage");
+  const mailbox = can(session, "core.email.personal");
   const links: SettingsLink[] = [];
+  if (it || mailbox) {
+    links.push({ group: "IT", label: "Email accounts", href: "/settings/it/email", hint: it ? "Company and personal mailboxes" : "Send from your own address" });
+    links.push({ group: "IT", label: "Email templates", href: "/settings/it/templates", hint: "Branded template maker" });
+  }
+  if (it) links.push({ group: "IT", label: "Social accounts", href: "/settings/it/social", hint: "Accounts Marketing publishes to" });
   if (company) {
     links.push(
       { group: "Company", label: "Workspace", href: "/settings?tab=workspace", hint: "Identity, currency and apps" },

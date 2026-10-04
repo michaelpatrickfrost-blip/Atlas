@@ -823,3 +823,9 @@ ALTER TABLE "marketing_event_attendees" ADD CONSTRAINT "marketing_event_attendee
 -- AddForeignKey
 ALTER TABLE "marketing_social_post_targets" ADD CONSTRAINT "marketing_social_post_targets_postId_organisationId_fkey" FOREIGN KEY ("postId", "organisationId") REFERENCES "marketing_social_posts"("id", "organisationId") ON DELETE CASCADE ON UPDATE CASCADE;
 
+
+-- Grant new email capabilities to existing sales roles (additive).
+UPDATE roles SET capabilities = array_append(capabilities, 'core.email.send')
+  WHERE 'sales.order.read' = ANY(capabilities) AND NOT ('core.email.send' = ANY(capabilities));
+UPDATE roles SET capabilities = array_append(capabilities, 'core.email.personal')
+  WHERE 'sales.order.read' = ANY(capabilities) AND NOT ('core.email.personal' = ANY(capabilities));

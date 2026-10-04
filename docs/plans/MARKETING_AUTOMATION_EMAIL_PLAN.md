@@ -135,6 +135,20 @@ campaign ROI, attribution with model shown, funnel, content-to-pipeline, budget,
   checks of /marketing, /automations, /settings/it/*, /sign/<token>, tick endpoint. Update `.ai/CURRENT_STATE.md`,
   `DECISIONS.md`, module docs.
 
+### H. Additional requirements added by Michael (must all be done)
+1. **CRM projects (Sales Projects) editable**: add/remove organisations (parties) and quotes (and orders) on a CRM project,
+   every one attached to the project's assigned CRM contact. CRM projects are NOT internal Projects (`/projects`); keep
+   them in the CRM module (`src/modules/crm/services/sales-projects-*`, `crm/projects/[projectId]`).
+2. **Sales order / quotation form on two columns** (current form is one long list; see the "New sales order" screenshot):
+   header fields in a responsive 2-column grid, tags/notes on the side or below, labels above inputs, nicer cards.
+   File: `src/modules/sales/components/document-composer.tsx`.
+3. **Finance app options restored**: every Finance area that was built must be reachable again from the Finance
+   navigation (audit `src/modules/finance/manifest.ts` against `src/app/(app)/finance/**` pages and re-add missing links).
+4. **Price list entries**: when a product is selected the standard/original price is pulled in automatically; the user
+   must not retype it (editable override only). Files under `src/app/(app)/pricing` and `src/modules/pricing`.
+5. **Exports**: every export offers Excel (.xlsx) or CSV and lets the user choose which columns to include
+   (shared export dialog + `/api/**/export` handlers; exceljs already installed).
+
 ## 2. Order of execution
 A → B → E(send) → D → C (domain + UI in sub-steps: C1 campaigns/budget/today, C2 audience/ABM/consent, C3 content/
 product, C4 growth: forms/pages/UTM/social/events/experiments, C5 attribution/insights) → F → G.

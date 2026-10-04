@@ -15,11 +15,50 @@ export function on(eventName: string, handler: Handler): void {
   handlers.set(eventName, list);
 }
 
+/** Receives a stored event straight after it is saved. Registered once at server start (src/instrumentation.ts)
+ *  so Core never imports a module. If nothing is registered the scheduler tick picks the event up. */
+export type EventSink = (eventId: string) => Promise<void>;
+const SINK_KEY = "__atlasEventSink";
+export function registerEventSink(sink: EventSink) {
+  (globalThis as Record<string, unknown>)[SINK_KEY] = sink;
+}
+
+async function organisationOf(payload: Record<string, unknown>): Promise<string | null> {
+  if (typeof payload.organisationId === "string") return payload.organisationId;
+  const { db } = await import("@/core/db/client");
+  if (typeof payload.partyId === "string") return (await db.party.findUnique({ where: { id: payload.partyId }, select: { organisationId: true } }))?.organisationId ?? null;
+  if (typeof payload.orderId === "string") return (await db.salesOrder.findUnique({ where: { id: payload.orderId }, select: { organisationId: true } }))?.organisationId ?? null;
+  return null;
+}
+
+/** Every event is kept (durable log for Automations, audit and replay). A failing listener never undoes the business action. */
+async function persist(eventName: string, payload: unknown): Promise<void> {
+  if (process.env.ATLAS_RUNTIME === "desktop" || !payload || typeof payload !== "object") return;
+  try {
+    const body = payload as Record<string, unknown>;
+    const organisationId = await organisationOf(body);
+    if (!organisationId) return;
+    const { db } = await import("@/core/db/client");
+    const entityKey = Object.keys(body).find((key) => key.endsWith("Id") && key !== "organisationId" && typeof body[key] === "string");
+    const row = await db.automationEvent.create({
+      data: {
+        organisationId, name: eventName, payload: JSON.parse(JSON.stringify({ ...body, organisationId })),
+        entityType: entityKey?.replace(/Id$/, "") ?? null, entityId: entityKey ? String(body[entityKey]) : null,
+      },
+    });
+    const sink = (globalThis as Record<string, unknown>)[SINK_KEY] as EventSink | undefined;
+    if (sink) void sink(row.id).catch((error) => console.error("[events] automation dispatch failed", error));
+  } catch (error) {
+    console.error("[events] could not store event", eventName, error);
+  }
+}
+
 export async function emit(eventName: string, payload: unknown): Promise<void> {
   const list = handlers.get(eventName) ?? [];
   for (const handler of list) {
     await handler(payload);
   }
+  await persist(eventName, payload);
 }
 
 /** Known domain events. Modules import from here rather than inventing string literals
@@ -129,4 +168,25 @@ export const DOMAIN_EVENTS = {
   planApproved: "plan.approved",
   planScenarioPromoted: "plan.scenario.promoted",
   planDecisionRecorded: "plan.decision.recorded",
+  financeInvoiceCreated: "finance.invoice.created",
+  financeInvoicePosted: "finance.invoice.posted",
+  manufacturingOrderCompleted: "manufacturing.order.completed",
+  manufacturingOrderReleased: "manufacturing.order.released",
+  contractSent: "contract.sent",
+  contractSigned: "contract.signed",
+  contractDeclined: "contract.declined",
+  csatResponded: "csat.responded",
+  emailSent: "email.sent",
+  emailFailed: "email.failed",
+  marketingCampaignCreated: "marketing.campaign.created",
+  marketingCampaignLaunched: "marketing.campaign.launched",
+  marketingCampaignCompleted: "marketing.campaign.completed",
+  marketingTouchpointCreated: "marketing.touchpoint.created",
+  marketingFormSubmitted: "marketing.form.submitted",
+  marketingMqlCreated: "marketing.mql.created",
+  marketingMqlRecycled: "marketing.mql.recycled",
+  marketingEventRegistered: "marketing.event.registered",
+  marketingEventAttended: "marketing.event.attended",
+  marketingConsentChanged: "marketing.consent.changed",
+  marketingExperimentCompleted: "marketing.experiment.completed",
 } as const;

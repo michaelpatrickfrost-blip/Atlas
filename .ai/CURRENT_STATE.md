@@ -1,6 +1,62 @@
 # Atlas current state
 
-## Platform foundation live — Automations, Email/Social IT, CSAT, contracts — 5 October 2026 (Marketing UI rebuild still pending, see below)
+## Platform foundation live — Automations, Email/Social IT, CSAT, contracts — 5 October 2026
+
+Deployed to https://atlassystem.online (`npm run deploy:vps`, commit be9fddc). Migration
+`20261005090000_marketing_automation_email_platform` applied on the VPS, service healthy,
+`/login` 200, `/sign/<token>` and `/csat/<token>` 200 (public, pre-session). `/automations`,
+`/csat`, `/settings/it` return 307 to `/login` when signed out, as expected.
+
+**Built and live:** durable event log (`AutomationEvent`; `emit()` in `core/events/bus.ts` now
+persists every event and hands it to a registered sink) feeding a real Automations engine
+(`src/modules/automations/engine/{catalogue,context,conditions,steps,run}.ts`) — trigger catalogue
+across Sales/CRM/Logistics/Finance/Production/Service/Marketing, a plain-English "When → If → Then"
+visual builder (`src/app/(app)/automations/builder.tsx`), ready-made templates, dry-run "test on a
+past event", run history with per-step results, idempotent/resumable runs (wait steps), and actions
+including send email, send CSAT survey, send calendar invite (.ics), create draft invoice (wired to
+Finance's real invoicing path), create CRM task/service case, tag, add to marketing audience, notify,
+webhook. CSAT is its own module (`src/modules/csat`, `/csat` results + `/csat/surveys`, public
+`/csat/[token]`). Company IT settings (`/settings/it`) hold email accounts (company + personal,
+SMTP+IMAP, encrypted passwords, verify/test-send/default/daily-limit) and social accounts (Bluesky,
+Mastodon, Telegram, Discord, Facebook via free APIs; X/LinkedIn/Instagram/TikTok as copy-and-open),
+ported and rebranded from the HelloPort/Blocwrite scheduler (`~/Desktop/CODEX/lib/social-scheduler`,
+`smtp-nodemailer`) into `core/email/*` and `core/social/publish.ts` — no vendor code left as-is, all
+rewritten against Atlas's schema/session/capability model. A branded template maker
+(`/settings/it/templates`) renders every email through the company's brand kit (logo/colour/footer)
+with live preview, merge fields, and starter templates (quote, dispatch, invoice, contract, CSAT,
+meeting invite, campaign). Contracts: `ContractDocument` + public `/sign/[token]` (type-name-to-sign,
+audit, `contract.signed`/`contract.declined` events) — `core/contracts/actions.ts`, not yet wired to
+a Sales/CRM "Send" button (next item below). A 60s in-process scheduler tick
+(`src/instrumentation.ts` → `core/scheduler/tick.ts`) delivers due emails, resumes paused automation
+runs, fires due schedules, and publishes due social posts, with a DB lease so only one worker runs it.
+New capabilities (`core.it.manage`, `core.email.send`, `core.email.personal`, `core.contract.manage`,
+`automations.rule.*`, `csat.*`) granted to Administrator and Sales roles in code and migrated onto
+existing companies' roles. `npx tsc --noEmit`, `npm run build` (all new routes compiled) and
+`npx vitest run` all clean except pre-existing unrelated failures (confirmed via `git stash` — same
+failures before this work: `company-user-isolation`, `hr-team-access`, `planning-inventory`,
+`platform-actions`, `sales-rewind`, `setup-import`, `workspace-security`, and a manufacturing-deps
+drift in `modules.test.ts` from another session); updated that test's expected module list for the
+two new modules.
+
+**Not yet built — do these next, the plan is unchanged, see
+`docs/plans/MARKETING_AUTOMATION_EMAIL_PLAN.md` section numbering:**
+- Marketing UI/domain rebuild itself (section C): Today/Campaigns/Audience/Content/Growth/Insights,
+  segment builder, ABM, attribution, funnel, budget pacing, product launch readiness, etc. Schema for
+  most of this already landed in this same migration (MarketingBudgetLine, MarketingActivity,
+  MarketingSegment, MarketingTargetAccount, MarketingBrandKit, MarketingForm, MarketingLandingPage,
+  MarketingLink, MarketingEventPlan/Attendee, MarketingKnowledge, MarketingAttributionModel,
+  MarketingCampaignSnapshot, MarketingPaidSpend, MarketingSocialPost/Target, plus new columns on
+  MarketingCampaign/Content/Lead/Touch) — the UI and query/command layer over it is the remaining work.
+  The existing `/marketing` desk (campaign-desk.tsx etc.) still works unchanged in the meantime.
+- Sales/CRM "Email this" and "Send contract" buttons wired to `sendEmail()`/`core/contracts/actions.ts`
+  on quote/order/invoice/customer/prospect pages, plus an email thread panel on those records.
+- Section H (added mid-task, not yet done): CRM Sales Projects editable to attach organisations and
+  quotes/orders to the project's assigned CRM contact (distinct from internal `/projects`); sales
+  order/quotation composer redesigned to a 2-column layout; Finance navigation audited against built
+  pages and missing links restored; price list entry auto-fills the product's price (override only,
+  no retyping); every export offers XLSX/CSV with a column chooser.
+- ERP chain integrity script (workstream F) and the Marketing acceptance tests (plan §213-216).
+
 
 Michael's standing instruction: execute `docs/plans/MARKETING_AUTOMATION_EMAIL_PLAN.md` end to end, no questions, then `npm run deploy:vps`. If a session resumes, **continue that plan from the first unchecked step below**; do not re-plan.
 
@@ -9,15 +65,7 @@ Done so far
 - [x] Schema + migration `20261005090000_marketing_automation_email_platform` (additive): AutomationEvent/Automation/AutomationRun, EmailAccount/EmailTemplate/EmailMessage, SocialAccount, ContractDocument, CsatSurvey/CsatResponse, Marketing* additions (settings, budget lines, activities, segments, target accounts, brand kit, forms, landing pages, links/UTM, event plans/attendees, knowledge, attribution models, snapshots, paid spend, social posts) and new columns on MarketingCampaign/Content/Lead/Touch. `nodemailer` added. NOT yet applied to the VPS database (deploy script runs `prisma migrate deploy`).
 
 DEPLOYED-PENDING. Remaining, in order (also see section H of the plan: CRM projects editable with orgs/quotes attached to the CRM contact; sales order form on two columns; Finance nav options restored; price list pulls the product's price automatically; all exports as XLSX/CSV with column chooser)
-- Done since: `core/security/secrets.ts`, durable `emit()` (events stored in `automation_events`, sink registered on globalThis), `core/email/*` (blocks, render, ics, send, presets, starters), `core/social/publish.ts`, IT settings pages (email, social, template maker), `sessionForUser()`, `finance/services/auto-invoice.ts`, automations `engine/catalogue.ts` + `engine/context.ts`, public logo + email-open routes, new capabilities. Still to write: automations `engine/run.ts`/actions, tick (`src/instrumentation.ts`), automations + CSAT modules/UI, contracts + `/sign`, `/csat`, `/unsubscribe`, sales email dialog, all Marketing UI/logic, section H items, ERP chain, deploy.
-- [ ] A: `src/core/security/secrets.ts`; durable `emit()` in `src/core/events/bus.ts`; scheduler tick (`src/instrumentation.ts`, `/api/cron/tick`).
-- [ ] B: `sendEmail()` service, IT settings pages (email accounts, social accounts), template maker, capabilities, settings menu.
-- [ ] E: email dialog on Sales/CRM, contracts + public `/sign/[token]`, quote acceptance link.
-- [ ] D: Automations module (engine, catalogue, builder UI, smart suggestions, NL builder, dry-run/backfill), CSAT module (own section) + `/csat/[token]`, calendar invites (.ics).
-- [ ] C: Marketing UI/logic (Today, Campaigns, Audience, Content, Growth, Insights), social scheduler port from `~/Desktop/CODEX/lib/social-scheduler`, attribution/funnel/budget logic + tests.
-- [ ] F: ERP chain check script and fixes. G: read-policy/action registry regen (`node scripts/generate-data-api.mjs`), role capability sync, enable modules for Michael's org, tsc/eslint/vitest/build, commit, `npm run deploy:vps`, live checks.
-
-## Live target is the VPS — 4 October 2026
+- ## Live target is the VPS — 4 October 2026
 
 Michael confirmed the live app is https://atlassystem.online (VPS), not the Mac app, and wants every finished change deployed there with `npm run deploy:vps`. Ran it for the input-padding and restored sales composer changes: no pending migrations, service healthy, /login 200. The earlier Mac app install and old-server (217.154.51.15) migrations were not the live target. Feature-level check of New sales order on the VPS not done.
 

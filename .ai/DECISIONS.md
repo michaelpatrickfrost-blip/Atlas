@@ -709,3 +709,21 @@ overlaps the sidebar/app chrome, and for it to apply to every app going forward.
 
 ## 2026-10-04 — Atlas app hosted on VPS 85.190.118.218
 Michael asked in chat for the full app on the new VPS ("I want it all to run on this new VPS"). This supersedes the data-only server boundary for this host. Rationale: user's explicit requirement. Review before treating it as the permanent architecture.
+
+## 5 October 2026 — Automations, company email/social and CSAT are their own modules; social code is rewritten, not copied
+
+Michael asked for an automations app ("if order is done auto invoice"), company-level email/social
+setup usable by Automations, CSAT with its own section, and contracts with a working sign URL — "no
+questions, just do it". Built as three new Core-adjacent modules (`automations`, `csat`) plus
+platform services (`core/email/*`, `core/social/publish.ts`, `core/contracts/*`, `core/scheduler/tick.ts`)
+rather than folding any of it into Marketing, because Automations must act on Sales/Logistics/Finance/
+Production events that have nothing to do with Marketing, and CSAT needed its own section per explicit
+instruction. The HelloPort/Blocwrite social-scheduler and SMTP code on the Desktop was used as a
+reference for which free platform APIs work (Bluesky AT Protocol, Mastodon, Telegram, Discord webhook,
+Facebook Graph) but every line was rewritten against Atlas's `SocialAccount`/`EmailAccount` schema,
+session/capability model and encrypted-secret store (`core/security/secrets.ts`) — no file was copied
+in as-is, and nothing from Blocwrite's own product (novel-writing, admin, billing) came with it.
+Domain events are now durable (`AutomationEvent` table; `emit()` persists before notifying in-process
+handlers) specifically so Automations has something reliable to trigger from — the prior in-memory
+bus was fire-and-forget to listeners that were never even registered. See
+`docs/plans/MARKETING_AUTOMATION_EMAIL_PLAN.md` for the full plan and what is still open.

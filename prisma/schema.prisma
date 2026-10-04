@@ -7479,3 +7479,5 @@ model NonConformanceAction {
   @@index([organisationId, ncrId])
   @@map("non_conformance_actions")
 }
+
+// ---------- Customer Templates: flexible per-customer module configuration

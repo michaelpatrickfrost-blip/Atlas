@@ -144,7 +144,7 @@ export default async function SalesProjectDetailPage({ params }: Props) {
           <div className="rounded-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-gray-900">Organisations</h3>
-              <Button size="sm" variant="secondary" className="gap-2">
+              <Button variant="secondary" className="gap-2 text-sm px-3 py-2">
                 <Plus className="w-4 h-4" />
                 Add
               </Button>
@@ -176,7 +176,7 @@ export default async function SalesProjectDetailPage({ params }: Props) {
           <div className="rounded-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-gray-900">Stakeholders</h3>
-              <Button size="sm" variant="secondary" className="gap-2">
+              <Button variant="secondary" className="gap-2 text-sm px-3 py-2">
                 <Plus className="w-4 h-4" />
                 Add
               </Button>
@@ -210,7 +210,7 @@ export default async function SalesProjectDetailPage({ params }: Props) {
           <div className="rounded-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-gray-900">Quotes</h3>
-              <Button size="sm" variant="secondary" className="gap-2">
+              <Button variant="secondary" className="gap-2 text-sm px-3 py-2">
                 <Plus className="w-4 h-4" />
                 New
               </Button>
@@ -280,7 +280,7 @@ export default async function SalesProjectDetailPage({ params }: Props) {
                 Due: {new Date(project.nextActionAt).toLocaleDateString()}
               </p>
             )}
-            <Button size="sm" variant="secondary" className="w-full mt-4">
+            <Button variant="secondary" className="w-full mt-4 text-sm px-3 py-2">
               Update
             </Button>
           </div>

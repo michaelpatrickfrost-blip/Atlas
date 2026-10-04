@@ -2406,3 +2406,8 @@ Moved company branding (logo, colours, letterhead) into the onboarding flow so c
 ## 2026-10-04 (HTTPS) — https://atlassystem.online live on VPS
 - DNS A records atlassystem.online and www -> 85.190.118.218 (user fixed doubled hostnames). Caddy reverse-proxies to localhost:3000 with an automatic Let's Encrypt certificate (obtained 19:14 UTC). ufw enabled: 22, 80, 443 only (port 3000 no longer reachable externally).
 - ATLAS_PRIVATE_TUNNEL stopgap REMOVED, so the session cookie is secure again. Verified: /login 200 over HTTPS with valid cert. NOT verified: sign-in and module pages (no credentials used). Mac may cache a stale DNS answer (46.30.211.38) for a while; flush with `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`.
+
+## 2026-10-04 (deploy script) — `npm run deploy:vps`
+- Added scripts/deploy-vps.sh (+ npm script `deploy:vps`, docs/DEPLOY.md section): pushes main, then on the VPS backs up the DB (~/backups, last 10), git pull --ff-only, npm ci, prisma generate, migrate deploy, build (6 GB heap), restart `atlas`, health-check /login. Refuses if tree dirty or not on main. SSH key auth only; the VPS password is deliberately NOT stored in the repo (it would be pushed to GitHub).
+- Ran it for real: succeeded (commit d2be393 -> 21e0d35, no pending migrations, service healthy). Public https check returned 000 from this Mac only because of its stale DNS cache; VPS-side check was 200.
+- Known limit: build overwrites .next before restart, so a failed build leaves the running service on the old process until restart; no automatic rollback (restore from ~/backups dump / git reset if needed).

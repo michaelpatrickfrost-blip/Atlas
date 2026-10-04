@@ -706,3 +706,6 @@ or scroll — see Finance's and HR's manifests. Documented as the required patte
 `docs/MODULE_SPEC.md` so new modules inherit it instead of hand-rolling a tab row.
 Reason: Michael asked for a slimmer, grouped, "premium" nav that never scrolls or
 overlaps the sidebar/app chrome, and for it to apply to every app going forward.
+
+## 2026-10-04 — Atlas app hosted on VPS 85.190.118.218
+Michael asked in chat for the full app on the new VPS ("I want it all to run on this new VPS"). This supersedes the data-only server boundary for this host. Rationale: user's explicit requirement. Review before treating it as the permanent architecture.

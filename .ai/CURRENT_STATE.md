@@ -2381,3 +2381,12 @@ Moved company branding (logo, colours, letterhead) into the onboarding flow so c
 3. Verify setup page loads brand step
 4. Test brand upload → invoice generation with custom logo/colour
 
+
+## 2026-10-04 — Full Atlas stack on VPS 85.190.118.218 (user-directed)
+
+- Michael explicitly directed the whole Atlas app (UI + Postgres) onto this VPS, overriding the desktop/data-only boundary for this server. Recorded in DECISIONS.md. Old server 217.154.51.15 and the Mac app were not touched; no business data was migrated.
+- Server: /opt/atlas (clone of GitHub michaelpatrickfrost-blip/Atlas), systemd unit `atlas` (npm run start, port 3000), local PostgreSQL db `atlas`, secrets only in /opt/atlas/.env.local (600). Key-based SSH installed for the Mac.
+- Fixes: schema.prisma Ticket models commented out (half-wired relations failed validation under Prisma 7); server must use Prisma 7 CLI with `--config prisma7.config.ts`; build needs NODE_OPTIONS=--max-old-space-size=6144.
+- Schema built with `prisma db push` (the 77-migration history does not replay on an empty DB: 20261003170000 needs pre-existing hr_employees); migrations were baselined with `migrate resolve --applied`. Demo seed loaded.
+- Verified: service active, http://85.190.118.218:3000/login returns 200 and renders. NOT verified: signing in, module enablement, real data. Port 3000 is plain HTTP, ufw inactive.
+- Next: migrate real data from old server, add HTTPS + firewall, enable modules, point the Mac app at this server. Test portal on :3001 is obsolete.

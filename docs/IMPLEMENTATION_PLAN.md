@@ -69,7 +69,7 @@ Icon-launcher home, crisp white workspaces and blue accents; no permanent sideba
 
 - [ ] Finish the approved app-home/white/blue design system and visually verify every implemented workspace.
 - [ ] Build desktop/mobile acceptance tests for shell, menus, tables, forms, boards and customer map.
-- [ ] Company signup creates an isolated organisation, initial roles and creator membership atomically.
+- [x] An Atlas owner creates an isolated organisation, initial roles and first administrator atomically from the console. Public sign-up is removed.
 - [ ] User creation, role assignment and permission editing work with visible errors and save feedback.
 - [ ] Test cross-company direct actions, record relations and disabled module access.
 - [ ] Add verified invitations, password reset, email verification, MFA, session revocation and distributed rate limiting.

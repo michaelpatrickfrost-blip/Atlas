@@ -84,6 +84,24 @@ actually click through it in the installed app (or the dev preview first via
 `npm run dev:all` / the `atlas-dev` preview config in `.claude/launch.json`) —
 a 200 on `/login` proves the app started, not that your feature works.
 
+## When another session's unfinished schema blocks the gate
+
+If the gate reports tables that belong to someone's uncommitted schema edit with no
+migration yet, do not apply or bypass anything. Build the release from a clean
+snapshot instead: `git worktree add --detach ~/Library/Caches/atlas-release-wt HEAD`,
+copy in your own uncommitted files, `cp -cR node_modules` into it (an APFS clone),
+and run `scripts/deploy-mac-client.sh` from there. To apply one committed additive
+migration while an unfinished one is also pending, run `prisma migrate deploy` from
+a scratch copy of `prisma/` that leaves the unfinished migration out.
+
+## Atlas in the browser
+
+`scripts/install-browser-launcher.sh` installs `~/Applications/Atlas in Browser.app`
+with a Desktop link. It starts the installed Atlas runtime (by opening Atlas.app in
+the background) when it is not already serving, then opens
+`http://127.0.0.1:13200/home` in the default browser. Same local software, same
+central data. Quitting Atlas.app stops the server; click the button again.
+
 ## What never happens here
 
 - Never deploy the Atlas application itself to the remote host — it stores

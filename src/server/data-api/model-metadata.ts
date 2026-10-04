@@ -2085,24 +2085,6 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": true
     },
-    "templateCode": {
-      "type": "String",
-      "list": false,
-      "nullable": true,
-      "relation": false
-    },
-    "templateOverrides": {
-      "type": "Json",
-      "list": false,
-      "nullable": false,
-      "relation": false
-    },
-    "templateAssignments": {
-      "type": "CustomerTemplateAssignment",
-      "list": true,
-      "nullable": false,
-      "relation": true
-    },
     "tradingLinks": {
       "type": "CustomerTradingLink",
       "list": true,
@@ -28778,7 +28760,7 @@ export const MODEL_FIELDS = {
       "relation": true
     }
   },
-  "CustomerTemplate": {
+  "TicketQueue": {
     "id": {
       "type": "String",
       "list": false,
@@ -28809,19 +28791,19 @@ export const MODEL_FIELDS = {
       "nullable": true,
       "relation": false
     },
-    "version": {
-      "type": "Int",
-      "list": false,
-      "nullable": false,
-      "relation": false
-    },
     "status": {
       "type": "String",
       "list": false,
       "nullable": false,
       "relation": false
     },
-    "createdBy": {
+    "defaultPriority": {
+      "type": "TicketPriority",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "autoAssignRule": {
       "type": "String",
       "list": false,
       "nullable": true,
@@ -28831,12 +28813,6 @@ export const MODEL_FIELDS = {
       "type": "DateTime",
       "list": false,
       "nullable": false,
-      "relation": false
-    },
-    "updatedBy": {
-      "type": "String",
-      "list": false,
-      "nullable": true,
       "relation": false
     },
     "updatedAt": {
@@ -28851,163 +28827,69 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": true
     },
-    "modules": {
-      "type": "CustomerTemplateModule",
-      "list": true,
-      "nullable": false,
-      "relation": true
-    },
-    "changes": {
-      "type": "CustomerTemplateChange",
-      "list": true,
-      "nullable": false,
-      "relation": true
-    },
-    "assignments": {
-      "type": "CustomerTemplateAssignment",
-      "list": true,
-      "nullable": false,
-      "relation": true
-    },
-    "parties": {
-      "type": "Party",
+    "tickets": {
+      "type": "Ticket",
       "list": true,
       "nullable": false,
       "relation": true
     }
   },
-  "CustomerTemplateModule": {
+  "Ticket": {
     "id": {
       "type": "String",
       "list": false,
       "nullable": false,
       "relation": false
     },
-    "templateId": {
+    "organisationId": {
       "type": "String",
       "list": false,
       "nullable": false,
       "relation": false
     },
-    "module": {
+    "queueId": {
       "type": "String",
       "list": false,
       "nullable": false,
       "relation": false
     },
-    "configuration": {
-      "type": "Json",
+    "title": {
+      "type": "String",
       "list": false,
       "nullable": false,
       "relation": false
     },
-    "version": {
-      "type": "Int",
-      "list": false,
-      "nullable": false,
-      "relation": false
-    },
-    "changedBy": {
+    "description": {
       "type": "String",
       "list": false,
       "nullable": true,
       "relation": false
     },
-    "changedAt": {
-      "type": "DateTime",
+    "status": {
+      "type": "TicketStatus",
       "list": false,
       "nullable": false,
       "relation": false
     },
-    "template": {
-      "type": "CustomerTemplate",
-      "list": false,
-      "nullable": false,
-      "relation": true
-    },
-    "changes": {
-      "type": "CustomerTemplateChange",
-      "list": true,
-      "nullable": false,
-      "relation": true
-    }
-  },
-  "CustomerTemplateChange": {
-    "id": {
-      "type": "String",
+    "priority": {
+      "type": "TicketPriority",
       "list": false,
       "nullable": false,
       "relation": false
     },
-    "templateId": {
-      "type": "String",
-      "list": false,
-      "nullable": false,
-      "relation": false
-    },
-    "templateModuleId": {
+    "assignedToUserId": {
       "type": "String",
       "list": false,
       "nullable": true,
       "relation": false
     },
-    "changeType": {
-      "type": "String",
-      "list": false,
-      "nullable": false,
-      "relation": false
-    },
-    "featureCode": {
+    "assignedToTeamId": {
       "type": "String",
       "list": false,
       "nullable": true,
       "relation": false
     },
-    "oldValue": {
-      "type": "Json",
-      "list": false,
-      "nullable": true,
-      "relation": false
-    },
-    "newValue": {
-      "type": "Json",
-      "list": false,
-      "nullable": true,
-      "relation": false
-    },
-    "changedBy": {
-      "type": "String",
-      "list": false,
-      "nullable": true,
-      "relation": false
-    },
-    "changedAt": {
-      "type": "DateTime",
-      "list": false,
-      "nullable": false,
-      "relation": false
-    },
-    "template": {
-      "type": "CustomerTemplate",
-      "list": false,
-      "nullable": false,
-      "relation": true
-    },
-    "module": {
-      "type": "CustomerTemplateModule",
-      "list": false,
-      "nullable": true,
-      "relation": true
-    }
-  },
-  "CustomerTemplateAssignment": {
-    "id": {
-      "type": "String",
-      "list": false,
-      "nullable": false,
-      "relation": false
-    },
-    "templateId": {
+    "reportedByUserId": {
       "type": "String",
       "list": false,
       "nullable": false,
@@ -29016,35 +28898,207 @@ export const MODEL_FIELDS = {
     "partyId": {
       "type": "String",
       "list": false,
-      "nullable": false,
+      "nullable": true,
       "relation": false
     },
-    "assignedBy": {
+    "relatedProjectId": {
       "type": "String",
       "list": false,
       "nullable": true,
       "relation": false
     },
-    "assignedAt": {
+    "relatedOrderId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "tags": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
       "type": "DateTime",
       "list": false,
       "nullable": false,
       "relation": false
     },
-    "removedAt": {
+    "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "resolvedAt": {
       "type": "DateTime",
       "list": false,
       "nullable": true,
       "relation": false
     },
-    "template": {
-      "type": "CustomerTemplate",
+    "closedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
       "list": false,
       "nullable": false,
       "relation": true
     },
+    "queue": {
+      "type": "TicketQueue",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "reportedBy": {
+      "type": "User",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "assignedToUser": {
+      "type": "User",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "assignedToTeam": {
+      "type": "WorkTeam",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
     "party": {
       "type": "Party",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "comments": {
+      "type": "TicketComment",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "watchers": {
+      "type": "TicketWatcher",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "TicketComment": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "ticketId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "authorId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "content": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "attachmentUrls": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "isInternal": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "ticket": {
+      "type": "Ticket",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "author": {
+      "type": "User",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "TicketWatcher": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "ticketId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "userId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "addedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "addedByUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "ticket": {
+      "type": "Ticket",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "user": {
+      "type": "User",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "addedBy": {
+      "type": "User",
       "list": false,
       "nullable": false,
       "relation": true

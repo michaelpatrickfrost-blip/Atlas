@@ -1,7 +1,10 @@
 # Design memory map
 
-Current direction: icon-launcher home, white workspaces, blue accents, separate app
-top menus, rounded controls, consistent spacing and clear active states. Dense
+Current direction (4 October 2026): no sidebar. The home screen is the launcher —
+apps as short named columns by area, not tiles or rows of cards — and the top bar's
+Apps menu shows the same list everywhere else. Plain wording: no greetings, slogans
+or marketing panels. White workspaces, blue accents, separate app top menus, small
+type, hairline borders, consistent spacing and clear active states. Dense
 business information should remain calm; avoid excessive cards and decorative icons.
 Desktop, tablet and phone layouts require visual acceptance.
 

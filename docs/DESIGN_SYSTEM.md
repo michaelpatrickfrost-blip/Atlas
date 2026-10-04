@@ -44,9 +44,14 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
 
 ## Shell (`src/components/shell/`)
 
-- **Sidebar** — company logo and name, Workspace, enabled apps with icons, then
-  Manage apps and Company admin. Built from `getNavigableModules`.
-- **Topbar** — search, back, chat, profile and sign-out on a glass bar.
+- **No sidebar.** The home screen is the launcher. `AppDirectory` lists the apps a
+  person can open as short named columns by area (Customers, Operations, People,
+  Business, Company) from `getNavigableModules`; areas are set in
+  `src/core/modules/areas.ts` and an unlisted app falls under More. No app tiles,
+  no descriptions.
+- **Topbar** — home, an Apps menu (`AppMenu`, the same `AppDirectory` in a panel,
+  hidden on the home screen), back, search, new window, notices, chat, profile and
+  sign-out on a plain white bar.
 - **CommandPalette** — ⌘K / Ctrl+K. Debounced query against `/api/search`,
   which aggregates navigation matches and each module's `searchProvider`.
 

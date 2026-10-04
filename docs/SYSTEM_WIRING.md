@@ -31,7 +31,7 @@ The approved boundary puts screens and application runtime on the Mac, and autho
 | Local save → central command | `scripts/prepare-runtime.mjs`, `scripts/generate-data-api.mjs` | Build inserts action forwarding into exported server actions; compatible server action registry required |
 | Session | `src/core/auth/session.ts`, `src/app/api/desktop/session/route.ts` | Server resolves authenticated user, organisation and capabilities; desktop does not hold database credentials |
 | Read endpoint | `src/app/api/desktop/query/route.ts`, `src/server/data-api/read-query.ts` | Read-method allowlist; scoped nested relations; protected fields removed/masked |
-| Write endpoint | `src/app/api/desktop/action/route.ts`, `src/server/data-api/action-registry.ts` | Registered action only; authenticated except explicit authentication/signup allowlist; each command must enforce its own authority |
+| Write endpoint | `src/app/api/desktop/action/route.ts`, `src/server/data-api/action-registry.ts` | Registered action only; authenticated except the explicit sign-in, sign-out and setup-code allowlist; each command must enforce its own authority |
 | Query model authority | `src/server/data-api/read-policy.ts`, `model-metadata.ts` | Every new model and relation needs correct capability and scope coverage |
 | Wire encoding | `src/core/desktop/wire.ts` | Round-trip non-plain JSON values and action arguments |
 | Release | `scripts/build-mac-client.sh`, `install-mac-client.sh`, `deploy-mac-client.sh` | Schema compatibility, isolated package, release locks, preserved prior app |
@@ -402,7 +402,6 @@ Extracted from `src/app/**/page.tsx`; route groups removed. Dynamic segments rem
 - `/settings/imports`
 - `/settings/logistics`
 - `/settings/users/[membershipId]`
-- `/signup`
 - `/stock`
 - `/stock/items/[productId]`
 - `/stock/movements`

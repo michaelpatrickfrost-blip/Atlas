@@ -1,5 +1,17 @@
 # Atlas decisions
 
+## 4 October 2026 — No sidebar; the home screen is the launcher
+
+Michael rejected the home screen and shell as oversized and dated ("a bit Windows 98"), asked whether a sidebar is needed, and asked for no rows of apps and no cheesy wording. The permanent sidebar is removed from every page. Home lists the apps a person can open as short named columns by area; the top bar has an Apps menu with the same list. No app tiles, descriptions, greeting or marketing copy on home, sign-in, Manage apps or the Atlas console. Area grouping is presentation only (`src/core/modules/areas.ts`) and grants nothing. Supersedes the sidebar parts of "Polished glass chrome". Source: `src/components/shell/{app-directory,app-menu,topbar,shell-chrome}.tsx`, `src/app/(app)/home/page.tsx`.
+
+## 4 October 2026 — Companies are created only by Atlas, in the app
+
+Michael: a user or company is set up by Atlas only, in the app. Public sign-up (`/signup` and its action) is removed. An Atlas owner creates the company in the console; that creates its own organisation, roles, enabled apps and first administrator, who sets a password with a one-time setup code. Redeeming a code now signs the person in. Source: `src/app/(app)/atlas/actions.ts`, `src/core/auth/security-actions.ts`, `src/app/api/desktop/action/route.ts`.
+
+## 4 October 2026 — A Desktop button opens Atlas in the browser
+
+Michael asked for a Desktop button that starts the server and opens Atlas in the web browser, saying "this will be a browser app". `Atlas in Browser.app` starts the installed local runtime and opens it in the default browser. This keeps the software on the Mac and the records on the server. It does not move Atlas to a hosted web app; that would reverse the deployment boundary and needs Michael's explicit decision first. A normal browser keeps its own cookies and cache, unlike the app's non-persistent web view; pages are served no-store. Source: `scripts/install-browser-launcher.sh`, `docs/DEPLOY.md`.
+
 ## 4 October 2026 — Contacts get their own tab; clicking a contact opens it straight into edit, not a read-then-edit two-step
 
 Customer Master's contacts moved out of the combined "People & Places" tab into their own

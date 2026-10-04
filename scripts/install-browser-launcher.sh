@@ -33,7 +33,14 @@ rm -rf "$app"
 /usr/bin/osacompile -o "$app" "$src"
 rm -f "$src"
 icon="$HOME/Applications/Atlas.app/Contents/Resources/Atlas.icns"
-if [ -f "$icon" ]; then cp "$icon" "$app/Contents/Resources/applet.icns"; /usr/bin/codesign --force -s - "$app" >/dev/null 2>&1 || true; touch "$app"; fi
+if [ -f "$icon" ]; then
+  # The compiled asset catalogue would win over applet.icns and show the generic script icon.
+  cp "$icon" "$app/Contents/Resources/applet.icns"
+  rm -f "$app/Contents/Resources/Assets.car"
+  /usr/libexec/PlistBuddy -c "Delete :CFBundleIconName" "$app/Contents/Info.plist" 2>/dev/null || true
+  /usr/bin/codesign --force -s - "$app" >/dev/null 2>&1 || true
+  touch "$app"
+fi
 # The Desktop is iCloud-synced, so keep the app in ~/Applications and link to it, as Atlas.app does.
 ln -sfn "$app" "$link"
 echo "Installed $app (Desktop link: $link)"

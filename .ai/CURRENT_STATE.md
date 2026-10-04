@@ -2402,3 +2402,7 @@ Moved company branding (logo, colours, letterhead) into the onboarding flow so c
 ## 2026-10-04 (later still) — VPS modules failed with UNAUTHENTICATED
 - Cause: src/core/auth/session.ts marks the session cookie `secure` in production, so over plain HTTP (VPS :3000) the browser dropped it and every page threw UNAUTHENTICATED.
 - Stopgap: ATLAS_PRIVATE_TUNNEL=1 added to /opt/atlas/.env.local (only affects that cookie flag) and atlas restarted; /login 200. Sign-in/modules NOT verified by me (no credentials used). Proper fix: HTTPS with a domain, then remove the flag. Passwords currently cross the network unencrypted.
+
+## 2026-10-04 (HTTPS) — https://atlassystem.online live on VPS
+- DNS A records atlassystem.online and www -> 85.190.118.218 (user fixed doubled hostnames). Caddy reverse-proxies to localhost:3000 with an automatic Let's Encrypt certificate (obtained 19:14 UTC). ufw enabled: 22, 80, 443 only (port 3000 no longer reachable externally).
+- ATLAS_PRIVATE_TUNNEL stopgap REMOVED, so the session cookie is secure again. Verified: /login 200 over HTTPS with valid cert. NOT verified: sign-in and module pages (no credentials used). Mac may cache a stale DNS answer (46.30.211.38) for a while; flush with `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`.

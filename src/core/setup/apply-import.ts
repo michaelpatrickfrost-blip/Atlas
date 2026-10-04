@@ -79,6 +79,7 @@ function checkShape(input: SetupImportInput) {
   if (input.entity === "warehouses") fail(duplicateKeyIssue(input.rows, (row) => row.code.toUpperCase()));
   if (input.entity === "locations") fail(duplicateKeyIssue(input.rows, (row) => `${row.warehouseCode.toUpperCase()}|${row.code}`));
   if (input.entity === "employees") fail(duplicateKeyIssue(input.rows, (row) => row.employeeNumber));
+  if (input.entity === "sales-orders" || input.entity === "sales-quotes") return;
 }
 
 async function importCustomers(tx: Tx, input: SetupImportInput) {
@@ -331,6 +332,147 @@ async function importEmployees(tx: Tx, input: SetupImportInput) {
   }
 }
 
+async function importSalesOrders(tx: Tx, input: SetupImportInput) {
+  const customers = await tx.party.findMany({ where: { organisationId: input.organisationId }, select: { id: true, customerCode: true, preferredCurrency: true } });
+  const products = await tx.product.findMany({ where: { organisationId: input.organisationId }, select: { id: true, code: true, basePriceAmount: true, baseCurrency: true } });
+  const byCustomer = new Map(customers.map((c) => [c.customerCode, c]));
+  const byProduct = new Map(products.map((p) => [p.code, p]));
+
+  // Validate
+  for (const [index, row] of input.rows.entries()) {
+    if (!byCustomer.has(row.customerCode)) throw new Error(rowIssue(index, `customer ${row.customerCode} was not found. Import customers first.`));
+    if (!byProduct.has(row.productCode)) throw new Error(rowIssue(index, `product ${row.productCode} was not found. Import products first.`));
+    if (!/^\d+$/.test(row.quantity) || Number(row.quantity) < 1) throw new Error(rowIssue(index, "quantity must be a whole number of 1 or more."));
+    if (row.unitPrice && !/^\d+(\.\d{1,2})?$/.test(row.unitPrice)) throw new Error(rowIssue(index, "unit price must be a positive amount with up to 2 decimal places."));
+    if (row.deliveryDate && !/^\d{4}-\d{2}-\d{2}$/.test(row.deliveryDate)) throw new Error(rowIssue(index, "delivery date must be YYYY-MM-DD format."));
+  }
+
+  if (!input.applying) return;
+
+  // Group rows by reference
+  const grouped = new Map<string, typeof input.rows>();
+  for (const row of input.rows) {
+    const ref = row.reference || `SO-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+    if (!grouped.has(ref)) grouped.set(ref, []);
+    grouped.get(ref)!.push({ ...row, reference: ref });
+  }
+
+  for (const [ref, rows] of grouped) {
+    const customer = byCustomer.get(rows[0].customerCode)!;
+    let netAmount = 0,
+      taxAmount = 0;
+    const lines = rows.map((row, i) => {
+      const product = byProduct.get(row.productCode)!;
+      const unitPrice = row.unitPrice ? Math.round(Number(row.unitPrice) * 100) : product.basePriceAmount;
+      const qty = Number(row.quantity);
+      const lineNet = unitPrice * qty;
+      const lineTax = Math.round((lineNet * 20) / 100); // Standard UK VAT
+      netAmount += lineNet;
+      taxAmount += lineTax;
+      return {
+        lineNumber: i + 1,
+        type: "PRODUCT" as const,
+        productId: product.id,
+        descriptionSnapshot: product.code,
+        orderedQuantity: qty,
+        unitOfMeasure: "each",
+        unitPriceAmount: unitPrice,
+        discountPercent: 0,
+        netAmount: lineNet,
+        taxCategory: "STANDARD",
+        taxAmount: lineTax,
+        priceSource: row.unitPrice ? "Import" : "Price list",
+      };
+    });
+
+    await tx.salesOrder.create({
+      data: {
+        organisationId: input.organisationId,
+        partyId: customer.id,
+        reference: ref,
+        commercialStatus: "DRAFT",
+        orderType: "STANDARD",
+        currency: customer.preferredCurrency || "GBP",
+        netAmount,
+        taxAmount,
+        grossAmount: netAmount + taxAmount,
+        ownerUserId: input.actorUserId,
+        requestedDeliveryDate: rows[0].deliveryDate ? day(rows[0].deliveryDate, 0, "Delivery date") : null,
+        customerNotes: rows[0].notes || null,
+        lines: { create: lines },
+      },
+    });
+  }
+}
+
+async function importSalesQuotes(tx: Tx, input: SetupImportInput) {
+  const customers = await tx.party.findMany({ where: { organisationId: input.organisationId }, select: { id: true, customerCode: true, preferredCurrency: true } });
+  const products = await tx.product.findMany({ where: { organisationId: input.organisationId }, select: { id: true, code: true, basePriceAmount: true, baseCurrency: true } });
+  const byCustomer = new Map(customers.map((c) => [c.customerCode, c]));
+  const byProduct = new Map(products.map((p) => [p.code, p]));
+
+  // Validate
+  for (const [index, row] of input.rows.entries()) {
+    if (!byCustomer.has(row.customerCode)) throw new Error(rowIssue(index, `customer ${row.customerCode} was not found. Import customers first.`));
+    if (!byProduct.has(row.productCode)) throw new Error(rowIssue(index, `product ${row.productCode} was not found. Import products first.`));
+    if (!/^\d+$/.test(row.quantity) || Number(row.quantity) < 1) throw new Error(rowIssue(index, "quantity must be a whole number of 1 or more."));
+    if (row.unitPrice && !/^\d+(\.\d{1,2})?$/.test(row.unitPrice)) throw new Error(rowIssue(index, "unit price must be a positive amount with up to 2 decimal places."));
+    if (row.expiryDate && !/^\d{4}-\d{2}-\d{2}$/.test(row.expiryDate)) throw new Error(rowIssue(index, "expiry date must be YYYY-MM-DD format."));
+  }
+
+  if (!input.applying) return;
+
+  // Group rows by reference
+  const grouped = new Map<string, typeof input.rows>();
+  for (const row of input.rows) {
+    const ref = row.reference || `QT-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+    if (!grouped.has(ref)) grouped.set(ref, []);
+    grouped.get(ref)!.push({ ...row, reference: ref });
+  }
+
+  for (const [ref, rows] of grouped) {
+    const customer = byCustomer.get(rows[0].customerCode)!;
+    let netAmount = 0,
+      taxAmount = 0;
+    const lines = rows.map((row, i) => {
+      const product = byProduct.get(row.productCode)!;
+      const unitPrice = row.unitPrice ? Math.round(Number(row.unitPrice) * 100) : product.basePriceAmount;
+      const qty = Number(row.quantity);
+      const lineNet = unitPrice * qty;
+      const lineTax = Math.round((lineNet * 20) / 100); // Standard UK VAT
+      netAmount += lineNet;
+      taxAmount += lineTax;
+      return {
+        lineNumber: i + 1,
+        description: product.code,
+        quantity: qty,
+        unitAmount: unitPrice,
+        netAmount: lineNet,
+        taxAmount: lineTax,
+        taxCategory: "STANDARD",
+      };
+    });
+
+    await tx.quote.create({
+      data: {
+        organisationId: input.organisationId,
+        partyId: customer.id,
+        reference: ref,
+        status: "DRAFT",
+        kind: "STANDARD",
+        totalCurrency: customer.preferredCurrency || "GBP",
+        netAmount,
+        taxAmount,
+        totalAmount: netAmount + taxAmount,
+        ownerUserId: input.actorUserId,
+        expiryDate: rows[0].expiryDate ? day(rows[0].expiryDate, 0, "Expiry date") : null,
+        customerNotes: rows[0].notes || null,
+        lines: { create: lines },
+      },
+    });
+  }
+}
+
 export async function runSetupImport(input: SetupImportInput) {
   checkShape(input);
   await db.$transaction(async (tx) => {
@@ -343,6 +485,8 @@ export async function runSetupImport(input: SetupImportInput) {
     else if (input.entity === "warehouses") await importWarehouses(tx, input);
     else if (input.entity === "locations") await importLocations(tx, input);
     else if (input.entity === "employees") await importEmployees(tx, input);
+    else if (input.entity === "sales-orders") await importSalesOrders(tx, input);
+    else if (input.entity === "sales-quotes") await importSalesQuotes(tx, input);
     else throw new Error("Choose a supported import.");
     if (input.applying) await tx.auditEntry.create({ data: { organisationId: input.organisationId, actorUserId: input.actorUserId, action: `import.${input.entity}`, entityType: "Import", entityId: crypto.randomUUID(), after: { rows: input.rows.length, fileName: input.fileName.slice(0, 120) } } });
   }, { isolationLevel: "Serializable", timeout: 60_000 });

@@ -135,6 +135,40 @@ export const SETUP_CATALOGUE: SetupTemplate[] = [
       "An existing employee number updates the job details and does not add another checklist.",
     ],
   },
+  {
+    id: "sales-orders",
+    group: "Customers",
+    title: "Sales orders",
+    summary: "Create or update orders for customers with line items.",
+    required: ["customerCode", "productCode", "quantity"],
+    columns: ["reference", "customerCode", "productCode", "quantity", "unitPrice", "deliveryDate", "notes"],
+    example: ["SO-1001", "C-100", "SKU-100", "10", "22.50", "2026-11-01", "Rush delivery"],
+    notes: [
+      "Import customers and products first.",
+      "quantity is a whole number of 1 or more.",
+      "unitPrice is optional; if blank, the customer's price list price is used.",
+      "deliveryDate is optional and in YYYY-MM-DD format.",
+      "A blank reference generates one automatically.",
+      "Each row becomes a line on an order. Multiple rows with the same reference create a multi-line order.",
+    ],
+  },
+  {
+    id: "sales-quotes",
+    group: "Customers",
+    title: "Sales quotes",
+    summary: "Create or update quotations for customers with line items.",
+    required: ["customerCode", "productCode", "quantity"],
+    columns: ["reference", "customerCode", "productCode", "quantity", "unitPrice", "expiryDate", "notes"],
+    example: ["QT-2001", "C-100", "SKU-100", "5", "22.50", "2026-11-15", "Price valid 30 days"],
+    notes: [
+      "Import customers and products first.",
+      "quantity is a whole number of 1 or more.",
+      "unitPrice is optional; if blank, the customer's price list price is used.",
+      "expiryDate is optional and in YYYY-MM-DD format.",
+      "A blank reference generates one automatically.",
+      "Each row becomes a line on a quote. Multiple rows with the same reference create a multi-line quote.",
+    ],
+  },
 ];
 
 export const SETUP_ORDER = ["customers", "contacts", "products", "price-lists", "prices", "customer-commercial", "warehouses", "locations", "employees"];

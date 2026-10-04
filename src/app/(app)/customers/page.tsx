@@ -3,6 +3,7 @@ import { requireSession } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
 import { CUSTOMER_CAPABILITIES } from "@/core/permissions/capabilities";
 import { listCustomers, type CustomerListFilter } from "@/core/customers/queries";
+import { CustomerCsvTools } from "@/core/customers/csv-import-export";
 import { db } from "@/core/db/client";
 import { DataTable } from "@/components/ui/table";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
@@ -55,11 +56,14 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
     <div className="mx-auto flex max-w-6xl flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
 <h1 className="text-2xl font-semibold tracking-tight text-[var(--color-ink)]">Customers</h1>
-        {can(session, CUSTOMER_CAPABILITIES.create) && (
-          <Link href="/customers/new">
-            <Button variant="primary">Add customer</Button>
-          </Link>
-        )}
+        <div className="flex gap-2">
+          {can(session, CUSTOMER_CAPABILITIES.create) && (
+            <Link href="/customers/new">
+              <Button variant="primary">Add customer</Button>
+            </Link>
+          )}
+          <CustomerCsvTools />
+        </div>
       </div>
 
       <form className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3">

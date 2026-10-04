@@ -7,6 +7,8 @@ const COMPANY_TEMPLATES: Record<string, string> = {
   customers: "customers.create",
   products: "core.products.manage",
   prices: "core.pricing.manage",
+  "sales-orders": "sales.order.create",
+  "sales-quotes": "sales.quote.create",
 };
 
 export async function GET(request: Request) {

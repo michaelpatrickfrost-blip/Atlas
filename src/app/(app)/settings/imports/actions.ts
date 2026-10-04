@@ -10,7 +10,13 @@ import { revalidatePath } from "next/cache";
 export type ImportResult = { error: string; message: string; preview: Record<string, string>[] };
 
 function capability(entity: string) {
-  const caps: Record<string, string> = { customers: "customers.create", products: "core.products.manage", prices: "core.pricing.manage" };
+  const caps: Record<string, string> = {
+    customers: "customers.create",
+    products: "core.products.manage",
+    prices: "core.pricing.manage",
+    "sales-orders": "sales.order.create",
+    "sales-quotes": "sales.quote.create",
+  };
   if (!caps[entity]) throw new Error("Choose a supported import.");
   return caps[entity];
 }

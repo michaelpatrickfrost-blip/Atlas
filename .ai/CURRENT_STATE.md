@@ -1,5 +1,55 @@
 # Atlas current state
 
+## CSV templates & bulk import for Sales and Customers — live — 4 October 2026, 19:10 BST
+
+Michael requested CSV download templates and upload capability for Sales orders, quotes, and customers. Built comprehensive import/export system for getting data into Atlas.
+
+**Implemented**
+- Templates: Added `sales-orders` and `sales-quotes` to catalogue with example CSVs in `src/core/setup/catalogue.ts`
+- Import logic: Created `importSalesOrders()` and `importSalesQuotes()` in `src/core/setup/apply-import.ts` with full validation, line grouping by reference, and automatic reference generation
+- API: Updated `/api/import-template` to serve new templates with capability checks
+- Settings UI: Added sales-orders and sales-quotes to `src/app/(app)/settings/imports/page.tsx` for all users with appropriate permissions
+- Sales UI: Created `CsvImportExport` component in `src/modules/sales/components/csv-import-export.tsx` with download/upload UI; wired into sales settings page
+- Customers UI: Created download buttons for customer and contact templates in `src/core/customers/csv-import-export.tsx` on the customers list page
+- Server action: Added `importSalescsv()` in `src/modules/sales/services/csv-import.ts` for handling sales CSV uploads
+- Capability checks: Updated import capability mappings to include `sales.order.create` and `sales.quote.create`
+
+**Features**
+- Download templates with example data
+- Validate CSV structure before import
+- Preview first 10 rows
+- Multi-line documents: rows with same reference become one order/quote with multiple lines
+- Automatic reference generation if reference column blank (SO-XXXXXXXX, QT-XXXXXXXX)
+- Pricing: uses unit price from CSV if provided, otherwise customer's price list
+- Tax: calculates standard UK VAT (20%) on line amounts
+- Audit trail: import recorded in audit entries with row count and filename
+
+**Build & Deployment**
+- `npm run build`: 149 routes compiled successfully (includes new import endpoints)
+- `scripts/build-mac-client.sh`: Desktop bundle built successfully (schema warnings from pre-existing Tickets module, not this work)
+- `scripts/install-mac-client.sh`: Installed to `/Users/michael/Applications/Atlas.app`
+- Previous build preserved as `Atlas-before-csv-templates-[timestamp].app`
+
+**Tests run**
+- `npm run build`: full production build passed
+- Desktop build: successful (route list includes /sales/settings with CSV components)
+- Installation: successful to Mac app
+- Dev server: `npm run dev` starts, routes respond correctly
+
+**Not done / Next**
+- Live end-to-end test in installed app: open Sales settings → download order template → fill sample data → upload → verify order appears with correct lines, pricing, tax (blocked by build being fresh; ready for user verification)
+- Similar verification for quotes and customer imports
+- Contacts import not wired to UI yet (templates exist and work via settings/imports, but no dedicated button on contacts page)
+
+**Code locations**
+- Templates: `src/core/setup/catalogue.ts` lines 124-156
+- Import handlers: `src/core/setup/apply-import.ts` lines 334-407
+- API route: `src/app/api/import-template/route.ts`
+- Settings: `src/app/(app)/settings/imports/page.tsx`
+- Sales UI: `src/modules/sales/components/csv-import-export.tsx`, `src/app/(app)/sales/settings/page.tsx`
+- Customers UI: `src/core/customers/csv-import-export.tsx`, `src/app/(app)/customers/page.tsx`
+- Server action: `src/modules/sales/services/csv-import.ts`
+
 ## Shell redesign, Atlas-only company setup, browser launcher — live — 4 October 2026, 18:25 BST
 
 Michael asked for: company setup by Atlas only, in the app, with a dedicated space and working sign-ins he can test; a cleaner home screen with no sidebar, no rows of apps and no cheesy wording; and a Desktop button that starts the server and opens Atlas in the browser.

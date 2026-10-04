@@ -5,7 +5,7 @@ import { assertCapability } from "@/core/permissions/check";
 import { SALES_CAPABILITIES } from "@/core/permissions/capabilities";
 import { db } from "@/core/db/client";
 import { assertModuleEnabled } from "@/core/modules/access";
-import { createDraftOrder,addOrderLine,removeOrderLine,confirmOrder,updateDraftOrderFields,addHold,releaseHold,decideApproval,cancelOrder } from "@/modules/sales/services/orders";
+import { createDraftOrder,addOrderLine,removeOrderLine,confirmOrder,updateDraftOrderFields,addHold,releaseHold,decideApproval,cancelOrder,deleteOrder } from "@/modules/sales/services/orders";
 import { parseHashtags } from "@/core/shared/hashtags";
 import { restoreCancelledOrder, returnOrderToQuote, saveOrderHashtags } from "@/modules/sales/services/rewind";
 import { redirect } from "next/navigation";
@@ -70,4 +70,9 @@ export async function rejectOrderApproval(orderId:string,approvalId:string,form:
  const session=await requireSession();
  assertCapability(session,'sales.order.approval.approve');
  await decideApproval(approvalId,orderId,false,String(form.get('reason')??''));
+}
+
+export async function deleteOrderForm(orderId:string){
+ await deleteOrder(orderId);
+ redirect('/sales/orders');
 }

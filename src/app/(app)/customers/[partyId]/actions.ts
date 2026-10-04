@@ -15,7 +15,9 @@ import {
   setCreditHold,
   createNote,
   updateCustomerStatus,
+  deleteCustomer,
 } from "@/core/customers/commands";
+import { redirect } from "next/navigation";
 import type { AddressType, ContactPreferredMethod, ContactRole, ContactStatus, DirectDebitScheme } from "@/generated/prisma/client";
 
 /** Thin FormData -> typed-command adapters so record-page forms can post
@@ -131,4 +133,9 @@ export async function createNoteFormAction(partyId: string, formData: FormData) 
 export async function updateStatusFormAction(partyId: string, formData: FormData) {
   await updateCustomerStatus(partyId, formData.get("status") as never);
   revalidatePath(`/customers/${partyId}`);
+}
+
+export async function deleteCustomerFormAction(partyId: string) {
+  await deleteCustomer(partyId);
+  redirect('/customers');
 }

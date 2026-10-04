@@ -119,6 +119,28 @@ export async function updateCustomerStatus(partyId: string, status: "PROSPECT" |
   revalidatePath(`/customers/${partyId}`);
 }
 
+export async function deleteCustomer(partyId: string) {
+  const session = await requireSession();
+  assertCapability(session, CUSTOMER_CAPABILITIES.edit);
+
+  const customer = await db.party.findFirstOrThrow({ where: { id: partyId, organisationId: session.organisationId } });
+  if (customer.status === "CLOSED") throw new Error("This customer is already closed.");
+
+  const after = await db.party.update({ where: { id: partyId }, data: { status: "CLOSED" } });
+
+  await writeAudit({
+    organisationId: session.organisationId,
+    actorUserId: session.userId,
+    action: "customer.deleted",
+    entityType: "Party",
+    entityId: partyId,
+    before: { status: customer.status, name: customer.name },
+    after: { status: after.status },
+  });
+
+  revalidatePath(`/customers`);
+}
+
 // ---------- People & Places ----------
 
 export type CreateContactInput = {

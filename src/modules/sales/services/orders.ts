@@ -447,6 +447,28 @@ export async function cancelOrder(orderId: string, reason: string) {
   revalidatePath(`/sales/orders/${orderId}`);
 }
 
+export async function deleteOrder(orderId: string) {
+  const session = await requireSession();
+  assertCapability(session, SALES_CAPABILITIES.orderEditDraft);
+  await assertModuleEnabled(session, "sales");
+  await assertOwnedByOrg(session.organisationId, orderId);
+
+  const order = await db.salesOrder.findFirstOrThrow({where:{id:orderId,organisationId:session.organisationId}});
+  if(order.commercialStatus!=='DRAFT')throw new Error('Only draft orders can be deleted.');
+
+  await db.$transaction(async tx=>{
+    await tx.salesOrderLine.deleteMany({where:{orderId}});
+    await tx.salesOrderRevision.deleteMany({where:{orderId}});
+    await tx.orderChangeEvent.deleteMany({where:{orderId}});
+    await tx.orderHold.deleteMany({where:{orderId}});
+    await tx.orderApproval.deleteMany({where:{orderId}});
+    await tx.salesOrder.delete({where:{id:orderId}});
+    await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:'order.deleted',entityType:'SalesOrder',entityId:orderId,before:{reference:order.reference,status:order.commercialStatus},after:{}}});
+  });
+
+  revalidatePath("/sales/orders");
+}
+
 /** Cancels the remaining open quantity on one line — §39: already-shipped
  *  quantity is never simply deleted. Since no Logistics module exists yet,
  *  "shipped" is always 0 today, so the maximum cancellable is the full

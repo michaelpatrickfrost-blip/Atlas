@@ -18,21 +18,19 @@ export function LoginForm() {
       <label className="flex flex-col gap-1 text-sm">
         <span className="text-[var(--color-ink-muted)]">Email</span>
         <input
-          name="email"
+          name="email" autoComplete="username"
           type="email"
           required
           autoFocus
-          defaultValue="demo@atlas.app"
           className="rounded-2xl border border-slate-200 px-3 py-3 text-sm"
         />
       </label>
       <label className="flex flex-col gap-1 text-sm">
         <span className="text-[var(--color-ink-muted)]">Password</span>
         <input
-          name="password"
+          name="password" autoComplete="current-password"
           type="password"
           required
-          defaultValue="atlas-demo"
           className="rounded-2xl border border-slate-200 px-3 py-3 text-sm"
         />
       </label>

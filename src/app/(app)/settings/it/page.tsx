@@ -5,6 +5,8 @@ import { db } from "@/core/db/client";
 import { can } from "@/core/permissions/check";
 import { CORE_CAPABILITIES } from "@/core/permissions/capabilities";
 
+function sevenDaysAgo() { return new Date(Date.now() - 7 * 86400000); }
+
 export default async function ItOverview() {
   const session = await requireSession();
   const admin = can(session, CORE_CAPABILITIES.itManage);
@@ -14,7 +16,7 @@ export default async function ItOverview() {
     db.socialAccount.count({ where: { organisationId: session.organisationId, active: true } }),
     db.emailTemplate.count({ where: { organisationId: session.organisationId } }),
     db.emailMessage.count({ where: { organisationId: session.organisationId, status: "QUEUED" } }),
-    db.emailMessage.count({ where: { organisationId: session.organisationId, status: "FAILED", createdAt: { gte: new Date(Date.now() - 7 * 86400000) } } }),
+    db.emailMessage.count({ where: { organisationId: session.organisationId, status: "FAILED", createdAt: { gte: sevenDaysAgo() } } }),
   ]);
   const cards = [
     { href: "/settings/it/email", icon: Mail, title: "Email accounts", body: `${mail} company mailbox${mail === 1 ? "" : "es"}, ${mine} of yours. Send from your own address or the company's.` },

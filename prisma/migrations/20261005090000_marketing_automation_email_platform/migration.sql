@@ -829,3 +829,13 @@ UPDATE roles SET capabilities = array_append(capabilities, 'core.email.send')
   WHERE 'sales.order.read' = ANY(capabilities) AND NOT ('core.email.send' = ANY(capabilities));
 UPDATE roles SET capabilities = array_append(capabilities, 'core.email.personal')
   WHERE 'sales.order.read' = ANY(capabilities) AND NOT ('core.email.personal' = ANY(capabilities));
+
+-- Grant automations/csat/contract capabilities to existing admin roles (additive).
+DO $$
+DECLARE caps text[] := ARRAY['core.it.manage','automations.rule.read','automations.rule.manage','automations.rule.run','automations.template.manage','csat.result.read','csat.survey.manage','core.contract.manage'];
+DECLARE cap text;
+BEGIN
+  FOREACH cap IN ARRAY caps LOOP
+    UPDATE roles SET capabilities = array_append(capabilities, cap) WHERE key = 'admin' AND NOT (cap = ANY(capabilities));
+  END LOOP;
+END $$;

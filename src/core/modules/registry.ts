@@ -22,6 +22,8 @@ import { payrollManifest } from "@/modules/payroll/manifest";
 import { safetyManifest } from "@/modules/safety/manifest";
 import { auditManifest } from "@/modules/audit/manifest";
 import { qualityManifest } from "@/modules/quality/manifest";
+import { automationsManifest } from "@/modules/automations/manifest";
+import { csatManifest } from "@/modules/csat/manifest";
 import { stubModules } from "@/modules/stubs";
 
 /**
@@ -35,7 +37,7 @@ const implemented = [
   payrollManifest, teamsManifest, planningManifest, planManifest,
   analyticsManifest, serviceManifest, marketingManifest, financeManifest,
   logisticsManifest, manufacturingManifest, safetyManifest,
-  auditManifest, qualityManifest, /* ticketingManifest disabled */
+  auditManifest, qualityManifest, automationsManifest, csatManifest, /* ticketingManifest disabled */
 ];
 
 const stubs = stubModules.filter(m =>

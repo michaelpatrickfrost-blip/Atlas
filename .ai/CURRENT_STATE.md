@@ -1,6 +1,6 @@
 # Atlas current state
 
-## IN PROGRESS — Marketing rebuild, Automations, company Email/Social (IT), CSAT, contracts — 4/5 October 2026
+## Platform foundation live — Automations, Email/Social IT, CSAT, contracts — 5 October 2026 (Marketing UI rebuild still pending, see below)
 
 Michael's standing instruction: execute `docs/plans/MARKETING_AUTOMATION_EMAIL_PLAN.md` end to end, no questions, then `npm run deploy:vps`. If a session resumes, **continue that plan from the first unchecked step below**; do not re-plan.
 
@@ -8,7 +8,7 @@ Done so far
 - [x] Plan written (`docs/plans/MARKETING_AUTOMATION_EMAIL_PLAN.md`).
 - [x] Schema + migration `20261005090000_marketing_automation_email_platform` (additive): AutomationEvent/Automation/AutomationRun, EmailAccount/EmailTemplate/EmailMessage, SocialAccount, ContractDocument, CsatSurvey/CsatResponse, Marketing* additions (settings, budget lines, activities, segments, target accounts, brand kit, forms, landing pages, links/UTM, event plans/attendees, knowledge, attribution models, snapshots, paid spend, social posts) and new columns on MarketingCampaign/Content/Lead/Touch. `nodemailer` added. NOT yet applied to the VPS database (deploy script runs `prisma migrate deploy`).
 
-Remaining, in order (also see section H of the plan: CRM projects editable with orgs/quotes attached to the CRM contact; sales order form on two columns; Finance nav options restored; price list pulls the product's price automatically; all exports as XLSX/CSV with column chooser)
+DEPLOYED-PENDING. Remaining, in order (also see section H of the plan: CRM projects editable with orgs/quotes attached to the CRM contact; sales order form on two columns; Finance nav options restored; price list pulls the product's price automatically; all exports as XLSX/CSV with column chooser)
 - Done since: `core/security/secrets.ts`, durable `emit()` (events stored in `automation_events`, sink registered on globalThis), `core/email/*` (blocks, render, ics, send, presets, starters), `core/social/publish.ts`, IT settings pages (email, social, template maker), `sessionForUser()`, `finance/services/auto-invoice.ts`, automations `engine/catalogue.ts` + `engine/context.ts`, public logo + email-open routes, new capabilities. Still to write: automations `engine/run.ts`/actions, tick (`src/instrumentation.ts`), automations + CSAT modules/UI, contracts + `/sign`, `/csat`, `/unsubscribe`, sales email dialog, all Marketing UI/logic, section H items, ERP chain, deploy.
 - [ ] A: `src/core/security/secrets.ts`; durable `emit()` in `src/core/events/bus.ts`; scheduler tick (`src/instrumentation.ts`, `/api/cron/tick`).
 - [ ] B: `sendEmail()` service, IT settings pages (email accounts, social accounts), template maker, capabilities, settings menu.

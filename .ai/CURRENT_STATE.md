@@ -1,5 +1,9 @@
 # Atlas current state
 
+## Live target is the VPS — 4 October 2026
+
+Michael confirmed the live app is https://atlassystem.online (VPS), not the Mac app, and wants every finished change deployed there with `npm run deploy:vps`. Ran it for the input-padding and restored sales composer changes: no pending migrations, service healthy, /login 200. The earlier Mac app install and old-server (217.154.51.15) migrations were not the live target. Feature-level check of New sales order on the VPS not done.
+
 ## Sales document composer restored — 4 October 2026
 
 `src/modules/sales/components/document-composer.tsx` had been replaced by a placeholder in 5a385a3 ("being rebuilt"), so New sales order/quotation showed no form. Restored the full composer from 9972df4 and fixed its build error (stray `</section>` closing the lines card early). `npx tsc --noEmit` clean. Deploy as `composer-restore`; live check of creating an order not yet done unless noted below. Note: my earlier `git add -A` commit 4b6ed33 also swept in other sessions' uncommitted work (44 files, incl. manufacturing services).

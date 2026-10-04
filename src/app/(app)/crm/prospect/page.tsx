@@ -106,7 +106,7 @@ export default async function ProspectPage({ searchParams }: { searchParams: Pro
       {can(session, SALES_CAPABILITIES.prospectManage) && (
         <form action={createIndustry} className="flex flex-wrap items-end gap-3">
           <label className="text-xs font-medium text-[#6e6e73]">New industry
-            <input name="name" required minLength={2} maxLength={60} placeholder="Drainage, house bricks…" className="mt-1.5 block min-w-64" />
+            <input name="name" required minLength={2} maxLength={60} placeholder="Drainage, house bricks…" className="mt-1.5 block min-w-72" />
           </label>
           <Button type="submit" variant="secondary">Add industry</Button>
         </form>

@@ -2,7 +2,7 @@
 
 ## Global text-input padding fix — 4 October 2026
 
-Bare inputs (e.g. CRM "New industry") rendered as thin bars because Tailwind preflight zeroes padding. Added a `@layer base` rule in `src/app/globals.css` giving text inputs/textareas padding, font size and placeholder colour; widened the field in `src/app/(app)/crm/prospect/page.tsx`. Checks: `npx tsc --noEmit` and `npm run build` passed. Deploy BLOCKED: release schema gate reports central DB missing committed migrations (organisations.isTest, inventory_movements.shipmentId/receiptId, stock_reservations.fulfilmentLineId, logistics_shipment_sources.salesOrderId). Next: back up and run `prisma migrate deploy` per docs/DEPLOY.md, then redeploy.
+Bare inputs (e.g. CRM "New industry") rendered as thin bars because Tailwind preflight zeroes padding. Added a `@layer base` rule in `src/app/globals.css` giving text inputs/textareas padding, font size and placeholder colour; widened the field in `src/app/(app)/crm/prospect/page.tsx`. Checks: `npx tsc --noEmit` and `npm run build` passed. Central DB migrations applied 4 Oct 2026 after pg_dump backup (/opt/atlas-test/backups/pre-migration-20261004T194813Z.sql.gz): `20261004100000_customer_templates` had been left half-applied and its parties index used a wrong column name (fixed to "organisationId" in the migration file, remaining objects created idempotently, then `migrate resolve --applied`); `organisation_is_test` and `link_stock_and_shipments` applied via `migrate deploy`. Schema gate: 0 missing. Note: `scripts/apply-central-migrations.sh` cannot take `echo y` (npx eats stdin). DB also records `20261003155019_add_hr_module` with no local file.
 
 ## CSV templates & bulk import for Sales and Customers — live — 4 October 2026, 19:10 BST
 

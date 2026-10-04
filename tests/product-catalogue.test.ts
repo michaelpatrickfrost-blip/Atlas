@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { categoryParentOk, cleanCategoryCode, categoryClass, productClassChoice } from "@/core/products/categories";
 import { assertProductLinks, packContainsLoops } from "@/core/products/links";
-// import { releasedAssignment } from "@/modules/manufacturing/domain/plant"; // Disabled: Manufacturing module disabled
+import { releasedAssignment } from "@/modules/manufacturing/domain/plant";
 
 describe("product categories", () => {
   it("rejects a category placed inside itself", () => {
@@ -47,15 +47,14 @@ describe("packs and products a product needs", () => {
   });
 });
 
-// describe("a product step releases onto the plant", () => {
-//   const centres = new Map([["forming", "centre-1"]]);
-//
-//   it("uses the machine on the recipe rather than a typed name", () => {
-//     expect(releasedAssignment({ workCentreId: "centre-9", resourceId: "press-2", workCentre: "Forming" }, centres)).toEqual({ workCentreId: "centre-9", resourceId: "press-2" });
-//   });
-//
-//   it("still matches an older step that only typed the work centre name", () => {
-//     expect(releasedAssignment({ workCentreId: null, resourceId: null, workCentre: "Forming" }, centres)).toEqual({ workCentreId: "centre-1", resourceId: null });
-//   });
-// });
-// Manufacturing module disabled; tests commented out
+describe("a product step releases onto the plant", () => {
+  const centres = new Map([["forming", "centre-1"]]);
+
+  it("uses the machine on the recipe rather than a typed name", () => {
+    expect(releasedAssignment({ workCentreId: "centre-9", resourceId: "press-2", workCentre: "Forming" }, centres)).toEqual({ workCentreId: "centre-9", resourceId: "press-2" });
+  });
+
+  it("still matches an older step that only typed the work centre name", () => {
+    expect(releasedAssignment({ workCentreId: null, resourceId: null, workCentre: "Forming" }, centres)).toEqual({ workCentreId: "centre-1", resourceId: null });
+  });
+});

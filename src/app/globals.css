@@ -120,6 +120,16 @@ textarea:focus {
   box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.16);
   outline: none;
 }
+@layer base {
+  input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]):not([type=color]),
+  textarea {
+    padding: 0.7rem 0.95rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--color-ink);
+  }
+  input::placeholder, textarea::placeholder { color: #a1a1a6; }
+}
 input[type=checkbox], input[type=radio] { accent-color: #0071e3; }
 select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='1.8'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
 a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--color-atlas-blue); outline-offset: 3px; }

@@ -8,7 +8,7 @@ import { analyticsManifest } from "@/modules/analytics/manifest";
 import { planningManifest } from "@/modules/planning/manifest";
 import { planManifest } from "@/modules/plan/manifest";
 // import { ticketingManifest } from "@/modules/tickets/manifest"; // Disabled due to schema issues
-// import { manufacturingManifest } from "@/modules/manufacturing/manifest"; // Disabled: schema mismatch, awaiting Postgres + schema migration
+import { manufacturingManifest } from "@/modules/manufacturing/manifest";
 import type { ModuleManifest } from "@/core/modules/types";
 import { salesManifest } from "@/modules/sales/manifest";
 import { crmManifest } from "@/modules/crm/manifest";
@@ -19,7 +19,6 @@ import { productsManifest } from "@/modules/products/manifest";
 import { pricingManifest } from "@/modules/pricing/manifest";
 import { peopleManifest } from "@/modules/people/manifest";
 import { payrollManifest } from "@/modules/payroll/manifest";
-// import { manufacturingManifest } from "@/modules/manufacturing/manifest";
 import { safetyManifest } from "@/modules/safety/manifest";
 import { auditManifest } from "@/modules/audit/manifest";
 import { qualityManifest } from "@/modules/quality/manifest";
@@ -35,7 +34,7 @@ const implemented = [
   productsManifest, pricingManifest, peopleManifest, schedulingManifest,
   payrollManifest, teamsManifest, planningManifest, planManifest,
   analyticsManifest, serviceManifest, marketingManifest, financeManifest,
-  logisticsManifest, /* manufacturingManifest disabled */, safetyManifest,
+  logisticsManifest, manufacturingManifest, safetyManifest,
   auditManifest, qualityManifest, /* ticketingManifest disabled */
 ];
 

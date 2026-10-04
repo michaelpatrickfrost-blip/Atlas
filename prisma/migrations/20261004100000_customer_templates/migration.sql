@@ -96,7 +96,7 @@ ALTER TABLE parties ADD COLUMN template_overrides JSONB DEFAULT '{}';
 
 -- Index for template lookups
 CREATE INDEX idx_parties_template
-  ON parties(organisation_id, template_code);
+  ON parties("organisationId", template_code);
 
 -- Template assignment tracking (optional: for auditing which customers use which template)
 CREATE TABLE customer_template_assignments (

@@ -52,7 +52,7 @@ export default async function EditProjectPage({ params }: { params: { projectId:
           <div className="space-y-2">
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
               <p className="text-sm">Add organisations & roles (END_CLIENT, CONTRACTOR, etc.)</p>
-              <Button size="sm">Add</Button>
+              <Button variant="secondary">Add</Button>
             </div>
           </div>
         </div>

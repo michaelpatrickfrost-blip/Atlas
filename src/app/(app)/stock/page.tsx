@@ -10,7 +10,7 @@ export default async function StockPage() {
   const session = await requireSession();
   await assertCapability(session, 'inventory.stock.read');
 
-  const locations = await db.storeLocation.findMany({
+  const locations = await db.stockLocation.findMany({
     where: { organisationId: session.organisationId },
     take: 20,
   });

@@ -142,6 +142,7 @@ model Organisation {
   stockPositions StockPosition[]
   stockReservations StockReservation[]
   stockDiscrepancies StockDiscrepancy[]
+  stockForecasts StockForecast[]
   logisticsPolicy LogisticsPolicy?
   fulfilments FulfilmentRequirement[]
   fulfilmentLines FulfilmentLine[]
@@ -998,6 +999,11 @@ model Product {
   trackingMode String @default("NONE")
   barcode String?
   active          Boolean    @default(true)
+  safetyStockLevel Int @default(0)
+  leadTimeDays Int @default(0)
+  averageDailyDemand Int @default(0)
+  forecastMethod String @default("EXPONENTIAL_SMOOTHING")
+  lastForecastDate DateTime?
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 
@@ -1021,6 +1027,7 @@ model Product {
   manufacturingOrders ManufacturingOrder[]
   manufacturingSupplySuggestions ManufacturingSupplySuggestion[]
   manufacturingDemandForecasts ManufacturingDemandForecast[]
+  stockForecasts StockForecast[]
 
   @@unique([organisationId, code])
   @@unique([organisationId, barcode])
@@ -5543,6 +5550,21 @@ model StockPosition {
  @@unique([warehouseId,locationId,productId,lotId,status])
  @@index([organisationId,productId])
  @@map("stock_positions")
+}
+model StockForecast {
+ id String @id @default(cuid())
+ organisationId String
+ productId String
+ forecastDate DateTime
+ quantity Int
+ method String
+ confidence Int @default(80)
+ notes String?
+ createdAt DateTime @default(now())
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ product Product @relation(fields:[productId],references:[id],onDelete:Cascade)
+ @@index([organisationId,productId,forecastDate])
+ @@map("stock_forecasts")
 }
 model StockReservation {
  id String @id @default(cuid())

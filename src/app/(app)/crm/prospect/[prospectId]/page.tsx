@@ -11,6 +11,7 @@ import { saveProspectGrouping } from "@/modules/crm/services/prospects";
 import { Card } from "@/components/ui/card";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
 import { Button } from "@/components/ui/button";
+import { ActionForm } from "@/components/ui/action-form";
 import { EmptyState } from "@/components/ui/empty-state";
 import { formatMoney } from "@/core/shared/money";
 import {
@@ -70,9 +71,9 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
 
         {canPush && active && prospect.lifecycleStage !== "QUALIFIED" && (
           <div className="flex flex-wrap gap-2">
-            <form action={qualifyFormAction.bind(null, prospect.id)}>
+            <ActionForm action={qualifyFormAction.bind(null, prospect.id)}>
               <Button type="submit" variant="primary">Qualify</Button>
-            </form>
+            </ActionForm>
           </div>
         )}
       </div>
@@ -81,10 +82,10 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
         <Card className="p-4 text-sm text-[var(--color-ink-muted)]">A sales manager assigns the next task and pushes this prospect.</Card>
       )}
 
-      {prospect.lifecycleStage === "QUALIFIED" && canPush && (
+      {active && canPush && (
         <Card className="flex flex-col gap-3 p-4">
-          <p className="text-sm font-medium text-[var(--color-ink)]">Convert to opportunity</p>
-          <form action={convertProspectFormAction.bind(null, prospect.id)} className="flex flex-wrap items-end gap-3">
+          <div><p className="text-sm font-medium text-[var(--color-ink)]">Convert to a deal in the pipeline</p><p className="mt-1 text-xs text-[var(--color-ink-muted)]">Creates the customer record if there is not one yet, and puts the deal in the first pipeline stage.</p></div>
+          <ActionForm action={convertProspectFormAction.bind(null, prospect.id)} className="flex flex-wrap items-end gap-3">
             <label className="flex flex-col gap-1 text-sm">
               <span className="text-[var(--color-ink-muted)]">Opportunity name</span>
               <input name="opportunityName" required defaultValue={`${prospect.companyName} — new business`} className={inputClass} />
@@ -93,8 +94,8 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
               <span className="text-[var(--color-ink-muted)]">Value (£)</span>
               <input name="valueAmount" type="number" step="0.01" min="0" defaultValue={prospect.estimatedValueAmount ? prospect.estimatedValueAmount / 100 : undefined} className={inputClass} />
             </label>
-            <Button type="submit" variant="primary">Convert</Button>
-          </form>
+            <Button type="submit" variant="primary">Convert and add to pipeline</Button>
+          </ActionForm>
         </Card>
       )}
 
@@ -135,15 +136,15 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
             <section>
               <h2 className="mb-3 text-sm font-medium text-[var(--color-ink-muted)]">Manager</h2>
               <Card className="flex flex-col gap-4 p-4">
-                <form action={assignProspectFormAction.bind(null, prospect.id)} className="flex flex-col gap-2">
+                <ActionForm action={assignProspectFormAction.bind(null, prospect.id)} className="flex flex-col gap-2">
                   <label className="flex flex-col gap-1 text-xs text-[var(--color-ink-muted)]">Prospect owner
                     <select name="ownerUserId" defaultValue={prospect.ownerUserId ?? ""} className={inputClass}>
                       {colleagues.map((member) => <option key={member.userId} value={member.userId}>{member.user.name}</option>)}
                     </select>
                   </label>
                   <Button type="submit" variant="secondary">Assign prospect</Button>
-                </form>
-                <form action={assignProspectTaskFormAction.bind(null, prospect.id)} className="flex flex-col gap-2 border-t border-[var(--color-border)] pt-4">
+                </ActionForm>
+                <ActionForm action={assignProspectTaskFormAction.bind(null, prospect.id)} className="flex flex-col gap-2 border-t border-[var(--color-border)] pt-4">
                   <label className="flex flex-col gap-1 text-xs text-[var(--color-ink-muted)]">Task for
                     <select name="ownerUserId" defaultValue={prospect.ownerUserId ?? ""} className={inputClass}>
                       {colleagues.map((member) => <option key={member.userId} value={member.userId}>{member.user.name}</option>)}
@@ -152,7 +153,7 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
                   <input name="subject" placeholder="Task" required className={inputClass} />
                   <input name="dueAt" type="date" className={inputClass} />
                   <Button type="submit" variant="secondary">Assign task</Button>
-                </form>
+                </ActionForm>
               </Card>
             </section>
           )}
@@ -160,7 +161,7 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
           {canManage && active && (
             <section>
               <h2 className="mb-3 text-sm font-medium text-[var(--color-ink-muted)]">Log activity</h2>
-              <form action={logProspectActivityFormAction.bind(null, prospect.id)} className="flex flex-col gap-3 rounded-[var(--radius-atlas-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+              <ActionForm action={logProspectActivityFormAction.bind(null, prospect.id)} className="flex flex-col gap-3 rounded-[var(--radius-atlas-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
                 <div className="grid grid-cols-2 gap-3">
                   <select name="type" defaultValue="CALL" className={inputClass}>
                     {ACTIVITY_TYPES.map((type) => (
@@ -171,7 +172,7 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
                 </div>
                 <textarea name="notes" rows={2} placeholder="Notes..." className={`${inputClass} resize-none`} />
                 <Button type="submit" variant="secondary" className="self-start">Log activity</Button>
-              </form>
+              </ActionForm>
             </section>
           )}
 
@@ -200,7 +201,7 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
             <section>
               <h2 className="mb-3 text-sm font-medium text-[var(--color-ink-muted)]">Industry and tags</h2>
               <Card className="flex flex-col gap-3 p-4">
-                <form action={saveProspectGrouping.bind(null, prospect.id)} className="flex flex-col gap-3">
+                <ActionForm action={saveProspectGrouping.bind(null, prospect.id)} className="flex flex-col gap-3">
                   <label className="text-xs text-[var(--color-ink-muted)]">Industry
                     <select name="industryId" defaultValue={prospect.industryId ?? ""} className={`${inputClass} mt-1 w-full`}>
                       <option value="">None</option>
@@ -215,7 +216,7 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
                   </div>
                   <input name="tag" placeholder="Add a tag" className={inputClass} />
                   <Button type="submit" variant="secondary">Save grouping</Button>
-                </form>
+                </ActionForm>
               </Card>
             </section>
           )}
@@ -232,18 +233,18 @@ export default async function ProspectRecordPage({ params }: { params: Promise<{
             <section>
               <h2 className="mb-3 text-sm font-medium text-[var(--color-ink-muted)]">Not ready to buy?</h2>
               <Card className="flex flex-col gap-4 p-4">
-                <form action={nurtureFormAction.bind(null, prospect.id)} className="flex flex-col gap-2">
+                <ActionForm action={nurtureFormAction.bind(null, prospect.id)} className="flex flex-col gap-2">
                   <label className="flex flex-col gap-1 text-xs text-[var(--color-ink-muted)]">
                     Nurture — review on
                     <input name="nextReviewAt" type="date" className={inputClass} />
                   </label>
                   <input name="reason" placeholder="Reason (optional)" className={inputClass} />
                   <Button type="submit" variant="secondary">Move to nurture</Button>
-                </form>
-                <form action={disqualifyFormAction.bind(null, prospect.id)} className="flex flex-col gap-2 border-t border-[var(--color-border)] pt-4">
+                </ActionForm>
+                <ActionForm action={disqualifyFormAction.bind(null, prospect.id)} className="flex flex-col gap-2 border-t border-[var(--color-border)] pt-4">
                   <input name="reason" placeholder="Disqualification reason" className={inputClass} />
                   <Button type="submit" variant="ghost">Disqualify</Button>
-                </form>
+                </ActionForm>
               </Card>
             </section>
           )}

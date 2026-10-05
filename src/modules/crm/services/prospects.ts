@@ -167,6 +167,17 @@ export async function convertProspect(prospectId: string, opts: { existingPartyI
 
   const prospect = await db.prospect.findFirstOrThrow({ where: { id: prospectId, organisationId: session.organisationId }, include: { industry: true } });
 
+  if (prospect.lifecycleStage === "CONVERTED") {
+    const done = await db.opportunity.findFirst({ where: { organisationId: session.organisationId, prospectId: prospect.id }, orderBy: { createdAt: "desc" } });
+    if (done) return done;
+  }
+  if (prospect.lifecycleStage === "DISQUALIFIED") throw new Error("This prospect was disqualified. Reopen it before converting.");
+  const name = opts.opportunityName.trim().slice(0, 200);
+  if (!name) throw new Error("Give the opportunity a name.");
+  if (!Number.isSafeInteger(opts.valueAmount) || opts.valueAmount < 0 || opts.valueAmount > 2_000_000_000) throw new Error("Enter a value of zero or more.");
+  // The pipeline is resolved before any customer record is created, so a failed convert leaves nothing behind.
+  const pipeline = await getDefaultPipeline(session.organisationId);
+
   let partyId = opts.existingPartyId ?? prospect.partyId ?? undefined;
   if (!partyId) {
     await assertRecordCreationAllowed(session.organisationId,"customers");
@@ -215,17 +226,12 @@ export async function convertProspect(prospectId: string, opts: { existingPartyI
     }
   }
 
-  const pipeline = await getDefaultPipeline(session.organisationId);
-  if (!pipeline || pipeline.stages.length === 0) {
-    throw new Error("NO_PIPELINE: organisation has no sales pipeline configured");
-  }
-
   const opportunity = await db.opportunity.create({
     data: {
       organisationId: session.organisationId,
       partyId,
       prospectId: prospect.id,
-      name: opts.opportunityName,
+      name,
       pipelineId: pipeline.id,
       stageId: pipeline.stages[0].id,
       probability: pipeline.stages[0].defaultProbability,

@@ -1,5 +1,29 @@
 # Atlas current state
 
+## CRM convert crash, automatic pipeline, New deal — 5 October 2026
+
+- **Cause of the CRM crash.** Pipelines were only ever created by the demo seed. A real company had none,
+  so `convertProspect` threw `NO_PIPELINE` (seen in the VPS log) and the plain `<form>` showed the error
+  screen; each failed attempt also left a new PROSPECT customer behind, because the customer was created
+  before the pipeline check. `getDefaultPipeline` now creates the standard pipeline (five stages) and loss
+  reasons when a company has none. `convertProspect` resolves the pipeline and validates before creating
+  anything, and returns the existing opportunity if the prospect is already converted.
+- Prospect page forms use `ActionForm`, so an error is a message, not a crash. Convert is offered on any
+  open prospect ("Convert and add to pipeline"), not only Qualified.
+- `/crm/pipeline`: **New deal** dialog (customer or prospect, name, value, expected close;
+  `crm/pipeline/actions.ts`) and **Add to pipeline** on each prospect card. There was previously no way to
+  create an opportunity except by converting a qualified prospect.
+- Live data note: company "Michael Test" has two PROSPECT customers named "Michae" (C000002, C000003) left
+  by the failed converts. Not deleted by the agent.
+- **Deploy risk found.** `deploy-vps.sh` rebuilds `.next` and reinstalls `node_modules` in place under the
+  running service; the VPS log shows chunk-load and "no production build" errors during every build
+  today. Pages can fail for the few minutes a deploy runs. Not fixed: needs a build in a separate
+  directory and a swap, to be done and tested deliberately.
+
+**Checks run:** `npx tsc --noEmit` clean. Local dev app: `/crm/pipeline` for a company with no pipeline
+created it and rendered; New deal for a customer appeared in Qualified. Convert from a prospect not
+exercised locally (no prospect in the local company).
+
 ## Order lines show stock — 5 October 2026
 
 `document-composer.tsx` order lines (layout only; save unchanged): flat `[code] name` rows via

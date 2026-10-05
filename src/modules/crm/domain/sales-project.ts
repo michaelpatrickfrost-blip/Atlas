@@ -3,3 +3,7 @@ export const ORGANISATION_ROLES = ["END_CLIENT", "CONTRACTOR", "MERCHANT", "SPEC
 export const STAKEHOLDER_ROLES = ["DECISION_MAKER", "BUYER", "ESTIMATOR", "ENGINEER", "SPECIFIER", "COMMERCIAL_MANAGER", "QUANTITY_SURVEYOR", "SITE_MANAGER", "ACCOUNTS_PAYABLE", "INFLUENCER", "CHAMPION", "BLOCKER", "OTHER"] as const;
 export const stageLabel = (value: string) => value.replaceAll("_", " ").toLowerCase().replace(/^./, (letter) => letter.toUpperCase());
 export const stageTone = (stage: string): "success" | "warning" | "danger" | "neutral" => ["AWARDED", "LIVE", "COMPLETED"].includes(stage) ? "success" : ["LOST", "CANCELLED"].includes(stage) ? "danger" : ["DORMANT", "IDENTIFIED"].includes(stage) ? "neutral" : "warning";
+
+/** Sales projects are one set of records, opened from CRM or from Sales. */
+export type ProjectBase = "/crm/projects" | "/sales/projects";
+export const projectBase = (value: unknown): ProjectBase => (value === "/sales/projects" ? "/sales/projects" : "/crm/projects");

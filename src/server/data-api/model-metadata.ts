@@ -30147,6 +30147,42 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "lowFollowUpQuestion": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "reasons": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "lowLabel": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "highLabel": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "emailSubject": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "emailIntro": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
     "thanksText": {
       "type": "String",
       "list": false,
@@ -30261,6 +30297,12 @@ export const MODEL_FIELDS = {
       "type": "String",
       "list": false,
       "nullable": true,
+      "relation": false
+    },
+    "reasons": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
       "relation": false
     },
     "sentAt": {

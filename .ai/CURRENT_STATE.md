@@ -1,5 +1,38 @@
 # Atlas current state
 
+## CSAT templates, Sales Projects section, installers and delivery addresses — 5 October 2026
+
+- **CSAT** (`src/modules/csat`, `/csat`, `/csat/surveys`, `/csat/surveys/[surveyId]`): seven ready-made
+  survey templates (`domain/templates.ts`: delivery, order, quotation, support case, invoice, first month,
+  job won), each with email subject and opening, scale labels, reasons to tick, separate follow-up for a
+  score of 3 or lower. Surveys are fully editable with a live customer preview; delete only before first
+  send. Public form (`/csat/[token]`) shows labels and reasons and saves them (`csat_responses.reasons`).
+  Results page: filter by survey and period, happy %, need-a-call count, reasons good vs poor, answers
+  linked to the customer. Additive migration `20261005160000_csat_survey_templates`.
+- **Attach in Automations**: "Attach to an automation" on a survey opens `/automations/new?survey=<id>`
+  with trigger, wait and the survey step filled from the template. The survey email uses the survey's own
+  subject and opening when no email template is chosen. Two automation templates added (delivered → survey;
+  poor score → notify owner and create a call-back task). The builder's survey picker links to Surveys.
+- **Sales → Projects** (`/sales/projects`, new, detail): the same sales project records as CRM → Projects,
+  rendered by shared components in `src/modules/crm/components/sales-project-{list,new,detail}.tsx` with a
+  `base` so links, redirects and revalidation stay in the app the person is in. The opportunity page has a
+  Sales project panel with a prefilled New sales project. The older panel that creates Projects-app
+  projects is relabelled "Delivery project".
+- **Installers and delivery addresses** (`document-composer.tsx`, `new-delivery-address.tsx`,
+  `services/delivery-address.ts`): "Installer / for" replaces "Pricing account". Customer = the branch that
+  is invoiced; installer = its own customer record (`customerGroup` Installer) joined by
+  `CustomerTradingLink`. "+ New installer" creates the record and link inline; choosing an unlinked
+  customer links it on save (previously an error). Delivery addresses are grouped by owner (installer
+  first) and default to the installer's; "+ New delivery address" saves to the installer's (or customer's)
+  record and selects it. Customer record: Add delivery address / Add another address buttons.
+
+**Checks run:** `npx tsc --noEmit` clean; eslint no errors in changed files. Local dev app: order form with
+a customer, created an installer inline, saw it selected and the invoiced/delivered line. Not exercised:
+saving an order with an installer, inline delivery address save, CSAT screens in a browser, survey send.
+
+**Open:** company email (IMAP) set-up rework and Facebook/Instagram/Threads scheduler in Marketing
+(requested, not started).
+
 ## CRM convert crash, automatic pipeline, New deal — 5 October 2026
 
 - **Cause of the CRM crash.** Pipelines were only ever created by the demo seed. A real company had none,

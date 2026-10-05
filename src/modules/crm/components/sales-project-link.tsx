@@ -21,13 +21,13 @@ export async function SalesProjectLink({ kind, documentId }: { kind: "quote" | "
   return <section className="rounded-2xl border border-slate-200 bg-white p-5">
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div><h3 className="text-sm font-semibold">Sales project</h3><p className="mt-1 text-xs text-slate-500">The job this {kind === "quote" ? "quotation" : "order"} is for. Its value counts towards the project.</p></div>
-      {current ? <Link href={`/crm/projects/${current.id}`} className="text-sm text-blue-600">{current.reference} · {current.name} →</Link> : <p className="text-sm text-slate-400">Not on a project</p>}
+      {current ? <Link href={`/sales/projects/${current.id}`} className="text-sm text-blue-600">{current.reference} · {current.name} →</Link> : <p className="text-sm text-slate-400">Not on a project</p>}
     </div>
     {change && <ActionForm action={setDocumentSalesProjectAction} className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
       <input type="hidden" name="kind" value={kind} /><input type="hidden" name="documentId" value={documentId} />
       <label className="text-xs text-slate-500">Project<select name="salesProjectId" defaultValue={current?.id ?? ""} className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"><option value="">No sales project</option>{[...projects].sort((a, b) => Number(here(b)) - Number(here(a))).map((project) => <option key={project.id} value={project.id}>{project.reference} · {project.name}{here(project) ? " · this customer" : ""}</option>)}</select></label>
       <Button type="submit">Save project</Button>
     </ActionForm>}
-    {change && !projects.length && <p className="mt-3 text-xs text-slate-500">No sales projects yet. <Link href={`/crm/projects/new?customer=${document.partyId}`} className="font-medium text-blue-600">Create one →</Link></p>}
+    {change && !projects.length && <p className="mt-3 text-xs text-slate-500">No sales projects yet. <Link href={`/sales/projects/new?customer=${document.partyId}`} className="font-medium text-blue-600">Create one →</Link></p>}
   </section>;
 }

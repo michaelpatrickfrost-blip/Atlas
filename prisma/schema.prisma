@@ -7877,6 +7877,15 @@ model CsatSurvey {
   name String
   question String
   followUpQuestion String @default("Anything we could do better?")
+  /** Asked instead of the follow-up when the score is 3 or lower. Empty means use the follow-up. */
+  lowFollowUpQuestion String @default("")
+  /** Things the customer can tick to say what the score was about. */
+  reasons String[] @default([])
+  lowLabel String @default("Very unhappy")
+  highLabel String @default("Very happy")
+  /** The email that carries the survey when an automation uses no email template. Merge fields allowed. */
+  emailSubject String @default("")
+  emailIntro String @default("") @db.Text
   thanksText String @default("Thank you for your feedback.")
   scale Int @default(5)
   context String @default("GENERAL")
@@ -7901,6 +7910,7 @@ model CsatResponse {
   entityId String?
   score Int?
   comment String?
+  reasons String[] @default([])
   sentAt DateTime @default(now())
   respondedAt DateTime?
   automationRunId String?

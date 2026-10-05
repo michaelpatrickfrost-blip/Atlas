@@ -22,7 +22,13 @@ export function Addresses({ customer, session }: { customer: Customer; session: 
   return (
     <div className="flex flex-col gap-8">
       <section>
-        <h2 className="mb-3 text-sm font-medium text-[var(--color-ink-muted)]">Addresses</h2>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-sm font-medium text-[var(--color-ink-muted)]">Addresses</h2>
+          {canManageAddresses && <div className="flex flex-wrap gap-2">
+            <CreateDialog label="Add delivery address" title="Add a delivery address"><ActionForm action={createAddressFormAction.bind(null, customer.id)}><div className="flex flex-col gap-3"><AddressFields kind="DELIVERY" /><Button type="submit" variant="primary" className="self-start">Add address</Button></div></ActionForm></CreateDialog>
+            <CreateDialog label="Add another address" title="Add an address" variant="secondary"><ActionForm action={createAddressFormAction.bind(null, customer.id)}><div className="flex flex-col gap-3"><AddressFields kind="BILLING" /><Button type="submit" variant="primary" className="self-start">Add address</Button></div></ActionForm></CreateDialog>
+          </div>}
+        </div>
         {addresses.length === 0 ? (
           <EmptyState title="No addresses yet." />
         ) : (
@@ -47,17 +53,6 @@ export function Addresses({ customer, session }: { customer: Customer; session: 
           </div>
         )}
 
-        {canManageAddresses && (
-          <details className="mt-3 rounded-[var(--radius-atlas-md)] border border-dashed border-[var(--color-border)] p-4">
-            <summary className="cursor-pointer text-sm font-medium text-[var(--color-atlas-blue)]">Add address</summary>
-            <form action={createAddressFormAction.bind(null, customer.id)} className="mt-3 flex flex-col gap-3">
-              <AddressFields />
-              <Button type="submit" variant="primary" className="self-start">
-                Add address
-              </Button>
-            </form>
-          </details>
-        )}
       </section>
     </div>
   );
@@ -66,10 +61,10 @@ export function Addresses({ customer, session }: { customer: Customer; session: 
 const inputClass =
   "rounded-[var(--radius-atlas-sm)] border border-[var(--color-border-strong)] px-3 py-2 text-sm outline-none focus:border-[var(--color-atlas-blue)]";
 
-function AddressFields({ address }: { address?: Customer["addresses"][number] }) {
+function AddressFields({ address, kind = "BILLING" }: { address?: Customer["addresses"][number]; kind?: string }) {
   return <>
     <div className="grid grid-cols-2 gap-3">
-      <select name="type" aria-label="Kind of address" className={inputClass} defaultValue={address?.type ?? "BILLING"}>{ADDRESS_TYPES.map((type) => <option key={type} value={type}>{type.charAt(0) + type.slice(1).toLowerCase()}</option>)}</select>
+      <select name="type" aria-label="Kind of address" className={inputClass} defaultValue={address?.type ?? kind}>{ADDRESS_TYPES.map((type) => <option key={type} value={type}>{type.charAt(0) + type.slice(1).toLowerCase()}</option>)}</select>
       <input name="label" placeholder="Name for this address (optional)" defaultValue={address?.label ?? ""} className={inputClass} />
     </div>
     <input name="line1" placeholder="Address line 1" required defaultValue={address?.line1 ?? ""} className={inputClass} />
@@ -84,7 +79,7 @@ function AddressFields({ address }: { address?: Customer["addresses"][number] })
     <input name="deliveryInstructions" placeholder="Delivery instructions (optional)" defaultValue={address?.deliveryInstructions ?? ""} className={inputClass} />
     <div className="flex gap-4">
       <label className="flex items-center gap-1.5 text-sm text-[var(--color-ink-muted)]"><input type="checkbox" name="isDefaultBilling" defaultChecked={address?.isDefaultBilling} /> Default billing</label>
-      <label className="flex items-center gap-1.5 text-sm text-[var(--color-ink-muted)]"><input type="checkbox" name="isDefaultDelivery" defaultChecked={address?.isDefaultDelivery} /> Default delivery</label>
+      <label className="flex items-center gap-1.5 text-sm text-[var(--color-ink-muted)]"><input type="checkbox" name="isDefaultDelivery" defaultChecked={address ? address.isDefaultDelivery : kind === "DELIVERY" && false} /> Default delivery</label>
     </div>
   </>;
 }

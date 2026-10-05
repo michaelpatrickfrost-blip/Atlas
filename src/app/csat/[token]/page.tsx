@@ -12,7 +12,7 @@ export default async function CsatPage({ params, searchParams }: { params: Promi
   const picked = score ? Math.min(5, Math.max(1, Number(score))) : undefined;
   return (
     <Shell brand={brand}>
-      <CsatForm token={token} question={response.survey.question} followUpQuestion={response.survey.followUpQuestion} thanksText={response.survey.thanksText} initialScore={picked} alreadyScore={response.score ?? undefined} />
+      <CsatForm token={token} survey={{ question: response.survey.question, followUpQuestion: response.survey.followUpQuestion, lowFollowUpQuestion: response.survey.lowFollowUpQuestion, thanksText: response.survey.thanksText, lowLabel: response.survey.lowLabel, highLabel: response.survey.highLabel, reasons: response.survey.reasons }} accent={brand.accent} initialScore={picked} alreadyScore={response.score ?? undefined} />
     </Shell>
   );
 }
@@ -20,7 +20,7 @@ export default async function CsatPage({ params, searchParams }: { params: Promi
 function Shell({ brand, children }: { brand: { name: string; accent: string } | null; children: React.ReactNode }) {
   return (
     <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f4f4f5", padding: 24 }}>
-      <div style={{ maxWidth: 440, width: "100%", background: "#fff", borderRadius: 16, padding: 32, borderTop: `3px solid ${brand?.accent ?? "#1d1d1f"}` }}>
+      <div style={{ maxWidth: 480, width: "100%", background: "#fff", borderRadius: 16, padding: 32, borderTop: `3px solid ${brand?.accent ?? "#1d1d1f"}` }}>
         <p style={{ fontWeight: 700, marginBottom: 16 }}>{brand?.name ?? "Atlas"}</p>
         {children}
       </div>

@@ -9,6 +9,7 @@ import { writeAudit } from "@/core/audit/log";
 import { SalesProjectStage, SalesProjectOrganisationRole, SalesProjectStakeholderRole } from "@/generated/prisma/client";
 import { generateSalesProjectReference } from "./sales-projects-queries";
 import { refreshSalesProjectValues } from "./sales-project-values";
+import { projectBase } from "../domain/sales-project";
 
 const text = (form: FormData, name: string, max = 2000) => String(form.get(name) ?? "").trim().slice(0, max);
 const date = (form: FormData, name: string) => { const value = text(form, name, 10); if (!value) return null; const parsed = new Date(`${value}T00:00:00Z`); if (Number.isNaN(parsed.getTime())) throw new Error("Enter a valid date."); return parsed; };
@@ -25,8 +26,7 @@ async function owned(organisationId: string, id: string) {
   return project;
 }
 function done(id: string) {
-  revalidatePath("/crm/projects");
-  revalidatePath(`/crm/projects/${id}`);
+  for (const base of ["/crm/projects", "/sales/projects"]) { revalidatePath(base); revalidatePath(`${base}/${id}`); }
 }
 
 export async function createSalesProject(input: { name: string; description?: string; ownerUserId: string; teamId?: string; potentialValueAmount?: number; industryId?: string; stage?: SalesProjectStage; targetAwardDate?: Date; primaryOrganisationId?: string }) {
@@ -44,6 +44,7 @@ export async function createSalesProject(input: { name: string; description?: st
   });
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "sales_project.created", entityType: "SalesProject", entityId: project.id, after: { reference, name } });
   revalidatePath("/crm/projects");
+  revalidatePath("/sales/projects");
   return project;
 }
 
@@ -51,7 +52,7 @@ export async function createSalesProjectFormAction(form: FormData) {
   const stage = text(form, "stage", 40);
   const project = await createSalesProject({ name: text(form, "name", 200), description: text(form, "description") || undefined, ownerUserId: "", potentialValueAmount: pounds(form, "potentialValue") ?? undefined, stage: stage in SalesProjectStage ? (stage as SalesProjectStage) : undefined, targetAwardDate: date(form, "targetAwardDate") ?? undefined, primaryOrganisationId: text(form, "partyId", 60) || undefined });
   const { redirect } = await import("next/navigation");
-  redirect(`/crm/projects/${project.id}`);
+  redirect(`${projectBase(form.get("base"))}/${project.id}`);
 }
 
 export async function saveSalesProjectAction(form: FormData) {
@@ -163,6 +164,7 @@ export async function deleteSalesProjectAction(form: FormData) {
   ]);
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "sales_project.deleted", entityType: "SalesProject", entityId: id, before: { reference: project.reference, name: project.name } });
   revalidatePath("/crm/projects");
+  revalidatePath("/sales/projects");
   const { redirect } = await import("next/navigation");
-  redirect("/crm/projects");
+  redirect(projectBase(form.get("base")));
 }

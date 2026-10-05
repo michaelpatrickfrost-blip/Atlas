@@ -60,7 +60,7 @@ export async function runStep(organisationId: string, ownerSession: Session, ste
         const { publicBaseUrl } = await import("@/core/email/render");
         const csatUrl = `${publicBaseUrl()}/csat/${token}`;
         const result = await sendEmail({ organisationId, to: recipient.email, toName: recipient.name, templateId: step.params.template || undefined, accountId: step.params.account || undefined, actorUserId: ownerSession.userId, context: { ...ctx.display, csat: { url: csatUrl } }, partyId: ctx.ids.partyId, contactId: ctx.ids.contactId,
-          ...(step.params.template ? {} : { subject: survey.question, blocks: [{ id: "h", type: "heading", text: survey.question }, { id: "c", type: "csat", question: survey.question }] as never }) });
+          ...(step.params.template ? {} : { subject: survey.emailSubject || survey.question, blocks: [{ id: "i", type: "text", text: survey.emailIntro || "Hello {{contact.firstName}},\n\nWe would value your view. It takes one tap." }, { id: "c", type: "csat", question: survey.question }, { id: "t", type: "text", text: `1 is ${survey.lowLabel.toLowerCase()}, 5 is ${survey.highLabel.toLowerCase()}. Thank you.` }] as never }) });
         return result.status === "SENT" ? { ...base, status: "OK", detail: `Survey sent to ${recipient.email}. Response ${response.id}.` } : { ...base, status: "FAILED", detail: result.error ?? "Could not send." };
       }
       case "send_invite": {

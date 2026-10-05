@@ -28,6 +28,7 @@ import { MilestoneToggle } from "@/app/(app)/crm/opportunities/[opportunityId]/m
 import { projectScope } from "@/core/permissions/work-access";
 import { commitmentView } from "@/modules/sales/services/call-off-balance";
 import { CommercialLinks } from "@/modules/sales/components/commercial-links";
+import { OpportunitySalesProjects } from "@/modules/crm/components/opportunity-sales-projects";
 import { deliverAndInvoiceCallOff } from "@/modules/sales/services/commercial";
 
 const inputClass = "rounded-[var(--radius-atlas-sm)] border border-[var(--color-border-strong)] px-3 py-2 text-sm outline-none focus:border-[var(--color-atlas-blue)]";
@@ -128,6 +129,7 @@ export default async function OpportunityRecordPage({ params }: { params: Promis
       <section className="space-y-4">
         <h2 className="text-xs font-medium uppercase tracking-[0.14em] text-[var(--color-ink-faint)]">Projects and call-offs</h2>
         {dealProjects.map((project) => <Link key={project.id} href={`/projects/${project.id}`} className="block text-sm text-[var(--color-atlas-blue)]">{project.reference} · {project.name}</Link>)}
+        <OpportunitySalesProjects partyId={opportunity.partyId} name={opportunity.name} valueAmount={opportunity.valueAmount} />
         <CommercialLinks target="opportunity" recordId={opportunity.id} partyId={opportunity.partyId} opportunityId={opportunity.id} projects={linkableProjects} canLink={can(session, "projects.read") || can(session, "projects.manage")} canCreateQuote={can(session, SALES_CAPABILITIES.quoteCreate)} canCreateOrder={can(session, SALES_CAPABILITIES.orderCreate)} />
         {agreements.map((agreement) => {
           const open = commitmentView(agreement.lines, agreement.callOffs);

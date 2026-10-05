@@ -22,8 +22,8 @@ export function CommercialLinks({
   return <section className="rounded-2xl border border-slate-200 bg-white p-5">
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div>
-        <h3 className="text-sm font-semibold">Project</h3>
-        <p className="mt-1 text-xs text-slate-500">The same delivery project is shared by CRM, the quotation and the sales order.</p>
+        <h3 className="text-sm font-semibold">Delivery project</h3>
+        <p className="mt-1 text-xs text-slate-500">For running the work after the sale, in the Projects app. The job you are selling is the sales project above.</p>
       </div>
       {project ? <Link href={`/projects/${project.id}`} className="text-sm text-blue-600">{project.reference} · {project.name} →</Link> : <p className="text-sm text-slate-400">No project yet</p>}
     </div>

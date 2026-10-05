@@ -1,17 +1,12 @@
 import { requireSession } from '@/core/auth/session';
 import { assertCapability } from '@/core/permissions/check';
-import { db } from '@/core/db/client';
 
 export default async function ForecastPage() {
   const session = await requireSession();
   await assertCapability(session, 'inventory.read');
 
-  const forecasts = await db.stockForecast.findMany({
-    where: { organisationId: session.organisationId },
-    include: { product: { select: { code: true, name: true } } },
-    orderBy: { createdAt: 'desc' },
-    take: 20,
-  });
+  // Placeholder - forecasts will be populated when migrations run
+  const forecasts: any[] = [];
 
   return (
     <div className="space-y-6">

@@ -7,13 +7,13 @@ export default async function StockLevelsPage() {
   await assertCapability(session, 'inventory.read');
 
   const positions = await db.stockPosition.findMany({
-    where: { organisation: { id: session.organisationId } },
+    where: { organisationId: session.organisationId },
     include: {
       product: { select: { code: true, name: true } },
       warehouse: { select: { name: true } },
       location: { select: { code: true } },
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { id: 'desc' },
     take: 50,
   });
 

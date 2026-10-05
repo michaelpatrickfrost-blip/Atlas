@@ -28,9 +28,9 @@ export default async function AdjustmentsPage() {
           <p className="text-2xl font-bold mt-1">{movements.length}</p>
         </div>
         <div className="p-4 border rounded">
-          <p className="text-sm text-gray-600">Quantity Adjusted</p>
+          <p className="text-sm text-gray-600">Total Quantity Changed</p>
           <p className="text-2xl font-bold mt-1">
-            {movements.reduce((sum, m) => sum + m.quantity, 0).toLocaleString()}
+            {movements.reduce((sum, m) => sum + m.delta, 0).toLocaleString()}
           </p>
         </div>
         <div className="p-4 border rounded">
@@ -74,15 +74,15 @@ export default async function AdjustmentsPage() {
                     <td className="p-3">
                       <span
                         className={`px-2 py-1 rounded text-xs font-medium ${
-                          movement.quantity > 0
+                          movement.delta > 0
                             ? 'bg-green-100 text-green-800'
                             : 'bg-red-100 text-red-800'
                         }`}
                       >
-                        {movement.quantity > 0 ? 'Addition' : 'Reduction'}
+                        {movement.delta > 0 ? 'Addition' : 'Reduction'}
                       </span>
                     </td>
-                    <td className="p-3 text-right font-mono">{Math.abs(movement.quantity)}</td>
+                    <td className="p-3 text-right font-mono">{Math.abs(movement.delta)}</td>
                     <td className="p-3">{movement.reason || '—'}</td>
                     <td className="p-3 text-gray-600">{movement.createdAt.toLocaleDateString()}</td>
                   </tr>

@@ -26,7 +26,15 @@ export async function addInstaller(invoiceAccountId: string, input: { name: stri
   if (!(await db.party.findFirst({ where: { id: invoiceAccountId, organisationId: session.organisationId }, select: { id: true } }))) throw new Error("The invoice customer no longer exists.");
   const installer = await createCustomer({ name, kind: "COMPANY", customerGroup: "Delivery account", hierarchyRole: "DELIVERY", contactFirstName: String(input.contactFirstName ?? "").trim().slice(0, 100) || name, contactSurname: String(input.contactSurname ?? "").trim().slice(0, 100), contactPhone: String(input.contactPhone ?? "").trim().slice(0, 40) || undefined, contactEmail: String(input.contactEmail ?? "").trim().slice(0, 200) || undefined });
   await linkOrderedFor(session.organisationId, session.userId, installer.id, invoiceAccountId);
-  return { id: installer.id, name: installer.name, code: installer.customerCode, parentId: null as string | null, currency: installer.preferredCurrency, defaultListId: null as string | null };
+  return { id: installer.id, name: installer.name, code: installer.customerCode, role: "DELIVERY", parentId: null as string | null, currency: installer.preferredCurrency, defaultListId: null as string | null };
+}
+
+/** A delivery account does not buy from us: it buys through our customer, so the customer's prices apply. */
+export async function pricePartyId(organisationId: string, partyId: string, pricingPartyId: string | null) {
+  if (!pricingPartyId || pricingPartyId === partyId) return partyId;
+  const { db } = await import("@/core/db/client");
+  const account = await db.party.findFirst({ where: { id: pricingPartyId, organisationId }, select: { hierarchyRole: true } });
+  return account?.hierarchyRole === "DELIVERY" ? partyId : pricingPartyId;
 }
 
 /** The installer (account) is supplied through the branch (trading account) that is invoiced. */

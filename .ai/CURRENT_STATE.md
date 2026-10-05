@@ -20,6 +20,10 @@
   map, quick create and imports. Accounts created from the order form are independent records at that
   level, joined to each business that orders for them by `CustomerTradingLink` (many businesses, one record).
 
+- **Delivery accounts are non-buying**: they cannot be chosen as the invoiced Customer on a quotation or
+  order, "Ordered for" offers linked accounts and other delivery accounts only, and prices resolve from the
+  buying customer (`pricePartyId` in `sales/services/delivery-address.ts`, used on save and re-price).
+
 **Checks run:** `npx tsc --noEmit` clean; eslint no errors on new files. Local dev app: `/marketing/social`
 and `/settings/it/email` render. **Not tested:** a real IMAP sign-in or sync, any real Facebook, Instagram
 or Threads post (no accounts or tokens available to the agent), scheduled publishing end to end.

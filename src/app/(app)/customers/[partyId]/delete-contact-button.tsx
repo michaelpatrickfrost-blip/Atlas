@@ -10,7 +10,7 @@ export function DeleteContactButton({ contactId, partyId, contactName }: { conta
       message={`Delete ${contactName}? This cannot be undone.`}
       confirmLabel="Delete"
       confirmVariant="danger"
-      onConfirm={() => void deleteContactFormAction(contactId, partyId)}
+      onConfirm={async () => { await deleteContactFormAction(contactId, partyId); }}
       trigger={(openDialog) => (
         <button
           type="button"

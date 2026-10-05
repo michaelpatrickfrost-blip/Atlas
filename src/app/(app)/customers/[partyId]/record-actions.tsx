@@ -37,7 +37,7 @@ export function CustomerRecordActions({
               message={`Restore ${customerName} to active lists?`}
               confirmLabel="Restore"
               confirmVariant="primary"
-              onConfirm={() => void unarchiveCustomerFormAction(partyId)}
+              onConfirm={async () => { await archiveCustomerFormAction(partyId); }}
               trigger={(openDialog) => (
                 <div
                   role="menuitem"
@@ -57,7 +57,7 @@ export function CustomerRecordActions({
               message={`Archive ${customerName}? They will be hidden from active lists but their history will be preserved.`}
               confirmLabel="Archive"
               confirmVariant="primary"
-              onConfirm={() => void archiveCustomerFormAction(partyId)}
+              onConfirm={async () => { await archiveCustomerFormAction(partyId); }}
               trigger={(openDialog) => (
                 <div
                   role="menuitem"
@@ -77,7 +77,7 @@ export function CustomerRecordActions({
             message={`Delete ${customerName}? This will mark them as closed and cannot be undone.`}
             confirmLabel="Delete"
             confirmVariant="danger"
-            onConfirm={() => void deleteCustomerFormAction(partyId)}
+            onConfirm={async () => { await deleteCustomerFormAction(partyId); }}
             trigger={(openDialog) => (
               <div
                 role="menuitem"

@@ -36,8 +36,12 @@ export function ConfirmationDialog({
   };
 
   const handleConfirm = async () => {
-    await onConfirm();
-    ref.current?.close();
+    try {
+      await onConfirm();
+      ref.current?.close();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "An unexpected error occurred.");
+    }
   };
 
   return (

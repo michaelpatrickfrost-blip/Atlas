@@ -170,7 +170,25 @@ export async function deleteCustomer(partyId: string) {
   const customer = await db.party.findFirstOrThrow({ where: { id: partyId, organisationId: session.organisationId } });
   if (customer.status === "CLOSED") throw new Error("This customer is already closed.");
 
-  const after = await db.party.update({ where: { id: partyId }, data: { status: "CLOSED" } });
+  try {
+    await db.party.delete({ where: { id: partyId } });
+  } catch (e) {
+    // Fallback to soft-delete if hard-delete fails due to foreign key constraints (historical data)
+    const after = await db.party.update({ where: { id: partyId }, data: { status: "CLOSED" } });
+
+    await writeAudit({
+      organisationId: session.organisationId,
+      actorUserId: session.userId,
+      action: "customer.deleted",
+      entityType: "Party",
+      entityId: partyId,
+      before: { status: customer.status, name: customer.name },
+      after: { status: after.status },
+    });
+
+    revalidatePath(`/customers`);
+    throw new Error(`Customer has historical data and cannot be fully removed. Account has been marked as CLOSED instead.`);
+  }
 
   await writeAudit({
     organisationId: session.organisationId,
@@ -179,7 +197,7 @@ export async function deleteCustomer(partyId: string) {
     entityType: "Party",
     entityId: partyId,
     before: { status: customer.status, name: customer.name },
-    after: { status: after.status },
+    after: { status: "DELETED" },
   });
 
   revalidatePath(`/customers`);

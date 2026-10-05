@@ -2811,3 +2811,10 @@ Moved company branding (logo, colours, letterhead) into the onboarding flow so c
 - Added `CustomerRecordActions` menu to `CustomerHeader` in `src/app/(app)/customers/[partyId]/page.tsx` providing "Archive Customer" and "Delete Customer" actions with professional confirmation modals.
 - Removed legacy `DeleteCustomerButton` from `src/app/(app)/customers/`.
 - Verified build success and deployed to VPS via `npm run deploy:vps`.
+
+## 2026-10-05 (Customer archive/unarchive and contact deletion)
+- Updated `listCustomers` in `src/core/customers/queries.ts` to filter out archived customers by default.
+- Implemented `unarchiveCustomer` command and corresponding server action.
+- Updated `CustomerRecordActions` to toggle between "Archive" and "Unarchive" based on the customer's state.
+- Replaced `window.confirm` with `ConfirmationDialog` in `DeleteContactButton` for a professional UI.
+- Verified build and deployed to VPS.

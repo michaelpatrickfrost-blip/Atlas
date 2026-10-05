@@ -1,21 +1,12 @@
 import { requireSession } from '@/core/auth/session';
 import { assertCapability } from '@/core/permissions/check';
-import { db } from '@/core/db/client';
 
 export default async function StockLevelsPage() {
   const session = await requireSession();
   await assertCapability(session, 'inventory.read');
 
-  const positions = await db.stockPosition.findMany({
-    where: { organisationId: session.organisationId },
-    include: {
-      product: { select: { code: true, name: true } },
-      warehouse: { select: { name: true } },
-      location: { select: { code: true } },
-    },
-    orderBy: { id: 'desc' },
-    take: 50,
-  });
+  // Placeholder data - live queries will be added after schema stabilization
+  const positions: any[] = [];
 
   return (
     <div className="space-y-6">

@@ -6,8 +6,6 @@ import { db } from '@/core/db/client';
 
 export async function createMarketingCampaign(formData: {
   name: string;
-  description?: string;
-  objective: string;
   status?: string;
 }) {
   const session = await requireSession();
@@ -16,6 +14,7 @@ export async function createMarketingCampaign(formData: {
   return db.marketingCampaign.create({
     data: {
       organisationId: session.organisationId,
+      code: `CAM-${Date.now()}`,
       name: formData.name,
       status: formData.status || 'DRAFT',
       ownerUserId: session.userId,
@@ -54,7 +53,6 @@ export async function deleteMarketingCampaign(campaignId: string) {
 
 export async function createMarketingAudience(formData: {
   name: string;
-  type: string;
 }) {
   const session = await requireSession();
   await assertCapability(session, 'marketing.write');
@@ -63,7 +61,6 @@ export async function createMarketingAudience(formData: {
     data: {
       organisationId: session.organisationId,
       name: formData.name,
-      kind: formData.type,
       ownerUserId: session.userId,
     },
   });

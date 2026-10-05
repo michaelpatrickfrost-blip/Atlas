@@ -28,9 +28,15 @@ export function CampaignForm({ campaign, onSuccess }: CampaignFormProps) {
 
     try {
       if (campaign?.id) {
-        await updateMarketingCampaign(campaign.id, formData);
+        await updateMarketingCampaign(campaign.id, {
+          name: formData.name,
+          status: formData.status,
+        });
       } else {
-        await createMarketingCampaign(formData);
+        await createMarketingCampaign({
+          name: formData.name,
+          status: formData.status,
+        });
       }
       onSuccess?.();
     } catch (err) {

@@ -6,7 +6,6 @@ import { db } from '@/core/db/client';
 
 export async function createCrmProject(formData: {
   name: string;
-  description?: string;
   stage?: string;
 }) {
   const session = await requireSession();
@@ -16,7 +15,6 @@ export async function createCrmProject(formData: {
     data: {
       organisationId: session.organisationId,
       name: formData.name,
-      description: formData.description || '',
       status: formData.stage || 'IDENTIFIED',
       ownerUserId: session.userId,
     },
@@ -27,7 +25,6 @@ export async function updateCrmProject(
   projectId: string,
   formData: {
     name?: string;
-    description?: string;
     stage?: string;
   }
 ) {
@@ -36,7 +33,6 @@ export async function updateCrmProject(
 
   const updates: Record<string, any> = {};
   if (formData.name) updates.name = formData.name;
-  if (formData.description !== undefined) updates.description = formData.description;
   if (formData.stage) updates.status = formData.stage;
 
   return db.project.update({

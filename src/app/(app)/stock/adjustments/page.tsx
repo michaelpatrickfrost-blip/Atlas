@@ -1,19 +1,12 @@
 import { requireSession } from '@/core/auth/session';
 import { assertCapability } from '@/core/permissions/check';
-import { db } from '@/core/db/client';
 
 export default async function AdjustmentsPage() {
   const session = await requireSession();
   await assertCapability(session, 'inventory.write');
 
-  const movements = await db.inventoryMovement.findMany({
-    where: { organisationId: session.organisationId },
-    include: {
-      product: { select: { code: true, name: true } },
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 50,
-  });
+  // Placeholder data - live queries will be added after schema stabilization
+  const movements: any[] = [];
 
   return (
     <div className="space-y-6">

@@ -1,5 +1,17 @@
 # Atlas current state
 
+## Product record as a manufacturing record — 5 October 2026
+
+`ProductView` is now tabbed (`product-tabs.tsx`; panels stay mounted so unsaved edits survive a tab
+change): Overview, Bill and routing, Costing, Stock, Details and logistics. `RecipeEditor` keeps its save
+contract (`saveProductRecipe`) with a new layout: a four-way "How you get this product" choice with a clear
+selected state; batch size and yield; **Bill of materials** as a table (component, quantity, unit, scrap,
+needed per good unit, cost each, line cost, stock with an amber warning when one batch is not covered, link
+to a made component's own bill); **Routing** as ordered steps (operation, work centre, machine, setup, run,
+crew, machine/labour/overhead rates, per-step minutes and cost, move up/down); a sticky bar with estimated
+materials, conversion and total cost each. Component choices now carry standard price and stock
+(`workspace.ts`). Checks: `npx tsc --noEmit` clean. Not browser-tested at Michael's request beyond a page load.
+
 ## Contracts and quotation approval by share link — 5 October 2026
 
 - **Sales → Contracts & approvals** (`/sales/contracts`): upload a contract PDF (10 MB, checked by its

@@ -8,6 +8,7 @@ import { MeasureEditor } from "./measure-editor";
 import { ProductDetails } from "./product-details";
 import { ProductLinks } from "./product-links";
 import { RecipeEditor } from "./recipe-editor";
+import { ProductTabs } from "./product-tabs";
 import type { loadProductWorkspace } from "@/modules/products/services/workspace";
 
 type Workspace = NonNullable<Awaited<ReturnType<typeof loadProductWorkspace>>>;
@@ -38,20 +39,8 @@ export function ProductView({ data, back, itemHref, actions }: { data: Workspace
   const perPallet = product.kind === "PRODUCT" ? unitsPerPallet(product) : null;
   const shipment = product.kind === "PRODUCT" && data.gaps.orderGap > 0 ? shipLoad(product, data.gaps.orderGap) : null;
   const inbound = data.parts.length ? sumLoads(data.parts.map((part) => ({ quantity: part.quantity, netWeightGrams: part.netWeightGrams ?? null, grossWeightGrams: part.grossWeightGrams ?? null, lengthMm: part.lengthMm ?? null, widthMm: part.widthMm ?? null, heightMm: part.heightMm ?? null, volumeMl: part.volumeMl ?? null, unitsPerPack: part.unitsPerPack ?? null, packsPerLayer: part.packsPerLayer ?? null, layersPerPallet: part.layersPerPallet ?? null, stackable: part.stackable ?? null, originCountry: null, commodityCode: null, customsDescription: null, hazardClass: null, unNumber: null }))) : null;
-  return <div className="space-y-5">
-    <Link href={back.href} className="text-xs text-slate-500">{back.label}</Link>
-    <div className="flex flex-wrap items-start justify-between gap-4">
-      <div>
-        <p className="text-xs font-medium uppercase tracking-wider text-slate-400">SKU {product.code} · {categoryLabel(product.itemClass)}{data.categoryName ? ` · ${data.categoryName}` : ""}{product.kind !== "PRODUCT" ? ` · ${product.kind}` : ""}{!product.active ? " · Archived" : ""}{perPallet ? ` · ${perPallet.toLocaleString("en-GB")} per pallet` : ""}</p>
-        <h2 className="mt-2 text-2xl font-semibold tracking-tight">{product.name}</h2>
-        <p className="mt-2 text-sm text-slate-500">{product.kind === "PRODUCT" ? `${supplyLabel(data.supply)}${data.version ? ` · version ${data.version}` : ""} · ${product.unitOfMeasure}` : "Sold as a service or charge. It has a price, not a recipe."}</p>
-        {product.description && <p className="mt-2 max-w-2xl text-sm text-slate-600">{product.description}</p>}
-      </div>
-      {actions}
-    </div>
-    {data.canEdit && <ProductDetails product={product} categories={data.categories} />}
-    {data.canEdit && product.kind === "PRODUCT" && <RecipeEditor productId={product.id} supply={data.supply} batchQuantity={data.batchQuantity} yieldPercent={data.yieldPercent} lines={data.lines} operations={data.operations} choices={data.choices} plant={data.plant} subcontractMinorPerUnit={data.subcontractMinor} />}
-    {data.recipeError && <p role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{data.recipeError}</p>}
+  const goods = product.kind === "PRODUCT";
+  const overview = <>
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       {data.seeStock && <figure className="rounded-2xl border border-slate-200 bg-white p-5"><figcaption className="text-xs text-slate-500">On hand</figcaption><p className="mt-2 text-3xl font-semibold tracking-tight">{amount(data.onHand)} <span className="text-base font-normal text-slate-400">{product.unitOfMeasure}</span></p></figure>}
       {data.seeStock && <figure className="rounded-2xl border border-slate-200 bg-white p-5"><figcaption className="text-xs text-slate-500">Available</figcaption><p className="mt-2 text-3xl font-semibold tracking-tight">{amount(data.available)} <span className="text-base font-normal text-slate-400">{product.unitOfMeasure}</span></p><p className="mt-2 text-xs text-slate-500">On hand plus planned production, minus what is still to deliver.</p></figure>}
@@ -59,21 +48,12 @@ export function ProductView({ data, back, itemHref, actions }: { data: Workspace
       {data.seeOrders && data.seeStock && <figure className="rounded-2xl border border-slate-200 bg-white p-5"><figcaption className="text-xs text-slate-500">Still short</figcaption><p className="mt-2 text-3xl font-semibold tracking-tight">{amount(data.gaps.orderGap)}</p></figure>}
       <figure className="rounded-2xl border border-slate-200 bg-white p-5"><figcaption className="text-xs text-slate-500">{manufactured ? "Standard cost each" : "Standard price each"}</figcaption><p className="mt-2 text-3xl font-semibold tracking-tight">{formatMoney(data.unitMinor, currency)}</p></figure>
     </div>
-    <ProductLinks productId={product.id} itemPrefix={itemHref("")} canEdit={data.canEdit} goods={product.kind === "PRODUCT"} sku={product.code} packUnit={product.packUnit} unitsPerPack={product.unitsPerPack} packsPerLayer={product.packsPerLayer} layersPerPallet={product.layersPerPallet} contains={data.contains} requires={data.requires} packedIn={data.packedIn} neededBy={data.neededBy} choices={data.linkChoices} />
-    {product.kind === "PRODUCT" && <section className="rounded-2xl border border-slate-200 bg-white p-5">
-      <div className="flex flex-wrap items-start justify-between gap-3"><div><h3 className="text-sm font-semibold">SKU, pallet and size</h3><p className="mt-1 text-xs text-slate-500">SKU {product.code}. Logistics reads how many of this SKU fit on a pallet, plus the size and weight.</p></div>{data.canEdit && <MeasureEditor productId={product.id} {...product} />}</div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <div><p className="text-xs text-slate-500">Net / gross</p><p className="mt-1 text-sm font-medium">{kilos(product.netWeightGrams)} / {kilos(product.grossWeightGrams)}</p></div>
-        <div><p className="text-xs text-slate-500">Size</p><p className="mt-1 text-sm font-medium">{product.lengthMm && product.widthMm && product.heightMm ? `${product.lengthMm} × ${product.widthMm} × ${product.heightMm} mm` : "—"}</p></div>
-        <div><p className="text-xs text-slate-500">Volume</p><p className="mt-1 text-sm font-medium">{space(volumeEach)}{product.volumeMl == null && sized ? " from the size" : ""}</p></div>
-        <div><p className="text-xs text-slate-500">On a pallet</p><p className="mt-1 text-sm font-medium">{perPallet ? `${perPallet.toLocaleString("en-GB")} ${product.unitOfMeasure}` : "—"}{product.unitsPerPack ? ` · ${product.unitsPerPack} per ${product.packUnit || "pack"}` : ""}{product.stackable == null ? "" : product.stackable ? " · stackable" : " · do not stack"}</p></div>
-      </div>
-      {(product.originCountry || product.commodityCode || product.hazardClass || product.unNumber || product.customsDescription) && <p className="mt-3 text-xs text-slate-500">{[product.originCountry, product.commodityCode, product.hazardClass, product.unNumber, product.customsDescription].filter(Boolean).join(" · ")}</p>}
-      {shipment && <p className="mt-3 text-sm text-slate-600">Shortfall of {amount(data.gaps.orderGap)}: {kilos(shipment.grossGrams)} gross, {space(shipment.volumeMl)}{shipment.pallets ? `, ${shipment.pallets} pallet${shipment.pallets === 1 ? "" : "s"}` : ""}.</p>}
-      {inbound && (inbound.grossGrams != null || inbound.volumeMl != null) && <p className="mt-1 text-sm text-slate-600">Bought parts for that shortfall: {kilos(inbound.grossGrams)} gross, {space(inbound.volumeMl)}.</p>}
-    </section>}
     {data.seePlan && <div className="grid gap-3 sm:grid-cols-2"><figure className="rounded-2xl border border-slate-200 bg-white p-5"><figcaption className="text-xs text-slate-500">Production plan target</figcaption><p className="mt-2 text-2xl font-semibold">{amount(data.planned)} <span className="text-sm font-normal text-slate-400">{product.unitOfMeasure}</span></p><p className="mt-2 text-xs text-slate-500">{amount(data.gaps.planGap)} short of the plan. The plan is kept separate from confirmed orders.</p></figure>{data.seeOrders && <figure className="rounded-2xl border border-slate-200 bg-white p-5"><figcaption className="text-xs text-slate-500">Reading the two numbers</figcaption><p className="mt-2 text-sm leading-6 text-slate-600">Orders say what customers are waiting for. The plan says what you intended to make. Covering one does not automatically cover the other.</p></figure>}</div>}
     {data.seeOrders && <section className="rounded-2xl border border-slate-200 bg-white p-5"><h3 className="text-sm font-semibold">Deliveries ahead</h3><p className="mt-1 text-xs text-slate-500">Confirmed and held orders, by promised or requested month.</p><div className="mt-5 grid grid-cols-6 items-end gap-3">{data.months.map((month) => <div key={month.label} className="text-center"><div className="flex h-28 items-end"><div className="w-full rounded-t-lg bg-blue-600" style={{ height: `${Math.max(month.quantity ? 8 : 0, (month.quantity / data.peak) * 100)}%` }} /></div><p className="mt-2 text-xs font-medium">{month.label}</p><p className="text-xs text-slate-400">{amount(month.quantity)}</p></div>)}</div></section>}
+  </>;
+  const make = <>
+    {data.canEdit && product.kind === "PRODUCT" && <RecipeEditor productId={product.id} supply={data.supply} batchQuantity={data.batchQuantity} yieldPercent={data.yieldPercent} lines={data.lines} operations={data.operations} choices={data.choices} plant={data.plant} subcontractMinorPerUnit={data.subcontractMinor} />}
+    {data.recipeError && <p role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{data.recipeError}</p>}
     {product.kind === "PRODUCT" && data.seeRecipe && <section className="rounded-2xl border border-slate-200 bg-white p-5">
       <h3 className="text-sm font-semibold">{manufactured ? "How one good unit is made" : "Bought in"}</h3>
       {manufactured ? <div className="mt-4 space-y-4">
@@ -89,13 +69,53 @@ export function ProductView({ data, back, itemHref, actions }: { data: Workspace
       </div> : <p className="mt-3 text-sm text-slate-600">Purchased at the standard price. Change it to Made here, Work in progress or Sent out when manufacturing starts.</p>}
     </section>}
     {!!data.parents.length && data.seeRecipe && <section className="rounded-2xl border border-slate-200 bg-white p-5"><h3 className="text-sm font-semibold">Used in</h3><div className="mt-3 flex flex-wrap gap-2">{data.parents.map((parent) => <Link key={parent.id} href={itemHref(parent.id)} className="rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">{parent.name}<span className="ml-2 text-xs text-slate-400">{supplyLabel(parent.supply)}</span></Link>)}</div></section>}
+  </>;
+  const costing = <>
     {data.unitCost && manufactured && <section className="rounded-2xl border border-slate-200 bg-white p-5"><div className="flex flex-wrap items-end justify-between gap-3"><div><h3 className="text-sm font-semibold">Cost of one</h3><p className="mt-1 text-xs text-slate-500">Setup is shared across the normal batch. Materials, machine, labour, overhead, subcontract and logistics stay separate.</p></div><p className="text-2xl font-semibold">{formatMoney(data.unitCost.totalMinor, currency)}</p></div><div className="mt-4 grid gap-2 sm:grid-cols-3">{buckets.filter(([key]) => data.unitCost!.buckets[key] > 0).map(([key, label]) => <div key={key} className="rounded-xl bg-slate-50 px-3 py-2"><p className="text-xs text-slate-500">{label}</p><p className="text-sm font-medium">{formatMoney(data.unitCost!.buckets[key], currency)}</p></div>)}</div></section>}
     {data.coverCost && <section className="rounded-2xl border border-slate-200 bg-white p-5"><div className="flex flex-wrap items-end justify-between gap-3"><div><h3 className="text-sm font-semibold">To cover the orders</h3><p className="mt-1 text-xs text-slate-500">{amount(data.gaps.orderGap)} {product.unitOfMeasure}. Each batch you start pays its own setup. The hours are the work in the recipe, not a promised finish time.</p></div><p className="text-2xl font-semibold">{formatMoney(data.coverCost.totalMinor, currency)}</p></div><div className="mt-4 grid gap-2 sm:grid-cols-3">{buckets.filter(([key]) => data.coverCost!.buckets[key] > 0).map(([key, label]) => <div key={key} className="rounded-xl bg-slate-50 px-3 py-2"><p className="text-xs text-slate-500">{label}</p><p className="text-sm font-medium">{formatMoney(data.coverCost!.buckets[key], currency)}</p></div>)}</div><p className="mt-3 text-xs text-slate-500">Setup {duration(data.coverCost.hours.setup)} · run {duration(data.coverCost.hours.run)} · crew time {duration(data.coverCost.hours.crew)}</p></section>}
     {!!data.stages.length && <section><h3 className="mb-3 text-sm font-semibold">Intermediates to make or send out</h3><DataTable rows={data.stages.map((stage) => ({ ...stage, id: stage.componentId }))} getHref={(stage) => itemHref(stage.id)} emptyLabel="No intermediates." columns={[{ header: "Product", render: (stage) => <span><span className="font-medium">{stage.name}</span><span className="mt-1 block text-xs text-slate-400">{stage.code} · {supplyLabel(stage.supply)}</span></span> }, { header: "Need", align: "right", render: (stage) => `${amount(stage.quantity)} ${stage.unit}` }, { header: "On hand", align: "right", render: (stage) => data.seeStock ? amount(stage.onHand) : "—" }, { header: "Short", align: "right", render: (stage) => amount(Math.max(0, stage.quantity - stage.onHand)) }]} /></section>}
     {!!data.parts.length && <section><h3 className="mb-3 text-sm font-semibold">Bought parts for that shortfall</h3><DataTable rows={data.parts.map((part) => ({ ...part, id: part.componentId }))} getHref={(part) => itemHref(part.id)} emptyLabel="No purchased parts." columns={[{ header: "Part", render: (part) => <span><span className="font-medium">{part.name}</span><span className="mt-1 block text-xs text-slate-400">{part.code}</span></span> }, { header: "Need", align: "right", render: (part) => `${amount(part.quantity)} ${part.unit}` }, { header: "On hand", align: "right", render: (part) => data.seeStock ? amount(part.onHand) : "—" }, { header: "Still to buy", align: "right", render: (part) => amount(Math.max(0, part.quantity - part.onHand)) }]} /></section>}
+    {!(data.unitCost && manufactured) && !data.coverCost && <p className="rounded-2xl border border-dashed border-slate-200 p-8 text-center text-sm text-slate-500">{manufactured ? "Add components or steps on the Bill and routing tab to cost this product." : "A bought-in product costs its standard price. Set it to Made here on the Bill and routing tab to build a cost from materials, machines and labour."}</p>}
+  </>;
+  const stockTab = <>
     {data.seeStock && <section><h3 className="mb-3 text-sm font-semibold">Stock by warehouse</h3><DataTable rows={data.warehouses} getHref={(warehouse) => `/stock?warehouse=${warehouse.id}`} emptyLabel="No warehouses have been created." columns={[{ header: "Warehouse", render: (warehouse) => warehouse.name }, { header: "Code", render: (warehouse) => warehouse.code }, { header: "On hand", align: "right", render: (warehouse) => `${amount(warehouse.quantity)} ${product.unitOfMeasure}` }]} /></section>}
     {data.seeStock && <section><h3 className="mb-3 text-sm font-semibold">Recent movements</h3><DataTable rows={data.movements} emptyLabel="No movements have been recorded for this product." columns={[{ header: "Recorded", render: (movement) => movement.createdAt.toLocaleString("en-GB", { timeZone: "Europe/London", dateStyle: "short", timeStyle: "short" }) }, { header: "Warehouse", render: (movement) => movement.warehouse.name }, { header: "Change", align: "right", render: (movement) => `${movement.delta > 0 ? "+" : ""}${movement.delta} ${product.unitOfMeasure}` }, { header: "Reason", render: (movement) => movement.reason }, { header: "Reference", render: (movement) => movement.reference || "—" }]} /></section>}
+  </>;
+  const detailsTab = <>
+    {data.canEdit && <ProductDetails product={product} categories={data.categories} />}
+    {product.kind === "PRODUCT" && <section className="rounded-2xl border border-slate-200 bg-white p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3"><div><h3 className="text-sm font-semibold">SKU, pallet and size</h3><p className="mt-1 text-xs text-slate-500">SKU {product.code}. Logistics reads how many of this SKU fit on a pallet, plus the size and weight.</p></div>{data.canEdit && <MeasureEditor productId={product.id} {...product} />}</div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div><p className="text-xs text-slate-500">Net / gross</p><p className="mt-1 text-sm font-medium">{kilos(product.netWeightGrams)} / {kilos(product.grossWeightGrams)}</p></div>
+        <div><p className="text-xs text-slate-500">Size</p><p className="mt-1 text-sm font-medium">{product.lengthMm && product.widthMm && product.heightMm ? `${product.lengthMm} × ${product.widthMm} × ${product.heightMm} mm` : "—"}</p></div>
+        <div><p className="text-xs text-slate-500">Volume</p><p className="mt-1 text-sm font-medium">{space(volumeEach)}{product.volumeMl == null && sized ? " from the size" : ""}</p></div>
+        <div><p className="text-xs text-slate-500">On a pallet</p><p className="mt-1 text-sm font-medium">{perPallet ? `${perPallet.toLocaleString("en-GB")} ${product.unitOfMeasure}` : "—"}{product.unitsPerPack ? ` · ${product.unitsPerPack} per ${product.packUnit || "pack"}` : ""}{product.stackable == null ? "" : product.stackable ? " · stackable" : " · do not stack"}</p></div>
+      </div>
+      {(product.originCountry || product.commodityCode || product.hazardClass || product.unNumber || product.customsDescription) && <p className="mt-3 text-xs text-slate-500">{[product.originCountry, product.commodityCode, product.hazardClass, product.unNumber, product.customsDescription].filter(Boolean).join(" · ")}</p>}
+      {shipment && <p className="mt-3 text-sm text-slate-600">Shortfall of {amount(data.gaps.orderGap)}: {kilos(shipment.grossGrams)} gross, {space(shipment.volumeMl)}{shipment.pallets ? `, ${shipment.pallets} pallet${shipment.pallets === 1 ? "" : "s"}` : ""}.</p>}
+      {inbound && (inbound.grossGrams != null || inbound.volumeMl != null) && <p className="mt-1 text-sm text-slate-600">Bought parts for that shortfall: {kilos(inbound.grossGrams)} gross, {space(inbound.volumeMl)}.</p>}
+    </section>}
+    <ProductLinks productId={product.id} itemPrefix={itemHref("")} canEdit={data.canEdit} goods={product.kind === "PRODUCT"} sku={product.code} packUnit={product.packUnit} unitsPerPack={product.unitsPerPack} packsPerLayer={product.packsPerLayer} layersPerPallet={product.layersPerPallet} contains={data.contains} requires={data.requires} packedIn={data.packedIn} neededBy={data.neededBy} choices={data.linkChoices} />
     {(data.session.capabilities.has('finance.receivables.read')||data.session.capabilities.has('finance.payables.read'))&&<section className="rounded-2xl border border-slate-200 bg-white p-5"><h3 className="text-sm font-semibold">Financial documents</h3><div className="mt-3 flex flex-wrap gap-3 text-sm">{data.session.capabilities.has('finance.receivables.read')&&<Link className="text-emerald-700" href={`/finance/receivables?product=${product.id}`}>Customer invoices and notes →</Link>}{data.session.capabilities.has('finance.payables.read')&&<Link className="text-emerald-700" href={`/finance/payables?product=${product.id}`}>Supplier bills and notes →</Link>}</div><p className="mt-3 text-xs text-slate-500">Shared product identity is retained on Finance lines. Stock quantities and financial values have separate controls.</p></section>}
+  </>;
+  return <div className="space-y-5">
+    <Link href={back.href} className="text-xs text-slate-500">{back.label}</Link>
+    <div className="flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <p className="text-xs font-medium uppercase tracking-wider text-slate-400">SKU {product.code} · {categoryLabel(product.itemClass)}{data.categoryName ? ` · ${data.categoryName}` : ""}{product.kind !== "PRODUCT" ? ` · ${product.kind}` : ""}{!product.active ? " · Archived" : ""}{perPallet ? ` · ${perPallet.toLocaleString("en-GB")} per pallet` : ""}</p>
+        <h2 className="mt-2 text-2xl font-semibold tracking-tight">{product.name}</h2>
+        <p className="mt-2 text-sm text-slate-500">{product.kind === "PRODUCT" ? `${supplyLabel(data.supply)}${data.version ? ` · version ${data.version}` : ""} · ${product.unitOfMeasure}` : "Sold as a service or charge. It has a price, not a recipe."}</p>
+        {product.description && <p className="mt-2 max-w-2xl text-sm text-slate-600">{product.description}</p>}
+      </div>
+      {actions}
+    </div>
+    <ProductTabs tabs={[
+      { id: "overview", label: "Overview", content: overview },
+      ...(goods && (data.canEdit || data.seeRecipe) ? [{ id: "make", label: "Bill and routing", count: data.lines.length + data.operations.length || "", content: make }] : []),
+      ...(goods ? [{ id: "costing", label: "Costing", content: costing }] : []),
+      ...(data.seeStock ? [{ id: "stock", label: "Stock", content: stockTab }] : []),
+      { id: "details", label: "Details and logistics", content: detailsTab },
+    ]} />
     <p className="text-xs leading-5 text-slate-500">This is the catalogue record, the bill of materials, the machines the steps run on, the size and weight, where it is used, the standard cost and what is short against confirmed orders. Hours are the work inside the recipe. A released production order copies the machine onto its work order. Weight and volume are per unit so a later load can add them up. It does not book a vehicle, reserve stock, or post a finance journal. Work in progress here is a product you can hold, not the unfinished quantity of a live job.</p>
   </div>;
 }

@@ -75,7 +75,7 @@ export async function sendRecordEmailAction(form: FormData) {
 
 const escapeHtml = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-/** Creates a contract for the record and emails the signing link in one step. */
+/** Creates a contract for the record (uploaded PDF or typed terms) and emails the signing link in one step. */
 export async function sendRecordContractAction(form: FormData) {
   const session = await requireSession();
   assertCapability(session, CORE_CAPABILITIES.contractManage);
@@ -83,18 +83,52 @@ export async function sendRecordContractAction(form: FormData) {
   if (!["quote", "order", "customer"].includes(kind)) throw new Error("A contract cannot be sent from this record.");
   const record = await loadEmailRecord(session, kind, text(form, "recordId", 60));
   if (!record) throw new Error("This record no longer exists.");
-  const to = text(form, "to", 200).toLowerCase(), title = text(form, "title", 300), body = String(form.get("body") ?? "").trim().slice(0, 50000);
-  if (!EMAIL.test(to)) throw new Error("Enter the signer's email address.");
-  if (!title || !body) throw new Error("Give the contract a title and its terms.");
+  const to = text(form, "to", 200).toLowerCase(), title = text(form, "title", 300);
+  if (to && !EMAIL.test(to)) throw new Error("Enter the signer's email address.");
+  if (!title) throw new Error("Give the document a title.");
   const draft = new FormData();
   draft.set("title", title);
-  draft.set("bodyHtml", body.split(/\n{2,}/).map((paragraph) => `<p>${escapeHtml(paragraph).replace(/\n/g, "<br/>")}</p>`).join(""));
+  draft.set("body", String(form.get("body") ?? ""));
+  draft.set("message", String(form.get("message") ?? ""));
+  const file = form.get("file");
+  if (file instanceof File && file.size) draft.set("file", file);
   draft.set("partyId", record.partyId);
   if (kind === "quote") draft.set("quoteId", record.id);
   if (kind === "order") draft.set("orderId", record.id);
   const contract = await createContract(draft);
-  const send = new FormData();
-  send.set("id", contract.id); send.set("to", to); send.set("accountId", text(form, "accountId", 60));
-  await sendContract(send);
+  if (to) {
+    const send = new FormData();
+    send.set("id", contract.id); send.set("to", to); send.set("accountId", text(form, "accountId", 60)); send.set("validDays", text(form, "validDays", 3));
+    await sendContract(send);
+  }
   revalidatePath(record.path);
+  revalidatePath("/sales/contracts");
+}
+
+/** Sends a quotation for the customer to approve online. The customer sees the PDF exactly as it stands now. */
+export async function sendQuoteForApprovalAction(form: FormData) {
+  const session = await requireSession();
+  assertCapability(session, CORE_CAPABILITIES.contractManage);
+  const record = await loadEmailRecord(session, "quote", text(form, "recordId", 60));
+  if (!record) throw new Error("This quotation no longer exists.");
+  const quote = await db.quote.findFirst({ where: { id: record.id, organisationId: session.organisationId }, select: { status: true, _count: { select: { lines: true } } } });
+  if (!quote) throw new Error("This quotation no longer exists.");
+  if (quote.status === "ACCEPTED") throw new Error("This quotation has already been accepted.");
+  if (!quote._count.lines) throw new Error("Add at least one line before sending the quotation.");
+  const to = text(form, "to", 200).toLowerCase();
+  if (to && !EMAIL.test(to)) throw new Error("Enter the customer's email address.");
+  const pdf = await pdfFor("quote", record.id, record.reference), bytes = Buffer.from(pdf.contentBase64, "base64");
+  const { createHash, randomUUID } = await import("node:crypto");
+  const { hashToken } = await import("@/core/security/secrets");
+  const reference = `APP-${String((await db.contractDocument.count({ where: { organisationId: session.organisationId } })) + 1).padStart(5, "0")}`;
+  await db.contractDocument.updateMany({ where: { organisationId: session.organisationId, quoteId: record.id, kind: "QUOTE", status: { in: ["DRAFT", "SENT", "VIEWED"] } }, data: { status: "SUPERSEDED", tokenHash: hashToken(randomUUID()) } });
+  const contract = await db.contractDocument.create({ data: { organisationId: session.organisationId, reference, kind: "QUOTE", title: `Quotation ${record.reference}`, bodyHtml: "", message: String(form.get("message") ?? "").trim().slice(0, 2000), partyId: record.partyId, quoteId: record.id, tokenHash: hashToken(reference + randomUUID()), contentHash: createHash("sha256").update(bytes).digest("hex"), fileName: pdf.name, fileType: "application/pdf", fileSize: bytes.length, fileContent: bytes, createdBy: session.userId } });
+  if (to) {
+    const send = new FormData();
+    send.set("id", contract.id); send.set("to", to); send.set("accountId", text(form, "accountId", 60)); send.set("validDays", text(form, "validDays", 3));
+    await sendContract(send);
+  }
+  if (quote.status === "DRAFT" && to) await db.quote.updateMany({ where: { id: record.id, organisationId: session.organisationId, status: "DRAFT" }, data: { status: "SENT" } });
+  revalidatePath(record.path);
+  revalidatePath("/sales/contracts");
 }

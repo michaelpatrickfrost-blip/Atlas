@@ -1,5 +1,31 @@
 # Atlas current state
 
+## Contracts and quotation approval by share link — 5 October 2026
+
+- **Sales → Contracts & approvals** (`/sales/contracts`): upload a contract PDF (10 MB, checked by its
+  first bytes) or type terms against a customer; email it or Get share link (7/14/30/60/90 days; a new
+  link cancels the old one); timeline Created / Sent / Opened / Signed; Signing record (name, time, network
+  address, device, SHA-256 of the document, drawn signature); Open PDF, Send again, Delete (never once signed).
+- **Quotation approval**: "Send for approval" on a quotation stores the quotation PDF as it stands
+  (`ContractDocument.kind = QUOTE`), and the customer's approval marks the quotation ACCEPTED (decline marks
+  it DECLINED). An earlier open approval for the same quotation is superseded.
+- **Public page** `/sign/[token]` in the company's brand (logo, colour, letterhead, footer): message,
+  open-until date, quotation lines and totals, PDF inline with open/download, full name, optional drawn
+  signature, agreement, Sign/Approve or decline with a reason. `/sign/[token]/file` serves the PDF.
+- `core/contracts/actions.ts` rewritten; typed terms are stored escaped (raw HTML no longer accepted,
+  because the page is public). Views, signatures and declines write audit entries with IP and device.
+  Additive migration `20261005200000_contract_files_and_quote_approval`. Server action body limit 12 MB.
+- The same buttons are on quotation, order and customer records (`_shared/record-email.tsx`), and work
+  without an email account by making a link.
+
+**Checks run:** `npx tsc --noEmit` clean; eslint no errors. Local dev app end to end: Send for approval on a
+quotation (link only) → share link → public page showed prices and PDF → approved with a typed name → hub
+showed Approved with the timeline. Not exercised: PDF upload through a browser, drawn signature, email
+delivery of the link, decline.
+
+**Open:** signing does not notify the owner by itself; use the "A contract is signed" automation trigger.
+Product page rework for manufacturing still not started.
+
 ## Inbox over IMAP, Instagram/Threads, social scheduler, fourth hierarchy level — 5 October 2026
 
 - **Email receiving** (`core/email/inbox.ts`, deps `imapflow`, `mailparser`): mailboxes have Sending (SMTP)

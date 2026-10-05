@@ -16,6 +16,7 @@ export const salesManifest: ModuleManifest = {salesFinanceSourceProvider:finance
   { label: "All Sales", href: "/sales/documents", capability: SALES_CAPABILITIES.orderRead },
   { label: "Projects", href: "/sales/projects", capability: SALES_CAPABILITIES.opportunityRead },
   { label: "Sites", href: "/sales/sites", capability: SALES_CAPABILITIES.siteRead },
+  { label: "Contracts & approvals", href: "/sales/contracts", capability: "core.contract.manage" },
   { label: "Templates", href: "/sales/templates", capability: SALES_CAPABILITIES.orderRead },
   { label: "Reports", href: "/sales/reporting", capability: SALES_CAPABILITIES.reportRead },
  ], customerOverviewProvider: salesCustomerOverviewProvider,

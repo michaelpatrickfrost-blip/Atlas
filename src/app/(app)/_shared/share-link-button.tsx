@@ -1,0 +1,11 @@
+"use client";
+import { useState, useTransition } from "react";
+import { shareContractLink } from "@/core/contracts/actions";
+
+/** Makes a fresh signing link to copy and send by any means. The previous link stops working. */
+export function ShareLinkButton({ contractId, className = "rounded-lg px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900" }: { contractId: string; className?: string }) {
+  const [link, setLink] = useState(""), [copied, setCopied] = useState(false), [error, setError] = useState(""), [days, setDays] = useState(30), [pending, start] = useTransition();
+  const make = () => start(async () => { setError(""); try { const result = await shareContractLink(contractId, days); setLink(result.link); try { await navigator.clipboard.writeText(result.link); setCopied(true); } catch { setCopied(false); } } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not make a link."); } });
+  if (!link) return <span className="inline-flex items-center gap-1"><select aria-label="How long the link stays open" value={days} onChange={(event) => setDays(Number(event.target.value))} className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600">{[7, 14, 30, 60, 90].map((value) => <option key={value} value={value}>{value} days</option>)}</select><button type="button" disabled={pending} onClick={make} className={className}>{pending ? "Making link…" : "Get share link"}</button>{error && <span className="text-xs text-red-600">{error}</span>}</span>;
+  return <span className="flex w-full flex-wrap items-center gap-2 rounded-xl bg-blue-50 px-3 py-2"><input readOnly value={link} onFocus={(event) => event.currentTarget.select()} className="min-w-0 flex-1 rounded-lg border border-blue-200 bg-white px-2 py-1 text-xs" /><button type="button" onClick={async () => { try { await navigator.clipboard.writeText(link); setCopied(true); } catch { setCopied(false); } }} className="rounded-lg bg-blue-600 px-3 py-1 text-xs font-medium text-white">{copied ? "Copied" : "Copy"}</button><span className="basis-full text-[11px] text-blue-900">Open for {days} days. Send it however you like. Any earlier link for this document no longer works.</span></span>;
+}

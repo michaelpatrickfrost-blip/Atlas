@@ -7894,6 +7894,18 @@ model ContractDocument {
   signerIp String?
   declinedReason String?
   contentHash String @default("")
+  /** CONTRACT is a document to sign. QUOTE is a quotation sent for the customer to approve. */
+  kind String @default("CONTRACT")
+  /** Shown to the signer above the document. */
+  message String @default("") @db.Text
+  /** The PDF the signer reads. For a quotation this is the copy as it stood when it was sent. */
+  fileName String?
+  fileType String?
+  fileSize Int?
+  fileContent Bytes?
+  signerUserAgent String?
+  /** Drawn signature as a PNG data URL, when the signer drew one. */
+  signatureImage String? @db.Text
   createdBy String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

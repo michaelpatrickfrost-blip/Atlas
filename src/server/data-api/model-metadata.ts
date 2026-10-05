@@ -30225,6 +30225,54 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "kind": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "message": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "fileName": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "fileType": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "fileSize": {
+      "type": "Int",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "fileContent": {
+      "type": "Bytes",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "signerUserAgent": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "signatureImage": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
     "createdBy": {
       "type": "String",
       "list": false,

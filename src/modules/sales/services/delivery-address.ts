@@ -21,9 +21,9 @@ export async function addInstaller(invoiceAccountId: string, input: { name: stri
   const session = await requireSession();
   const name = String(input.name ?? "").trim().slice(0, 200);
   if (!invoiceAccountId) throw new Error("Choose the customer being invoiced first.");
-  if (!name) throw new Error("Enter the installer's name.");
+  if (!name) throw new Error("Enter the account's name.");
   if (!(await db.party.findFirst({ where: { id: invoiceAccountId, organisationId: session.organisationId }, select: { id: true } }))) throw new Error("The invoice customer no longer exists.");
-  const installer = await createCustomer({ name, kind: "COMPANY", customerGroup: "Installer", contactFirstName: String(input.contactFirstName ?? "").trim().slice(0, 100) || name, contactSurname: String(input.contactSurname ?? "").trim().slice(0, 100), contactPhone: String(input.contactPhone ?? "").trim().slice(0, 40) || undefined, contactEmail: String(input.contactEmail ?? "").trim().slice(0, 200) || undefined });
+  const installer = await createCustomer({ name, kind: "COMPANY", customerGroup: "Delivery account", contactFirstName: String(input.contactFirstName ?? "").trim().slice(0, 100) || name, contactSurname: String(input.contactSurname ?? "").trim().slice(0, 100), contactPhone: String(input.contactPhone ?? "").trim().slice(0, 40) || undefined, contactEmail: String(input.contactEmail ?? "").trim().slice(0, 200) || undefined });
   await linkOrderedFor(session.organisationId, session.userId, installer.id, invoiceAccountId);
   return { id: installer.id, name: installer.name, code: installer.customerCode, parentId: null as string | null, currency: installer.preferredCurrency, defaultListId: null as string | null };
 }

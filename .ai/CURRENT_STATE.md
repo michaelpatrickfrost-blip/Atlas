@@ -28,7 +28,7 @@ existing campaign desk again. Inventory lives in `src/modules/stock` (there is n
 **Checks run:** `npx tsc --noEmit` clean; `tests/stock-forecast.test.ts` 6 passed; stock-balance and
 stock-places pass; `planning-inventory` keeps its 2 known failures (transfers mock, untouched). Local dev
 app: added a warehouse, product, +120, -30, forecast page and figures rendered. `npm run build` not run
-locally (Michael's instruction; the VPS build gates the deploy). Deploy result: see the next entry or Git.
+locally (Michael's instruction; the VPS build gates the deploy). Deployed with `npm run deploy:vps` (c585fb9): backup taken, migration applied, VPS build passed, service healthy; signed-out `/stock`, `/stock/forecast`, `/marketing`, `/automations`, `/finance/banking` redirect to login. Signed-in check on the VPS not done by the agent.
 
 **Open:** `products.averageDailyDemand/forecastMethod/lastForecastDate` and table `stock_forecasts` (from
 `20261005_add_stock_forecasting`) are unused; dropping them needs Michael's explicit consent. Audit of

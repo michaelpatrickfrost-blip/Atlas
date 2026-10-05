@@ -7,7 +7,7 @@ export async function listCustomers(
   organisationId: string,
   opts: { search?: string; filter?: CustomerListFilter; accountManagerUserId?: string } = {},
 ) {
-  const where: Prisma.PartyWhereInput = { organisationId };
+  const where: Prisma.PartyWhereInput = { organisationId, archived: false };
 
   if (opts.search) {
     where.OR = [

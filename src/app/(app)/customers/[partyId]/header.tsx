@@ -19,7 +19,7 @@ export function CustomerHeader({
   hasVerifiedTaxRegistration,
   extra,
 }: {
-  customer: { id: string; name: string; customerCode: string; status: CustomerStatus; countryOfRegistration: string | null };
+  customer: { id: string; name: string; customerCode: string; status: CustomerStatus; countryOfRegistration: string | null; archived: boolean };
   accountManagerName: string | null;
   contributions: CustomerOverviewContribution[];
   onHold: boolean;

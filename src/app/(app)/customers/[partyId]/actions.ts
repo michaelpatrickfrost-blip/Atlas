@@ -16,6 +16,7 @@ import {
   createNote,
   updateCustomerStatus,
   archiveCustomer,
+  unarchiveCustomer,
   deleteCustomer,
 } from "@/core/customers/commands";
 import { redirect } from "next/navigation";
@@ -143,6 +144,10 @@ export async function updateStatusFormAction(partyId: string, formData: FormData
 
 export async function archiveCustomerFormAction(partyId: string) {
   await archiveCustomer(partyId);
+}
+
+export async function unarchiveCustomerFormAction(partyId: string) {
+  await unarchiveCustomer(partyId);
 }
 
 export async function deleteCustomerFormAction(partyId: string) {

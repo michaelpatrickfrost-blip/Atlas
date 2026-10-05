@@ -2,11 +2,11 @@ import Link from 'next/link';
 import type { Session } from '@/core/auth/session';
 import { db } from '@/core/db/client';
 import { StatusPill } from '@/components/ui/status-pill';
-import { CAMPAIGN_TRANSITIONS, CAMPAIGN_TYPES } from '../domain/policy';
-import { createCampaign, updateCampaign } from '../services/commands';
+import { CAMPAIGN_TRANSITIONS } from '../domain/policy';
+import { updateCampaign } from '../services/commands';
 import { marketingDesk } from '../services/desk';
 import { ActionForm } from './action-form';
-import { Area, Choice, Field } from './fields';
+import { Choice } from './fields';
 import { campaignTone, money, words } from './format';
 
 const STAGE: Record<string, string> = {
@@ -41,8 +41,8 @@ export async function CampaignDesk({ session, focus }: { session: Session; focus
     <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
       <section className="rounded-[28px] border border-slate-200 p-4">
         <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="font-semibold">Campaigns</h2>
-          <span className="text-sm text-[var(--color-ink-faint)]">{desk.campaigns.length}</span>
+          <h2 className="font-semibold">Campaigns <span className="ml-1 text-sm font-normal text-[var(--color-ink-faint)]">{desk.campaigns.length}</span></h2>
+          {canCreate && <Link href="/marketing/campaigns/new" className="rounded-xl bg-blue-600 px-3 py-1.5 text-sm font-medium text-white">New campaign</Link>}
         </div>
         <div className="space-y-2">
           {desk.campaigns.map((campaign) => (
@@ -66,7 +66,7 @@ export async function CampaignDesk({ session, focus }: { session: Session; focus
                 <h2 className="mt-1 text-3xl font-semibold tracking-tight">{selected.name}</h2>
                 <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--color-ink-muted)]">{selected.description || 'Say what this campaign is for.'}</p>
               </div>
-              <StatusPill label={STAGE[selected.status] ?? words(selected.status)} tone={campaignTone(selected.status)} />
+              <div className="flex items-center gap-3"><StatusPill label={STAGE[selected.status] ?? words(selected.status)} tone={campaignTone(selected.status)} /><Link href={`/marketing/campaigns/${selected.id}`} className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white">Open campaign</Link></div>
             </div>
             <div className="mt-6 grid gap-3 sm:grid-cols-4">
               <Metric label="Envelope" value={money(selected.budgetMinor, selected.currency)} />
@@ -110,30 +110,7 @@ export async function CampaignDesk({ session, focus }: { session: Session; focus
             )}
           </section>
         ) : null}
-        {canCreate && (
-          <section className="rounded-[28px] border border-slate-200 p-6">
-            <h2 className="text-lg font-semibold">New campaign</h2>
-            <p className="mt-1 text-sm text-[var(--color-ink-muted)]">Name it, set the envelope, then assign that money to places.</p>
-            <div className="mt-5 max-w-3xl">
-              <ActionForm action={createCampaign} label="Create campaign">
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Field name="name" label="Campaign name" />
-                  <Field name="code" label="Code" />
-                  <Choice name="type" label="Type" options={CAMPAIGN_TYPES.map((type) => ({ value: type, label: words(type) }))} />
-                  <Field name="currency" label="Currency" value="GBP" />
-                  <Field name="budgetAmount" label="Budget envelope" value="0.00" />
-                  <Field name="goal" label="Goal" required={false} />
-                  <Field name="goalTarget" label="Goal target" type="number" value="0" />
-                  <Field name="startAt" label="Starts" type="date" required={false} />
-                  <Field name="endAt" label="Ends" type="date" required={false} />
-                  <Choice name="audienceId" label="Audience" optional options={audiences.map((audience) => ({ value: audience.id, label: audience.name }))} />
-                  <Choice name="parentId" label="Part of" optional options={desk.campaigns.map((campaign) => ({ value: campaign.id, label: campaign.name }))} />
-                </div>
-                <Area name="description" label="What is this for?" required={false} />
-              </ActionForm>
-            </div>
-          </section>
-        )}
+        {!selected && <section className="rounded-[28px] border border-slate-200 p-8 text-center"><h2 className="text-lg font-semibold">No campaigns yet</h2><p className="mt-1 text-sm text-[var(--color-ink-muted)]">Build the first one: brief, audience, channels, budget and launch plan.</p></section>}
       </div>
     </div>
   );

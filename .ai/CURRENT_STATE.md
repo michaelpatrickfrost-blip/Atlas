@@ -2802,3 +2802,12 @@ Moved company branding (logo, colours, letterhead) into the onboarding flow so c
 - Behaviour (Michael chose Automatic): completing the FINAL routing step (src/modules/manufacturing/services/stock.ts, called from completeWorkOrder before the work order update) receives finished goods and uses BOM components for good + all scrap on the order (ceil of qty x quantityPerUnit x (1+scrap%)), via the stock provider with repeat-safe keys; refused if components are short. Limits: whole units only; no negative-stock/material-override path is wired (capability exists, not used); warehouse defaults to the first WAREHOUSE by code and is saved on the order (no UI field yet); quantities per unit are assumed per ONE finished unit (batchQuantity/yield not applied).
 - Verified on the VPS (scripts/check-manufacturing-stock.ts, throwaway Test company, all 10 checks PASS twice): non-final step leaves stock alone; flour/sugar used correctly; finished goods received; replay safe; 3 movements linked to the order; short stock refused and nothing changed. The run found and I fixed a bug that would have broken the console's company delete (my shipment view was picked up as a table).
 - NOT verified: the shop-floor UI itself (no sign-in by me), MRP run end to end with real data, product/BOM screens. Another contributor is committing to main concurrently (sales document composer etc.) — keep staging to explicit paths.
+
+## 2026-10-05 (Customer archive and delete)
+- Added `archived` boolean to `Party` model in Prisma schema.
+- Implemented `archiveCustomer` command in `src/core/customers/commands.ts` (sets `archived: true`).
+- Implemented `deleteCustomer` command (sets status to `CLOSED`).
+- Created `ConfirmationDialog` UI component in `src/components/ui/confirmation-dialog.tsx` to replace `window.confirm`.
+- Added `CustomerRecordActions` menu to `CustomerHeader` in `src/app/(app)/customers/[partyId]/page.tsx` providing "Archive Customer" and "Delete Customer" actions with professional confirmation modals.
+- Removed legacy `DeleteCustomerButton` from `src/app/(app)/customers/`.
+- Verified build success and deployed to VPS via `npm run deploy:vps`.

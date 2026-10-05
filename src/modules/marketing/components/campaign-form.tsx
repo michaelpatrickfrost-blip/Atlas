@@ -8,9 +8,6 @@ interface CampaignFormProps {
   campaign?: {
     id: string;
     name: string;
-    description: string;
-    objective: string;
-    budget: number;
     status: string;
   };
   onSuccess?: () => void;
@@ -21,9 +18,6 @@ export function CampaignForm({ campaign, onSuccess }: CampaignFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: campaign?.name || '',
-    description: campaign?.description || '',
-    objective: campaign?.objective || 'AWARENESS',
-    budget: campaign ? campaign.budget / 100 : 0,
     status: campaign?.status || 'DRAFT',
   });
 
@@ -66,47 +60,6 @@ export function CampaignForm({ campaign, onSuccess }: CampaignFormProps) {
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-2">Description</label>
-        <textarea
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="w-full px-3 py-2 border rounded"
-          rows={3}
-          placeholder="Campaign overview and goals"
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium mb-2">Objective *</label>
-          <select
-            required
-            value={formData.objective}
-            onChange={(e) => setFormData({ ...formData, objective: e.target.value })}
-            className="w-full px-3 py-2 border rounded"
-          >
-            <option value="AWARENESS">Brand Awareness</option>
-            <option value="CONSIDERATION">Consideration</option>
-            <option value="CONVERSION">Conversion</option>
-            <option value="RETENTION">Retention</option>
-            <option value="ADVOCACY">Advocacy</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">Budget (£)</label>
-          <input
-            type="number"
-            min="0"
-            step="100"
-            value={formData.budget}
-            onChange={(e) => setFormData({ ...formData, budget: parseFloat(e.target.value) || 0 })}
-            className="w-full px-3 py-2 border rounded"
-            placeholder="0"
-          />
-        </div>
-      </div>
 
       <div>
         <label className="block text-sm font-medium mb-2">Status</label>
@@ -123,7 +76,7 @@ export function CampaignForm({ campaign, onSuccess }: CampaignFormProps) {
       </div>
 
       <div className="flex gap-3 justify-end">
-        <Button variant="outline" type="button" disabled={isLoading}>
+        <Button type="button" disabled={isLoading} className="bg-gray-100 text-gray-800 hover:bg-gray-200">
           Cancel
         </Button>
         <Button type="submit" disabled={isLoading}>

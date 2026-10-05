@@ -134,7 +134,7 @@ export function ForecastSettingsForm({
       </div>
 
       <div className="flex gap-3 justify-end">
-        <Button variant="outline" type="button" disabled={isLoading}>
+        <Button type="button" disabled={isLoading} className="bg-gray-100 text-gray-800 hover:bg-gray-200">
           Cancel
         </Button>
         <Button type="submit" disabled={isLoading}>

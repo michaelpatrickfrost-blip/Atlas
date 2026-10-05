@@ -1,19 +1,19 @@
 # Atlas current state
 
-## Stock Forecasting & Complete Form Workflows deployed — 5 October 2026, 08:10 BST
+## Core Modules Live — Stock Forecasting, Marketing & Automations — 5 October 2026, 09:00 BST
 
-**Deployed to VPS** (commit 29fab3a, `npm run deploy:vps`). Service healthy, `/login` 200. Migration `20261005_add_stock_forecasting` applied successfully to VPS database.
+**Deployed to VPS** (commit b1b4568, `npm run deploy:vps`). Service healthy, all core pages rendering without errors.
 
-**Built — Part A Complete:**
-- Marketing module: six navigation areas (Today, Campaigns, Audience, Content, Growth, Insights) with proper routes
-- Automations module: rule list, create, detail pages, run history
-- **Stock Forecasting (NEW):** Product model enhanced with safetyStockLevel, leadTimeDays, averageDailyDemand, forecastMethod; StockForecast model created for forecast history; exponential smoothing and moving average algorithms in `src/modules/inventory/services/stock-forecasting.ts`; forecast dashboard at `/stock/forecast` showing recent predictions, confidence scores, and reorder optimization
-- Stock management pages: `/stock/levels` (current inventory), `/stock/adjustments` (manual movements), `/stock/forecast` (demand predictions)
-- Form handling: all input pages now have proper edit/save workflow with server actions
+**✓ Completed:**
+- Marketing module: Six navigation areas (Today, Campaigns, Audience, Content, Growth, Insights) with working routes
+- Automations module: Rule list, create, detail pages with run history
+- **Stock Forecasting:** Product model with safetyStockLevel, leadTimeDays, averageDailyDemand, forecastMethod fields; StockForecast model with historical tracking; exponential smoothing and moving average algorithms in `src/modules/inventory/services/stock-forecasting.ts`
+- Stock management: `/stock` (main hub), `/stock/levels` (inventory status), `/stock/adjustments` (manual tracking), `/stock/forecast` (demand predictions)
+- **Form framework:** Forecast settings form component with proper input validation and save workflow; server actions use `requireSession()` + `assertCapability()` for security
 
-**Status:** Marketing, Automations, and Stock Forecasting infrastructure live on VPS. All forms have complete edit/save functionality with capability checks. Next: wire forecasting to product detail pages, add batch forecast generation, marketing campaign data binding, automations builder visual refinement.
+**Status:** Core navigation and module infrastructure live. Pages load reliably without errors. Database migration 82 (`20261005_add_stock_forecasting`) applied; schema ready for data binding. Next phase: wire real data to dashboards, complete form save handlers, marketing campaign builder UI, automations visual editor.
 
-Schema at 82 migrations, 0 missing fields. Forms across all modules use server actions with `requireSession()` + `assertCapability()` pattern.
+**Known:** Pages use placeholder data initially; live data queries will be added when schema is fully stabilized. No pages should error - all show working UI state.
 
 ---
 

@@ -1,5 +1,15 @@
 # Atlas current state
 
+## Order lines show stock — 5 October 2026
+
+`document-composer.tsx` order lines (layout only; save unchanged): flat `[code] name` rows via
+`ProductPicker bare`, Cat. code column, a stock indicator beside Quantity (green in stock, amber part, red
+none; hover shows free now, this line, short/left and dated arrivals), the shortfall written under the
+product, tax pill, drag handle to reorder. `.atlas-cell` in `globals.css` removes the input box in table
+cells (the global input rule is unlayered, so it needs `!important`). Checks: `npx tsc --noEmit` clean; local
+quotation edit screen viewed with a short line. Drag reorder not exercised. Deployed with
+`npm run deploy:vps`; see Git for the commit.
+
 ## Finance menu, sites, email on records, exports, customer editing, pipeline prospects — 5 October 2026
 
 - **Finance menu hidden.** The `admin` role held four Finance capabilities, so most Finance navigation was

@@ -120,6 +120,12 @@ textarea:focus {
   box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.16);
   outline: none;
 }
+/* Table-cell inputs (sales order lines): no box until hovered or focused. */
+input.atlas-cell { border-color: transparent !important; background: transparent !important; border-radius: 8px !important; padding: 0.4rem 0.5rem !important; font-size: 0.875rem; }
+tr:hover input.atlas-cell, input.atlas-cell:hover { border-color: rgba(0, 0, 0, 0.1) !important; }
+input.atlas-cell:focus { border-color: #0071e3 !important; background: white !important; box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.14) !important; }
+input.atlas-cell:disabled { color: #475569; border-color: transparent !important; }
+input.atlas-cell.atlas-cell-search { padding-left: 1.75rem !important; }
 @layer base {
   input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]):not([type=color]),
   textarea {

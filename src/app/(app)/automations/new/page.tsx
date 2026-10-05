@@ -9,7 +9,7 @@ export default async function NewAutomationPage() {
 
   return (
     <div className="space-y-6">
-      <Link href="/automations"><Button variant="outline">Back</Button></Link>
+      <Link href="/automations"><Button variant="secondary">Back</Button></Link>
       <h1 className="text-3xl font-bold">Create Automation</h1>
       <p className="text-gray-600">Choose a template or build from scratch</p>
     </div>

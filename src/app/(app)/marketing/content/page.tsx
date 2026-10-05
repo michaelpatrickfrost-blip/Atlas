@@ -1,5 +1,5 @@
 import { requireSession } from '@/core/auth/session';
-import { assertCapability } from '@/core/permissions/capabilities';
+import { assertCapability } from '@/core/permissions/check';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
 

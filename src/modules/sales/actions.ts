@@ -1,7 +1,7 @@
 'use server';
 
 import { requireSession } from '@/core/auth/session';
-import { assertCapability } from '@/core/permissions/capabilities';
+import { assertCapability } from '@/core/permissions/check';
 import { sendEmail } from '@/core/email/send';
 import { db } from '@/core/db/client';
 import type { SalesQuote, SalesOrder } from '@prisma/client';

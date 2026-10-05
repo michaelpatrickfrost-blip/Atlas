@@ -1,5 +1,5 @@
 import { requireSession } from '@/core/auth/session';
-import { assertCapability } from '@/core/permissions/capabilities';
+import { assertCapability } from '@/core/permissions/check';
 import { db } from '@/core/db/client';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { Card } from '@/components/ui/card';

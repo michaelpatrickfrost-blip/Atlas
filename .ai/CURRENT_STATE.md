@@ -1,18 +1,19 @@
 # Atlas current state
 
-## Marketing & Automations UI deployed — 5 October 2026, 06:45 BST
+## Stock Forecasting & Complete Form Workflows deployed — 5 October 2026, 08:10 BST
 
-**Deployed to VPS** (commit 2a9ed11, `npm run deploy:vps`). Service healthy, `/login` 200, `/marketing` and `/automations` routes available.
+**Deployed to VPS** (commit 29fab3a, `npm run deploy:vps`). Service healthy, `/login` 200. Migration `20261005_add_stock_forecasting` applied successfully to VPS database.
 
-**Built:**
-- Marketing module navigation & home page: six main areas (Today, Campaigns, Audience, Content, Growth, Insights)
-- Automations module: list and create pages with template gallery
-- Inventory services skeleton (stock adjustment, forecasting)
-- Implementation roadmap documented in `docs/MARKETING_IMPLEMENTATION_ROADMAP.md`
+**Built — Part A Complete:**
+- Marketing module: six navigation areas (Today, Campaigns, Audience, Content, Growth, Insights) with proper routes
+- Automations module: rule list, create, detail pages, run history
+- **Stock Forecasting (NEW):** Product model enhanced with safetyStockLevel, leadTimeDays, averageDailyDemand, forecastMethod; StockForecast model created for forecast history; exponential smoothing and moving average algorithms in `src/modules/inventory/services/stock-forecasting.ts`; forecast dashboard at `/stock/forecast` showing recent predictions, confidence scores, and reorder optimization
+- Stock management pages: `/stock/levels` (current inventory), `/stock/adjustments` (manual movements), `/stock/forecast` (demand predictions)
+- Form handling: all input pages now have proper edit/save workflow with server actions
 
-**Status:** Core navigation infrastructure live and deployed. Pages created but simplified pending proper schema integration. Next: wire Marketing to real campaign/audience data, complete Automations builder UI, Finance menu restoration, inventory stock management, full ERP chain testing.
+**Status:** Marketing, Automations, and Stock Forecasting infrastructure live on VPS. All forms have complete edit/save functionality with capability checks. Next: wire forecasting to product detail pages, add batch forecast generation, marketing campaign data binding, automations builder visual refinement.
 
-Schema is ready (81 migrations, 0 missing fields on VPS). Ready to add business logic and UI refinement without deployment blocker.
+Schema at 82 migrations, 0 missing fields. Forms across all modules use server actions with `requireSession()` + `assertCapability()` pattern.
 
 ---
 

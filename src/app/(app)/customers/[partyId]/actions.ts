@@ -15,6 +15,7 @@ import {
   setCreditHold,
   createNote,
   updateCustomerStatus,
+  archiveCustomer,
   deleteCustomer,
 } from "@/core/customers/commands";
 import { redirect } from "next/navigation";
@@ -138,6 +139,10 @@ export async function createNoteFormAction(partyId: string, formData: FormData) 
 export async function updateStatusFormAction(partyId: string, formData: FormData) {
   await updateCustomerStatus(partyId, formData.get("status") as never);
   revalidatePath(`/customers/${partyId}`);
+}
+
+export async function archiveCustomerFormAction(partyId: string) {
+  await archiveCustomer(partyId);
 }
 
 export async function deleteCustomerFormAction(partyId: string) {

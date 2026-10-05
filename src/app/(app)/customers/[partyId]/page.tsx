@@ -1,4 +1,5 @@
 import { EditCustomerDetails } from "@/app/(app)/customers/[partyId]/edit-details";
+import { CustomerRecordActions } from "@/app/(app)/customers/[partyId]/record-actions";
 import {RecordEmail} from "@/app/(app)/_shared/record-email";
 import { CustomerHierarchy } from "./hierarchy";
 import { notFound } from "next/navigation";
@@ -50,7 +51,7 @@ export default async function CustomerRecordPage({
         contributions={contributions}
         onHold={customer.creditProfile?.onHold ?? false}
         hasVerifiedTaxRegistration={customer.taxRegistrations.some((r) => r.validationStatus === "MANUALLY_VERIFIED" || r.validationStatus === "VERIFIED_BY_SERVICE")}
-        extra={<>{can(session, "customers.edit") && <EditCustomerDetails customer={customer} />}{can(session, "echo.read") ? <EchoRail entityType="Party" entityId={customer.id} title={customer.name} canWrite={can(session, "echo.write")} startOpen={echo === "1"} /> : null}</>}
+        extra={<>{can(session, "customers.edit") && <><CustomerRecordActions partyId={partyId} customerName={customer.name} /><EditCustomerDetails customer={customer} /></>}{can(session, "echo.read") ? <EchoRail entityType="Party" entityId={customer.id} title={customer.name} canWrite={can(session, "echo.write")} startOpen={echo === "1"} /> : null}</>}
       />
       <CustomerTabs partyId={partyId} active={activeTab} />
 

@@ -119,6 +119,28 @@ export async function updateCustomerStatus(partyId: string, status: "PROSPECT" |
   revalidatePath(`/customers/${partyId}`);
 }
 
+export async function archiveCustomer(partyId: string) {
+  const session = await requireSession();
+  assertCapability(session, CUSTOMER_CAPABILITIES.edit);
+
+  const customer = await db.party.findFirstOrThrow({ where: { id: partyId, organisationId: session.organisationId } });
+
+  const after = await db.party.update({ where: { id: partyId }, data: { archived: true } });
+
+  await writeAudit({
+    organisationId: session.organisationId,
+    actorUserId: session.userId,
+    action: "customer.archived",
+    entityType: "Party",
+    entityId: partyId,
+    before: { archived: customer.archived },
+    after: { archived: after.archived },
+  });
+
+  revalidatePath(`/customers/${partyId}`);
+  revalidatePath("/customers");
+}
+
 export async function deleteCustomer(partyId: string) {
   const session = await requireSession();
   assertCapability(session, CUSTOMER_CAPABILITIES.edit);

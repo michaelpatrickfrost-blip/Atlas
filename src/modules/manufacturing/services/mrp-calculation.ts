@@ -119,6 +119,19 @@ async function loadDemand(organisationId: string, start: Date, end: Date): Promi
     });
   }
 
+  // Expected usage set on the product in Inventory: forecast demand for every
+  // month in the horizon the planner has not given its own figure.
+  const standing = await db.product.findMany({ where: { organisationId, kind: "PRODUCT", active: true, monthlyUsage: { gt: 0 } }, select: { id: true, monthlyUsage: true } });
+  const entered = new Set(forecasts.map((forecast) => `${forecast.productId}:${forecast.periodStart.toISOString().slice(0, 7)}`));
+  const now = new Date();
+  for (const product of standing) {
+    for (let month = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1)); month <= end; month = new Date(Date.UTC(month.getUTCFullYear(), month.getUTCMonth() + 1, 1))) {
+      const key = `${product.id}:${month.toISOString().slice(0, 7)}`;
+      if (entered.has(key)) continue;
+      demand.push({ id: `usage:${key}`, demandType: DemandType.FORECAST, source: DemandSource.FORECAST, productId: product.id, quantity: product.monthlyUsage ?? 0, requiredDate: month < now ? now : month, sourceId: product.id, notes: "Expected usage (Inventory)" });
+    }
+  }
+
   return demand;
 }
 
@@ -266,15 +279,14 @@ async function loadExistingSupply(organisationId: string): Promise<Map<string, n
 async function loadLeadTimes(organisationId: string): Promise<Map<string, number>> {
   const leadTimes = new Map<string, number>();
 
-  // TODO: Load from product definitions or supplier data
-  // For now, return defaults
+  // Set on the product in Inventory. 0 means not set: 5 days.
   const products = await db.product.findMany({
     where: { organisationId },
-    select: { id: true },
+    select: { id: true, leadTimeDays: true },
   });
 
   for (const product of products) {
-    leadTimes.set(product.id, 5); // default 5 days
+    leadTimes.set(product.id, product.leadTimeDays > 0 ? product.leadTimeDays : 5);
   }
 
   return leadTimes;
@@ -286,15 +298,14 @@ async function loadLeadTimes(organisationId: string): Promise<Map<string, number
 async function loadSafetyStocks(organisationId: string): Promise<Map<string, number>> {
   const safetyStocks = new Map<string, number>();
 
-  // TODO: Load from product definitions or inventory configuration
-  // For now, return defaults
+  // Set on the product in Inventory. 0 means not set: 100 units.
   const products = await db.product.findMany({
     where: { organisationId },
-    select: { id: true },
+    select: { id: true, safetyStockLevel: true },
   });
 
   for (const product of products) {
-    safetyStocks.set(product.id, 100); // default 100 units TODO: make configurable
+    safetyStocks.set(product.id, product.safetyStockLevel > 0 ? product.safetyStockLevel : 100);
   }
 
   return safetyStocks;

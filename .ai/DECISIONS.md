@@ -727,3 +727,13 @@ Domain events are now durable (`AutomationEvent` table; `emit()` persists before
 handlers) specifically so Automations has something reliable to trigger from — the prior in-memory
 bus was fire-and-forget to listeners that were never even registered. See
 `docs/plans/MARKETING_AUTOMATION_EMAIL_PLAN.md` for the full plan and what is still open.
+
+## 5 October 2026 — One stock forecast, shared with production
+
+Inventory's forecast is calculated, not stored: usage from the movement ledger, overridden by the
+product's expected monthly usage, overridden by the planner's production forecast for the month. Safety
+stock, lead time and expected usage live on `Product` and are the same figures MRP plans with. Reason:
+Michael requires the stock forecast to be tied into production; a separate forecast table would be a
+second, disagreeing source. New pages must never be added as fixed routes over an existing dynamic
+route, and an existing screen is never replaced with a placeholder to get a build through.
+

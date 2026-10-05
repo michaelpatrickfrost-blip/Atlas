@@ -12,6 +12,12 @@ export async function inventoryExportRows(type:string,warehouse:string,q:string,
   if(rows.length>10000)throw new Error('Narrow your filters to export at most 10,000 movements.');
   return [['Recorded UTC','SKU','Product','Warehouse code','Warehouse','Quantity change','Unit','Reason','Reference'],...rows.map(m=>[m.createdAt.toISOString(),m.product.code,m.product.name,m.warehouse.code,m.warehouse.name,m.delta,m.product.unitOfMeasure,m.reason,m.reference??''])];
  }
+ if(type==='forecast') {
+  const {readStockForecast}=await import('./forecast');
+  const labels:Record<string,string>={ORDER_NOW:'Order now',ORDER_SOON:'Order soon',COVERED:'Covered',NO_USAGE:'No usage yet'};
+  const rows=(await readStockForecast()).filter(row=>(!q||`${row.code} ${row.name}`.toLowerCase().includes(q.toLowerCase()))&&(!focus||row.state===focus));
+  return [['SKU','Product','Unit','On hand','Available','Coming in','Usage a month','Usage source','Days of cover','Runs out','Lead time days','Safety stock','Reorder at','Suggested order','Status'],...rows.map(row=>[row.code,row.name,row.unit,row.onHand,row.available,row.incoming,Math.round(row.dailyUsage*30),row.usageSource==='set'?'Set':row.usageSource==='history'?'History':'',row.daysOfCover==null?'':Math.floor(row.daysOfCover),row.runsOutOn??'',row.leadTimeDays,row.safetyStock,row.reorderPoint,row.suggestedOrder,labels[row.state]])];
+ }
  const snapshot=await inventorySnapshot(session);
  const warehouses=snapshot.warehouses.filter(w=>!warehouse||w.id===warehouse);
  const rows=snapshot.products.filter(p=>{

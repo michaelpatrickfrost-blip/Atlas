@@ -999,8 +999,11 @@ model Product {
   trackingMode String @default("NONE")
   barcode String?
   active          Boolean    @default(true)
+  /** Stock planning. 0 means not set. */
   safetyStockLevel Int @default(0)
   leadTimeDays Int @default(0)
+  /** Expected usage per month. Unset means usage is read from the movement ledger. */
+  monthlyUsage Int?
   averageDailyDemand Int @default(0)
   forecastMethod String @default("EXPONENTIAL_SMOOTHING")
   lastForecastDate DateTime?

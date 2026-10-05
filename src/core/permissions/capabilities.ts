@@ -328,10 +328,8 @@ export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: st
       ...Object.values(TEAMS_CAPABILITIES),
       ...Object.values(SERVICE_CAPABILITIES),
       ...Object.values(TICKETING_CAPABILITIES),
-      "finance.overview.read",
-      "finance.receivables.read",
-      "finance.configure",
-      "finance.approval.decide",
+      // Every Finance area, so the whole Finance menu is available to an administrator.
+      "finance.overview.read", "finance.receivables.read", "finance.receivables.manage", "finance.payables.read", "finance.payables.manage", "finance.purchase.read", "finance.purchase.manage", "finance.request.create", "finance.spend.read", "finance.expense.create", "finance.approval.decide", "finance.bank.read", "finance.bank.manage", "finance.bank.verify", "finance.bank.reveal", "finance.payment.create", "finance.payment.approve", "finance.ledger.read", "finance.journal.create", "finance.journal.post", "finance.period.manage", "finance.asset.read", "finance.asset.manage", "finance.planning.read", "finance.planning.manage", "finance.tax.read", "finance.report.read", "finance.control.read", "finance.configure",
       ...Object.values(MARKETING_CAPABILITIES),
       ...Object.values(LOGISTICS_CAPABILITIES),
       ...Object.values(MANUFACTURING_CAPABILITIES),

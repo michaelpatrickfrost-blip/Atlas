@@ -34,7 +34,7 @@ export default async function AgreementPage({ params }: { params: Promise<{ agre
     ? await Promise.all([
         db.party.findMany({ where: { organisationId: session.organisationId }, select: { id: true, name: true, customerCode: true }, orderBy: { name: "asc" }, take: 500 }),
         db.priceList.findMany({ where: { organisationId: session.organisationId }, select: { id: true, name: true, currency: true }, orderBy: { name: "asc" } }),
-        db.product.findMany({ where: { organisationId: session.organisationId, active: true }, select: { id: true, code: true, name: true }, orderBy: { code: "asc" } }),
+        db.product.findMany({ where: { organisationId: session.organisationId, active: true }, select: { id: true, code: true, name: true, basePriceAmount: true, baseCurrency: true }, orderBy: { code: "asc" } }),
       ])
     : [[], [], []];
   const status = agreementLabel(agreement.status, agreement.endsOn);
@@ -101,7 +101,7 @@ export default async function AgreementPage({ params }: { params: Promise<{ agre
         {!agreement.prices.length && <p className="px-5 py-6 text-sm text-[var(--color-ink-muted)]">No special prices. The price list covers this customer.</p>}
         {manage && (
           <ActionForm action={saveAgreementPrice.bind(null, agreement.id)} className="grid gap-3 border-t border-[var(--color-border)] p-5 sm:grid-cols-[1.4fr_0.6fr_0.6fr_auto] sm:items-end">
-            <ProductSearch products={products} />
+            <ProductSearch products={products.map((product) => ({ id: product.id, code: product.code, name: product.name, price: product.baseCurrency === currency ? product.basePriceAmount / 100 : undefined }))} fillPrice="price" />
             <label className="text-sm">From quantity<input name="quantity" type="number" min="1" step="1" defaultValue="1" required className={field} /></label>
             <label className="text-sm">Price ({currency})<input name="price" type="number" min="0" step="0.01" required className={field} /></label>
             <Button type="submit" variant="primary">Add price</Button>

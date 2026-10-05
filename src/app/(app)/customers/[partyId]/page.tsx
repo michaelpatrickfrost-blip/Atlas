@@ -1,3 +1,5 @@
+import { EditCustomerDetails } from "@/app/(app)/customers/[partyId]/edit-details";
+import {RecordEmail} from "@/app/(app)/_shared/record-email";
 import { CustomerHierarchy } from "./hierarchy";
 import { notFound } from "next/navigation";
 import { requireSession } from "@/core/auth/session";
@@ -48,7 +50,7 @@ export default async function CustomerRecordPage({
         contributions={contributions}
         onHold={customer.creditProfile?.onHold ?? false}
         hasVerifiedTaxRegistration={customer.taxRegistrations.some((r) => r.validationStatus === "MANUALLY_VERIFIED" || r.validationStatus === "VERIFIED_BY_SERVICE")}
-        extra={can(session, "echo.read") ? <EchoRail entityType="Party" entityId={customer.id} title={customer.name} canWrite={can(session, "echo.write")} startOpen={echo === "1"} /> : null}
+        extra={<>{can(session, "customers.edit") && <EditCustomerDetails customer={customer} />}{can(session, "echo.read") ? <EchoRail entityType="Party" entityId={customer.id} title={customer.name} canWrite={can(session, "echo.write")} startOpen={echo === "1"} /> : null}</>}
       />
       <CustomerTabs partyId={partyId} active={activeTab} />
 
@@ -63,6 +65,7 @@ export default async function CustomerRecordPage({
       {activeTab === "relationships" && <CustomerHierarchy partyId={partyId} session={session} />}
       {activeTab === "commercial" && <Commercial customer={customer} session={session} />}
       {activeTab === "finance" && <FinanceAndTax customer={customer} session={session} />}
+      {activeTab === "activity" && <RecordEmail kind="customer" recordId={partyId} />}
       {activeTab === "activity" && (
         <CustomerActivity customer={customer} activity={await getCustomerActivity(session.organisationId, partyId)} session={session} />
       )}

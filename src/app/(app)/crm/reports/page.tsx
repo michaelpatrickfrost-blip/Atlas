@@ -1,3 +1,4 @@
+import { ExportMenu } from '@/components/ui/export-menu';
 import { ownerRestriction } from "@/modules/crm/services/visibility";
 import type { ReactNode } from "react";
 import { requireSession } from "@/core/auth/session";
@@ -53,7 +54,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
           <h1 className="text-4xl font-semibold tracking-tight text-[#1d1d1f]">Reports</h1>
           <p className="mt-1 text-sm text-[#6e6e73]">Filter the book and download it. Boards open in Dashboards.</p>
         </div>
-        <a href={`/api/crm/reports?${query.toString()}`} className="rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium text-[#1d1d1f]">Download</a>
+        <ExportMenu href={`/api/crm/reports?${query.toString()}`}/>
       </div>
 
       <form className="grid gap-3 rounded-3xl border border-black/[0.04] bg-white p-4 shadow-[0_12px_32px_-24px_rgba(0,0,0,0.35)] sm:grid-cols-2 lg:grid-cols-6">

@@ -1,5 +1,42 @@
 # Atlas current state
 
+## Finance menu, sites, email on records, exports, customer editing, pipeline prospects — 5 October 2026
+
+- **Finance menu hidden.** The `admin` role held four Finance capabilities, so most Finance navigation was
+  filtered out. `admin` now has every `finance.*` capability (`core/permissions/capabilities.ts`); migration
+  `20261005140000_admin_finance_capabilities` adds them to existing admin roles. Purchase orders and
+  Suppliers added to the Finance navigation (they were only reachable through tabs). All Finance nav links
+  resolve to `/finance/[workspace]`.
+- **Sales → Sites** (`/sales/sites/[projectId]`, `sales/sites/actions.ts`): Edit site, New quotation / New
+  order with the site and customer preselected (`?projectId=`), add existing quotation/order, remove.
+  The composer now honours `initialProject`. Unscoped `updateSite` removed.
+- **Email and contracts on records** (`src/app/(app)/_shared/record-email*.ts[x]`): Email dialog (sender,
+  recipient from contacts, copy, subject, message, PDF attached) and Send contract on quotation, order,
+  finance document and the customer Activity tab, with sent history. Uses `core/email/send` and
+  `core/contracts/actions`; PDFs come from the existing PDF routes.
+- **Exports**: `csvResponse(filename, rows, request)` serves `format=xlsx`, `format=headers`, `columns=`.
+  `ExportMenu` (`components/ui/export-menu.tsx`) offers Excel/CSV and a column chooser on Inventory (3),
+  Planning (4) and CRM reports. Sales and courier exports already had this. Audit, plan and pricing-sheet
+  exports are unchanged (CSV only).
+- **Forecast Buy** opens a purchase order with product, quantity, due date and reason filled in
+  (`finance/documents/new?kind=PO&product=&quantity=`); the supplier and unit cost are still entered by hand.
+- **Price lists**: choosing a product fills its standard price (converted with the list rate) in the price
+  list and agreement price forms; typing a price overrides.
+- **Customers**: Edit details (names, kind, account manager, type, industry, registration, website,
+  territory, currency, language, customer since) and address Edit / Remove (retired, not deleted); new
+  addresses save label, line 2, region, telephone and delivery instructions.
+- **CRM pipeline** shows open prospects by lifecycle stage above the deals board.
+
+**Checks run:** `npx tsc --noEmit` clean; eslint on changed files no errors. Local dev app: customer page
+shows Edit details; forecast Export dialog lists Excel and CSV links; no console errors. Not exercised:
+sending an email or contract (no mail account locally), xlsx download content, site add/remove, address
+edit, PO prefill, pipeline prospects, the Finance menu (local admin role lacks the new capabilities).
+
+**Open:** `scripts/check-erp-chain.ts` not written. `/customers/new` reported "blocked" by Michael: the
+live organisation allows customer creation, admin and sales roles hold `customers.create`, and the server
+log shows no error for that page; cause not found, needs a screenshot. App-wide edit/save audit and the
+Marketing rebuild remain not done.
+
 ## Sales projects link to quotations, orders and customers; new order screen; All Sales 404 — 5 October 2026
 
 **Problems found.** (1) `/crm/projects/[id]` was a shell: Edit, Add organisation, Add stakeholder, New quote

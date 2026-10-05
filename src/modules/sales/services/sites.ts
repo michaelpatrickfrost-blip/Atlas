@@ -92,35 +92,3 @@ export async function createSite(session: Session, input: {
   });
   return project;
 }
-
-export async function updateSite(session: Session, projectId: string, input: {
-  name?: string;
-  partyId?: string;
-  notes?: string;
-  startAt?: string | null;
-  targetAt?: string | null;
-  status?: string;
-}) {
-  assertCapability(session, "sales.site.manage");
-  const updates: Record<string, unknown> = {};
-  if (input.name !== undefined) updates.name = input.name;
-  if (input.partyId !== undefined) updates.partyId = input.partyId;
-  if (input.notes !== undefined) updates.notes = input.notes;
-  if (input.startAt !== undefined) updates.startAt = input.startAt ? new Date(input.startAt) : null;
-  if (input.targetAt !== undefined) updates.targetAt = input.targetAt ? new Date(input.targetAt) : null;
-  if (input.status !== undefined) updates.status = input.status;
-
-  const updated = await db.project.update({
-    where: { id: projectId },
-    data: updates,
-    include: { party: { select: { id: true, name: true } } },
-  });
-  await writeAudit({
-    organisationId: session.organisationId,
-    actorUserId: session.userId,
-    action: "sales.site.update",
-    entityType: "Project",
-    entityId: projectId,
-  });
-  return updated;
-}

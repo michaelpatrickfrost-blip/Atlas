@@ -45,5 +45,5 @@ export async function GET(request: Request) {
       row.lossReason?.label ?? "",
     ]),
   ];
-  return csvResponse(`atlas-crm-report-${new Date().toISOString().slice(0, 10)}.csv`, rows);
+  return csvResponse(`atlas-crm-report-${new Date().toISOString().slice(0, 10)}.csv`, rows,request);
 }

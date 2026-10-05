@@ -286,6 +286,11 @@ export type CreateAddressInput = {
   partyId: string;
   type: AddressType;
   line1: string;
+  label?: string;
+  line2?: string;
+  region?: string;
+  telephone?: string;
+  deliveryInstructions?: string;
   city?: string;
   postcode?: string;
   country?: string;
@@ -311,6 +316,11 @@ export async function createAddress(input: CreateAddressInput) {
       partyId: input.partyId,
       type: input.type,
       line1: input.line1,
+      label: input.label,
+      line2: input.line2,
+      region: input.region,
+      telephone: input.telephone,
+      deliveryInstructions: input.deliveryInstructions,
       city: input.city,
       postcode: input.postcode,
       country: input.country,
@@ -675,4 +685,65 @@ export async function saveCustomerHashtags(partyId: string, formData: FormData) 
 async function assertOwnedByOrg(organisationId: string, partyId: string) {
   const party = await db.party.findFirst({ where: { id: partyId, organisationId }, select: { id: true } });
   if (!party) throw new Error("NOT_FOUND: customer does not belong to this organisation");
+}
+
+// ---------- Edit details and addresses ----------
+
+const field = (form: FormData, name: string, max = 200) => String(form.get(name) ?? "").trim().slice(0, max);
+const ADDRESS_KINDS = ["REGISTERED", "BILLING", "DELIVERY", "SITE", "SERVICE", "OFFICE", "OTHER"];
+
+/** The customer's own identity: names, registration, classification and account manager. */
+export async function updateCustomerDetails(partyId: string, form: FormData) {
+  const session = await requireSession();
+  assertCapability(session, CUSTOMER_CAPABILITIES.edit);
+  const before = await db.party.findFirst({ where: { id: partyId, organisationId: session.organisationId } });
+  if (!before) throw new Error("This customer no longer exists.");
+  const name = field(form, "name");
+  if (!name) throw new Error("Enter the customer's name.");
+  const currency = field(form, "preferredCurrency", 3).toUpperCase() || before.preferredCurrency;
+  if (!/^[A-Z]{3}$/.test(currency)) throw new Error("Currency is a three-letter code, for example GBP.");
+  const website = field(form, "website", 300);
+  if (website && !/^https?:\/\/\S+\.\S+$/i.test(website)) throw new Error("Enter the website with http:// or https://, or leave it blank.");
+  const accountManagerUserId = field(form, "accountManagerUserId", 60) || null;
+  if (accountManagerUserId && !(await db.membership.findFirst({ where: { organisationId: session.organisationId, userId: accountManagerUserId }, select: { id: true } }))) throw new Error("Choose an account manager from your team.");
+  const started = field(form, "relationshipStartDate", 10);
+  const relationshipStartDate = started ? new Date(`${started}T00:00:00Z`) : null;
+  if (relationshipStartDate && Number.isNaN(relationshipStartDate.getTime())) throw new Error("Enter a valid date.");
+  const data = {
+    name, tradingName: field(form, "tradingName") || null, kind: (form.get("kind") === "PERSON" ? "PERSON" : "COMPANY") as PartyKind, customerGroup: field(form, "customerGroup", 100) || null, industry: field(form, "industry", 100) || null,
+    website: website || null, registrationNumber: field(form, "registrationNumber", 60) || null, countryOfRegistration: field(form, "countryOfRegistration", 60) || null, territory: field(form, "territory", 100) || null,
+    preferredLanguage: field(form, "preferredLanguage", 40) || null, preferredCurrency: currency, accountManagerUserId, relationshipStartDate,
+  };
+  await db.party.update({ where: { id: partyId }, data });
+  await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "customer.details_updated", entityType: "Party", entityId: partyId, before: { name: before.name, tradingName: before.tradingName, accountManagerUserId: before.accountManagerUserId, preferredCurrency: before.preferredCurrency }, after: { name, tradingName: data.tradingName, accountManagerUserId, preferredCurrency: currency } });
+  revalidatePath(`/customers/${partyId}`);
+  revalidatePath("/customers");
+}
+
+export async function updateAddress(addressId: string, partyId: string, form: FormData) {
+  const session = await requireSession();
+  assertCapability(session, CUSTOMER_CAPABILITIES.addressesManage);
+  const before = await db.address.findFirst({ where: { id: addressId, partyId, party: { organisationId: session.organisationId } } });
+  if (!before) throw new Error("This address no longer exists.");
+  const type = field(form, "type", 20), line1 = field(form, "line1");
+  if (!ADDRESS_KINDS.includes(type)) throw new Error("Choose the kind of address.");
+  if (!line1) throw new Error("Enter the first line of the address.");
+  const billing = form.get("isDefaultBilling") === "on", delivery = form.get("isDefaultDelivery") === "on";
+  await db.$transaction(async (tx) => {
+    if (billing) await tx.address.updateMany({ where: { partyId }, data: { isDefaultBilling: false } });
+    if (delivery) await tx.address.updateMany({ where: { partyId }, data: { isDefaultDelivery: false } });
+    await tx.address.update({ where: { id: addressId }, data: { type: type as AddressType, label: field(form, "label", 100) || null, line1, line2: field(form, "line2") || null, city: field(form, "city", 100) || null, region: field(form, "region", 100) || null, postcode: field(form, "postcode", 20) || null, country: field(form, "country", 60) || null, telephone: field(form, "telephone", 40) || null, deliveryInstructions: field(form, "deliveryInstructions", 1000) || null, isDefaultBilling: billing, isDefaultDelivery: delivery } });
+  });
+  await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "customer.address.updated", entityType: "Address", entityId: addressId, before: { type: before.type, line1: before.line1, postcode: before.postcode }, after: { type, line1 } });
+  revalidatePath(`/customers/${partyId}`);
+}
+
+/** Addresses are retired, not deleted: quotations and orders keep their own copy of the address they used. */
+export async function archiveAddress(addressId: string, partyId: string) {
+  const session = await requireSession();
+  assertCapability(session, CUSTOMER_CAPABILITIES.addressesManage);
+  const changed = await db.address.updateMany({ where: { id: addressId, partyId, party: { organisationId: session.organisationId } }, data: { active: false, isDefaultBilling: false, isDefaultDelivery: false } });
+  if (!changed.count) throw new Error("This address no longer exists.");
+  await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "customer.address.archived", entityType: "Address", entityId: addressId });
+  revalidatePath(`/customers/${partyId}`);
 }

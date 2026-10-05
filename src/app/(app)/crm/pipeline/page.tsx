@@ -11,6 +11,7 @@ import { ownerRestriction } from "@/modules/crm/services/visibility";
 import { EmptyState } from "@/components/ui/empty-state";
 import { formatMoney } from "@/core/shared/money";
 import { PipelineBoard } from "./pipeline-board";
+import { db } from "@/core/db/client";
 
 export default async function PipelinePage({ searchParams }: { searchParams: Promise<{ pipeline?: string }> }) {
   const session = await requireSession();
@@ -33,6 +34,11 @@ export default async function PipelinePage({ searchParams }: { searchParams: Pro
     crmManagerPolicy(session.organisationId),
   ]);
   const canPush = crmPushAllowed(policy, session.capabilities);
+  const owner = ownerRestriction(session);
+  const prospects = can(session, SALES_CAPABILITIES.prospectRead)
+    ? await db.prospect.findMany({ where: { organisationId: session.organisationId, lifecycleStage: { in: ["NEW", "CONTACTED", "QUALIFIED", "NURTURE"] }, ...(owner ? { ownerUserId: owner } : {}) }, select: { id: true, companyName: true, contactFirstName: true, contactSurname: true, lifecycleStage: true, source: true, priorityScore: true, createdAt: true }, orderBy: [{ priorityScore: "desc" }, { createdAt: "desc" }], take: 200 })
+    : [];
+  const prospectStages = [["NEW", "New"], ["CONTACTED", "Contacted"], ["QUALIFIED", "Qualified"], ["NURTURE", "Nurture"]] as const;
 
   const totals = opportunities.reduce<Record<string, number>>((sum, item) => {
     sum[item.valueCurrency] = (sum[item.valueCurrency] ?? 0) + item.valueAmount;
@@ -69,6 +75,38 @@ export default async function PipelinePage({ searchParams }: { searchParams: Pro
         )}
       </div>
 
+      {can(session, SALES_CAPABILITIES.prospectRead) && (
+        <section>
+          <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-semibold text-[var(--color-ink)]">Prospects <span className="ml-1 font-normal text-[var(--color-ink-faint)]">{prospects.length}</span></h2>
+              <p className="mt-1 text-xs text-[var(--color-ink-muted)]">Not yet a deal. Open a prospect to qualify it and turn it into an opportunity in the pipeline below.</p>
+            </div>
+            <div className="flex gap-4 text-xs font-medium"><Link href="/crm/prospect" className="text-[var(--color-atlas-blue)]">All prospects →</Link>{can(session, SALES_CAPABILITIES.prospectCreate) && <Link href="/crm/prospect/new" className="text-[var(--color-atlas-blue)]">New prospect →</Link>}</div>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {prospectStages.map(([stage, label]) => {
+              const cards = prospects.filter((prospect) => prospect.lifecycleStage === stage);
+              return (
+                <div key={stage} className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-sunken)] p-3">
+                  <p className="px-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-ink-muted)]">{label} <span className="ml-1 font-normal text-[var(--color-ink-faint)]">{cards.length}</span></p>
+                  <div className="mt-2 flex max-h-72 flex-col gap-2 overflow-y-auto">
+                    {cards.map((prospect) => (
+                      <Link key={prospect.id} href={`/crm/prospect/${prospect.id}`} className="rounded-xl border border-[var(--color-border)] bg-white px-3 py-2.5 hover:border-[var(--color-atlas-blue)]">
+                        <p className="truncate text-sm font-medium text-[var(--color-ink)]">{prospect.companyName}</p>
+                        <p className="mt-0.5 truncate text-xs text-[var(--color-ink-muted)]">{[[prospect.contactFirstName, prospect.contactSurname].filter(Boolean).join(" "), prospect.source].filter(Boolean).join(" · ") || "No contact yet"}</p>
+                      </Link>
+                    ))}
+                    {!cards.length && <p className="px-1 py-3 text-xs text-[var(--color-ink-faint)]">None</p>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      <h2 className="-mb-2 text-sm font-semibold text-[var(--color-ink)]">Deals</h2>
       <PipelineBoard stages={activePipeline.stages} editable={can(session, SALES_CAPABILITIES.opportunityManage) && canPush} items={opportunities.map(item => ({id:item.id, name:item.name, stageId:item.stageId, valueAmount:item.valueAmount, valueCurrency:item.valueCurrency, party:{name:item.party.name}, nextActionAt:item.nextActionAt?.toISOString() ?? null}))} />
     </div>
   );

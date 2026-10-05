@@ -32,12 +32,13 @@ export default async function PriceListPage({ params }: { params: Promise<{ pric
   });
   if (!list) notFound();
   const [products, customers, categoryRows] = await Promise.all([
-    db.product.findMany({ where: { organisationId: session.organisationId, active: true }, select: { id: true, name: true, code: true, categoryCode: true, description: true }, orderBy: { code: "asc" } }),
+    db.product.findMany({ where: { organisationId: session.organisationId, active: true }, select: { id: true, name: true, code: true, categoryCode: true, description: true, basePriceAmount: true, baseCurrency: true }, orderBy: { code: "asc" } }),
     db.party.findMany({ where: { organisationId: session.organisationId }, select: { id: true, name: true, customerCode: true }, orderBy: { name: "asc" }, take: 500 }),
     db.productCategory.findMany({ where: { organisationId: session.organisationId, active: true }, select: { code: true, name: true }, orderBy: { name: "asc" } }),
   ]);
   const categoryNames = new Map(categoryRows.map((category) => [category.code, category.name]));
   for (const product of products) if (product.categoryCode && !categoryNames.has(product.categoryCode)) categoryNames.set(product.categoryCode, product.categoryCode);
+  const pricedProducts = products.map((product) => ({ id: product.id, code: product.code, name: product.name, categoryCode: product.categoryCode, description: product.description, price: product.baseCurrency === list.currency ? product.basePriceAmount / 100 : product.baseCurrency === list.baseCurrency ? Math.round(product.basePriceAmount * list.exchangeRate) / 100 : undefined }));
   const namedCategories = [...categoryNames.entries()].map(([code, name]) => ({ code, name })).sort((a, b) => a.name.localeCompare(b.name));
   const categories = namedCategories.map((category) => category.code);
   const manage = can(session, CORE_CAPABILITIES.pricingManage);
@@ -68,7 +69,7 @@ export default async function PriceListPage({ params }: { params: Promise<{ pric
         </div>
         {manage && (
           <CreateDialog label="Add a price" title={`Add a ${list.currency} price`}>
-            <SetPriceForm listId={list.id} currency={list.currency} products={products} />
+            <SetPriceForm listId={list.id} currency={list.currency} products={pricedProducts} />
           </CreateDialog>
         )}
       </div>
@@ -89,7 +90,7 @@ export default async function PriceListPage({ params }: { params: Promise<{ pric
         <PriceFilter
           currency={list.currency}
           listId={manage ? list.id : undefined}
-          products={manage ? products : undefined}
+          products={manage ? pricedProducts : undefined}
           remove={manage ? setRuleActive.bind(null, list.id) : undefined}
           rows={prices.map((entry) => ({
             id: entry.id,

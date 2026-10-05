@@ -737,3 +737,9 @@ Michael requires the stock forecast to be tied into production; a separate forec
 second, disagreeing source. New pages must never be added as fixed routes over an existing dynamic
 route, and an existing screen is never replaced with a placeholder to get a build through.
 
+## 5 October 2026 — Administrators hold every Finance capability
+
+The admin role had four Finance capabilities, which hid most of the Finance menu from the company owner.
+Admin now holds all `finance.*`, as it does for every other app. Finance's own controls still apply: a
+requester cannot approve their own document, and payment runs need a separate approval step.
+

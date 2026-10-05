@@ -1,21 +1,30 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { ActionForm } from "@/components/ui/action-form";
 import { Button } from "@/components/ui/button";
 import { savePriceEntry } from "./actions";
 
-export type PricingProduct = { id: string; code: string; name: string; categoryCode?: string | null; description?: string | null };
+/** `price` is the product's standard price in the currency of the form, in major units. */
+export type PricingProduct = { id: string; code: string; name: string; categoryCode?: string | null; description?: string | null; price?: number };
 
 const field = "mt-2 block w-full rounded-xl border border-[var(--color-border)] bg-white px-3 py-2.5 text-sm";
 
-export function ProductSearch({ products, defaultId = "", name = "productId" }: { products: PricingProduct[]; defaultId?: string; name?: string }) {
+/** `fillPrice` names a price input in the same form: choosing a product puts its standard price there,
+ * unless the person has typed their own. */
+export function ProductSearch({ products, defaultId = "", name = "productId", fillPrice }: { products: PricingProduct[]; defaultId?: string; name?: string; fillPrice?: string }) {
   const listId = useId();
   const initial = products.find((product) => product.id === defaultId);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(initial ?? null);
   const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null), filled = useRef("");
+  function choose(product: PricingProduct) {
+    setSelected(product); setOpen(false);
+    const input = fillPrice ? root.current?.closest("form")?.elements.namedItem(fillPrice) : null;
+    if (input instanceof HTMLInputElement && product.price != null && (!input.value || input.value === filled.current)) { input.value = product.price.toFixed(2); filled.current = input.value; }
+  }
   const matches = useMemo(() => {
     const needle = query.trim().toLowerCase();
     const source = needle
@@ -25,7 +34,7 @@ export function ProductSearch({ products, defaultId = "", name = "productId" }: 
   }, [products, query]);
 
   return (
-    <div className="text-sm">
+    <div className="text-sm" ref={root}>
       <span className="font-medium">Product</span>
       <input type="hidden" name={name} value={selected?.id ?? ""} required />
       <div className="relative mt-2">
@@ -58,7 +67,7 @@ export function ProductSearch({ products, defaultId = "", name = "productId" }: 
                 role="option"
                 aria-selected={selected?.id === product.id}
                 onMouseDown={(event) => event.preventDefault()}
-                onClick={() => { setSelected(product); setOpen(false); }}
+                onClick={() => choose(product)}
                 className="block w-full rounded-lg px-3 py-2 text-left hover:bg-[var(--color-surface-sunken)]"
               >
                 <span className="text-xs font-semibold">{product.code}</span>
@@ -81,8 +90,8 @@ export function SetPriceForm({ listId, currency, products, entry }: {
 }) {
   return (
     <ActionForm action={savePriceEntry.bind(null, listId)} className="grid gap-4 sm:grid-cols-2">
-      <div className="sm:col-span-2"><ProductSearch products={products} defaultId={entry?.productId} /></div>
-      <label className="text-sm">Set price ({currency})<input name="price" required type="number" min="0" step="0.01" defaultValue={entry?.price} className={field} /></label>
+      <div className="sm:col-span-2"><ProductSearch products={products} defaultId={entry?.productId} fillPrice="price" /></div>
+      <label className="text-sm">Set price ({currency})<input name="price" required type="number" min="0" step="0.01" defaultValue={entry?.price} className={field} /><span className="mt-1 block text-xs text-[var(--color-ink-muted)]">Filled from the product&apos;s standard price. Change it only to override.</span></label>
       <label className="text-sm">Discount %<input name="discount" type="number" min="0" max="100" step="0.01" defaultValue={entry?.discount ?? 0} className={field} /></label>
       <label className="text-sm">From quantity<input name="quantity" required type="number" min="1" step="1" defaultValue={entry?.quantity ?? 1} className={field} /></label>
       <label className="text-sm">Valid from<input name="validFrom" type="date" defaultValue={entry?.validFrom} className={field} /></label>

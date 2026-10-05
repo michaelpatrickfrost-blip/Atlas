@@ -32,6 +32,8 @@ shows Edit details; forecast Export dialog lists Excel and CSV links; no console
 sending an email or contract (no mail account locally), xlsx download content, site add/remove, address
 edit, PO prefill, pipeline prospects, the Finance menu (local admin role lacks the new capabilities).
 
+**Deployed** with `npm run deploy:vps` (56405c9): backup taken, migration applied, VPS build passed, service healthy; live admin roles hold all 29 Finance capabilities. Signed-in check on the VPS not done by the agent.
+
 **Open:** `scripts/check-erp-chain.ts` not written. `/customers/new` reported "blocked" by Michael: the
 live organisation allows customer creation, admin and sales roles hold `customers.create`, and the server
 log shows no error for that page; cause not found, needs a screenshot. App-wide edit/save audit and the

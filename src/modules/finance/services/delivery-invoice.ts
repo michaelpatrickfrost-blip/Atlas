@@ -4,6 +4,7 @@ import type { DeliveredInvoiceRequest } from "@/core/finance/handoff";
 import { writeAudit } from "@/core/audit/log";
 import { roundRatio } from "../domain/money";
 import crypto from "node:crypto";
+import { booksFor } from "./books";
 
 const TAX: Record<string, { code: string; bps: number }> = {
   STANDARD: { code: "STANDARD", bps: 2000 },
@@ -36,8 +37,7 @@ export async function invoiceDeliveredShipment(session: Session, request: Delive
       include: { lines: true, paymentTerm: true },
     });
     if (!order || ["BLANKET", "INTERNAL"].includes(order.orderType)) continue;
-    const entity = await db.financeEntity.findFirst({ where: { organisationId, currency: order.currency }, orderBy: { name: "asc" } });
-    if (!entity) continue;
+    const entity = await booksFor(organisationId, order.currency, session.userId);
     const lineIds = [...quantities.keys()];
     const already = await db.financeDocumentLine.findMany({
       where: { organisationId, salesOrderLineId: { in: lineIds }, document: { organisationId, kind: "AR_INVOICE", status: { not: "CANCELLED" } } },

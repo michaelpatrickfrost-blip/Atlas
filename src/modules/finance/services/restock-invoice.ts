@@ -1,3 +1,4 @@
+import { booksFor } from "./books";
 import crypto from "node:crypto";
 import { db } from "@/core/db/client";
 import type { Session } from "@/core/auth/session";
@@ -76,8 +77,7 @@ export async function invoiceWhenBackInStock(session: Session, productIds: strin
     const duplicateKey = `restock:${source.id}`;
     if (existing.has(duplicateKey)) continue;
     const order = source.order;
-    const entity = await db.financeEntity.findFirst({ where: { organisationId, currency: order.currency }, orderBy: { name: "asc" } });
-    if (!entity) continue;
+    const entity = await booksFor(organisationId, order.currency, session.userId);
     const whole = source.orderedQuantity - source.cancelledQuantity;
     if (row.quantity <= 0 || whole <= 0) continue;
     const treatment = TAX[source.taxCategory ?? ""] ?? TAX.OUTSIDE_SCOPE;

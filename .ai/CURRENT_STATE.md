@@ -1,5 +1,23 @@
 # Atlas current state
 
+## Delivery → invoice verified and fixed — 5 October 2026
+
+- **Cause of "no invoice".** `invoiceDeliveredShipment` (and `invoiceWhenBackInStock`) skipped silently when
+  the company had no `FinanceEntity` in the order's currency. Live company "Michael Test" had none, so no
+  delivery could ever raise an invoice. Both now call `booksFor` (`finance/services/books.ts`), which opens
+  standard books (entity, 14-account chart, current-year period, close tasks, audited) when there are none.
+  `setupFinance` uses the same `openBooks`.
+- The triggers were already wired: marking a shipment delivered (`logistics/services/shipping.ts`), confirming
+  a call-off order, and stock arriving for invoice-when-in-stock lines.
+- **Scenario test added:** `scripts/check-delivery-invoice.ts` (creates and deletes a Test company). Run
+  locally with `.env` loaded: 13/13 pass: books opened automatically, one draft invoice for a part
+  delivery with correct net/VAT/gross and links, repeat-safe, second delivery capped at the open quantity,
+  never over-invoiced. It calls the Finance consumer directly; it does not drive the Logistics screens.
+- `scripts/check-manufacturing-stock.ts` only failed locally because `.env` was not loaded.
+
+**Still unverified:** the Logistics steps before delivery (pick, pack, dispatch, mark delivered) through the
+UI, and posting the draft invoice in Finance.
+
 ## End-to-end links: products → manufacturing, customers → sales, sales ↔ marketing — 5 October 2026
 
 Audit by reading the hand-off code, then fixes for the gaps found:

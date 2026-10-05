@@ -1,4 +1,5 @@
 "use server";
+import {openBooks} from './books';
 import {z} from 'zod';
 import {salesFinanceSource,stockReceipt} from '@/core/finance/connections';
 import {approvedExpenseSource} from '@/core/finance/expense-source';
@@ -34,12 +35,7 @@ export async function setupFinance(form:FormData){
  await requireFinance(session,'finance.configure');
  const name=z.string().min(1).max(150).parse(text(form,'name')),code=z.string().regex(/^[A-Z0-9-]{1,20}$/).parse(text(form,'code')),currency=text(form,'currency')||'GBP';digits(currency);
  const startAt=date(text(form,'startAt')),endAt=dateEnd(text(form,'endAt'));if(startAt>=endAt)throw new Error('Period end must follow start.');
- const result=await transaction(async tx=>{const entity=await tx.financeEntity.create({data:{organisationId:session.organisationId,name,code,currency}});
- const chart=[['1000','Bank','ASSET','BANK'],['1100','Trade receivables','ASSET','AR'],['1200','Inventory','ASSET','INVENTORY'],['1300','Fixed assets','ASSET','ASSET'],['1390','Accumulated depreciation','ASSET','DEPRECIATION_ACCUMULATED'],['2000','Trade payables','LIABILITY','AP'],['2100','VAT output','LIABILITY','VAT_OUTPUT'],['2110','VAT input','ASSET','VAT_INPUT'],['2200','Goods received not invoiced','LIABILITY','GRNI'],['3000','Opening equity','EQUITY','EQUITY'],['4000','Revenue','REVENUE','REVENUE'],['5000','Operating expenses','EXPENSE','EXPENSE'],['5100','Depreciation','EXPENSE','DEPRECIATION'],['5200','Purchase price variance','EXPENSE','PURCHASE_VARIANCE']];
- await tx.financeAccount.createMany({data:chart.map(([accountCode,accountName,type,control])=>({organisationId:session.organisationId,entityId:entity.id,code:accountCode,name:accountName,type,control}))});
- const period=await tx.financePeriod.create({data:{organisationId:session.organisationId,entityId:entity.id,name:`${startAt.toISOString().slice(0,10)} – ${endAt.toISOString().slice(0,10)}`,startAt,endAt}});
- await tx.financeCloseTask.createMany({data:['Bank reconciliation','Accounts receivable','Accounts payable','Stock valuation','Accruals','Fixed assets','Payroll','Intercompany','VAT','Management accounts'].map(name=>({organisationId:session.organisationId,entityId:entity.id,periodId:period.id,name}))});
- await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:'finance.entity.created',entityType:'FinanceEntity',entityId:entity.id,after:{name,code,currency}}});return entity;});refresh();return {id:result.id};
+ const result=await transaction(async tx=>openBooks(tx,{organisationId:session.organisationId,name,code,currency,startAt,endAt,actorUserId:session.userId}));refresh();return {id:result.id};
 }
 export async function createFinanceDocument(input:unknown){
  const session=await requireSession();

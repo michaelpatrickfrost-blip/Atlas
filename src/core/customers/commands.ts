@@ -330,7 +330,13 @@ export async function deleteContact(contactId: string, partyId: string) {
   await assertOwnedByOrg(session.organisationId, partyId);
   const contact = await db.contact.findFirstOrThrow({ where: { id: contactId, partyId } });
 
-  await db.contact.delete({ where: { id: contactId } });
+  try {
+    await db.contact.delete({ where: { id: contactId } });
+  } catch (e) {
+    // Fallback to soft-delete if hard-delete fails due to foreign key constraints (e.g. Marketing Profiles)
+    await db.contact.update({ where: { id: contactId }, data: { status: "INACTIVE" } });
+    throw new Error(`Contact has linked profiles and cannot be fully removed. They have been marked as Inactive instead.`);
+  }
 
   await writeAudit({
     organisationId: session.organisationId,

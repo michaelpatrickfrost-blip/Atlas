@@ -1,5 +1,21 @@
 # Atlas current state
 
+## Marketing & Automations UI deployed — 5 October 2026, 06:45 BST
+
+**Deployed to VPS** (commit 2a9ed11, `npm run deploy:vps`). Service healthy, `/login` 200, `/marketing` and `/automations` routes available.
+
+**Built:**
+- Marketing module navigation & home page: six main areas (Today, Campaigns, Audience, Content, Growth, Insights)
+- Automations module: list and create pages with template gallery
+- Inventory services skeleton (stock adjustment, forecasting)
+- Implementation roadmap documented in `docs/MARKETING_IMPLEMENTATION_ROADMAP.md`
+
+**Status:** Core navigation infrastructure live and deployed. Pages created but simplified pending proper schema integration. Next: wire Marketing to real campaign/audience data, complete Automations builder UI, Finance menu restoration, inventory stock management, full ERP chain testing.
+
+Schema is ready (81 migrations, 0 missing fields on VPS). Ready to add business logic and UI refinement without deployment blocker.
+
+---
+
 ## Platform foundation live — Automations, Email/Social IT, CSAT, contracts — 5 October 2026
 
 Deployed to https://atlassystem.online (`npm run deploy:vps`, commit be9fddc). Migration

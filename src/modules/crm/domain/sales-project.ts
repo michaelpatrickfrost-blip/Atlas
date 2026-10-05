@@ -1,0 +1,5 @@
+export const STAGES = ["IDENTIFIED", "QUALIFIED", "SPECIFICATION", "ESTIMATING", "QUOTING", "NEGOTIATION", "PREFERRED", "AWARDED", "LIVE", "COMPLETED", "LOST", "CANCELLED", "DORMANT"] as const;
+export const ORGANISATION_ROLES = ["END_CLIENT", "CONTRACTOR", "MERCHANT", "SPECIFIER", "DESIGN_CONSULTANT", "ENGINEER", "QUANTITY_SURVEYOR", "SITE_MANAGER", "PROCUREMENT_MANAGER", "ACCOUNTS_PAYABLE"] as const;
+export const STAKEHOLDER_ROLES = ["DECISION_MAKER", "BUYER", "ESTIMATOR", "ENGINEER", "SPECIFIER", "COMMERCIAL_MANAGER", "QUANTITY_SURVEYOR", "SITE_MANAGER", "ACCOUNTS_PAYABLE", "INFLUENCER", "CHAMPION", "BLOCKER", "OTHER"] as const;
+export const stageLabel = (value: string) => value.replaceAll("_", " ").toLowerCase().replace(/^./, (letter) => letter.toUpperCase());
+export const stageTone = (stage: string): "success" | "warning" | "danger" | "neutral" => ["AWARDED", "LIVE", "COMPLETED"].includes(stage) ? "success" : ["LOST", "CANCELLED"].includes(stage) ? "danger" : ["DORMANT", "IDENTIFIED"].includes(stage) ? "neutral" : "warning";

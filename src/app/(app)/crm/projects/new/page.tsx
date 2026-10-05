@@ -1,120 +1,34 @@
-"use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { createSalesProjectAction } from "./actions";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { requireSession } from "@/core/auth/session";
+import { assertCapability } from "@/core/permissions/check";
+import { SALES_CAPABILITIES } from "@/core/permissions/capabilities";
+import { db } from "@/core/db/client";
+import { ActionForm } from "@/components/ui/action-form";
+import { Button } from "@/components/ui/button";
+import { createSalesProjectFormAction } from "@/modules/crm/services/sales-projects-commands";
+import { STAGES, stageLabel } from "@/modules/crm/domain/sales-project";
 
-export default function NewSalesProjectPage() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+const field = "mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm";
 
-  const [form, setForm] = useState({
-    name: "",
-    description: "",
-    potentialValueAmount: 0,
-  });
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      const result = await createSalesProjectAction({
-        name: form.name,
-        description: form.description,
-        potentialValueAmount:
-          form.potentialValueAmount > 0 ? form.potentialValueAmount * 100 : undefined,
-      });
-
-      if (result.error) {
-        setError(result.error);
-      } else if (result.projectId) {
-        router.push(`/crm/projects/${result.projectId}`);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create project");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="space-y-6">
-      <div>
-        <Link
-          href="/crm/projects"
-          className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-4"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Projects
-        </Link>
-        <h1 className="text-2xl font-semibold">New Sales Project</h1>
-        <p className="text-sm text-gray-600 mt-1">
-          A sales project is a commercial container for complex, multi-organisation deals.
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
-        <div className="rounded-lg border border-gray-200 p-6 space-y-6">
-          <div>
-            <label className="text-xs font-semibold text-gray-600 uppercase">Project Name *</label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="e.g. Northgate Distribution Centre"
-              required
-              className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="text-xs font-semibold text-gray-600 uppercase">Description</label>
-            <textarea
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-              placeholder="Project overview, scope, key stakeholders..."
-              rows={4}
-              className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="text-xs font-semibold text-gray-600 uppercase">Estimated Project Value (£)</label>
-            <input
-              type="number"
-              value={form.potentialValueAmount || ""}
-              onChange={(e) =>
-                setForm({ ...form, potentialValueAmount: parseFloat(e.target.value) || 0 })
-              }
-              placeholder="e.g. 420000"
-              className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+export default async function NewSalesProjectPage({ searchParams }: { searchParams: Promise<{ customer?: string }> }) {
+  const session = await requireSession();
+  assertCapability(session, SALES_CAPABILITIES.opportunityManage);
+  const [{ customer }, parties] = await Promise.all([searchParams, db.party.findMany({ where: { organisationId: session.organisationId }, select: { id: true, name: true, customerCode: true }, orderBy: { name: "asc" } })]);
+  return <div className="mx-auto max-w-3xl space-y-5">
+    <Link href="/crm/projects" className="text-xs text-slate-500">← All projects</Link>
+    <div><h2 className="text-2xl font-semibold tracking-tight">New sales project</h2><p className="mt-1 text-sm text-slate-500">A job you are trying to win. Add the organisations involved, then attach quotations and orders to it.</p></div>
+    <section className="rounded-2xl border border-slate-200 bg-white p-6">
+      <ActionForm action={createSalesProjectFormAction}><div className="space-y-4">
+        <label className="block text-xs font-medium">Project name<input name="name" required maxLength={200} placeholder="Riverside apartments, phase 2" className={field} /></label>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="block text-xs font-medium">Main customer<select name="partyId" defaultValue={customer ?? ""} className={field}><option value="">Add later</option>{parties.map((party) => <option key={party.id} value={party.id}>{party.customerCode} · {party.name}</option>)}</select></label>
+          <label className="block text-xs font-medium">Stage<select name="stage" defaultValue="IDENTIFIED" className={field}>{STAGES.map((stage) => <option key={stage} value={stage}>{stageLabel(stage)}</option>)}</select></label>
+          <label className="block text-xs font-medium">Potential value (£)<input name="potentialValue" type="number" min={0} step="0.01" className={field} /></label>
+          <label className="block text-xs font-medium">Target award date<input name="targetAwardDate" type="date" className={field} /></label>
         </div>
-
-        {error && (
-          <div className="rounded-lg bg-red-50 border border-red-200 p-4">
-            <p className="text-sm text-red-800">{error}</p>
-          </div>
-        )}
-
-        <div className="flex gap-3">
-          <Button type="submit" disabled={loading || !form.name}>
-            {loading ? "Creating..." : "Create Project"}
-          </Button>
-          <Link href="/crm/projects">
-            <Button type="button" variant="secondary">
-              Cancel
-            </Button>
-          </Link>
-        </div>
-      </form>
-    </div>
-  );
+        <label className="block text-xs font-medium">Description<textarea name="description" rows={3} maxLength={2000} className={field} /></label>
+        <div className="flex gap-2"><Button type="submit" variant="primary">Create project</Button><Link href="/crm/projects" className="rounded-full px-4 py-2.5 text-sm font-semibold text-slate-500">Cancel</Link></div>
+      </div></ActionForm>
+    </section>
+  </div>;
 }

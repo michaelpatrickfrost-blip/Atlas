@@ -1,5 +1,40 @@
 # Atlas current state
 
+## Sales projects link to quotations, orders and customers; new order screen; All Sales 404 — 5 October 2026
+
+**Problems found.** (1) `/crm/projects/[id]` was a shell: Edit, Add organisation, Add stakeholder, New quote
+and Update had no handlers, and nothing in the app ever set `Quote.salesProjectId`/`SalesOrder.salesProjectId`.
+(2) `sales-projects-commands.ts` updated records by id with no organisation check. (3) "All Sales"
+(`/sales/documents`) linked every row to `/sales/documents/<id>`, which does not exist (the 404 Michael hit).
+
+**Built.**
+- `src/modules/crm/services/sales-projects-commands.ts` rewritten: every action checks the organisation,
+  capability and writes audit. Edit project, next action, add/remove/make-main organisation, add/remove
+  person, attach/detach quotation or order (`setDocumentSalesProjectAction`), delete (documents are kept).
+  `sales-project-values.ts` keeps quoted/ordered/remaining on the project from its linked documents.
+- `/crm/projects` (list with search, stage filter, `?customer=`), `/crm/projects/new` (server form with
+  main customer, stage, value, date), `/crm/projects/[projectId]` (all controls working, Atlas components).
+- Quotation and order pages show a Sales project panel with a picker
+  (`src/modules/crm/components/sales-project-link.tsx`). The composer has a Sales project field
+  (`?salesProject=` preselects it), saved by `documents.ts` and kept in working drafts. A quotation
+  converted to an order carries its sales project.
+- Customer record (CRM overview provider): open sales projects count, links to the customer's projects and
+  New sales project.
+- `document-list.tsx`: rows link to `/sales/orders/<id>` or `/sales/quotes/<id>` by document type.
+- `document-composer.tsx` layout only (state, field names and save unchanged): Save/Discard and stage
+  steps on top; compact two-column header (customer left, terms and links right); tabs Order lines /
+  Optional products / Other info; inline Add a product / section / note; choosing a product on the last
+  line adds the next line, Enter in Quantity adds a line; blank product lines are not submitted; totals
+  bottom right. "Delivery project" is the internal Project (Sites); "Sales project" is the CRM job.
+
+**Checks run:** `npx tsc --noEmit` clean; eslint on changed files no errors. Local dev app: created a
+project, added an organisation, opened New quotation from the project (customer and project preselected),
+picked a product, saved; the quotation page showed the project link. Not exercised: add person, attach
+existing order, order conversion carry-over, delete project. No local `npm run build` (Michael's instruction).
+
+**Open:** composer still ignores `initialKind`/`initialOrderType`/`initialAgreement` (pre-existing: blanket
+quotation and call-off type are not sent from the form). `/sales/sites/[projectId]` is read-only.
+
 ## Placeholder pages removed, real screens restored; Inventory add/count/forecast — 5 October 2026
 
 **Correction.** Commits 73b828c..abadd26 (5 Oct) overwrote working screens with static placeholders and

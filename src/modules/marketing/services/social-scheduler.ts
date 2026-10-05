@@ -27,6 +27,8 @@ export async function publishDueSocialPosts(limit = 10) {
         await db.marketingSocialPostTarget.update({ where: { id: target.id }, data: { status: "FAILED", lastError: error instanceof Error ? error.message.slice(0, 500) : "Publish failed." } });
       }
     }
+    const already = await db.marketingSocialPostTarget.count({ where: { postId: post.id, status: "PUBLISHED" } });
+    if (already) anyOk = true;
     await db.marketingSocialPost.update({ where: { id: post.id }, data: { status: anyFailed && !anyOk ? "FAILED" : anyFailed ? "PARTIAL" : "PUBLISHED", publishedAt: new Date(), lastError: anyFailed ? "One or more platforms failed; see targets." : null } });
   }
   return processed;

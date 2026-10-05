@@ -43,7 +43,7 @@ export function QuickCreateForm({accounts=[],initialParent}:{accounts?:{id:strin
     setSubmitting(true);
     await createCustomerAction({
       parentPartyId:String(formData.get("parentPartyId")??"")||undefined,
-      hierarchyRole:String(formData.get("hierarchyRole")??"CUSTOMER") as "GROUP"|"CUSTOMER"|"BRANCH",
+      hierarchyRole:String(formData.get("hierarchyRole")??"CUSTOMER") as "GROUP"|"CUSTOMER"|"BRANCH"|"DELIVERY",
       customerGroup:String(formData.get("customerGroup")??"")||undefined,
       name: String(formData.get("name")),
       kind: (formData.get("kind") as "COMPANY" | "PERSON") ?? "COMPANY",
@@ -70,7 +70,7 @@ export function QuickCreateForm({accounts=[],initialParent}:{accounts?:{id:strin
         </label>
       </div>
 
-      <Field label="Country" name="country" /><details open={!!initialParent} className="rounded-xl border border-slate-200 p-4"><summary className="cursor-pointer text-sm font-medium">Account structure <span className="ml-2 text-xs font-normal text-slate-400">Optional</span></summary><p className="mt-3 text-xs leading-relaxed text-slate-500">Leave this account independent, or attach it to any group, business or branch. You can change the structure later.</p><div className="mt-4 grid gap-4 sm:grid-cols-2"><label className="text-xs">Parent account<select name="parentPartyId" defaultValue={initialParent??''} className="mt-2 w-full rounded-xl border border-slate-200 bg-white p-3"><option value="">Independent account</option>{accounts.map(a=><option key={a.id} value={a.id}>{a.name} · {a.customerCode}</option>)}</select></label><label className="text-xs">Account level<select name="hierarchyRole" defaultValue={initialParent?'BRANCH':'CUSTOMER'} className="mt-2 w-full rounded-xl border border-slate-200 bg-white p-3"><option value="CUSTOMER">Business / account</option><option value="GROUP">Group</option><option value="BRANCH">Branch / location</option></select></label><Field label="Customer type" name="customerGroup"/></div></details>
+      <Field label="Country" name="country" /><details open={!!initialParent} className="rounded-xl border border-slate-200 p-4"><summary className="cursor-pointer text-sm font-medium">Account structure <span className="ml-2 text-xs font-normal text-slate-400">Optional</span></summary><p className="mt-3 text-xs leading-relaxed text-slate-500">Leave this account independent, or attach it to any group, business or branch. You can change the structure later.</p><div className="mt-4 grid gap-4 sm:grid-cols-2"><label className="text-xs">Parent account<select name="parentPartyId" defaultValue={initialParent??''} className="mt-2 w-full rounded-xl border border-slate-200 bg-white p-3"><option value="">Independent account</option>{accounts.map(a=><option key={a.id} value={a.id}>{a.name} · {a.customerCode}</option>)}</select></label><label className="text-xs">Account level<select name="hierarchyRole" defaultValue={initialParent?'BRANCH':'CUSTOMER'} className="mt-2 w-full rounded-xl border border-slate-200 bg-white p-3"><option value="CUSTOMER">Business / account</option><option value="GROUP">Group</option><option value="BRANCH">Branch / location</option><option value="DELIVERY">Delivery account (installer, contractor, site)</option></select></label><Field label="Customer type" name="customerGroup"/></div></details>
 
       <div className="h-px bg-[var(--color-border)]" />
 

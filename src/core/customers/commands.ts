@@ -26,7 +26,7 @@ import type {
 export type QuickCreateInput = {
   name: string;
   parentPartyId?: string;
-  hierarchyRole?: "GROUP"|"CUSTOMER"|"BRANCH";
+  hierarchyRole?: "GROUP"|"CUSTOMER"|"BRANCH"|"DELIVERY";
   customerGroup?: string;
   kind: PartyKind;
   country?: string;
@@ -43,7 +43,7 @@ export async function createCustomer(input: QuickCreateInput) {
   await assertRecordCreationAllowed(session.organisationId,"customers");
 
   if(!input.name.trim()||input.name.length>200)throw new Error("Enter a customer name up to 200 characters.");
-  if(input.hierarchyRole&&!['GROUP','CUSTOMER','BRANCH'].includes(input.hierarchyRole))throw new Error('Invalid account level.');
+  if(input.hierarchyRole&&!['GROUP','CUSTOMER','BRANCH','DELIVERY'].includes(input.hierarchyRole))throw new Error('Invalid account level.');
   if(input.parentPartyId)await db.party.findFirstOrThrow({where:{id:input.parentPartyId,organisationId:session.organisationId}});
   const customerCode = await nextCustomerCode(session.organisationId);
 

@@ -1,5 +1,31 @@
 # Atlas current state
 
+## Inbox over IMAP, Instagram/Threads, social scheduler, fourth hierarchy level — 5 October 2026
+
+- **Email receiving** (`core/email/inbox.ts`, deps `imapflow`, `mailparser`): mailboxes have Sending (SMTP)
+  and Receiving (IMAP: server, port, security, username, "Bring replies into Atlas"). Save tests both.
+  The scheduler tick checks each reading mailbox about every five minutes and stores new mail in
+  `email_inbound`, matched to a customer by the sender's contact email or by In-Reply-To. Mailbox page
+  shows both statuses, Check inbox now, Received and Sent. Customer Activity and record email panels list
+  received mail. Email accounts, templates and social accounts are listed under Company in Settings.
+  Additive migration `20261005180000_email_inbox`.
+- **Social**: Instagram (business/creator, needs a picture) and Threads publish through Meta's Graph APIs
+  (`core/social/publish.ts`); Facebook posts with a picture go to page photos. Credentials are the IDs and
+  long-lived tokens from the company's Meta developer app; there is no "Log in with Facebook" flow.
+- **Marketing → Social** (`/marketing/social`, `services/social-actions.ts`, `components/social-composer.tsx`):
+  compose once, pick accounts, character limits and Instagram picture check, preview, Schedule (UK time),
+  Post now, Save as draft; week calendar; Needs attention / Scheduled / Drafts / Published lists with
+  per-account status, links, Edit, Try again now, Delete. Pictures are public https links (no upload yet).
+- **Hierarchy**: fourth level `DELIVERY` ("Delivery account": installer, contractor, site) in the account
+  map, quick create and imports. Accounts created from the order form are independent records at that
+  level, joined to each business that orders for them by `CustomerTradingLink` (many businesses, one record).
+
+**Checks run:** `npx tsc --noEmit` clean; eslint no errors on new files. Local dev app: `/marketing/social`
+and `/settings/it/email` render. **Not tested:** a real IMAP sign-in or sync, any real Facebook, Instagram
+or Threads post (no accounts or tokens available to the agent), scheduled publishing end to end.
+
+**Open:** product page rework for manufacturing (bill of materials, machines, routing) requested, not started.
+
 ## CSAT templates, Sales Projects section, installers and delivery addresses — 5 October 2026
 
 - **CSAT** (`src/modules/csat`, `/csat`, `/csat/surveys`, `/csat/surveys/[surveyId]`): seven ready-made

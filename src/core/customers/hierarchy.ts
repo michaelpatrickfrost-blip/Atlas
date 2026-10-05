@@ -11,7 +11,7 @@ export function descendantAccountIds(accounts:HierarchyAccount[],roots:string[])
  const result=new Set<string>(),pending=[...roots];while(pending.length){const id=pending.pop()!;if(result.has(id))continue;result.add(id);for(const a of accounts)if(a.parentPartyId===id)pending.push(a.id);}return [...result];
 }
 
-const ROLE_RANK:Record<string,number>={GROUP:0,CUSTOMER:1,BRANCH:2};
+const ROLE_RANK:Record<string,number>={GROUP:0,CUSTOMER:1,BRANCH:2,DELIVERY:3};
 
 /** Siblings in the same order the map draws them: group, business, branch, then name. */
 export function orderedSiblings<T extends HierarchyAccount&{name:string;hierarchyRole?:string}>(accounts:T[],parentPartyId:string|null):T[]{

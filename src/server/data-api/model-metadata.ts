@@ -29615,6 +29615,42 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "imapUser": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "imapEnabled": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "imapStatus": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "imapError": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "imapSyncedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "imapLastUid": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
     "signatureHtml": {
       "type": "String",
       "list": false,
@@ -29664,6 +29700,98 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    }
+  },
+  "EmailInbound": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "accountId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "uid": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "messageId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "inReplyTo": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "fromEmail": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "fromName": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "subject": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "text": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "receivedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "partyId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "contactId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "replyToMessageId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "createdAt": {
       "type": "DateTime",
       "list": false,
       "nullable": false,

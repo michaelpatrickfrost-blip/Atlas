@@ -3,18 +3,19 @@
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Building2, ChevronDown, ChevronRight, ChevronUp, MapPin, Network, UserRound } from "lucide-react";
+import { Building2, ChevronDown, ChevronRight, ChevronUp, MapPin, Network, UserRound, Truck } from "lucide-react";
 import { HierarchyBuilder } from "@/components/customers/hierarchy-builder";
 import { moveCustomer, placeCustomer, setContactReportsTo } from "@/core/customers/hierarchy-actions";
 import { setInvoiceAccount } from "@/core/customers/trading-actions";
 import { descendantAccountIds, hierarchyAccountIds, nextHierarchyParent, orderedSiblings, reportingDescendantIds } from "@/core/customers/hierarchy";
 import type { MapAccount, MapPerson } from "@/core/customers/map-data";
 
-const ROLE_LABEL: Record<string, string> = { GROUP: "Group", CUSTOMER: "Business", BRANCH: "Branch" };
+const ROLE_LABEL: Record<string, string> = { GROUP: "Group", CUSTOMER: "Business", BRANCH: "Branch", DELIVERY: "Delivery account" };
 const TONE: Record<string, { chip: string; icon: string; line: string }> = {
   GROUP: { chip: "bg-violet-50 text-violet-700", icon: "bg-violet-100 text-violet-700", line: "border-violet-200" },
   CUSTOMER: { chip: "bg-blue-50 text-blue-700", icon: "bg-blue-100 text-blue-700", line: "border-blue-200" },
   BRANCH: { chip: "bg-teal-50 text-teal-800", icon: "bg-teal-100 text-teal-800", line: "border-teal-200" },
+  DELIVERY: { chip: "bg-amber-50 text-amber-800", icon: "bg-amber-100 text-amber-800", line: "border-amber-200" },
 };
 const AVATAR = ["bg-blue-100 text-blue-800", "bg-violet-100 text-violet-800", "bg-teal-100 text-teal-800", "bg-amber-100 text-amber-800"];
 const selectClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-blue-500";
@@ -80,7 +81,7 @@ export function AccountMap({
 
   const roots = pool
     .filter((account) => !account.parentPartyId || !pool.some((parent) => parent.id === account.parentPartyId))
-    .sort((a, b) => (a.hierarchyRole === "GROUP" ? 0 : a.hierarchyRole === "BRANCH" ? 2 : 1) - (b.hierarchyRole === "GROUP" ? 0 : b.hierarchyRole === "BRANCH" ? 2 : 1) || a.name.localeCompare(b.name))
+    .sort((a, b) => (a.hierarchyRole === "GROUP" ? 0 : a.hierarchyRole === "DELIVERY" ? 3 : a.hierarchyRole === "BRANCH" ? 2 : 1) - (b.hierarchyRole === "GROUP" ? 0 : b.hierarchyRole === "DELIVERY" ? 3 : b.hierarchyRole === "BRANCH" ? 2 : 1) || a.name.localeCompare(b.name))
     .filter((account) => accountVisible(account));
 
   const selectedAccount = selected.startsWith("account:") ? accounts.find((account) => account.id === selected.slice(8)) : undefined;
@@ -151,7 +152,7 @@ export function AccountMap({
     const children = orderedSiblings(pool, account.id).filter((child) => accountVisible(child));
     const folded = collapsed.has(account.id);
     const colors = tone(account.hierarchyRole);
-    const Icon = account.hierarchyRole === "GROUP" ? Network : account.hierarchyRole === "BRANCH" ? MapPin : Building2;
+    const Icon = account.hierarchyRole === "GROUP" ? Network : account.hierarchyRole === "BRANCH" ? MapPin : account.hierarchyRole === "DELIVERY" ? Truck : Building2;
     const active = selected === `account:${account.id}`;
     const team = peopleUnder(account.id, null);
     const canUp = nextHierarchyParent(accounts, account.id, "up") !== undefined;
@@ -227,6 +228,7 @@ export function AccountMap({
           <option value="GROUP">Groups</option>
           <option value="CUSTOMER">Businesses</option>
           <option value="BRANCH">Branches</option>
+          <option value="DELIVERY">Delivery accounts</option>
         </select>
         <button type="button" onClick={() => setCollapsed(new Set())} className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-medium text-slate-600">Expand</button>
         <button type="button" onClick={() => setCollapsed(new Set(pool.map((account) => account.id)))} className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-medium text-slate-600">Collapse</button>
@@ -249,7 +251,7 @@ export function AccountMap({
                     <button type="button" disabled={pending || nextHierarchyParent(accounts, selectedAccount.id, "down") === undefined} onClick={() => run(() => moveCustomer(selectedAccount.id, "down"))} className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:border-blue-300 disabled:opacity-40">Move down</button>
                   </>
                 )}
-                {canEdit && (["GROUP", "CUSTOMER", "BRANCH"] as const).map((level) => (
+                {canEdit && (["GROUP", "CUSTOMER", "BRANCH", "DELIVERY"] as const).map((level) => (
                   <button key={level} type="button" aria-pressed={selectedAccount.hierarchyRole === level} disabled={pending} onClick={() => run(() => placeCustomer(selectedAccount.id, selectedAccount.parentPartyId, level))} className={`rounded-full px-3 py-1.5 text-xs font-medium ${selectedAccount.hierarchyRole === level ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-600"}`}>{roleLabel(level)}</button>
                 ))}
               </div>

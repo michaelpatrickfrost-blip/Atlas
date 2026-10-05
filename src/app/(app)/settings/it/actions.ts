@@ -7,6 +7,7 @@ import { assertCapability, can } from "@/core/permissions/check";
 import { CORE_CAPABILITIES } from "@/core/permissions/capabilities";
 import { encryptSecret, decryptSecret } from "@/core/security/secrets";
 import { sendEmail, verifyAccount } from "@/core/email/send";
+import { syncInbox, verifyInbox } from "@/core/email/inbox";
 import { sanitiseBlocks } from "@/core/email/blocks";
 import { writeAudit } from "@/core/audit/log";
 import { SOCIAL_PLATFORMS } from "@/core/email/presets";
@@ -42,7 +43,7 @@ export async function saveEmailAccount(f: FormData) {
   const data = {
     label: text(f, "label", 100, true), fromName: text(f, "fromName", 100), fromEmail, replyTo: text(f, "replyTo", 200),
     smtpHost: text(f, "smtpHost", 200, true), smtpPort: Math.min(65535, Math.max(1, Number(text(f, "smtpPort", 6)) || 587)), smtpSecurity: security,
-    smtpUser: text(f, "smtpUser", 200, true), imapHost: text(f, "imapHost", 200), signatureHtml: text(f, "signatureHtml", 4000),
+    smtpUser: text(f, "smtpUser", 200, true), imapHost: text(f, "imapHost", 200), imapPort: Math.min(65535, Math.max(1, Number(text(f, "imapPort", 6)) || 993)), imapSecurity: ["SSL", "STARTTLS", "NONE"].includes(text(f, "imapSecurity", 20)) ? text(f, "imapSecurity", 20) : "SSL", imapUser: text(f, "imapUser", 200), imapEnabled: f.get("imapEnabled") === "on" && !!text(f, "imapHost", 200), signatureHtml: text(f, "signatureHtml", 4000),
     dailyLimit: Math.min(5000, Math.max(1, Number(text(f, "dailyLimit", 6)) || 500)),
     ...(password ? { passwordEnc: encryptSecret(password) } : {}),
   };
@@ -54,8 +55,10 @@ export async function saveEmailAccount(f: FormData) {
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: existing ? "email.account.updated" : "email.account.created", entityType: "EmailAccount", entityId: saved.id, after: { scope: saved.scope, fromEmail } });
   const fresh = await db.emailAccount.findUniqueOrThrow({ where: { id: saved.id } });
   const check = await verifyAccount(fresh);
+  const inbox = fresh.imapHost ? await verifyInbox(fresh) : null;
   refresh();
-  if (!check.ok) throw new Error(`Saved, but the mail server refused the sign-in: ${check.error}`);
+  if (!check.ok) throw new Error(`Saved, but sending failed: ${check.error}`);
+  if (inbox && !inbox.ok) throw new Error(`Saved and sending works, but the inbox could not be read: ${inbox.error}`);
 }
 
 async function owned(id: string) {
@@ -153,4 +156,17 @@ export async function deleteEmailTemplate(f: FormData) {
   if (!can(session, CORE_CAPABILITIES.itManage) && !can(session, "automations.rule.manage")) throw new Error("FORBIDDEN: missing capability to delete templates.");
   await db.emailTemplate.deleteMany({ where: { id: text(f, "id", 60, true), organisationId: session.organisationId } });
   revalidatePath("/settings/it/templates");
+}
+
+/** Test receiving, then pull anything new now. */
+export async function checkInboxNow(f: FormData) {
+  const session = await requireSession();
+  const account = await db.emailAccount.findFirst({ where: { id: text(f, "id", 60, true), organisationId: session.organisationId } });
+  if (!account) throw new Error("That mailbox no longer exists.");
+  await accountAccess(account.scope, account.ownerUserId);
+  if (!account.imapHost) throw new Error("Add the inbox server under Edit settings first.");
+  const check = await verifyInbox(account);
+  if (!check.ok) { refresh(); throw new Error(check.error ?? "Could not read the inbox."); }
+  if (account.imapEnabled) { const result = await syncInbox(account); refresh(); if (!result.ok) throw new Error(result.error ?? "Could not read the inbox."); }
+  refresh();
 }

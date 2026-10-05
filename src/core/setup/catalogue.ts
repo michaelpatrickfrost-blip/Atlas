@@ -20,7 +20,7 @@ export const SETUP_CATALOGUE: SetupTemplate[] = [
     example: ["C-100", "Example Group", "Example Trading", "", "GROUP", "Wholesale", "ACTIVE", "GBP", "Food", "https://example.com", "GB", "1 Example Street", "London", "SW1A 1AA", "2 Example Road", "London", "SW1A 1AB"],
     notes: [
       "Creates new customers. An existing customer code is rejected so this file cannot overwrite a live account.",
-      "hierarchyRole is GROUP, CUSTOMER or BRANCH. Leave it blank for CUSTOMER.",
+      "hierarchyRole is GROUP, CUSTOMER, BRANCH or DELIVERY (an account a branch orders for). Leave it blank for CUSTOMER.",
       "parentCustomerCode must already exist in the company or earlier in this file. Do not create a loop.",
       "status is ACTIVE, PROSPECT, ON_HOLD or INACTIVE. Atlas owners default a blank status to ACTIVE.",
     ],

@@ -10,7 +10,7 @@ import { hierarchyAccountIds, nextHierarchyParent, reportsInCircle } from "@/cor
 type Placement = { parentPartyId: string | null; hierarchyRole: string; customerGroup: string | null };
 
 async function applyPlacement(session: Session, partyId: string, placement: Placement) {
-  if (!["GROUP", "CUSTOMER", "BRANCH"].includes(placement.hierarchyRole)) throw new Error("Invalid hierarchy level.");
+  if (!["GROUP", "CUSTOMER", "BRANCH", "DELIVERY"].includes(placement.hierarchyRole)) throw new Error("Invalid hierarchy level.");
   await db.$transaction(async (tx) => {
     const before = await tx.party.findFirstOrThrow({ where: { id: partyId, organisationId: session.organisationId } });
     const seen = new Set([partyId]);

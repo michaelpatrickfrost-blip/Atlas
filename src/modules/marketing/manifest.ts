@@ -6,6 +6,7 @@ import { marketingAttention, marketingSearch, marketingCustomer, marketingAnalyt
 const desk: Array<[string, string, string]> = [
   ['Campaigns', '/marketing', 'marketing.campaign.read'],
   ['Calendar', '/marketing/calendar', 'marketing.campaign.read'],
+  ['Social', '/marketing/social', 'marketing.campaign.read'],
   ['Budgets', '/marketing/budgets', 'marketing.campaign.read'],
   ['Journey', '/marketing/journey', 'marketing.campaign.read'],
   ['Leads', '/marketing/leads', 'marketing.lead.read'],

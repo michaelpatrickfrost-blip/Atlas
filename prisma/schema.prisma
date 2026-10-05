@@ -7759,6 +7759,14 @@ model EmailAccount {
   imapHost String @default("")
   imapPort Int @default(993)
   imapSecurity String @default("SSL")
+  /** Inbox sign-in. Blank means the sending username. The password is shared with sending. */
+  imapUser String @default("")
+  /** Read replies into Atlas from this mailbox. */
+  imapEnabled Boolean @default(false)
+  imapStatus String @default("UNVERIFIED")
+  imapError String?
+  imapSyncedAt DateTime?
+  imapLastUid Int @default(0)
   signatureHtml String @default("") @db.Text
   dailyLimit Int @default(500)
   isDefault Boolean @default(false)
@@ -7771,6 +7779,29 @@ model EmailAccount {
   @@unique([id,organisationId])
   @@index([organisationId,scope,ownerUserId])
   @@map("email_accounts")
+}
+/** Mail received in a connected mailbox, matched to a customer where the sender is a known contact. */
+model EmailInbound {
+  id String @id @default(cuid())
+  organisationId String
+  accountId String
+  uid Int
+  messageId String?
+  inReplyTo String?
+  fromEmail String
+  fromName String @default("")
+  subject String @default("")
+  text String @default("") @db.Text
+  receivedAt DateTime
+  partyId String?
+  contactId String?
+  /** The Atlas message this is a reply to, when the mail client kept the reference. */
+  replyToMessageId String?
+  createdAt DateTime @default(now())
+  @@unique([accountId,uid])
+  @@index([organisationId,receivedAt])
+  @@index([organisationId,partyId,receivedAt])
+  @@map("email_inbound")
 }
 
 model EmailTemplate {

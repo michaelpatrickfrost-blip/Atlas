@@ -46,7 +46,7 @@ export function customerImportIssue(rows: Record<string, string>[], existingCode
       if (existingCodes.has(row.customerCode)) return rowIssue(index, `customer ${row.customerCode} already exists. Customer import creates records and does not overwrite them.`);
       if (!row.name || row.name.length > 200) return rowIssue(index, "enter a customer name up to 200 characters.");
       if (row.customerCode.length > 64) return rowIssue(index, "customer code must be 64 characters or fewer.");
-      if (!["GROUP", "CUSTOMER", "BRANCH"].includes(row.hierarchyRole || "CUSTOMER")) return rowIssue(index, "hierarchy level must be GROUP, CUSTOMER or BRANCH.");
+      if (!["GROUP", "CUSTOMER", "BRANCH", "DELIVERY"].includes(row.hierarchyRole || "CUSTOMER")) return rowIssue(index, "hierarchy level must be GROUP, CUSTOMER, BRANCH or DELIVERY.");
       if (!/^[A-Z]{3}$/.test(row.currency || "GBP")) return rowIssue(index, "currency must be a 3-letter code such as GBP.");
       if (row.status && !["PROSPECT", "ACTIVE", "ON_HOLD", "INACTIVE", "CLOSED"].includes(row.status)) return rowIssue(index, "status must be ACTIVE, PROSPECT, ON_HOLD, INACTIVE or CLOSED.");
       return null;

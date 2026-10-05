@@ -1,5 +1,27 @@
 # Atlas current state
 
+## End-to-end links: products → manufacturing, customers → sales, sales ↔ marketing — 5 October 2026
+
+Audit by reading the hand-off code, then fixes for the gaps found:
+- **Customer → Sales**: the customer record's "New quote" link sent `?party=`, which the quotation form
+  ignores, so the customer was not carried over. Now `?customer=`, with a New order link beside it.
+- **Product → Manufacturing**: there was no way to raise a production order except from MRP or the stock
+  forecast. Added New production order on `/manufacturing/produce` and a Production panel with "Make this
+  product" and open orders on the product record (`modules/manufacturing/components/make-order.tsx`,
+  `manufacturing/produce/actions.ts`). Orders use the product's active bill and routing.
+- **Customers → Marketing**: contacts only became marketing profiles one at a time by hand, so Marketing
+  could not see Sales customers and attribution had nothing to join on. The scheduler tick now creates a
+  profile for every customer contact with an email in companies using Marketing
+  (`marketing/services/customer-sync.ts`). A profile is not consent.
+- **Marketing → Sales**: quotation and order pages show the campaigns that reached the customer
+  (`marketing/components/customer-campaigns.tsx`). Already in place and left as is: lead hand-off to a CRM
+  prospect, prospect → opportunity → quotation → order, and the attribution report crediting confirmed
+  orders to campaigns by customer.
+
+**Checks run:** `npx tsc --noEmit` clean. Not browser-tested (Michael's instruction). The existing
+`scripts/check-manufacturing-stock.ts` fails locally at company creation, before reaching any production
+code; not investigated. **No end-to-end scenario test exists**; the chain is verified by reading only.
+
 ## Product record as a manufacturing record — 5 October 2026
 
 `ProductView` is now tabbed (`product-tabs.tsx`; panels stay mounted so unsaved edits survive a tab

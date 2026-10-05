@@ -4,6 +4,7 @@ import { assertCapability } from "@/core/permissions/check";
 import { MANUFACTURING_CAPABILITIES as C } from "@/core/permissions/capabilities";
 import { listOrders } from "@/modules/manufacturing/services/queries";
 import { StatusPill } from "@/components/ui/status-pill";
+import { MakeOrderDialog } from "@/modules/manufacturing/components/make-order";
 
 export default async function ProduceWorkspace({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
   const session = await requireSession();
@@ -12,9 +13,12 @@ export default async function ProduceWorkspace({ searchParams }: { searchParams:
   const orders = await listOrders(session.organisationId, view);
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-3xl font-semibold tracking-tight">Produce</h1>
-        <p className="mt-2 text-sm text-[var(--color-ink-muted)]">Every production order, its material readiness and progress.</p>
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight">Produce</h1>
+          <p className="mt-2 text-sm text-[var(--color-ink-muted)]">Every production order, its material readiness and progress.</p>
+        </div>
+        <MakeOrderDialog />
       </header>
       <div className="overflow-hidden rounded-3xl border border-[var(--color-border)] bg-white">
         <table className="w-full text-sm">

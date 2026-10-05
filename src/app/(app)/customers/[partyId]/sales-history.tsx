@@ -109,7 +109,7 @@ export async function CustomerSalesHistory({ partyId, session }: { partyId: stri
           <div className="mb-3 flex items-center justify-between gap-3">
             <h2 className="text-sm font-medium text-[var(--color-ink-muted)]">Quotes</h2>
             {can(session, SALES_CAPABILITIES.quoteCreate) && (
-              <Link href={`/sales/quotes/new?party=${partyId}`} className="text-sm font-medium text-[var(--color-atlas-blue)]">New quote</Link>
+              <span className="flex gap-4"><Link href={`/sales/quotes/new?customer=${partyId}`} className="text-sm font-medium text-[var(--color-atlas-blue)]">New quotation</Link><Link href={`/sales/orders/new?customer=${partyId}`} className="text-sm font-medium text-[var(--color-atlas-blue)]">New order</Link></span>
             )}
           </div>
           {quotes.length ? (

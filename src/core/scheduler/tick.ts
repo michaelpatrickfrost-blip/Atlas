@@ -37,5 +37,6 @@ export async function runTick() {
   const { processDueAutomations } = await import("@/modules/automations/engine/run");
   const { publishDueSocialPosts } = await import("@/modules/marketing/services/social-scheduler");
   const { syncDueInboxes } = await import("@/core/email/inbox");
-  await Promise.allSettled([deliverDueEmails(25), processDueAutomations(25), publishDueSocialPosts(10), syncDueInboxes(3)]);
+  const { syncAllCustomerProfiles } = await import("@/modules/marketing/services/customer-sync");
+  await Promise.allSettled([deliverDueEmails(25), processDueAutomations(25), publishDueSocialPosts(10), syncDueInboxes(3), syncAllCustomerProfiles()]);
 }

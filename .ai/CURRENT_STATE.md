@@ -30,7 +30,7 @@ and Update had no handlers, and nothing in the app ever set `Quote.salesProjectI
 **Checks run:** `npx tsc --noEmit` clean; eslint on changed files no errors. Local dev app: created a
 project, added an organisation, opened New quotation from the project (customer and project preselected),
 picked a product, saved; the quotation page showed the project link. Not exercised: add person, attach
-existing order, order conversion carry-over, delete project. No local `npm run build` (Michael's instruction).
+existing order, order conversion carry-over, delete project. No local `npm run build` (Michael’s instruction). Deployed with `npm run deploy:vps` (b0d36d3): backup taken, VPS build passed, service healthy; signed-out routes redirect to login. Signed-in check on the VPS not done by the agent.
 
 **Open:** composer still ignores `initialKind`/`initialOrderType`/`initialAgreement` (pre-existing: blanket
 quotation and call-off type are not sent from the form). `/sales/sites/[projectId]` is read-only.

@@ -125,6 +125,7 @@ export async function archiveCustomer(partyId: string) {
   assertCapability(session, CUSTOMER_CAPABILITIES.edit);
 
   const customer = await db.party.findFirstOrThrow({ where: { id: partyId, organisationId: session.organisationId } });
+  if (customer.identityScrubbed) throw new Error("This customer has been deleted and cannot be restored.");
 
   const after = await db.party.update({ where: { id: partyId }, data: { archived: true } });
 
@@ -147,6 +148,7 @@ export async function unarchiveCustomer(partyId: string) {
   assertCapability(session, CUSTOMER_CAPABILITIES.edit);
 
   const customer = await db.party.findFirstOrThrow({ where: { id: partyId, organisationId: session.organisationId } });
+  if (customer.identityScrubbed) throw new Error("This customer has been deleted and cannot be restored.");
 
   const after = await db.party.update({ where: { id: partyId }, data: { archived: false } });
 
@@ -169,7 +171,10 @@ export async function deleteCustomer(partyId: string) {
   assertCapability(session, CUSTOMER_CAPABILITIES.edit);
 
   const customer = await db.party.findFirstOrThrow({ where: { id: partyId, organisationId: session.organisationId } });
-  if (customer.status === "CLOSED") throw new Error("This customer is already closed.");
+  if (customer.identityScrubbed) {
+    revalidatePath("/customers");
+    return;
+  }
 
   try {
     await db.party.delete({ where: { id: partyId, organisationId: session.organisationId } });
@@ -178,16 +183,187 @@ export async function deleteCustomer(partyId: string) {
       throw error;
     }
 
-    const after = await db.party.update({ where: { id: partyId }, data: { status: "CLOSED" } });
+    await db.$transaction(async (tx) => {
+      const contacts = await tx.contact.findMany({
+        where: { partyId },
+        select: { id: true },
+      });
+      const contactIds = contacts.map(({ id }) => id);
+
+      await tx.address.updateMany({
+        where: { partyId },
+        data: {
+          label: null,
+          locationName: null,
+          line1: "Deleted address",
+          line2: null,
+          city: null,
+          region: null,
+          postcode: null,
+          country: null,
+          telephone: null,
+          contactId: null,
+          deliveryInstructions: null,
+          active: false,
+          isDefaultBilling: false,
+          isDefaultDelivery: false,
+        },
+      });
+      await tx.communicationDestination.updateMany({
+        where: { partyId },
+        data: { email: null, contactId: null },
+      });
+      await tx.contact.updateMany({
+        where: { partyId },
+        data: {
+          title: null,
+          firstName: "Deleted",
+          middleName: null,
+          surname: "Contact",
+          preferredName: null,
+          jobTitle: null,
+          department: null,
+          email: null,
+          alternativeEmail: null,
+          phone: null,
+          mobile: null,
+          preferredContactMethod: null,
+          language: null,
+          notes: null,
+          status: "INACTIVE",
+          isPrimary: false,
+          roles: [],
+          reportsToContactId: null,
+          identityScrubbed: true,
+        },
+      });
+      if (contactIds.length > 0) {
+        await tx.communicationDestination.updateMany({
+          where: { contactId: { in: contactIds } },
+          data: { email: null, contactId: null },
+        });
+      }
+      await tx.marketingProfile.updateMany({
+        where: { partyId },
+        data: {
+          lifecycle: "ERASED",
+          source: "ERASURE",
+          country: "",
+          score: 0,
+          fitScore: 0,
+          engagementScore: 0,
+        },
+      });
+      await tx.taxRegistration.updateMany({
+        where: { partyId },
+        data: {
+          number: "REDACTED",
+          normalizedNumber: "REDACTED",
+          verifiedLegalName: null,
+          verifiedAddress: null,
+          notes: null,
+          validationStatus: "NOT_VERIFIED",
+          validationDate: null,
+          validationSource: null,
+        },
+      });
+      const mandates = await tx.directDebitMandate.findMany({
+        where: { partyId },
+        select: { id: true },
+      });
+      for (const mandate of mandates) {
+        await tx.directDebitMandate.update({
+          where: { id: mandate.id },
+          data: {
+            mandateReference: `REDACTED-${mandate.id}`,
+            status: "CANCELLED",
+            cancellationDate: new Date(),
+            cancellationReason: "Customer identity scrubbed",
+            notes: null,
+          },
+        });
+      }
+      await tx.bankAccount.updateMany({
+        where: { partyId },
+        data: {
+          accountHolder: "Deleted",
+          bankName: null,
+          label: null,
+          country: "",
+          sortCode: null,
+          accountNumber: null,
+          iban: null,
+          bic: null,
+          active: false,
+          isDefault: false,
+          verifiedStatus: "NOT_VERIFIED",
+          verifiedDate: null,
+          notes: null,
+        },
+      });
+      await tx.document.updateMany({
+        where: { partyId },
+        data: { type: "REDACTED", description: null, url: null },
+      });
+      await tx.note.deleteMany({ where: { partyId } });
+      await tx.customerCommercialSettings.deleteMany({ where: { partyId } });
+      await tx.customerCreditProfile.deleteMany({ where: { partyId } });
+      await tx.party.updateMany({
+        where: { organisationId: session.organisationId, parentPartyId: partyId },
+        data: { parentPartyId: customer.parentPartyId },
+      });
+      await tx.activity.updateMany({
+        where: { organisationId: session.organisationId, partyId },
+        data: { summary: "Activity retained for deleted customer", metadata: {} },
+      });
+      await tx.echoNote.updateMany({
+        where: { organisationId: session.organisationId, entityType: "Party", entityId: partyId },
+        data: { body: "Content removed after customer identity scrub" },
+      });
+      await tx.auditEntry.updateMany({
+        where: {
+          organisationId: session.organisationId,
+          OR: [
+            { entityType: "Party", entityId: partyId },
+            ...(contactIds.length > 0
+              ? [{ entityType: "Contact", entityId: { in: contactIds } }]
+              : []),
+          ],
+        },
+        data: { before: Prisma.DbNull, after: Prisma.DbNull },
+      });
+      await tx.party.update({
+        where: { id: partyId, organisationId: session.organisationId },
+        data: {
+          name: "Deleted customer",
+          tradingName: null,
+          customerCode: `DELETED-${partyId}`,
+          status: "CLOSED",
+          archived: true,
+          identityScrubbed: true,
+          customerGroup: null,
+          website: null,
+          industry: null,
+          registrationNumber: null,
+          countryOfRegistration: null,
+          relationshipStartDate: null,
+          accountManagerUserId: null,
+          territory: null,
+          tags: [],
+          preferredLanguage: null,
+          preferredCurrency: "GBP",
+        },
+      });
+    });
 
     await writeAudit({
       organisationId: session.organisationId,
       actorUserId: session.userId,
-      action: "customer.deleted",
+      action: "customer.scrubbed",
       entityType: "Party",
       entityId: partyId,
-      before: { status: customer.status, name: customer.name },
-      after: { status: after.status },
+      before: { status: customer.status },
+      after: { status: "CLOSED", archived: true, identityScrubbed: true },
     });
 
     revalidatePath(`/customers`);
@@ -200,7 +376,7 @@ export async function deleteCustomer(partyId: string) {
     action: "customer.deleted",
     entityType: "Party",
     entityId: partyId,
-    before: { status: customer.status, name: customer.name },
+    before: { status: customer.status },
     after: { status: "DELETED" },
   });
 
@@ -333,6 +509,10 @@ export async function deleteContact(contactId: string, partyId: string) {
 
   await assertOwnedByOrg(session.organisationId, partyId);
   const contact = await db.contact.findFirstOrThrow({ where: { id: contactId, partyId } });
+  if (contact.identityScrubbed) {
+    revalidatePath(`/customers/${partyId}`);
+    return;
+  }
 
   try {
     await db.contact.delete({ where: { id: contactId } });
@@ -341,15 +521,90 @@ export async function deleteContact(contactId: string, partyId: string) {
       throw error;
     }
 
-    const after = await db.contact.update({ where: { id: contactId }, data: { status: "INACTIVE" } });
+    await db.$transaction(async (tx) => {
+      await tx.communicationDestination.updateMany({
+        where: { contactId },
+        data: { email: null, contactId: null },
+      });
+      await tx.address.updateMany({
+        where: { contactId },
+        data: {
+          label: null,
+          locationName: null,
+          line1: "Deleted address",
+          line2: null,
+          city: null,
+          region: null,
+          postcode: null,
+          country: null,
+          telephone: null,
+          contactId: null,
+          deliveryInstructions: null,
+          active: false,
+          isDefaultBilling: false,
+          isDefaultDelivery: false,
+        },
+      });
+      await tx.marketingProfile.updateMany({
+        where: { contactId },
+        data: {
+          lifecycle: "ERASED",
+          source: "ERASURE",
+          country: "",
+          score: 0,
+          fitScore: 0,
+          engagementScore: 0,
+        },
+      });
+      await tx.contact.update({
+        where: { id: contactId, partyId },
+        data: {
+          title: null,
+          firstName: "Deleted",
+          middleName: null,
+          surname: "Contact",
+          preferredName: null,
+          jobTitle: null,
+          department: null,
+          email: null,
+          alternativeEmail: null,
+          phone: null,
+          mobile: null,
+          preferredContactMethod: null,
+          language: null,
+          notes: null,
+          status: "INACTIVE",
+          isPrimary: false,
+          roles: [],
+          reportsToContactId: null,
+          identityScrubbed: true,
+        },
+      });
+      await tx.echoNote.updateMany({
+        where: { organisationId: session.organisationId, entityType: "Contact", entityId: contactId },
+        data: { body: "Content removed after contact identity scrub" },
+      });
+      await tx.activity.updateMany({
+        where: {
+          organisationId: session.organisationId,
+          entityType: "Contact",
+          entityId: contactId,
+        },
+        data: { summary: "Activity retained for deleted contact", metadata: {} },
+      });
+      await tx.auditEntry.updateMany({
+        where: { organisationId: session.organisationId, entityType: "Contact", entityId: contactId },
+        data: { before: Prisma.DbNull, after: Prisma.DbNull },
+      });
+    });
     await writeAudit({
       organisationId: session.organisationId,
       actorUserId: session.userId,
-      action: "customer.contact.deactivated",
+      action: "customer.contact.scrubbed",
       entityType: "Contact",
       entityId: contactId,
-      before: { firstName: contact.firstName, surname: contact.surname, status: contact.status },
-      after: { status: after.status },
+      before: { status: contact.status },
+      after: { status: "INACTIVE", identityScrubbed: true },
     });
     revalidatePath(`/customers/${partyId}`);
     return;
@@ -361,7 +616,7 @@ export async function deleteContact(contactId: string, partyId: string) {
     action: "customer.contact.deleted",
     entityType: "Contact",
     entityId: contactId,
-    before: { firstName: contact.firstName, surname: contact.surname },
+    before: { status: contact.status },
   });
 
   revalidatePath(`/customers/${partyId}`);

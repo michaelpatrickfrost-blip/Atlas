@@ -104,6 +104,9 @@ describe("CustomerRecordActions — archive / unarchive / delete", () => {
   it("deletes the record when Delete Customer is confirmed", async () => {
     mounted = await mount(false);
     await openMenuAndChoose(mounted.container, "Delete Customer");
+    const dialog = [...document.querySelectorAll("dialog")].find((d) => d.hasAttribute("open"))!;
+    expect(dialog.textContent).toContain("Are you sure you want to delete");
+    expect(dialog.textContent).toContain("permanently removes customer and contact details");
     await confirmDialog(mounted.container, "Delete");
 
     expect(deleteCustomerFormAction).toHaveBeenCalledTimes(1);

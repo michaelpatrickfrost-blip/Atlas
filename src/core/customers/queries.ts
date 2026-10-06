@@ -10,6 +10,7 @@ export async function listCustomers(
   const where: Prisma.PartyWhereInput = {
     organisationId,
     archived: opts.filter === "archived",
+    identityScrubbed: false,
   };
 
   if (opts.search) {
@@ -41,9 +42,12 @@ export async function listCustomers(
 
 export async function getCustomer(organisationId: string, partyId: string) {
   return db.party.findFirst({
-    where: { organisationId, id: partyId },
+    where: { organisationId, id: partyId, identityScrubbed: false },
     include: {
-      contacts: { orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }] },
+      contacts: {
+        where: { identityScrubbed: false },
+        orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+      },
       addresses: { orderBy: { createdAt: "asc" } },
       communicationDestinations: { include: { contact: true } },
       commercialSettings: true,

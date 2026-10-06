@@ -17,7 +17,9 @@ describe("listCustomers archive filtering", () => {
     await listCustomers("org_1");
 
     expect(findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { organisationId: "org_1", archived: false } }),
+      expect.objectContaining({
+        where: { organisationId: "org_1", archived: false, identityScrubbed: false },
+      }),
     );
   });
 
@@ -29,6 +31,7 @@ describe("listCustomers archive filtering", () => {
         where: {
           organisationId: "org_1",
           archived: true,
+          identityScrubbed: false,
           OR: [
             { name: { contains: "Northbridge", mode: "insensitive" } },
             { tradingName: { contains: "Northbridge", mode: "insensitive" } },

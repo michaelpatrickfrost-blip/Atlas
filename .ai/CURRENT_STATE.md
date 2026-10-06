@@ -1,5 +1,29 @@
 # Atlas current state
 
+## Customer Delete retries now scrub rather than stop at CLOSED — 6 October 2026
+
+- **Confirmed live cause:** the online service log after the previous release showed
+  `This customer is already closed.` on repeated Delete attempts. The earlier flow had
+  already changed a customer with historical links to CLOSED, then threw; the new guard
+  rejected every later attempt. React #441 was the Server Action/RSC error the dialog
+  displayed, not the user-facing reason.
+- **Fix in progress:** removed the CLOSED retry guard. Delete now retries physical removal;
+  on a foreign-key history constraint, it uses one transaction to scrub customer/contact
+  identity, addresses, bank/tax/mandate and document data, customer notes, marketing
+  profile scores, customer activity text, Echo text, and identifying audit payloads.
+  The retained customer tombstone is closed, archived, identityScrubbed, and excluded
+  from Customer Master; scrubbed contacts are also excluded. Sales/audit linkage remains
+  with a generic deleted-customer/contact reference. Repeat deletion is idempotent.
+- The dialog now explicitly asks for confirmation and tells the user the retained-history
+  behavior. Added additive `identityScrubbed` flags on Party and Contact with migration
+  `20261006200800_customer_identity_scrub`.
+- **Checks run:** focused customer delete/query/dialog Vitest tests → 10 passed;
+  `npx tsc --noEmit` → passed; targeted ESLint → passed; Prisma schema validation →
+  passed; production `npm run build` → passed; `git diff --check` → passed.
+- **Next step:** back up and deploy the new additive migration and code to the online VPS,
+  then verify the service and login. Do not claim an actual customer's authorized delete
+  has been live-tested; no customer data was deleted during development verification.
+
 ## Customer/contact delete error and archive section request — 6 October 2026
 
 - **Implemented:** Customers now has an Archived filter backed by organisation-scoped

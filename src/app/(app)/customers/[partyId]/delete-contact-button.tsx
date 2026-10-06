@@ -7,7 +7,7 @@ export function DeleteContactButton({ contactId, partyId, contactName }: { conta
   return (
     <ConfirmationDialog
       title="Delete Contact"
-      message={`Delete ${contactName}? If linked records prevent removal, the contact will be marked inactive instead.`}
+      message={`Are you sure you want to delete ${contactName}? This permanently removes their contact details. Linked history is retained without their identity.`}
       confirmLabel="Delete"
       confirmVariant="danger"
       onConfirm={async () => { await deleteContactFormAction(contactId, partyId); }}

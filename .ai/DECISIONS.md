@@ -1,5 +1,16 @@
 # Atlas decisions
 
+## 6 October 2026 — Delete scrubs identities but preserves linked transaction history
+
+When a customer or contact is referenced by historical records, Delete must not silently
+degrade to a visible CLOSED/INACTIVE record or make every retry fail. It first asks for
+confirmation, physically deletes when possible, and otherwise irreversibly scrubs
+identifying/profile data and hides the scrubbed identity while retaining sales and audit
+history required for traceability. Scrubbed identities cannot be restored. This is the
+safe interpretation of “delete and scrub”: remove identifying details without breaking
+historical business records. Source: `src/core/customers/commands.ts`,
+`src/core/customers/queries.ts`, `prisma/schema.prisma`.
+
 ## 4 October 2026 — No sidebar; the home screen is the launcher
 
 Michael rejected the home screen and shell as oversized and dated ("a bit Windows 98"), asked whether a sidebar is needed, and asked for no rows of apps and no cheesy wording. The permanent sidebar is removed from every page. Home lists the apps a person can open as short named columns by area; the top bar has an Apps menu with the same list. No app tiles, descriptions, greeting or marketing copy on home, sign-in, Manage apps or the Atlas console. Area grouping is presentation only (`src/core/modules/areas.ts`) and grants nothing. Supersedes the sidebar parts of "Polished glass chrome". Source: `src/components/shell/{app-directory,app-menu,topbar,shell-chrome}.tsx`, `src/app/(app)/home/page.tsx`.
@@ -742,4 +753,3 @@ route, and an existing screen is never replaced with a placeholder to get a buil
 The admin role had four Finance capabilities, which hid most of the Finance menu from the company owner.
 Admin now holds all `finance.*`, as it does for every other app. Finance's own controls still apply: a
 requester cannot approve their own document, and payment runs need a separate approval step.
-

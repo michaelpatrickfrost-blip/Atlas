@@ -412,6 +412,7 @@ model Party {
   preferredLanguage      String?
   preferredCurrency      String  @default("GBP")
   archived               Boolean @default(false)
+  identityScrubbed       Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -491,6 +492,7 @@ model Contact {
   language       String?
   notes          String?
   status         ContactStatus @default(ACTIVE)
+  identityScrubbed Boolean @default(false)
   isPrimary      Boolean       @default(false)
   roles          ContactRole[]
   reportsToContactId String?

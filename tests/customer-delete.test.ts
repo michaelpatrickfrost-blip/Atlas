@@ -5,12 +5,27 @@ const mocks = vi.hoisted(() => ({
   findParty: vi.fn(),
   findOwnedParty: vi.fn(),
   deleteParty: vi.fn(),
-  updateParty: vi.fn(),
   findContact: vi.fn(),
   deleteContact: vi.fn(),
-  updateContact: vi.fn(),
   writeAudit: vi.fn(),
   revalidatePath: vi.fn(),
+  tx: {
+    address: { updateMany: vi.fn() },
+    communicationDestination: { updateMany: vi.fn() },
+    contact: { findMany: vi.fn(), updateMany: vi.fn(), update: vi.fn() },
+    marketingProfile: { updateMany: vi.fn() },
+    taxRegistration: { updateMany: vi.fn() },
+    directDebitMandate: { findMany: vi.fn(), update: vi.fn() },
+    bankAccount: { updateMany: vi.fn() },
+    document: { updateMany: vi.fn() },
+    note: { deleteMany: vi.fn() },
+    customerCommercialSettings: { deleteMany: vi.fn() },
+    customerCreditProfile: { deleteMany: vi.fn() },
+    party: { updateMany: vi.fn(), update: vi.fn() },
+    activity: { updateMany: vi.fn() },
+    echoNote: { updateMany: vi.fn() },
+    auditEntry: { updateMany: vi.fn() },
+  },
 }));
 
 vi.mock("@/core/auth/session", () => ({
@@ -23,13 +38,12 @@ vi.mock("@/core/db/client", () => ({
       findFirstOrThrow: mocks.findParty,
       findFirst: mocks.findOwnedParty,
       delete: mocks.deleteParty,
-      update: mocks.updateParty,
     },
     contact: {
       findFirstOrThrow: mocks.findContact,
       delete: mocks.deleteContact,
-      update: mocks.updateContact,
     },
+    $transaction: (callback: (tx: typeof mocks.tx) => Promise<unknown>) => callback(mocks.tx),
   },
 }));
 vi.mock("@/core/audit/log", () => ({ writeAudit: mocks.writeAudit }));
@@ -56,58 +70,101 @@ function foreignKeyError() {
 describe("customer and contact deletion fallbacks", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.findParty.mockResolvedValue({ id: "party_1", status: "ACTIVE", name: "Example Ltd" });
+    mocks.findParty.mockResolvedValue({
+      id: "party_1",
+      status: "ACTIVE",
+      name: "Example Ltd",
+      identityScrubbed: false,
+      parentPartyId: null,
+    });
     mocks.findOwnedParty.mockResolvedValue({ id: "party_1" });
+    mocks.tx.contact.findMany.mockResolvedValue([]);
+    mocks.tx.directDebitMandate.findMany.mockResolvedValue([]);
     mocks.findContact.mockResolvedValue({
       id: "contact_1",
       firstName: "Ari",
       surname: "Example",
       status: "ACTIVE",
+      identityScrubbed: false,
     });
   });
 
-  it("closes a customer with historical links without returning a failed action", async () => {
+  it("scrubs customer details when historical links prevent physical removal", async () => {
     mocks.deleteParty.mockRejectedValueOnce(foreignKeyError());
-    mocks.updateParty.mockResolvedValue({ status: "CLOSED" });
 
     await expect(deleteCustomer("party_1")).resolves.toBeUndefined();
 
     expect(mocks.deleteParty).toHaveBeenCalledWith({
       where: { id: "party_1", organisationId: "org_1" },
     });
-    expect(mocks.updateParty).toHaveBeenCalledWith({
-      where: { id: "party_1" },
-      data: { status: "CLOSED" },
-    });
+    expect(mocks.tx.party.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: "party_1", organisationId: "org_1" },
+        data: expect.objectContaining({
+          name: "Deleted customer",
+          status: "CLOSED",
+          archived: true,
+          identityScrubbed: true,
+        }),
+      }),
+    );
     expect(mocks.writeAudit).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "customer.deleted", after: { status: "CLOSED" } }),
+      expect.objectContaining({
+        action: "customer.scrubbed",
+        after: { status: "CLOSED", archived: true, identityScrubbed: true },
+      }),
     );
   });
 
-  it("deactivates a contact with historical links and revalidates its customer", async () => {
+  it("scrubs contact details when linked history prevents physical removal", async () => {
     mocks.deleteContact.mockRejectedValueOnce(foreignKeyError());
-    mocks.updateContact.mockResolvedValue({ status: "INACTIVE" });
 
     await expect(deleteContact("contact_1", "party_1")).resolves.toBeUndefined();
 
-    expect(mocks.updateContact).toHaveBeenCalledWith({
-      where: { id: "contact_1" },
-      data: { status: "INACTIVE" },
-    });
+    expect(mocks.tx.contact.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: "contact_1", partyId: "party_1" },
+        data: expect.objectContaining({
+          firstName: "Deleted",
+          surname: "Contact",
+          email: null,
+          status: "INACTIVE",
+          identityScrubbed: true,
+        }),
+      }),
+    );
     expect(mocks.writeAudit).toHaveBeenCalledWith(
       expect.objectContaining({
-        action: "customer.contact.deactivated",
-        after: { status: "INACTIVE" },
+        action: "customer.contact.scrubbed",
+        after: { status: "INACTIVE", identityScrubbed: true },
       }),
     );
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/customers/party_1");
   });
 
-  it("does not turn unrelated database failures into a close/deactivation", async () => {
+  it("lets a previously closed customer retry deletion and scrub", async () => {
+    mocks.findParty.mockResolvedValueOnce({
+      id: "party_1",
+      status: "CLOSED",
+      name: "Example Ltd",
+      identityScrubbed: false,
+      parentPartyId: null,
+    });
+    mocks.deleteParty.mockRejectedValueOnce(foreignKeyError());
+
+    await expect(deleteCustomer("party_1")).resolves.toBeUndefined();
+    expect(mocks.tx.party.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ identityScrubbed: true }),
+      }),
+    );
+  });
+
+  it("does not turn unrelated database failures into a successful scrub", async () => {
     const databaseError = new Error("Database unavailable");
     mocks.deleteParty.mockRejectedValueOnce(databaseError);
 
     await expect(deleteCustomer("party_1")).rejects.toBe(databaseError);
-    expect(mocks.updateParty).not.toHaveBeenCalled();
+    expect(mocks.tx.party.update).not.toHaveBeenCalled();
   });
 });

@@ -32,10 +32,13 @@ The Customers list has an **Archived** filter for records whose `Party.archived`
 flag is set. The normal list excludes them; the archived list uses the same
 tenant-scoped search and links to the normal record page, where users with
 `customers.edit` can restore the account. Archiving preserves the record and its
-history. Deleting attempts physical removal; if historical foreign-key links
-prevent it, the customer is marked `CLOSED` instead. A contact with linked
-records that cannot be removed is marked `INACTIVE`. Other database errors are
-reported rather than being mistaken for a history constraint.
+history. Delete asks for confirmation, then attempts physical removal. If
+historical foreign-key links prevent that, it permanently scrubs identifying
+customer/contact and profile details and hides the tombstone from Customer
+Master. Linked sales and audit records remain for business history and point to
+a generic deleted-customer reference. Scrubbed identities cannot be restored.
+Contacts linked to historical records are likewise scrubbed and hidden;
+unrelated database errors are reported rather than mistaken for history links.
 
 ## Module extension points
 

@@ -94,7 +94,7 @@ export function CustomerRecordActions({
         open={pending === "delete"}
         onOpenChange={(next) => { if (!next) setPending(null); }}
         title="Delete Customer"
-        message={`Delete ${customerName}? Accounts with linked history will be marked as closed instead of removed.`}
+        message={`Are you sure you want to delete ${customerName}? This permanently removes customer and contact details. Linked sales and audit history stays with a deleted-customer reference.`}
         confirmLabel="Delete"
         confirmVariant="danger"
         onConfirm={async () => { await deleteCustomerFormAction(partyId); }}

@@ -7,7 +7,7 @@
   already changed a customer with historical links to CLOSED, then threw; the new guard
   rejected every later attempt. React #441 was the Server Action/RSC error the dialog
   displayed, not the user-facing reason.
-- **Fix in progress:** removed the CLOSED retry guard. Delete now retries physical removal;
+- **Fix:** removed the CLOSED retry guard. Delete now retries physical removal;
   on a foreign-key history constraint, it uses one transaction to scrub customer/contact
   identity, addresses, bank/tax/mandate and document data, customer notes, marketing
   profile scores, customer activity text, Echo text, and identifying audit payloads.
@@ -20,9 +20,17 @@
 - **Checks run:** focused customer delete/query/dialog Vitest tests → 10 passed;
   `npx tsc --noEmit` → passed; targeted ESLint → passed; Prisma schema validation →
   passed; production `npm run build` → passed; `git diff --check` → passed.
-- **Next step:** back up and deploy the new additive migration and code to the online VPS,
-  then verify the service and login. Do not claim an actual customer's authorized delete
-  has been live-tested; no customer data was deleted during development verification.
+- **Online deployment:** commit `6e6f86c` is live on the VPS. The deployment backed up
+  the VPS DB to `/home/administrator/backups/atlas-pre-deploy-20261006-201159.dump`,
+  applied the additive identity-scrub migration, built/restarted the app, and reported
+  healthy. A separate backup was taken at
+  `/opt/atlas-test/backups/pre-customer-identity-scrub-20261006T2013Z.sql.gz` before
+  applying the same migration to the shared data endpoint; the release schema check
+  now reports zero missing fields.
+- **Live verification:** online `/login` returns HTTP 200, the service is active, and an
+  unauthenticated Archived-customer URL redirects to sign-in. No customer data was
+  deleted during development or deployment, and authenticated Delete was not executed
+  against a real customer; the action path is covered by regression tests.
 
 ## Customer/contact delete error and archive section request — 6 October 2026
 

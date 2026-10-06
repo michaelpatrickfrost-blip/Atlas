@@ -1,5 +1,27 @@
 # Atlas current state
 
+## Customer archive / delete actually open their confirmation — 6 October 2026
+
+- **Bug found.** Archive, Unarchive and Delete on a customer record did nothing. The menu items lived in
+  `src/app/(app)/customers/[partyId]/record-actions.tsx` and called `setOpen(false)` to close the dropdown;
+  each `ConfirmationDialog` was rendered *inside* that dropdown. Closing the menu unmounted the dialog in the
+  same commit, so it could never open. The user saw a click and no dialog.
+- **Fix.** `record-actions.tsx` now renders the three dialogs outside `{open && ...}`, driven by a
+  `pending: "archive" | "unarchive" | "delete" | null` state using the dialog's existing controlled
+  `open` / `onOpenChange` props. Menu items are real `role="menuitem"` buttons that set `pending` and close
+  the menu. No change was needed in `confirmation-dialog.tsx` (its controlled mode already existed).
+- `deleteContactButton` (`[partyId]/delete-contact-button.tsx`) uses the same dialog but a `trigger`
+  outside any dropdown, so it was not affected.
+- **Test harness fixed too.** The new jsdom test `tests/customer-record-actions.test.tsx` was failing 4/4.
+  Two causes: (1) the component bug above, and (2) `tests/setup-dom.ts` polyfilled `showModal`/`close` but
+  jsdom implements neither, so the dialog effect threw and unmounted the React tree. Setup now polyfills
+  both (the loop shadows in the test itself are redundant but harmless).
+- **Checks run.** `npx vitest run tests/customer-record-actions.test.tsx` → 4/4 pass (was 4/4 fail). Full
+  `npx vitest run` → 423 pass, 10 fail; those 10 (modules, workspace-security, planning-inventory,
+  platform-actions, sales-rewind, setup-import, company-user-isolation, hr-team-access) fail identically at
+  a clean `HEAD` baseline — pre-existing, unrelated.
+- **Not done:** browser check of the live dialog, Mac-app build/install for this change.
+
 ## Delivery → invoice verified and fixed — 5 October 2026
 
 - **Cause of "no invoice".** `invoiceDeliveredShipment` (and `invoiceWhenBackInStock`) skipped silently when

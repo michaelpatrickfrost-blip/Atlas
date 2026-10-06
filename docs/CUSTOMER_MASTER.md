@@ -26,6 +26,17 @@ section is independently section-editable (§35 of the brief: never one giant
 edit form) and so sensitive sections can carry their own capability without
 gating the whole record.
 
+## Archive and deletion
+
+The Customers list has an **Archived** filter for records whose `Party.archived`
+flag is set. The normal list excludes them; the archived list uses the same
+tenant-scoped search and links to the normal record page, where users with
+`customers.edit` can restore the account. Archiving preserves the record and its
+history. Deleting attempts physical removal; if historical foreign-key links
+prevent it, the customer is marked `CLOSED` instead. A contact with linked
+records that cannot be removed is marked `INACTIVE`. Other database errors are
+reported rather than being mistaken for a history constraint.
+
 ## Module extension points
 
 Customer Master never hardcodes "Sales" or "Finance" logic. A module

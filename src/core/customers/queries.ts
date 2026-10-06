@@ -1,13 +1,16 @@
 import { db } from "@/core/db/client";
 import type { CustomerStatus, Prisma } from "@/generated/prisma/client";
 
-export type CustomerListFilter = "active" | "prospects" | "on_hold" | "my_customers";
+export type CustomerListFilter = "active" | "prospects" | "on_hold" | "my_customers" | "archived";
 
 export async function listCustomers(
   organisationId: string,
   opts: { search?: string; filter?: CustomerListFilter; accountManagerUserId?: string } = {},
 ) {
-  const where: Prisma.PartyWhereInput = { organisationId, archived: false };
+  const where: Prisma.PartyWhereInput = {
+    organisationId,
+    archived: opts.filter === "archived",
+  };
 
   if (opts.search) {
     where.OR = [

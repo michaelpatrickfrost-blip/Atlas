@@ -25,6 +25,7 @@ const FILTERS: { key: CustomerListFilter | "all"; label: string }[] = [
   { key: "prospects", label: "Prospects" },
   { key: "on_hold", label: "On hold" },
   { key: "my_customers", label: "My customers" },
+  { key: "archived", label: "Archived" },
 ];
 
 export default async function CustomersPage({ searchParams }: { searchParams: Promise<{ filter?: string; q?: string }> }) {
@@ -32,7 +33,11 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
   assertCapability(session, CUSTOMER_CAPABILITIES.read);
 
   const params = await searchParams;
-  const filter = (params.filter as CustomerListFilter | undefined) ?? undefined;
+  const requestedFilter = params.filter;
+  const filter: CustomerListFilter | undefined =
+    requestedFilter && FILTERS.some((item) => item.key === requestedFilter && item.key !== "all")
+      ? (requestedFilter as CustomerListFilter)
+      : undefined;
 
   const [customers, accountManagers] = await Promise.all([
     listCustomers(session.organisationId, { search: params.q, filter, accountManagerUserId: session.userId }),
@@ -55,7 +60,9 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
-<h1 className="text-2xl font-semibold tracking-tight text-[var(--color-ink)]">Customers</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-[var(--color-ink)]">
+            {filter === "archived" ? "Archived customers" : "Customers"}
+          </h1>
         <div className="flex gap-2">
           {can(session, CUSTOMER_CAPABILITIES.create) && (
             <Link href="/customers/new">

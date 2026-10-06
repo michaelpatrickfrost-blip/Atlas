@@ -94,7 +94,7 @@ export function CustomerRecordActions({
         open={pending === "delete"}
         onOpenChange={(next) => { if (!next) setPending(null); }}
         title="Delete Customer"
-        message={`Delete ${customerName}? This will mark them as closed and cannot be undone.`}
+        message={`Delete ${customerName}? Accounts with linked history will be marked as closed instead of removed.`}
         confirmLabel="Delete"
         confirmVariant="danger"
         onConfirm={async () => { await deleteCustomerFormAction(partyId); }}

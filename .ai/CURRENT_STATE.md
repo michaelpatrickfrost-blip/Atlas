@@ -1,5 +1,38 @@
 # Atlas current state
 
+## Customer/contact delete error and archive section request — 6 October 2026
+
+- **Implemented:** Customers now has an Archived filter backed by organisation-scoped
+  `archived` queries; archived records open in the existing customer record and can be
+  restored by users with `customers.edit`. Customer/contact delete fallbacks now respond
+  only to Prisma foreign-key errors (`P2003`), record the close/deactivation audit result,
+  and complete normally instead of throwing after changing the record. Other DB errors
+  are rethrown. Confirmation copy describes the historical-link fallback.
+- **Documentation/tests:** `docs/CUSTOMER_MASTER.md` documents the archive and delete
+  behavior. Focused regression tests cover active/archive query scoping, successful
+  customer/contact FK fallbacks, unrelated DB errors, and the customer confirmation UI.
+- **React #441 root cause found in the installed-client path:** after sign-in, the
+  archived customer route returned HTTP 500. The installed runtime log exposes
+  `Invalid filter field.` from the desktop data API query allowlist, because the active
+  data API does not yet accept the new `Party.archived` field. React #441 was the
+  production RSC wrapper for that server exception. This is distinct from customer/contact
+  delete fallback handling. The user clarified that the target is the online server,
+  not the desktop client.
+- **Central data DB release prep:** a remote pre-migration backup was created at
+  `/opt/atlas-test/backups/pre-migration-20261006T194945Z.sql.gz`. Pending migrations
+  were reviewed; the one data-normalizing update had zero affected rows, and the existing
+  inventory movement satisfied the replacement constraint. All nine ordered migrations
+  were applied; the schema check then found only nine false positives from a commented
+  `TicketQueue` model. `scripts/check-release-schema.mjs` now strips full-line Prisma
+  comments before parsing; the re-run reports zero missing fields.
+- **Checks run:** focused Vitest files → 9 passed; `npx tsc --noEmit` → passed; targeted
+  ESLint → passed; `npm run build` → passed after clearing the known-corrupt generated
+  `.next` cache; desktop package build/signature/install succeeded at
+  `/Users/michael/Applications/Atlas.app` and its login returned HTTP 200;
+  `git diff --check` → passed. The installed client’s archived route still fails against
+  the stale desktop data API (`Invalid filter field`) and is not the user’s requested
+  target. Online VPS app deployment and live verification are now the remaining steps.
+
 ## Customer archive / delete actually open their confirmation — 6 October 2026
 
 - **Bug found.** Archive, Unarchive and Delete on a customer record did nothing. The menu items lived in
@@ -25,12 +58,10 @@
 - **Note:** the first `npm run build` failed with `Failed to open database / Loading persistence directory
   failed / invalid digit found in string` — a corrupt `.next` (duplicate `cache-life.d 2.ts` etc.), not code.
   `rm -rf .next` and rebuild fixed it; `.next` is disposable.
-- **Central schema gate is stale:** `scripts/deploy-mac-client.sh` aborts with a long `Missing <table>.<column>`
-  list. The central DB is 9 migrations behind (marketing platform, email inbox, archived party, contracts,
-  quote approval). This is why the installed Mac app has never shown archive/delete. Those migrations are all
-  additive (checked for DROP/TRUNCATE — none) and a backup was taken, but the apply was stopped mid-run; the
-  central DB is deliberately not migrated yet. Run `scripts/apply-central-migrations.sh` then
-  `scripts/deploy-mac-client.sh` to ship the Mac app.
+- **Historical schema-gate status at the time of this entry:** `scripts/deploy-mac-client.sh`
+  reported missing tables/columns. The 6 October follow-up, migration review, backup,
+  and schema-check parser correction are recorded in the current customer/contact entry
+  above.
 - **Not done:** browser check of the live dialog.
 
 ## Delivery → invoice verified and fixed — 5 October 2026

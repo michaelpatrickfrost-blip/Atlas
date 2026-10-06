@@ -20,6 +20,7 @@ import type {
   PaymentMethod,
   DirectDebitScheme,
 } from "@/generated/prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 
 // ---------- Identity / quick create ----------
 
@@ -171,9 +172,12 @@ export async function deleteCustomer(partyId: string) {
   if (customer.status === "CLOSED") throw new Error("This customer is already closed.");
 
   try {
-    await db.party.delete({ where: { id: partyId } });
-  } catch (e) {
-    // Fallback to soft-delete if hard-delete fails due to foreign key constraints (historical data)
+    await db.party.delete({ where: { id: partyId, organisationId: session.organisationId } });
+  } catch (error) {
+    if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== "P2003") {
+      throw error;
+    }
+
     const after = await db.party.update({ where: { id: partyId }, data: { status: "CLOSED" } });
 
     await writeAudit({
@@ -187,7 +191,7 @@ export async function deleteCustomer(partyId: string) {
     });
 
     revalidatePath(`/customers`);
-    throw new Error(`Customer has historical data and cannot be fully removed. Account has been marked as CLOSED instead.`);
+    return;
   }
 
   await writeAudit({
@@ -332,10 +336,23 @@ export async function deleteContact(contactId: string, partyId: string) {
 
   try {
     await db.contact.delete({ where: { id: contactId } });
-  } catch (e) {
-    // Fallback to soft-delete if hard-delete fails due to foreign key constraints (e.g. Marketing Profiles)
-    await db.contact.update({ where: { id: contactId }, data: { status: "INACTIVE" } });
-    throw new Error(`Contact has linked profiles and cannot be fully removed. They have been marked as Inactive instead.`);
+  } catch (error) {
+    if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== "P2003") {
+      throw error;
+    }
+
+    const after = await db.contact.update({ where: { id: contactId }, data: { status: "INACTIVE" } });
+    await writeAudit({
+      organisationId: session.organisationId,
+      actorUserId: session.userId,
+      action: "customer.contact.deactivated",
+      entityType: "Contact",
+      entityId: contactId,
+      before: { firstName: contact.firstName, surname: contact.surname, status: contact.status },
+      after: { status: after.status },
+    });
+    revalidatePath(`/customers/${partyId}`);
+    return;
   }
 
   await writeAudit({

@@ -16,8 +16,7 @@
   `Invalid filter field.` from the desktop data API query allowlist, because the active
   data API does not yet accept the new `Party.archived` field. React #441 was the
   production RSC wrapper for that server exception. This is distinct from customer/contact
-  delete fallback handling. The user clarified that the target is the online server,
-  not the desktop client.
+  delete fallback handling.
 - **Central data DB release prep:** a remote pre-migration backup was created at
   `/opt/atlas-test/backups/pre-migration-20261006T194945Z.sql.gz`. Pending migrations
   were reviewed; the one data-normalizing update had zero affected rows, and the existing
@@ -28,10 +27,18 @@
 - **Checks run:** focused Vitest files → 9 passed; `npx tsc --noEmit` → passed; targeted
   ESLint → passed; `npm run build` → passed after clearing the known-corrupt generated
   `.next` cache; desktop package build/signature/install succeeded at
-  `/Users/michael/Applications/Atlas.app` and its login returned HTTP 200;
-  `git diff --check` → passed. The installed client’s archived route still fails against
-  the stale desktop data API (`Invalid filter field`) and is not the user’s requested
-  target. Online VPS app deployment and live verification are now the remaining steps.
+  `/Users/michael/Applications/Atlas.app`; `git diff --check` → passed.
+- **Online release:** Michael clarified the target is the online server, not the desktop
+  app. Commit `1d100cc` was pushed and deployed to the VPS with `npm run deploy:vps`.
+  Pre-deploy backup: `/home/administrator/backups/atlas-pre-deploy-20261006-195919.dump`.
+  VPS migration status was up to date; service reported healthy and
+  `https://atlassystem.online/login` returned HTTP 200. The unauthenticated archived
+  customer route returned the expected 307 to `/login`. Authenticated online verification
+  remains unavailable: no online account credentials were supplied, and the documented
+  demo credentials were rejected. Do not claim authorized record reads/deletes verified.
+- The separately installed Mac app uses the older desktop data API allowlist and its
+  archived route still logs `Invalid filter field`; that client/API pair is not the
+  requested release target and was not presented as working.
 
 ## Customer archive / delete actually open their confirmation — 6 October 2026
 

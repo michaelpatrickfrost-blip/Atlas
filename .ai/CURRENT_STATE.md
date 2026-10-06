@@ -19,8 +19,19 @@
 - **Checks run.** `npx vitest run tests/customer-record-actions.test.tsx` → 4/4 pass (was 4/4 fail). Full
   `npx vitest run` → 423 pass, 10 fail; those 10 (modules, workspace-security, planning-inventory,
   platform-actions, sales-rewind, setup-import, company-user-isolation, hr-team-access) fail identically at
-  a clean `HEAD` baseline — pre-existing, unrelated.
-- **Not done:** browser check of the live dialog, Mac-app build/install for this change.
+  a clean `HEAD` baseline — pre-existing, unrelated. `npm run build` passes.
+- **Deployed to the VPS** (`npm run deploy:vps`, `84d4086 -> f069609`): backup taken, `No pending migrations
+  to apply`, service healthy, `https://atlassystem.online/login` returns 200.
+- **Note:** the first `npm run build` failed with `Failed to open database / Loading persistence directory
+  failed / invalid digit found in string` — a corrupt `.next` (duplicate `cache-life.d 2.ts` etc.), not code.
+  `rm -rf .next` and rebuild fixed it; `.next` is disposable.
+- **Central schema gate is stale:** `scripts/deploy-mac-client.sh` aborts with a long `Missing <table>.<column>`
+  list. The central DB is 9 migrations behind (marketing platform, email inbox, archived party, contracts,
+  quote approval). This is why the installed Mac app has never shown archive/delete. Those migrations are all
+  additive (checked for DROP/TRUNCATE — none) and a backup was taken, but the apply was stopped mid-run; the
+  central DB is deliberately not migrated yet. Run `scripts/apply-central-migrations.sh` then
+  `scripts/deploy-mac-client.sh` to ship the Mac app.
+- **Not done:** browser check of the live dialog.
 
 ## Delivery → invoice verified and fixed — 5 October 2026
 

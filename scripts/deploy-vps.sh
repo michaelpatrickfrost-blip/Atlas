@@ -41,7 +41,14 @@ DB="${DATABASE_URL%%\?*}"
 mkdir -p ~/backups
 B=~/backups/atlas-pre-deploy-$(date +%Y%m%d-%H%M%S).dump
 pg_dump "$DB" -Fc -f "$B"
+chmod 600 "$B"
 echo "backup: $B"
+if [ -n "${ATLAS_SERVICE_FILE_ROOT:-}" ] && [ -d "$ATLAS_SERVICE_FILE_ROOT" ]; then
+  F="${B%.dump}-service-files.tar.gz"
+  tar -C "$ATLAS_SERVICE_FILE_ROOT" -czf "$F" .
+  chmod 600 "$F"
+  echo "private evidence backup: $F"
+fi
 # Preserve existing deployment backups; retention is an explicit operational task.
 
 PREV=$(git rev-parse --short HEAD)

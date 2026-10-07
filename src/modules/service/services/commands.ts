@@ -187,7 +187,7 @@ export async function getCaseOwners() {
   assertCapability(session,'service.case.assign');
   await requireService(session);
   const rows=await db.membership.findMany({where:{organisationId:session.organisationId,active:true},include:{roles:{include:{role:true}},user:{select:{name:true}}},take:500});
-  return rows.filter(m=>{const caps=new Set(m.roles.flatMap(r=>r.role.capabilities));return caps.has('service.case.read')&&caps.has('service.case.update');}).map(m=>({userId:m.userId,name:m.user.name}));
+  return rows.filter(m=>{const caps=new Set([...m.roles.flatMap(r=>r.role.capabilities),...m.grantedCapabilities]);for(const denied of m.deniedCapabilities)caps.delete(denied);return caps.has('service.case.read')&&caps.has('service.case.update');}).map(m=>({userId:m.userId,name:m.user.name}));
 }
 export async function getDepartmentWork() {
   const session=await requireSession();

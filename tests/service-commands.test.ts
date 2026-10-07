@@ -2,13 +2,13 @@ import {beforeEach,describe,expect,it,vi} from 'vitest';
 const mocks=vi.hoisted(()=>({
  session:{organisationId:'org-a',userId:'agent-a',capabilities:new Set(['service.case.read','service.case.update','service.case.resolve','service.case.communication','service.ticket.read','service.ticket.create','service.ticket.update'])},
  tx:{serviceWorkItem:{count:vi.fn()},serviceCase:{findFirst:vi.fn(),findFirstOrThrow:vi.fn(),updateMany:vi.fn(),update:vi.fn()},serviceTicket:{findFirst:vi.fn(),create:vi.fn(),updateMany:vi.fn(),count:vi.fn()},serviceQueue:{findFirst:vi.fn()},serviceSequence:{upsert:vi.fn()},serviceEntry:{create:vi.fn()},domainOutbox:{create:vi.fn()},auditEntry:{create:vi.fn()},activity:{create:vi.fn()}},
- enabled:vi.fn(),
+ enabled:vi.fn(),members:vi.fn(),
 }));
 vi.mock('@/core/auth/session',()=>({requireSession:async()=>mocks.session}));
-vi.mock('@/core/db/client',()=>({db:{$transaction:async(cb:(tx:typeof mocks.tx)=>Promise<unknown>)=>cb(mocks.tx),moduleState:{findFirst:mocks.enabled}}}));
+vi.mock('@/core/db/client',()=>({db:{$transaction:async(cb:(tx:typeof mocks.tx)=>Promise<unknown>)=>cb(mocks.tx),moduleState:{findFirst:mocks.enabled},membership:{findMany:mocks.members}}}));
 vi.mock('next/cache',()=>({revalidatePath:vi.fn()}));
 vi.mock('next/navigation',()=>({redirect:vi.fn()}));
-import {createDepartmentTicket,updateDepartmentTicket,transitionCase,addCaseEntry} from '@/modules/service/services/commands';
+import {createDepartmentTicket,updateDepartmentTicket,transitionCase,addCaseEntry,getCaseOwners} from '@/modules/service/services/commands';
 const c={id:'case-a',organisationId:'org-a',number:'CASE-000001',partyId:'party-a',ownerUserId:'agent-a',status:'OPEN',security:'STANDARD',version:1,type:'QUERY',rootCause:null,firstResponseAt:null};
 function form(values:Record<string,string>){const f=new FormData();for(const [key,value]of Object.entries(values))f.set(key,value);return f;}
 beforeEach(()=>{vi.clearAllMocks();mocks.enabled.mockResolvedValue({enabled:true,entitled:true});mocks.tx.serviceEntry.create.mockResolvedValue({id:"entry-a"});mocks.tx.serviceCase.findFirst.mockResolvedValue(c);mocks.tx.serviceCase.findFirstOrThrow.mockResolvedValue(c);mocks.tx.serviceCase.updateMany.mockResolvedValue({count:1});mocks.tx.serviceTicket.updateMany.mockResolvedValue({count:1});mocks.tx.serviceTicket.count.mockResolvedValue(0);mocks.tx.serviceWorkItem.count.mockResolvedValue(0);mocks.tx.serviceQueue.findFirst.mockResolvedValue({id:'queue-fin',name:'Finance',prefix:'FIN'});mocks.tx.serviceSequence.upsert.mockResolvedValue({value:1});mocks.tx.serviceTicket.create.mockResolvedValue({id:'ticket-a',number:'FIN-000001'});mocks.tx.serviceTicket.findFirst.mockResolvedValue({id:'ticket-a',caseId:'case-a',status:'IN_PROGRESS',ownerUserId:'finance-a',number:'FIN-000001',version:1});});
@@ -21,3 +21,5 @@ describe('case and departmental mutation boundaries',()=>{
  it('reopens a resolved case on a recorded customer response',async()=>{mocks.tx.serviceCase.findFirst.mockResolvedValue({...c,status:'RESOLVED'});await addCaseEntry(form({caseId:'case-a',version:'1',kind:'CUSTOMER_CONTACT',body:'This still is not fixed.'}));expect(mocks.tx.serviceCase.updateMany).toHaveBeenCalledWith(expect.objectContaining({data:expect.objectContaining({status:'OPEN',reopenCount:{increment:1},resolvedAt:null})}));});
  it('rejects actions when the company has disabled Customer Service',async()=>{mocks.enabled.mockResolvedValue(null);await expect(updateDepartmentTicket(form({ticketId:'ticket-a',version:'1',status:'COMPLETE',outcome:'Done'}))).rejects.toThrow('not enabled');expect(mocks.tx.serviceTicket.updateMany).not.toHaveBeenCalled();});
 });
+
+describe('profile-based case assignment',()=>{it('includes explicit grants and respects explicit denials when listing owners',async()=>{mocks.session.capabilities.add('service.case.assign');mocks.members.mockResolvedValue([{userId:'granted',user:{name:'Granted'},roles:[],grantedCapabilities:['service.case.read','service.case.update'],deniedCapabilities:[]},{userId:'denied',user:{name:'Denied'},roles:[{role:{capabilities:['service.case.read','service.case.update']}}],grantedCapabilities:[],deniedCapabilities:['service.case.update']}]);expect(await getCaseOwners()).toEqual([{userId:'granted',name:'Granted'}]);expect(mocks.members).toHaveBeenCalledWith(expect.objectContaining({where:{organisationId:'org-a',active:true}}));});});

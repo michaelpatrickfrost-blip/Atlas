@@ -45,3 +45,6 @@ next-env.d.ts
 
 # local embedded Postgres data (scripts/local-postgres.mjs)
 /.atlas/
+
+# Private central service evidence is never source content.
+/shared/service-files/

@@ -26,7 +26,7 @@ Core owns reusable work access, clocks, numbering, history, evidence, approval c
 
 ## Security and data
 
-Tenant and enabled/entitled-app scopes apply server-side. Restricted case permission remains additional; restricted queues add membership/owner protection. Requesters cannot read receiving-team private notes. Mutation permissions, independent approvals, optimistic versions and serializable dependency/financial operations remain authoritative. Audit and durable events contain IDs rather than unrestricted complaint content. Server-only evidence files have opaque keys and private permissions.
+Tenant and enabled/entitled-app scopes apply server-side. Restricted case permission remains additional; restricted queues add membership/owner protection. Requesters cannot read receiving-team private notes. Mutation permissions, independent approvals, optimistic versions and serializable dependency/financial operations remain authoritative. Audit and durable events contain IDs rather than unrestricted complaint content. Server-only evidence files have opaque keys and private permissions; deployment backs up both database records and the private evidence directory. Case owner selection respects explicit profile grants and denials.
 
 Migration `20261007190000_service_work_desk` adds service work/history/files/recovery/redemptions/knowledge, context/clock/merge fields, unique source keys and CSAT integrity fields. It preserves all existing rows and backfills only historical comment submission timestamps. No table or column is removed.
 

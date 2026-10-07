@@ -80,10 +80,17 @@ business-data caching or an offline/local business database.
 
 Each person’s profile at `/profile` is My work: time off, rota, assigned tasks and meetings, goals, performance plans, and the phone, address and emergency contact that save onto the HR employee record.
 
-## Owner company setup — 3 October 2026
+## Atlas Admin — 7 October 2026
 
-Atlas owners set up a business from the console: company account, user setup codes, and CSV templates for customers and hierarchy, contacts, commercial settings, products, price lists, prices, warehouses, locations and employees. That portal stays owner-only. Company administrators keep the smaller customers, products and prices import. Registered company identity is separate from customer accounts. See docs/COMPANY_ADMINISTRATION.md.
-
+Atlas Admin at /atlas replaces the owner console: company setup/profile/settings,
+users, granular access, recovery, separate Atlas staff, audit, archive and full
+company handover. Michael currently requires every active Atlas administrator and
+employee to have full platform and selected-company permissions. Customer roles
+cannot create staff access and their permissions remain separately controlled.
+Staff open a customer workspace explicitly under their own audited identity.
+Archives preserve records, revoke sessions/codes and restore to suspended. Exports
+include stored documents and linked records while excluding credentials; no local
+business database/cache is introduced. See docs/ATLAS_ADMIN.md and CURRENT_STATE.
 
 ## Price lists and agreements — 7 October 2026
 

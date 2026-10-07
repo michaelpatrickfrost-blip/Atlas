@@ -12,14 +12,16 @@ async function main() {
   const manifest = JSON.parse(await readFile(".next/server/server-reference-manifest.json", "utf8"));
   const post = async (name: string, fields: Record<string, string | string[]>, cookie = "", route = "/atlas") => {
     const action = Object.entries(manifest.node as Record<string, { exportedName?: string }>).find(([, value]) => value.exportedName === name); assert(action, `Action exists: ${name}`);
-    const data = new FormData(); data.set("0", '["$K1"]');
-    for (const [key, values] of Object.entries(fields)) for (const value of Array.isArray(values) ? values : [values]) data.append(`1_${key}`, value);
+    const data = new FormData();
+    for (const [key, values] of Object.entries(fields)) for (const value of Array.isArray(values) ? values : [values]) data.append(`_1_${key}`, value);
+    // Match this Next version's encodeReply: nested fields precede the root model.
+    data.set("0", '["$K1"]');
     const response = await fetch(`${base}${route}`, { method: "POST", redirect: "manual", headers: { Origin: base, "Next-Action": action[0], Accept: "text/x-component", ...(cookie ? { Cookie: cookie } : {}) }, body: data });
     return { response, body: await response.text() };
   };
   const login = async (email: string, password: string) => {
     const result = await post("loginAction", { email, password }, "", "/login");
-    const cookie = result.response.headers.get("set-cookie")?.match(/atlas_session=[^;]+/)?.[0]; assert(cookie, "Normal password sign-in issues a session"); return cookie;
+    const cookie = result.response.headers.get("set-cookie")?.match(/atlas_session=[^;]+/)?.[0]; assert(cookie, "Normal password sign-in issues a session: " + JSON.stringify({status: result.response.status, redirect: result.response.headers.get("x-action-redirect"), error: result.body.includes("Incorrect email"), noWorkspace: result.body.includes("no active workspace"), length: result.body.length})); return cookie;
   };
   const page = async (route: string, cookie: string) => { const response = await fetch(`${base}${route}`, { headers: { Cookie: cookie }, redirect: "manual" }); return { response, body: await response.text() }; };
   const check = (condition: unknown, label: string) => { assert(condition, label); console.log(`PASS ${label}`); };
@@ -61,6 +63,15 @@ async function main() {
     check(recovered.response.headers.has("set-cookie"), "Customer recovery opens signed session");
     const reused = await post("completePasswordRecovery", { code: code!, password: `${password}-again`, confirmPassword: `${password}-again` }, "", "/reset-password");
     check(!reused.response.headers.has("set-cookie") && await bcrypt.compare(`${password}-new`, (await db.user.findUniqueOrThrow({ where: { id: customer.id } })).passwordHash), "Recovery code cannot be reused");
+    const addedEmail = `atlas-check-added-${suffix}@example.test`;
+    const added = await post("createCompanyUser", { organisationId: a.id, name: "Added disposable customer", email: addedEmail, roleId: reader.id }, ownerCookie, `/atlas/${a.id}/users`);
+    const addedUser = await db.user.findUnique({ where: { email: addedEmail } }); assert(addedUser, "Company user creation succeeds"); userIds.push(addedUser.id);
+    const addedMember = await db.membership.findUniqueOrThrow({ where: { organisationId_userId: { organisationId: a.id, userId: addedUser.id } } });
+    check(/"code":"[a-f0-9]{64}"/.test(added.body), "Customer user added with one-time setup code");
+    await post("setCompanyUserStatus", { organisationId: a.id, membershipId: addedMember.id, status: "SUSPENDED" }, ownerCookie, `/atlas/${a.id}/users`);
+    check(!(await db.membership.findUniqueOrThrow({ where: { id: addedMember.id } })).active, "Customer user suspension saved");
+    await post("setCompanyUserStatus", { organisationId: a.id, membershipId: addedMember.id, status: "ACTIVE" }, ownerCookie, `/atlas/${a.id}/users`);
+    check((await db.membership.findUniqueOrThrow({ where: { id: addedMember.id } })).active, "Customer user access restored");
     await post("saveAtlasCompanyBrand", { organisationId: a.id, legalName: "Selected company legal name", accentColour: "#123456" }, ownerCookie, `/atlas/${a.id}/setup`);
     const branded = (await db.organisation.findUniqueOrThrow({ where: { id: a.id } })).companyProfile as { legalName?: string };
     check(branded.legalName === "Selected company legal name" && (await db.organisation.findUniqueOrThrow({ where: { id: internal.id } })).name === "Atlas team", "Brand saved to selected company");
@@ -74,7 +85,7 @@ async function main() {
     check(records.some(row => row.table === "hr_policies" && row.data?.content === `\\x${document.toString("hex")}`), "Stored binary document exported intact");
     const staffEmail = `atlas-check-employee-${suffix}@example.test`;
     const created = await post("createAtlasStaff", { name: "Disposable Atlas employee", email: staffEmail, staffRole: "EMPLOYEE", currentPassword: password }, ownerCookie, "/atlas/team");
-    const staff = await db.user.findUnique({ where: { email: staffEmail } }); assert(staff); userIds.push(staff.id);
+    const staff = await db.user.findUnique({ where: { email: staffEmail } }); assert(staff, `Atlas employee creation succeeds (HTTP ${created.response.status})`); userIds.push(staff.id);
     const staffCode = created.body.match(/"code":"([a-f0-9]{64})"/)?.[1]; check(!!staffCode, "Atlas employee created with platform setup code");
     await post("completePasswordRecovery", { code: staffCode!, password, confirmPassword: password }, "", "/reset-password");
     const staffCookie = await login(staffEmail, password);

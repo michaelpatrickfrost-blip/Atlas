@@ -21,10 +21,12 @@ async function ownerOrganisation(organisationId: string) {
 }
 
 export async function importCompanySetup(_state: SetupResult, form: FormData): Promise<SetupResult> {
+  const session = await requireSession();
+  assertCapability(session, "atlas.companies.manage");
   const organisationId = String(form.get("organisationId") ?? "");
   const entity = String(form.get("entity") ?? "");
   try {
-    const session = await ownerOrganisation(organisationId);
+    await ownerOrganisation(organisationId);
     if (!setupTemplate(entity)) throw new Error("Choose a setup template.");
     const file = form.get("file");
     if (!(file instanceof File) || file.size > 2_000_000) throw new Error("Choose a CSV file smaller than 2 MB.");

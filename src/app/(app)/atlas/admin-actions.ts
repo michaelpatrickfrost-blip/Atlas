@@ -118,7 +118,7 @@ export async function createAtlasStaff(form: FormData) {
   if (!isStaffRole(role)) throw new Error("Choose an Atlas staff role.");
   const credential = createRecoveryCredential(), passwordHash = await bcrypt.hash(randomBytes(32).toString("hex"), 12);
   const existingAccount = await db.$transaction(async tx => {
-    await tx.$queryRaw`SELECT pg_advisory_xact_lock(71423501)`;
+    await tx.$queryRaw`SELECT pg_advisory_xact_lock(71423501)::text`;
     const existing = await tx.user.findUnique({ where: { email: data.email }, include: { platformAdmin: true } });
     if (existing?.platformAdmin) throw new Error("This person is already listed in Atlas team.");
     if (existing && form.get("existingAccount") !== "on") throw new Error("This email already exists. Confirm that you intend to grant this existing person Atlas staff access.");
@@ -145,7 +145,7 @@ export async function updateAtlasStaff(form: FormData) {
   if (!isStaffRole(role) || !["ACTIVE", "SUSPENDED"].includes(value(form, "status"))) throw new Error("Choose a staff role and status.");
   if (userId === session.userId) throw new Error("Another Atlas Owner must change your own staff access.");
   await db.$transaction(async tx => {
-    await tx.$queryRaw`SELECT pg_advisory_xact_lock(71423501)`;
+    await tx.$queryRaw`SELECT pg_advisory_xact_lock(71423501)::text`;
     const before = await tx.platformAdministrator.findUniqueOrThrow({ where: { userId } });
     if (before.active && before.role === "OWNER" && (!active || role !== "OWNER") && await tx.platformAdministrator.count({ where: { active: true, role: "OWNER" } }) <= 1) throw new Error("Keep at least one active Atlas Owner.");
     await tx.platformAdministrator.update({ where: { userId }, data: { role, active } });

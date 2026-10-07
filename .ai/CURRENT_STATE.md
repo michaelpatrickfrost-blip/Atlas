@@ -3057,3 +3057,26 @@ remains pending at this checkpoint. Existing
 concurrent Manufacturing/Planning/Service and other edits must be excluded from the
 release. No real customer contacted; no local business database/cache created.
 Next: isolated compatible build, VPS backup/migration/deploy and live flow checks.
+## 7 October 2026 — Atlas Admin live acceptance checkpoint
+
+Initial Admin release ad71ab4 deployed to atlassystem.online; migration
+20261007110000_atlas_admin_portal applied with server backup
+/home/administrator/backups/atlas-pre-deploy-20261007-065820.dump. Server production
+build and public login health passed. Authenticated HTTP acceptance verified portal
+routes, customer isolation/forged permission rejection, user access/profile editing,
+one-use recovery, selected-company branding and complete export with child records
+and stored binary documents, excluding foreign-company data/credentials. Disposable
+Test companies and accounts removed.
+
+Acceptance caught Prisma's unsupported PostgreSQL void result for the staff
+advisory lock. Cast that lock result to text in admin-actions; deploying/rechecking
+staff creation, suspension and archive/restore is still required. The setup import also applies its auth/capability guard as the action's first two lines.
+The acceptance script now matches this Next version's multipart field prefix and root-last order.
+Reconciled the setup catalogue fixture with the already-shipped Sales templates.
+Isolated typecheck, scoped ESLint and production build passed. Focused Admin/auth
+tests pass; the wider workspace-security CRM mock still fails
+on its missing organisation.findUniqueOrThrow stub (unrelated to this release).
+Michael's requested account was verified server-side as an existing active Atlas
+Owner with active internal workspace access; no password or existing grants changed.
+No user identifiers or credentials are stored in shared memory. Enduring Admin
+policy is now recorded in PROJECT_MEMORY.md.

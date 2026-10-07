@@ -851,6 +851,10 @@ Quality diagnostics are platform-only and cannot be granted by customer roles.
 A server sweep inventories connections and probes authorised pages/explicit safe
 controls without business writes. Recurring coding work reproduces and verifies
 repairs in an isolated release; unresolved failures become actionable AI briefs.
+Probe evidence is buffered and discarded if the checkout/build changes mid-sweep;
+a release interruption is a monitor/deployment condition, never proof that all
+affected product pages are broken. Operator pagination preserves access to older
+blocked reports. Copied/downloaded briefs include current triage notes.
 HTTP success, control inventory and source heuristics are not blanket workflow
 verification. Never hide a broken page or auto-close a report after an unrelated
 passing check. See docs/GUARDIAN.md.

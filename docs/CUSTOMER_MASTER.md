@@ -164,3 +164,11 @@ explicit “summary unavailable” metric without a fabricated zero or module ac
 Other summaries, shared customer details and hierarchy remain accessible. This is
 resilience to unavailable/incompatible module data, not proof of that module’s
 working server integration.
+
+
+Historical links to an identity-scrubbed customer render a clear Customer deleted
+state with a return to the list. This state checks only the same-company retained
+pointer after customer-read authorisation; it exposes no identity, contacts or
+business child records. Unknown/foreign-company IDs remain not found. Scrubbed
+customers stay excluded from all Master lists/maps. Sales references label deleted
+customers while retaining their historical documents.

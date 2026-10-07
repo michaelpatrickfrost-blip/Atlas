@@ -92,6 +92,14 @@ Archives preserve records, revoke sessions/codes and restore to suspended. Expor
 include stored documents and linked records while excluding credentials; no local
 business database/cache is introduced. See docs/ATLAS_ADMIN.md and CURRENT_STATE.
 
+## Atlas Guardian — 7 October 2026
+
+Atlas Guardian at `/atlas/guardian` is the Atlas-staff-only quality inbox and AI
+repair handoff area. Central detectors record private diagnostic metadata; a
+recurring repair agent must reproduce, deploy and verify fixes before closing
+reports. Unresolved items retain exact blockers and next actions. Inventory and
+HTTP success are not complete workflow verification. See `docs/GUARDIAN.md`.
+
 ## Price lists and agreements — 7 October 2026
 
 Price lists are a Sales workspace (`/sales/price-lists`), with no separate launcher app. Commercial agreements and service promises live in CRM (`/crm/agreements`), alongside contracts/approvals. The internal pricing entitlement, shared pricing engine and existing capabilities remain. See [Pricing](../docs/modules/PRICING.md).

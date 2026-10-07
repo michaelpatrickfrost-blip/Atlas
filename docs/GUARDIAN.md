@@ -28,6 +28,8 @@ cookie, token, screenshot or raw exception message is collected.
   links; the app error boundary captures render digests and offers Retry/Home.
   Next instrumentation captures server render, route and action digests/codes.
   Runtime diagnostic recording failures do not replace the original error.
+- Deleted-record explanation screens are labelled `unavailable` and excluded from
+  working-page/browser coverage; disabled screens are labelled `restricted`.
 - A passing request is labelled `http-render-pass`, not a working button. Run
   summaries distinguish inventories, runtime/browser coverage and remaining work.
   No sweep automatically marks a report fixed. Repeated findings are deduplicated;

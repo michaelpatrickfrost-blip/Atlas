@@ -105,91 +105,82 @@
 
 ## Atlas Guardian implementation — 7 October 2026
 
-- Recurrence tracking correctly reopened the customer-link finding when the deeper
-  crawl reached historical order details. Extended the fix to all invoice/pricing/
-  header references on Sales order and quote details using a shared CustomerReference
-  (deleted label, preserved history and explicit customer-read capability). Added
-  shared-reference regression coverage. Full Vitest: 591 passed / 22 integration
-  skips; scoped lint has zero errors (one existing unused-workingDrafts warning),
-  production build and separate TypeScript passed. Live checks follow.
-  Operator queue now supports pagination so older blocked reports remain reachable.
-- Reproduced two live 404 customer links without retaining identifiers: Sales
-  documents and Customer Map linked identity-scrubbed, archived CLOSED tombstones.
-  Map queries now exclude scrubbed accounts/contacts/trading endpoints. Sales keeps
-  historical orders/quotes and labels their deleted customer without a broken link;
-  active customers remain linked and scrubbed accounts leave the filter chooser.
-  Regression tests (19 focused), full Vitest (590 passed, 22 integration skips),
-  production build and separate TypeScript passed. Scoped lint has zero errors and
-  one existing unused-workingDrafts warning. Live verification follows. No customer
-  records changed.
-- A concurrent server deployment invalidated the dff1aa0 sweep: menu probes failed
-  during the build and passed when repeated on the stable release. Worker now
-  buffers runtime findings, aborts if revision/BUILD_ID/build-lock changes, discards
-  incomplete evidence and retries failed runs on the next timer tick. Added a
-  regression for checkout/build changes; 17 Guardian tests, TypeScript and focused
-  ESLint passed. Final compatible release and stable sweep follow.
-- Live QA exposed a coverage gap: shared ModuleSpace disabled screens used different
-  wording. Response classification now treats that known access state as restricted,
-  with a regression for HTTP-200 disabled/error screens. Tickets is disabled for the
-  current enduring QA company; do not claim its business controls verified there.
-  NEEDS_AI now requires blocker notes in UI/server validation; pagination normalises
-  fractional page input. Guardian tests (16), scoped ESLint, production build and
-  separate TypeScript passed; final live verification follows.
-- Copied/downloaded AI briefs now include the latest repair status, blocker/next-step
-  notes and last verified revision. Added private-download regression coverage so
-  an unresolved repair does not lose its triage context during handoff. Guardian
-  tests (14), scoped lint, production build and separate TypeScript check passed.
-- Live sweep confirmed Campaign “Write a message” targeted missing `/marketing/messages`.
-  Corrected the canonical link to `/marketing/email` and retained the old URL as an
-  alias in the existing dynamic section route; destination permissions remain enforced.
-  Source audit has no findings; scoped ESLint, TypeScript, 14 Guardian tests and
-  production build passed. Live alias/deployment verification is next.
-- Added staff-only `/atlas/guardian` reports, AI brief copy/download, durable queue,
-  recurrence tracking and verified-repair fields. Additive migration:
-  `20261007180000_atlas_guardian`. Runtime browser/server diagnostics contain only
-  categories, paths/digests, never request bodies or raw customer error messages.
-- Added AST route/link/control inventory and a central six-hour sweep with five-minute
-  queue polling, advisory-lock ownership, explicit QA profile, read-only Chromium
-  render/safe-toggle probes and coverage summaries. See `docs/GUARDIAN.md`.
-- Fixed generic manager absence reads to self/direct reports in the current company
-  and removed private note/reason access from team-management-only profiles. Fixed
-  the missing legacy queue setup URL with a redirect to the queue workspace.
-- Reconciled stale test fixtures/expectations for Manufacturing dependencies, setup
-  templates, implemented Quality, stock-position/CRM-policy mocks and tag wording;
-  no production capability checks were weakened. Full Vitest: 459 passed, 22 skipped.
-  Typecheck and initial production build passed. Guardian-focused ESLint passed after
-  moving server heartbeat-time evaluation out of the component; repository-wide lint
-  has 17 existing errors in unrelated files. Final build/live release still pending.
-- Integrated the finished Admin/Templates releases into the isolated Guardian release;
-  the combined suite now passes 491 tests with 22 integration skips. Final production
-  build and Guardian lint passed. The hourly `atlas-guardian-repairs` heartbeat is
-  ACTIVE in this chat; the server detector remains independent of the Mac. Added
-  privileged server-only `scripts/guardian/triage.ts` for report maintenance and
-  excluded diagnostic tables from customer exports. Live deployment is next.
-- Added telemetry regression checks for proxy origin handling, unauthenticated/cross-origin
-  rejection, privacy and rate limiting; persistence tests cover deduplication, fixed
-  report recurrence and serialized queue clicks. Guardian suites: 14 tests passed.
-- Guardian UI is live at revision 811307d (retained by later compatible releases).
-  Backup: `/home/administrator/backups/atlas-pre-guardian-20261007-070813.dump`.
-  Additive migration applied; public login 200; signed-in inbox, durable sweep queue,
-  search/filter, report detail, copy feedback and private brief download passed.
-  Anonymous download returned 401 and a real customer profile returned 403.
-- Server timer/browser runtime installed. First sweep checked 204 page requests;
-  a concurrent deploy and multiple-main browser locator produced misleading browser
-  findings. Corrected main selection, added assertion phases/reset verification,
-  build-lock waiting and abort-on-QA-session-change. Selected a stable existing
-  staff membership instead of a mutable acceptance-test identity. Corrected sweep
-  and disposition of first-run probe findings are pending.
-- Integrated the finished connected Service/Tickets release. Combined Vitest:
-  543 passed, 22 integration skips. Source sweep found one remaining blank legacy
-  `/service/tickets` route; it now redirects to the real `/tickets` workspace.
-  The source inventory now covers 1,020 files, 253 pages, 540 static links and
-  791 controls, with 571 dynamic links still requiring runtime/fixture coverage.
-- Initial source audit inventories 930 source files, 233 pages, 518 static links,
-  766 controls and 517 dynamic links requiring runtime coverage. Three deployed-base
-  Ticketing pages return null; preserve the parallel Service/Tickets rebuild and
-  retain these as unresolved reports until deployed and verified.
-
+- Full linked-page crawl still reached one scrubbed customer through another
+  historical record. Customer routes now render an explicit deleted/unavailable
+  state from same-company id-only metadata after authorisation; no deleted identity
+  or children load, unknown/foreign IDs stay not found. The monitor labels this
+  `unavailable`, excluded from working-page/browser coverage. Compatible release
+  including the finished S&OP changes passed 653 Vitest tests (22 integration skips),
+  production build and separate TypeScript; scoped lint passed. Live verification follows; this completes legacy URL handling without hiding a
+  broken active customer page or changing retained records.
+- Live staff-only quality inbox: `/atlas/guardian`, private AI briefs, latest repair
+  status/blocker notes, copy/download, search/status filters, pagination, durable
+  Run system sweep queue and verified repair fields. Server boundary is
+  `atlas.companies.manage`; anonymous briefs return 401, customer profiles 403.
+  Additive migration `20261007180000_atlas_guardian` is applied. Diagnostics stay
+  central, are excluded from customer exports and contain no customer bodies,
+  inputs, raw errors, tokens or screenshots. See `docs/GUARDIAN.md`.
+- Server systemd detector checks the manual queue every five minutes and runs
+  automatic sweeps every six hours, using an enduring existing authorised staff
+  membership. It grants no rights/entitlements and performs GET/render checks plus
+  explicitly safe menu toggles; business writes need disposable central fixtures.
+  Rate-limited runtime browser/server telemetry, deduplication and recurrence
+  reopening are active. Error screens provide Retry/Home/sign-in recovery.
+- Hourly `atlas-guardian-repairs` heartbeat is ACTIVE in this chat. It reproduces,
+  fixes, tests, backs up/deploys and verifies bounded repairs, and leaves precise
+  NEEDS_AI blockers/next actions for unresolved items. Local repairs require the
+  Mac and Codex running; the server detector continues independently. Operator-only
+  `triage.ts list [page]` is compact/paginated (`hasMore`), `show <id>` returns the
+  full issue, and `fixed` requires deployed revision plus reproduction notes.
+- Confirmed repairs: team-manager absence reads now allow only self/direct reports
+  within the company and exclude private reason/notes; legacy queue setup and
+  service/tickets URLs connect to real destinations; Campaign Write a message and
+  legacy `/marketing/messages` reach `/marketing/email`. Customer Map excludes
+  scrubbed identities/trading endpoints. Sales list/order/quote invoice, pricing
+  and header references show Deleted customer without broken links while preserving
+  historical documents and current customer links/capability checks. No customer
+  records or real communications were changed by these checks.
+- Live recurrence tracking reopened the customer report after a deeper crawl found
+  historical order-detail links missed by the first static-page trace. Shared
+  `CustomerReference` completes that repair; latest deep trace checked six remaining
+  distinct customer links including connected Sales details with zero 404s.
+- Application release `64a11ce` is deployed and healthy. Backup:
+  `/home/administrator/backups/atlas-pre-guardian-references-20261007-075208.dump`
+  plus private Service evidence archive. Server production build/restart and HTTPS
+  login 200 passed. Signed-in inbox/queue/filter/detail/copy/download, Campaign
+  Content and links → Write a message, legacy alias, and Save progress → persisted
+  NEEDS_AI → download including the exact blocker/next action passed live.
+- Final compatible checks: 653 Vitest tests passed, 22 integration skips; separate
+  TypeScript and production build passed. Scoped ESLint has zero errors and one
+  pre-existing unused-workingDrafts warning. Full-repo lint was not rerun; its
+  initial check found 17 unrelated errors. Guardian tests cover privacy, auth/rate
+  limits, deduplication, recurrence, queue serialisation, deployment invalidation,
+  disabled/error response classification and current AI brief context. Two deleted
+  customer regression suites retain sales rows and active links.
+- Current source inventory: 1,066 files, 260 pages, 588 static links, 818 controls,
+  627 dynamic links requiring runtime/fixture coverage; zero source findings. Last
+  stable 66cde65 sweep checked 213 requests, one restricted screen, 100 Chromium
+  renders and 99 safe toggles, zero browser failures; it found the now-repaired
+  historical order link. Final 64a11ce sweep is in progress at this checkpoint.
+- Retired 94 initial BROWSER_PROBE reports only after their exact render/safe-menu
+  checks passed on a stable release (100-page sweep plus six additional routes).
+  Earlier probes were invalidated by overlapping builds or the initial multiple-main
+  locator. Worker now buffers runtime findings and discards them when revision,
+  BUILD_ID or build lock changes; verified guard aborts on a parallel checkout pull.
+  Failed runs retry at the next timer tick. Disabled ModuleSpace screens count as
+  restricted coverage. Tickets is disabled in the enduring QA company; its queue/
+  detail controls still require a permitted disposable fixture to close those reports.
+- Unresolved reports retain actionable NEEDS_AI notes. A confirmed deployment-
+  reliability brief records that in-place node_modules/.next replacement can break
+  active clients; the shared release lock serialises deploys and the sweep guard
+  protects evidence, but atomic release/service switching still needs implementation
+  and staging/rollback proof. Other digest-only reports need correlation with server
+  logs and safe fixtures; some arose from intentional Finance/Admin/Service negative
+  acceptance checks. Never weaken those business guards to clear diagnostics.
+- Code/docs are integrated into the canonical shared repository without overwriting
+  concurrent contributors. Inventory/HTTP passes do not establish that every button,
+  write workflow, profile or dynamic business state works; expand outcome-based
+  fixtures over successive repair runs and preserve the central data boundary.
 
 ## Sales price lists and CRM agreements — 7 October 2026
 

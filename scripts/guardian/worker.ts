@@ -49,7 +49,7 @@ async function main() {
     const seeds = ["/home", "/apps", "/profile", ...modules.flatMap(module => [module.rootPath, ...getModuleNavigation(module, session).map(item => item.href)])];
     const queue = [...new Set(seeds)], checked = new Set<string>(), outcomes: Array<{ route: string; result: string }> = [];
     const pending = new Set(queue);
-    let failures = audit.findings.length, skipped = 0;
+    let failures = audit.findings.length, skipped = 0, unavailable = 0;
     const findingForPage = (route: string, actual: string): Finding => ({ key: `page:${safePath(route)}`, title: `Page failed: ${safePath(route)}`, kind: "PAGE_FAILURE", severity: "HIGH", route: safePath(route), source: audit.routes.find(item => routeMatches(item.path, route))?.file, expected: "An advertised page renders its workspace without a missing-page or error boundary.", actual, steps: ["Use the configured QA profile with its existing permissions and enabled apps.", `Follow the navigation to ${safePath(route)}.`], evidence: [actual, `Revision ${revision}`, "Response content and record identifiers were not retained."] });
     while (queue.length && checked.size < 300) {
       assertStable();
@@ -76,6 +76,7 @@ async function main() {
         if (outcome === "restricted") {
           skipped++; outcomes.push({ route: safePath(route), result: "restricted" }); continue;
         }
+        if (outcome === "unavailable") { unavailable++; outcomes.push({ route: safePath(route), result: "unavailable" }); continue; }
         outcomes.push({ route: safePath(route), result: "http-render-pass" });
         for (const match of html.matchAll(/href="([^"<>]+)"/g)) {
           const destination = match[1].replaceAll("&amp;", "&");
@@ -98,7 +99,7 @@ async function main() {
     }
     assertStable();
     for (const finding of runtimeFindings) await recordFinding(finding, revision, run.id);
-    const summary = `${audit.coverage.sourceFiles} source files; ${audit.coverage.staticLinksChecked} static links; ${audit.coverage.controlsInventoried} controls inventoried. ${checked.size} page requests, ${skipped} restricted, ${queue.length} remaining after cap. ${failures} findings. ${browserSummary} Dynamic forms/writes still require fixture-based regression coverage; inventory is not a pass.`;
+    const summary = `${audit.coverage.sourceFiles} source files; ${audit.coverage.staticLinksChecked} static links; ${audit.coverage.controlsInventoried} controls inventoried. ${checked.size} page requests, ${skipped} restricted, ${unavailable} unavailable, ${queue.length} remaining after cap. ${failures} findings. ${browserSummary} Dynamic forms/writes still require fixture-based regression coverage; inventory is not a pass.`;
     await db.guardianRun.update({ where: { id: run.id }, data: { status: queue.length ? "PARTIAL" : failures ? "ISSUES_FOUND" : "COMPLETED", finishedAt: new Date(), summary, coverage: { ...audit.coverage, outcomes, remaining: queue.length, browserSummary, browserVerifiedRoutes } } });
     console.log(summary);
   } catch (error) {

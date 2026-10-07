@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { EditCustomerDetails } from "@/app/(app)/customers/[partyId]/edit-details";
 import { CustomerRecordActions } from "@/app/(app)/customers/[partyId]/record-actions";
 import {RecordEmail} from "@/app/(app)/_shared/record-email";
@@ -6,7 +7,7 @@ import { notFound } from "next/navigation";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
 import { CUSTOMER_CAPABILITIES } from "@/core/permissions/capabilities";
-import { getCustomer, getSetupChecklist } from "@/core/customers/queries";
+import { customerWasDeleted, getCustomer, getSetupChecklist } from "@/core/customers/queries";
 import { getCustomerOverviewContributions } from "@/core/customers/overview";
 import { getCustomerActivity } from "@/core/activity/log";
 import { db } from "@/core/db/client";
@@ -36,7 +37,10 @@ export default async function CustomerRecordPage({
   const activeTab = (["overview", "contacts", "people", "relationships", "commercial", "finance", "activity"].includes(tab ?? "") ? tab : "overview") as CustomerTabKey;
 
   const customer = await getCustomer(session.organisationId, partyId);
-  if (!customer) notFound();
+  if (!customer) {
+    if (!await customerWasDeleted(session.organisationId, partyId)) notFound();
+    return <section data-guardian-state="record-deleted" className="mx-auto max-w-3xl space-y-4 rounded-2xl border border-slate-200 bg-white p-8"><h1 className="text-2xl font-semibold">Customer deleted</h1><p className="text-sm leading-relaxed text-slate-600">This customer&apos;s identifying details have been removed. Historical documents remain in their owning apps.</p><Link href="/customers" className="inline-block text-sm font-medium text-blue-600">Back to customers →</Link></section>;
+  }
 
   const [contributions, accountManager] = await Promise.all([
     getCustomerOverviewContributions(session, partyId),

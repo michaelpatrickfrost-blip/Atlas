@@ -30,6 +30,7 @@ describe("Guardian reports and source checks", () => {
     expect(responseOutcome(200, "You don&#x27;t have permission")).toBe("restricted");
     expect(responseOutcome(200, "Something went wrong.")).toBe("failed");
     expect(responseOutcome(404, "Missing page")).toBe("failed");
+    expect(responseOutcome(200, '<section data-guardian-state="record-deleted">Customer deleted</section>')).toBe("unavailable");
     expect(responseOutcome(200, '<h2>Tickets</h2><a href="/tickets/create">New ticket</a>')).toBe("http-render-pass");
   });
   it("matches groups, dynamic pages and optional catchalls without accepting sibling paths", () => {

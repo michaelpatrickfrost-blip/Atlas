@@ -63,6 +63,11 @@ export async function getCustomer(organisationId: string, partyId: string) {
   });
 }
 
+/** Only existence metadata is needed to explain retained historical links. Never load deleted identity. */
+export async function customerWasDeleted(organisationId: string, partyId: string) {
+  return !!await db.party.findFirst({ where: { organisationId, id: partyId, identityScrubbed: true }, select: { id: true } });
+}
+
 /** Completeness checklist shown after quick-create (§34). Deliberately only
  *  checks a handful of high-value gaps — not every optional field. */
 export function getSetupChecklist(customer: NonNullable<Awaited<ReturnType<typeof getCustomer>>>) {

@@ -9,6 +9,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { buildDemand,DEFAULT_SETTINGS,monthOffset,type SopSettings } from '../domain/engine';
 import { z } from 'zod';
+import { planningSignature as planSignature } from '../domain/lineage';
 import { scenarioRows,forecastBridge,type ScenarioAssumptions } from '../domain/scenario';
 const text=(f:FormData,k:string)=>String(f.get(k)??'').trim();
 const versionWhere=(s:Session)=>({organisationId:s.organisationId,OR:[{kind:{not:'scenario'}},{createdByUserId:s.userId}]});
@@ -19,7 +20,6 @@ async function opened(s:Session,id:string){await assertModuleEnabled(s,'sop');co
 function settings(value:unknown){return settingsSchema.parse({...DEFAULT_SETTINGS,...(value&&typeof value==='object'?value:{})});}
 function reviewWorkflow(previous:unknown,owner:string,versionId?:string){const rows=Array.isArray(previous)?previous:[];return stages.map(title=>{const before=rows.find(row=>row&&typeof row==='object'&&row.title===title);return {title,status:'open',owner:typeof before?.owner==='string'?before.owner:owner,dueOn:typeof before?.dueOn==='string'?before.dueOn:'',...(versionId?{versionId}:{})};});}
 function reviewsComplete(workflow:unknown,versionId:string){return Array.isArray(workflow)&&workflow.length===stages.length&&workflow.every(row=>row&&typeof row==='object'&&row.status==='approved'&&row.versionId===versionId);}
-function planSignature(value:{inputs?:unknown[];targets?:unknown[];planRevisions?:unknown[]}){const ordered=(items:unknown[]=[])=>items.map(i=>JSON.stringify(i)).sort();return JSON.stringify([ordered(value.inputs),ordered(value.targets),ordered(value.planRevisions)]);}
 export async function getSopWorkspace(cycleId?:string,versionId?:string,includeSnapshot=true){
  const session=await requireSession();
  assertCapability(session,'sop.read');

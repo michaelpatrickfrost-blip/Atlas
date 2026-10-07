@@ -27,10 +27,18 @@
   its initial unused-variable warning in the touched MRP loader was corrected.
   Additive migration `20261007160000_connected_plans_sop` passed on a disposable
   server-only schema clone; no production records copied and clone removed.
-- `scripts/check-sop.ts` prepares normal-login authenticated acceptance with synthetic
-  test tenants and revoked credentials. Live migration/deployment/activation and
-  acceptance have not run. Server target explicitly authorised by Michael: “deploy
-  to server when done”; earlier Mac/target-confirmation blockers are superseded.
+- Initial server release `46ca06a` built/restarted successfully, public login 200;
+  additive migration applied with backup
+  `/home/administrator/backups/atlas-pre-deploy-20261007-075416.dump` and matching
+  private service-evidence archive. Live acceptance passed the initial Plan,
+  forecast, scenario, tenant/stale-write and draft-publication guards, then caught
+  an approval defect: PostgreSQL JSONB normalises object key order, while source
+  signatures used insertion-order JSON. Fixed canonical value comparison and
+  added regression coverage; integrated suite now 652 passed / 22 skipped.
+  The failed run's synthetic tenants were suspended and credentials revoked.
+  Follow-up build/release and full live acceptance/organisation activation pending.
+- Server target explicitly authorised by Michael: “deploy to server when done”;
+  earlier Mac/target-confirmation blockers are superseded.
 - Genuine master-spec gaps remain in `docs/modules/SOP.md`: finite material/labour/
   machine feasibility, hierarchy/weekly editing, advanced lifecycle/OTIF policies,
   actual costs/FX/revenue budgets, notifications and high-volume QA. Logistics partial

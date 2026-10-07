@@ -1,3 +1,5 @@
+> Contract builder and customer sharing implementation (7 October 2026): see [Contracts and Templates](../plans/CONTRACTS_TEMPLATES.md) for delivered scope, security and remaining extensions.
+
 # ATLAS CRM
 
 ## Complete Sales CRM Technical Functional Specification

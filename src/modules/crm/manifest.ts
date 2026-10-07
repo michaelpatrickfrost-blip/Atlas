@@ -1,3 +1,4 @@
+import { crmTemplateContext } from "./services/template-context";
 import { crmAnalytics } from "./services/analytics";
 import { crmCustomerOverviewProvider } from "./customer-overview";
 import { Handshake } from "lucide-react";
@@ -7,6 +8,7 @@ import { salesAttentionProvider } from "@/modules/crm/services/attention";
 import { salesSearchProvider } from "@/modules/crm/services/search";
 
 export const crmManifest: ModuleManifest = {
+ templateContextProvider: crmTemplateContext,
  analyticsProvider: crmAnalytics,
   id: "crm",
   name: "CRM",

@@ -88,3 +88,8 @@ Atlas owners set up a business from the console: company account, user setup cod
 ## Price lists and agreements — 7 October 2026
 
 Price lists are a Sales workspace (`/sales/price-lists`), with no separate launcher app. Commercial agreements and service promises live in CRM (`/crm/agreements`), alongside contracts/approvals. The internal pricing entitlement, shared pricing engine and existing capabilities remain. See [Pricing](../docs/modules/PRICING.md).
+
+
+## Business document templates — 7 October 2026
+
+Templates is a separate app for reusable business documents. CRM Deals owns contract work; Core stores immutable shared PDFs, template snapshots and customer responses. Customers receive private Atlas share pages and may sign online or return a signed PDF for staff review. Source apps supply authorised template fields through the module registry. See [Contracts and Templates](../docs/plans/CONTRACTS_TEMPLATES.md).

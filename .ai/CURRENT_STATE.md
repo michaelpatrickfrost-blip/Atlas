@@ -3004,3 +3004,23 @@ added and recheck pending. Stale baseline Quality and Project test fixtures were
 corrected; unrelated CRM workspace-security mock failure not changed. Release is
 based on remote main and excludes concurrent unfinished module edits. Live
 migration/deployment/acceptance still pending at this checkpoint.
+
+
+## 7 October 2026 — Deal contract builder and reusable Templates (implementation checkpoint)
+
+Implemented CRM Deal contract controls, contract detail/review workspace, a separate
+Templates app with section builder/merge fields/version snapshots and authorised
+CRM/Sales/Projects/Service source providers. Added Atlas customer /share pages,
+server-checked signing consent, signed-PDF returns awaiting review, link revocation,
+draft revision and downloadable completion records. Additive migration:
+20261007094500_document_templates_contract_returns. Scope/limits documented in
+docs/plans/CONTRACTS_TEMPLATES.md; lasting decision recorded.
+
+Targeted Vitest: 24 passed. Isolated production build, TypeScript, scoped ESLint,
+Prisma schema validation and whitespace checks passed. Full isolated suite: 457
+passed, 10 failed, 22 skipped; the same 10 failures reproduced in the clean e5e474c
+baseline (the new Templates catalogue expectation was updated). Server acceptance
+remains pending at this checkpoint. Existing
+concurrent Manufacturing/Planning/Service and other edits must be excluded from the
+release. No real customer contacted; no local business database/cache created.
+Next: isolated compatible build, VPS backup/migration/deploy and live flow checks.

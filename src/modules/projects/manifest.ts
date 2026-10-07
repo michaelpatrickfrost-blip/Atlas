@@ -1,8 +1,10 @@
+import { projectsTemplateContext } from "./services/template-context";
 import {FolderKanban} from 'lucide-react';
 import type {ModuleManifest} from '@/core/modules/types';
 import {projectsAnalytics} from './services/analytics';
 import {projectsAttention,projectsSearch,projectsCustomer} from './services/providers';
-export const projectsManifest:ModuleManifest={id:'projects',name:'Projects',description:'Personal work, team projects and connected business delivery.',icon:FolderKanban,version:'0.2.0',minimumCoreVersion:'0.1.0',dependencies:[],capabilities:['projects.read','projects.manage'],rootPath:'/projects',accessCapability:'projects.read',status:'available',analyticsProvider:projectsAnalytics,attentionProvider:projectsAttention,searchProvider:projectsSearch,customerOverviewProvider:projectsCustomer,navigation:[
+export const projectsManifest:ModuleManifest={
+ templateContextProvider: projectsTemplateContext,id:'projects',name:'Projects',description:'Personal work, team projects and connected business delivery.',icon:FolderKanban,version:'0.2.0',minimumCoreVersion:'0.1.0',dependencies:[],capabilities:['projects.read','projects.manage'],rootPath:'/projects',accessCapability:'projects.read',status:'available',analyticsProvider:projectsAnalytics,attentionProvider:projectsAttention,searchProvider:projectsSearch,customerOverviewProvider:projectsCustomer,navigation:[
  {label:'Home',href:'/projects'},
  {label:'My Work',href:'/projects/work/my-work',group:'My day'},
  {label:'My Day',href:'/projects/work/my-day',group:'My day'},

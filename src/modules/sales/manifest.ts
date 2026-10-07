@@ -1,3 +1,4 @@
+import { salesTemplateContext } from "./services/template-context";
 import {financeSource} from './services/finance-source';
 import { salesAnalytics } from "./services/analytics";
 import { planningDemand } from "./services/planning-demand";
@@ -5,7 +6,8 @@ import { ShoppingBag } from "lucide-react";
 import type { ModuleManifest } from "@/core/modules/types";
 import { SALES_CAPABILITIES } from "@/core/permissions/capabilities";
 import { salesCustomerOverviewProvider } from "./services/customer-overview";
-export const salesManifest: ModuleManifest = {salesFinanceSourceProvider:financeSource,
+export const salesManifest: ModuleManifest = {
+ templateContextProvider: salesTemplateContext,salesFinanceSourceProvider:financeSource,
  analyticsProvider: salesAnalytics,
   planningDemandProvider: planningDemand,
  id: "sales", name: "Sales", description: "Orders, quotations, and customer sales processing.",

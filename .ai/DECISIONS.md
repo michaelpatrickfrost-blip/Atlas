@@ -798,3 +798,16 @@ access is reopened. Full company exports are consistent, credential-redacted
 NDJSON/gzip handovers including linked records and stored documents. External URLs
 stay references and oversized exports fail without partial files. Production
 accounts cannot be relabelled as wipeable tests. See docs/ATLAS_ADMIN.md.
+
+
+## 7 October 2026 — Shared Templates app and CRM deal contracts
+
+Business document templates live in a separate Templates app, backed by Core.
+Modules expose authorised source fields through the registry's template context
+provider, preserving CRM owner, Project visibility and Service security scopes.
+Generated contracts snapshot the template version and exact PDF; shared terms are
+frozen. A customer PDF return awaits human review instead of counting as an online
+signature. Private Atlas share pages follow Blocwrite's focused reading/submission
+pattern without importing its storage or authentication. One signer and the existing
+contract/email capabilities are retained; no profile permissions are widened.
+See docs/plans/CONTRACTS_TEMPLATES.md.

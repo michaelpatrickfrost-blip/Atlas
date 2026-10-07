@@ -87,6 +87,7 @@ export type StaffRosterProvider = (session: Session, manage: boolean) => Promise
 }>>;
 
 export type ModuleManifest = {
+  templateContextProvider?: import('@/core/templates/types').TemplateContextProvider;
   salesInvoiceGenerator?: (id:string,form:FormData)=>Promise<{id:string}>;
   salesCancellationGuard?: (session:Session,tx:import('@/generated/prisma/client').Prisma.TransactionClient,id:string)=>Promise<void>;
   salesFinanceSourceProvider?: (session:Session,tx:import('@/generated/prisma/client').Prisma.TransactionClient,id:string)=>Promise<import('@/core/finance/connections').SalesFinanceSource>;

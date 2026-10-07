@@ -30213,6 +30213,66 @@ export const MODEL_FIELDS = {
       "nullable": true,
       "relation": false
     },
+    "opportunityId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "sourceModule": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "sourceType": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "sourceId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "templateId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "templateVersion": {
+      "type": "Int",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "templateSnapshot": {
+      "type": "Json",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "signingMode": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "completionMethod": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "returns": {
+      "type": "ContractReturn",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "status": {
       "type": "String",
       "list": false,
@@ -30343,6 +30403,184 @@ export const MODEL_FIELDS = {
       "type": "DateTime",
       "list": false,
       "nullable": false,
+      "relation": false
+    }
+  },
+  "DocumentTemplate": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "name": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "description": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "category": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "targetModules": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "titleTemplate": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "blocks": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "status": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdBy": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    }
+  },
+  "ContractReturn": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "contractId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "contract": {
+      "type": "ContractDocument",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "fileName": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "fileSize": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "fileContent": {
+      "type": "Bytes",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "contentHash": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "signerName": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "signerIp": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "signerUserAgent": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "submittedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "status": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "reviewedBy": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "reviewedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "reviewNote": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
       "relation": false
     }
   },

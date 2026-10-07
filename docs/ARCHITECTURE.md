@@ -94,3 +94,8 @@ case ownership/status. Read scopes also enforce case security and queue membersh
 commands are forwarded to the central data service. See
 [Customer Service delivery](modules/CUSTOMER_SERVICE.md) for remaining workflows,
 full source coverage and activation limits.
+
+
+## Reusable documents and contract sharing
+
+Core `templates/` and `contracts/` own template rendering, snapshots, PDFs and public customer responses. The separate Templates app registers normally. CRM owns contract operations. Each source module contributes `templateContextProvider` through its manifest for scoped record choices/fields; Core calls the registry contract and never imports source implementations directly. See [Contracts and Templates](plans/CONTRACTS_TEMPLATES.md).

@@ -1,71 +1,27 @@
-import type { Metadata } from "next";
-import { db } from "@/core/db/client";
-import { loadPublicContract } from "@/core/contracts/actions";
-import { loadBrand } from "@/core/email/render";
-import { formatMoney } from "@/core/shared/money";
-import { SignForm } from "./form";
-
-export const metadata: Metadata = { title: "Review and sign", robots: { index: false, follow: false } };
-const long = (value: Date) => value.toLocaleString("en-GB", { timeZone: "Europe/London", dateStyle: "long", timeStyle: "short" });
-const day = (value: Date) => value.toLocaleDateString("en-GB", { timeZone: "Europe/London", day: "numeric", month: "long", year: "numeric" });
-type Brand = Awaited<ReturnType<typeof loadBrand>>;
-
-export default async function SignPage({ params }: { params: Promise<{ token: string }> }) {
-  const { token } = await params;
-  const contract = await loadPublicContract(token);
-  if (!contract) return <Shell brand={null}><h1 style={{ fontSize: 20, fontWeight: 700 }}>This link is no longer valid</h1><p style={{ marginTop: 8, color: "#52525b" }}>It may have been replaced by a newer one. Ask the person who sent it for a fresh link.</p></Shell>;
-  const brand = await loadBrand(contract.organisationId);
-  const quote = contract.kind === "QUOTE";
-  const expired = !!contract.expiresAt && contract.expiresAt < new Date();
-  const open = ["SENT", "VIEWED"].includes(contract.status) && !expired;
-  const lines = quote && contract.quoteId ? await db.quote.findFirst({ where: { id: contract.quoteId, organisationId: contract.organisationId }, select: { reference: true, netAmount: true, taxAmount: true, totalAmount: true, totalCurrency: true, expiryDate: true, lines: { where: { optional: false }, orderBy: { lineNumber: "asc" }, select: { id: true, type: true, description: true, quantity: true, unitOfMeasure: true, unitAmount: true, netAmount: true } } } }) : null;
-  const file = contract.fileName ? `/sign/${token}/file` : null;
-  return <Shell brand={brand}>
-    <p style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#71717a" }}>{quote ? "Quotation for your approval" : "Document for your signature"} · {contract.reference}</p>
-    <h1 style={{ marginTop: 6, fontSize: 26, fontWeight: 700, lineHeight: 1.2 }}>{contract.title}</h1>
-    {contract.message && <p style={{ marginTop: 14, whiteSpace: "pre-wrap", fontSize: 15, color: "#3f3f46", lineHeight: 1.6 }}>{contract.message}</p>}
-    {open && contract.expiresAt && <p style={{ marginTop: 14, display: "inline-block", background: "#fef3c7", color: "#92400e", borderRadius: 999, padding: "5px 12px", fontSize: 13 }}>Open for you to {quote ? "approve" : "sign"} until {day(contract.expiresAt)}</p>}
-
-    {lines && <section style={{ marginTop: 24, border: "1px solid #e4e4e7", borderRadius: 14, overflow: "hidden" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
-        <thead><tr style={{ background: "#fafafa", textAlign: "left", fontSize: 12, color: "#71717a" }}><th style={{ padding: "10px 14px" }}>Item</th><th style={{ padding: "10px 14px", textAlign: "right" }}>Qty</th><th style={{ padding: "10px 14px", textAlign: "right" }}>Price</th><th style={{ padding: "10px 14px", textAlign: "right" }}>Amount</th></tr></thead>
-        <tbody>{lines.lines.map((line) => ["SECTION", "NOTE"].includes(line.type) ? <tr key={line.id} style={{ borderTop: "1px solid #f4f4f5" }}><td colSpan={4} style={{ padding: "10px 14px", fontWeight: line.type === "SECTION" ? 700 : 400, fontStyle: line.type === "NOTE" ? "italic" : "normal", color: "#3f3f46" }}>{line.description}</td></tr> : <tr key={line.id} style={{ borderTop: "1px solid #f4f4f5" }}><td style={{ padding: "10px 14px" }}>{line.description}</td><td style={{ padding: "10px 14px", textAlign: "right", whiteSpace: "nowrap" }}>{line.quantity.toLocaleString("en-GB")} {line.unitOfMeasure}</td><td style={{ padding: "10px 14px", textAlign: "right", whiteSpace: "nowrap" }}>{formatMoney(line.unitAmount, lines.totalCurrency)}</td><td style={{ padding: "10px 14px", textAlign: "right", whiteSpace: "nowrap", fontWeight: 600 }}>{formatMoney(line.netAmount, lines.totalCurrency)}</td></tr>)}</tbody>
-      </table>
-      <div style={{ borderTop: "1px solid #e4e4e7", padding: "14px", display: "flex", justifyContent: "flex-end" }}><dl style={{ width: 260, fontSize: 14, margin: 0 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", padding: "2px 0", color: "#52525b" }}><dt>Net</dt><dd style={{ margin: 0 }}>{formatMoney(lines.netAmount, lines.totalCurrency)}</dd></div>
-        <div style={{ display: "flex", justifyContent: "space-between", padding: "2px 0", color: "#52525b" }}><dt>VAT</dt><dd style={{ margin: 0 }}>{formatMoney(lines.taxAmount, lines.totalCurrency)}</dd></div>
-        <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0 0", marginTop: 6, borderTop: "1px solid #e4e4e7", fontSize: 18, fontWeight: 700 }}><dt>Total</dt><dd style={{ margin: 0 }}>{formatMoney(lines.totalAmount, lines.totalCurrency)}</dd></div>
-      </dl></div>
-      {lines.expiryDate && <p style={{ padding: "0 14px 14px", fontSize: 12, color: "#71717a", textAlign: "right" }}>Prices valid until {day(lines.expiryDate)}.</p>}
-    </section>}
-
-    {file && <section style={{ marginTop: 24 }}>
-      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 10 }}><h2 style={{ fontSize: 15, fontWeight: 700 }}>{quote ? "The full quotation" : "The document"}</h2><span style={{ display: "flex", gap: 14, fontSize: 13 }}><a href={file} target="_blank" rel="noopener" style={{ color: brand.accent, fontWeight: 600 }}>Open in a new tab</a><a href={`${file}?download=1`} style={{ color: brand.accent, fontWeight: 600 }}>Download PDF</a></span></div>
-      <object data={`${file}#toolbar=0&view=FitH`} type="application/pdf" style={{ marginTop: 10, width: "100%", height: "70vh", minHeight: 420, border: "1px solid #e4e4e7", borderRadius: 14, background: "#fafafa" }}><p style={{ padding: 20, fontSize: 14 }}>Your browser cannot show the PDF here. <a href={file} target="_blank" rel="noopener" style={{ color: brand.accent, fontWeight: 600 }}>Open the PDF</a> to read it, then come back to {quote ? "approve" : "sign"}.</p></object>
-    </section>}
-    {contract.bodyHtml && <section style={{ marginTop: 24, border: "1px solid #e4e4e7", borderRadius: 14, padding: 22, fontSize: 15, lineHeight: 1.65, color: "#27272a" }} dangerouslySetInnerHTML={{ __html: contract.bodyHtml }} />}
-
-    <section style={{ marginTop: 28, borderTop: "1px solid #e4e4e7", paddingTop: 24 }}>
-      {contract.status === "SIGNED" ? <div style={{ border: "1px solid #a7f3d0", background: "#ecfdf5", borderRadius: 14, padding: 20 }}><p style={{ color: "#047857", fontWeight: 700, fontSize: 17 }}>{quote ? "Approved" : "Signed"}</p><p style={{ marginTop: 6, fontSize: 14, color: "#065f46" }}>By {contract.signerName} on {contract.signedAt ? long(contract.signedAt) : ""}. This page is your record.</p></div>
-        : contract.status === "DECLINED" ? <p style={{ fontWeight: 600, color: "#b91c1c" }}>This {quote ? "quotation" : "document"} was declined.{contract.declinedReason && contract.declinedReason !== "No reason given" ? ` “${contract.declinedReason}”` : ""}</p>
-        : expired ? <p style={{ fontWeight: 600, color: "#b91c1c" }}>This link closed on {contract.expiresAt ? day(contract.expiresAt) : ""}. Ask {brand.name} to send it again.</p>
-        : <><h2 style={{ fontSize: 17, fontWeight: 700, marginBottom: 14 }}>{quote ? "Approve this quotation" : "Sign this document"}</h2><SignForm token={token} accent={brand.accent} quote={quote} company={brand.name} /></>}
-    </section>
-    <p style={{ marginTop: 26, fontSize: 11, color: "#a1a1aa", wordBreak: "break-all" }}>Document fingerprint (SHA-256): {contract.contentHash}</p>
-  </Shell>;
+/* eslint-disable @next/next/no-img-element -- Tenant branding is served by the existing public logo endpoint. */
+import type { Metadata } from 'next';
+import { loadPublicContract } from '@/core/contracts/actions';
+import { loadBrand } from '@/core/email/render';
+import { CompletionChoice } from './completion-choice';
+import { AtlasLogo } from '@/components/shell/atlas-logo';
+import { FileText, Check, LockKeyhole, ArrowDownToLine } from 'lucide-react';
+export const metadata:Metadata={title:'Private document · Atlas',robots:{index:false,follow:false},referrer:'no-referrer'};
+const when=(d:Date)=>d.toLocaleString('en-GB',{timeZone:'Europe/London',dateStyle:'long',timeStyle:'short'});
+type Brand=Awaited<ReturnType<typeof loadBrand>>;
+export default async function SignPage({params}:{params:Promise<{token:string}>}){
+ const {token}=await params,c=await loadPublicContract(token);if(!c)return <Shell brand={null}><div className="py-12 text-center"><LockKeyhole className="mx-auto mb-5 h-10 w-10 text-slate-300"/><h1 className="text-2xl font-semibold">This private link is unavailable</h1><p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-500">It may have been replaced or revoked. Ask the sender for a fresh invitation.</p></div></Shell>;
+ const brand=await loadBrand(c.organisationId),expired=c.status!=='SIGNED'&&!!c.expiresAt&&c.expiresAt<new Date(),quote=c.kind==='QUOTE',file=`/share/${token}/file`,complete=c.status==='SIGNED',pending=c.status==='RETURNED',open=['SENT','VIEWED'].includes(c.status)&&!expired;
+ return <Shell brand={brand}><div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-6"><p className="flex items-center gap-2 text-xs font-medium text-slate-500"><LockKeyhole size={14}/> Private document invitation</p><span className="rounded-full bg-slate-100 px-3 py-1.5 text-[11px] text-slate-500">{c.reference}</span></div>
+ <div className="py-7"><p className="text-xs font-semibold uppercase tracking-[.15em] text-slate-400">{brand.name} has shared a {quote?'quotation':'document'} with you</p><h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">{c.title}</h1>{c.message&&<p className="mt-4 max-w-2xl whitespace-pre-wrap text-sm leading-7 text-slate-500">{c.message}</p>}<p className="mt-4 text-xs text-slate-400">No Atlas account needed{open&&c.expiresAt?` · Please respond by ${when(c.expiresAt)}`:''}</p></div>
+ <ol className="mb-8 grid grid-cols-3 gap-2">{[['Read the document',true],[pending?'Copy received':quote?'Approve quotation':'Sign or return',complete||pending],['Confirmation',complete]].map(([label,done],i)=><li key={String(label)} className={`flex items-center gap-2 rounded-xl p-3 text-xs ${done?'bg-blue-50 text-blue-800':'bg-slate-50 text-slate-400'}`}><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white font-semibold">{done&&i>0?<Check size={13}/>:i+1}</span><span>{String(label)}</span></li>)}</ol>
+ {expired?<div className="rounded-2xl border border-amber-200 bg-amber-50 p-7"><h2 className="font-semibold text-amber-900">This invitation has expired</h2><p className="mt-2 text-sm text-amber-800">Ask {brand.name} to send a new link so you can review and complete the document.</p></div>:<>
+ {c.fileName&&<section className="mb-8 overflow-hidden rounded-2xl border border-slate-200"><div className="flex flex-wrap items-center justify-between gap-3 bg-slate-50 px-5 py-4"><div className="flex items-center gap-3"><FileText size={20} className="text-blue-600"/><div><h2 className="text-sm font-semibold">{quote?'Your quotation':'Your document'}</h2><p className="mt-0.5 text-xs text-slate-400">PDF · {Math.max(1,Math.round((c.fileSize??0)/1024))} KB</p></div></div><div className="flex gap-4 text-xs font-medium"><a href={file} target="_blank" rel="noopener noreferrer" className="text-blue-700">Open ↗</a><a href={`${file}?download=1`} className="flex items-center gap-1 text-blue-700"><ArrowDownToLine size={14}/> Download</a></div></div><object data={`${file}#toolbar=0&view=FitH`} type="application/pdf" className="h-[60vh] min-h-[360px] w-full bg-white"><p className="p-6 text-sm text-slate-500">Open or download the PDF to read it, then return here to complete it.</p></object></section>}
+ {!c.fileName&&c.bodyHtml&&<article className="mb-8 space-y-4 rounded-2xl border border-slate-200 p-6 text-sm leading-7" dangerouslySetInnerHTML={{__html:c.bodyHtml}}/>}
+ {complete?<section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6"><div className="flex items-center gap-3"><span className="rounded-full bg-emerald-100 p-2 text-emerald-700"><Check size={20}/></span><h2 className="text-lg font-semibold text-emerald-900">{quote?'Quotation approved':'Document completed'}</h2></div><p className="mt-3 text-sm leading-6 text-emerald-800">{c.completionMethod==='UPLOAD'?'The sender accepted the signed PDF returned by':'Signed online by'} {c.signerName}{c.signedAt?` on ${when(c.signedAt)}`:''}.</p><a href={`/share/${token}/record`} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-4 py-3 text-sm font-semibold text-white"><ArrowDownToLine size={16}/> Download document & completion record</a></section>
+ :pending?<section className="rounded-2xl border border-blue-200 bg-blue-50 p-6"><h2 className="font-semibold text-blue-900">Your signed copy is awaiting review</h2><p className="mt-2 text-sm leading-6 text-blue-800">{brand.name} will check the file you returned. Come back to this page for confirmation.</p></section>
+ :c.status==='DECLINED'?<section className="rounded-2xl bg-slate-50 p-6"><h2 className="font-semibold">This document was declined</h2><p className="mt-2 whitespace-pre-wrap text-sm text-slate-500">{c.declinedReason}</p><p className="mt-3 text-xs text-slate-400">Contact {brand.name} to discuss changes.</p></section>
+ :open?<section id="complete" className="border-t border-slate-100 pt-7"><h2 className="mb-5 text-xl font-semibold">{quote?'Approve your quotation':'Complete your document'}</h2>{c.returns[0]?.status==='REJECTED'&&<div className="mb-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-900"><p className="font-medium">Please return a corrected copy</p><p className="mt-1 whitespace-pre-wrap">{c.returns[0].reviewNote}</p></div>}<CompletionChoice token={token} accent={brand.accent==='#1d1d1f'?'#2563eb':brand.accent} quote={quote} company={brand.name} mode={c.signingMode}/></section>:null}
+ <details className="mt-8 border-t border-slate-100 pt-5 text-xs text-slate-400"><summary className="cursor-pointer">Document verification</summary><p className="mt-3 leading-6">Atlas records the document fingerprint, completion time and network address. Keep the completed PDF for your records.</p><p className="mt-2 break-all font-mono">SHA-256 {c.contentHash}</p></details></>}
+ </Shell>;
 }
-
-function Shell({ brand, children }: { brand: Brand | null; children: React.ReactNode }) {
-  const accent = brand?.accent ?? "#1d1d1f";
-  return <main style={{ minHeight: "100vh", background: "#f4f4f5", padding: "24px 16px 48px", fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, sans-serif", color: "#18181b" }}>
-    <div style={{ maxWidth: 820, margin: "0 auto" }}>
-      <header style={{ display: "flex", alignItems: "center", gap: 14, padding: "6px 4px 18px" }}>
-        {/* eslint-disable-next-line @next/next/no-img-element -- the company's own logo, stored as a data URL. */}
-        {brand?.logoUrl ? <img src={brand.logoUrl} alt={brand.name} style={{ maxHeight: 48, maxWidth: 200, objectFit: "contain" }} /> : <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 42, height: 42, borderRadius: 10, background: accent, color: "#fff", fontWeight: 700, fontSize: 18 }}>{(brand?.name ?? "A").charAt(0)}</span>}
-        <span style={{ fontWeight: 700, fontSize: 18 }}>{brand?.name ?? ""}</span>
-      </header>
-      <div style={{ background: "#fff", borderRadius: 18, padding: "32px 28px", borderTop: `4px solid ${accent}`, boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}>{children}</div>
-      {brand && <footer style={{ marginTop: 18, textAlign: "center", fontSize: 12, color: "#71717a", lineHeight: 1.6 }}>{brand.letterhead.length ? <p>{brand.letterhead.join(" · ")}</p> : null}<p>{brand.footer}</p></footer>}
-    </div>
-  </main>;
-}
+function Shell({brand,children}:{brand:Brand|null;children:React.ReactNode}){return <main className="min-h-screen bg-[#f3f5f8] px-4 py-8 text-slate-900 sm:px-6 sm:py-12"><div className="mx-auto max-w-4xl"><header className="mb-7 flex items-center justify-between gap-4 px-1"><div className="flex items-center gap-3">{brand?.logoUrl?<img src={brand.logoUrl} alt={brand.name} className="max-h-11 max-w-40 object-contain"/>:<span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-600 text-lg font-semibold text-white">{(brand?.name??'A').charAt(0)}</span>}<span className="text-sm font-semibold">{brand?.name??'Atlas'}</span></div><span className="flex items-center gap-2 text-xs text-slate-400">Shared with <AtlasLogo className="h-6 w-auto"/></span></header><div className="rounded-[24px] border border-slate-200/80 bg-white px-5 py-6 shadow-[0_8px_40px_rgba(15,23,42,.04)] sm:px-10 sm:py-8">{children}</div><footer className="px-4 pt-7 text-center text-xs leading-6 text-slate-400">{brand&&<p>{brand.footer}</p>}<p className="mt-1">Atlas · Private business documents</p><p className="mt-1">Keep this invitation private. Only share it with the intended recipient.</p></footer></div></main>;}

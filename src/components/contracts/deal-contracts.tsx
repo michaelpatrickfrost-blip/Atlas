@@ -1,0 +1,10 @@
+import Link from 'next/link';
+import { db } from '@/core/db/client';
+import { CreateDialog } from '@/components/ui/create-dialog';
+import { ContractComposer } from './composer';
+import { parseBlocks } from '@/core/templates/domain';
+import type { Session } from '@/core/auth/session';
+export async function DealContracts({session,dealId,partyId}:{session:Session;dealId:string;partyId:string}){
+ const [rows,templates]=await Promise.all([db.contractDocument.findMany({where:{organisationId:session.organisationId,opportunityId:dealId},select:{id:true,reference:true,title:true,status:true},orderBy:{createdAt:'desc'}}),db.documentTemplate.findMany({where:{organisationId:session.organisationId,status:'PUBLISHED',targetModules:{has:'crm'}},select:{id:true,name:true,titleTemplate:true,blocks:true},orderBy:{name:'asc'}})]);
+ return <section><div className="mb-3 flex items-center justify-between gap-3"><h2 className="text-xs font-medium uppercase tracking-[0.14em] text-slate-400">Contracts</h2><CreateDialog label="Build contract" title="Create a deal contract"><ContractComposer dealId={dealId} partyId={partyId} parties={[]} templates={templates.map(t=>({...t,blocks:parseBlocks(t.blocks)}))}/></CreateDialog></div><div className="rounded-2xl border border-slate-200 bg-white">{rows.length?rows.map(r=><Link key={r.id} href={`/crm/contracts/${r.id}`} className="flex items-center justify-between gap-4 border-b border-slate-100 px-5 py-4 last:border-0 hover:bg-slate-50"><div><p className="text-sm font-medium">{r.title}</p><p className="mt-1 text-xs text-slate-400">{r.reference}</p></div><span className={`text-xs ${r.status==='SIGNED'?'text-emerald-700':r.status==='RETURNED'?'text-amber-700':'text-slate-500'}`}>{r.status==='RETURNED'?'Returned · review needed':r.status==='DRAFT'?'Draft':r.status.toLowerCase()}</span></Link>):<p className="p-5 text-sm text-slate-500">Upload a PDF, write a contract or generate one from a reusable template. The customer can sign online or return a signed copy.</p>}</div></section>;
+}

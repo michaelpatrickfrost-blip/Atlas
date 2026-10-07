@@ -5,5 +5,5 @@ export async function GET(request: Request, { params }: { params: Promise<{ toke
   const file = await loadPublicContractFile((await params).token);
   if (!file) return new Response("This link is no longer valid.", { status: 404 });
   const download = new URL(request.url).searchParams.get("download") === "1";
-  return new Response(new Uint8Array(file.bytes), { headers: { "Content-Type": "application/pdf", "Content-Disposition": `${download ? "attachment" : "inline"}; filename="${file.name.replace(/"/g, "")}"`, "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff", "X-Robots-Tag": "noindex" } });
+  return new Response(new Uint8Array(file.bytes), { headers: { "Content-Type": "application/pdf", "Content-Disposition": `${download ? "attachment" : "inline"}; filename="${file.name.replace(/"/g, "")}"`, "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff", "X-Robots-Tag": "noindex", "Referrer-Policy": "no-referrer" } });
 }

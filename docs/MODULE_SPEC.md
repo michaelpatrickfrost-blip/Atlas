@@ -196,3 +196,8 @@ Sales (`src/modules/sales/`) implements this spec end to end: manifest,
 queries/commands, an attention provider (quotes awaiting response), a search
 provider (customer name match), capability-gated navigation, and the
 Pipeline/Customers/Quotes/Orders pages. Read it before building anything new.
+
+
+## Contributing document template context
+
+A module may register a `templateContextProvider` with source types, capability-gated `list` and `get` functions returning whitelisted merge fields, canonical Party/contact references and its record link. Both functions enforce tenant and record visibility; the shared engine re-checks the source on generation, sharing and file access. See `src/modules/crm/services/template-context.ts` and [Contracts and Templates](plans/CONTRACTS_TEMPLATES.md).

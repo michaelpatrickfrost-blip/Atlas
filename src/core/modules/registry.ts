@@ -1,3 +1,4 @@
+import { templatesManifest } from "@/modules/templates/manifest";
 import { logisticsManifest } from "@/modules/logistics/manifest";
 import { financeManifest } from "@/modules/finance/manifest";
 import { marketingManifest } from "@/modules/marketing/manifest";
@@ -32,6 +33,7 @@ import { stubModules } from "@/modules/stubs";
  * enable/disable state lives in the database (ModuleState) — see runtime.ts.
  */
 const implemented = [
+  templatesManifest,
   crmManifest, salesManifest, projectsManifest, stockManifest, kpisManifest,
   productsManifest, pricingManifest, peopleManifest, schedulingManifest,
   payrollManifest, teamsManifest, planningManifest, planManifest,

@@ -7892,6 +7892,16 @@ model ContractDocument {
   contactId String?
   quoteId String?
   orderId String?
+  opportunityId String?
+  sourceModule String?
+  sourceType String?
+  sourceId String?
+  templateId String?
+  templateVersion Int?
+  templateSnapshot Json?
+  signingMode String @default("BOTH")
+  completionMethod String?
+  returns ContractReturn[]
   status String @default("DRAFT")
   tokenHash String @unique
   expiresAt DateTime?
@@ -7920,7 +7930,50 @@ model ContractDocument {
   updatedAt DateTime @updatedAt
   @@unique([organisationId,reference])
   @@index([organisationId,status])
+  @@index([organisationId,opportunityId])
+  @@index([organisationId,sourceModule,sourceType,sourceId])
   @@map("contract_documents")
+}
+
+// Core reusable documents. Published content is snapshotted on each generated document.
+model DocumentTemplate {
+  id String @id @default(cuid())
+  organisationId String
+  name String
+  description String @default("")
+  category String @default("Contract")
+  targetModules String[] @default([])
+  titleTemplate String
+  blocks Json
+  status String @default("DRAFT")
+  version Int @default(1)
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([organisationId,status])
+  @@map("document_templates")
+}
+
+// Append-only customer submissions; a return is not a completed contract until reviewed.
+model ContractReturn {
+  id String @id @default(cuid())
+  organisationId String
+  contractId String
+  contract ContractDocument @relation(fields:[contractId],references:[id],onDelete:Restrict)
+  fileName String
+  fileSize Int
+  fileContent Bytes
+  contentHash String
+  signerName String
+  signerIp String?
+  signerUserAgent String?
+  submittedAt DateTime @default(now())
+  status String @default("PENDING")
+  reviewedBy String?
+  reviewedAt DateTime?
+  reviewNote String?
+  @@index([organisationId,contractId,submittedAt])
+  @@map("contract_returns")
 }
 
 model CsatSurvey {

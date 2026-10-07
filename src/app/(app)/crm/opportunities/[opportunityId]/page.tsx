@@ -1,3 +1,4 @@
+import { DealContracts } from "@/components/contracts/deal-contracts";
 import { ownerRestriction } from "@/modules/crm/services/visibility";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -112,6 +113,8 @@ export default async function OpportunityRecordPage({ params }: { params: Promis
           <HeaderStat label="Forecast" value={FORECAST_LABEL[opportunity.forecastCategory]} />
         </div>
       </div>
+
+      {can(session, "core.contract.manage") && <DealContracts session={session} dealId={opportunity.id} partyId={opportunity.partyId} />}
 
       <section>
         <div className="mb-3 flex items-center justify-between">

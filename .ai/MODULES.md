@@ -106,3 +106,8 @@ or access for every profile. Preserve the full coverage maps for implemented app
 as well: their unfinished requirements must not disappear behind Installed labels.
 
 Price lists are embedded in Sales and commercial agreements in CRM; `pricing` remains an internal registered module with its existing enablement/capability gates. See [Pricing](../docs/modules/PRICING.md).
+
+
+## Templates — 7 October 2026
+
+`templates` provides the shared business document library, section editor and generation from CRM deals, Sales quotations/orders, Projects and Customer Service cases. Uses existing contract permission; source access remains scoped by the owning module. [Delivery scope](../docs/plans/CONTRACTS_TEMPLATES.md).

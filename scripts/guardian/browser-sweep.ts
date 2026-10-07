@@ -1,8 +1,9 @@
 import { chromium, expect } from "@playwright/test";
+import { DEPLOYMENT_CHANGED } from "./deployment-guard";
 import type { Finding } from "../../src/core/guardian/report";
 
 /** Real browser render/hydration and explicitly non-mutating menu checks. No forms are submitted. */
-export async function browserSweep(base: URL, token: string, routes: string[], report: (finding: Finding) => Promise<unknown>) {
+export async function browserSweep(base: URL, token: string, routes: string[], report: (finding: Finding) => Promise<unknown>, assertStable = () => {}) {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ baseURL: base.origin });
   await context.addCookies([{ name: "atlas_session", value: token, domain: base.hostname, path: "/", httpOnly: true, secure: base.protocol === "https:", sameSite: "Lax" }]);
@@ -10,6 +11,7 @@ export async function browserSweep(base: URL, token: string, routes: string[], r
   const verifiedRoutes: string[] = [];
   try {
     for (const route of [...new Set(routes)].slice(0, 100)) {
+      assertStable();
       const page = await context.newPage();
       let errorCount = 0;
       page.on("pageerror", () => errorCount++);
@@ -18,6 +20,7 @@ export async function browserSweep(base: URL, token: string, routes: string[], r
       let phase = "render";
       try {
         const response = await page.goto(route, { waitUntil: "networkidle", timeout: 30_000 });
+        assertStable();
         if (new URL(page.url()).pathname === "/login") throw new Error("QA_SESSION_EXPIRED");
         await expect(page.locator("main").first()).toBeVisible();
         if (!response?.ok()) throw new Error("Render failed");
@@ -38,8 +41,11 @@ export async function browserSweep(base: URL, token: string, routes: string[], r
           await expect(button).toHaveAttribute("aria-expanded", before ?? "false");
           controls++;
         }
+        assertStable();
         verifiedRoutes.push(route);
       } catch (error) {
+        assertStable();
+        if (error instanceof Error && error.message === DEPLOYMENT_CHANGED) throw error;
         if (error instanceof Error && error.message === "QA_SESSION_EXPIRED") throw new Error("QA profile session changed during browser checks; refresh the authorised profile and rerun.");
         failures++;
         await report({ key: `browser-probe:${route}`, title: `Browser check failed: ${route}`, kind: "BROWSER_PROBE", severity: "HIGH", route, expected: "The workspace hydrates without errors; tested controls respond visibly.", actual: `Chromium assertion failed at: ${phase}.`, steps: ["Run node --env-file=.env.local --env-file=/etc/atlas/guardian.env --import tsx scripts/guardian/worker.ts --now", `Open ${route} in the browser and inspect ${phase}.`], evidence: [`Failed phase: ${phase}`, `Browser exceptions observed: ${errorCount}`, "Business writes were blocked during the probe. No screenshots or business content retained."] });

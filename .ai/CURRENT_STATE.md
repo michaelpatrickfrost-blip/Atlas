@@ -48,6 +48,12 @@
 
 ## Atlas Guardian implementation — 7 October 2026
 
+- A concurrent server deployment invalidated the dff1aa0 sweep: menu probes failed
+  during the build and passed when repeated on the stable release. Worker now
+  buffers runtime findings, aborts if revision/BUILD_ID/build-lock changes, discards
+  incomplete evidence and retries failed runs on the next timer tick. Added a
+  regression for checkout/build changes; 17 Guardian tests, TypeScript and focused
+  ESLint passed. Final compatible release and stable sweep follow.
 - Live QA exposed a coverage gap: shared ModuleSpace disabled screens used different
   wording. Response classification now treats that known access state as restricted,
   with a regression for HTTP-200 disabled/error screens. Tickets is disabled for the

@@ -54,6 +54,9 @@ The worker reads database/session configuration from `.env.local` in `/opt/atlas
 Never commit environment values or print authentication tokens. Install Chromium
 with `npx playwright install --with-deps --only-shell chromium`, then enable
 `atlas-guardian.timer`. A database advisory lock prevents overlapping workers.
+Runtime probe findings are buffered until the checkout and build remain stable
+through the full sweep. A changed revision/build aborts the run, discards incomplete
+probe evidence and retries at the next timer tick.
 The worker waits while a Next build lock is active and stops with a single profile
 blocker if the QA session changes mid-sweep. The timer checks the queue every five minutes; automatic sweeps run every six
 hours. Manual Run system sweep queues a durable run. The heartbeat must be less

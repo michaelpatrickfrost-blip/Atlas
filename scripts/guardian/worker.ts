@@ -9,6 +9,7 @@ import { recordFinding } from "../../src/core/guardian/store";
 import { safePath, type Finding } from "../../src/core/guardian/report";
 import { auditSources, routeMatches } from "./source-audit";
 import { responseOutcome } from "./response-check";
+import { deploymentGuard } from "./deployment-guard";
 
 async function main() {
   if (process.env.ATLAS_RUNTIME === "desktop") throw new Error("Guardian runs only against the central hosted service.");
@@ -21,15 +22,19 @@ async function main() {
     if (!acquired.rows[0].acquired) return;
     await db.guardianWorker.upsert({ where: { id: "guardian" }, create: { id: "guardian", revision }, update: { heartbeatAt: new Date(), revision } });
     if (fs.existsSync(".next/lock")) { console.log("Guardian is waiting for the active deployment/build to finish."); return; }
+    const assertStable = deploymentGuard(process.cwd(), revision);
+    assertStable();
     await db.guardianRateLimit.deleteMany({ where: { expiresAt: { lt: new Date() } } });
     await db.guardianRun.updateMany({ where: { status: "RUNNING", startedAt: { lt: new Date(Date.now() - 45 * 60_000) } }, data: { status: "FAILED", finishedAt: new Date(), summary: "Worker stopped before completing. Retry the sweep." } });
     let run = await db.guardianRun.findFirst({ where: { status: "QUEUED" }, orderBy: { createdAt: "asc" } });
-    const latest = await db.guardianRun.findFirst({ where: { startedAt: { not: null } }, orderBy: { startedAt: "desc" } });
+    const latest = await db.guardianRun.findFirst({ where: { startedAt: { not: null }, status: { in: ["COMPLETED", "ISSUES_FOUND", "PARTIAL"] } }, orderBy: { startedAt: "desc" } });
     if (!run && latest?.startedAt && Date.now() - latest.startedAt.getTime() < 6 * 60 * 60_000 && !process.argv.includes("--now")) return;
     run ??= await db.guardianRun.create({ data: {} });
     runId = run.id;
     await db.guardianRun.update({ where: { id: run.id }, data: { status: "RUNNING", revision, startedAt: new Date() } });
     const audit = auditSources(process.cwd());
+    const runtimeFindings: Finding[] = [];
+    const observe = (finding: Finding) => { assertStable(); runtimeFindings.push(finding); };
     for (const finding of audit.findings) await recordFinding(finding, revision, run.id);
     const userId = process.env.ATLAS_GUARDIAN_USER_ID, organisationId = process.env.ATLAS_GUARDIAN_ORGANISATION_ID;
     if (!userId || !organisationId) throw new Error("Set the existing authorised QA profile in ATLAS_GUARDIAN_USER_ID and ATLAS_GUARDIAN_ORGANISATION_ID; no customer/profile is created or modified.");
@@ -47,6 +52,7 @@ async function main() {
     let failures = audit.findings.length, skipped = 0;
     const findingForPage = (route: string, actual: string): Finding => ({ key: `page:${safePath(route)}`, title: `Page failed: ${safePath(route)}`, kind: "PAGE_FAILURE", severity: "HIGH", route: safePath(route), source: audit.routes.find(item => routeMatches(item.path, route))?.file, expected: "An advertised page renders its workspace without a missing-page or error boundary.", actual, steps: ["Use the configured QA profile with its existing permissions and enabled apps.", `Follow the navigation to ${safePath(route)}.`], evidence: [actual, `Revision ${revision}`, "Response content and record identifiers were not retained."] });
     while (queue.length && checked.size < 300) {
+      assertStable();
       const route = queue.shift()!;
       if (checked.has(route)) continue;
       checked.add(route);
@@ -60,9 +66,10 @@ async function main() {
           outcomes.push({ route: safePath(route), result: "redirect" }); continue;
         }
         const html = await response.text();
+        assertStable();
         const outcome = responseOutcome(response.status, html);
         if (outcome === "failed") {
-          failures++; await recordFinding(findingForPage(route, `HTTP ${response.status}; ${response.status === 200 ? "streamed error boundary found" : "unexpected response"}.`), revision, run.id);
+          failures++; observe(findingForPage(route, `HTTP ${response.status}; ${response.status === 200 ? "streamed error boundary found" : "unexpected response"}.`));
           outcomes.push({ route: safePath(route), result: "failed" }); continue;
         }
         // Access-denied/disabled workspaces are never counted as passing pages.
@@ -76,8 +83,9 @@ async function main() {
           if (audit.routes.some(item => !item.api && routeMatches(item.path, destination)) && !pending.has(destination)) { pending.add(destination); queue.push(destination); }
         }
       } catch (error) {
+        assertStable();
         if (error instanceof Error && error.message.startsWith("QA session")) throw new Error("QA profile session changed during page checks; refresh the authorised profile and rerun.");
-        failures++; await recordFinding(findingForPage(route, error instanceof Error && error.message.startsWith("QA session") ? error.message : "Page request failed or timed out (20 seconds)."), revision, run.id);
+        failures++; observe(findingForPage(route, "Page request failed or timed out (20 seconds)."));
         outcomes.push({ route: safePath(route), result: "failed" });
       }
     }
@@ -85,14 +93,16 @@ async function main() {
     let browserVerifiedRoutes: string[] = [];
     if (process.env.ATLAS_GUARDIAN_BROWSER === "1") {
       const { browserSweep } = await import("./browser-sweep");
-      const result = await browserSweep(base, token, outcomes.filter(row => row.result === "http-render-pass").map(row => row.route).filter(route => !route.includes("[record]")), finding => recordFinding(finding, revision, run!.id));
+      const result = await browserSweep(base, token, outcomes.filter(row => row.result === "http-render-pass").map(row => row.route).filter(route => !route.includes("[record]")), async finding => observe(finding), assertStable);
       failures += result.failures; browserSummary = result.summary; browserVerifiedRoutes = result.verifiedRoutes;
     }
+    assertStable();
+    for (const finding of runtimeFindings) await recordFinding(finding, revision, run.id);
     const summary = `${audit.coverage.sourceFiles} source files; ${audit.coverage.staticLinksChecked} static links; ${audit.coverage.controlsInventoried} controls inventoried. ${checked.size} page requests, ${skipped} restricted, ${queue.length} remaining after cap. ${failures} findings. ${browserSummary} Dynamic forms/writes still require fixture-based regression coverage; inventory is not a pass.`;
     await db.guardianRun.update({ where: { id: run.id }, data: { status: queue.length ? "PARTIAL" : failures ? "ISSUES_FOUND" : "COMPLETED", finishedAt: new Date(), summary, coverage: { ...audit.coverage, outcomes, remaining: queue.length, browserSummary, browserVerifiedRoutes } } });
     console.log(summary);
   } catch (error) {
-    const message = error instanceof Error && /^(Set the existing|Configured QA|A production|Use loopback|QA profile session)/.test(error.message) ? error.message : "Guardian worker failed. Inspect the service log securely and retry.";
+    const message = error instanceof Error && /^(Set the existing|Configured QA|A production|Use loopback|QA profile session|Deployment changed)/.test(error.message) ? error.message : "Guardian worker failed. Inspect the service log securely and retry.";
     if (runId) await db.guardianRun.update({ where: { id: runId }, data: { status: "FAILED", finishedAt: new Date(), summary: message } });
     await recordFinding({ key: "worker:blocked", title: "Guardian sweep needs attention", kind: "WORKER_FAILURE", severity: "HIGH", route: "/atlas/guardian", expected: "The scheduled sweep completes with declared coverage.", actual: message, steps: ["Check systemctl status atlas-guardian.timer and atlas-guardian.service.", "Inspect the worker environment and authorised QA profile.", "Run the worker with --now and confirm a completed sweep."], evidence: [message] }, revision, runId);
     process.exitCode = 1;

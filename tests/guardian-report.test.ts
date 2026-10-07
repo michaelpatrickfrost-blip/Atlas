@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { safePath, repairBrief, type Finding } from "@/core/guardian/report";
+import { deploymentGuard } from "../scripts/guardian/deployment-guard";
 import { responseOutcome } from "../scripts/guardian/response-check";
 import { routeFromFile, routeMatches, auditSources } from "../scripts/guardian/source-audit";
 import fs from "node:fs";
@@ -11,6 +12,18 @@ describe("Guardian reports and source checks", () => {
     expect(safePath("/customers/cmabcdefghijklmnopqrstuv?token=secret#notes")).toBe("/customers/[record]");
     expect(safePath("//outside.test/path")).toBe("/unknown");
     expect(safePath("/sales/orders/12345")).toBe("/sales/orders/[record]");
+  });
+  it("invalidates evidence when the checkout, build or active build lock changes", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "atlas-guardian-deployment-"));
+    try {
+      fs.mkdirSync(path.join(dir, ".next"));
+      const build = path.join(dir, ".next/BUILD_ID"); fs.writeFileSync(build, "build-a");
+      let revision = "abc";
+      const check = deploymentGuard(dir, revision, () => revision);
+      expect(check).not.toThrow(); revision = "def"; expect(check).toThrow("Deployment changed");
+      revision = "abc"; fs.writeFileSync(build, "build-b"); expect(check).toThrow("Deployment changed");
+      fs.writeFileSync(build, "build-a"); fs.writeFileSync(path.join(dir, ".next/lock"), ""); expect(check).toThrow("Deployment changed");
+    } finally { fs.rmSync(dir, { recursive: true, force: true }); }
   });
   it("does not count a disabled module or streamed error as a working page", () => {
     expect(responseOutcome(200, '<p>Tickets is disabled</p><p>Ask your workspace administrator to enable this app in Manage apps.</p>')).toBe("restricted");

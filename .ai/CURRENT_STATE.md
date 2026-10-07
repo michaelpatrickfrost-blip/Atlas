@@ -3121,3 +3121,21 @@ in the in-app browser. Readable generated HTML terms plus the original PDF links
 and an explicit upload-preview fallback are implemented; follow-up production build
 passed (79823f3). Follow-up server deploy, final 34 checks, visual verification and
 removal of retained synthetic QA workspaces remain pending at this checkpoint.
+## 7 October 2026 — Atlas archive constraint acceptance correction
+
+Staff compatibility fix c3eecf0 deployed after backup
+/home/administrator/backups/atlas-pre-deploy-20261007-071048.dump. Server build,
+service and HTTPS login passed. Live acceptance now confirms customer creation,
+suspension/restoration, Atlas Employee setup/full platform/full company settings,
+and immediate staff session revocation. The harness follows the settings workspace
+tab explicitly because /settings redirects to the permitted default tab.
+
+Live archive exposed the older organisation_status database CHECK allowing only
+ACTIVE/SUSPENDED. New migration 20261007190000_atlas_archive_status atomically
+replaces that constraint with ACTIVE/SUSPENDED/ARCHIVED, without changing records,
+columns or existing status values. Reviewed against the original platform migration;
+server application and archive/restore acceptance remain pending at this checkpoint.
+The original Admin migration is already applied and remains immutable. Current
+combined-release typecheck and 40 focused tests passed; upstream has corrected the
+previously reported CRM mock/catalogue fixtures. Browser review confirmed the
+requested Owner account is active; its temporary reviewing account was removed.

@@ -92,11 +92,15 @@ async function main() {
     check((await page("/atlas/team", staffCookie)).body.includes("Add Atlas employee"), "Atlas employee has full platform administration");
     const opened = await post("openCompanyWorkspace", { organisationId: a.id }, staffCookie, `/atlas/${a.id}`);
     const companyCookie = opened.response.headers.get("set-cookie")?.match(/atlas_session=[^;]+/)?.[0]; assert(companyCookie);
-    check((await page("/settings", companyCookie)).response.status === 200, "Atlas employee opens full company settings");
+    const workspaceSettings = await page("/settings?tab=workspace", companyCookie);
+    check(workspaceSettings.response.status === 200 && workspaceSettings.body.includes("Workspace controls"), "Atlas employee opens full company settings");
     await post("updateAtlasStaff", { userId: staff.id, staffRole: "EMPLOYEE", status: "SUSPENDED", currentPassword: password }, ownerCookie, "/atlas/team");
     check((await page("/atlas", staffCookie)).response.status === 307, "Suspending staff revokes existing platform session");
     await post("archiveAtlasCompany", { organisationId: a.id, confirmName: a.name, currentPassword: password, reason: "Disposable offboarding acceptance" }, ownerCookie, `/atlas/${a.id}/offboarding`);
     check((await db.organisation.findUniqueOrThrow({ where: { id: a.id } })).status === "ARCHIVED" && await db.party.count({ where: { organisationId: a.id } }) === 1, "Archive blocks access and preserves records");
+    const archivedExportForm = new FormData(); archivedExportForm.set("confirmName", a.name); archivedExportForm.set("currentPassword", password);
+    const archivedExport = await fetch(`${base}/api/atlas/companies/${a.id}/export`, { method: "POST", headers: { Cookie: ownerCookie, Origin: base }, body: archivedExportForm });
+    check(archivedExport.status === 200 && gunzipSync(Buffer.from(await archivedExport.arrayBuffer())).toString().includes(partyA.name), "Archived company remains fully exportable");
     const archivedLogin = await post("loginAction", { email: customer.email, password: `${password}-new` }, "", "/login");
     check(!archivedLogin.response.headers.has("set-cookie"), "Archived customer cannot sign in");
     await post("archiveAtlasCompany", { organisationId: a.id, confirmName: a.name, currentPassword: password, mode: "restore" }, ownerCookie, `/atlas/${a.id}/offboarding`);

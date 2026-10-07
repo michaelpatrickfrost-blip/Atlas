@@ -4,7 +4,6 @@ import {randomBytes} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import bcrypt from 'bcryptjs';
 import {db} from '../src/core/db/client';
-import {wipeCompany} from '../src/core/admin/wipe-company';
 import {FINANCE_CAPABILITIES} from '../src/modules/finance/capabilities';
 async function main(){
  if(process.env.ATLAS_FINANCE_LIVE_TEST!=='1'||process.env.ATLAS_RUNTIME==='desktop')throw new Error('Run explicitly on the deployed central server with ATLAS_FINANCE_LIVE_TEST=1.');
@@ -98,8 +97,9 @@ async function main(){
   const rec=await call('getFinanceSubledgerReconciliation',[entityId],makerCookie);check(rec.body.includes('"difference":"$n0"'),'AR/AP control reconciliation returns zero difference');
   console.log('LIVE FINANCE ERP ACCEPTANCE PASSED');
  }finally{
-  for(const id of companies.reverse()){const company=await db.organisation.findUnique({where:{id}});assert(company?.isTest,'Cleanup only verified disposable Test company');await wipeCompany(id);}
-  await db.user.deleteMany({where:{id:{in:users}}});await db.$disconnect();console.log('Disposable Finance acceptance records removed.');
+  for(const id of companies){const company=await db.organisation.findUnique({where:{id}});assert(company?.isTest,'Cleanup only verified synthetic Test company');await db.organisation.update({where:{id},data:{status:'SUSPENDED'}});}
+  await db.membership.updateMany({where:{userId:{in:users}},data:{active:false,grantedCapabilities:[],sessionVersion:{increment:1}}});
+  await db.user.updateMany({where:{id:{in:users}},data:{passwordHash:await bcrypt.hash(randomBytes(32).toString('base64url'),10),authVersion:{increment:1}}});await db.$disconnect();console.log('Synthetic companies suspended, temporary credentials revoked; immutable acceptance evidence retained.');
  }
 }
 main().catch(error=>{console.error(error instanceof Error?error.message:'Finance acceptance failed');process.exitCode=1;});

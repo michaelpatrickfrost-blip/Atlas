@@ -60,10 +60,14 @@ associated future WIP, consolidation or accrual workflows.
 - `scripts/check-finance-erp.ts` runs only when explicitly enabled on the central
   server. It uses normal password sign-in and deployed Server Actions, creates
   clearly marked disposable Test companies, checks real posting/approval/settlement/
-  period/security invariants, and removes its synthetic records in `finally`.
+  period/security invariants, and suspends its synthetic companies/revokes credentials in `finally`. Immutable
+  journal, settlement and audit acceptance evidence is retained.
   It sends no customer communication and uses no real customer financial fixtures.
 - Deployment must use `docs/DEPLOY.md`, take a central backup before migrations,
   build/restart the live service and verify actual features at `atlassystem.online`.
+
+Live deployment and the 41 passing authenticated assertions are recorded in
+[the acceptance evidence](FINANCE_ERP_ACCEPTANCE.md).
 
 ## Explicit remaining work
 

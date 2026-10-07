@@ -2,29 +2,36 @@
 
 ## Finance ERP accounting controls — 7 October 2026
 
-- Preserved the new 223-section request in `docs/modules/FINANCE_ERP_REQUIREMENTS.md`;
-  delivery/remaining scope in `FINANCE_ERP_DELIVERY.md`. Existing Core approvals,
-  Sales/Service credits, Inventory, Manufacturing, S&OP/Plan providers remain intact.
+- Preserved the 223-section request in `docs/modules/FINANCE_ERP_REQUIREMENTS.md`;
+  implementation/remaining scope in `FINANCE_ERP_DELIVERY.md`, live evidence in
+  `FINANCE_ERP_ACCEPTANCE.md`. Existing Core approvals, Sales/Service credits,
+  Inventory, Manufacturing and S&OP/Plan providers remain intact.
 - Added typed chart/profile/dimension configuration, financial dates/retained FX,
-  stronger immutable balanced posting checks, explicit source replay/fingerprints,
-  period overlap/source exceptions and independent versioned reopening.
-- Added ledger/source-journal drill-down/current AR/AP reconciliation, statement
-  import/replay/conflict checks, partial/foreign-invoice settlement with retained
-  carrying value/realised FX, collections history and contextual help. Fixed repeated
-  PO-line matching, configured price tolerance/GRNI variance and receipt request replay.
-- Relevant paths: `src/modules/finance/`, `src/app/(app)/finance/`, additive migration
+  stronger immutable balanced posting checks, source replay/fingerprints, period
+  overlap/source exceptions and independent versioned reopening. Added ledger/source
+  drill-down/current AR/AP reconciliation, bank import/partial/foreign-invoice
+  settlement with retained carrying value/realised FX, collections history and help.
+  Fixed repeated PO-line matching, price tolerance/GRNI variance and receipt replay.
+- Paths: `src/modules/finance/`, `src/app/(app)/finance/`, additive migration
   `20261007220000_finance_erp_controls`, `scripts/check-finance-erp.ts`, Finance tests.
-- Verification so far: isolated production build passed; focused tests 59/59 and
-  full regression suite 581 passed, 22 skipped. Prisma validate/generate passed.
-  Separate TypeScript, focused ESLint (zero warnings/errors), repeated production
-  build after receipt/reopening fixes and `git diff --check` passed. Live acceptance
-  and backup/deployment still pending.
-- Full 223-section ERP remains unfinished: costed Inventory/Manufacturing WIP/COGS,
-  advanced treasury/expenses/assets/schedules, consolidation, statutory integrations
-  and the other explicit gaps in the delivery document. No external banking/HMRC
-  service is claimed. Next step: complete compatible release checks, backup/deploy
-  live server and execute disposable authenticated acceptance.
-
+- Compatible release: Prisma validate/generate, separate TypeScript, focused ESLint
+  (zero warnings/errors), repeated production build and `git diff --check` passed.
+  Finance tests 59/59 passed; integrated full suite 586 passed, 22 skipped.
+- Finance `6e1743a` deployed; server also integrated reviewed Service `3c8980b`.
+  Backup `/home/administrator/backups/atlas-pre-deploy-20261007-073332.dump`;
+  migration/build/restart and public login 200 passed. All 41 authenticated live
+  assertions passed: invoice/VAT/FX, partial payments, independent approvals,
+  receipt/import/allocation retries, over-invoice/over-allocation rejection, tenant
+  and read-only guards, dimension rules, database immutability/balance rollback,
+  period close/reopen and six real pages; AR/AP reconciliation differences zero.
+  Browser verified Help → Collections and readable live layout.
+- Test companies suspended and temporary credentials revoked; immutable central
+  acceptance evidence retained. No real company data/permissions changed. Current
+  shared deployment-policy docs reconciled to user-supplied server requirement.
+- Full ERP remains unfinished: costed Inventory/Manufacturing WIP/COGS, advanced
+  treasury/expenses/assets/schedules, consolidation, statutory integrations and
+  other explicit delivery gaps. Next: costed operational event posting/reconciliation
+  through existing owner contracts; never replace Approvals/S&OP/Manufacturing.
 
 ## Customer Service, Tickets and Queries release — 7 October 2026
 

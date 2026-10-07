@@ -42,6 +42,15 @@ async function main(){
   const project=await db.salesProject.create({data:{organisationId,reference:'SP-CHECK',name:'Synthetic growth project',ownerUserId:maker.id,probability:50,potentialValueAmount:1000000}});
   const order=async(reference:string,month:string,quantity:number,status:'CLOSED'|'CONFIRMED',projectId?:string)=>db.salesOrder.create({data:{organisationId,reference,partyId:party.id,ownerUserId:maker.id,commercialStatus:status,orderDate:new Date(month+'-01T00:00:00Z'),requestedDeliveryDate:new Date(month+'-05T00:00:00Z'),promisedDeliveryDate:new Date(month+'-05T00:00:00Z'),salesProjectId:projectId,netAmount:quantity*1000,lines:{create:{lineNumber:1,productId:product.id,descriptionSnapshot:product.name,orderedQuantity:quantity,unitPriceAmount:1000,netAmount:quantity*1000}}},include:{lines:true}});
   for(let lag=12;lag>0;lag--)await order(`SO-HISTORY-${lag}`,monthOffset(first,-lag),100,'CLOSED');
+  const historical=await db.salesOrder.findFirstOrThrow({where:{organisationId,reference:'SO-HISTORY-1'},include:{lines:true}});
+  const fulfilment=await db.fulfilmentRequirement.create({data:{organisationId,reference:'FF-HISTORY',salesOrderId:historical.id,partyId:party.id,shipTo:{},sourceEventKey:`sop-check-${suffix}`,status:'DELIVERED'}});
+  const fulfilmentLine=await db.fulfilmentLine.create({data:{organisationId,requirementId:fulfilment.id,salesOrderLineId:historical.lines[0].id,productId:product.id,description:product.name,orderedQuantity:100,shippedQuantity:100,deliveredQuantity:100}});
+  for(const [index,day]of ['04','05'].entries()){const shipment=await db.shipment.create({data:{organisationId,reference:`SH-HISTORY-${index}`,partyId:party.id,shipTo:{},status:'DELIVERED',inFull:true,plannedDispatchAt:new Date(monthOffset(first,-1)+'-03'),dispatchedAt:new Date(monthOffset(first,-1)+'-03'),deliveredAt:new Date(monthOffset(first,-1)+'-'+day)}});await db.shipmentSource.create({data:{organisationId,salesOrderId:historical.id,shipmentId:shipment.id,requirementId:fulfilment.id,fulfilmentLineId:fulfilmentLine.id,quantity:50}});}
+  const partialOrder=await db.salesOrder.findFirstOrThrow({where:{organisationId,reference:'SO-HISTORY-2'},include:{lines:true}});
+  const partialRequirement=await db.fulfilmentRequirement.create({data:{organisationId,reference:'FF-PARTIAL',salesOrderId:partialOrder.id,partyId:party.id,shipTo:{},sourceEventKey:`sop-partial-${suffix}`,status:'DELIVERED'}});
+  const partialLine=await db.fulfilmentLine.create({data:{organisationId,requirementId:partialRequirement.id,salesOrderLineId:partialOrder.lines[0].id,productId:product.id,description:product.name,orderedQuantity:100,shippedQuantity:100,deliveredQuantity:100}});
+  const partialShipment=await db.shipment.create({data:{organisationId,reference:'SH-PARTIAL',partyId:party.id,shipTo:{},status:'DELIVERED',inFull:false,dispatchedAt:new Date(monthOffset(first,-2)+'-03'),deliveredAt:new Date(monthOffset(first,-2)+'-05')}});
+  await db.shipmentSource.create({data:{organisationId,salesOrderId:partialOrder.id,shipmentId:partialShipment.id,requirementId:partialRequirement.id,fulfilmentLineId:partialLine.id,quantity:100}});
   const firm=await order('SO-FIRM',first,200,'CONFIRMED',project.id);
   await call('createPlan',[],makerCookie,{name:'Synthetic Sales operating plan',type:'sales',mode:'custom',start,end:end.toISOString().slice(0,10),measuresChosen:'1',metric:['sales_volume','revenue']});
   const plan=await db.businessPlan.findFirstOrThrow({where:{organisationId,name:'Synthetic Sales operating plan'}});
@@ -90,6 +99,11 @@ async function main(){
   await call('publishSopVersion',[],makerCookie,{cycleId:cycle.id,versionId:version.id});await call('publishSopVersion',[],makerCookie,{cycleId:cycle.id,versionId:version.id});
   const forecasts=await db.manufacturingDemandForecast.findMany({where:{organisationId}});
   check(forecasts.length===12&&forecasts.every(row=>row.sourceSopVersionId===version.id),'Publication/replay creates twelve total-demand rows with immutable lineage');
+  const oldId=`old-version-${suffix}`;
+  const oldCycle=await db.sopCycle.create({data:{organisationId,name:'Synthetic older overlapping cycle',startsOn:cycle.startsOn,endsOn:cycle.endsOn,currency:'GBP',ownerUserId:maker.id,inputRevision:version.sourceRevision,sourcePlanIds:[plan.id],settings:JSON.parse(JSON.stringify(cycle.settings)),workflow:Array.from({length:7},(_,index)=>({title:String(index),status:'approved',versionId:oldId}))}});
+  await db.sopVersion.create({data:{id:oldId,organisationId,cycleId:oldCycle.id,name:'Older overlapping evidence',status:'approved',sourceRevision:version.sourceRevision,payload:JSON.parse(JSON.stringify(version.payload)),requiredCapabilities:version.requiredCapabilities,requiredModules:version.requiredModules,createdByUserId:maker.id,createdAt:new Date(version.createdAt.getTime()-1000)}});
+  await denied('publishSopVersion',[],makerCookie,{cycleId:oldCycle.id,versionId:oldId});
+  check((await db.manufacturingDemandForecast.findMany({where:{organisationId}})).every(row=>row.sourceSopVersionId===version.id)&&(await db.sopVersion.findUniqueOrThrow({where:{id:oldId}})).status==='approved','Older overlapping cycle publication rolls back and preserves newer approved demand');
   await call('runMrp',[],makerCookie);
   const run=await db.manufacturingPlanningRun.findFirstOrThrow({where:{organisationId},orderBy:{startedAt:'desc'}});
   const suggestions=await db.manufacturingSupplySuggestion.findMany({where:{organisationId,runId:run.id}});
@@ -101,12 +115,14 @@ async function main(){
   for(const view of ['overview','demand','service','supply','finance','products','customers','projects','scenarios','cycle','history']){
    const response=await fetch(`${base}/sop?cycle=${cycle.id}&version=${version.id}&view=${view}`,{headers:{Cookie:makerCookie},redirect:'manual'}),html=await response.text();check(response.status===200&&html.includes('Synthetic S&amp;OP cycle')&&!html.includes('This page could not be loaded'),`Authenticated S&OP ${view} screen`);
   }
-  const planPage=await fetch(`${base}/plan/plans/${plan.id}?tab=builder`,{headers:{Cookie:makerCookie}});check(planPage.status===200&&(await planPage.text()).includes('Build plan'),'Authenticated connected Plan builder');
+  const planPage=await fetch(`${base}/plan/plans/${plan.id}?tab=inputs`,{headers:{Cookie:makerCookie}});check(planPage.status===200&&(await planPage.text()).includes('Build the plan'),'Authenticated connected Plan builder');
   const launcher=await fetch(base+'/home',{headers:{Cookie:makerCookie}});check((await launcher.text()).includes('S&amp;OP'),'Authorised Apps navigation includes S&OP');
   const {chromium}=await import('@playwright/test');
   const browser=await chromium.launch({headless:true,...(process.env.ATLAS_CHROMIUM_PATH?{executablePath:process.env.ATLAS_CHROMIUM_PATH}:{}),args:['--no-sandbox']});
   try{const context=await browser.newContext({viewport:{width:1280,height:900}});await context.addCookies([{name:'atlas_session',value:makerCookie.slice('atlas_session='.length),url:base,httpOnly:true,secure:true}]);const page=await context.newPage();let runtimeErrors=0;page.on('pageerror',()=>runtimeErrors++);
    await page.goto(`${base}/sop?cycle=${cycle.id}&version=${version.id}&view=demand`,{waitUntil:'networkidle'});await page.getByText('Synthetic refreshed consensus',{exact:true}).first().waitFor({state:'attached'});check(await page.locator('body').innerText().then(t=>t.includes('SOP-CHECK'))&&runtimeErrors===0,'Real Chromium renders live demand with no runtime errors');
+   await page.goto(`${base}/sop?cycle=${cycle.id}&view=service&filter=all`,{waitUntil:'networkidle'});const serviceRow=page.getByRole('link',{name:'SO-HISTORY-1 ↗',exact:true}).locator('xpath=ancestor::tr');check((await serviceRow.innerText()).includes('100 / 100')&&await serviceRow.getByText('pass',{exact:true}).count()===2,'Live service aggregates two deliveries into Customer and Promise OTIF passes');
+   const partialRow=page.getByRole('link',{name:'SO-HISTORY-2 ↗',exact:true}).locator('xpath=ancestor::tr');check(await partialRow.getByText('unavailable',{exact:true}).count()===2,'Unverified partial receipts stay unavailable for OTIF and do not reopen closed demand');
    await page.setViewportSize({width:657,height:758});await page.goto(`${base}/sop?cycle=${cycle.id}&version=${version.id}&view=cycle`,{waitUntil:'networkidle'});check(await page.locator('body').innerText().then(t=>t.includes('Executive review'))&&runtimeErrors===0,'Narrow live review screen renders its controls');await context.close();
   }finally{await browser.close();}
   check(firm.lines.length===1,'Canonical Sales source remains intact');

@@ -1,6 +1,7 @@
 # Sales & Operations Planning
 
-7 October 2026. Source implementation; activation and live verification are pending.
+7 October 2026. Connected S&OP workflows are deployed and verified on the live server;
+advanced master-spec coverage remains below. See `SOP_ACCEPTANCE.md`.
 The supplied master specification is preserved in `docs/plans/SOP_IMPLEMENTATION_SPEC.md`.
 This document describes implemented behaviour, not completion of that entire specification.
 
@@ -60,6 +61,8 @@ supplies spending-budget references. Product identity, pricing and units remain 
 - Approved consensus publishes monthly total demand to Manufacturing transactionally.
   Empty source results cannot clear Manufacturing demand. Publication is idempotent; each row retains `sourceSopVersionId`. Both the Manufacturing screen action and calculation service subtract
   gross current-month bookings, including closed/part-shipped orders, from S&OP totals before adding open firm demand. Source failures stop MRP visibly.
+  Older overlapping cycles cannot replace newer approved product-month demand.
+  Historical closed orders remain closed even when delivery evidence is unverified.
 
 ## Security and persistence
 

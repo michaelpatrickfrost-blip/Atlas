@@ -16,6 +16,8 @@ export const publishSopDemand:NonNullable<import('@/core/modules/types').ModuleM
  const version=await tx.sopVersion.findFirstOrThrow({where:{id:input.versionId,organisationId:session.organisationId}});
  const previous=await tx.manufacturingDemandForecast.findMany({where:{organisationId:session.organisationId,sopVersion:{cycleId:version.cycleId,organisationId:session.organisationId}},select:{id:true,productId:true,periodStart:true}});
  const keys=new Set(input.rows.map(r=>r.productId+'|'+r.period));
+ const current=await tx.manufacturingDemandForecast.findMany({where:{organisationId:session.organisationId,productId:{in:ids},periodStart:{in:[...new Set(input.rows.map(r=>r.period))].map(period=>new Date(period+'-01T00:00:00Z'))},sourceSopVersionId:{not:null}},select:{productId:true,periodStart:true,sopVersion:{select:{id:true,createdAt:true}}}});
+ if(current.some(row=>keys.has(row.productId+'|'+row.periodStart.toISOString().slice(0,7))&&row.sopVersion&&row.sopVersion.createdAt>version.createdAt))throw Error('Newer approved S&OP demand already exists for this product month. Generate a fresh consensus instead of overwriting it with an older cycle.');
  const cleared=previous.filter(r=>!keys.has(r.productId+'|'+r.periodStart.toISOString().slice(0,7))).map(r=>r.id);
  if(cleared.length)await tx.manufacturingDemandForecast.updateMany({where:{organisationId:session.organisationId,id:{in:cleared}},data:{quantity:0,sourceSopVersionId:input.versionId,notes:`Approved S&OP ${input.versionId}; previous cycle demand removed`}});
  for(const row of input.rows){if(!Number.isFinite(row.quantity)||row.quantity<0)throw Error('Approved demand contains an invalid quantity.');

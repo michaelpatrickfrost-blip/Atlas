@@ -21,22 +21,30 @@
   `64a11ce`, including finished Service, Finance, Guardian and customer-reference repairs. No unrelated
   unfinished source is included. Relevant schema/contracts/manifests, Plan/S&OP docs,
   module wiring and source access policy are updated. S&OP appears under Business.
-- Checks run on integrated source: 650 tests passed / 22 integration skips across
-  108 files; strict TypeScript and production build passed; Prisma validate/generate
+- Checks run on integrated source: 655 tests passed / 22 integration skips across
+  110 files; strict TypeScript and production build passed; Prisma validate/generate
   and diff checks passed. Final changed-file ESLint passed with zero warnings/errors;
   its initial unused-variable warning in the touched MRP loader was corrected.
   Additive migration `20261007160000_connected_plans_sop` passed on a disposable
   server-only schema clone; no production records copied and clone removed.
-- Initial server release `46ca06a` built/restarted successfully, public login 200;
-  additive migration applied with backup
+- Initial server release `46ca06a` migrated/built/restarted, login 200; backup
   `/home/administrator/backups/atlas-pre-deploy-20261007-075416.dump` and matching
-  private service-evidence archive. Live acceptance passed the initial Plan,
-  forecast, scenario, tenant/stale-write and draft-publication guards, then caught
-  an approval defect: PostgreSQL JSONB normalises object key order, while source
-  signatures used insertion-order JSON. Fixed canonical value comparison and
-  added regression coverage; integrated suite now 652 passed / 22 skipped.
-  The failed run's synthetic tenants were suspended and credentials revoked.
-  Follow-up build/release and full live acceptance/organisation activation pending.
+  private evidence archive. Live acceptance caught JSONB object-key normalisation
+  causing false Plan-change rejection. Canonical comparison fix `d5c1c22` is live
+  (backup `20261007-075753`); all 39 authenticated live assertions passed: normal
+  sign-in, private Plan/source inputs/weighted forecast, closed-month forecasts,
+  source/tenant/stale-write guards, scenarios, exact-version reviews, stale live
+  probability rejection, publication/replay, actual Manufacturing MRP, DB immutability,
+  source permission loss, eleven real screens, Plan builder and Apps; Chromium demand,
+  split-delivery Customer/Promise OTIF and narrow review controls passed without
+  runtime errors. Test tenants suspended and temporary credentials revoked.
+- S&OP enabled for Michael Test alongside its already-enabled Plan. Existing Michael
+  profile and actual Apps resolver expose both apps and all eleven S&OP views.
+  Activation audited; existing role permissions compared unchanged. No real business
+  records were changed. New edge hardening prevents historical closed orders with
+  unverified partial receipts reopening as demand, and prevents older overlapping
+  cycles overwriting newer approved product-month demand. Final source build/release
+  and expanded 42-assertion live acceptance pending.
 - Server target explicitly authorised by Michael: “deploy to server when done”;
   earlier Mac/target-confirmation blockers are superseded.
 - Genuine master-spec gaps remain in `docs/modules/SOP.md`: finite material/labour/

@@ -117,3 +117,10 @@ it('keeps today’s delivery date pending until its calendar-day cutoff has pass
  const result=serviceAt(1000,'2026-06-10',[{quantity:900,deliveredOn:'2026-06-10'}],'2026-06-10',DEFAULT_SETTINGS);
  expect(result.state).toBe('pending');expect(result.otif).toBeNull();
 });
+
+it('does not reopen historical closed bookings when partial-delivery quantities are unverified',()=>{
+ const closed=order({closed:true,quantity:100,requestedOn:'2026-05-10',promisedOn:'2026-05-10'});
+ const result=build({orders:[closed],deliveries:[{id:'partial',orderId:closed.id,lineId:closed.lineId,productId:'p',quantity:100,deliveryQuantityVerified:false,dispatchedOn:'2026-05-10',deliveredOn:'2026-05-10',plannedDispatchOn:null,eta:null,status:'DELIVERED',href:'/delivery'}]});
+ expect(result.rows[0].confirmedOrders).toBe(0);expect(result.rows[0].openOrders).toBe(0);
+ expect(result.service[0].requested.state).toBe('unavailable');
+});

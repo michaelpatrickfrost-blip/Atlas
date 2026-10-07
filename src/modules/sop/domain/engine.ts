@@ -66,7 +66,7 @@ export function buildDemand(input:{products:PlanningProduct[];orders:PlanningOrd
   let opening:number|null=input.supplyAvailable&&periods[0]>=currentMonth?(stock.get(p.id)??0):null;
   for(const [index,period]of periods.entries()){
    if(period===currentMonth&&index>0)opening=input.supplyAvailable?(stock.get(p.id)??0):null;
-   const orderRows=orders.filter(o=>{const due=(o.requestedOn??o.promisedOn)?.slice(0,7);return due===period||index===0&&!!due&&due<period&&o.open>0;});
+   const orderRows=orders.filter(o=>{const due=(o.requestedOn??o.promisedOn)?.slice(0,7);return due===period||index===0&&!o.closed&&!!due&&due<period&&o.open>0;});
    const dispatched=(o:typeof orders[number])=>Math.min(o.quantity,o.dispatchedQuantity??o.events.filter(e=>e.dispatchedOn||e.deliveredOn).reduce((s,e)=>s+e.quantity,0));
    const confirmedOrders=orderRows.reduce((s,o)=>s+o.quantity,0),orderDemand=orderRows.reduce((s,o)=>s+(o.closed?0:Math.max(0,o.quantity-dispatched(o))),0),fulfilled=orderRows.reduce((s,o)=>s+(o.closed?o.quantity:dispatched(o)),0);
    const phased=sources.filter(s=>s.periodKey===period);let projectRaw=0,projectWeighted=0,projectConsumed=0,adjustment=0;

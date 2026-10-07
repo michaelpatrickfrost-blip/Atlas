@@ -3103,24 +3103,40 @@ limits: docs/plans/CONTRACTS_TEMPLATES.md. Core/provider architecture, module ma
 project memory and lasting decision updated. Editable master retains concurrent work.
 
 Checks: targeted Vitest 25 passed; isolated TypeScript, ESLint, schema validation,
-production build and whitespace checks passed. After integrating finished Guardian
-commits, the full compatible release suite passed 497 tests with 22 integration
-skips and no failures. Generated Data API registrations reconciled with that schema.
-Earlier baseline failures are superseded by the now-green combined suite.
+production build and whitespace checks passed. Compatible release 3459690 passed
+497 tests with 22 integration skips and no failures. Earlier baseline failures were
+superseded by the green combined suite. Task-owned master/release files compared
+identically; shared record pages retain other contributors' changes.
 
-VPS c7c9b27 deployed using the canonical deploy-vps remote procedure from the clean
-release worktree. Backup: /home/administrator/backups/atlas-pre-deploy-20261007-070322.dump.
-Additive migration 20261007094500_document_templates_contract_returns applied;
-service healthy and HTTPS /login 200. First server Test-workspace acceptance: 32
-checks passed, including public signing/returns/review/completion downloads,
-CRM/Sales/Projects generation, Service restriction, expiry/reissue/revocation and
-tenant/owner/project isolation. No emails or real customer changes.
+Initial VPS c7c9b27 deployment applied additive migration
+20261007094500_document_templates_contract_returns. Backup:
+/home/administrator/backups/atlas-pre-deploy-20261007-070322.dump.
+First live Test-workspace acceptance passed 32 checks. Browser review then exposed
+unreliable embedded PDF rendering; generated terms now render directly alongside
+original PDF links, with an explicit Open/Download fallback for uploaded PDFs.
 
-Browser confirmed response controls but exposed unreliable embedded-PDF rendering
-in the in-app browser. Readable generated HTML terms plus the original PDF links
-and an explicit upload-preview fallback are implemented; follow-up production build
-passed (79823f3). Follow-up server deploy, final 34 checks, visual verification and
-removal of retained synthetic QA workspaces remain pending at this checkpoint.
+Reader follow-up 3459690 is included in completed live release d0e46c5 and current
+server revision 91e7e7a. Production server build completed, atlas service active,
+and HTTPS /login returned 200. Latest backup:
+/home/administrator/backups/atlas-pre-deploy-20261007-071633.dump.
+An overlapping deployment interrupted the earlier 07:13:58 attempt during dependency
+installation: npx selected a Prisma 8 fallback and rejected the migrate command;
+that attempt applied no schema change. The finished combined deployment recovered
+with repository Prisma 7.10.0. Preserve this evidence; do not run concurrent VPS installs.
+
+Final live script scripts/check-contract-workflow.ts passed 34/34: template
+publication/generation/version snapshots, Deal attachment/draft freezing, public
+online signing/replay/consent/completion PDF, signed returns/rejection/re-upload/
+acceptance/history, expiry/rotation/revocation/suspension, cross-company/owner/project
+isolation, Sales quote/order and authorised/restricted Service generation. Desktop
+and 390px mobile browser checks confirmed readable terms and online/upload controls.
+All synthetic acceptance and retained QA companies/users were removed. Three new
+Guardian reports from intentional negative public-action checks were classified
+IGNORED with their diagnostic history retained. No emails sent or real customer
+records changed. Email transport remains dependent on a configured sending account;
+this release provides one signer per document and no identity-verification provider.
+No remaining delivery blocker for this scope.
+
 ## 7 October 2026 — Atlas archive constraint acceptance correction
 
 Staff compatibility fix c3eecf0 deployed after backup

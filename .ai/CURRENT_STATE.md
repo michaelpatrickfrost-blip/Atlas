@@ -3080,3 +3080,33 @@ Michael's requested account was verified server-side as an existing active Atlas
 Owner with active internal workspace access; no password or existing grants changed.
 No user identifiers or credentials are stored in shared memory. Enduring Admin
 policy is now recorded in PROJECT_MEMORY.md.
+
+## 7 October 2026 — Deal contracts and reusable Templates (live release)
+
+Implemented Deal contract controls and CRM contract detail/review pages; separate
+Templates app with section builder, merge fields, publishing and version snapshots;
+scoped CRM/Sales/Projects/Service source providers; Atlas /share customer reader,
+online consent/signatures, signed-PDF returns awaiting review, draft revision,
+revocation and downloadable completion PDFs. Existing contract/email permissions
+retained; source record visibility and suspended-company checks enforced. Scope and
+limits: docs/plans/CONTRACTS_TEMPLATES.md. Core/provider architecture, module map,
+project memory and lasting decision updated. Editable master retains concurrent work.
+
+Checks: targeted Vitest 25 passed; isolated TypeScript, ESLint, schema validation,
+production build and whitespace checks passed. Full combined release suite: 474
+passed, 8 failed, 22 skipped. All eight are among the ten failures reproduced in
+clean e5e474c; the intervening Admin release fixed two unrelated failures.
+
+VPS c7c9b27 deployed using the canonical deploy-vps remote procedure from the clean
+release worktree. Backup: /home/administrator/backups/atlas-pre-deploy-20261007-070322.dump.
+Additive migration 20261007094500_document_templates_contract_returns applied;
+service healthy and HTTPS /login 200. First server Test-workspace acceptance: 32
+checks passed, including public signing/returns/review/completion downloads,
+CRM/Sales/Projects generation, Service restriction, expiry/reissue/revocation and
+tenant/owner/project isolation. No emails or real customer changes.
+
+Browser confirmed response controls but exposed unreliable embedded-PDF rendering
+in the in-app browser. Readable generated HTML terms plus the original PDF links
+and an explicit upload-preview fallback are implemented; follow-up production build
+passed (79823f3). Follow-up server deploy, final 34 checks, visual verification and
+removal of retained synthetic QA workspaces remain pending at this checkpoint.

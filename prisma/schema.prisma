@@ -57,6 +57,9 @@ model Organisation {
   marketingPermissionRows MarketingPermission[]
   marketingProfileRows MarketingProfile[]
   serviceCases ServiceCase[]
+  serviceWork ServiceWorkItem[]
+  serviceWorkEntries ServiceWorkEntry[]
+  serviceFiles ServiceFile[]
   serviceEntries ServiceEntry[]
   serviceTickets ServiceTicket[]
   serviceQueues ServiceQueue[]
@@ -4351,6 +4354,9 @@ model ServiceCase {
   queueId String?
   version Int @default(1)
   reopenCount Int @default(0)
+  mergedIntoId String?
+  mergedInto ServiceCase? @relation("CaseMerges",fields:[mergedIntoId,organisationId],references:[id,organisationId],onDelete:Restrict)
+  mergedFrom ServiceCase[] @relation("CaseMerges")
   firstResponseAt DateTime?
   resolvedAt DateTime?
   closedAt DateTime?
@@ -4363,6 +4369,15 @@ model ServiceCase {
   updatedAt DateTime @updatedAt
   party Party @relation(fields:[partyId,organisationId],references:[id,organisationId],onDelete:Restrict)
   queue ServiceQueue? @relation(fields:[queueId,organisationId],references:[id,organisationId],onDelete:Restrict)
+  recoveries ServiceRecovery[]
+  work ServiceWorkItem[]
+  files ServiceFile[]
+  context Json @default("{}")
+  sla Json @default("{}")
+  firstResponseDueAt DateTime?
+  resolutionDueAt DateTime?
+  pausedAt DateTime?
+  investigation Json @default("{}")
   entries ServiceEntry[]
   tickets ServiceTicket[]
   links ServiceLink[]
@@ -4381,6 +4396,7 @@ model ServiceEntry {
   organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict)
   caseId String
   ticketId String?
+  sourceKey String?
   kind String
   visibility String @default("INTERNAL")
   body String
@@ -4388,6 +4404,7 @@ model ServiceEntry {
   createdAt DateTime @default(now())
   case ServiceCase @relation(fields:[caseId,organisationId],references:[id,organisationId],onDelete:Restrict)
   ticket ServiceTicket? @relation(fields:[ticketId,organisationId],references:[id,organisationId],onDelete:Restrict)
+  @@unique([organisationId,sourceKey])
   @@index([organisationId,caseId,createdAt])
   @@map("service_entries")
 }
@@ -4430,6 +4447,10 @@ model ServiceQueue {
   createdAt DateTime @default(now())
   members ServiceQueueMember[]
   cases ServiceCase[]
+  work ServiceWorkItem[]
+  updatedAt DateTime @default(now()) @updatedAt
+  restricted Boolean @default(false)
+  configuration Json @default("{}")
   tickets ServiceTicket[]
   @@unique([id,organisationId])
   @@unique([organisationId,name])
@@ -8015,11 +8036,21 @@ model CsatResponse {
   entityId String?
   score Int?
   comment String?
+  commentSubmittedAt DateTime?
+  invalidReason String?
+  invalidatedBy String?
+  invalidatedAt DateTime?
   reasons String[] @default([])
   sentAt DateTime @default(now())
   respondedAt DateTime?
   automationRunId String?
+  deliveryStatus String @default("LEGACY")
+  emailMessageId String?
+  sourceKey String?
+  serviceContext Json @default("{}")
   survey CsatSurvey @relation(fields:[surveyId,organisationId],references:[id,organisationId],onDelete:Cascade)
+  @@unique([organisationId,sourceKey])
+  @@index([organisationId,entityType,entityId])
   @@index([organisationId,surveyId,respondedAt])
   @@index([organisationId,partyId])
   @@map("csat_responses")
@@ -8433,4 +8464,159 @@ model GuardianRateLimit {
   count Int @default(1)
   expiresAt DateTime
   @@map("guardian_rate_limits")
+}
+
+model ServiceWorkItem {
+  id String @id @default(cuid())
+  organisationId String
+  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict)
+  number String
+  kind String
+  subject String
+  description String @default("")
+  type String @default("SERVICE_REQUEST")
+  category String @default("")
+  priority String @default("NORMAL")
+  severity String @default("MODERATE")
+  impact String @default("INDIVIDUAL")
+  urgency String @default("NORMAL")
+  status String @default("NEW")
+  queueId String
+  queue ServiceQueue @relation(fields:[queueId,organisationId],references:[id,organisationId],onDelete:Restrict)
+  requesterUserId String
+  requestedForUserId String?
+  ownerUserId String?
+  watcherIds String[] @default([])
+  parentCaseId String?
+  parentCase ServiceCase? @relation(fields:[parentCaseId,organisationId],references:[id,organisationId],onDelete:Restrict)
+  parentId String?
+  parent ServiceWorkItem? @relation("ServiceChildren",fields:[parentId,organisationId],references:[id,organisationId],onDelete:Restrict)
+  children ServiceWorkItem[] @relation("ServiceChildren")
+  mergedIntoId String?
+  mergedInto ServiceWorkItem? @relation("ServiceMerges",fields:[mergedIntoId,organisationId],references:[id,organisationId],onDelete:Restrict)
+  mergedFrom ServiceWorkItem[] @relation("ServiceMerges")
+  context Json @default("{}")
+  definition Json @default("{}")
+  sla Json @default("{}")
+  firstResponseDueAt DateTime?
+  resolutionDueAt DateTime?
+  firstResponseAt DateTime?
+  pausedAt DateTime?
+  resolvedAt DateTime?
+  resolution String?
+  reopenCount Int @default(0)
+  version Int @default(1)
+  approvalId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  entries ServiceWorkEntry[]
+  files ServiceFile[]
+  @@unique([id,organisationId])
+  @@unique([organisationId,number])
+  @@index([organisationId,queueId,status,resolutionDueAt])
+  @@index([organisationId,requesterUserId,status])
+  @@index([organisationId,parentCaseId])
+  @@index([organisationId,parentId])
+  @@map("service_work_items")
+}
+
+model ServiceWorkEntry {
+  id String @id @default(cuid())
+  organisationId String
+  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict)
+  workId String
+  work ServiceWorkItem @relation(fields:[workId,organisationId],references:[id,organisationId],onDelete:Restrict)
+  kind String
+  visibility String @default("INTERNAL")
+  body String
+  actorUserId String
+  createdAt DateTime @default(now())
+  @@index([organisationId,workId,createdAt])
+  @@map("service_work_entries")
+}
+
+model ServiceFile {
+  id String @id @default(cuid())
+  organisationId String
+  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict)
+  caseId String?
+  case ServiceCase? @relation(fields:[caseId,organisationId],references:[id,organisationId],onDelete:Restrict)
+  workId String?
+  work ServiceWorkItem? @relation(fields:[workId,organisationId],references:[id,organisationId],onDelete:Restrict)
+  name String
+  storageKey String @unique
+  mime String
+  size Int
+  sha256 String
+  visibility String @default("INTERNAL")
+  actorUserId String
+  createdAt DateTime @default(now())
+  @@index([organisationId,caseId])
+  @@index([organisationId,workId])
+  @@map("service_files")
+}
+
+model ServiceRecovery {
+ id String @id @default(cuid())
+ organisationId String
+ caseId String
+ case ServiceCase @relation(fields:[caseId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ partyId String
+ number String
+ type String
+ status String @default("PROPOSED")
+ currency String @default("GBP")
+ value Int
+ maximum Int?
+ minimumOrder Int @default(0)
+ validFrom DateTime @default(now())
+ expiresAt DateTime
+ usageLimit Int @default(1)
+ usedCount Int @default(0)
+ eligibleProductIds String[] @default([])
+ excludedProductIds String[] @default([])
+ reason String
+ creatorUserId String
+ approvalId String?
+ version Int @default(1)
+ createdAt DateTime @default(now())
+ redemptions ServiceRedemption[]
+ @@unique([id,organisationId])
+ @@unique([organisationId,number])
+ @@index([organisationId,partyId,status,expiresAt])
+ @@map("service_recoveries")
+}
+
+model ServiceRedemption {
+ id String @id @default(cuid())
+ organisationId String
+ recoveryId String
+ recovery ServiceRecovery @relation(fields:[recoveryId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ orderId String
+ amount Int
+ actorUserId String
+ createdAt DateTime @default(now())
+ @@unique([recoveryId,orderId])
+ @@index([organisationId,orderId])
+ @@map("service_redemptions")
+}
+
+model ServiceKnowledge {
+ id String @id @default(cuid())
+ organisationId String
+ title String
+ category String @default("")
+ content String
+ keywords String[] @default([])
+ productIds String[] @default([])
+ visibility String @default("INTERNAL")
+ queueId String?
+ status String @default("DRAFT")
+ version Int @default(1)
+ previousId String?
+ ownerUserId String
+ reviewedAt DateTime?
+ createdAt DateTime @default(now())
+ @@index([organisationId,status,category])
+ @@map("service_knowledge")
 }

@@ -1,3 +1,2 @@
-// Tickets module temporarily disabled due to schema issues
-export const dynamic = "force-dynamic";
-export default function DisabledPage() { return null; }
+import { WorkDetail } from "@/components/service-work/work-detail";
+export default async function Ticket({ params }: { params: Promise<{ ticketId: string }> }) { return <WorkDetail id={(await params).ticketId}/>; }

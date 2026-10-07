@@ -4,7 +4,7 @@ import { getImplementedModules, getMissingDependencies, getModule, MODULE_CATALO
 describe("module registry", () => {
   it("registers the implemented apps separately from future stubs", () => {
     const implemented = getImplementedModules();
-    expect(implemented.map((m) => m.id)).toEqual(["templates", "crm", "sales", "projects", "stock", "kpis", "products", "pricing", "people", "scheduling", "payroll", "teams", "planning", "plan", "analytics", "service", "marketing", "finance", "logistics", "manufacturing", "safety", "audit", "quality", "automations", "csat"]);
+    expect(implemented.map((m) => m.id)).toEqual(["templates", "crm", "sales", "projects", "stock", "kpis", "products", "pricing", "people", "scheduling", "payroll", "teams", "planning", "plan", "analytics", "service", "marketing", "finance", "logistics", "manufacturing", "safety", "audit", "quality", "automations", "csat", "tickets"]);
   });
 
   it("every module id in the catalogue is unique", () => {

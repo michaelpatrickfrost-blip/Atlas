@@ -1,3 +1,4 @@
+import { requestServiceReplacement } from "./services/service-replacement";
 import { salesTemplateContext } from "./services/template-context";
 import {financeSource} from './services/finance-source';
 import { salesAnalytics } from "./services/analytics";
@@ -7,6 +8,7 @@ import type { ModuleManifest } from "@/core/modules/types";
 import { SALES_CAPABILITIES } from "@/core/permissions/capabilities";
 import { salesCustomerOverviewProvider } from "./services/customer-overview";
 export const salesManifest: ModuleManifest = {
+ serviceOperationProvider:requestServiceReplacement,
  templateContextProvider: salesTemplateContext,salesFinanceSourceProvider:financeSource,
  analyticsProvider: salesAnalytics,
   planningDemandProvider: planningDemand,

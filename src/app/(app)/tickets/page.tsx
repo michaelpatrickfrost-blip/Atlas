@@ -1,2 +1,2 @@
-// Tickets module temporarily disabled due to schema issues
-export default async function TicketsPage() { return <div>Tickets temporarily disabled</div>; }
+import { WorkList } from "@/components/service-work/work-list";
+export default async function Tickets({ searchParams }: { searchParams: Promise<{ q?: string; mine?: string; queueId?: string; status?: string; type?: string; breach?: string }> }) { return <WorkList filters={await searchParams}/>; }

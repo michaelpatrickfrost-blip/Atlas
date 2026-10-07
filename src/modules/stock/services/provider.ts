@@ -171,9 +171,10 @@ export const stockProvider: StockProvider = {
     if ((command.status ?? "AVAILABLE") === "AVAILABLE") await replenished(actor, command.productId, command.warehouseId, `balance:${command.requestKey}`);
     return result;
   },
-  returnStock(actor, command) {
+  returnStock(actor, command, transaction) {
     assertCommand(command);
-    return run(async (tx) => receive(tx, actor, command, command.status ?? "QUARANTINE", ["RETURNS", "QUARANTINE"]));
+    const work = (tx: Tx) => receive(tx, actor, command, command.status ?? "QUARANTINE", ["RETURNS", "QUARANTINE"]);
+    return transaction ? work(transaction) : run(work);
   },
   shipStock(actor, command) {
     assertCommand(command);

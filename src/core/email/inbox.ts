@@ -1,3 +1,4 @@
+import { appendServiceReply } from "@/core/service-work/email-intake";
 import { ImapFlow } from "imapflow";
 import { simpleParser } from "mailparser";
 import type { EmailAccount } from "@/generated/prisma/client";
@@ -60,12 +61,13 @@ export async function syncInbox(account: EmailAccount, limit = 60): Promise<{ ok
         if (!fromEmail || fromEmail === account.fromEmail.toLowerCase()) continue;
         const contact = await db.contact.findFirst({ where: { party: { organisationId: account.organisationId }, OR: [{ email: { equals: fromEmail, mode: "insensitive" } }, { alternativeEmail: { equals: fromEmail, mode: "insensitive" } }] }, select: { id: true, partyId: true } });
         const inReplyTo = typeof mail.inReplyTo === "string" ? mail.inReplyTo : null;
-        const original = inReplyTo ? await db.emailMessage.findFirst({ where: { organisationId: account.organisationId, providerMessageId: inReplyTo }, select: { id: true, partyId: true, contactId: true } }) : null;
+        const original = inReplyTo ? await db.emailMessage.findFirst({ where: { organisationId: account.organisationId, providerMessageId: inReplyTo }, select: { id: true, partyId: true, contactId: true, entityType: true, entityId: true } }) : null;
         const created = await db.emailInbound.createMany({ skipDuplicates: true, data: [{
           organisationId: account.organisationId, accountId: account.id, uid, messageId: mail.messageId ?? null, inReplyTo, fromEmail, fromName: (from?.name ?? "").slice(0, 200),
           subject: (mail.subject ?? "").slice(0, 500), text: (mail.text ?? "").slice(0, 20000), receivedAt: mail.date ?? (message.internalDate instanceof Date ? message.internalDate : new Date()),
           partyId: contact?.partyId ?? original?.partyId ?? null, contactId: contact?.id ?? original?.contactId ?? null, replyToMessageId: original?.id ?? null,
         }] });
+        if(original?.entityType==='ServiceCase'&&original.entityId)await appendServiceReply({organisationId:account.organisationId,caseId:original.entityId,sourceKey:`inbound:${account.id}:${uid}`,partyId:contact?.partyId??null,contactId:contact?.id??null,text:mail.text??''});
         added += created.count;
       }
     } finally { lock.release(); }

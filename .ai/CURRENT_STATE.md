@@ -1,5 +1,15 @@
 # Atlas current state
 
+## Customer Service, Tickets and Queries release — 7 October 2026
+
+- Implemented distinct customer cases (CS), internal tickets (TKT) and cross-team queries (QRY) over shared queues, append-only history, business-hours SLA snapshots, pause/resume, child dependencies, optimistic writes, independent approvals, merges/reopens and server evidence storage. Historical cases, department work and CSAT remain intact.
+- Added verified customer/order/line/product/delivery selection, investigations, canonical NCR/return/replacement requests, Finance-owned line-based credit drafts, independent approval/posting enforcement, controlled next-order recovery redemption and integrated immutable CSAT. Knowledge versions/reusable responses and scoped performance/root-cause/recorded-cost reports are included.
+- Fixed confirmed existing return receipt hazards: retry double counting and over-receipt; Inventory quarantine and receipt counters now commit in one serializable transaction. Fixed the existing service-credit shortcut that could self-approve/post. Restricted work/history/files remain tenant and queue gated.
+- Relevant paths: `src/core/service-work/`, `src/components/service-work/`, service/tickets routes and services, typed source-module providers, `prisma/migrations/20261007190000_service_work_desk/`, `docs/modules/SERVICE_WORK_DESK.md`, preserved 123-section specification in `docs/plans/`. Release excludes concurrent unfinished edits and incorporates finished main releases.
+- Checks: Prisma generation and validation passed; production `npm run build`, separate `npx tsc --noEmit`, targeted ESLint (zero errors; one pre-existing Finance import warning), and `git diff --check` passed. Nine focused suites passed 72/72 tests, including DST/holidays, credit quantity/value limits and replay, purchase validation, quarantine receipt replay, CSAT immutability and restricted/approval/dependency/stale-work guards. Final isolated-release full suite passed: 94 files / 543 tests, 3 files / 22 tests skipped. Live acceptance follows below.
+- Deployment pending: additive migration and application release must be backed up/deployed at `atlassystem.online`, attachment storage configured server-side, then authenticated synthetic workflows checked. SMTP/IMAP delivery requires configured mail; no real customer communication is sent by verification.
+- Remaining scope is recorded explicitly in `SERVICE_WORK_DESK.md`, including escalation delivery/next-update clocks, broader origins/assets/batch analysis, advanced change/portal/telephony/refund flows and complete cost dimensions. Do not call the entire 123-section specification complete based on this release.
+
 ## Atlas Guardian implementation — 7 October 2026
 
 - Added staff-only `/atlas/guardian` reports, AI brief copy/download, durable queue,

@@ -111,16 +111,14 @@ export async function createPurchaseOrder(requestId:string){
 export async function raiseServiceCredit(id:string){
  const session=await requireSession();
  assertCapability(session,'finance.receivables.manage');
- assertCapability(session,'finance.journal.post');
  await requireFinance(session,'finance.receivables.manage');
- await transaction(async tx=>{const doc=await tx.financeDocument.findFirstOrThrow({where:{AND:[documentScope(session),{id,kind:'AR_CREDIT',category:'SERVICE_CREDIT',status:'DRAFT'}]}});await tx.financeDocument.update({where:{id:doc.id},data:{status:'APPROVED',approverUserId:session.userId}});await tx.financeTimeline.create({data:{organisationId:session.organisationId,documentId:doc.id,actorUserId:session.userId,action:'RAISED',detail:'Finance accepted the Customer Service request and is raising the credit against the customer.'}});await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:'finance.service_credit.raised',entityType:'FinanceDocument',entityId:doc.id,after:{gross:doc.gross.toString()}}});});
- await postFinanceDocument(id);
+ await submitFinanceDocument(id);
 }
 export async function postFinanceDocument(id:string){
  const session=await requireSession();
  assertCapability(session,'finance.journal.post');
  await requireFinance(session,'finance.journal.post');
- await transaction(async tx=>{const organisationId=session.organisationId,doc=await tx.financeDocument.findFirstOrThrow({where:{AND:[documentScope(session),{id,status:'APPROVED'}]},include:{lines:true,source:{include:{lines:true,children:{include:{lines:true}}}}}});assertCapability(session,documentCapability(doc.kind,true));if(!['AP_INVOICE','AR_INVOICE','AP_CREDIT','AR_CREDIT','AP_DEBIT','AR_DEBIT','EXPENSE'].includes(doc.kind))throw new Error('This document does not create an invoice/expense posting.');if(!doc.approverUserId)throw new Error('Independent approval evidence is missing.');
+ await transaction(async tx=>{const organisationId=session.organisationId,doc=await tx.financeDocument.findFirstOrThrow({where:{AND:[documentScope(session),{id,status:'APPROVED'}]},include:{lines:true,source:{include:{lines:true,children:{include:{lines:true}}}}}});assertCapability(session,documentCapability(doc.kind,true));if(!['AP_INVOICE','AR_INVOICE','AP_CREDIT','AR_CREDIT','AP_DEBIT','AR_DEBIT','EXPENSE'].includes(doc.kind))throw new Error('This document does not create an invoice/expense posting.');if(!doc.approverUserId)throw new Error('Independent approval evidence is missing.');if(doc.category==='SERVICE_CREDIT'&&(doc.approverUserId===doc.creatorUserId||!await tx.approvalInstance.findFirst({where:{organisationId,subjectId:doc.id,status:'APPROVED'}})))throw new Error('A service credit requires independent approval through the configured Finance route.');
  const account=await controls(tx,organisationId,doc.entityId),ar=doc.kind.startsWith('AR_'),credit=doc.kind.endsWith('_CREDIT'),lines:PostingLine[]=[];
  if(!ar&&doc.partyId)await tx.financeSupplier.findFirstOrThrow({where:{organisationId,partyId:doc.partyId,status:'ACTIVE'}});
  if(doc.kind.endsWith('_DEBIT')&&(!doc.source||doc.source.status!=='POSTED'))throw new Error('Debit notes require an original posted invoice.');if(credit){const source=doc.source;if(!source||source.status!=='POSTED'||source.currency!==doc.currency||source.gross-source.settled<doc.gross)throw new Error('Credit exceeds the original posted invoice outstanding amount.');}

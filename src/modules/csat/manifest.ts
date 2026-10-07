@@ -1,8 +1,10 @@
+import { surveyResolvedServiceCase } from "./services/service-case";
 import { Smile } from "lucide-react";
 import type { ModuleManifest } from "@/core/modules/types";
 import { CSAT_CAPABILITIES } from "@/core/permissions/capabilities";
 
 export const csatManifest: ModuleManifest = {
+ serviceSurveyConsumer:surveyResolvedServiceCase,
   id: "csat",
   name: "Satisfaction (CSAT)",
   description: "Branded satisfaction surveys sent after an order, delivery or case closes, with results in one place.",

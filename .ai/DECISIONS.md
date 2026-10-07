@@ -821,3 +821,9 @@ repairs in an isolated release; unresolved failures become actionable AI briefs.
 HTTP success, control inventory and source heuristics are not blanket workflow
 verification. Never hide a broken page or auto-close a report after an unrelated
 passing check. See docs/GUARDIAN.md.
+
+## 7 October 2026 — Cases, Tickets and Queries keep separate ownership
+
+Customer cases stay in `ServiceCase`; new internal tickets and cross-team queries share Core `ServiceWorkItem` with an explicit kind and origin. Historical departmental tickets remain readable dependencies. This avoids duplicating customer identity and preserves historical records while sharing clocks, queues, approvals and evidence. Query completion records safe parent history without transferring the customer case or copying private receiving-team content.
+
+Service credits remain canonical Finance draft documents with readable CR requests and CN references; Service cannot approve or post them. Recovery benefits require independent Core approval and explicit draft-order redemption through Sales pricing/tax calculations. Return receipt joins the Inventory provider transaction to prevent duplicate counters or stock on retries. Browser server deployment is required; a clean detached release may deploy only when pinned to the exact pushed main SHA, preserving concurrent unfinished edits.

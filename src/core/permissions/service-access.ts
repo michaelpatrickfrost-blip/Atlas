@@ -5,6 +5,7 @@ import type { Prisma } from '@/generated/prisma/client';
 export function serviceCaseScope(session: Session): Prisma.ServiceCaseWhereInput {
   return { organisationId: session.organisationId,
     organisation: { moduleStates: { some: { moduleId: "service", enabled: true, entitled: true } } },
+    AND: [{OR:[{queueId:null},{queue:{restricted:false}},{ownerUserId:session.userId},{queue:{members:{some:{organisationId:session.organisationId,userId:session.userId}}}}]}],
     ...(!session.capabilities.has('service.case.read') ? { id: '__denied__' } : {}),
     ...(!session.capabilities.has('service.case.restricted') ? { security: 'STANDARD' } : {}),
   };

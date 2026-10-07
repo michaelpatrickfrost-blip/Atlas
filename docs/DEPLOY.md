@@ -18,8 +18,7 @@ npm run deploy:vps
 `scripts/deploy-vps.sh` pushes `main`, then over SSH on the VPS: takes a
 `pg_dump` backup (`~/backups`, last 10 kept), `git pull --ff-only`, `npm ci`,
 `prisma generate`, `prisma migrate deploy`, builds, restarts the `atlas`
-systemd service and checks `/login`. It refuses to run with uncommitted
-changes or off `main`. Login is SSH key only — no password is stored in the
+systemd service and checks `/login`. It refuses to run with uncommitted changes. A clean detached release worktree may use `ATLAS_RELEASE_COMMIT=<full HEAD SHA> npm run deploy:vps` only after that exact commit is pushed to `origin/main`. The script verifies the pinned commit both locally and after the server pull, stopping if another release moved main. This lets a compatible reviewed release exclude concurrent unfinished edits. Login is SSH key only — no password is stored in the
 repo; on a new Mac run `ssh-copy-id -i ~/.ssh/id_ed25519.pub administrator@85.190.118.218` once.
 Overrides: `ATLAS_VPS_HOST`, `ATLAS_VPS_DIR`, `ATLAS_VPS_URL`.
 

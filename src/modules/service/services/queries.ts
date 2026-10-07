@@ -32,3 +32,11 @@ export async function serviceQueues(session:Session) {
 export async function serviceMembers(session:Session) {
   return db.membership.findMany({where:{organisationId:session.organisationId,active:true},select:{userId:true,user:{select:{name:true}}},take:500});
 }
+
+export async function configuredCaseTypes(session:Session){
+ await requireService(session);
+ const {CASE_TYPES}=await import('../domain/workflow');
+ const {queueConfig}=await import('@/core/service-work/config');
+ const queues=await db.serviceQueue.findMany({where:{organisationId:session.organisationId,active:true},select:{configuration:true}});
+ return [...new Set([...CASE_TYPES,...queues.flatMap(q=>queueConfig(q.configuration).caseTypes)])];
+}

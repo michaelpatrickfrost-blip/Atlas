@@ -135,7 +135,7 @@ export type StockProvider = {
   executeMovement(actor: LogisticsActor, command: StockCommand): Promise<StockCommandResult>;
   receiveStock(actor: LogisticsActor, command: StockCommand): Promise<StockCommandResult>;
   shipStock(actor: LogisticsActor, command: StockCommand): Promise<StockCommandResult>;
-  returnStock(actor: LogisticsActor, command: StockCommand): Promise<StockCommandResult>;
+  returnStock(actor: LogisticsActor, command: StockCommand, transaction?: import("@/generated/prisma/client").Prisma.TransactionClient): Promise<StockCommandResult>;
   reportDiscrepancy(actor: LogisticsActor, input: { requestKey: string; productId: string; warehouseId: string; locationId?: string | null; systemQuantity: number; reportedQuantity: number; sourceType: string; sourceId: string }): Promise<StockCommandResult>;
 };
 

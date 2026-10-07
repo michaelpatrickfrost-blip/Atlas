@@ -1,11 +1,12 @@
 import { Ticket as TicketIcon } from "lucide-react";
+import { ticketSearch, ticketAttention } from "@/core/service-work/queries";
 import type { ModuleManifest } from "@/core/modules/types";
 import { TICKETING_CAPABILITIES } from "@/core/permissions/capabilities";
 
 export const ticketingManifest: ModuleManifest = {
   id: "tickets",
-  name: "Ticketing",
-  description: "Multi-queue ticketing system for IT, customer service, complaints and internal requests.",
+  name: "Tickets",
+  description: "Internal service requests, incidents and cross-team work for every department.",
   icon: TicketIcon,
   version: "0.1.0",
   minimumCoreVersion: "0.1.0",
@@ -14,9 +15,14 @@ export const ticketingManifest: ModuleManifest = {
   rootPath: "/tickets",
   accessCapability: TICKETING_CAPABILITIES.ticketRead,
   status: "available",
+  searchProvider: ticketSearch,
+  attentionProvider: ticketAttention,
   navigation: [
-    { label: "My Tickets", href: "/tickets", capability: TICKETING_CAPABILITIES.ticketRead },
+    { label: "Overview", href: "/tickets", capability: TICKETING_CAPABILITIES.ticketRead },
     { label: "Queues", href: "/tickets/queues", capability: TICKETING_CAPABILITIES.queueRead, group: "Admin" },
-    { label: "Queue Setup", href: "/tickets/queues/manage", capability: TICKETING_CAPABILITIES.queueManage, group: "Admin" },
+    { label: "My work", href: "/tickets?mine=1", capability: TICKETING_CAPABILITIES.ticketRead },
+    { label: "Service catalogue", href: "/tickets/catalogue", capability: TICKETING_CAPABILITIES.ticketCreate },
+    { label: "Knowledge", href: "/tickets/knowledge", capability: TICKETING_CAPABILITIES.ticketRead, group: "Insights" },
+    { label: "Reports", href: "/tickets/reports", capability: TICKETING_CAPABILITIES.ticketRead, group: "Insights" },
   ],
 };

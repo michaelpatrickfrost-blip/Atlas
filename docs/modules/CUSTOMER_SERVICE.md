@@ -1,5 +1,14 @@
 # Customer Service delivery
 
+## Current release — 7 October 2026
+
+The connected Case / Tickets / Queries release is documented in
+[SERVICE_WORK_DESK.md](SERVICE_WORK_DESK.md). Its target runtime is the installed
+Mac app with central server data; the server must not host these pages. See
+CURRENT_STATE for the release's actual verification status.
+
+## Historical foundation — 3 October 2026
+
 3 October 2026. Module id `service`, local application routes `/service/**`.
 The [241-section source](CUSTOMER_SERVICE_SOURCE_REQUIREMENTS.md) is preserved
 verbatim. [Coverage](CUSTOMER_SERVICE_COVERAGE.md) retains every requirement;

@@ -17,10 +17,13 @@ if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
 fi
 
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-[ "$BRANCH" = "main" ] || { echo "Deploy from main (currently on $BRANCH)." >&2; exit 1; }
+COMMIT=$(git rev-parse HEAD)
+if [ "$BRANCH" != "main" ]; then
+  [ "$BRANCH" = "HEAD" ] && [ "${ATLAS_RELEASE_COMMIT:-}" = "$COMMIT" ] && [ "$(git rev-parse origin/main)" = "$COMMIT" ] || { echo "Deploy from main, or a clean detached release pinned to origin/main." >&2; exit 1; }
+fi
 
 echo "==> Pushing main"
-git push -q origin main
+git push -q origin HEAD:main
 
 echo "==> Checking SSH key login to $HOST"
 "${SSH[@]}" true 2>/dev/null || {
@@ -29,7 +32,7 @@ echo "==> Checking SSH key login to $HOST"
 }
 
 echo "==> Deploying on the VPS"
-"${SSH[@]}" bash -s "$DIR" <<'REMOTE'
+"${SSH[@]}" bash -s "$DIR" "$COMMIT" <<'REMOTE'
 set -euo pipefail
 cd "$1"
 set -a; . ./.env.local; set +a
@@ -39,10 +42,11 @@ mkdir -p ~/backups
 B=~/backups/atlas-pre-deploy-$(date +%Y%m%d-%H%M%S).dump
 pg_dump "$DB" -Fc -f "$B"
 echo "backup: $B"
-ls -1t ~/backups/atlas-pre-deploy-*.dump | tail -n +11 | xargs -r rm -f
+# Preserve existing deployment backups; retention is an explicit operational task.
 
 PREV=$(git rev-parse --short HEAD)
 git pull -q --ff-only
+[ "$(git rev-parse HEAD)" = "$2" ] || { echo "Remote main changed during deployment; review the new commit before continuing." >&2; exit 1; }
 echo "commit: $PREV -> $(git rev-parse --short HEAD)"
 
 npm ci --no-audit --no-fund >/dev/null

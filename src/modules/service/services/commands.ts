@@ -7,20 +7,21 @@ import { serviceCaseScope, serviceTicketScope } from '@/core/permissions/service
 import type { Prisma, ServiceCase } from '@/generated/prisma/client';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { requireService } from './queries';
-import { ACTIVE_STATUSES, CASE_TYPES, PRIORITIES, SEVERITIES, CHANNELS, TICKET_STATUSES, choice, validateTransition, isComplaint } from '../domain/workflow';
+import { requireService, configuredCaseTypes } from './queries';
+import { ACTIVE_STATUSES, PRIORITIES, SEVERITIES, CHANNELS, TICKET_STATUSES, choice, validateTransition, isComplaint } from '../domain/workflow';
 import { readManagerPolicy, serviceNeedsManagerSignOff } from '@/core/permissions/manager-level';
 import { readCompanyProfile } from '@/core/setup/company-profile';
 import { SERVICE_CAPABILITIES } from '@/core/permissions/capabilities';
-import { assertModuleEnabled } from '@/core/modules/access';
-import { SERVICE_CREDIT_REASONS, serviceCreditAmounts } from '../domain/credit';
-import { minor } from '@/modules/finance/domain/money';
+import { validatePurchase } from './purchase';
+import { queueConfig } from '@/core/service-work/config';
+import { slaSchema, addBusinessMinutes, businessMinutesBetween } from '@/core/service-work/sla';
+import { prepareServiceCredit, prepareServiceOperation, triggerCaseSurvey } from '@/core/service-work/connections';
 
 function field(form:FormData,key:string,max=2000) {const value=String(form.get(key)??'').trim();if(value.length>max)throw new Error(`${key} is too long.`);return value;}
 function required(form:FormData,key:string,max=2000) {const value=field(form,key,max);if(!value)throw new Error(`${key} is required.`);return value;}
 function version(form:FormData) {const n=Number(form.get('version'));if(!Number.isSafeInteger(n)||n<1)throw new Error('Refresh this record before saving.');return n;}
 function date(form:FormData,key:string,needed=false) {const raw=field(form,key,60);if(!raw){if(needed)throw new Error('A due date is required.');return null;}const d=new Date(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(raw)?raw+'Z':raw);if(!Number.isFinite(d.getTime()))throw new Error('Invalid date.');return d;}
-async function getCase(tx:Prisma.TransactionClient,session:Session,id:string) {const c=await tx.serviceCase.findFirst({where:{AND:[serviceCaseScope(session),{id}]}});if(!c)throw new Error('Case unavailable.');return c;}
+async function getCase(tx:Prisma.TransactionClient,session:Session,id:string) {const c=await tx.serviceCase.findFirst({where:{AND:[serviceCaseScope(session),{id}]}});if(!c)throw new Error('Case unavailable.');if(c.mergedIntoId)throw new Error('Open the continuing case before making changes.');return c;}
 async function member(tx:Prisma.TransactionClient,session:Session,userId:string) {if(!await tx.membership.findFirst({where:{organisationId:session.organisationId,userId,active:true}}))throw new Error('Choose an active company member.');}
 async function number(tx:Prisma.TransactionClient,organisationId:string,prefix:string) {const seq=await tx.serviceSequence.upsert({where:{organisationId_prefix:{organisationId,prefix}},create:{organisationId,prefix,value:1},update:{value:{increment:1}}});return `${prefix}-${String(seq.value).padStart(6,'0')}`;}
 async function lock(tx:Prisma.TransactionClient,session:Session,c:ServiceCase,expected:number,data:Prisma.ServiceCaseUpdateManyMutationInput={}) {const result=await tx.serviceCase.updateMany({where:{id:c.id,organisationId:session.organisationId,version:expected},data:{...data,version:{increment:1}}});if(result.count!==1)throw new Error('This case changed. Refresh before saving.');}
@@ -38,33 +39,40 @@ export async function createCase(form:FormData) {
   assertCapability(session,'service.case.create');
   assertCapability(session,'service.case.read');assertCapability(session,'customers.read');await requireService(session);
   const partyId=required(form,'partyId',100),subject=required(form,'subject',250);
+  const types=await configuredCaseTypes(session);
   const id=await db.$transaction(async tx=>{
     if(!await tx.party.findFirst({where:{id:partyId,organisationId:session.organisationId}}))throw new Error('Customer unavailable.');
     const contactId=field(form,'contactId',100)||null;
     if(contactId&&!await tx.contact.findFirst({where:{id:contactId,partyId,party:{organisationId:session.organisationId}}}))throw new Error('Contact does not belong to this customer.');
     const security=choice(field(form,'security')||'STANDARD',['STANDARD','RESTRICTED'] as const);if(security==='RESTRICTED')assertCapability(session,'service.case.restricted');
-    const c=await tx.serviceCase.create({data:{organisationId:session.organisationId,number:await number(tx,session.organisationId,'CASE'),partyId,contactId,subject,description:field(form,'description',20000),type:choice(field(form,'type')||'QUERY',CASE_TYPES),priority:choice(field(form,'priority')||'NORMAL',PRIORITIES),severity:choice(field(form,'severity')||'SEV3',SEVERITIES),channel:choice(field(form,'channel')||'MANUAL',CHANNELS),ownerUserId:session.userId,createdByUserId:session.userId,security}});
+    const context=await validatePurchase(tx,session,partyId,form);
+    const queues=await tx.serviceQueue.findMany({where:{organisationId:session.organisationId,active:true},orderBy:{name:'asc'}});
+    const queue=queues.find(q=>queueConfig(q.configuration).routing.some(rule=>Object.entries(rule).every(([key,value])=>field(form,key)===value)));
+    const sla=queue?queueConfig(queue.configuration).sla:slaSchema.parse({}); const now=new Date();
+    const c=await tx.serviceCase.create({data:{context,sla,queueId:queue?.id,firstResponseDueAt:addBusinessMinutes(now,sla.responseMinutes,sla.calendar),resolutionDueAt:addBusinessMinutes(now,sla.resolutionMinutes,sla.calendar),organisationId:session.organisationId,number:await number(tx,session.organisationId,'CS'),partyId,contactId,subject,category:field(form,'category',250),description:field(form,'description',20000),type:choice(field(form,'type')||'GENERAL_ENQUIRY',types),priority:choice(field(form,'priority')||'NORMAL',PRIORITIES),severity:choice(field(form,'severity')||'SEV3',SEVERITIES),channel:choice(field(form,'channel')||'MANUAL',CHANNELS),ownerUserId:session.userId,createdByUserId:session.userId,security}});
+    for(const [entityType,entityId] of [['SalesOrder',context.salesOrderId],['Product',context.productId],['Shipment',context.shipmentId]])if(entityId)await tx.serviceLink.create({data:{organisationId:session.organisationId,caseId:c.id,entityType,entityId}});
     await event(tx,session,c,'CASE_CREATED','Case received. Customer Service retains ownership.');return c.id;
   });revalidatePath('/service','layout');revalidatePath(`/service/cases/${id}`);redirect(`/service/cases/${id}`);
 }
 export async function updateCase(form:FormData) {
   const session=await requireSession();
   assertCapability(session,'service.case.update');
-  await requireService(session);const id=required(form,'caseId',100);
-  await db.$transaction(async tx=>{const c=await getCase(tx,session,id);await lock(tx,session,c,version(form),{type:choice(required(form,'type'),CASE_TYPES),category:field(form,'category',250),priority:choice(required(form,'priority'),PRIORITIES),severity:choice(required(form,'severity'),SEVERITIES),rootCause:field(form,'rootCause',2000)||null,customerUpdateDueAt:date(form,'customerUpdateDueAt')});await event(tx,session,c,'CASE_RECLASSIFIED',`Classification changed: ${c.type} / ${c.category} / ${c.priority} / ${c.severity} → ${field(form,'type')} / ${field(form,'category')} / ${field(form,'priority')} / ${field(form,'severity')}. Root cause: ${c.rootCause??'Not recorded'} → ${field(form,'rootCause')||'Not recorded'}. Customer update due: ${c.customerUpdateDueAt?.toISOString()??'None'} → ${date(form,'customerUpdateDueAt')?.toISOString()??'None'}.`);});revalidatePath('/service','layout');revalidatePath(`/service/cases/${id}`);
+  await requireService(session);const id=required(form,'caseId',100);const types=await configuredCaseTypes(session);
+  await db.$transaction(async tx=>{const c=await getCase(tx,session,id);await lock(tx,session,c,version(form),{type:choice(required(form,'type'),types),category:field(form,'category',250),priority:choice(required(form,'priority'),PRIORITIES),severity:choice(required(form,'severity'),SEVERITIES),rootCause:field(form,'rootCause',2000)||null,customerUpdateDueAt:date(form,'customerUpdateDueAt')});await event(tx,session,c,'CASE_RECLASSIFIED',`Classification changed: ${c.type} / ${c.category} / ${c.priority} / ${c.severity} → ${field(form,'type')} / ${field(form,'category')} / ${field(form,'priority')} / ${field(form,'severity')}. Root cause: ${c.rootCause??'Not recorded'} → ${field(form,'rootCause')||'Not recorded'}. Customer update due: ${c.customerUpdateDueAt?.toISOString()??'None'} → ${date(form,'customerUpdateDueAt')?.toISOString()??'None'}.`);});revalidatePath('/service','layout');revalidatePath(`/service/cases/${id}`);
 }
 export async function assignCase(form:FormData) {
   const session=await requireSession();
   assertCapability(session,'service.case.assign');
   await requireService(session);const id=required(form,'caseId',100),ownerUserId=required(form,'ownerUserId',100);
-  await db.$transaction(async tx=>{const c=await getCase(tx,session,id);await member(tx,session,ownerUserId);const owner=await tx.membership.findFirstOrThrow({where:{organisationId:session.organisationId,userId:ownerUserId,active:true},include:{roles:{include:{role:true}}}});const caps=new Set(owner.roles.flatMap(r=>r.role.capabilities));if(c.security==='RESTRICTED'&&!caps.has('service.case.restricted'))throw new Error('Owner must have restricted case access.');if(!caps.has('service.case.read')||!caps.has('service.case.update'))throw new Error('Case owner must have Customer Service case access.');await lock(tx,session,c,version(form),{ownerUserId});await event(tx,session,c,'CASE_ASSIGNED',`Case owner changed from ${c.ownerUserId} to ${ownerUserId}.`);});revalidatePath('/service','layout');revalidatePath(`/service/cases/${id}`);
+  await db.$transaction(async tx=>{const c=await getCase(tx,session,id);await member(tx,session,ownerUserId);const owner=await tx.membership.findFirstOrThrow({where:{organisationId:session.organisationId,userId:ownerUserId,active:true},include:{roles:{include:{role:true}}}});const caps=new Set([...owner.roles.flatMap(r=>r.role.capabilities),...owner.grantedCapabilities]);for(const denied of owner.deniedCapabilities)caps.delete(denied);if(c.security==='RESTRICTED'&&!caps.has('service.case.restricted'))throw new Error('Owner must have restricted case access.');if(!caps.has('service.case.read')||!caps.has('service.case.update'))throw new Error('Case owner must have Customer Service case access.');await lock(tx,session,c,version(form),{ownerUserId});await event(tx,session,c,'CASE_ASSIGNED',`Case owner changed from ${c.ownerUserId} to ${ownerUserId}.`);});revalidatePath('/service','layout');revalidatePath(`/service/cases/${id}`);
 }
 export async function transitionCase(form:FormData) {
   const session=await requireSession();
   assertCapability(session,'service.case.update');
   await requireService(session);const id=required(form,'caseId',100),status=required(form,'status',40);
   if(status==='RESOLVED')assertCapability(session,'service.case.resolve');if(status==='CLOSED')assertCapability(session,'service.case.close');
-  await db.$transaction(async tx=>{const c=await getCase(tx,session,id),openTickets=await tx.serviceTicket.count({where:{organisationId:session.organisationId,caseId:id,status:{notIn:['COMPLETE','CANCELLED']}}});
+  await db.$transaction(async tx=>{const c=await getCase(tx,session,id),linkedOpen=await tx.serviceWorkItem.count({where:{organisationId:session.organisationId,parentCaseId:id,status:{notIn:['RESOLVED','CLOSED','CANCELLED']},mergedIntoId:null}}),legacyOpen=await tx.serviceTicket.count({where:{organisationId:session.organisationId,caseId:id,status:{notIn:['COMPLETE','CANCELLED']}}});
+    const openTickets=linkedOpen+legacyOpen;
     const reason=field(form,'reason'),summary=field(form,'resolutionSummary',10000),code=field(form,'resolutionCode',100);
     validateTransition(c.status,status,{openTickets,resolution:summary,code,rootCause:c.rootCause??undefined,complaint:isComplaint(c.type),reason});
     if(status==='RESOLVED'||status==='CLOSED'){
@@ -77,9 +85,12 @@ export async function transitionCase(form:FormData) {
       if(serviceNeedsManagerSignOff(readManagerPolicy(org.managerPolicy),{complaint:isComplaint(c.type),linkedGross,foreign})&&!session.capabilities.has(SERVICE_CAPABILITIES.caseApprove))throw new Error(isComplaint(c.type)?'A customer service manager must sign off this complaint before it can be resolved or closed.':'A customer service manager must sign off this high-value query before it can be resolved or closed.');
     }
     const reopening=status==='OPEN'&&['RESOLVED','CLOSED','CANCELLED'].includes(c.status);
-    await lock(tx,session,c,version(form),{status,...(status==='RESOLVED'?{resolutionCode:code,resolutionSummary:summary,resolvedAt:new Date(),customerUpdateDueAt:null}:{}),...(status==='CLOSED'?{closedAt:new Date()}:{}),...(reopening?{reopenCount:{increment:1},resolvedAt:null,closedAt:null}:{} )});
+    const sla=slaSchema.parse(c.sla);const now=new Date();const pause=sla.pauseStates.includes(status);let resolutionDueAt=c.resolutionDueAt;
+    if(c.pausedAt&&!pause&&resolutionDueAt)resolutionDueAt=addBusinessMinutes(resolutionDueAt,businessMinutesBetween(c.pausedAt,now,sla.calendar),sla.calendar);
+    await lock(tx,session,c,version(form),{status,pausedAt:pause?(c.pausedAt??now):null,resolutionDueAt,...(status==='RESOLVED'?{resolutionCode:code,resolutionSummary:summary,resolvedAt:new Date(),customerUpdateDueAt:null}:{}),...(status==='CLOSED'?{closedAt:new Date()}:{}),...(reopening?{reopenCount:{increment:1},resolvedAt:null,closedAt:null}:{} )});
+    if(pause!==!!c.pausedAt)await event(tx,session,c,pause?'SLA_PAUSED':'SLA_RESUMED',`Resolution deadline ${c.resolutionDueAt?.toISOString()??'none'} → ${resolutionDueAt?.toISOString()??'none'}. ${reason}`);
     await event(tx,session,c,reopening?'CASE_REOPENED':'STATUS_CHANGED',`${c.status} → ${status}. ${reason||summary}`);
-  },{isolationLevel:'Serializable'});revalidatePath('/service','layout');revalidatePath(`/service/cases/${id}`);
+  },{isolationLevel:'Serializable'});if(status==='RESOLVED')await triggerCaseSurvey(session,id);revalidatePath('/service','layout');revalidatePath(`/service/cases/${id}`);
 }
 export async function addCaseEntry(form:FormData) {
   const session=await requireSession();
@@ -124,13 +135,13 @@ export async function createQueue(form:FormData) {
   const session=await requireSession();
   assertCapability(session,'service.queue.manage');
   await requireService(session);const prefix=required(form,'prefix',8).toUpperCase();if(!/^[A-Z]{2,8}$/.test(prefix)||prefix==='CASE')throw new Error('Use 2–8 letters, excluding CASE.');
-  await db.$transaction(async tx=>{const queue=await tx.serviceQueue.create({data:{organisationId:session.organisationId,name:required(form,'name',100),prefix,department:required(form,'department',100)}});await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:'service.queue.created',entityType:'ServiceQueue',entityId:queue.id}});});revalidatePath('/service','layout');
+  await db.$transaction(async tx=>{const queue=await tx.serviceQueue.create({data:{organisationId:session.organisationId,name:required(form,'name',100),prefix,department:required(form,'department',100)}});await tx.serviceQueueMember.create({data:{organisationId:session.organisationId,queueId:queue.id,userId:session.userId}});await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:'service.queue.created',entityType:'ServiceQueue',entityId:queue.id}});});revalidatePath('/service','layout');
 }
 export async function addQueueMember(form:FormData) {
   const session=await requireSession();
   assertCapability(session,'service.queue.manage');
   await requireService(session);const queueId=required(form,'queueId',100),userId=required(form,'userId',100);
-  await db.$transaction(async tx=>{if(!await tx.serviceQueue.findFirst({where:{id:queueId,organisationId:session.organisationId}}))throw new Error('Queue unavailable.');await member(tx,session,userId);await tx.serviceQueueMember.upsert({where:{queueId_userId:{queueId,userId}},create:{organisationId:session.organisationId,queueId,userId},update:{}});await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:'service.queue.member_added',entityType:'ServiceQueue',entityId:queueId,after:{userId}}});});revalidatePath('/service','layout');
+  await db.$transaction(async tx=>{const queue=await tx.serviceQueue.findFirst({where:{id:queueId,organisationId:session.organisationId}});if(!queue)throw new Error('Queue unavailable.');if(queue.restricted&&!await tx.serviceQueueMember.findFirst({where:{queueId,organisationId:session.organisationId,userId:session.userId}}))throw new Error('Restricted queue membership requires a current member.');await member(tx,session,userId);await tx.serviceQueueMember.upsert({where:{queueId_userId:{queueId,userId}},create:{organisationId:session.organisationId,queueId,userId},update:{}});await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:'service.queue.member_added',entityType:'ServiceQueue',entityId:queueId,after:{userId}}});});revalidatePath('/service','layout');
 }
 export async function linkCaseRecord(form:FormData) {
   const session=await requireSession();
@@ -149,56 +160,26 @@ export async function creditChoices(caseId: string) {
   await requireService(session);
   const serviceCase = await db.serviceCase.findFirst({ where: { AND: [serviceCaseScope(session), { id: caseId }] }, select: { id: true, partyId: true } });
   if (!serviceCase) return { invoices: [], sent: null };
+  if(!await db.moduleState.findFirst({where:{organisationId:session.organisationId,moduleId:"finance",enabled:true,entitled:true}}))return {invoices:[],sent:null};
   const [invoices, sent] = await Promise.all([
-    db.financeDocument.findMany({ where: { organisationId: session.organisationId, partyId: serviceCase.partyId, kind: "AR_INVOICE", status: "POSTED" }, select: { id: true, reference: true, gross: true, settled: true, currency: true }, orderBy: { documentDate: "desc" }, take: 30 }),
+    db.financeDocument.findMany({ where: { organisationId: session.organisationId, partyId: serviceCase.partyId, kind: "AR_INVOICE", status: "POSTED" }, select: { id: true, reference: true, gross: true, settled: true, currency: true, lines: {select:{id:true,number:true,description:true,productId:true,salesOrderLineId:true,quantity:true,net:true,tax:true}} }, orderBy: { documentDate: "desc" }, take: 30 }),
     db.financeDocument.findFirst({ where: { organisationId: session.organisationId, duplicateKey: `service-credit:${serviceCase.id}` }, select: { id: true, reference: true, status: true } }),
   ]);
   return {
-    invoices: invoices.filter((invoice) => invoice.gross > invoice.settled).map((invoice) => ({ id: invoice.id, reference: invoice.reference, outstanding: invoice.gross - invoice.settled, currency: invoice.currency })),
+    invoices: invoices.filter((invoice) => invoice.gross > invoice.settled).map((invoice) => ({ id: invoice.id, reference: invoice.reference, outstanding: invoice.gross - invoice.settled, currency: invoice.currency, lines: invoice.lines.map(line=>({...line,quantity:line.quantity.toString(),net:line.net.toString(),tax:line.tax.toString()})) })),
     sent: sent && !["CANCELLED", "REJECTED"].includes(sent.status) ? sent : null,
   };
 }
 
 export async function askFinanceForCredit(form: FormData) {
-  const session = await requireSession();
-  assertCapability(session, "service.case.update");
-  await requireService(session);
-  await assertModuleEnabled(session, "finance");
-  const reason = field(form, "reason", 40);
-  if (!(SERVICE_CREDIT_REASONS as readonly string[]).includes(reason)) throw new Error("Say whether this is damage, a complaint, a shortage, pricing or goodwill.");
-  const note = field(form, "note", 2000);
-  const invoiceId = required(form, "invoiceId", 100);
-  const id = required(form, "caseId", 100);
-  await db.$transaction(async (tx) => {
-    const serviceCase = await getCase(tx, session, id);
-    const invoice = await tx.financeDocument.findFirst({ where: { id: invoiceId, organisationId: session.organisationId, partyId: serviceCase.partyId, kind: "AR_INVOICE", status: "POSTED" }, include: { lines: true } });
-    if (!invoice) throw new Error("Choose a posted invoice for this customer.");
-    const existing = await tx.financeDocument.findFirst({ where: { organisationId: session.organisationId, duplicateKey: `service-credit:${serviceCase.id}` } });
-    if (existing && !["CANCELLED", "REJECTED"].includes(existing.status)) throw new Error(`Finance already has ${existing.reference} for this case.`);
-    if (existing) await tx.financeDocument.update({ where: { id: existing.id }, data: { duplicateKey: null } });
-    const line = [...invoice.lines].sort((a, b) => (a.net > b.net ? -1 : 1))[0];
-    if (!line) throw new Error("That invoice has no lines to credit.");
-    const amounts = serviceCreditAmounts(minor(field(form, "amount", 40), invoice.currency), line.net, line.tax, invoice.gross - invoice.settled);
-    const detail = [reason, note].filter(Boolean).join(". ");
-    const credit = await tx.financeDocument.create({
-      data: {
-        organisationId: session.organisationId, entityId: invoice.entityId, kind: "AR_CREDIT", category: "SERVICE_CREDIT", department: "Customer Service",
-        reference: `CN-${crypto.randomUUID().slice(0, 10).toUpperCase()}`, title: `${reason} credit for ${serviceCase.number}`,
-        creatorUserId: session.userId, partyId: serviceCase.partyId, sourceId: invoice.id, salesOrderId: invoice.salesOrderId, salesOrderRevision: invoice.salesOrderRevision,
-        duplicateKey: `service-credit:${serviceCase.id}`, currency: invoice.currency, exchangeRate: invoice.exchangeRate, documentDate: new Date(), dueAt: invoice.dueAt,
-        net: amounts.net, tax: amounts.tax, gross: amounts.gross, reason: `${serviceCase.number}: ${detail}`.slice(0, 4000),
-        lines: { create: [{ number: 1, description: `${reason} on ${serviceCase.number}: ${line.description}`.slice(0, 500), quantity: "1", unitPrice: amounts.net, net: amounts.net, tax: amounts.tax, taxCode: line.taxCode, taxRateBps: line.taxRateBps, sourceLineId: line.id, productId: line.productId, salesOrderLineId: line.salesOrderLineId, accountId: line.accountId }] },
-      },
-    });
-    await tx.financeTimeline.create({ data: { organisationId: session.organisationId, documentId: credit.id, actorUserId: session.userId, action: "ASKED_BY_SERVICE", detail: `${serviceCase.number} asked Finance to raise this against ${invoice.reference}. The customer balance is unchanged until Finance posts it.` } });
-    await tx.serviceLink.create({ data: { organisationId: session.organisationId, caseId: serviceCase.id, entityType: "FinanceDocument", entityId: credit.id, relationship: "CREDIT" } });
-    await lock(tx, session, serviceCase, version(form));
-    await event(tx, session, serviceCase, "CREDIT_ASKED", `Asked Finance to raise a ${reason.toLowerCase()} credit ${credit.reference} against ${invoice.reference}.`);
-    await tx.auditEntry.create({ data: { organisationId: session.organisationId, actorUserId: session.userId, action: "service.credit.asked", entityType: "FinanceDocument", entityId: credit.id, after: { caseId: serviceCase.id, invoiceId: invoice.id, gross: amounts.gross.toString() } } });
-  });
-  revalidatePath("/service", "layout");
-  revalidatePath(`/service/cases/${id}`);
-  revalidatePath("/finance", "layout");
+ const session=await requireSession();
+ assertCapability(session,'service.case.update');
+ await requireService(session);const id=required(form,'caseId',100);
+ await db.$transaction(async tx=>{const c=await getCase(tx,session,id);await lock(tx,session,c,version(form));
+ const purchase=c.context as {productId?:string;salesOrderLineId?:string;affectedQuantity?:number};
+ const credit=await prepareServiceCredit(tx,session,{affectedQuantity:purchase.affectedQuantity,productId:purchase.productId,salesOrderLineId:purchase.salesOrderLineId,caseId:id,caseNumber:c.number,partyId:c.partyId,invoiceId:required(form,'invoiceId',100),lineId:required(form,'lineId',100),net:field(form,'amount',40),quantity:field(form,'creditQuantity')?Number(form.get('creditQuantity')):null,reason:required(form,'reason',2000),requestKey:required(form,'requestKey',100)});
+ await tx.serviceLink.upsert({where:{caseId_entityType_entityId:{caseId:id,entityType:'FinanceDocument',entityId:credit.id}},create:{organisationId:session.organisationId,caseId:id,entityType:'FinanceDocument',entityId:credit.id,relationship:'CREDIT'},update:{}});await event(tx,session,c,'CREDIT_REQUESTED',`${credit.requestReference} → ${credit.reference}. Finance approval and separate posting required.`);
+ },{isolationLevel:'Serializable'});revalidatePath('/service','layout');revalidatePath('/finance','layout');
 }
 
 export async function getCaseOwners() {
@@ -214,4 +195,47 @@ export async function getDepartmentWork() {
   await requireService(session);
   const rows=await db.serviceTicket.findMany({where:serviceTicketScope(session),include:{queue:{select:{id:true,name:true}},case:{select:{number:true}}},orderBy:{dueAt:'asc'},take:100});
   return rows.map(({case:c,...t})=>({...t,caseNumber:c.number}));
+}
+
+export async function savePurchaseContext(form:FormData) {
+ const session=await requireSession();
+ assertCapability(session,'service.case.update');
+ await requireService(session);const id=required(form,'caseId',100);
+ await db.$transaction(async tx=>{const c=await getCase(tx,session,id);const context=await validatePurchase(tx,session,c.partyId,form);await lock(tx,session,c,version(form),{context});
+ for(const [entityType,entityId] of [['SalesOrder',context.salesOrderId],['Product',context.productId],['Shipment',context.shipmentId]])if(entityId)await tx.serviceLink.upsert({where:{caseId_entityType_entityId:{caseId:id,entityType,entityId}},create:{organisationId:session.organisationId,caseId:id,entityType,entityId},update:{}});
+ await event(tx,session,c,'PURCHASE_CONTEXT_SAVED','Verified order, product and delivery context updated.');});revalidatePath('/service','layout');
+}
+export async function saveInvestigation(form:FormData){
+ const session=await requireSession();
+ assertCapability(session,'service.case.update');
+ await requireService(session);const id=required(form,'caseId',100);
+ await db.$transaction(async tx=>{const c=await getCase(tx,session,id);const investigation=Object.fromEntries(['impact','containment','suspectedCause','confirmedCause','correctiveAction','preventiveAction'].map(key=>[key,field(form,key,4000)]));await lock(tx,session,c,version(form),{investigation});await event(tx,session,c,'INVESTIGATION_UPDATED','Impact, containment and investigation findings updated.');});revalidatePath('/service','layout');
+}
+export async function logCaseCall(form:FormData){
+ const session=await requireSession();
+ assertCapability(session,'service.case.communication');
+ await requireService(session);const id=required(form,'caseId',100);
+ await db.$transaction(async tx=>{const c=await getCase(tx,session,id);const direction=choice(required(form,'direction'),['INBOUND','OUTBOUND'] as const);const duration=Number(form.get('duration'));if(!Number.isFinite(duration)||duration<0||duration>1440)throw new Error('Enter call duration in minutes.');const body=`${direction==='INBOUND'?'Inbound':'Outbound'} call · ${field(form,'telephone',60)} · ${date(form,'startedAt',true)!.toISOString()} · ${duration} minutes\nOutcome: ${required(form,'outcome',250)}\n${field(form,'notes',10000)}\nFollow-up: ${field(form,'followUp',1000)}`;await lock(tx,session,c,version(form));await tx.serviceEntry.create({data:{organisationId:session.organisationId,caseId:id,kind:'CALL_LOG',visibility:'INTERNAL',body,authorUserId:session.userId}});await event(tx,session,c,'CALL_RECORDED','Manual call log recorded.');});revalidatePath('/service','layout');
+}
+
+export async function createCaseRemedy(form:FormData){
+ const session=await requireSession();
+ assertCapability(session,'service.case.update');
+ await requireService(session);const id=required(form,'caseId',100),moduleId=choice(required(form,'moduleId'),['sales','logistics','quality'] as const);
+ await db.$transaction(async tx=>{const c=await getCase(tx,session,id);if(!ACTIVE_STATUSES.includes(c.status as typeof ACTIVE_STATUSES[number]))throw new Error('Reopen the case before requesting a remedy.');const relationship=`REMEDY:${required(form,'requestKey',100)}`;
+ if(await tx.serviceLink.findFirst({where:{organisationId:session.organisationId,caseId:id,relationship}}))return;
+ await lock(tx,session,c,version(form));const result=await prepareServiceOperation(tx,session,moduleId,{caseId:id,caseNumber:c.number,partyId:c.partyId,subject:c.subject,description:c.description,context:c.context as {salesOrderId?:string;salesOrderLineId?:string;productId?:string;shipmentId?:string;affectedQuantity?:number;lotCode?:string},requestKey:required(form,'requestKey',100)});
+ await tx.serviceLink.create({data:{organisationId:session.organisationId,caseId:id,entityId:result.id,entityType:result.entityType,relationship}});await event(tx,session,c,'REMEDY_REQUESTED',`${result.reference} created with ${moduleId}. Source module retains control.`);},{isolationLevel:'Serializable'});revalidatePath('/service','layout');revalidatePath(`/${moduleId}`,'layout');
+}
+
+export async function mergeCases(form:FormData){
+ const session=await requireSession();
+ assertCapability(session,'service.case.assign');
+ await requireService(session);
+ await db.$transaction(async tx=>{const source=await getCase(tx,session,required(form,'caseId',100));const target=await tx.serviceCase.findFirst({where:{AND:[serviceCaseScope(session),{number:required(form,'targetNumber',40),mergedIntoId:null,status:{in:[...ACTIVE_STATUSES]}}]}});
+ if(!target||source.id===target.id||source.partyId!==target.partyId||source.security!==target.security||source.mergedIntoId)throw new Error('Choose a different active case for the same customer and security level.');const reason=required(form,'reason',2000);
+ const changed=await tx.serviceCase.updateMany({where:{id:source.id,organisationId:session.organisationId,version:version(form)},data:{mergedIntoId:target.id,status:'CLOSED',resolutionCode:'DUPLICATE',resolutionSummary:reason,resolvedAt:new Date(),closedAt:new Date(),version:{increment:1}}});if(!changed.count)throw new Error('Case changed. Refresh before merging.');
+ await tx.serviceTicket.updateMany({where:{organisationId:session.organisationId,caseId:source.id,status:{notIn:['COMPLETE','CANCELLED']}},data:{caseId:target.id,version:{increment:1}}});await tx.serviceWorkItem.updateMany({where:{organisationId:session.organisationId,parentCaseId:source.id,status:{notIn:['RESOLVED','CLOSED','CANCELLED']}},data:{parentCaseId:target.id,version:{increment:1}}});await tx.serviceCase.update({where:{id:target.id},data:{version:{increment:1}}});
+ await event(tx,session,source,'CASE_MERGED',`Merged into ${target.number}. ${reason}`);await event(tx,session,target,'MERGE_RECEIVED',`${source.number} merged here. Original timeline, evidence and financial links are retained on the historical reference.`);
+ },{isolationLevel:'Serializable'});revalidatePath('/service','layout');
 }

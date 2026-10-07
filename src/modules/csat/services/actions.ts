@@ -72,7 +72,20 @@ export async function recordCsatScore(token: string, score: number) {
   const response = await db.csatResponse.findUnique({ where: { token }, include: { survey: true } });
   if (!response || response.respondedAt) return null;
   const value = Math.min(5, Math.max(1, Math.round(Number(score)) || 1));
-  await db.csatResponse.update({ where: { token }, data: { score: value, respondedAt: new Date() } });
+  const changed = await db.$transaction(async tx => {
+    const updated = await tx.csatResponse.updateMany({ where: { token, respondedAt: null }, data: { score: value, respondedAt: new Date() } });
+    if (!updated.count) return false;
+    if (response.entityType === "ServiceCase" && response.entityId) {
+      const serviceCase = await tx.serviceCase.findFirst({where:{id:response.entityId,organisationId:response.organisationId}});
+      if (serviceCase) {
+        await tx.serviceEntry.create({data:{organisationId:response.organisationId,caseId:serviceCase.id,kind:value<=2?"CSAT_RECOVERY_NEEDED":"CSAT_RESPONSE_RECEIVED",visibility:"INTERNAL",authorUserId:serviceCase.ownerUserId,body:`Customer submitted ${value}/5 satisfaction.${value<=2?" The case owner should review recovery.":""}`}});
+        await tx.serviceCase.updateMany({where:{id:serviceCase.id,organisationId:response.organisationId},data:{version:{increment:1},...(value<=2?{customerUpdateDueAt:new Date()}: {})}});
+        await tx.domainOutbox.create({data:{organisationId:response.organisationId,eventKey:`csat-response:${response.id}`,eventName:"csat.responded",payload:{caseId:serviceCase.id,responseId:response.id,score:value}}});
+      }
+    }
+    return true;
+  });
+  if (!changed) return null;
   await emit(DOMAIN_EVENTS.csatResponded, { organisationId: response.organisationId, responseId: response.id, partyId: response.partyId ?? undefined, score: value });
   return response.survey;
 }
@@ -81,5 +94,5 @@ export async function recordCsatScore(token: string, score: number) {
 export async function recordCsatComment(token: string, comment: string, reasons: string[] = []) {
   const response = await db.csatResponse.findUnique({ where: { token }, select: { survey: { select: { reasons: true } } } });
   if (!response) return;
-  await db.csatResponse.updateMany({ where: { token }, data: { comment: String(comment).slice(0, 2000), reasons: (Array.isArray(reasons) ? reasons : []).filter((reason) => response.survey.reasons.includes(reason)) } });
+  await db.csatResponse.updateMany({ where: { token, respondedAt: {not:null}, commentSubmittedAt: null }, data: { commentSubmittedAt: new Date(), comment: String(comment).slice(0, 2000), reasons: (Array.isArray(reasons) ? reasons : []).filter((reason) => response.survey.reasons.includes(reason)) } });
 }

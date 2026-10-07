@@ -1,0 +1,12 @@
+import Link from "next/link";
+import { listFinanceDocuments } from "@/modules/finance/services/queries";
+import { money } from "@/modules/finance/domain/money";
+import { Field, Select } from "@/components/ui/service-fields";
+import { Card } from "@/components/ui/card";
+export default async function Credits({searchParams}:{searchParams:Promise<{q?:string;status?:string;page?:string}>}) {
+ const filters=await searchParams;
+ const page=Math.max(0,Number(filters.page)||0);
+ const {rows,count}=await listFinanceDocuments({kind:"AR_CREDIT",query:filters.q||undefined,status:filters.status||undefined,page});
+ const url=(p:number)=>`/finance/credits?${new URLSearchParams({q:filters.q??"",status:filters.status??"",page:String(p)})}`;
+ return <div className="space-y-6"><div><p className="text-xs font-semibold uppercase tracking-widest text-teal-700">Finance control</p><h2 className="mt-2 text-3xl font-semibold">Credits & adjustments</h2><p className="mt-2 text-sm text-slate-500">Review the original invoice, evidence and approval history. Approval and posting remain separate actions.</p></div><form className="flex flex-wrap items-end gap-3"><Field title="Search reference / case / request" name="q" defaultValue={filters.q}/><Select title="Status" name="status" options={["","DRAFT","AWAITING_APPROVAL","APPROVED","POSTED","REJECTED","CANCELLED"]} defaultValue={filters.status??""}/><button className="atlas-secondary-button">Filter</button></form><Card className="overflow-x-auto"><table className="w-full text-left text-sm"><thead className="bg-slate-50 text-xs text-slate-500"><tr>{["Credit / request","Customer","Reason","Value","Status"].map(title=><th className="p-4" key={title}>{title}</th>)}</tr></thead><tbody>{rows.map(row=><tr className="border-t border-slate-100" key={row.id}><td className="p-4"><Link className="font-medium text-teal-700" href={`/finance/documents/${row.id}`}>{row.reference}</Link><p className="mt-1 text-xs text-slate-500">{row.externalReference}</p></td><td className="p-4">{row.party?.name??"—"}</td><td className="max-w-md p-4">{row.reason}</td><td className="whitespace-nowrap p-4">{money(row.gross,row.currency)}</td><td className="p-4 text-xs">{row.status.replaceAll("_"," ")}</td></tr>)}</tbody></table>{!rows.length&&<p className="p-8 text-sm text-slate-500">No matching credits.</p>}</Card><div className="flex gap-4 text-sm"><span>{count} matching credits · page {page+1}</span>{page>0&&<Link href={url(page-1)}>Previous</Link>}{(page+1)*100<count&&<Link href={url(page+1)}>Next</Link>}</div></div>;
+}

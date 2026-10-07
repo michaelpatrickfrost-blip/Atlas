@@ -8,7 +8,7 @@ import { teamsManifest } from "@/modules/teams/manifest";
 import { analyticsManifest } from "@/modules/analytics/manifest";
 import { planningManifest } from "@/modules/planning/manifest";
 import { planManifest } from "@/modules/plan/manifest";
-// import { ticketingManifest } from "@/modules/tickets/manifest"; // Disabled due to schema issues
+import { ticketingManifest } from "@/modules/tickets/manifest";
 import { manufacturingManifest } from "@/modules/manufacturing/manifest";
 import type { ModuleManifest } from "@/core/modules/types";
 import { salesManifest } from "@/modules/sales/manifest";
@@ -39,7 +39,7 @@ const implemented = [
   payrollManifest, teamsManifest, planningManifest, planManifest,
   analyticsManifest, serviceManifest, marketingManifest, financeManifest,
   logisticsManifest, manufacturingManifest, safetyManifest,
-  auditManifest, qualityManifest, automationsManifest, csatManifest, /* ticketingManifest disabled */
+  auditManifest, qualityManifest, automationsManifest, csatManifest, ticketingManifest,
 ];
 
 const stubs = stubModules.filter(m =>

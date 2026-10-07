@@ -1,3 +1,26 @@
+import {createWork as serviceWorkAction0} from "@/core/service-work/actions";
+import {updateWork as serviceWorkAction1} from "@/core/service-work/actions";
+import {commentWork as serviceWorkAction2} from "@/core/service-work/actions";
+import {watchWork as serviceWorkAction3} from "@/core/service-work/actions";
+import {mergeWork as serviceWorkAction4} from "@/core/service-work/actions";
+import {requestWorkApproval as serviceWorkAction5} from "@/core/service-work/actions";
+import {decideWorkApproval as serviceWorkAction6} from "@/core/service-work/actions";
+import {saveDeskQueue as serviceWorkAction7} from "@/core/service-work/actions";
+import {changeDeskMember as serviceWorkAction8} from "@/core/service-work/actions";
+import {attachServiceFile as serviceWorkAction9} from "@/core/service-work/file-actions";
+import {saveKnowledge as serviceWorkAction10} from "@/core/service-work/knowledge";
+import {casePurchaseContext as serviceWorkAction11} from "@/modules/service/services/context";
+import {sendCaseEmail as serviceWorkAction12} from "@/modules/service/services/communication";
+import {invalidateCaseCsat as serviceWorkAction13} from "@/modules/service/services/communication";
+import {proposeRecovery as serviceWorkAction14} from "@/modules/service/services/recovery";
+import {decideRecovery as serviceWorkAction15} from "@/modules/service/services/recovery";
+import {saveServiceApprovalRoute as serviceWorkAction16} from "@/modules/service/services/recovery";
+import {redeemServiceRecovery as serviceWorkAction17} from "@/modules/sales/services/recovery";
+import {savePurchaseContext as serviceWorkAction18} from "@/modules/service/services/commands";
+import {saveInvestigation as serviceWorkAction19} from "@/modules/service/services/commands";
+import {logCaseCall as serviceWorkAction20} from "@/modules/service/services/commands";
+import {createCaseRemedy as serviceWorkAction21} from "@/modules/service/services/commands";
+import {mergeCases as serviceWorkAction22} from "@/modules/service/services/commands";
 // Generated allowlist: public calls still enforce their own server capabilities.
 import {loadEmailRecord as action0} from "@/app/(app)/_shared/record-email-actions";
 import {sendRecordEmailAction as action1} from "@/app/(app)/_shared/record-email-actions";
@@ -767,6 +790,30 @@ import {savePlace as action764} from "@/modules/teams/services/commands";
 import {saveMoment as action765} from "@/modules/teams/services/commands";
 import {removeMoment as action766} from "@/modules/teams/services/commands";
 export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>={
+"src/core/service-work/actions:createWork":serviceWorkAction0 as (...args:never[])=>Promise<unknown>,
+"src/core/service-work/actions:updateWork":serviceWorkAction1 as (...args:never[])=>Promise<unknown>,
+"src/core/service-work/actions:commentWork":serviceWorkAction2 as (...args:never[])=>Promise<unknown>,
+"src/core/service-work/actions:watchWork":serviceWorkAction3 as (...args:never[])=>Promise<unknown>,
+"src/core/service-work/actions:mergeWork":serviceWorkAction4 as (...args:never[])=>Promise<unknown>,
+"src/core/service-work/actions:requestWorkApproval":serviceWorkAction5 as (...args:never[])=>Promise<unknown>,
+"src/core/service-work/actions:decideWorkApproval":serviceWorkAction6 as (...args:never[])=>Promise<unknown>,
+"src/core/service-work/actions:saveDeskQueue":serviceWorkAction7 as (...args:never[])=>Promise<unknown>,
+"src/core/service-work/actions:changeDeskMember":serviceWorkAction8 as (...args:never[])=>Promise<unknown>,
+"src/core/service-work/file-actions:attachServiceFile":serviceWorkAction9 as (...args:never[])=>Promise<unknown>,
+"src/core/service-work/knowledge:saveKnowledge":serviceWorkAction10 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/context:casePurchaseContext":serviceWorkAction11 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/communication:sendCaseEmail":serviceWorkAction12 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/communication:invalidateCaseCsat":serviceWorkAction13 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/recovery:proposeRecovery":serviceWorkAction14 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/recovery:decideRecovery":serviceWorkAction15 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/recovery:saveServiceApprovalRoute":serviceWorkAction16 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/recovery:redeemServiceRecovery":serviceWorkAction17 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:savePurchaseContext":serviceWorkAction18 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:saveInvestigation":serviceWorkAction19 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:logCaseCall":serviceWorkAction20 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:createCaseRemedy":serviceWorkAction21 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:mergeCases":serviceWorkAction22 as (...args:never[])=>Promise<unknown>,
+
 "src/app/(app)/_shared/record-email-actions:loadEmailRecord":action0 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/_shared/record-email-actions:sendRecordEmailAction":action1 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/_shared/record-email-actions:sendRecordContractAction":action2 as (...args:never[])=>Promise<unknown>,

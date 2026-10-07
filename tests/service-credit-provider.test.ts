@@ -1,0 +1,22 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { prepareCustomerServiceCredit } from '@/modules/finance/services/service-credit';
+import type { Prisma } from '@/generated/prisma/client';
+import type { Session } from '@/core/auth/session';
+const session={organisationId:'org',userId:'agent',capabilities:new Set(['service.case.update'])} as Session;
+const invoice={id:'invoice',entityId:'books',partyId:'customer',currency:'GBP',exchangeRate:'1',gross:480000n,settled:0n,reference:'INV-1',lines:[{id:'line',number:1,description:'Pipes',quantity:'4000',net:400000n,tax:80000n,taxCode:'STANDARD',taxRateBps:2000,productId:'pipes'}]};
+const tx={serviceLink:{findMany:vi.fn()},financeDocument:{findFirst:vi.fn(),findMany:vi.fn(),create:vi.fn()},serviceSequence:{upsert:vi.fn()},financeTimeline:{create:vi.fn()}};
+const input={caseId:'case',caseNumber:'CS-1',partyId:'customer',invoiceId:'invoice',lineId:'line',net:'',quantity:250,reason:'Damaged pipes',requestKey:'request-1'};
+const call=(change={})=>prepareCustomerServiceCredit(tx as unknown as Prisma.TransactionClient,session,{...input,...change});
+beforeEach(()=>{vi.resetAllMocks();tx.financeDocument.findFirst.mockResolvedValueOnce(null).mockResolvedValueOnce(invoice);tx.financeDocument.findMany.mockResolvedValue([]);tx.serviceLink.findMany.mockResolvedValue([]);tx.financeDocument.create.mockImplementation(async({data})=>({id:'credit',...data}));tx.serviceSequence.upsert.mockResolvedValue({value:1});});
+describe('Finance-owned service credit requests',()=>{
+ it('uses the selected invoice line quantity, price and proportional tax',async()=>{const result=await call();expect(result.requestReference).toBe('CR-000001');expect(tx.financeDocument.create).toHaveBeenCalledWith(expect.objectContaining({data:expect.objectContaining({net:25000n,tax:5000n,gross:30000n,status:'DRAFT',sourceId:'invoice'})}));});
+ it('returns the original draft on an idempotent retry',async()=>{tx.financeDocument.findFirst.mockReset().mockResolvedValue({id:'credit',reference:'CN-1',externalReference:'CR-1',sourceId:'invoice',partyId:'customer',reason:'CS-1: Damaged pipes',lines:[{sourceLineId:'line',quantity:'250'}]});expect((await call()).id).toBe('credit');expect(tx.financeDocument.create).not.toHaveBeenCalled();});
+ it('rejects a request key reused for another invoice',async()=>{tx.financeDocument.findFirst.mockReset().mockResolvedValue({sourceId:'other',partyId:'customer',lines:[]});await expect(call()).rejects.toThrow('different source');});
+ it('rejects an invoice line not on the selected invoice',async()=>await expect(call({lineId:'foreign'})).rejects.toThrow('affected invoice line'));
+ it('reserves pending credits against line value',async()=>{tx.financeDocument.findMany.mockResolvedValue([{status:'DRAFT',gross:456000n,lines:[{sourceLineId:'line',net:380000n}]}]);await expect(call()).rejects.toThrow('existing and pending');});
+ it('does not invent a paid-invoice refund workflow',async()=>{tx.financeDocument.findFirst.mockReset().mockResolvedValueOnce(null).mockResolvedValueOnce({...invoice,settled:480000n});await expect(call()).rejects.toThrow('Finance review');});
+ it('caps credit at the affected case quantity',async()=>await expect(call({affectedQuantity:100})).rejects.toThrow('affected quantity'));
+ it('rejects a credit against a different affected product',async()=>await expect(call({productId:'other'})).rejects.toThrow('affected invoice line'));
+ it('rejects quantities exceeding the source line',async()=>await expect(call({quantity:5000})).rejects.toThrow('exceeds'));
+ it('checks tenant, customer and posted invoice status in the lookup',async()=>{await call();expect(tx.financeDocument.findFirst).toHaveBeenLastCalledWith(expect.objectContaining({where:{organisationId:'org',id:'invoice',partyId:'customer',kind:'AR_INVOICE',status:'POSTED'}}));});
+});

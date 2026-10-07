@@ -1,3 +1,4 @@
+import { requestServiceReturn } from "./services/service-return";
 import { Truck } from "lucide-react";
 import type { ModuleManifest } from "@/core/modules/types";
 import { LOGISTICS_CAPABILITIES as C } from "@/core/permissions/capabilities";
@@ -7,6 +8,7 @@ import { logisticsAnalytics } from "./services/analytics";
 import { customerLogistics, logisticsAttention, searchLogistics } from "./services/queries";
 
 export const logisticsManifest: ModuleManifest = {
+ serviceOperationProvider:requestServiceReturn,
   id: "logistics",
   name: "Logistics",
   description: "Fulfilment, warehouse work, dispatch and returns.",

@@ -67,10 +67,14 @@ startup failures when the database itself is unavailable.
 ```
 npm run guardian:audit
 npm run guardian:worker -- --now
-node --env-file=.env.local --import tsx scripts/guardian/triage.ts list
+node --env-file=.env.local --import tsx scripts/guardian/triage.ts list [page]
 node --env-file=.env.local --import tsx scripts/guardian/triage.ts show <issue-id>
 sudo systemctl status atlas-guardian.timer atlas-guardian.service
 ```
+
+`list` returns a compact paginated queue with `hasMore`; continue through pages so
+older blocked reports cannot be starved by the newest findings. `show` returns the
+full diagnostic brief for one report.
 
 ## Repair agent
 

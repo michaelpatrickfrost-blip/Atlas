@@ -7,12 +7,15 @@ import { z } from "zod";
 const [command = "list", id, revision, ...notes] = process.argv.slice(2);
 async function main() {
   if (command === "list") {
-    const [reports, worker, runs] = await Promise.all([
-      db.guardianIssue.findMany({ where: { status: { notIn: ["FIXED", "IGNORED"] } }, orderBy: { lastSeenAt: "desc" }, take: 25, select: { id: true, title: true, status: true, severity: true, kind: true, lastSeenAt: true, resolution: true } }),
+    const page = z.coerce.number().int().min(1).max(10000).parse(id ?? 1);
+    const active = { status: { notIn: ["FIXED", "IGNORED"] } };
+    const [reports, worker, runs, total] = await Promise.all([
+      db.guardianIssue.findMany({ where: active, orderBy: { lastSeenAt: "desc" }, take: 25, skip: (page - 1) * 25, select: { id: true, title: true, status: true, severity: true, kind: true, lastSeenAt: true, resolution: true } }),
       db.guardianWorker.findUnique({ where: { id: "guardian" } }),
       db.guardianRun.findMany({ orderBy: { createdAt: "desc" }, take: 2, select: { id: true, status: true, revision: true, summary: true, createdAt: true } }),
+      db.guardianIssue.count({ where: active }),
     ]);
-    console.log(JSON.stringify({ reports, worker, runs }, null, 2));
+    console.log(JSON.stringify({ page, total, hasMore: page * 25 < total, reports, worker, runs }, null, 2));
   } else if (command === "show") {
     console.log(JSON.stringify(await db.guardianIssue.findUniqueOrThrow({ where: { id: z.string().min(1).parse(id) } }), null, 2));
   } else if (command === "record") {
@@ -24,6 +27,6 @@ async function main() {
     const verified = z.string().trim().min(1).max(80).parse(revision);
     await db.guardianIssue.update({ where: { id }, data: { status: command === "fixed" ? "FIXED" : "NEEDS_AI", resolution: note, ...(command === "fixed" ? { verifiedRevision: verified } : {}), reviewedBy: "guardian-operator" } });
     console.log("Report updated.");
-  } else throw new Error("Use list, record <file> <revision>, needs-ai <id> <revision> <blocker>, or fixed <id> <deployed-revision> <verification>.");
+  } else throw new Error("Use list [page], show <id>, record <file> <revision>, needs-ai <id> <revision> <blocker>, or fixed <id> <deployed-revision> <verification>.");
 }
 main().catch(() => { console.error("Guardian triage failed; check arguments and server configuration securely."); process.exitCode = 1; }).finally(() => db.$disconnect());

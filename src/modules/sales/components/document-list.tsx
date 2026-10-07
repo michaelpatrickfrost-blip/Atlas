@@ -1,3 +1,4 @@
+import {CustomerReference} from "./customer-reference";
 import {prepareSalesFilters} from '../services/account-filters';
 import Link from 'next/link';
 import type {Prisma} from '@/generated/prisma/client';
@@ -31,7 +32,7 @@ export async function DocumentList({mode,filters}:{mode:'quote'|'order'|'documen
  {key:'number',header:'Number',render:r=><Link className="font-semibold text-blue-600" href={`${r.docType==='Quote'?'/sales/quotes':'/sales/orders'}/${r.id}`}>{r.reference}</Link>},
  {key:'docType',header:'Type',render:r=>mode==='document'?<span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-medium text-slate-600">{r.docType}</span>:'—'},
  {key:'type',header:'Order type',render:r=>r.orderType?<span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-medium text-slate-600">{r.orderType.replaceAll('_',' ')}</span>:'—'},
- {key:'customer',header:'Invoice account',render:r=>r.customerDeleted?<span className="text-slate-500" title="Customer deleted; historical document retained">Deleted customer</span>:can(session,'customers.read')?<Link href={`/customers/${r.partyId}`}>{r.customer}</Link>:r.customer},
+ {key:'customer',header:'Invoice account',render:r=><CustomerReference party={{id:r.partyId,name:r.customer,identityScrubbed:r.customerDeleted}} canRead={can(session,'customers.read')}/>},
  {key:'pricingCustomer',header:'Pricing account',render:r=>r.pricingCustomer},{key:'customerType',header:'Customer type',render:r=>r.customerType??'—'},
  {key:'status',header:'Status',render:r=><span className="rounded-full bg-blue-50 px-3 py-1 text-[10px] font-medium text-blue-700">{r.status.replaceAll('_',' ')}</span>},
  {key:'owner',header:'Salesperson',render:r=>names.get(r.owner??'')??'Unassigned'},

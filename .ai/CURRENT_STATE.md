@@ -49,6 +49,14 @@
 
 ## Atlas Guardian implementation — 7 October 2026
 
+- Recurrence tracking correctly reopened the customer-link finding when the deeper
+  crawl reached historical order details. Extended the fix to all invoice/pricing/
+  header references on Sales order and quote details using a shared CustomerReference
+  (deleted label, preserved history and explicit customer-read capability). Added
+  shared-reference regression coverage. Full Vitest: 591 passed / 22 integration
+  skips; scoped lint has zero errors (one existing unused-workingDrafts warning),
+  production build and separate TypeScript passed. Live checks follow.
+  Operator queue now supports pagination so older blocked reports remain reachable.
 - Reproduced two live 404 customer links without retaining identifiers: Sales
   documents and Customer Map linked identity-scrubbed, archived CLOSED tombstones.
   Map queries now exclude scrubbed accounts/contacts/trading endpoints. Sales keeps

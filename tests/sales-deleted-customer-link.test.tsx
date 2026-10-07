@@ -5,6 +5,7 @@ vi.mock("@/core/auth/session", () => ({ requireSession: async () => ({ organisat
 vi.mock("@/modules/sales/services/account-filters", () => ({ prepareSalesFilters: async () => ({}) }));
 vi.mock("@/modules/sales/components/sales-filters", () => ({ SalesFilterBar: () => null }));
 vi.mock("@/core/db/client", () => ({ db: { salesOrder: { findMany: state.orders, count: async () => 2 }, quote: { findMany: state.quotes, count: async () => 0 }, party: { findMany: async () => [] }, membership: { findMany: async () => [] }, salesSavedView: { findMany: async () => [] } } }));
+import { CustomerReference } from "@/modules/sales/components/customer-reference";
 import { DocumentList } from "@/modules/sales/components/document-list";
 it("retains historical sales rows while replacing only deleted customer links with a clear state", async () => {
   const common = { orderType: "STANDARD", commercialStatus: "CLOSED", grossAmount: 12000, netAmount: 10000, taxAmount: 2000, currency: "GBP", customerPoReference: null, externalReference: null, ownerUserId: null, tags: [], requestedDeliveryDate: null, promisedDeliveryDate: null, createdAt: new Date(), updatedAt: new Date(), deliveryAddressSnapshot: null, pricingParty: null, _count: { lines: 1 } };
@@ -19,4 +20,11 @@ it("retains historical sales rows while replacing only deleted customer links wi
   expect(html).toContain("Customer deleted; historical document retained");
   expect(html).not.toContain('href="/customers/deleted"');
   expect(html).toContain('href="/customers/active"');
+});
+
+it("keeps deleted pricing/header references non-navigable and respects customer read access", () => {
+  const party = { id: "customer", name: "Account", identityScrubbed: true };
+  expect(renderToStaticMarkup(<CustomerReference party={party} canRead arrow/>)).not.toContain("href");
+  expect(renderToStaticMarkup(<CustomerReference party={{ ...party, identityScrubbed: false }} canRead={false}/>)).not.toContain("href");
+  expect(renderToStaticMarkup(<CustomerReference party={{ ...party, identityScrubbed: false }} canRead arrow/>)).toContain('href="/customers/customer"');
 });

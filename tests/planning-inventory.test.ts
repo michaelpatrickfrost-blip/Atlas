@@ -22,7 +22,7 @@ describe('physical demand coverage',()=>{
 });
 const state=vi.hoisted(()=>({
  session:{userId:'u',organisationId:'org-a',capabilities:new Set<string>()},enabled:vi.fn(),
- tx:{inventoryMovement:{findMany:vi.fn(),create:vi.fn()},product:{findFirstOrThrow:vi.fn()},warehouse:{findMany:vi.fn()},inventoryBalance:{updateMany:vi.fn(),upsert:vi.fn()},auditEntry:{create:vi.fn()},internalMove:{findUnique:vi.fn(),count:vi.fn(),create:vi.fn()}},transaction:vi.fn(),salesLines:vi.fn(),
+ tx:{stockPosition:{findFirst:vi.fn(),findMany:vi.fn(),update:vi.fn()},inventoryMovement:{findMany:vi.fn(),create:vi.fn()},product:{findFirstOrThrow:vi.fn()},warehouse:{findMany:vi.fn()},inventoryBalance:{updateMany:vi.fn(),upsert:vi.fn()},auditEntry:{create:vi.fn()},internalMove:{findUnique:vi.fn(),count:vi.fn(),create:vi.fn()}},transaction:vi.fn(),salesLines:vi.fn(),
 }));
 vi.mock('@/core/db/client',()=>({db:{$transaction:state.transaction,salesOrderLine:{findMany:state.salesLines}}}));
 vi.mock('@/core/auth/session',()=>({requireSession:async()=>state.session}));
@@ -36,7 +36,7 @@ const session=()=>state.session as Session;
 function transferForm(){const form=new FormData();for(const [key,value] of Object.entries({productId:'p',fromWarehouseId:'a',toWarehouseId:'b',quantity:'10',reason:'Rebalance',reference:'TR-1',requestKey:'request'}))form.set(key,value);return form;}
 beforeEach(()=>{
  vi.clearAllMocks();state.session.capabilities=new Set(['stock.manage','planning.demand.read']);state.enabled.mockResolvedValue(undefined);
- state.transaction.mockImplementation(async fn=>fn(state.tx));state.tx.inventoryMovement.findMany.mockResolvedValue([]);state.tx.product.findFirstOrThrow.mockResolvedValue({id:'p'});state.tx.warehouse.findMany.mockResolvedValue([{id:'a'},{id:'b'}]);state.tx.inventoryBalance.updateMany.mockResolvedValue({count:1});state.tx.inventoryMovement.create.mockResolvedValue({id:'movement'});state.tx.internalMove.findUnique.mockResolvedValue(null);state.tx.internalMove.count.mockResolvedValue(0);state.tx.internalMove.create.mockResolvedValue({id:'move',reference:'MV-0001'});
+ state.transaction.mockImplementation(async fn=>fn(state.tx));state.tx.stockPosition.findFirst.mockResolvedValue(null);state.tx.stockPosition.findMany.mockResolvedValue([]);state.tx.inventoryMovement.findMany.mockResolvedValue([]);state.tx.product.findFirstOrThrow.mockResolvedValue({id:'p'});state.tx.warehouse.findMany.mockResolvedValue([{id:'a'},{id:'b'}]);state.tx.inventoryBalance.updateMany.mockResolvedValue({count:1});state.tx.inventoryMovement.create.mockResolvedValue({id:'movement'});state.tx.internalMove.findUnique.mockResolvedValue(null);state.tx.internalMove.count.mockResolvedValue(0);state.tx.internalMove.create.mockResolvedValue({id:'move',reference:'MV-0001'});
 });
 describe('controlled stock transfers',()=>{
  it('rejects same-warehouse and fractional transfers',()=>{const form=transferForm();form.set('toWarehouseId','a');expect(()=>parseTransfer(form)).toThrow('different');form.set('toWarehouseId','b');form.set('quantity','0.5');expect(()=>parseTransfer(form)).toThrow('whole');});

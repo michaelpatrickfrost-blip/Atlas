@@ -11,7 +11,7 @@ describe("hashtags and sales rewind", () => {
     expect(parseHashtags("#Priority #priority, New-Business")).toEqual(["priority", "new-business"]);
     expect(parseTags("Priority, priority, New Business")).toEqual(["priority", "new business"]);
     expect(hashtagLabel("new business")).toBe("#new-business");
-    expect(() => parseHashtags("<script>")).toThrow(/hashtags/);
+    expect(() => parseHashtags("<script>")).toThrow(/tags/);
   });
 
   it("shows only the pointers an administrator has left on", () => {

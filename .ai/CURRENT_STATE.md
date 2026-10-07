@@ -1,5 +1,29 @@
 # Atlas current state
 
+## Atlas Guardian implementation — 7 October 2026
+
+- Added staff-only `/atlas/guardian` reports, AI brief copy/download, durable queue,
+  recurrence tracking and verified-repair fields. Additive migration:
+  `20261007180000_atlas_guardian`. Runtime browser/server diagnostics contain only
+  categories, paths/digests, never request bodies or raw customer error messages.
+- Added AST route/link/control inventory and a central six-hour sweep with five-minute
+  queue polling, advisory-lock ownership, explicit QA profile, read-only Chromium
+  render/safe-toggle probes and coverage summaries. See `docs/GUARDIAN.md`.
+- Fixed generic manager absence reads to self/direct reports in the current company
+  and removed private note/reason access from team-management-only profiles. Fixed
+  the missing legacy queue setup URL with a redirect to the queue workspace.
+- Reconciled stale test fixtures/expectations for Manufacturing dependencies, setup
+  templates, implemented Quality, stock-position/CRM-policy mocks and tag wording;
+  no production capability checks were weakened. Full Vitest: 459 passed, 22 skipped.
+  Typecheck and initial production build passed. Guardian-focused ESLint passed after
+  moving server heartbeat-time evaluation out of the component; repository-wide lint
+  has 17 existing errors in unrelated files. Final build/live release still pending.
+- Initial source audit inventories 930 source files, 233 pages, 518 static links,
+  766 controls and 517 dynamic links requiring runtime coverage. Three deployed-base
+  Ticketing pages return null; preserve the parallel Service/Tickets rebuild and
+  retain these as unresolved reports until deployed and verified.
+
+
 ## Sales price lists and CRM agreements — 7 October 2026
 
 - Price lists now live at `/sales/price-lists` under the Sales dropdown, with searchable/paginated list rows and currency/usage filters. Pricing keeps its existing company entitlement/enablement and capabilities internally; it no longer appears as a standalone launcher app.

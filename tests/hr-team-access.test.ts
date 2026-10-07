@@ -3,7 +3,7 @@ import type { Session } from "@/core/auth/session";
 const mock=vi.hoisted(()=>({ find:vi.fn() }));
 vi.mock("@/core/db/client",()=>({db:{workTeam:{findMany:async()=>[]},employee:{findFirstOrThrow:mock.find}}}));
 import { requireTeamEmployee, teamScope } from "@/modules/people/services/team-access";
-import { canReadModel, deniedScalar } from "@/server/data-api/read-policy";
+import { canReadModel, deniedScalar, modelScope } from "@/server/data-api/read-policy";
 const session=(caps:string[]=[]):Session=>({userId:"manager",organisationId:"org",membershipId:"m",userName:"Manager",userEmail:"m@example.com",organisationName:"Org",capabilities:new Set(["core.profile.self",...caps])});
 beforeEach(()=>mock.find.mockReset());
 describe("HR relationship authorization",()=>{
@@ -27,6 +27,10 @@ describe("HR relationship authorization",()=>{
   mock.find.mockResolvedValue({id:"staff",userId:"staff-user",manager:null});
   await expect(requireTeamEmployee(session(["people.employee.manage"]),"staff")).resolves.toMatchObject({id:"staff"});
   expect(await teamScope(session(["people.team.manage"]),true)).toEqual({organisationId:"org",OR:[{manager:{userId:"manager",organisationId:"org"}}]});
+ });
+ it("limits generic manager absence reads to self and direct reports in this company",()=>{
+  const scope=modelScope(session(["people.team.manage"]),"AbsenceRecord");
+  expect(scope).toEqual({organisationId:"org",employee:{organisationId:"org",OR:[{userId:"manager"},{manager:{organisationId:"org",userId:"manager"}}]}});
  });
  it("never exposes private notes or timesheets through the generic query endpoint",()=>{
   const s=session(["people.employee.read","people.team.manage"]);

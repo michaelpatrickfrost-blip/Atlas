@@ -7,7 +7,7 @@ import { SETUP_CATALOGUE } from "@/core/setup/catalogue";
 describe("company setup catalogue", () => {
   it("gives every template a matching example and its required columns", () => {
     expect(catalogueCoversRequiredColumns()).toBe(true);
-    expect(SETUP_CATALOGUE.map((template) => template.id)).toEqual(["customers", "contacts", "customer-commercial", "products", "price-lists", "prices", "warehouses", "locations", "employees"]);
+    expect(SETUP_CATALOGUE.map((template) => template.id)).toEqual(["customers", "contacts", "customer-commercial", "products", "price-lists", "prices", "warehouses", "locations", "employees", "sales-orders", "sales-quotes"]);
   });
 
   it("rejects a customer loop and a missing parent, and accepts a parent already in the company", () => {

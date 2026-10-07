@@ -1,7 +1,7 @@
 import { beforeEach,describe,expect,it,vi } from "vitest";
 const state=vi.hoisted(()=>({
  session:{userId:'user-a',organisationId:'org-a',membershipId:'member-a',capabilities:new Set<string>()},
- db:{opportunity:{findFirst:vi.fn(),findUniqueOrThrow:vi.fn(),update:vi.fn()},pipelineStage:{findFirstOrThrow:vi.fn()},chatMessage:{create:vi.fn()},role:{findFirstOrThrow:vi.fn(),update:vi.fn()},roleOnMembership:{findFirst:vi.fn()},$transaction:vi.fn()},
+ db:{organisation:{findUniqueOrThrow:vi.fn()},opportunity:{findFirst:vi.fn(),findUniqueOrThrow:vi.fn(),update:vi.fn()},pipelineStage:{findFirstOrThrow:vi.fn()},chatMessage:{create:vi.fn()},role:{findFirstOrThrow:vi.fn(),update:vi.fn()},roleOnMembership:{findFirst:vi.fn()},$transaction:vi.fn()},
  enabled:vi.fn(),audit:vi.fn(),emit:vi.fn(),
 }));
 vi.mock('@/core/auth/session',()=>({requireSession:vi.fn(async()=>state.session)}));
@@ -15,7 +15,7 @@ vi.mock('@/modules/crm/services/pipelines',()=>({getDefaultPipeline:vi.fn()}));
 import { moveOpportunityStage } from '@/modules/crm/services/opportunities';
 import { postMessage } from '@/app/(app)/chat/actions';
 import { saveRole } from '@/app/(app)/settings/actions';
-beforeEach(()=>{vi.clearAllMocks();state.session.capabilities=new Set(['sales.opportunity.manage','core.chat.write','core.roles.manage']);state.enabled.mockResolvedValue(undefined);state.db.$transaction.mockImplementation(async fn=>fn(state.db));});
+beforeEach(()=>{vi.clearAllMocks();state.session.capabilities=new Set(['sales.opportunity.manage','core.chat.write','core.roles.manage']);state.enabled.mockResolvedValue(undefined);state.db.organisation.findUniqueOrThrow.mockResolvedValue({managerPolicy:{}});state.db.$transaction.mockImplementation(async fn=>fn(state.db));});
 describe('workspace security boundaries',()=>{
  it('rejects a stage from another pipeline before writing',async()=>{
   state.db.opportunity.findFirst.mockResolvedValue({id:'opp-a'});

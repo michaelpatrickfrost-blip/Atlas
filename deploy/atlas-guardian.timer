@@ -1,0 +1,11 @@
+[Unit]
+Description=Poll Atlas Guardian queue; sweep every six hours
+
+[Timer]
+OnBootSec=3min
+OnUnitInactiveSec=5min
+Persistent=true
+Unit=atlas-guardian.service
+
+[Install]
+WantedBy=timers.target

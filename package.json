@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "guardian:worker": "node --env-file=.env.local --import tsx scripts/guardian/worker.ts",
+    "guardian:audit": "tsx scripts/guardian/audit.ts",
     "build": "next build",
     "deploy:vps": "scripts/deploy-vps.sh",
     "start": "next start",
@@ -41,6 +43,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",

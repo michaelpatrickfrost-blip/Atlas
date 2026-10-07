@@ -8382,3 +8382,55 @@ model MarketingSocialPostTarget {
   @@index([organisationId,status])
   @@map("marketing_social_post_targets")
 }
+
+// Platform-only diagnostics: deliberately excluded from company data exports.
+model GuardianIssue {
+  id String @id @default(cuid())
+  fingerprint String @unique
+  title String
+  kind String
+  severity String
+  status String @default("OPEN")
+  route String
+  source String?
+  expected String
+  actual String
+  steps String[]
+  evidence String[]
+  brief String
+  revision String
+  runId String?
+  occurrences Int @default(1)
+  firstSeenAt DateTime @default(now())
+  lastSeenAt DateTime @default(now())
+  resolution String?
+  verifiedRevision String?
+  reviewedBy String?
+  @@index([status, lastSeenAt])
+  @@map("guardian_issues")
+}
+model GuardianRun {
+  id String @id @default(cuid())
+  status String @default("QUEUED")
+  requestedBy String?
+  createdAt DateTime @default(now())
+  startedAt DateTime?
+  finishedAt DateTime?
+  revision String?
+  summary String?
+  coverage Json?
+  @@index([status, createdAt])
+  @@map("guardian_runs")
+}
+model GuardianWorker {
+  id String @id
+  heartbeatAt DateTime @default(now())
+  revision String
+  @@map("guardian_workers")
+}
+model GuardianRateLimit {
+  id String @id
+  count Int @default(1)
+  expiresAt DateTime
+  @@map("guardian_rate_limits")
+}

@@ -14,6 +14,7 @@ export default async function AtlasAdminLayout({ children }: { children: React.R
         <nav aria-label="Atlas administration" className="flex flex-wrap gap-2 text-sm">
           <Link href="/atlas" className="rounded-lg bg-slate-100 px-4 py-2 hover:bg-slate-200">Companies</Link>
           {can(session, ATLAS_CAPABILITIES.staff) && <Link href="/atlas/team" className="rounded-lg bg-slate-100 px-4 py-2 hover:bg-slate-200">Atlas team</Link>}
+          <Link href="/atlas/guardian" className="rounded-lg bg-slate-100 px-4 py-2 hover:bg-slate-200">Guardian</Link>
           <Link href="/atlas/activity" className="rounded-lg bg-slate-100 px-4 py-2 hover:bg-slate-200">Admin activity</Link>
         </nav>
       </div>

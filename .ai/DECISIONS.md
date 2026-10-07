@@ -811,3 +811,13 @@ signature. Private Atlas share pages follow Blocwrite's focused reading/submissi
 pattern without importing its storage or authentication. One signer and the existing
 contract/email capabilities are retained; no profile permissions are widened.
 See docs/plans/CONTRACTS_TEMPLATES.md.
+
+## 7 October 2026 — Guardian separates detection from proven repairs
+
+Quality diagnostics are platform-only and cannot be granted by customer roles.
+A server sweep inventories connections and probes authorised pages/explicit safe
+controls without business writes. Recurring coding work reproduces and verifies
+repairs in an isolated release; unresolved failures become actionable AI briefs.
+HTTP success, control inventory and source heuristics are not blanket workflow
+verification. Never hide a broken page or auto-close a report after an unrelated
+passing check. See docs/GUARDIAN.md.

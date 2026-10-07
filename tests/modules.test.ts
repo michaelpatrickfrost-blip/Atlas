@@ -14,11 +14,11 @@ describe("module registry", () => {
 
   it("flags missing dependencies when a dependency isn't enabled", () => {
     const missing = getMissingDependencies("manufacturing", new Set());
-    expect(missing).toEqual(["stock", "products"]);
+    expect(missing).toEqual(["stock", "products", "sales"]);
   });
 
   it("reports no missing dependencies once the dependency is enabled", () => {
-    const missing = getMissingDependencies("manufacturing", new Set(["stock", "products"]));
+    const missing = getMissingDependencies("manufacturing", new Set(["stock", "products", "sales"]));
     expect(missing).toEqual([]);
   });
 

@@ -41,7 +41,7 @@ export async function createWork(form: FormData) {
     // Share only purchase identifiers and affected quantity with the receiving team.
     // Customer messages, investigation notes and contact details stay on the case.
     const sourceContext = (originCase?.context ?? {}) as Record<string, unknown>;
-    const origin = originCase ? { caseNumber: originCase.number, ...Object.fromEntries(["salesOrderId", "salesOrderLineId", "productId", "shipmentId", "affectedQuantity", "batchLot"].filter(key => sourceContext[key] != null).map(key => [key, sourceContext[key]])) } : ((originWork?.context as Record<string, unknown> | undefined)?.origin ?? {});
+    const origin = originCase ? { caseNumber: originCase.number, ...Object.fromEntries(["salesOrderId", "salesOrderLineId", "productId", "shipmentId", "affectedQuantity", "lotCode"].filter(key => sourceContext[key] != null).map(key => [key, sourceContext[key]])) } : ((originWork?.context as Record<string, unknown> | undefined)?.origin ?? {});
     const requestedForUserId = text(form, "requestedForUserId", 100) || null;
     if (requestedForUserId && !await tx.membership.findFirst({ where: { organisationId: session.organisationId, userId: requestedForUserId, active: true } })) throw new Error("Choose an active colleague.");
     const priority = z.enum(["LOW", "NORMAL", "HIGH", "URGENT"]).parse(text(form, "priority") || "NORMAL");

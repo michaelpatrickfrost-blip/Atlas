@@ -12,6 +12,7 @@ export function serviceCaseScope(session: Session): Prisma.ServiceCaseWhereInput
 }
 export function serviceTicketScope(session: Session): Prisma.ServiceTicketWhereInput {
   return { organisationId: session.organisationId,
+    AND: [{OR:[{queue:{restricted:false}},{ownerUserId:session.userId},{queue:{members:{some:{organisationId:session.organisationId,userId:session.userId}}}}]}],
     organisation: { moduleStates: { some: { moduleId: 'service', enabled: true, entitled: true } } },
     case: { organisationId: session.organisationId, ...(!session.capabilities.has('service.case.restricted') ? { security: 'STANDARD' } : {}) },
     ...(!session.capabilities.has('service.ticket.read') ? { id: '__denied__' } : {}),

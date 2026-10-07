@@ -827,3 +827,8 @@ passing check. See docs/GUARDIAN.md.
 Customer cases stay in `ServiceCase`; new internal tickets and cross-team queries share Core `ServiceWorkItem` with an explicit kind and origin. Historical departmental tickets remain readable dependencies. This avoids duplicating customer identity and preserves historical records while sharing clocks, queues, approvals and evidence. Query completion records safe parent history without transferring the customer case or copying private receiving-team content.
 
 Service credits remain canonical Finance draft documents with readable CR requests and CN references; Service cannot approve or post them. Recovery benefits require independent Core approval and explicit draft-order redemption through Sales pricing/tax calculations. Return receipt joins the Inventory provider transaction to prevent duplicate counters or stock on retries. Browser server deployment is required; a clean detached release may deploy only when pinned to the exact pushed main SHA, preserving concurrent unfinished edits.
+
+
+## 7 October 2026 — Preserve immutable live acceptance evidence
+
+Live service acceptance uses an isolated synthetic company and explicit test profiles. Cleanup suspends that company, revokes its memberships and deletes temporary credential state. Posted journals, financial timelines and audit records are retained under the existing database guards rather than weakening those guards for test deletion.

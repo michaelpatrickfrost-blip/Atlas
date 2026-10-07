@@ -1,15 +1,15 @@
 # Deploying Atlas
 
-Read this before deploying. Desktop software, server data (see AGENTS.md): the
-Atlas application runs from the installed Mac app; the remote host only stores
-shared business data via Postgres. A deploy ships a new build of the Mac app —
-it never ships the app to the server.
+Michael’s latest instruction (7 October 2026): always deploy finished Atlas changes
+to the live server at https://atlassystem.online (85.190.118.218), then verify the
+changed feature. This supersedes earlier Mac-only/data-only-server requirements.
+Preserve data, backups, secrets, tenant/capability checks and existing permissions.
+A Mac installation alone is insufficient. The Mac procedure below is optional
+additional packaging, not a substitute for server deployment.
 
-## VPS deploy (current live target as of 2026-10-04)
+## Server deployment — current required target
 
-Michael directed the full Atlas app onto the VPS (https://atlassystem.online,
-85.190.118.218), superseding the data-only-server wording below for that host
-(see `.ai/DECISIONS.md`). Commit your work on `main`, then:
+Commit the reviewed compatible changes on main, then:
 
 ```bash
 npm run deploy:vps
@@ -25,7 +25,7 @@ Overrides: `ATLAS_VPS_HOST`, `ATLAS_VPS_DIR`, `ATLAS_VPS_URL`.
 
 The Mac-app procedure below is unchanged and still applies to the installed app.
 
-## The one command
+## Additional Mac package (when needed)
 
 ```bash
 npm run build                          # must succeed first — catches most problems cheaply
@@ -122,12 +122,9 @@ the background) when it is not already serving, then opens
 `http://127.0.0.1:13200/home` in the default browser. Same local software, same
 central data. Quitting Atlas.app stops the server; click the button again.
 
-## What never happens here
+## Release safeguards
 
-- Never deploy the Atlas application itself to the remote host — it stores
-  data only (AGENTS.md "Required deployment boundary").
-- Never put shared database credentials into the desktop package.
-- Never run `prisma migrate dev`, `db push`, or anything that resets/diffs
-  against the central database — only `migrate deploy`, which only applies
-  existing committed-shape migration files in order.
-- Never skip the pre-migration backup step.
+- Keep shared credentials out of client packages and source control.
+- Never use migrate dev, db push or reset against the live database.
+- Back up before migrations and inspect pending changes; preserve records.
+- Do not include unrelated unfinished work merely to clear the release gate.

@@ -5,38 +5,19 @@ memory for Claude Code, Codex and Cursor; chat history is not required to contin
 This file is the canonical context entry point. Detailed topic truth stays in the
 linked docs and implementation, rather than being copied into multiple handbooks.
 
-## Every prompt — desktop software, server data
+## Standing deployment requirement — 7 October 2026
 
-Deploy Atlas to the Desktop/Mac. The remote server stores shared data only and
-must not run Atlas software. Finished work goes live in the installed Mac app.
-Cursor loads `.cursor/rules/desktop-data-boundary.mdc` on every prompt; Claude
-and Codex follow this file and AGENTS.md.
+Michael explicitly requires Atlas and every finished app change to be deployed to
+its live server at https://atlassystem.online (85.190.118.218). Server deployment
+and live feature verification are required before completed handoff, not optional
+follow-ups. This supersedes the earlier Desktop/Mac-only and data-only-server
+deployment instructions, including the earlier 7 October restoration. A Mac-only
+installation does not satisfy this requirement. Use docs/DEPLOY.md.
 
-## Required deployment boundary — 3 October 2026
-
-User requirement: Atlas software, UI and application runtime belong on the user's
-Desktop/Mac. The remote server stores shared user/business data; it must not host
-the Atlas UI or full Atlas application. Apply this to every module, including HR,
-CRM, Sales and Manufacturing. A desktop wrapper displaying a remotely hosted Atlas
-application does not satisfy this requirement.
-
-Persist user/business records, attachments and backups on the server only. Do not
-introduce a local business database, offline record store or persistent business-data
-cache. Local software files and minimal connection/session settings are separate
-from business records; review browser caches/logs/exports against this boundary.
-Transient data needed to display a record is not an authoritative local datastore.
-
-A minimal authenticated data-access service may be needed to protect the remote
-database and enforce tenant/capability checks; it must not grow into a hosted Atlas
-application. Do not put shared database credentials into the desktop package or
-remove server-enforced access controls. The precise data-service/runtime split is
-an implementation task, not a claim that the current build already meets the target.
-
-Older hosted-web-app/private-SSH thin-client plans are superseded as target
-architecture. Preserve historical deployment evidence, clearly labelled, and inspect
-actual runtime/package/network/storage behaviour before claiming compliance.
-Do not deploy the Atlas application to the remote server. Any retirement of an
-existing remote application must preserve all user data and backups.
+Preserve central records/backups, existing tenant and capability checks, secrets
+and profile permissions. Build and verify the compatible release; report concrete
+blockers honestly. Do not deploy unrelated unfinished edits or create local
+business databases/caches. Preserve historical deployment evidence.
 
 ## Product principles
 
@@ -45,21 +26,6 @@ existing remote application must preserve all user data and backups.
 - Premium, calm enterprise UI with clear hierarchy and useful reporting.
 - Configurable dashboards; desktop, tablet and phone are supported targets.
 - A catalogue entry, schema or navigation link is not a completed business workflow.
-
-## Live completion requirement — 3 October 2026
-
-Michael expects completed apps and app changes to be live in the installed Atlas
-app. Every app worked on from now onwards, including current work and subsequent
-fixes, must include deployment and live verification before completed handoff;
-do not leave release as an optional follow-up. This is standing authorization for
-compatible release and activation within
-the Desktop/Mac software and central server-data boundary. Source/build/preview
-delivery alone is incomplete. Verify installed use and authorised central-data
-behaviour, preserve profile access and unsaved work, and report concrete activation
-blockers honestly. Deployment includes enabling the completed module for Michael’s
-organisation and checking its Apps/navigation entry for authorised profiles;
-Production and Marketing must be turned on when complete. Preserve profile/data
-permissions. Follow the live completion gate in AGENTS.md.
 
 ## Read next
 
@@ -108,7 +74,7 @@ all native business-data downloads are disabled; shared authoritative records,
 attachments and backups still remain server-side. Do not introduce automatic
 business-data caching or an offline/local business database.
 
-- 2026-10-03: Michael explicitly instructed “always deploy”. Finish Atlas changes by building, installing the Mac client and deploying the compatible private data API when changed, then verify the installed app and live service. UI/software stays on Mac; server holds secure data API and records. Preserve Blocwrite.
+- Historical, superseded 7 October: Michael explicitly instructed “always deploy”. Finish Atlas changes by building, installing the Mac client and deploying the compatible private data API when changed, then verify the installed app and live service. UI/software stays on Mac; server holds secure data API and records. Preserve Blocwrite.
 
 ## My work — 3 October 2026
 

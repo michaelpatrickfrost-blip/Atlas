@@ -1,7 +1,7 @@
 # Atlas — Claude Code entry point
 
-Desktop software, server data: deploy Atlas to the installed Mac app. The remote
-server stores shared data only and must not host Atlas software.
+Every finished Atlas change must be deployed and verified on the live server.
+See AGENTS.md and docs/DEPLOY.md; the earlier Mac-only boundary is superseded.
 
 @AGENTS.md
 

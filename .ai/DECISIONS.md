@@ -760,3 +760,11 @@ requester cannot approve their own document, and payment runs need a separate ap
 Michael requires Contracts & approvals in CRM; Sales is order processing. Move the
 workspace/navigation with legacy redirects, retaining Core contract capabilities
 and existing signing/quotation links.
+
+
+## 7 October 2026 — Always deploy to the live server
+
+Michael explicitly requires every finished change deployed and verified at
+atlassystem.online. This supersedes earlier Desktop-only/data-only server
+restrictions. Preserve data, permissions and backups. Mac-only release is
+insufficient. AGENTS, shared memory, Claude/Cursor rules and DEPLOY agree.

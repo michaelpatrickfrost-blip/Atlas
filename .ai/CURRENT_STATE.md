@@ -2937,3 +2937,29 @@ pending at this checkpoint; no schema/grant changes.
 Release preparation check: isolated production build passed with /crm and
 /crm/contracts routes; isolated tsc and scoped ESLint passed, whitespace clean.
 Server release is next; no live acceptance claimed yet.
+
+
+## 7 October 2026 — CRM contracts and order tabs deployed to server
+
+Release 466e3fa pushed to main from isolated release worktree and deployed to
+/opt/atlas on 85.190.118.218 using the canonical deploy-vps remote procedure.
+Backup: /home/administrator/backups/atlas-pre-deploy-20261007-062554.dump.
+Server Prisma generate and production build passed; migrate deploy found 89
+migrations and none pending. Atlas service healthy, public HTTPS /login 200.
+No business schema migrations or existing user grants changed. Source/master
+concurrent edits were excluded and preserved.
+
+Server-only temporary Test company verified through normal password sign-in and
+authenticated HTTP page requests: CRM contracts renders, Sales navigation has no
+contracts entry, old URL redirects retaining filters, new order renders the simpler
+tabs, contract-only user lands in CRM contracts, and pipeline-only user cannot see
+the protected workspace. Test workspace/user/membership/module states removed; no
+emails sent or orders created. Browser clicking could not be completed because
+Safari repeatedly reported concurrent user changes; authenticated HTTP rendering
+is the live acceptance evidence, not a visual walkthrough or signing acceptance.
+Isolated tsc, scoped ESLint, production build and whitespace checks passed.
+
+This supersedes the earlier Mac-only/pending-server order-entry handoff: the
+simplified order form and CRM move are now deployed on atlassystem.online.
+Shared policy files accompany the release evidence. Root working tree still holds
+concurrent uncommitted work; do not reset it to synchronize release commits.

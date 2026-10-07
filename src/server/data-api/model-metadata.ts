@@ -469,6 +469,24 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "kind": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "archivedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "archiveReason": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
     "subscriptionStatus": {
       "type": "String",
       "list": false,
@@ -1929,6 +1947,18 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "archived": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "identityScrubbed": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
     "createdAt": {
       "type": "DateTime",
       "list": false,
@@ -2227,6 +2257,12 @@ export const MODEL_FIELDS = {
     },
     "status": {
       "type": "ContactStatus",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "identityScrubbed": {
+      "type": "Boolean",
       "list": false,
       "nullable": false,
       "relation": false
@@ -9435,6 +9471,18 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "role": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "active": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
     "createdAt": {
       "type": "DateTime",
       "list": false,
@@ -16030,6 +16078,12 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "membershipId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "purpose": {
       "type": "String",
       "list": false,
       "nullable": false,

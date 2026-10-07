@@ -21,7 +21,7 @@ export async function AppDirectory({ session }: { session: Session }) {
     { id: "my-work", name: "My work", href: "/profile", icon: Briefcase },
     ...(canOpenCompanyAdmin(session) ? [{ id: "settings", name: "Company admin", href: "/settings", icon: Settings }] : []),
     ...(can(session, CORE_CAPABILITIES.modulesManage) ? [{ id: "apps", name: "Manage apps", href: "/apps", icon: LayoutGrid }] : []),
-    ...(can(session, "atlas.companies.manage") ? [{ id: "atlas", name: "Atlas console", href: "/atlas", icon: ShieldCheck }] : []),
+    ...(can(session, "atlas.companies.manage") ? [{ id: "atlas", name: "Atlas Admin", href: "/atlas", icon: ShieldCheck }] : []),
   ];
   const columns = [...[...groups].filter(([, entries]) => entries.length > 0), ["Company", company] as const];
   return (

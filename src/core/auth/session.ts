@@ -4,6 +4,8 @@ import {getRemoteSession} from "@/core/desktop/data-client";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { db } from "@/core/db/client";
+import { platformCapabilities } from "@/core/admin/access";
+import { STANDARD_ROLES } from "@/core/permissions/capabilities";
 
 const SESSION_COOKIE = "atlas_session";
 function sessionSecret() {
@@ -65,6 +67,7 @@ export async function getSession(): Promise<Session | null> {
   if(typeof token.userId!=="string" || typeof token.organisationId!=="string") return null;
   const membership = await loadMembership(token.organisationId, token.userId);
   if (!membership || !membership.active || membership.organisation.status !== "ACTIVE") return null;
+  if (membership.organisation.kind === "INTERNAL" && !platformCapabilities(membership.user.platformAdmin).length) return null;
 
   if((token.authVersion??0)!==(membership.user.authVersion??0)||(token.sessionVersion??0)!==(membership.sessionVersion??0))return null;
   return sessionFromMembership(membership);
@@ -89,8 +92,15 @@ function sessionFromMembership(membership: LoadedMembership): Session {
 
   for(const cap of membership.grantedCapabilities??[])if(!cap.startsWith("atlas."))capabilities.add(cap);
   for(const cap of membership.deniedCapabilities??[])capabilities.delete(cap);
-  if (membership.user.platformAdmin) capabilities.add("atlas.companies.manage");
+  const staffCapabilities = platformCapabilities(membership.user.platformAdmin);
   for (const capability of auditSessionCapabilities(parseAuditAccess(membership.organisation.auditAccess), membership.userId)) capabilities.add(capability);
+  const effective = applyCompanyAccessRestrictions(capabilities,membership.organisation.restrictedAccessAreas);
+  // Michael's current policy: every active Atlas staff member has full permissions in
+  // the explicitly selected company. Customer role/restriction policy is unchanged.
+  if (staffCapabilities.length) {
+    for (const capability of STANDARD_ROLES.find(role => role.key === "admin")?.capabilities ?? []) effective.add(capability);
+    for (const capability of staffCapabilities) effective.add(capability);
+  }
   return {
     userId: membership.userId,
     userName: membership.user.name,
@@ -98,7 +108,7 @@ function sessionFromMembership(membership: LoadedMembership): Session {
     organisationId: membership.organisationId,
     organisationName: membership.organisation.name,
     membershipId: membership.id,
-    capabilities:applyCompanyAccessRestrictions(capabilities,membership.organisation.restrictedAccessAreas),
+    capabilities: effective,
   };
 }
 
@@ -107,6 +117,7 @@ function sessionFromMembership(membership: LoadedMembership): Session {
 export async function sessionForUser(organisationId: string, userId: string): Promise<Session | null> {
   const membership = await loadMembership(organisationId, userId);
   if (!membership || !membership.active || membership.organisation.status !== "ACTIVE") return null;
+  if (membership.organisation.kind === "INTERNAL" && !platformCapabilities(membership.user.platformAdmin).length) return null;
   return sessionFromMembership(membership);
 }
 

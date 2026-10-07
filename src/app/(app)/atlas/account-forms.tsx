@@ -4,12 +4,12 @@ import Link from "next/link";
 import { createCompanyAccount } from "./actions";
 import { createCompanyUser } from "./setup-actions";
 
-function CodeReady({ title, code, expiresAt, href, hrefLabel }: { title: string; code: string; expiresAt: string; href?: string; hrefLabel?: string }) {
+export function CodeReady({ title, code, expiresAt, href, hrefLabel }: { title: string; code: string; expiresAt: string; href?: string; hrefLabel?: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <div className="space-y-4 rounded-2xl border border-blue-200 bg-blue-50 p-5">
       <h3 className="text-sm font-semibold text-blue-900">{title}</h3>
-      <p className="text-xs leading-relaxed text-blue-800">Shown only here. Give it to this person. On the sign-in screen they choose “Use a setup or recovery code”, enter it and set a password, which signs them in. To test it yourself, copy the code, sign out and do the same.</p>
+      <p className="text-xs leading-relaxed text-blue-800">Shown only here. Give it to this person. On the sign-in screen they choose “Use a setup or recovery code”, enter it and set a password, which signs them in. Share it directly through your approved private channel.</p>
       <code className="block break-all rounded-xl bg-white p-4 text-xs text-slate-700">{code}</code>
       <p className="text-xs text-blue-700">Expires {new Date(expiresAt).toLocaleString("en-GB")} · single use.</p>
       <div className="flex flex-wrap gap-3">

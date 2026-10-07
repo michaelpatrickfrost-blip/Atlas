@@ -16,14 +16,17 @@ export async function updateCompanyAccount(form:FormData){
  if(!name||name.length>150||!planName||planName.length>100||!['ACTIVE','SUSPENDED'].includes(status)||!['TRIAL','ACTIVE','PAST_DUE','CANCELLED'].includes(subscriptionStatus)||(trialEndsAt&&isNaN(trialEndsAt.getTime())))throw new Error('Enter valid account details.');
  if(organisationId===session.organisationId&&status==='SUSPENDED')throw new Error('You cannot suspend your current workspace.');
  const before=await db.organisation.findUniqueOrThrow({where:{id:organisationId}});
- await db.$transaction(async tx=>{await tx.organisation.update({where:{id:organisationId},data:{name,status,subscriptionStatus,planName,trialEndsAt,isTest}});await tx.auditEntry.create({data:{organisationId,actorUserId:session.userId,action:'atlas.company.updated',entityType:'Organisation',entityId:organisationId,before:{name:before.name,status:before.status,subscriptionStatus:before.subscriptionStatus,isTest:before.isTest},after:{name,status,subscriptionStatus,planName,isTest}}});});
+ if(before.kind==='INTERNAL')throw new Error('The Atlas internal workspace is managed through Atlas team.');
+ if(before.archivedAt)throw new Error('Restore this company from Archive & export before changing its account.');
+ if(isTest!==before.isTest)throw new Error('The test designation is fixed when a company is created. Real companies must be archived, not wiped.');
+ await db.$transaction(async tx=>{await tx.organisation.update({where:{id:organisationId,archivedAt:null,kind:'CUSTOMER'},data:{name,status,subscriptionStatus,planName,trialEndsAt,isTest}});await tx.auditEntry.create({data:{organisationId,actorUserId:session.userId,action:'atlas.company.updated',entityType:'Organisation',entityId:organisationId,before:{name:before.name,status:before.status,subscriptionStatus:before.subscriptionStatus,isTest:before.isTest},after:{name,status,subscriptionStatus,planName,isTest}}});});
  revalidatePath('/atlas');revalidatePath(`/atlas/${organisationId}`);
 }
 export async function saveCompanyEntitlements(form:FormData){
  const session=await requireSession();
  assertCapability(session,'atlas.companies.manage');
  const organisationId=String(form.get('organisationId')),ids=form.getAll('moduleId').map(String),modules=getImplementedModules();
- await db.organisation.findUniqueOrThrow({where:{id:organisationId}});
+ await db.organisation.findFirstOrThrow({where:{id:organisationId,kind:'CUSTOMER',archivedAt:null}});
  if(ids.some(id=>!modules.some(m=>m.id===id)))throw new Error('Unknown or unimplemented module.');
  for(const m of modules.filter(m=>ids.includes(m.id)))if(m.dependencies.some(dep=>!ids.includes(dep)))throw new Error(`${m.name} requires its dependent apps to be included.`);
  await db.$transaction(async tx=>{for(const m of modules){const entitled=ids.includes(m.id);await tx.moduleState.upsert({where:{organisationId_moduleId:{organisationId,moduleId:m.id}},create:{organisationId,moduleId:m.id,entitled,enabled:false},update:{entitled,...(!entitled?{enabled:false}:{})}});}await tx.auditEntry.create({data:{organisationId,actorUserId:session.userId,action:'atlas.entitlements.updated',entityType:'Organisation',entityId:organisationId,after:{moduleIds:ids}}});});
@@ -43,11 +46,12 @@ export async function createCompanyAccount(form:FormData){
 
 export async function deleteTestCompany(form:FormData){
  const session=await requireSession();
- assertCapability(session,'atlas.companies.manage');
+ assertCapability(session,'atlas.companies.archive');
  const organisationId=String(form.get('organisationId')??''),typedName=String(form.get('confirmName')??'').trim();
  const org=await db.organisation.findUnique({where:{id:organisationId}});
  if(!org)throw new Error('Company not found.');
- if(!org.isTest)throw new Error('Only companies marked as Test can be deleted. Mark it as a test company first, or suspend it.');
+ if(org.kind==='INTERNAL')throw new Error('The Atlas staff workspace cannot be deleted.');
+ if(!org.isTest)throw new Error('Only companies created as Test can be deleted. Archive a real company instead.');
  if(org.id===session.organisationId)throw new Error('Switch to another company before deleting this one.');
  if(typedName!==org.name)throw new Error('Type the company name exactly to confirm.');
  await wipeCompany(organisationId);

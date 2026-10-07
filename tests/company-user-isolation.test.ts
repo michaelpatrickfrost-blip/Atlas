@@ -17,7 +17,7 @@ function session(userId: string, organisationId: string, capabilities: string[])
 
 const staff = session("person-a", "company-a", ["core.profile.self", "people.holiday.self", "scheduling.read", "projects.read"]);
 const colleague = session("person-b", "company-a", ["core.profile.self", "payroll.run.read", "people.absence.read", "people.rota.read", "scheduling.manage", "projects.manage"]);
-const otherCompany = session("person-c", "company-b", ["core.profile.self", "customers.read", "sales.order.read", "people.employee.read"]);
+const otherCompany = session("person-c", "company-b", ["core.profile.self", "customers.read", "sales.order.read", "people.employee.read", "projects.read"]);
 
 describe("company and user areas", () => {
   it("keeps another company's records out of a company read", () => {

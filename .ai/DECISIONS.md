@@ -780,3 +780,21 @@ existing shared pricing engine, company entitlement/enablement, capabilities and
 customer inheritance; relocation must not grant access or copy business records.
 Same-currency list copies preserve prices/rules, and populated list currency changes
 are blocked to prevent silently reinterpreting monetary values.
+
+## 7 October 2026 — Atlas Admin separates staff and customer permissions
+
+Michael requested a proper Atlas Admin portal, offboarding/export, and user,
+password, profile and access administration. He explicitly requires all Atlas
+admins and employees to see/do everything for now. Independent active Owner,
+Administrator and Employee grants therefore give full platform and selected-company
+capabilities. Customer roles cannot create staff access and their restrictions are
+retained. Staff enter a company with an audited signed-session switch under their
+own identity; business tenant scoping is preserved. An internal workspace makes
+staff sign-in independent from customer lifecycle. Classifications are retained
+for a future narrower policy; current classifications all receive full access.
+
+Archive retains records and revokes sessions/codes. Restoring stays suspended until
+access is reopened. Full company exports are consistent, credential-redacted
+NDJSON/gzip handovers including linked records and stored documents. External URLs
+stay references and oversized exports fail without partial files. Production
+accounts cannot be relabelled as wipeable tests. See docs/ATLAS_ADMIN.md.

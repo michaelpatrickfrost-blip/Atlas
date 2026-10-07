@@ -2978,3 +2978,29 @@ This supersedes the earlier Mac-only/pending-server order-entry handoff: the
 simplified order form and CRM move are now deployed on atlassystem.online.
 Shared policy files accompany the release evidence. Root working tree still holds
 concurrent uncommitted work; do not reset it to synchronize release commits.
+
+## 7 October 2026 — Atlas Admin portal release preparation
+
+Implemented /atlas replacement: account/profile/entitlements, searchable company
+users, profile editing, roles/granular permissions and effective access, session
+revocation/suspension, password recovery, Atlas staff administration, activity,
+audited company switching, archive/restore and complete company export. All active
+Atlas staff have full platform and selected-company permissions per Michael's
+latest instruction. Customer grants remain unchanged. Fixed brand setup saving
+the operator's current company instead of the selected company.
+
+Paths: src/app/(app)/atlas, src/core/admin, auth/session/login/recovery, access
+editor/shell, api/atlas/companies/[organisationId]/export, additive migration
+20261007110000_atlas_admin_portal. Scope: docs/ATLAS_ADMIN.md. Archive revokes all
+company sessions/codes and preserves records; restore stays suspended. Exports
+include indirect children/documents, exclude credentials and create no disk cache;
+250 MB/120-second limits and external references are explicit. Test designation is
+immutable after creation.
+
+Checks: Prisma validation/generation passed. Isolated focused permission/admin
+suite: 34 passed. Scoped ESLint passed. Isolated production build passed. Typecheck
+identified a baseline/shared ActionForm API difference; portal-local form wrapper
+added and recheck pending. Stale baseline Quality and Project test fixtures were
+corrected; unrelated CRM workspace-security mock failure not changed. Release is
+based on remote main and excludes concurrent unfinished module edits. Live
+migration/deployment/acceptance still pending at this checkpoint.

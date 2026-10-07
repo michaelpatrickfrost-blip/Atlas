@@ -261,3 +261,14 @@ atomic transfers and CSV exports. This is a starting slice, not accepted full
 MPS/MRP/BOM/WIP/capacity scheduling. [Research and required acceptance](modules/PLANNING_RESEARCH.md)
 records the user's industrial-planner requirement. All broad manufacturing gates
 remain open. See CURRENT_STATE.md for fresh checks and activation evidence.
+
+## Atlas Admin portal — 7 October 2026
+
+- [x] Company accounts/profiles, entitlements, user roles and granular access,
+  staff classifications and audited workspace switching implemented.
+- [x] Full access for active Atlas staff; customer roles cannot grant platform access.
+- [x] Company/staff recovery, archive/restore and complete company handover implemented.
+- [ ] Finish isolated typecheck, server deployment and authenticated live acceptance.
+
+Scope: [Atlas Admin](ATLAS_ADMIN.md). Evidence: shared CURRENT_STATE. Completion
+requires live server feature verification.

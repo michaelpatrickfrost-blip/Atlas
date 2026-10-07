@@ -13,7 +13,7 @@ export default async function CompanySetupPage({ params }: { params: Promise<{ o
   assertCapability(session, "atlas.companies.manage");
   const { organisationId } = await params;
   const org = await db.organisation.findUnique({
-    where: { id: organisationId },
+    where: { id: organisationId, kind: "CUSTOMER", archivedAt: null },
     select: {
       id: true,
       name: true,
@@ -36,7 +36,7 @@ export default async function CompanySetupPage({ params }: { params: Promise<{ o
           <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-blue-600">Step 1 · White-label</p>
           <h2 className="text-2xl font-semibold tracking-tight">Company identity</h2>
         </div>
-        <SetupBrand name={org.name} logoDataUrl={org.logoDataUrl} profile={profile} />
+        <SetupBrand organisationId={org.id} name={org.name} logoDataUrl={org.logoDataUrl} profile={profile} />
       </section>
 
       {/* Data import portal */}

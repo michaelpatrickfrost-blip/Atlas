@@ -1,6 +1,6 @@
 # Company administration
 
-The owner setup portal and registered company profile are in the installed Mac app, using the central data service. Company administration itself was already installed earlier on 3 October 2026.
+Atlas Admin and company administration run on the live server at https://atlassystem.online. The 3 October installed-Mac evidence below is historical. See [Atlas Admin](ATLAS_ADMIN.md) for the current platform portal and staff policy.
 
 ## Available workflows
 
@@ -33,19 +33,23 @@ Recovery follows [OWASP password recovery guidance](https://cheatsheetseries.owa
 
 Password resets and changes increment the global account authentication version. Company session revocation and suspension increment the membership session version. Restoring membership does not revive old sessions.
 
-## Atlas owner setup portal
+## Atlas Admin portal — 7 October 2026
 
-Open only to people with `atlas.companies.manage`. Company roles cannot grant that capability. The console is at `/atlas`.
+/atlas is now Atlas Admin: company accounts, profiles, entitlements, company users
+and individual permissions, a separate Atlas team, admin activity, archive/restore
+and full company exports. All active Atlas staff currently have full platform and
+selected-company permissions as Michael explicitly requested. Customer roles cannot
+grant platform access. See [Atlas Admin](ATLAS_ADMIN.md) for scope and boundaries.
 
-- Company list with user, customer, product, price list and people counts, plus a new company account. This is the only way a company is created; there is no public sign-up. The first administrator receives a one-time setup code, enters it under “Use a setup or recovery code” on the sign-in screen and sets a password. With the current data service release that opens their company directly; an older release returns them to sign-in. The administrator's email must not already be an Atlas sign-in.
-- Account & users for a selected company: add a user with a setup code, suspend or restore a membership. An owner cannot suspend their own membership from that screen.
-- Data setup at `/atlas/[organisationId]/setup`. Nine CSV templates, in order: customers and hierarchy, contacts, customer commercial settings, products, price lists, prices, warehouses, locations, employees. Download a template, validate the file, then import. A clean preview of the current file is required before import. The import is one transaction, at most 500 rows and 2 MB. Existing customer codes are rejected rather than overwritten. Audit stores the file name and row count, not the row contents.
-- Company administrators still import customers, products and prices from Company administration → Imports. Those customer rows default to PROSPECT. Owner customer rows default to ACTIVE. Orders, invoices and supplier bank details stay in their own apps.
+Data setup retains the nine CSV templates and transactional import. Brand setup
+now targets the selected company. Company administrators keep the smaller customer,
+product and price import under Company administration.
 
 ## Remaining integrations
 
 - [ ] Automated email invitations and recovery delivery.
-- [ ] Shared-account invitation acceptance and platform recovery service.
+- [ ] Shared-account invitation acceptance.
+- [x] Separate platform staff recovery through Atlas Admin. Company administrators cannot issue staff credentials.
 - [ ] MFA, SSO, SCIM, detailed device/IP session inventory.
 - [ ] Department identity records and controlled rename across employee data. Current department names are derived from HR records and selected by company administrators.
 - [x] Deploy/install the local Mac app and secure server data API; verify native-client administration and management groups.

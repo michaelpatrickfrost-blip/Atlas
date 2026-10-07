@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { db } from "@/core/db/client";
 import { createSessionCookie, clearSessionCookie } from "@/core/auth/session";
+import { platformCapabilities } from "@/core/admin/access";
 
 export type LoginResult = { error: string } | never;
 
@@ -13,21 +14,22 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
 
   const user = await db.user.findUnique({
     where: { email },
-    include: { memberships: { include: { organisation: true } } },
+    include: { platformAdmin: true, memberships: { include: { organisation: true } } },
   });
 
   if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
     return { error: "Incorrect email or password." };
   }
 
-  const membership = user.memberships.find(m => m.active && m.organisation.status === "ACTIVE");
+  const active = user.memberships.filter(m => m.active && m.organisation.status === "ACTIVE" && (m.organisation.kind !== "INTERNAL" || platformCapabilities(user.platformAdmin).length > 0));
+  const membership = active.find(m => m.organisation.kind === "INTERNAL") ?? active[0];
   if (!membership) {
     return { error: "This account has no active workspace access. Contact your administrator." };
   }
 
   await db.membership.update({where:{id:membership.id,organisationId:membership.organisationId},data:{lastLoginAt:new Date()}});
   await createSessionCookie({ userId: user.id, organisationId: membership.organisationId });
-  redirect("/home");
+  redirect(platformCapabilities(user.platformAdmin).length ? "/atlas" : "/home");
 }
 
 export async function logoutAction() {

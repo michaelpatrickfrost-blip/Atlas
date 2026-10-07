@@ -80,3 +80,13 @@ Company administrators turn a manager level on per app under Company administrat
 - CRM: `sales.pipeline.manage` is required to push a prospect or move a deal. `sales.prospect.assign` assigns the prospect and tasks.
 - Finance: at or above the company limit, or in another currency, the approval route must include someone with `finance.approval.decide`. That person cannot approve their own document.
 - Customer Service: `service.case.approve` is required to resolve or close a complaint, or a query linked to an order at or above the limit. Agents can keep working the case.
+
+## Atlas staff and customer users — 7 October 2026
+
+Independent PlatformAdministrator grants control Atlas Admin. Every atlas.* entry
+from customer roles or membership overrides is ignored. Active Owner, Administrator
+and Employee staff currently have full platform and selected-company capabilities,
+per Michael's explicit instruction. Customer permissions and restrictions remain
+unchanged. Tenant scoping, private record ownership and module gates still apply.
+Staff switches and portal mutations are audited under the staff identity. See
+[Atlas Admin](ATLAS_ADMIN.md) for recovery and offboarding.

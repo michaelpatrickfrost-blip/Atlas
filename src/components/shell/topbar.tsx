@@ -22,6 +22,7 @@ export function Topbar({ session }: { session: Session }) {
       </Link>
       <AppMenu><AppDirectory session={session} /></AppMenu>
       <WorkspaceBack />
+      {can(session, "atlas.companies.manage") && <Link href="/atlas" title={`Atlas staff · ${session.organisationName}`} className="hidden max-w-48 truncate rounded-lg bg-blue-50 px-3 py-2 text-xs text-blue-700 sm:block">{session.organisationName} · Admin</Link>}
       <div className="min-w-0 flex-1 lg:max-w-md"><CommandPalette /></div>
       <div className="ml-auto flex items-center gap-1 sm:gap-1.5">
         <NewWindow />

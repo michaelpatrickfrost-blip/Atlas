@@ -5,7 +5,7 @@ import { ImageIcon } from "lucide-react";
 import { ActionForm } from "@/components/ui/action-form";
 import { COMPANY_COUNTRIES, type CompanyProfile } from "@/core/setup/company-profile";
 import { displayName, letterheadLines } from "@/core/documents/company-brand";
-import { saveCompanyBrand } from "@/app/(app)/settings/actions";
+import { saveAtlasCompanyBrand } from "./admin-actions";
 
 const field = "mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm";
 
@@ -20,10 +20,12 @@ function savedLogo(value: string | null) {
  * Defaults to Atlas defaults if nothing is set.
  */
 export function SetupBrand({
+  organisationId,
   name,
   logoDataUrl,
   profile,
 }: {
+  organisationId: string;
   name: string;
   logoDataUrl: string | null;
   profile: CompanyProfile;
@@ -69,7 +71,7 @@ export function SetupBrand({
 
   return (
     <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
-      <ActionForm action={saveCompanyBrand} className="space-y-5">
+      <ActionForm action={saveAtlasCompanyBrand} className="space-y-5"><input type="hidden" name="organisationId" value={organisationId} />
         <section className="rounded-[28px] border border-slate-200 bg-white p-6 sm:p-8">
           <h3 className="text-lg font-semibold">White-label your workspace</h3>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-500">

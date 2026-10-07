@@ -97,6 +97,9 @@ model Organisation {
   updatedAt DateTime @updatedAt
 
   status String @default("ACTIVE")
+  kind String @default("CUSTOMER")
+  archivedAt DateTime?
+  archiveReason String?
   subscriptionStatus String @default("TRIAL")
   trialEndsAt DateTime?
   planName String @default("All apps trial")
@@ -2620,6 +2623,8 @@ model Meeting {
 // Owner grants are independent of tenant-editable roles.
 model PlatformAdministrator {
  userId String @id
+ role String @default("OWNER")
+ active Boolean @default(true)
  createdAt DateTime @default(now())
  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
  @@map("platform_administrators")
@@ -4473,6 +4478,7 @@ model ServiceSequence {
 model PasswordReset {
  id String @id @default(cuid())
  membershipId String
+ purpose String @default("COMPANY")
  tokenHash String @unique
  expiresAt DateTime
  usedAt DateTime?

@@ -1,134 +1,39 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireSession } from "@/core/auth/session";
-import { assertCapability } from "@/core/permissions/check";
+import { assertCapability, can } from "@/core/permissions/check";
 import { db } from "@/core/db/client";
 import { getImplementedModules } from "@/core/modules/registry";
-import { ActionForm } from "@/components/ui/action-form";
-import { Button } from "@/components/ui/button";
-import { CreateDialog } from "@/components/ui/create-dialog";
+import { PortalActionForm as ActionForm } from "@/app/(app)/atlas/portal-action-form";
 import { updateCompanyAccount, saveCompanyEntitlements, deleteTestCompany } from "../actions";
-import { setCompanyUserStatus } from "../setup-actions";
+import { saveAtlasCompanyProfile, openCompanyWorkspace } from "../admin-actions";
 import { ConsoleNav } from "../console-nav";
-import { NewCompanyUserForm } from "../account-forms";
+import { readCompanyProfile, COMPANY_TIMEZONES, FISCAL_MONTHS } from "@/core/setup/company-profile";
 
 const input = "mt-2 w-full rounded-xl border border-slate-200 bg-white p-3 text-sm";
-
-export default async function CompanyAccount({ params, searchParams }: { params: Promise<{ organisationId: string }>; searchParams: Promise<{ q?: string }> }) {
+const panel = "rounded-2xl border border-slate-200 bg-white p-6";
+export default async function CompanyAccount({ params }: { params: Promise<{ organisationId: string }> }) {
   const session = await requireSession();
   assertCapability(session, "atlas.companies.manage");
   const { organisationId } = await params;
-  const { q = "" } = await searchParams;
-  const query = q.trim().slice(0, 100);
-  const org = await db.organisation.findUnique({
-    where: { id: organisationId },
-    include: {
-      moduleStates: true,
-      memberships: {
-        where: query ? { user: { OR: [{ name: { contains: query, mode: "insensitive" } }, { email: { contains: query, mode: "insensitive" } }] } } : {},
-        include: { user: { select: { id: true, name: true, email: true } }, roles: { include: { role: { select: { name: true } } } } },
-        orderBy: { user: { name: "asc" } },
-        take: 200,
-      },
-      _count: { select: { parties: true, products: true, priceLists: true, employees: true } },
-    },
-  });
+  const org = await db.organisation.findFirst({ where: { id: organisationId, kind: "CUSTOMER" }, include: { moduleStates: true, _count: { select: { memberships: true, parties: true, products: true, employees: true } } } });
   if (!org) notFound();
-  const roles = await db.role.findMany({ where: { organisationId }, orderBy: { name: "asc" }, select: { id: true, name: true } });
-  const audit = await db.auditEntry.findMany({ where: { organisationId, action: { startsWith: "atlas." } }, orderBy: { createdAt: "desc" }, take: 20 });
-  return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      <ConsoleNav organisationId={org.id} current="account" />
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[.16em] text-blue-600">Company account</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight">{org.name}</h1>
-          <p className="mt-2 text-sm text-slate-500">{org._count.parties} customers · {org._count.products} products · {org._count.priceLists} price lists · {org._count.employees} people</p>
-        </div>
-        <Link href={`/atlas/${org.id}/setup`} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white">Open data setup</Link>
-      </div>
-      <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-2xl border border-slate-200 bg-white p-6">
-          <h2 className="mb-5 font-semibold">Account & subscription</h2>
-          <ActionForm action={updateCompanyAccount} className="space-y-4">
-            <input type="hidden" name="organisationId" value={org.id} />
-            <label className="block text-xs">Company name<input required name="name" defaultValue={org.name} className={input} /></label>
-            <label className="block text-xs">Account access<select name="status" defaultValue={org.status} className={input}><option value="ACTIVE">Active</option><option value="SUSPENDED">Suspended — block company sign-in</option></select></label>
-            <label className="block text-xs">Subscription status<select name="subscriptionStatus" defaultValue={org.subscriptionStatus} className={input}>{["TRIAL", "ACTIVE", "PAST_DUE", "CANCELLED"].map((status) => <option key={status}>{status}</option>)}</select></label>
-            <label className="block text-xs">Plan name<input required name="planName" defaultValue={org.planName} className={input} /></label>
-            <label className="block text-xs">Trial ends<input name="trialEndsAt" type="date" defaultValue={org.trialEndsAt?.toISOString().slice(0, 10)} className={input} /></label>
-            <label className="flex items-center gap-2 text-xs"><input type="checkbox" name="isTest" defaultChecked={org.isTest} /> Test company — can be wiped and deleted, including finance records</label>
-            <p className="text-xs text-slate-400">Subscription fields record the account you manage. Charging and automatic expiry are separate.</p>
-            <Button type="submit" variant="primary">Save account</Button>
-          </ActionForm>
-        </section>
-        <section className="rounded-2xl border border-slate-200 bg-white p-6">
-          <h2 className="mb-2 font-semibold">App entitlements</h2>
-          <p className="mb-5 text-xs text-slate-500">Choose what this company can turn on. Removing an entitlement disables access and keeps its records.</p>
-          <ActionForm action={saveCompanyEntitlements} className="space-y-3">
-            <input type="hidden" name="organisationId" value={org.id} />
-            {getImplementedModules().map((module) => (
-              <label key={module.id} className="flex items-center gap-3 rounded-xl bg-slate-50 p-3 text-sm">
-                <input type="checkbox" name="moduleId" value={module.id} defaultChecked={org.moduleStates.some((state) => state.moduleId === module.id && state.entitled)} />
-                <span className="flex-1">{module.name}</span>
-                <span className="text-[10px] text-slate-400">{org.moduleStates.some((state) => state.moduleId === module.id && state.enabled) ? "Enabled" : "Disabled"}</span>
-              </label>
-            ))}
-            <Button type="submit" variant="primary">Save entitlements</Button>
-          </ActionForm>
-        </section>
-      </div>
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 p-5">
-          <div>
-            <h2 className="font-semibold">Company users</h2>
-            <p className="mt-1 text-xs text-slate-500">Add people with a one-time setup code. This console does not sign in as them.</p>
-          </div>
-          <CreateDialog title="Add a company user" label="Add user"><NewCompanyUserForm organisationId={org.id} roles={roles} /></CreateDialog>
-        </div>
-        <form className="flex gap-3 border-b border-slate-100 p-4">
-          <input aria-label="Search users" name="q" defaultValue={query} placeholder="Search by name or email…" className="min-w-0 flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm" />
-          <Button type="submit">Search</Button>
-        </form>
-        <div className="divide-y divide-slate-100">
-          {org.memberships.map((member) => (
-            <div key={member.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 text-sm">
-              <div>
-                <p className="font-medium">{member.user.name}{member.id === session.membershipId && <span className="ml-2 text-xs font-normal text-slate-400">You</span>}</p>
-                <p className="mt-1 text-xs text-slate-400">{member.user.email}</p>
-              </div>
-              <p className="text-xs text-slate-500">{member.roles.map((role) => role.role.name).join(", ") || "No role"} · {member.lastLoginAt ? `Last sign-in ${member.lastLoginAt.toLocaleDateString("en-GB")}` : "Not signed in yet"}</p>
-              <div className="flex items-center gap-3">
-                <span className={`rounded-full px-3 py-1 text-[10px] font-semibold ${member.active ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-700"}`}>{member.active ? "Active" : "Suspended"}</span>
-                {member.id !== session.membershipId && (
-                  <ActionForm action={setCompanyUserStatus} className="flex items-center gap-2">
-                    <input type="hidden" name="organisationId" value={org.id} />
-                    <input type="hidden" name="membershipId" value={member.id} />
-                    <input type="hidden" name="status" value={member.active ? "SUSPENDED" : "ACTIVE"} />
-                    <button className="text-xs text-blue-600">{member.active ? "Suspend" : "Restore"}</button>
-                  </ActionForm>
-                )}
-              </div>
-            </div>
-          ))}
-          {!org.memberships.length && <p className="p-6 text-sm text-slate-400">No users match this search.</p>}
-        </div>
-      </section>
-      <section className="rounded-2xl border border-slate-200 bg-white p-6">
-        <h2 className="mb-4 font-semibold">Account history</h2>
-        {audit.length ? audit.map((entry) => <p key={entry.id} className="border-t border-slate-100 py-3 text-xs text-slate-500">{entry.createdAt.toLocaleString("en-GB")} · {entry.action}</p>) : <p className="text-sm text-slate-400">No owner changes yet.</p>}
-      </section>
-      {org.isTest && (
-        <section className="rounded-2xl border border-rose-200 bg-rose-50 p-6">
-          <h2 className="mb-2 font-semibold text-rose-900">Delete this test company</h2>
-          <p className="mb-4 text-xs text-rose-800">Permanently removes this company, all its records (including finance), and users who belong to no other company. This cannot be undone. Type the company name to confirm.</p>
-          <ActionForm action={deleteTestCompany} className="flex flex-wrap items-end gap-3">
-            <input type="hidden" name="organisationId" value={org.id} />
-            <label className="block flex-1 text-xs">Company name<input required name="confirmName" autoComplete="off" placeholder={org.name} className={input} /></label>
-            <Button type="submit" variant="primary">Delete permanently</Button>
-          </ActionForm>
-        </section>
-      )}
-    </div>
-  );
+  const profile = readCompanyProfile(org.companyProfile);
+  return <div className="space-y-6">
+    <ConsoleNav organisationId={org.id} current="account" />
+    <div className="flex flex-wrap items-end justify-between gap-4"><div><h2 className="text-3xl font-semibold tracking-tight">{org.name}</h2><p className="mt-2 text-sm text-slate-500">{org._count.memberships} users · {org._count.parties} customers · {org._count.products} products · {org._count.employees} employees{org.isTest ? " · Test company" : ""}</p></div><div className="flex flex-wrap gap-3"><Link href={`/atlas/${org.id}/users`} className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm">Manage users</Link>{org.status === "ACTIVE" && <form action={openCompanyWorkspace}><input type="hidden" name="organisationId" value={org.id} /><button className="rounded-xl bg-blue-600 px-4 py-3 text-sm text-white">Open company workspace →</button></form>}</div></div>
+    {org.archivedAt ? <section className={panel}><h3 className="font-semibold">Archived {org.archivedAt.toLocaleDateString("en-GB")}</h3><p className="mt-3 text-sm text-slate-500">{org.archiveReason}</p><Link href={`/atlas/${org.id}/offboarding`} className="mt-4 inline-block text-sm text-blue-700">Export records or restore account →</Link></section> : <div className="grid items-start gap-6 lg:grid-cols-2">
+      <div className="space-y-6"><section className={panel}><h3 className="mb-5 font-semibold">Account & subscription</h3><ActionForm action={updateCompanyAccount} label="Save account">
+        <input type="hidden" name="organisationId" value={org.id} />{org.isTest && <input type="hidden" name="isTest" value="on" />}
+        <label className="block text-xs">Company name<input required name="name" maxLength={150} defaultValue={org.name} className={input} /></label>
+        <label className="block text-xs">Account access<select name="status" defaultValue={org.status} className={input}><option value="ACTIVE">Active</option><option value="SUSPENDED">Suspended — block company sign-in</option></select></label>
+        <div className="grid gap-4 sm:grid-cols-2"><label className="block text-xs">Subscription<select name="subscriptionStatus" defaultValue={org.subscriptionStatus} className={input}>{["TRIAL", "ACTIVE", "PAST_DUE", "CANCELLED"].map(status => <option key={status}>{status}</option>)}</select></label><label className="block text-xs">Plan name<input required name="planName" maxLength={100} defaultValue={org.planName} className={input} /></label></div>
+        <label className="block text-xs">Trial ends<input name="trialEndsAt" type="date" defaultValue={org.trialEndsAt?.toISOString().slice(0, 10)} className={input} /></label>
+        <p className="text-xs text-slate-500">Subscription status is an administration record. Charging and automatic expiry are not configured.</p>
+      </ActionForm></section>
+      <section className={panel}><h3 className="mb-5 font-semibold">Registered company profile</h3><ActionForm action={saveAtlasCompanyProfile} label="Save profile"><input type="hidden" name="organisationId" value={org.id} /><div className="grid gap-4 sm:grid-cols-2">{[["legalName", "Legal name"], ["registrationNumber", "Company number"], ["vatNumber", "VAT number"], ["addressLine1", "Registered address"], ["city", "City"], ["postcode", "Postcode"], ["country", "Country code (GB, IE…)"], ["defaultCurrency", "Currency (GBP, EUR…)"]].map(([key, label]) => <label key={key} className="text-xs">{label}<input name={key} defaultValue={String(profile[key as keyof typeof profile])} maxLength={key === "country" ? 2 : key === "defaultCurrency" ? 3 : 200} className={input} /></label>)}<label className="text-xs">Time zone<select name="timezone" defaultValue={profile.timezone} className={input}>{COMPANY_TIMEZONES.map(zone => <option key={zone}>{zone}</option>)}</select></label><label className="text-xs">Financial year starts<select name="fiscalYearStartMonth" defaultValue={profile.fiscalYearStartMonth} className={input}>{FISCAL_MONTHS.map((month, i) => <option key={month} value={i + 1}>{month}</option>)}</select></label><label className="text-xs">Language<select name="locale" defaultValue={profile.locale} className={input}><option value="en-GB">English (UK)</option><option value="en-US">English (US)</option></select></label></div></ActionForm></section></div>
+      <section className={panel}><h3 className="font-semibold">App entitlements</h3><p className="mb-5 mt-2 text-xs text-slate-500">Controls the apps the company may enable. Users still need permission to open each app. Removing an app preserves its records.</p><ActionForm action={saveCompanyEntitlements} label="Save entitlements"><input type="hidden" name="organisationId" value={org.id} />{getImplementedModules().map(module => <label key={module.id} className="flex items-center gap-3 rounded-xl bg-slate-50 p-3 text-sm"><input type="checkbox" name="moduleId" value={module.id} defaultChecked={org.moduleStates.some(state => state.moduleId === module.id && state.entitled)} /><span className="flex-1">{module.name}</span><span className="text-[10px] text-slate-500">{org.moduleStates.some(state => state.moduleId === module.id && state.enabled) ? "Enabled" : "Disabled"}</span></label>)}</ActionForm></section>
+    </div>}
+    {org.isTest && can(session, "atlas.companies.archive") && <details className="rounded-2xl border border-rose-200 bg-rose-50 p-6"><summary className="cursor-pointer text-sm font-semibold text-rose-900">Delete disposable test company</summary><p className="my-4 text-xs text-rose-800">Permanently deletes all test records including finance. Type the company name to confirm. Real companies use Archive & export.</p><ActionForm action={deleteTestCompany} label="Delete permanently"><input type="hidden" name="organisationId" value={org.id} /><label className="block text-xs">Company name<input required name="confirmName" autoComplete="off" placeholder={org.name} className={input} /></label></ActionForm></details>}
+  </div>;
 }

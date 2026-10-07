@@ -12,6 +12,11 @@
 
 ## Atlas Guardian implementation — 7 October 2026
 
+- Live sweep confirmed Campaign “Write a message” targeted missing `/marketing/messages`.
+  Corrected the canonical link to `/marketing/email` and retained the old URL as an
+  alias in the existing dynamic section route; destination permissions remain enforced.
+  Source audit has no findings; scoped ESLint, TypeScript, 14 Guardian tests and
+  production build passed. Live alias/deployment verification is next.
 - Added staff-only `/atlas/guardian` reports, AI brief copy/download, durable queue,
   recurrence tracking and verified-repair fields. Additive migration:
   `20261007180000_atlas_guardian`. Runtime browser/server diagnostics contain only

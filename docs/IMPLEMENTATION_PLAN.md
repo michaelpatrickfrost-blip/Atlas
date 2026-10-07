@@ -1,14 +1,13 @@
 # Atlas delivery checklist
 
-> **Superseded deployment target — 3 October 2026:** The user requires Atlas
-> software/UI/application runtime on the Desktop/Mac and shared user data stored
-> only on the server. Remote hosting of the Atlas UI/full application and the
-> hosted thin-client target below are historical, not the approved architecture.
-> See AGENTS.md, .ai/ARCHITECTURE.md and [desktop/data runtime](DESKTOP_DATA_BOUNDARY.md). Minimal secured data access must retain
-> server-side tenant/capability enforcement. Current deployment compliance is unverified.
+> **Current deployment target — 7 October 2026:** Every finished app change must
+> be deployed and verified at https://atlassystem.online. This supersedes the earlier
+> Desktop/Mac-only and data-only-server restrictions. Preserve central records,
+> backups, tenant/capability checks and profile permissions. See AGENTS.md and
+> [deployment](DEPLOY.md).
 
 
-Updated 3 October 2026. This is the working delivery tracker, not a declaration that Atlas is a complete ERP. Checkboxes describe specific accepted workflows. A module's catalogue entry or schema alone never earns a tick.
+Service checkpoints updated 7 October 2026; other checkpoints retain their recorded dates. This is the working delivery tracker, not a declaration that Atlas is a complete ERP. Checkboxes describe specific accepted workflows. A module's catalogue entry or schema alone never earns a tick.
 
 ## Current position and first delivery batch
 
@@ -32,7 +31,7 @@ Updated 3 October 2026. This is the working delivery tracker, not a declaration 
 | Projects / Meetings / KPIs | Broad canonical work-management workspace and existing scorecard foundations; Projects source/build/synthetic evidence in PROJECTS_WORKSPACE.md | Full 256-section acceptance, advanced collaboration/workflow/capacity, live ERP/Finance processing and installed desktop activation |
 | Logistics / Finance / Purchasing | Planned | Fulfilment contracts, accounting design and reconciled end-to-end transactions |
 | HR / Scheduling / Production | Partial foundations; acceptance open | Resource calendars, demand model, MRP and finite-capacity scheduler |
-| Service / Quality / Safety / Marketing | Service and Marketing source foundations; Quality/Safety planned | Marketing planning, consent and CRM handoff implemented; external delivery and complete acceptance remain pending |
+| Service / Tickets / Quality / Safety / Marketing | Core connected case/ticket/query server journey verified; existing Quality/Safety/Marketing foundations | Service advanced/native extensions and external delivery remain open; see module delivery evidence |
 | Mac / paid add-ons | Private SSH Mac client and isolated test server running; entitlement foundation exists | Notarised distribution, billing and production release verification |
 
 **Next batch:** finish the visual system and customer/catalogue/pricing/Sales journey before opening another major module. Start with app menus, rounded controls, consistent spacing and mobile tables; then verify imports and customer defaults; then enforce confirmation rules and connect inventory reservations. Follow with Logistics and Finance so an order can become a delivered, correctly invoiced transaction.
@@ -194,8 +193,10 @@ The broader checklist remains open; no live migration/activation or full accepta
 ## 12. Service, Quality, Health & Safety and Marketing
 
 - [ ] Customer Service: cases, complaints, inbox, ownership, SLAs, escalation, communication and resolution.
-  Case and department-ticket source foundation now exists; full acceptance remains open.
-  See [Customer Service delivery](modules/CUSTOMER_SERVICE.md) and [all 241 requirements](modules/CUSTOMER_SERVICE_COVERAGE.md).
+  Core browser/server workflow is verified; automatic escalation delivery, broader integrations and native transport remain open.
+  See [connected service desk](modules/SERVICE_WORK_DESK.md), [live acceptance](modules/SERVICE_WORK_ACCEPTANCE.md), and historical [241-section coverage](modules/CUSTOMER_SERVICE_COVERAGE.md).
+- [x] Core connected service journey: purchase/delivery complaint → internal Query → independently approved/posted credit, RMA/replacement/NCR and approved recovery → resolution/immutable CSAT; live acceptance passed on 7 October 2026.
+- [x] Tickets/Queries core: configurable service form, receiving queues, assignment, business-hours targets, private collaboration, independent approval, reasoned reopen and scoped reporting; automated and live browser/server checks passed. This does not close advanced change/CAB, portal, telephony or native transport.
 - [ ] Quality: inspections, specifications, nonconformance, CAPA, traceability, supplier issues and holds/releases.
 - [ ] Health & Safety: risks, incidents, near misses, inspections, training compliance, actions and restricted records.
 - [ ] Marketing: source foundation includes strategy plans, budget allocations, channel calendar, audiences, consent, campaigns, content, versioned journey steps, CRM handoff and order attribution. External delivery, automatic scheduling and full brief completion remain pending; see docs/modules/MARKETING.md.

@@ -50,6 +50,24 @@ string. Never store money as a float. Format with `formatMoney()`
 (`OpportunityStage`, `QuoteStatus`, `SalesOrderStatus`) model the status
 language from `docs/DESIGN_SYSTEM.md`.
 
+## Customer Service, Tickets and Queries
+
+Customer Service retains `ServiceCase` linked to canonical `Party`, Contact and
+verified source purchase context. Shared Core `ServiceWorkItem` represents distinct
+TICKET / QUERY kinds; Query origins reference accessible cases or work items.
+`ServiceWorkEntry` preserves append-only history; `ServiceQueue` retains membership,
+restricted access and configured SLA/catalogue definitions. `ServiceFile` stores
+opaque metadata for bytes held only in private server storage. `ServiceRecovery`
+and `ServiceRedemption` retain independently approved, bounded benefits and explicit
+Sales applications. `ServiceKnowledge` stores reviewed article versions.
+
+Migration `20261007190000_service_work_desk` is additive: it also adds case context,
+clock/merge fields and CSAT integrity fields, preserves historical cases/department
+work and backfills historical comment timestamps. Canonical Finance documents,
+Logistics returns, Sales orders, Inventory positions, Quality NCRs and CSAT responses
+remain authoritative; Service does not duplicate their ledgers. See
+[connected service desk](modules/SERVICE_WORK_DESK.md).
+
 ## Adding a module's entities
 
 1. Add models to `prisma/schema.prisma`, prefixed `<module>_` for table names

@@ -2,9 +2,11 @@
 
 3 October 2026. [Source](CUSTOMER_SERVICE_SOURCE_REQUIREMENTS.md) · [Delivery](CUSTOMER_SERVICE.md).
 
-Every numbered requirement is retained. **All acceptance remains open** until
-central-data and UI acceptance. “Partial foundation” means some code exists; it
-does not imply the complete section or implementation phase has been delivered.
+This is the preserved 3 October coverage snapshot for the historical 241-section brief.
+The 7 October connected release has [new delivery evidence](SERVICE_WORK_ACCEPTANCE.md)
+and [explicit remaining work](SERVICE_WORK_DESK.md); the historical row labels below
+have not been reassessed against every section. They are not the current feature inventory.
+Every numbered requirement remains retained; partial evidence does not certify a complete section.
 
 | Section | Requirement | Current evidence / outstanding delivery |
 |---|---|---|

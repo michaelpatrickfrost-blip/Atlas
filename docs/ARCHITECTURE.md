@@ -15,10 +15,9 @@ PostgreSQL via Prisma.
   `docs/CUSTOMER_MASTER.md`), audit, activity, attention, search, navigation,
   shared UI primitives.
 - **Modules** (`src/modules/`) own business capabilities (Sales, CRM, Projects,
-  HR — `people`, Staff Scheduling, Production Planning, Inventory, KPIs,
-  Products, Pricing, Analytics, Customer Service, Finance and Marketing have source foundations;
-  Purchasing, Payroll, Manufacturing execution, Logistics, Quality, Health & Safety
-  and Fleet remain planned/stub domains). A module declares a manifest, owns its own
+  HR — `people`, Customer Service, Tickets, Finance, Logistics and Quality).
+  Consult the runtime registry and [module memory](../.ai/MODULES.md) for registered
+  implementations, remaining stubs and acceptance limits. A module declares a manifest, owns its own
   database tables, and contributes navigation, pages, capabilities, an
   attention provider and a search provider through typed contracts — it never
   reaches into another module's internals, and Core never contains
@@ -66,6 +65,16 @@ one application today — but the event names and payload shapes are the
 contract that would carry over to a real queue later.
 
 Confirmed Sales mutations now also write Core DomainOutbox records transactionally. These are durable pending records; no background dispatcher/consumer is installed yet. See [Sales delivery map](modules/SALES_ORDER_PROCESSING.md) for retry/idempotency/projection work before downstream integration.
+
+## Shared service work
+
+Core `src/core/service-work/` provides reusable queues, clocks, access, history,
+private evidence, knowledge and approval connections. Customer Service owns
+customer cases; Tickets owns internal tickets; Queries retain an accessible case
+or ticket origin without transferring its owner. Typed registry providers connect
+canonical Finance credits, Sales replacements/recovery, Logistics returns,
+Inventory quarantine, Quality NCRs and CSAT. Core never imports their module
+implementations. See [connected service desk](modules/SERVICE_WORK_DESK.md).
 
 ## Multi-tenancy
 

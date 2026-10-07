@@ -92,3 +92,19 @@ per Michael's explicit instruction. Customer permissions and restrictions remain
 unchanged. Tenant scoping, private record ownership and module gates still apply.
 Staff switches and portal mutations are audited under the staff identity. See
 [Atlas Admin](ATLAS_ADMIN.md) for recovery and offboarding.
+
+## Connected service work — 7 October 2026
+
+Customer cases use existing `service.case.*` capabilities, including the additional
+restricted-case permission. Internal tickets use `tickets.ticket.*`, cross-team
+queries use `service.ticket.*`, and Tickets queue setup uses `tickets.queue.*`. Enabled/entitled app gates and tenant scopes apply on the
+server. Restricted receiving queues also require permitted ownership/membership;
+manager capability never bypasses that boundary. Requesters see permitted replies,
+not receiving-team internal notes. File downloads re-check parent access.
+Case assignment respects both explicit profile grants and denials.
+
+Service creates Finance draft credit requests but cannot approve/post them.
+Independent Core approval and separate Finance posting capabilities remain required.
+Recovery benefits similarly require independent approval before Sales redemption.
+Configuring a queue or catalogue service never grants unrelated business permissions.
+See [service work security and behavior](modules/SERVICE_WORK_DESK.md).

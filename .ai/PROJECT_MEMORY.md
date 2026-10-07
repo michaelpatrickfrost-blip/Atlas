@@ -100,3 +100,16 @@ Price lists are a Sales workspace (`/sales/price-lists`), with no separate launc
 ## Business document templates — 7 October 2026
 
 Templates is a separate app for reusable business documents. CRM Deals owns contract work; Core stores immutable shared PDFs, template snapshots and customer responses. Customers receive private Atlas share pages and may sign online or return a signed PDF for staff review. Source apps supply authorised template fields through the module registry. See [Contracts and Templates](../docs/plans/CONTRACTS_TEMPLATES.md).
+
+## Customer Service, Tickets and Queries — 7 October 2026
+
+Customer cases (`/service`, CS) stay with Customer Service and canonical Party.
+Tickets (`/tickets`, TKT) are internal service work; Queries (QRY) request another
+team's help while retaining the originating case/ticket and its owner. Shared Core
+infrastructure owns clocks, queues, history, evidence and approval connections;
+source modules own Finance credits, Sales replacements/recovery, Logistics returns,
+Inventory quarantine and Quality NCRs. Finance independently approves/posts credits.
+Evidence and authoritative records remain on the server. See
+[connected service desk](../docs/modules/SERVICE_WORK_DESK.md) and
+[live acceptance](../docs/modules/SERVICE_WORK_ACCEPTANCE.md); advanced and native
+extensions remain explicit delivery gaps.

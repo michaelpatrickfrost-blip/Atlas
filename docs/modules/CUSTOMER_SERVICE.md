@@ -3,9 +3,11 @@
 ## Current release — 7 October 2026
 
 The connected Case / Tickets / Queries release is documented in
-[SERVICE_WORK_DESK.md](SERVICE_WORK_DESK.md). Its target runtime is the installed
-Mac app with central server data; the server must not host these pages. See
-CURRENT_STATE for the release's actual verification status.
+[SERVICE_WORK_DESK.md](SERVICE_WORK_DESK.md) and is deployed to the live Atlas
+server as required on 7 October 2026. See [live acceptance](SERVICE_WORK_ACCEPTANCE.md)
+and CURRENT_STATE for actual checks and remaining extensions. Native-client reads
+and evidence transport remain outstanding. The historical runtime wording below
+is superseded for the current release.
 
 ## Historical foundation — 3 October 2026
 

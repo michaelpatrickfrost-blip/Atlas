@@ -1,7 +1,7 @@
 # Module memory map
 
 The authoritative runtime catalogue is src/core/modules/registry.ts. Registered
-foundations: CRM, Sales, Projects, Stock (Inventory), KPIs, Products, Pricing, People, Staff Scheduling, Production Planning, Plan, Analytics, Customer Service, Marketing, Finance, Logistics, Manufacturing, Safety, Audit, Payroll and Team planner.
+foundations: CRM, Sales, Projects, Stock (Inventory), KPIs, Products, Pricing, People, Staff Scheduling, Production Planning, Plan, Analytics, Customer Service, Marketing, Finance, Logistics, Manufacturing, Safety, Audit, Payroll, Team planner, Quality, Tickets, CSAT, Automations and Templates.
 Customer Master belongs to Core. Registered foundations are not complete ERP apps.
 Safety is the workplace-risk module at `/safety`. See [Safety](../docs/modules/SAFETY.md).
 
@@ -9,7 +9,7 @@ Audit maps existing change records by system and shows a manager their team.
 Echo is the note-and-mention panel on a customer, order, quotation or call-off.
 See [Audit and Echo](../docs/modules/AUDIT.md).
 
-Current remaining catalogue stubs are Quality and Fleet. Payroll and Manufacturing have
+The remaining runtime catalogue stub is Fleet. Quality and Tickets have registered implementations. Payroll and Manufacturing have
 registered implementations; full workflow acceptance remains separate from registration. Read src/modules/stubs.ts for actual IDs/dependencies and check the
 registry for which stubs are replaced by implemented manifests.
 
@@ -59,14 +59,17 @@ holidays, company policy PDFs, performance plans, disciplinary cases, My Team, c
 [Staff Scheduling](../docs/modules/STAFF_SCHEDULING.md). Central workflows and the installed planner/hours budgets are live
 and enabled; acceptance is recorded in CURRENT_STATE.
 
-Customer Service (`service`, `/service`) is a limited case/departmental-work
-foundation, with shared Party identity, independent ownership and guarded
-resolution. The [241-section source](../docs/modules/CUSTOMER_SERVICE_SOURCE_REQUIREMENTS.md),
-[delivery limits](../docs/modules/CUSTOMER_SERVICE.md) and
-[coverage](../docs/modules/CUSTOMER_SERVICE_COVERAGE.md) retain the full target.
-Email delivery, attachments, SLA/OLA engines, surveys and later integrations are
-open. The limited foundation is live in the installed Mac app and private central
-data service as of 3 October 2026; see delivery evidence and remaining acceptance.
+Customer Service (`service`, `/service`) now connects customer/order/product/delivery
+complaints, investigations, canonical remedies and immutable CSAT. Tickets
+(`tickets`, `/tickets`) and cross-team Queries share Core service-work infrastructure
+while keeping distinct business meaning and case ownership. Business-hours clocks,
+private evidence, service forms, independent approvals and source-module providers
+are implemented and core browser/server journeys verified on 7 October 2026.
+See [connected service desk](../docs/modules/SERVICE_WORK_DESK.md) and
+[live acceptance](../docs/modules/SERVICE_WORK_ACCEPTANCE.md) for genuine advanced
+and native gaps. The historical [241-section source](../docs/modules/CUSTOMER_SERVICE_SOURCE_REQUIREMENTS.md)
+and [coverage](../docs/modules/CUSTOMER_SERVICE_COVERAGE.md) remain preserved targets,
+not a claim of full acceptance.
 
 Projects now has a broad work-management implementation, not complete brief acceptance.
 The user requests all 256 sections without staged delivery gates. See

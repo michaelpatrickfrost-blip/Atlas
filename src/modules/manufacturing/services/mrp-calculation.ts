@@ -171,7 +171,7 @@ async function loadInventory(organisationId: string): Promise<Map<string, Invent
   });
 
   for (const hold of holds) {
-    for (const [key, state] of inventory) {
+    for (const state of inventory.values()) {
       if (state.productId === hold.productId) {
         state.qualityHeld += Number(hold.quantity);
       }

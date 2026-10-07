@@ -15,7 +15,7 @@ const version={id:'v',cycleId:'cycle',organisationId:'org',status:'approved',cre
 const form=(data:Record<string,string>)=>{const f=new FormData();for(const [k,v]of Object.entries(data))f.set(k,v);return f;};
 beforeEach(()=>{
  vi.clearAllMocks();state.session.capabilities=new Set(['plan.read','plan.edit','sop.read','sop.manage','sop.approve','sop.publish','manufacturing.plan.manage']);
- state.db.sopCycle.findMany.mockResolvedValue([cycle]);state.db.sopCycle.findFirst.mockResolvedValue(cycle);state.db.businessPlan.findMany.mockResolvedValue([]);state.db.sopVersion.findMany.mockResolvedValue([{id:'v',kind:'consensus',requiredCapabilities:[],requiredModules:[]}]);state.db.sopVersion.findFirst.mockImplementation(async(args)=>args?.where?.createdAt?null:{...version});state.db.sopCycle.updateMany.mockResolvedValue({count:1});state.db.sopVersion.updateMany.mockResolvedValue({count:1});state.db.$transaction.mockImplementation(async(fn:(tx:unknown)=>Promise<unknown>)=>fn(state.db));state.read.mockResolvedValue({sources:[],products:[],orders:[],deliveries:[],stock:[],supply:[],inputs:[],budgets:[],requiredCapabilities:[],requiredModules:[],warnings:[]});
+ state.db.sopCycle.findMany.mockResolvedValue([cycle]);state.db.sopCycle.findFirst.mockResolvedValue(cycle);state.db.businessPlan.findMany.mockResolvedValue([]);state.db.sopVersion.findMany.mockResolvedValue([{id:'v',kind:'consensus',requiredCapabilities:[],requiredModules:[]}]);state.db.sopVersion.findFirst.mockImplementation(async(args)=>args?.where?.createdAt?null:{...version});state.db.sopCycle.updateMany.mockResolvedValue({count:1});state.db.sopVersion.updateMany.mockResolvedValue({count:1});state.db.$transaction.mockImplementation(async(fn:(tx:unknown)=>Promise<unknown>)=>fn(state.db));state.read.mockResolvedValue({sources:[],products:[],orders:[],deliveries:[],stock:[],supply:[],inputs:[],budgets:[],planRevisions:[],targets:[],requiredCapabilities:[],requiredModules:[],warnings:[]});
 });
 describe('connected planning boundaries',()=>{
  it('refuses editing a view-only private-plan share',async()=>{state.db.businessPlan.findFirst.mockResolvedValue({ownerUserId:'other',audience:'private',shares:[{userId:'owner',access:'view'}],locked:false});await expect(savePlanGrid(form({planId:'p'}))).rejects.toThrow('view');expect(state.db.$transaction).not.toHaveBeenCalled();});
@@ -61,5 +61,11 @@ it('rechecks snapshot access before allowing a review-stage approval',async()=>{
 it('does not clear manufacturing forecasts by publishing an empty source result',async()=>{
  state.db.sopVersion.findFirst.mockResolvedValue({...version,payload:{...version.payload,rows:[]}});
  await expect(publishSopVersion(form({cycleId:'cycle',versionId:'v'}))).rejects.toThrow('no product demand');
+ expect(state.publish).not.toHaveBeenCalled();expect(state.db.$transaction).not.toHaveBeenCalled();
+});
+
+it('refuses publication after a connected plan changed since approval',async()=>{
+ state.read.mockResolvedValue({sources:[],inputs:[{id:'changed'}],planRevisions:[{id:'p',revision:2}],targets:[],requiredCapabilities:[]});
+ await expect(publishSopVersion(form({cycleId:'cycle',versionId:'v'}))).rejects.toThrow('inputs changed after approval');
  expect(state.publish).not.toHaveBeenCalled();expect(state.db.$transaction).not.toHaveBeenCalled();
 });

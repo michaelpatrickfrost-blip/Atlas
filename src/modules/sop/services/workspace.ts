@@ -147,11 +147,14 @@ export async function publishSopVersion(form:FormData){
  if(!version.payload.rows.length)throw Error('This version has no product demand to publish. Check the source scope and generate a populated consensus.');
  if(!reviewsComplete(cycle.workflow,version.id))throw Error('A review stage was reopened or belongs to another version. Review and approve a fresh consensus before publication.');
  if(version.sourceRevision!==cycle.inputRevision)throw Error('Cycle inputs changed after approval. Generate and approve a fresh consensus before publishing.');
+ const current=await readBusinessPlanning(session,{startsOn:cycle.startsOn.toISOString().slice(0,10),endsOn:cycle.endsOn.toISOString().slice(0,10),historyStartsOn:cycle.startsOn.toISOString().slice(0,10),purpose:'forecast',modules:['plan'],productIds:version.payload.productIds,planIds:version.payload.sourcePlanIds});
+ if(planSignature(current)!==planSignature(version.payload))throw Error('Connected plan inputs changed after approval. Generate and approve a fresh consensus before publishing.');
  const {getModule}=await import('@/core/modules/registry');
  const consumer=getModule('manufacturing')?.planningPublicationConsumer;if(!consumer)throw Error('Manufacturing demand publication is unavailable.');
  await db.$transaction(async tx=>{
   const unchanged=await tx.sopCycle.updateMany({where:{id:cycle.id,organisationId:session.organisationId,revision:cycle.revision,inputRevision:version.sourceRevision},data:{revision:{increment:1}}});
   if(unchanged.count!==1)throw Error('Cycle changed during publication. Refresh first.');
+  for(const plan of current.planRevisions){const unchanged=await tx.businessPlan.findFirst({where:{id:plan.id,organisationId:session.organisationId,revision:plan.revision},select:{id:true}});if(!unchanged)throw Error('A connected plan changed during publication. Generate a fresh consensus.');}
   const newer=await tx.sopVersion.findFirst({where:{organisationId:session.organisationId,cycleId:cycle.id,status:'published',createdAt:{gt:version.createdAt}},select:{id:true}});if(newer)throw Error('A newer version has already been published. Create a new version instead of overwriting it with an older one.');
   const changed=await tx.sopVersion.updateMany({where:{id:version.id,organisationId:session.organisationId,status:'approved'},data:{status:'published',publishedAt:new Date(),publicationId:version.id}});
   if(changed.count!==1)throw Error('This version was already published or its status changed.');

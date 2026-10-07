@@ -58,8 +58,8 @@ supplies spending-budget references. Product identity, pricing and units remain 
 - Review-stage owners/due dates/approvals, risks, actions and decisions are persisted.
   Stage approval requires `sop.approve`, current source access and the exact reviewed version. Source changes require a fresh consensus. Cycle and version selectors submit independently to avoid retaining another cycle’s version.
 - Approved consensus publishes monthly total demand to Manufacturing transactionally.
-  Empty source results cannot clear Manufacturing demand. Publication is idempotent; each row retains `sourceSopVersionId`. MRP subtracts
-  current firm orders from S&OP totals before adding the remaining forecast.
+  Empty source results cannot clear Manufacturing demand. Publication is idempotent; each row retains `sourceSopVersionId`. Both the Manufacturing screen action and calculation service subtract
+  gross current-month bookings, including closed/part-shipped orders, from S&OP totals before adding open firm demand. Source failures stop MRP visibly.
 
 ## Security and persistence
 
@@ -73,7 +73,7 @@ or business-data cache is introduced.
 New entities: `PlanInput`, `SopCycle`, `SopVersion`. Additive migration:
 `20261007160000_connected_plans_sop`. `BusinessPlan.revision` protects new builder edits;
 `SopCycle.revision/inputRevision` protect workflow/input changes. Snapshot payloads are
-immutable; approval/publication change status metadata only.
+immutable in both application writes and a database trigger; approval/publication change status metadata only. Publication rechecks connected Plan revisions and current project probabilities after approval.
 
 ## Remaining master-spec coverage
 
@@ -92,3 +92,13 @@ when done”. Release to `https://atlassystem.online` with the production migrat
 backups, authorised organisation activation and authenticated live acceptance.
 This resolves the earlier Mac/server conflict; no additional target approval is
 needed. Preserve other finished releases and do not deploy concurrent unfinished work.
+
+## Acceptance procedure
+
+`scripts/check-sop.ts` runs explicitly on the deployed central server with
+`ATLAS_SOP_LIVE_TEST=1`. It signs in normally, creates disposable `isTest`
+companies, exercises Plan inputs/forecast and S&OP reviews/scenarios/publication/
+MRP, checks stale writes and tenant/read-only/source-access boundaries, then
+checks real pages and Chromium rendering. Its `finally` suspends those companies
+and revokes temporary credentials; immutable central evidence is retained.
+Production activation and acceptance results belong in `SOP_ACCEPTANCE.md`.

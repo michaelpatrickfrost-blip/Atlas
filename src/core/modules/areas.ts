@@ -23,6 +23,7 @@ const AREA_BY_MODULE: Record<string, AppArea> = {
   kpis: "People",
   finance: "Business",
   plan: "Business",
+  sop: "Business",
   projects: "Business",
   analytics: "Business",
   audit: "Business",

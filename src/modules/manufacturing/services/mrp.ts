@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/core/db/client";
+import { assertModuleEnabled } from "@/core/modules/access";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { writeAudit } from "@/core/audit/log";
@@ -22,41 +23,47 @@ async function stockProvider() {
   return provider;
 }
 
-/** §34: gross requirements − available supply − existing inventory = net requirement,
- * then one MAKE suggestion per product in shortage. Gross requirement is confirmed
- * Sales demand (§29) PLUS planner-entered forecast demand (§33) for the same product —
- * CRM Opportunities carry deal value, not product/quantity lines, so there is nothing
- * upstream yet to consume automatically (see MANUFACTURING_COVERAGE.md); Manufacturing's
- * own forecast (`ManufacturingDemandForecast`) stands in for that until it exists.
- * `startBy` factors in the actual manufacturing lead time (§9) computed from the live
- * routing at the suggested quantity — not a static field that could drift from it — so
- * a suggestion says not just "make 500 by 18 Oct" but "start by 14 Oct to make it".
- * §38's full exception taxonomy beyond simple shortage remains open. */
+/** Net open firm demand plus the unconsumed balance of approved S&OP totals.
+ * Closed and part-shipped bookings consume the whole-month forecast without
+ * re-entering the outstanding requirement. Routing computes the start-by date. */
 export async function runMrp() {
   const session = await requireSession();
   assertCapability(session, C.planManage);
+  await assertModuleEnabled(session, "manufacturing");
+  assertCapability(session, "sales.order.read");
+  assertCapability(session, "customers.read");
   const organisationId = session.organisationId;
+  const periodStart = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1));
   const startedAt = new Date();
   const warnings: string[] = [];
 
   const [demandLines, forecastRows] = await Promise.all([
     db.salesOrderLine.findMany({
       where: {
-        order: { organisationId, commercialStatus: "CONFIRMED" },
+        order: { organisationId, commercialStatus: { in: ["CONFIRMED", "ON_HOLD", "CLOSED"] }, orderType: { notIn: ["BLANKET", "INTERNAL"] } },
         productId: { not: null },
-        manufacturingOrders: { none: {} },
       },
-      include: { order: { select: { reference: true, partyId: true, party: { select: { name: true } } } }, product: { select: { id: true, name: true, definitions: { where: { status: "ACTIVE" }, take: 1, orderBy: { version: "desc" } } } } },
-      take: 2000,
-    }).catch(() => []),
+      include: { order: { select: { reference: true, commercialStatus: true, requestedDeliveryDate: true, promisedDeliveryDate: true, partyId: true, party: { select: { name: true } } } }, product: { select: { id: true, name: true, definitions: { where: { status: "ACTIVE" }, take: 1, orderBy: { version: "desc" } } } } },
+      take: 5001,
+    }),
     db.manufacturingDemandForecast.findMany({
-      where: { organisationId, periodStart: { gte: new Date() } },
+      where: { organisationId, periodStart: { gte: periodStart } },
       include: { product: { select: { id: true, name: true, definitions: { where: { status: "ACTIVE" }, take: 1, orderBy: { version: "desc" } } } } },
-      take: 2000,
+      take: 5001,
     }),
   ]);
+  if (demandLines.length > 5000 || forecastRows.length > 5000) throw new Error("MRP source scope exceeds 5,000 rows. Narrow the demand before running MRP.");
 
   const chain = await readAvailability();
+  const shippedRows = await db.fulfilmentLine.groupBy({ by: ["salesOrderLineId"], where: { organisationId, salesOrderLineId: { in: demandLines.map(line => line.id) } }, _sum: { shippedQuantity: true } });
+  const shipped = new Map(shippedRows.map(row => [row.salesOrderLineId, Number(row._sum.shippedQuantity ?? 0)]));
+  const bookedByMonth = new Map<string, number>();
+  for (const line of demandLines) {
+    const due = line.requestedDeliveryDate ?? line.order.requestedDeliveryDate ?? line.promisedDeliveryDate ?? line.order.promisedDeliveryDate;
+    if (!due || !line.productId || line.order.commercialStatus === "CLOSED" && due < periodStart) continue;
+    const key = `${line.productId}|${(due < periodStart ? periodStart : due).toISOString().slice(0, 7)}`;
+    bookedByMonth.set(key, (bookedByMonth.get(key) ?? 0) + Math.max(0, line.orderedQuantity - line.cancelledQuantity));
+  }
   const manufacturable = demandLines.filter((line) => line.productId && line.product?.definitions.length);
   const manufacturableForecast = forecastRows.filter((row) => row.product.definitions.length);
   if ((demandLines.length || forecastRows.length) && !manufacturable.length && !manufacturableForecast.length) warnings.push("Demand exists, but none of those products have an active BOM/routing yet.");
@@ -65,9 +72,9 @@ export async function runMrp() {
   for (const line of manufacturable) {
     const key = line.productId!;
     const entry = byProduct.get(key) ?? { productId: key, pegs: [], demandQuantity: 0, definitionId: line.product!.definitions[0].id, earliestDemand: null };
-    const outstanding = Math.max(0, line.orderedQuantity - line.cancelledQuantity - (chain.deliveredByLine[line.id] ?? 0));
+    const outstanding = line.order.commercialStatus === "CLOSED" ? 0 : Math.max(0, line.orderedQuantity - line.cancelledQuantity - (shipped.get(line.id) ?? 0));
     if (outstanding <= 0) continue;
-    const due = line.promisedDeliveryDate ?? line.requestedDeliveryDate ?? null;
+    const due = line.requestedDeliveryDate ?? line.order.requestedDeliveryDate ?? line.promisedDeliveryDate ?? line.order.promisedDeliveryDate ?? null;
     entry.demandQuantity += outstanding;
     entry.pegs.push({ sourceType: "SALES_ORDER", sourceId: line.id, label: `${line.order.reference} · ${line.order.party.name}`, quantity: outstanding });
     if (due && (!entry.earliestDemand || due < entry.earliestDemand)) entry.earliestDemand = due;
@@ -76,7 +83,8 @@ export async function runMrp() {
   for (const row of manufacturableForecast) {
     const key = row.productId;
     const entry = byProduct.get(key) ?? { productId: key, pegs: [], demandQuantity: 0, definitionId: row.product.definitions[0].id, earliestDemand: null };
-    const quantity = Number(row.quantity);
+    const quantity = row.sourceSopVersionId ? Math.max(0, Number(row.quantity) - (bookedByMonth.get(`${key}|${row.periodStart.toISOString().slice(0, 7)}`) ?? 0)) : Number(row.quantity);
+    if (quantity <= 0) continue;
     entry.demandQuantity += quantity;
     entry.pegs.push({ sourceType: "FORECAST", sourceId: row.id, label: `Forecast · ${row.periodStart.toLocaleDateString("en-GB", { month: "short", year: "numeric" })}`, quantity });
     if (!entry.earliestDemand || row.periodStart < entry.earliestDemand) entry.earliestDemand = row.periodStart;

@@ -37,3 +37,15 @@ CREATE UNIQUE INDEX "sop_versions_publicationId_key" ON "sop_versions"("publicat
 CREATE INDEX "sop_versions_organisationId_cycleId_createdAt_idx" ON "sop_versions"("organisationId","cycleId","createdAt");
 ALTER TABLE "manufacturing_demand_forecasts" ADD COLUMN "sourceSopVersionId" TEXT;
 ALTER TABLE "manufacturing_demand_forecasts" ADD CONSTRAINT "manufacturing_demand_forecasts_sourceSopVersionId_fkey" FOREIGN KEY ("sourceSopVersionId") REFERENCES "sop_versions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- Calculated evidence is append-only; approval/publication may change metadata only.
+CREATE FUNCTION atlas_sop_version_immutable() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+ IF ROW(NEW."organisationId",NEW."cycleId",NEW."kind",NEW."sourceRevision",NEW."basedOnId",NEW."payload",NEW."requiredCapabilities",NEW."requiredModules",NEW."createdByUserId",NEW."createdAt")
+ IS DISTINCT FROM ROW(OLD."organisationId",OLD."cycleId",OLD."kind",OLD."sourceRevision",OLD."basedOnId",OLD."payload",OLD."requiredCapabilities",OLD."requiredModules",OLD."createdByUserId",OLD."createdAt") THEN
+  RAISE EXCEPTION 'S&OP calculated evidence is immutable; create a new version';
+ END IF;
+ RETURN NEW;
+END;
+$$;
+CREATE TRIGGER sop_versions_immutable BEFORE UPDATE ON "sop_versions" FOR EACH ROW EXECUTE FUNCTION atlas_sop_version_immutable();

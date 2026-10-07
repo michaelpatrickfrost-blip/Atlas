@@ -284,8 +284,9 @@ requires live server feature verification.
 - [ ] Complete remaining master-spec scope in [SOP.md](modules/SOP.md), including
   hierarchy/weekly grain, finite material/capacity review, actual cost/FX/budget,
   advanced OTIF policy, notifications and high-volume acceptance.
-- [ ] Deploy to the server Michael explicitly confirmed in this chat, migrate with
-  backup, activate for his organisation preserving permissions, and verify the
-  authorised live end-to-end workflow. The prior Mac/server target gate is resolved.
+- [x] Server deployment, backed-up additive migration, Michael Test activation with
+  existing permissions preserved, and all 42 authenticated end-to-end checks passed.
+  Source checks: 655 tests passed / 22 integration skips, TypeScript/lint/build green.
+  See [live acceptance](modules/SOP_ACCEPTANCE.md).
 - [ ] After S&OP: four distinct researched Sales, Customer Service, Marketing and HR
   Plan modules. The current shared builder does not satisfy this later scope.

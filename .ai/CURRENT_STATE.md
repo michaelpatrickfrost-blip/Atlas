@@ -43,18 +43,29 @@
   Activation audited; existing role permissions compared unchanged. No real business
   records were changed. New edge hardening prevents historical closed orders with
   unverified partial receipts reopening as demand, and prevents older overlapping
-  cycles overwriting newer approved product-month demand. Final source build/release
-  and expanded 42-assertion live acceptance pending.
+  cycles overwriting newer approved product-month demand. Final release `5b7f9e2`
+  is live: production build/restart and public login 200, all 42 expanded authenticated
+  live assertions passed, including both edge cases and their transaction rollback.
+  Backup `/home/administrator/backups/atlas-pre-deploy-20261007-080356.dump` plus
+  matching private evidence archive. Synthetic tenants suspended/credentials revoked.
+  Acceptance details: `docs/modules/SOP_ACCEPTANCE.md`.
 - Server target explicitly authorised by Michael: “deploy to server when done”;
   earlier Mac/target-confirmation blockers are superseded.
 - Genuine master-spec gaps remain in `docs/modules/SOP.md`: finite material/labour/
   machine feasibility, hierarchy/weekly editing, advanced lifecycle/OTIF policies,
   actual costs/FX/revenue budgets, notifications and high-volume QA. Logistics partial
   delivery lacks actual per-line received quantities; affected S&OP OTIF is unavailable.
-- Next: finish final checks, include latest compatible main, back up and deploy to
-  `https://atlassystem.online`, run authenticated Plan → forecast → review → approval
-  → publication → actual Manufacturing MRP acceptance, enable Michael's authorised
-  organisation preserving profile/source permissions, and record evidence.
+- Final owned source reconciled into the primary checkout without replacing concurrent
+  Manufacturing/Finance/Service edits; 85 focused primary integration tests passed
+  across ten files. No full dirty-primary build/typecheck claim. Compatible isolated
+  release source/worktree retained at
+  `/Users/michael/.codex/worktrees/connected-plans-sop/RP SYSTEM`, branch
+  `codex/connected-plans-sop`. No PR created. Source/memory/checkpoints reconciled.
+- Next S&OP scope stays ahead of departmental Plan modules: finite material/labour/
+  machine and supplier feasibility through owning-module contracts, actual costing/
+  financial revenue budget/FX, hierarchy/weekly editing, advanced OTIF/source receipt
+  capture and high-volume QA. The connected release is live, not certification of
+  every master-spec requirement. Do not infer received quantities from allocations.
 
 ## Finance ERP accounting controls — 7 October 2026
 

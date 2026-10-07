@@ -48,10 +48,18 @@ No real company business record was created or rewritten by acceptance.
 
 ## Final edge hardening
 
-Source now excludes historical closed orders from backlog even when partial
-receipt quantities are unverified, and blocks an older overlapping cycle from
-replacing newer approved product-month demand. Expanded live acceptance has 42
-assertions; final release/acceptance evidence is pending.
+Final release `5b7f9e2` is live. Production build/restart and public login 200
+passed. Backup `/home/administrator/backups/atlas-pre-deploy-20261007-080356.dump`
+and matching `-service-files.tar.gz` preserve central records/private evidence.
+
+All 42 expanded authenticated assertions passed. Historical closed orders with
+unverified partial receipts do not reopen as future demand; their OTIF stays
+unavailable. An older overlapping cycle cannot replace newer approved product-month
+demand; the transaction leaves its version approved and all newer forecasts intact.
+Both cases were checked through deployed actions and real Chromium screens.
+Synthetic companies suspended and credentials revoked after this final run.
+The compatible primary-source reconciliation also passed 85 focused integration
+tests; unrelated unfinished primary files were preserved.
 
 ## Source checks and limits
 

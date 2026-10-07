@@ -118,8 +118,10 @@ Price lists are embedded in Sales and commercial agreements in CRM; `pricing` re
 
 ## S&OP — 7 October 2026
 
-`/sop` is registered in source for connected demand, service, supply, finance,
-scenarios and cycle review. Its new data migration and live activation are pending;
-registration is not release acceptance. See [S&OP implementation and gaps](../docs/modules/SOP.md).
+`/sop` is deployed for connected demand, service, supply, assumed finance,
+scenarios and exact-version cycle review. Its additive migration is applied and
+S&OP is enabled for Michael Test with existing profile/source permissions preserved.
+All 42 authenticated live acceptance checks passed. See [implementation and genuine
+master-spec gaps](../docs/modules/SOP.md) and [acceptance](../docs/modules/SOP_ACCEPTANCE.md).
 Plan now has phased, source-linked inputs; the four researched departmental Plan
 modules follow S&OP and remain unimplemented.

@@ -110,6 +110,7 @@ Additive source migration `20261007160000_connected_plans_sop` introduces:
   manual Manufacturing forecast edits clear this link.
 
 New source/snapshot records are exposed only through authenticated tenant-scoped
-use cases, not the generic database read allowlist. The migration is not yet
-applied by this task; live records and runtime activation remain pending. See
+use cases, not the generic database read allowlist. The additive migration is
+applied on the live server; a database trigger also blocks calculated evidence
+rewrites. Activation and 42 authenticated acceptance checks passed. See
 [the S&OP module](modules/SOP.md) for implemented behaviour and genuine gaps.

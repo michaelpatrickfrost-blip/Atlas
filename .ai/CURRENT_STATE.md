@@ -18,13 +18,13 @@
   and visible source failure. Publication rechecks Plan revisions and live project
   probability after approval. Added regression tests and server-only acceptance script.
 - Reconciled isolated `codex/connected-plans-sop` with finished main releases through
-  `08a0b29`; later reviewed main changes will be included before release. No unrelated
+  `64a11ce`, including finished Service, Finance, Guardian and customer-reference repairs. No unrelated
   unfinished source is included. Relevant schema/contracts/manifests, Plan/S&OP docs,
   module wiring and source access policy are updated. S&OP appears under Business.
-- Checks run on integrated source: 649 tests passed / 22 integration skips across
+- Checks run on integrated source: 650 tests passed / 22 integration skips across
   108 files; strict TypeScript and production build passed; Prisma validate/generate
-  and diff checks passed. Initial changed-file ESLint had one pre-existing unused
-  variable in the touched MRP loader; corrected, final lint/typecheck in progress.
+  and diff checks passed. Final changed-file ESLint passed with zero warnings/errors;
+  its initial unused-variable warning in the touched MRP loader was corrected.
   Additive migration `20261007160000_connected_plans_sop` passed on a disposable
   server-only schema clone; no production records copied and clone removed.
 - `scripts/check-sop.ts` prepares normal-login authenticated acceptance with synthetic

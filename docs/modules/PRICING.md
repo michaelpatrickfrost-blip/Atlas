@@ -55,4 +55,4 @@ commitments, not commercial agreements.
 `tests/pricing-workspace.test.ts` covers setup scoping/currency restrictions, copies,
 assignment tenant checks, capabilities, break edits/collisions and read-only Sales
 price checking. Existing pricing-rule/CSV/customer-pricing tests cover resolution.
-Deployment and live verification evidence is recorded in `.ai/CURRENT_STATE.md`.
+`tests/pricing-checker-ui.test.tsx` covers retained preview inputs and clearing stale results after edits. Deployment and live verification evidence is recorded in `.ai/CURRENT_STATE.md`.

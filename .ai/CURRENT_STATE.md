@@ -48,6 +48,11 @@
   build-lock waiting and abort-on-QA-session-change. Selected a stable existing
   staff membership instead of a mutable acceptance-test identity. Corrected sweep
   and disposition of first-run probe findings are pending.
+- Integrated the finished connected Service/Tickets release. Combined Vitest:
+  543 passed, 22 integration skips. Source sweep found one remaining blank legacy
+  `/service/tickets` route; it now redirects to the real `/tickets` workspace.
+  The source inventory now covers 1,020 files, 253 pages, 540 static links and
+  791 controls, with 571 dynamic links still requiring runtime/fixture coverage.
 - Initial source audit inventories 930 source files, 233 pages, 518 static links,
   766 controls and 517 dynamic links requiring runtime coverage. Three deployed-base
   Ticketing pages return null; preserve the parallel Service/Tickets rebuild and

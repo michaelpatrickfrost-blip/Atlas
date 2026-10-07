@@ -1,3 +1,3 @@
-// Tickets module temporarily disabled due to schema issues
-export const dynamic = "force-dynamic";
-export default function DisabledPage() { return null; }
+import { redirect } from "next/navigation";
+/** Existing service-ticket bookmarks now open the connected Department Tickets workspace. */
+export default function LegacyServiceTickets() { redirect("/tickets"); }

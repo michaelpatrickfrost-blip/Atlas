@@ -45,7 +45,8 @@ if(mode==='desktop'){
  function removeUI(dir){for(const e of fs.readdirSync(dir,{withFileTypes:true})){const f=path.join(dir,e.name);if(e.isDirectory())removeUI(f);else if(e.name.endsWith('.tsx'))fs.rmSync(f);}}
  removeUI(path.join(stage,'src'));
  const api=path.join(stage,'src/app/api');
- for(const e of fs.readdirSync(api))if(e!=='desktop'&&e!=='sales')fs.rmSync(path.join(api,e),{recursive:true,force:true});
+ const retainedApi=new Set(['desktop','sales','quotes','orders','finance']);
+ for(const e of fs.readdirSync(api))if(!retainedApi.has(e))fs.rmSync(path.join(api,e),{recursive:true,force:true});
  for(const e of fs.readdirSync(path.join(api,'sales')))if(e!=='draft')fs.rmSync(path.join(api,'sales',e),{recursive:true,force:true});
  fs.rmSync(path.join(stage,'public'),{recursive:true,force:true});
  fs.writeFileSync(path.join(stage,'src/app/route.ts'),"export function GET(){return Response.json({service:'Atlas data service'},{headers:{'Cache-Control':'no-store'}});}\n");

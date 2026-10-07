@@ -90,3 +90,26 @@ set `DATABASE_URL` and run:
 npm run db:migrate
 npm run db:seed
 ```
+
+
+## Connected Plan inputs and S&OP — 7 October 2026
+
+Additive source migration `20261007160000_connected_plans_sop` introduces:
+
+- `PlanInput`: tenant/plan/product references, authorised polymorphic source link,
+  monthly measure/value, source-linked or overridden probability, selling price,
+  inclusion, required reason and optimistic revision. Canonical Party/Product,
+  CRM project/opportunity, Sales quote and HR employee identities are reused.
+- `BusinessPlan.revision`: compare-and-swap protection for builder/grid writes.
+- `SopCycle`: tenant/owner, privacy, dates/currency, selected Plan IDs, settings,
+  exact-version review stages, risks/actions/decisions and input/workflow revisions.
+- `SopVersion`: immutable payload and lineage, source capabilities/modules,
+  creator, source revision and approval/publication metadata. Private scenarios
+  are creator-scoped. Approval/publication do not rewrite snapshot payloads.
+- `ManufacturingDemandForecast.sourceSopVersionId`: retained publication lineage;
+  manual Manufacturing forecast edits clear this link.
+
+New source/snapshot records are exposed only through authenticated tenant-scoped
+use cases, not the generic database read allowlist. The migration is not yet
+applied by this task; live records and runtime activation remain pending. See
+[the S&OP module](modules/SOP.md) for implemented behaviour and genuine gaps.

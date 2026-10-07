@@ -274,3 +274,18 @@ remain open. See CURRENT_STATE.md for fresh checks and activation evidence.
 
 Scope: [Atlas Admin](ATLAS_ADMIN.md). Evidence: shared CURRENT_STATE. Completion
 requires live server feature verification.
+
+
+## S&OP connected implementation — 7 October 2026
+
+- [x] Source implementation: explicit Plan inputs, canonical projections, immutable
+  cycles/versions, monthly demand/service/supply/assumed-finance reviews, scenarios,
+  exact-version approvals and transactional Manufacturing publication.
+- [ ] Complete remaining master-spec scope in [SOP.md](modules/SOP.md), including
+  hierarchy/weekly grain, finite material/capacity review, actual cost/FX/budget,
+  advanced OTIF policy, notifications and high-volume acceptance.
+- [ ] Deploy to the server Michael explicitly confirmed in this chat, migrate with
+  backup, activate for his organisation preserving permissions, and verify the
+  authorised live end-to-end workflow. The prior Mac/server target gate is resolved.
+- [ ] After S&OP: four distinct researched Sales, Customer Service, Marketing and HR
+  Plan modules. The current shared builder does not satisfy this later scope.

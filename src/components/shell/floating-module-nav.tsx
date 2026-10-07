@@ -1,12 +1,14 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import type { ModuleNavItem } from "@/core/modules/types";
 import { useOnClickOutside } from "@/components/hooks/use-on-click-outside";
 import { iconForNav } from "./nav-icon";
+
+import { moduleNavHref, moduleNavActive } from "./module-nav-url";
 
 type Entry = { kind: "item"; item: ModuleNavItem } | { kind: "group"; label: string; items: ModuleNavItem[] };
 
@@ -26,6 +28,7 @@ function toEntries(items: ModuleNavItem[]): Entry[] {
  *  clicks are never blocked by the page below. Related sections group under one dropdown. */
 export function FloatingModuleNav({ title, items }: { title: string; items: ModuleNavItem[] }) {
   const pathname = usePathname();
+  const search = useSearchParams();
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const groupHideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -34,7 +37,8 @@ export function FloatingModuleNav({ title, items }: { title: string; items: Modu
   // eslint-disable-next-line react-hooks/set-state-in-effect -- flips a client-only mount flag once; required to avoid an SSR/client markup mismatch for the portal target.
   useEffect(() => setMounted(true), []);
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
+  const isActive = (href: string) => moduleNavActive(href, pathname, new URLSearchParams(search.toString()));
+  const hrefFor = (item: ModuleNavItem) => moduleNavHref(item.href, new URLSearchParams(search.toString()), item.preserveQuery);
   const entries = toEntries(items);
   const peers = items.map((item) => item.href);
   const bestMatch = peers.filter((href) => isActive(href)).sort((a, b) => b.length - a.length)[0];
@@ -71,7 +75,7 @@ export function FloatingModuleNav({ title, items }: { title: string; items: Modu
               const Ico = iconForNav(entry.item.label);
               const active = entry.item.href === bestMatch;
               return (
-                <Link key={entry.item.href} href={entry.item.href} aria-current={active ? "page" : undefined}
+                <Link key={entry.item.href} href={hrefFor(entry.item)} aria-current={active ? "page" : undefined}
                   className={`atlas-float-tab inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium ${active ? "atlas-float-tab-active" : ""}`}>
                   <Ico size={14} strokeWidth={1.8} />
                   {entry.item.label}
@@ -93,7 +97,7 @@ export function FloatingModuleNav({ title, items }: { title: string; items: Modu
                       const Ico = iconForNav(item.label);
                       const active = item.href === bestMatch;
                       return (
-                        <Link key={item.href} href={item.href} role="menuitem" aria-current={active ? "page" : undefined}
+                        <Link key={item.href} href={hrefFor(item)} role="menuitem" aria-current={active ? "page" : undefined}
                           onClick={() => setOpenGroup(null)}
                           className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium ${active ? "atlas-float-dropdown-active" : "text-[var(--color-ink-muted)] hover:bg-black/[0.04] hover:text-[var(--color-ink)]"}`}>
                           <Ico size={14} strokeWidth={1.8} />

@@ -8,6 +8,7 @@ import type { Session } from "@/core/auth/session";
 
 /** One entry in a module's secondary navigation (shown once the module is open). */
 export type ModuleNavItem = {
+  preserveQuery?: string[];
   label: string;
   href: string;
   /** Capability required to see this item. Omit for items available to anyone with module access. */
@@ -92,6 +93,8 @@ export type ModuleManifest = {
   serviceCreditProvider?: import('@/core/service-work/connections').ServiceCreditProvider;
   serviceOperationProvider?: import('@/core/service-work/connections').ServiceOperationProvider;
   templateContextProvider?: import('@/core/templates/types').TemplateContextProvider;
+  planningPublicationConsumer?: (session: Session, tx: import('@/generated/prisma/client').Prisma.TransactionClient, input: {versionId:string;currency:string;rows:Array<{productId:string;period:string;quantity:number}>}) => Promise<void>;
+  businessPlanningProvider?: import('@/core/planning/business').BusinessPlanningProvider;
   salesInvoiceGenerator?: (id:string,form:FormData)=>Promise<{id:string}>;
   salesCancellationGuard?: (session:Session,tx:import('@/generated/prisma/client').Prisma.TransactionClient,id:string)=>Promise<void>;
   salesFinanceSourceProvider?: (session:Session,tx:import('@/generated/prisma/client').Prisma.TransactionClient,id:string)=>Promise<import('@/core/finance/connections').SalesFinanceSource>;

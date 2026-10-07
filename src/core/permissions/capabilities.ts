@@ -335,6 +335,7 @@ export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: st
       ...Object.values(MANUFACTURING_CAPABILITIES),
       ...Object.values(SAFETY_CAPABILITIES),
       ...Object.values(PLAN_CAPABILITIES),
+      "sop.read", "sop.manage", "sop.approve", "sop.publish", "sop.share",
       ...Object.values(QUALITY_CAPABILITIES),
       ...Object.values(AUTOMATION_CAPABILITIES),
       ...Object.values(CSAT_CAPABILITIES),

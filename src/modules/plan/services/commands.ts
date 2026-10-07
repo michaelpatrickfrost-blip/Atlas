@@ -40,6 +40,7 @@ async function opened(session: Session, planId: string) {
 
 async function owned(session: Session, planId: string) {
   const plan = await opened(session, planId);
+  if (plan.locked) throw new Error("This plan is locked. Unlock it before editing.");
   if (!canEditPlan(plan, session.userId)) throw new Error("This plan is shared with you to read. Ask the owner if you need to change it.");
   return plan;
 }
@@ -64,7 +65,7 @@ export async function createPlan(form: FormData) {
   if (parentId && !await db.businessPlan.findFirst({ where: { id: parentId, ...planWhere(session) } })) throw new Error("Choose a plan you can open.");
   if (sensitive && !session.capabilities.has(PLAN_CAPABILITIES.sensitiveRead)) throw new Error("This plan contains sensitive figures, which your access does not include.");
   const chosen = form.getAll("metric").map(String).filter((key) => metricByKey(key));
-  const metrics = (chosen.length ? chosen : template.metricKeys).filter((key) => {
+  const metrics = (form.has("measuresChosen") ? chosen : chosen.length ? chosen : template.metricKeys).filter((key) => {
     const metric = metricByKey(key);
     return metric && (!metric.sensitive || sensitive);
   });
@@ -93,8 +94,8 @@ export async function createPlan(form: FormData) {
     const blocks = ["summary", "chart", "table", "assumptions", "drivers", "goals", "actions", "risks", "decisions", "production"].map((kind, sortOrder) => ({ organisationId: session.organisationId, planId: created.id, kind, title: kind, sortOrder }));
     await tx.planBlock.createMany({ data: blocks });
     if (template.assumptions.length) await tx.planAssumption.createMany({ data: template.assumptions.map((assumption) => ({ organisationId: session.organisationId, planId: created.id, versionId: version.id, name: assumption.name, note: assumption.note })) });
-    if (template.goals.length) await tx.planGoal.createMany({ data: template.goals.map((goal) => ({ organisationId: session.organisationId, planId: created.id, title: goal.title, targetText: goal.targetText, metricKey: goal.metricKey, qualitative: goal.qualitative ?? false, detail: goal.detail ?? "", ownerName: session.userName, startsOn: new Date(`${window.start}T00:00:00Z`), endsOn: new Date(`${window.end}T00:00:00Z`) })) });
-    for (const phase of template.phases ?? []) {
+    if (form.get("starterWork") === "on" && template.goals.length) await tx.planGoal.createMany({ data: template.goals.map((goal) => ({ organisationId: session.organisationId, planId: created.id, title: goal.title, targetText: goal.targetText, metricKey: goal.metricKey, qualitative: goal.qualitative ?? false, detail: goal.detail ?? "", ownerName: session.userName, startsOn: new Date(`${window.start}T00:00:00Z`), endsOn: new Date(`${window.end}T00:00:00Z`) })) });
+    for (const phase of form.get("starterWork") === "on" ? template.phases ?? [] : []) {
       const initiative = await tx.planInitiative.create({ data: { organisationId: session.organisationId, planId: created.id, title: phase.title, detail: phase.detail, ownerName: session.userName, startsOn: new Date(`${pointOnWindow(window.start, window.end, phase.start)}T00:00:00Z`), endsOn: new Date(`${pointOnWindow(window.start, window.end, phase.end)}T00:00:00Z`) } });
       if (phase.actions.length) await tx.planAction.createMany({ data: phase.actions.map((action) => ({ organisationId: session.organisationId, planId: created.id, initiativeId: initiative.id, title: action.title, detail: action.detail, ownerName: session.userName, startsOn: new Date(`${pointOnWindow(window.start, window.end, action.start)}T00:00:00Z`), dueOn: new Date(`${pointOnWindow(window.start, window.end, action.end)}T00:00:00Z`) })) });
     }
@@ -108,6 +109,7 @@ export async function createPlan(form: FormData) {
   });
   await writeActivity({ organisationId: session.organisationId, type: "plan.created", summary: `${name} created`, entityType: "BusinessPlan", entityId: plan.id });
   refresh();
+  revalidatePath("/plan", "layout");
   redirect(`/plan/plans/${plan.id}`);
 }
 
@@ -148,7 +150,9 @@ export async function saveCell(form: FormData) {
     });
   }
   if (kind === "plan") await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "plan.target.changed", entityType: "BusinessPlan", entityId: plan.id, after: { metric: metric.name, period: periodKey, value: parsed } });
+  await db.businessPlan.updateMany({ where: { id: plan.id, organisationId: session.organisationId }, data: { revision: { increment: 1 } } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function addMeasure(form: FormData) {
@@ -162,6 +166,7 @@ export async function addMeasure(form: FormData) {
   const count = plan.measures.length;
   await db.planMeasure.upsert({ where: { planId_metricKey: { planId: plan.id, metricKey: metric.key } }, create: { organisationId: session.organisationId, planId: plan.id, metricKey: metric.key, sortOrder: count }, update: {} });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function addAssumption(form: FormData) {
@@ -176,6 +181,7 @@ export async function addAssumption(form: FormData) {
   await db.planAssumption.create({ data: { organisationId: session.organisationId, planId: plan.id, versionId: version.id, name, valueText: text(form, "value"), note: text(form, "note"), effectiveOn: text(form, "effective") ? new Date(`${text(form, "effective")}T00:00:00Z`) : null, series: text(form, "series") ? text(form, "series").split(",").map((part) => { const [label, value] = part.split("="); return { label: label?.trim(), value: value?.trim() }; }).filter((row) => row.label) : [] } });
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "plan.assumption.changed", entityType: "BusinessPlan", entityId: plan.id, after: { name } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function addDriver(form: FormData) {
@@ -194,6 +200,7 @@ export async function addDriver(form: FormData) {
   if ("error" in explained) throw new Error(explained.error);
   await db.planDriver.create({ data: { organisationId: session.organisationId, planId: plan.id, versionId: version.id, name: text(form, "name") || "Driver", outputLabel: text(form, "output") || "Result", outputUnit: text(form, "unit") || "count", inputs } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function addLink(form: FormData) {
@@ -208,6 +215,7 @@ export async function addLink(form: FormData) {
   await db.planModelLink.upsert({ where: { planId_fromKey_toKey: { planId: plan.id, fromKey, toKey } }, create: { organisationId: session.organisationId, planId: plan.id, fromKey, toKey, passthrough, note: text(form, "note") }, update: { passthrough, note: text(form, "note") } });
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "plan.model.changed", entityType: "BusinessPlan", entityId: plan.id, after: { from: fromKey, to: toKey, passthrough } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function createScenario(form: FormData) {
@@ -234,6 +242,7 @@ export async function createScenario(form: FormData) {
   if (nextCells.length) await db.planCell.createMany({ data: nextCells.map((cell) => ({ organisationId: session.organisationId, planId: plan.id, versionId: scenario.id, ...cell, updatedByName: session.userName })) });
   await writeActivity({ organisationId: session.organisationId, type: "plan.scenario.created", summary: `${name} created`, entityType: "BusinessPlan", entityId: plan.id });
   refresh();
+  revalidatePath("/plan", "layout");
   redirect(`/plan/plans/${plan.id}?scenario=${scenario.id}`);
 }
 
@@ -261,7 +270,9 @@ export async function promoteScenario(form: FormData) {
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "plan.scenario.promoted", entityType: "BusinessPlan", entityId: plan.id, after: { scenario: scenario.name } });
   await writeActivity({ organisationId: session.organisationId, type: "plan.scenario.promoted", summary: `${scenario.name} promoted to the forecast`, entityType: "BusinessPlan", entityId: plan.id });
   await emit(DOMAIN_EVENTS.planScenarioPromoted, { organisationId: session.organisationId, planId: plan.id });
+  await db.businessPlan.updateMany({ where: { id: plan.id, organisationId: session.organisationId }, data: { revision: { increment: 1 } } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function submitPlan(form: FormData) {
@@ -273,6 +284,7 @@ export async function submitPlan(form: FormData) {
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "plan.submitted", entityType: "BusinessPlan", entityId: plan.id, after: { name: plan.name } });
   await writeActivity({ organisationId: session.organisationId, type: "plan.submitted", summary: `${plan.name} submitted`, entityType: "BusinessPlan", entityId: plan.id });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function approvePlan(form: FormData) {
@@ -295,6 +307,7 @@ export async function approvePlan(form: FormData) {
   await writeActivity({ organisationId: session.organisationId, type: "plan.approved", summary: `${plan.name} approved`, entityType: "BusinessPlan", entityId: plan.id });
   await emit(DOMAIN_EVENTS.planApproved, { organisationId: session.organisationId, planId: plan.id });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function lockPlan(form: FormData) {
@@ -306,6 +319,7 @@ export async function lockPlan(form: FormData) {
   await db.businessPlan.updateMany({ where: { id: plan.id, organisationId: session.organisationId }, data: { locked: locking } });
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: locking ? "plan.locked" : "plan.unlocked", entityType: "BusinessPlan", entityId: plan.id, after: { name: plan.name } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function addGoal(form: FormData) {
@@ -317,6 +331,7 @@ export async function addGoal(form: FormData) {
   if (!title) throw new Error("Name the goal.");
   await db.planGoal.create({ data: { organisationId: session.organisationId, planId: plan.id, parentId: text(form, "parent") || null, title, ownerName: text(form, "owner") || session.userName, targetText: text(form, "target"), detail: text(form, "detail"), metricKey: text(form, "metric") || null, qualitative: form.get("qualitative") === "on", startsOn: day(text(form, "start")), endsOn: day(text(form, "end")) } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function addInitiative(form: FormData) {
@@ -328,6 +343,7 @@ export async function addInitiative(form: FormData) {
   if (!title) throw new Error("Name the initiative.");
   await db.planInitiative.create({ data: { organisationId: session.organisationId, planId: plan.id, goalId: text(form, "goal") || null, title, detail: text(form, "detail"), ownerName: text(form, "owner") || session.userName, projectId: text(form, "project") || null, startsOn: day(text(form, "start")), endsOn: day(text(form, "end")) } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function createProjectForInitiative(form: FormData) {
@@ -344,6 +360,7 @@ export async function createProjectForInitiative(form: FormData) {
   await db.planInitiative.updateMany({ where: { id: initiative.id, organisationId: session.organisationId }, data: { projectId: project.id } });
   await writeActivity({ organisationId: session.organisationId, type: "plan.project.created", summary: `${initiative.title} opened as a project`, entityType: "BusinessPlan", entityId: plan.id });
   refresh();
+  revalidatePath("/plan", "layout");
   redirect(`/projects/${project.id}`);
 }
 
@@ -356,6 +373,7 @@ export async function addAction(form: FormData) {
   if (!title) throw new Error("Name the action.");
   await db.planAction.create({ data: { organisationId: session.organisationId, planId: plan.id, initiativeId: text(form, "initiative") || null, title, detail: text(form, "detail"), ownerName: text(form, "owner") || session.userName, startsOn: day(text(form, "start")), dueOn: day(text(form, "due")) } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function completeAction(form: FormData) {
@@ -365,6 +383,7 @@ export async function completeAction(form: FormData) {
   const plan = await owned(session, text(form, "planId"));
   await db.planAction.updateMany({ where: { id: text(form, "actionId"), organisationId: session.organisationId, planId: plan.id }, data: { status: "done" } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function addRisk(form: FormData) {
@@ -376,6 +395,7 @@ export async function addRisk(form: FormData) {
   if (!title) throw new Error("Name the risk.");
   await db.planRisk.create({ data: { organisationId: session.organisationId, planId: plan.id, title, impactText: text(form, "impact"), metricKey: text(form, "metric") || null, severity: text(form, "severity") || "watch" } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function addDependency(form: FormData) {
@@ -385,6 +405,7 @@ export async function addDependency(form: FormData) {
   const plan = await owned(session, text(form, "planId"));
   await db.planDependency.create({ data: { organisationId: session.organisationId, planId: plan.id, title: text(form, "title") || "Dependency", dependsOnPlanId: text(form, "dependsOn") || null, note: text(form, "note") } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function addDecision(form: FormData) {
@@ -400,6 +421,7 @@ export async function addDecision(form: FormData) {
   await writeActivity({ organisationId: session.organisationId, type: "plan.decision.recorded", summary: title, entityType: "BusinessPlan", entityId: plan.id });
   await emit(DOMAIN_EVENTS.planDecisionRecorded, { organisationId: session.organisationId, planId: plan.id });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function addComment(form: FormData) {
@@ -411,6 +433,7 @@ export async function addComment(form: FormData) {
   if (!body) throw new Error("Write the note.");
   await db.planComment.create({ data: { organisationId: session.organisationId, planId: plan.id, targetType: text(form, "targetType") || "plan", targetKey: text(form, "targetKey"), body, authorName: session.userName } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function addUpdate(form: FormData) {
@@ -423,6 +446,7 @@ export async function addUpdate(form: FormData) {
   await db.planUpdate.create({ data: { organisationId: session.organisationId, planId: plan.id, tone: text(form, "tone") || "watch", summary, detail: text(form, "detail"), actionsText: text(form, "actions"), authorName: session.userName } });
   await writeActivity({ organisationId: session.organisationId, type: "plan.update.published", summary: `${plan.name}: ${summary}`.slice(0, 180), entityType: "BusinessPlan", entityId: plan.id });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function completeReview(form: FormData) {
@@ -438,6 +462,7 @@ export async function completeReview(form: FormData) {
   await db.planReview.updateMany({ where: { id: review.id, organisationId: session.organisationId, status: { not: "completed" } }, data: { status: "completed", completedAt: new Date(), snapshot } });
   await writeActivity({ organisationId: session.organisationId, type: "plan.review.completed", summary: `${review.title} completed`, entityType: "BusinessPlan", entityId: plan.id });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function addReview(form: FormData) {
@@ -449,6 +474,7 @@ export async function addReview(form: FormData) {
   if (!title) throw new Error("Name the review.");
   await db.planReview.create({ data: { organisationId: session.organisationId, planId: plan.id, title, scheduledFor: text(form, "date") ? new Date(`${text(form, "date")}T00:00:00Z`) : null, agenda: ["Performance", "Variance", "Risks", "Actions", "Decisions", "Forecast"] } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function distributeTargets(form: FormData) {
@@ -477,7 +503,9 @@ export async function distributeTargets(form: FormData) {
     });
   }
   await db.planComment.create({ data: { organisationId: session.organisationId, planId: plan.id, targetType: "metric", targetKey: metric.key, body: `${split.method}. ${split.rows.map((row) => `${row.key} ${row.value}`).join(", ")}`, authorName: session.userName } });
+  await db.businessPlan.updateMany({ where: { id: plan.id, organisationId: session.organisationId }, data: { revision: { increment: 1 } } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function importGrid(form: FormData) {
@@ -508,7 +536,9 @@ export async function importGrid(form: FormData) {
       update: { value: row.value, updatedByName: session.userName },
     });
   }
+  await db.businessPlan.updateMany({ where: { id: plan.id, organisationId: session.organisationId }, data: { revision: { increment: 1 } } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function sharePlan(form: FormData) {
@@ -527,6 +557,7 @@ export async function sharePlan(form: FormData) {
   });
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "plan.shared", entityType: "BusinessPlan", entityId: plan.id, after: { userId, access } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function unsharePlan(form: FormData) {
@@ -536,6 +567,7 @@ export async function unsharePlan(form: FormData) {
   if (plan.ownerUserId !== session.userId) throw new Error("The owner shares this plan.");
   await db.planShare.deleteMany({ where: { id: text(form, "shareId"), organisationId: session.organisationId, planId: plan.id } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function setPlanAudience(form: FormData) {
@@ -547,6 +579,7 @@ export async function setPlanAudience(form: FormData) {
   await db.businessPlan.updateMany({ where: { id: plan.id, organisationId: session.organisationId }, data: { audience } });
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: audience === "company" ? "plan.shared.company" : "plan.made.private", entityType: "BusinessPlan", entityId: plan.id, after: { audience } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function addNote(form: FormData) {
@@ -558,6 +591,7 @@ export async function addNote(form: FormData) {
   if (!title || !body) throw new Error("Give the note a title and the detail.");
   await db.planNote.create({ data: { organisationId: session.organisationId, planId: plan.id, title, body, authorUserId: session.userId, authorName: session.userName } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function saveGoalProgress(form: FormData) {
@@ -568,6 +602,7 @@ export async function saveGoalProgress(form: FormData) {
   if (!progressNote) throw new Error("Write what changed on this goal.");
   await db.planGoal.updateMany({ where: { id: text(form, "goalId"), organisationId: session.organisationId, planId: plan.id }, data: { progressNote } });
   refresh();
+  revalidatePath("/plan", "layout");
 }
 
 export async function savePlanBrief(form: FormData) {
@@ -581,4 +616,5 @@ export async function savePlanBrief(form: FormData) {
   const previous = Object.fromEntries(fields.map(([key]) => [key, briefText(plan.brief, key)]));
   await db.businessPlan.updateMany({ where: { id: plan.id, organisationId: session.organisationId }, data: { brief: { ...previous, ...brief } } });
   refresh();
+  revalidatePath("/plan", "layout");
 }

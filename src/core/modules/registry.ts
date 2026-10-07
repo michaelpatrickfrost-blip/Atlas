@@ -1,4 +1,5 @@
 import { templatesManifest } from "@/modules/templates/manifest";
+import { sopManifest } from "@/modules/sop/manifest";
 import { logisticsManifest } from "@/modules/logistics/manifest";
 import { financeManifest } from "@/modules/finance/manifest";
 import { marketingManifest } from "@/modules/marketing/manifest";
@@ -36,7 +37,7 @@ const implemented = [
   templatesManifest,
   crmManifest, salesManifest, projectsManifest, stockManifest, kpisManifest,
   productsManifest, pricingManifest, peopleManifest, schedulingManifest,
-  payrollManifest, teamsManifest, planningManifest, planManifest,
+  payrollManifest, teamsManifest, planningManifest, planManifest, sopManifest,
   analyticsManifest, serviceManifest, marketingManifest, financeManifest,
   logisticsManifest, manufacturingManifest, safetyManifest,
   auditManifest, qualityManifest, automationsManifest, csatManifest, ticketingManifest,

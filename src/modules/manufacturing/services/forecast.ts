@@ -36,7 +36,7 @@ export async function setForecast(input: { productId: string; periodStart: Date;
   const saved = await db.manufacturingDemandForecast.upsert({
     where: { organisationId_productId_periodStart: { organisationId: session.organisationId, productId: input.productId, periodStart } },
     create: { organisationId: session.organisationId, productId: input.productId, periodStart, quantity: input.quantity, notes: input.notes ?? null, createdByUserId: session.userId },
-    update: { quantity: input.quantity, notes: input.notes ?? null },
+    update: { quantity: input.quantity, notes: input.notes ?? null, sourceSopVersionId: null },
   });
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "manufacturing.forecast.set", entityType: "ManufacturingDemandForecast", entityId: saved.id, after: { productId: input.productId, periodStart, quantity: input.quantity } });
   revalidatePath("/manufacturing/plan");

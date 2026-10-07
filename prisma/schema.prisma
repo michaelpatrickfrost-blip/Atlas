@@ -970,6 +970,7 @@ enum ProductKind {
 }
 
 model Product {
+  planInputs PlanInput[]
   qualitySpecifications QualitySpecification[]
   qualityControlPoints QualityControlPoint[]
   qualityInspections QualityInspection[]
@@ -3858,6 +3859,8 @@ model ManufacturingSupplySuggestion {
 // planner-entered one rather than block on that. One row per product per
 // month; MRP treats it as a floor alongside confirmed sales demand.
 model ManufacturingDemandForecast {
+ sourceSopVersionId String?
+ sopVersion SopVersion? @relation(fields:[sourceSopVersionId],references:[id],onDelete:Restrict)
  id String @id @default(cuid())
  organisationId String
  productId String
@@ -6107,6 +6110,8 @@ model LogisticsSavedView {
 // ---------- Plan: connected planning (distinct from Production Planning) ----------
 
 model BusinessPlan {
+  revision Int @default(1)
+  inputs PlanInput[]
   id                String    @id @default(cuid())
   organisationId    String
   name              String
@@ -8671,4 +8676,80 @@ model FinanceCollectionActivity {
  document FinanceDocument @relation(fields:[documentId,organisationId],references:[id,organisationId])
  @@index([organisationId,documentId,createdAt])
  @@map("finance_collection_activities")
+}
+
+model PlanInput {
+ id String @id @default(cuid())
+ organisationId String
+ planId String
+ sourceModule String @default("plan")
+ sourceType String @default("manual")
+ sourceId String @default("")
+ label String
+ productId String?
+ metricKey String
+ periodKey String
+ value Decimal @db.Decimal(20,4)
+ probability Decimal @default(100) @db.Decimal(8,4)
+ probabilityOverride Boolean @default(false)
+ unitPriceMinor Int?
+ note String
+ included Boolean @default(true)
+ revision Int @default(1)
+ createdByUserId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ plan BusinessPlan @relation(fields:[planId],references:[id],onDelete:Cascade)
+ product Product? @relation(fields:[productId],references:[id],onDelete:Restrict)
+ @@index([organisationId,planId,periodKey])
+ @@index([organisationId,sourceModule,sourceType,sourceId])
+ @@map("plan_inputs")
+}
+
+model SopCycle {
+ inputRevision Int @default(1)
+ id String @id @default(cuid())
+ organisationId String
+ name String
+ startsOn DateTime @db.Date
+ endsOn DateTime @db.Date
+ currency String @default("GBP")
+ ownerUserId String
+ companyVisible Boolean @default(false)
+ sourcePlanIds String[] @default([])
+ settings Json @default("{}")
+ workflow Json @default("[]")
+ risks Json @default("[]")
+ actions Json @default("[]")
+ decisions Json @default("[]")
+ revision Int @default(1)
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ versions SopVersion[]
+ @@index([organisationId,ownerUserId,startsOn])
+ @@map("sop_cycles")
+}
+
+model SopVersion {
+ forecasts ManufacturingDemandForecast[]
+ id String @id @default(cuid())
+ organisationId String
+ cycleId String
+ name String
+ kind String @default("consensus")
+ status String @default("draft")
+ sourceRevision Int
+ basedOnId String?
+ payload Json
+ requiredCapabilities String[]
+ requiredModules String[]
+ createdByUserId String
+ approvedByUserId String?
+ approvedAt DateTime?
+ publishedAt DateTime?
+ publicationId String? @unique
+ createdAt DateTime @default(now())
+ cycle SopCycle @relation(fields:[cycleId],references:[id],onDelete:Cascade)
+ @@index([organisationId,cycleId,createdAt])
+ @@map("sop_versions")
 }

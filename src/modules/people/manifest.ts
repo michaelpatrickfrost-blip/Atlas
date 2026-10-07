@@ -1,3 +1,4 @@
+import { peopleBusinessPlanning } from "./services/business-planning";
 import {getApprovedExpenseSource} from './services/finance-expenses';
 import { staffRosterProvider } from "./services/staff-roster";
 import { peopleAnalytics } from "./services/analytics";
@@ -7,6 +8,7 @@ import { CORE_CAPABILITIES, HR_CAPABILITIES } from "@/core/permissions/capabilit
 import { peopleAttentionProvider } from "./services/attention";
 
 export const peopleManifest: ModuleManifest = {
+ businessPlanningProvider: peopleBusinessPlanning,
  expensePostingSourceProvider:getApprovedExpenseSource,
  staffRosterProvider,
  analyticsProvider: peopleAnalytics,

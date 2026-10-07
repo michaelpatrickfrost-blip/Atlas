@@ -113,3 +113,15 @@ Evidence and authoritative records remain on the server. See
 [connected service desk](../docs/modules/SERVICE_WORK_DESK.md) and
 [live acceptance](../docs/modules/SERVICE_WORK_ACCEPTANCE.md); advanced and native
 extensions remain explicit delivery gaps.
+
+## S&OP and departmental planning priority — 7 October 2026
+
+S&OP is a separate planning-cycle module (`/sop`) consuming explicit accessible
+Plan inputs and canonical module-owned projections. Only approved immutable
+consensus publishes total monthly demand to Manufacturing; MRP consumes firm
+orders once. Source implementation and release/coverage limits are in
+[Sales & Operations Planning](../docs/modules/SOP.md).
+Michael explicitly prioritised finishing S&OP before the four detailed Sales,
+Customer Service, Marketing and HR Plan workspaces. Their researched scope is
+[departmental planning](../docs/plans/DEPARTMENT_PLANNING_RESEARCH.md); the shared
+builder alone does not fulfil those four modules.

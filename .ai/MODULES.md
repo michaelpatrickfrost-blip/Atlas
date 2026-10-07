@@ -114,3 +114,12 @@ Price lists are embedded in Sales and commercial agreements in CRM; `pricing` re
 ## Templates — 7 October 2026
 
 `templates` provides the shared business document library, section editor and generation from CRM deals, Sales quotations/orders, Projects and Customer Service cases. Uses existing contract permission; source access remains scoped by the owning module. [Delivery scope](../docs/plans/CONTRACTS_TEMPLATES.md).
+
+
+## S&OP — 7 October 2026
+
+`/sop` is registered in source for connected demand, service, supply, finance,
+scenarios and cycle review. Its new data migration and live activation are pending;
+registration is not release acceptance. See [S&OP implementation and gaps](../docs/modules/SOP.md).
+Plan now has phased, source-linked inputs; the four researched departmental Plan
+modules follow S&OP and remain unimplemented.

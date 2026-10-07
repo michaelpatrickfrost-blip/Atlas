@@ -26,6 +26,7 @@ export interface DemandLine {
   requiredDate: Date;
   sourceId: string; // SalesOrderId, ForecastId, etc
   sourceLineId?: string;
+  forecastIsResidual?: boolean; // S&OP already consumed whole-period firm bookings, including fulfilled orders.
   probability?: number; // 0-100 for forecast/CRM demand
   notes?: string;
 }

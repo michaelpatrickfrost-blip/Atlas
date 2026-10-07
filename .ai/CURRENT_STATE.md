@@ -1,5 +1,60 @@
 # Atlas current state
 
+## Connected Plan overhaul and S&OP implementation — 7 October 2026
+
+- Michael prioritised finishing S&OP before detailed Sales, Customer Service,
+  Marketing and HR Plan modules. Primary-product research and their separate
+  domain/workspace scope are saved in `docs/plans/DEPARTMENT_PLANNING_RESEARCH.md`;
+  the shared builder is not completion of those four modules.
+- Implemented source: phased authorised Plan inputs, live/default CRM probability
+  with explicit override, inactive-source exclusion, private sharing/locks/reasons;
+  first-class S&OP cycles, immutable consensus/scenarios, closed-month forecasting
+  and holdout validation, project/order consumption, service timelines and
+  requested/promise/dispatch line/order/value OTIF, dated stock/supply gaps,
+  committed-price-preserving assumed financials and selected Plan targets,
+  demand/supply scenarios and revenue bridges, inspectors, retained lag accuracy,
+  exact-version review approvals, actions/decisions and transactional MRP publication.
+- Publication preserves total demand and lineage; MRP consumes booked orders once
+  and adds remaining firm balances. Residual S&OP rows bypass the generic second
+  consumption. Empty source results cannot clear Manufacturing forecasts.
+- Additive unapplied migration: `20261007160000_connected_plans_sop` (`PlanInput`,
+  `BusinessPlan.revision`, `SopCycle`, `SopVersion`, forecast lineage). Generic data
+  queries do not expose the new payload/input models. Source access is rechecked
+  for current and historical links, including links since removed from a Plan.
+- Latest owned code reconciled into the primary checkout without replacing shared
+  schema/manifest/registry or concurrent Manufacturing changes. Isolated verification
+  worktree: `/Users/michael/.codex/worktrees/connected-plans-sop/RP SYSTEM` from
+  `ed54a6c`. It is retained; its older base must be reconciled with other finished
+  releases before any live install. Shared docs/data-model/wiring checkpoints updated.
+- Checks actually run: isolated Prisma generate/validate, strict typecheck,
+  targeted ESLint, production build, transformed desktop runtime build and API-only
+  build passed. Isolated focused suites: 68 passed. Primary integration suites:
+  84 passed across nine files (S&OP, Plan, projections, MRP, navigation, permissions,
+  registry). Full isolated suite: 484 passed, 10 failed, 22 skipped; all ten failures
+  reproduced in eight suites from unchanged HEAD in a disposable baseline stage.
+  They concern existing setup/tag/HR/company/CRM/stock/registry/admin fixtures.
+  Shared-root typecheck at 08:26 failed on missing `@playwright/test` and its resulting
+  implicit-any in concurrent Guardian scripts; no broad-root green claim. Diff checks
+  passed. A synthetic-only real-component UI review passed at the default narrow
+  viewport; it is not authenticated/live acceptance. No migration rehearsal ran.
+- Confirmed owning-source defect: Logistics `shipping.ts:confirmDelivery` increments
+  full allocation for PARTIAL and stores no actual per-line received quantities.
+  S&OP marks affected evidence unavailable. Logistics/invoice correction remains open.
+- **Not complete or live:** remaining master-spec scope is explicit in
+  `docs/modules/SOP.md` (hierarchy/weekly grain, finite material/labour/machine and
+  supplier feasibility, actual costs/FX/revenue budget, advanced OTIF policies,
+  lifecycle/forecast methods, notifications and high-volume QA). No live migration,
+  business write, runtime switch, installation or module activation occurred.
+- **Release target resolved:** Michael explicitly instructed “deploy to server
+  when done” in this chat. Use `https://atlassystem.online`; the earlier Mac/runtime-
+  split and target-confirmation blockers are superseded for this task. Server
+  deployment and authenticated feature acceptance remain required, not yet run.
+- Next: reconcile the isolated S&OP source with current finished `origin/main`,
+  finish release acceptance/hardening, build/test the compatible snapshot, then
+  back up/apply the reviewed migration, enable the authorised module preserving
+  profile permissions, and verify create → forecast → review → approve → publish
+  → MRP and source reads/writes on the live server.
+
 ## Finance ERP accounting controls — 7 October 2026
 
 - Preserved the 223-section request in `docs/modules/FINANCE_ERP_REQUIREMENTS.md`;

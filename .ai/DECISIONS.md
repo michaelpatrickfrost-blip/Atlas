@@ -1,5 +1,25 @@
 # Atlas decisions
 
+## 7 October 2026 — S&OP deploys to the live server
+
+Michael explicitly resolved this chat’s release-target conflict: “deploy to server
+when done”. S&OP must ship to `https://atlassystem.online` with central records,
+backups, existing capability/tenant checks and live workflow verification. This
+supersedes the pasted Mac-only target for this task; no repeated target permission
+is required. The four departmental Plan modules remain behind S&OP.
+
+## 7 October 2026 — Department plans feed a separate S&OP cycle
+
+Plan owns flexible, reasoned inputs referencing canonical Sales/CRM projects,
+quotations, products and HR employees. S&OP is a first-class module that consumes
+explicitly selected accessible plans and module-owned projections through Core
+contracts. Orders consume the baseline; attributed orders consume weighted project
+contributions once. Unconstrained demand is preserved beside dated supply gaps.
+Approved immutable S&OP totals publish to Manufacturing; working forecasts never
+silently drive MRP. Publication retains its version reference, and MRP consumes
+firm orders dynamically. This avoids duplicate business entities and duplicated
+order demand while making the user's sales planning workflow editable.
+
 ## 7 October 2026 — Extend Finance accounting without replacing connected modules
 
 Michael explicitly requires existing Approvals, S&OP, Manufacturing and other

@@ -628,185 +628,204 @@ import {saveSocialPost as action625} from "@/modules/marketing/services/social-a
 import {deleteSocialPost as action626} from "@/modules/marketing/services/social-actions";
 import {retrySocialPost as action627} from "@/modules/marketing/services/social-actions";
 import {getApprovedExpenseSource as action628} from "@/modules/people/services/finance-expenses";
-import {createPlan as action629} from "@/modules/plan/services/commands";
-import {saveCell as action630} from "@/modules/plan/services/commands";
-import {addMeasure as action631} from "@/modules/plan/services/commands";
-import {addAssumption as action632} from "@/modules/plan/services/commands";
-import {addDriver as action633} from "@/modules/plan/services/commands";
-import {addLink as action634} from "@/modules/plan/services/commands";
-import {createScenario as action635} from "@/modules/plan/services/commands";
-import {promoteScenario as action636} from "@/modules/plan/services/commands";
-import {submitPlan as action637} from "@/modules/plan/services/commands";
-import {approvePlan as action638} from "@/modules/plan/services/commands";
-import {lockPlan as action639} from "@/modules/plan/services/commands";
-import {addGoal as action640} from "@/modules/plan/services/commands";
-import {addInitiative as action641} from "@/modules/plan/services/commands";
-import {createProjectForInitiative as action642} from "@/modules/plan/services/commands";
-import {addAction as action643} from "@/modules/plan/services/commands";
-import {completeAction as action644} from "@/modules/plan/services/commands";
-import {addRisk as action645} from "@/modules/plan/services/commands";
-import {addDependency as action646} from "@/modules/plan/services/commands";
-import {addDecision as action647} from "@/modules/plan/services/commands";
-import {addComment as action648} from "@/modules/plan/services/commands";
-import {addUpdate as action649} from "@/modules/plan/services/commands";
-import {completeReview as action650} from "@/modules/plan/services/commands";
-import {addReview as action651} from "@/modules/plan/services/commands";
-import {distributeTargets as action652} from "@/modules/plan/services/commands";
-import {importGrid as action653} from "@/modules/plan/services/commands";
-import {sharePlan as action654} from "@/modules/plan/services/commands";
-import {unsharePlan as action655} from "@/modules/plan/services/commands";
-import {setPlanAudience as action656} from "@/modules/plan/services/commands";
-import {addNote as action657} from "@/modules/plan/services/commands";
-import {saveGoalProgress as action658} from "@/modules/plan/services/commands";
-import {savePlanBrief as action659} from "@/modules/plan/services/commands";
-import {listProductionPlans as action660} from "@/modules/planning/services/plans";
-import {getPlanOptions as action661} from "@/modules/planning/services/plans";
-import {getProductionPlan as action662} from "@/modules/planning/services/plans";
-import {createProductionPlan as action663} from "@/modules/planning/services/plans";
-import {addProductionPlanLine as action664} from "@/modules/planning/services/plans";
-import {getAssignedPlanningWork as action665} from "@/modules/planning/services/plans";
-import {getPlanningCoverage as action666} from "@/modules/planning/services/queries";
-import {saveProductRecipe as action667} from "@/modules/products/services/make";
-import {createSpecification as action668} from "@/modules/quality/services/commands";
-import {setSpecificationStatus as action669} from "@/modules/quality/services/commands";
-import {createControlPoint as action670} from "@/modules/quality/services/commands";
-import {executeInspection as action671} from "@/modules/quality/services/commands";
-import {releaseHold as action672} from "@/modules/quality/services/commands";
-import {reportNcr as action673} from "@/modules/quality/services/commands";
-import {updateNcrInvestigation as action674} from "@/modules/quality/services/commands";
-import {addNcrAction as action675} from "@/modules/quality/services/commands";
-import {updateNcrAction as action676} from "@/modules/quality/services/commands";
-import {closeNcr as action677} from "@/modules/quality/services/commands";
-import {saveSubstance as action678} from "@/modules/safety/services/assurance";
-import {addSafetyDataSheet as action679} from "@/modules/safety/services/assurance";
-import {saveCoshhAssessment as action680} from "@/modules/safety/services/assurance";
-import {approveSubstance as action681} from "@/modules/safety/services/assurance";
-import {saveCompetence as action682} from "@/modules/safety/services/assurance";
-import {saveSafetyDocument as action683} from "@/modules/safety/services/assurance";
-import {acknowledgeDocument as action684} from "@/modules/safety/services/assurance";
-import {saveAudit as action685} from "@/modules/safety/services/assurance";
-import {addAuditFinding as action686} from "@/modules/safety/services/assurance";
-import {approveAudit as action687} from "@/modules/safety/services/assurance";
-import {saveChange as action688} from "@/modules/safety/services/assurance";
-import {advanceChange as action689} from "@/modules/safety/services/assurance";
-import {linkSafetyRecord as action690} from "@/modules/safety/services/assurance";
-import {saveSafetyProfile as action691} from "@/modules/safety/services/commands";
-import {saveRiskMatrix as action692} from "@/modules/safety/services/commands";
-import {createRisk as action693} from "@/modules/safety/services/commands";
-import {addControl as action694} from "@/modules/safety/services/commands";
-import {rateAssessment as action695} from "@/modules/safety/services/commands";
-import {approveAssessment as action696} from "@/modules/safety/services/commands";
-import {reviseAssessment as action697} from "@/modules/safety/services/commands";
-import {requestRiskReview as action698} from "@/modules/safety/services/commands";
-import {reportIncident as action699} from "@/modules/safety/services/commands";
-import {saveImmediateControl as action700} from "@/modules/safety/services/commands";
-import {openInvestigation as action701} from "@/modules/safety/services/commands";
-import {addCause as action702} from "@/modules/safety/services/commands";
-import {saveRootCause as action703} from "@/modules/safety/services/commands";
-import {reviewRiddor as action704} from "@/modules/safety/services/commands";
-import {createSafetyAction as action705} from "@/modules/safety/services/commands";
-import {advanceAction as action706} from "@/modules/safety/services/commands";
-import {verifyAction as action707} from "@/modules/safety/services/commands";
-import {saveWorkplaceRecord as action708} from "@/modules/safety/services/commands";
-import {createPermit as action709} from "@/modules/safety/services/control";
-import {advancePermit as action710} from "@/modules/safety/services/control";
-import {extendPermit as action711} from "@/modules/safety/services/control";
-import {createIsolation as action712} from "@/modules/safety/services/control";
-import {applyIsolationLock as action713} from "@/modules/safety/services/control";
-import {verifyIsolation as action714} from "@/modules/safety/services/control";
-import {clearIsolation as action715} from "@/modules/safety/services/control";
-import {removeIsolationLock as action716} from "@/modules/safety/services/control";
-import {placeSafetyHold as action717} from "@/modules/safety/services/control";
-import {updateReturnToService as action718} from "@/modules/safety/services/control";
-import {releaseSafetyHold as action719} from "@/modules/safety/services/control";
-import {overrideSafetyHold as action720} from "@/modules/safety/services/control";
-import {saveStatutoryCheck as action721} from "@/modules/safety/services/control";
-import {completeInspection as action722} from "@/modules/safety/services/control";
-import {createInspection as action723} from "@/modules/safety/services/control";
-import {createSalesAddress as action724} from "@/modules/sales/services/address-actions";
-import {createSalesCatalogueProduct as action725} from "@/modules/sales/services/catalogue-actions";
-import {sendQuote as action726} from "@/modules/sales/services/commands";
-import {changeQuoteStatus as action727} from "@/modules/sales/services/commands";
-import {deleteQuote as action728} from "@/modules/sales/services/commands";
-import {duplicateDocument as action729} from "@/modules/sales/services/commands";
-import {saveQuoteTemplate as action730} from "@/modules/sales/services/commands";
-import {createOrderFromQuote as action731} from "@/modules/sales/services/commands";
-import {linkCommercialProject as action732} from "@/modules/sales/services/commercial";
-import {openCallOffOrder as action733} from "@/modules/sales/services/commercial";
-import {raiseCallOff as action734} from "@/modules/sales/services/commercial";
-import {invoiceCallOffDelivery as action735} from "@/modules/sales/services/commercial";
-import {deliverAndInvoiceCallOff as action736} from "@/modules/sales/services/commercial";
-import {importSalescsv as action737} from "@/modules/sales/services/csv-import";
-import {addDeliveryAddress as action738} from "@/modules/sales/services/delivery-address";
-import {addInstaller as action739} from "@/modules/sales/services/delivery-address";
-import {pricePartyId as action740} from "@/modules/sales/services/delivery-address";
-import {linkOrderedFor as action741} from "@/modules/sales/services/delivery-address";
-import {saveDocument as action742} from "@/modules/sales/services/documents";
-import {saveInvoiceTemplate as action743} from "@/modules/sales/services/invoice-template-actions";
-import {retireInvoiceTemplate as action744} from "@/modules/sales/services/invoice-template-actions";
-import {attachCustomerInvoiceTemplate as action745} from "@/modules/sales/services/invoice-template-actions";
-import {detachCustomerInvoiceTemplate as action746} from "@/modules/sales/services/invoice-template-actions";
-import {createDraftOrder as action747} from "@/modules/sales/services/orders";
-import {addOrderLine as action748} from "@/modules/sales/services/orders";
-import {removeOrderLine as action749} from "@/modules/sales/services/orders";
-import {updateDraftOrderFields as action750} from "@/modules/sales/services/orders";
-import {confirmOrder as action751} from "@/modules/sales/services/orders";
-import {decideApproval as action752} from "@/modules/sales/services/orders";
-import {amendLineQuantity as action753} from "@/modules/sales/services/orders";
-import {overrideLinePrice as action754} from "@/modules/sales/services/orders";
-import {amendRequestedDate as action755} from "@/modules/sales/services/orders";
-import {cancelOrder as action756} from "@/modules/sales/services/orders";
-import {deleteOrder as action757} from "@/modules/sales/services/orders";
-import {cancelLineRemaining as action758} from "@/modules/sales/services/orders";
-import {addHold as action759} from "@/modules/sales/services/orders";
-import {releaseHold as action760} from "@/modules/sales/services/orders";
-import {redeemServiceRecovery as action761} from "@/modules/sales/services/recovery";
-import {restoreCancelledOrder as action762} from "@/modules/sales/services/rewind";
-import {returnOrderToQuote as action763} from "@/modules/sales/services/rewind";
-import {saveOrderHashtags as action764} from "@/modules/sales/services/rewind";
-import {saveSalesView as action765} from "@/modules/sales/services/saved-views";
-import {archiveSalesView as action766} from "@/modules/sales/services/saved-views";
-import {createCase as action767} from "@/modules/service/services/commands";
-import {updateCase as action768} from "@/modules/service/services/commands";
-import {assignCase as action769} from "@/modules/service/services/commands";
-import {transitionCase as action770} from "@/modules/service/services/commands";
-import {addCaseEntry as action771} from "@/modules/service/services/commands";
-import {createDepartmentTicket as action772} from "@/modules/service/services/commands";
-import {updateDepartmentTicket as action773} from "@/modules/service/services/commands";
-import {createQueue as action774} from "@/modules/service/services/commands";
-import {addQueueMember as action775} from "@/modules/service/services/commands";
-import {linkCaseRecord as action776} from "@/modules/service/services/commands";
-import {creditChoices as action777} from "@/modules/service/services/commands";
-import {askFinanceForCredit as action778} from "@/modules/service/services/commands";
-import {getCaseOwners as action779} from "@/modules/service/services/commands";
-import {getDepartmentWork as action780} from "@/modules/service/services/commands";
-import {savePurchaseContext as action781} from "@/modules/service/services/commands";
-import {saveInvestigation as action782} from "@/modules/service/services/commands";
-import {logCaseCall as action783} from "@/modules/service/services/commands";
-import {createCaseRemedy as action784} from "@/modules/service/services/commands";
-import {mergeCases as action785} from "@/modules/service/services/commands";
-import {sendCaseEmail as action786} from "@/modules/service/services/communication";
-import {invalidateCaseCsat as action787} from "@/modules/service/services/communication";
-import {casePurchaseContext as action788} from "@/modules/service/services/context";
-import {proposeRecovery as action789} from "@/modules/service/services/recovery";
-import {decideRecovery as action790} from "@/modules/service/services/recovery";
-import {saveServiceApprovalRoute as action791} from "@/modules/service/services/recovery";
-import {readAvailability as action792} from "@/modules/stock/services/availability";
-import {readOrderChain as action793} from "@/modules/stock/services/availability";
-import {inventoryExportRows as action794} from "@/modules/stock/services/export";
-import {createTeam as action795} from "@/modules/teams/services/commands";
-import {renameTeam as action796} from "@/modules/teams/services/commands";
-import {addMember as action797} from "@/modules/teams/services/commands";
-import {removeMember as action798} from "@/modules/teams/services/commands";
-import {saveTask as action799} from "@/modules/teams/services/commands";
-import {setTaskStatus as action800} from "@/modules/teams/services/commands";
-import {removeTask as action801} from "@/modules/teams/services/commands";
-import {saveCover as action802} from "@/modules/teams/services/commands";
-import {removeCover as action803} from "@/modules/teams/services/commands";
-import {saveHandover as action804} from "@/modules/teams/services/commands";
-import {savePlace as action805} from "@/modules/teams/services/commands";
-import {saveMoment as action806} from "@/modules/teams/services/commands";
-import {removeMoment as action807} from "@/modules/teams/services/commands";
+import {getPlanBuilder as action629} from "@/modules/plan/services/builder";
+import {savePlanInput as action630} from "@/modules/plan/services/builder";
+import {setPlanInputIncluded as action631} from "@/modules/plan/services/builder";
+import {applyPlanInputs as action632} from "@/modules/plan/services/builder";
+import {savePlanGrid as action633} from "@/modules/plan/services/builder";
+import {removePlanMeasure as action634} from "@/modules/plan/services/builder";
+import {createPlan as action635} from "@/modules/plan/services/commands";
+import {saveCell as action636} from "@/modules/plan/services/commands";
+import {addMeasure as action637} from "@/modules/plan/services/commands";
+import {addAssumption as action638} from "@/modules/plan/services/commands";
+import {addDriver as action639} from "@/modules/plan/services/commands";
+import {addLink as action640} from "@/modules/plan/services/commands";
+import {createScenario as action641} from "@/modules/plan/services/commands";
+import {promoteScenario as action642} from "@/modules/plan/services/commands";
+import {submitPlan as action643} from "@/modules/plan/services/commands";
+import {approvePlan as action644} from "@/modules/plan/services/commands";
+import {lockPlan as action645} from "@/modules/plan/services/commands";
+import {addGoal as action646} from "@/modules/plan/services/commands";
+import {addInitiative as action647} from "@/modules/plan/services/commands";
+import {createProjectForInitiative as action648} from "@/modules/plan/services/commands";
+import {addAction as action649} from "@/modules/plan/services/commands";
+import {completeAction as action650} from "@/modules/plan/services/commands";
+import {addRisk as action651} from "@/modules/plan/services/commands";
+import {addDependency as action652} from "@/modules/plan/services/commands";
+import {addDecision as action653} from "@/modules/plan/services/commands";
+import {addComment as action654} from "@/modules/plan/services/commands";
+import {addUpdate as action655} from "@/modules/plan/services/commands";
+import {completeReview as action656} from "@/modules/plan/services/commands";
+import {addReview as action657} from "@/modules/plan/services/commands";
+import {distributeTargets as action658} from "@/modules/plan/services/commands";
+import {importGrid as action659} from "@/modules/plan/services/commands";
+import {sharePlan as action660} from "@/modules/plan/services/commands";
+import {unsharePlan as action661} from "@/modules/plan/services/commands";
+import {setPlanAudience as action662} from "@/modules/plan/services/commands";
+import {addNote as action663} from "@/modules/plan/services/commands";
+import {saveGoalProgress as action664} from "@/modules/plan/services/commands";
+import {savePlanBrief as action665} from "@/modules/plan/services/commands";
+import {listProductionPlans as action666} from "@/modules/planning/services/plans";
+import {getPlanOptions as action667} from "@/modules/planning/services/plans";
+import {getProductionPlan as action668} from "@/modules/planning/services/plans";
+import {createProductionPlan as action669} from "@/modules/planning/services/plans";
+import {addProductionPlanLine as action670} from "@/modules/planning/services/plans";
+import {getAssignedPlanningWork as action671} from "@/modules/planning/services/plans";
+import {getPlanningCoverage as action672} from "@/modules/planning/services/queries";
+import {saveProductRecipe as action673} from "@/modules/products/services/make";
+import {createSpecification as action674} from "@/modules/quality/services/commands";
+import {setSpecificationStatus as action675} from "@/modules/quality/services/commands";
+import {createControlPoint as action676} from "@/modules/quality/services/commands";
+import {executeInspection as action677} from "@/modules/quality/services/commands";
+import {releaseHold as action678} from "@/modules/quality/services/commands";
+import {reportNcr as action679} from "@/modules/quality/services/commands";
+import {updateNcrInvestigation as action680} from "@/modules/quality/services/commands";
+import {addNcrAction as action681} from "@/modules/quality/services/commands";
+import {updateNcrAction as action682} from "@/modules/quality/services/commands";
+import {closeNcr as action683} from "@/modules/quality/services/commands";
+import {saveSubstance as action684} from "@/modules/safety/services/assurance";
+import {addSafetyDataSheet as action685} from "@/modules/safety/services/assurance";
+import {saveCoshhAssessment as action686} from "@/modules/safety/services/assurance";
+import {approveSubstance as action687} from "@/modules/safety/services/assurance";
+import {saveCompetence as action688} from "@/modules/safety/services/assurance";
+import {saveSafetyDocument as action689} from "@/modules/safety/services/assurance";
+import {acknowledgeDocument as action690} from "@/modules/safety/services/assurance";
+import {saveAudit as action691} from "@/modules/safety/services/assurance";
+import {addAuditFinding as action692} from "@/modules/safety/services/assurance";
+import {approveAudit as action693} from "@/modules/safety/services/assurance";
+import {saveChange as action694} from "@/modules/safety/services/assurance";
+import {advanceChange as action695} from "@/modules/safety/services/assurance";
+import {linkSafetyRecord as action696} from "@/modules/safety/services/assurance";
+import {saveSafetyProfile as action697} from "@/modules/safety/services/commands";
+import {saveRiskMatrix as action698} from "@/modules/safety/services/commands";
+import {createRisk as action699} from "@/modules/safety/services/commands";
+import {addControl as action700} from "@/modules/safety/services/commands";
+import {rateAssessment as action701} from "@/modules/safety/services/commands";
+import {approveAssessment as action702} from "@/modules/safety/services/commands";
+import {reviseAssessment as action703} from "@/modules/safety/services/commands";
+import {requestRiskReview as action704} from "@/modules/safety/services/commands";
+import {reportIncident as action705} from "@/modules/safety/services/commands";
+import {saveImmediateControl as action706} from "@/modules/safety/services/commands";
+import {openInvestigation as action707} from "@/modules/safety/services/commands";
+import {addCause as action708} from "@/modules/safety/services/commands";
+import {saveRootCause as action709} from "@/modules/safety/services/commands";
+import {reviewRiddor as action710} from "@/modules/safety/services/commands";
+import {createSafetyAction as action711} from "@/modules/safety/services/commands";
+import {advanceAction as action712} from "@/modules/safety/services/commands";
+import {verifyAction as action713} from "@/modules/safety/services/commands";
+import {saveWorkplaceRecord as action714} from "@/modules/safety/services/commands";
+import {createPermit as action715} from "@/modules/safety/services/control";
+import {advancePermit as action716} from "@/modules/safety/services/control";
+import {extendPermit as action717} from "@/modules/safety/services/control";
+import {createIsolation as action718} from "@/modules/safety/services/control";
+import {applyIsolationLock as action719} from "@/modules/safety/services/control";
+import {verifyIsolation as action720} from "@/modules/safety/services/control";
+import {clearIsolation as action721} from "@/modules/safety/services/control";
+import {removeIsolationLock as action722} from "@/modules/safety/services/control";
+import {placeSafetyHold as action723} from "@/modules/safety/services/control";
+import {updateReturnToService as action724} from "@/modules/safety/services/control";
+import {releaseSafetyHold as action725} from "@/modules/safety/services/control";
+import {overrideSafetyHold as action726} from "@/modules/safety/services/control";
+import {saveStatutoryCheck as action727} from "@/modules/safety/services/control";
+import {completeInspection as action728} from "@/modules/safety/services/control";
+import {createInspection as action729} from "@/modules/safety/services/control";
+import {createSalesAddress as action730} from "@/modules/sales/services/address-actions";
+import {createSalesCatalogueProduct as action731} from "@/modules/sales/services/catalogue-actions";
+import {sendQuote as action732} from "@/modules/sales/services/commands";
+import {changeQuoteStatus as action733} from "@/modules/sales/services/commands";
+import {deleteQuote as action734} from "@/modules/sales/services/commands";
+import {duplicateDocument as action735} from "@/modules/sales/services/commands";
+import {saveQuoteTemplate as action736} from "@/modules/sales/services/commands";
+import {createOrderFromQuote as action737} from "@/modules/sales/services/commands";
+import {linkCommercialProject as action738} from "@/modules/sales/services/commercial";
+import {openCallOffOrder as action739} from "@/modules/sales/services/commercial";
+import {raiseCallOff as action740} from "@/modules/sales/services/commercial";
+import {invoiceCallOffDelivery as action741} from "@/modules/sales/services/commercial";
+import {deliverAndInvoiceCallOff as action742} from "@/modules/sales/services/commercial";
+import {importSalescsv as action743} from "@/modules/sales/services/csv-import";
+import {addDeliveryAddress as action744} from "@/modules/sales/services/delivery-address";
+import {addInstaller as action745} from "@/modules/sales/services/delivery-address";
+import {pricePartyId as action746} from "@/modules/sales/services/delivery-address";
+import {linkOrderedFor as action747} from "@/modules/sales/services/delivery-address";
+import {saveDocument as action748} from "@/modules/sales/services/documents";
+import {saveInvoiceTemplate as action749} from "@/modules/sales/services/invoice-template-actions";
+import {retireInvoiceTemplate as action750} from "@/modules/sales/services/invoice-template-actions";
+import {attachCustomerInvoiceTemplate as action751} from "@/modules/sales/services/invoice-template-actions";
+import {detachCustomerInvoiceTemplate as action752} from "@/modules/sales/services/invoice-template-actions";
+import {createDraftOrder as action753} from "@/modules/sales/services/orders";
+import {addOrderLine as action754} from "@/modules/sales/services/orders";
+import {removeOrderLine as action755} from "@/modules/sales/services/orders";
+import {updateDraftOrderFields as action756} from "@/modules/sales/services/orders";
+import {confirmOrder as action757} from "@/modules/sales/services/orders";
+import {decideApproval as action758} from "@/modules/sales/services/orders";
+import {amendLineQuantity as action759} from "@/modules/sales/services/orders";
+import {overrideLinePrice as action760} from "@/modules/sales/services/orders";
+import {amendRequestedDate as action761} from "@/modules/sales/services/orders";
+import {cancelOrder as action762} from "@/modules/sales/services/orders";
+import {deleteOrder as action763} from "@/modules/sales/services/orders";
+import {cancelLineRemaining as action764} from "@/modules/sales/services/orders";
+import {addHold as action765} from "@/modules/sales/services/orders";
+import {releaseHold as action766} from "@/modules/sales/services/orders";
+import {redeemServiceRecovery as action767} from "@/modules/sales/services/recovery";
+import {restoreCancelledOrder as action768} from "@/modules/sales/services/rewind";
+import {returnOrderToQuote as action769} from "@/modules/sales/services/rewind";
+import {saveOrderHashtags as action770} from "@/modules/sales/services/rewind";
+import {saveSalesView as action771} from "@/modules/sales/services/saved-views";
+import {archiveSalesView as action772} from "@/modules/sales/services/saved-views";
+import {createCase as action773} from "@/modules/service/services/commands";
+import {updateCase as action774} from "@/modules/service/services/commands";
+import {assignCase as action775} from "@/modules/service/services/commands";
+import {transitionCase as action776} from "@/modules/service/services/commands";
+import {addCaseEntry as action777} from "@/modules/service/services/commands";
+import {createDepartmentTicket as action778} from "@/modules/service/services/commands";
+import {updateDepartmentTicket as action779} from "@/modules/service/services/commands";
+import {createQueue as action780} from "@/modules/service/services/commands";
+import {addQueueMember as action781} from "@/modules/service/services/commands";
+import {linkCaseRecord as action782} from "@/modules/service/services/commands";
+import {creditChoices as action783} from "@/modules/service/services/commands";
+import {askFinanceForCredit as action784} from "@/modules/service/services/commands";
+import {getCaseOwners as action785} from "@/modules/service/services/commands";
+import {getDepartmentWork as action786} from "@/modules/service/services/commands";
+import {savePurchaseContext as action787} from "@/modules/service/services/commands";
+import {saveInvestigation as action788} from "@/modules/service/services/commands";
+import {logCaseCall as action789} from "@/modules/service/services/commands";
+import {createCaseRemedy as action790} from "@/modules/service/services/commands";
+import {mergeCases as action791} from "@/modules/service/services/commands";
+import {sendCaseEmail as action792} from "@/modules/service/services/communication";
+import {invalidateCaseCsat as action793} from "@/modules/service/services/communication";
+import {casePurchaseContext as action794} from "@/modules/service/services/context";
+import {proposeRecovery as action795} from "@/modules/service/services/recovery";
+import {decideRecovery as action796} from "@/modules/service/services/recovery";
+import {saveServiceApprovalRoute as action797} from "@/modules/service/services/recovery";
+import {getSopWorkspace as action798} from "@/modules/sop/services/workspace";
+import {createSopCycle as action799} from "@/modules/sop/services/workspace";
+import {configureSopCycle as action800} from "@/modules/sop/services/workspace";
+import {generateSopForecast as action801} from "@/modules/sop/services/workspace";
+import {approveSopVersion as action802} from "@/modules/sop/services/workspace";
+import {updateSopWorkflow as action803} from "@/modules/sop/services/workspace";
+import {publishSopVersion as action804} from "@/modules/sop/services/workspace";
+import {createSopScenario as action805} from "@/modules/sop/services/workspace";
+import {promoteSopScenario as action806} from "@/modules/sop/services/workspace";
+import {overrideSopDemand as action807} from "@/modules/sop/services/workspace";
+import {getLiveSopService as action808} from "@/modules/sop/services/workspace";
+import {getSopComparison as action809} from "@/modules/sop/services/workspace";
+import {getSopAccuracy as action810} from "@/modules/sop/services/workspace";
+import {readAvailability as action811} from "@/modules/stock/services/availability";
+import {readOrderChain as action812} from "@/modules/stock/services/availability";
+import {inventoryExportRows as action813} from "@/modules/stock/services/export";
+import {createTeam as action814} from "@/modules/teams/services/commands";
+import {renameTeam as action815} from "@/modules/teams/services/commands";
+import {addMember as action816} from "@/modules/teams/services/commands";
+import {removeMember as action817} from "@/modules/teams/services/commands";
+import {saveTask as action818} from "@/modules/teams/services/commands";
+import {setTaskStatus as action819} from "@/modules/teams/services/commands";
+import {removeTask as action820} from "@/modules/teams/services/commands";
+import {saveCover as action821} from "@/modules/teams/services/commands";
+import {removeCover as action822} from "@/modules/teams/services/commands";
+import {saveHandover as action823} from "@/modules/teams/services/commands";
+import {savePlace as action824} from "@/modules/teams/services/commands";
+import {saveMoment as action825} from "@/modules/teams/services/commands";
+import {removeMoment as action826} from "@/modules/teams/services/commands";
 export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>={
 "src/app/(app)/_shared/record-email-actions:loadEmailRecord":action0 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/_shared/record-email-actions:sendRecordEmailAction":action1 as (...args:never[])=>Promise<unknown>,
@@ -1437,183 +1456,202 @@ export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>={
 "src/modules/marketing/services/social-actions:deleteSocialPost":action626 as (...args:never[])=>Promise<unknown>,
 "src/modules/marketing/services/social-actions:retrySocialPost":action627 as (...args:never[])=>Promise<unknown>,
 "src/modules/people/services/finance-expenses:getApprovedExpenseSource":action628 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:createPlan":action629 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:saveCell":action630 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:addMeasure":action631 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:addAssumption":action632 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:addDriver":action633 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:addLink":action634 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:createScenario":action635 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:promoteScenario":action636 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:submitPlan":action637 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:approvePlan":action638 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:lockPlan":action639 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:addGoal":action640 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:addInitiative":action641 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:createProjectForInitiative":action642 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:addAction":action643 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:completeAction":action644 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:addRisk":action645 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:addDependency":action646 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:addDecision":action647 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:addComment":action648 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:addUpdate":action649 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:completeReview":action650 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:addReview":action651 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:distributeTargets":action652 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:importGrid":action653 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:sharePlan":action654 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:unsharePlan":action655 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:setPlanAudience":action656 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:addNote":action657 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:saveGoalProgress":action658 as (...args:never[])=>Promise<unknown>,
-"src/modules/plan/services/commands:savePlanBrief":action659 as (...args:never[])=>Promise<unknown>,
-"src/modules/planning/services/plans:listProductionPlans":action660 as (...args:never[])=>Promise<unknown>,
-"src/modules/planning/services/plans:getPlanOptions":action661 as (...args:never[])=>Promise<unknown>,
-"src/modules/planning/services/plans:getProductionPlan":action662 as (...args:never[])=>Promise<unknown>,
-"src/modules/planning/services/plans:createProductionPlan":action663 as (...args:never[])=>Promise<unknown>,
-"src/modules/planning/services/plans:addProductionPlanLine":action664 as (...args:never[])=>Promise<unknown>,
-"src/modules/planning/services/plans:getAssignedPlanningWork":action665 as (...args:never[])=>Promise<unknown>,
-"src/modules/planning/services/queries:getPlanningCoverage":action666 as (...args:never[])=>Promise<unknown>,
-"src/modules/products/services/make:saveProductRecipe":action667 as (...args:never[])=>Promise<unknown>,
-"src/modules/quality/services/commands:createSpecification":action668 as (...args:never[])=>Promise<unknown>,
-"src/modules/quality/services/commands:setSpecificationStatus":action669 as (...args:never[])=>Promise<unknown>,
-"src/modules/quality/services/commands:createControlPoint":action670 as (...args:never[])=>Promise<unknown>,
-"src/modules/quality/services/commands:executeInspection":action671 as (...args:never[])=>Promise<unknown>,
-"src/modules/quality/services/commands:releaseHold":action672 as (...args:never[])=>Promise<unknown>,
-"src/modules/quality/services/commands:reportNcr":action673 as (...args:never[])=>Promise<unknown>,
-"src/modules/quality/services/commands:updateNcrInvestigation":action674 as (...args:never[])=>Promise<unknown>,
-"src/modules/quality/services/commands:addNcrAction":action675 as (...args:never[])=>Promise<unknown>,
-"src/modules/quality/services/commands:updateNcrAction":action676 as (...args:never[])=>Promise<unknown>,
-"src/modules/quality/services/commands:closeNcr":action677 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/assurance:saveSubstance":action678 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/assurance:addSafetyDataSheet":action679 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/assurance:saveCoshhAssessment":action680 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/assurance:approveSubstance":action681 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/assurance:saveCompetence":action682 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/assurance:saveSafetyDocument":action683 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/assurance:acknowledgeDocument":action684 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/assurance:saveAudit":action685 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/assurance:addAuditFinding":action686 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/assurance:approveAudit":action687 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/assurance:saveChange":action688 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/assurance:advanceChange":action689 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/assurance:linkSafetyRecord":action690 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:saveSafetyProfile":action691 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:saveRiskMatrix":action692 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:createRisk":action693 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:addControl":action694 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:rateAssessment":action695 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:approveAssessment":action696 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:reviseAssessment":action697 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:requestRiskReview":action698 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:reportIncident":action699 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:saveImmediateControl":action700 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:openInvestigation":action701 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:addCause":action702 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:saveRootCause":action703 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:reviewRiddor":action704 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:createSafetyAction":action705 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:advanceAction":action706 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:verifyAction":action707 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/commands:saveWorkplaceRecord":action708 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/control:createPermit":action709 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/control:advancePermit":action710 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/control:extendPermit":action711 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/control:createIsolation":action712 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/control:applyIsolationLock":action713 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/control:verifyIsolation":action714 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/control:clearIsolation":action715 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/control:removeIsolationLock":action716 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/control:placeSafetyHold":action717 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/control:updateReturnToService":action718 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/control:releaseSafetyHold":action719 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/control:overrideSafetyHold":action720 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/control:saveStatutoryCheck":action721 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/control:completeInspection":action722 as (...args:never[])=>Promise<unknown>,
-"src/modules/safety/services/control:createInspection":action723 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/address-actions:createSalesAddress":action724 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/catalogue-actions:createSalesCatalogueProduct":action725 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/commands:sendQuote":action726 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/commands:changeQuoteStatus":action727 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/commands:deleteQuote":action728 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/commands:duplicateDocument":action729 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/commands:saveQuoteTemplate":action730 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/commands:createOrderFromQuote":action731 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/commercial:linkCommercialProject":action732 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/commercial:openCallOffOrder":action733 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/commercial:raiseCallOff":action734 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/commercial:invoiceCallOffDelivery":action735 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/commercial:deliverAndInvoiceCallOff":action736 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/csv-import:importSalescsv":action737 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/delivery-address:addDeliveryAddress":action738 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/delivery-address:addInstaller":action739 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/delivery-address:pricePartyId":action740 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/delivery-address:linkOrderedFor":action741 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/documents:saveDocument":action742 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/invoice-template-actions:saveInvoiceTemplate":action743 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/invoice-template-actions:retireInvoiceTemplate":action744 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/invoice-template-actions:attachCustomerInvoiceTemplate":action745 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/invoice-template-actions:detachCustomerInvoiceTemplate":action746 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/orders:createDraftOrder":action747 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/orders:addOrderLine":action748 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/orders:removeOrderLine":action749 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/orders:updateDraftOrderFields":action750 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/orders:confirmOrder":action751 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/orders:decideApproval":action752 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/orders:amendLineQuantity":action753 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/orders:overrideLinePrice":action754 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/orders:amendRequestedDate":action755 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/orders:cancelOrder":action756 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/orders:deleteOrder":action757 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/orders:cancelLineRemaining":action758 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/orders:addHold":action759 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/orders:releaseHold":action760 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/recovery:redeemServiceRecovery":action761 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/rewind:restoreCancelledOrder":action762 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/rewind:returnOrderToQuote":action763 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/rewind:saveOrderHashtags":action764 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/saved-views:saveSalesView":action765 as (...args:never[])=>Promise<unknown>,
-"src/modules/sales/services/saved-views:archiveSalesView":action766 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:createCase":action767 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:updateCase":action768 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:assignCase":action769 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:transitionCase":action770 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:addCaseEntry":action771 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:createDepartmentTicket":action772 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:updateDepartmentTicket":action773 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:createQueue":action774 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:addQueueMember":action775 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:linkCaseRecord":action776 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:creditChoices":action777 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:askFinanceForCredit":action778 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:getCaseOwners":action779 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:getDepartmentWork":action780 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:savePurchaseContext":action781 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:saveInvestigation":action782 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:logCaseCall":action783 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:createCaseRemedy":action784 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/commands:mergeCases":action785 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/communication:sendCaseEmail":action786 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/communication:invalidateCaseCsat":action787 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/context:casePurchaseContext":action788 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/recovery:proposeRecovery":action789 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/recovery:decideRecovery":action790 as (...args:never[])=>Promise<unknown>,
-"src/modules/service/services/recovery:saveServiceApprovalRoute":action791 as (...args:never[])=>Promise<unknown>,
-"src/modules/stock/services/availability:readAvailability":action792 as (...args:never[])=>Promise<unknown>,
-"src/modules/stock/services/availability:readOrderChain":action793 as (...args:never[])=>Promise<unknown>,
-"src/modules/stock/services/export:inventoryExportRows":action794 as (...args:never[])=>Promise<unknown>,
-"src/modules/teams/services/commands:createTeam":action795 as (...args:never[])=>Promise<unknown>,
-"src/modules/teams/services/commands:renameTeam":action796 as (...args:never[])=>Promise<unknown>,
-"src/modules/teams/services/commands:addMember":action797 as (...args:never[])=>Promise<unknown>,
-"src/modules/teams/services/commands:removeMember":action798 as (...args:never[])=>Promise<unknown>,
-"src/modules/teams/services/commands:saveTask":action799 as (...args:never[])=>Promise<unknown>,
-"src/modules/teams/services/commands:setTaskStatus":action800 as (...args:never[])=>Promise<unknown>,
-"src/modules/teams/services/commands:removeTask":action801 as (...args:never[])=>Promise<unknown>,
-"src/modules/teams/services/commands:saveCover":action802 as (...args:never[])=>Promise<unknown>,
-"src/modules/teams/services/commands:removeCover":action803 as (...args:never[])=>Promise<unknown>,
-"src/modules/teams/services/commands:saveHandover":action804 as (...args:never[])=>Promise<unknown>,
-"src/modules/teams/services/commands:savePlace":action805 as (...args:never[])=>Promise<unknown>,
-"src/modules/teams/services/commands:saveMoment":action806 as (...args:never[])=>Promise<unknown>,
-"src/modules/teams/services/commands:removeMoment":action807 as (...args:never[])=>Promise<unknown>
+"src/modules/plan/services/builder:getPlanBuilder":action629 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/builder:savePlanInput":action630 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/builder:setPlanInputIncluded":action631 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/builder:applyPlanInputs":action632 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/builder:savePlanGrid":action633 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/builder:removePlanMeasure":action634 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:createPlan":action635 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:saveCell":action636 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:addMeasure":action637 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:addAssumption":action638 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:addDriver":action639 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:addLink":action640 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:createScenario":action641 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:promoteScenario":action642 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:submitPlan":action643 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:approvePlan":action644 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:lockPlan":action645 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:addGoal":action646 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:addInitiative":action647 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:createProjectForInitiative":action648 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:addAction":action649 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:completeAction":action650 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:addRisk":action651 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:addDependency":action652 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:addDecision":action653 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:addComment":action654 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:addUpdate":action655 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:completeReview":action656 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:addReview":action657 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:distributeTargets":action658 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:importGrid":action659 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:sharePlan":action660 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:unsharePlan":action661 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:setPlanAudience":action662 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:addNote":action663 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:saveGoalProgress":action664 as (...args:never[])=>Promise<unknown>,
+"src/modules/plan/services/commands:savePlanBrief":action665 as (...args:never[])=>Promise<unknown>,
+"src/modules/planning/services/plans:listProductionPlans":action666 as (...args:never[])=>Promise<unknown>,
+"src/modules/planning/services/plans:getPlanOptions":action667 as (...args:never[])=>Promise<unknown>,
+"src/modules/planning/services/plans:getProductionPlan":action668 as (...args:never[])=>Promise<unknown>,
+"src/modules/planning/services/plans:createProductionPlan":action669 as (...args:never[])=>Promise<unknown>,
+"src/modules/planning/services/plans:addProductionPlanLine":action670 as (...args:never[])=>Promise<unknown>,
+"src/modules/planning/services/plans:getAssignedPlanningWork":action671 as (...args:never[])=>Promise<unknown>,
+"src/modules/planning/services/queries:getPlanningCoverage":action672 as (...args:never[])=>Promise<unknown>,
+"src/modules/products/services/make:saveProductRecipe":action673 as (...args:never[])=>Promise<unknown>,
+"src/modules/quality/services/commands:createSpecification":action674 as (...args:never[])=>Promise<unknown>,
+"src/modules/quality/services/commands:setSpecificationStatus":action675 as (...args:never[])=>Promise<unknown>,
+"src/modules/quality/services/commands:createControlPoint":action676 as (...args:never[])=>Promise<unknown>,
+"src/modules/quality/services/commands:executeInspection":action677 as (...args:never[])=>Promise<unknown>,
+"src/modules/quality/services/commands:releaseHold":action678 as (...args:never[])=>Promise<unknown>,
+"src/modules/quality/services/commands:reportNcr":action679 as (...args:never[])=>Promise<unknown>,
+"src/modules/quality/services/commands:updateNcrInvestigation":action680 as (...args:never[])=>Promise<unknown>,
+"src/modules/quality/services/commands:addNcrAction":action681 as (...args:never[])=>Promise<unknown>,
+"src/modules/quality/services/commands:updateNcrAction":action682 as (...args:never[])=>Promise<unknown>,
+"src/modules/quality/services/commands:closeNcr":action683 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/assurance:saveSubstance":action684 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/assurance:addSafetyDataSheet":action685 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/assurance:saveCoshhAssessment":action686 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/assurance:approveSubstance":action687 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/assurance:saveCompetence":action688 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/assurance:saveSafetyDocument":action689 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/assurance:acknowledgeDocument":action690 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/assurance:saveAudit":action691 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/assurance:addAuditFinding":action692 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/assurance:approveAudit":action693 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/assurance:saveChange":action694 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/assurance:advanceChange":action695 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/assurance:linkSafetyRecord":action696 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:saveSafetyProfile":action697 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:saveRiskMatrix":action698 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:createRisk":action699 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:addControl":action700 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:rateAssessment":action701 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:approveAssessment":action702 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:reviseAssessment":action703 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:requestRiskReview":action704 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:reportIncident":action705 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:saveImmediateControl":action706 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:openInvestigation":action707 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:addCause":action708 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:saveRootCause":action709 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:reviewRiddor":action710 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:createSafetyAction":action711 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:advanceAction":action712 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:verifyAction":action713 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/commands:saveWorkplaceRecord":action714 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/control:createPermit":action715 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/control:advancePermit":action716 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/control:extendPermit":action717 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/control:createIsolation":action718 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/control:applyIsolationLock":action719 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/control:verifyIsolation":action720 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/control:clearIsolation":action721 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/control:removeIsolationLock":action722 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/control:placeSafetyHold":action723 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/control:updateReturnToService":action724 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/control:releaseSafetyHold":action725 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/control:overrideSafetyHold":action726 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/control:saveStatutoryCheck":action727 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/control:completeInspection":action728 as (...args:never[])=>Promise<unknown>,
+"src/modules/safety/services/control:createInspection":action729 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/address-actions:createSalesAddress":action730 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/catalogue-actions:createSalesCatalogueProduct":action731 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/commands:sendQuote":action732 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/commands:changeQuoteStatus":action733 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/commands:deleteQuote":action734 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/commands:duplicateDocument":action735 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/commands:saveQuoteTemplate":action736 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/commands:createOrderFromQuote":action737 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/commercial:linkCommercialProject":action738 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/commercial:openCallOffOrder":action739 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/commercial:raiseCallOff":action740 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/commercial:invoiceCallOffDelivery":action741 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/commercial:deliverAndInvoiceCallOff":action742 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/csv-import:importSalescsv":action743 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/delivery-address:addDeliveryAddress":action744 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/delivery-address:addInstaller":action745 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/delivery-address:pricePartyId":action746 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/delivery-address:linkOrderedFor":action747 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/documents:saveDocument":action748 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/invoice-template-actions:saveInvoiceTemplate":action749 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/invoice-template-actions:retireInvoiceTemplate":action750 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/invoice-template-actions:attachCustomerInvoiceTemplate":action751 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/invoice-template-actions:detachCustomerInvoiceTemplate":action752 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/orders:createDraftOrder":action753 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/orders:addOrderLine":action754 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/orders:removeOrderLine":action755 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/orders:updateDraftOrderFields":action756 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/orders:confirmOrder":action757 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/orders:decideApproval":action758 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/orders:amendLineQuantity":action759 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/orders:overrideLinePrice":action760 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/orders:amendRequestedDate":action761 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/orders:cancelOrder":action762 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/orders:deleteOrder":action763 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/orders:cancelLineRemaining":action764 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/orders:addHold":action765 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/orders:releaseHold":action766 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/recovery:redeemServiceRecovery":action767 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/rewind:restoreCancelledOrder":action768 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/rewind:returnOrderToQuote":action769 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/rewind:saveOrderHashtags":action770 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/saved-views:saveSalesView":action771 as (...args:never[])=>Promise<unknown>,
+"src/modules/sales/services/saved-views:archiveSalesView":action772 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:createCase":action773 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:updateCase":action774 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:assignCase":action775 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:transitionCase":action776 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:addCaseEntry":action777 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:createDepartmentTicket":action778 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:updateDepartmentTicket":action779 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:createQueue":action780 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:addQueueMember":action781 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:linkCaseRecord":action782 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:creditChoices":action783 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:askFinanceForCredit":action784 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:getCaseOwners":action785 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:getDepartmentWork":action786 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:savePurchaseContext":action787 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:saveInvestigation":action788 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:logCaseCall":action789 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:createCaseRemedy":action790 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/commands:mergeCases":action791 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/communication:sendCaseEmail":action792 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/communication:invalidateCaseCsat":action793 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/context:casePurchaseContext":action794 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/recovery:proposeRecovery":action795 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/recovery:decideRecovery":action796 as (...args:never[])=>Promise<unknown>,
+"src/modules/service/services/recovery:saveServiceApprovalRoute":action797 as (...args:never[])=>Promise<unknown>,
+"src/modules/sop/services/workspace:getSopWorkspace":action798 as (...args:never[])=>Promise<unknown>,
+"src/modules/sop/services/workspace:createSopCycle":action799 as (...args:never[])=>Promise<unknown>,
+"src/modules/sop/services/workspace:configureSopCycle":action800 as (...args:never[])=>Promise<unknown>,
+"src/modules/sop/services/workspace:generateSopForecast":action801 as (...args:never[])=>Promise<unknown>,
+"src/modules/sop/services/workspace:approveSopVersion":action802 as (...args:never[])=>Promise<unknown>,
+"src/modules/sop/services/workspace:updateSopWorkflow":action803 as (...args:never[])=>Promise<unknown>,
+"src/modules/sop/services/workspace:publishSopVersion":action804 as (...args:never[])=>Promise<unknown>,
+"src/modules/sop/services/workspace:createSopScenario":action805 as (...args:never[])=>Promise<unknown>,
+"src/modules/sop/services/workspace:promoteSopScenario":action806 as (...args:never[])=>Promise<unknown>,
+"src/modules/sop/services/workspace:overrideSopDemand":action807 as (...args:never[])=>Promise<unknown>,
+"src/modules/sop/services/workspace:getLiveSopService":action808 as (...args:never[])=>Promise<unknown>,
+"src/modules/sop/services/workspace:getSopComparison":action809 as (...args:never[])=>Promise<unknown>,
+"src/modules/sop/services/workspace:getSopAccuracy":action810 as (...args:never[])=>Promise<unknown>,
+"src/modules/stock/services/availability:readAvailability":action811 as (...args:never[])=>Promise<unknown>,
+"src/modules/stock/services/availability:readOrderChain":action812 as (...args:never[])=>Promise<unknown>,
+"src/modules/stock/services/export:inventoryExportRows":action813 as (...args:never[])=>Promise<unknown>,
+"src/modules/teams/services/commands:createTeam":action814 as (...args:never[])=>Promise<unknown>,
+"src/modules/teams/services/commands:renameTeam":action815 as (...args:never[])=>Promise<unknown>,
+"src/modules/teams/services/commands:addMember":action816 as (...args:never[])=>Promise<unknown>,
+"src/modules/teams/services/commands:removeMember":action817 as (...args:never[])=>Promise<unknown>,
+"src/modules/teams/services/commands:saveTask":action818 as (...args:never[])=>Promise<unknown>,
+"src/modules/teams/services/commands:setTaskStatus":action819 as (...args:never[])=>Promise<unknown>,
+"src/modules/teams/services/commands:removeTask":action820 as (...args:never[])=>Promise<unknown>,
+"src/modules/teams/services/commands:saveCover":action821 as (...args:never[])=>Promise<unknown>,
+"src/modules/teams/services/commands:removeCover":action822 as (...args:never[])=>Promise<unknown>,
+"src/modules/teams/services/commands:saveHandover":action823 as (...args:never[])=>Promise<unknown>,
+"src/modules/teams/services/commands:savePlace":action824 as (...args:never[])=>Promise<unknown>,
+"src/modules/teams/services/commands:saveMoment":action825 as (...args:never[])=>Promise<unknown>,
+"src/modules/teams/services/commands:removeMoment":action826 as (...args:never[])=>Promise<unknown>
 };

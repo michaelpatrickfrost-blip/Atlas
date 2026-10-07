@@ -10,7 +10,7 @@ export const PLAN_TYPES = [
   ["logistics", "Logistics"],
   ["stock", "Stock"],
   ["purchasing", "Purchasing"],
-  ["people", "People"],
+  ["people", "HR / People"],
   ["finance", "Finance"],
   ["projects", "Project portfolio"],
   ["safety", "Safety improvement"],
@@ -44,6 +44,10 @@ export type GovernedMetric = {
 };
 
 export const METRICS: GovernedMetric[] = [
+  { key: "planned_hires", name: "Planned hires", definition: "New roles expected to start in each period, entered on this plan.", owner: "People", source: "plan", unit: "count", aggregation: "sum", direction: "higher", dimensions: ["Department", "Month"], version: 1 },
+  { key: "training_hours", name: "Training hours", definition: "Hours planned for learning and development.", owner: "People", source: "plan", unit: "hours", aggregation: "sum", direction: "higher", dimensions: ["Department", "Month"], version: 1 },
+  { key: "project_cost", name: "Project cost", definition: "Expected project costs entered as assumptions; this does not post costs to Finance.", owner: "Finance", source: "plan", unit: "money", aggregation: "sum", direction: "lower", dimensions: ["Project", "Month"], version: 1 },
+
   { key: "revenue", name: "Revenue", definition: "Confirmed and closed sales order value, excluding VAT.", owner: "Finance", source: "sales", readCapability: "sales.order.read", unit: "money", aggregation: "sum", direction: "higher", dimensions: ["Customer", "Product", "Month"], version: 1 },
   { key: "orders", name: "Orders", definition: "Count of confirmed and closed sales orders.", owner: "Sales", source: "sales", readCapability: "sales.order.read", unit: "count", aggregation: "sum", direction: "higher", dimensions: ["Customer", "Month"], version: 1 },
   { key: "pipeline", name: "Pipeline", definition: "Open opportunity value still in the pipeline.", owner: "Sales", source: "crm", readCapability: "sales.opportunity.read", unit: "money", aggregation: "sum", direction: "higher", dimensions: ["Territory", "Month"], version: 1 },

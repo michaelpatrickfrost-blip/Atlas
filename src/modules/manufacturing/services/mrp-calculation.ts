@@ -56,53 +56,38 @@ export async function runMrp(organisationId: string, userId: string, horizonDays
 async function loadDemand(organisationId: string, start: Date, end: Date): Promise<DemandLine[]> {
   const demand: DemandLine[] = [];
 
-  // Load confirmed sales orders (firm demand)
+  // S&OP is a whole-period forecast. Count gross bookings (including closed
+  // orders) to consume it, while only the outstanding firm balance enters MRP.
+  const periodStart = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), 1));
   const orders = await db.salesOrder.findMany({
-    where: {
-      organisationId,
-      commercialStatus: "CONFIRMED",
-      lines: { some: {} },
-    },
-    include: {
-      lines: {
-        where: {
-          requestedDeliveryDate: { gte: start, lte: end },
-        },
-      },
-    },
+    where: { organisationId, commercialStatus: { in: ["CONFIRMED", "ON_HOLD", "CLOSED"] }, orderType: { notIn: ["BLANKET", "INTERNAL"] },
+      OR: [{ commercialStatus: { not: "CLOSED" } }, { requestedDeliveryDate: { gte: periodStart } }, { lines: { some: { requestedDeliveryDate: { gte: periodStart } } } }] },
+    include: { lines: { where: { type: "PRODUCT", productId: { not: null } } } },
   });
-
   const shippedRows = await db.fulfilmentLine.findMany({
-    where: { organisationId, salesOrderLineId: { in: orders.flatMap((order) => order.lines.map((line) => line.id)) } },
+    where: { organisationId, salesOrderLineId: { in: orders.flatMap(order => order.lines.map(line => line.id)) } },
     select: { salesOrderLineId: true, shippedQuantity: true },
   });
-  const shipped = new Map<string, number>();
+  const shipped = new Map<string, number>(), bookedByMonth = new Map<string, number>();
   for (const row of shippedRows) shipped.set(row.salesOrderLineId, (shipped.get(row.salesOrderLineId) ?? 0) + row.shippedQuantity);
-
-  for (const order of orders) {
-    for (const line of order.lines) {
-      if (!line.productId) continue;
-      const open = line.orderedQuantity - line.cancelledQuantity - (shipped.get(line.id) ?? 0);
-      if (open <= 0) continue;
-      demand.push({
-        id: line.id,
-        demandType: DemandType.FIRM,
-        source: DemandSource.SALES_ORDER,
-        productId: line.productId,
-        quantity: open,
-        requiredDate: line.requestedDeliveryDate || new Date(),
-        sourceId: order.id,
-        sourceLineId: line.id,
-        notes: `SO ${order.reference}`,
-      });
-    }
+  for (const order of orders) for (const line of order.lines) {
+    const due = line.requestedDeliveryDate ?? order.requestedDeliveryDate ?? line.promisedDeliveryDate ?? order.promisedDeliveryDate;
+    if (!line.productId || !due || due > end || order.commercialStatus === "CLOSED" && due < periodStart) continue;
+    const requiredDate = due < periodStart ? periodStart : due;
+    const key = `${line.productId}|${requiredDate.toISOString().slice(0, 7)}`;
+    const quantity = Math.max(0, line.orderedQuantity - line.cancelledQuantity);
+    bookedByMonth.set(key, (bookedByMonth.get(key) ?? 0) + quantity);
+    const open = order.commercialStatus === "CLOSED" ? 0 : Math.max(0, quantity - (shipped.get(line.id) ?? 0));
+    if (!open) continue;
+    demand.push({ id: line.id, demandType: DemandType.FIRM, source: DemandSource.SALES_ORDER, productId: line.productId, quantity: open,
+      requiredDate, sourceId: order.id, sourceLineId: line.id, notes: `SO ${order.reference}` });
   }
 
   // Load forecast demand
   const forecasts = await db.manufacturingDemandForecast.findMany({
     where: {
       organisationId,
-      periodStart: { gte: start, lte: end },
+      periodStart: { gte: periodStart, lte: end },
     },
   });
 
@@ -112,7 +97,8 @@ async function loadDemand(organisationId: string, start: Date, end: Date): Promi
       demandType: DemandType.FORECAST,
       source: DemandSource.FORECAST,
       productId: forecast.productId,
-      quantity: Number(forecast.quantity),
+      quantity: forecast.sourceSopVersionId ? Math.max(0, Number(forecast.quantity) - (bookedByMonth.get(`${forecast.productId}|${forecast.periodStart.toISOString().slice(0, 7)}`) ?? 0)) : Number(forecast.quantity),
+      forecastIsResidual: !!forecast.sourceSopVersionId,
       requiredDate: forecast.periodStart,
       sourceId: forecast.id,
       notes: forecast.notes || "Forecast",

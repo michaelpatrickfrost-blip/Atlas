@@ -1,8 +1,10 @@
 # Atlas Architecture
 
-> **Current deployment target — 7 October 2026:** Michael requires every finished
-> change deployed and verified on the live Atlas server. This supersedes prior
-> Mac-only/data-only-server restrictions. See AGENTS.md and docs/DEPLOY.md.
+> **Current deployment target — 7 October 2026:** Michael explicitly confirmed
+> server deployment, including S&OP. Atlas runs at `https://atlassystem.online`
+> with central records and authenticated, tenant/capability-checked access.
+> Backups and live feature verification are required. Earlier Mac-only target
+> statements are superseded; see AGENTS.md and docs/DEPLOY.md.
 
 ## Shape
 

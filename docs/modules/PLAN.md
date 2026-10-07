@@ -1,6 +1,10 @@
 # Plan
 
-3 October 2026. Plan is the connected planning layer at `/plan`. Production Planning at `/planning` remains the product-demand and stock-coverage workbench.
+7 October 2026. Plan is the connected planning layer at `/plan`. Production Planning at `/planning` remains the product-demand and stock-coverage workbench.
+
+## Connected builder
+
+Plan now has Overview, Build plan, Targets & forecast, Work & sharing and Review & scenarios. Creation is one form. Suggested starter work is optional. Build plan adds, edits, phases and excludes actual planning inputs through authorised Sales/CRM project, opportunity, quotation and HR employee pickers and canonical products. Each input records a reason, period, measure, quantity/value, probability and optional selling price. A batch forecast grid replaces per-cell save forms. Approved targets remain fixed. See [S&OP](SOP.md) for forecast consumption, publication and current implementation limits.
 
 ## What a plan holds
 

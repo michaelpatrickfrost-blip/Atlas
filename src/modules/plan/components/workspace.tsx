@@ -3,14 +3,14 @@ import Link from "next/link";
 import type { Session } from "@/core/auth/session";
 import { metricByKey, resolveMetricSearch } from "../domain/catalogue";
 import { explainDriver, periodKeys } from "../domain/engine";
-import { audienceLabel } from "../domain/access";
+import { audienceLabel, canEditPlan } from "../domain/access";
 import { addAssumption, addDecision, addDependency, addDriver, addLink, addMeasure, addReview, addRisk, approvePlan, completeReview, createScenario, distributeTargets, importGrid, lockPlan, promoteScenario, saveCell, submitPlan } from "../services/commands";
 import { liveActuals, productionPicture } from "../services/actuals";
 import { cellValue, enabledModules, lensSections, planRecord, quarterTotals, searchPlanText } from "../services/queries";
 import { PlanStory } from "./story";
 import { field, primary, quiet, showMeasure } from "./format";
 
-export async function PlanWorkspace({ session, planId, lens, scenarioId, metricKey, query }: { session: Session; planId: string; lens?: string; scenarioId?: string; metricKey?: string; query?: string }) {
+export async function AdvancedPlanWorkspace({ session, planId, lens, scenarioId, metricKey, query }: { session: Session; planId: string; lens?: string; scenarioId?: string; metricKey?: string; query?: string }) {
   const plan = await planRecord(session, planId);
   const enabled = await enabledModules(session.organisationId);
   const periods = periodKeys(plan.periodStart.toISOString().slice(0, 10), plan.periodEnd.toISOString().slice(0, 10));
@@ -44,7 +44,7 @@ export async function PlanWorkspace({ session, planId, lens, scenarioId, metricK
   const actual = metric ? actuals[metric.key]?.value ?? null : null;
   const gapValue = target != null && forecast != null ? forecast - target : null;
   const dimensions = [...new Set(plan.cells.filter((cell) => cell.metricKey === metric?.key && cell.dimensionKey).map((cell) => cell.dimensionLabel || cell.dimensionKey))];
-  const canEdit = session.capabilities.has("plan.edit") && !plan.locked;
+  const canEdit = session.capabilities.has("plan.edit") && !plan.locked && canEditPlan(plan, session.userId);
   return (
     <div className="space-y-8">
       <header className="flex flex-wrap items-end justify-between gap-4">

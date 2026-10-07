@@ -48,7 +48,10 @@
   live assertions passed, including both edge cases and their transaction rollback.
   Backup `/home/administrator/backups/atlas-pre-deploy-20261007-080356.dump` plus
   matching private evidence archive. Synthetic tenants suspended/credentials revoked.
-  Acceptance details: `docs/modules/SOP_ACCEPTANCE.md`.
+  Acceptance details: `docs/modules/SOP_ACCEPTANCE.md`. Latest compatible main also
+  includes the separately finished customer-link/Guardian `4f3b964` follow-up;
+  combined suite 656 passed / 22 skipped and repeated live 42/42 passed after
+  that release. S&OP application source is unchanged from `5b7f9e2`.
 - Server target explicitly authorised by Michael: “deploy to server when done”;
   earlier Mac/target-confirmation blockers are superseded.
 - Genuine master-spec gaps remain in `docs/modules/SOP.md`: finite material/labour/

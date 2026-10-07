@@ -58,6 +58,9 @@ unavailable. An older overlapping cycle cannot replace newer approved product-mo
 demand; the transaction leaves its version approved and all newer forecasts intact.
 Both cases were checked through deployed actions and real Chromium screens.
 Synthetic companies suspended and credentials revoked after this final run.
+The separate customer-link/Guardian follow-up `4f3b964` was subsequently integrated;
+S&OP source is unchanged. All 42 live checks passed again against that combined
+runtime, and the combined full suite passed 656 tests with 22 integration skips.
 The compatible primary-source reconciliation also passed 85 focused integration
 tests; unrelated unfinished primary files were preserved.
 

@@ -3,6 +3,8 @@
 Guardian is the platform quality inbox at `/atlas/guardian`. It is gated server-side
 by `atlas.companies.manage`, a platform grant that customer roles cannot grant.
 The brief download endpoint independently enforces the same boundary and no-store.
+Copied/downloaded briefs include the latest status, blocker/next-step notes and last
+verified revision so another AI receives the current repair context.
 Reports are platform diagnostics, not company records; no customer body, input,
 cookie, token, screenshot or raw exception message is collected.
 

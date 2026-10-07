@@ -29,8 +29,8 @@ describe("Atlas-only Guardian", () => {
     expect(state.update).toHaveBeenCalledWith({ where: { id: "issue" }, data: { status: "FIXED", resolution: "Original reproduction passed live.", verifiedRevision: "abc123", reviewedBy: "staff" } });
   });
   it("downloads only private uncached briefs", async () => {
-    state.session.capabilities.add("atlas.companies.manage"); state.find.mockResolvedValue({ brief: "Repair instructions" });
+    state.session.capabilities.add("atlas.companies.manage"); state.find.mockResolvedValue({ brief: "Repair instructions", status: "NEEDS_AI", resolution: "Missing authorised fixture. Next: build a disposable central QA company.", verifiedRevision: null });
     const result = await GET(new Request("https://atlas.test/"), { params: Promise.resolve({ issueId: "issue" }) });
-    expect(result.status).toBe(200); expect(result.headers.get("Cache-Control")).toBe("private, no-store"); expect(await result.text()).toBe("Repair instructions");
+    expect(result.status).toBe(200); expect(result.headers.get("Cache-Control")).toBe("private, no-store"); const brief = await result.text(); expect(brief).toContain("Repair instructions"); expect(brief).toContain("Status: NEEDS_AI"); expect(brief).toContain("Next: build a disposable central QA company.");
   });
 });

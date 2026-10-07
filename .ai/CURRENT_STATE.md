@@ -12,6 +12,10 @@
 
 ## Atlas Guardian implementation — 7 October 2026
 
+- Copied/downloaded AI briefs now include the latest repair status, blocker/next-step
+  notes and last verified revision. Added private-download regression coverage so
+  an unresolved repair does not lose its triage context during handoff. Guardian
+  tests (14), scoped lint, production build and separate TypeScript check passed.
 - Live sweep confirmed Campaign “Write a message” targeted missing `/marketing/messages`.
   Corrected the canonical link to `/marketing/email` and retained the old URL as an
   alias in the existing dynamic section route; destination permissions remain enforced.

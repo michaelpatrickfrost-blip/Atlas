@@ -2921,3 +2921,19 @@ Moved company branding (logo, colours, letterhead) into the onboarding flow so c
 - Updated `CustomerRecordActions` to toggle between "Archive" and "Unarchive" based on the customer's state.
 - Replaced `window.confirm` with `ConfirmationDialog` in `DeleteContactButton` for a professional UI.
 - Verified build and deployed to VPS.
+
+
+## 7 October 2026 — CRM contracts and simplified order release
+
+Contracts & approvals moved to /crm/contracts and CRM navigation. Former Sales URL
+redirects retaining filters; Core contract permission retained, CRM accepts existing
+contract managers and routes them to contracts when they lack pipeline permission.
+Quotation approval actions refresh the CRM list. Includes earlier simplified order
+entry tabs. Server deployment is required by latest user instruction. Scoped ESLint
+passed. Isolated compatible release prepared from ed54a6c excluding concurrent
+Manufacturing/Products/Planning edits. Build/release/authenticated verification
+pending at this checkpoint; no schema/grant changes.
+
+Release preparation check: isolated production build passed with /crm and
+/crm/contracts routes; isolated tsc and scoped ESLint passed, whitespace clean.
+Server release is next; no live acceptance claimed yet.

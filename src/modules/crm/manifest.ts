@@ -16,8 +16,9 @@ export const crmManifest: ModuleManifest = {
   minimumCoreVersion: "0.1.0",
   dependencies: [],
   capabilities: Object.values(SALES_CAPABILITIES).filter((capability) => !capability.startsWith("sales.order.") && !capability.startsWith("sales.quote.")),
-  rootPath: "/crm/today",
+  rootPath: "/crm",
   accessCapability: SALES_CAPABILITIES.opportunityRead,
+  accessAnyOf: [SALES_CAPABILITIES.opportunityRead, "core.contract.manage"],
   status: "installed",
   // Each tab is a CRM section. Dashboards is its own app; reports can link there.
   navigation: [
@@ -26,6 +27,7 @@ export const crmManifest: ModuleManifest = {
     { label: "Pipeline", href: "/crm/pipeline", capability: SALES_CAPABILITIES.opportunityRead },
     { label: "Projects", href: "/crm/projects", capability: SALES_CAPABILITIES.opportunityRead },
     { label: "Forecast", href: "/crm/forecast", capability: SALES_CAPABILITIES.forecastRead },
+    { label: "Contracts & approvals", href: "/crm/contracts", capability: "core.contract.manage" },
     { label: "Reports", href: "/crm/reports", capability: SALES_CAPABILITIES.reportRead },
   ],
   customerOverviewProvider: crmCustomerOverviewProvider,

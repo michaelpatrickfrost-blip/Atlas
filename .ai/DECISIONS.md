@@ -753,3 +753,10 @@ route, and an existing screen is never replaced with a placeholder to get a buil
 The admin role had four Finance capabilities, which hid most of the Finance menu from the company owner.
 Admin now holds all `finance.*`, as it does for every other app. Finance's own controls still apply: a
 requester cannot approve their own document, and payment runs need a separate approval step.
+
+
+## 7 October 2026 — CRM owns contracts and customer approvals
+
+Michael requires Contracts & approvals in CRM; Sales is order processing. Move the
+workspace/navigation with legacy redirects, retaining Core contract capabilities
+and existing signing/quotation links.

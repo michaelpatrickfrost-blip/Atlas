@@ -118,3 +118,10 @@ revision/fulfilment/Finance workflow. Credit exposure reconciliation, dispatch-b
 invoice requests, returns/COGS and automatic durable consumers remain open.
 See [Finance delivery](FINANCE_WORKSPACE.md) and CURRENT_STATE.md for actual release
 checks. Source presence alone does not prove installed acceptance of later batches.
+
+
+### CRM contracts ownership — 7 October 2026
+
+Contracts & approvals is at /crm/contracts in CRM. The former Sales URL redirects
+with filters preserved. Sales retains order processing and source quotation links.
+New/edit order entry places delivery, pricing and notes/tags in separate tabs.

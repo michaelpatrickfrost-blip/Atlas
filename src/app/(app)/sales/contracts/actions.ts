@@ -13,15 +13,15 @@ export async function newContractAction(form: FormData) {
     send.set("id", contract.id); send.set("to", to); send.set("accountId", String(form.get("accountId") ?? "")); send.set("validDays", String(form.get("validDays") ?? "30"));
     await sendContract(send);
   }
-  revalidatePath("/sales/contracts");
+  revalidatePath("/crm/contracts");
 }
 
 export async function resendContractAction(form: FormData) {
   await sendContract(form);
-  revalidatePath("/sales/contracts");
+  revalidatePath("/crm/contracts");
 }
 
 export async function deleteContractAction(form: FormData) {
   await deleteContract(form);
-  revalidatePath("/sales/contracts");
+  revalidatePath("/crm/contracts");
 }

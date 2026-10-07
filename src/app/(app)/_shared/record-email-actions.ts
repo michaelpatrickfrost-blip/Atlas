@@ -102,7 +102,7 @@ export async function sendRecordContractAction(form: FormData) {
     await sendContract(send);
   }
   revalidatePath(record.path);
-  revalidatePath("/sales/contracts");
+  revalidatePath("/crm/contracts");
 }
 
 /** Sends a quotation for the customer to approve online. The customer sees the PDF exactly as it stands now. */
@@ -130,5 +130,5 @@ export async function sendQuoteForApprovalAction(form: FormData) {
   }
   if (quote.status === "DRAFT" && to) await db.quote.updateMany({ where: { id: record.id, organisationId: session.organisationId, status: "DRAFT" }, data: { status: "SENT" } });
   revalidatePath(record.path);
-  revalidatePath("/sales/contracts");
+  revalidatePath("/crm/contracts");
 }

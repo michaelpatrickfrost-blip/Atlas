@@ -127,3 +127,5 @@ central data. Quitting Atlas.app stops the server; click the button again.
 - Never use migrate dev, db push or reset against the live database.
 - Back up before migrations and inspect pending changes; preserve records.
 - Do not include unrelated unfinished work merely to clear the release gate.
+
+Server deployments acquire a shared release lock and wait for an existing Next build before changing the checkout. A busy lock/build times out safely after ten minutes. Backups retain both the PostgreSQL dump and configured private service evidence (`-service-files.tar.gz`), with private file permissions.

@@ -845,3 +845,8 @@ Service credits remain canonical Finance draft documents with readable CR reques
 ## 7 October 2026 — Preserve immutable live acceptance evidence
 
 Live service acceptance uses an isolated synthetic company and explicit test profiles. Cleanup suspends that company, revokes its memberships and deletes temporary credential state. Posted journals, financial timelines and audit records are retained under the existing database guards rather than weakening those guards for test deletion.
+
+
+## 7 October 2026 — Serialize live server releases
+
+A shared server deployment lock and existing-build wait prevent parallel agents from changing the checkout or installing dependencies during another release build. The pinned SHA is rechecked after the wait/pull. A ten-minute timeout leaves the checkout unchanged. Private service evidence is backed up alongside database metadata.

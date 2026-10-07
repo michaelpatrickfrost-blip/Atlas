@@ -35,6 +35,18 @@ echo "==> Deploying on the VPS"
 "${SSH[@]}" bash -s "$DIR" "$COMMIT" <<'REMOTE'
 set -euo pipefail
 cd "$1"
+umask 077
+exec 9>/tmp/atlas-vps-deploy.lock
+flock -w 600 9 || { echo "Another Atlas deployment still owns the release lock." >&2; exit 1; }
+for i in $(seq 1 300); do
+  pgrep -f '[n]ext build' >/dev/null || break
+  [ "$i" != "1" ] || echo "Waiting for the existing Next build before changing the checkout."
+  sleep 2
+done
+if pgrep -f '[n]ext build' >/dev/null; then
+  echo "Existing Next build did not finish; checkout left unchanged." >&2
+  exit 1
+fi
 set -a; . ./.env.local; set +a
 DB="${DATABASE_URL%%\?*}"
 

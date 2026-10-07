@@ -15,6 +15,13 @@
 
 ## Atlas Guardian implementation — 7 October 2026
 
+- Live QA exposed a coverage gap: shared ModuleSpace disabled screens used different
+  wording. Response classification now treats that known access state as restricted,
+  with a regression for HTTP-200 disabled/error screens. Tickets is disabled for the
+  current enduring QA company; do not claim its business controls verified there.
+  NEEDS_AI now requires blocker notes in UI/server validation; pagination normalises
+  fractional page input. Guardian tests (16), scoped ESLint, production build and
+  separate TypeScript passed; final live verification follows.
 - Copied/downloaded AI briefs now include the latest repair status, blocker/next-step
   notes and last verified revision. Added private-download regression coverage so
   an unresolved repair does not lose its triage context during handoff. Guardian

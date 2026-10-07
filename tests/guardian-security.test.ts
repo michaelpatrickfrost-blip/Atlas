@@ -22,6 +22,11 @@ describe("Atlas-only Guardian", () => {
     await expect(updateGuardianIssue(form())).rejects.toThrow("deployed revision");
     expect(state.update).not.toHaveBeenCalled();
   });
+  it("requires actionable context before requesting AI repair", async () => {
+    state.session.capabilities.add("atlas.companies.manage");
+    await expect(updateGuardianIssue(form("NEEDS_AI"))).rejects.toThrow("blocker and next action");
+    expect(state.update).not.toHaveBeenCalled();
+  });
   it("writes verified repair progress for staff", async () => {
     state.session.capabilities.add("atlas.companies.manage");
     const f = form(); f.set("resolution", "Original reproduction passed live."); f.set("verifiedRevision", "abc123");

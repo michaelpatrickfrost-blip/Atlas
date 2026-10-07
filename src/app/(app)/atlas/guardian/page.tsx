@@ -12,7 +12,7 @@ export default async function GuardianPage({ searchParams }: { searchParams: Pro
   const session = await requireSession();
   assertCapability(session, GUARDIAN_CAPABILITY);
   const { status = "active", q = "", queued, page: rawPage } = await searchParams;
-  const page = Math.min(10000, Math.max(1, Number(rawPage) || 1));
+  const page = Math.min(10000, Math.max(1, Math.trunc(Number(rawPage) || 1)));
   const where = { ...(ISSUE_STATES.includes(status as typeof ISSUE_STATES[number]) ? { status } : status === "all" ? {} : { status: { notIn: ["FIXED", "IGNORED"] } }), ...(q ? { OR: [{ title: { contains: q.slice(0, 100), mode: "insensitive" as const } }, { route: { contains: q.slice(0, 100), mode: "insensitive" as const } }] } : {}) };
   const [issues, count, runs, worker] = await Promise.all([db.guardianIssue.findMany({ where, orderBy: [{ lastSeenAt: "desc" }], take: 30, skip: (page - 1) * 30 }), db.guardianIssue.count({ where }), db.guardianRun.findMany({ orderBy: { createdAt: "desc" }, take: 4 }), db.guardianWorker.findUnique({ where: { id: "guardian" } })]);
   const online = workerIsOnline(worker);

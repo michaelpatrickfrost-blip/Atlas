@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { safePath, repairBrief, type Finding } from "@/core/guardian/report";
+import { responseOutcome } from "../scripts/guardian/response-check";
 import { routeFromFile, routeMatches, auditSources } from "../scripts/guardian/source-audit";
 import fs from "node:fs";
 import os from "node:os";
@@ -10,6 +11,13 @@ describe("Guardian reports and source checks", () => {
     expect(safePath("/customers/cmabcdefghijklmnopqrstuv?token=secret#notes")).toBe("/customers/[record]");
     expect(safePath("//outside.test/path")).toBe("/unknown");
     expect(safePath("/sales/orders/12345")).toBe("/sales/orders/[record]");
+  });
+  it("does not count a disabled module or streamed error as a working page", () => {
+    expect(responseOutcome(200, '<p>Tickets is disabled</p><p>Ask your workspace administrator to enable this app in Manage apps.</p>')).toBe("restricted");
+    expect(responseOutcome(200, "You don&#x27;t have permission")).toBe("restricted");
+    expect(responseOutcome(200, "Something went wrong.")).toBe("failed");
+    expect(responseOutcome(404, "Missing page")).toBe("failed");
+    expect(responseOutcome(200, '<h2>Tickets</h2><a href="/tickets/create">New ticket</a>')).toBe("http-render-pass");
   });
   it("matches groups, dynamic pages and optional catchalls without accepting sibling paths", () => {
     expect(routeFromFile("src/app/(app)/atlas/guardian/[issueId]/page.tsx")).toBe("/atlas/guardian/[issueId]");

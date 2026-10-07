@@ -8,6 +8,7 @@ import { getNavigableModules, getModuleNavigation } from "../../src/core/modules
 import { recordFinding } from "../../src/core/guardian/store";
 import { safePath, type Finding } from "../../src/core/guardian/report";
 import { auditSources, routeMatches } from "./source-audit";
+import { responseOutcome } from "./response-check";
 
 async function main() {
   if (process.env.ATLAS_RUNTIME === "desktop") throw new Error("Guardian runs only against the central hosted service.");
@@ -59,12 +60,13 @@ async function main() {
           outcomes.push({ route: safePath(route), result: "redirect" }); continue;
         }
         const html = await response.text();
-        if (response.status !== 200 || /Something went wrong\.|NEXT_HTTP_ERROR_FALLBACK;[45]\d\d|Application error: a server-side exception/.test(html)) {
+        const outcome = responseOutcome(response.status, html);
+        if (outcome === "failed") {
           failures++; await recordFinding(findingForPage(route, `HTTP ${response.status}; ${response.status === 200 ? "streamed error boundary found" : "unexpected response"}.`), revision, run.id);
           outcomes.push({ route: safePath(route), result: "failed" }); continue;
         }
         // Access-denied/disabled workspaces are never counted as passing pages.
-        if (/You (?:don&#x27;t|don't) have permission|This app is (?:not enabled|disabled)|not included in your company account/.test(html)) {
+        if (outcome === "restricted") {
           skipped++; outcomes.push({ route: safePath(route), result: "restricted" }); continue;
         }
         outcomes.push({ route: safePath(route), result: "http-render-pass" });

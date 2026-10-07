@@ -7,7 +7,11 @@ import { z } from "zod";
 const event = z.object({ kind: z.enum(["BROWSER_ERROR", "UNHANDLED_REJECTION", "EMPTY_LINK", "PAGE_ERROR"]), path: z.string().max(240), code: z.string().regex(/^[A-Za-z0-9_.:-]{1,80}$/) });
 export async function POST(request: Request) {
   const headers = { "Cache-Control": "private, no-store" };
-  if (request.headers.get("origin") !== new URL(request.url).origin) return new Response(null, { status: 403, headers });
+  const origin = request.headers.get("origin");
+  const host = request.headers.get("host") ?? new URL(request.url).host;
+  let sameOrigin = false;
+  try { const url = new URL(origin ?? ""); sameOrigin = url.host === host && (url.protocol === "https:" || ["localhost", "127.0.0.1"].includes(url.hostname)); } catch {}
+  if (!sameOrigin) return new Response(null, { status: 403, headers });
   const session = await getSession();
   if (!session) return new Response(null, { status: 401, headers });
   const text = await request.text();

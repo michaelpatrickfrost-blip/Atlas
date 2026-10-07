@@ -18,6 +18,12 @@
   Typecheck and initial production build passed. Guardian-focused ESLint passed after
   moving server heartbeat-time evaluation out of the component; repository-wide lint
   has 17 existing errors in unrelated files. Final build/live release still pending.
+- Integrated the finished Admin/Templates releases into the isolated Guardian release;
+  the combined suite now passes 491 tests with 22 integration skips. Final production
+  build and Guardian lint passed. The hourly `atlas-guardian-repairs` heartbeat is
+  ACTIVE in this chat; the server detector remains independent of the Mac. Added
+  privileged server-only `scripts/guardian/triage.ts` for report maintenance and
+  excluded diagnostic tables from customer exports. Live deployment is next.
 - Initial source audit inventories 930 source files, 233 pages, 518 static links,
   766 controls and 517 dynamic links requiring runtime coverage. Three deployed-base
   Ticketing pages return null; preserve the parallel Service/Tickets rebuild and

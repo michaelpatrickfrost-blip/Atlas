@@ -124,22 +124,28 @@ export function PriceCsv({ preview, apply, templateHref, sheetHref }: {
   );
 }
 
-export function PriceFilter({ rows, currency, remove, products, listId }: { currency: string; products?: PricingProduct[]; listId?: string; rows: { id: string; productId: string; code: string; name: string; quantity: number; price: string; discount: number; from: string; until: string; validFrom: string; validTo: string }[]; remove?: (id: string, form: FormData) => Promise<void> }) {
+export function PriceFilter({ rows, currency, remove, products, listId }: { currency: string; products?: PricingProduct[]; listId?: string; rows: { id: string; active?: boolean; productId: string; code: string; name: string; quantity: number; price: string; discount: number; from: string; until: string; validFrom: string; validTo: string }[]; remove?: (id: string, form: FormData) => Promise<void> }) {
   const [query, setQuery] = useState("");
+  const [status, setStatus] = useState("active");
+  const [page, setPage] = useState(1);
+  const [sort, setSort] = useState("code");
+  const today = new Date().toISOString().slice(0, 10);
+  const rowStatus = (row: typeof rows[number]) => row.active === false ? "inactive" : row.validFrom && row.validFrom > today ? "scheduled" : row.validTo && row.validTo < today ? "expired" : "current";
   const shown = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    if (!needle) return rows;
-    return rows.filter((row) => `${row.code} ${row.name}`.toLowerCase().includes(needle));
-  }, [query, rows]);
+    return rows.filter(row => (!needle || `${row.code} ${row.name}`.toLowerCase().includes(needle)) && (status === "all" || (status === "active" ? row.active !== false : rowStatus(row) === status))).sort((a, b) => sort === "price" ? Number(a.price) - Number(b.price) : a.code.localeCompare(b.code) || a.quantity - b.quantity);
+    // rowStatus only depends on the date and row values.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, rows, status, sort, today]);
+  const pages = Math.max(1, Math.ceil(shown.length / 30));
+  const currentPage = Math.min(page, pages);
+  const visible = shown.slice((currentPage - 1) * 30, currentPage * 30);
   return (
     <div>
-      <div className="mb-3 flex flex-wrap items-center gap-3">
-        <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Find a product" className="w-full max-w-sm rounded-xl border border-[var(--color-border)] bg-white px-3 py-2.5 text-sm" />
-        {remove && products && listId && (
-          <CreateDialog label="Add a price" title="Add a price">
-            <SetPriceForm listId={listId} currency={currency} products={products} />
-          </CreateDialog>
-        )}
+      <div className="flex flex-wrap items-end gap-3 border-b border-[var(--color-border)] p-4">
+        <label className="min-w-48 flex-1 text-xs text-[var(--color-ink-muted)]">Search prices<input value={query} onChange={event => { setQuery(event.target.value); setPage(1); }} placeholder="Product code or name" className="mt-1 block w-full rounded-xl border border-[var(--color-border)] bg-white px-3 py-2 text-sm" /></label>
+        <label className="text-xs text-[var(--color-ink-muted)]">Validity<select value={status} onChange={e => { setStatus(e.target.value); setPage(1); }} className="mt-1 block rounded-xl border border-[var(--color-border)] bg-white px-3 py-2 text-sm"><option value="active">Active rows</option><option value="current">In effect today</option><option value="scheduled">Scheduled</option><option value="expired">Expired</option><option value="inactive">Inactive</option><option value="all">All rows</option></select></label>
+        <label className="text-xs text-[var(--color-ink-muted)]">Sort<select value={sort} onChange={e => { setSort(e.target.value); setPage(1); }} className="mt-1 block rounded-xl border border-[var(--color-border)] bg-white px-3 py-2 text-sm"><option value="code">Product code</option><option value="price">Set price: low to high</option></select></label>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[680px] text-sm">
@@ -155,9 +161,9 @@ export function PriceFilter({ rows, currency, remove, products, listId }: { curr
             </tr>
           </thead>
           <tbody>
-            {shown.map((row) => (
+            {visible.map((row) => (
               <tr key={row.id} className="border-b border-[var(--color-border)] last:border-0">
-                <td className="px-5 py-3"><span className="font-medium">{row.code}</span><span className="mt-0.5 block text-xs text-[var(--color-ink-muted)]">{row.name}</span></td>
+                <td className="px-5 py-3"><span className="font-medium">{row.code}</span><span className="mt-0.5 block text-xs text-[var(--color-ink-muted)]">{row.name}</span>{rowStatus(row) !== "current" && <span className="mt-1 block text-xs text-[var(--color-ink-muted)]">{rowStatus(row)}</span>}</td>
                 <td className="px-3 py-3">{row.quantity}</td>
                 <td className="px-3 py-3 text-right font-medium">{formatMoney(Number(row.price), currency)}</td>
                 <td className="px-3 py-3 text-right">{row.discount ? `${row.discount}%` : "—"}</td>
@@ -168,11 +174,11 @@ export function PriceFilter({ rows, currency, remove, products, listId }: { curr
                     <div className="flex items-center justify-end gap-3">
                       {products && listId && (
                         <CreateDialog label="Edit" title={`Edit ${row.code}`} variant="secondary">
-                          <SetPriceForm listId={listId} currency={currency} products={products} entry={{ productId: row.productId, price: (Number(row.price) / 100).toFixed(2), quantity: row.quantity, discount: row.discount, validFrom: row.validFrom, validTo: row.validTo }} />
+                          <SetPriceForm listId={listId} currency={currency} products={products} entry={{ id: row.id, productId: row.productId, price: (Number(row.price) / 100).toFixed(2), quantity: row.quantity, discount: row.discount, validFrom: row.validFrom, validTo: row.validTo }} />
                         </CreateDialog>
                       )}
-                      <form action={(form) => { form.set("active", "false"); return remove(row.id, form); }}>
-                        <button type="submit" className="text-xs text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]">Remove</button>
+                      <form action={(form) => { form.set("active", String(row.active === false)); return remove(row.id, form); }}>
+                        <button type="submit" className="text-xs text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]">{row.active === false ? "Restore" : "Deactivate"}</button>
                       </form>
                     </div>
                   </td>
@@ -181,8 +187,9 @@ export function PriceFilter({ rows, currency, remove, products, listId }: { curr
             ))}
           </tbody>
         </table>
-        {!shown.length && <p className="px-5 py-8 text-sm text-[var(--color-ink-muted)]">{rows.length ? "No product matches that search." : "No product prices yet. Use “Add a price” above, or upload a spreadsheet."}</p>}
+        {!shown.length && <p className="px-5 py-8 text-sm text-[var(--color-ink-muted)]">{rows.length ? "No product matches that search." : "No product prices yet. Use “Add product price” above, or import a spreadsheet."}</p>}
       </div>
+      <div className="flex items-center justify-between border-t border-[var(--color-border)] px-5 py-3 text-xs text-[var(--color-ink-muted)]"><span>{shown.length} matching prices · page {currentPage} of {pages}</span><div className="flex gap-3"><button type="button" disabled={currentPage === 1} onClick={() => setPage(currentPage - 1)} className="disabled:opacity-30">Previous</button><button type="button" disabled={currentPage === pages} onClick={() => setPage(currentPage + 1)} className="disabled:opacity-30">Next</button></div></div>
     </div>
   );
 }

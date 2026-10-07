@@ -1,30 +1,9 @@
-import Link from "next/link";
-import { requireSession } from "@/core/auth/session";
-import { assertCapability } from "@/core/permissions/check";
-import { CORE_CAPABILITIES } from "@/core/permissions/capabilities";
-import { db } from "@/core/db/client";
-import { AgreementForm } from "../../agreement-form";
-
-export default async function NewAgreementPage({ searchParams }: { searchParams: Promise<{ party?: string }> }) {
-  const session = await requireSession();
-  assertCapability(session, CORE_CAPABILITIES.pricingManage);
-  const { party } = await searchParams;
-  const [customers, lists] = await Promise.all([
-    db.party.findMany({ where: { organisationId: session.organisationId }, select: { id: true, name: true, customerCode: true }, orderBy: { name: "asc" }, take: 500 }),
-    db.priceList.findMany({ where: { organisationId: session.organisationId }, select: { id: true, name: true, currency: true }, orderBy: { name: "asc" } }),
-  ]);
-  const selected = customers.some((customer) => customer.id === party) ? party : undefined;
-
-  return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      <Link href="/pricing/agreements" className="text-sm text-[var(--color-atlas-blue)]">All agreements</Link>
-      <div>
-        <h2 className="text-2xl font-semibold tracking-tight">New agreement</h2>
-        <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink-muted)]">Keep it as a draft until the customer has agreed. Active agreements set the price on new quotes and orders.</p>
-      </div>
-      <div className="rounded-[22px] border border-[var(--color-border)] bg-white p-6 shadow-[var(--shadow-atlas)]">
-        <AgreementForm customers={customers} lists={lists} agreement={selected ? { id: "new", partyId: selected, name: "", status: "DRAFT", startsOn: new Date(), endsOn: null, priceListId: null, paymentTerms: "", notes: "", slaName: "", coverage: "", responseMinutes: null, resolutionMinutes: null, slaNotes: "" } : undefined} />
-      </div>
-    </div>
-  );
+import { redirect } from "next/navigation";
+export default async function LegacyPricing({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(await searchParams)) {
+    if (Array.isArray(value)) for (const item of value) query.append(key, item);
+    else if (value !== undefined) query.set(key, value);
+  }
+  redirect("/crm/agreements/new" + (query.size ? "?" + query.toString() : ""));
 }

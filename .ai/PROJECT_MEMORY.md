@@ -83,3 +83,8 @@ Each person’s profile at `/profile` is My work: time off, rota, assigned tasks
 ## Owner company setup — 3 October 2026
 
 Atlas owners set up a business from the console: company account, user setup codes, and CSV templates for customers and hierarchy, contacts, commercial settings, products, price lists, prices, warehouses, locations and employees. That portal stays owner-only. Company administrators keep the smaller customers, products and prices import. Registered company identity is separate from customer accounts. See docs/COMPANY_ADMINISTRATION.md.
+
+
+## Price lists and agreements — 7 October 2026
+
+Price lists are a Sales workspace (`/sales/price-lists`), with no separate launcher app. Commercial agreements and service promises live in CRM (`/crm/agreements`), alongside contracts/approvals. The internal pricing entitlement, shared pricing engine and existing capabilities remain. See [Pricing](../docs/modules/PRICING.md).

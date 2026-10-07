@@ -23,8 +23,8 @@ Canonical detailed sources:
 - [Local development](../docs/LOCAL_DEVELOPMENT.md): runtime and database commands.
 
 Core owns platform concerns and canonical Party/customer identity. Modules own
-business capabilities and relate records to shared identities. Products and Pricing
-are business-wide apps backed by shared catalogue/pricing services. CRM owns
+business capabilities and relate records to shared identities. Products owns the
+shared catalogue; Sales price lists and CRM agreements use shared pricing services. CRM owns
 relationship/pipeline work; Sales owns quotations and commercial orders.
 
 Core must not import module internals; src/core/modules/registry.ts is the wiring

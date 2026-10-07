@@ -768,3 +768,15 @@ Michael explicitly requires every finished change deployed and verified at
 atlassystem.online. This supersedes earlier Desktop-only/data-only server
 restrictions. Preserve data, permissions and backups. Mac-only release is
 insufficient. AGENTS, shared memory, Claude/Cursor rules and DEPLOY agree.
+
+
+## 7 October 2026 — Price lists belong to Sales; agreements belong to CRM
+
+Michael requires Price lists as a dropdown within Sales, with compact searchable
+lists and flexible setup. Commercial agreements, contracts and service promises
+belong to CRM. This supersedes the 3 October ownership/navigation decisions for
+Pricing and the earlier rule excluding Price lists from Sales navigation. Keep the
+existing shared pricing engine, company entitlement/enablement, capabilities and
+customer inheritance; relocation must not grant access or copy business records.
+Same-currency list copies preserve prices/rules, and populated list currency changes
+are blocked to prevent silently reinterpreting monetary values.

@@ -13,7 +13,7 @@ const field = "mt-2 block w-full rounded-xl border border-[var(--color-border)] 
 
 /** `fillPrice` names a price input in the same form: choosing a product puts its standard price there,
  * unless the person has typed their own. */
-export function ProductSearch({ products, defaultId = "", name = "productId", fillPrice }: { products: PricingProduct[]; defaultId?: string; name?: string; fillPrice?: string }) {
+export function ProductSearch({ products, defaultId = "", name = "productId", fillPrice, onSelect }: { products: PricingProduct[]; defaultId?: string; name?: string; fillPrice?: string; onSelect?: () => void }) {
   const listId = useId();
   const initial = products.find((product) => product.id === defaultId);
   const [query, setQuery] = useState("");
@@ -21,7 +21,7 @@ export function ProductSearch({ products, defaultId = "", name = "productId", fi
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null), filled = useRef("");
   function choose(product: PricingProduct) {
-    setSelected(product); setOpen(false);
+    setSelected(product); setOpen(false); onSelect?.();
     const input = fillPrice ? root.current?.closest("form")?.elements.namedItem(fillPrice) : null;
     if (input instanceof HTMLInputElement && product.price != null && (!input.value || input.value === filled.current)) { input.value = product.price.toFixed(2); filled.current = input.value; }
   }
@@ -53,7 +53,7 @@ export function ProductSearch({ products, defaultId = "", name = "productId", fi
             if (event.key === "Escape") setOpen(false);
             if (event.key === "Enter" && open) {
               event.preventDefault();
-              if (matches[0]) { setSelected(matches[0]); setOpen(false); }
+              if (matches[0]) choose(matches[0]);
             }
           }}
           className="w-full rounded-xl border border-[var(--color-border)] bg-white py-2.5 pl-9 pr-3 text-sm"
@@ -86,10 +86,11 @@ export function SetPriceForm({ listId, currency, products, entry }: {
   listId: string;
   currency: string;
   products: PricingProduct[];
-  entry?: { productId: string; price: string; quantity: number; discount: number; validFrom: string; validTo: string };
+  entry?: { id: string; productId: string; price: string; quantity: number; discount: number; validFrom: string; validTo: string };
 }) {
   return (
     <ActionForm action={savePriceEntry.bind(null, listId)} className="grid gap-4 sm:grid-cols-2">
+      <input type="hidden" name="entryId" value={entry?.id ?? ""} />
       <div className="sm:col-span-2"><ProductSearch products={products} defaultId={entry?.productId} fillPrice="price" /></div>
       <label className="text-sm">Set price ({currency})<input name="price" required type="number" min="0" step="0.01" defaultValue={entry?.price} className={field} /><span className="mt-1 block text-xs text-[var(--color-ink-muted)]">Filled from the product&apos;s standard price. Change it only to override.</span></label>
       <label className="text-sm">Discount %<input name="discount" type="number" min="0" max="100" step="0.01" defaultValue={entry?.discount ?? 0} className={field} /></label>

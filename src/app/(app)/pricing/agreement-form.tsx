@@ -2,6 +2,7 @@ import { ActionForm } from "@/components/ui/action-form";
 import { Button } from "@/components/ui/button";
 import { dayStamp } from "@/core/pricing/agreements";
 import { saveAgreement } from "./actions";
+import { CustomerPicker } from "./customer-picker";
 
 const field = "mt-2 block w-full rounded-xl border border-[var(--color-border)] bg-white px-3 py-2.5 text-sm";
 
@@ -39,12 +40,7 @@ export function AgreementForm({
     <ActionForm action={saveAgreement.bind(null, agreement?.id ?? "new")} className="grid gap-8">
       <section className="grid gap-4 sm:grid-cols-2">
         <h2 className={sectionHeading}><span className={stepNumber}>1</span>Who this contract is with</h2>
-        <label className="text-sm sm:col-span-2">Customer
-          <select name="partyId" required defaultValue={agreement?.partyId ?? ""} className={field}>
-            <option value="">Choose a customer</option>
-            {customers.map((customer) => <option key={customer.id} value={customer.id}>{customer.customerCode} · {customer.name}</option>)}
-          </select>
-        </label>
+        <div className="sm:col-span-2"><CustomerPicker customers={customers} defaultId={agreement?.partyId} /></div>
         <label className="text-sm sm:col-span-2">Agreement name<input name="name" required maxLength={150} defaultValue={agreement?.name ?? ""} placeholder="Annual supply 2026" className={field} /></label>
 
         <h2 className={sectionHeading}><span className={stepNumber}>2</span>Price list this customer is assigned to</h2>

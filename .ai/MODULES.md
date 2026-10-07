@@ -104,3 +104,5 @@ Mac installation/central-data release; enabling its stub would not deliver it.
 Installed catalogue presence is evidence of enablement, not workflow completion
 or access for every profile. Preserve the full coverage maps for implemented apps
 as well: their unfinished requirements must not disappear behind Installed labels.
+
+Price lists are embedded in Sales and commercial agreements in CRM; `pricing` remains an internal registered module with its existing enablement/capability gates. See [Pricing](../docs/modules/PRICING.md).

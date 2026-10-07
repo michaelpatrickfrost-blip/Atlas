@@ -84,7 +84,7 @@ export async function Commercial({ customer, session }: { customer: Customer; se
       <section>
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="text-sm font-medium text-[var(--color-ink-muted)]">Agreements</h2>
-          {canPriceManage && <Link href={`/pricing/agreements/new?party=${customer.id}`} className="text-sm font-medium text-[var(--color-atlas-blue)]">New agreement</Link>}
+          {canPriceManage && <Link href={`/crm/agreements/new?party=${customer.id}`} className="text-sm font-medium text-[var(--color-atlas-blue)]">New agreement</Link>}
         </div>
         {agreements.length ? (
           <div className="flex flex-col gap-3">
@@ -100,7 +100,7 @@ export async function Commercial({ customer, session }: { customer: Customer; se
                   </div>
                   <div className="flex items-center gap-3">
                     <StatusPill label={status.label} tone={status.tone} />
-                    {canPrice && <Link href={`/pricing/agreements/${agreement.id}`} className="text-sm text-[var(--color-atlas-blue)]">Open</Link>}
+                    {canPrice && <Link href={`/crm/agreements/${agreement.id}`} className="text-sm text-[var(--color-atlas-blue)]">Open</Link>}
                   </div>
                 </Card>
               );
@@ -112,7 +112,7 @@ export async function Commercial({ customer, session }: { customer: Customer; se
               <p className="font-medium">{pricing.agreement.name} <span className="font-normal text-[var(--color-ink-muted)]">— inherited from {pricing.inheritedFrom}</span></p>
               <p className="mt-1 text-xs text-[var(--color-ink-muted)]">This account has no agreement of its own, so {pricing.inheritedFrom}&rsquo;s contract applies here too.</p>
             </div>
-            {canPrice && <Link href={`/pricing/agreements/${pricing.agreement.id}`} className="text-sm text-[var(--color-atlas-blue)]">Open parent&rsquo;s agreement</Link>}
+            {canPrice && <Link href={`/crm/agreements/${pricing.agreement.id}`} className="text-sm text-[var(--color-atlas-blue)]">Open parent&rsquo;s agreement</Link>}
           </Card>
         ) : (
           <Card className="p-4 text-sm text-[var(--color-ink-muted)]">No contract or service promise is recorded for this customer.</Card>

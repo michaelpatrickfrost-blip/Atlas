@@ -1,5 +1,17 @@
 # Atlas current state
 
+## Sales price lists and CRM agreements — 7 October 2026
+
+- Price lists now live at `/sales/price-lists` under the Sales dropdown, with searchable/paginated list rows and currency/usage filters. Pricing keeps its existing company entitlement/enablement and capabilities internally; it no longer appears as a standalone launcher app.
+- Full-page setup supports blank lists, same-currency copies (including rules, dates and quantity breaks), or active same-currency catalogue products with an optional discount/category. Optional initial assignment and searchable batch customer assignment use existing commercial settings.
+- The list workspace separates prices, discount rules, customers, Sales price checking and settings. Product prices support search/sort/validity filters, paging and deactivation/restoration; edits retain row identity. CSV preview/import/export remains available.
+- Commercial agreements are at `/crm/agreements` alongside existing CRM contracts/approvals; customer links and old `/pricing/**` bookmarks route to the new locations. Shared Party/Product, agreement precedence and ancestor inheritance remain authoritative.
+- New create/assignment/rename/edit writes are audited and tenant/capability gated. Populated list currencies cannot be reinterpreted. Price checking calls the actual Sales resolver and creates no sales document.
+- Relevant paths: `src/app/(app)/sales/price-lists/`, `src/app/(app)/crm/agreements/`, `src/app/(app)/pricing/`, Sales/CRM/Pricing manifests, `tests/pricing-workspace.test.ts`, `docs/modules/PRICING.md`.
+- Checks run on the isolated release: Prisma client generation, `npx tsc --noEmit`, production `npm run build`, targeted ESLint and `git diff --check` passed; pricing tests passed 32/32. Permission suites passed 9/9. Optional registry suite has two pre-existing stale Manufacturing dependency expectations (expects no Sales dependency although committed Manufacturing declares Sales); 3 registry tests passed. Shared-checkout typecheck encountered unrelated unfinished template-service errors. No schema migration is required. Live deployment/feature verification pending; release excludes unrelated unfinished work.
+
+
+
 ## Customer Delete retries now scrub rather than stop at CLOSED — 6 October 2026
 
 - **Confirmed live cause:** the online service log after the previous release showed

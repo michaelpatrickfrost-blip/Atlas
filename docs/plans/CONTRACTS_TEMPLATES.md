@@ -18,7 +18,9 @@ public sharing and template engine. Templates is a separate registered app.
   the token is stored. Reissuing cancels old links; revocation preserves history.
   Legacy `/sign/<token>` links continue working.
 - The customer receives an Atlas-branded reading page with company branding,
-  context, PDF preview/download, response steps and confirmation. No account is
+  context, readable generated terms, PDF preview/download, response steps and confirmation.
+  Uploaded PDFs include an explicit Open/Download fallback for browsers whose PDF
+  embedding is unavailable. No account is
   needed. This follows Blocwrite's focused share-reader interaction, implemented
   within Atlas rather than copying its storage/authentication or product code.
 - Online signing requires full name and explicit server-checked consent. Drawing

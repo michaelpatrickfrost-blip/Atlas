@@ -1,4 +1,5 @@
 import { Client } from "pg";
+import fs from "node:fs";
 import jwt from "jsonwebtoken";
 import { execFileSync } from "node:child_process";
 import { db } from "../../src/core/db/client";
@@ -18,6 +19,7 @@ async function main() {
     const acquired = await lease.query("SELECT pg_try_advisory_lock(73411022) AS acquired");
     if (!acquired.rows[0].acquired) return;
     await db.guardianWorker.upsert({ where: { id: "guardian" }, create: { id: "guardian", revision }, update: { heartbeatAt: new Date(), revision } });
+    if (fs.existsSync(".next/lock")) { console.log("Guardian is waiting for the active deployment/build to finish."); return; }
     await db.guardianRateLimit.deleteMany({ where: { expiresAt: { lt: new Date() } } });
     await db.guardianRun.updateMany({ where: { status: "RUNNING", startedAt: { lt: new Date(Date.now() - 45 * 60_000) } }, data: { status: "FAILED", finishedAt: new Date(), summary: "Worker stopped before completing. Retry the sweep." } });
     let run = await db.guardianRun.findFirst({ where: { status: "QUEUED" }, orderBy: { createdAt: "asc" } });
@@ -72,21 +74,23 @@ async function main() {
           if (audit.routes.some(item => !item.api && routeMatches(item.path, destination)) && !pending.has(destination)) { pending.add(destination); queue.push(destination); }
         }
       } catch (error) {
+        if (error instanceof Error && error.message.startsWith("QA session")) throw new Error("QA profile session changed during page checks; refresh the authorised profile and rerun.");
         failures++; await recordFinding(findingForPage(route, error instanceof Error && error.message.startsWith("QA session") ? error.message : "Page request failed or timed out (20 seconds)."), revision, run.id);
         outcomes.push({ route: safePath(route), result: "failed" });
       }
     }
     let browserSummary = "Browser interaction checks not run.";
+    let browserVerifiedRoutes: string[] = [];
     if (process.env.ATLAS_GUARDIAN_BROWSER === "1") {
       const { browserSweep } = await import("./browser-sweep");
       const result = await browserSweep(base, token, outcomes.filter(row => row.result === "http-render-pass").map(row => row.route).filter(route => !route.includes("[record]")), finding => recordFinding(finding, revision, run!.id));
-      failures += result.failures; browserSummary = result.summary;
+      failures += result.failures; browserSummary = result.summary; browserVerifiedRoutes = result.verifiedRoutes;
     }
     const summary = `${audit.coverage.sourceFiles} source files; ${audit.coverage.staticLinksChecked} static links; ${audit.coverage.controlsInventoried} controls inventoried. ${checked.size} page requests, ${skipped} restricted, ${queue.length} remaining after cap. ${failures} findings. ${browserSummary} Dynamic forms/writes still require fixture-based regression coverage; inventory is not a pass.`;
-    await db.guardianRun.update({ where: { id: run.id }, data: { status: queue.length ? "PARTIAL" : failures ? "ISSUES_FOUND" : "COMPLETED", finishedAt: new Date(), summary, coverage: { ...audit.coverage, outcomes, remaining: queue.length, browserSummary } } });
+    await db.guardianRun.update({ where: { id: run.id }, data: { status: queue.length ? "PARTIAL" : failures ? "ISSUES_FOUND" : "COMPLETED", finishedAt: new Date(), summary, coverage: { ...audit.coverage, outcomes, remaining: queue.length, browserSummary, browserVerifiedRoutes } } });
     console.log(summary);
   } catch (error) {
-    const message = error instanceof Error && /^(Set the existing|Configured QA|A production|Use loopback)/.test(error.message) ? error.message : "Guardian worker failed. Inspect the service log securely and retry.";
+    const message = error instanceof Error && /^(Set the existing|Configured QA|A production|Use loopback|QA profile session)/.test(error.message) ? error.message : "Guardian worker failed. Inspect the service log securely and retry.";
     if (runId) await db.guardianRun.update({ where: { id: runId }, data: { status: "FAILED", finishedAt: new Date(), summary: message } });
     await recordFinding({ key: "worker:blocked", title: "Guardian sweep needs attention", kind: "WORKER_FAILURE", severity: "HIGH", route: "/atlas/guardian", expected: "The scheduled sweep completes with declared coverage.", actual: message, steps: ["Check systemctl status atlas-guardian.timer and atlas-guardian.service.", "Inspect the worker environment and authorised QA profile.", "Run the worker with --now and confirm a completed sweep."], evidence: [message] }, revision, runId);
     process.exitCode = 1;

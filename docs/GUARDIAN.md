@@ -37,7 +37,9 @@ cookie, token, screenshot or raw exception message is collected.
 Apply the additive migration through the normal backed-up server release. Install
 `deploy/atlas-guardian.{service,timer}` in `/etc/systemd/system`. Create root-owned
 `/etc/atlas/guardian.env`, mode 0640 with the administrator group, containing the
-existing authorised QA user/organisation IDs:
+existing authorised QA user/organisation IDs. Choose an enduring staff membership
+in a stable company; avoid accounts/companies being revoked by parallel acceptance
+tests. No capabilities or entitlements are granted:
 
 ```
 ATLAS_GUARDIAN_USER_ID=<existing QA user id>
@@ -50,7 +52,8 @@ The worker reads database/session configuration from `.env.local` in `/opt/atlas
 Never commit environment values or print authentication tokens. Install Chromium
 with `npx playwright install --with-deps --only-shell chromium`, then enable
 `atlas-guardian.timer`. A database advisory lock prevents overlapping workers.
-The timer checks the queue every five minutes; automatic sweeps run every six
+The worker waits while a Next build lock is active and stops with a single profile
+blocker if the QA session changes mid-sweep. The timer checks the queue every five minutes; automatic sweeps run every six
 hours. Manual Run system sweep queues a durable run. The heartbeat must be less
 than 15 minutes old for the inbox to show Monitoring. Interrupted runs expire at
 45 minutes; failures create an actionable worker report. Check the journal for
@@ -59,6 +62,8 @@ startup failures when the database itself is unavailable.
 ```
 npm run guardian:audit
 npm run guardian:worker -- --now
+node --env-file=.env.local --import tsx scripts/guardian/triage.ts list
+node --env-file=.env.local --import tsx scripts/guardian/triage.ts show <issue-id>
 sudo systemctl status atlas-guardian.timer atlas-guardian.service
 ```
 

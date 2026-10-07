@@ -7,6 +7,7 @@ export async function browserSweep(base: URL, token: string, routes: string[], r
   const context = await browser.newContext({ baseURL: base.origin });
   await context.addCookies([{ name: "atlas_session", value: token, domain: base.hostname, path: "/", httpOnly: true, secure: base.protocol === "https:", sameSite: "Lax" }]);
   let pages = 0, controls = 0, failures = 0;
+  const verifiedRoutes: string[] = [];
   try {
     for (const route of [...new Set(routes)].slice(0, 100)) {
       const page = await context.newPage();
@@ -14,10 +15,12 @@ export async function browserSweep(base: URL, token: string, routes: string[], r
       page.on("pageerror", () => errorCount++);
       // Diagnostic browser checks cannot create business writes, including background UI mutations.
       await page.route("**/*", request => ["GET", "HEAD", "OPTIONS"].includes(request.request().method()) ? request.continue() : request.abort());
+      let phase = "render";
       try {
         const response = await page.goto(route, { waitUntil: "networkidle", timeout: 30_000 });
-        await expect(page.locator("main")).toBeVisible();
-        if (!response?.ok() || new URL(page.url()).pathname === "/login") throw new Error("Render failed");
+        if (new URL(page.url()).pathname === "/login") throw new Error("QA_SESSION_EXPIRED");
+        await expect(page.locator("main").first()).toBeVisible();
+        if (!response?.ok()) throw new Error("Render failed");
         await expect(page.getByText("Something went wrong.", { exact: true })).toHaveCount(0);
         if (errorCount) throw new Error("Browser exception");
         pages++;
@@ -27,15 +30,21 @@ export async function browserSweep(base: URL, token: string, routes: string[], r
           const button = menus.nth(i);
           if (!await button.isVisible() || !await button.isEnabled()) continue;
           const before = await button.getAttribute("aria-expanded");
+          phase = "safe toggle opens";
           await button.click();
           await expect(button).toHaveAttribute("aria-expanded", before === "true" ? "false" : "true");
-          await button.click(); controls++;
+          phase = "safe toggle resets";
+          await button.click();
+          await expect(button).toHaveAttribute("aria-expanded", before ?? "false");
+          controls++;
         }
-      } catch {
+        verifiedRoutes.push(route);
+      } catch (error) {
+        if (error instanceof Error && error.message === "QA_SESSION_EXPIRED") throw new Error("QA profile session changed during browser checks; refresh the authorised profile and rerun.");
         failures++;
-        await report({ key: `browser-probe:${route}`, title: `Browser check failed: ${route}`, kind: "BROWSER_PROBE", severity: "HIGH", route, expected: "The workspace hydrates without errors; tested controls respond visibly.", actual: "Chromium render, hydration or safe-toggle assertion failed.", steps: ["Run node --env-file=.env.local --env-file=/etc/atlas/guardian.env --import tsx scripts/guardian/worker.ts --now", `Open ${route} in the browser and inspect page errors/control state.`], evidence: [`Browser exceptions observed: ${errorCount}`, "Business writes were blocked during the probe. No screenshots or business content retained."] });
+        await report({ key: `browser-probe:${route}`, title: `Browser check failed: ${route}`, kind: "BROWSER_PROBE", severity: "HIGH", route, expected: "The workspace hydrates without errors; tested controls respond visibly.", actual: `Chromium assertion failed at: ${phase}.`, steps: ["Run node --env-file=.env.local --env-file=/etc/atlas/guardian.env --import tsx scripts/guardian/worker.ts --now", `Open ${route} in the browser and inspect ${phase}.`], evidence: [`Failed phase: ${phase}`, `Browser exceptions observed: ${errorCount}`, "Business writes were blocked during the probe. No screenshots or business content retained."] });
       } finally { await page.close(); }
     }
   } finally { await context.close(); await browser.close(); }
-  return { failures, summary: `Chromium checked ${pages} rendered pages and ${controls} explicit safe toggles; ${failures} browser failures. ${Math.max(0, routes.length - 100)} routes beyond browser cap.` };
+  return { failures, verifiedRoutes, summary: `Chromium checked ${pages} rendered pages and ${controls} explicit safe toggles; ${failures} browser failures. ${Math.max(0, routes.length - 100)} routes beyond browser cap.` };
 }

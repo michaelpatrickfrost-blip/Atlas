@@ -37,6 +37,17 @@
 - Added telemetry regression checks for proxy origin handling, unauthenticated/cross-origin
   rejection, privacy and rate limiting; persistence tests cover deduplication, fixed
   report recurrence and serialized queue clicks. Guardian suites: 14 tests passed.
+- Guardian UI is live at revision 811307d (retained by later compatible releases).
+  Backup: `/home/administrator/backups/atlas-pre-guardian-20261007-070813.dump`.
+  Additive migration applied; public login 200; signed-in inbox, durable sweep queue,
+  search/filter, report detail, copy feedback and private brief download passed.
+  Anonymous download returned 401 and a real customer profile returned 403.
+- Server timer/browser runtime installed. First sweep checked 204 page requests;
+  a concurrent deploy and multiple-main browser locator produced misleading browser
+  findings. Corrected main selection, added assertion phases/reset verification,
+  build-lock waiting and abort-on-QA-session-change. Selected a stable existing
+  staff membership instead of a mutable acceptance-test identity. Corrected sweep
+  and disposition of first-run probe findings are pending.
 - Initial source audit inventories 930 source files, 233 pages, 518 static links,
   766 controls and 517 dynamic links requiring runtime coverage. Three deployed-base
   Ticketing pages return null; preserve the parallel Service/Tickets rebuild and

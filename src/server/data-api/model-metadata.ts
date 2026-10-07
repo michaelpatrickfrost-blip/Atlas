@@ -259,6 +259,24 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": true
     },
+    "serviceWork": {
+      "type": "ServiceWorkItem",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "serviceWorkEntries": {
+      "type": "ServiceWorkEntry",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "serviceFiles": {
+      "type": "ServiceFile",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "serviceEntries": {
       "type": "ServiceEntry",
       "list": true,
@@ -15589,6 +15607,24 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "mergedIntoId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "mergedInto": {
+      "type": "ServiceCase",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "mergedFrom": {
+      "type": "ServiceCase",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "firstResponseAt": {
       "type": "DateTime",
       "list": false,
@@ -15661,6 +15697,60 @@ export const MODEL_FIELDS = {
       "nullable": true,
       "relation": true
     },
+    "recoveries": {
+      "type": "ServiceRecovery",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "work": {
+      "type": "ServiceWorkItem",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "files": {
+      "type": "ServiceFile",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "context": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "sla": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "firstResponseDueAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "resolutionDueAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "pausedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "investigation": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
     "entries": {
       "type": "ServiceEntry",
       "list": true,
@@ -15706,6 +15796,12 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "ticketId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "sourceKey": {
       "type": "String",
       "list": false,
       "nullable": true,
@@ -15936,6 +16032,30 @@ export const MODEL_FIELDS = {
       "list": true,
       "nullable": false,
       "relation": true
+    },
+    "work": {
+      "type": "ServiceWorkItem",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "restricted": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "configuration": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
     },
     "tickets": {
       "type": "ServiceTicket",
@@ -18187,6 +18307,30 @@ export const MODEL_FIELDS = {
       "nullable": true,
       "relation": false
     },
+    "registrationNumber": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "registeredAddress": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "fiscalStartMonth": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "matchToleranceBps": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
     "createdAt": {
       "type": "DateTime",
       "list": false,
@@ -18297,6 +18441,42 @@ export const MODEL_FIELDS = {
       "nullable": true,
       "relation": false
     },
+    "description": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "subType": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "parentId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "postingAllowed": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "currencyRestriction": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "dimensionRules": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
     "active": {
       "type": "Boolean",
       "list": false,
@@ -18368,6 +18548,12 @@ export const MODEL_FIELDS = {
     "version": {
       "type": "Int",
       "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "allowedSources": {
+      "type": "String",
+      "list": true,
       "nullable": false,
       "relation": false
     },
@@ -18455,6 +18641,30 @@ export const MODEL_FIELDS = {
       "type": "String",
       "list": false,
       "nullable": false,
+      "relation": false
+    },
+    "exchangeRate": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "postingFingerprint": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "documentDate": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "taxDate": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
       "relation": false
     },
     "status": {
@@ -18939,6 +19149,18 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "accountingDate": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "taxDate": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
     "dueAt": {
       "type": "DateTime",
       "list": false,
@@ -19089,6 +19311,12 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": true
     },
+    "collectionActivities": {
+      "type": "FinanceCollectionActivity",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "timeline": {
       "type": "FinanceTimeline",
       "list": true,
@@ -19235,6 +19463,24 @@ export const MODEL_FIELDS = {
       "type": "BigInt",
       "list": false,
       "nullable": false,
+      "relation": false
+    },
+    "bankAmount": {
+      "type": "BigInt",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "carryingAmount": {
+      "type": "BigInt",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "realisedFx": {
+      "type": "BigInt",
+      "list": false,
+      "nullable": true,
       "relation": false
     },
     "actorUserId": {
@@ -30767,6 +31013,30 @@ export const MODEL_FIELDS = {
       "nullable": true,
       "relation": false
     },
+    "commentSubmittedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "invalidReason": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "invalidatedBy": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "invalidatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
     "reasons": {
       "type": "String",
       "list": true,
@@ -30789,6 +31059,30 @@ export const MODEL_FIELDS = {
       "type": "String",
       "list": false,
       "nullable": true,
+      "relation": false
+    },
+    "deliveryStatus": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "emailMessageId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "sourceKey": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "serviceContext": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
       "relation": false
     },
     "survey": {
@@ -32588,6 +32882,820 @@ export const MODEL_FIELDS = {
       "list": false,
       "nullable": false,
       "relation": false
+    }
+  },
+  "ServiceWorkItem": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "number": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "kind": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "subject": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "description": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "type": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "category": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "priority": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "severity": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "impact": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "urgency": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "status": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "queueId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "queue": {
+      "type": "ServiceQueue",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "requesterUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "requestedForUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "ownerUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "watcherIds": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "parentCaseId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "parentCase": {
+      "type": "ServiceCase",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "parentId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "parent": {
+      "type": "ServiceWorkItem",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "children": {
+      "type": "ServiceWorkItem",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "mergedIntoId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "mergedInto": {
+      "type": "ServiceWorkItem",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "mergedFrom": {
+      "type": "ServiceWorkItem",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "context": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definition": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "sla": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "firstResponseDueAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "resolutionDueAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "firstResponseAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "pausedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "resolvedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "resolution": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "reopenCount": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "approvalId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "entries": {
+      "type": "ServiceWorkEntry",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "files": {
+      "type": "ServiceFile",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "ServiceWorkEntry": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "workId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "work": {
+      "type": "ServiceWorkItem",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "kind": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "visibility": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "body": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "actorUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    }
+  },
+  "ServiceFile": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "caseId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "case": {
+      "type": "ServiceCase",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "workId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "work": {
+      "type": "ServiceWorkItem",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "name": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "storageKey": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "mime": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "size": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "sha256": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "visibility": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "actorUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    }
+  },
+  "ServiceRecovery": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "caseId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "case": {
+      "type": "ServiceCase",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "partyId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "number": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "type": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "status": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "currency": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "value": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "maximum": {
+      "type": "Int",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "minimumOrder": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "validFrom": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "expiresAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "usageLimit": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "usedCount": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "eligibleProductIds": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "excludedProductIds": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "reason": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "creatorUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "approvalId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "redemptions": {
+      "type": "ServiceRedemption",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "ServiceRedemption": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "recoveryId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "recovery": {
+      "type": "ServiceRecovery",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "orderId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "amount": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "actorUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    }
+  },
+  "ServiceKnowledge": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "title": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "category": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "content": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "keywords": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "productIds": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "visibility": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "queueId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "status": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "previousId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "ownerUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "reviewedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    }
+  },
+  "FinanceDimensionValue": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "entityId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "dimension": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "code": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "name": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "active": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    }
+  },
+  "FinanceCollectionActivity": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "documentId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "kind": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "notes": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "promisedAmount": {
+      "type": "BigInt",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "followUpAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "actorUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "document": {
+      "type": "FinanceDocument",
+      "list": false,
+      "nullable": false,
+      "relation": true
     }
   }
 } as const;

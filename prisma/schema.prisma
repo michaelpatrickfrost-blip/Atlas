@@ -4980,6 +4980,10 @@ model FinanceEntity {
  currency String @default("GBP")
  country String @default("GB")
  vatNumber String?
+ registrationNumber String?
+ registeredAddress String?
+ fiscalStartMonth Int @default(1)
+ matchToleranceBps Int @default(0)
  createdAt DateTime @default(now())
  accounts FinanceAccount[]
  periods FinancePeriod[]
@@ -5003,6 +5007,12 @@ model FinanceAccount {
  name String
  type String
  control String?
+ description String?
+ subType String?
+ parentId String?
+ postingAllowed Boolean @default(true)
+ currencyRestriction String?
+ dimensionRules Json @default("{}")
  active Boolean @default(true)
  entity FinanceEntity @relation(fields:[entityId,organisationId],references:[id,organisationId])
  lines FinanceJournalLine[]
@@ -5020,6 +5030,7 @@ model FinancePeriod {
  endAt DateTime
  state String @default("OPEN")
  version Int @default(1)
+ allowedSources String[] @default(["AP_INVOICE"])
  entity FinanceEntity @relation(fields:[entityId,organisationId],references:[id,organisationId])
  journals FinanceJournal[]
  closeTasks FinanceCloseTask[]
@@ -5039,6 +5050,10 @@ model FinanceJournal {
  sourceId String?
  accountingDate DateTime
  currency String
+ exchangeRate Decimal? @db.Decimal(24,12)
+ postingFingerprint String?
+ documentDate DateTime?
+ taxDate DateTime?
  status String @default("DRAFT")
  creatorUserId String
  approverUserId String?
@@ -5139,6 +5154,8 @@ model FinanceDocument {
  currency String
  exchangeRate Decimal @default(1) @db.Decimal(24,12)
  documentDate DateTime
+ accountingDate DateTime?
+ taxDate DateTime?
  dueAt DateTime?
  net BigInt @default(0)
  tax BigInt @default(0)
@@ -5164,6 +5181,7 @@ model FinanceDocument {
  children FinanceDocument[] @relation("FinanceLineage")
  lines FinanceDocumentLine[]
  settlements FinanceSettlement[]
+ collectionActivities FinanceCollectionActivity[]
  timeline FinanceTimeline[]
  @@unique([organisationId,reference])
  @@unique([organisationId,duplicateKey])
@@ -5200,6 +5218,9 @@ model FinanceSettlement {
  documentId String
  bankTransactionId String
  amount BigInt
+ bankAmount BigInt?
+ carryingAmount BigInt?
+ realisedFx BigInt?
  actorUserId String
  createdAt DateTime @default(now())
  document FinanceDocument @relation(fields:[documentId,organisationId],references:[id,organisationId])
@@ -5236,6 +5257,7 @@ model FinanceBankTransaction {
  settlements FinanceSettlement[]
  @@unique([bankId,externalId])
  @@unique([id,organisationId])
+ @@index([organisationId,bankId,status,date])
  @@map("finance_bank_transactions")
 }
 model FinanceBudget {
@@ -8619,4 +8641,34 @@ model ServiceKnowledge {
  createdAt DateTime @default(now())
  @@index([organisationId,status,category])
  @@map("service_knowledge")
+}
+
+
+model FinanceDimensionValue {
+ id String @id @default(cuid())
+ organisationId String
+ entityId String
+ dimension String
+ code String
+ name String
+ active Boolean @default(true)
+ @@unique([entityId,dimension,code])
+ @@index([organisationId,entityId,dimension,active])
+ @@map("finance_dimension_values")
+}
+
+
+model FinanceCollectionActivity {
+ id String @id @default(cuid())
+ organisationId String
+ documentId String
+ kind String
+ notes String
+ promisedAmount BigInt?
+ followUpAt DateTime?
+ actorUserId String
+ createdAt DateTime @default(now())
+ document FinanceDocument @relation(fields:[documentId,organisationId],references:[id,organisationId])
+ @@index([organisationId,documentId,createdAt])
+ @@map("finance_collection_activities")
 }

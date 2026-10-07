@@ -1,5 +1,10 @@
 # Atlas Finance requirement coverage
 
+Current continuation: [223-section ERP request](FINANCE_ERP_REQUIREMENTS.md) and
+[implementation, verification and remaining gaps](FINANCE_ERP_DELIVERY.md).
+The historical 80-section evidence below is retained; server deployment and live
+feature verification supersede earlier Mac-only delivery instructions.
+
 Captured: 3 October 2026. [Exact supplied brief](FINANCE_SOURCE_REQUIREMENTS.md).
 
 All 80 sections remain required. This is an acceptance map, not implementation
@@ -10,8 +15,7 @@ until all its specified acceptance evidence exists; partial workflows do not clo
 No delivery phases or reduced MVP have been agreed.
 
 All checks also require server-enforced tenant/capability scope, relevant legal
-entity/source access, central-only business persistence and compatible installed
-Mac/data-service release. Example amounts are acceptance fixtures, not live data.
+entity/source access, central-only business persistence and compatible live-server release. Example amounts are acceptance fixtures, not live data.
 
 | Section | Requirement | Owning boundary | Required evidence | Status |
 | --- | --- | --- | --- | --- |

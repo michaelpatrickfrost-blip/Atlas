@@ -1,5 +1,31 @@
 # Atlas current state
 
+## Finance ERP accounting controls — 7 October 2026
+
+- Preserved the new 223-section request in `docs/modules/FINANCE_ERP_REQUIREMENTS.md`;
+  delivery/remaining scope in `FINANCE_ERP_DELIVERY.md`. Existing Core approvals,
+  Sales/Service credits, Inventory, Manufacturing, S&OP/Plan providers remain intact.
+- Added typed chart/profile/dimension configuration, financial dates/retained FX,
+  stronger immutable balanced posting checks, explicit source replay/fingerprints,
+  period overlap/source exceptions and independent versioned reopening.
+- Added ledger/source-journal drill-down/current AR/AP reconciliation, statement
+  import/replay/conflict checks, partial/foreign-invoice settlement with retained
+  carrying value/realised FX, collections history and contextual help. Fixed repeated
+  PO-line matching, configured price tolerance/GRNI variance and receipt request replay.
+- Relevant paths: `src/modules/finance/`, `src/app/(app)/finance/`, additive migration
+  `20261007220000_finance_erp_controls`, `scripts/check-finance-erp.ts`, Finance tests.
+- Verification so far: isolated production build passed; focused tests 59/59 and
+  full regression suite 581 passed, 22 skipped. Prisma validate/generate passed.
+  Separate TypeScript, focused ESLint (zero warnings/errors), repeated production
+  build after receipt/reopening fixes and `git diff --check` passed. Live acceptance
+  and backup/deployment still pending.
+- Full 223-section ERP remains unfinished: costed Inventory/Manufacturing WIP/COGS,
+  advanced treasury/expenses/assets/schedules, consolidation, statutory integrations
+  and the other explicit gaps in the delivery document. No external banking/HMRC
+  service is claimed. Next step: complete compatible release checks, backup/deploy
+  live server and execute disposable authenticated acceptance.
+
+
 ## Customer Service, Tickets and Queries release — 7 October 2026
 
 - Implemented distinct customer cases (CS), internal tickets (TKT) and cross-team queries (QRY) over shared queues, append-only history, business-hours SLA snapshots, pause/resume, child dependencies, optimistic writes, independent approvals, merges/reopens and server evidence storage. Historical cases, department work and CSAT remain intact.

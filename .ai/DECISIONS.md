@@ -1,5 +1,18 @@
 # Atlas decisions
 
+## 7 October 2026 — Extend Finance accounting without replacing connected modules
+
+Michael explicitly requires existing Approvals, S&OP, Manufacturing and other
+connections to be preserved and enhanced. The 223-section Finance brief extends
+the existing foundation. Finance remains the monetary owner; canonical operational
+identities/providers and Core approvals remain authoritative. Cost-profile labels
+alone are configuration, not evidence of a working WIP/COGS/consolidation workflow.
+Unknown legacy FX/date provenance stays unknown. Future base-currency settlements
+retain carrying values and realised FX rather than rewriting original invoices.
+Full server deployment/live acceptance is required; complete-scope gaps stay explicit.
+See `docs/modules/FINANCE_ERP_DELIVERY.md`.
+
+
 ## 6 October 2026 — Delete scrubs identities but preserves linked transaction history
 
 When a customer or contact is referenced by historical records, Delete must not silently

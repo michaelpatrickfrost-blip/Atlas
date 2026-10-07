@@ -1,5 +1,10 @@
 # Atlas Finance scope and implementation constraints
 
+Current continuation: [223-section ERP request](FINANCE_ERP_REQUIREMENTS.md) and
+[implementation, verification and remaining gaps](FINANCE_ERP_DELIVERY.md).
+The historical 80-section evidence below is retained; server deployment and live
+feature verification supersede earlier Mac-only delivery instructions.
+
 Captured: 3 October 2026. The [supplied 80-section brief](FINANCE_SOURCE_REQUIREMENTS.md)
 is preserved byte-for-byte. [Coverage](FINANCE_COVERAGE.md) retains every requirement
 and its acceptance evidence. Michael explicitly authorised building and refining the full brief. No scope
@@ -110,15 +115,14 @@ before implementation; this document does not certify statutory compliance.
 ## Delivery and live acceptance
 
 No new local business database, offline record store or persistent record cache.
-Mac software/UI/runtime uses the central authenticated data service. Build compatible
-source snapshots, migrate additive central schema after backup, release API-only
-server data operations and install the local Mac bundle. Preserve existing role
-permissions and active unsaved forms. Do not host the Finance UI remotely.
+Build compatible source snapshots, back up and migrate central schema, deploy the
+full app to https://atlassystem.online and verify authenticated changed features.
+Preserve existing role permissions and active unsaved forms. Mac packaging is optional.
 
 Validate domain/accounting invariants, tenant/entity isolation, actor separation,
 period locks, bank-version changes, cumulative matching and replay/concurrency.
 Run applicable lint/typecheck/tests and production/package builds. Verify actual
-installed authorised central read/write workflows plus forbidden-action rejection.
+live-server authorised central read/write workflows plus forbidden-action rejection.
 Record each of the 80 coverage rows with specific evidence before claiming full
 Finance delivery. A shell, schema, build or synthetic preview is insufficient.
 
@@ -141,7 +145,7 @@ depreciation; budgets/commitments and budget block rechecks; invoice-based cash
 forecast, actual P&L/balance sheet and tax ledger; central PDF/image supporting
 evidence; approved HR-claim link; Customer Master receivables contribution.
 
-UI reads and commands are dedicated authenticated actions forwarded from the Mac.
+UI reads and commands use dedicated authenticated actions; desktop forwarding is retained.
 Generic Finance model reads remain denied. Project/source permissions remain
 independent; no module grant provides additional customer, project or HR rights.
 Original attachments persist in central database Bytes; previews are transient.
@@ -151,7 +155,7 @@ Outstanding includes OCR/email/EDI/PEPPOL, automatic dispatch/return/COGS and
 Logistics/Sales event consumers, landed-cost/valuation workflows, card/expense policies, payment execution
 and live bank feeds, currency revaluation/consolidation/intercompany, complete
 asset disposal/impairment/leases, operational scenario calculations, automatic
-accruals/prepayments, period reopening, statutory VAT/MTD submissions, advanced
+accruals/prepayments, statutory VAT/MTD submissions, advanced
 report builder/management packs/export and grounded Finance AI. Saved scenario
 assumptions are not a calculated scenario. Payment preparation sends no money.
 Tax ledger is not an HMRC-compliant return. Accepted non-tracked whole-unit

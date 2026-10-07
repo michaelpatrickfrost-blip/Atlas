@@ -268,7 +268,8 @@ remain open. See CURRENT_STATE.md for fresh checks and activation evidence.
   staff classifications and audited workspace switching implemented.
 - [x] Full access for active Atlas staff; customer roles cannot grant platform access.
 - [x] Company/staff recovery, archive/restore and complete company handover implemented.
-- [ ] Finish isolated typecheck, server deployment and authenticated live acceptance.
+- [x] Isolated typecheck/build, server deployment and all 31 authenticated live
+  workflow checks passed; 40 focused tests and browser team review passed.
 
 Scope: [Atlas Admin](ATLAS_ADMIN.md). Evidence: shared CURRENT_STATE. Completion
 requires live server feature verification.

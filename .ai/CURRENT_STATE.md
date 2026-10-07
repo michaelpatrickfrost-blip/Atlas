@@ -3155,3 +3155,35 @@ The original Admin migration is already applied and remains immutable. Current
 combined-release typecheck and 40 focused tests passed; upstream has corrected the
 previously reported CRM mock/catalogue fixtures. Browser review confirmed the
 requested Owner account is active; its temporary reviewing account was removed.
+
+## 7 October 2026 — Atlas Admin deployed and accepted
+
+Supersedes the Admin preparation/checkpoint blockers above. Atlas Admin is live at
+https://atlassystem.online/atlas. Application release 91e7e7a includes the staff-lock
+compatibility fix and migration 20261007190000_atlas_archive_status, applied after
+backup /home/administrator/backups/atlas-pre-deploy-20261007-071633.dump. Both Admin
+migrations are applied; historical release/backup evidence is retained. Server
+production build passed, atlas service healthy and public HTTPS login returned 200.
+Prisma migrate deploy succeeded. Migrate status still reports the previously
+recorded database-only historical HR migration 20261003155019_add_hr_module;
+no history reset or repair was performed.
+
+Live scripts/check-atlas-admin.ts: all 31 authenticated workflow checks passed.
+Covered portal pages, forged customer platform permissions/cross-company targets,
+new customer users, profile/access editing, suspension/restoration, one-use recovery,
+selected-company branding, export integrity/child records/stored binary documents,
+Atlas Employee creation/setup/full platform/full selected-company settings, immediate
+staff session revocation, archive preserving records and preventing customer login,
+archived-company export, and restoration staying suspended. Every synthetic Test
+company/account/document was removed. Browser sign-in also verified the team page
+and requested account's active Owner classification; visual-review account removed.
+No real account passwords, customer roles or business records were changed.
+
+Final compatible release: Prisma generation, TypeScript, production build, scoped
+ESLint and whitespace checks passed; 40 focused tests passed across eight files.
+Earlier CRM mock/catalogue failures are superseded by the passing combined tests.
+Shared permissions docs now distinguish customer restrictions from the explicit
+full-access staff policy and validated platform company targeting. Delivery
+checkpoint completed; enduring context in PROJECT_MEMORY and scope/limitations in
+docs/ATLAS_ADMIN.md. Manual setup/recovery codes, 250 MB/120-second exports and
+external-file references remain documented limits. No Admin delivery blocker remains.

@@ -24,7 +24,7 @@ assertCapability(session, SALES_CAPABILITIES.quoteApprove);
 
 Each module declares its capability constants (see
 `src/core/permissions/capabilities.ts` for Core + Sales) and lists them in
-its manifest's `capabilities` array, so they're discoverable for a future
+its manifest's `capabilities` array, so they're discoverable in the
 role editor. `accessCapability` on the manifest is the single capability that
 gates whether the module appears in navigation at all.
 
@@ -54,9 +54,11 @@ Company administration provides reusable role presets and granular controls, ind
   for the capability it requires, before querying data.
 - **Server actions**: same pattern, as the first two lines, before any
   mutation.
-- **Tenant isolation** is a separate, always-on boundary: every query filters
-  by `session.organisationId`, which can only come from the signed session
-  cookie — never from a request parameter.
+- **Tenant isolation** is a separate, always-on boundary: company workspaces query
+  by `session.organisationId` from the signed session. Atlas Admin actions require
+  an independent platform capability and validate the selected company server-side
+  before accessing its records or changing its settings. Customer actions cannot
+  select another tenant.
 
 ## Adding a new role or capability
 
@@ -71,7 +73,7 @@ Company administration provides reusable role presets and granular controls, ind
 `requireSession`) and renders a plain-language `EmptyState` rather than a
 stack trace.
 
-Membership grants are applied after role unions, then individual denials. Company workspace restrictions apply last. Session versions revoke older JWTs after suspension, recovery, or explicit session revocation. Management-group oversight scopes employees without granting capabilities.
+For customer users, membership grants are applied after role unions, then individual denials and company workspace restrictions. Active Atlas staff receive the full standard company capabilities after these restrictions, under the explicit current staff policy below. Session versions revoke older JWTs after suspension, recovery, or explicit session revocation. Management-group oversight scopes employees without granting capabilities.
 
 ## Manager level
 

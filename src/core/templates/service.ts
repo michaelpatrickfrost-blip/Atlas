@@ -6,6 +6,7 @@ import { getEnabledModuleIds } from '@/core/modules/runtime';
 import { merge, parseBlocks } from './domain';
 import { loadBrand } from '@/core/email/render';
 import { TARGET_MODULES, type TemplateRecord } from './types';
+export async function requireTemplateWorkspace(session:Session){if(!(await getEnabledModuleIds(session.organisationId)).has('templates'))throw new Error('Templates is not enabled for this company.');}
 export async function templateSources(session:Session){
  const enabled=await getEnabledModuleIds(session.organisationId);
  return TARGET_MODULES.flatMap(id=>{const m=getModule(id);return enabled.has(id)&&m?.templateContextProvider?m.templateContextProvider.types.filter(t=>can(session,t.capability)).map(t=>({module:id,type:t.id,label:`${m.name} · ${t.label}`})):[];});
@@ -19,7 +20,7 @@ export async function templateRecords(session:Session,module:string,type:string)
  return getModule(module)!.templateContextProvider!.list(session,type);
 }
 export async function renderTemplate(session:Session,id:string,input:{sourceModule?:string;sourceType?:string;sourceId?:string;partyId?:string;values?:Record<string,string>}){
- assertCapability(session,'core.contract.manage');
+ assertCapability(session,'core.contract.manage');await requireTemplateWorkspace(session);
  const template=await db.documentTemplate.findFirst({where:{id,organisationId:session.organisationId,status:'PUBLISHED'}});
  if(!template)throw new Error('Choose a published template.');
  const source=input.sourceModule&&input.sourceType&&input.sourceId?await templateRecord(session,input.sourceModule,input.sourceType,input.sourceId):null;

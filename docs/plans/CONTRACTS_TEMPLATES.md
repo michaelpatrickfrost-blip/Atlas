@@ -77,7 +77,8 @@ remains a read-only completion record. Customer returns after expiry require sta
 to reject the pending return and issue a fresh link if corrections are needed.
 Generated PDFs use standard embedded PDF fonts for UK/Western text; unsupported
 characters block generation with an explicit error. Uploaded PDFs retain their own
-fonts. Source pickers show up to 200 recent authorised records; the contract list
+fonts. Completion records show characters outside the standard font as explicit
+Unicode code points; the exact entered name remains in the audit record. Source pickers show up to 200 recent authorised records; the contract list
 shows up to 200 recent documents and counts that displayed scope.
 
 ## Verification

@@ -103,7 +103,8 @@ export async function deleteContract(f:FormData){
 }
 async function caller(){const {headers}=await import('next/headers');const h=await headers();return {ip:(h.get('x-forwarded-for')??'').split(',')[0].trim().slice(0,60)||null,agent:(h.get('user-agent')??'').slice(0,300)||null};}
 function publicWhere(token:string):Prisma.ContractDocumentWhereInput {return {tokenHash:hashToken(token),status:{in:['SENT','VIEWED']},expiresAt:{gt:new Date()}};}
-async function openContract(token:string){const c=await db.contractDocument.findFirst({where:publicWhere(token)});if(!c)throw new Error('This link has expired, was replaced, or is already complete.');return c;}
+async function publicCompany(organisationId:string){return !!await db.organisation.findFirst({where:{id:organisationId,status:'ACTIVE'},select:{id:true}});}
+async function openContract(token:string){const c=await db.contractDocument.findFirst({where:publicWhere(token)});if(!c||!await publicCompany(c.organisationId))throw new Error('This link has expired, was replaced, or is already complete.');return c;}
 async function completeQuote(tx:Prisma.TransactionClient,c:{kind:string;quoteId:string|null;organisationId:string}){if(c.kind==='QUOTE'&&c.quoteId)await tx.quote.updateMany({where:{id:c.quoteId,organisationId:c.organisationId,status:{in:['DRAFT','SENT']}},data:{status:'ACCEPTED'}});}
 export async function signContract(token:string,signerName:string,signatureImage?:string,consent=false){
  if(consent!==true)throw new Error('Confirm that you have read and agree to this document.');
@@ -135,10 +136,10 @@ export async function declineContract(token:string,reason:string){
 }
 export async function loadPublicContract(token:string){
  const c=await db.contractDocument.findFirst({where:{tokenHash:hashToken(token),status:{in:['SENT','VIEWED','SIGNED','DECLINED','RETURNED']}},select:{id:true,organisationId:true,reference:true,title:true,kind:true,message:true,bodyHtml:true,status:true,expiresAt:true,sentAt:true,viewedAt:true,signedAt:true,signerName:true,declinedReason:true,contentHash:true,fileName:true,fileSize:true,quoteId:true,signingMode:true,completionMethod:true,returns:{where:{status:{in:['REJECTED','PENDING','ACCEPTED']}},select:{id:true,status:true,reviewNote:true,submittedAt:true},orderBy:{submittedAt:'desc'},take:1}}});
- if(!c)return null;if(c.status!=='SIGNED'&&c.expiresAt&&c.expiresAt<new Date())return {...c,bodyHtml:'',fileName:null,quoteId:null,returns:[]};
+ if(!c||!await publicCompany(c.organisationId))return null;if(c.status!=='SIGNED'&&c.expiresAt&&c.expiresAt<new Date())return {...c,bodyHtml:'',fileName:null,quoteId:null,returns:[]};
  if(c.status==='SENT'){const {ip}=await caller(),at=new Date();const r=await db.contractDocument.updateMany({where:{id:c.id,...publicWhere(token)},data:{status:'VIEWED',viewedAt:at}});if(r.count){await writeAudit({organisationId:c.organisationId,action:'contract.viewed',entityType:'ContractDocument',entityId:c.id,after:{viewedAt:at,ip}});return {...c,status:'VIEWED',viewedAt:at};}}
  return c;
 }
 export async function loadPublicContractFile(token:string){
- const c=await db.contractDocument.findFirst({where:{tokenHash:hashToken(token),OR:[{status:'SIGNED'},{status:{in:['SENT','VIEWED','RETURNED','DECLINED']},expiresAt:{gt:new Date()}}]},select:{fileContent:true,fileName:true,fileType:true}});return c?.fileContent?{bytes:Buffer.from(c.fileContent),name:c.fileName??'document.pdf',type:'application/pdf'}:null;
+ const c=await db.contractDocument.findFirst({where:{tokenHash:hashToken(token),OR:[{status:'SIGNED'},{status:{in:['SENT','VIEWED','RETURNED','DECLINED']},expiresAt:{gt:new Date()}}]},select:{organisationId:true,fileContent:true,fileName:true,fileType:true}});return c?.fileContent&&await publicCompany(c.organisationId)?{bytes:Buffer.from(c.fileContent),name:c.fileName??'document.pdf',type:'application/pdf'}:null;
 }

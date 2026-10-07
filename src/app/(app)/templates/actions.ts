@@ -2,6 +2,7 @@
 import { requireSession } from '@/core/auth/session';
 import { assertCapability } from '@/core/permissions/check';
 import { db } from '@/core/db/client';
+import { requireTemplateWorkspace } from '@/core/templates/service';
 import { parseBlocks, validateFields } from '@/core/templates/domain';
 import { TARGET_MODULES } from '@/core/templates/types';
 import { writeAudit } from '@/core/audit/log';
@@ -10,7 +11,7 @@ import { redirect } from 'next/navigation';
 import { createContract } from '@/core/contracts/actions';
 const str=(f:FormData,k:string,max=300)=>{const v=String(f.get(k)??'').trim();if(v.length>max)throw new Error(`${k} is too long.`);return v;};
 export async function saveTemplate(form:FormData){
- const session=await requireSession();assertCapability(session,'core.contract.manage');
+ const session=await requireSession();assertCapability(session,'core.contract.manage');await requireTemplateWorkspace(session);
  const id=str(form,'id',100),name=str(form,'name'),titleTemplate=str(form,'titleTemplate'),description=str(form,'description',2000),category=str(form,'category',60),status=str(form,'status');
  if(!name||!titleTemplate)throw new Error('Enter a name and document title.');if(!['DRAFT','PUBLISHED'].includes(status))throw new Error('Choose draft or published.');
  let value:unknown;try{value=JSON.parse(str(form,'blocks',70000));}catch{throw new Error('The template sections are invalid.');}
@@ -24,11 +25,11 @@ export async function saveTemplate(form:FormData){
  revalidatePath('/templates');revalidatePath('/crm/contracts');redirect(`/templates/${resultId}`);
 }
 export async function archiveTemplate(form:FormData){
- const session=await requireSession();assertCapability(session,'core.contract.manage');
+ const session=await requireSession();assertCapability(session,'core.contract.manage');await requireTemplateWorkspace(session);
  const id=str(form,'id',100);await db.documentTemplate.updateMany({where:{id,organisationId:session.organisationId},data:{status:'ARCHIVED',version:{increment:1}}});
  await writeAudit({organisationId:session.organisationId,actorUserId:session.userId,action:'template.archived',entityType:'DocumentTemplate',entityId:id});revalidatePath('/templates');
 }
 export async function generateTemplateDocument(form:FormData){
- const session=await requireSession();assertCapability(session,'core.contract.manage');
+ const session=await requireSession();assertCapability(session,'core.contract.manage');await requireTemplateWorkspace(session);
  await createContract(form);revalidatePath('/crm/contracts');redirect('/crm/contracts');
 }

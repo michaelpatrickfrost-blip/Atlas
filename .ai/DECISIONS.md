@@ -855,6 +855,10 @@ Probe evidence is buffered and discarded if the checkout/build changes mid-sweep
 a release interruption is a monitor/deployment condition, never proof that all
 affected product pages are broken. Operator pagination preserves access to older
 blocked reports. Copied/downloaded briefs include current triage notes.
+Corrected probe diagnostics are FIXED with verification notes so real recurrences
+reopen them; IGNORED is reserved for proven expected/non-defect cases. Deleted-
+customer URL explanations use same-tenant id-only metadata after authorisation
+and count as unavailable coverage, without exposing or restoring deleted identity.
 HTTP success, control inventory and source heuristics are not blanket workflow
 verification. Never hide a broken page or auto-close a report after an unrelated
 passing check. See docs/GUARDIAN.md.

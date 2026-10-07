@@ -119,82 +119,82 @@
 
 ## Atlas Guardian implementation — 7 October 2026
 
-- Full linked-page crawl still reached one scrubbed customer through another
-  historical record. Customer routes now render an explicit deleted/unavailable
-  state from same-company id-only metadata after authorisation; no deleted identity
-  or children load, unknown/foreign IDs stay not found. The monitor labels this
-  `unavailable`, excluded from working-page/browser coverage. Compatible release
-  including the finished S&OP changes passed 653 Vitest tests (22 integration skips),
-  production build and separate TypeScript; scoped lint passed. Live verification follows; this completes legacy URL handling without hiding a
-  broken active customer page or changing retained records.
-- Live staff-only quality inbox: `/atlas/guardian`, private AI briefs, latest repair
-  status/blocker notes, copy/download, search/status filters, pagination, durable
-  Run system sweep queue and verified repair fields. Server boundary is
-  `atlas.companies.manage`; anonymous briefs return 401, customer profiles 403.
-  Additive migration `20261007180000_atlas_guardian` is applied. Diagnostics stay
-  central, are excluded from customer exports and contain no customer bodies,
-  inputs, raw errors, tokens or screenshots. See `docs/GUARDIAN.md`.
-- Server systemd detector checks the manual queue every five minutes and runs
-  automatic sweeps every six hours, using an enduring existing authorised staff
-  membership. It grants no rights/entitlements and performs GET/render checks plus
-  explicitly safe menu toggles; business writes need disposable central fixtures.
-  Rate-limited runtime browser/server telemetry, deduplication and recurrence
-  reopening are active. Error screens provide Retry/Home/sign-in recovery.
-- Hourly `atlas-guardian-repairs` heartbeat is ACTIVE in this chat. It reproduces,
-  fixes, tests, backs up/deploys and verifies bounded repairs, and leaves precise
-  NEEDS_AI blockers/next actions for unresolved items. Local repairs require the
-  Mac and Codex running; the server detector continues independently. Operator-only
-  `triage.ts list [page]` is compact/paginated (`hasMore`), `show <id>` returns the
-  full issue, and `fixed` requires deployed revision plus reproduction notes.
-- Confirmed repairs: team-manager absence reads now allow only self/direct reports
-  within the company and exclude private reason/notes; legacy queue setup and
-  service/tickets URLs connect to real destinations; Campaign Write a message and
-  legacy `/marketing/messages` reach `/marketing/email`. Customer Map excludes
-  scrubbed identities/trading endpoints. Sales list/order/quote invoice, pricing
-  and header references show Deleted customer without broken links while preserving
-  historical documents and current customer links/capability checks. No customer
-  records or real communications were changed by these checks.
-- Live recurrence tracking reopened the customer report after a deeper crawl found
-  historical order-detail links missed by the first static-page trace. Shared
-  `CustomerReference` completes that repair; latest deep trace checked six remaining
-  distinct customer links including connected Sales details with zero 404s.
-- Application release `64a11ce` is deployed and healthy. Backup:
-  `/home/administrator/backups/atlas-pre-guardian-references-20261007-075208.dump`
-  plus private Service evidence archive. Server production build/restart and HTTPS
-  login 200 passed. Signed-in inbox/queue/filter/detail/copy/download, Campaign
-  Content and links → Write a message, legacy alias, and Save progress → persisted
-  NEEDS_AI → download including the exact blocker/next action passed live.
-- Final compatible checks: 653 Vitest tests passed, 22 integration skips; separate
-  TypeScript and production build passed. Scoped ESLint has zero errors and one
-  pre-existing unused-workingDrafts warning. Full-repo lint was not rerun; its
-  initial check found 17 unrelated errors. Guardian tests cover privacy, auth/rate
-  limits, deduplication, recurrence, queue serialisation, deployment invalidation,
-  disabled/error response classification and current AI brief context. Two deleted
-  customer regression suites retain sales rows and active links.
-- Current source inventory: 1,066 files, 260 pages, 588 static links, 818 controls,
-  627 dynamic links requiring runtime/fixture coverage; zero source findings. Last
-  stable 66cde65 sweep checked 213 requests, one restricted screen, 100 Chromium
-  renders and 99 safe toggles, zero browser failures; it found the now-repaired
-  historical order link. Final 64a11ce sweep is in progress at this checkpoint.
-- Retired 94 initial BROWSER_PROBE reports only after their exact render/safe-menu
-  checks passed on a stable release (100-page sweep plus six additional routes).
-  Earlier probes were invalidated by overlapping builds or the initial multiple-main
-  locator. Worker now buffers runtime findings and discards them when revision,
-  BUILD_ID or build lock changes; verified guard aborts on a parallel checkout pull.
-  Failed runs retry at the next timer tick. Disabled ModuleSpace screens count as
-  restricted coverage. Tickets is disabled in the enduring QA company; its queue/
-  detail controls still require a permitted disposable fixture to close those reports.
-- Unresolved reports retain actionable NEEDS_AI notes. A confirmed deployment-
-  reliability brief records that in-place node_modules/.next replacement can break
-  active clients; the shared release lock serialises deploys and the sweep guard
-  protects evidence, but atomic release/service switching still needs implementation
-  and staging/rollback proof. Other digest-only reports need correlation with server
-  logs and safe fixtures; some arose from intentional Finance/Admin/Service negative
-  acceptance checks. Never weaken those business guards to clear diagnostics.
-- Code/docs are integrated into the canonical shared repository without overwriting
-  concurrent contributors. Inventory/HTTP passes do not establish that every button,
-  write workflow, profile or dynamic business state works; expand outcome-based
-  fixtures over successive repair runs and preserve the central data boundary.
+- Live staff-only quality inbox `/atlas/guardian`: private AI briefs with latest
+  blocker/status notes, copy/download, search/status filters, pagination, durable
+  sweep queue and verified repair fields. Server boundary: `atlas.companies.manage`;
+  anonymous briefs return 401, customer profiles 403. Migration
+  `20261007180000_atlas_guardian` is applied. Diagnostics stay central, are excluded
+  from company exports and collect no customer bodies, inputs, raw errors, tokens
+  or screenshots. See `docs/GUARDIAN.md`.
+- Server detector checks the manual queue every five minutes and automatically
+  sweeps every six hours under advisory ownership. It uses an enduring existing
+  authorised staff membership without granting rights/entitlements. GET/render
+  checks and explicit safe menu toggles do not create business writes; workflow
+  mutations require disposable central fixtures. Runtime telemetry is rate limited;
+  recurrence reopens FIXED reports. Error screens offer Retry/Home/sign-in recovery.
+- Hourly `atlas-guardian-repairs` heartbeat is ACTIVE. It reproduces, fixes, tests,
+  backs up/deploys and verifies bounded repairs, leaving precise NEEDS_AI blockers/
+  next actions where proof is missing. Local repair runs require the Mac and Codex
+  running; the server detector is independent. Operator-only `triage.ts list [page]`
+  exposes a compact queue with `hasMore`; `show <id>` returns full diagnostics.
+- Confirmed repairs: team-manager absence reads allow only self/direct reports in
+  the company and exclude private reason/notes; legacy queue setup and service/
+  tickets URLs reach real destinations; Campaign Write a message and legacy
+  `/marketing/messages` reach `/marketing/email`. Customer Map excludes scrubbed
+  identities/trading endpoints. Sales list/order/quote invoice, pricing and header
+  references label deleted customers while preserving history and active links.
+- A deeper crawl reopened the customer-link report after finding another historical
+  reference. Legacy same-company deleted-customer URLs now show an explicit deleted
+  state with a working return link. Only id-only existence metadata is read after
+  customer authorisation; no deleted identity/children load, foreign/unknown IDs
+  remain not found, and scrubbed accounts stay out of Master lists/maps. The monitor
+  labels this `unavailable`, never as a working customer workspace. No customer
+  records, entitlements or real communications changed during this verification.
+- Application release `4f3b964` is deployed and healthy, including the compatible
+  finished S&OP release. Backup:
+  `/home/administrator/backups/atlas-pre-guardian-deleted-state-20261007-080532.dump`
+  plus private Service evidence archive. Production server build/restart and HTTPS
+  login 200 passed. Earlier Guardian migration backup is retained at
+  `/home/administrator/backups/atlas-pre-guardian-20261007-070813.dump`.
+- Final compatible verification: 656 Vitest tests passed, 22 integration skips;
+  separate TypeScript and production build passed. Scoped ESLint has zero errors
+  (one pre-existing unused-workingDrafts warning in Sales). Full-repo lint was not
+  rerun; the initial check found 17 unrelated errors. Guardian and deletion tests
+  cover private access/rate limits, deduplication/recurrence, queue serialisation,
+  deployment invalidation, disabled/deleted/error response classification, current
+  AI notes, id-only tenant metadata, retained sales rows and active reference links.
+- Latest source audit: 1,066 files, 260 pages, 588 static links, 818 controls and 627
+  dynamic links requiring runtime/fixture coverage; zero source findings. Stable
+  deployed 4f3b964 sweep COMPLETED: 224 requests, one restricted, one unavailable,
+  zero remaining after HTTP cap, zero findings; Chromium rendered 100 pages and
+  verified 99 explicit safe toggles with zero browser failures. 86 routes remain
+  beyond the browser cap. A separate deep trace covered 177 connected source
+  workspaces and six remaining distinct customer links with zero 404s.
+- Live staff inbox/queue/filter/detail/copy/download, Campaign Content and links →
+  Write a message, legacy Marketing alias, deleted-customer explanation → Back to
+  customers, and Save progress → persisted NEEDS_AI → downloaded exact blocker/
+  next action all passed. Anonymous/customer brief denial was repeated. Tickets is
+  disabled in the enduring QA company; queue/detail controls still need a permitted
+  disposable fixture for independent closure of those historical reports.
+- Retired 94 initial probe diagnostics only after their exact render/menu checks
+  passed (100-page sweep plus six additional routes). The underlying locator/
+  deployment-evidence faults are corrected; these diagnostics are FIXED with notes
+  and verified revisions so a future failure reopens them. Expected proven access
+  guards remain IGNORED. Worker buffers findings and discards them when revision,
+  BUILD_ID or build lock changes; parallel checkout pulls verified this abort path.
+  Failed/interrupted runs retry at the next timer tick. Final stable verification
+  used the shared deployment lock to prevent changing releases underneath probes.
+- Remaining inbox has 39 actionable NEEDS_AI diagnostics at this checkpoint,
+  including old digest-only errors and intentional Finance/Admin/Service/S&OP
+  negative acceptance checks still needing exact correlation. Each has blocker/
+  next-action notes; do not weaken business guards to clear reports. A confirmed
+  deployment-reliability brief records that in-place node_modules/.next replacement
+  can interrupt active clients. Shared release locking and probe invalidation are
+  deployed; atomic release/service switching needs staging and rollback proof.
+- Code/docs and this handoff are integrated into the canonical shared repository
+  without overwriting other contributors. Inventory, HTTP success and safe-menu
+  checks do not prove every business button, write workflow, profile or dynamic
+  state; expand outcome-based fixtures over successive authorised repair runs.
 
 ## Sales price lists and CRM agreements — 7 October 2026
 

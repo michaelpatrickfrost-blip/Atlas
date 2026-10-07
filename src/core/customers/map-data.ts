@@ -24,7 +24,7 @@ export type MapPerson = {
 export async function loadCustomerMap(organisationId: string, includeInvoices: boolean) {
   const [parties, users, links] = await Promise.all([
     db.party.findMany({
-      where: { organisationId },
+      where: { organisationId, identityScrubbed: false },
       select: {
         id: true,
         name: true,
@@ -35,7 +35,7 @@ export async function loadCustomerMap(organisationId: string, includeInvoices: b
         status: true,
         accountManagerUserId: true,
         contacts: {
-          where: { status: "ACTIVE" },
+          where: { status: "ACTIVE", identityScrubbed: false },
           select: { id: true, partyId: true, firstName: true, surname: true, jobTitle: true, reportsToContactId: true },
           orderBy: [{ surname: "asc" }, { firstName: "asc" }],
         },
@@ -49,7 +49,7 @@ export async function loadCustomerMap(organisationId: string, includeInvoices: b
     }),
     includeInvoices
       ? db.customerTradingLink.findMany({
-          where: { organisationId, active: true },
+          where: { organisationId, active: true, account: { identityScrubbed: false }, tradingAccount: { identityScrubbed: false } },
           select: { accountId: true, tradingAccountId: true, updatedAt: true, tradingAccount: { select: { name: true } } },
           orderBy: { updatedAt: "desc" },
         })

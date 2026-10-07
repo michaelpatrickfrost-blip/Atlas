@@ -48,6 +48,15 @@
 
 ## Atlas Guardian implementation — 7 October 2026
 
+- Reproduced two live 404 customer links without retaining identifiers: Sales
+  documents and Customer Map linked identity-scrubbed, archived CLOSED tombstones.
+  Map queries now exclude scrubbed accounts/contacts/trading endpoints. Sales keeps
+  historical orders/quotes and labels their deleted customer without a broken link;
+  active customers remain linked and scrubbed accounts leave the filter chooser.
+  Regression tests (19 focused), full Vitest (590 passed, 22 integration skips),
+  production build and separate TypeScript passed. Scoped lint has zero errors and
+  one existing unused-workingDrafts warning. Live verification follows. No customer
+  records changed.
 - A concurrent server deployment invalidated the dff1aa0 sweep: menu probes failed
   during the build and passed when repeated on the stable release. Worker now
   buffers runtime findings, aborts if revision/BUILD_ID/build-lock changes, discards

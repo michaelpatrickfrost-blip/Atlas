@@ -6,6 +6,9 @@ The connected Customer Service, Tickets and Queries application is live at
 https://atlassystem.online. Runtime revision `d1f126b` includes the independently
 finished Finance controls `6e1743a`; `c763018` adds Finance acceptance documentation
 and a server-only test utility change, with no application-runtime change.
+Later reviewed Guardian/deleted-customer releases preserve this service engine.
+Final acceptance documentation `2f54481` was synced to the server with its release
+lock; the service remained active and public login returned HTTP 200.
 
 - Additive migration `20261007190000_service_work_desk` applied; no historical records removed.
 - Initial backup: `/home/administrator/backups/atlas-pre-deploy-20261007-071426.dump`.

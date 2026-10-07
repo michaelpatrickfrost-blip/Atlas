@@ -3093,9 +3093,10 @@ limits: docs/plans/CONTRACTS_TEMPLATES.md. Core/provider architecture, module ma
 project memory and lasting decision updated. Editable master retains concurrent work.
 
 Checks: targeted Vitest 25 passed; isolated TypeScript, ESLint, schema validation,
-production build and whitespace checks passed. Full combined release suite: 474
-passed, 8 failed, 22 skipped. All eight are among the ten failures reproduced in
-clean e5e474c; the intervening Admin release fixed two unrelated failures.
+production build and whitespace checks passed. After integrating finished Guardian
+commits, the full compatible release suite passed 497 tests with 22 integration
+skips and no failures. Generated Data API registrations reconciled with that schema.
+Earlier baseline failures are superseded by the now-green combined suite.
 
 VPS c7c9b27 deployed using the canonical deploy-vps remote procedure from the clean
 release worktree. Backup: /home/administrator/backups/atlas-pre-deploy-20261007-070322.dump.

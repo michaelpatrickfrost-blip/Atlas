@@ -1,0 +1,29 @@
+import { QualityForm } from "./action-form";
+import { NCR_SOURCES, NCR_SEVERITIES, NCR_DISPOSITIONS, label } from "../domain/workflow";
+import { QUALITY_FIELDS } from "../domain/workspace";
+import { reportNcr, updateNcrInvestigation } from "../services/ncr-actions";
+export const qualityInput="w-full min-w-0 rounded-xl border border-[var(--color-border)] bg-white px-3 py-2 text-sm";
+type Options={products:{id:string;name:string;code:string}[];members:{id:string;name:string}[]};
+export type IssueDraft={id:string;version:number;title:string;defect:string;source:string;severity:string;productId:string|null;ownerUserId:string|null;dueAt:string;quantityAffected:number|null;containment:string|null;rootCause:string|null;rootCauseConfirmed:boolean;disposition:string;dispositionNote:string|null;workspace:Record<string,unknown>};
+export function IssueForm({record,options}:{record?:IssueDraft;options:Options}){
+ const textarea=(name:string,title:string,value?:string|null)=><label key={name} className="block min-w-0 space-y-1 text-sm"><span>{title}</span><textarea aria-label={title} name={name} rows={3} maxLength={4000} defaultValue={value??""} className={qualityInput}/></label>;
+ const ws=(key:string)=>typeof record?.workspace[key]==="string"?String(record.workspace[key]):"";
+ const details=(title:string,keys:string[])=><details className="rounded-2xl border p-4"><summary className="cursor-pointer font-medium">{title}</summary><div className="mt-4 grid gap-4 md:grid-cols-2">{QUALITY_FIELDS.filter(([key])=>keys.includes(key)).map(([key,text])=>textarea(key,text,ws(key)))}</div></details>;
+ return <QualityForm key={record?.version??"new"} action={record?updateNcrInvestigation:reportNcr} className="space-y-5">
+ {record&&<><input type="hidden" name="ncrId" value={record.id}/><input type="hidden" name="version" value={record.version}/></>}
+ <div className="grid gap-4 md:grid-cols-2"><label className="text-sm md:col-span-2">What failed?<input aria-label="What failed?" name="title" required maxLength={250} defaultValue={record?.title} className={qualityInput}/></label><label className="text-sm md:col-span-2">Requirement / defect<textarea aria-label="Requirement / defect" name="defect" required rows={3} maxLength={2000} defaultValue={record?.defect} className={qualityInput}/></label>
+ <label className="text-sm">Source<select aria-label="Source" name="source" defaultValue={record?.source??"OTHER"} className={qualityInput}>{NCR_SOURCES.map(item=><option key={item} value={item}>{label(item)}</option>)}</select></label>
+ <label className="text-sm">Severity<select aria-label="Severity" name="severity" defaultValue={record?.severity??"MINOR"} className={qualityInput}>{NCR_SEVERITIES.map(item=><option key={item} value={item}>{label(item)}</option>)}</select></label>
+ <label className="text-sm">Product<select aria-label="Product" name="productId" defaultValue={record?.productId??""} className={qualityInput}><option value="">Not product-specific</option>{record?.productId&&!options.products.some(p=>p.id===record.productId)&&<option value={record.productId}>Existing linked product</option>}{options.products.map(item=><option key={item.id} value={item.id}>{item.code} · {item.name}</option>)}</select></label>
+ <label className="text-sm">Quantity affected<input aria-label="Quantity affected" name="quantityAffected" type="number" min={0} max={2147483647} step={1} defaultValue={record?.quantityAffected??""} className={qualityInput}/></label>
+ <label className="text-sm">Issue owner<select aria-label="Issue owner" name="ownerUserId" defaultValue={record?.ownerUserId??""} className={qualityInput}><option value="">Unassigned</option>{record?.ownerUserId&&!options.members.some(p=>p.id===record.ownerUserId)&&<option value={record.ownerUserId}>Previous owner — choose an active member</option>}{options.members.map(item=><option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
+ <label className="text-sm">Target resolution date<input aria-label="Target resolution date" name="dueAt" type="date" defaultValue={record?.dueAt} className={qualityInput}/></label></div>
+ {textarea("containment","Immediate containment",record?.containment)}
+ {details("Context, impact and evidence",["location","department","lot","externalReference","requirement","impact","evidence"])}
+ <details className="rounded-2xl border p-4" open={Boolean(record)}><summary className="cursor-pointer font-medium">Investigation and root cause</summary><div className="mt-4 space-y-4">{textarea("rootCause","Root cause",record?.rootCause)}{textarea("causeEvidence","Evidence supporting the root cause",ws("causeEvidence"))}<label className="flex items-center gap-2 text-sm"><input type="checkbox" name="rootCauseConfirmed" value="1" defaultChecked={record?.rootCauseConfirmed}/>Root cause confirmed by evidence</label>
+ {details("Optional investigation method and five whys",["investigationMethod","why1","why2","why3","why4","why5","prevention"])}</div></details>
+ <details className="rounded-2xl border p-4" open={Boolean(record)}><summary className="cursor-pointer font-medium">Disposition decision</summary><div className="mt-4 space-y-4"><label className="text-sm">Disposition<select aria-label="Disposition" name="disposition" defaultValue={record?.disposition??"PENDING"} className={qualityInput}>{NCR_DISPOSITIONS.map(item=><option key={item} value={item}>{label(item)}</option>)}</select></label>{textarea("dispositionNote","Disposition reason / authorisation reference",record?.dispositionNote)}</div><p className="mt-2 text-xs text-slate-500">Recording a disposition does not release stock or an equipment hold.</p></details>
+ <input type="hidden" name="closureEvidence" value={ws("closureEvidence")}/>
+ <button type="submit" className="atlas-primary-button">{record?"Save issue and investigation":"Report quality issue"}</button>
+ </QualityForm>;
+}

@@ -11,16 +11,20 @@ export function label(value: string): string {
   return value.charAt(0) + value.slice(1).toLowerCase().replaceAll("_", " ");
 }
 
-/** A critical NCR, or any NCR with a confirmed root cause, must be dispositioned before it can close. */
-export function canClose(ncr: { severity: string; disposition: string; status: string }): { ok: boolean; reason?: string } {
-  if (ncr.status === "CLOSED") return { ok: false, reason: "Already closed." };
-  if (ncr.disposition === "PENDING") return { ok: false, reason: "A disposition is required before closing." };
-  return { ok: true };
+/** Closure is a review of disposition, investigation and every recorded action. Holds remain independent. */
+export function canClose(ncr: { severity: string; disposition: string; status: string; rootCauseConfirmed?: boolean; actions?: {status:string}[] }): { ok: boolean; reason?: string } {
+ if(ncr.status==="CLOSED")return {ok:false,reason:"Already closed."};
+ if(ncr.disposition==="PENDING")return {ok:false,reason:"Record a disposition before closing."};
+ if(["MAJOR","CRITICAL"].includes(ncr.severity)&&!ncr.rootCauseConfirmed)return {ok:false,reason:"Confirm the root cause for a major or critical issue before closing."};
+ if(ncr.actions?.some(action=>action.status!=="VERIFIED"))return {ok:false,reason:"Verify every corrective action; unresolved or ineffective actions prevent closure."};
+ if(["MAJOR","CRITICAL"].includes(ncr.severity)&&!ncr.actions?.length)return {ok:false,reason:"Record and verify corrective action for a major or critical issue."};
+ return {ok:true};
 }
 
 /** Evaluate a measured value against a characteristic's limits. Non-numeric methods fall back to the recorded pass flag. */
 export function evaluateMeasurement(method: string, value: number | null, lowerLimit: number | null, upperLimit: number | null, recordedPass: boolean): boolean {
-  if (method !== "MEASUREMENT" || value === null) return recordedPass;
+  if (method !== "MEASUREMENT") return recordedPass;
+  if(value===null||!Number.isFinite(value))return false;
   if (lowerLimit !== null && value < lowerLimit) return false;
   if (upperLimit !== null && value > upperLimit) return false;
   return true;

@@ -1,5 +1,15 @@
 # Atlas decisions
 
+## 8 October 2026 — Quality issues close through verified corrective work
+
+Extend existing NonConformance/actions and canonical identities. Optional guided
+investigation keeps minor reporting simple; major/critical closure requires confirmed
+cause and verified corrective action. Every recorded action must be verified; ineffective
+work remains unresolved. Closing locks edits until reasoned reopening and never releases
+stock holds. Use one expected parent version for all issue/action mutations, keeping
+change and metadata audit atomic. Evidence notes/references are not file uploads,
+regulatory signatures, independent approvals or compliance certification.
+
 ## 8 October 2026 — Workplace safety records retain their existing owner
 
 Extend SafetyRecord payload and due/status fields rather than create competing

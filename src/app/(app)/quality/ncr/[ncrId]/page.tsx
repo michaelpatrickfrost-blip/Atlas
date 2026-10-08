@@ -1,120 +1,33 @@
+import Link from "next/link";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
-import { QUALITY_CAPABILITIES } from "@/core/permissions/capabilities";
-import { requireNcr, similarNcr } from "@/modules/quality/services/queries";
-import { updateNcrInvestigation, addNcrAction, updateNcrAction, closeNcr } from "@/modules/quality/services/commands";
-import { StatusPill } from "@/components/ui/status-pill";
-import { Button } from "@/components/ui/button";
-import { NCR_DISPOSITIONS, ACTION_STATUSES, canClose, label } from "@/modules/quality/domain/workflow";
-
-const input = "w-full rounded-xl border px-3 py-2 text-sm";
-
-export default async function NcrDetail({ params }: { params: Promise<{ ncrId: string }> }) {
-  const { ncrId } = await params;
-  const session = await requireSession();
-  assertCapability(session, QUALITY_CAPABILITIES.ncrRead);
-  const ncr = await requireNcr(session, ncrId);
-  const similar = await similarNcr(session, ncr.productId, ncr.defect);
-  const canManage = session.capabilities.has(QUALITY_CAPABILITIES.ncrManage);
-  const closeGate = canClose(ncr);
-
-  return (
-    <div className="max-w-3xl space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold">{ncr.number}</h2>
-          <p className="text-sm text-slate-500">{ncr.title}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <StatusPill label={label(ncr.severity)} tone={ncr.severity === "CRITICAL" ? "danger" : ncr.severity === "MAJOR" ? "warning" : "neutral"} />
-          <StatusPill label={label(ncr.status)} tone={ncr.status === "CLOSED" ? "success" : "warning"} />
-        </div>
-      </div>
-
-      <section className="grid grid-cols-2 gap-4 rounded-2xl border bg-white p-4 text-sm">
-        <div><p className="text-xs text-slate-500">Product</p><p>{ncr.product?.name ?? "—"}</p></div>
-        <div><p className="text-xs text-slate-500">Quantity affected</p><p>{ncr.quantityAffected ?? "—"}</p></div>
-        <div><p className="text-xs text-slate-500">Source</p><p>{label(ncr.source)}</p></div>
-        <div><p className="text-xs text-slate-500">Quality hold</p><p>{ncr.hold ? `${ncr.hold.number} (${label(ncr.hold.status)})` : "None"}</p></div>
-        <div className="col-span-2"><p className="text-xs text-slate-500">Defect</p><p>{ncr.defect}</p></div>
-      </section>
-
-      {similar.length > 0 && (
-        <section className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm">
-          <p className="font-semibold text-amber-900">Similar issues found</p>
-          <ul className="mt-2 space-y-1">
-            {similar.filter((s) => s.id !== ncr.id).map((s) => (
-              <li key={s.id}><a className="underline" href={`/quality/ncr/${s.id}`}>{s.number}</a> — {s.title} ({label(s.status)})</li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {canManage && (
-        <form action={updateNcrInvestigation} className="space-y-4 rounded-2xl border bg-white p-5">
-          <input type="hidden" name="ncrId" value={ncr.id} />
-          <p className="text-sm font-semibold">Containment, root cause and disposition</p>
-          <label className="text-xs">Containment<textarea name="containment" defaultValue={ncr.containment ?? ""} className={input} rows={2} /></label>
-          <label className="text-xs">Root cause<textarea name="rootCause" defaultValue={ncr.rootCause ?? ""} className={input} rows={3} /></label>
-          <label className="flex items-center gap-2 text-xs"><input type="checkbox" name="rootCauseConfirmed" value="1" defaultChecked={ncr.rootCauseConfirmed} /> Root cause confirmed (not just a hypothesis)</label>
-          <div className="grid grid-cols-2 gap-4">
-            <label className="text-xs">Disposition<select name="disposition" defaultValue={ncr.disposition} className={input}>
-              {NCR_DISPOSITIONS.map((d) => <option key={d} value={d}>{label(d)}</option>)}
-            </select></label>
-            <label className="text-xs">Disposition note<input name="dispositionNote" defaultValue={ncr.dispositionNote ?? ""} className={input} /></label>
-          </div>
-          <Button type="submit" variant="primary">Save investigation</Button>
-        </form>
-      )}
-
-      <section className="space-y-3 rounded-2xl border bg-white p-5">
-        <p className="text-sm font-semibold">Corrective actions &amp; effectiveness</p>
-        <div className="divide-y">
-          {ncr.actions.map((action) => (
-            <div key={action.id} className="py-3 text-sm">
-              <div className="flex items-center justify-between">
-                <p>{action.description}</p>
-                <StatusPill label={label(action.status)} tone={action.status === "VERIFIED" ? "success" : action.status === "INEFFECTIVE" ? "danger" : "neutral"} />
-              </div>
-              {action.effectivenessCriterion && <p className="mt-1 text-xs text-slate-500">Effectiveness criterion: {action.effectivenessCriterion}{action.effectivenessReviewDate ? ` · Review ${action.effectivenessReviewDate.toLocaleDateString("en-GB")}` : ""}</p>}
-              {action.effectivenessResult && <p className="text-xs text-slate-500">Result: {action.effectivenessResult}</p>}
-              {canManage && (
-                <form action={updateNcrAction} className="mt-2 flex flex-wrap items-center gap-2">
-                  <input type="hidden" name="actionId" value={action.id} />
-                  <input type="hidden" name="ncrId" value={ncr.id} />
-                  <select name="status" defaultValue={action.status} className={`${input} w-auto`}>
-                    {ACTION_STATUSES.map((s) => <option key={s} value={s}>{label(s)}</option>)}
-                  </select>
-                  <input name="effectivenessResult" placeholder="Effectiveness result" defaultValue={action.effectivenessResult ?? ""} className={`${input} w-auto flex-1`} />
-                  <Button type="submit" variant="secondary">Update</Button>
-                </form>
-              )}
-            </div>
-          ))}
-          {ncr.actions.length === 0 && <p className="py-3 text-sm text-slate-500">No corrective actions recorded yet.</p>}
-        </div>
-        {canManage && (
-          <form action={addNcrAction} className="space-y-2 border-t pt-3">
-            <input type="hidden" name="ncrId" value={ncr.id} />
-            <input name="description" required placeholder="Corrective action description" className={input} />
-            <div className="grid grid-cols-2 gap-2">
-              <input name="dueDate" type="date" className={input} />
-              <input name="effectivenessReviewDate" type="date" className={input} placeholder="Effectiveness review date" />
-            </div>
-            <input name="effectivenessCriterion" placeholder="Effectiveness criterion (e.g. no repeat defect for 8 weeks)" className={input} />
-            <Button type="submit" variant="secondary">Add action</Button>
-          </form>
-        )}
-      </section>
-
-      {session.capabilities.has(QUALITY_CAPABILITIES.ncrClose) && ncr.status !== "CLOSED" && (
-        <form action={closeNcr} className="rounded-2xl border bg-white p-5">
-          <input type="hidden" name="ncrId" value={ncr.id} />
-          {!closeGate.ok && <p className="mb-2 text-xs text-amber-700">{closeGate.reason}</p>}
-          <Button type="submit" variant={closeGate.ok ? "primary" : "secondary"} disabled={!closeGate.ok}>Close NCR</Button>
-        </form>
-      )}
-      {ncr.status === "CLOSED" && <p className="text-sm text-slate-500">Closed {ncr.closedAt?.toLocaleString("en-GB")}.</p>}
-    </div>
-  );
+import { QUALITY_CAPABILITIES as C } from "@/core/permissions/capabilities";
+import { ncrDetail, similarNcr, qualityWorkspaceOptions } from "@/modules/quality/services/queries";
+import { updateNcrAction, closeNcr, reopenNcr } from "@/modules/quality/services/ncr-actions";
+import { ActionEditor } from "@/modules/quality/components/action-editor";
+import { QualityForm } from "@/modules/quality/components/action-form";
+import { IssueForm, qualityInput as input } from "@/modules/quality/components/issue-form";
+import { canClose, label } from "@/modules/quality/domain/workflow";
+import { QUALITY_FIELDS } from "@/modules/quality/domain/workspace";
+export default async function NcrDetail({params}:{params:Promise<{ncrId:string}>}){
+ const session=await requireSession();assertCapability(session,C.ncrRead);const ncr=await ncrDetail((await params).ncrId);const [options,similar]=await Promise.all([qualityWorkspaceOptions(),similarNcr(session,ncr.productId,ncr.defect)]);
+ const manage=session.capabilities.has(C.ncrManage),open=ncr.status!=="CLOSED",gate=canClose(ncr);const ws=ncr.workspace&&typeof ncr.workspace==="object"&&!Array.isArray(ncr.workspace)?ncr.workspace as Record<string,unknown>:{};
+ const hidden=<><input type="hidden" name="ncrId" value={ncr.id}/><input type="hidden" name="version" value={ncr.version}/></>;
+ const owner=(id:string|null)=>options.members.find(p=>p.id===id)?.name??(id?"Previous company member":"Unassigned");
+ return <div className="space-y-7"><Link href="/quality/ncr" className="text-sm text-[var(--color-atlas-blue)]">← Quality issues</Link><header className="space-y-2"><p className="text-sm text-slate-500">{ncr.number} · {label(ncr.source)} · {label(ncr.severity)}</p><h1 className="break-words text-3xl font-semibold tracking-tight">{ncr.title}</h1><p className="text-sm">{label(ncr.status)} · Owner: {owner(ncr.ownerUserId)}{ncr.dueAt?` · Target ${ncr.dueAt.toLocaleDateString("en-GB",{timeZone:"UTC"})}`:""}</p></header>
+ {ncr.inspectionId&&session.capabilities.has(C.checkExecute)&&<Link href={`/quality/checks/${ncr.inspectionId}`} className="block text-sm underline">Open linked inspection results</Link>}
+ <nav aria-label="Issue workflow" className="flex flex-wrap gap-2 text-xs">{["Record issue","Contain","Investigate","Take action","Verify effectiveness","Close"].map(step=><span key={step} className="rounded-full border bg-white px-3 py-2">{step}</span>)}</nav>
+ <section className="grid gap-4 rounded-3xl border bg-white p-5 md:grid-cols-2"><div><p className="text-xs text-slate-500">Product / affected quantity</p><p className="text-sm">{ncr.product?.name??"Not product-specific"} · {ncr.quantityAffected??"Not recorded"}</p></div><div><p className="text-xs text-slate-500">Quality hold</p><p className="text-sm">{ncr.hold?`${ncr.hold.number} · ${label(ncr.hold.status)}`:"No linked hold"}</p>{ncr.hold&&session.capabilities.has(C.holdRead)&&<Link href="/quality/holds" className="text-xs underline">Review quality holds</Link>}</div>{[["Defect",ncr.defect],["Containment",ncr.containment],["Root cause",ncr.rootCause],["Disposition",`${label(ncr.disposition)} · ${ncr.dispositionNote??"No reason recorded"}`]].map(([title,value])=><div key={title} className="min-w-0"><p className="text-xs text-slate-500">{title}</p><p className="whitespace-pre-wrap break-words text-sm">{value||"Not recorded"}</p></div>)}</section>
+ <details className="rounded-3xl border bg-white p-5"><summary className="cursor-pointer font-semibold">Context, investigation and evidence</summary><dl className="mt-4 grid gap-4 md:grid-cols-2">{QUALITY_FIELDS.filter(([key])=>ws[key]).map(([key,title])=><div key={key} className="min-w-0"><dt className="text-xs text-slate-500">{title}</dt><dd className="whitespace-pre-wrap break-words text-sm">{String(ws[key])}</dd></div>)}</dl></details>
+ {similar.some(item=>item.id!==ncr.id)&&<aside className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm"><p className="font-medium">Possible repeat issues — same product and overlapping defect wording</p>{similar.filter(item=>item.id!==ncr.id).map(item=><Link key={item.id} href={`/quality/ncr/${item.id}`} className="mt-2 block underline">{item.number} · {item.title}</Link>)}</aside>}
+ {manage&&open&&<details className="rounded-3xl border bg-white p-5"><summary className="cursor-pointer text-lg font-semibold">Edit issue and investigation</summary><div className="mt-5"><IssueForm record={{...ncr,dueAt:ncr.dueAt?.toISOString().slice(0,10)??"",workspace:ws}} options={options}/></div></details>}
+ <section className="space-y-4 rounded-3xl border bg-white p-5"><h2 className="text-xl font-semibold">Corrective actions and effectiveness</h2><p className="text-sm text-slate-500">Record the work, then check whether it prevented the problem. Ineffective actions remain unresolved.</p>
+ {!ncr.actions.length&&<p className="text-sm text-slate-500">No actions recorded yet.</p>}
+ {ncr.actions.map(action=><article key={action.id} className="min-w-0 space-y-2 rounded-2xl border p-4"><h3 className="break-words font-medium">{action.description}</h3><p className="text-xs text-slate-500">{label(action.status)} · {owner(action.ownerUserId)}{action.dueDate?` · Due ${action.dueDate.toLocaleDateString("en-GB",{timeZone:"UTC"})}`:" · No due date"}</p><p className="text-sm">Effectiveness criterion: {action.effectivenessCriterion??"Not recorded"}</p><p className="text-xs text-slate-500">Review: {action.effectivenessReviewDate?.toLocaleDateString("en-GB",{timeZone:"UTC"})??"Not scheduled"}</p>{action.effectivenessResult&&<p className="whitespace-pre-wrap break-words text-sm">Review evidence: {action.effectivenessResult}</p>}
+ {manage&&open&&action.status!=="VERIFIED"&&<QualityForm key={ncr.version} action={updateNcrAction} className="space-y-3">{hidden}<input type="hidden" name="actionId" value={action.id}/><label className="block text-sm">Next step<select aria-label={`Next step for ${action.description}`} name="status" className={input}>{(action.status==="OPEN"?["DONE"]:action.status==="INEFFECTIVE"?["OPEN"]:["VERIFIED","INEFFECTIVE","OPEN"]).map(value=><option key={value} value={value}>{label(value)}</option>)}</select></label><label className="block text-sm">Review evidence<textarea aria-label={`Review evidence for ${action.description}`} name="effectivenessResult" maxLength={2000} defaultValue={action.effectivenessResult??""} className={input}/></label><button type="submit" className="rounded-xl border px-4 py-2 text-sm">Update action</button></QualityForm>}{manage&&open&&action.status!=="VERIFIED"&&<details className="border-t pt-3"><summary className="cursor-pointer text-sm font-medium">Edit action details and dates</summary><ActionEditor ncrId={ncr.id} version={ncr.version} action={action} members={options.members}/></details>}</article>)}
+ {manage&&open&&<details className="border-t pt-4"><summary className="cursor-pointer font-semibold">Add corrective action</summary><ActionEditor ncrId={ncr.id} version={ncr.version} members={options.members}/></details>}
+ </section>
+ {open&&session.capabilities.has(C.ncrClose)&&<section className="rounded-3xl border bg-white p-5"><h2 className="text-lg font-semibold">Closure review</h2>{!gate.ok&&<p className="my-3 text-sm text-amber-700">{gate.reason}</p>}<QualityForm key={ncr.version} action={closeNcr} className="mt-3 space-y-3">{hidden}<label className="block text-sm">Closure evidence<textarea aria-label="Closure evidence" name="closureEvidence" required minLength={10} className={input}/></label><button type="submit" disabled={!gate.ok} className="atlas-primary-button disabled:opacity-50">Close quality issue</button></QualityForm><p className="mt-2 text-xs text-slate-500">Closing this issue does not release a quality hold.</p></section>}
+ {!open&&<section className="rounded-3xl border bg-white p-5"><p className="text-sm">Closed {ncr.closedAt?.toLocaleString("en-GB")} · {String(ws.closureEvidence??"Legacy closure — no evidence note recorded")}</p>{manage&&<details className="mt-4"><summary className="cursor-pointer font-medium">Reopen with a reason</summary><QualityForm key={ncr.version} action={reopenNcr} className="mt-3 space-y-3">{hidden}<label className="block text-sm">Reopen reason<textarea aria-label="Reopen reason" name="reason" required minLength={10} className={input}/></label><button type="submit" className="rounded-xl border px-4 py-2 text-sm">Reopen issue</button></QualityForm></details>}</section>}
+ </div>;
 }

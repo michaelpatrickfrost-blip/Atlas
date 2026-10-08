@@ -16,6 +16,7 @@ export const qualityManifest: ModuleManifest = {
     { label: "Checks", href: "/quality/checks", capability: QUALITY_CAPABILITIES.checkExecute },
     { label: "Quality Holds", href: "/quality/holds", capability: QUALITY_CAPABILITIES.holdRead },
     { label: "NCRs", href: "/quality/ncr", capability: QUALITY_CAPABILITIES.ncrRead },
+    { label: "Actions", href: "/quality/actions", capability: QUALITY_CAPABILITIES.ncrRead },
     { label: "Reports", href: "/quality/reports", capability: QUALITY_CAPABILITIES.reportRead },
   ],
 };

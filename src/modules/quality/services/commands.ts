@@ -8,26 +8,20 @@ import { writeAudit } from "@/core/audit/log";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { stockProvider } from "@/modules/stock/services/provider";
-import { evaluateMeasurement, canClose } from "../domain/workflow";
-import { requireSpecification, requireNcr } from "./queries";
+import { QualityInputError } from "../domain/workspace";
+import { evaluateMeasurement } from "../domain/workflow";
+import { requireSpecification } from "./queries";
 import type { Prisma } from "@/generated/prisma/client";
 
 function field(form: FormData, key: string, max = 2000) {
   const value = String(form.get(key) ?? "").trim();
-  if (value.length > max) throw new Error(`${key} is too long.`);
+  if (value.length > max) throw new QualityInputError(`${key} is too long.`);
   return value;
 }
 function required(form: FormData, key: string, max = 2000) {
   const value = field(form, key, max);
-  if (!value) throw new Error(`${key} is required.`);
+  if (!value) throw new QualityInputError(`${key} is required.`);
   return value;
-}
-function optionalNumber(form: FormData, key: string): number | null {
-  const raw = field(form, key, 40);
-  if (!raw) return null;
-  const n = Number(raw);
-  if (!Number.isFinite(n)) throw new Error(`${key} must be a number.`);
-  return n;
 }
 
 async function requireQuality(session: Session) {
@@ -107,6 +101,8 @@ export async function createControlPoint(form: FormData) {
   const specificationId = field(form, "specificationId", 100) || null;
   const trigger = required(form, "trigger", 20);
   const sampleSize = Math.max(1, Number(field(form, "sampleSize", 10)) || 1);
+  if(productId&&!await db.product.findFirst({where:{id:productId,organisationId:session.organisationId}}))throw new Error("Product not found.");
+  if(specificationId){const spec=await db.qualitySpecification.findFirst({where:{id:specificationId,organisationId:session.organisationId}});if(!spec||productId&&spec.productId!==productId)throw new Error("Choose a specification for this company and product.");}
   await db.qualityControlPoint.create({
     data: { organisationId: session.organisationId, code, name, productId, specificationId, trigger: trigger as "MANUAL", sampleSize, operation: field(form, "operation", 120) || null },
   });
@@ -121,32 +117,41 @@ export async function executeInspection(form: FormData) {
   assertCapability(session, QUALITY_CAPABILITIES.checkExecute);
   await requireQuality(session);
   const controlPointId = required(form, "controlPointId", 100);
-  const quantityInspected = Math.max(1, Number(field(form, "quantityInspected", 10)) || 1);
+  const quantityInspected = Number(field(form, "quantityInspected", 10));
+  if(!Number.isSafeInteger(quantityInspected)||quantityInspected<1||quantityInspected>2147483647)return {error:"Enter a positive whole quantity inspected."};
   const lotCode = field(form, "lotCode", 80) || null;
   const warehouseId = field(form, "warehouseId", 100) || null;
   const locationId = field(form, "locationId", 100) || null;
   const characteristicIds = form.getAll("characteristicId").map(String);
-  const values = form.getAll("value").map(String);
-  const manualPass = form.getAll("pass").map(String);
 
-  const outcome = await db.$transaction(async (tx) => {
+  let outcome;
+  try { outcome = await db.$transaction(async (tx) => {
     const controlPoint = await tx.qualityControlPoint.findFirst({ where: { id: controlPointId, organisationId: session.organisationId }, include: { specification: { include: { characteristics: true } } } });
-    if (!controlPoint) throw new Error("Control point not found.");
-    const productId = controlPoint.productId;
-    if (!productId) throw new Error("This control point has no product configured.");
+    if (!controlPoint || !controlPoint.active) throw new Error("Active control point not found.");
+    if(warehouseId&&!await tx.warehouse.findFirst({where:{id:warehouseId,organisationId:session.organisationId}}))throw new QualityInputError("Choose a warehouse from this company.");
+    if(locationId&&!await tx.stockLocation.findFirst({where:{id:locationId,organisationId:session.organisationId,...(warehouseId?{warehouseId}:{})}}))throw new QualityInputError("Choose a location from this company and warehouse.");
+    if(controlPoint.specification&&controlPoint.specification.status!=="EFFECTIVE")throw new QualityInputError("Use an effective specification for inspection.");
+    const productId = controlPoint.productId ?? controlPoint.specification?.productId;
+    if (!productId) throw new QualityInputError("Configure a product or product specification for this control point before inspection.");
+    if(!await tx.product.findFirst({where:{id:productId,organisationId:session.organisationId}}))throw new Error("Product unavailable.");
+    if(controlPoint.specification&&(controlPoint.specification.organisationId!==session.organisationId||controlPoint.specification.productId!==productId))throw new Error("Specification unavailable for this company and product.");
     const number = await nextNumber(tx, session.organisationId, "INS");
     const characteristicById = new Map((controlPoint.specification?.characteristics ?? []).map((c) => [c.id, c]));
     let anyFail = false;
     const measurementRows: { characteristicId: string | null; valueNumber: number | null; pass: boolean; name: string }[] = [];
-    for (let i = 0; i < characteristicIds.length; i++) {
-      const characteristic = characteristicById.get(characteristicIds[i]);
-      const numeric = values[i] !== "" && values[i] !== undefined && !Number.isNaN(Number(values[i])) ? Number(values[i]) : null;
-      const recordedPass = manualPass[i] === "1" || manualPass[i] === "true";
-      const pass = characteristic ? evaluateMeasurement(characteristic.method, numeric, characteristic.lowerLimit ? Number(characteristic.lowerLimit) : null, characteristic.upperLimit ? Number(characteristic.upperLimit) : null, recordedPass) : recordedPass;
-      if (!pass) anyFail = true;
-      measurementRows.push({ characteristicId: characteristic?.id ?? null, valueNumber: numeric, pass, name: characteristic?.name ?? "Check" });
+    const configured=controlPoint.specification?.characteristics??[];
+    if(new Set(characteristicIds).size!==characteristicIds.length||characteristicIds.length!==configured.length||characteristicIds.some(id=>!characteristicById.has(id)))throw new QualityInputError("Complete every configured characteristic exactly once.");
+    for(const characteristic of configured){
+      const raw=field(form,`value:${characteristic.id}`,100),answer=field(form,`pass:${characteristic.id}`,10);
+      const numeric=raw?Number(raw):null;
+      if(characteristic.method==="MEASUREMENT"&&(numeric===null||!Number.isFinite(numeric)))throw new QualityInputError(`Enter a finite measurement for ${characteristic.name}.`);
+      if(characteristic.method!=="MEASUREMENT"&&!["1","0"].includes(answer))throw new QualityInputError(`Record pass or fail for ${characteristic.name}.`);
+      const pass=evaluateMeasurement(characteristic.method,numeric,characteristic.lowerLimit!==null?Number(characteristic.lowerLimit):null,characteristic.upperLimit!==null?Number(characteristic.upperLimit):null,answer==="1");
+      if(!pass)anyFail=true;
+      measurementRows.push({characteristicId:characteristic.id,valueNumber:characteristic.method==="MEASUREMENT"?numeric:null,pass,name:characteristic.name});
     }
-    const result = measurementRows.length ? (anyFail ? "FAIL" : "PASS") : "PASS";
+    if(!configured.length){const answer=field(form,"pass",10);if(!["1","0"].includes(answer))throw new QualityInputError("Explicitly record pass or fail for this inspection.");anyFail=answer==="0";measurementRows.push({characteristicId:null,valueNumber:null,pass:!anyFail,name:"Manual inspection"});}
+    const result=anyFail?"FAIL":"PASS";
     const inspection = await tx.qualityInspection.create({
       data: {
         organisationId: session.organisationId, number, controlPointId, specificationId: controlPoint.specificationId, productId,
@@ -172,16 +177,16 @@ export async function executeInspection(form: FormData) {
       const ncr = await tx.nonConformance.create({
         data: {
           organisationId: session.organisationId, number: ncrNumber, title: `${failedNames} — ${number}`,
-          source: "FINAL", status: "OPEN", severity: "MAJOR", productId, specificationId: controlPoint.specificationId,
+          source: controlPoint.trigger === "RECEIPT" ? "INCOMING" : controlPoint.trigger === "PRODUCTION" ? "MANUFACTURING" : "FINAL", status: "OPEN", severity: "MAJOR", productId, specificationId: controlPoint.specificationId,
           inspectionId: inspection.id, holdId: hold.id, quantityAffected: quantityInspected,
           defect: failedNames, reportedByUserId: session.userId,
         },
       });
       ncrId = ncr.id;
     }
-    await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: `quality.inspection.${result.toLowerCase()}`, entityType: "QualityInspection", entityId: inspection.id });
+    await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: `quality.inspection.${result.toLowerCase()}`, entityType: "QualityInspection", entityId: inspection.id }, tx);
     return { inspectionId: inspection.id, result, holdId, ncrId, warehouseId, locationId, productId, lotCode, quantity: quantityInspected };
-  });
+  }); } catch(error) {if(error instanceof QualityInputError)return {error:error.message};throw error;}
 
   if (outcome.holdId && outcome.warehouseId) {
     try {
@@ -234,100 +239,34 @@ export async function releaseHold(form: FormData) {
   revalidatePath("/quality", "layout");
 }
 
+
 export async function reportNcr(form: FormData) {
-  const session = await requireSession();
-  assertCapability(session, QUALITY_CAPABILITIES.ncrReport);
-  await requireQuality(session);
-  const title = required(form, "title", 250);
-  const defect = required(form, "defect", 2000);
-  const source = required(form, "source", 20);
-  const severity = required(form, "severity", 20);
-  const productId = field(form, "productId", 100) || null;
-  const quantityAffected = optionalNumber(form, "quantityAffected");
-  const containment = field(form, "containment", 4000) || null;
-  const id = await db.$transaction(async (tx) => {
-    const number = await nextNumber(tx, session.organisationId, "NCR");
-    const ncr = await tx.nonConformance.create({
-      data: {
-        organisationId: session.organisationId, number, title, defect, source: source as "OTHER", severity: severity as "MINOR",
-        productId, quantityAffected, containment, status: containment ? "CONTAINED" : "OPEN", reportedByUserId: session.userId,
-      },
-    });
-    await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "quality.ncr.reported", entityType: "NonConformance", entityId: ncr.id });
-    return ncr.id;
-  });
-  revalidatePath("/quality/ncr");
-  redirect(`/quality/ncr/${id}`);
+ const session = await requireSession();
+ assertCapability(session, QUALITY_CAPABILITIES.ncrReport);
+ const actions = await import("./ncr-actions");
+ return actions.reportNcr(form);
 }
-
 export async function updateNcrInvestigation(form: FormData) {
-  const session = await requireSession();
-  assertCapability(session, QUALITY_CAPABILITIES.ncrManage);
-  await requireQuality(session);
-  const id = required(form, "ncrId", 100);
-  const ncr = await requireNcr(session, id);
-  const containment = field(form, "containment", 4000) || ncr.containment;
-  const rootCause = field(form, "rootCause", 4000) || ncr.rootCause;
-  const rootCauseConfirmed = field(form, "rootCauseConfirmed") === "1";
-  const disposition = field(form, "disposition", 30) || ncr.disposition;
-  const dispositionNote = field(form, "dispositionNote", 2000) || ncr.dispositionNote;
-  const status = disposition !== "PENDING" ? "DISPOSITIONED" : rootCause ? "INVESTIGATING" : ncr.status;
-  await db.nonConformance.updateMany({
-    where: { id: ncr.id, organisationId: session.organisationId, version: ncr.version },
-    data: { containment, rootCause, rootCauseConfirmed, disposition: disposition as "PENDING", dispositionNote, status: status as "OPEN", version: { increment: 1 } },
-  });
-  await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "quality.ncr.investigation_updated", entityType: "NonConformance", entityId: ncr.id });
-  revalidatePath(`/quality/ncr/${id}`);
+ const session = await requireSession();
+ assertCapability(session, QUALITY_CAPABILITIES.ncrManage);
+ const actions = await import("./ncr-actions");
+ return actions.updateNcrInvestigation(form);
 }
-
 export async function addNcrAction(form: FormData) {
-  const session = await requireSession();
-  assertCapability(session, QUALITY_CAPABILITIES.ncrManage);
-  await requireQuality(session);
-  const ncrId = required(form, "ncrId", 100);
-  await requireNcr(session, ncrId);
-  const description = required(form, "description", 2000);
-  const ownerUserId = field(form, "ownerUserId", 100) || session.userId;
-  const dueRaw = field(form, "dueDate", 20);
-  const effectivenessCriterion = field(form, "effectivenessCriterion", 2000) || null;
-  const effectivenessReviewRaw = field(form, "effectivenessReviewDate", 20);
-  await db.nonConformanceAction.create({
-    data: {
-      organisationId: session.organisationId, ncrId, description, ownerUserId,
-      dueDate: dueRaw ? new Date(dueRaw) : null, effectivenessCriterion,
-      effectivenessReviewDate: effectivenessReviewRaw ? new Date(effectivenessReviewRaw) : null,
-    },
-  });
-  revalidatePath(`/quality/ncr/${ncrId}`);
+ const session = await requireSession();
+ assertCapability(session, QUALITY_CAPABILITIES.ncrManage);
+ const actions = await import("./ncr-actions");
+ return actions.addNcrAction(form);
 }
-
 export async function updateNcrAction(form: FormData) {
-  const session = await requireSession();
-  assertCapability(session, QUALITY_CAPABILITIES.ncrManage);
-  await requireQuality(session);
-  const actionId = required(form, "actionId", 100);
-  const ncrId = required(form, "ncrId", 100);
-  const status = required(form, "status", 20);
-  const effectivenessResult = field(form, "effectivenessResult", 2000) || null;
-  const action = await db.nonConformanceAction.findFirst({ where: { id: actionId, organisationId: session.organisationId, ncrId } });
-  if (!action) throw new Error("Action not found.");
-  await db.nonConformanceAction.update({ where: { id: action.id }, data: { status: status as "OPEN", effectivenessResult: effectivenessResult ?? action.effectivenessResult } });
-  revalidatePath(`/quality/ncr/${ncrId}`);
+ const session = await requireSession();
+ assertCapability(session, QUALITY_CAPABILITIES.ncrManage);
+ const actions = await import("./ncr-actions");
+ return actions.updateNcrAction(form);
 }
-
 export async function closeNcr(form: FormData) {
-  const session = await requireSession();
-  assertCapability(session, QUALITY_CAPABILITIES.ncrClose);
-  await requireQuality(session);
-  const id = required(form, "ncrId", 100);
-  const ncr = await requireNcr(session, id);
-  const gate = canClose(ncr);
-  if (!gate.ok) throw new Error(gate.reason);
-  await db.nonConformance.updateMany({
-    where: { id: ncr.id, organisationId: session.organisationId, version: ncr.version },
-    data: { status: "CLOSED", closedByUserId: session.userId, closedAt: new Date(), version: { increment: 1 } },
-  });
-  await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "quality.ncr.closed", entityType: "NonConformance", entityId: ncr.id });
-  revalidatePath(`/quality/ncr/${id}`);
-  revalidatePath("/quality/ncr");
+ const session = await requireSession();
+ assertCapability(session, QUALITY_CAPABILITIES.ncrClose);
+ const actions = await import("./ncr-actions");
+ return actions.closeNcr(form);
 }

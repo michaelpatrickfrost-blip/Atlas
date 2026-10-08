@@ -7582,6 +7582,9 @@ model NonConformance {
   closedByUserId     String?
   closedAt           DateTime?
   version            Int      @default(1)
+  ownerUserId        String?
+  dueAt              DateTime?
+  workspace          Json     @default("{}")
 
   organisation  Organisation            @relation(fields: [organisationId], references: [id], onDelete: Cascade)
   product       Product?                @relation(fields: [productId], references: [id], onDelete: SetNull)
@@ -7593,6 +7596,7 @@ model NonConformance {
   @@unique([organisationId, number])
   @@index([organisationId, status, severity])
   @@index([organisationId, productId])
+  @@index([organisationId, ownerUserId, dueAt])
   @@map("non_conformances")
 }
 

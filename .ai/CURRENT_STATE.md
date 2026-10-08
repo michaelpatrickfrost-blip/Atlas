@@ -1,5 +1,26 @@
 # Atlas current state
 
+## 8 October 2026 — Quality workspace improvements (verification in progress)
+
+- User requested substantial Quality improvements with external research. Official
+  Qualio, MasterControl and Reliance references mapped in
+  `docs/plans/QUALITY_WORKSPACE_RESEARCH.md`; behaviour in `docs/modules/QUALITY.md`.
+- Richer NCR reporting/editing, canonical product/active member owner, target date,
+  optional context/impact/evidence/five whys, action register and editable action
+  details, evidence-based effectiveness and guarded closure/reopening. Parent
+  submitted-version lock serialises all issue/action writes with atomic audit.
+- Fixes missing inspection results silently passing, positional/radio-group answer
+  bugs, manual failure not opening hold/NCR, missing tenant checks on control-point
+  references; adds readable inspection history and capability-filtered Quality Home.
+  Reports distinguish actual inspection pass rate and include all-date open ageing.
+- Additive migration `20261008130000_quality_workspace`: optional owner/date, default
+  JSON workspace and company owner/date index. Reviewed SQL: no destructive changes.
+  Existing holds/service-linked records and legacy metadata preserved.
+- Paths: Quality routes/components/domain/services/manifest, schema/migration,
+  `tests/quality-*`, Quality topic/research docs. 36 focused tests and full suite 808 passed / 22 integration skips; strict
+  TypeScript, Quality ESLint, production build and whitespace checks passed.
+  Server migration/deployment and live acceptance pending. No local business DB.
+
 ## Guardian Tickets access and recovery — 8 October 2026
 
 - Deployed application `7a7f005`. Missing Tickets read access previously showed a
@@ -50,6 +71,7 @@
   and section-only updates, preserving concurrent Safety/Marketing changes. Evidence:
   `docs/evidence/2026-10-08-guardian-ticket-access.md`. This is tested workflow coverage,
   not a blanket pass for every screen, control or role.
+
 
 ## 8 October 2026 — Safety workplace register deployed and verified
 

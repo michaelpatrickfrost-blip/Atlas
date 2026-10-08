@@ -20,7 +20,10 @@
   build, separate TypeScript and scoped ESLint (fixture prefer-const corrected).
   Compatible release includes deployed admin cleanup `00cf015`; regenerated Prisma
   client, production build, separate TypeScript and full suite 944 pass / 22 skips.
-  Deployment and live acceptance remain pending.
+  Runtime `d3312b4` deployed with backup, 99 migrations current, healthy restart and login 200.
+  Original 42 live acceptance assertions pass. New browser harness exposed a navigation
+  timing assumption; waiting for the destination heading before checking it. Guided
+  acceptance remains pending.
 - Next: preserve newly deployed concurrent admin cleanup commits, rebase and rebuild,
   deploy, run old S&OP calculation/publication acceptance and new actual guided browser
   journey, revoke synthetic fixture access, integrate owned shared-project files.

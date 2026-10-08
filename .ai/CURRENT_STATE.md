@@ -15,6 +15,45 @@ cross-tenant pointer foreign keys and immutable deletes. Next: prepare corrected
 candidate, repeat central lifecycle/forms acceptance before
 activation. Phase 1 gate remains pending; later phases not started.
 
+## 9 October 2026 — Guardian recovery reverified on current live release
+
+- Public runtime `58b3610f73329264e5b48b92bde721daddeb6a74` includes the
+  already-deployed `2d25bd2` record repair. Repeated the complete original central
+  Test fixture: all 13 missing/foreign/private unavailable states and actual module
+  return clicks, six authorised records, equipment/work and Fleet/work round-trips
+  pass; exact full central record/version/history/connection snapshots unchanged.
+  Zero browser errors or attempted business writes; 21 background notice reads
+  blocked. Exact synthetic companies suspended and sessions revoked, history kept.
+  Private pre-test database/Service backup `atlas-pre-record-refresh-20261009-184900`
+  retained. Seven previously identified reports now verified against this live SHA.
+- Read all seven queue pages through `hasMore=false`: 169 active diagnostics.
+  Seven recent Manufacturing/Home/People/Tickets reports received full current
+  briefs and precise NEEDS_AI symptoms, evidence, source paths, attempted checks,
+  original-state blockers and next actions. Other historical reports remain open
+  or NEEDS_AI; no bulk closure or claim that all actions are verified.
+- Manufacturing digest `1518667181` on `585e9ba` correlates privately with 25
+  `requiredDate.getTime` TypeErrors. The parallel deployed `af030b0` date conversion
+  is preserved. Existing QA browser reads of Home, planning, planned orders,
+  shortages, People, Tickets queues and My work pass on pinned `58b3610`: seven
+  pages, six available Apps toggles, zero browser/chunk errors, all non-GET/HEAD
+  traffic blocked. QA has zero saved MRP runs/pending proposals: this proves fresh
+  empty-state rendering only, not the original saved-date or Run MRP outcome.
+  Initial read harness expected a Home Apps button; Home intentionally is the
+  launcher, so the harness was corrected without changing product code.
+- Atlas and Guardian timer active; worker Result=success. Exit 75 is an intentional
+  shared-release-lock skip, not a worker failure. Recent completed sweep on
+  `585e9ba`: 256 requests, 100 rendered pages, 99 safe toggles, no findings/browser
+  errors; inventory/capped read coverage does not prove dynamic writes. Anonymous
+  login 200, staff-only Guardian inbox 307 and correct brief endpoint 401 verified.
+- Final recovery evidence and shared guide reconciled; only this chat's completed
+  four ephemeral server files removed. Sealed checker, reports, private logs and
+  central backups retained. This follow-up changes documentation/triage only;
+  no runtime switch, schema change or unrelated parallel source deployment.
+  Original repair production build/types/lint/tests and live evidence remain in
+  `docs/evidence/2026-10-08-guardian-record-recovery.md`; no new full application
+  build is claimed for documentation edits. Continue with a disposable central
+  data-bearing MRP fixture and exact original control/record verification.
+
 ## 9 October 2026 — User-supplied Atlas logo and app icon
 
 - Applied Michael's supplied blue ribbon A artwork. Full logo with “Plan. Make.
@@ -435,29 +474,55 @@ and `/login` returned 200. The bug was real but incomplete, not undeployed.
   `scripts/guardian/check-app-launcher.ts`; design docs reconciled.
   Evidence: `docs/evidence/2026-10-08-app-launcher.md`.
 
-## 8 October 2026 — Guardian unavailable-record recovery in release checks
+## 8 October 2026 — Guardian unavailable-record recovery deployed and verified
 
-- Reproduced generic HTTP 500s on live 2bda114 for missing/foreign links across six
-  operational record routes and a non-attendee private meeting. Six valid fixture
-  records render; private meeting title/agenda remain hidden. New evidence-backed
-  report `cmuzskpvh00001cd5zp9gv50g`; historical unidentified reports remain NEEDS_AI.
-- Six scoped null-read branches now return a neutral unavailable explanation and
-  working module backlink. Meetings read uses the unchanged meetingScope while
-  mutation access still rejects. All tenant/capability/module/source/privacy gates
-  and unexpected error reporting preserved; Guardian does not count unavailable as
-  a working page. No schema or permission changes.
-- New `check-unavailable-records.ts`: explicitly opted-in disposable central Test
-  companies/read-only profiles, all non-read browser requests blocked, privacy and
-  exact full record/history snapshots, module recovery and equipment/work/Fleet
-  round-trips, stable runtime SHA, exact fixture retirement. Initial fixture schema
-  and overly strict background-read counting corrected in the harness.
-- New page suite first failed nine assertions against original code; repaired
-  focused 73 tests pass. Full 1,034 tests pass / 22 integration skips; production
-  build, strict types and scoped lint pass. Final probe-only adjustments pass strict types, lint and full original
-  reproduction: 13 generic failures, six valid pages, both connected round-trips
-  and exact unchanged central snapshots; 21 notification reads also blocked. Private pre-fixture DB/Service backup 170522 UTC retained.
-- Candidate staging, compatible backed-up activation, exact live original outcome,
-  triage FIXED and canonical integration still pending; no deployment claim yet.
+- Immutable live runtime `2d25bd2` fixes generic HTTP 500s for scoped missing/foreign
+  Meetings, Equipment, Maintenance work, Fleet, Engineering and Field Service reads.
+  A neutral unavailable explanation provides a working calendar/register return
+  link; private meeting audience, tenant/source/capability/module/customer-erasure
+  filters, throwing mutation guards and unexpected server errors remain intact.
+  Guardian classifies unavailable separately from working coverage. No migration.
+- 8 October launcher release `dd66039` includes this repair. Repeated
+  exact original check on that pinned SHA: all 13 states/returns, six valid pages,
+  connected round-trips, unchanged central snapshots and zero browser errors pass.
+  Private latest fixture backup 172432 UTC retained; exact synthetic access retired.
+- Original 2bda114 fixture proves all 13 generic failures (12 missing/foreign plus
+  private non-attendee meeting), six valid pages and both connected round-trips;
+  exact central records/history unchanged. Candidate and public live original check
+  both pass all 13 explicit states/return clicks, six valid records, equipment/work
+  and Fleet/work links, hidden private title/agenda and exact full central snapshots
+  including versions, canonical connections, audit/outbox/Finance/Inventory.
+  Zero browser errors; all non-read traffic including 21 background notice reads
+  blocked. Exact Test companies suspended and synthetic sessions revoked; retained
+  central history. Initial fixture schema/background-count harness issues corrected.
+- New page suite first fails nine assertions against original code; repaired
+  focused 73 tests pass, full 1,034 pass / 22 integration skips, strict types, scoped
+  lint, production build and whitespace pass. Canonical four-file focused suite
+  76 pass after safe integration. Already-deployed operational dependencies were
+  missing from canonical: 69 files integrated with base checks/three-way schema and
+  metadata merge; 20 action aliases appended without replacing concurrent mappings.
+  Parallel operational owner subsequently preserves repair and records its separate
+  repeated 62-assertion acceptance on 2d25bd2; see its own evidence.
+- Prepared candidate recovery `4KmPKa`; actual old/candidate/rollback `F6fNk0` passes
+  40 page requests/40 Apps toggles, zero browser/chunk failures. Public post-release
+  five pages/five toggles pass. Exact public SHA; Atlas/timer active, worker success
+  and fresh heartbeat. Staff-only anonymous inbox 307 / correct brief endpoint 401.
+- Private DB/Service backups retained: original fixture 170522, prepare 171205,
+  candidate fixture 171440, activation 171649, live fixture 171745 UTC. Previous
+  2bda114 retained. Seven identified reproduction reports FIXED after live proof,
+  including cmuzskpvh00001cd5zp9gv50g and six exact current-revision render streams.
+  Older unidentified streams stay NEEDS_AI. New team digest 3529963080 at17:12 is
+  triaged NEEDS_AI (unknown-action category nearby; original control/state missing).
+  Eleven later operational negative-acceptance diagnostics received full current
+  briefs and NEEDS_AI with exact symptom/source/context/blocker/next action. Queue
+  refreshed through page four; 91 active before subsequent profile report. Source
+  acceptance success does not automatically close unidentified guard diagnostics.
+  New /profile digest 24128237 at17:21 is NEEDS_AI: original profile/projection
+  state absent; fresh existing QA HTTP GET passes 200 without generic error. This
+  does not prove original browser/control outcome. 8 October closing queue: 92 active.
+- Evidence `docs/evidence/2026-10-08-guardian-record-recovery.md`; shared Guardian
+  guide/decision updated. Continue rotating uncovered dynamic controls and states;
+  8 October broad sweep was 6ef3cdf inventory, not new workflow proof.
 
 ## 8 October 2026 — Guardian draft recovery deployed and verified
 

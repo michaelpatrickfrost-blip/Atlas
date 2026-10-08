@@ -169,6 +169,7 @@ history retained. `--reproduce` requires the old generic failures. Optional
 `ATLAS_RECORD_TEST_REVISION` pins the expected SHA; each run also asserts the public
 runtime SHA stays unchanged throughout. Independent proof does not close historical
 render reports whose original fixture/profile/action remains unidentified.
+Deployed reproduction evidence: [8 October record recovery](evidence/2026-10-08-guardian-record-recovery.md).
 
 ## Rejected drafts and older tabs
 

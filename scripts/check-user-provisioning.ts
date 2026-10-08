@@ -52,7 +52,7 @@ async function main() {
       check(await dialog.locator('input[name="currentPassword"]').count() === 0, "New employee form does not ask for Michael's password");
       await dialog.getByLabel("Full name", { exact: true }).fill(input.name);
       await dialog.getByLabel("Email", { exact: true }).fill(input.email);
-      await dialog.getByLabel("Atlas role", { exact: true }).selectOption("EMPLOYEE");
+      await dialog.locator('select[name="staffRole"]').selectOption("EMPLOYEE");
       await dialog.getByLabel("Employee sign-in password", { exact: true }).fill(input.password);
       await dialog.getByRole("button", { name: "Create staff access", exact: true }).click();
       await expect(dialog.getByRole("status")).toContainText("sign in now");

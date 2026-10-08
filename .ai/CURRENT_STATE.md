@@ -14,7 +14,10 @@
 - Checks so far: production build, separate strict TypeScript, 36 focused regressions,
   full suite (953 pass / 22 integration skips), scoped ESLint and whitespace pass.
   Refreshed disposable dependencies after cloned tree lacked Playwright. Live
-  deployment, Danielle provisioning/sign-in and denied-creation verification pending.
+  deployment completed (runtime `2fe33ad`, server/public login 200; 99 migrations
+  current). Danielle provisioning/sign-in and denied-creation verification pending.
+  Initial browser harness stopped at an ambiguous select label before any creation;
+  scoped its selector to the employee role field for the next run.
   No schema or local business database/cache introduced.
 
 

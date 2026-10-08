@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { assertModuleEnabled } from "@/core/modules/access";
+import { assuranceState } from "@/modules/people/domain/platform";
 import { ActionForm } from "@/components/ui/action-form";
 import { Button } from "@/components/ui/button";
 import { StatusPill, type StatusTone } from "@/components/ui/status-pill";
@@ -26,6 +28,7 @@ export default async function EmployeeRecordPage({ params }: { params: Promise<{
   const { employeeId } = await params;
   const session = await requireSession();
   assertCapability(session, HR_CAPABILITIES.employeeRead);
+  await assertModuleEnabled(session, "people");
   const manage = can(session, HR_CAPABILITIES.employeeManage);
   const canAbsence = can(session, HR_CAPABILITIES.absenceRead);
   const managePayroll = can(session, PAYROLL_CAPABILITIES.employeeManage);
@@ -79,7 +82,7 @@ export default async function EmployeeRecordPage({ params }: { params: Promise<{
   });
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6 break-words">
       <div className="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-[var(--color-border)] bg-white p-6">
         <div>
           <p className="text-xs text-[var(--color-ink-faint)]">{employee.employeeNumber}</p>
@@ -143,6 +146,7 @@ export default async function EmployeeRecordPage({ params }: { params: Promise<{
         </section>
       )}
 
+      <section className="flex flex-wrap gap-3 rounded-2xl border border-[var(--color-border)] bg-white p-4 text-sm"><Link className="text-[var(--color-atlas-blue)]" href={`/people/training?employeeId=${employee.id}`}>Training &amp; qualifications →</Link><Link className="text-[var(--color-atlas-blue)]" href={`/people/documents?employeeId=${employee.id}`}>Document register &amp; renewals →</Link></section>
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="space-y-3 rounded-2xl border border-[var(--color-border)] bg-white p-6">
           <h3 className="text-sm font-semibold">Onboarding checklist</h3>
@@ -304,12 +308,12 @@ export default async function EmployeeRecordPage({ params }: { params: Promise<{
               {employee.documents.map((d) => (
                 <li key={d.id} className="flex items-center justify-between gap-3">
                   {d.url ? <a href={d.url} target="_blank" rel="noreferrer" className="text-[var(--color-atlas-blue)]">{d.title}</a> : <span>{d.title}</span>}
-                  {d.category && <span className="text-xs text-[var(--color-ink-faint)]">{d.category}</span>}
+                  {<span className="ml-2 text-xs text-[var(--color-ink-muted)]">{assuranceState(d)}</span>}{d.category && <span className="text-xs text-[var(--color-ink-faint)]">{d.category}</span>}
                 </li>
               ))}
             </ul>
           )}
-          <p className="text-xs text-[var(--color-ink-faint)]">Links to documents held elsewhere — Atlas doesn&rsquo;t have file storage configured yet.</p>
+          <p className="text-xs text-[var(--color-ink-faint)]">Document references use your approved storage. Manage issue dates, renewals and archive status in the document register.</p>
           {manage && (
             <ActionForm action={addEmployeeDocument.bind(null, employee.id)} className="grid gap-2 border-t border-[var(--color-border)] pt-3 sm:grid-cols-2">
               <input name="title" placeholder="Document title" required maxLength={200} className="border border-[var(--color-border)] p-2 text-sm sm:col-span-2" />

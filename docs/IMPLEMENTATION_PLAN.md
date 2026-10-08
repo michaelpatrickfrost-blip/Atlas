@@ -178,9 +178,13 @@ Finance scope is researched against primary product documentation and UK digital
 3 October: source foundations now include self-service holiday/contacts, direct-team
 approvals, private manager/HR notes, actual timesheets and the separate Scheduling
 weekly board/bulk shifts/tasks. See [delivery and release limits](modules/STAFF_SCHEDULING.md).
-The broader checklist remains open; no live migration/activation or full acceptance.
+8 October: connected HR home, internal recruitment/accepted-offer handover, learning
+and qualification records, document renewals and operational workforce reports extend
+those foundations. See [HR platform scope](modules/HR_PLATFORM.md) and CURRENT_STATE
+for checks/deployment evidence. Broader HR acceptance remains open.
 
-- [ ] HR: employee records, departments, contracts, leave, policies, skills, training and restricted-data permissions.
+- [x] HR source workflows: employee directory, lifecycle tasks, internal recruitment, training/qualification register, document metadata/expiry, leave, policies and restricted-data checks.
+- [ ] HR: public recruiting, document uploads/signatures, benefits, configurable probation, course delivery and unattended notifications.
 - [ ] Scheduling: availability, shifts, rotations, leave, skills/certification constraints and overtime rules.
 - [ ] Hours: time capture, timesheets, breaks, approval, project/work-centre costing and Payroll export.
 - [ ] Payroll remains a separately validated jurisdiction-specific engine; employee access is separate from app membership.

@@ -255,6 +255,9 @@ model Organisation {
   payrollDocuments PayrollDocument[]
   employeeHistoryEvents EmployeeHistoryEvent[]
   employeeDocuments EmployeeDocument[]
+  hrVacancies HrVacancy[]
+  hrApplications HrApplication[]
+  employeeTraining EmployeeTraining[]
   expenseClaims ExpenseClaim[]
   hrPolicies HrPolicy[]
   performancePlans PerformancePlan[]
@@ -2899,6 +2902,8 @@ model Employee {
   payrollDocuments PayrollDocument[]
   history         EmployeeHistoryEvent[]
   documents       EmployeeDocument[]
+  training        EmployeeTraining[]
+  recruitmentApplications HrApplication[]
   expenseClaims   ExpenseClaim[]
   performancePlans PerformancePlan[]
   goals            Kpi[]
@@ -2910,6 +2915,7 @@ model Employee {
   plannerHandovers PlannerHandover[]
   plannerPlaces PlannerPlace[]
 
+  @@unique([id, organisationId])
   @@unique([organisationId, employeeNumber])
   @@index([organisationId])
   @@index([organisationId, status])
@@ -3327,6 +3333,10 @@ model EmployeeDocument {
   category       String?
   url            String?
   notes          String?
+  issuedOn       DateTime? @db.Date
+  expiresOn      DateTime? @db.Date
+  status         String @default("ACTIVE")
+  version        Int @default(0)
   createdAt      DateTime @default(now())
 
   organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
@@ -8756,4 +8766,70 @@ model SopVersion {
  cycle SopCycle @relation(fields:[cycleId],references:[id],onDelete:Cascade)
  @@index([organisationId,cycleId,createdAt])
  @@map("sop_versions")
+}
+
+// HR-owned lifecycle records. Tenant-qualified relations prevent cross-company links.
+model HrVacancy {
+  id String @id @default(cuid())
+  organisationId String
+  title String
+  department String?
+  location String?
+  employmentType EmploymentType @default(FULL_TIME)
+  description String
+  ownerUserId String
+  targetStartOn DateTime? @db.Date
+  status String @default("OPEN")
+  version Int @default(0)
+  createdAt DateTime @default(now())
+  organisation Organisation @relation(fields:[organisationId], references:[id], onDelete:Cascade)
+  applications HrApplication[]
+  @@unique([id,organisationId])
+  @@index([organisationId,status])
+  @@map("hr_vacancies")
+}
+model HrApplication {
+  id String @id @default(cuid())
+  organisationId String
+  vacancyId String
+  name String
+  email String
+  phone String?
+  source String?
+  evidenceUrl String?
+  notes String?
+  stage String @default("APPLIED")
+  interviewOn DateTime?
+  employeeId String?
+  version Int @default(0)
+  createdAt DateTime @default(now())
+  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+  vacancy HrVacancy @relation(fields:[vacancyId,organisationId],references:[id,organisationId],onDelete:Restrict)
+  employee Employee? @relation(fields:[employeeId,organisationId],references:[id,organisationId],onDelete:Restrict)
+  @@unique([vacancyId,email])
+  @@unique([employeeId,organisationId])
+  @@index([organisationId,stage])
+  @@map("hr_applications")
+}
+model EmployeeTraining {
+  id String @id @default(cuid())
+  organisationId String
+  employeeId String
+  title String
+  category String
+  provider String?
+  required Boolean @default(false)
+  dueOn DateTime? @db.Date
+  completedOn DateTime? @db.Date
+  expiresOn DateTime? @db.Date
+  evidenceUrl String?
+  notes String?
+  status String @default("PLANNED")
+  version Int @default(0)
+  createdAt DateTime @default(now())
+  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+  employee Employee @relation(fields:[employeeId,organisationId],references:[id,organisationId],onDelete:Restrict)
+  @@index([organisationId,status,dueOn])
+  @@index([organisationId,employeeId])
+  @@map("hr_employee_training")
 }

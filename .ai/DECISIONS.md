@@ -1,5 +1,15 @@
 # Atlas decisions
 
+## 8 October 2026 — HR lifecycle records use the existing employee owner
+
+Internal recruitment hands accepted offers to canonical same-company onboarding
+employees, not duplicate identities or automatic login provisioning. Employee
+management owns confidential applicants; employee reading alone cannot expose them.
+Training and document renewals are HR records; own learning resolves linked login.
+Payroll, scheduling and conduct keep their own boundaries. Updates use submitted
+versions, serializable transactions and central audit. Reason: Michael requires HR
+to feel like a complete platform while remaining easy to use and private.
+
 ## 8 October 2026 — Goals read bounded results from their source owners
 
 Use the analytics registry's optional bounded goal-query contract rather than copy

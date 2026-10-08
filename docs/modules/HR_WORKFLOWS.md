@@ -1,6 +1,9 @@
 # HR workflows
 
-Updated 3 October 2026. Source: `src/modules/people/` and `src/app/(app)/people/`.
+Updated 8 October 2026. Source: `src/modules/people/` and `src/app/(app)/people/`.
+
+The connected HR home, recruitment, training and document-renewal expansion is
+documented in [HR platform](HR_PLATFORM.md); the existing workflows below remain.
 
 ## Delivered in the workflow overhaul
 
@@ -48,9 +51,10 @@ are installed and live; release evidence is tracked in CURRENT_STATE. Build/type
 Existing migration drift
 is outside this change. Rota preflight checks are not database exclusion constraints:
 concurrent scheduling can still race. Status/checklist/profile checks are not a
-fully transactional policy engine. Recruitment, document upload/expiry, dedicated
-training/qualifications, case management, configurable probation policy,
-statutory payroll and unattended notification delivery remain separate workflows.
+fully transactional policy engine. Internal recruitment, document expiry and training/qualifications now have their
+own HR registers; public recruitment, file uploads, configurable probation policy
+and unattended notifications remain open. Payroll is a separate module with its
+own statutory calculation and filing boundaries.
 Performance plans and disciplinary cases are recorded in HR. They are structured
 forms with team or company scope. They are not a tribunal file, a statutory
 dismissal workflow, or an automated legal process.

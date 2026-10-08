@@ -826,7 +826,15 @@ import {saveHandover as action823} from "@/modules/teams/services/commands";
 import {savePlace as action824} from "@/modules/teams/services/commands";
 import {saveMoment as action825} from "@/modules/teams/services/commands";
 import {removeMoment as action826} from "@/modules/teams/services/commands";
+import {saveVacancy as hrPlatform0} from "@/app/(app)/people/platform-actions";
+import {saveApplication as hrPlatform1} from "@/app/(app)/people/platform-actions";
+import {saveTraining as hrPlatform2} from "@/app/(app)/people/platform-actions";
+import {saveHRDocument as hrPlatform3} from "@/app/(app)/people/platform-actions";
 export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>={
+"src/app/(app)/people/platform-actions:saveVacancy":hrPlatform0 as (...args:never[])=>Promise<unknown>,
+"src/app/(app)/people/platform-actions:saveApplication":hrPlatform1 as (...args:never[])=>Promise<unknown>,
+"src/app/(app)/people/platform-actions:saveTraining":hrPlatform2 as (...args:never[])=>Promise<unknown>,
+"src/app/(app)/people/platform-actions:saveHRDocument":hrPlatform3 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/_shared/record-email-actions:loadEmailRecord":action0 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/_shared/record-email-actions:sendRecordEmailAction":action1 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/_shared/record-email-actions:sendRecordContractAction":action2 as (...args:never[])=>Promise<unknown>,

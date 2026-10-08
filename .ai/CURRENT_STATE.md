@@ -1,5 +1,24 @@
 # Atlas current state
 
+## 8 October 2026 — HR platform expansion (live verification pending)
+
+- Operational HR home, preserved employee directory/filter URLs, internal vacancies/
+  applicants with accepted-offer handover to canonical onboarding Employee; training/
+  qualifications, own learning, document renewal/archive and workforce reports.
+- Employee management owns recruitment; no permission grants changed. New actions
+  require active HR, tenant references, submitted versions and atomic audit under
+  serializable transactions. Generic reads retain applicant/own-learning boundaries.
+- Additive migration `20261008160000_hr_platform`; preserves existing employees,
+  document metadata, payroll and lifecycle history. No local business DB/cache.
+- Checks: 27 focused / full suite 884 passed, 22 integration skips;
+  final production build, separate strict TypeScript, scoped ESLint and whitespace pass.
+  Rebase onto concurrent Service repair, then rebuild/deploy/live acceptance before handoff.
+- Paths: people routes/components/domain/platform services, schema/migration, data API
+  policy/metadata/actions, `tests/hr-platform*`, `scripts/check-hr-platform.ts`.
+  Research/scope: `docs/plans/HR_PLATFORM_RESEARCH.md`, `docs/modules/HR_PLATFORM.md`.
+- Pending: deploy compatible release, exercise hire/onboarding/learning/renewal/privacy/
+  mobile workflows, integrate owned changes into primary and save release evidence.
+
 ## Guardian work assignment — 8 October 2026
 
 - Deployed application `7079baa`. Live pre-fix `2b7a486` (checkout `622259f`)

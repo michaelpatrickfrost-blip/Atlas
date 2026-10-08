@@ -106,6 +106,7 @@ export async function createEmployee(form: FormData) {
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "employee.created", entityType: "Employee", entityId: employee.id });
   await writeActivity({ organisationId: session.organisationId, type: "employee.created", summary: `${firstName} ${lastName} added as ${jobTitle}`, entityType: "Employee", entityId: employee.id });
   revalidatePath("/people");
+  revalidatePath("/people/directory");
   revalidatePath("/people/workspace");
   revalidatePath("/people/onboarding");
   revalidatePath("/people/my-team");
@@ -157,6 +158,7 @@ export async function changeEmployeeStatus(employeeId: string, form: FormData) {
   }
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "employee.status.updated", entityType: "Employee", entityId: employeeId, after: { status } });
   revalidatePath("/people");
+  revalidatePath("/people/directory");
   revalidatePath(`/people/${employeeId}`);
   revalidatePath("/people/offboarding");
 }
@@ -320,6 +322,7 @@ export async function updateEmployeeContact(employeeId: string, form: FormData) 
   } });
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "employee.contact.updated", entityType: "Employee", entityId: employeeId });
   revalidatePath("/people");
+  revalidatePath("/people/directory");
   revalidatePath(`/people/${employeeId}`);
   revalidatePath("/people/me");
   revalidatePath("/profile");

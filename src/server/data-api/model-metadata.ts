@@ -1381,6 +1381,24 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": true
     },
+    "hrVacancies": {
+      "type": "HrVacancy",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "hrApplications": {
+      "type": "HrApplication",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "employeeTraining": {
+      "type": "EmployeeTraining",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "expenseClaims": {
       "type": "ExpenseClaim",
       "list": true,
@@ -10539,6 +10557,18 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": true
     },
+    "training": {
+      "type": "EmployeeTraining",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "recruitmentApplications": {
+      "type": "HrApplication",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "expenseClaims": {
       "type": "ExpenseClaim",
       "list": true,
@@ -11779,6 +11809,30 @@ export const MODEL_FIELDS = {
       "type": "String",
       "list": false,
       "nullable": true,
+      "relation": false
+    },
+    "issuedOn": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "expiresOn": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "status": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
       "relation": false
     },
     "createdAt": {
@@ -29455,6 +29509,24 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "ownerUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "dueAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "workspace": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
     "organisation": {
       "type": "Organisation",
       "list": false,
@@ -34089,6 +34161,300 @@ export const MODEL_FIELDS = {
     },
     "cycle": {
       "type": "SopCycle",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "HrVacancy": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "title": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "department": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "location": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "employmentType": {
+      "type": "EmploymentType",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "description": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "ownerUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "targetStartOn": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "status": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "applications": {
+      "type": "HrApplication",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "HrApplication": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "vacancyId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "name": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "email": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "phone": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "source": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "evidenceUrl": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "notes": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "stage": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "interviewOn": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "employeeId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "vacancy": {
+      "type": "HrVacancy",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "employee": {
+      "type": "Employee",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    }
+  },
+  "EmployeeTraining": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "employeeId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "title": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "category": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "provider": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "required": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "dueOn": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "completedOn": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "expiresOn": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "evidenceUrl": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "notes": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "status": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "employee": {
+      "type": "Employee",
       "list": false,
       "nullable": false,
       "relation": true

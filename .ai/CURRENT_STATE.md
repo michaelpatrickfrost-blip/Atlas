@@ -1,5 +1,21 @@
 # Atlas current state
 
+## Inventory context before controls — 8 October 2026
+
+- Inventory product pages show ProductView before locations, forecast and production
+  controls. ProductView labels future supply as Projected stock and explains the
+  inclusion of expected supply, commitments and holds. Detailed reading guidance is
+  disclosed on demand. Forecast exceptions remain visible; authorised planning
+  settings use native keyboard-operable disclosure.
+- Paths: `src/app/(app)/stock/items/[productId]/page.tsx`,
+  `src/modules/products/components/product-view.tsx`,
+  `src/modules/stock/components/product-planning.tsx`. No calculation, permissions,
+  persistence or schema change. Added live browser acceptance for record/forecast
+  order, projected label, settings visibility and keyboard disclosure. Validation
+  passed: separate TypeScript, changed-file lint, production build and diff check.
+  Latest logic suite remains 712 passed / 22 integration skips; no calculation
+  changed in this layout-only follow-up. Deployment/live presentation proof pending.
+
 ## Atomic manufacturing completion — 8 October 2026
 
 - Four regressions reproduced partial material commits, stock retained after a
@@ -15,7 +31,12 @@
   replay payload are enforced. Existing movement keys are preserved; oversize keys
   fail instead of truncating identities. Thirteen regression tests passed. Full
   suite: 712 passed / 22 integration skips (117 files). Production build, separate
-  TypeScript, changed-file lint and diff check passed. Live release proof pending.
+  TypeScript, changed-file lint and diff check passed. Release `bff3a5c` deployed:
+  server build/restart, HTTPS login 200, 96 migrations/no pending. Backup:
+  `/home/administrator/backups/atlas-pre-deploy-20261008-113632.dump` plus private
+  evidence archive. All 44 live assertions passed, including actual multi-material
+  rollback, warehouse/progress versions, concurrent requests, exactly three linked
+  movements and one audit/activity. Test tenants suspended/credentials revoked.
 - Live acceptance extended with actual authenticated completion, second-component
   shortage rollback, concurrent retry, lineage/progress/audit and denied access.
   Legacy provider diagnostic now passes a transaction. Repeated partial reporting,
@@ -42,7 +63,8 @@
 - Changes merged into the dirty primary with base-equality checks, clean patches
   or narrow manual integration; concurrent edits preserved. An introduced duplicate
   Finance import was corrected before verification. Primary focused suite: 43 passed;
-  separate primary TypeScript still running. Clean compatible release remains the
+  primary TypeScript did not finish after six minutes (idle process), so it was
+  stopped without a success claim. Clean compatible release remains the
   deployment source; no claim that unrelated primary edits were validated.
 
 ## Simple connected record navigation — 8 October 2026

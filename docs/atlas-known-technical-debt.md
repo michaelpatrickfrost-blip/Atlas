@@ -15,7 +15,7 @@ reproduced by tests are confirmed runtime defects. No claim of a full code audit
 | Split attachment architecture | Finance attachments, Projects documents, Core templates/contracts and Service evidence use different APIs/access paths. |
 | Overlapping quality state | QualityHold and QUARANTINE StockPosition have no explicit common hold identity for safe deduplication. |
 | Aggregate plan/execution overlap | `availability/picture.ts` uses max(plan, production), without item-date-source pegging. |
-| Non-atomic manufacturing boundary | Reproduced and repaired: completion now shares one transaction with owner stock commands, progress and audit. Live failure/retry proof pending. |
+| Non-atomic manufacturing boundary | Reproduced and repaired: completion now shares one transaction with owner stock commands, progress and audit. Live `bff3a5c`: actual multi-material failure and concurrent retry passed. |
 | Scattered contextual navigation | Sales commercial links, service panels and Finance sources were bespoke; shared relationships now implemented on five root types; remaining roots open. |
 | Release checkout fragmentation | Primary main is older with extensive concurrent edits; live main is newer. Pinned clean release prevents unrelated deployment. |
 
@@ -29,7 +29,7 @@ reproduced by tests are confirmed runtime defects. No claim of a full code audit
 | Receipt supply missing from projection | Arrivals contain receipts but aggregate incoming formerly omitted them; regression reproduced. |
 | Arrival truncation affects promise | `incomingArrivals` formerly slices inputs at 12; a later covering arrival is ignored. |
 | Incomplete quality propagation | MRP reads QualityHold; Sales availability reads restricted positions; safe shared identity/atomicity unresolved. |
-| Partial manufacturing failure | Reproduced in regressions and repaired with transaction propagation; actual authenticated multi-material failure/retry proof pending. Repeated partial output remains open. |
+| Partial manufacturing failure | Reproduced in regressions and repaired with transaction propagation; actual authenticated failure/concurrent-retry passed on `bff3a5c`. Repeated partial output remains open. |
 | Procurement suggestion stops short | Manufacturing delivery guide records executable BUY/transfer handoffs as open. |
 | Customer delay explanation incomplete | One sourceSalesOrderLine relationship and JSON suggestion pegging cannot yet explain the entire supply chain. |
 | Missing precise delivery receipt | S&OP acceptance marks partial received quantities unavailable; do not infer a delivery receipt from allocation. |
@@ -45,7 +45,7 @@ reproduced by tests are confirmed runtime defects. No claim of a full code audit
 | Stale connection guidance | Sales Connections had obsolete awaiting-connection guidance; replaced alongside real relationship navigation. |
 | Weak direct fulfilment link | Order fulfilment reference formerly pointed to queue; corrected to canonical record ID. |
 | Shared table overflow | Order chain lacked a local horizontal-scroll wrapper; corrected alongside the stock label. |
-| Configuration before product context | Stock item places locations/planning/production controls before ProductView summary. |
+| Configuration before product context | Implemented: product summary comes first; forecast exceptions remain visible, planning settings/reading guidance use disclosure. Live presentation proof pending. |
 | Search groups can disappear | `core/search/aggregate.ts` globally slices first 20; earlier providers/navigation can crowd out business matches. |
 | Different import/document experiences | Domain-specific imports and attachment UIs require users to learn repeated patterns. |
 

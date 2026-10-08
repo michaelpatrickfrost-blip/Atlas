@@ -14,5 +14,5 @@ export default async function StockItemPage({ params }: { params: Promise<{ prod
   if (!data) notFound();
   const loaded = can(data.session, "stock.manage") ? await readInventory() : null;
   const actions = loaded ? <StockToolbar snapshot={{ products: loaded.products, warehouses: loaded.warehouses, balances: loaded.balances }} productId={productId} /> : null;
-  return <div className="space-y-6"><ProductLocations productId={productId} />{data.product.kind === "PRODUCT" && <ProductPlanning productId={productId} />}{data.product.kind === "PRODUCT" && <ProductProduction productId={productId} />}<ProductView data={data} back={{ href: "/stock", label: "← All stock" }} itemHref={(id) => `/stock/items/${id}`} actions={actions} /></div>;
+  return <div className="space-y-6"><ProductView data={data} back={{ href: "/stock", label: "← All stock" }} itemHref={(id) => `/stock/items/${id}`} actions={actions} /><ProductLocations productId={productId} />{data.product.kind === "PRODUCT" && <ProductPlanning productId={productId} />}{data.product.kind === "PRODUCT" && <ProductProduction productId={productId} />}</div>;
 }

@@ -51,7 +51,7 @@ async function main() {
       await db.membership.create({ data: { organisationId: org, userId: user.id, grantedCapabilities: caps } }); return user;
     };
     const caps = ["sales.order.read", "customers.read", "core.products.read", "stock.read", "logistics.fulfilment.read", "logistics.shipment.read", "manufacturing.order.read"];
-    const viewer = await makeUser("viewer", caps), accountant = await makeUser("accountant", [...caps, "finance.receivables.read", "finance.overview.read"]), outside = await makeUser("outside", caps, companies[1]);
+    const viewer = await makeUser("viewer", caps), accountant = await makeUser("accountant", [...caps, "finance.receivables.read", "finance.overview.read", "stock.manage"]), outside = await makeUser("outside", caps, companies[1]);
     const operator = await makeUser("operator", ["manufacturing.order.read", "manufacturing.work_order.execute", "core.products.read"]);
     const operatorCookie = await login(operator.email);
     const viewerCookie = await login(viewer.email), financeCookie = await login(accountant.email), outsideCookie = await login(outside.email);
@@ -133,6 +133,21 @@ async function main() {
         check(await attention.evaluate(element => element.scrollWidth <= element.clientWidth), "Home attention fits a phone viewport");
         await apps.locator("summary").focus(); await page.keyboard.press("Enter");
         check(await apps.getAttribute("open") !== null && await apps.locator('a[href="/manufacturing"]').isVisible(), "Keyboard users can expand Apps and reach Manufacturing");
+        await page.goto(`${base}/stock/items/${product.id}`, { waitUntil: "domcontentloaded", timeout: 60_000 });
+        const productHeading = page.getByRole("heading", { name: product.name, exact: true });
+        await productHeading.waitFor();
+        const forecastHeading = page.getByRole("heading", { name: "Forecast and planning", exact: true });
+        check(await productHeading.evaluate((element, forecast) => Boolean(element.compareDocumentPosition(forecast as Node) & Node.DOCUMENT_POSITION_FOLLOWING), await forecastHeading.elementHandle()), "Inventory presents product context before planning controls");
+        check(await page.getByText("Projected stock", { exact: true }).count() === 1 && errors === 0, "Product summary clearly labels expected stock and renders without browser errors");
+        const planningSettings = page.locator("details").filter({ has: page.locator("summary", { hasText: /^Planning settings$/ }) });
+        check(await planningSettings.count() === Number(allowed), "Planning settings remain restricted to authorised Inventory managers");
+        if (allowed) {
+          check(await planningSettings.getAttribute("open") === null, "Inventory planning settings start collapsed");
+          await planningSettings.locator("summary").focus(); await page.keyboard.press("Enter");
+          check(await planningSettings.getAttribute("open") !== null && await planningSettings.locator("form").isVisible(), "Inventory managers can open planning settings using the keyboard");
+        }
+        const readingGuide = page.locator("details").filter({ has: page.locator("summary", { hasText: /^How to read this record$/ }) });
+        check(await readingGuide.getAttribute("open") === null, "Detailed product guidance is available without crowding the daily view");
         await context.close();
       }
       const operatorContext = await browser.newContext();

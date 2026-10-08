@@ -102,7 +102,9 @@ identity. See
 Customer cases use existing `service.case.*` capabilities, including the additional
 restricted-case permission. Internal tickets use `tickets.ticket.*`, cross-team
 queries use `service.ticket.*`, and Tickets queue setup uses `tickets.queue.*`. Enabled/entitled app gates and tenant scopes apply on the
-server. Restricted receiving queues also require permitted ownership/membership;
+server for customer users. Atlas staff retain app availability, while cross-app
+source gates remain in force. Restricted receiving queues also require permitted
+ownership/membership;
 manager capability never bypasses that boundary. Requesters see permitted replies,
 not receiving-team internal notes. File downloads re-check parent access.
 Case assignment respects both explicit profile grants and denials.

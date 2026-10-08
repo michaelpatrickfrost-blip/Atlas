@@ -1,6 +1,6 @@
 # Atlas current state
 
-## 8 October 2026 — Atlas staff app access (implementation verified; live deployment pending)
+## 8 October 2026 — Atlas staff app access deployed and verified
 
 - Active Atlas staff now see and can open every implemented app they have
   capabilities for, independent of a selected company's enabled/entitled
@@ -21,8 +21,18 @@
   `npx tsc --noEmit`, production `npm run build` and `git diff --check` passed.
   First staging attempt stopped at its fixture gate because the QA company already
   had every app enabled; no runtime switch occurred. Staging now checks the staff
-  member's internal workspace, where apps are off by default. Candidate
-  preparation, staging switch and live employee acceptance are pending.
+  member's internal workspace, where apps are off by default. Prepared candidate
+  and staging old→new→old switch passed; 30 authorised app links/icons and a
+  disabled app route were verified in the internal workspace, with all browser
+  writes blocked. Cross-release action recovery passed, using disposable Test
+  fixtures only. Deployed `1a031c9cf48349edb297d1faedf0829a67118bba`; live
+  `/api/health/release` reports that exact SHA and `/login` returns 200. Live
+  launcher check passed at desktop/tablet/phone widths: 30 app links/icons,
+  disabled internal app opened, no layout/chunk errors, and all writes blocked.
+  Previous runtime `aa7a3906a030f585c00334b151cf0a2fb6d1e319` retained.
+  Backups: `atlas-pre-deploy-20261008-205407`,
+  `atlas-pre-deploy-20261008-205710`, and
+  `atlas-pre-action-test-20261008-205644`.
 
 ## 8 October 2026 — Atlas Admin Test-company deletion (deployed and verified)
 

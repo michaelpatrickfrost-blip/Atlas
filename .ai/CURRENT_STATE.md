@@ -1,27 +1,39 @@
 # Atlas current state
 
-## 8 October 2026 — Michael-only user setup (in progress)
+## 8 October 2026 — Danielle staff setup and Michael-only provisioning verified
 
-- Added a server-enforced provisioning guard to all five runtime user-creation
-  actions; only Michael’s signed-in Atlas staff account can add staff/company users
-  or a company’s first administrator. Matching creation controls hidden for others.
-- New Atlas staff accept a direct password, preserving existing password policy,
-  hashing, tenant/capability checks and atomic audit. Repeated own-password entry
-  and setup-code redemption removed only for staff creation. Existing-account
-  promotion keeps explicit consent and existing password; other confirmations kept.
-- Updated Atlas Admin/permissions/company-admin guides, product memory and decision.
-  Earlier staff creation acceptance describes the superseded setup-code workflow.
-- Checks so far: production build, separate strict TypeScript, 36 focused regressions,
-  full suite (953 pass / 22 integration skips), scoped ESLint and whitespace pass.
-  Refreshed disposable dependencies after cloned tree lacked Playwright. Live
-  deployment completed (runtime `2fe33ad`, server/public login 200; 99 migrations
-  current). Danielle provisioning/sign-in and denied-creation verification pending.
-  Initial browser harness stopped at an ambiguous select label before creation;
-  corrected selector. Next run created Danielle, verified normal sign-in and all
-  five denied provisioning routes; switched company-opening acceptance from raw
-  action-cookie handling to the actual browser control for its final run.
-  No schema or local business database/cache introduced.
-
+- Live runtime `2fe33ad` deploys direct Atlas employee passwords and server-enforced
+  Michael-only provisioning. All five runtime creation actions retain their original
+  capability guards and additionally require Michael’s server-resolved Atlas staff
+  identity. New-company first administrators are included; creation controls are
+  hidden from everyone else. Existing user management/company access stays available.
+- Requested Danielle account created through the live Atlas team form as active
+  EMPLOYEE; normal browser sign-in with the requested credentials verified. Password
+  stored only as bcrypt, no pending setup code, audit records Michael without secrets.
+  Michael’s password unchanged. Only new staff creation drops repeated own-password
+  confirmation; existing-account consent and other sensitive confirmations remain.
+- Paths: `src/core/admin/access.ts`, Atlas/Settings creation actions and pages,
+  sign-in guidance; `tests/user-provisioning.test.ts`, staff regressions, updated
+  historical admin harness, new `scripts/check-user-provisioning.ts`, owning guides.
+- Checks: production build, separate strict TypeScript, scoped ESLint and whitespace
+  pass; full suite 953 passed / 22 integration skips (149 files pass / 3 skip),
+  36 focused release tests, 33 focused canonical-repo integration checks. Dependencies
+  refreshed from lockfile after disposable cloned tree lacked Playwright.
+- Final live browser/server acceptance: 20 assertions pass, including sign-in,
+  duplicate feedback, five forged provisioning attempts, own-password preservation,
+  selected-company opening and hidden creation controls in both administration areas.
+  Server journal separately confirms all five `Only Michael` rejections. Initial
+  run stopped at an ambiguous role selector before creation; second run created and
+  signed in successfully but stopped at raw action-cookie handling for company open.
+  Both harness issues corrected; final run uses the actual workspace browser control.
+- Deployment backup `atlas-pre-deploy-20261008-150343` retains private PostgreSQL and
+  Service evidence archives. Server build/restart/public login 200 pass; 99 migrations
+  current, no schema change/local business DB/cache. Later commits change only the
+  harness/documentation, pulled to server without changing the compiled app.
+- Owned source/docs integrated into the shared canonical repository using base
+  comparisons/three-way merges; concurrent work preserved. Decisions/product memory
+  updated. Evidence: `docs/evidence/2026-10-08-user-provisioning.md`. Full historical
+  live Admin suite was reconciled to the new policy but not rerun in this task.
 
 ## 8 October 2026 — S&OP guided usability deployed and verified
 

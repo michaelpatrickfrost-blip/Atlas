@@ -21,7 +21,8 @@ git fetch -q origin
 git merge-base --is-ancestor HEAD "$REV"
 PREVIOUS_REV=$(git rev-parse HEAD)
 RELEASES="${ROOT}-releases"; CURRENT="${ROOT}-current"; CANDIDATE="$RELEASES/$REV"
-mkdir -p "$RELEASES" "$HOME/backups"
+sudo install -d -o administrator -g administrator -m 755 "$RELEASES" "${ROOT}-maintenance-backups"
+mkdir -p "$HOME/backups"
 set -a; . "$ROOT/.env.local"; set +a
 # Private file evidence must remain outside all release directories and checkout.
 if [[ -n "${ATLAS_SERVICE_FILE_ROOT:-}" ]]; then
@@ -90,7 +91,7 @@ cleanup() {
   local result=$?
   if [[ -n "$PROBE_PID" ]]; then kill -TERM "$PROBE_PID" 2>/dev/null || true; wait "$PROBE_PID" 2>/dev/null || true; fi
   if [[ "$result" != 0 && "$SWITCHED" = 1 ]]; then
-    node "$CANDIDATE/scripts/deploy/release-files.mjs" link "$PREVIOUS" "$CURRENT"
+    sudo /usr/bin/node "$CANDIDATE/scripts/deploy/release-files.mjs" link "$PREVIOUS" "$CURRENT"
     sudo systemctl restart atlas
     for i in $(seq 1 30); do healthy 3000 && break; sleep 1; done
     healthy 3000 && echo 'Previous immutable runtime restored; database was not rolled back.' >&2
@@ -142,7 +143,7 @@ KillSignal=SIGTERM
 KillMode=mixed
 TimeoutStopSec=30
 UNIT
-node "$CANDIDATE/scripts/deploy/release-files.mjs" link "$PREVIOUS" "$CURRENT"
+sudo /usr/bin/node "$CANDIDATE/scripts/deploy/release-files.mjs" link "$PREVIOUS" "$CURRENT"
 sudo install -m 644 "$BACKUP-release.conf.next" /etc/systemd/system/atlas.service.d/release.conf
 sudo mkdir -p /etc/systemd/system/atlas-guardian.service.d
 if [[ -f /etc/systemd/system/atlas-guardian.service.d/release.conf ]]; then sudo cp -a /etc/systemd/system/atlas-guardian.service.d/release.conf "$BACKUP-guardian-release.conf"; fi
@@ -155,7 +156,7 @@ UNIT
 sudo install -m 644 "$BACKUP-guardian-release.conf.next" /etc/systemd/system/atlas-guardian.service.d/release.conf
 sudo systemctl daemon-reload
 SWITCHED=1
-node "$CANDIDATE/scripts/deploy/release-files.mjs" link "$CANDIDATE" "$CURRENT"
+sudo /usr/bin/node "$CANDIDATE/scripts/deploy/release-files.mjs" link "$CANDIDATE" "$CURRENT"
 sudo systemctl restart atlas
 for i in $(seq 1 30); do healthy 3000 && break; sleep 1; done
 healthy 3000
@@ -171,6 +172,6 @@ for relative in node_modules .next src/generated/prisma; do
   if [[ -e "$link" && ! -L "$link" ]]; then mv "$link" "$MAINTENANCE/$(basename "$relative")"; fi
   node "$CANDIDATE/scripts/deploy/release-files.mjs" link "$CURRENT/$relative" "$link"
 done
-node "$CANDIDATE/scripts/deploy/release-files.mjs" link "$PREVIOUS" "${ROOT}-previous"
+sudo /usr/bin/node "$CANDIDATE/scripts/deploy/release-files.mjs" link "$PREVIOUS" "${ROOT}-previous"
 SWITCHED=0
 echo "Activated immutable runtime $REV; previous release retained at $PREVIOUS"

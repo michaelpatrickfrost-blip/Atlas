@@ -14,6 +14,9 @@
   shell/whitespace checks passed. Reviewed/merged concurrent user-provisioning and
   S&OP evidence through d226ef8; final combined checks: 959 pass / 22 skips,
   production build, strict TypeScript, scoped lint and 19 focused checks pass.
+- First prepare stopped before backup/build: /opt parent requires privilege for
+  release folders and pointers. Corrected only those operations with sudo; live
+  runtime unchanged. Strict combined TypeScript passed.
 - Staging, activation, live continuity/connected fixture and shared-project
   integration remain pending; no FIXED claim or live architecture change yet.
 

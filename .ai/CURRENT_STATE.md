@@ -16,8 +16,10 @@
   Refreshed disposable dependencies after cloned tree lacked Playwright. Live
   deployment completed (runtime `2fe33ad`, server/public login 200; 99 migrations
   current). Danielle provisioning/sign-in and denied-creation verification pending.
-  Initial browser harness stopped at an ambiguous select label before any creation;
-  scoped its selector to the employee role field for the next run.
+  Initial browser harness stopped at an ambiguous select label before creation;
+  corrected selector. Next run created Danielle, verified normal sign-in and all
+  five denied provisioning routes; switched company-opening acceptance from raw
+  action-cookie handling to the actual browser control for its final run.
   No schema or local business database/cache introduced.
 
 

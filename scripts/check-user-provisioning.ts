@@ -92,10 +92,10 @@ async function main() {
       check(!await db.user.findUnique({ where: { email: deniedEmail } }), "Employee cannot bypass creation policy through " + action);
     }
     const company = await db.organisation.findFirstOrThrow({ where: { kind: "CUSTOMER", status: "ACTIVE", archivedAt: null, memberships: { some: { userId: owner.id, active: true } } }, select: { id: true } });
-    const opened = await post("openCompanyWorkspace", { organisationId: company.id }, staffCookie, "/atlas");
-    const companyCookie = opened.response.headers.get("set-cookie")?.match(/atlas_session=([^;]+)/)?.[1];
-    assert(companyCookie, "Employee can open a selected company");
-    await staffContext.addCookies([{ name: "atlas_session", value: companyCookie, url: base, httpOnly: true, secure: true }]);
+    await staffPage.goto(base + `/atlas/${company.id}`, { waitUntil: "domcontentloaded" });
+    await staffPage.getByRole("button", { name: "Open company workspace →", exact: true }).click();
+    await staffPage.waitForURL(base + "/home");
+    check(true, "Employee can open a selected company through its live control");
     await staffPage.goto(base + `/atlas/${company.id}/users`, { waitUntil: "domcontentloaded" });
     await expect(staffPage.getByRole("heading", { name: "Users & access", exact: true })).toBeVisible();
     check(await staffPage.getByRole("button", { name: "Add user", exact: true }).count() === 0, "Selected-company admin retains user reading without creation");

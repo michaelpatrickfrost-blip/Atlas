@@ -23,7 +23,8 @@
   Runtime `d3312b4` deployed with backup, 99 migrations current, healthy restart and login 200.
   Original 42 live acceptance assertions pass. New browser harness exposed a navigation
   timing assumption; waiting for the destination heading before checking it. Guided
-  acceptance remains pending.
+  journey reaches publication; fixture expects its two populated months (100/200),
+  not twelve rows where ten months have no history/input. Remaining acceptance pending.
 - Next: preserve newly deployed concurrent admin cleanup commits, rebase and rebuild,
   deploy, run old S&OP calculation/publication acceptance and new actual guided browser
   journey, revoke synthetic fixture access, integrate owned shared-project files.

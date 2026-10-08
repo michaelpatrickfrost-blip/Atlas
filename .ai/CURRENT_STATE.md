@@ -95,7 +95,9 @@
   Corrected transactionally in `dbd5c91`; no migration reset/repair required.
 - DB/private-file backup `atlas-pre-deploy-20261008-160643` and previous runtime
   retained. Subsequent Guardian runtime `2bda114` includes these apps; its deployment
-  and newer recovery checks are documented separately, not counted as these 62.
+  and newer recovery checks are documented separately. Repeated the complete
+  62-assertion operational acceptance on latest live `2d25bd2`: all pass again,
+  zero manager browser errors; exact new fixtures suspended/credentials revoked.
 
 ## 8 October 2026 — Guardian isolated releases deployed and verified
 

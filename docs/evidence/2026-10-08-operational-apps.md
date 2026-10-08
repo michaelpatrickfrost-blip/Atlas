@@ -5,6 +5,9 @@ Public release check and login succeeded. Central additive migration applied;
 100 migrations current. Immutable previous `6ef3cdf` and private central database /
 Service-file backup `atlas-pre-deploy-20261008-160643` retained. Later Guardian
 runtime `2bda114` includes the same apps; its separate evidence is not conflated.
+After unavailable-record recovery deployed as `2d25bd2`, reran the entire 62-assertion
+operational harness: **all 62 pass again**, zero manager browser runtime errors.
+The second run used fresh fixtures and retired them with credentials revoked.
 
 ## Actual live acceptance
 

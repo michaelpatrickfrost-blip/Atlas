@@ -12,16 +12,27 @@
 - Five new component regressions cover success, denied permission, missing API,
   retry and pending clicks. The denied-permission regression failed before repair;
   all 33 focused Atlas/Guardian tests, separate TypeScript, focused ESLint and
-  production build pass. Deployment/live post-fix proof are pending at this checkpoint.
+  production build pass. Application repair `d7ed15a` is deployed; server build,
+  restart and public HTTPS login 200 passed with no pending migrations. Backup:
+  `/home/administrator/backups/atlas-pre-deploy-20261008-105258.dump`
+  plus private Service evidence. No unrelated unfinished source was deployed.
 - `scripts/guardian/check-atlas-code-copy.ts` reproduced the actual staff-creation
   and copy failure with disposable central identities and real Chromium clipboard
   denial. Rendered code matched the central hash. Exact fixture identities/grants/
   credentials were removed; audit retained, no secrets logged. Backup:
   `/home/administrator/backups/atlas-pre-guardian-copy-test-20261008-104917.dump`
-  plus private Service evidence. Normal script mode verifies recovery and retry.
+  plus private Service evidence. Live post-fix proof passed actual staff creation,
+  denied/missing Clipboard API feedback, retry with the exact code in the real
+  clipboard, zero browser errors and an unchanged unused central credential.
+  Temporary identities/grants/codes were again removed; synthetic audit retained.
+  Initial retry verification exposed a test-harness permission-scope/timing error;
+  corrected it to use the actual browser context and grant before retry. Repeated
+  script TypeScript/lint and the complete live regression passed. The independently
+  recorded copy-control issue is FIXED with deployed revision and original proof.
 - Worker is healthy; the 8 October 08:30 UTC sweep checked 224 page requests,
   100 browser pages and 99 safe toggles with zero findings. All 42 active report
-  summaries across both CLI pages were inspected. The three newer generic reports still need
+  summaries across both CLI pages were inspected. The three newer generic reports
+  are now NEEDS_AI with exact evidence, investigated paths, blockers and next actions:
   exact cause correlation: stream closed early on company render (digest
   1130916247), aborted home action/ECONNRESET (2313178152), and staff-page generic
   rejection. A reproduced copy defect does not prove the latter's original click.

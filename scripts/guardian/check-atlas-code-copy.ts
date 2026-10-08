@@ -50,7 +50,8 @@ async function main() {
     console.log("PASS actual staff creation renders the matching one-time credential.");
 
     const cdp = await context.newCDPSession(page);
-    await cdp.send("Browser.setPermission", { permission: { name: "clipboard-write" }, setting: "denied", origin: base });
+    const { targetInfo } = await cdp.send("Target.getTargetInfo");
+    await cdp.send("Browser.setPermission", { permission: { name: "clipboard-write" }, setting: "denied", origin: base, browserContextId: targetInfo.browserContextId });
     await dialog.getByRole("button", { name: "Copy code", exact: true }).click();
     if (reproduce) {
       await expect.poll(() => errors).toBeGreaterThan(0);
@@ -71,11 +72,10 @@ async function main() {
     assert.equal(errors, 0);
     console.log("PASS missing Clipboard API keeps the code and recovery feedback.");
     await page.evaluate(() => { delete (navigator as unknown as { clipboard?: Clipboard }).clipboard; });
-    await cdp.send("Browser.setPermission", { permission: { name: "clipboard-write" }, setting: "granted", origin: base });
+    await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: base });
     await dialog.getByRole("button", { name: "Copy code", exact: true }).click();
     await expect(dialog.getByRole("button", { name: "Copied", exact: true })).toBeVisible();
     await expect(dialog.getByRole("status")).toHaveText("Code copied.");
-    await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: base });
     assert.equal(await page.evaluate(() => navigator.clipboard.readText()), code, "Actual clipboard contains the unchanged code.");
     assert.equal((await db.passwordReset.findUniqueOrThrow({ where: { id: credential.id } })).usedAt, null, "Copying never consumes the credential.");
     assert.equal(errors, 0);

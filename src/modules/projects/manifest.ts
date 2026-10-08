@@ -12,7 +12,7 @@ export const projectsManifest:ModuleManifest={
  {label:'My time',href:'/projects/work/timesheets',group:'My day'},
  {label:'Tasks',href:'/projects/tasks',group:'Delivery'},
  {label:'Portfolios',href:'/projects/work/portfolios',group:'Delivery'},
- {label:'Timeline',href:'/projects/work/timeline',group:'Delivery'},
+ {label:'Gantt timeline',href:'/projects/work/timeline',group:'Delivery'},
  {label:'Workload',href:'/projects/work/workload',group:'Delivery'},
  {label:'Notes',href:'/projects/work/notes',group:'Collaborate'},
  {label:'Docs',href:'/projects/work/docs',group:'Collaborate'},

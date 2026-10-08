@@ -1,3 +1,4 @@
+import {rescheduleTask as projectsRescheduleTask} from '@/app/(app)/projects/actions';
 // Generated allowlist: public calls still enforce their own server capabilities.
 import {loadEmailRecord as action0} from "@/app/(app)/_shared/record-email-actions";
 import {sendRecordEmailAction as action1} from "@/app/(app)/_shared/record-email-actions";
@@ -1072,6 +1073,7 @@ export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>={
 "src/app/(app)/projects/actions:archiveProject":action234 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/projects/actions:createTask":action235 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/projects/actions:changeTaskStatus":action236 as (...args:never[])=>Promise<unknown>,
+"src/app/(app)/projects/actions:rescheduleTask":projectsRescheduleTask as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/projects/actions:editTask":action237 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/projects/actions:checklistItem":action238 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/projects/actions:addDependency":action239 as (...args:never[])=>Promise<unknown>,

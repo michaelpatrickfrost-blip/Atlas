@@ -28,7 +28,7 @@ Service checkpoints updated 7 October 2026; other checkpoints retain their recor
 | CRM | Separate app, stage movement and curated dashboards exist | Pipeline usability, qualification rules, accurate reporting and full record lifecycle |
 | Sales | Product-backed document composer and order record foundations exist | Quote revisions, PO/tax confirmation rules, complete conversion and stock allocation |
 | Inventory | Warehouse balances and movement ledger exist | Concurrent adjustments, reservations, transfers and counts |
-| Projects / Meetings / KPIs | Broad canonical work-management workspace and existing scorecard foundations; Projects source/build/synthetic evidence in PROJECTS_WORKSPACE.md | Full 256-section acceptance, advanced collaboration/workflow/capacity, live ERP/Finance processing and installed desktop activation |
+| Projects / Meetings / KPIs | Canonical work-management workspace with detailed Gantt, versioned date edits, dependencies, milestones and baseline variance; evidence in PROJECTS_WORKSPACE.md | Full 256-section acceptance, advanced collaboration/workflow/capacity, live ERP/Finance processing and installed desktop activation |
 | Logistics / Finance / Purchasing | Planned | Fulfilment contracts, accounting design and reconciled end-to-end transactions |
 | HR / Scheduling / Production | Partial foundations; acceptance open | Resource calendars, demand model, MRP and finite-capacity scheduler |
 | Service / Tickets / Quality / Safety / Marketing | Core connected case/ticket/query server journey verified; existing Quality/Safety/Marketing foundations | Service advanced/native extensions and external delivery remain open; see module delivery evidence |

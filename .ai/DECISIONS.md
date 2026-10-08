@@ -974,3 +974,14 @@ serializable transaction with Inventory-owned ship/receive commands; audit and
 activity participate. Replenishment is notified after commit. Final routing
 completion closes parent supply; a retry with changed quantities is rejected.
 This does not authorise silent quantity tolerances or invent partial-output history.
+
+
+## 8 October 2026 — Gantt edits keep canonical task dates
+
+Projects Gantt is a view over existing tasks/dependencies/milestones/baselines.
+Date-only edits require active module, capability, record access and submitted
+version with transactional audit. Preserve all other task fields and immutable
+baselines. Successors are not silently moved: surface conflicts for review.
+Historical baseline views project current visible task IDs/date fields only.
+Use bounded calendar-day windows for long schedules; do not imply finite capacity,
+working-calendar scheduling or completed full source scope.

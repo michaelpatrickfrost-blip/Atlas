@@ -1,5 +1,43 @@
 # Atlas Projects workspace
 
+## 8 October 2026 — Detailed Gantt planning
+
+Project **Plan & Gantt** and the shared **Gantt timeline** now render a bounded,
+scrollable date grid with day/week/month zoom, Earlier/Later, Today and Whole plan.
+Sticky task names show owner, inclusive calendar duration and status. Dependency
+connectors use the existing four dependency types; milestones, today, critical
+work, date conflicts, open estimates and incomplete dates are visible. Search,
+open-only and critical-only filters simplify large plans. Whole plan opens a
+366-day overview; longer schedules explicitly page rather than render unlimited
+columns. Remaining estimates are original estimates on open tasks, not time-netted
+actual remaining effort. Forecasts cover tasks supplied to the view; missing dates
+and external/filtered prerequisites are not invented. No working-calendar engine.
+
+Selecting a task opens concise details and the canonical full task. On an editable,
+active project, date-only saves preserve other fields, check the submitted version,
+and atomically retain audit/outbox history. No automatic successor rescheduling,
+drag/drop or bulk editing is claimed. Archived projects remain readable and expose
+no management forms. Existing tenant, capability, module and project-role checks
+also apply server-side to forged calls. No schema or permission grants changed.
+
+Existing immutable baselines have readable finish-variance tables and thin shadow
+bars, selected in the chart. Newly added tasks are identified. Baseline projections
+include only current visible task IDs and date fields; raw historical JSON is no
+longer rendered. Snapshot content remains intact on the central server.
+
+Design references reviewed: [Asana Gantt view](https://help.asana.com/s/article/gantt-view)
+for dated work/dependencies/baselines and [monday baseline comparison](https://support.monday.com/hc/en-us/articles/360020978159-The-Gantt-Baseline)
+for comparing the agreed plan. Atlas uses its existing tasks, not a second store.
+
+Verification before deployment: production build, separate TypeScript, scoped
+ESLint, 24 focused planning checks and full suite 903 passed / 22 integration skips.
+The initial full-suite inventory test timed out during simultaneous checks; the
+unchanged suite passed with four workers. Deployment/live acceptance pending.
+This current server release supersedes the earlier Mac/data-only deployment notes
+below, which describe historical 3 October evidence only. Full 256-section scope
+remains open; this change does not close unrelated portfolio/document/finance work.
+
+
 Michael requested the entire attached Projects brief as one scope on 3 October
 2026: **“no phases just do it all.”** All 256 sections remain the target. The
 numbered phases in the preserved source describe its original proposal; they are
@@ -21,7 +59,7 @@ model, command or screenshot as full acceptance of the requirement.
 - Project overview plus Tasks, Plan, Docs, Notes, Decisions, Risks, Updates, People,
   Approvals, Requests, Budget, Activity, Automations, Templates, Files and Properties.
   Module navigation includes My Work, My Day, Inbox, workload and time reporting.
-- Canonical List/Board/agenda Calendar/read-only Timeline; board grouping by status,
+- Canonical List/Board/agenda Calendar/Gantt timeline with guarded date editing; board grouping by status,
   owner, project or priority. Search/status/owner filters and personal saved views.
   Board is a projection; it does not own task status.
 - Tasks support description/type/priority/owner/contributors, start/due/waiting dates,

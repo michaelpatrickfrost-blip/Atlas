@@ -49,11 +49,11 @@ See [workspace implementation and verification](PROJECTS_WORKSPACE.md) and
 | 38 | LIST VIEW | Partial; see workspace limits | Open |
 | 39 | BOARD VIEW | Partial; see workspace limits | Open |
 | 40 | TABLE VIEW | Partial; see workspace limits | Open |
-| 41 | TIMELINE | Partial; see workspace limits | Open |
-| 42 | GANTT | Partial; see workspace limits | Open |
-| 43 | BASELINES | Partial; see workspace limits | Open |
-| 44 | PROJECT SLIPPAGE | Partial; see workspace limits | Open |
-| 45 | CRITICAL PATH | Partial; see workspace limits | Open |
+| 41 | TIMELINE | Partial; Dated Gantt grid, zoom/paging, owners, missing dates and task inspector | Open |
+| 42 | GANTT | Partial; Dependency connectors, milestones, guarded versioned date edits; drag/bulk open | Open |
+| 43 | BASELINES | Partial; Existing snapshots with readable finish variance and shadow bars | Open |
+| 44 | PROJECT SLIPPAGE | Partial; Baseline variance and dependency conflict explanations | Open |
+| 45 | CRITICAL PATH | Partial; Calendar-day critical/slack analysis; working calendars open | Open |
 | 46 | CALENDAR | Partial; see workspace limits | Open |
 | 47 | MY WORK | Partial; see workspace limits | Open |
 | 48 | MY DAY | Partial; see workspace limits | Open |

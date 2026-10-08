@@ -1,5 +1,27 @@
 # Atlas current state
 
+## 8 October 2026 — Projects detailed Gantt release prepared
+
+- Project Plan & Gantt and shared timeline now show dated grids, day/week/month
+  zoom, bounded paging, Today, sticky owner/duration/status rows, dependency lines,
+  milestones, critical/slack/conflicts, open estimates and incomplete-date signals.
+  Search/open/critical filters and a compact task inspector preserve ease of use.
+- Existing baselines now compare finish variance and shadow bars; visible current
+  task dates only are projected, without raw historical snapshots in the browser.
+- `rescheduleTask` changes only canonical dates, preserving task content, using
+  session/capability/module/project access, tenant and optimistic version checks,
+  atomic audit/outbox. Archived projects expose no editing forms. No schema change,
+  new business store or automatic downstream rescheduling. Data action allowlist updated.
+- Paths: Projects components/domain/actions/project page/manifest, action registry,
+  `tests/projects-gantt.test.tsx`, `scripts/check-projects-gantt.ts`, owning guide/coverage.
+- Checks: production build, separate TypeScript, scoped ESLint and whitespace pass;
+  24 focused checks; full suite 903 pass / 22 integration skips with four workers.
+  First full run had an unrelated inventory timeout under concurrent load, then
+  complete unchanged rerun passed. Deployment and live acceptance remain pending.
+- Next: deploy this compatible release, run central synthetic browser/security
+  acceptance, preserve fixture history and revoke access; integrate owned primary files.
+
+
 ## 8 October 2026 — HR platform deployed and verified
 
 - Runtime `e20c5c8` live at https://atlassystem.online. HR home, preserved employee

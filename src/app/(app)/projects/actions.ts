@@ -1,4 +1,5 @@
 'use server';
+import {scheduleDate} from '@/modules/projects/domain/gantt';
 import {requireSession,type Session} from '@/core/auth/session';
 import {assertCapability,can} from '@/core/permissions/check';
 import {getNavigableModules} from '@/core/modules/runtime';
@@ -283,4 +284,20 @@ export async function getProjectWorkload(fromIso:string){
  const session=await requireSession();
  assertCapability(session,'projects.manage');await assertModuleEnabled(session,'projects');const from=dateValue(fromIso)!;if(!from)throw new Error('Choose a workload week.');const [members,all,visible,modules]=await Promise.all([db.membership.findMany({where:{organisationId:session.organisationId,active:true},select:{userId:true,user:{select:{name:true}}}}),db.projectTask.findMany({where:{organisationId:session.organisationId,status:{notIn:['DONE','CANCELLED']}},select:{id:true,assigneeUserId:true,startAt:true,dueAt:true,estimatedMinutes:true}}),db.projectTask.findMany({where:{AND:[taskScope(session),{status:{notIn:['DONE','CANCELLED']}}]},select:{id:true}}),getNavigableModules(session)]),ids=new Set(visible.map(t=>t.id));const rosterProvider=modules.find(m=>m.staffRosterProvider)?.staffRosterProvider,roster=rosterProvider?await rosterProvider(session,true):[];
  return members.map(m=>{const staff=roster.find(e=>e.userId===m.userId),tasks=all.filter(t=>t.assigneeUserId===m.userId),workingDays=staff?.workingDays??[1,2,3,4,5],daily=Array(7).fill(0) as number[],privateDaily=Array(7).fill(0) as number[];for(const task of tasks){const allocation=distributeEffort(task,from,7,workingDays);allocation.forEach((value,i)=>{daily[i]+=value;if(!ids.has(task.id))privateDaily[i]+=value;});}return {userId:m.userId,name:m.user.name,dailyMinutes:daily,privateMinutes:privateDaily,contractedWeeklyHours:staff?.contractedWeeklyHours??null,unestimated:tasks.filter(t=>!t.estimatedMinutes).length,unscheduledMinutes:tasks.filter(t=>!t.startAt&&!t.dueAt).reduce((n,t)=>n+t.estimatedMinutes,0)};});
+}
+
+/** Date-only edit from Gantt; preserve all task content and retain an audited version. */
+export async function rescheduleTask(id:string,form:FormData){
+ const session=await requireSession();
+ assertCapability(session,'projects.manage');
+ await assertModuleEnabled(session,'projects');
+ await requireTask(session,id,true);
+ const startAt=scheduleDate(required(form,'startAt')),dueAt=scheduleDate(required(form,'dueAt'));
+ assertDateRange(startAt,dueAt);
+ const version=integer(form.get('version'),1,2147483646,'version');
+ await db.$transaction(async tx=>{
+  conflict((await tx.projectTask.updateMany({where:{id,organisationId:session.organisationId,version},data:{startAt,dueAt,version:{increment:1}}})).count);
+  await event(tx,session,'TaskRescheduled','ProjectTask',id,{startAt:startAt!.toISOString(),dueAt:dueAt!.toISOString()});
+ });
+ refresh();
 }

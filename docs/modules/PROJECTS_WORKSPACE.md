@@ -29,13 +29,19 @@ Design references reviewed: [Asana Gantt view](https://help.asana.com/s/article/
 for dated work/dependencies/baselines and [monday baseline comparison](https://support.monday.com/hc/en-us/articles/360020978159-The-Gantt-Baseline)
 for comparing the agreed plan. Atlas uses its existing tasks, not a second store.
 
-Verification before deployment: production build, separate TypeScript, scoped
-ESLint, 24 focused planning checks and full suite 903 passed / 22 integration skips.
-The initial full-suite inventory test timed out during simultaneous checks; the
-unchanged suite passed with four workers. Deployment/live acceptance pending.
-This current server release supersedes the earlier Mac/data-only deployment notes
+Runtime `9d5a460` deployed to https://atlassystem.online and verified. Production
+build, separate TypeScript, scoped ESLint, 25 focused planning checks and full suite
+912 passed / 22 integration skips. All 28 central synthetic browser/security
+assertions pass, including actual dates save/reload, baseline/privacy, viewport,
+zero browser errors, stale/foreign/viewer/archived/disabled rejection and audit.
+See [deployment evidence](../evidence/2026-10-08-projects-gantt.md). An initial SVG
+title hydration failure was reproduced, fixed and covered by a hydration regression
+before the complete final live rerun. Synthetic companies remain suspended with
+access revoked and history retained. No local business database/cache was created.
+This server deployment supersedes the earlier Mac/data-only deployment notes
 below, which describe historical 3 October evidence only. Full 256-section scope
 remains open; this change does not close unrelated portfolio/document/finance work.
+
 
 
 Michael requested the entire attached Projects brief as one scope on 3 October

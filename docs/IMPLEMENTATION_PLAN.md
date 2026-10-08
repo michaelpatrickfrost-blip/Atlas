@@ -138,11 +138,12 @@ and [open coverage](modules/PROJECTS_COVERAGE.md) supersede the former basic
 customer-project/Monday-style plan. Source/build/synthetic browser/database evidence
 is not full acceptance or installed desktop activation.
 
+- [x] Detailed Gantt planning deployed 8 October: versioned date saves, dependencies, milestones, baseline variance, 28 live checks and 25 planning regressions; see Projects evidence.
 - [ ] Accept every requirement and all supplied permission/dependency/view/workload/ERP/automation/budget/update/document scenarios.
 - [ ] Complete configurable workflows/roles, external collaboration/forms, rich simultaneous editing and full view/bulk/drag interactions.
 - [ ] Complete working calendars/leave-aware capacity/resource forecasting, multi-stage approvals, nested portfolio/goals and advanced templates.
 - [ ] Deliver real Finance cost/billing and Procurement/Manufacturing/Logistics/Service providers, durable event processing and reconciliation.
-- [ ] Verify compatible desktop/data packages, protected central migration and installed Mac/server-data operation while preserving unsaved work.
+- [ ] Verify remaining Projects scope on the required live server with protected central records/backups; optional desktop packaging does not replace server acceptance.
 
 ## 8. Goals & KPIs
 

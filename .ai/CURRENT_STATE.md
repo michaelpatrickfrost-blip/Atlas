@@ -1,37 +1,42 @@
 # Atlas current state
 
-## 8 October 2026 — Projects detailed Gantt deployed; live acceptance running
+## 8 October 2026 — Projects detailed Gantt deployed and verified
 
-- Project Plan & Gantt and shared timeline now show dated grids, day/week/month
-  zoom, bounded paging, Today, sticky owner/duration/status rows, dependency lines,
-  milestones, critical/slack/conflicts, open estimates and incomplete-date signals.
-  Search/open/critical filters and a compact task inspector preserve ease of use.
-- Existing baselines now compare finish variance and shadow bars; visible current
-  task dates only are projected, without raw historical snapshots in the browser.
-- `rescheduleTask` changes only canonical dates, preserving task content, using
-  session/capability/module/project access, tenant and optimistic version checks,
-  atomic audit/outbox. Archived projects expose no editing forms. No schema change,
-  new business store or automatic downstream rescheduling. Data action allowlist updated.
-- Paths: Projects components/domain/actions/project page/manifest, action registry,
-  `tests/projects-gantt.test.tsx`, `scripts/check-projects-gantt.ts`, owning guide/coverage.
-- Checks: production build, separate TypeScript, scoped ESLint and whitespace pass;
-  24 focused checks; full suite 903 pass / 22 integration skips with four workers.
-  First full run had an unrelated inventory timeout under concurrent load, then
-  complete unchanged rerun passed. Combined release preserves admin fix `7926f2c`;
-  rebuild, strict TypeScript and 911 tests / 22 skips pass. Runtime `ddde304` deployed,
-  98 migrations current, service healthy/public login 200. Private pre-deploy DB and
-  service-files backup `atlas-pre-deploy-20261008-142820` retained. First live run
-  stopped on test reading a collapsed baseline table; test now opens comparison.
-  Corrected run passed 14 UI assertions including save/reload/privacy/mobile;
-  browser error count stopped acceptance. Diagnosis reproduced SVG title hydration
-  mismatch (mixed JSX children). Changed to one string; added actual server-render/
-  hydrate regression. Narrower sticky task column improves phone chart space.
-  Fix validation: 25 focused planning checks, 912 full-suite pass / 22 skips, build,
-  strict TypeScript and scoped ESLint pass. Fixture companies suspended and
-  credentials revoked on every run; corrected runtime deploy/full live rerun pending.
-- Next: deploy this compatible release, run central synthetic browser/security
-  acceptance, preserve fixture history and revoke access; integrate owned primary files.
-
+- Runtime `9d5a460` live at https://atlassystem.online. Project **Plan & Gantt**
+  and shared **Gantt timeline** show dated grids, day/week/month zoom, bounded
+  paging, Today, sticky owner/duration/status rows, dependency lines, milestones,
+  critical/slack/conflicts, open-task estimates and incomplete-date signals.
+  Search/open/critical filters and compact task detail keep planning approachable.
+- Existing baselines have readable finish variance and shadow bars. Only current
+  visible task IDs/date fields are projected; raw historical JSON is not rendered.
+  Immutable snapshots remain central. Date-only edits preserve canonical task detail,
+  require session/capability/active module/project access/tenant/version, and retain
+  atomic audit/outbox. Archived projects expose no management forms. No schema,
+  role grants, local storage or automatic successor rescheduling introduced.
+- Paths: Projects components/domain/actions/project page/manifest, data action
+  registry, `tests/projects-gantt.test.tsx`, `scripts/check-projects-gantt.ts`, owning
+  guide/coverage/delivery map. See `docs/evidence/2026-10-08-projects-gantt.md`.
+- Checks: production build, separate strict TypeScript, scoped ESLint and whitespace
+  pass; final full suite 912 pass / 22 integration skips (144 files pass/3 skip),
+  25 focused planning regressions. Canonical shared repo's 25 focused checks pass.
+  Compatible release retains concurrent admin validation/evidence changes.
+- Live `scripts/check-projects-gantt.ts`: all 28 assertions pass, including actual
+  save/reload/baseline, immutable successors/task content, search/zoom/connectors/
+  milestones, 390px contained scrolling, zero manager browser errors, stale saves,
+  read-only capability and viewer role, foreign-company reads/writes, invalid dates,
+  archived/disabled controls and retained successful-only audit. Synthetic companies
+  suspended and credentials/sessions revoked after every run; central history kept.
+- Both server builds/restarts/public login 200 pass; active service/clean checkout,
+  98 current migrations/no schema change. Private database/service-files backups
+  `atlas-pre-deploy-20261008-142820` and `atlas-pre-deploy-20261008-143425` retained.
+  Final phone screenshot visually inspected. Owned source integrated into primary
+  with base checks and narrow action-registry entry; concurrent edits preserved.
+- Initial full-suite inventory timeout passed on unchanged four-worker rerun.
+  Live acceptance initially read a closed baseline table (test fixed), then exposed
+  an actual SVG-title hydration mismatch. Reproduced with server-render/hydrate test,
+  changed tooltip to one string, rebuilt/redeployed and fully reran acceptance.
+- Remaining full source scope is open: drag/bulk/reschedule propagation, working
+  calendars/finite capacity, rich collaboration and Finance actuals are not claimed.
 
 ## 8 October 2026 — HR platform deployed and verified
 

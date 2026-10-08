@@ -1037,3 +1037,22 @@ Existing-account promotion still requires explicit confirmation and preserves it
 password/customer roles. Recovery/access/profile/offboarding confirmations remain.
 This is a narrow exception to the 7 October full-staff-permission policy; customer
 permissions and other company workflows are retained. Passwords never enter memory.
+
+
+## 8 October 2026 — Meetings and operational apps retain canonical authority
+
+Michael requested five distinct apps: Meetings, Maintenance, Engineering / PLM,
+Fleet and Field Service. Extend canonical Meeting/Product/Party rather than copy
+customer, product or project identities. Private meeting audience also constrains
+legacy Projects/gateway access. Microsoft calendar consent belongs to the selected
+company/person; imported invitations default private and retain Outlook ownership.
+Atlas notes/actions do not become Outlook invitation bodies; include a protected
+link. Only confirmed sends claim delivery; configuration and provider proof remain
+required. No auto-cancel or automatic retry of uncertain business sends.
+
+Operational parts/fuel/job labour are explicit records, not implicit stock or
+ledger postings. Engineering release locks the design and supersedes its previous
+revision without silently changing a production BOM/routing. Independent approval
+excludes both original author and last editor. Fleet service dates require Fleet
+management; customer identity erasure also clears copied Field Service content.
+New apps are enabled only for an authorised company, not globally for every tenant.

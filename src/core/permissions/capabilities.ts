@@ -309,11 +309,19 @@ export const TICKETING_CAPABILITIES = {
   ticketWatch: "tickets.ticket.watch",
 } as const;
 
+export const MEETINGS_CAPABILITIES={read:'meetings.meeting.read',manage:'meetings.meeting.manage',connect:'meetings.calendar.connect'} as const;
+export const MAINTENANCE_CAPABILITIES={read:'maintenance.work.read',manage:'maintenance.work.manage'} as const;
+export const ENGINEERING_CAPABILITIES={read:'engineering.revision.read',manage:'engineering.revision.manage',approve:'engineering.revision.approve',release:'engineering.revision.release'} as const;
+export const FLEET_CAPABILITIES={read:'fleet.vehicle.read',manage:'fleet.vehicle.manage'} as const;
+export const FIELDSERVICE_CAPABILITIES={read:'fieldservice.job.read',manage:'fieldservice.job.manage'} as const;
+
 export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: string[] }> = [
   {
     key: "admin",
     name: "Administrator",
     capabilities: [
+      ...Object.values(MEETINGS_CAPABILITIES), ...Object.values(MAINTENANCE_CAPABILITIES),
+      ...Object.values(ENGINEERING_CAPABILITIES), ...Object.values(FLEET_CAPABILITIES), ...Object.values(FIELDSERVICE_CAPABILITIES),
       ...Object.values(CORE_CAPABILITIES),
       ...Object.values(AUDIT_CAPABILITIES),
       ...Object.values(ECHO_CAPABILITIES),

@@ -1,0 +1,2 @@
+export const REVISION_STATES=['DRAFT','IN_REVIEW','APPROVED','RELEASED','SUPERSEDED'] as const;
+export function engineeringTransition(from:string,to:string,author:string,actor:string){const routes:Record<string,string[]>={DRAFT:['IN_REVIEW'],IN_REVIEW:['DRAFT','APPROVED'],APPROVED:['DRAFT','RELEASED']};if(!(routes[from]??[]).includes(to))throw Error('This revision cannot make that transition.');if(to==='APPROVED'&&author===actor)throw Error('Another authorised person must approve the design.');}

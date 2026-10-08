@@ -17,3 +17,6 @@ export function workAuditScope(session:Session):Prisma.AuditEntryWhereInput {
  if(session.capabilities.has('projects.read'))(base.OR as Prisma.AuditEntryWhereInput[]).push({workProjectId:{not:null},workProject:projectScope(session),workTaskId:null,workDocumentId:null},{workTask:taskScope(session),workDocumentId:null},{workDocument:documentScope(session)});
  return base;
 }
+
+/** Meeting notes follow both meeting audience and the independent project boundary. */
+export function meetingScope(session:Session):Prisma.MeetingWhereInput{return {organisationId:session.organisationId,AND:[{OR:[{visibility:'COMPANY'},{organiserUserId:session.userId},{attendeeUserIds:{has:session.userId}}]},{OR:[{projectId:null},...(session.capabilities.has('projects.read')?[{project:projectScope(session)}]:[])]}]};}

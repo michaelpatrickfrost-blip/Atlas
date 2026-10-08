@@ -125,3 +125,14 @@ All 42 authenticated live acceptance checks passed. See [implementation and genu
 master-spec gaps](../docs/modules/SOP.md) and [acceptance](../docs/modules/SOP_ACCEPTANCE.md).
 Plan now has phased, source-linked inputs; the four researched departmental Plan
 modules follow S&OP and remain unimplemented.
+
+
+## 8 October 2026 — Requested operational apps
+
+Meetings (`/meetings`), Maintenance (`/maintenance`), Engineering / PLM
+(`/engineering`), Fleet (`/fleet`) and Field Service (`/fieldservice`) now have
+implemented source/workflows in a compatible release, with live acceptance pending.
+Fleet replaces its catalogue placeholder. See [scope and genuine integration
+boundaries](../docs/modules/OPERATIONAL_APPS.md) and CURRENT_STATE for release truth.
+Microsoft calendar application configuration/consent and provider proof remain
+required; no external delivery is inferred from a connected UI or manual draft.

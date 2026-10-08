@@ -1,0 +1,3 @@
+import {db} from '@/core/db/client';
+import type {CustomerOverviewProvider} from '@/core/modules/types';
+export const fieldServiceCustomer:CustomerOverviewProvider=async({session,partyId})=>{if(!session.capabilities.has('fieldservice.job.read')||!session.capabilities.has('customers.read'))return null;const count=await db.fieldServiceJob.count({where:{organisationId:session.organisationId,partyId,party:{identityScrubbed:false},status:{notIn:['COMPLETED','CANCELLED']}}});return {moduleId:'fieldservice',metrics:[{label:'Open service visits',value:String(count),href:'/fieldservice?customerId='+partyId}],actions:[{label:'Service visits',href:'/fieldservice?customerId='+partyId}]};};

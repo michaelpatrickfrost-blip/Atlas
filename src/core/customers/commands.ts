@@ -332,6 +332,9 @@ export async function deleteCustomer(partyId: string) {
         },
         data: { before: Prisma.DbNull, after: Prisma.DbNull },
       });
+      // Field service keeps canonical customer references; erase copied site/contact content.
+      await tx.fieldServiceEntry.updateMany({where:{organisationId:session.organisationId,job:{partyId}},data:{body:"Content removed after customer identity scrub"}});
+      await tx.fieldServiceJob.updateMany({where:{organisationId:session.organisationId,partyId},data:{title:"Visit for deleted customer",site:"Deleted address",contactName:null,contactPhone:null,instructions:"Content removed after customer identity scrub",findings:null,resolution:null,status:"CANCELLED",version:{increment:1}}});
       await tx.party.update({
         where: { id: partyId, organisationId: session.organisationId },
         data: {

@@ -64,6 +64,7 @@ export async function emit(eventName: string, payload: unknown): Promise<void> {
 /** Known domain events. Modules import from here rather than inventing string literals
  *  inline, so the full event surface is discoverable in one place. */
 export const DOMAIN_EVENTS = {
+  operationalRecordChanged: "operational.record.changed",
   marketingLeadBecameMql: "marketing.lead.became_mql",
   marketingEventRecorded: "marketing.event.recorded",
   serviceCaseCreated: "service.case.created",

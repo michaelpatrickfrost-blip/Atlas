@@ -10,6 +10,8 @@ const mocks = vi.hoisted(() => ({
   writeAudit: vi.fn(),
   revalidatePath: vi.fn(),
   tx: {
+    fieldServiceJob: { updateMany: vi.fn() },
+    fieldServiceEntry: { updateMany: vi.fn() },
     address: { updateMany: vi.fn() },
     communicationDestination: { updateMany: vi.fn() },
     contact: { findMany: vi.fn(), updateMany: vi.fn(), update: vi.fn() },
@@ -168,3 +170,5 @@ describe("customer and contact deletion fallbacks", () => {
     expect(mocks.tx.party.update).not.toHaveBeenCalled();
   });
 });
+
+it('erases copied field service address/contact and notes when canonical identity is scrubbed',async()=>{mocks.findParty.mockResolvedValue({id:'party_1',identityScrubbed:false});mocks.deleteParty.mockRejectedValue(foreignKeyError());mocks.tx.contact.findMany.mockResolvedValue([]);mocks.tx.directDebitMandate.findMany.mockResolvedValue([]);await deleteCustomer('party_1');expect(mocks.tx.fieldServiceJob.updateMany).toHaveBeenCalledWith(expect.objectContaining({where:{organisationId:'org_1',partyId:'party_1'},data:expect.objectContaining({site:'Deleted address',contactName:null,contactPhone:null,resolution:null,status:'CANCELLED'})}));expect(mocks.tx.fieldServiceEntry.updateMany).toHaveBeenCalledWith({where:{organisationId:'org_1',job:{partyId:'party_1'}},data:{body:'Content removed after customer identity scrub'}});});

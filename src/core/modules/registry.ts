@@ -1,3 +1,8 @@
+import {meetingsManifest} from '@/modules/meetings/manifest';
+import {maintenanceManifest} from '@/modules/maintenance/manifest';
+import {engineeringManifest} from '@/modules/engineering/manifest';
+import {fleetManifest} from '@/modules/fleet/manifest';
+import {fieldserviceManifest} from '@/modules/fieldservice/manifest';
 import { templatesManifest } from "@/modules/templates/manifest";
 import { sopManifest } from "@/modules/sop/manifest";
 import { logisticsManifest } from "@/modules/logistics/manifest";
@@ -34,6 +39,7 @@ import { stubModules } from "@/modules/stubs";
  * enable/disable state lives in the database (ModuleState) — see runtime.ts.
  */
 const implemented = [
+ meetingsManifest,maintenanceManifest,engineeringManifest,fleetManifest,fieldserviceManifest,
   templatesManifest,
   crmManifest, salesManifest, projectsManifest, stockManifest, kpisManifest,
   productsManifest, pricingManifest, peopleManifest, schedulingManifest,
@@ -44,7 +50,7 @@ const implemented = [
 ];
 
 const stubs = stubModules.filter(m =>
-  !["projects","stock","people","scheduling","payroll","service","marketing","finance","purchasing","logistics","manufacturing","safety","quality","tickets"].includes(m.id)
+  !["fleet","projects","stock","people","scheduling","payroll","service","marketing","finance","purchasing","logistics","manufacturing","safety","quality","tickets"].includes(m.id)
 );
 
 export const MODULE_CATALOGUE = [...implemented, ...stubs].filter((m): m is ModuleManifest => m !== undefined && m !== null);

@@ -14,6 +14,19 @@ datasource db {
 // ---------- Core: tenancy & identity ----------
 
 model Organisation {
+ operationalMeetingEntry MeetingEntry[]
+ operationalMicrosoftCalendarConnection MicrosoftCalendarConnection[]
+ operationalMeetingOAuthState MeetingOAuthState[]
+ operationalMaintenanceEquipment MaintenanceEquipment[]
+ operationalMaintenanceWorkOrder MaintenanceWorkOrder[]
+ operationalMaintenancePart MaintenancePart[]
+ operationalFleetVehicle FleetVehicle[]
+ operationalFleetLog FleetLog[]
+ operationalEngineeringRevision EngineeringRevision[]
+ operationalEngineeringAttachment EngineeringAttachment[]
+ operationalFieldServiceJob FieldServiceJob[]
+ operationalFieldServiceEntry FieldServiceEntry[]
+
   isTest Boolean @default(false)
   qualitySequences QualitySequence[]
   qualitySpecifications QualitySpecification[]
@@ -392,6 +405,7 @@ model CustomerTradingLink {
 }
 
 model Party {
+ fieldServiceJobs FieldServiceJob[]
   financeDocuments FinanceDocument[]
   financeSuppliers FinanceSupplier[]
   marketingProfiles MarketingProfile[]
@@ -1028,6 +1042,8 @@ model Product {
   priceListEntries PriceListEntry[]
   agreementPrices AgreementPrice[]
   quoteLines QuoteLine[]
+  engineeringRevisions EngineeringRevision[]
+  maintenanceParts MaintenancePart[]
   orderLines       SalesOrderLine[]
   agreementLines SalesAgreementLine[]
   inventoryBalances InventoryBalance[]
@@ -1047,6 +1063,7 @@ model Product {
 
   @@unique([organisationId, code])
   @@unique([organisationId, barcode])
+  @@unique([id,organisationId])
   @@index([organisationId, active])
   @@map("products")
 }
@@ -2455,7 +2472,7 @@ model InventoryBalance {
  quantity Int @default(0)
  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
  warehouse Warehouse @relation(fields:[warehouseId],references:[id])
- product Product @relation(fields:[productId],references:[id])
+ product Product @relation(fields:[productId,organisationId],references:[id,organisationId])
  @@unique([warehouseId,productId])
  @@index([organisationId])
  @@map("inventory_balances")
@@ -2477,7 +2494,7 @@ model InventoryMovement {
  createdAt DateTime @default(now())
  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
  warehouse Warehouse @relation(fields:[warehouseId],references:[id])
- product Product @relation(fields:[productId],references:[id])
+ product Product @relation(fields:[productId,organisationId],references:[id,organisationId])
  @@unique([organisationId,requestKey])
  @@index([organisationId,createdAt])
  @@map("inventory_movements")
@@ -2611,6 +2628,23 @@ model ProjectTask {
  @@map("project_tasks")
 }
 model Meeting {
+ endsAt DateTime?
+ timezone String @default("Europe/London")
+ agenda String?
+ location String?
+ joinUrl String?
+ visibility String @default("COMPANY")
+ status String @default("SCHEDULED")
+ version Int @default(1)
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ microsoftManaged Boolean @default(false)
+ microsoftEventId String?
+ microsoftOwnerUserId String?
+ microsoftCalendarId String?
+ entries MeetingEntry[]
+ @@unique([id,organisationId])
+ @@unique([organisationId,microsoftOwnerUserId,microsoftCalendarId,microsoftEventId])
  id String @id @default(cuid())
  organisationId String
  projectId String?
@@ -8847,4 +8881,241 @@ model CompanyCleanupRun {
   updatedAt DateTime @updatedAt
   @@index([status,createdAt])
   @@map("company_cleanup_runs")
+}
+
+// Operational apps — central records, additive to the existing ERP.
+model MeetingEntry {
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ id String @id @default(cuid())
+ organisationId String
+ meetingId String
+ kind String
+ body String
+ ownerUserId String?
+ dueAt DateTime?
+ status String @default("OPEN")
+ version Int @default(1)
+ authorUserId String
+ createdAt DateTime @default(now())
+ completedAt DateTime?
+ meeting Meeting @relation(fields:[meetingId,organisationId],references:[id,organisationId],onDelete:Cascade)
+ @@index([organisationId,meetingId])
+ @@map("meeting_entries")
+}
+model MicrosoftCalendarConnection {
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ id String @id @default(cuid())
+ organisationId String
+ userId String
+ accessToken String
+ refreshToken String
+ expiresAt DateTime
+ calendarId String @default("primary")
+ calendarName String @default("My Outlook calendar")
+ connectedAt DateTime @default(now())
+ lastSyncAt DateTime?
+ @@unique([organisationId,userId])
+ @@map("microsoft_calendar_connections")
+}
+model MeetingOAuthState {
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ stateHash String @id
+ organisationId String
+ userId String
+ verifier String
+ expiresAt DateTime
+ @@map("meeting_oauth_states")
+}
+model MaintenanceEquipment {
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ id String @id @default(cuid())
+ organisationId String
+ code String
+ name String
+ serialNumber String?
+ location String?
+ manufacturer String?
+ model String?
+ criticality String @default("NORMAL")
+ status String @default("OPERATIONAL")
+ serviceIntervalDays Int?
+ nextServiceAt DateTime?
+ notes String?
+ version Int @default(1)
+ createdAt DateTime @default(now())
+ workOrders MaintenanceWorkOrder[]
+ @@unique([id,organisationId])
+ @@unique([organisationId,code])
+ @@index([organisationId,status])
+ @@map("maintenance_equipment")
+}
+model MaintenanceWorkOrder {
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ id String @id @default(cuid())
+ organisationId String
+ equipmentId String?
+ vehicleId String?
+ title String
+ kind String
+ priority String @default("NORMAL")
+ status String @default("OPEN")
+ reportedByUserId String
+ assigneeUserId String?
+ dueAt DateTime?
+ startedAt DateTime?
+ completedAt DateTime?
+ downtimeStartedAt DateTime?
+ downtimeEndedAt DateTime?
+ findings String?
+ resolution String?
+ actualMinutes Int @default(0)
+ version Int @default(1)
+ createdAt DateTime @default(now())
+ equipment MaintenanceEquipment? @relation(fields:[equipmentId,organisationId],references:[id,organisationId])
+ vehicle FleetVehicle? @relation(fields:[vehicleId,organisationId],references:[id,organisationId])
+ parts MaintenancePart[]
+ @@unique([id,organisationId])
+ @@index([organisationId,status,dueAt])
+ @@map("maintenance_work_orders")
+}
+model MaintenancePart {
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ id String @id @default(cuid())
+ organisationId String
+ workOrderId String
+ productId String
+ quantity Decimal @db.Decimal(18,4)
+ note String
+ createdAt DateTime @default(now())
+ workOrder MaintenanceWorkOrder @relation(fields:[workOrderId,organisationId],references:[id,organisationId])
+ product Product @relation(fields:[productId,organisationId],references:[id,organisationId])
+ @@index([organisationId,workOrderId])
+ @@map("maintenance_parts")
+}
+model FleetVehicle {
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ id String @id @default(cuid())
+ organisationId String
+ registration String
+ name String
+ make String?
+ model String?
+ vin String?
+ fuelType String @default("DIESEL")
+ status String @default("ACTIVE")
+ driverUserId String?
+ odometer Int @default(0)
+ motDueAt DateTime?
+ insuranceDueAt DateTime?
+ serviceDueAt DateTime?
+ notes String?
+ version Int @default(1)
+ createdAt DateTime @default(now())
+ logs FleetLog[]
+ workOrders MaintenanceWorkOrder[]
+ @@unique([id,organisationId])
+ @@unique([organisationId,registration])
+ @@index([organisationId,status])
+ @@map("fleet_vehicles")
+}
+model FleetLog {
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ id String @id @default(cuid())
+ organisationId String
+ vehicleId String
+ kind String
+ occurredAt DateTime
+ odometer Int
+ quantity Decimal? @db.Decimal(18,4)
+ costMinor Int?
+ currency String @default("GBP")
+ result String?
+ notes String
+ authorUserId String
+ createdAt DateTime @default(now())
+ vehicle FleetVehicle @relation(fields:[vehicleId,organisationId],references:[id,organisationId])
+ @@index([organisationId,vehicleId,occurredAt])
+ @@map("fleet_logs")
+}
+model EngineeringRevision {
+ lastEditorUserId String?
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ id String @id @default(cuid())
+ organisationId String
+ productId String
+ revision String
+ title String
+ reason String
+ specification String
+ status String @default("DRAFT")
+ authorUserId String
+ reviewerUserId String?
+ approvedAt DateTime?
+ releasedAt DateTime?
+ version Int @default(1)
+ createdAt DateTime @default(now())
+ product Product @relation(fields:[productId,organisationId],references:[id,organisationId])
+ attachments EngineeringAttachment[]
+ @@unique([id,organisationId])
+ @@unique([organisationId,productId,revision])
+ @@index([organisationId,status])
+ @@map("engineering_revisions")
+}
+model EngineeringAttachment {
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ id String @id @default(cuid())
+ organisationId String
+ revisionId String
+ name String
+ storageKey String @unique
+ mime String
+ size Int
+ sha256 String
+ authorUserId String
+ createdAt DateTime @default(now())
+ revision EngineeringRevision @relation(fields:[revisionId,organisationId],references:[id,organisationId])
+ @@index([organisationId,revisionId])
+ @@map("engineering_attachments")
+}
+model FieldServiceJob {
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ id String @id @default(cuid())
+ organisationId String
+ partyId String
+ title String
+ kind String
+ site String
+ contactName String?
+ contactPhone String?
+ engineerUserId String?
+ scheduledStart DateTime
+ scheduledEnd DateTime
+ timezone String @default("Europe/London")
+ status String @default("SCHEDULED")
+ instructions String
+ findings String?
+ resolution String?
+ actualMinutes Int @default(0)
+ completedAt DateTime?
+ version Int @default(1)
+ createdByUserId String
+ createdAt DateTime @default(now())
+ party Party @relation(fields:[partyId,organisationId],references:[id,organisationId])
+ entries FieldServiceEntry[]
+ @@unique([id,organisationId])
+ @@index([organisationId,scheduledStart,status])
+ @@map("field_service_jobs")
+}
+model FieldServiceEntry {
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ id String @id @default(cuid())
+ organisationId String
+ jobId String
+ kind String
+ body String
+ authorUserId String
+ createdAt DateTime @default(now())
+ job FieldServiceJob @relation(fields:[jobId,organisationId],references:[id,organisationId])
+ @@index([organisationId,jobId])
+ @@map("field_service_entries")
 }

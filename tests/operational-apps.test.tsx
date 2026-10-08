@@ -1,0 +1,63 @@
+import {describe,it,expect,vi,beforeEach} from 'vitest';
+import {renderToStaticMarkup} from 'react-dom/server';
+import type {Session} from '@/core/auth/session';
+const mocks=vi.hoisted(()=>({db:{membership:{findFirst:vi.fn(),findMany:vi.fn()},meeting:{findFirst:vi.fn(),updateMany:vi.fn(),create:vi.fn()},meetingEntry:{findFirst:vi.fn(),updateMany:vi.fn(),create:vi.fn()},maintenanceEquipment:{findFirst:vi.fn(),updateMany:vi.fn(),create:vi.fn()},maintenanceWorkOrder:{findFirst:vi.fn(),updateMany:vi.fn(),create:vi.fn()},maintenancePart:{create:vi.fn()},fleetVehicle:{findFirst:vi.fn(),updateMany:vi.fn(),create:vi.fn()},fleetLog:{create:vi.fn()},engineeringRevision:{findFirst:vi.fn(),updateMany:vi.fn(),create:vi.fn()},fieldServiceJob:{findFirst:vi.fn(),updateMany:vi.fn(),create:vi.fn()},fieldServiceEntry:{create:vi.fn()},product:{findFirst:vi.fn()},party:{findFirst:vi.fn()},auditEntry:{create:vi.fn()},domainOutbox:{create:vi.fn()},$transaction:vi.fn()},session:{organisationId:'org',userId:'u',capabilities:new Set<string>()},enabled:vi.fn()}));
+vi.mock('@/core/db/client',()=>({db:mocks.db}));
+vi.mock('@/core/auth/session',()=>({requireSession:async()=>mocks.session}));
+vi.mock('@/core/modules/access',()=>({assertModuleEnabled:mocks.enabled}));
+vi.mock('next/cache',()=>({revalidatePath:vi.fn()}));
+vi.mock('next/navigation',()=>({redirect:vi.fn()}));
+import {localTime,range,day,safeJoinUrl} from '@/core/shared/operational-forms';
+import {maintenanceTransition,downtimeMinutes} from '@/modules/maintenance/domain/rules';
+import {engineeringTransition} from '@/modules/engineering/domain/rules';
+import {jobTransition} from '@/modules/fieldservice/domain/rules';
+import {meetingScope} from '@/core/permissions/work-access';
+import {createMaintenanceWork,updateMaintenanceWork,recordMaintenancePart} from '@/modules/maintenance/services/commands';
+import {addFleetLog} from '@/modules/fleet/services/commands';
+import {saveEngineeringRevision,transitionEngineeringRevision} from '@/modules/engineering/services/commands';
+import {saveFieldJob,updateFieldJob} from '@/modules/fieldservice/services/commands';
+import {addMeetingEntry,meetingStatus,completeMeetingAction} from '@/modules/meetings/services/commands';
+import {MeetingForm} from '@/modules/meetings/components/form';
+import {JobForm} from '@/modules/fieldservice/components/form';
+const form=(fields:Record<string,string>)=>{const f=new FormData();for(const [k,v]of Object.entries(fields))f.set(k,v);return f;};
+beforeEach(()=>{vi.resetAllMocks();mocks.session.capabilities=new Set(['meetings.meeting.manage','maintenance.work.manage','fleet.vehicle.manage','fleet.vehicle.read','engineering.revision.manage','engineering.revision.approve','engineering.revision.release','fieldservice.job.manage','core.products.read','customers.read']);mocks.enabled.mockResolvedValue(undefined);mocks.db.$transaction.mockImplementation(fn=>fn(mocks.db));mocks.db.membership.findFirst.mockResolvedValue({id:'member'});for(const delegate of [mocks.db.meeting,mocks.db.meetingEntry,mocks.db.maintenanceEquipment,mocks.db.maintenanceWorkOrder,mocks.db.fleetVehicle,mocks.db.engineeringRevision,mocks.db.fieldServiceJob])delegate.updateMany.mockResolvedValue({count:1});});
+describe('dates and safe meeting links',()=>{
+ it('uses London winter and summer offsets',()=>{expect(localTime('2026-01-10T10:00').toISOString()).toBe('2026-01-10T10:00:00.000Z');expect(localTime('2026-07-10T10:00').toISOString()).toBe('2026-07-10T09:00:00.000Z');});
+ it.each(['2026-03-29T01:30','2026-10-25T01:30','2026-02-30T12:00','nonsense'])('rejects ambiguous or invalid local input %s',value=>expect(()=>localTime(value)).toThrow());
+ it('rejects unknown timezone',()=>expect(()=>localTime('2026-10-08T12:00','Bad/Zone')).toThrow('timezone'));
+ it('rejects reversed and overlong windows',()=>{expect(()=>range(form({startsAt:'2026-10-08T12:00',endsAt:'2026-10-08T11:00'}))).toThrow('End');expect(()=>range(form({startsAt:'2026-10-08T12:00',endsAt:'2026-10-20T12:00'}))).toThrow('End');});
+ it('validates date-only fields without normalising invalid days',()=>{expect(()=>day(form({due:'2026-02-30'}),'due')).toThrow();expect(day(form({due:'2026-10-08'}),'due')?.toISOString()).toBe('2026-10-08T00:00:00.000Z');});
+ it.each(['javascript:alert(1)','http://teams.microsoft.com/x','https://evil.test/x','https://teams.microsoft.com.evil.test/x','https://u:p@teams.microsoft.com/x'])('rejects unsafe join link %s',url=>expect(()=>safeJoinUrl(url)).toThrow());
+ it('accepts a real secure Teams link',()=>expect(safeJoinUrl('https://teams.microsoft.com/l/meetup-join/abc')).toContain('meetup-join'));
+});
+describe('operational transitions',()=>{
+ it('allows work start, parts wait and completion',()=>{expect(()=>maintenanceTransition('OPEN','IN_PROGRESS')).not.toThrow();expect(()=>maintenanceTransition('IN_PROGRESS','WAITING_PARTS')).not.toThrow();expect(()=>maintenanceTransition('IN_PROGRESS','COMPLETED')).not.toThrow();});
+ it.each([['OPEN','COMPLETED'],['COMPLETED','IN_PROGRESS'],['CANCELLED','OPEN']])('rejects maintenance %s to %s',(a,b)=>expect(()=>maintenanceTransition(a,b)).toThrow());
+ it('keeps ongoing and closed downtime distinct',()=>{const a=new Date('2026-10-08T10:00Z'),b=new Date('2026-10-08T11:30Z');expect(downtimeMinutes(a,b,new Date('2026-10-09'))).toBe(90);expect(downtimeMinutes(a,null,b)).toBe(90);expect(downtimeMinutes(null,b)).toBe(0);});
+ it('requires independent engineering approval',()=>{expect(()=>engineeringTransition('IN_REVIEW','APPROVED','a','a')).toThrow('Another');expect(()=>engineeringTransition('IN_REVIEW','APPROVED','a','b')).not.toThrow();});
+ it('does not allow draft release or released edits',()=>{expect(()=>engineeringTransition('DRAFT','RELEASED','a','b')).toThrow();expect(()=>engineeringTransition('RELEASED','DRAFT','a','b')).toThrow();});
+ it('requires site arrival before job completion',()=>{expect(()=>jobTransition('SCHEDULED','COMPLETED')).toThrow();expect(()=>jobTransition('ON_SITE','COMPLETED')).not.toThrow();expect(()=>jobTransition('COMPLETED','ON_SITE')).toThrow();});
+});
+describe('real action guards and atomic writes',()=>{
+ it('blocks an unauthorised maintenance write before data access',async()=>{mocks.session.capabilities.clear();await expect(createMaintenanceWork(form({}))).rejects.toThrow('FORBIDDEN');expect(mocks.db.maintenanceWorkOrder.create).not.toHaveBeenCalled();});
+ it('checks disabled apps before accessing records',async()=>{mocks.enabled.mockRejectedValue(Error('disabled'));await expect(addFleetLog(form({id:'v'}))).rejects.toThrow('disabled');expect(mocks.db.fleetVehicle.findFirst).not.toHaveBeenCalled();});
+ it('requires exactly one valid maintenance target',async()=>{await expect(createMaintenanceWork(form({equipmentId:'e',vehicleId:'v'}))).rejects.toThrow('one');await expect(createMaintenanceWork(form({equipmentId:'foreign'}))).rejects.toThrow('unavailable');expect(mocks.db.maintenanceWorkOrder.create).not.toHaveBeenCalled();});
+ it('requires a resolution to complete work',async()=>{mocks.db.maintenanceWorkOrder.findFirst.mockResolvedValue({id:'w',status:'IN_PROGRESS'});await expect(updateMaintenanceWork(form({id:'w',status:'COMPLETED'}))).rejects.toThrow('completed repair');});
+ it('does not record parts after losing a version check',async()=>{mocks.db.maintenanceWorkOrder.findFirst.mockResolvedValue({id:'w'});mocks.db.product.findFirst.mockResolvedValue({id:'p'});mocks.db.maintenanceWorkOrder.updateMany.mockResolvedValue({count:0});await expect(recordMaintenancePart(form({id:'w',version:'2',productId:'p',quantity:'3',note:'Replacement'}))).rejects.toThrow('changed');expect(mocks.db.maintenancePart.create).not.toHaveBeenCalled();expect(mocks.db.auditEntry.create).not.toHaveBeenCalled();});
+ it('does not allow an odometer rollback',async()=>{mocks.db.fleetVehicle.findFirst.mockResolvedValue({id:'v',status:'ACTIVE',odometer:100});await expect(addFleetLog(form({id:'v',kind:'TRIP',odometer:'50'}))).rejects.toThrow('decrease');});
+ it('marks an unsafe vehicle off road in the same transaction as its log',async()=>{mocks.db.fleetVehicle.findFirst.mockResolvedValue({id:'v',status:'ACTIVE',odometer:100});mocks.db.fleetLog.create.mockResolvedValue({id:'log'});await addFleetLog(form({id:'v',version:'1',kind:'INSPECTION',odometer:'101',occurredAt:'2026-01-01',result:'UNSAFE',notes:'Brake defect'}));expect(mocks.db.fleetVehicle.updateMany).toHaveBeenCalledWith(expect.objectContaining({where:expect.objectContaining({organisationId:'org',version:1}),data:expect.objectContaining({status:'OFF_ROAD'})}));expect(mocks.db.fleetLog.create).toHaveBeenCalledWith(expect.objectContaining({data:expect.objectContaining({organisationId:'org',result:'UNSAFE'})}));expect(mocks.db.domainOutbox.create).toHaveBeenCalledOnce();});
+ it('requires an active local product for a revision',async()=>{await expect(saveEngineeringRevision(form({productId:'foreign'}))).rejects.toThrow('Product unavailable');});
+ it('rejects self-approval and read-only release',async()=>{mocks.db.engineeringRevision.findFirst.mockResolvedValue({id:'r',authorUserId:'u',status:'IN_REVIEW'});await expect(transitionEngineeringRevision(form({id:'r',status:'APPROVED'}))).rejects.toThrow('Another');mocks.db.engineeringRevision.findFirst.mockResolvedValue({id:'r',authorUserId:'other',status:'APPROVED'});mocks.session.capabilities.delete('engineering.revision.release');await expect(transitionEngineeringRevision(form({id:'r',status:'RELEASED'}))).rejects.toThrow('FORBIDDEN');});
+ it('blocks an engineer double booking before creating a job',async()=>{mocks.db.party.findFirst.mockResolvedValue({id:'c'});mocks.db.fieldServiceJob.findFirst.mockResolvedValue({id:'existing'});await expect(saveFieldJob(form({partyId:'c',engineerUserId:'u',scheduledStart:'2026-10-08T10:00',scheduledEnd:'2026-10-08T11:00'}))).rejects.toThrow('already has a job');expect(mocks.db.fieldServiceJob.create).not.toHaveBeenCalled();});
+ it('requires a job outcome before completion',async()=>{mocks.db.fieldServiceJob.findFirst.mockResolvedValue({id:'j',status:'ON_SITE'});await expect(updateFieldJob(form({id:'j',status:'COMPLETED'}))).rejects.toThrow('outcome');});
+ it('requires attendees for notes and owners for actions',async()=>{mocks.db.meeting.findFirst.mockResolvedValue({id:'m',organiserUserId:'other',attendeeUserIds:[]});await expect(addMeetingEntry(form({id:'m'}))).rejects.toThrow('attendees');mocks.db.meeting.findFirst.mockResolvedValue({id:'m',organiserUserId:'u',attendeeUserIds:[]});await expect(addMeetingEntry(form({id:'m',kind:'ACTION'}))).rejects.toThrow('owner');});
+ it('allows only the organiser to close a scheduled meeting',async()=>{mocks.db.meeting.findFirst.mockResolvedValue({id:'m',organiserUserId:'other',status:'SCHEDULED'});await expect(meetingStatus(form({id:'m',status:'COMPLETED'}))).rejects.toThrow('organiser');});
+ it('allows only the action owner or organiser to complete it',async()=>{mocks.db.meetingEntry.findFirst.mockResolvedValue({id:'e',meetingId:'m',ownerUserId:'other'});mocks.db.meeting.findFirst.mockResolvedValue({id:'m',organiserUserId:'organiser'});await expect(completeMeetingAction(form({id:'e'}))).rejects.toThrow('owner');});
+ it('keeps private meeting and independent project filters in every scope',()=>{const scope=meetingScope(mocks.session as Session);expect(scope.organisationId).toBe('org');expect(scope.AND).toEqual(expect.arrayContaining([expect.objectContaining({OR:expect.arrayContaining([{visibility:'COMPANY'},{organiserUserId:'u'},{attendeeUserIds:{has:'u'}}])})]));expect(JSON.stringify(scope)).not.toContain('projectId":{"not":null');});
+});
+describe('usable forms',()=>{
+ it('explains that saving does not send invitations',()=>{const html=renderToStaticMarkup(<MeetingForm people={[]} projects={[]}/>);expect(html).toContain('Outlook invitations are sent separately');expect(html).toContain('Shared company calendar');expect(html).toContain('Organiser and attendees only');expect(html).toContain('name="endsAt"');});
+ it('shows a timezone and canonical customer choice on the job sheet',()=>{const html=renderToStaticMarkup(<JobForm customers={[{id:'c',name:'Existing customer'}]} people={[]}/>);expect(html).toContain('Existing customer');expect(html).toContain('Europe/London');expect(html).toContain('does not send customer messages');});
+});
+
+it('the last draft editor cannot approve another author’s revision',async()=>{mocks.db.engineeringRevision.findFirst.mockResolvedValue({id:'r',authorUserId:'original',lastEditorUserId:'u',status:'IN_REVIEW'});await expect(transitionEngineeringRevision(form({id:'r',status:'APPROVED'}))).rejects.toThrow('Another');expect(mocks.db.engineeringRevision.updateMany).not.toHaveBeenCalled();});

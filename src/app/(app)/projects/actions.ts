@@ -9,7 +9,7 @@ import type {Prisma} from '@/generated/prisma/client';
 import {revalidatePath} from 'next/cache';
 import {applyTaskAutomations} from '@/modules/projects/services/automations';
 import {requireProject,requireTask} from '@/modules/projects/services/queries';
-import {documentScope,projectScope,taskScope} from '@/core/permissions/work-access';
+import {documentScope,projectScope,taskScope,meetingScope} from '@/core/permissions/work-access';
 import {distributeEffort,choice,integer,dateValue,assertDateRange,assertAcyclic,nextOccurrence,TASK_STATUSES,PROJECT_STATUSES,HEALTHS,PRIORITIES,TASK_TYPES,PROJECT_TYPES} from '@/modules/projects/domain/work';
 const text=(f:FormData,key:string,max=10000)=>String(f.get(key)??'').trim().slice(0,max);
 function required(f:FormData,key:string,max=300){const value=text(f,key,max);if(!value)throw new Error(`Enter ${key}.`);return value;}
@@ -68,7 +68,7 @@ export async function createTask(form:FormData){
  assertCapability(session,'projects.manage');await assertModuleEnabled(session,'projects');
  const projectId=text(form,'projectId')||null,parentTaskId=text(form,'parentTaskId')||null,meetingId=text(form,'meetingId')||null,milestoneId=text(form,'milestoneId')||null,assigneeUserId=text(form,'assigneeUserId')||session.userId;await member(session,assigneeUserId);if(projectId){const p=await requireProject(session,projectId,true);if(['COMPLETED','CANCELLED'].includes(p.status))throw new Error('Reopen the project before adding work.');if(!await db.project.findFirst({where:{AND:[projectScope({...session,userId:assigneeUserId}),{id:projectId}]}}))throw new Error('Invite this task owner to the project first.');}
  if(parentTaskId){const parent=await requireTask(session,parentTaskId,true);if(parent.projectId!==projectId)throw new Error('Subtasks must use the same project.');}
- if(meetingId){const m=await db.meeting.findFirstOrThrow({where:{id:meetingId,organisationId:session.organisationId}});if(m.projectId!==projectId)throw new Error('Choose a meeting from this project.');}
+ if(meetingId){const m=await db.meeting.findFirstOrThrow({where:{AND:[meetingScope(session),{id:meetingId}]}});if(m.projectId!==projectId)throw new Error('Choose a meeting from this project.');}
  if(milestoneId){if(!projectId)throw new Error('Choose a project before assigning a milestone.');await db.projectMilestone.findFirstOrThrow({where:{id:milestoneId,organisationId:session.organisationId,projectId}});}
  const startAt=dateValue(text(form,'startAt')),dueAt=dateValue(text(form,'dueAt'));assertDateRange(startAt,dueAt);
  await db.$transaction(async tx=>{const task=await tx.projectTask.create({data:{organisationId:session.organisationId,projectId,parentTaskId,meetingId,milestoneId,reference:`TASK-${crypto.randomUUID().slice(0,8).toUpperCase()}`,creatorUserId:session.userId,visibility:projectId?'PROJECT':'PRIVATE',title:required(form,'title'),description:text(form,'description'),assigneeUserId,startAt,dueAt,priority:choice(text(form,'priority')||'NORMAL',PRIORITIES,'priority'),taskType:choice(text(form,'taskType')||'TASK',TASK_TYPES,'task type'),estimatedMinutes:integer(form.get('estimatedMinutes')||0,0,525600,'estimate')}});if(assigneeUserId!==session.userId)await tx.projectInboxItem.create({data:{organisationId:session.organisationId,userId:assigneeUserId,projectId,taskId:task.id,label:`Assigned: ${task.title}`,kind:'ASSIGNMENT'}});await event(tx,session,'TaskCreated','ProjectTask',task.id,{title:task.title,assigneeUserId});});refresh();

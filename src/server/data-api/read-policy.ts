@@ -3,7 +3,7 @@ import {planWhere} from '@/modules/plan/domain/access';
 import {policyAudiences} from '@/core/permissions/hr-access';
 import {echoMentionScope,echoNoteScope} from '@/core/audit/scope';
 import {serviceCaseScope,serviceTicketScope} from '@/core/permissions/service-access';
-import {projectScope,taskScope,documentScope,workAuditScope} from '@/core/permissions/work-access';
+import {projectScope,taskScope,documentScope,workAuditScope,meetingScope} from '@/core/permissions/work-access';
 import type {Session} from '@/core/auth/session';
 import {MODEL_FIELDS} from './model-metadata';
 export type ModelName=keyof typeof MODEL_FIELDS;
@@ -61,7 +61,7 @@ export function modelScope(session:Session,model:ModelName):Scope{
  if(model==='ChatLink')return {organisationId,message:{organisationId,conversation:{organisationId,kind:{in:['DIRECT','GROUP']},participants:{some:{organisationId,userId:session.userId}}}}};
  if(model==='ChatMessage')return {organisationId,conversation:{organisationId,kind:{in:['DIRECT','GROUP']},participants:{some:{organisationId,userId:session.userId}}}};
  if(model==='Project')return projectScope(session) as Scope;
- if(model==='Meeting'){const visible={organisationId,OR:[{projectId:null},{project:projectScope(session)}]};return session.capabilities.has('projects.manage')?visible:{AND:[visible,{OR:[{organiserUserId:session.userId},{attendeeUserIds:{has:session.userId}}]}]}};
+ if(model==='Meeting'){const visible=meetingScope(session);return session.capabilities.has('projects.manage')?visible:{AND:[visible,{OR:[{organiserUserId:session.userId},{attendeeUserIds:{has:session.userId}}]}]}};
  if(model==='ProjectTask')return taskScope(session) as Scope;
  if(model==='ProjectDocument')return documentScope(session) as Scope;
  if(model==='ProjectDocumentRevision')return {organisationId,document:documentScope(session)};

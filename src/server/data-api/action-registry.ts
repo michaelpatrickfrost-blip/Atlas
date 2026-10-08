@@ -831,6 +831,26 @@ import {saveVacancy as hrPlatform0} from "@/app/(app)/people/platform-actions";
 import {saveApplication as hrPlatform1} from "@/app/(app)/people/platform-actions";
 import {saveTraining as hrPlatform2} from "@/app/(app)/people/platform-actions";
 import {saveHRDocument as hrPlatform3} from "@/app/(app)/people/platform-actions";
+import {saveEngineeringRevision as action827} from "@/modules/engineering/services/commands";
+import {transitionEngineeringRevision as action828} from "@/modules/engineering/services/commands";
+import {uploadEngineeringDrawing as action829} from "@/modules/engineering/services/commands";
+import {saveFieldJob as action830} from "@/modules/fieldservice/services/commands";
+import {updateFieldJob as action831} from "@/modules/fieldservice/services/commands";
+import {addFieldJobNote as action832} from "@/modules/fieldservice/services/commands";
+import {saveVehicle as action833} from "@/modules/fleet/services/commands";
+import {addFleetLog as action834} from "@/modules/fleet/services/commands";
+import {saveEquipment as action835} from "@/modules/maintenance/services/commands";
+import {createMaintenanceWork as action836} from "@/modules/maintenance/services/commands";
+import {updateMaintenanceWork as action837} from "@/modules/maintenance/services/commands";
+import {recordMaintenancePart as action838} from "@/modules/maintenance/services/commands";
+import {disconnectMicrosoftCalendar as action839} from "@/modules/meetings/services/calendar-actions";
+import {chooseMicrosoftCalendar as action840} from "@/modules/meetings/services/calendar-actions";
+import {sendMicrosoftMeeting as action841} from "@/modules/meetings/services/calendar-actions";
+import {importMicrosoftMeetings as action842} from "@/modules/meetings/services/calendar-actions";
+import {saveMeeting as action843} from "@/modules/meetings/services/commands";
+import {meetingStatus as action844} from "@/modules/meetings/services/commands";
+import {addMeetingEntry as action845} from "@/modules/meetings/services/commands";
+import {completeMeetingAction as action846} from "@/modules/meetings/services/commands";
 export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>={
 "src/app/(app)/people/platform-actions:saveVacancy":hrPlatform0 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/people/platform-actions:saveApplication":hrPlatform1 as (...args:never[])=>Promise<unknown>,
@@ -1663,5 +1683,25 @@ export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>={
 "src/modules/teams/services/commands:saveHandover":action823 as (...args:never[])=>Promise<unknown>,
 "src/modules/teams/services/commands:savePlace":action824 as (...args:never[])=>Promise<unknown>,
 "src/modules/teams/services/commands:saveMoment":action825 as (...args:never[])=>Promise<unknown>,
-"src/modules/teams/services/commands:removeMoment":action826 as (...args:never[])=>Promise<unknown>
+"src/modules/teams/services/commands:removeMoment":action826 as (...args:never[])=>Promise<unknown>,
+"src/modules/engineering/services/commands:saveEngineeringRevision":action827 as (...args:never[])=>Promise<unknown>,
+"src/modules/engineering/services/commands:transitionEngineeringRevision":action828 as (...args:never[])=>Promise<unknown>,
+"src/modules/engineering/services/commands:uploadEngineeringDrawing":action829 as (...args:never[])=>Promise<unknown>,
+"src/modules/fieldservice/services/commands:saveFieldJob":action830 as (...args:never[])=>Promise<unknown>,
+"src/modules/fieldservice/services/commands:updateFieldJob":action831 as (...args:never[])=>Promise<unknown>,
+"src/modules/fieldservice/services/commands:addFieldJobNote":action832 as (...args:never[])=>Promise<unknown>,
+"src/modules/fleet/services/commands:saveVehicle":action833 as (...args:never[])=>Promise<unknown>,
+"src/modules/fleet/services/commands:addFleetLog":action834 as (...args:never[])=>Promise<unknown>,
+"src/modules/maintenance/services/commands:saveEquipment":action835 as (...args:never[])=>Promise<unknown>,
+"src/modules/maintenance/services/commands:createMaintenanceWork":action836 as (...args:never[])=>Promise<unknown>,
+"src/modules/maintenance/services/commands:updateMaintenanceWork":action837 as (...args:never[])=>Promise<unknown>,
+"src/modules/maintenance/services/commands:recordMaintenancePart":action838 as (...args:never[])=>Promise<unknown>,
+"src/modules/meetings/services/calendar-actions:disconnectMicrosoftCalendar":action839 as (...args:never[])=>Promise<unknown>,
+"src/modules/meetings/services/calendar-actions:chooseMicrosoftCalendar":action840 as (...args:never[])=>Promise<unknown>,
+"src/modules/meetings/services/calendar-actions:sendMicrosoftMeeting":action841 as (...args:never[])=>Promise<unknown>,
+"src/modules/meetings/services/calendar-actions:importMicrosoftMeetings":action842 as (...args:never[])=>Promise<unknown>,
+"src/modules/meetings/services/commands:saveMeeting":action843 as (...args:never[])=>Promise<unknown>,
+"src/modules/meetings/services/commands:meetingStatus":action844 as (...args:never[])=>Promise<unknown>,
+"src/modules/meetings/services/commands:addMeetingEntry":action845 as (...args:never[])=>Promise<unknown>,
+"src/modules/meetings/services/commands:completeMeetingAction":action846 as (...args:never[])=>Promise<unknown>
 };

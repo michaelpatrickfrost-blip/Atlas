@@ -1,5 +1,30 @@
 # Atlas current state
 
+## 8 October 2026 — Five operational apps prepared
+
+- Michael requested Meetings with shared calendar/Outlook/Teams-linked notes,
+  Maintenance, Engineering / PLM, Fleet and Field Service. Five distinct manifests,
+  routes and operational workflows implemented; see docs/modules/OPERATIONAL_APPS.md.
+- Meetings extends canonical Meeting; private audience is also enforced through
+  Projects/gateway. Notes/decisions/owned actions; state/PKCE/encrypted Microsoft
+  calendar connection, manual import and explicitly confirmed send. Imported
+  invitation attendee ownership preserved. Live Microsoft app credentials absent;
+  provider delivery is not verified and requires administrator registration/consent.
+- Equipment/vehicle maintenance work, downtime and canonical spare-part records;
+  Fleet inspections/fuel/service/driver/renewals; independent controlled engineering
+  revision release/private drawing evidence; canonical customer engineer visits and
+  mobile job notes/outcomes with double-booking prevention and privacy erasure.
+- One additive migration; central tenant/source/module/capability gates, optimistic
+  versions, transactional audit/durable events. No implicit stock/Finance posting,
+  BOM replacement, automatic external sending or local business cache.
+- 1,000 tests pass/22 integration skips; 50 focused operational/customer/registry
+  checks pass. Production build, separate strict TypeScript, scoped ESLint and
+  whitespace pass. Live deploy/acceptance and shared-source integration pending.
+  Customer erasure regression mocks extended for new owned snapshot cleanup.
+- Next: finish release checks, deploy isolated compatible release, enable five apps
+  for Michael under standing all-app instruction, run synthetic browser/tenant/
+  read-only/state/history/drawing/phone acceptance and preserve central evidence.
+
 ## 8 October 2026 — Guardian isolated releases deployed and verified
 
 - Live runtime `6ef3cdf`; builds/dependencies/generated client now live in sealed

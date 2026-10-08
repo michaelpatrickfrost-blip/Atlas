@@ -306,3 +306,13 @@ live assertions pass; [release evidence](evidence/2026-10-08-sop-usability.md).
   See [live acceptance](modules/SOP_ACCEPTANCE.md).
 - [ ] After S&OP: four distinct researched Sales, Customer Service, Marketing and HR
   Plan modules. The current shared builder does not satisfy this later scope.
+
+
+## Five operational apps — 8 October 2026
+
+Michael requests Meetings (shared calendar, notes/actions and Outlook/Teams link),
+Maintenance, Engineering / PLM, Fleet and Field Service as distinct apps. Working
+source is prepared; live acceptance remains pending. See
+[operational app scope and boundaries](modules/OPERATIONAL_APPS.md).
+This does not close broad warehouse/Finance/manufacturing integration or certify
+Microsoft delivery without configured consent/provider evidence.

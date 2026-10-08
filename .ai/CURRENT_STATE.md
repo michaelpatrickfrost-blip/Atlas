@@ -10,9 +10,12 @@
   serializable transactions. Generic reads retain applicant/own-learning boundaries.
 - Additive migration `20261008160000_hr_platform`; preserves existing employees,
   document metadata, payroll and lifecycle history. No local business DB/cache.
-- Checks: 27 focused / full suite 884 passed, 22 integration skips;
+- Checks: 30 focused / final full suite 893 passed, 22 integration skips;
   final production build, separate strict TypeScript, scoped ESLint and whitespace pass.
-  Rebase onto concurrent Service repair, then rebuild/deploy/live acceptance before handoff.
+  Runtime `94e1c34` deployed with Service repair preserved; 98 migrations current.
+  First live run reached Home; ambiguous select labels stopped the browser fixture
+  before vacancy creation. Explicit form labels added; rebuild/redeploy and rerun.
+  Fixture company suspended and credentials revoked.
 - Paths: people routes/components/domain/platform services, schema/migration, data API
   policy/metadata/actions, `tests/hr-platform*`, `scripts/check-hr-platform.ts`.
   Research/scope: `docs/plans/HR_PLATFORM_RESEARCH.md`, `docs/modules/HR_PLATFORM.md`.

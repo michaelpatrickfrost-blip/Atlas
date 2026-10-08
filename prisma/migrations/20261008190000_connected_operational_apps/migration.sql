@@ -1,8 +1,4 @@
--- DropForeignKey
-ALTER TABLE "inventory_balances" DROP CONSTRAINT "inventory_balances_productId_fkey";
-
--- DropForeignKey
-ALTER TABLE "inventory_movements" DROP CONSTRAINT "inventory_movements_productId_fkey";
+BEGIN;
 
 -- AlterTable
 ALTER TABLE "meetings" ADD COLUMN     "agenda" TEXT,
@@ -15,7 +11,7 @@ ADD COLUMN     "microsoftEventId" TEXT,
 ADD COLUMN     "microsoftOwnerUserId" TEXT,
 ADD COLUMN     "status" TEXT NOT NULL DEFAULT 'SCHEDULED',
 ADD COLUMN     "timezone" TEXT NOT NULL DEFAULT 'Europe/London',
-ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL,
+ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 ADD COLUMN     "version" INTEGER NOT NULL DEFAULT 1,
 ADD COLUMN     "visibility" TEXT NOT NULL DEFAULT 'COMPANY';
 
@@ -313,12 +309,6 @@ CREATE UNIQUE INDEX "meetings_id_organisationId_key" ON "meetings"("id", "organi
 CREATE UNIQUE INDEX "meetings_organisationId_microsoftOwnerUserId_microsoftCalen_key" ON "meetings"("organisationId", "microsoftOwnerUserId", "microsoftCalendarId", "microsoftEventId");
 
 -- AddForeignKey
-ALTER TABLE "inventory_balances" ADD CONSTRAINT "inventory_balances_productId_organisationId_fkey" FOREIGN KEY ("productId", "organisationId") REFERENCES "products"("id", "organisationId") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "inventory_movements" ADD CONSTRAINT "inventory_movements_productId_organisationId_fkey" FOREIGN KEY ("productId", "organisationId") REFERENCES "products"("id", "organisationId") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "meeting_entries" ADD CONSTRAINT "meeting_entries_organisationId_fkey" FOREIGN KEY ("organisationId") REFERENCES "organisations"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -407,3 +397,5 @@ CREATE FUNCTION atlas_engineering_drawing_lock() RETURNS trigger LANGUAGE plpgsq
 CREATE TRIGGER engineering_drawing_lock BEFORE INSERT OR UPDATE ON engineering_attachments FOR EACH ROW EXECUTE FUNCTION atlas_engineering_drawing_lock();
 
 ALTER TABLE meetings ADD COLUMN "microsoftManaged" BOOLEAN NOT NULL DEFAULT false;
+
+COMMIT;

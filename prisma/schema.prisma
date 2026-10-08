@@ -2472,7 +2472,7 @@ model InventoryBalance {
  quantity Int @default(0)
  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
  warehouse Warehouse @relation(fields:[warehouseId],references:[id])
- product Product @relation(fields:[productId,organisationId],references:[id,organisationId])
+ product Product @relation(fields:[productId],references:[id])
  @@unique([warehouseId,productId])
  @@index([organisationId])
  @@map("inventory_balances")
@@ -2494,7 +2494,7 @@ model InventoryMovement {
  createdAt DateTime @default(now())
  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
  warehouse Warehouse @relation(fields:[warehouseId],references:[id])
- product Product @relation(fields:[productId,organisationId],references:[id,organisationId])
+ product Product @relation(fields:[productId],references:[id])
  @@unique([organisationId,requestKey])
  @@index([organisationId,createdAt])
  @@map("inventory_movements")
@@ -2637,7 +2637,7 @@ model Meeting {
  status String @default("SCHEDULED")
  version Int @default(1)
  createdAt DateTime @default(now())
- updatedAt DateTime @updatedAt
+ updatedAt DateTime @default(now()) @updatedAt
  microsoftManaged Boolean @default(false)
  microsoftEventId String?
  microsoftOwnerUserId String?

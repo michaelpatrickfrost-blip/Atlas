@@ -17,10 +17,15 @@
 - One additive migration; central tenant/source/module/capability gates, optimistic
   versions, transactional audit/durable events. No implicit stock/Finance posting,
   BOM replacement, automatic external sending or local business cache.
-- 1,000 tests pass/22 integration skips; 50 focused operational/customer/registry
+- 1,003 tests pass/22 integration skips; 53 focused operational/customer/registry/migration
   checks pass. Production build, separate strict TypeScript, scoped ESLint and
   whitespace pass. Live deploy/acceptance and shared-source integration pending.
   Customer erasure regression mocks extended for new owned snapshot cleanup.
+- Initial runtime `9ef1414` deploy stopped during dependency installation after final
+  migration review caught missing default for existing Meeting.updatedAt and an
+  unintended Inventory FK rewrite. Migration step was not reached; live 6ef3cdf
+  remained healthy. Corrected both, made the additive migration transactional and added three
+  migration regressions. Rebuilt successfully; no migration repair/reset required.
 - Next: finish release checks, deploy isolated compatible release, enable five apps
   for Michael under standing all-app instruction, run synthetic browser/tenant/
   read-only/state/history/drawing/phone acceptance and preserve central evidence.

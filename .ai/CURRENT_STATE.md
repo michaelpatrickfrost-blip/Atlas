@@ -1,38 +1,46 @@
 # Atlas current state
 
-## 8 October 2026 — Guardian rejected-draft recovery in verification
+## 8 October 2026 — Guardian draft recovery deployed and verified
 
-- Confirmed on live-source 6ef3cdf through isolated actual runtime switch to
-  retained 6028b1f: Atlas account validation rejection erases entered plan/name;
-  old Atlas tabs also erase drafts after unknown Server Actions. Shared ActionForm
-  retains its draft but exposes a technical action error. New staff-only report
-  `cmuzq6drq0000oud569cvjp0m` records exact independent reproduction.
-- PortalActionForm now uses shared ActionForm so failed submissions retain fields
-  and pending saves disable the form. Unknown actions receive explicit copy/reload/
-  re-entry guidance; no mutation replay or browser draft storage is introduced.
-- New opt-in central fixture `scripts/guardian/check-action-recovery.ts` and actual
-  loopback switch `scripts/deploy/check-action-switch.sh` verify rejected drafts,
-  one POST per attempt, exact central company/query state and audit/history, then
-  intentional reload/save. Existing authorised QA staff rights are reused; no
-  platform grants created. Synthetic company suspended and sessions revoked.
-- Reproduction passed 16:01 UTC in private `/tmp/atlas-action-switch-wqGPQT`;
-  production pointer unchanged. Private DB/evidence backup `20261008-160122` kept.
-  Three new Portal regressions fail on original source as expected. Final local
-  suite passes 963 tests / 22 integration skips (152 files pass / 3 skip);
-  production build, separate strict TypeScript, focused lint, shell syntax and
-  whitespace pass. Generated-client duplicate scratch files stalled the first
-  typecheck; regenerated only this isolated worktree client, corrected QA null
-  narrowing and reran successfully. Candidate staging/deployment are pending;
-  do not mark the report FIXED yet.
-- Historical team report `cmuzoku170000lod5qx9koaa9` lacks the original action,
-  record and request outcome. This independent action reproduction does not prove
-  that render digest; keep NEEDS_AI until its original outcome can be verified.
-
-- Rebased onto concurrent corrected operational-app commits through dbd5c91;
-  combined suite 1,007 passed / 22 integration skips (154 files pass / 3 skip),
-  regenerated client, strict TypeScript and production build pass. Canonical
-  integration: seven shared/Portal tests pass. Parallel runtime dbd5c91 is now
-  active; preserve its owner's acceptance before our later activation.
+- Live immutable runtime `2bda114` preserves rejected Atlas administration drafts
+  through shared ActionForm; pending saves disable the form. Unknown older-tab
+  actions explain copy/reload/re-entry without automatic POST replay or browser
+  draft storage. Existing central guards, provisioning identity and schema intact.
+- Original 6ef3cdf real fixture proved rejected account-save draft loss and older
+  Atlas-tab draft loss/raw action errors; shared query draft survived. New report
+  `cmuzq6drq0000oud569cvjp0m` is FIXED only after deployed original reproduction.
+- Actual loopback candidate -> 6ef3cdf -> candidate passes: original account/query
+  buttons retain drafts, no central change or replay on rejection, intentional
+  restored reload/save persists exact status/owner/version and one history entry.
+  Private staging `Kq9v1f`; production pointer stayed on concurrent dbd5c91.
+- Backed-up activation and live fixture pass: rejected account draft retained,
+  company/audit unchanged; corrected Save persists once; query status/owner/version/
+  reason history persist once after reload. Zero browser errors. All fixture Test
+  companies suspended and synthetic credentials/sessions revoked; existing QA kept.
+- Post-activation 35 rendered pages / 35 Apps toggles, zero browser/chunk failures,
+  all writes blocked. Initial attempted activation probe refused configuration
+  because opt-in was omitted; corrected probe ran after activation only. Do not
+  claim continuous public browser proof during this activation. Public exact SHA,
+  Atlas/timer active, worker success/fresh heartbeat, anonymous inbox 307/brief 401.
+- Combined corrected operational-app main through dbd5c91: 1,007 tests pass / 22
+  integration skips (154 files pass / 3 skip), regenerated client, production build,
+  strict types, focused lint, shell syntax and whitespace pass. Canonical integration
+  seven focused tests pass. Initial generated duplicate scratch/type narrowing
+  issues corrected before release. Concurrent source/migration and edits preserved.
+- Private DB/Service backups: original fixture 160122, prepare 160914, staged fixture
+  165146, activation 165324 and live fixture 165412 UTC retained. Previous dbd5c91
+  runtime retained. This repair adds no migration or permission change.
+- Four queue pages refreshed (80 active before repair closure). Seventeen new
+  generic action/render reports received full current briefs and NEEDS_AI with
+  exact time/digest, source/negative-acceptance context, blocker and next action.
+  Guards remain enforced; no unidentified historic report guessed FIXED. Historical
+  team digest `cmuzoku170000lod5qx9koaa9` still needs its original control/profile/
+  record/request outcome; independent recovery proof does not close that stream.
+- Evidence: `docs/evidence/2026-10-08-guardian-action-recovery.md`; owning operations
+  in docs/GUARDIAN.md and docs/DEPLOY.md. Owned code/docs and memory sections
+  integrated into canonical repo using base comparisons; unrelated work preserved.
+  Pre-fix tabs keep their original handler until reloaded. Continue rotating exact
+  dynamic fixture workflows and correlating unresolved guard/stream reports.
 
 ## 8 October 2026 — Five operational apps prepared
 

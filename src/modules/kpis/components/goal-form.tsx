@@ -42,8 +42,8 @@ export function GoalForm({ measures, people, members, initialKind, employeeId, p
   const [direction, setDirection] = useState<"AT_LEAST" | "AT_MOST">("AT_LEAST");
   const preview = metric ? readActual(metric.points,metric.unit,slice) : null;
   const needsPerson = personal && !self && !employeeId;
-  return <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-    <ActionForm action={saveGoal} className="space-y-6 rounded-2xl border border-[var(--color-border)] bg-white p-6">
+  return <div className="grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+    <ActionForm action={saveGoal} className="min-w-0 space-y-6 rounded-2xl border border-[var(--color-border)] bg-white p-6">
       <input type="hidden" name="kind" value={kind} />
       <input type="hidden" name="self" value={self ? "1" : ""} />
       {employeeId && <input type="hidden" name="employeeId" value={employeeId} />}

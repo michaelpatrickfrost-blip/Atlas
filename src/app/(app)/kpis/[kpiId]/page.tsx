@@ -23,7 +23,7 @@ export default async function GoalPage({ params }: { params: Promise<{ kpiId: st
   const canClose = can(session, "kpis.manage") || can(session, "people.conduct.manage");
   const canConnect=goal.visibility==="COMPANY"&&goal.status==="ACTIVE"&&can(session,"kpis.manage");
   const measures=canConnect?await loadMeasureChoices(session):[];
-  return <div className="mx-auto max-w-3xl space-y-6">
+  return <div className="mx-auto min-w-0 w-full max-w-3xl space-y-6 break-words">
     <div><Link href={goal.visibility === "PRIVATE" ? "/kpis?view=people" : "/kpis"} className="text-sm text-[var(--color-atlas-blue)]">Goals</Link>
       <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500">{goal.visibility === "COMPANY" ? goal.department || goal.teamName : goal.planKind === "PIP" ? "Performance improvement" : "Personal"}{goal.personName ? ` · ${goal.personName}` : ""}</p>
       <h2 className="mt-1 text-3xl font-semibold tracking-tight">{goal.name}</h2>

@@ -25,7 +25,7 @@ export function GoalMeter({ name, actual, target, elapsed, verdict, unit, curren
 }) {
   const width = actual === null || target <= 0 ? 0 : Math.max(0, Math.min(100, actual / target * 100));
   const pace = Math.max(0, Math.min(100, elapsed * 100));
-  const label = status === "CLOSED" ? "Closed" : verdictLabel[verdict];
+  const label = status === "CLOSED" ? "Closed" : verdict === "behind" && (unit === "percent" || !showPace) ? "Below target" : verdictLabel[verdict];
   return <div>
     <div className="flex flex-wrap items-end justify-between gap-3">
       <div>

@@ -8,6 +8,10 @@
 - Bounded inclusive UTC periods capped at now; rates/snapshots judged against full
   target. Source capability/entitlement/company scope, valid CSAT case/queue scope,
   posted Finance document/project scope. Missing data/access never becomes zero.
+- First live browser journeys verified all nine result calculations and five source
+  panels; dashboard period independence passes. Phone check caught intrinsic width
+  on the existing detail container: constrain it to full available width. Rebuild/
+  redeploy and complete access/mobile acceptance before handoff.
 - Old numeric history retained centrally, rendered as notes for live goals to avoid
   unit reinterpretation; generic data API hides shared source-linked updates.
   Private/manual progress remains. No schema change/local business persistence.

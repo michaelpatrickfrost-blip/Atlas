@@ -38,7 +38,7 @@ reproduced by tests are confirmed runtime defects. No claim of a full code audit
 
 | Finding | Evidence / implication |
 | --- | --- |
-| Home gives navigation before work | `home/page.tsx` places the app directory before its existing attention/goals; supplied brief now requires operational attention/My Work first. |
+| Home gives navigation before work | Implemented: Home leads with urgency-sorted attention and My work; Apps uses native disclosure. Live release proof pending. Broader role-specific workspaces remain open. |
 | Large sales record rendering | Sales order page composes many inline actions and panels; use tabs/context without losing workflows. |
 | Technical JSON in history | Sales History renders revision snapshots with JSON.stringify rather than meaningful field changes. |
 | Projected stock labelled Available | Order chain mixes future supply/open demand with an available label; corrected to Projected stock. |

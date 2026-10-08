@@ -1,5 +1,20 @@
 # Atlas current state
 
+## Work-first Home — 8 October 2026
+
+- Home now leads with authorised attention items and a direct My work link. The
+  existing Apps directory remains in a keyboard-operable collapsed section below;
+  top-bar navigation is preserved. No duplicate task store or business database.
+- `src/core/attention/aggregate.ts` keeps working providers if another fails, labels
+  each source, prioritises urgency and deduplicates identical actions. Home reports
+  an incomplete list with Refresh updates, distinct from a healthy empty result.
+  `src/components/ui/refresh-button.tsx` refreshes the server view in place.
+- Six attention aggregation tests passed and separate TypeScript passed. Extended
+  live acceptance now checks real overdue Manufacturing links, phone fit, My work
+  and keyboard Apps disclosure. Full suite: 699 passed / 22 integration skips
+  (116 files); production build, separate TypeScript, changed-file lint and diff
+  check passed. Deployment and live Home acceptance pending.
+
 ## Simple connected record navigation — 8 October 2026
 
 - Michael reinforced that ease of use is vital despite ERP complexity. Existing
@@ -21,7 +36,12 @@
   Finance line tables. Owner-scoped queries preserve private Projects.
 - Focused owner/access/resilience tests pass; strict TypeScript, production build,
   changed-file lint and diff check passed. Full suite: 693 passed / 22 integration
-  skips (115 files). Extended live acceptance is pending.
+  skips (115 files). Release `58ee4f3` deployed with server build/restart and
+  HTTPS login 200. Backup: `/home/administrator/backups/atlas-pre-deploy-20261008-112355.dump`
+  plus matching private evidence archive. All 26 extended authenticated assertions
+  passed: actual forward/reverse record links, phone viewport, no browser errors,
+  Finance/private-project denial and Manufacturing-only identity protection.
+  Synthetic tenants suspended and credentials revoked; evidence retained.
   This records implemented scope, not full master-brief completion.
 
 ## Continuous ERP unification — 8 October 2026

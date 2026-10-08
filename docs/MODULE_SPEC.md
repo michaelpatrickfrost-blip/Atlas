@@ -128,7 +128,10 @@ visual patterns per module — see `docs/DESIGN_SYSTEM.md`.
 Implement `AttentionProvider`/`SearchProvider` (both in
 `src/core/modules/types.ts`) if the module has something worth surfacing on
 Home or in ⌘K. Core calls these automatically for every enabled, accessible
-module — no wiring beyond returning them from the manifest.
+module — no wiring beyond returning them from the manifest. Providers must enforce
+entity-specific capabilities and tenant scope themselves. Home aggregates sources
+independently, labels their origin and sorts by urgency. A failed source marks the
+list incomplete while retaining other sources; it is never a healthy empty queue.
 
 ## Contributing to a customer record
 

@@ -87,7 +87,7 @@ async function main() {
     check(!anonymous.body.includes("INV-UNIFY-PRIVATE") && !anonymous.body.includes("Synthetic availability"), "Anonymous action cannot expose test records");
     check(row?.invoiced === null && row.toInvoice === null, "Shared stock projection does not expose financial quantities to Sales-only users");
     const fulfilment = await db.fulfilmentRequirement.findFirstOrThrow({ where: { organisationId, salesOrderId: live.id }, include: { lines: true } });
-    const manufacturing = await db.manufacturingOrder.create({ data: { organisationId, orderNumber: "MO-UNIFY", productId: product.id, quantity: 60, sourceSalesOrderLineId: live.lines[0].id, createdByUserId: viewer.id } });
+    const manufacturing = await db.manufacturingOrder.create({ data: { organisationId, orderNumber: "MO-UNIFY", requiredDate: new Date(Date.now() - 86_400_000), productId: product.id, quantity: 60, sourceSalesOrderLineId: live.lines[0].id, createdByUserId: viewer.id } });
     const shipment = await db.shipment.create({ data: { organisationId, reference: "SH-UNIFY", partyId: party.id, shipTo: {}, status: "IN_TRANSIT", sources: { create: { organisationId, salesOrderId: live.id, requirementId: fulfilment.id, fulfilmentLineId: fulfilment.lines[0].id, quantity: 40 } } } });
     const privateProject = await db.project.create({ data: { organisationId, reference: "PR-UNIFY-PRIVATE", name: "Synthetic private project", visibility: "PRIVATE", ownerUserId: viewer.id } });
     await db.financeDocument.create({ data: { organisationId, entityId: entity.id, kind: "AR_INVOICE", reference: "INV-UNIFY-HIDDEN-PROJECT", title: "Private project invoice", creatorUserId: viewer.id, salesOrderId: live.id, projectId: privateProject.id, currency: "GBP", documentDate: new Date() } });
@@ -124,6 +124,15 @@ async function main() {
           await relationships.locator(`a[href="/sales/orders/${live.id}"]`).waitFor();
           check(await relationships.locator(`a[href="/sales/orders/${live.id}"]`).count() === 1 && errors === 0, `${label} links back to the canonical Sales order`);
         }
+        await page.goto(`${base}/home`, { waitUntil: "domcontentloaded", timeout: 60_000 });
+        const attention = page.getByRole("region", { name: "Needs attention", exact: true });
+        await attention.locator(`a[href="/manufacturing/produce/${manufacturing.id}"]`).waitFor();
+        const apps = page.locator("details").filter({ has: page.locator("summary", { hasText: /^Apps$/ }) });
+        check(await apps.count() === 1 && await apps.getAttribute("open") === null && await page.locator('a[href="/profile#assigned"]').count() === 1, "Home puts attention and My work before a collapsed app directory");
+        check((await attention.innerText()).includes("Urgent") && (await attention.innerText()).includes("Manufacturing") && errors === 0, "Home shows the actual overdue manufacturing record with clear urgency and source");
+        check(await attention.evaluate(element => element.scrollWidth <= element.clientWidth), "Home attention fits a phone viewport");
+        await apps.locator("summary").focus(); await page.keyboard.press("Enter");
+        check(await apps.getAttribute("open") !== null && await apps.locator('a[href="/manufacturing"]').isVisible(), "Keyboard users can expand Apps and reach Manufacturing");
         await context.close();
       }
       const operatorContext = await browser.newContext();

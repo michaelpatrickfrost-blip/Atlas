@@ -6,7 +6,7 @@ Michael supplied the full ERP/MRP master brief and explicitly rejected phased
 work/sign-offs. Implement and deploy compatible finished changes continuously;
 retain canonical Party/Product, owner services, approvals and central records.
 The brief now asks for an operational Home; that supersedes the older launcher-only
-preference when Home is implemented. Shared availability must match fulfilment to
+preference: Home now leads with attention and My work, with Apps disclosed below. Shared availability must match fulfilment to
 its actual active source line and distinguish physical stock from expected supply.
 Indirect invoice projections require Finance read and entitlement, not merely an
 order-page capability. Keep the requested architecture-decision document as an

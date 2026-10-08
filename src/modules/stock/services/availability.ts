@@ -1,6 +1,8 @@
 "use server";
 
 import { db } from "@/core/db/client";
+import { readOrderInvoices } from "@/core/finance/connections";
+import { getEnabledModuleIds } from "@/core/modules/runtime";
 import { requireSession } from "@/core/auth/session";
 import { availabilityPicture, type AvailabilityPicture } from "@/core/availability/picture";
 import { incomingArrivals, type SupplyArrival } from "@/core/availability/stock-promise";
@@ -24,9 +26,11 @@ type Bucket = {
   invoiced: number;
   planned: number;
   inProduction: number;
+  expectedReceipts: number;
+  fulfilledQuantity: number;
 };
 
-const empty = (): Bucket => ({ onHand: 0, reserved: 0, held: 0, ordered: 0, delivered: 0, allocated: 0, shipped: 0, invoiced: 0, planned: 0, inProduction: 0 });
+const empty = (): Bucket => ({ onHand: 0, reserved: 0, held: 0, ordered: 0, delivered: 0, allocated: 0, shipped: 0, invoiced: 0, planned: 0, inProduction: 0, expectedReceipts: 0, fulfilledQuantity: 0 });
 
 async function optional<T>(query: Promise<T>, fallback: T): Promise<T> {
   try {
@@ -63,7 +67,7 @@ export async function readAvailability(): Promise<CommercialPicture> {
     }), []),
     optional(db.financeDocumentLine.findMany({
       where: { organisationId, productId: { not: null }, document: { organisationId, kind: { in: ["AR_INVOICE", "AR_CREDIT"] }, status: { not: "CANCELLED" } } },
-      select: { productId: true, quantity: true, document: { select: { kind: true } } },
+      select: { productId: true, salesOrderLineId: true, quantity: true, document: { select: { kind: true } } },
     }), []),
     optional(db.productionPlanLine.findMany({ where: { organisationId, endsOn: { gte: today } }, select: { productId: true, quantity: true, endsOn: true } }), []),
     optional(db.manufacturingOrder.findMany({ where: { organisationId, status: { in: OPEN_PRODUCTION } }, select: { productId: true, quantity: true, plannedFinish: true, requiredDate: true } }), []),
@@ -89,18 +93,36 @@ export async function readAvailability(): Promise<CommercialPicture> {
     if (unit && !sameUnit(line.unitOfMeasure, unit)) continue;
     bucket(line.productId).ordered += Math.max(0, line.orderedQuantity - line.cancelledQuantity);
   }
+  const activeLines = new Map(salesLines.filter(line => line.productId && sameUnit(line.unitOfMeasure, units.get(line.productId) ?? "")).map(line => [line.id, line]));
+  const movementByLine = new Map<string, { allocated: number; shipped: number; delivered: number }>();
   for (const line of fulfilment) {
     deliveredByLine[line.salesOrderLineId] = (deliveredByLine[line.salesOrderLineId] ?? 0) + line.deliveredQuantity;
-    if (!line.productId) continue;
+    if (!activeLines.has(line.salesOrderLineId)) continue;
+    const movement = movementByLine.get(line.salesOrderLineId) ?? { allocated: 0, shipped: 0, delivered: 0 };
+    movement.allocated += line.allocatedQuantity;
+    movement.shipped += line.shippedQuantity;
+    movement.delivered += line.deliveredQuantity;
+    movementByLine.set(line.salesOrderLineId, movement);
+  }
+  // Match fulfilment to the same live, base-unit sales line. Historical deliveries
+  // must never consume today's unrelated demand; clamp each source independently.
+  for (const [id, line] of activeLines) {
+    const movement = movementByLine.get(id);
+    if (!movement || !line.productId) continue;
+    const quantity = Math.max(0, line.orderedQuantity - line.cancelledQuantity);
     const row = bucket(line.productId);
-    row.delivered += line.deliveredQuantity;
-    row.allocated += line.allocatedQuantity;
-    row.shipped += line.shippedQuantity;
+    row.delivered += Math.min(quantity, Math.max(0, movement.delivered));
+    row.allocated += Math.min(quantity, Math.max(0, movement.allocated));
+    row.shipped += Math.min(quantity, Math.max(0, movement.shipped));
+    row.fulfilledQuantity += Math.min(quantity, Math.max(0, movement.shipped, movement.delivered));
   }
   for (const line of invoices) {
-    if (!line.productId) continue;
+    if (!line.productId || !line.salesOrderLineId || !activeLines.has(line.salesOrderLineId)) continue;
     const quantity = Number(line.quantity);
     bucket(line.productId).invoiced += line.document.kind === "AR_CREDIT" ? -quantity : quantity;
+  }
+  for (const line of receipts) {
+    if (line.productId) bucket(line.productId).expectedReceipts += Math.max(0, line.expectedQuantity - line.receivedQuantity);
   }
   for (const line of plans) bucket(line.productId).planned += Number(line.quantity);
   for (const order of production) bucket(order.productId).inProduction += Number(order.quantity);
@@ -138,13 +160,10 @@ export async function readOrderChain(orderId: string) {
   });
   if (!order) return null;
   const lineIds = order.lines.map((line) => line.id);
+  const financeVisible = session.capabilities.has("finance.receivables.read") && (await getEnabledModuleIds(session.organisationId)).has("finance");
   const [fulfilment, invoices, picture] = await Promise.all([
     optional(db.fulfilmentLine.findMany({ where: { organisationId: session.organisationId, salesOrderLineId: { in: lineIds } }, select: { salesOrderLineId: true, allocatedQuantity: true, shippedQuantity: true, deliveredQuantity: true } }), []),
-    optional(db.financeDocument.findMany({
-      where: { organisationId: session.organisationId, salesOrderId: orderId, kind: "AR_INVOICE", status: { not: "CANCELLED" } },
-      select: { id: true, reference: true, status: true, documentDate: true, lines: { select: { salesOrderLineId: true, quantity: true } } },
-      orderBy: { documentDate: "asc" },
-    }), []),
+    financeVisible ? readOrderInvoices(session, orderId) : Promise.resolve([]),
     readAvailability(),
   ]);
   const available = new Map(picture.products.map((row) => [row.productId, row.available]));
@@ -159,12 +178,13 @@ export async function readOrderChain(orderId: string) {
       allocated: movement.reduce((sum, row) => sum + row.allocatedQuantity, 0),
       shipped: movement.reduce((sum, row) => sum + row.shippedQuantity, 0),
       delivered: movement.reduce((sum, row) => sum + row.deliveredQuantity, 0),
-      invoiced,
+      invoiced: financeVisible ? invoiced : null,
       available: line.productId ? available.get(line.productId) ?? 0 : null,
     };
   });
   return {
+    financeVisible,
     lines,
-    invoices: invoices.map((invoice) => ({ id: invoice.id, reference: invoice.reference, status: invoice.status, documentDate: invoice.documentDate.toISOString() })),
+    invoices: invoices.map((invoice) => ({ id: invoice.id, reference: invoice.reference, status: invoice.status, documentDate: invoice.documentDate })),
   };
 }

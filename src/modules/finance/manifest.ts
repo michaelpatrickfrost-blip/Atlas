@@ -1,3 +1,4 @@
+import { salesInvoiceChain } from "./services/order-chain";
 import { financeBusinessPlanning } from "./services/business-planning";
 import { prepareCustomerServiceCredit } from "./services/service-credit";
 import {generateSalesInvoice} from './services/commands';
@@ -10,6 +11,7 @@ import type {ModuleManifest} from '@/core/modules/types';
 import {FINANCE_CAPABILITIES as C} from './capabilities';
 import { financeAnalytics } from "./services/analytics";
 export const financeManifest:ModuleManifest={
+ salesInvoiceChainProvider: salesInvoiceChain,
  businessPlanningProvider:financeBusinessPlanning,
  serviceCreditProvider:prepareCustomerServiceCredit,analyticsProvider:financeAnalytics,deliveryInvoiceConsumer:invoiceDeliveredShipment,salesInvoiceGenerator:generateSalesInvoice,salesCancellationGuard:guardSalesCancellation,salesFinanceProjectionProvider:getSalesFinanceProjection,id:'finance',name:'Finance',description:'Financial control, purchasing, receivables, banking and connected accounting.',icon:Wallet,version:'0.1.0',minimumCoreVersion:'0.1.0',dependencies:[],capabilities:Object.values(C),rootPath:'/finance',accessCapability:C.read,status:'available',searchProvider:async({session,query})=>session.capabilities.has(C.read)?searchFinance(query):[],customerOverviewProvider:async({session,partyId})=>{if(!session.capabilities.has(C.receivablesRead)||!session.capabilities.has('customers.read'))return null;const values=await getFinanceCustomerContribution(partyId);return {moduleId:'finance',metrics:values.flatMap(v=>[{label:'Receivables',value:money(v.outstanding,v.currency),href:`/finance/receivables?party=${partyId}`},{label:'Overdue receivables',value:money(v.overdue,v.currency),href:`/finance/receivables?party=${partyId}&overdue=1`}]),actions:[],...(values.length===1&&values[0].outstanding<=BigInt(Number.MAX_SAFE_INTEGER)?{creditExposure:{amountMinorUnits:Number(values[0].outstanding),currency:values[0].currency}}:{})};},navigation:[
  {label:'Overview',href:'/finance',capability:C.read},

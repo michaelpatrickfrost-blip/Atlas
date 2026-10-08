@@ -1,5 +1,17 @@
 # Atlas decisions
 
+## 8 October 2026 — Continuous ERP unification on existing owners
+
+Michael supplied the full ERP/MRP master brief and explicitly rejected phased
+work/sign-offs. Implement and deploy compatible finished changes continuously;
+retain canonical Party/Product, owner services, approvals and central records.
+The brief now asks for an operational Home; that supersedes the older launcher-only
+preference when Home is implemented. Shared availability must match fulfilment to
+its actual active source line and distinguish physical stock from expected supply.
+Indirect invoice projections require Finance read and entitlement, not merely an
+order-page capability. Keep the requested architecture-decision document as an
+index to this existing decision authority, not a parallel handbook.
+
 ## 7 October 2026 — S&OP deploys to the live server
 
 Michael explicitly resolved this chat’s release-target conflict: “deploy to server

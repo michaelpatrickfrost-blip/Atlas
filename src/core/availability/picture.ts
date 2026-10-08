@@ -11,6 +11,9 @@ export type AvailabilityInput = {
   invoiced: number;
   planned: number;
   inProduction: number;
+  expectedReceipts?: number;
+  /** Sum of max(shipped, delivered) per matching source line, never across unrelated lines. */
+  fulfilledQuantity?: number;
 };
 
 export type AvailabilityPicture = {
@@ -37,10 +40,12 @@ const whole = (value: number) => (Number.isFinite(value) ? Math.max(0, value) : 
 export function availabilityPicture(input: AvailabilityInput): AvailabilityPicture {
   const ordered = whole(input.ordered);
   const delivered = Math.min(ordered, whole(input.delivered));
-  const openDemand = Math.max(0, ordered - delivered);
+  // Shipped goods have already left the inventory ledger, even before proof of delivery.
+  const shipped = Math.min(ordered, whole(input.shipped));
+  const openDemand = Math.max(0, ordered - whole(input.fulfilledQuantity ?? Math.max(shipped, delivered)));
   const planned = whole(input.planned);
   const inProduction = whole(input.inProduction);
-  const incoming = Math.max(planned, inProduction);
+  const incoming = Math.max(planned, inProduction) + whole(input.expectedReceipts ?? 0);
   const held = whole(input.held);
   const reserved = whole(input.reserved);
   const committed = Math.max(openDemand, reserved);
@@ -52,7 +57,7 @@ export function availabilityPicture(input: AvailabilityInput): AvailabilityPictu
     ordered,
     delivered,
     allocated: whole(input.allocated),
-    shipped: whole(input.shipped),
+    shipped,
     invoiced: whole(input.invoiced),
     openDemand,
     planned,

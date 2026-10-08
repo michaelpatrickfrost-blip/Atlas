@@ -21,8 +21,7 @@ export function incomingArrivals(input: { receipts: SupplyArrival[]; plan: Suppl
   const made = input.production.length && total(input.production) >= total(input.plan) ? input.production : input.plan;
   return [...input.receipts, ...made]
     .filter((row) => row.quantity > 0 && /^\d{4}-\d{2}-\d{2}$/.test(row.on))
-    .sort((left, right) => left.on.localeCompare(right.on) || left.source.localeCompare(right.source))
-    .slice(0, 12);
+    .sort((left, right) => left.on.localeCompare(right.on) || left.source.localeCompare(right.source));
 }
 
 /** The first dated arrival that brings free stock up to the quoted quantity. */

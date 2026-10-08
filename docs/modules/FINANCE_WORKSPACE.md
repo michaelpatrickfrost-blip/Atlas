@@ -205,3 +205,11 @@ block commercial cancellation pending explicit credit/return resolution. Confirm
 partial-line cancellation remains blocked pending a revision-safe combined
 Finance/fulfilment process. Sales credit exposure still requires reconciled Finance
 projection work; invoice linking alone does not close that credit-control gate.
+
+## Order-chain read boundary — 8 October 2026
+
+`salesInvoiceChainProvider` is a Finance-owned narrow operational projection registered
+on the manifest. It checks receivables read, source tenant and the existing Finance
+`documentScope`, including private Projects. The Core caller checks enabled Finance.
+Order-only viewers receive no invoice references or invoiced quantities from the chain.
+No posting, ledger or existing profile permissions changed.

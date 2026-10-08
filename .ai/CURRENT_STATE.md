@@ -1,5 +1,30 @@
 # Atlas current state
 
+## Continuous ERP unification — 8 October 2026
+
+- Michael supplied the complete 251-section master brief and requested continuous
+  work/deployment without phases. Full source preserved in
+  `docs/requirements/ATLAS_MASTER_SYSTEM.md`; eight requested maps/assessment docs
+  are `docs/atlas-*.md`, referencing existing owner documentation.
+- Inspected live `5741196` and dirty older primary checkout; isolated compatible
+  release at `.codex/worktrees/atlas-unification/RP SYSTEM` excludes unrelated edits.
+- Fixed shared availability: fulfilment matches the same active base-unit order
+  line, caps each source separately, subtracts dispatched inventory demand once,
+  and includes outstanding expected receipts only as incoming. Promise inputs no
+  longer truncate at 12 arrivals. Finance-owned `salesInvoiceChainProvider` retains document/private-project scope.
+  Invoice-chain metadata/quantities require enabled
+  Finance and `finance.receivables.read`; UI distinguishes projected stock.
+- Six regression cases failed before repair; 27 focused tests then passed. Clean
+  dependency installation and Prisma generation resolved missing generated-client/
+  dependency setup errors. Production build, strict TypeScript, changed-file ESLint
+  and diff check passed; full suite 677 passed / 22 integration skips (113 files).
+  Deployment/live acceptance pending; no completion claim yet. Synthetic acceptance
+  script: `scripts/check-atlas-unification.ts`. No migration or records rewritten.
+- Open: shared relationship providers, hold/position identity and unified usable
+  stock, atomic manufacturing completion, time-phased pegged supply and the broader
+  master brief. Current architecture docs corrected stale claims that MRP/payroll/
+  accounting/warehouse were wholly absent.
+
 ## Guardian staff code-copy repair — 8 October 2026
 
 - Confirmed and reproduced on live `/atlas/team`: Copy code rejects when browser

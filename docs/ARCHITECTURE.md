@@ -28,7 +28,7 @@ PostgreSQL via Prisma.
 ## Request flow
 
 1. `src/app/(app)/layout.tsx` resolves the session (`getSession()`), redirects
-   to `/login` if absent, and renders the shell (`Topbar`, icon-launcher home and app switcher).
+   to `/login` if absent, and renders the shell (`Topbar`, app-directory home and app switcher).
 2. The launcher and app switcher call `getNavigableModules(session)` — the enabled, accessible
    modules for this org/user — to build app navigation. No module is
    hardcoded into the shell.
@@ -92,10 +92,12 @@ Capability strings, not role names, gate every action. See
 
 ## What's deliberately not built yet
 
-Full accounting, payroll calculation, MRP, warehouse management, tax engines,
-bank integrations, marketing automation, natural-language commands. The
-module stubs in `src/modules/stubs.ts` and the `coming_soon` status on the
-Apps screen represent this honestly — nothing is faked.
+The repository includes accounting controls, a statutory payroll calculation engine,
+MRP, warehouse execution and tax calculations. These are substantial implementations,
+not blanket completion of those domains. Full operational costing/WIP/COGS, protected
+ATP/finite CTP, external bank/statutory submissions and other delivery gaps remain
+open in the owning-module guides. See [system map](atlas-system-map.md) and the
+[source assessment](atlas-known-technical-debt.md) for current verified limits.
 
 ## Customer Service
 

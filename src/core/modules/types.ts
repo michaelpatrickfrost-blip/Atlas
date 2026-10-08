@@ -88,6 +88,7 @@ export type StaffRosterProvider = (session: Session, manage: boolean) => Promise
 }>>;
 
 export type ModuleManifest = {
+  salesInvoiceChainProvider?: import("@/core/finance/connections").SalesInvoiceChainProvider;
   serviceOrderProjectionProvider?: (session:Session,partyId:string,orderId:string)=>Promise<import('@/core/service-work/connections').ServiceOrderProjection>;
   serviceSurveyConsumer?: (session:Session,caseId:string)=>Promise<void>;
   serviceCreditProvider?: import('@/core/service-work/connections').ServiceCreditProvider;

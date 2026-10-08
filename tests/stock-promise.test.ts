@@ -33,6 +33,12 @@ describe("quotation stock promise", () => {
     expect(quotationSupplyNote({ quantity: 1, freeNow: 0, arrivals: [], invoiceWhenInStock: false, kind: "SERVICE" })).toBeNull();
   });
 
+  it("does not truncate calculation inputs at the thirteenth arrival", () => {
+    const receipts = Array.from({ length: 15 }, (_, i) => ({ on: `2026-11-${String(i + 1).padStart(2, "0")}`, quantity: 1, source: "receipt" as const }));
+    const supply = incomingArrivals({ receipts, plan: [], production: [] });
+    expect(forecastCover(0, 15, supply)).toEqual({ on: "2026-11-15", source: "receipt" });
+  });
+
   it("invoices the oldest confirmed line only when free stock covers it", () => {
     const ready = linesReadyToInvoice(6, [
       { id: "older", remaining: 4 },

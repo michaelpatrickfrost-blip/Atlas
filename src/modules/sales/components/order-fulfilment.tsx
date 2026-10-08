@@ -34,16 +34,16 @@ async function OrderChain({ orderId }: { orderId: string }) {
   const date = (value: string) => new Date(value).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
   return (
     <div className="mt-5 space-y-3">
-      <p className="text-sm text-slate-600">Sold, allocated, shipped, delivered, then invoiced. The invoice date is the delivery date. Available is the product figure shared with stock and planning.</p>
+      <p className="text-sm text-slate-600">Sold, allocated, shipped, delivered, then invoiced. The invoice date is the delivery date. Projected stock includes expected supply and open demand; it is not stock available to promise today.</p>
       {chain.lines.some((line) => line.ordered > line.delivered && line.allocated < line.ordered) && <p className="text-sm text-amber-800">This order is short of stock. The balance stays open. When the product is back in stock, Atlas raises the delivery and then the invoice.</p>}
       {chain.invoices.map((invoice) => seeFinance ? <Link key={invoice.id} href={`/finance/documents/${invoice.id}`} className="block text-sm text-emerald-700">{invoice.reference} · {date(invoice.documentDate)} · {invoice.status}</Link> : <p key={invoice.id} className="text-sm text-slate-600">{invoice.reference} · {date(invoice.documentDate)} · {invoice.status}</p>)}
-      {!chain.invoices.length && <p className="text-sm text-slate-500">Nothing is invoiced yet. The delivery raises the draft. A short order waits until the product is back in stock.</p>}
-      <table className="w-full text-sm">
-        <thead className="text-left text-xs text-slate-500"><tr>{["Product", "Ordered", "Balance", "Allocated", "Shipped", "Delivered", "Invoiced", "Available"].map((heading) => <th key={heading} className="py-2 pr-3 font-medium">{heading}</th>)}</tr></thead>
+      {chain.financeVisible && !chain.invoices.length && <p className="text-sm text-slate-500">Nothing is invoiced yet. The delivery raises the draft. A short order waits until the product is back in stock.</p>}
+      <div className="overflow-x-auto"><table className="w-full text-sm">
+        <thead className="text-left text-xs text-slate-500"><tr>{["Product", "Ordered", "Balance", "Allocated", "Shipped", "Delivered", "Invoiced", "Projected stock"].map((heading) => <th key={heading} className="py-2 pr-3 font-medium">{heading}</th>)}</tr></thead>
         <tbody>
-          {chain.lines.map((line) => <tr key={line.id} className="border-t border-slate-200"><td className="py-2 pr-3">{line.description}</td><td className="py-2 pr-3 tabular-nums">{line.ordered} {line.unit}</td><td className="py-2 pr-3 tabular-nums">{Math.max(0, line.ordered - line.delivered)}</td><td className="py-2 pr-3 tabular-nums">{line.allocated}</td><td className="py-2 pr-3 tabular-nums">{line.shipped}</td><td className="py-2 pr-3 tabular-nums">{line.delivered}</td><td className="py-2 pr-3 tabular-nums">{line.invoiced}</td><td className="py-2 pr-3 tabular-nums">{line.available ?? "—"}</td></tr>)}
+          {chain.lines.map((line) => <tr key={line.id} className="border-t border-slate-200"><td className="py-2 pr-3">{line.description}</td><td className="py-2 pr-3 tabular-nums">{line.ordered} {line.unit}</td><td className="py-2 pr-3 tabular-nums">{Math.max(0, line.ordered - line.delivered)}</td><td className="py-2 pr-3 tabular-nums">{line.allocated}</td><td className="py-2 pr-3 tabular-nums">{line.shipped}</td><td className="py-2 pr-3 tabular-nums">{line.delivered}</td><td className="py-2 pr-3 tabular-nums">{line.invoiced ?? "—"}</td><td className="py-2 pr-3 tabular-nums">{line.available ?? "—"}</td></tr>)}
         </tbody>
-      </table>
+      </table></div>
     </div>
   );
 }

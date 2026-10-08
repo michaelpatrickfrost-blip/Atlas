@@ -125,3 +125,18 @@ checks. Source presence alone does not prove installed acceptance of later batch
 Contracts & approvals is at /crm/contracts in CRM. The former Sales URL redirects
 with filters preserved. Sales retains order processing and source quotation links.
 New/edit order entry places delivery, pricing and notes/tags in separate tabs.
+
+## Shared stock and invoice-chain correction — 8 October 2026
+
+The order Delivery tab labels the cross-product forecast as Projected stock,
+separately from physical available-now stock. Shared Inventory availability matches
+fulfilment to each active base-unit sales line, caps progress per line and removes
+shipped goods from inventory demand once. Outstanding expected receipts are incoming
+only; historical deliveries cannot erase today's demand. Promise calculations retain
+all dated arrivals rather than truncating at twelve.
+
+Invoice-chain references and quantities require enabled Finance and receivables read.
+Finance's `salesInvoiceChainProvider` applies its own document/project scope; Inventory
+consumes the narrow Core contract rather than directly querying invoice metadata.
+The Delivery table scrolls within its panel at small widths. These are projections,
+not protected ATP/CTP or full time-phased pegging. Release evidence: CURRENT_STATE.

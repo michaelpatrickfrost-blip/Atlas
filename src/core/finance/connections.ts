@@ -10,3 +10,11 @@ export async function stockReceipt(session:Session,tx:Prisma.TransactionClient,i
 export async function orderFinanceProjection(id:string):Promise<SalesFinanceProjection|null>{const provider=getModule('finance')?.salesFinanceProjectionProvider;return provider?provider(id):null;}
 
 export async function guardFinancialCancellation(session:Session,tx:Prisma.TransactionClient,id:string){await getModule('finance')?.salesCancellationGuard?.(session,tx,id);}
+
+export type SalesInvoiceChainEntry = { id: string; reference: string; status: string; documentDate: string; lines: Array<{salesOrderLineId: string | null; quantity: number}> };
+export type SalesInvoiceChainProvider = (session: Session, orderId: string) => Promise<SalesInvoiceChainEntry[]>;
+export async function readOrderInvoices(session: Session, orderId: string): Promise<SalesInvoiceChainEntry[]> {
+ if (!session.capabilities.has('finance.receivables.read')) return [];
+ await assertModuleEnabled(session, 'finance');
+ return await getModule('finance')?.salesInvoiceChainProvider?.(session, orderId) ?? [];
+}

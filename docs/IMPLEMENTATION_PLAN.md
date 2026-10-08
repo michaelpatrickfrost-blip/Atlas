@@ -289,6 +289,10 @@ requires live server feature verification.
 
 ## S&OP connected implementation — 7 October 2026
 
+8 October usability source built: guided Start here, monthly decision brief, simple
+Setup, explained review checklists, Decisions & actions and independent How-to.
+Research: [S&OP usability](plans/SOP_USABILITY_RESEARCH.md). Live acceptance pending.
+
 - [x] Source implementation: explicit Plan inputs, canonical projections, immutable
   cycles/versions, monthly demand/service/supply/assumed-finance reviews, scenarios,
   exact-version approvals and transactional Manufacturing publication.

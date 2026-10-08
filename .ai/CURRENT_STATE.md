@@ -18,7 +18,9 @@
   `tests/sop-guidance.test.tsx`, `scripts/check-sop-usability.ts`, owning guide/research.
 - Initial checks: 57 focused checks, full suite 928 pass / 22 skips, production
   build, separate TypeScript and scoped ESLint (fixture prefer-const corrected).
-  Final compatible release validation/deployment/live acceptance still pending.
+  Compatible release includes deployed admin cleanup `00cf015`; regenerated Prisma
+  client, production build, separate TypeScript and full suite 944 pass / 22 skips.
+  Deployment and live acceptance remain pending.
 - Next: preserve newly deployed concurrent admin cleanup commits, rebase and rebuild,
   deploy, run old S&OP calculation/publication acceptance and new actual guided browser
   journey, revoke synthetic fixture access, integrate owned shared-project files.

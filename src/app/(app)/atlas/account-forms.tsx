@@ -5,17 +5,28 @@ import { createCompanyAccount } from "./actions";
 import { createCompanyUser } from "./setup-actions";
 
 export function CodeReady({ title, code, expiresAt, href, hrefLabel }: { title: string; code: string; expiresAt: string; href?: string; hrefLabel?: string }) {
-  const [copied, setCopied] = useState(false);
+  const [copyStatus, setCopyStatus] = useState<"idle" | "copying" | "copied" | "failed">("idle");
+  async function copyCode() {
+    if (copyStatus === "copying") return;
+    setCopyStatus("copying");
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopyStatus("copied");
+    } catch {
+      setCopyStatus("failed");
+    }
+  }
   return (
     <div className="space-y-4 rounded-2xl border border-blue-200 bg-blue-50 p-5">
       <h3 className="text-sm font-semibold text-blue-900">{title}</h3>
       <p className="text-xs leading-relaxed text-blue-800">Shown only here. Give it to this person. On the sign-in screen they choose “Use a setup or recovery code”, enter it and set a password, which signs them in. Share it directly through your approved private channel.</p>
-      <code className="block break-all rounded-xl bg-white p-4 text-xs text-slate-700">{code}</code>
+      <code className="block select-all break-all rounded-xl bg-white p-4 text-xs text-slate-700">{code}</code>
       <p className="text-xs text-blue-700">Expires {new Date(expiresAt).toLocaleString("en-GB")} · single use.</p>
       <div className="flex flex-wrap gap-3">
-        <button type="button" className="rounded-lg bg-blue-600 px-4 py-2 text-xs text-white" onClick={async () => { await navigator.clipboard.writeText(code); setCopied(true); }}>{copied ? "Copied" : "Copy code"}</button>
+        <button type="button" disabled={copyStatus === "copying"} className="rounded-lg bg-blue-600 px-4 py-2 text-xs text-white disabled:opacity-50" onClick={copyCode}>{copyStatus === "copied" ? "Copied" : copyStatus === "copying" ? "Copying…" : "Copy code"}</button>
         {href && <Link className="rounded-lg bg-white px-4 py-2 text-xs text-blue-600" href={href}>{hrefLabel}</Link>}
       </div>
+      {copyStatus !== "idle" && <p role="status" className="text-xs text-blue-800">{copyStatus === "copied" ? "Code copied." : copyStatus === "failed" ? "Copying is unavailable. Select the code above and copy it manually." : "Copying…"}</p>}
     </div>
   );
 }

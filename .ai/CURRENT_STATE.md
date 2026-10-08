@@ -1,5 +1,32 @@
 # Atlas current state
 
+## Guardian staff code-copy repair — 8 October 2026
+
+- Confirmed and reproduced on live `/atlas/team`: Copy code rejects when browser
+  clipboard permission is denied, giving no feedback and an unhandled rejection.
+  The same shared `CodeReady` is used for company/user setup and staff recovery.
+- `src/app/(app)/atlas/account-forms.tsx` now handles denied/missing Clipboard APIs,
+  retains a selectable code and clear manual-copy guidance, supports retry, and
+  disables overlapping requests. Success is announced only after the write finishes.
+  No authentication, permission, credential-generation or expiry rule changed.
+- Five new component regressions cover success, denied permission, missing API,
+  retry and pending clicks. The denied-permission regression failed before repair;
+  all 33 focused Atlas/Guardian tests, separate TypeScript, focused ESLint and
+  production build pass. Deployment/live post-fix proof are pending at this checkpoint.
+- `scripts/guardian/check-atlas-code-copy.ts` reproduced the actual staff-creation
+  and copy failure with disposable central identities and real Chromium clipboard
+  denial. Rendered code matched the central hash. Exact fixture identities/grants/
+  credentials were removed; audit retained, no secrets logged. Backup:
+  `/home/administrator/backups/atlas-pre-guardian-copy-test-20261008-104917.dump`
+  plus private Service evidence. Normal script mode verifies recovery and retry.
+- Worker is healthy; the 8 October 08:30 UTC sweep checked 224 page requests,
+  100 browser pages and 99 safe toggles with zero findings. All 42 active report
+  summaries across both CLI pages were inspected. The three newer generic reports still need
+  exact cause correlation: stream closed early on company render (digest
+  1130916247), aborted home action/ECONNRESET (2313178152), and staff-page generic
+  rejection. A reproduced copy defect does not prove the latter's original click.
+  Atomic deployment reliability and older unresolved diagnostics remain open.
+
 ## Connected Plan overhaul and S&OP implementation — 7 October 2026
 
 - Michael prioritised S&OP before detailed Sales, Customer Service, Marketing and HR

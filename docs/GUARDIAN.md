@@ -69,6 +69,7 @@ startup failures when the database itself is unavailable.
 ```
 npm run guardian:audit
 npm run guardian:worker -- --now
+ATLAS_GUARDIAN_COPY_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-atlas-code-copy.ts
 node --env-file=.env.local --import tsx scripts/guardian/triage.ts list [page]
 node --env-file=.env.local --import tsx scripts/guardian/triage.ts show <issue-id>
 sudo systemctl status atlas-guardian.timer atlas-guardian.service
@@ -77,6 +78,15 @@ sudo systemctl status atlas-guardian.timer atlas-guardian.service
 `list` returns a compact paginated queue with `hasMore`; continue through pages so
 older blocked reports cannot be starved by the newest findings. `show` returns the
 full diagnostic brief for one report.
+
+The copy-code regression runs only on the deployed server after a database/private
+evidence backup. It creates two disposable staff identities, exercises actual staff
+creation and the browser's denied/missing/allowed Clipboard API, verifies the shown
+code against its central credential, then removes only those identities and their
+grants/codes. Synthetic audit evidence remains. No code, password, token or customer
+content is logged. `--reproduce` verifies the pre-fix rejection and missing feedback;
+the normal mode verifies manual-copy recovery and a successful retry without
+consuming the credential. It is an explicit fixture test, never part of the crawler.
 
 ## Repair agent
 

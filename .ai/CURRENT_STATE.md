@@ -3923,3 +3923,23 @@ Prisma generation, isolated TypeScript and production build passed. Initial loca
 checks needed generated Prisma and the release's locked dependencies; both corrected.
 Deployment and final live acceptance pending at this checkpoint. A disposable browser
 QA identity is temporary and will be removed; no real identity/permissions changed.
+
+
+## 8 October 2026 — Employee creation fix deployed and verified
+
+Release 7926f2c is live at https://atlassystem.online. Required deployment script
+completed under the shared release lock; no pending migrations. Server production
+build/service/public login passed. Backups preserved at
+/home/administrator/backups/atlas-pre-deploy-20261008-142655.dump and matching
+-service-files.tar.gz. All 33 live Admin checks passed, including explicit wrong
+password/duplicate feedback, creation after rejected password, setup, staff sign-in,
+full access, suspension and company archive/export/restore. Acceptance records
+removed. Browser verified inline password feedback, retained fields, corrected
+password retry and duplicate-account feedback; disposable browser identity removed
+and signed out. No real passwords, staff classifications or business data changed.
+
+Final validation: 19 focused tests, scoped ESLint, Prisma generation, isolated
+TypeScript, local/server production builds and whitespace checks passed. Task-owned
+source/tests/docs and memory were merged back to the shared editable master without
+replacing concurrent changes. This supersedes this task's pending checkpoint above;
+no employee-creation delivery blocker remains.

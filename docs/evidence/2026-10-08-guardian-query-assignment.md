@@ -26,8 +26,10 @@ remain. No schema migration or local business persistence.
 - 22 focused tests pass, including six new assignment cases: Ticket/Query clearing,
   omission, foreign queue member, forbidden mutation and stale event exclusion.
 - Full suite: 863 passed / 22 integration tests skipped; 135 files passed / 3 skipped.
-- Production build, scoped ESLint and separate strict TypeScript passed.
-  Deployment and original live reproduction are pending; no FIXED status yet.
+- Production build, scoped ESLint, separate strict TypeScript and whitespace passed.
+- Deployed application `7079baa`; server build/restart, HTTPS login 200 and all 97
+  migrations current. Private deploy database/evidence backup
+  `atlas-pre-deploy-20261008-140135` preserved. No pending schema changes.
 - A stalled local typecheck was traced to an ignored duplicate generated Prisma
   artifact. Removed only generated duplicate files in the isolated checkout and
   regenerated the client before repeating strict verification.
@@ -51,3 +53,28 @@ acceptance scripts and existing final 22/37-assertion live evidence reviewed;
 those suites were not rerun here. IGNORED classification saved through actual staff
 UI and independently checked in the current private AI brief. No guard suppressed.
 Guardian service/timer and heartbeat healthy at review; both active queue pages read.
+
+## Final live proof
+
+On `7079baa`, normal opt-in `check-service-query.ts` passed all seven workflow
+groups under the shared release lock. The exact Unassigned action now stores null,
+retains Unassigned after reload and appends one matching readable owner-change
+entry. The real originating case form creates the exact query/queue/requester;
+receiving-team list/detail works without parent private content or an inaccessible
+case link. Requester-visible reply records one central entry and first-response
+time; private team note is excluded from requester response payload.
+
+Resolution records the result/time and a safe parent event. Case ownership and
+WAITING_INTERNAL status remain, with no parent resolution. Customer Service sees
+the response-ready prompt; both case/query link directions work. Service report
+shows the observed 1/1 completed SLA, actual receiving team and working underlying
+case-list/back navigation. Zero browser runtime errors. Exact synthetic Test
+company suspended, both membership/user sessions revoked; audit/history retained.
+No customer message sent. Report `cmuzlnwu80000x0d5b8mxdfbn` marked FIXED at
+`7079baa` only after these original control and connected-state assertions passed.
+
+Guardian timer active, heartbeat 14:03:25 UTC on `7079baa`. Active queue is 41
+NEEDS_AI reports with no new OPEN report; the historical deployment cause remains
+explicitly unresolved. Owned code/check/topic files integrated into canonical repo
+using base comparisons; only the owned memory section/evidence merged afterward,
+preserving concurrent edits. No claim that every dynamic workflow is verified.

@@ -2,35 +2,42 @@
 
 ## Guardian work assignment — 8 October 2026
 
-- Live pre-fix `2b7a486` (checkout `622259f`) reproduced false success: selecting
-  Unassigned and Update work retained the old query owner despite Saved feedback.
-  New independent central report `cmuzlnwu80000x0d5b8mxdfbn`; private fixture backup
-  `atlas-pre-guardian-query-20261008-135417`. Exact synthetic company retired and
-  sessions revoked, history retained. First harness attempt corrected an exact
-  select-label locator; it did not establish the control outcome.
-- `src/core/service-work/actions.ts` now treats explicitly empty ownership as null
-  and omitted ownership as unchanged, records readable unassignment history, and
-  preserves receiving-team, tenant, capability and optimistic-version checks.
-  Six new regressions include both Ticket and Query clearing, omitted field,
-  foreign member, forbidden mutation and stale-save rollback of events.
-- 22 focused checks passed; full suite 863 passed / 22 integration skips. Production
-  build, separate strict TypeScript and scoped lint passed. Ignored duplicate local
-  Prisma artifacts were removed/regenerated to unblock typecheck. Deployment/live
-  acceptance pending; no deployed-fix claim until original control succeeds live.
-- Added opt-in server-only `scripts/guardian/check-service-query.ts`: real case
-  query creation, receiving-team detail/assignment/unassignment, privacy, replies,
-  resolution, safe parent event, case/query links and observed report state. Only
-  its own Test company/profiles are used, then suspended/revoked; no customer mail.
-- Exact private journal correlates three original Service render digests with
-  missing React Client Manifest boundary/icon modules and the 07:25:52 UTC failure
-  with missing static /500. Six Service briefs now have precise NEEDS_AI evidence
-  and immutable-release/rollback next steps. Browser ScriptErrors remain only
-  timing-correlated; release reliability `cmuxsymb70000cmd5jgotzfwo` remains open.
+- Deployed application `7079baa`. Live pre-fix `2b7a486` (checkout `622259f`)
+  reproduced false success: Unassigned + Update work retained the old query owner
+  despite Saved feedback. Independent report `cmuzlnwu80000x0d5b8mxdfbn` is now
+  FIXED only after the original live control clears the owner and survives reload.
+- `src/core/service-work/actions.ts` treats explicitly empty ownership as null and
+  omitted ownership as unchanged, with readable central unassignment history.
+  Receiving-team, tenant, capability and optimistic-version guards preserved.
+  Six new regressions cover Ticket/Query clearing, omitted field, foreign member,
+  forbidden mutation and stale-save event exclusion. No schema changes/local DB.
+- 22 focused tests; full suite 863 passed / 22 integration skips (135 files passed,
+  3 skipped). Production build, separate strict TypeScript, scoped lint and diff
+  check passed. Ignored duplicate Prisma artifacts in the isolated checkout were
+  removed/regenerated to unblock strict TypeScript; source/business data untouched.
+- Server build/restart and HTTPS login passed; 97 migrations, none pending.
+  Private database/evidence backups `atlas-pre-guardian-query-20261008-135417` and
+  `atlas-pre-deploy-20261008-140135` retained. Guardian timer active and fresh worker
+  heartbeat 14:03:25 UTC on `7079baa`; 41 active reports, no new OPEN reports.
+- Live opt-in `scripts/guardian/check-service-query.ts` passed: real case query
+  creation, receiving-team list/detail, assignment/unassignment and central history,
+  reply/first-response, private case/team-note exclusion, resolution/safe parent event,
+  original case owner/status retained, case response-ready prompt, both linked
+  directions and observed report SLA 1/1 with working back links. Zero browser errors.
+  Exact Test company suspended and all fixture sessions revoked; history retained.
+  First pre-fix attempt corrected a select-label locator before successful repro.
+- Exact private journal correlates original Service render digests with missing React
+  Client Manifest boundary/icon modules and 07:25:52 UTC missing static /500. Six
+  Service briefs now hold precise NEEDS_AI evidence and immutable-release/rollback
+  next steps. Browser ScriptErrors remain only timing-correlated; deployment
+  reliability `cmuxsymb70000cmd5jgotzfwo` stays open, not fixed by assignment repair.
 - Three recent Quality/Goals diagnostics classified IGNORED through staff UI and
   verified current AI briefs after exact journal/source/previous acceptance review:
   foreign NCR detail/closure and foreign goal connection intentionally reject.
-  Existing 22/37-assertion suites were reviewed, not rerun for this classification.
-  Guardian healthy, queue fully paginated; no permission rules weakened.
+  Existing 22/37-assertion suites reviewed, not rerun here; guards unchanged.
+- Owned code/check/topic files integrated into canonical repo through reviewed-base
+  comparisons, memory section merged independently; concurrent work preserved.
+  Evidence: `docs/evidence/2026-10-08-guardian-query-assignment.md`.
 
 ## 8 October 2026 — Connected Goals and KPIs deployed and verified
 

@@ -17,6 +17,7 @@ export type FulfilmentLineStatus = {
 };
 
 export type FulfilmentProjection = {
+  requirementId?: string | null;
   orderId: string;
   reference: string | null;
   lineCount: number;

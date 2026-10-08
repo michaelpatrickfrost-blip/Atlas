@@ -1,3 +1,4 @@
+import { manufacturingRecordContext, manufacturingRecordRelationships } from "./services/relationships";
 import { manufacturingBusinessPlanning, publishSopDemand } from "./services/business-planning";
 import { Factory } from "lucide-react";
 import type { ModuleManifest } from "@/core/modules/types";
@@ -8,6 +9,7 @@ import { manufacturingAttention, searchManufacturing } from "./services/queries"
 // Includes MRP engine, planned orders, material shortage workbench, capacity planning,
 // manufacturing orders, work orders and shop-floor execution.
 export const manufacturingManifest: ModuleManifest = {
+ recordContextProvider: manufacturingRecordContext, recordRelationshipProvider: manufacturingRecordRelationships,
  businessPlanningProvider: manufacturingBusinessPlanning,planningPublicationConsumer: publishSopDemand,
   id: "manufacturing",
   name: "Manufacturing",

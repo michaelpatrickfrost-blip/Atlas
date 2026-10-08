@@ -1,3 +1,4 @@
+import { RecordRelationships } from "@/components/records/relationships";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireSession } from "@/core/auth/session";
@@ -48,20 +49,7 @@ export default async function ProductionOrderPage({ params }: { params: Promise<
         </section>
 
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Customer demand</h2>
-          <div className="mt-3 rounded-3xl border border-[var(--color-border)] bg-white px-5 py-6 text-sm">
-            {order.sourceSalesOrderLine ? (
-              <>
-                <p className="font-medium"><Link href={`/sales/orders/${order.sourceSalesOrderLine.orderId}`} className="text-[var(--color-atlas-blue)] hover:underline">{order.sourceSalesOrderLine.order.reference}</Link></p>
-                <p className="mt-1 text-[var(--color-ink-muted)]">{order.sourceSalesOrderLine.order.party.name}</p>
-                {order.sourceSalesOrderLine.promisedDeliveryDate && (
-                  <p className="mt-1 text-[var(--color-ink-muted)]">Promised {order.sourceSalesOrderLine.promisedDeliveryDate.toLocaleDateString("en-GB")}</p>
-                )}
-              </>
-            ) : (
-              <p className="text-[var(--color-ink-muted)]">Not linked to a sales order — make-to-stock.</p>
-            )}
-          </div>
+          <RecordRelationships session={session} record={{ moduleId: "manufacturing", type: "order", id: order.id }} />
 
           <h2 className="mt-6 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Materials</h2>
           <div className="mt-3 divide-y divide-[var(--color-border)] rounded-3xl border border-[var(--color-border)] bg-white">

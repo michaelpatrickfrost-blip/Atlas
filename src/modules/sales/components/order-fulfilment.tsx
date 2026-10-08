@@ -6,6 +6,7 @@ import { requireSession } from "@/core/auth/session";
 import { readOrderChain } from "@/modules/stock/services/availability";
 
 export async function OrderFulfilment({ organisationId, orderId }: { organisationId: string; orderId: string }) {
+  const session = await requireSession();
   const logistics = (await getEnabledModuleIds(organisationId)).has("logistics");
   const projection = logistics ? await getModule("logistics")?.fulfilmentProjectionProvider?.({ organisationId, orderId }) : null;
   return (
@@ -19,7 +20,7 @@ export async function OrderFulfilment({ organisationId, orderId }: { organisatio
             {projection.holdLabel && <p className="mt-2 text-sm text-amber-700">Blocked · {projection.holdLabel}</p>}
           </> : <p className="mt-2 text-sm text-slate-500">{logistics ? "Confirming this order creates its fulfilment requirement." : "Logistics is off. The sale still shows what has been invoiced."}</p>}
         </div>
-        {projection?.reference && <Link href="/logistics/fulfil" className="text-sm text-blue-600">{projection.reference} →</Link>}
+        {projection?.reference && can(session, "logistics.fulfilment.read") && <Link href={projection.requirementId ? `/logistics/fulfil/${projection.requirementId}` : "/logistics/fulfil"} className="text-sm text-blue-600">{projection.reference} →</Link>}
       </div>
       <OrderChain orderId={orderId} />
     </section>

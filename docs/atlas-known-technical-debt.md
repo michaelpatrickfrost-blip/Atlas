@@ -16,7 +16,7 @@ reproduced by tests are confirmed runtime defects. No claim of a full code audit
 | Overlapping quality state | QualityHold and QUARANTINE StockPosition have no explicit common hold identity for safe deduplication. |
 | Aggregate plan/execution overlap | `availability/picture.ts` uses max(plan, production), without item-date-source pegging. |
 | Non-atomic manufacturing boundary | `manufacturing/services/stock.ts` loops separate provider transactions before completion state persists. |
-| Scattered contextual navigation | Sales commercial links, service panels and Finance sources are bespoke; no shared relationship provider. |
+| Scattered contextual navigation | Sales commercial links, service panels and Finance sources were bespoke; shared relationships now implemented on five root types; remaining roots open. |
 | Release checkout fragmentation | Primary main is older with extensive concurrent edits; live main is newer. Pinned clean release prevents unrelated deployment. |
 
 ## Ten workflow problems
@@ -38,13 +38,13 @@ reproduced by tests are confirmed runtime defects. No claim of a full code audit
 
 | Finding | Evidence / implication |
 | --- | --- |
-| Home gives navigation before work | `home/page.tsx` is the existing app directory; supplied brief now requires operational attention/My Work. |
+| Home gives navigation before work | `home/page.tsx` places the app directory before its existing attention/goals; supplied brief now requires operational attention/My Work first. |
 | Large sales record rendering | Sales order page composes many inline actions and panels; use tabs/context without losing workflows. |
 | Technical JSON in history | Sales History renders revision snapshots with JSON.stringify rather than meaningful field changes. |
 | Projected stock labelled Available | Order chain mixes future supply/open demand with an available label; corrected to Projected stock. |
-| Stale connection guidance | Sales Connections still says awaiting Logistics connection when runtime providers exist. |
-| Weak direct fulfilment link | Order fulfilment reference points to queue, requiring users to locate the record again. |
-| Shared table overflow | Order chain renders an eight-column table without a local horizontal-scroll wrapper. |
+| Stale connection guidance | Sales Connections had obsolete awaiting-connection guidance; replaced alongside real relationship navigation. |
+| Weak direct fulfilment link | Order fulfilment reference formerly pointed to queue; corrected to canonical record ID. |
+| Shared table overflow | Order chain lacked a local horizontal-scroll wrapper; corrected alongside the stock label. |
 | Configuration before product context | Stock item places locations/planning/production controls before ProductView summary. |
 | Search groups can disappear | `core/search/aggregate.ts` globally slices first 20; earlier providers/navigation can crowd out business matches. |
 | Different import/document experiences | Domain-specific imports and attachment UIs require users to learn repeated patterns. |

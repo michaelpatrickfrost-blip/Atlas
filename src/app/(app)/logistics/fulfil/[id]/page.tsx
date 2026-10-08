@@ -1,3 +1,4 @@
+import { RecordRelationships } from "@/components/records/relationships";
 import { ActionForm } from "@/components/ui/action-form";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -62,6 +63,7 @@ export default async function FulfilmentPage({ params }: { params: Promise<{ id:
       <div className="flex flex-wrap gap-4">{row.tasks.filter((task) => task.status !== "COMPLETE").map((task) => <Link key={task.id} className="text-sm text-[var(--color-atlas-blue)]" href={`/logistics/work/${task.id}`}>Open {task.kind.toLowerCase()} {task.reference}</Link>)}</div>
       {row.packages.length > 0 && <section className="space-y-2">{row.packages.map((unit) => <p key={unit.id} className="text-sm">{unit.reference} · {unit.typeCode ?? unit.packageType}{unit.parent?.reference ? ` inside ${unit.parent.reference}` : ""} · {unit.contents.map((content) => `${content.description} × ${content.quantity}`).join(", ")}</p>)}</section>}
       {row.fulfilmentMode !== "WAREHOUSE" && can(session, C.shipmentCreate) && <ActionForm action={directShipAction.bind(null, row.id)} className="flex gap-2"><input name="tracking" placeholder="Supplier tracking" className="rounded-full border px-4 py-2 text-sm" /><button className="rounded-full border px-4 py-2 text-sm" type="submit">Record direct shipment</button></ActionForm>}
+      <RecordRelationships session={session} record={{ moduleId: "logistics", type: "fulfilment", id: row.id }} />
     </div>
   );
 }

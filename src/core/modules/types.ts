@@ -88,6 +88,9 @@ export type StaffRosterProvider = (session: Session, manage: boolean) => Promise
 }>>;
 
 export type ModuleManifest = {
+  recordContextProvider?: import("@/core/relationships/types").RecordContextProvider;
+  recordRelationshipProvider?: import("@/core/relationships/types").RecordRelationshipProvider;
+  salesInvoiceQuantitiesProvider?: import("@/core/finance/connections").SalesInvoiceQuantitiesProvider;
   salesInvoiceChainProvider?: import("@/core/finance/connections").SalesInvoiceChainProvider;
   serviceOrderProjectionProvider?: (session:Session,partyId:string,orderId:string)=>Promise<import('@/core/service-work/connections').ServiceOrderProjection>;
   serviceSurveyConsumer?: (session:Session,caseId:string)=>Promise<void>;

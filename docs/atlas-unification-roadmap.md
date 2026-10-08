@@ -6,8 +6,8 @@ continuously. Preserve the [full requirements](requirements/ATLAS_MASTER_SYSTEM.
 
 | Work | State on 8 October 2026 | Completion evidence required |
 | --- | --- | --- |
-| Correct shared active-line availability and Finance chain access | Implemented; validation/deployment tracked in CURRENT_STATE | Regressions plus authenticated live source/permission assertions |
-| Shared record relationship panel and owning-module providers | Next | Source/target access, tenant isolation, actual record links, browser proof |
+| Correct shared active-line availability and Finance chain access | Live `29316a8`, 10 authenticated assertions passed | Regressions plus authenticated live source/permission assertions |
+| Shared record relationship panel and owning-module providers | Implemented; extended live acceptance pending | Source/target access, tenant isolation, actual record links, browser proof |
 | Consistent Inventory restrictions across all projections | Open | Explicit hold/position provenance; quality hold + allocation scenarios |
 | Atomic manufacturing consumption/output/progress | Open | Multi-material failure rollback, retries and partial output reconciliation |
 | Time-phased Supply Lens and pegging | Open | Stock/reservations/known demand/firm supply, dates and source provenance |

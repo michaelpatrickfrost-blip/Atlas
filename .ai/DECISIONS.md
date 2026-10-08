@@ -890,3 +890,16 @@ Live service acceptance uses an isolated synthetic company and explicit test pro
 ## 7 October 2026 — Serialize live server releases
 
 A shared server deployment lock and existing-build wait prevent parallel agents from changing the checkout or installing dependencies during another release build. The pinned SHA is rechecked after the wait/pull. A ten-minute timeout leaves the checkout unchanged. Private service evidence is backed up alongside database metadata.
+
+## 8 October 2026 — Ease of use and owner-authorised record relationships
+
+Michael emphasised that Atlas must feel easy to use despite its complexity.
+Everyday views prioritise what is happening, what needs attention and the next
+useful action. Technical setup and detailed explanations belong behind context.
+Record links follow canonical stored relationships, never matching product guesses.
+The source owner authorises the root before each enabled target owner contributes
+its authorised metadata. Core aggregates without importing module implementations;
+Customer Master remains a Core contribution. Empty groups stay out of the user's
+way; partial relationship failures do not take down the operational page. Finance
+read scope, including private Projects, remains authoritative for linked metadata
+and quantities. No read-only operator gains Sales/customer access through a link.

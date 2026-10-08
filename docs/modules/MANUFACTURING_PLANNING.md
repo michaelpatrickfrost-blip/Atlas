@@ -255,3 +255,11 @@ the calendar; scheduling does that.
 Still open: effective dates, alternate routes, named machines and skills,
 calendars, finite scheduling, production orders, shop-floor WIP quantities,
 reservations, and Finance journals. A plan target still does not move stock.
+
+## Contextual record access — 8 October 2026
+
+Manufacturing order Related records uses shared owner-authorised providers. The
+originating Sales order appears only with Sales read and enabled Sales; operators
+without that permission receive neither its reference nor customer identity.
+Existing product/material/operation details remain. Manufacturing contributes exact
+source-line-linked production orders back to Sales; no product-match guessing.

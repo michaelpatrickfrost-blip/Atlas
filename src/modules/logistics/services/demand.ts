@@ -192,6 +192,7 @@ export async function projectOrder(organisationId: string, orderId: string) {
   return {
     orderId,
     reference: rows[0]?.reference ?? null,
+    requirementId: rows[0]?.id ?? null,
     lineCount: lines.length,
     readyLineCount: ready,
     awaitingLineCount: lines.filter((line) => line.allocationStatus === "SHORT" || line.allocationStatus === "UNALLOCATED").length,

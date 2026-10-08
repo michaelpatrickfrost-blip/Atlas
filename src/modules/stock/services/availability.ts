@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/core/db/client";
-import { readOrderInvoices } from "@/core/finance/connections";
+import { readOrderInvoices, readInvoiceQuantities } from "@/core/finance/connections";
 import { getEnabledModuleIds } from "@/core/modules/runtime";
 import { requireSession } from "@/core/auth/session";
 import { availabilityPicture, type AvailabilityPicture } from "@/core/availability/picture";
@@ -12,7 +12,7 @@ const READ = ["stock.read", "planning.demand.read", "sales.order.read", "sales.q
 /** Open shop-floor orders. Matches manufacturing OPEN_PRODUCTION_ORDER_STATUSES. */
 const OPEN_PRODUCTION: ManufacturingOrderStatus[] = ["PLANNED", "READY", "RELEASED", "RUNNING"];
 
-export type ProductAvailability = AvailabilityPicture & { productId: string };
+export type ProductAvailability = Omit<AvailabilityPicture, "invoiced" | "toInvoice"> & { productId: string; invoiced: number | null; toInvoice: number | null };
 export type CommercialPicture = { products: ProductAvailability[]; deliveredByLine: Record<string, number>; arrivals: Record<string, SupplyArrival[]> };
 
 type Bucket = {
@@ -50,9 +50,10 @@ export async function readAvailability(): Promise<CommercialPicture> {
   const session = await requireSession();
   if (!READ.some((capability) => session.capabilities.has(capability))) throw new Error('FORBIDDEN: missing capability "stock.read"');
   const organisationId = session.organisationId;
+  const financeVisible = session.capabilities.has("finance.receivables.read") && (await getEnabledModuleIds(organisationId)).has("finance");
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const [products, balances, reservations, positions, salesLines, fulfilment, invoices, plans, production, receipts] = await Promise.all([
+  const [products, balances, reservations, positions, salesLines, fulfilment, plans, production, receipts] = await Promise.all([
     db.product.findMany({ where: { organisationId }, select: { id: true, unitOfMeasure: true } }),
     db.inventoryBalance.findMany({ where: { organisationId }, select: { productId: true, quantity: true } }),
     optional(db.stockReservation.findMany({ where: { organisationId, status: "ACTIVE" }, select: { productId: true, quantity: true } }), []),
@@ -64,10 +65,6 @@ export async function readAvailability(): Promise<CommercialPicture> {
     optional(db.fulfilmentLine.findMany({
       where: { organisationId },
       select: { productId: true, salesOrderLineId: true, allocatedQuantity: true, shippedQuantity: true, deliveredQuantity: true },
-    }), []),
-    optional(db.financeDocumentLine.findMany({
-      where: { organisationId, productId: { not: null }, document: { organisationId, kind: { in: ["AR_INVOICE", "AR_CREDIT"] }, status: { not: "CANCELLED" } } },
-      select: { productId: true, salesOrderLineId: true, quantity: true, document: { select: { kind: true } } },
     }), []),
     optional(db.productionPlanLine.findMany({ where: { organisationId, endsOn: { gte: today } }, select: { productId: true, quantity: true, endsOn: true } }), []),
     optional(db.manufacturingOrder.findMany({ where: { organisationId, status: { in: OPEN_PRODUCTION } }, select: { productId: true, quantity: true, plannedFinish: true, requiredDate: true } }), []),
@@ -116,17 +113,18 @@ export async function readAvailability(): Promise<CommercialPicture> {
     row.shipped += Math.min(quantity, Math.max(0, movement.shipped));
     row.fulfilledQuantity += Math.min(quantity, Math.max(0, movement.shipped, movement.delivered));
   }
+  const invoices = financeVisible ? await readInvoiceQuantities(session, [...activeLines.keys()]) : [];
   for (const line of invoices) {
     if (!line.productId || !line.salesOrderLineId || !activeLines.has(line.salesOrderLineId)) continue;
     const quantity = Number(line.quantity);
-    bucket(line.productId).invoiced += line.document.kind === "AR_CREDIT" ? -quantity : quantity;
+    bucket(line.productId).invoiced += quantity;
   }
   for (const line of receipts) {
     if (line.productId) bucket(line.productId).expectedReceipts += Math.max(0, line.expectedQuantity - line.receivedQuantity);
   }
   for (const line of plans) bucket(line.productId).planned += Number(line.quantity);
   for (const order of production) bucket(order.productId).inProduction += Number(order.quantity);
-  const rows: ProductAvailability[] = [...buckets].map(([productId, row]) => ({ productId, ...availabilityPicture(row) }));
+  const rows: ProductAvailability[] = [...buckets].map(([productId, row]) => ({ productId, ...availabilityPicture(row), ...(!financeVisible ? { invoiced: null, toInvoice: null } : {}) }));
   const day = (value: Date | null | undefined) => (value ? value.toISOString().slice(0, 10) : "");
   const group = new Map<string, { receipts: SupplyArrival[]; plan: SupplyArrival[]; production: SupplyArrival[] }>();
   const bucketSupply = (productId: string) => {

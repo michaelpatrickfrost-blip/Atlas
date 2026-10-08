@@ -1,5 +1,29 @@
 # Atlas current state
 
+## Simple connected record navigation — 8 October 2026
+
+- Michael reinforced that ease of use is vital despite ERP complexity. Existing
+  source-owner contracts now provide a shared `RecordRelationships` panel on Sales
+  Connections, Manufacturing orders, fulfilment, shipments and Finance documents.
+  It uses real IDs and direct links, omits empty groups, works in a narrow viewport
+  and handles partial provider failure without breaking the record page.
+- Core contracts/aggregation: `src/core/relationships/`; component:
+  `src/components/records/relationships.tsx`. Sales, Manufacturing, Logistics,
+  Finance and Products register owner-authorised providers; Customer Master remains
+  Core. Root existence/permission/tenant is checked before contributors. Finance
+  keeps private-project scope; source/target app enablement and capabilities apply.
+- Removed Manufacturing customer/order output that bypassed Sales read access.
+  Permitted viewers retain the originating order through the shared panel. Sales
+  Delivery now links to its actual fulfilment record rather than forcing a queue
+  search. No navigation menu, new business store or migration added.
+- Extended Finance-owned quantities projection so shared availability also returns
+  null financial quantities without Finance access, and never directly queries
+  Finance line tables. Owner-scoped queries preserve private Projects.
+- Focused owner/access/resilience tests pass; strict TypeScript, production build,
+  changed-file lint and diff check passed. Full suite: 693 passed / 22 integration
+  skips (115 files). Extended live acceptance is pending.
+  This records implemented scope, not full master-brief completion.
+
 ## Continuous ERP unification — 8 October 2026
 
 - Michael supplied the complete 251-section master brief and requested continuous
@@ -18,9 +42,16 @@
   dependency installation and Prisma generation resolved missing generated-client/
   dependency setup errors. Production build, strict TypeScript, changed-file ESLint
   and diff check passed; full suite 677 passed / 22 integration skips (113 files).
-  Deployment/live acceptance pending; no completion claim yet. Synthetic acceptance
-  script: `scripts/check-atlas-unification.ts`. No migration or records rewritten.
-- Open: shared relationship providers, hold/position identity and unified usable
+  Release `29316a8` deployed: server build/restart and HTTPS login 200; no pending
+  migrations. Backup `/home/administrator/backups/atlas-pre-deploy-20261008-111337.dump`
+  plus matching private evidence archive. All ten authenticated live assertions
+  passed, including real Sales/Finance Chromium screens and cross-tenant/app denial.
+  First browser attempt timed out waiting for perpetual network-idle; rerun used
+  document-ready plus explicit content waits and passed. Test tenants suspended,
+  credentials revoked, central synthetic evidence retained. No real business data
+  or profile permissions changed.
+- At that release, open: shared relationship providers (implemented in the next
+  entry above), hold/position identity and unified usable
   stock, atomic manufacturing completion, time-phased pegged supply and the broader
   master brief. Current architecture docs corrected stale claims that MRP/payroll/
   accounting/warehouse were wholly absent.

@@ -201,3 +201,20 @@ Pipeline/Customers/Quotes/Orders pages. Read it before building anything new.
 ## Contributing document template context
 
 A module may register a `templateContextProvider` with source types, capability-gated `list` and `get` functions returning whitelisted merge fields, canonical Party/contact references and its record link. Both functions enforce tenant and record visibility; the shared engine re-checks the source on generation, sharing and file access. See `src/modules/crm/services/template-context.ts` and [Contracts and Templates](plans/CONTRACTS_TEMPLATES.md).
+
+## Record relationships — 8 October 2026
+
+Optional `recordContextProvider(session, record)` validates the source's type,
+capability and same-tenant existence before returning identity-only anchors.
+`recordRelationshipProvider(session, context)` contributes authorised upstream,
+downstream and related links from its own records. Core calls only enabled owners;
+each contributor applies target capability and record visibility. Never infer a
+relationship merely because two records use the same product. Customer Master
+contributes through Core and hides scrubbed identities. Finance uses `documentScope`.
+
+`src/core/relationships/load.ts` deduplicates internal links and tolerates optional
+provider failure; the reusable Server Component is
+`src/components/records/relationships.tsx`. Providers bound display lists with an
+explicit more-records marker. This is navigation over canonical records, not a
+second graph database or a persistence cache. Current roots: Sales order,
+Manufacturing order, Logistics fulfilment/shipment, Finance document.

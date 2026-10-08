@@ -140,3 +140,12 @@ Finance's `salesInvoiceChainProvider` applies its own document/project scope; In
 consumes the narrow Core contract rather than directly querying invoice metadata.
 The Delivery table scrolls within its panel at small widths. These are projections,
 not protected ATP/CTP or full time-phased pegging. Release evidence: CURRENT_STATE.
+
+## Connected records — 8 October 2026
+
+Connections now contains the shared Related records panel: accepted quotation,
+actual linked manufacturing, fulfilment, shipments, permitted Finance documents and
+canonical customer/products. Each owning module scopes its contribution; unavailable
+or disabled apps do not disclose linked records. Empty groups are omitted. Delivery
+links directly to the first actual fulfilment record; split deliveries remain
+individually listed in Connections. Existing Finance invoice actions are retained.

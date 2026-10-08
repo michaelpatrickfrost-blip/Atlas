@@ -2,11 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const state = vi.hoisted(() => ({
   session: { userId: "u", organisationId: "tenant", capabilities: new Set<string>() },
-  invoices: vi.fn(),
+  invoices: vi.fn(), quantities: vi.fn(),
   enabled: new Set(["stock", "sales", "logistics", "finance"]),
   db: Object.fromEntries(["product", "inventoryBalance", "stockReservation", "stockPosition", "salesOrderLine", "fulfilmentLine", "financeDocumentLine", "productionPlanLine", "manufacturingOrder", "receiptLine", "financeDocument", "salesOrder"].map(name => [name, { findMany: vi.fn(), findFirst: vi.fn() }])),
 }));
-vi.mock("@/core/finance/connections", () => ({ readOrderInvoices: state.invoices }));
+vi.mock("@/core/finance/connections", () => ({ readOrderInvoices: state.invoices, readInvoiceQuantities: state.quantities }));
 vi.mock("@/core/db/client", () => ({ db: state.db }));
 vi.mock("@/core/auth/session", () => ({ requireSession: async () => state.session }));
 vi.mock("@/core/modules/runtime", () => ({ getEnabledModuleIds: async () => state.enabled }));
@@ -14,7 +14,7 @@ import { readAvailability, readOrderChain } from "@/modules/stock/services/avail
 
 beforeEach(() => {
   vi.clearAllMocks();
-  state.invoices.mockResolvedValue([]);
+  state.invoices.mockResolvedValue([]); state.quantities.mockResolvedValue([]);
   state.session.capabilities = new Set(["sales.order.read"]);
   state.enabled = new Set(["stock", "sales", "logistics", "finance"]);
   for (const model of Object.values(state.db)) model.findMany.mockResolvedValue([]);
@@ -37,7 +37,7 @@ describe("shared operational availability", () => {
 
   it("stock already shipped leaves open inventory demand even before delivery", async () => {
     state.db.fulfilmentLine.findMany.mockResolvedValue([{ productId: "p", salesOrderLineId: "open", allocatedQuantity: 40, shippedQuantity: 40, deliveredQuantity: 0 }]);
-    expect((await readAvailability()).products[0]).toMatchObject({ openDemand: 60, available: -40, toInvoice: 0 });
+    expect((await readAvailability()).products[0]).toMatchObject({ openDemand: 60, available: -40, toInvoice: null });
   });
 
   it("caps fulfilment against its own line instead of consuming another line's demand", async () => {
@@ -67,6 +67,15 @@ describe("shared operational availability", () => {
   it("includes outstanding expected receipts in projected supply without calling them on hand", async () => {
     state.db.receiptLine.findMany.mockResolvedValue([{ productId: "p", expectedQuantity: 50, receivedQuantity: 20, receipt: { expectedOn: new Date("2026-10-20") } }]);
     expect((await readAvailability()).products[0]).toMatchObject({ onHand: 20, availableNow: 20, incoming: 30, available: -50 });
+  });
+
+  it("omits financial quantities from shared availability without Finance access", async () => {
+    const result = await readAvailability();
+    expect(result.products[0]).toMatchObject({ invoiced: null, toInvoice: null });
+    expect(state.quantities).not.toHaveBeenCalled();
+    state.session.capabilities.add("finance.receivables.read");
+    state.quantities.mockResolvedValue([{ productId: "p", salesOrderLineId: "open", quantity: 7 }]);
+    expect((await readAvailability()).products[0].invoiced).toBe(7);
   });
 
   it("scopes every operational query to the authenticated tenant", async () => {

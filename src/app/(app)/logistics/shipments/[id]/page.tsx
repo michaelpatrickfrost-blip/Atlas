@@ -1,3 +1,4 @@
+import { RecordRelationships } from "@/components/records/relationships";
 import { ActionForm } from "@/components/ui/action-form";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -48,6 +49,7 @@ export default async function ShipmentPage({ params }: { params: Promise<{ id: s
       <ActionForm action={trackingAction.bind(null, row.id)} className="flex gap-2"><input name="status" placeholder="Carrier update" className="rounded-full border px-3 py-2 text-sm" /><button className="rounded-full border px-4 py-2 text-sm" type="submit">Record tracking</button></ActionForm>
       <ul className="space-y-2 text-sm">{row.events.map((event) => <li key={event.id}>{event.status}{event.rawStatus ? ` · ${event.rawStatus}` : ""} · {event.occurredAt.toLocaleString("en-GB")}</li>)}</ul>
       {can(session, C.shipmentDispatch) && <ActionForm action={deliverAction.bind(null, row.id)} className="grid max-w-md gap-2 rounded-3xl border border-[var(--color-border)] bg-white p-5"><p className="text-sm font-medium">Delivery</p><select name="outcome" className="rounded-xl border px-3 py-2 text-sm"><option value="DELIVERED">Delivered</option><option value="PARTIAL">Partial</option><option value="FAILED">Failed</option></select><input name="receiver" placeholder="Receiver" className="rounded-xl border px-3 py-2 text-sm" /><input name="note" placeholder="Note" className="rounded-xl border px-3 py-2 text-sm" /><input name="reason" placeholder="Failure reason, if any" className="rounded-xl border px-3 py-2 text-sm" /><button className="rounded-full bg-[var(--color-atlas-blue)] px-4 py-2 text-sm font-semibold text-white" type="submit">Confirm</button></ActionForm>}
+      <RecordRelationships session={session} record={{ moduleId: "logistics", type: "shipment", id: row.id }} />
     </div>
   );
 }

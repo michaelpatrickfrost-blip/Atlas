@@ -43,15 +43,17 @@ async function main() {
     for (const name of ["inside", "outside"]) {
       const company = await db.organisation.create({ data: { name: `Synthetic Atlas unification ${name} ${suffix}`, slug: `unification-${name}-${suffix}`, isTest: true } });
       companies.push(company.id);
-      await db.moduleState.createMany({ data: ["sales", "stock", "logistics", "finance", "products"].map(moduleId => ({ organisationId: company.id, moduleId, enabled: true, entitled: true })) });
+      await db.moduleState.createMany({ data: ["sales", "stock", "logistics", "finance", "products", "manufacturing"].map(moduleId => ({ organisationId: company.id, moduleId, enabled: true, entitled: true })) });
     }
     const organisationId = companies[0];
     const makeUser = async (name: string, caps: string[], org = organisationId) => {
       const user = await db.user.create({ data: { name: `Synthetic unification ${name}`, email: `unification-${name}-${suffix}@example.test`, passwordHash: await bcrypt.hash(password, 10) } }); users.push(user.id);
       await db.membership.create({ data: { organisationId: org, userId: user.id, grantedCapabilities: caps } }); return user;
     };
-    const caps = ["sales.order.read", "customers.read", "core.products.read", "stock.read", "logistics.fulfilment.read"];
-    const viewer = await makeUser("viewer", caps), accountant = await makeUser("accountant", [...caps, "finance.receivables.read"]), outside = await makeUser("outside", caps, companies[1]);
+    const caps = ["sales.order.read", "customers.read", "core.products.read", "stock.read", "logistics.fulfilment.read", "logistics.shipment.read", "manufacturing.order.read"];
+    const viewer = await makeUser("viewer", caps), accountant = await makeUser("accountant", [...caps, "finance.receivables.read", "finance.overview.read"]), outside = await makeUser("outside", caps, companies[1]);
+    const operator = await makeUser("operator", ["manufacturing.order.read", "core.products.read"]);
+    const operatorCookie = await login(operator.email);
     const viewerCookie = await login(viewer.email), financeCookie = await login(accountant.email), outsideCookie = await login(outside.email);
     const product = await db.product.create({ data: { organisationId, code: "UNIFY", name: "Synthetic availability item", basePriceAmount: 100, baseCurrency: "GBP", unitOfMeasure: "each" } });
     const party = await db.party.create({ data: { organisationId, kind: "COMPANY", name: "Synthetic availability customer", customerCode: "UNIFY" } });
@@ -65,7 +67,7 @@ async function main() {
     }
     await db.expectedReceipt.create({ data: { organisationId, reference: "RC-UNIFY", sourceType: "PURCHASE", sourceReference: "PO-UNIFY", warehouseId: warehouse.id, expectedOn: new Date("2026-10-20"), lines: { create: { organisationId, productId: product.id, description: product.name, expectedQuantity: 50, receivedQuantity: 20 } } } });
     const entity = await db.financeEntity.create({ data: { organisationId, code: "UNIFY", name: "Synthetic books" } });
-    await db.financeDocument.create({ data: { organisationId, entityId: entity.id, kind: "AR_INVOICE", reference: "INV-UNIFY-PRIVATE", title: "Synthetic invoice", creatorUserId: accountant.id, salesOrderId: live.id, currency: "GBP", documentDate: new Date(), lines: { create: { number: 1, salesOrderLineId: live.lines[0].id, productId: product.id, description: product.name, quantity: 10, unitPrice: 100n, net: 1000n, tax: 0n } } } });
+    const invoice = await db.financeDocument.create({ data: { organisationId, entityId: entity.id, kind: "AR_INVOICE", reference: "INV-UNIFY-PRIVATE", title: "Synthetic invoice", creatorUserId: accountant.id, salesOrderId: live.id, currency: "GBP", documentDate: new Date(), lines: { create: { number: 1, salesOrderLineId: live.lines[0].id, productId: product.id, description: product.name, quantity: 10, unitPrice: 100n, net: 1000n, tax: 0n } } } });
     type Picture = Awaited<ReturnType<typeof readAvailability>>;
     type Chain = Awaited<ReturnType<typeof readOrderChain>>;
     const picture = await call<Picture>("readAvailability", [], viewerCookie), row = picture.products.find(item => item.productId === product.id);
@@ -83,6 +85,14 @@ async function main() {
     await db.moduleState.update({ where: { organisationId_moduleId: { organisationId, moduleId: "finance" } }, data: { enabled: true } });
     const anonymous = await post("readOrderChain", [live.id]);
     check(!anonymous.body.includes("INV-UNIFY-PRIVATE") && !anonymous.body.includes("Synthetic availability"), "Anonymous action cannot expose test records");
+    check(row?.invoiced === null && row.toInvoice === null, "Shared stock projection does not expose financial quantities to Sales-only users");
+    const fulfilment = await db.fulfilmentRequirement.findFirstOrThrow({ where: { organisationId, salesOrderId: live.id }, include: { lines: true } });
+    const manufacturing = await db.manufacturingOrder.create({ data: { organisationId, orderNumber: "MO-UNIFY", productId: product.id, quantity: 60, sourceSalesOrderLineId: live.lines[0].id, createdByUserId: viewer.id } });
+    const shipment = await db.shipment.create({ data: { organisationId, reference: "SH-UNIFY", partyId: party.id, shipTo: {}, status: "IN_TRANSIT", sources: { create: { organisationId, salesOrderId: live.id, requirementId: fulfilment.id, fulfilmentLineId: fulfilment.lines[0].id, quantity: 40 } } } });
+    const privateProject = await db.project.create({ data: { organisationId, reference: "PR-UNIFY-PRIVATE", name: "Synthetic private project", visibility: "PRIVATE", ownerUserId: viewer.id } });
+    await db.financeDocument.create({ data: { organisationId, entityId: entity.id, kind: "AR_INVOICE", reference: "INV-UNIFY-HIDDEN-PROJECT", title: "Private project invoice", creatorUserId: viewer.id, salesOrderId: live.id, projectId: privateProject.id, currency: "GBP", documentDate: new Date() } });
+    const scopedChain = await call<Chain>("readOrderChain", [live.id], financeCookie);
+    check(!scopedChain?.invoices.some(item => item.reference === "INV-UNIFY-HIDDEN-PROJECT"), "Finance-owned chain preserves private-project visibility");
     const { chromium } = await import("@playwright/test");
     const browser = await chromium.launch({ headless: true, ...(process.env.ATLAS_CHROMIUM_PATH ? { executablePath: process.env.ATLAS_CHROMIUM_PATH } : {}), args: ["--no-sandbox"] });
     try {
@@ -90,14 +100,40 @@ async function main() {
         const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
         await context.addCookies([{ name: "atlas_session", value: cookie.slice("atlas_session=".length), url: base, httpOnly: true, secure: true }]);
         const page = await context.newPage(); let errors = 0; page.on("pageerror", () => errors++);
-        await page.goto(`${base}/sales/orders/${live.id}`, { waitUntil: "networkidle" });
+        await page.goto(`${base}/sales/orders/${live.id}`, { waitUntil: "domcontentloaded", timeout: 60_000 });
         await page.getByText("SO-UNIFY-LIVE", { exact: true }).first().waitFor();
         const fulfilmentTab = page.getByRole("tab", { name: "Delivery", exact: true });
         if (await fulfilmentTab.count()) await fulfilmentTab.click();
         const text = await page.locator("body").innerText();
         check(text.includes("Projected stock") && text.includes("INV-UNIFY-PRIVATE") === allowed && errors === 0, `Chromium order chain renders accurate labels and Finance access (${allowed ? "accountant" : "sales"})`);
+        await page.getByRole("tab", { name: "Connections", exact: true }).click();
+        const panel = page.getByRole("region", { name: "Record relationships", exact: true });
+        await panel.getByRole("heading", { name: "Related records", exact: true }).waitFor();
+        check(await panel.locator(`a[href="/logistics/fulfil/${fulfilment.id}"]`).count() === 1 && await panel.locator(`a[href="/manufacturing/produce/${manufacturing.id}"]`).count() === 1 && await panel.locator(`a[href="/logistics/shipments/${shipment.id}"]`).count() === 1, "Order relationships link directly to its actual fulfilment, manufacturing and shipment");
+        check(await panel.locator(`a[href="/finance/documents/${invoice.id}"]`).count() === Number(allowed) && !(await page.content()).includes("INV-UNIFY-HIDDEN-PROJECT"), "Relationship panel respects Finance and private-project access in rendered HTML");
+        await page.setViewportSize({ width: 390, height: 844 });
+        check(await panel.evaluate(element => element.scrollWidth <= element.clientWidth), "Relationship panel fits a phone viewport without horizontal overflow");
+        await panel.locator(`a[href="/manufacturing/produce/${manufacturing.id}"]`).click();
+        await page.waitForURL(`**/manufacturing/produce/${manufacturing.id}`);
+        const manufacturingPanel = page.getByRole("region", { name: "Record relationships", exact: true });
+        await manufacturingPanel.locator(`a[href="/sales/orders/${live.id}"]`).waitFor();
+        check(await manufacturingPanel.locator(`a[href="/sales/orders/${live.id}"]`).count() === 1 && errors === 0, "Manufacturing shows the authorised originating Sales order with no browser errors");
+        for (const [path, label] of [[`/logistics/fulfil/${fulfilment.id}`, "Fulfilment"], [`/logistics/shipments/${shipment.id}`, "Shipment"], ...(allowed ? [[`/finance/documents/${invoice.id}`, "Invoice"]] : [])]) {
+          await page.goto(base + path, { waitUntil: "domcontentloaded", timeout: 60_000 });
+          const relationships = page.getByRole("region", { name: "Record relationships", exact: true });
+          await relationships.locator(`a[href="/sales/orders/${live.id}"]`).waitFor();
+          check(await relationships.locator(`a[href="/sales/orders/${live.id}"]`).count() === 1 && errors === 0, `${label} links back to the canonical Sales order`);
+        }
         await context.close();
       }
+      const operatorContext = await browser.newContext();
+      await operatorContext.addCookies([{ name: "atlas_session", value: operatorCookie.slice("atlas_session=".length), url: base, httpOnly: true, secure: true }]);
+      const operatorPage = await operatorContext.newPage();
+      await operatorPage.goto(`${base}/manufacturing/produce/${manufacturing.id}`, { waitUntil: "domcontentloaded", timeout: 60_000 });
+      await operatorPage.getByText("MO-UNIFY", { exact: true }).waitFor();
+      const operatorHtml = await operatorPage.content();
+      check(!operatorHtml.includes("SO-UNIFY-LIVE") && !operatorHtml.includes(party.name), "Manufacturing-only operator receives no customer or Sales-order identity");
+      await operatorContext.close();
     } finally { await browser.close(); }
     console.log(`LIVE ATLAS UNIFICATION ACCEPTANCE PASSED: ${checks} assertions`);
   } finally {

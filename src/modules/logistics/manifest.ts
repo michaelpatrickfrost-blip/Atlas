@@ -1,3 +1,4 @@
+import { logisticsRecordContext, logisticsRecordRelationships } from "./services/relationships";
 import { requestServiceReturn } from "./services/service-return";
 import { logisticsBusinessPlanning } from "./services/business-planning";
 import { Truck } from "lucide-react";
@@ -9,6 +10,7 @@ import { logisticsAnalytics } from "./services/analytics";
 import { customerLogistics, logisticsAttention, searchLogistics } from "./services/queries";
 
 export const logisticsManifest: ModuleManifest = {
+ recordContextProvider: logisticsRecordContext, recordRelationshipProvider: logisticsRecordRelationships,
  serviceOperationProvider:requestServiceReturn,
  businessPlanningProvider: logisticsBusinessPlanning,
   id: "logistics",

@@ -18,3 +18,11 @@ export async function readOrderInvoices(session: Session, orderId: string): Prom
  await assertModuleEnabled(session, 'finance');
  return await getModule('finance')?.salesInvoiceChainProvider?.(session, orderId) ?? [];
 }
+
+export type SalesInvoiceQuantity = {productId: string; salesOrderLineId: string; quantity: number};
+export type SalesInvoiceQuantitiesProvider = (session: Session, lineIds: string[]) => Promise<SalesInvoiceQuantity[]>;
+export async function readInvoiceQuantities(session: Session, lineIds: string[]): Promise<SalesInvoiceQuantity[]> {
+ if (!session.capabilities.has('finance.receivables.read') || !lineIds.length) return [];
+ await assertModuleEnabled(session, 'finance');
+ return await getModule('finance')?.salesInvoiceQuantitiesProvider?.(session, lineIds) ?? [];
+}

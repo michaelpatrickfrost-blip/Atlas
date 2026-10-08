@@ -133,3 +133,14 @@ Michael explicitly prioritised finishing S&OP before the four detailed Sales,
 Customer Service, Marketing and HR Plan workspaces. Their researched scope is
 [departmental planning](../docs/plans/DEPARTMENT_PLANNING_RESEARCH.md); the shared
 builder alone does not fulfil those four modules.
+
+## Connected ERP and ease of use — 8 October 2026
+
+Michael supplied the full [ERP/MRP master brief](../docs/requirements/ATLAS_MASTER_SYSTEM.md)
+and requests continuous implementation and live deployment without phase sign-offs.
+Ease of use is vital: expose context, exceptions and useful next actions; keep the
+technical complexity behind owning-domain engines and contextual detail. The new
+brief asks for operational Home rather than leading with an app directory.
+[System map](../docs/atlas-system-map.md) and the other `atlas-*.md` guides index
+existing owners, evidence, gaps and continuous work; they do not replace `.ai/`
+shared memory or the detailed module delivery guides.

@@ -23,8 +23,12 @@
   service-files backup `atlas-pre-deploy-20261008-142820` retained. First live run
   stopped on test reading a collapsed baseline table; test now opens comparison.
   Corrected run passed 14 UI assertions including save/reload/privacy/mobile;
-  browser error count stopped acceptance. Error capture added for diagnosis.
-  Fixture companies suspended and credentials revoked on every run; full rerun pending.
+  browser error count stopped acceptance. Diagnosis reproduced SVG title hydration
+  mismatch (mixed JSX children). Changed to one string; added actual server-render/
+  hydrate regression. Narrower sticky task column improves phone chart space.
+  Fix validation: 25 focused planning checks, 912 full-suite pass / 22 skips, build,
+  strict TypeScript and scoped ESLint pass. Fixture companies suspended and
+  credentials revoked on every run; corrected runtime deploy/full live rerun pending.
 - Next: deploy this compatible release, run central synthetic browser/security
   acceptance, preserve fixture history and revoke access; integrate owned primary files.
 

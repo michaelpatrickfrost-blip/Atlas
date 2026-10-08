@@ -20,3 +20,13 @@ describe('Gantt planning',()=>{
  it('search and critical filters do not remove schedule analysis context',()=>{render(<Gantt tasks={[task,{...task,id:'b',title:'Build',startAt:'2026-10-06',dueAt:'2026-10-07',dependencies:[{predecessorId:'a',successorId:'b',kind:'FINISH_TO_START',lagDays:1}]}]} today="2026-10-08"/>);expect(screen.getByText('Review 1 dependency conflicts')).toBeTruthy();fireEvent.change(screen.getByLabelText('Find task or owner'),{target:{value:'Build'}});expect(screen.queryByRole('button',{name:'Schedule Design approval'})).toBeNull();expect(screen.getByText('Review 1 dependency conflicts')).toBeTruthy();});
  it('shows readable baseline changes and unscheduled tasks',()=>{render(<Gantt tasks={[task,{...task,id:'b',title:'Unplanned',startAt:null,dueAt:null}]} today="2026-10-08" baselines={[{id:'base',name:'Agreed',createdAt:'2026-10-01',tasks:[{id:'a',startAt:'2026-10-05',dueAt:'2026-10-07'}]}]}/>);expect(screen.getByText('+2d')).toBeTruthy();expect(screen.getByText('Added since baseline')).toBeTruthy();expect(screen.getByText('Unscheduled')).toBeTruthy();fireEvent.change(screen.getByLabelText('Gantt zoom'),{target:{value:'Days'}});expect(screen.getByLabelText('Today marker')).toBeTruthy();});
 });
+
+describe('Gantt hydration',()=>{
+ it('hydrates the baseline and dependency chart without browser repairing invalid HTML',async()=>{
+  const {renderToString}=await import('react-dom/server');const {hydrateRoot}=await import('react-dom/client');const {act}=await import('react');
+  const props={tasks:[task,{...task,id:'b',title:'Build',dependencies:[{predecessorId:'a',successorId:'b',kind:'FINISH_TO_START',lagDays:1}]}],today:'2026-10-08',milestones:[{id:'m',name:'Delivery',targetAt:'2026-10-20',complete:false}],baselines:[{id:'base',name:'Agreed',createdAt:'2026-10-01',tasks:[{id:'a',startAt:'2026-10-05',dueAt:'2026-10-07'}]}]};
+  const container=document.createElement('div');container.innerHTML=renderToString(<Gantt {...props}/>);document.body.append(container);const errors:unknown[]=[];let root:ReturnType<typeof hydrateRoot>;
+  await act(async()=>{root=hydrateRoot(container,<Gantt {...props}/>,{onRecoverableError:e=>errors.push(e)});});
+  await act(async()=>root.unmount());container.remove();expect(errors).toEqual([]);
+ });
+});

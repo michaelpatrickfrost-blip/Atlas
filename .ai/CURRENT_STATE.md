@@ -1,6 +1,6 @@
 # Atlas current state
 
-## 8 October 2026 — Projects detailed Gantt release prepared
+## 8 October 2026 — Projects detailed Gantt deployed; live acceptance running
 
 - Project Plan & Gantt and shared timeline now show dated grids, day/week/month
   zoom, bounded paging, Today, sticky owner/duration/status rows, dependency lines,
@@ -17,7 +17,12 @@
 - Checks: production build, separate TypeScript, scoped ESLint and whitespace pass;
   24 focused checks; full suite 903 pass / 22 integration skips with four workers.
   First full run had an unrelated inventory timeout under concurrent load, then
-  complete unchanged rerun passed. Deployment and live acceptance remain pending.
+  complete unchanged rerun passed. Combined release preserves admin fix `7926f2c`;
+  rebuild, strict TypeScript and 911 tests / 22 skips pass. Runtime `ddde304` deployed,
+  98 migrations current, service healthy/public login 200. Private pre-deploy DB and
+  service-files backup `atlas-pre-deploy-20261008-142820` retained. First live run
+  stopped on test reading a collapsed baseline table; test now opens comparison.
+  Fixture companies suspended and credentials revoked; full rerun pending.
 - Next: deploy this compatible release, run central synthetic browser/security
   acceptance, preserve fixture history and revoke access; integrate owned primary files.
 

@@ -15,7 +15,12 @@
   Runtime `94e1c34` deployed with Service repair preserved; 98 migrations current.
   First live run reached Home; ambiguous select labels stopped the browser fixture
   before vacancy creation. Explicit form labels added; rebuild/redeploy and rerun.
-  Fixture company suspended and credentials revoked.
+  Fixture company suspended and credentials revoked. A separate TypeScript check
+  caught an unsupported option in the new accessibility tests; corrected without
+  changing application behaviour. Strict TypeScript now passes. Second live run saved vacancy/applicant/interview/
+  offer correctly; scoped the existing Add employee dialog Department locator to
+  distinguish it from the directory filter. Point all-absence decision counts to
+  Absence rather than the holiday-only workspace; rebuild/redeploy and rerun.
 - Paths: people routes/components/domain/platform services, schema/migration, data API
   policy/metadata/actions, `tests/hr-platform*`, `scripts/check-hr-platform.ts`.
   Research/scope: `docs/plans/HR_PLATFORM_RESEARCH.md`, `docs/modules/HR_PLATFORM.md`.

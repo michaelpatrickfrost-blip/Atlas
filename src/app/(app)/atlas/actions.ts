@@ -8,6 +8,7 @@ import {getImplementedModules} from '@/core/modules/registry';
 import {STANDARD_ROLES} from '@/core/permissions/capabilities';
 import {createRecoveryCredential} from '@/core/auth/recovery';
 import {revalidatePath} from 'next/cache';
+import {redirect} from 'next/navigation';
 import bcrypt from 'bcryptjs';
 import {wipeTestCompanies} from '@/core/admin/wipe-company';
 export async function updateCompanyAccount(form:FormData){
@@ -61,4 +62,5 @@ export async function deleteTestCompany(form:FormData){
  await wipeTestCompanies([organisationId],{actorUserId:session.userId,currentOrganisationId:session.organisationId,selection:[{id:org.id,name:org.name,updatedAt:org.updatedAt.toISOString()}]});
  console.info(`atlas.company.deleted org=${organisationId} name=${JSON.stringify(org.name)} by=${session.userId}`);
  revalidatePath('/atlas');
+ redirect('/atlas');
 }

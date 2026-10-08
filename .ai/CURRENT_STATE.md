@@ -1,5 +1,21 @@
 # Atlas current state
 
+## 8 October 2026 — Atlas Admin Test-company deletion fix (release candidate)
+
+- Added the signed-in administrator password field to individual Test-company
+  deletion and return to `/atlas` after successful deletion. Exact-name and
+  password checks, tenant/capability boundaries and shared wipe transaction are
+  preserved; failures remain inline and retain the form draft.
+- Updated `src/app/(app)/atlas/[organisationId]/page.tsx`,
+  `src/app/(app)/atlas/actions.ts`, `tests/atlas-delete-company.test.ts` and
+  `docs/ATLAS_ADMIN.md`.
+- Verification on the clean release candidate: focused delete/form tests pass
+  (7), scoped ESLint passes, `npx tsc --noEmit` passes and `npm run build` passes.
+- Live deployment is pending. Current live revision is `6483c96`; deploy only
+  after the reviewed candidate is committed and the staging release-switch gate
+  passes, then verify the delete workflow against a disposable central Test
+  company without changing real-company data.
+
 ## 8 October 2026 — Connections onboarding app (deployed & verified live)
 
 - Added Atlas-staff-only `/atlas/connections` and Apps/Admin links. Thirteen template/upload sections cover customer hierarchy/contacts/trading, catalogue/pricing, stock locations, people, work centres/machines and Sales drafts. Company search/selection, dependency rules, required fields, preview, explicit attach and latest-30 audit history are implemented.

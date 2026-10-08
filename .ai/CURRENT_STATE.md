@@ -1,5 +1,39 @@
 # Atlas current state
 
+## 8 October 2026 — Guardian rejected-draft recovery in verification
+
+- Confirmed on live-source 6ef3cdf through isolated actual runtime switch to
+  retained 6028b1f: Atlas account validation rejection erases entered plan/name;
+  old Atlas tabs also erase drafts after unknown Server Actions. Shared ActionForm
+  retains its draft but exposes a technical action error. New staff-only report
+  `cmuzq6drq0000oud569cvjp0m` records exact independent reproduction.
+- PortalActionForm now uses shared ActionForm so failed submissions retain fields
+  and pending saves disable the form. Unknown actions receive explicit copy/reload/
+  re-entry guidance; no mutation replay or browser draft storage is introduced.
+- New opt-in central fixture `scripts/guardian/check-action-recovery.ts` and actual
+  loopback switch `scripts/deploy/check-action-switch.sh` verify rejected drafts,
+  one POST per attempt, exact central company/query state and audit/history, then
+  intentional reload/save. Existing authorised QA staff rights are reused; no
+  platform grants created. Synthetic company suspended and sessions revoked.
+- Reproduction passed 16:01 UTC in private `/tmp/atlas-action-switch-wqGPQT`;
+  production pointer unchanged. Private DB/evidence backup `20261008-160122` kept.
+  Three new Portal regressions fail on original source as expected. Final local
+  suite passes 963 tests / 22 integration skips (152 files pass / 3 skip);
+  production build, separate strict TypeScript, focused lint, shell syntax and
+  whitespace pass. Generated-client duplicate scratch files stalled the first
+  typecheck; regenerated only this isolated worktree client, corrected QA null
+  narrowing and reran successfully. Candidate staging/deployment are pending;
+  do not mark the report FIXED yet.
+- Historical team report `cmuzoku170000lod5qx9koaa9` lacks the original action,
+  record and request outcome. This independent action reproduction does not prove
+  that render digest; keep NEEDS_AI until its original outcome can be verified.
+
+- Rebased onto concurrent corrected operational-app commits through dbd5c91;
+  combined suite 1,007 passed / 22 integration skips (154 files pass / 3 skip),
+  regenerated client, strict TypeScript and production build pass. Canonical
+  integration: seven shared/Portal tests pass. Parallel runtime dbd5c91 is now
+  active; preserve its owner's acceptance before our later activation.
+
 ## 8 October 2026 — Five operational apps prepared
 
 - Michael requested Meetings with shared calendar/Outlook/Teams-linked notes,

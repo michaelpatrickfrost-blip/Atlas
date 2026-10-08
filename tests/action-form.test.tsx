@@ -43,3 +43,14 @@ it("submits the activated button's name and value", async () => {
   await waitFor(() => expect(save).toHaveBeenCalledTimes(1));
   expect((save.mock.calls[0][0] as FormData).get("intent")).toBe("preview");
 });
+
+it("retains an older-tab draft and explains recovery without repeating the action", async () => {
+  const save = vi.fn().mockRejectedValue(Object.assign(new Error('Server Action "private-id" was not found on the server.'), { name: "UnrecognizedActionError" }));
+  render(<ActionForm action={save} label="Save queue">{fields}</ActionForm>);
+  fireEvent.change(screen.getByLabelText("Investigation"), { target: { value: "Unsaved investigation" } });
+  fireEvent.click(screen.getByRole("button", { name: "Save queue" }));
+  await waitFor(() => expect(screen.getByRole("alert").textContent).toContain("Copy your unsaved changes"));
+  expect(screen.getByRole("alert").textContent).not.toContain("private-id");
+  expect((screen.getByLabelText("Investigation") as HTMLTextAreaElement).value).toBe("Unsaved investigation");
+  expect(save).toHaveBeenCalledTimes(1);
+});

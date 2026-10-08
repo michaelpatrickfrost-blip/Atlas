@@ -76,6 +76,7 @@ ATLAS_GUARDIAN_COPY_TEST=1 node --env-file=.env.local --import tsx scripts/guard
 ATLAS_GUARDIAN_TICKET_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-ticket-pages.ts
 ATLAS_GUARDIAN_ACCESS_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-ticket-access.ts
 ATLAS_GUARDIAN_QUERY_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-service-query.ts
+ATLAS_GUARDIAN_ACTION_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-action-recovery.ts
 node --env-file=.env.local --import tsx scripts/guardian/triage.ts list [page]
 node --env-file=.env.local --import tsx scripts/guardian/triage.ts show <issue-id>
 sudo systemctl status atlas-guardian.timer atlas-guardian.service
@@ -143,3 +144,23 @@ Logistics, Manufacturing and Service pages while opening/closing their explicit
 safe Apps toggles. It asserts zero browser/chunk failures. This is release
 continuity evidence, not verification of business writes or every dynamic page.
 See `docs/DEPLOY.md` for isolated candidate/switch/rollback staging.
+
+## Rejected drafts and older tabs
+
+Atlas administration shares ActionForm's draft-preserving submit lifecycle.
+An unknown action from an older release explains copy/reload/re-entry; it never
+replays the write. The opt-in action check uses the existing authorised Guardian
+staff identity and a new disposable Test company/query, allows POST only to those
+two exact fixture routes, and asserts central records plus audit/history. It
+suspends the company and revokes synthetic sessions, retaining central history.
+
+For an actual older-tab challenge, prepare the candidate then run its
+`scripts/deploy/check-action-switch.sh /opt/atlas <candidate SHA> <retained SHA>`
+with `ATLAS_GUARDIAN_ACTION_TEST=1`. Both releases must already be sealed and ready.
+The script takes both deployment locks and a private central backup, starts a
+separate loopback service/proxy, opens forms on the candidate, switches to the
+retained runtime, verifies the original submitted drafts/outcomes, restores the
+candidate and proves intentional reload/save. Production stays on its existing
+pointer. Private logs are retained. This proves safe rejection/recovery, not
+uninterrupted execution of arbitrary in-flight writes. Existing pages loaded
+before this fix still have their original form handler until reloaded.

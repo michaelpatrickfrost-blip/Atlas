@@ -1,5 +1,15 @@
 # Atlas decisions
 
+## 8 October 2026 — Retain rejected administration drafts and recover manually
+
+Atlas administration uses the shared form submit lifecycle: disable while pending,
+reset only after success, keep every entered field after rejection. An unrecognised
+Server Action after a release explains that the change was not saved and asks the
+user to copy the draft, reload and intentionally submit again. Never automatically
+replay a business mutation or persist business drafts in browser storage. Test this
+across actual isolated runtimes with disposable central fixtures and exact audit/
+record assertions; fresh-page health alone does not prove an older-tab outcome.
+
 ## 8 October 2026 — Isolate release files from the running Atlas process
 
 Recurring streamed blank pages/ENOENT and Guardian sweep aborts correlated with

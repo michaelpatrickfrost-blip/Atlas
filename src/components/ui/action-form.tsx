@@ -16,7 +16,9 @@ export function ActionForm({action,children,className="",label}:{action:(data:Fo
     setMessage("Saved.");
    }catch(e){
     if(typeof e==="object"&&e&&"digest" in e&&String((e as {digest?:unknown}).digest).startsWith("NEXT_REDIRECT"))throw e;
-    setError(true);setMessage(e instanceof Error ? e.message : "Could not save. Try again.");
+    setError(true);setMessage(e instanceof Error && e.name === "UnrecognizedActionError"
+     ? "Atlas was updated while this page was open. Your changes were not saved. Copy your unsaved changes, then reload this page and enter them again."
+     : e instanceof Error ? e.message : "Could not save. Try again.");
    }
   });
  }}><fieldset disabled={pending} className="contents">{children}{label&&<Button type="submit" variant="primary">{pending?"Saving…":label}</Button>}</fieldset><p role={error?"alert":"status"} aria-live="polite" className={`basis-full text-xs ${error?"text-[var(--color-status-danger)]":"text-[var(--color-ink-muted)]"}`}>{pending?"Saving…":message}</p></form>;

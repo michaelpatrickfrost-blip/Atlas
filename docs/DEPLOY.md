@@ -45,6 +45,17 @@ all writes blocked, switches old → candidate → old, and asserts both runtime
 remain immutable. It cleans up its service/proxy and retains private test logs.
 It uses the existing Guardian QA membership, never creates/grants an account.
 
+Also challenge forms opened on the candidate across an actual different runtime:
+
+```bash
+ssh administrator@85.190.118.218 'ATLAS_GUARDIAN_ACTION_TEST=1 bash /opt/atlas-releases/<candidate SHA>/scripts/deploy/check-action-switch.sh /opt/atlas <candidate SHA> <retained SHA>'
+```
+
+This explicitly authorised Test fixture check backs up central data and verifies
+rejected drafts, no automatic POST replay, exact unchanged records, and intentional
+reload/re-entry/save after restoring the candidate. It reuses existing Guardian
+staff rights, retires synthetic access and leaves the production pointer unchanged.
+
 The first transition from the old npm launcher sends SIGTERM to its entire process
 group so the Next child can drain; later direct-Node releases use mixed kill mode.
 

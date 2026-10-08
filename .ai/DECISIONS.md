@@ -1114,7 +1114,10 @@ as a recognisable icon. This supersedes the older no-tiles/list-only preference
 and the operational-first Home ordering. Home shows accessible app icons first;
 attention/goals follow. Company and Atlas staff logins land on Home, with Admin
 still explicitly accessible. Reuse the existing server-filtered directory and
-compact topbar menu; presentation must not grant app or company access.
+compact topbar menu; presentation must not grant app or company access. The home
+launcher uses compact, left-aligned rows with small, consistent brand-blue icons
+rather than large individually-coloured tiles: this keeps the requested app
+icons while making dense groups faster to scan and visually calmer.
 
 ## 8 October 2026 — Connections is privileged company onboarding
 

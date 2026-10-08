@@ -1,5 +1,16 @@
 # Atlas current state
 
+## 8 October 2026 — Compact app launcher visual refinement (verification pending)
+
+- Replaced large multi-colour app tiles with smaller, consistent blue icon marks
+  and left-aligned responsive app rows. Tightened the launcher card spacing; app
+  categories and the compact topbar menu remain unchanged.
+- Updated `src/components/shell/app-directory.tsx`,
+  `src/app/(app)/home/page.tsx`, `scripts/guardian/check-app-launcher.ts`,
+  `docs/DESIGN_SYSTEM.md` and `docs/evidence/2026-10-08-app-launcher.md`;
+  documented the visual direction in `.ai/DECISIONS.md`.
+- Focused verification, visual staging and live deployment are pending.
+
 ## 8 October 2026 — Atlas staff app access deployed and verified
 
 - Active Atlas staff now see and can open every implemented app they have

@@ -46,6 +46,17 @@ async function main() {
       await expect(page.getByRole("heading", { name: "Your apps", exact: true })).toBeVisible();
       const nav = page.getByRole("navigation", { name: "Apps", exact: true });
       for (const app of apps) await expect(nav.getByRole("link", { name: app.name, exact: true })).toHaveAttribute("href", app.rootPath);
+      const firstApp = nav.getByRole("link").first();
+      const iconSize = await firstApp.locator("svg").evaluate(el => {
+        const { width, height } = el.getBoundingClientRect();
+        return { width, height };
+      });
+      assert(iconSize.width <= 20 && iconSize.height <= 20, "Launcher icons should remain compact.");
+      const iconTileSize = await firstApp.locator("span").first().evaluate(el => {
+        const { width, height } = el.getBoundingClientRect();
+        return { width, height };
+      });
+      assert(iconTileSize.width <= 36 && iconTileSize.height <= 36, "Launcher icon marks should remain compact.");
       assert(await nav.locator("svg").count() >= apps.length);
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), "No horizontal overflow");
       const launcherTop = await nav.evaluate(el => el.getBoundingClientRect().top);

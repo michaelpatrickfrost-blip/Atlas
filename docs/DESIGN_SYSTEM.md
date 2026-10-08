@@ -44,8 +44,9 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
 
 ## Shell (`src/components/shell/`)
 
-- **No sidebar.** After sign-in, Home leads with a responsive grid of labelled
-  app icons, softly coloured and grouped by area; attention/goals follow below.
+- **No sidebar.** After sign-in, Home leads with a compact, consistently
+  aligned grid of labelled app links. Small icons use a restrained brand-blue
+  treatment and are grouped by area; attention/goals follow below.
   `AppDirectory` uses `getNavigableModules` for both the icon launcher and compact
   topbar list. Areas in `src/core/modules/areas.ts` are presentation only; an
   unlisted app falls under More. Company and Atlas staff logins both land on Home;

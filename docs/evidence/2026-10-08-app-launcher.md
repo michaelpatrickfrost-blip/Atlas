@@ -5,8 +5,8 @@ login. This supersedes the older list-only and operational-first Home preference
 
 ## Delivered
 
-Home leads with a responsive grid of labelled Lucide app icons, soft colour,
-keyboard focus and area grouping. Operational attention/goals remain below.
+Home leads with a responsive grid of labelled Lucide app icons, compact blue
+marks, keyboard focus and area grouping. Operational attention/goals remain below.
 Successful company and Atlas staff sign-ins redirect to Home. Existing workspace
 selection and explicit Atlas Admin access remain intact. The same server-filtered
 AppDirectory supplies the compact topbar menu; no entitlement, capability, tenant,
@@ -32,6 +32,14 @@ schema or business-data storage changes were made.
   submission or grant an account. Sign-in redirect is covered by unit tests.
 - Mobile toggle acceptance uses the existing `data-guardian-safe` marker because
   its compact text is hidden. No product behavior was changed for that selector.
+
+## Visual refinement — 8 October 2026
+
+The original larger pastel icon tiles were replaced with compact, consistently
+aligned rows: 36px blue icon marks, 19px glyphs and a responsive three-column
+maximum grid. The compact topbar app menu is unchanged. Candidate and live
+acceptance checks assert the icon and mark dimensions at desktop, tablet and
+phone widths.
 
 Private server evidence: `/home/administrator/atlas-launcher-acceptance-20261008/`.
 Database/file backup prefix:

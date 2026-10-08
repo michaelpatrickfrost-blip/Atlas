@@ -27,8 +27,8 @@ export default async function HomePage() {
         </div>
         <Link href="/profile#assigned" className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700">My work →</Link>
       </header>
-      <section aria-labelledby="launcher-title" className={`${PANEL} p-5 sm:p-7`}>
-        <div className="mb-7">
+      <section aria-labelledby="launcher-title" className={`${PANEL} p-4 sm:p-5`}>
+        <div className="mb-5">
           <h2 id="launcher-title" className="text-lg font-semibold tracking-tight text-[#1d1d1f]">Your apps</h2>
           <p className="mt-1 text-[13px] text-[#6e6e73]">Choose an app to get started.</p>
         </div>

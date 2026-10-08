@@ -70,6 +70,7 @@ startup failures when the database itself is unavailable.
 npm run guardian:audit
 npm run guardian:worker -- --now
 ATLAS_GUARDIAN_COPY_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-atlas-code-copy.ts
+ATLAS_GUARDIAN_TICKET_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-ticket-pages.ts
 node --env-file=.env.local --import tsx scripts/guardian/triage.ts list [page]
 node --env-file=.env.local --import tsx scripts/guardian/triage.ts show <issue-id>
 sudo systemctl status atlas-guardian.timer atlas-guardian.service
@@ -87,6 +88,15 @@ grants/codes. Synthetic audit evidence remains. No code, password, token or cust
 content is logged. `--reproduce` verifies the pre-fix rejection and missing feedback;
 the normal mode verifies manual-copy recovery and a successful retry without
 consuming the credential. It is an explicit fixture test, never part of the crawler.
+
+The Tickets regression also requires a central backup and the server release lock.
+It creates only its own Test company/profile and uses real queue/ticket forms. Two
+browser tabs prove stale-edit rejection preserves both the entered draft and the
+newer saved record, followed by a successful retry. Ticket creation, detail/list
+links, following and replies assert the matching central state. Cleanup suspends
+that exact company, revokes every fixture session and retains central audit/history;
+no credentials or business content are saved locally. `--reproduce` verifies the
+old draft loss. Shared save forms now reset only after successful completion.
 
 ## Repair agent
 

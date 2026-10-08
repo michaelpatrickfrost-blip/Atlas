@@ -875,6 +875,10 @@ HTTP success, control inventory and source heuristics are not blanket workflow
 verification. Never hide a broken page or auto-close a report after an unrelated
 passing check. See docs/GUARDIAN.md.
 
+Shared save forms retain unsaved fields when validation, version or network checks
+reject a request. Only a successful save resets the form. The visible error and
+newer saved record stay intact, so users can recover without re-entering their work.
+
 ## 7 October 2026 — Cases, Tickets and Queries keep separate ownership
 
 Customer cases stay in `ServiceCase`; new internal tickets and cross-team queries share Core `ServiceWorkItem` with an explicit kind and origin. Historical departmental tickets remain readable dependencies. This avoids duplicating customer identity and preserves historical records while sharing clocks, queues, approvals and evidence. Query completion records safe parent history without transferring the customer case or copying private receiving-team content.

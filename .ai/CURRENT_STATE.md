@@ -1,5 +1,36 @@
 # Atlas current state
 
+## Guardian rejected-save draft retention — 8 October 2026
+
+- A real two-tab `/tickets/queues` reproduction confirmed that rejecting a stale
+  Save queue correctly preserves the newer database record but resets the user's
+  entered queue name. The new component regression failed before the repair.
+- `src/components/ui/action-form.tsx` now captures the actual submitter's FormData
+  before disabling controls, retains draft fields on error/pending, and resets only
+  after success. Existing transitions, redirect handling and business/capability/
+  version checks remain. The native method stays POST to keep fields out of URLs.
+- New `tests/action-form.test.tsx` covers rejected/pending/success states and named
+  submitter values. Focused tests: 34 passed; full compatible suite: 715 passed,
+  22 integration skips. Production build, focused lint and separate post-build
+  TypeScript pass. An earlier concurrent type check encountered duplicate generated
+  `.next/types/* 2.ts` declarations; the completed build replaced its generated tree
+  and the sequential check passed. Deployment and post-fix live verification remain
+  pending at this checkpoint.
+- `scripts/guardian/check-ticket-pages.ts` reproduced the live failure using only
+  its own Test tenant/profile, explicit Tickets grants and actual forms. Queue
+  creation renders and saves the correct company/member. Fixture companies are
+  suspended and sessions revoked after every attempt; central audit/history retained.
+  The harness's XPath and mutable-heading locators were corrected before the
+  successful reproduction. Backup:
+  `/home/administrator/backups/atlas-pre-guardian-ticket-test-20261008-114807.dump`
+  plus private Service evidence. Normal mode additionally verifies queue retry,
+  ticket create/detail/list links, following and reply state.
+- Read all 45 active queue summaries across both CLI pages and full target briefs.
+  Worker/timer and public login are healthy. Three new Manufacturing errors match
+  exact private log digests for deliberate shortage, overproduction and changed-
+  payload replay checks in `scripts/check-atlas-unification.ts`; guards must remain.
+  Historical Tickets null-page reports await this run's independent full proof.
+
 ## Inventory context before controls — 8 October 2026
 
 - Inventory product pages show ProductView before locations, forecast and production

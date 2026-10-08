@@ -24,9 +24,15 @@ RELEASES="${ROOT}-releases"; CURRENT="${ROOT}-current"; CANDIDATE="$RELEASES/$RE
 sudo install -d -o administrator -g administrator -m 755 "$RELEASES" "${ROOT}-maintenance-backups"
 mkdir -p "$HOME/backups"
 set -a; . "$ROOT/.env.local"; set +a
-# Private file evidence must remain outside all release directories and checkout.
+# Preserve the existing absolute private evidence location. A dedicated shared
+# directory in the control checkout is persistent; no release copies/moves it.
 if [[ -n "${ATLAS_SERVICE_FILE_ROOT:-}" ]]; then
-  case "$(realpath "$ATLAS_SERVICE_FILE_ROOT")/" in "$ROOT/"*|"$RELEASES/"*) echo 'Private storage must be external to releases.' >&2; exit 1;; esac
+  [[ "$ATLAS_SERVICE_FILE_ROOT" = /* ]] || { echo 'Private storage must use an absolute path.' >&2; exit 1; }
+  case "$(realpath "$ATLAS_SERVICE_FILE_ROOT")/" in
+    "$RELEASES/"*) echo 'Private storage must be external to releases.' >&2; exit 1;;
+    "$ROOT/shared/"*) ;;
+    "$ROOT/"*) echo 'Private storage must use the dedicated shared directory or an external path.' >&2; exit 1;;
+  esac
 fi
 BACKUP="$HOME/backups/atlas-pre-deploy-$(date +%Y%m%d-%H%M%S)"
 pg_dump "${DATABASE_URL%%\?*}" -Fc -f "$BACKUP.dump"

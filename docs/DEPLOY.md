@@ -26,7 +26,8 @@ The server backs up PostgreSQL and configured private Service files into
 Each release has its own dependencies, generated client, build and retained old
 hashed browser assets. Runtime files are root-owned; only disposable `.next/cache`
 is writable. `.env.local` links to the existing central configuration; private
-Service evidence must remain outside the checkout/releases. No business data is
+Service evidence stays at its existing absolute path (`/opt/atlas/shared/service-files`
+on this VPS) or another external persistent path, always outside releases. No business data is
 copied into a release. Existing backups and previous releases are retained.
 
 Before first activation, prepare and test the actual candidate and rollback:

@@ -16,7 +16,9 @@
   production build, strict TypeScript, scoped lint and 19 focused checks pass.
 - First prepare stopped before backup/build: /opt parent requires privilege for
   release folders and pointers. Corrected only those operations with sudo; live
-  runtime unchanged. Strict combined TypeScript passed.
+  runtime unchanged. Strict combined TypeScript passed. The next prepare caught
+  the existing absolute private evidence path under /opt/atlas/shared; corrected
+  the guard to preserve that dedicated central directory, never copy or move it.
 - Staging, activation, live continuity/connected fixture and shared-project
   integration remain pending; no FIXED claim or live architecture change yet.
 

@@ -3995,3 +3995,31 @@ cleanup also stopped and will be completed after the correction is deployed.
 No existing user company was selected or deleted. Final live recheck pending.
 
 Live recheck isolated Prisma 7 adapter SQLSTATE under meta.driverAdapterError.cause.originalCode. Dependency classification now supports this actual production shape as well as legacy meta.code; both FK codes have regression coverage for both shapes. Further live acceptance pending.
+
+## 8 October 2026 — Bulk Test cleanup delivered and live-verified
+
+Product release d4efeeb is live at https://atlassystem.online/atlas/cleanup.
+Database/evidence backup: atlas-pre-deploy-20261008-145058.dump and matching
+-service-files.tar.gz. Migration 20261008160000_company_cleanup applied; public
+login healthy (200). PostgreSQL dependency retries now handle Prisma 7 adapter
+originalCode as well as legacy meta.code, narrowly for 23503/23001.
+
+Final validation: 37 focused tests, scoped ESLint, Prisma generation/validation,
+TypeScript and local/server production builds passed. Live cleanup acceptance:
+16 checks passed, covering password/confirmation/permissions/stale selection,
+ordinary-company finance protection, atomic two-company sweep, posted journals/
+invoices/verified bank history/timeline removal, test-only employee/login removal,
+staff/shared identity and unselected company preservation, physical file removal,
+surviving audit/history and harmless completed-file retry. All synthetic fixtures,
+including the initial interrupted Finance fixture, were removed. The existing
+33-check live Admin suite also passed again (employee creation, password/duplicate
+feedback, export/documents, access, archive and restore); its fixtures removed.
+
+Browser verified search/select-all/review with two disposable preview companies;
+no irreversible UI submission was made. Preview identity signed out and fixtures
+removed. Review screenshot: outputs/atlas-cleanup-review.jpg in this task workspace.
+Task source/tests/docs/memory merged to shared editable master without replacing
+concurrent work. Updated Admin acceptance finally block removes its own durable
+helper cleanup records. No existing user company/data selected or deleted. Ordinary
+companies continue to use archive/export; bulk permanent cleanup is Test-only.
+This supersedes the pending checkpoints above; no delivery blocker remains.

@@ -115,6 +115,9 @@ async function main() {
     await db.membership.deleteMany({ where: { userId: { in: userIds }, organisation: { kind: "INTERNAL" } } });
     await db.auditEntry.deleteMany({ where: { actorUserId: { in: userIds }, organisation: { kind: "INTERNAL" } } });
     for (const id of companyIds.reverse()) await wipeCompany(id);
+    const cleanupRuns = await db.companyCleanupRun.findMany({ where: { actorUserId: "acceptance-cleanup" }, select: { id: true, companies: true } });
+    const cleanupRunIds = cleanupRuns.filter(run => Array.isArray(run.companies) && run.companies.some(company => company && typeof company === "object" && !Array.isArray(company) && typeof company.id === "string" && companyIds.includes(company.id))).map(run => run.id);
+    await db.companyCleanupRun.deleteMany({ where: { id: { in: cleanupRunIds } } });
     await db.role.deleteMany({ where: { id: { in: roleIds } } });
     await db.user.deleteMany({ where: { id: { in: userIds } } });
     await db.$disconnect(); console.log("Disposable acceptance records removed.");

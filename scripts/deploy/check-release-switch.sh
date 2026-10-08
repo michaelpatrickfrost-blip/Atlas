@@ -45,7 +45,6 @@ write_unit '/usr/bin/npm run start -- --hostname 127.0.0.1 --port 3011' mixed
 cat > "$RUN/Caddyfile" <<'CADDY'
 {
   admin off
-  persist_config off
 }
 http://127.0.0.1:3010 {
   reverse_proxy 127.0.0.1:3011 {

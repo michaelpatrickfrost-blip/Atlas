@@ -31,7 +31,10 @@
   transition and direct-Node rollback. Added safe probe phase/count diagnostics.
 - Global lock tested under Guardian PrivateTmp: busy worker exits 75, Result=success.
   Full stable sweep running. Revised staging and a fresh live continuity release,
-  report triage and shared-project integration remain pending.
+  report triage and shared-project integration remain pending. Revised harness
+  caught unsupported Caddy global persist_config before starting any service or
+  browser; removed it. Existing per-run XDG config/data already isolates autosave.
+  Final strict TypeScript and six focused filesystem/health regressions pass.
 
 ## 8 October 2026 — Danielle staff setup and Michael-only provisioning verified
 

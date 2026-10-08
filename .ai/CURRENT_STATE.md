@@ -22,33 +22,47 @@
 ## Guardian rejected-save draft retention — 8 October 2026
 
 - A real two-tab `/tickets/queues` reproduction confirmed that rejecting a stale
-  Save queue correctly preserves the newer database record but resets the user's
-  entered queue name. The new component regression failed before the repair.
-- `src/components/ui/action-form.tsx` now captures the actual submitter's FormData
-  before disabling controls, retains draft fields on error/pending, and resets only
-  after success. Existing transitions, redirect handling and business/capability/
-  version checks remain. The native method stays POST to keep fields out of URLs.
-- New `tests/action-form.test.tsx` covers rejected/pending/success states and named
-  submitter values. Focused tests: 34 passed; full compatible suite: 715 passed,
-  22 integration skips. Production build, focused lint and separate post-build
-  TypeScript pass. An earlier concurrent type check encountered duplicate generated
-  `.next/types/* 2.ts` declarations; the completed build replaced its generated tree
-  and the sequential check passed. Deployment and post-fix live verification remain
-  pending at this checkpoint.
-- `scripts/guardian/check-ticket-pages.ts` reproduced the live failure using only
-  its own Test tenant/profile, explicit Tickets grants and actual forms. Queue
-  creation renders and saves the correct company/member. Fixture companies are
-  suspended and sessions revoked after every attempt; central audit/history retained.
-  The harness's XPath and mutable-heading locators were corrected before the
-  successful reproduction. Backup:
-  `/home/administrator/backups/atlas-pre-guardian-ticket-test-20261008-114807.dump`
-  plus private Service evidence. Normal mode additionally verifies queue retry,
-  ticket create/detail/list links, following and reply state.
-- Read all 45 active queue summaries across both CLI pages and full target briefs.
-  Worker/timer and public login are healthy. Three new Manufacturing errors match
-  exact private log digests for deliberate shortage, overproduction and changed-
-  payload replay checks in `scripts/check-atlas-unification.ts`; guards must remain.
-  Historical Tickets null-page reports await this run's independent full proof.
+  Save queue protects the newer database record but discards the entered draft.
+  The new component regression failed before the repair. Application `3db6f4c`
+  is deployed: shared `src/components/ui/action-form.tsx` snapshots FormData and
+  submitter before disabling controls, retains rejected/pending fields, resets
+  only successful saves and keeps POST. Existing permissions/version guards remain.
+- Validation: 34 focused tests; full compatible suite 715 passed / 22 integration
+  skips (115 files passed / 3 skipped). Production build, focused lint and separate
+  post-build TypeScript passed. An initial concurrent type check encountered duplicate
+  generated `.next/types/* 2.ts` declarations; the completed build replaced the
+  generated tree and sequential TypeScript passed. No source/customer files removed.
+- Server release took database/private-evidence backups:
+  `/home/administrator/backups/atlas-pre-deploy-20261008-115647.dump` and matching
+  `-service-files.tar.gz`. Build/restart and HTTPS login passed; 96 migrations,
+  none pending. Earlier pre-fixture backup `atlas-pre-guardian-ticket-test-20261008-114807`
+  remains. Timer restored; heartbeat on `3db6f4c` and service exit status healthy.
+- Live `scripts/guardian/check-ticket-pages.ts` passed on deployed `3db6f4c`:
+  queues render; actual creation saves same-company queue/creator membership;
+  two-tab rejection keeps the draft and newer central name; refresh/retry saves;
+  Create ticket opens its formerly blank detail route with correct queue/requester/
+  deadlines; following, exact reply, list/back/detail links persist correct state,
+  zero browser errors. Every exact disposable Test company was suspended and its
+  sessions revoked; history/audit retained. Initial harness XPath/mutable-heading
+  selectors were corrected before the successful pre-fix reproduction.
+- FIXED with original live proof: new draft-loss `cmuzhb3jm000016d5772a0h57`, historical
+  queue null-page `cmuxrrto60003sxd5l2iy32bl`, and detail null-page
+  `cmuxrrtnk0002sxd51b1kpakv`. Four exact expected guard diagnostics classified
+  IGNORED through staff Save progress; current downloaded AI briefs verified.
+  Three Manufacturing digests match deliberate shortage/overreport/changed-replay
+  acceptance and record rollback assertions. Queue digest matches deliberate stale
+  edit; actual draft-loss is independently fixed. No guard broadly suppressed.
+- Read every active queue page, initially 45 reports; three fresh render/browser
+  cases retain NEEDS_AI with exact journal category, source, blocker and next action:
+  disabled Tickets application, missing Tickets read capability, and closed S&OP
+  stream. Enabled Tickets proof does not clear denied profiles; original request/
+  visible recovery is unproved. 43 active NEEDS_AI reports remain at this checkpoint.
+  Next rotation: disposable disabled/denied Tickets restriction UI and original S&OP
+  request correlation. Deployment non-atomicity and generic older reports remain open.
+- Owned code/docs/memory integrated into the canonical repo by base comparison and
+  section-only memory updates, preserving concurrent work. Evidence:
+  `docs/evidence/2026-10-08-guardian-ticket-pages.md`. Coverage is the tested workflow;
+  other controls, role combinations and write paths are not blanket verified.
 
 ## Inventory context before controls — 8 October 2026
 

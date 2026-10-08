@@ -41,6 +41,22 @@ maximum grid. The compact topbar app menu is unchanged. Candidate and live
 acceptance checks assert the icon and mark dimensions at desktop, tablet and
 phone widths.
 
+### Refinement delivery
+
+The refinement passed seven focused login/entitlement tests, scoped ESLint,
+strict TypeScript, production build and whitespace checks. VPS candidate
+staging passed; 30 authorised app links/icons, blocked writes and responsive
+dimensions were verified. The live browser check also passed all 30 app links at
+desktop/tablet/phone sizes, plus root-to-Home, My work and Apps navigation with
+zero browser/chunk errors and no business writes. Desktop and phone layouts were
+visually reviewed.
+
+Deployed immutable runtime `f89b48aedb919267c129d5d52afe07a346f370c0`.
+Public release health returned the exact SHA; `/login` returned HTTP 200.
+Previous runtime `1a031c9cf48349edb297d1faedf0829a67118bba` and private
+pre-deployment backup `atlas-pre-deploy-20261008-210443` were retained. No
+schema migration was needed.
+
 Private server evidence: `/home/administrator/atlas-launcher-acceptance-20261008/`.
 Database/file backup prefix:
 `/home/administrator/backups/atlas-pre-deploy-20261008-171940`.

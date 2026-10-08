@@ -1,6 +1,6 @@
 # Atlas current state
 
-## 8 October 2026 — Compact app launcher visual refinement (verification pending)
+## 8 October 2026 — Compact app launcher visual refinement deployed
 
 - Replaced large multi-colour app tiles with smaller, consistent blue icon marks
   and left-aligned responsive app rows. Tightened the launcher card spacing; app
@@ -9,7 +9,15 @@
   `src/app/(app)/home/page.tsx`, `scripts/guardian/check-app-launcher.ts`,
   `docs/DESIGN_SYSTEM.md` and `docs/evidence/2026-10-08-app-launcher.md`;
   documented the visual direction in `.ai/DECISIONS.md`.
-- Focused verification, visual staging and live deployment are pending.
+- Seven focused login/entitlement tests passed; scoped ESLint, strict TypeScript,
+  production build and whitespace checks passed. Candidate staging verified 30
+  app links/icons across desktop/tablet/phone, compact dimensions, no layout or
+  browser/chunk errors, and blocked all writes. Live read-only acceptance passed
+  the same checks; desktop and phone screenshots reviewed. Deployed
+  `f89b48aedb919267c129d5d52afe07a346f370c0`, exact SHA confirmed by public
+  health, login HTTP 200. Previous runtime
+  `1a031c9cf48349edb297d1faedf0829a67118bba` retained; backup
+  `atlas-pre-deploy-20261008-210443` retained. No schema changes.
 
 ## 8 October 2026 — Atlas staff app access deployed and verified
 

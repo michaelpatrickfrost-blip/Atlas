@@ -21,9 +21,23 @@ export async function caseRecord(session:Session,id:string) {
   assertCapability(session,'service.case.read'); await requireService(session);
   return db.serviceCase.findFirst({where:{AND:[serviceCaseScope(session),{id}]},include:{entries:{where:{organisationId:session.organisationId},orderBy:{createdAt:'asc'},take:500},tickets:{where:serviceTicketScope(session),include:{queue:true},orderBy:{dueAt:'asc'}},links:{where:{organisationId:session.organisationId}}}});
 }
-export async function ticketList(session:Session) {
+export async function ticketList(session:Session, filter:{q?:string;status?:string;mine?:boolean;caseId?:string}={}) {
   assertCapability(session,'service.ticket.read'); await requireService(session);
-  return db.serviceTicket.findMany({where:serviceTicketScope(session),include:{queue:true},orderBy:[{dueAt:'asc'}],take:100});
+  return db.serviceTicket.findMany({where:{AND:[serviceTicketScope(session),{
+    ...(filter.status?{status:filter.status}:{}), ...(filter.mine?{ownerUserId:session.userId}:{}),
+    ...(filter.caseId?{caseId:filter.caseId}:{}),
+    ...(filter.q?{OR:[{number:{contains:filter.q,mode:'insensitive'}},{subject:{contains:filter.q,mode:'insensitive'}}]}:{}),
+  }]},select:{id:true,number:true,subject:true,status:true,dueAt:true,ownerUserId:true,queue:{select:{name:true}},case:{select:{number:true}}},orderBy:[{dueAt:'asc'},{id:'asc'}],take:100});
+}
+export async function ticketRecord(session:Session,id:string) {
+  assertCapability(session,'service.ticket.read'); await requireService(session);
+  const ticket=await db.serviceTicket.findFirst({where:{AND:[serviceTicketScope(session),{id}]},select:{
+    id:true,caseId:true,number:true,subject:true,description:true,status:true,dueAt:true,ownerUserId:true,
+    outcome:true,customerSafeSummary:true,completedAt:true,version:true,queue:{select:{name:true}},case:{select:{number:true}},
+  }});
+  if(!ticket) return null;
+  const canOpenCase=session.capabilities.has('service.case.read') && !!await db.serviceCase.findFirst({where:{AND:[serviceCaseScope(session),{id:ticket.caseId}]},select:{id:true}});
+  return {...ticket,canOpenCase};
 }
 export async function serviceQueues(session:Session) {
   assertCapability(session,'service.ticket.read'); await requireService(session);

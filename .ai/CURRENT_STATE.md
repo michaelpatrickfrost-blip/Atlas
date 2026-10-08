@@ -1,5 +1,24 @@
 # Atlas current state
 
+## Customer Service historical department work — 8 October 2026
+
+- Confirmed on the live server: `/service/tickets` redirected to the newer Tickets
+  app, hiding original `ServiceTicket` records and requiring unrelated permissions.
+- Restored the historical list (search, status, assigned-to-me and case filters)
+  and individual ticket pages. Responders can take ownership, save progress, add
+  findings/customer-safe summary and complete work with the existing guarded action.
+  Case Linked work now opens the specific historical ticket. Completion preserves
+  case ownership/status; completed/cancelled tickets are read-only.
+- Queries retain tenant, restricted queue/case and capability checks. Department-only
+  readers receive ticket details and a case reference, never parent conversation;
+  case links require independent case access. No schema or data migration.
+- Paths: `src/app/(app)/service/tickets/`, case Linked work, Service queries/commands,
+  `tests/service-history-*.test.*`, `scripts/check-service-history.ts`.
+- Checks: pre-fix live browser reproduction passed; full Vitest 721 passed / 22
+  integration skips; strict TypeScript, production build, changed-file lint and diff
+  check passed. Deployment and post-deployment workflow verification pending.
+  Next: deploy and record live outcome. Broader Customer Service remains outside this fix.
+
 ## Guardian rejected-save draft retention — 8 October 2026
 
 - A real two-tab `/tickets/queues` reproduction confirmed that rejecting a stale

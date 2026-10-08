@@ -129,7 +129,7 @@ export async function updateDepartmentTicket(form:FormData) {
     const c=await tx.serviceCase.findFirstOrThrow({where:{id:t.caseId,organisationId:session.organisationId}});
     await tx.serviceCase.update({where:{id:c.id,organisationId:session.organisationId},data:{version:{increment:1}}});
     await event(tx,session,c,status==='COMPLETE'?'DEPARTMENT_RESPONSE_READY':'DEPARTMENT_TICKET_UPDATED',`${t.number}: ${t.status} → ${status}. ${outcome}${summary?`\nCustomer-safe summary: ${summary}`:''}`,t.id);return t.caseId;
-  },{isolationLevel:'Serializable'});revalidatePath('/service','layout');revalidatePath(`/service/cases/${caseId}`);
+  },{isolationLevel:'Serializable'});revalidatePath('/service','layout');revalidatePath(`/service/cases/${caseId}`);revalidatePath('/service/tickets');revalidatePath(`/service/tickets/${id}`);
 }
 export async function createQueue(form:FormData) {
   const session=await requireSession();

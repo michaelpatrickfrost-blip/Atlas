@@ -6,6 +6,18 @@ Source: [123-section implementation specification](../plans/CUSTOMER_SERVICE_TIC
 
 Customer cases (`ServiceCase`, new `CS` references) belong to Customer Service and the canonical Party. Internal tickets and cross-team queries share `ServiceWorkItem` with distinct TICKET / QUERY kinds and `TKT` / `QRY` references. A query requires an accessible originating case or work item. Historical `CASE` cases and departmental `ServiceTicket` records remain intact; they continue to block resolution while unfinished. Team work never changes the case owner or resolves its parent automatically.
 
+Historical department work is available at `/service/tickets`, with search, status,
+assigned-to-me and case filters. Each preserved `ServiceTicket` has its own detail
+route (`/service/tickets/[ticketId]`); case Linked work opens that exact record.
+These pages use `service.ticket.read/update` and the original restricted queue/case
+scopes, independently of newer Tickets permissions. Department-only readers see
+ticket context and the case reference without the parent conversation. A case link
+is shown only after independent case-access verification. Existing version-checked
+updates support ownership, progress, outcome and customer-safe summary; completion
+returns findings to the case owner, and completed/cancelled work is read-only.
+No historical records are converted into newer work items.
+
+
 Core owns reusable work access, clocks, numbering, history, evidence, approval connections and request contracts in `src/core/service-work/`. Modules expose typed credit, operation, survey and Sales projection providers through the registry. Core imports no module implementation. Canonical Sales, Finance, Logistics, Quality, Inventory and CSAT records remain authoritative.
 
 ## Delivered behavior

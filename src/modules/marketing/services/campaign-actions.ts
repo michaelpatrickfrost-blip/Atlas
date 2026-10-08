@@ -12,11 +12,13 @@ import { requireMarketing } from "./queries";
 import { CAMPAIGN_TYPES } from "../domain/policy";
 import { ACTIVITY_KINDS, ACTIVITY_STATUSES, AD_PROVIDERS, BUDGET_CATEGORIES, CAMPAIGN_CHANNELS, channelCategory, launchPlan } from "../domain/campaign";
 
+class CampaignInputError extends Error {}
+const checkedDetails=(form:FormData)=>{try{return parseCampaignDetails(form);}catch(error){throw new CampaignInputError(error instanceof Error?error.message:"Check the campaign details.");}};
 const text = (form: FormData, name: string, max = 300) => String(form.get(name) ?? "").trim().slice(0, max);
 const long = (form: FormData, name: string) => text(form, name, 5000);
-const pounds = (form: FormData, name: string) => {const value=text(form,name,30);return value?moneyMinor(value):0;};
-const whole = (form: FormData, name: string) => { const value = text(form, name, 12); if (!value) return 0; const number = Number(value); if (!Number.isInteger(number) || number < 0 || number > 100_000_000) throw new Error("Enter a whole number, zero or more."); return number; };
-const date = (form: FormData, name: string) => { const value = text(form, name, 10); if (!value) return null; const parsed = new Date(`${value}T00:00:00Z`); if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0,10)!==value) throw new Error("Enter a valid date."); return parsed; };
+const pounds = (form: FormData, name: string) => {const value=text(form,name,30);try{return value?moneyMinor(value):0;}catch(error){throw new CampaignInputError(error instanceof Error?error.message:"Check the amount.");}};
+const whole = (form: FormData, name: string) => { const value = text(form, name, 12); if (!value) return 0; const number = Number(value); if (!Number.isInteger(number) || number < 0 || number > 100_000_000) throw new CampaignInputError("Enter a whole number, zero or more."); return number; };
+const date = (form: FormData, name: string) => { const value = text(form, name, 10); if (!value) return null; const parsed = new Date(`${value}T00:00:00Z`); if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0,10)!==value) throw new CampaignInputError("Enter a valid date."); return parsed; };
 const pick = <T extends string>(value: string, options: readonly T[], fallback: T) => (options.includes(value as T) ? (value as T) : fallback);
 
 async function manager(capability = "marketing.campaign.manage") {
@@ -27,7 +29,7 @@ async function manager(capability = "marketing.campaign.manage") {
 }
 async function owned(session: Session, id: string) {
   const campaign = await db.marketingCampaign.findFirst({ where: { id, organisationId: session.organisationId } });
-  if (!campaign) throw new Error("This campaign no longer exists.");
+  if (!campaign) throw new CampaignInputError("This campaign no longer exists.");
   return campaign;
 }
 const refresh = (id: string) => { revalidatePath("/marketing", "layout"); revalidatePath(`/marketing/campaigns/${id}`); };
@@ -36,16 +38,16 @@ const audit = (session: Session, action: string, entityId: string, after: object
 async function briefFields(session: Session, form: FormData) {
   const organisationId = session.organisationId;
   const name = text(form, "name", 250);
-  if (!name) throw new Error("Give the campaign a name.");
+  if (!name) throw new CampaignInputError("Give the campaign a name.");
   const startAt = date(form, "startAt"), endAt = date(form, "endAt");
-  if (startAt && endAt && endAt < startAt) throw new Error("The end date must be after the start date.");
+  if (startAt && endAt && endAt < startAt) throw new CampaignInputError("The end date must be after the start date.");
   const audienceId = text(form, "audienceId", 60) || null, productId = text(form, "productId", 60) || null, parentId = text(form, "parentId", 60) || null, ownerUserId = text(form, "ownerUserId", 60);
-  if (audienceId && !(await db.marketingAudience.findFirst({ where: { id: audienceId, organisationId }, select: { id: true } }))) throw new Error("Choose an audience from your list.");
-  if (productId && !(await db.product.findFirst({ where: { id: productId, organisationId }, select: { id: true } }))) throw new Error("Choose a product from the catalogue.");
-  if (parentId && !(await db.marketingCampaign.findFirst({ where: { id: parentId, organisationId }, select: { id: true } }))) throw new Error("Choose a programme from your campaigns.");
-  if (ownerUserId && !(await db.membership.findFirst({ where: { organisationId, userId: ownerUserId, active:true }, select: { id: true } }))) throw new Error("Choose an owner from your team.");
+  if (audienceId && !(await db.marketingAudience.findFirst({ where: { id: audienceId, organisationId }, select: { id: true } }))) throw new CampaignInputError("Choose an audience from your list.");
+  if (productId && !(await db.product.findFirst({ where: { id: productId, organisationId }, select: { id: true } }))) throw new CampaignInputError("Choose a product from the catalogue.");
+  if (parentId && !(await db.marketingCampaign.findFirst({ where: { id: parentId, organisationId }, select: { id: true } }))) throw new CampaignInputError("Choose a programme from your campaigns.");
+  if (ownerUserId && !(await db.membership.findFirst({ where: { organisationId, userId: ownerUserId, active:true }, select: { id: true } }))) throw new CampaignInputError("Choose an owner from your team.");
   const currency = text(form, "currency", 3).toUpperCase() || "GBP";
-  if (!/^[A-Z]{3}$/.test(currency)) throw new Error("Currency is a three-letter code, for example GBP.");
+  if (!/^[A-Z]{3}$/.test(currency)) throw new CampaignInputError("Currency is a three-letter code, for example GBP.");
   return {
     name, description: long(form, "description"), type: pick(text(form, "type", 40), CAMPAIGN_TYPES, "CUSTOM"), startAt, endAt, audienceId, productId, parentId, currency,
     objective: long(form, "objective"), businessGoal: long(form, "businessGoal"), targetMarket: long(form, "targetMarket"), persona: long(form, "persona"), positioning: long(form, "positioning"), message: long(form, "message"), offer: long(form, "offer"), cta: text(form, "cta", 300),
@@ -57,19 +59,22 @@ async function briefFields(session: Session, form: FormData) {
   };
 }
 
-export async function createCampaignAction(form: FormData) {
-  const session = await requireSession();
+export async function createCampaignAction(form:FormData) {
+  const session=await requireSession();
   assertCapability(session,"marketing.campaign.create");
+  try {return await createCampaignDraft(session,form);}catch(error){if(error instanceof CampaignInputError)return {error:error.message};throw error;}
+}
+async function createCampaignDraft(session:Session,form: FormData) {
   await requireMarketing(session);
   const data = await briefFields(session, form);
-  const details=form.get('briefWorkspace')==='1'?parseCampaignDetails(form):null;
+  const details=form.get('briefWorkspace')==='1'?checkedDetails(form):null;
   const typed = text(form, "code", 50).toUpperCase().replace(/[^A-Z0-9-]+/g, "-").replace(/^-+|-+$/g, "");
   const split = data.channels.map(channel=>({channel,plannedMinor:pounds(form,`split:${channel}`)})).filter(row=>row.plannedMinor>0);
-  if(split.reduce((total,row)=>total+row.plannedMinor,0)>data.budgetMinor)throw new Error('Channel allocations exceed the campaign budget.');
+  if(split.reduce((total,row)=>total+row.plannedMinor,0)>data.budgetMinor)throw new CampaignInputError('Channel allocations exceed the campaign budget.');
   const campaign=await db.$transaction(async tx=>{
     const count=await tx.marketingCampaign.count({where:{organisationId:session.organisationId}});
     const code=typed||`CMP-${String(count+1).padStart(4,"0")}`;
-    if(await tx.marketingCampaign.findFirst({where:{organisationId:session.organisationId,code},select:{id:true}}))throw new Error(`The code ${code} is already used by another campaign.`);
+    if(await tx.marketingCampaign.findFirst({where:{organisationId:session.organisationId,code},select:{id:true}}))throw new CampaignInputError(`The code ${code} is already used by another campaign.`);
     const row=await tx.marketingCampaign.create({data:{...data,...(details?{brief:mergeCampaignDetails({},details) as Prisma.InputJsonValue}:{}),ownerUserId:data.ownerUserId??session.userId,organisationId:session.organisationId,code,utmCampaign:data.utmCampaign||code.toLowerCase()}});
     const month=data.startAt?.toISOString().slice(0,7)??'';
     if(split.length)await tx.marketingBudgetLine.createMany({data:split.map(line=>({organisationId:session.organisationId,campaignId:row.id,category:channelCategory(line.channel),label:line.channel,month,plannedMinor:line.plannedMinor,forecastMinor:line.plannedMinor}))});
@@ -81,19 +86,22 @@ export async function createCampaignAction(form: FormData) {
   redirect(`/marketing/campaigns/${campaign.id}`);
 }
 
-export async function saveCampaignBriefAction(form: FormData) {
-  const session = await requireSession();
+export async function saveCampaignBriefAction(form:FormData) {
+  const session=await requireSession();
   assertCapability(session,"marketing.campaign.manage");
+  try {return await saveCampaignBrief(session,form);}catch(error){if(error instanceof CampaignInputError)return {error:error.message};throw error;}
+}
+async function saveCampaignBrief(session:Session,form: FormData) {
   await requireMarketing(session);
   const campaign=await owned(session,text(form,"campaignId",60));
   const data=await briefFields(session,form);
-  if(data.parentId===campaign.id)throw new Error('A campaign cannot be part of itself.');
+  if(data.parentId===campaign.id)throw new CampaignInputError('A campaign cannot be part of itself.');
   const version=Number(form.get('version'));
-  if(!Number.isSafeInteger(version)||version<1)throw new Error('Refresh the campaign before saving.');
-  const details=form.get('briefWorkspace')==='1'?parseCampaignDetails(form):null;
+  if(!Number.isSafeInteger(version)||version<1)throw new CampaignInputError('Refresh the campaign before saving.');
+  const details=form.get('briefWorkspace')==='1'?checkedDetails(form):null;
   await db.$transaction(async tx=>{
     const changed=await tx.marketingCampaign.updateMany({where:{id:campaign.id,organisationId:session.organisationId,version},data:{...data,...(details?{brief:mergeCampaignDetails(campaign.brief,details) as Prisma.InputJsonValue}:{}),version:{increment:1}}});
-    if(changed.count!==1)throw new Error('This campaign changed. Refresh before saving; your entered details are still here.');
+    if(changed.count!==1)throw new CampaignInputError('This campaign changed. Refresh before saving; your entered details are still here.');
     await audit(session,"campaign.brief_saved",campaign.id,{name:data.name},tx);
   });
   refresh(campaign.id);

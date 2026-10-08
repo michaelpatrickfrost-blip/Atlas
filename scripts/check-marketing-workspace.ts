@@ -26,7 +26,7 @@ async function main(){
   const workerCookie=await login(worker.email),observerCookie=await login(observer.email),foreignCookie=await login(foreign.email);
   const browser=await chromium.launch({args:['--no-sandbox'],...(process.env.ATLAS_CHROMIUM_PATH?{executablePath:process.env.ATLAS_CHROMIUM_PATH}:{})});
   try{
-   const context=await browser.newContext({viewport:{width:1440,height:1000}});await context.addCookies([{name:'atlas_session',value:workerCookie.slice(14),url:base,httpOnly:true,secure:true}]);const page=await context.newPage();let errors=0;page.on('pageerror',()=>errors++);
+   const context=await browser.newContext({viewport:{width:1440,height:1000}});await context.addCookies([{name:'atlas_session',value:workerCookie.slice(14),url:base,httpOnly:true,secure:true}]);const page=await context.newPage();let errors=0;page.on('pageerror',error=>{errors++;console.log(`Browser runtime: ${error.message}`);});
    await page.goto(base+'/marketing/campaigns/new',{waitUntil:'domcontentloaded'});
    await page.getByRole('button',{name:/Blank campaign/}).click();
    await page.getByLabel('Campaign name',{exact:true}).fill('Synthetic expanded campaign');await page.getByLabel('Code (optional)',{exact:true}).fill('MK-TEST');await page.getByLabel('Brand',{exact:true}).fill('TEST-BRAND');
@@ -36,7 +36,7 @@ async function main(){
    await page.getByRole('button',{name:'Add custom field',exact:true}).click();await page.getByLabel('Field name 1',{exact:true}).fill('Agency contact');await page.getByLabel('Field value 1',{exact:true}).fill('Synthetic creative team');
    await page.getByRole('button',{name:'Add resource link',exact:true}).click();await page.getByLabel('Resource name 1',{exact:true}).fill('Creative pack');await page.getByLabel('Resource URL 1',{exact:true}).fill('https://example.com/creative');
    await page.locator('form nav').getByRole('button',{name:/Channels and budget$/}).click();await page.getByLabel('Email',{exact:true}).check();await page.getByLabel('Total budget',{exact:true}).fill('120.50');await page.locator('input[name="split:Email"]').fill('121');
-   await page.getByRole('button',{name:'Create now',exact:true}).click();await page.getByRole('alert').filter({hasText:'exceed'}).waitFor();
+   await page.getByRole('button',{name:'Create now',exact:true}).click();await page.getByRole('alert').filter({hasText:'exceed'}).waitFor().catch(async error=>{console.log('Creation diagnostic',JSON.stringify({alerts:await page.getByRole('alert').allTextContents(),url:page.url(),budget:await page.getByLabel('Total budget',{exact:true}).inputValue(),split:await page.locator('input[name="split:Email"]').inputValue()}));throw error;});
    check(await page.getByLabel('Total budget',{exact:true}).inputValue()==='120.50'&&await db.marketingCampaign.count({where:{organisationId:companies[0]}})===0,'Rejected allocation preserves draft and creates no partial campaign');
    await page.locator('input[name="split:Email"]').fill('120.50');await page.getByRole('button',{name:'Create now',exact:true}).click();await page.waitForURL(/\/marketing\/campaigns\/(?!new)[^/]+$/);
    const campaign=await db.marketingCampaign.findFirstOrThrow({where:{organisationId:companies[0],code:'MK-TEST'}});

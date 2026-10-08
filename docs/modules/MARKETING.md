@@ -74,7 +74,8 @@ not upload assets or host public pages. Approval/exclusion notes do not execute 
 Audiences, Content, Messages, Profiles, Consent and Analytics are visible according
 to their existing capabilities. Campaign lead and message reads respect their own
 capabilities. Builder and Marketing action forms preserve rejected input; brief saves
-use optimistic version checks. Exact money/date/allocation validation precedes atomic
+use optimistic version checks and return safe validation messages in production.
+Unexpected database/authentication errors remain protected. Exact money/date/allocation validation precedes atomic
 campaign/budget/launch-plan/audit creation. No delivery provider was selected or enabled.
 Research and remaining scope: [platform comparison](../plans/MARKETING_WORKSPACE_RESEARCH.md).
 

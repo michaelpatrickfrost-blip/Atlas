@@ -22,11 +22,17 @@
 - Paths: Marketing campaign page, manifest, campaign actions/workspace, brief/builder/
   detail/form components, domain campaign-details, Marketing regression tests and
   `scripts/check-marketing-workspace.ts`. No schema migration or delivery provider.
-- Checks: full suite 746 passed / 22 integration skips; production build, separate
+- Checks before first release: full suite 750 passed / 22 integration skips; production build, separate
   strict TypeScript, changed-file lint (including acceptance script) and diff check
-  passed. Test navigation selectors were scoped to the builder navigation after an
-  ambiguous selector failure. Deployment/live acceptance pending. Next: deploy and
-  verify real create/edit/content workflows.
+  passed. First application release `76ecde5` deployed with database/private-file
+  backup `atlas-pre-deploy-20261008-121810`; 96 migrations current, service/login healthy.
+  Live browser validation found production React error 441 instead of expected
+  validation text (draft retained, full acceptance not passed). Added explicit safe
+  validation results for campaign create/brief saves; unexpected/server/auth errors
+  remain protected. Both Marketing clients handle returned errors without resetting
+  drafts or reporting success. Follow-up full suite 750 passed / 22 skips, production
+  build, strict TypeScript, changed-file lint and diff check passed. Redeployment/live
+  acceptance pending. Next: deploy and verify real create/edit/content workflows.
   External sending/publishing and the full 275-section brief remain incomplete.
 
 ## Customer Service historical department work — 8 October 2026

@@ -8,7 +8,7 @@ import { ActionForm } from '@/modules/marketing/components/action-form';
 import { CampaignBuilder } from '@/modules/marketing/components/campaign-builder';
 afterEach(cleanup);
 it('keeps the marketing draft after a rejected save and submits its actual values',async()=>{
- const save=vi.fn().mockRejectedValue(new Error('Campaign changed.'));
+ const save=vi.fn().mockResolvedValue({error:'Campaign changed.'});
  render(<ActionForm action={save} label="Save brief"><label>Team notes<textarea name="notes"/></label></ActionForm>);
  fireEvent.change(screen.getByLabelText('Team notes'),{target:{value:'Keep the agency brief'}});
  fireEvent.submit(screen.getByRole('button',{name:'Save brief'}).closest('form')!);
@@ -17,7 +17,7 @@ it('keeps the marketing draft after a rejected save and submits its actual value
  expect((save.mock.calls[0][0] as FormData).get('notes')).toBe('Keep the agency brief');
 });
 it('keeps a campaign builder draft after a validation rejection',async()=>{
- mocks.create.mockRejectedValue(new Error('Channel allocations exceed budget.'));
+ mocks.create.mockResolvedValue({error:'Channel allocations exceed budget.'});
  render(<CampaignBuilder options={{audiences:[],products:[],members:[],programmes:[]}}/>);
  fireEvent.click(screen.getByRole('button',{name:/Blank campaign/i}));
  fireEvent.change(screen.getByLabelText('Campaign name'),{target:{value:'Autumn campaign'}});

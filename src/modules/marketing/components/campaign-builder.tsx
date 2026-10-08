@@ -58,7 +58,7 @@ export function CampaignBuilder({ options }: { options: BriefOptions }) {
   const submit = (data: FormData) => {
     if (!String(data.get("name") ?? "").trim()) { setStep(1); setError("Give the campaign a name."); return; }
     setError("");
-    start(async () => { try { await createCampaignAction(data); } catch (problem) { if (typeof (problem as { digest?: string })?.digest === "string" && (problem as { digest: string }).digest.startsWith("NEXT_REDIRECT")) throw problem; setError(problem instanceof Error ? problem.message : "The campaign could not be created. Try again."); } });
+    start(async () => { try { const result=await createCampaignAction(data); if(result?.error)setError(result.error); } catch (problem) { if (typeof (problem as { digest?: string })?.digest === "string" && (problem as { digest: string }).digest.startsWith("NEXT_REDIRECT")) throw problem; setError(problem instanceof Error ? problem.message : "The campaign could not be created. Try again."); } });
   };
   const t = template, initial = t ? dates(t.weeks) : { startAt: "", endAt: "" };
   const panel = (id: string) => STEPS[step].id !== id;

@@ -1,5 +1,22 @@
 # Atlas current state
 
+## 8 October 2026 — Michael-only user setup (in progress)
+
+- Added a server-enforced provisioning guard to all five runtime user-creation
+  actions; only Michael’s signed-in Atlas staff account can add staff/company users
+  or a company’s first administrator. Matching creation controls hidden for others.
+- New Atlas staff accept a direct password, preserving existing password policy,
+  hashing, tenant/capability checks and atomic audit. Repeated own-password entry
+  and setup-code redemption removed only for staff creation. Existing-account
+  promotion keeps explicit consent and existing password; other confirmations kept.
+- Updated Atlas Admin/permissions/company-admin guides, product memory and decision.
+  Earlier staff creation acceptance describes the superseded setup-code workflow.
+- Checks so far: production build, 36 focused regressions, full suite (953 pass /
+  22 integration skips), scoped ESLint and whitespace pass. Separate strict typecheck
+  and live deployment, Danielle provisioning/sign-in and denied-creation verification
+  pending. No schema or local business database/cache introduced.
+
+
 ## 8 October 2026 — S&OP guided usability deployed and verified
 
 - Runtime `d3312b4` live at https://atlassystem.online. Researched SAP/Oracle/Kinaxis;

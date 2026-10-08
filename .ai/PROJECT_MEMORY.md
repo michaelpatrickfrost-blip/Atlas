@@ -85,7 +85,9 @@ Each person’s profile at `/profile` is My work: time off, rota, assigned tasks
 Atlas Admin at /atlas replaces the owner console: company setup/profile/settings,
 users, granular access, recovery, separate Atlas staff, audit, archive and full
 company handover. Michael currently requires every active Atlas administrator and
-employee to have full platform and selected-company permissions. Customer roles
+employee to have full platform and selected-company permissions, except that only
+Michael (`kickablur@icloud.com`) may create users (8 October). New Atlas staff
+can sign in with the password Michael sets directly. Customer roles
 cannot create staff access and their permissions remain separately controlled.
 Staff open a customer workspace explicitly under their own audited identity.
 Archives preserve records, revoke sessions/codes and restore to suspended. Exports

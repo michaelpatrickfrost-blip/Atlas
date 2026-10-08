@@ -1,4 +1,5 @@
 "use server";
+import { assertUserProvisioner } from "@/core/admin/access";
 import {randomBytes} from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import {requireSession} from '@/core/auth/session';
@@ -57,6 +58,7 @@ export async function issuePasswordRecovery(form:FormData){
 export async function createManagedUser(form:FormData){
  const session=await requireSession();
  assertCapability(session,CORE_CAPABILITIES.usersManage);
+  assertUserProvisioner(session);
  const name=String(form.get('name')??'').trim(),email=String(form.get('email')??'').trim().toLowerCase();
  if(!name||name.length>100||email.length>254||! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw new Error('Enter a name and valid email.');
  const roleIds=[...new Set(form.getAll('roleId').map(String))];const credential=createRecoveryCredential(),passwordHash=await bcrypt.hash(randomBytes(32).toString('hex'),12);

@@ -1,6 +1,6 @@
 "use server";
+import { assertUserProvisioner } from "@/core/admin/access";
 
-import { randomBytes } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { requireSession, createSessionCookie, type Session } from "@/core/auth/session";
@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 import { assertCapability } from "@/core/permissions/check";
 import { ATLAS_CAPABILITIES, isStaffRole } from "@/core/admin/access";
 import { db } from "@/core/db/client";
-import { createRecoveryCredential } from "@/core/auth/recovery";
+import { validNewPassword, createRecoveryCredential } from "@/core/auth/recovery";
 import { capabilityOverrides, effectiveRoleCapabilities } from "@/core/permissions/access-levels";
 import { companyProfileSchema, readCompanyProfile } from "@/core/setup/company-profile";
 import { accessGroups } from "../settings/access-groups";
@@ -113,31 +113,31 @@ export async function issueAtlasUserRecovery(form: FormData) {
 export async function createAtlasStaff(form: FormData) {
   const session = await requireSession();
   assertCapability(session, ATLAS_CAPABILITIES.staff);
-  const administrator = await db.user.findUniqueOrThrow({ where: { id: session.userId }, select: { passwordHash: true } });
-  if (!await bcrypt.compare(String(form.get("currentPassword") ?? ""), administrator.passwordHash)) return { error: "Your administrator password was not recognised. Enter the password you use to sign in to Atlas, then try again." };
+  assertUserProvisioner(session);
   const data = { name: value(form, "name"), email: value(form, "email").toLowerCase() }, role = value(form, "staffRole");
   if (!data.name || data.name.length > 100 || data.email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return { error: "Enter a name and valid email." };
   if (!isStaffRole(role)) return { error: "Choose an Atlas staff role." };
-  const credential = createRecoveryCredential(), passwordHash = await bcrypt.hash(randomBytes(32).toString("hex"), 12);
+  const password = String(form.get("newPassword") ?? "");
+  const passwordHash = validNewPassword(password) ? await bcrypt.hash(password, 12) : null;
   const outcome = await db.$transaction(async tx => {
     await tx.$queryRaw`SELECT pg_advisory_xact_lock(71423501)::text`;
     const existing = await tx.user.findUnique({ where: { email: data.email }, include: { platformAdmin: true } });
     if (existing?.platformAdmin) return { error: "This person is already listed in Atlas team. Find them in the staff list to manage their access." };
     if (existing && form.get("existingAccount") !== "on") return { error: "This email already exists. Tick the existing-account confirmation to grant this person Atlas staff access." };
+    if (!existing && !passwordHash) return { error: "Enter a password with 12–128 characters, up to 72 UTF-8 bytes, for the new employee." };
     const company = await tx.organisation.upsert({ where: { slug: "atlas-internal-staff" }, create: { slug: "atlas-internal-staff", name: "Atlas team", kind: "INTERNAL", status: "ACTIVE", subscriptionStatus: "ACTIVE", planName: "Internal" }, update: {} });
     if (company.kind !== "INTERNAL" || company.status !== "ACTIVE") return { error: "Atlas staff workspace is unavailable." };
-    const user = existing ?? await tx.user.create({ data: { ...data, passwordHash } });
-    const membership = await tx.membership.upsert({ where: { organisationId_userId: { organisationId: company.id, userId: user.id } }, create: { organisationId: company.id, userId: user.id }, update: { active: true, sessionVersion: { increment: 1 } } });
+    const user = existing ?? await tx.user.create({ data: { ...data, passwordHash: passwordHash! } });
+    await tx.membership.upsert({ where: { organisationId_userId: { organisationId: company.id, userId: user.id } }, create: { organisationId: company.id, userId: user.id }, update: { active: true, sessionVersion: { increment: 1 } } });
     await tx.platformAdministrator.create({ data: { userId: user.id, role } });
     await tx.passwordReset.updateMany({ where: { membership: { userId: user.id }, usedAt: null }, data: { usedAt: new Date() } });
-    if (!existing) await tx.passwordReset.create({ data: { membershipId: membership.id, purpose: "PLATFORM", tokenHash: credential.tokenHash, expiresAt: credential.expiresAt } });
     await tx.auditEntry.create({ data: { organisationId: company.id, actorUserId: session.userId, action: "atlas.staff.created", entityType: "User", entityId: user.id, after: { role, existingAccount: !!existing } } });
     if (existing && existing.id !== session.userId) await tx.user.update({ where: { id: user.id }, data: { authVersion: { increment: 1 } } });
     return { existingAccount: !!existing };
   }, { isolationLevel: "Serializable" });
   if ("error" in outcome) return { error: outcome.error! };
   refresh();
-  return outcome.existingAccount ? { message: "Atlas access granted. This person keeps their existing password." } : { code: credential.code, expiresAt: credential.expiresAt.toISOString() };
+  return outcome.existingAccount ? { message: "Atlas access granted. This person keeps their existing password." } : { message: "Atlas employee created. They can sign in now with the email and password you set." };
 }
 
 export async function updateAtlasStaff(form: FormData) {

@@ -64,10 +64,10 @@ async function main() {
     const reused = await post("completePasswordRecovery", { code: code!, password: `${password}-again`, confirmPassword: `${password}-again` }, "", "/reset-password");
     check(!reused.response.headers.has("set-cookie") && await bcrypt.compare(`${password}-new`, (await db.user.findUniqueOrThrow({ where: { id: customer.id } })).passwordHash), "Recovery code cannot be reused");
     const addedEmail = `atlas-check-added-${suffix}@example.test`;
-    const added = await post("createCompanyUser", { organisationId: a.id, name: "Added disposable customer", email: addedEmail, roleId: reader.id }, ownerCookie, `/atlas/${a.id}/users`);
-    const addedUser = await db.user.findUnique({ where: { email: addedEmail } }); assert(addedUser, "Company user creation succeeds"); userIds.push(addedUser.id);
-    const addedMember = await db.membership.findUniqueOrThrow({ where: { organisationId_userId: { organisationId: a.id, userId: addedUser.id } } });
-    check(/"code":"[a-f0-9]{64}"/.test(added.body), "Customer user added with one-time setup code");
+    await post("createCompanyUser", { organisationId: a.id, name: "Added disposable customer", email: addedEmail, roleId: reader.id }, ownerCookie, `/atlas/${a.id}/users`);
+    check(!await db.user.findUnique({ where: { email: addedEmail } }), "Other Atlas owners cannot add company users");
+    const addedUser = await db.user.create({ data: { email: addedEmail, name: "Added disposable customer", passwordHash: await bcrypt.hash(password, 12) } }); userIds.push(addedUser.id);
+    const addedMember = await db.membership.create({ data: { organisationId: a.id, userId: addedUser.id, roles: { create: { roleId: reader.id } } } });
     await post("setCompanyUserStatus", { organisationId: a.id, membershipId: addedMember.id, status: "SUSPENDED" }, ownerCookie, `/atlas/${a.id}/users`);
     check(!(await db.membership.findUniqueOrThrow({ where: { id: addedMember.id } })).active, "Customer user suspension saved");
     await post("setCompanyUserStatus", { organisationId: a.id, membershipId: addedMember.id, status: "ACTIVE" }, ownerCookie, `/atlas/${a.id}/users`);
@@ -84,16 +84,16 @@ async function main() {
     check(raw.includes(partyA.name) && !raw.includes(partyB.name) && !raw.includes('"passwordHash":') && !raw.includes('"tokenHash":') && !raw.includes('"passwordEnc":'), "Export excludes other company records and credential values");
     check(records.some(row => row.table === "hr_policies" && row.data?.content === `\\x${document.toString("hex")}`), "Stored binary document exported intact");
     const staffEmail = `atlas-check-employee-${suffix}@example.test`;
-    const wrongPassword = await post("createAtlasStaff", { name: "Disposable Atlas employee", email: staffEmail, staffRole: "EMPLOYEE", currentPassword: "incorrect-password" }, ownerCookie, "/atlas/team");
-    check(wrongPassword.body.includes("Your administrator password was not recognised") && !await db.user.findUnique({ where: { email: staffEmail } }), "Incorrect administrator password returns a clear error without creating staff");
-    const created = await post("createAtlasStaff", { name: "Disposable Atlas employee", email: staffEmail, staffRole: "EMPLOYEE", currentPassword: password }, ownerCookie, "/atlas/team");
-    const staff = await db.user.findUnique({ where: { email: staffEmail } }); assert(staff, `Atlas employee creation succeeds (HTTP ${created.response.status})`); userIds.push(staff.id);
-    const duplicate = await post("createAtlasStaff", { name: "Disposable Atlas employee", email: staffEmail, staffRole: "EMPLOYEE", currentPassword: password }, ownerCookie, "/atlas/team");
-    check(duplicate.body.includes("already listed in Atlas team"), "Duplicate employee returns a clear error");
-    const staffCode = created.body.match(/"code":"([a-f0-9]{64})"/)?.[1]; check(!!staffCode, "Atlas employee created with platform setup code");
-    await post("completePasswordRecovery", { code: staffCode!, password, confirmPassword: password }, "", "/reset-password");
+    await post("createAtlasStaff", { name: "Disposable Atlas employee", email: staffEmail, staffRole: "EMPLOYEE", newPassword: password }, ownerCookie, "/atlas/team");
+    check(!await db.user.findUnique({ where: { email: staffEmail } }), "Other Atlas owners cannot add Atlas staff");
+    // Provisioning through Michael's real UI is covered by check-user-provisioning.ts.
+    // Central synthetic fixtures exercise the remaining administration controls here.
+    const staff = await db.user.create({ data: { email: staffEmail, name: "Disposable Atlas employee", passwordHash: await bcrypt.hash(password, 12) } }); userIds.push(staff.id);
+    await db.platformAdministrator.create({ data: { userId: staff.id, role: "EMPLOYEE" } });
+    await db.membership.create({ data: { organisationId: internal.id, userId: staff.id } });
     const staffCookie = await login(staffEmail, password);
-    check((await page("/atlas/team", staffCookie)).body.includes("Add Atlas employee"), "Atlas employee has full platform administration");
+    const staffTeam = await page("/atlas/team", staffCookie);
+    check(staffTeam.body.includes("Atlas team") && !staffTeam.body.includes("Add Atlas employee"), "Atlas employee retains platform access without user creation");
     const opened = await post("openCompanyWorkspace", { organisationId: a.id }, staffCookie, `/atlas/${a.id}`);
     const companyCookie = opened.response.headers.get("set-cookie")?.match(/atlas_session=[^;]+/)?.[0]; assert(companyCookie);
     const workspaceSettings = await page("/settings?tab=workspace", companyCookie);

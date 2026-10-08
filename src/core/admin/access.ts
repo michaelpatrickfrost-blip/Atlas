@@ -20,3 +20,11 @@ export function platformCapabilities(grant: { role?: string; active?: boolean } 
   const role = grant.role ?? "OWNER";
   return isStaffRole(role) ? ATLAS_STAFF_ROLES[role].capabilities : [];
 }
+
+/** User provisioning is reserved to Michael's signed-in Atlas staff identity. */
+export function canCreateUsers(session: { userEmail?: string; capabilities: ReadonlySet<string> }): boolean {
+  return session.userEmail?.trim().toLowerCase() === "kickablur@icloud.com" && session.capabilities.has(ATLAS_CAPABILITIES.staff);
+}
+export function assertUserProvisioner(session: { userEmail?: string; capabilities: ReadonlySet<string> }): void {
+  if (!canCreateUsers(session)) throw new Error("FORBIDDEN: Only Michael can add Atlas users.");
+}

@@ -1012,3 +1012,17 @@ approval/publication remain authoritative. A page visit is not a completed revie
 Missing evidence stays unavailable, unlike units stay separate and agreed demand
 stays visible beside supply cover. Help must remain accessible without snapshot
 source rights. No second planning store or sample business data for onboarding.
+
+## 8 October 2026 — Michael alone provisions Atlas users
+
+Michael explicitly restricted adding users to his `kickablur@icloud.com` account
+and requested direct staff passwords for easy Test-zone setup. Every runtime user
+creation path (including a company's first administrator) therefore requires both
+that server-resolved identity and independent Atlas staff permission, in addition
+to its existing capability guard. UI controls follow the same policy. New Atlas
+staff get a bcrypt-hashed password chosen by Michael and immediate sign-in; his
+signed session authorises creation without repeated own-password confirmation.
+Existing-account promotion still requires explicit confirmation and preserves its
+password/customer roles. Recovery/access/profile/offboarding confirmations remain.
+This is a narrow exception to the 7 October full-staff-permission policy; customer
+permissions and other company workflows are retained. Passwords never enter memory.

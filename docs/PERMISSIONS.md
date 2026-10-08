@@ -108,3 +108,8 @@ Independent Core approval and separate Finance posting capabilities remain requi
 Recovery benefits similarly require independent approval before Sales redemption.
 Configuring a queue or catalogue service never grants unrelated business permissions.
 See [service work security and behavior](modules/SERVICE_WORK_DESK.md).
+
+User creation exception (8 October 2026): only Michael’s authenticated
+`kickablur@icloud.com` Atlas staff identity can provision staff/company users or a
+new company’s first administrator. Existing capability and tenant checks still run;
+other user management remains separately permissioned. See [Atlas Admin](ATLAS_ADMIN.md).

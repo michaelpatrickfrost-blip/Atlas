@@ -12,6 +12,7 @@ grants give all platform and standard company capabilities in the explicitly
 selected workspace. Customer roles, overrides and restrictions never grant
 platform access; their existing permission behavior is retained. Module availability,
 tenant scoping, private record ownership, secrets and financial controls still apply.
+User creation is reserved to Michael as described below.
 
 An internal Atlas team workspace provides independent staff sign-in. Existing
 owners receive an internal membership in the additive migration. Opening a company
@@ -21,10 +22,11 @@ back to Atlas Admin. Staff never impersonate a customer. No customer grants chan
 
 Atlas team maintains staff classification, name/email, active status and recovery.
 Changes revoke global sessions and pending recovery codes. Self-access changes and
-removal of the last active Owner are prohibited. Grants, profile changes and recovery
-require the requesting staff member's password. Existing identities can be promoted
-only with explicit confirmation and keep their password/customer roles. New staff
-receive a one-use setup code. Classifications retain space for a future narrower
+removal of the last active Owner are prohibited. Staff access/profile changes and
+recovery require the requesting staff member's password. Only Michael can create or
+promote staff, using his authenticated session. Existing identities require explicit
+confirmation and keep their password/customer roles. New staff use the password
+Michael sets and can sign in immediately. Classifications retain space for a future narrower
 policy; every active classification currently has full access.
 
 ## Company workflows
@@ -87,15 +89,23 @@ No automatic deletion/retention schedule, email delivery, MFA, SSO or customer
 impersonation is introduced. Backups are preserved. Release and live acceptance
 evidence belongs in `.ai/CURRENT_STATE.md`.
 
-## Employee creation feedback — 8 October 2026
+## User creation — 8 October 2026
 
-Adding Atlas staff requires the signed-in administrator's existing Atlas password.
-The new employee chooses their own password with the generated one-use setup code.
-Incorrect password, invalid identity/role and existing/duplicate-account errors are
-returned as explicit form results so production does not hide them. The form retains
-entered employee details for correction and disables fields during submission.
-Unexpected server failures use a generic retry message; capability checks remain
-server-side and no access is granted on validation failure.
+Only the signed-in `kickablur@icloud.com` identity with independent Atlas staff
+permission can create users. The server checks this after each existing capability
+guard, including Atlas staff, company users, Company administration and new-company
+first administrators. Creation controls are hidden for everyone else. Existing user
+management, selected-company permissions and tenant boundaries remain unchanged.
+
+Atlas team → Add Atlas employee asks Michael for the employee's name, email, role
+and sign-in password. New passwords use the existing 12–128 character/72 UTF-8 byte
+policy and bcrypt hashing. Michael's authenticated session authorises creation;
+there is no repeated request for his own password and no setup-code redemption for
+new staff. Existing-account promotion needs its explicit checkbox, preserves the
+existing password and revokes old sessions. Duplicate/invalid entries return useful
+feedback without creating accounts. Audit never includes passwords or setup codes.
+Staff access/profile changes, recovery, archive/export and cleanup retain their
+own-password confirmation. This supersedes the previous staff setup-code flow.
 
 ## Bulk test cleanup — 8 October 2026
 

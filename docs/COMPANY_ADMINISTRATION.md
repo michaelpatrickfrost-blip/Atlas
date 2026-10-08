@@ -63,3 +63,8 @@ Verified: 208 tests passed (five skipped), production build passed using the iso
 Installed `/Users/michael/Applications/Atlas.app` (Desktop shortcut retained). Private API release: `/opt/atlas-test/data-releases/admin-management-20261003-v1`, active through `atlas-test` on loopback port 3100. No business UI routes run on the server. Database backup and previous release retained under `/var/backups/atlas-test/admin-management-20261003`; previous Mac bundle is `~/Applications/Atlas-before-admin-20261003.app`.
 
 Both desktop and data-service production builds passed. Isolated server acceptance passed account setup, one-use recovery, permission and tenant enforcement, management groups, session revocation, suspension/resumption, and HR team/leave/rota/timesheet checks. Live API acceptance passed after activation. Installed native app signed in against central data and opened Company administration and Management groups. Blocwrite process IDs and online states were unchanged. Email invitations, MFA and SSO remain outstanding.
+
+User creation exception (8 October 2026): only Michael’s authenticated
+`kickablur@icloud.com` Atlas staff identity can provision staff/company users or a
+new company’s first administrator. Existing capability and tenant checks still run;
+other user management remains separately permissioned. See [Atlas Admin](ATLAS_ADMIN.md).

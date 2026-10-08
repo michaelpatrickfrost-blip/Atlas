@@ -1,5 +1,22 @@
 # Atlas current state
 
+## 8 October 2026 — App icon landing screen
+
+- Michael requests a polished, modern app launcher immediately after sign-in.
+  Home now leads with labelled, softly coloured app icons grouped by area;
+  attention/goals remain below. Both company users and Atlas staff land at
+  `/home`; staff retain explicit Atlas Admin navigation and workspace selection.
+- Shared AppDirectory uses the same server-filtered enabled/entitled/capability
+  entries for its Home icon layout and compact topbar menu. No permissions,
+  records, schema or browser data storage changed.
+- Paths: `src/components/shell/app-directory.tsx`, `src/app/(app)/home/page.tsx`,
+  `src/core/auth/actions.ts`, `tests/login-landing.test.ts`.
+- Checks: production build, strict TypeScript, focused ESLint, whitespace and
+  eight sign-in/registry tests pass in the isolated release. Initial cloned
+  dependencies omitted Playwright; clean npm ci corrected typecheck prerequisites.
+  Deployment/live responsive acceptance pending. No schema changes.
+
+
 ## 8 October 2026 — Guardian unavailable-record recovery in release checks
 
 - Reproduced generic HTTP 500s on live 2bda114 for missing/foreign links across six

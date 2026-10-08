@@ -29,7 +29,7 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
 
   await db.membership.update({where:{id:membership.id,organisationId:membership.organisationId},data:{lastLoginAt:new Date()}});
   await createSessionCookie({ userId: user.id, organisationId: membership.organisationId });
-  redirect(platformCapabilities(user.platformAdmin).length ? "/atlas" : "/home");
+  redirect("/home");
 }
 
 export async function logoutAction() {

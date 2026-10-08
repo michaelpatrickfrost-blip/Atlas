@@ -27,6 +27,13 @@ export default async function HomePage() {
         </div>
         <Link href="/profile#assigned" className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700">My work →</Link>
       </header>
+      <section aria-labelledby="launcher-title" className={`${PANEL} p-5 sm:p-7`}>
+        <div className="mb-7">
+          <h2 id="launcher-title" className="text-lg font-semibold tracking-tight text-[#1d1d1f]">Your apps</h2>
+          <p className="mt-1 text-[13px] text-[#6e6e73]">Choose an app to get started.</p>
+        </div>
+        <AppDirectory session={session} variant="launcher" />
+      </section>
       <div className={`grid gap-5 ${highlights.length > 0 ? "lg:grid-cols-2" : ""}`}>
         <section aria-label="Needs attention" className={`${PANEL} px-5 py-4 sm:px-6`}>
           <h2 className="text-[13px] font-semibold text-[#1d1d1f]">Needs attention{attention.items.length > 0 && <span className="ml-2 font-normal text-[#86868b]">{attention.items.length}</span>}</h2>
@@ -59,7 +66,6 @@ export default async function HomePage() {
           </section>
         )}
       </div>
-      <details className={`${PANEL} p-5 sm:p-6`}><summary className="cursor-pointer text-sm font-semibold text-[#1d1d1f]">Apps</summary><div className="mt-5"><AppDirectory session={session} /></div></details>
     </div>
   );
 }

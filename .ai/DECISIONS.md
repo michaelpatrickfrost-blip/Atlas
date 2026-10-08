@@ -89,8 +89,8 @@ See `docs/plans/MARKETING_WORKSPACE_RESEARCH.md` for sources and rationale.
 Michael supplied the full ERP/MRP master brief and explicitly rejected phased
 work/sign-offs. Implement and deploy compatible finished changes continuously;
 retain canonical Party/Product, owner services, approvals and central records.
-The brief now asks for an operational Home; that supersedes the older launcher-only
-preference: Home now leads with attention and My work, with Apps disclosed below. Shared availability must match fulfilment to
+The brief requested operational Home; the later 8 October icon-launcher request
+supersedes that ordering: app icons now lead, with attention and goals below. Shared availability must match fulfilment to
 its actual active source line and distinguish physical stock from expected supply.
 Indirect invoice projections require Finance read and entitlement, not merely an
 order-page capability. Keep the requested architecture-decision document as an
@@ -1076,3 +1076,12 @@ revision without silently changing a production BOM/routing. Independent approva
 excludes both original author and last editor. Fleet service dates require Fleet
 management; customer identity erasure also clears copied Field Service content.
 New apps are enabled only for an authorised company, not globally for every tenant.
+
+## 8 October 2026 — Sign-in leads to the app icon launcher
+
+Michael explicitly requests a polished, professional landing screen with each app
+as a recognisable icon. This supersedes the older no-tiles/list-only preference
+and the operational-first Home ordering. Home shows accessible app icons first;
+attention/goals follow. Company and Atlas staff logins land on Home, with Admin
+still explicitly accessible. Reuse the existing server-filtered directory and
+compact topbar menu; presentation must not grant app or company access.

@@ -1,11 +1,11 @@
 # Design memory map
 
-Current direction (4 October 2026): no sidebar. The home screen is the launcher —
-apps as short named columns by area, not tiles or rows of cards — and the top bar's
-Apps menu shows the same list everywhere else. Plain wording: no greetings, slogans
-or marketing panels. White workspaces, blue accents, separate app top menus, small
-type, hairline borders, consistent spacing and clear active states. Dense
-business information should remain calm; avoid excessive cards and decorative icons.
+Current direction (8 October 2026): no sidebar. After sign-in, Home leads with
+labelled app icons in a responsive grid, grouped by area, with soft colour and
+clear keyboard focus. Attention and goals follow the launcher. The top bar's Apps
+menu keeps a compact list using the same permission-filtered directory. White
+workspaces, blue accents, separate app top menus, small type, hairline borders
+and consistent spacing remain. No greetings, slogans or marketing panels.
 Desktop, tablet and phone layouts require visual acceptance.
 
 Use [the delivery plan](../docs/IMPLEMENTATION_PLAN.md#design-direction) for the

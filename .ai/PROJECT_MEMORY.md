@@ -141,8 +141,9 @@ builder alone does not fulfil those four modules.
 Michael supplied the full [ERP/MRP master brief](../docs/requirements/ATLAS_MASTER_SYSTEM.md)
 and requests continuous implementation and live deployment without phase sign-offs.
 Ease of use is vital: expose context, exceptions and useful next actions; keep the
-technical complexity behind owning-domain engines and contextual detail. The new
-brief asks for operational Home rather than leading with an app directory.
+technical complexity behind owning-domain engines and contextual detail. The later
+8 October app-launcher request places polished app icons first on Home after login,
+with operational attention and goals below.
 [System map](../docs/atlas-system-map.md) and the other `atlas-*.md` guides index
 existing owners, evidence, gaps and continuous work; they do not replace `.ai/`
 shared memory or the detailed module delivery guides.

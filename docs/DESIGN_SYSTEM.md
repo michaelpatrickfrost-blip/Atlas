@@ -44,11 +44,13 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
 
 ## Shell (`src/components/shell/`)
 
-- **No sidebar.** The home screen is the launcher. `AppDirectory` lists the apps a
-  person can open as short named columns by area (Customers, Operations, People,
-  Business, Company) from `getNavigableModules`; areas are set in
-  `src/core/modules/areas.ts` and an unlisted app falls under More. No app tiles,
-  no descriptions.
+- **No sidebar.** After sign-in, Home leads with a responsive grid of labelled
+  app icons, softly coloured and grouped by area; attention/goals follow below.
+  `AppDirectory` uses `getNavigableModules` for both the icon launcher and compact
+  topbar list. Areas in `src/core/modules/areas.ts` are presentation only; an
+  unlisted app falls under More. Company and Atlas staff logins both land on Home;
+  Atlas Admin remains an explicit authorised destination. Keyboard focus stays
+  visible and app labels wrap on narrow screens.
 - **Topbar** — home, an Apps menu (`AppMenu`, the same `AppDirectory` in a panel,
   hidden on the home screen), back, search, new window, notices, chat, profile and
   sign-out on a plain white bar.

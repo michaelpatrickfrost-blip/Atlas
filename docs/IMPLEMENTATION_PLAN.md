@@ -312,7 +312,7 @@ live assertions pass; [release evidence](evidence/2026-10-08-sop-usability.md).
 
 Michael requests Meetings (shared calendar, notes/actions and Outlook/Teams link),
 Maintenance, Engineering / PLM, Fleet and Field Service as distinct apps. Working
-source is prepared; live acceptance remains pending. See
+source is deployed and enabled for Michael Test; all 62 live acceptance assertions pass. See
 [operational app scope and boundaries](modules/OPERATIONAL_APPS.md).
 This does not close broad warehouse/Finance/manufacturing integration or certify
 Microsoft delivery without configured consent/provider evidence.

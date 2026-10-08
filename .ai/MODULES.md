@@ -131,7 +131,7 @@ modules follow S&OP and remain unimplemented.
 
 Meetings (`/meetings`), Maintenance (`/maintenance`), Engineering / PLM
 (`/engineering`), Fleet (`/fleet`) and Field Service (`/fieldservice`) now have
-implemented source/workflows in a compatible release, with live acceptance pending.
+deployed workflows, enabled for Michael Test; all 62 live acceptance assertions pass.
 Fleet replaces its catalogue placeholder. See [scope and genuine integration
 boundaries](../docs/modules/OPERATIONAL_APPS.md) and CURRENT_STATE for release truth.
 Microsoft calendar application configuration/consent and provider proof remain

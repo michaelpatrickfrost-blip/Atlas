@@ -1,7 +1,8 @@
 # Meetings, Maintenance, Engineering, Fleet and Field Service
 
 8 October 2026. Michael requested these five distinct apps. This document records
-implemented scope and real remaining integration boundaries; live acceptance pending.
+deployed scope and real remaining integration boundaries. All 62 live synthetic
+acceptance assertions pass; see [release evidence](../evidence/2026-10-08-operational-apps.md).
 
 ## Meetings — /meetings
 

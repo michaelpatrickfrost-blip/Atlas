@@ -66,35 +66,36 @@
   Pre-fix tabs keep their original handler until reloaded. Continue rotating exact
   dynamic fixture workflows and correlating unresolved guard/stream reports.
 
-## 8 October 2026 — Five operational apps prepared
+## 8 October 2026 — Five operational apps deployed and verified
 
-- Michael requested Meetings with shared calendar/Outlook/Teams-linked notes,
-  Maintenance, Engineering / PLM, Fleet and Field Service. Five distinct manifests,
-  routes and operational workflows implemented; see docs/modules/OPERATIONAL_APPS.md.
-- Meetings extends canonical Meeting; private audience is also enforced through
-  Projects/gateway. Notes/decisions/owned actions; state/PKCE/encrypted Microsoft
-  calendar connection, manual import and explicitly confirmed send. Imported
-  invitation attendee ownership preserved. Live Microsoft app credentials absent;
-  provider delivery is not verified and requires administrator registration/consent.
-- Equipment/vehicle maintenance work, downtime and canonical spare-part records;
-  Fleet inspections/fuel/service/driver/renewals; independent controlled engineering
-  revision release/private drawing evidence; canonical customer engineer visits and
-  mobile job notes/outcomes with double-booking prevention and privacy erasure.
-- One additive migration; central tenant/source/module/capability gates, optimistic
-  versions, transactional audit/durable events. No implicit stock/Finance posting,
-  BOM replacement, automatic external sending or local business cache.
-- 1,003 tests pass/22 integration skips; 53 focused operational/customer/registry/migration
-  checks pass. Production build, separate strict TypeScript, scoped ESLint and
-  whitespace pass. Live deploy/acceptance and shared-source integration pending.
-  Customer erasure regression mocks extended for new owned snapshot cleanup.
-- Initial runtime `9ef1414` deploy stopped during dependency installation after final
-  migration review caught missing default for existing Meeting.updatedAt and an
-  unintended Inventory FK rewrite. Migration step was not reached; live 6ef3cdf
-  remained healthy. Corrected both, made the additive migration transactional and added three
-  migration regressions. Rebuilt successfully; no migration repair/reset required.
-- Next: finish release checks, deploy isolated compatible release, enable five apps
-  for Michael under standing all-app instruction, run synthetic browser/tenant/
-  read-only/state/history/drawing/phone acceptance and preserve central evidence.
+- Meetings, Maintenance, Engineering / PLM, Fleet and Field Service deployed in
+  immutable runtime `dbd5c91`; additive migration applied (100 migrations current),
+  existing records preserved. Five apps enabled for Michael Test under his standing
+  all-app instruction: 30 launcher-visible apps resolve through actual session.
+  Existing roles/grants/denials unchanged; private activation backup retained.
+- Live synthetic acceptance passes all 62 assertions: actual browser create/edit/
+  completion histories, meeting privacy through Projects, downtime/parts/service,
+  unsafe inspection and odometer rules, independent engineering release/private
+  drawing bytes, customer visit overlap/outcome, ten phone views, read-only and
+  foreign-company rejection, disabled-module writes, audit/durable events. Zero
+  manager browser runtime errors. Test companies suspended and credentials revoked.
+- 1,003 tests pass / 22 integration skips, 53 focused checks, production build,
+  separate strict TypeScript, scoped ESLint and whitespace pass. Shared-source
+  integration preserves concurrent recovery code and extra generated schema fields;
+  focused verification recorded in docs/evidence/2026-10-08-operational-apps.md.
+- Microsoft OAuth/PKCE/encrypted connection, manual import and explicit send are
+  implemented; live Microsoft credentials absent. Outlook invitation/Teams creation
+  needs administrator application registration and user consent; external delivery
+  has not been verified. Internal calendars, notes and owned follow-ups are verified.
+- Canonical Meeting/Product/Party sources, tenant/capability/source/module/version
+  gates retained. No implicit stock, Finance or manufacturing BOM posting; no local
+  business cache. Scope/configuration: docs/modules/OPERATIONAL_APPS.md.
+- Initial `9ef1414` installation was stopped before migration after final review
+  caught existing Meeting timestamp default and unintended Inventory FK rewrite.
+  Corrected transactionally in `dbd5c91`; no migration reset/repair required.
+- DB/private-file backup `atlas-pre-deploy-20261008-160643` and previous runtime
+  retained. Subsequent Guardian runtime `2bda114` includes these apps; its deployment
+  and newer recovery checks are documented separately, not counted as these 62.
 
 ## 8 October 2026 — Guardian isolated releases deployed and verified
 

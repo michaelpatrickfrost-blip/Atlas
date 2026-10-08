@@ -1,12 +1,12 @@
 import { db } from '@/core/db/client';
 import type { Session } from '@/core/auth/session';
 import { assertCapability } from '@/core/permissions/check';
+import { assertModuleEnabled } from '@/core/modules/access';
 import { ACTIVE_STATUSES } from '../domain/workflow';
 import { serviceCaseScope, serviceTicketScope } from '@/core/permissions/service-access';
 
 export async function requireService(session: Session) {
-  const state = await db.moduleState.findFirst({ where: {organisationId: session.organisationId,moduleId:'service',enabled:true,entitled:true} });
-  if(!state) throw new Error('Customer Service is not enabled for this company.');
+  await assertModuleEnabled(session, 'service');
 }
 export async function caseList(session:Session, filter:{q?:string;type?:string;mine?:boolean;status?:string;partyId?:string;overdue?:boolean}={}) {
   assertCapability(session,'service.case.read');

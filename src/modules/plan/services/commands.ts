@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireSession, type Session } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
+import { assertModuleEnabled } from "@/core/modules/access";
 import { PLAN_CAPABILITIES } from "@/core/permissions/capabilities";
 import { db } from "@/core/db/client";
 import { writeAudit } from "@/core/audit/log";
@@ -23,8 +24,8 @@ function refresh() {
   revalidatePath("/plan", "layout");
 }
 
-async function enabled(organisationId: string) {
-  if (!await db.moduleState.findFirst({ where: { organisationId, moduleId: "plan", enabled: true, entitled: true } })) throw new Error("Plan is not enabled for this company.");
+async function enabled(session: Session) {
+  await assertModuleEnabled(session, "plan");
 }
 
 function day(value: string) {
@@ -32,7 +33,7 @@ function day(value: string) {
 }
 
 async function opened(session: Session, planId: string) {
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await db.businessPlan.findFirst({ where: { id: planId, ...planWhere(session) }, include: { versions: true, cells: true, modelLinks: true, measures: true, shares: true } });
   if (!plan) throw new Error("That plan is not available.");
   return plan;
@@ -56,7 +57,7 @@ function cellsOf(rows: Array<{ versionId: string; metricKey: string; periodKey: 
 export async function createPlan(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.create);
-  await enabled(session.organisationId);
+  await enabled(session);
   const type = text(form, "type") || "custom";
   const template = templateFor(type);
   const window = planWindow({ mode: text(form, "mode") as "year" | "quarter" | "custom", year: Number(text(form, "year")), quarter: Number(text(form, "quarter")), start: text(form, "start"), end: text(form, "end") });
@@ -116,7 +117,7 @@ export async function createPlan(form: FormData) {
 export async function saveCell(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   if (plan.locked && !session.capabilities.has(PLAN_CAPABILITIES.lock)) throw new Error("This plan is locked.");
   const metric = metricByKey(text(form, "metric"));
@@ -158,7 +159,7 @@ export async function saveCell(form: FormData) {
 export async function addMeasure(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   const metric = metricByKey(text(form, "metric"));
   if (!metric) throw new Error("Choose one of the listed measures. Nothing was added.");
@@ -172,7 +173,7 @@ export async function addMeasure(form: FormData) {
 export async function addAssumption(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   const version = workingVersion(plan.versions);
   if (!version) throw new Error("This plan has no working forecast.");
@@ -187,7 +188,7 @@ export async function addAssumption(form: FormData) {
 export async function addDriver(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   const version = workingVersion(plan.versions);
   if (!version) throw new Error("This plan has no working forecast.");
@@ -206,7 +207,7 @@ export async function addDriver(form: FormData) {
 export async function addLink(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.modelManage);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   const fromKey = text(form, "from");
   const toKey = text(form, "to");
@@ -221,7 +222,7 @@ export async function addLink(form: FormData) {
 export async function createScenario(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.scenarioCreate);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   const base = workingVersion(plan.versions);
   if (!base) throw new Error("This plan has no working forecast.");
@@ -249,7 +250,7 @@ export async function createScenario(form: FormData) {
 export async function promoteScenario(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.approve);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await opened(session, text(form, "planId"));
   const scenario = plan.versions.find((version) => version.id === text(form, "scenarioId") && version.kind === "scenario");
   const working = workingVersion(plan.versions);
@@ -278,7 +279,7 @@ export async function promoteScenario(form: FormData) {
 export async function submitPlan(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.submit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await opened(session, text(form, "planId"));
   await db.businessPlan.updateMany({ where: { id: plan.id, organisationId: session.organisationId }, data: { status: "submitted" } });
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "plan.submitted", entityType: "BusinessPlan", entityId: plan.id, after: { name: plan.name } });
@@ -290,7 +291,7 @@ export async function submitPlan(form: FormData) {
 export async function approvePlan(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.approve);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await opened(session, text(form, "planId"));
   const revision = plan.versions.find((version) => version.kind === "revision" && version.status === "draft");
   const source = revision ?? workingVersion(plan.versions);
@@ -313,7 +314,7 @@ export async function approvePlan(form: FormData) {
 export async function lockPlan(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.lock);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await opened(session, text(form, "planId"));
   const locking = text(form, "unlock") !== "1";
   await db.businessPlan.updateMany({ where: { id: plan.id, organisationId: session.organisationId }, data: { locked: locking } });
@@ -325,7 +326,7 @@ export async function lockPlan(form: FormData) {
 export async function addGoal(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   const title = text(form, "title");
   if (!title) throw new Error("Name the goal.");
@@ -337,7 +338,7 @@ export async function addGoal(form: FormData) {
 export async function addInitiative(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   const title = text(form, "title");
   if (!title) throw new Error("Name the initiative.");
@@ -350,7 +351,7 @@ export async function createProjectForInitiative(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
   assertCapability(session, "projects.manage");
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   const initiative = await db.planInitiative.findFirst({ where: { id: text(form, "initiativeId"), organisationId: session.organisationId, planId: plan.id } });
   if (!initiative) throw new Error("That initiative is not on this plan.");
@@ -367,7 +368,7 @@ export async function createProjectForInitiative(form: FormData) {
 export async function addAction(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   const title = text(form, "title");
   if (!title) throw new Error("Name the action.");
@@ -379,7 +380,7 @@ export async function addAction(form: FormData) {
 export async function completeAction(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   await db.planAction.updateMany({ where: { id: text(form, "actionId"), organisationId: session.organisationId, planId: plan.id }, data: { status: "done" } });
   refresh();
@@ -389,7 +390,7 @@ export async function completeAction(form: FormData) {
 export async function addRisk(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   const title = text(form, "title");
   if (!title) throw new Error("Name the risk.");
@@ -401,7 +402,7 @@ export async function addRisk(form: FormData) {
 export async function addDependency(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   await db.planDependency.create({ data: { organisationId: session.organisationId, planId: plan.id, title: text(form, "title") || "Dependency", dependsOnPlanId: text(form, "dependsOn") || null, note: text(form, "note") } });
   refresh();
@@ -411,7 +412,7 @@ export async function addDependency(form: FormData) {
 export async function addDecision(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   const title = text(form, "title");
   const reason = text(form, "reason");
@@ -427,7 +428,7 @@ export async function addDecision(form: FormData) {
 export async function addComment(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   const body = text(form, "body");
   if (!body) throw new Error("Write the note.");
@@ -439,7 +440,7 @@ export async function addComment(form: FormData) {
 export async function addUpdate(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   const summary = text(form, "summary");
   if (!summary) throw new Error("Write the update.");
@@ -452,7 +453,7 @@ export async function addUpdate(form: FormData) {
 export async function completeReview(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.review);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await opened(session, text(form, "planId"));
   const review = await db.planReview.findFirst({ where: { id: text(form, "reviewId"), organisationId: session.organisationId, planId: plan.id } });
   if (!review) throw new Error("That review is not on this plan.");
@@ -468,7 +469,7 @@ export async function completeReview(form: FormData) {
 export async function addReview(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   const title = text(form, "title");
   if (!title) throw new Error("Name the review.");
@@ -480,7 +481,7 @@ export async function addReview(form: FormData) {
 export async function distributeTargets(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   const metric = metricByKey(text(form, "metric"));
   const version = workingVersion(plan.versions);
@@ -511,7 +512,7 @@ export async function distributeTargets(form: FormData) {
 export async function importGrid(form: FormData) {
   const session = await requireSession();
   assertCapability(session, PLAN_CAPABILITIES.edit);
-  await enabled(session.organisationId);
+  await enabled(session);
   const plan = await owned(session, text(form, "planId"));
   const version = workingVersion(plan.versions);
   if (!version || plan.locked) throw new Error("The working forecast is not open for import.");

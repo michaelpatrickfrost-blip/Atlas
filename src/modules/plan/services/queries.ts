@@ -1,6 +1,7 @@
 import type { Session } from "@/core/auth/session";
 import { db } from "@/core/db/client";
 import { assertCapability } from "@/core/permissions/check";
+import { assertModuleEnabled } from "@/core/modules/access";
 import { PLAN_CAPABILITIES } from "@/core/permissions/capabilities";
 import { planWhere } from "../domain/access";
 import { metricByKey, planTypeLabel } from "../domain/catalogue";
@@ -9,7 +10,7 @@ import { liveActuals, productionPicture } from "./actuals";
 
 export async function requirePlan(session: Session) {
   assertCapability(session, PLAN_CAPABILITIES.read);
-  if (!await db.moduleState.findFirst({ where: { organisationId: session.organisationId, moduleId: "plan", enabled: true, entitled: true } })) throw new Error("Plan is not enabled for this company.");
+  await assertModuleEnabled(session, "plan");
 }
 
 function visible(session: Session) {

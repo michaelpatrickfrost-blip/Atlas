@@ -1,5 +1,25 @@
 # Atlas current state
 
+## 8 October 2026 — Atlas staff app access (implementation verified; live deployment pending)
+
+- Active Atlas staff now see and can open every implemented app they have
+  capabilities for, independent of a selected company's enabled/entitled
+  `ModuleState`. Customer users remain subject to the existing app gates;
+  company settings are not changed, tenant scoping/capabilities remain enforced,
+  and cross-app data/integration checks still respect source app availability.
+- Applied the same staff exception to direct app gates for Audit, Marketing,
+  Plan, Safety and Customer Service. Added targeted launcher acceptance requiring
+  an authenticated Atlas staff identity and at least one disabled/unentitled app
+  to both the launcher check and candidate release switch test.
+- Paths: `src/core/modules/runtime.ts`, `src/core/modules/access.ts`,
+  `src/modules/{audit,marketing,plan,safety,service}/services/*`,
+  `tests/module-entitlements.test.ts`,
+  `scripts/guardian/{check-app-launcher,check-release-pages}.ts`,
+  `docs/{ARCHITECTURE,PERMISSIONS,SYSTEM_WIRING}.md`, `.ai/DECISIONS.md`.
+- Verification: focused module entitlement tests (4 passed), scoped ESLint,
+  `npx tsc --noEmit`, production `npm run build` and `git diff --check` passed.
+  VPS candidate preparation, staging and live employee acceptance are pending.
+
 ## 8 October 2026 — Atlas Admin Test-company deletion (deployed and verified)
 
 - Individual disposable Test-company deletion is name-confirmed only during the

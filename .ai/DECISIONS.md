@@ -1,5 +1,20 @@
 # Atlas decisions
 
+## 8 October 2026 — Atlas staff app access ignores company app switches
+
+Active Atlas staff can navigate to and use every implemented app in the
+currently selected workspace even when that company's app is disabled or
+unentitled. The app directory and server-side module gates apply this exception
+only to authenticated Atlas staff; customer users continue to follow company
+entitlements and enablement. Tenant scopes and capability checks remain
+authoritative, and cross-app integrations continue to respect source-app
+availability. Staff access does not mutate company module settings.
+
+Reason: Atlas staff are required to have full platform and selected-company
+access. Making their app access depend on customer-facing switches can hide apps
+even in the internal staff workspace. Automatically changing company settings
+was rejected because staff availability must not rewrite tenant configuration.
+
 ## 8 October 2026 — Test-company deletion is name-confirmed during testing
 
 During the testing phase, an Atlas administrator can delete a disposable Test

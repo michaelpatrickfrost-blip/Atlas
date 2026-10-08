@@ -29,9 +29,10 @@ PostgreSQL via Prisma.
 
 1. `src/app/(app)/layout.tsx` resolves the session (`getSession()`), redirects
    to `/login` if absent, and renders the shell (`Topbar`, app-directory home and app switcher).
-2. The launcher and app switcher call `getNavigableModules(session)` — the enabled, accessible
-   modules for this org/user — to build app navigation. No module is
-   hardcoded into the shell.
+2. The launcher and app switcher call `getNavigableModules(session)` to build app
+   navigation. Customer users see only enabled, entitled and accessible modules;
+   Atlas staff can open every implemented, accessible app regardless of that
+   company's module switches. No module is hardcoded into the shell.
 3. A module's own layout (e.g. `src/app/(app)/sales/layout.tsx`) renders its
    secondary navigation via `getModuleNavigation(manifest, session)`.
 4. Pages call `requireSession()` then `assertCapability()` before reading or

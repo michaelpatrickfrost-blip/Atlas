@@ -2,6 +2,7 @@ import { db } from "@/core/db/client";
 import { getImplementedModules, getModule, MODULE_CATALOGUE } from "@/core/modules/registry";
 import type { ModuleManifest, ModuleNavItem } from "@/core/modules/types";
 import type { Session } from "@/core/auth/session";
+import { ATLAS_CAPABILITIES } from "@/core/admin/access";
 import { can, canAny } from "@/core/permissions/check";
 import { syncAdminCapabilities } from "@/core/permissions/role-sync";
 
@@ -20,8 +21,11 @@ export function canOpenModule(session: Session, module: ModuleManifest) {
 }
 
 export async function getNavigableModules(session: Session): Promise<ModuleManifest[]> {
-  const enabled = await getEnabledModuleIds(session.organisationId);
-  return getImplementedModules().filter(
+  const modules = getImplementedModules();
+  const enabled = session.capabilities.has(ATLAS_CAPABILITIES.staff)
+    ? new Set(modules.map((module) => module.id))
+    : await getEnabledModuleIds(session.organisationId);
+  return modules.filter(
     (module) => module.launcherVisible!==false && enabled.has(module.id) && canOpenModule(session, module),
   ).map((module) => module.id === "scheduling" && !can(session, "scheduling.manage") && !can(session, "people.rota.manage")
     ? { ...module, name: "My rota", description: "Your published shifts, hours and team." }

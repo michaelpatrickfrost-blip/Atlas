@@ -89,8 +89,12 @@ Independent PlatformAdministrator grants control Atlas Admin. Every atlas.* entr
 from customer roles or membership overrides is ignored. Active Owner, Administrator
 and Employee staff currently have full platform and selected-company capabilities,
 per Michael's explicit instruction. Customer permissions and restrictions remain
-unchanged. Tenant scoping, private record ownership and module gates still apply.
-Staff switches and portal mutations are audited under the staff identity. See
+unchanged. Tenant scoping and private record ownership still apply. Atlas staff
+can navigate to and use implemented apps regardless of company enablement or
+entitlement switches; those switches remain authoritative for customer users and
+cross-app data/integration visibility. Staff app use never changes a company's
+module settings. Staff switches and portal mutations are audited under the staff
+identity. See
 [Atlas Admin](ATLAS_ADMIN.md) for recovery and offboarding.
 
 ## Connected service work — 7 October 2026

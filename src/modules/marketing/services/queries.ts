@@ -2,8 +2,9 @@ import { db } from '@/core/db/client';
 import type { Session } from '@/core/auth/session';
 import type { Prisma } from '@/generated/prisma/client';
 import { assertCapability } from '@/core/permissions/check';
+import { assertModuleEnabled } from '@/core/modules/access';
 import { eligibility, evaluateRule, parseRule } from '../domain/policy';
-export async function requireMarketing(session:Session){if(!await db.moduleState.findFirst({where:{organisationId:session.organisationId,moduleId:'marketing',enabled:true,entitled:true}}))throw new Error('Marketing is not enabled for this company.');}
+export async function requireMarketing(session:Session){await assertModuleEnabled(session,'marketing');}
 export const sections={
   campaigns:{title:'Campaigns',cap:'marketing.campaign.read'},
   calendar:{title:'Calendar',cap:'marketing.campaign.read'},

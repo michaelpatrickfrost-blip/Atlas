@@ -4,6 +4,10 @@ import fs from "node:fs";
 import jwt from "jsonwebtoken";
 import { chromium, expect } from "@playwright/test";
 import { db } from "../../src/core/db/client";
+import { sessionForUser } from "../../src/core/auth/session";
+import { ATLAS_CAPABILITIES } from "../../src/core/admin/access";
+import { canOpenModule, getEnabledModuleIds, getNavigableModules } from "../../src/core/modules/runtime";
+import { getImplementedModules } from "../../src/core/modules/registry";
 import { responseOutcome } from "./response-check";
 
 let phase = "configuration";
@@ -14,6 +18,16 @@ async function main() {
   assert(process.env.SESSION_SECRET && process.env.SESSION_SECRET.length >= 32);
   assert(process.env.ATLAS_GUARDIAN_ORGANISATION_ID && process.env.ATLAS_GUARDIAN_USER_ID);
   const membership = await db.membership.findFirstOrThrow({ where: { organisationId: process.env.ATLAS_GUARDIAN_ORGANISATION_ID, userId: process.env.ATLAS_GUARDIAN_USER_ID, active: true }, include: { user: true } });
+  const session = await sessionForUser(membership.organisationId, membership.userId);
+  assert(session);
+  assert(session.capabilities.has(ATLAS_CAPABILITIES.staff), "release acceptance requires an active Atlas staff identity");
+  const apps = await getNavigableModules(session);
+  const expectedApps = getImplementedModules().filter(module => module.launcherVisible !== false && canOpenModule(session, module));
+  const enabledApps = await getEnabledModuleIds(session.organisationId);
+  assert(expectedApps.some(module => !enabledApps.has(module.id)), "release acceptance requires at least one disabled or unentitled app");
+  assert.deepEqual(apps.map(module => module.id), expectedApps.map(module => module.id), "Atlas staff should see every implemented app they can access");
+  const disabledApp = apps.find(module => !enabledApps.has(module.id));
+  assert(disabledApp);
   const token = jwt.sign({ userId: membership.userId, organisationId: membership.organisationId, authVersion: membership.user.authVersion, sessionVersion: membership.sessionVersion }, process.env.SESSION_SECRET, { algorithm: "HS256", expiresIn: "30m" });
   const browser = await chromium.launch({ headless: true });
   let errors = 0, assets = 0, pages = 0, toggles = 0;
@@ -32,6 +46,16 @@ async function main() {
     const duration = Number(process.env.ATLAS_RELEASE_TEST_SECONDS ?? "180"); assert(duration >= 1 && duration <= 900);
     const until = Date.now() + duration * 1000;
     do {
+      phase = "Atlas staff launcher";
+      const launcherResponse = await page.goto("/home", { waitUntil: "networkidle", timeout: 30_000 }); assert(launcherResponse);
+      assert.equal(responseOutcome(launcherResponse.status(), await launcherResponse.text()), "http-render-pass", "Atlas staff launcher must render.");
+      const launcher = page.getByRole("navigation", { name: "Apps", exact: true });
+      await expect(launcher).toBeVisible();
+      for (const app of apps) await expect(launcher.getByRole("link", { name: app.name, exact: true })).toHaveAttribute("href", app.rootPath);
+      phase = `disabled app navigation ${disabledApp.rootPath}`;
+      const appResponse = await page.goto(disabledApp.rootPath, { waitUntil: "networkidle", timeout: 30_000 }); assert(appResponse);
+      assert.equal(responseOutcome(appResponse.status(), await appResponse.text()), "http-render-pass", "Atlas staff must be able to open an app disabled for the company.");
+      await expect(page.locator("main")).not.toContainText(/disabled in your workspace|not enabled for this company/i);
       for (const path of ["/finance", "/logistics", "/manufacturing", "/service/queries", "/service/reports"]) {
         phase = `navigation ${path}`;
         const response = await page.goto(path, { waitUntil: "networkidle", timeout: 30_000 }); assert(response);

@@ -55,7 +55,7 @@ The authoritative entity/foreign-key definitions are `prisma/schema.prisma`. App
 
 ## 4. Module registration and navigation
 
-The sole catalogue is `src/core/modules/registry.ts`. `types.ts` defines integration contracts and `runtime.ts` filters enabled, entitled and accessible modules. `launcherVisible:false` deliberately hides Products from the main launcher while preserving its routes. A manifest status of available/installed is source metadata, not a live release result. Quality and Fleet are the remaining catalogue stubs after registry filtering; Purchasing is owned by Finance.
+The sole catalogue is `src/core/modules/registry.ts`. `types.ts` defines integration contracts and `runtime.ts` filters customer users by enabled, entitled and accessible modules; Atlas staff can open every implemented, accessible app regardless of company switches. `launcherVisible:false` deliberately hides Products from the main launcher while preserving its routes. A manifest status of available/installed is source metadata, not a live release result. Quality and Fleet are the remaining catalogue stubs after registry filtering; Purchasing is owned by Finance.
 
 The following table is extracted from current manifest files. Quality has an available manifest file but is not imported into the inspected registry, which still uses its stub; this is a confirmed registration mismatch. Dependencies are enablement prerequisites, not a complete list of all records a module can read.
 
@@ -184,7 +184,7 @@ All entries below are **pending live verification in this documentation task**. 
 |---|---|
 | Installed app → server | Launch installed Atlas; local screen opens; authenticated central record read succeeds; data-service failure shows an error |
 | Login/session | Login/logout/password recovery as applicable; expired/missing session rejected; no signed-in data persists after quit |
-| Module activation | Entitled + enabled + prerequisites + role capability + correct launcher/navigation; direct URL is still checked |
+| Module activation | Customers: entitled + enabled + prerequisites + role capability + correct launcher/navigation; direct URL is still checked. Atlas staff app access bypasses company enabled/entitled state but retains capability and tenant checks. |
 | New model/action | Model read policy and generated relation metadata present; forwarded action registered in compatible central service |
 | Tenant/profile isolation | Foreign-company IDs, related records, protected HR/bank fields and restricted project/case records rejected or removed |
 | Customer and prices | Existing Party/contact/address selected; hierarchy pricing/terms apply; quote conversion preserves relationship |

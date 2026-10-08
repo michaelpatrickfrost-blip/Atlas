@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/core/db/client";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
+import { assertModuleEnabled } from "@/core/modules/access";
 import { writeAudit } from "@/core/audit/log";
 import { writeActivity } from "@/core/activity/log";
 import { DOMAIN_EVENTS, emit } from "@/core/events/bus";
@@ -508,8 +509,7 @@ export async function verifyAction(formData: FormData) {
 export async function saveWorkplaceRecord(formData: FormData) {
   const session = await requireSession();
   assertCapability(session, C.riskCreate);
-  const enabled = await db.moduleState.findFirst({ where: { organisationId: session.organisationId, moduleId: "safety", enabled: true, entitled: true } });
-  if (!enabled) throw new Error("Safety is not enabled for this company.");
+  await assertModuleEnabled(session, "safety");
   let input;
   try { input = workplaceInput(formData); } catch (error) {
     if (error instanceof WorkplaceValidationError) return { error: error.message };

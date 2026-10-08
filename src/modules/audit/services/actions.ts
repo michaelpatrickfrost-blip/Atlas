@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireSession, type Session } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
+import { assertModuleEnabled } from "@/core/modules/access";
 import { AUDIT_CAPABILITIES, CORE_CAPABILITIES, ECHO_CAPABILITIES } from "@/core/permissions/capabilities";
 import { workAuditScope } from "@/core/permissions/work-access";
 import { db } from "@/core/db/client";
@@ -35,10 +36,7 @@ import {
 } from "@/core/audit/systems";
 
 async function requireAuditApp(session: Session) {
-  const state = await db.moduleState.findUnique({
-    where: { organisationId_moduleId: { organisationId: session.organisationId, moduleId: "audit" } },
-  });
-  if (!state?.enabled || !state.entitled) throw new Error("Audit is not enabled for this company.");
+  await assertModuleEnabled(session, "audit");
 }
 
 async function teamUserIds(session: Session) {

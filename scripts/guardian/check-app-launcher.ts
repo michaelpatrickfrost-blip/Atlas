@@ -5,7 +5,9 @@ import jwt from "jsonwebtoken";
 import { chromium, expect } from "@playwright/test";
 import { db } from "../../src/core/db/client";
 import { sessionForUser } from "../../src/core/auth/session";
-import { getNavigableModules } from "../../src/core/modules/runtime";
+import { ATLAS_CAPABILITIES } from "../../src/core/admin/access";
+import { canOpenModule, getEnabledModuleIds, getNavigableModules } from "../../src/core/modules/runtime";
+import { getImplementedModules } from "../../src/core/modules/registry";
 
 async function main() {
   assert(process.platform === "linux" && process.env.ATLAS_GUARDIAN_RELEASE_TEST === "1");
@@ -14,7 +16,12 @@ async function main() {
   const membership = await db.membership.findFirstOrThrow({ where: { userId: process.env.ATLAS_GUARDIAN_USER_ID, organisationId: process.env.ATLAS_GUARDIAN_ORGANISATION_ID, active: true }, include: { user: true } });
   const session = await sessionForUser(membership.organisationId, membership.userId);
   assert(session);
+  assert(session.capabilities.has(ATLAS_CAPABILITIES.staff), "launcher acceptance requires an active Atlas staff identity");
   const apps = await getNavigableModules(session);
+  const expectedApps = getImplementedModules().filter(module => module.launcherVisible !== false && canOpenModule(session, module));
+  const enabledApps = await getEnabledModuleIds(session.organisationId);
+  assert(expectedApps.some(module => !enabledApps.has(module.id)), "launcher acceptance requires at least one disabled or unentitled app");
+  assert.deepEqual(apps.map(module => module.id), expectedApps.map(module => module.id), "Atlas staff should see every implemented app they can access");
   const token = jwt.sign({ userId: membership.userId, organisationId: membership.organisationId, authVersion: membership.user.authVersion, sessionVersion: membership.sessionVersion }, process.env.SESSION_SECRET, { expiresIn: "10m", algorithm: "HS256" });
   const browser = await chromium.launch();
   let failures = 0;

@@ -1,26 +1,43 @@
 # Atlas current state
 
-## 8 October 2026 — Connected Goals and KPIs (verification in progress)
+## 8 October 2026 — Connected Goals and KPIs deployed and verified
 
-- User requested meaningful Sales/profit, Service CSAT and operations/production
-  links. Nine source-owned connected results, guided target starters, existing-goal
-  connection, source-app target panels and independently dated dashboard targets.
-- Bounded inclusive UTC periods capped at now; rates/snapshots judged against full
-  target. Source capability/entitlement/company scope, valid CSAT case/queue scope,
-  posted Finance document/project scope. Missing data/access never becomes zero.
-- First live browser journeys verified all nine result calculations and five source
-  panels; dashboard period independence passes. Phone check caught intrinsic width
-  on the existing detail container: constrain it to full available width. Rebuild/
-  redeploy and complete access/mobile acceptance before handoff.
-- Old numeric history retained centrally, rendered as notes for live goals to avoid
-  unit reinterpretation; generic data API hides shared source-linked updates.
-  Private/manual progress remains. No schema change/local business persistence.
-- Paths: analytics types/catalogue/load/period, source module metrics/manifests,
-  Goals services/components/routes, source pages/dashboard components,
-  data-api read policy, connected-goal tests and topic docs. Full suite 857 passed /
-  22 integration skips; production build, separate strict TypeScript, scoped ESLint
-  and whitespace pass. Server deployment/live acceptance pending. See
-  `docs/modules/GOALS_KPIS.md`.
+- Runtime `2b7a486` live at https://atlassystem.online. Nine source-owned results:
+  confirmed sales value, posted revenue/profit, overall/service CSAT, resolved cases,
+  completed/on-time production and actual dispatch. Guided starters, owner/team/target,
+  existing-goal source connections and matching source-app/dashboard target panels.
+  Definitions and limits: `docs/modules/GOALS_KPIS.md`.
+- Inclusive UTC goal dates stop at the end date or now; rates/current positions
+  compare with the full target. Source capabilities, entitlements and company/record
+  scopes apply separately from Goals access. Service CSAT respects case/queue privacy;
+  Finance uses posted journal document/project scope and base currencies, not order
+  value or forecast margins. Missing source/data/currency never becomes manual/zero.
+- Existing-goal connections use submitted metric/group/unit/target state, conditional
+  writes and atomic audit. Live history displays notes, retaining old numbers centrally
+  without changing their units; generic data API excludes shared source-linked numeric
+  updates. Private/manual goals and personal-plan access remain. Older flow measures
+  without a bounded contract require reconnection; snapshots remain current positions.
+- Live checks caught detail's intrinsic mobile width; constrained detail/setup grids
+  and corrected rate badge to Below target. Both detail and target setup fit 390px;
+  final screenshot visually reviewed. Prior Quality and Tickets releases preserved.
+- Checks: full suite 857 passed / 22 integration skips; final 45 focused tests pass.
+  Production build, separate strict TypeScript, scoped ESLint and whitespace passed.
+  Server build/restart/public login 200 passed; 97 migrations current, no schema change.
+- Final server-only `scripts/check-connected-goals.ts` passed 37 assertions covering
+  all nine actual calculations, last-day/excluded period/status/currency results,
+  source refresh without copied actuals, retained history, five source panels, chart
+  period independence, mobile, zero browser errors, direct/nested data-query history
+  protection, read-only/foreign/stale connections, disabled sources and central audit.
+  Exact synthetic companies suspended and fixture credentials/sessions revoked;
+  historical records/audit retained. Earlier fixture errors corrected, not hidden.
+- Private database/service-evidence backups `atlas-pre-deploy-20261008-133332` and
+  `atlas-pre-deploy-20261008-134301` retained. No local business DB/cache. Owned files
+  integrated into canonical repo through base comparisons/narrow manifest/doc updates;
+  concurrent unfinished work excluded. Evidence: `docs/evidence/2026-10-08-connected-goals.md`.
+- Remaining: arbitrary formulas, weighting/roll-ups, recurring goals, employee
+  attribution, historical snapshot archive and automatic notifications. Source
+  operational status/repricing changes may change past-period readings; Finance
+  posting/reversal rules remain authoritative. No physical server-isolation claim.
 
 ## 8 October 2026 — Quality workspace deployed and verified
 

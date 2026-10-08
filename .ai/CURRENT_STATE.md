@@ -16,8 +16,19 @@
   `tests/service-history-*.test.*`, `scripts/check-service-history.ts`.
 - Checks: pre-fix live browser reproduction passed; full Vitest 721 passed / 22
   integration skips; strict TypeScript, production build, changed-file lint and diff
-  check passed. Deployment and post-deployment workflow verification pending.
-  Next: deploy and record live outcome. Broader Customer Service remains outside this fix.
+  check passed, including the latest shared ActionForm release. Release `67b8c3d`
+  deployed with backup `/home/administrator/backups/atlas-pre-deploy-20261008-120207.dump`
+  and private evidence archive; 96 migrations current, service healthy, login 200.
+- Live acceptance: all 13 assertions passed through normal sign-in and real browser
+  forms: original open/completed records, ownership/progress/completion, case status
+  and ownership preservation, exact case link, phone layout, no runtime errors,
+  private conversation exclusion, read-only/other-company/restricted access and raw
+  action denial. Harness selectors were corrected for select text and tab counts;
+  synthetic tenants suspended and credentials revoked after every attempt. Central
+  history retained. Primary integration focused tests: 22 passed in three files.
+  Evidence: `docs/evidence/2026-10-08-service-history.md`. Broader Customer Service
+  remains unfinished; next: investigate the next reported workflow without bypassing
+  access or converting preserved historical records.
 
 ## Guardian rejected-save draft retention — 8 October 2026
 

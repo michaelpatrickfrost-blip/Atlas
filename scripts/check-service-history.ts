@@ -55,10 +55,10 @@ async function main() {
         await page.getByRole("link", { name: new RegExp(ticket.number) }).click();
         await page.getByRole("heading", { name: ticket.subject, exact: true }).waitFor();
         check(!(await page.content()).includes("PRIVATE-PARENT-NOTE") && !(await page.content()).includes("CASE-CONVERSATION-MUST-STAY-PRIVATE") && await page.locator(`a[href="/service/cases/${serviceCase.id}"]`).count() === 0, "Department responder receives ticket context without private parent conversation or inaccessible case link");
-        await page.getByLabel("Status", { exact: true }).selectOption("IN_PROGRESS"); await page.getByLabel("Assign this ticket to me").check();
+        await page.getByRole("combobox", { name: /^Status/ }).selectOption("IN_PROGRESS"); await page.getByLabel("Assign this ticket to me").check();
         await page.getByRole("button", { name: "Save progress", exact: true }).click(); await page.getByRole("status").filter({ hasText: "Saved." }).waitFor();
         check((await db.serviceTicket.findUniqueOrThrow({ where: { id: ticket.id } })).ownerUserId === worker.id, "Historical responder takes ownership and saves progress through real browser form");
-        await page.reload({ waitUntil: "domcontentloaded" }); await page.getByLabel("Status", { exact: true }).selectOption("COMPLETE");
+        await page.reload({ waitUntil: "domcontentloaded" }); await page.getByRole("combobox", { name: /^Status/ }).selectOption("COMPLETE");
         await page.getByLabel("Outcome / reason", { exact: true }).fill("Delivered quantity reconciled with the warehouse.");
         await page.getByLabel("Customer-safe summary", { exact: true }).fill("We checked and corrected the delivery record.");
         await page.getByRole("button", { name: "Save progress", exact: true }).click();
@@ -77,7 +77,7 @@ async function main() {
         const denied = await post("updateDepartmentTicket", { ticketId: ticket.id, version: String(done.version), status: "IN_PROGRESS" }, observerCookie);
         check(/(?:^|\n)\w+:E\{/.test(denied.body) || denied.response.status >= 400, "Read-only user cannot bypass update permission through the action endpoint");
         const ownerView = await browser.newContext(); await ownerView.addCookies([{ name: "atlas_session", value: ownerCookie.slice(14), url: base, httpOnly: true, secure: true }]); const ownerPage = await ownerView.newPage();
-        await ownerPage.goto(`${base}/service/cases/${serviceCase.id}`, { waitUntil: "domcontentloaded" }); await ownerPage.getByRole("tab", { name: "Linked work", exact: true }).click();
+        await ownerPage.goto(`${base}/service/cases/${serviceCase.id}`, { waitUntil: "domcontentloaded" }); await ownerPage.getByRole("tab", { name: /^Linked work/ }).click();
         check(await ownerPage.locator(`a[href="/service/tickets/${ticket.id}"]`).count() === 1, "Case Linked work opens its exact historical departmental ticket"); await ownerView.close();
       }
       await context.close();

@@ -3993,3 +3993,5 @@ ordering. The selected database sweep rolled back; expected dependency handling 
 retries both codes, with regression coverage. Synthetic Finance acceptance fixture
 cleanup also stopped and will be completed after the correction is deployed.
 No existing user company was selected or deleted. Final live recheck pending.
+
+Live recheck isolated Prisma 7 adapter SQLSTATE under meta.driverAdapterError.cause.originalCode. Dependency classification now supports this actual production shape as well as legacy meta.code; both FK codes have regression coverage for both shapes. Further live acceptance pending.

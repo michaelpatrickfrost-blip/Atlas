@@ -39,11 +39,11 @@ it("aborts the transaction on non-FK failure without starting file deletion", as
   await expect(wipeTestCompanies(["test-a"])).rejects.toThrow("storage failure");
   expect(state.create).not.toHaveBeenCalled(); expect(state.file).not.toHaveBeenCalled();
 });
-it.each(["23503", "23001"])("retries PostgreSQL FK and RESTRICT dependencies (%s)", async code => {
+it.each(["23503", "23001"].flatMap(code => [{meta:{code}}, {code:"P2010",meta:{driverAdapterError:{cause:{originalCode:code}}}}]))("retries PostgreSQL FK and RESTRICT dependencies (%j)", async error => {
   let attempts = 0;
   state.raw.mockImplementation(async (sql:string) => {
     if (sql.startsWith("SELECT id,name")) return state.companies;
-    if (sql.startsWith('DELETE FROM public."parties"') && attempts++ === 0) throw {meta:{code}};
+    if (sql.startsWith('DELETE FROM public."parties"') && attempts++ === 0) throw error;
     return 1;
   });
   // Add a dependent table so the first pass can make progress before retrying its parent.

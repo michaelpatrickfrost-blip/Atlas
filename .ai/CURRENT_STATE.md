@@ -1,6 +1,6 @@
 # Atlas current state
 
-## 8 October 2026 — Atlas Admin Test-company deletion (testing flow correction)
+## 8 October 2026 — Atlas Admin Test-company deletion (deployed and verified)
 
 - Individual disposable Test-company deletion is name-confirmed only during the
   testing phase; real-company archive, bulk-cleanup password confirmation,
@@ -12,10 +12,17 @@
   `tests/atlas-delete-company.test.ts`, `tests/portal-action-form.test.tsx`,
   `scripts/check-atlas-admin.ts` and `docs/ATLAS_ADMIN.md`.
 - The prior deployed password-required flow produced the reported React error
-  #441. The corrected isolated candidate passes the seven focused tests, scoped
-  ESLint, `npx tsc --noEmit`, production build and `git diff --check`.
-- Candidate release, staged switch/action tests and live disposable-company
-  deletion acceptance are pending.
+  #441. The corrected candidate passes seven focused tests, scoped ESLint,
+  `npx tsc --noEmit`, production build and `git diff --check`.
+- Deployed immutable runtime `aa7a3906a030f585c00334b151cf0a2fb6d1e319`.
+  Staging passed 60 page renders/60 Apps toggles with writes blocked and the
+  cross-runtime draft/no-replay action checks. Live Atlas Admin acceptance
+  passed all 33 checks, including rendering the name-only form and deleting a
+  disposable Test company plus its child record without a React #441 response.
+  Client-router navigation is covered by the focused component test. Public
+  health reports the exact active SHA; `/login` returns 200. No migrations;
+  backup `atlas-pre-deploy-20261008-195514` retained and previous release
+  `874729a636ccf6762ca172246d0e4ba6e9a2e17d` retained for rollback.
 
 ## 8 October 2026 — Connections onboarding app (deployed & verified live)
 

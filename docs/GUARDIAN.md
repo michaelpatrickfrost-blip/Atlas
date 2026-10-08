@@ -28,7 +28,7 @@ cookie, token, screenshot or raw exception message is collected.
   links; the app error boundary captures render digests and offers Retry/Home.
   Next instrumentation captures server render, route and action digests/codes.
   Runtime diagnostic recording failures do not replace the original error.
-- Deleted-record explanation screens are labelled `unavailable` and excluded from
+- Deleted/inaccessible-record explanation screens are labelled `unavailable` and excluded from
   working-page/browser coverage; disabled screens are labelled `restricted`.
 - A passing request is labelled `http-render-pass`, not a working button. Run
   summaries distinguish inventories, runtime/browser coverage and remaining work.
@@ -77,6 +77,7 @@ ATLAS_GUARDIAN_TICKET_TEST=1 node --env-file=.env.local --import tsx scripts/gua
 ATLAS_GUARDIAN_ACCESS_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-ticket-access.ts
 ATLAS_GUARDIAN_QUERY_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-service-query.ts
 ATLAS_GUARDIAN_ACTION_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-action-recovery.ts
+ATLAS_GUARDIAN_RECORD_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-unavailable-records.ts
 node --env-file=.env.local --import tsx scripts/guardian/triage.ts list [page]
 node --env-file=.env.local --import tsx scripts/guardian/triage.ts show <issue-id>
 sudo systemctl status atlas-guardian.timer atlas-guardian.service
@@ -144,6 +145,30 @@ Logistics, Manufacturing and Service pages while opening/closing their explicit
 safe Apps toggles. It asserts zero browser/chunk failures. This is release
 continuity evidence, not verification of business writes or every dynamic page.
 See `docs/DEPLOY.md` for isolated candidate/switch/rollback staging.
+
+## Unavailable operational records
+
+Meetings, Equipment, Maintenance work, Fleet, Engineering and Field Service retain
+all existing tenant/audience/source/capability/module filters. A scoped null read
+shows a neutral explanation and a calendar/register return link, with no record
+content or mutation controls. Unknown database/server errors still reach error
+reporting; mutation access still throws on unavailable records. Guardian recognises
+`record-unavailable` independently of working-page coverage; real failures take
+precedence over that marker.
+
+The opt-in central record check requires a private DB/evidence backup and both
+release locks. It seeds two exact disposable Test companies and read-only profiles,
+checks six valid records plus twelve missing/foreign reads and one private meeting,
+clicks each recovery link and connected equipment/work and fleet/work round-trips,
+and compares full central fixture records, versions, history, audit/outbox and
+canonical connections in memory. All browser non-GET/HEAD traffic is blocked;
+background notification reads also stay blocked. No private bodies/IDs are logged.
+Both companies are suspended and synthetic sessions revoked afterwards, with
+history retained. `--reproduce` requires the old generic failures. Optional
+`ATLAS_RECORD_TEST_URL` accepts only production or loopback, and
+`ATLAS_RECORD_TEST_REVISION` pins the expected SHA; each run also asserts the public
+runtime SHA stays unchanged throughout. Independent proof does not close historical
+render reports whose original fixture/profile/action remains unidentified.
 
 ## Rejected drafts and older tabs
 

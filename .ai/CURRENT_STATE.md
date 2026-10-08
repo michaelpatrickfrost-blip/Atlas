@@ -1,5 +1,29 @@
 # Atlas current state
 
+## 8 October 2026 — Guardian unavailable-record recovery in release checks
+
+- Reproduced generic HTTP 500s on live 2bda114 for missing/foreign links across six
+  operational record routes and a non-attendee private meeting. Six valid fixture
+  records render; private meeting title/agenda remain hidden. New evidence-backed
+  report `cmuzskpvh00001cd5zp9gv50g`; historical unidentified reports remain NEEDS_AI.
+- Six scoped null-read branches now return a neutral unavailable explanation and
+  working module backlink. Meetings read uses the unchanged meetingScope while
+  mutation access still rejects. All tenant/capability/module/source/privacy gates
+  and unexpected error reporting preserved; Guardian does not count unavailable as
+  a working page. No schema or permission changes.
+- New `check-unavailable-records.ts`: explicitly opted-in disposable central Test
+  companies/read-only profiles, all non-read browser requests blocked, privacy and
+  exact full record/history snapshots, module recovery and equipment/work/Fleet
+  round-trips, stable runtime SHA, exact fixture retirement. Initial fixture schema
+  and overly strict background-read counting corrected in the harness.
+- New page suite first failed nine assertions against original code; repaired
+  focused 73 tests pass. Full 1,034 tests pass / 22 integration skips; production
+  build, strict types and scoped lint pass. Final probe-only adjustments pass strict types, lint and full original
+  reproduction: 13 generic failures, six valid pages, both connected round-trips
+  and exact unchanged central snapshots; 21 notification reads also blocked. Private pre-fixture DB/Service backup 170522 UTC retained.
+- Candidate staging, compatible backed-up activation, exact live original outcome,
+  triage FIXED and canonical integration still pending; no deployment claim yet.
+
 ## 8 October 2026 — Guardian draft recovery deployed and verified
 
 - Live immutable runtime `2bda114` preserves rejected Atlas administration drafts

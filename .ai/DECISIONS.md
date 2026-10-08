@@ -1,5 +1,15 @@
 # Atlas decisions
 
+## 8 October 2026 — Scoped missing records have explicit recovery
+
+A scoped read returning no record is an unavailable state, using the same neutral
+explanation for missing and inaccessible records plus a working module return link.
+Keep all original query/auth/source/audience filters and throwing mutation guards;
+never catch arbitrary exceptions to manufacture an unavailable screen. Guardian
+must classify this state separately from working-page coverage and prioritise real
+failures. Prove valid records, privacy, clicked recovery and connected central state
+with disposable central Test fixtures before calling the repair deployed.
+
 ## 8 October 2026 — Retain rejected administration drafts and recover manually
 
 Atlas administration uses the shared form submit lifecycle: disable while pending,

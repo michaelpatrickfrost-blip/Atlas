@@ -1,40 +1,61 @@
 # Atlas current state
 
-## 8 October 2026 — Guardian isolated release repair prepared
+## 8 October 2026 — Guardian isolated releases deployed and verified
 
-- Recurring in-place build failures reproduced in central journal: reset-password
-  and company render ENOENT /500 at 14:43–14:44; monitor sweep aborted at 14:34.
-  Deployment reliability report `cmuxsymb70000cmd5jgotzfwo` remains NEEDS_AI until
-  staged and deployed proof. All 57 active reports across three pages read.
-- Prepared isolated immutable release deployer, retained browser assets, atomic
-  pointer/rollback, exact release health, global Guardian/deploy lock and read-only
-  continuous page/menu staging. No schema/business permission changes.
-- Initial local checks on base 5b21c68: full 952 pass / 22 skips, production build,
-  separate strict TypeScript, focused lint, six filesystem/health regressions and
-  shell/whitespace checks passed. Reviewed/merged concurrent user-provisioning and
-  S&OP evidence through d226ef8; final combined checks: 959 pass / 22 skips,
-  production build, strict TypeScript, scoped lint and 19 focused checks pass.
-- First prepare stopped before backup/build: /opt parent requires privilege for
-  release folders and pointers. Corrected only those operations with sudo; live
-  runtime unchanged. Strict combined TypeScript passed. The next prepare caught
-  the existing absolute private evidence path under /opt/atlas/shared; corrected
-  the guard to preserve that dedicated central directory, never copy or move it.
-- Runtime 6028b1f activated after prepared smoke/staging: build-phase live probe
-  215 pages/Apps toggles and staged switch/rollback 40, zero browser/chunk failures.
-  Connected live Service fixture passes all seven groups; exact company suspended
-  and sessions revoked. Release health, root-owned runtime, preserved absolute
-  storage/env permissions and old hashed asset HTTP verified.
-- First production cutover browser timed out. Journal 15:17:33 shows legacy npm
-  parent exit immediately SIGKILLed Next child; new Node ready 15:17:34. Report is
-  NOT FIXED. Corrected first-transition kill mode to signal the whole old group,
-  retain direct-Node mixed mode thereafter. Staging now explicitly exercises npm
-  transition and direct-Node rollback. Added safe probe phase/count diagnostics.
-- Global lock tested under Guardian PrivateTmp: busy worker exits 75, Result=success.
-  Full stable sweep running. Revised staging and a fresh live continuity release,
-  report triage and shared-project integration remain pending. Revised harness
-  caught unsupported Caddy global persist_config before starting any service or
-  browser; removed it. Existing per-run XDG config/data already isolates autosave.
-  Final strict TypeScript and six focused filesystem/health regressions pass.
+- Live runtime `6ef3cdf`; builds/dependencies/generated client now live in sealed
+  `/opt/atlas-releases/<SHA>` directories. Atomic current/previous pointers,
+  retained old hashed browser assets, exact public release health and graceful
+  direct-Node service replace in-place npm/.next replacement. Central absolute
+  private evidence `/opt/atlas/shared/service-files` and .env permissions preserved.
+  Control checkout links through current; never install/generate/build there.
+- Final continuous live probe: 425 rendered page requests and 425 Apps toggles
+  through separate builds and production activation, zero browser/chunk failures,
+  every business write blocked. Final real loopback npm -> candidate -> direct-Node
+  rollback: 20 pages/toggles pass, both runtimes immutable. Earlier separate-build
+  probe passed 215 and initial direct-Node staging 40; do not conflate runs.
+- Actual final Service fixture passes all seven linked case/query/assignment/
+  unassignment/reply/privacy/resolution/report assertions. Exact Test company
+  suspended and sessions revoked, central history retained. Public reset-password
+  form and actual Sign in backlink, authorised dynamic company pattern and repeated
+  CSAT/team renders pass; no existing company/business control was mutated.
+- Guardian full sweep `cmuzoxyy500009dd5t0ja47my` COMPLETED on 6ef3cdf:
+  240 HTTP requests, 2 declared unavailable, 0 findings; 100 browser pages,
+  99 safe toggles, 0 browser failures. Inventory 1130 files/634 links/848 controls
+  is not verification; 102 routes exceed browser cap and writes need fixtures.
+  Installed PrivateTmp service tested under global exclusive lock: exit 75,
+  Result=success; timer remains active. Global /run/lock lock avoids sweep/release
+  overlap and retains legacy /tmp acceptance compatibility.
+- Local final combined 959 tests pass / 22 integration skips; production build,
+  separate strict TypeScript, scoped lint, shell syntax/whitespace and six new
+  filesystem/health regressions pass. Remote sealed builds/smokes and original
+  staged rollback/live controls pass. No schema/permission changes; 99 migrations
+  current. Database/private-evidence backups 15:13:27, 15:17:29, 15:20:43,
+  15:24:51 and 15:27:44 UTC retained; previous 6028b1f and bootstrap d226ef8 kept.
+- Initial prepare caught /opt privileges and existing shared storage location;
+  corrected without replacing production files. First legacy migration browser
+  timed out; journal 15:17:33 shows npm child SIGKILL then Node ready 15:17:34.
+  Corrected first-transition whole-group SIGTERM; final explicit npm staging and
+  live production probe pass. Revised staging caught unsupported Caddy global
+  before running; removed it and kept isolated per-run XDG config/data. Preserve
+  this evidence; no claim of uninterrupted in-flight business mutations.
+- Deployment reliability, reset-password render and sweep-overlap reports marked
+  FIXED only after final deployed proof. Historic Service and company-record
+  reports remain NEEDS_AI where original record/control is absent, with stale
+  in-place-build blockers replaced by current evidence. Fresh team 15:17:59 has
+  closed-stream digest 4138332578 immediately after missing Server Action log;
+  original older-tab/action identity absent, so fresh-page success does not close
+  it. Next: disposable fixture open across release, safe recovery/draft feedback
+  and exact central state; never automatically replay a business mutation.
+- Refreshed all three queue pages: 63 active before monitor closure, now 62.
+  Remaining unproved OPEN reports received full-brief review and explicit
+  NEEDS_AI symptoms/time/digest, source/acceptance context, attempted work, missing
+  original fixture/control blocker and next action; no expected guard guessed away.
+  Staff inbox remains protected (anonymous request redirects to sign-in).
+- Shared source integrated using exact base comparisons; only owned memory
+  sections merged and concurrent work preserved. Evidence/operations:
+  `docs/evidence/2026-10-08-guardian-isolated-releases.md`, `docs/DEPLOY.md` and
+  `docs/GUARDIAN.md`. Continue unresolved-report correlation and rotate dynamic
+  workflows; preserve explicit restrictions and distinguish inventory from proof.
 
 ## 8 October 2026 — Danielle staff setup and Michael-only provisioning verified
 

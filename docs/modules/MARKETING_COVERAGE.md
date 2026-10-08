@@ -12,7 +12,7 @@ Every numbered requirement from the supplied brief is retained below. Implemente
 | 6 | CAMPAIGN | Partial foundation; remaining acceptance required |
 | 7 | CAMPAIGN TYPES | Partial foundation; remaining acceptance required |
 | 8 | CAMPAIGN STATUS | Partial foundation; remaining acceptance required |
-| 9 | CAMPAIGN WORKSPACE | Partial: strategy, channel calendar, budget and Sales outcomes; unified campaign record pending |
+| 9 | CAMPAIGN WORKSPACE | Partial: unified campaign brief, plan, budget, results, contextual content, custom information and resource links; provider execution pending |
 | 10 | CAMPAIGN HIERARCHY | Partial foundation; remaining acceptance required |
 | 11 | MARKETING CALENDAR | Pending |
 | 12 | CALENDAR DRAG AND DROP | Pending |

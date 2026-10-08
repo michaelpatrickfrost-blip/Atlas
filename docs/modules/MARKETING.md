@@ -2,7 +2,7 @@
 
 Marketing is a module around Core Contact/Party identities, with separate campaign,
 audience, message, content and journey objects. Shared records remain on central
-PostgreSQL; the Mac runs the UI. See [the exact brief](MARKETING_SOURCE_REQUIREMENTS.md)
+PostgreSQL; finished changes deploy to the live web server at atlassystem.online. See [the exact brief](MARKETING_SOURCE_REQUIREMENTS.md)
 and [all 275 coverage checkpoints](MARKETING_COVERAGE.md). This is a foundation,
 not acceptance of the complete brief.
 
@@ -53,11 +53,30 @@ has no outbound delivery path and cannot bypass those checks.
 
 ## Verification and activation
 
-Run `npm run build`, TypeScript, scoped lint, Marketing policy/command tests and
-central synthetic integration. Build synchronized desktop/data-only packages,
-back up central records, apply the additive Marketing migration, explicitly enable
-only the intended company/profile, then verify installed Mac reads/writes. Record
-actual release evidence and remaining blockers in `.ai/CURRENT_STATE.md`.
+Run `npm run build`, strict TypeScript, scoped lint and Marketing tests, then deploy
+the reviewed compatible release with `docs/DEPLOY.md`. Verify changed features on
+https://atlassystem.online using normal sign-in and real forms; record release,
+backup and workflow evidence in `.ai/CURRENT_STATE.md`. Mac packaging is optional
+additional delivery. Never create local business databases or use HTTP success
+alone as feature verification.
+
+### Campaign workspace information — 8 October 2026
+
+Creation and editing retain the guided brief and add brand, detailed customer insight,
+creative requirements, proof points, exclusions, measurement, sales handoff, follow-up,
+lessons and notes. Optional sections also support 20 custom named fields and 20 named
+resource links. These live in existing campaign metadata; no schema migration.
+Overview displays populated details; Content and links opens resources and supports
+campaign-linked draft content using existing content permissions/independent approval.
+Activity notes accept multiline briefs. Links reference original files/pages; they do
+not upload assets or host public pages. Approval/exclusion notes do not execute policy.
+
+Audiences, Content, Messages, Profiles, Consent and Analytics are visible according
+to their existing capabilities. Campaign lead and message reads respect their own
+capabilities. Builder and Marketing action forms preserve rejected input; brief saves
+use optimistic version checks. Exact money/date/allocation validation precedes atomic
+campaign/budget/launch-plan/audit creation. No delivery provider was selected or enabled.
+Research and remaining scope: [platform comparison](../plans/MARKETING_WORKSPACE_RESEARCH.md).
 
 ### Campaign desk — 3 October 2026
 Marketing opens on campaigns, a calendar, budgets, the customer journey and

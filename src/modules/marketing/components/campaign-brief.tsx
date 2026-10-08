@@ -1,3 +1,5 @@
+import { CampaignDetailsFields } from "./campaign-details";
+import { readCampaignDetails } from "../domain/campaign-details";
 import { CAMPAIGN_TYPES } from "../domain/policy";
 import { CAMPAIGN_CHANNELS } from "../domain/campaign";
 import { words } from "./format";
@@ -7,7 +9,7 @@ const group = "space-y-4 rounded-2xl border border-slate-200 bg-white p-5";
 const iso = (value: Date | null | undefined) => (value ? value.toISOString().slice(0, 10) : "");
 const pounds = (minor: number | undefined) => (minor ? (minor / 100).toFixed(2) : "");
 export type BriefOptions = { audiences: { id: string; name: string }[]; products: { id: string; name: string; code: string }[]; members: { id: string; name: string }[]; programmes: { id: string; name: string }[] };
-type Campaign = { name: string; code: string; description: string; type: string; ownerUserId: string; startAt: Date | null; endAt: Date | null; audienceId: string | null; productId: string | null; parentId: string | null; currency: string; objective: string; businessGoal: string; targetMarket: string; persona: string; positioning: string; message: string; offer: string; cta: string; channels: string[]; budgetMinor: number; targetLeads: number; targetCustomers: number; targetPipelineMinor: number; targetRevenueMinor: number; goal: string; risks: string; dependencies: string; teamName: string; region: string; language: string; utmCampaign: string; isProgramme: boolean };
+type Campaign = { brief:unknown; brand:string; name: string; code: string; description: string; type: string; ownerUserId: string; startAt: Date | null; endAt: Date | null; audienceId: string | null; productId: string | null; parentId: string | null; currency: string; objective: string; businessGoal: string; targetMarket: string; persona: string; positioning: string; message: string; offer: string; cta: string; channels: string[]; budgetMinor: number; targetLeads: number; targetCustomers: number; targetPipelineMinor: number; targetRevenueMinor: number; goal: string; risks: string; dependencies: string; teamName: string; region: string; language: string; utmCampaign: string; isProgramme: boolean };
 
 function Area({ name, label, value, hint, rows = 3 }: { name: string; label: string; value?: string; hint?: string; rows?: number }) {
   return <label className="block text-xs font-medium">{label}<textarea name={name} rows={rows} maxLength={5000} defaultValue={value ?? ""} placeholder={hint} className={field} /></label>;
@@ -23,6 +25,7 @@ export function CampaignBriefFields({ campaign, options }: { campaign?: Campaign
         {!c && <label className="block text-xs font-medium">Code (optional)<input name="code" maxLength={50} placeholder="Made for you if left blank" className={field} /></label>}
         <label className="block text-xs font-medium">Type<select name="type" defaultValue={c?.type ?? "LEAD_GENERATION"} className={field}>{CAMPAIGN_TYPES.map((type) => <option key={type} value={type}>{words(type)}</option>)}</select></label>
         <label className="block text-xs font-medium">Owner<select name="ownerUserId" defaultValue={c?.ownerUserId ?? ""} className={field}>{!c && <option value="">Me</option>}{options.members.map((member) => <option key={member.id} value={member.id}>{member.name}</option>)}</select></label>
+        <label className="block text-xs font-medium">Brand<input name="brand" maxLength={100} defaultValue={c?.brand??"DEFAULT"} className={field}/></label>
         <label className="block text-xs font-medium">Team<input name="teamName" maxLength={150} defaultValue={c?.teamName} placeholder="Marketing, with Sales north" className={field} /></label>
         <label className="block text-xs font-medium">Starts<input name="startAt" type="date" defaultValue={iso(c?.startAt)} className={field} /></label>
         <label className="block text-xs font-medium">Ends<input name="endAt" type="date" defaultValue={iso(c?.endAt)} className={field} /></label>
@@ -76,5 +79,6 @@ export function CampaignBriefFields({ campaign, options }: { campaign?: Campaign
       <Area name="risks" label="Risks" value={c?.risks} hint="Stock of the new range may not land before launch." rows={2} />
       <Area name="dependencies" label="Depends on" value={c?.dependencies} hint="Price list signed off; product photography; sales team briefed." rows={2} />
     </fieldset>
+    <fieldset className={group}><legend className="px-1 text-sm font-semibold">Detailed brief and resources</legend><CampaignDetailsFields details={readCampaignDetails(c?.brief)}/></fieldset>
   </div>;
 }

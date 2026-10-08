@@ -1,24 +1,28 @@
 import { db } from "@/core/db/client";
 import type { Session } from "@/core/auth/session";
-import { can } from "@/core/permissions/check";
+import { requireMarketing } from "./queries";
+import { assertCapability, can } from "@/core/permissions/check";
 
 /** Everything the campaign workspace shows: the brief, its plan and money, and what it has produced. */
 export async function loadCampaignWorkspace(session: Session, campaignId: string) {
+  assertCapability(session,"marketing.campaign.read");
+  await requireMarketing(session);
   const organisationId = session.organisationId;
   const campaign = await db.marketingCampaign.findFirst({ where: { id: campaignId, organisationId }, include: { audience: { select: { id: true, name: true } } } });
   if (!campaign) return null;
-  const [lines, activities, spend, leads, touches, posts, messages, children, owner, product, parent] = await Promise.all([
+  const [lines, activities, spend, leads, touches, posts, messages, children, owner, product, parent, content] = await Promise.all([
     db.marketingBudgetLine.findMany({ where: { organisationId, campaignId }, orderBy: [{ month: "asc" }, { createdAt: "asc" }] }),
     db.marketingActivity.findMany({ where: { organisationId, campaignId }, orderBy: [{ startAt: { sort: "asc", nulls: "last" } }, { createdAt: "asc" }] }),
     db.marketingPaidSpend.findMany({ where: { organisationId, campaignId }, orderBy: { day: "desc" }, take: 200 }),
-    db.marketingLead.findMany({ where: { organisationId, campaignId }, select: { id: true, status: true, prospectId: true, mqlAt: true, profile: { select: { partyId: true, contactId: true } } }, orderBy: { mqlAt: "desc" }, take: 500 }),
+    can(session,"marketing.lead.read") ? db.marketingLead.findMany({ where: { organisationId, campaignId }, select: { id: true, status: true, prospectId: true, mqlAt: true, profile: { select: { partyId: true, contactId: true } } }, orderBy: { mqlAt: "desc" }, take: 500 }) : [],
     db.marketingTouch.findMany({ where: { organisationId, campaignId }, select: { profileId: true, channel: true, source: true, occurredAt: true }, orderBy: { occurredAt: "asc" }, take: 5000 }),
     db.marketingSocialPost.findMany({ where: { organisationId, campaignId }, select: { id: true, caption: true, status: true, scheduledAt: true, publishedAt: true }, orderBy: { createdAt: "desc" }, take: 20 }),
-    db.marketingMessage.findMany({ where: { organisationId, campaignId }, orderBy: { createdAt: "desc" }, take: 20 }),
+    can(session,"marketing.email.read") ? db.marketingMessage.findMany({ where: { organisationId, campaignId }, orderBy: { createdAt: "desc" }, take: 20 }) : [],
     db.marketingCampaign.findMany({ where: { organisationId, parentId: campaignId }, select: { id: true, name: true, code: true, status: true, budgetMinor: true, currency: true } }),
     db.user.findUnique({ where: { id: campaign.ownerUserId }, select: { name: true } }),
     campaign.productId ? db.product.findFirst({ where: { id: campaign.productId, organisationId }, select: { id: true, code: true, name: true } }) : null,
     campaign.parentId ? db.marketingCampaign.findFirst({ where: { id: campaign.parentId, organisationId }, select: { id: true, name: true } }) : null,
+    can(session,"marketing.content.read") ? db.marketingContent.findMany({where:{organisationId,campaignId},select:{id:true,name:true,kind:true,body:true,status:true,rights:true},orderBy:{createdAt:"desc"},take:50}) : [],
   ]);
 
   // People and customers reached, and what those customers went on to order.
@@ -38,11 +42,11 @@ export async function loadCampaignWorkspace(session: Session, campaignId: string
   const adSpend = sum(spend.map((row) => row.spendMinor)), activityCost = sum(activities.map((row) => row.costMinor));
   const actual = lineActual + adSpend;
   const revenue = sum(influenced.map((order) => order.netAmount));
-  const open = deals.filter((deal) => deal.status === "OPEN"), won = deals.filter((deal) => deal.status === "WON");
+  const open = deals.filter((deal) => deal.status === "OPEN" && deal.valueCurrency===campaign.currency), won = deals.filter((deal) => deal.status === "WON" && deal.valueCurrency===campaign.currency);
   const channels = new Map<string, number>();
   for (const touch of touches) { const key = touch.channel || touch.source || "Other"; channels.set(key, (channels.get(key) ?? 0) + 1); }
   return {
-    campaign, owner: owner?.name ?? "—", product, parent, children, lines, activities, spend, leads, posts, messages, deals, influenced: influenced.slice(0, 25), seeSales,
+    campaign, owner: owner?.name ?? "—", product, parent, children, lines, activities, spend, leads, posts, messages, content, deals, influenced: influenced.slice(0, 25), seeSales,
     totals: { planned, committed, lineActual, adSpend, activityCost, actual, remaining: campaign.budgetMinor - actual, unallocated: campaign.budgetMinor - planned },
     results: {
       touches: touches.length, people: profileIds.length, customers: firstTouch.size, leads: leads.length, handed: leads.filter((lead) => lead.prospectId).length,
@@ -60,7 +64,7 @@ export async function campaignBriefOptions(session: Session, exceptId?: string) 
   const [audiences, products, members, programmes] = await Promise.all([
     can(session, "marketing.audience.read") ? db.marketingAudience.findMany({ where: { organisationId }, select: { id: true, name: true }, orderBy: { name: "asc" }, take: 200 }) : [],
     db.product.findMany({ where: { organisationId, active: true }, select: { id: true, name: true, code: true }, orderBy: { name: "asc" }, take: 1000 }),
-    db.membership.findMany({ where: { organisationId }, select: { userId: true, user: { select: { name: true } } }, orderBy: { user: { name: "asc" } } }),
+    db.membership.findMany({ where: { organisationId, active:true }, select: { userId: true, user: { select: { name: true } } }, orderBy: { user: { name: "asc" } } }),
     db.marketingCampaign.findMany({ where: { organisationId, ...(exceptId ? { id: { not: exceptId } } : {}) }, select: { id: true, name: true }, orderBy: { name: "asc" }, take: 200 }),
   ]);
   return { audiences, products, members: members.map((member) => ({ id: member.userId, name: member.user.name })), programmes };

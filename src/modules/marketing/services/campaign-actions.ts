@@ -2,6 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import type { Prisma } from "@/generated/prisma/client";
+import { parseCampaignDetails, mergeCampaignDetails } from "../domain/campaign-details";
+import { moneyMinor } from "../domain/planning";
 import { db } from "@/core/db/client";
 import { requireSession, type Session } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
@@ -11,9 +14,9 @@ import { ACTIVITY_KINDS, ACTIVITY_STATUSES, AD_PROVIDERS, BUDGET_CATEGORIES, CAM
 
 const text = (form: FormData, name: string, max = 300) => String(form.get(name) ?? "").trim().slice(0, max);
 const long = (form: FormData, name: string) => text(form, name, 5000);
-const pounds = (form: FormData, name: string) => { const value = text(form, name, 20); if (!value) return 0; const minor = Math.round(Number(value.replace(/,/g, "")) * 100); if (!Number.isSafeInteger(minor) || minor < 0 || minor > 2_000_000_000) throw new Error("Enter an amount of zero or more."); return minor; };
+const pounds = (form: FormData, name: string) => {const value=text(form,name,30);return value?moneyMinor(value):0;};
 const whole = (form: FormData, name: string) => { const value = text(form, name, 12); if (!value) return 0; const number = Number(value); if (!Number.isInteger(number) || number < 0 || number > 100_000_000) throw new Error("Enter a whole number, zero or more."); return number; };
-const date = (form: FormData, name: string) => { const value = text(form, name, 10); if (!value) return null; const parsed = new Date(`${value}T00:00:00Z`); if (Number.isNaN(parsed.getTime())) throw new Error("Enter a valid date."); return parsed; };
+const date = (form: FormData, name: string) => { const value = text(form, name, 10); if (!value) return null; const parsed = new Date(`${value}T00:00:00Z`); if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0,10)!==value) throw new Error("Enter a valid date."); return parsed; };
 const pick = <T extends string>(value: string, options: readonly T[], fallback: T) => (options.includes(value as T) ? (value as T) : fallback);
 
 async function manager(capability = "marketing.campaign.manage") {
@@ -28,7 +31,7 @@ async function owned(session: Session, id: string) {
   return campaign;
 }
 const refresh = (id: string) => { revalidatePath("/marketing", "layout"); revalidatePath(`/marketing/campaigns/${id}`); };
-const audit = (session: Session, action: string, entityId: string, after: object = {}) => db.auditEntry.create({ data: { organisationId: session.organisationId, actorUserId: session.userId, action: `marketing.${action}`, entityType: "MarketingCampaign", entityId, after } });
+const audit = (session: Session, action: string, entityId: string, after: object = {}, client: Pick<Prisma.TransactionClient,"auditEntry"> = db) => client.auditEntry.create({ data: { organisationId: session.organisationId, actorUserId: session.userId, action: `marketing.${action}`, entityType: "MarketingCampaign", entityId, after } });
 
 async function briefFields(session: Session, form: FormData) {
   const organisationId = session.organisationId;
@@ -40,45 +43,59 @@ async function briefFields(session: Session, form: FormData) {
   if (audienceId && !(await db.marketingAudience.findFirst({ where: { id: audienceId, organisationId }, select: { id: true } }))) throw new Error("Choose an audience from your list.");
   if (productId && !(await db.product.findFirst({ where: { id: productId, organisationId }, select: { id: true } }))) throw new Error("Choose a product from the catalogue.");
   if (parentId && !(await db.marketingCampaign.findFirst({ where: { id: parentId, organisationId }, select: { id: true } }))) throw new Error("Choose a programme from your campaigns.");
-  if (ownerUserId && !(await db.membership.findFirst({ where: { organisationId, userId: ownerUserId }, select: { id: true } }))) throw new Error("Choose an owner from your team.");
+  if (ownerUserId && !(await db.membership.findFirst({ where: { organisationId, userId: ownerUserId, active:true }, select: { id: true } }))) throw new Error("Choose an owner from your team.");
   const currency = text(form, "currency", 3).toUpperCase() || "GBP";
   if (!/^[A-Z]{3}$/.test(currency)) throw new Error("Currency is a three-letter code, for example GBP.");
   return {
     name, description: long(form, "description"), type: pick(text(form, "type", 40), CAMPAIGN_TYPES, "CUSTOM"), startAt, endAt, audienceId, productId, parentId, currency,
     objective: long(form, "objective"), businessGoal: long(form, "businessGoal"), targetMarket: long(form, "targetMarket"), persona: long(form, "persona"), positioning: long(form, "positioning"), message: long(form, "message"), offer: long(form, "offer"), cta: text(form, "cta", 300),
-    channels: form.getAll("channels").map(String).filter((channel) => (CAMPAIGN_CHANNELS as readonly string[]).includes(channel)),
+    channels: [...new Set(form.getAll("channels").map(String).filter((channel) => (CAMPAIGN_CHANNELS as readonly string[]).includes(channel)))],
     budgetMinor: pounds(form, "budget"), targetLeads: whole(form, "targetLeads"), targetCustomers: whole(form, "targetCustomers"), targetPipelineMinor: pounds(form, "targetPipeline"), targetRevenueMinor: pounds(form, "targetRevenue"),
-    goal: text(form, "goal", 300), risks: long(form, "risks"), dependencies: long(form, "dependencies"), teamName: text(form, "teamName", 150), region: text(form, "region", 150), language: text(form, "language", 40) || "en", brand: text(form, "brand", 100) || "DEFAULT",
+    goal: text(form, "goal", 300), risks: long(form, "risks"), dependencies: long(form, "dependencies"), teamName: text(form, "teamName", 150), region: text(form, "region", 150), language: text(form, "language", 40) || "en", ...(form.has("brand")?{brand:text(form,"brand",100)||"DEFAULT"}:{}),
     utmCampaign: text(form, "utmCampaign", 150).toLowerCase().replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, ""), isProgramme: form.get("isProgramme") === "on",
     ...(ownerUserId ? { ownerUserId } : {}),
   };
 }
 
 export async function createCampaignAction(form: FormData) {
-  const session = await manager("marketing.campaign.create");
+  const session = await requireSession();
+  assertCapability(session,"marketing.campaign.create");
+  await requireMarketing(session);
   const data = await briefFields(session, form);
+  const details=form.get('briefWorkspace')==='1'?parseCampaignDetails(form):null;
   const typed = text(form, "code", 50).toUpperCase().replace(/[^A-Z0-9-]+/g, "-").replace(/^-+|-+$/g, "");
-  const count = await db.marketingCampaign.count({ where: { organisationId: session.organisationId } });
-  const code = typed || `CMP-${String(count + 1).padStart(4, "0")}`;
-  if (await db.marketingCampaign.findFirst({ where: { organisationId: session.organisationId, code }, select: { id: true } })) throw new Error(`The code ${code} is already used by another campaign.`);
-  const campaign = await db.marketingCampaign.create({ data: { ...data, ownerUserId: data.ownerUserId ?? session.userId, organisationId: session.organisationId, code, utmCampaign: data.utmCampaign || code.toLowerCase() } });
-  // The builder can split the budget by channel and lay out a dated launch plan in the same step.
-  const month = data.startAt ? data.startAt.toISOString().slice(0, 7) : "";
-  const split = data.channels.map((channel) => ({ channel, plannedMinor: pounds(form, `split:${channel}`) })).filter((row) => row.plannedMinor > 0);
-  if (split.length) await db.marketingBudgetLine.createMany({ data: split.map((row) => ({ organisationId: session.organisationId, campaignId: campaign.id, category: channelCategory(row.channel), label: row.channel, month, plannedMinor: row.plannedMinor, forecastMinor: row.plannedMinor })) });
-  if (form.get("seedPlan") === "on") await db.marketingActivity.createMany({ data: launchPlan(data.channels, data.startAt, data.endAt).map((step) => ({ ...step, organisationId: session.organisationId, campaignId: campaign.id, ownerUserId: campaign.ownerUserId })) });
-  await audit(session, "campaign.created", campaign.id, { code, name: data.name });
+  const split = data.channels.map(channel=>({channel,plannedMinor:pounds(form,`split:${channel}`)})).filter(row=>row.plannedMinor>0);
+  if(split.reduce((total,row)=>total+row.plannedMinor,0)>data.budgetMinor)throw new Error('Channel allocations exceed the campaign budget.');
+  const campaign=await db.$transaction(async tx=>{
+    const count=await tx.marketingCampaign.count({where:{organisationId:session.organisationId}});
+    const code=typed||`CMP-${String(count+1).padStart(4,"0")}`;
+    if(await tx.marketingCampaign.findFirst({where:{organisationId:session.organisationId,code},select:{id:true}}))throw new Error(`The code ${code} is already used by another campaign.`);
+    const row=await tx.marketingCampaign.create({data:{...data,...(details?{brief:mergeCampaignDetails({},details) as Prisma.InputJsonValue}:{}),ownerUserId:data.ownerUserId??session.userId,organisationId:session.organisationId,code,utmCampaign:data.utmCampaign||code.toLowerCase()}});
+    const month=data.startAt?.toISOString().slice(0,7)??'';
+    if(split.length)await tx.marketingBudgetLine.createMany({data:split.map(line=>({organisationId:session.organisationId,campaignId:row.id,category:channelCategory(line.channel),label:line.channel,month,plannedMinor:line.plannedMinor,forecastMinor:line.plannedMinor}))});
+    if(form.get("seedPlan")==="on")await tx.marketingActivity.createMany({data:launchPlan(data.channels,data.startAt,data.endAt).map(step=>({...step,organisationId:session.organisationId,campaignId:row.id,ownerUserId:row.ownerUserId}))});
+    await audit(session,"campaign.created",row.id,{code,name:data.name},tx);
+    return row;
+  },{isolationLevel:'Serializable'});
   refresh(campaign.id);
   redirect(`/marketing/campaigns/${campaign.id}`);
 }
 
 export async function saveCampaignBriefAction(form: FormData) {
-  const session = await manager();
-  const campaign = await owned(session, text(form, "campaignId", 60));
-  const data = await briefFields(session, form);
-  if (data.parentId === campaign.id) throw new Error("A campaign cannot be part of itself.");
-  await db.marketingCampaign.update({ where: { id: campaign.id }, data: { ...data, version: { increment: 1 } } });
-  await audit(session, "campaign.brief_saved", campaign.id, { name: data.name });
+  const session = await requireSession();
+  assertCapability(session,"marketing.campaign.manage");
+  await requireMarketing(session);
+  const campaign=await owned(session,text(form,"campaignId",60));
+  const data=await briefFields(session,form);
+  if(data.parentId===campaign.id)throw new Error('A campaign cannot be part of itself.');
+  const version=Number(form.get('version'));
+  if(!Number.isSafeInteger(version)||version<1)throw new Error('Refresh the campaign before saving.');
+  const details=form.get('briefWorkspace')==='1'?parseCampaignDetails(form):null;
+  await db.$transaction(async tx=>{
+    const changed=await tx.marketingCampaign.updateMany({where:{id:campaign.id,organisationId:session.organisationId,version},data:{...data,...(details?{brief:mergeCampaignDetails(campaign.brief,details) as Prisma.InputJsonValue}:{}),version:{increment:1}}});
+    if(changed.count!==1)throw new Error('This campaign changed. Refresh before saving; your entered details are still here.');
+    await audit(session,"campaign.brief_saved",campaign.id,{name:data.name},tx);
+  });
   refresh(campaign.id);
 }
 

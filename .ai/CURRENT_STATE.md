@@ -1,5 +1,34 @@
 # Atlas current state
 
+## Marketing campaign information and workspace — 8 October 2026
+
+- Michael requested research into established marketing platforms and a stronger
+  app, particularly the information users can capture. Reviewed official HubSpot
+  campaign, Mailchimp audience and Brevo campaign documentation; sources and design
+  mapping: `docs/plans/MARKETING_WORKSPACE_RESEARCH.md`.
+- Campaign creation/editing now supports 14 optional detailed brief fields, brand,
+  up to 20 named custom fields and 20 named resource links using existing campaign
+  metadata. Overview reads those details; Content and links opens resources and
+  creates/reads campaign-linked content through existing content permissions and
+  draft/independent approval flow. Activity notes support multiline briefs.
+- Navigation exposes existing audiences/content/messages/profiles/consent/analytics.
+  Existing campaign creation now validates exact money/dates/allocations before
+  persistence and atomically saves campaign, budget lines, launch plan and audit.
+  Brief saves require the expected version and preserve unrelated metadata/brand.
+  Marketing forms/builders retain rejected drafts; update scope remains server-side.
+  Campaign detail no longer loads leads/messages without their respective read grants.
+  Pipeline totals stay in the campaign currency; order value is labelled separately
+  from invoiced revenue. Restricted lead results are not presented as zero.
+- Paths: Marketing campaign page, manifest, campaign actions/workspace, brief/builder/
+  detail/form components, domain campaign-details, Marketing regression tests and
+  `scripts/check-marketing-workspace.ts`. No schema migration or delivery provider.
+- Checks: full suite 746 passed / 22 integration skips; production build, separate
+  strict TypeScript, changed-file lint (including acceptance script) and diff check
+  passed. Test navigation selectors were scoped to the builder navigation after an
+  ambiguous selector failure. Deployment/live acceptance pending. Next: deploy and
+  verify real create/edit/content workflows.
+  External sending/publishing and the full 275-section brief remain incomplete.
+
 ## Customer Service historical department work — 8 October 2026
 
 - Confirmed on the live server: `/service/tickets` redirected to the newer Tickets

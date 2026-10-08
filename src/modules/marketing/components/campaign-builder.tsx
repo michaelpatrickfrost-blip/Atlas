@@ -1,4 +1,6 @@
 "use client";
+import { CampaignDetailsFields } from "./campaign-details";
+import { readCampaignDetails } from "../domain/campaign-details";
 import Link from "next/link";
 import { useMemo, useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
@@ -60,10 +62,10 @@ export function CampaignBuilder({ options }: { options: BriefOptions }) {
   };
   const t = template, initial = t ? dates(t.weeks) : { startAt: "", endAt: "" };
   const panel = (id: string) => STEPS[step].id !== id;
-  return <form ref={form} action={submit} onInput={read} onChange={read} className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)_300px]">
-    <nav className="space-y-1 lg:sticky lg:top-4 lg:self-start">{STEPS.map((item, index) => <button key={item.id} type="button" onClick={() => setStep(index)} className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm ${index === step ? "bg-blue-50 font-semibold text-blue-700" : "text-slate-600 hover:bg-slate-50"}`}><span className={`grid size-6 shrink-0 place-items-center rounded-full text-xs font-semibold ${done[item.id] ? "bg-emerald-500 text-white" : index === step ? "bg-blue-600 text-white" : "bg-slate-200 text-slate-600"}`}>{done[item.id] ? "✓" : index + 1}</span>{item.label}</button>)}</nav>
+  return <form ref={form} method="post" noValidate onSubmit={event=>{event.preventDefault();if(!pending)submit(new FormData(event.currentTarget));}} onInput={read} onChange={read} className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)_300px]">
+    <nav className="space-y-1 lg:sticky lg:top-4 lg:self-start">{STEPS.map((item, index) => <button key={item.id} type="button" disabled={pending} onClick={() => setStep(index)} className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm ${index === step ? "bg-blue-50 font-semibold text-blue-700" : "text-slate-600 hover:bg-slate-50"}`}><span className={`grid size-6 shrink-0 place-items-center rounded-full text-xs font-semibold ${done[item.id] ? "bg-emerald-500 text-white" : index === step ? "bg-blue-600 text-white" : "bg-slate-200 text-slate-600"}`}>{done[item.id] ? "✓" : index + 1}</span>{item.label}</button>)}</nav>
 
-    <div className="min-w-0">
+    <fieldset disabled={pending} className="min-w-0">
       <div className="rounded-2xl border border-slate-200 bg-white p-6">
         <p className="text-xs font-medium text-slate-500">Step {step + 1} of {STEPS.length}</p>
         <h2 className="mt-1 text-xl font-semibold tracking-tight">{STEPS[step].label}</h2>
@@ -84,6 +86,7 @@ export function CampaignBuilder({ options }: { options: BriefOptions }) {
               <label className="block text-xs font-medium">Starts<input name="startAt" type="date" defaultValue={initial.startAt} className={field} /></label>
               <label className="block text-xs font-medium">Ends<input name="endAt" type="date" defaultValue={initial.endAt} className={field} /></label>
               <label className="block text-xs font-medium">Owner<select name="ownerUserId" defaultValue="" className={field}><option value="">Me</option>{options.members.map((member) => <option key={member.id} value={member.id}>{member.name}</option>)}</select></label>
+              <label className="block text-xs font-medium">Brand<input name="brand" maxLength={100} defaultValue="DEFAULT" className={field}/></label>
               <label className="block text-xs font-medium">Team<input name="teamName" maxLength={150} placeholder="Marketing, with Sales north" className={field} /></label>
               <label className="block text-xs font-medium">Part of a programme<select name="parentId" defaultValue="" className={field}><option value="">Stands alone</option>{options.programmes.map((row) => <option key={row.id} value={row.id}>{row.name}</option>)}</select></label>
               <label className="flex items-center gap-2 self-end pb-2.5 text-sm"><input type="checkbox" name="isProgramme" className="size-4" />This is a programme other campaigns sit under</label>
@@ -120,6 +123,7 @@ export function CampaignBuilder({ options }: { options: BriefOptions }) {
             <Area name="offer" label="Offer" value={t?.offer} hint="Free site survey, or 10% off first order before 30 June." rows={2} />
             <label className="block text-xs font-medium">Call to action<input name="cta" maxLength={300} defaultValue={t?.cta} placeholder="Book a site survey" className={field} /></label>
             <Area name="risks" label="Risks" hint="Stock of the new range may not land before launch." rows={2} />
+            <details className="rounded-xl border border-slate-200 p-4"><summary className="cursor-pointer text-sm font-semibold">Detailed brief, custom information and resources</summary><div className="mt-4"><CampaignDetailsFields details={readCampaignDetails(null)}/></div></details>
             <Area name="dependencies" label="Depends on" hint="Price list signed off; product photography; sales team briefed." rows={2} />
           </div>
 
@@ -146,7 +150,7 @@ export function CampaignBuilder({ options }: { options: BriefOptions }) {
 
         <div hidden={panel("review")} className="mt-5 space-y-3 text-sm">
           {[["Campaign", snap.name || "Not named yet"], ["Type", words(snap.type ?? "")], ["Runs", snap.startAt && snap.endAt ? `${day(startAt)} – ${day(endAt)}` : "Dates not set"], ["Objective", snap.objective || "Not written"], ["Audience", options.audiences.find((row) => row.id === snap.audienceId)?.name ?? (snap.targetMarket || "Not chosen")], ["Key message", snap.message || "Not written"], ["Offer", snap.offer || "None"], ["Call to action", snap.cta || "Not written"], ["Channels", channels.join(", ") || "None chosen"], ["Budget", budget ? `${gbp(budget, currency)} · ${gbp(allocated, currency)} shared between channels` : "Not set"], ["Launch plan", seed ? `${plan.length} activities will be added` : "Not adding activities"]].map(([label, value]) => <div key={label} className="grid gap-1 border-b border-slate-100 pb-3 sm:grid-cols-[150px_1fr]"><span className="text-slate-500">{label}</span><span className="whitespace-pre-line font-medium">{value}</span></div>)}
-          <p className="text-slate-500">The campaign is created as a draft. Nothing is sent or published until you schedule it.</p>
+          <p className="text-slate-500">The campaign is created as a draft. Scheduling plans your work; delivery requires a configured provider.</p>
         </div>
         {error && <p role="alert" className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}
       </div>
@@ -157,7 +161,7 @@ export function CampaignBuilder({ options }: { options: BriefOptions }) {
           {step < STEPS.length - 1 ? <Button type="button" variant="primary" onClick={() => { if (step === 0 && !template) choose(null); else setStep(step + 1); }}>Next</Button> : <Button type="submit" variant="primary" disabled={pending}>{pending ? "Creating…" : "Create campaign"}</Button>}
         </div>
       </div>
-    </div>
+    </fieldset>
 
     <aside className="space-y-4 lg:sticky lg:top-4 lg:self-start">
       <div className="rounded-2xl border border-slate-200 bg-white p-5">

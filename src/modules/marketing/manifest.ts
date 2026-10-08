@@ -9,6 +9,12 @@ const desk: Array<[string, string, string]> = [
   ['Social', '/marketing/social', 'marketing.campaign.read'],
   ['Budgets', '/marketing/budgets', 'marketing.campaign.read'],
   ['Journey', '/marketing/journey', 'marketing.campaign.read'],
+  ['Audiences', '/marketing/audiences', 'marketing.audience.read'],
+  ['Content', '/marketing/content', 'marketing.content.read'],
+  ['Messages', '/marketing/email', 'marketing.email.read'],
+  ['Profiles', '/marketing/profiles', 'marketing.profile.read'],
+  ['Consent', '/marketing/consent', 'marketing.consent.view'],
+  ['Analytics', '/marketing/analytics', 'marketing.report.read'],
   ['Leads', '/marketing/leads', 'marketing.lead.read'],
 ];
 

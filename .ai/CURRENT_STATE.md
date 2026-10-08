@@ -1,31 +1,50 @@
 # Atlas current state
 
-## 8 October 2026 — HR platform expansion (live verification pending)
+## 8 October 2026 — HR platform deployed and verified
 
-- Operational HR home, preserved employee directory/filter URLs, internal vacancies/
-  applicants with accepted-offer handover to canonical onboarding Employee; training/
-  qualifications, own learning, document renewal/archive and workforce reports.
-- Employee management owns recruitment; no permission grants changed. New actions
-  require active HR, tenant references, submitted versions and atomic audit under
-  serializable transactions. Generic reads retain applicant/own-learning boundaries.
-- Additive migration `20261008160000_hr_platform`; preserves existing employees,
-  document metadata, payroll and lifecycle history. No local business DB/cache.
-- Checks: 30 focused / final full suite 893 passed, 22 integration skips;
-  final production build, separate strict TypeScript, scoped ESLint and whitespace pass.
-  Runtime `94e1c34` deployed with Service repair preserved; 98 migrations current.
-  First live run reached Home; ambiguous select labels stopped the browser fixture
-  before vacancy creation. Explicit form labels added; rebuild/redeploy and rerun.
-  Fixture company suspended and credentials revoked. A separate TypeScript check
-  caught an unsupported option in the new accessibility tests; corrected without
-  changing application behaviour. Strict TypeScript now passes. Second live run saved vacancy/applicant/interview/
-  offer correctly; scoped the existing Add employee dialog Department locator to
-  distinguish it from the directory filter. Point all-absence decision counts to
-  Absence rather than the holiday-only workspace; rebuild/redeploy and rerun.
-- Paths: people routes/components/domain/platform services, schema/migration, data API
-  policy/metadata/actions, `tests/hr-platform*`, `scripts/check-hr-platform.ts`.
-  Research/scope: `docs/plans/HR_PLATFORM_RESEARCH.md`, `docs/modules/HR_PLATFORM.md`.
-- Pending: deploy compatible release, exercise hire/onboarding/learning/renewal/privacy/
-  mobile workflows, integrate owned changes into primary and save release evidence.
+- Runtime `e20c5c8` live at https://atlassystem.online. HR home, preserved employee
+  directory/filter URLs, owned vacancies/applicants, interview/offer/hire handover,
+  learning/qualifications, own learning, document renewals/archive and workforce reports.
+  Scope/research: `docs/modules/HR_PLATFORM.md`, `docs/plans/HR_PLATFORM_RESEARCH.md`.
+- Hiring links one canonical same-company ONBOARDING Employee with matching email,
+  created through existing checklists/review triggers. Employee management owns
+  confidential recruitment; hire also needs onboarding management. No profile grants
+  changed. Training/document readers and own-learning scopes remain separate.
+- New actions require session/capability/active HR, valid dates and tenant references,
+  submitted integer versions and atomic central audit in serializable transactions.
+  New tenant-qualified relations prevent foreign-company employee/vacancy links.
+  Data API protects applicants and own learning, including active module entitlement.
+- Guided forms retain rejected drafts, clear new records only after successful saves,
+  and use explicit accessible labels. Known restriction/disabled views explain recovery.
+  All-absence decision counts open Absence. Archived documents and closed applicants
+  retain history; qualification completion/renewal is recorded evidence, not certification.
+- Additive `20261008160000_hr_platform` applied; 98 migrations current. Existing
+  employees, documents, roles, payroll and history preserved; no local business DB/cache.
+  Private database/service-file backups `atlas-pre-deploy-20261008-140555`,
+  `atlas-pre-deploy-20261008-141006`, `atlas-pre-deploy-20261008-141419` retained.
+- Checks: final full suite 893 passed / 22 integration skips (141 files pass/3 skip),
+  30 focused HR regressions; production build, separate strict TypeScript, scoped
+  ESLint and whitespace pass. Primary integration's 30 focused tests pass. Server
+  build/restart/public login 200 pass; active service and clean checkout verified.
+- Final server-only `scripts/check-hr-platform.ts` passed all 36 live assertions:
+  vacancy/applicant/interview/offer/hire into one onboarding record; actual training,
+  overdue/expiry and stale saves; document dates/archive; reports/record links/legacy
+  filters; five 390px layouts; zero manager browser errors; own-learning, applicant,
+  read-only, foreign-company, disabled-module and unsafe-link controls; central audit.
+  Exact synthetic companies suspended and sessions/credentials revoked on every run;
+  central history retained. Final phone screenshot visually reviewed.
+- Earlier runs stopped on ambiguous select labels (fixed in UI) then an unscoped
+  Department test locator (fixed to employee dialog). Separate TypeScript caught an
+  unsupported test option; corrected and strict check rerun successfully. Complete
+  acceptance rerun on final runtime; no guard weakened or failed assertion hidden.
+- Owned changes integrated into canonical repo using base comparisons and narrow
+  schema/manifest/data-policy/generated allowlist/doc merges; concurrent changes kept.
+  Concurrent Service repair `7079baa` retained. Evidence:
+  `docs/evidence/2026-10-08-hr-platform.md`.
+- Remaining: public recruiting/job boards/invitations, course delivery/automatic
+  competence enforcement, file uploads/signatures, benefits, configurable probation,
+  historical FTE/turnover and unattended notifications. Dedicated company server
+  environments remain a separate unimplemented requirement, not proved by tenant tests.
 
 ## Guardian work assignment — 8 October 2026
 

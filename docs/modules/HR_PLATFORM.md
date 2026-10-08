@@ -62,7 +62,7 @@ and private pre-deploy backups remain authoritative; no local business DB/cache 
 
 Additive migration: `20261008160000_hr_platform`. Existing document records, employees,
 roles, payroll facts and onboarding history are preserved. Release/live evidence lives
-in `.ai/CURRENT_STATE.md` and `docs/evidence/2026-10-08-hr-platform.md` when verified.
+in `.ai/CURRENT_STATE.md` and `docs/evidence/2026-10-08-hr-platform.md`.
 
 ## Remaining boundaries
 

@@ -22,18 +22,28 @@
 - Paths: Marketing campaign page, manifest, campaign actions/workspace, brief/builder/
   detail/form components, domain campaign-details, Marketing regression tests and
   `scripts/check-marketing-workspace.ts`. No schema migration or delivery provider.
-- Checks before first release: full suite 750 passed / 22 integration skips; production build, separate
-  strict TypeScript, changed-file lint (including acceptance script) and diff check
-  passed. First application release `76ecde5` deployed with database/private-file
-  backup `atlas-pre-deploy-20261008-121810`; 96 migrations current, service/login healthy.
-  Live browser validation found production React error 441 instead of expected
-  validation text (draft retained, full acceptance not passed). Added explicit safe
-  validation results for campaign create/brief saves; unexpected/server/auth errors
-  remain protected. Both Marketing clients handle returned errors without resetting
-  drafts or reporting success. Follow-up full suite 750 passed / 22 skips, production
-  build, strict TypeScript, changed-file lint and diff check passed. Redeployment/live
-  acceptance pending. Next: deploy and verify real create/edit/content workflows.
-  External sending/publishing and the full 275-section brief remain incomplete.
+- Validation: full compatible suite 750 passed / 22 integration skips; production
+  build, separate strict TypeScript, changed-file lint and diff check passed. Primary
+  integration: 52 focused Marketing tests passed in seven files. Initial ambiguous
+  navigation/textarea selectors were corrected in the acceptance harness.
+- Application releases `76ecde5` and `d77e7c4` deployed with database/private-evidence
+  backups `atlas-pre-deploy-20261008-121810` and `atlas-pre-deploy-20261008-122647`.
+  Both server builds/restarts passed; 96 migrations current and HTTPS login 200.
+  Initial live validation exposed production React error 441; follow-up explicitly
+  returns safe campaign validation results while retaining protected auth/database
+  exceptions. Clients keep entered work and do not report success for validation errors.
+- Final live acceptance on `d77e7c4`: all 12 assertions passed through normal login
+  and actual forms, including rejected allocation/no partial record, brand/detail/
+  custom/resource round trip, budget/launch-plan creation, connected draft content,
+  two-tab stale-save protection/draft retention, phone layout, no browser errors,
+  read-only/other-company boundaries and raw action denial. Synthetic companies
+  suspended and credentials revoked after every attempt; central history retained.
+  Evidence: `docs/evidence/2026-10-08-marketing-workspace.md`. Owned changes and memory
+  integrated into the canonical primary without replacing concurrent edits.
+- No delivery provider or schema migration. External sending/publishing and the
+  complete 275-section Marketing brief remain unfinished; next work should extend
+  audience/content authoring and provider-backed execution without treating planning
+  guidance or campaign status as delivery/approval evidence.
 
 ## Customer Service historical department work — 8 October 2026
 

@@ -1,5 +1,16 @@
 # Atlas decisions
 
+## 8 October 2026 — Optional Marketing information stays with its campaign
+
+Extend existing campaign metadata (`brief.workspace`) for optional planning details,
+custom values and resource links; preserve unrelated metadata and canonical identities.
+Use disclosures so additional information does not make every field mandatory.
+Campaign-linked content retains its own permissions and independent approval.
+Expected campaign validation failures return explicitly classified safe results;
+arbitrary server/auth/database errors remain protected. Planning and recorded order
+influence are distinct from delivery, approval execution and invoiced revenue.
+See `docs/plans/MARKETING_WORKSPACE_RESEARCH.md` for sources and rationale.
+
 ## 8 October 2026 — Continuous ERP unification on existing owners
 
 Michael supplied the full ERP/MRP master brief and explicitly rejected phased

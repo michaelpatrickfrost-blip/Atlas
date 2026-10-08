@@ -14,7 +14,24 @@
   order, projected label, settings visibility and keyboard disclosure. Validation
   passed: separate TypeScript, changed-file lint, production build and diff check.
   Latest logic suite remains 712 passed / 22 integration skips; no calculation
-  changed in this layout-only follow-up. Deployment/live presentation proof pending.
+  changed in this layout-only follow-up. Release `bae014b` deployed with server
+  build/restart and HTTPS login 200. Backup:
+  `/home/administrator/backups/atlas-pre-deploy-20261008-114017.dump` plus private
+  evidence archive. All 54 live assertions passed, including both Inventory
+  permissions, product/forecast order, settings disclosure/keyboard, other record
+  links, Home, Finance isolation and actual manufacturing rollback/concurrent retry.
+  Synthetic tenants suspended and credentials revoked; evidence retained centrally.
+- Both subsequent app releases are integrated into the shared primary using
+  base-equality or applicable patches, preserving its concurrent edits. Primary
+  focused suite: 56 passed (7 files). Primary-wide TypeScript remained unverified
+  after an idle six-minute run was stopped; clean release strict TypeScript and
+  build passed. Full evidence: `docs/evidence/2026-10-08-atlas-unification.md`.
+- Full master brief remains unfinished. Next: reproduce/unify both MRP execution
+  paths, then consistent restrictions/dated supply and costing. Further source
+  inspection found cockpit MRP loads product/site inventory keys but reads product
+  keys, records component pegging without netting that component demand, and reads
+  released quality holds. These are source findings, not a live verified repair.
+
 
 ## Atomic manufacturing completion — 8 October 2026
 

@@ -12,9 +12,11 @@ continuously. Preserve the [full requirements](requirements/ATLAS_MASTER_SYSTEM.
 | Atomic manufacturing consumption/output/progress | Live `bff3a5c`; 44 assertions passed; repeated partial output remains open | Multi-material failure rollback, retries and partial output reconciliation |
 | Time-phased Supply Lens and pegging | Open | Stock/reservations/known demand/firm supply, dates and source provenance |
 | MRP purchased supply and executable BUY/transfer | Open | Exact golden scenario, multi-level dates, traceable firming, approvals |
-| Operational Home/My Work and progressively disclosed records | Home live `77252b4`; 34 assertions passed; deeper per-record disclosure remains open | Real authorised queues, responsive/actionable views, no new duplicate tasks |
+| Operational Home/My Work and progressively disclosed records | Home/Inventory live through `bae014b`; 54 assertions passed; deeper per-record disclosure remains open | Real authorised queues, responsive/actionable views, no new duplicate tasks |
 | Operational Finance costing/WIP/COGS | Open | Owner contracts and physical/subledger/GL reconciliation |
 | Remaining master brief and hardening | Open | Requirement-by-requirement workflow/security/performance evidence |
 
 A live release is completion of its recorded scope only. It does not certify all
 251 requirements. Keep investigating and implementing beyond these entries.
+
+Release details: [8 October deployment evidence](evidence/2026-10-08-atlas-unification.md).

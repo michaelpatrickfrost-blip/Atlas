@@ -14,7 +14,7 @@ reproduced by tests are confirmed runtime defects. No claim of a full code audit
 | Two durable event paths | `AutomationEvent` sink/scheduler and Sales `DomainOutbox` are separate; inspect delivery semantics before consolidation. |
 | Split attachment architecture | Finance attachments, Projects documents, Core templates/contracts and Service evidence use different APIs/access paths. |
 | Overlapping quality state | QualityHold and QUARANTINE StockPosition have no explicit common hold identity for safe deduplication. |
-| Aggregate plan/execution overlap | `availability/picture.ts` uses max(plan, production), without item-date-source pegging. |
+| Aggregate plan/execution overlap | `availability/picture.ts` uses max(plan, production), without item-date-source pegging. Cockpit MRP and `/manufacturing/plan` use different engines; cockpit inventory keys/lookup and component-demand propagation need reproduced repair. |
 | Non-atomic manufacturing boundary | Reproduced and repaired: completion now shares one transaction with owner stock commands, progress and audit. Live `bff3a5c`: actual multi-material failure and concurrent retry passed. |
 | Scattered contextual navigation | Sales commercial links, service panels and Finance sources were bespoke; shared relationships now implemented on five root types; remaining roots open. |
 | Release checkout fragmentation | Primary main is older with extensive concurrent edits; live main is newer. Pinned clean release prevents unrelated deployment. |
@@ -28,7 +28,7 @@ reproduced by tests are confirmed runtime defects. No claim of a full code audit
 | Invoice metadata crosses read boundary | `readOrderChain` formerly queries/returns invoice references without Finance read; regression reproduced. |
 | Receipt supply missing from projection | Arrivals contain receipts but aggregate incoming formerly omitted them; regression reproduced. |
 | Arrival truncation affects promise | `incomingArrivals` formerly slices inputs at 12; a later covering arrival is ignored. |
-| Incomplete quality propagation | MRP reads QualityHold; Sales availability reads restricted positions; safe shared identity/atomicity unresolved. |
+| Incomplete quality propagation | MRP reads all QualityHold statuses and applies located holds to all product sites; Sales availability reads restricted positions. Safe shared provenance/atomicity remains unresolved. Source findings; no full live hold reconciliation claimed. |
 | Partial manufacturing failure | Reproduced in regressions and repaired with transaction propagation; actual authenticated failure/concurrent-retry passed on `bff3a5c`. Repeated partial output remains open. |
 | Procurement suggestion stops short | Manufacturing delivery guide records executable BUY/transfer handoffs as open. |
 | Customer delay explanation incomplete | One sourceSalesOrderLine relationship and JSON suggestion pegging cannot yet explain the entire supply chain. |
@@ -45,7 +45,7 @@ reproduced by tests are confirmed runtime defects. No claim of a full code audit
 | Stale connection guidance | Sales Connections had obsolete awaiting-connection guidance; replaced alongside real relationship navigation. |
 | Weak direct fulfilment link | Order fulfilment reference formerly pointed to queue; corrected to canonical record ID. |
 | Shared table overflow | Order chain lacked a local horizontal-scroll wrapper; corrected alongside the stock label. |
-| Configuration before product context | Implemented: product summary comes first; forecast exceptions remain visible, planning settings/reading guidance use disclosure. Live presentation proof pending. |
+| Configuration before product context | Implemented: product summary comes first; forecast exceptions remain visible, planning settings/reading guidance use disclosure. Live `bae014b`: product/forecast order, permission visibility and keyboard disclosure passed. |
 | Search groups can disappear | `core/search/aggregate.ts` globally slices first 20; earlier providers/navigation can crowd out business matches. |
 | Different import/document experiences | Domain-specific imports and attachment UIs require users to learn repeated patterns. |
 

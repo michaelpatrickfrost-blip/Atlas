@@ -48,7 +48,10 @@ build, separate strict TypeScript, scoped lint, Prisma schema validation/generat
 and whitespace checks pass. Central build/smoke and exact public SHA passed.
 Shared canonical integration retains concurrent schema/metadata/action aliases and
 newer recovery branches; all operational model metadata fields match the release. Canonical focused suite
-was rerun: **53 tests pass** across four files.
+was rerun: **53 tests pass** across four files; scoped registry/tests lint and
+whitespace pass. An additional whole dirty canonical-tree TypeScript attempt
+produced no result after over three minutes and was stopped. The isolated release
+strict TypeScript passed; the extra canonical attempt is not a passed check.
 
 Initial migration review caught an existing-Meeting timestamp default omission and
 unintended Inventory FK diff during the first dependency installation. That own

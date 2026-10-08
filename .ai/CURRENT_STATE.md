@@ -100,6 +100,9 @@
   separate strict TypeScript, scoped ESLint and whitespace pass. Shared-source
   integration preserves concurrent recovery code and extra generated schema fields;
   focused verification recorded in docs/evidence/2026-10-08-operational-apps.md.
+  Canonical rerun: 53 tests and scoped lint pass; extra whole dirty-tree TypeScript
+  attempt stopped after over three minutes with no result. Isolated release strict
+  TypeScript had passed; no whole canonical-tree typecheck success is claimed.
 - Microsoft OAuth/PKCE/encrypted connection, manual import and explicit send are
   implemented; live Microsoft credentials absent. Outlook invitation/Teams creation
   needs administrator application registration and user consent; external delivery

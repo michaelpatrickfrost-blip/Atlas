@@ -1,33 +1,30 @@
 # Atlas current state
 
-## 8 October 2026 — S&OP guided usability prepared
+## 8 October 2026 — S&OP guided usability deployed and verified
 
-- Researched SAP, Oracle and Kinaxis primary guidance; confirmed blank first use,
-  unexplained review rows, dense setup/decision screen and technical generation landing.
-  `docs/plans/SOP_USABILITY_RESEARCH.md` records findings and boundaries.
-- New guided Start here, selected monthly decision brief, basic Setup with collapsed
-  advanced controls, explained review checklists/evidence, owned Decisions & actions,
-  independent How-to/glossary/example. Cycle creation opens Setup; generation and
-  scenario promotion return home. Grouped navigation/old cycle compatibility retained.
-- Guidance follows selected version, cycle input revision and exact seven reviews;
-  unlike units kept separate and unknown supply/target/margin not fabricated.
-  Opening a view does not approve it. Existing server guards, immutable versions,
-  source access/signature checks, publication/MRP contracts and central records intact.
-  No new schema/capabilities/business store or calculation changes.
-- Paths: SOP components/domain guidance/manifest, three service redirects,
-  `tests/sop-guidance.test.tsx`, `scripts/check-sop-usability.ts`, owning guide/research.
-- Initial checks: 57 focused checks, full suite 928 pass / 22 skips, production
-  build, separate TypeScript and scoped ESLint (fixture prefer-const corrected).
-  Compatible release includes deployed admin cleanup `00cf015`; regenerated Prisma
-  client, production build, separate TypeScript and full suite 944 pass / 22 skips.
-  Runtime `d3312b4` deployed with backup, 99 migrations current, healthy restart and login 200.
-  Original 42 live acceptance assertions pass. New browser harness exposed a navigation
-  timing assumption; waiting for the destination heading before checking it. Guided
-  journey reaches publication; fixture expects its two populated months (100/200),
-  not twelve rows where ten months have no history/input. Remaining acceptance pending.
-- Next: preserve newly deployed concurrent admin cleanup commits, rebase and rebuild,
-  deploy, run old S&OP calculation/publication acceptance and new actual guided browser
-  journey, revoke synthetic fixture access, integrate owned shared-project files.
+- Runtime `d3312b4` live at https://atlassystem.online. Researched SAP/Oracle/Kinaxis;
+  guided Start here → Setup → Generate → Review → Decide → Approve → Release.
+  Monthly brief, explained review questions/evidence, owned follow-up actions,
+  independent How-to/glossary/example; advanced setup collapsed by default.
+- Existing tenant/source/capability/version checks, immutable snapshots, seven
+  exact-version reviews and separate approval/publication remain authoritative.
+  Unknown figures unavailable; units separate. No schema/calculation/store changes.
+  Finite capacity and remaining master-spec scope are not certified by this update.
+- Paths: SOP components/domain/manifest, three service redirects, guidance tests,
+  new usability harness, owning guide/research and delivery map. Evidence:
+  `docs/evidence/2026-10-08-sop-usability.md`.
+- Compatible release includes concurrent finished admin cleanup. Production build,
+  separate TypeScript, scoped ESLint, whitespace pass; full suite 946 pass/22 skips.
+  Canonical shared project's 57 focused SOP checks pass after guarded integration.
+- Live original 42 assertions and new 28 usability assertions pass. Actual browser
+  setup/month switch/7 reviews/approval/release/action completion/refresh/history,
+  five 390px screens, zero manager runtime errors, source-access/help/tenant checks.
+  Harness navigation wait and two populated-month expectation corrected; final run
+  verifies exact 100/200 published quantities. Synthetic access revoked, history kept.
+- Private DB/service backups `20261008-145354` retained; 99 migrations current,
+  server build/restart and public login 200 pass. Harness-only follow-ups do not
+  change runtime. Owned source integrated into shared repo without unrelated edits.
+- Next: remaining detailed capacity/costing/weekly/hierarchy master-spec work.
 
 
 ## 8 October 2026 — Projects detailed Gantt deployed and verified

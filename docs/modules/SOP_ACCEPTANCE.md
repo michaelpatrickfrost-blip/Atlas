@@ -79,3 +79,12 @@ notifications and high-volume QA. Logistics partial receipt quantities remain
 unknown where the owning source did not capture them; S&OP does not invent evidence.
 The four detailed departmental Plan workspaces remain behind S&OP by Michael’s
 explicit priority. Their research is in `docs/plans/DEPARTMENT_PLANNING_RESEARCH.md`.
+
+
+## 8 October 2026 — guided usability release
+
+Runtime `d3312b4`: guided home/setup/monthly brief/review questions/decisions/help.
+All original 42 live checks pass again; new guided browser harness passes 28.
+Build, typecheck, scoped lint and 946 automated checks pass (22 integration skips).
+See [release evidence](../evidence/2026-10-08-sop-usability.md) for exact scope,
+backups, fixture corrections and retained implementation boundaries.

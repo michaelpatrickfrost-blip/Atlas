@@ -15,7 +15,9 @@ Setup retains advanced defaults behind an expandable section. New navigation
 separates work areas; old `view=cycle` remains compatible. All existing source,
 version, tenant and publication guards remain authoritative. No schema change.
 Research/design rationale: [S&OP usability research](../plans/SOP_USABILITY_RESEARCH.md).
-Compatible release validation and live acceptance are pending for this update.
+Runtime `d3312b4` deployed; 28 guided browser and 42 existing live assertions pass.
+Full suite: 946 pass/22 skips; build/typecheck/lint pass.
+See [8 October evidence](../evidence/2026-10-08-sop-usability.md).
 
 
 7 October 2026. Connected S&OP workflows are deployed and verified on the live server;

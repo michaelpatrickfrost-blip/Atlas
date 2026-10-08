@@ -43,7 +43,7 @@ async function main() {
       }
       await nav.getByRole("link", { name: "My work", exact: true }).click();
       await expect(page).toHaveURL(`${base}/profile`);
-      const toggle = page.getByRole("button", { name: "Apps", exact: true });
+      const toggle = page.locator('[data-guardian-safe="toggle"]').first();
       await toggle.click(); await expect(toggle).toHaveAttribute("aria-expanded", "true");
       await page.getByRole("navigation", { name: "Apps", exact: true }).getByRole("link", { name: "My work", exact: true }).click();
       await expect(toggle).toHaveAttribute("aria-expanded", "false");

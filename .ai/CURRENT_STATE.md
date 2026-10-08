@@ -1,21 +1,28 @@
 # Atlas current state
 
-## 8 October 2026 — App icon landing screen
+## 8 October 2026 — Polished app icon landing screen deployed
 
-- Michael requests a polished, modern app launcher immediately after sign-in.
-  Home now leads with labelled, softly coloured app icons grouped by area;
-  attention/goals remain below. Both company users and Atlas staff land at
-  `/home`; staff retain explicit Atlas Admin navigation and workspace selection.
-- Shared AppDirectory uses the same server-filtered enabled/entitled/capability
-  entries for its Home icon layout and compact topbar menu. No permissions,
-  records, schema or browser data storage changed.
+- Live runtime `dd66039` makes Home the sign-in landing for company users and Atlas
+  staff. Labelled, softly coloured icons lead the page, grouped by area;
+  attention/goals remain below and the compact Apps menu still switches apps.
+- Shared AppDirectory retains existing enabled/entitled/capability filtering.
+  Admin and company access are unchanged; no schema or business-data storage change.
+- Isolated-release production build, strict types, focused ESLint, whitespace and
+  eight sign-in/registry tests pass. Initial cloned dependencies lacked Playwright;
+  clean npm ci corrected the typecheck prerequisites. Remote build/smoke passed.
+- Live read-only Guardian acceptance: all 30 permitted module links/icons, root to
+  Home, My work clicks and Apps menu selection at 1440/768/390 widths; no horizontal
+  overflow, browser/chunk errors or business writes. Desktop/phone screenshots
+  visually reviewed. Password submission redirects are unit-tested; live browser
+  uses the existing authorised QA session, not a new/password-modified account.
+- Public release SHA exact; Atlas and Guardian timer active. Private pre-release
+  database/evidence backup `atlas-pre-deploy-20261008-171940` and prior `2d25bd2`
+  runtime retained. Verification selector uses the existing safe-toggle marker
+  because the compact mobile menu hides its text.
 - Paths: `src/components/shell/app-directory.tsx`, `src/app/(app)/home/page.tsx`,
-  `src/core/auth/actions.ts`, `tests/login-landing.test.ts`.
-- Checks: production build, strict TypeScript, focused ESLint, whitespace and
-  eight sign-in/registry tests pass in the isolated release. Initial cloned
-  dependencies omitted Playwright; clean npm ci corrected typecheck prerequisites.
-  Deployment/live responsive acceptance pending. No schema changes.
-
+  `src/core/auth/actions.ts`, `tests/login-landing.test.ts`,
+  `scripts/guardian/check-app-launcher.ts`; design docs reconciled.
+  Evidence: `docs/evidence/2026-10-08-app-launcher.md`.
 
 ## 8 October 2026 — Guardian unavailable-record recovery in release checks
 

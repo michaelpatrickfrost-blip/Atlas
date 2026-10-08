@@ -1,5 +1,20 @@
 # Atlas decisions
 
+## 8 October 2026 — Test-company deletion is name-confirmed during testing
+
+During the testing phase, an Atlas administrator can delete a disposable Test
+company by typing its exact name without re-entering a password. The action still
+requires `atlas.companies.archive`, refuses the internal/current/non-Test company,
+and uses the existing locked, audited wipe path. Real-company archive and bulk
+Test cleanup retain their own-password confirmation. Return the successful
+individual deletion to Atlas Admin through client navigation rather than a thrown
+redirect inside the custom form lifecycle.
+
+Reason: repeated disposable company cleanup is a test workflow; re-entering a
+password adds friction, and the earlier custom-form/server-redirect combination
+surfaced React error #441. Revisit the password-confirmation policy before Atlas
+leaves the testing phase.
+
 ## 8 October 2026 — Scoped missing records have explicit recovery
 
 A scoped read returning no record is an unavailable state, using the same neutral
@@ -1089,4 +1104,3 @@ compact topbar menu; presentation must not grant app or company access.
 ## 8 October 2026 — Connections is privileged company onboarding
 
 Michael requested a separate Connections app for Atlas admins with section templates, uploads and company attachment. Keep it under Atlas administration with independent staff permission and a staff-only launcher entry, rather than granting platform access through customer roles. Import into canonical records; do not duplicate customer/product identity or create local stores. Require file/company-bound review, atomic audited attachment, duplicate protection and destination entitlement/creation checks. Sales imports create reviewed drafts through Sales-owned pricing/tax logic; no posting/fulfilment side effects. Original CSV files are transient inputs, with metadata retained in central audit. Unauthenticated visitors never receive a server error: Connections pages redirect to `/login`, and the template API answers `401` (signed out) / `403` (non-staff) rather than throwing through the auth guard.
-

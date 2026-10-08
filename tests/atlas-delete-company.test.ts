@@ -3,8 +3,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const state = vi.hoisted(() => ({
   session: { userId: "staff", organisationId: "internal", capabilities: new Set<string>() },
   organisation: vi.fn(),
-  user: vi.fn(),
-  compare: vi.fn(async (password: string) => password === "correct-password"),
   wipe: vi.fn(),
 }));
 
@@ -17,16 +15,12 @@ vi.mock("@/core/permissions/check", () => ({
 vi.mock("@/core/db/client", () => ({
   db: {
     organisation: { findUnique: state.organisation },
-    user: { findUniqueOrThrow: state.user },
   },
 }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
-vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
-vi.mock("bcryptjs", () => ({ default: { compare: state.compare } }));
 vi.mock("@/core/admin/wipe-company", () => ({ wipeTestCompanies: state.wipe }));
 
 import { deleteTestCompany } from "@/app/(app)/atlas/actions";
-import { redirect } from "next/navigation";
 
 function form(values: Record<string, string>) {
   const result = new FormData();
@@ -44,7 +38,6 @@ const company = {
 const validForm = () => form({
   organisationId: company.id,
   confirmName: company.name,
-  currentPassword: "correct-password",
 });
 
 beforeEach(() => {
@@ -52,8 +45,6 @@ beforeEach(() => {
   state.session.organisationId = "internal";
   state.session.capabilities = new Set(["atlas.companies.archive"]);
   state.organisation.mockResolvedValue(company);
-  state.user.mockResolvedValue({ passwordHash: "hash" });
-  state.compare.mockImplementation(async password => password === "correct-password");
   state.wipe.mockResolvedValue(undefined);
 });
 
@@ -69,22 +60,11 @@ describe("Atlas Admin single-company deletion", () => {
     await expect(deleteTestCompany(form({
       organisationId: company.id,
       confirmName: "Wrong name",
-      currentPassword: "correct-password",
     }))).rejects.toThrow("Type the company name exactly to confirm.");
-    expect(state.user).not.toHaveBeenCalled();
     expect(state.wipe).not.toHaveBeenCalled();
   });
 
-  it("rejects the wrong administrator password without deleting", async () => {
-    await expect(deleteTestCompany(form({
-      organisationId: company.id,
-      confirmName: company.name,
-      currentPassword: "wrong-password",
-    }))).rejects.toThrow("Confirm your own Atlas sign-in password");
-    expect(state.wipe).not.toHaveBeenCalled();
-  });
-
-  it("deletes only the confirmed disposable company using the signed-in identity", async () => {
+  it("deletes a confirmed disposable company without requiring a password", async () => {
     vi.spyOn(console, "info").mockImplementation(() => {});
     await expect(deleteTestCompany(validForm())).resolves.toBeUndefined();
     expect(state.wipe).toHaveBeenCalledExactlyOnceWith([company.id], {
@@ -92,6 +72,5 @@ describe("Atlas Admin single-company deletion", () => {
       currentOrganisationId: "internal",
       selection: [{ id: company.id, name: company.name, updatedAt: company.updatedAt.toISOString() }],
     });
-    expect(redirect).toHaveBeenCalledWith("/atlas");
   });
 });

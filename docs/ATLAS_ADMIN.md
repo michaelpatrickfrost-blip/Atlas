@@ -51,10 +51,10 @@ policy; every active classification currently has full access.
 User profile changes revoke sessions and unused recovery codes. Archived accounts
 remain read only until restored. A company's test designation is fixed at creation:
 production accounts cannot be relabelled as disposable and wiped. Deleting an
-individual Test company requires the exact company name and the signed-in Atlas
-administrator's password. Test cleanup at `/atlas/cleanup` requires platform access,
-a reviewed company list, an exact count confirmation, acknowledgement and the
-administrator’s own password.
+individual Test company requires the exact company name; password confirmation is
+intentionally omitted while Atlas is in its testing phase. Test cleanup at
+`/atlas/cleanup` requires platform access, a reviewed company list, an exact count
+confirmation, acknowledgement and the administrator’s own password.
 
 ## Offboarding and full export
 

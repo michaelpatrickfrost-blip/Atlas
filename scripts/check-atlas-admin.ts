@@ -34,6 +34,8 @@ async function main() {
     await db.membership.create({ data: { organisationId: internal.id, userId: owner.id } });
     const a = await db.organisation.create({ data: { name: `Disposable Admin A ${suffix}`, slug: `atlas-check-a-${suffix}`, isTest: true } }); companyIds.push(a.id);
     const b = await db.organisation.create({ data: { name: `Disposable Admin B ${suffix}`, slug: `atlas-check-b-${suffix}`, isTest: true } }); companyIds.push(b.id);
+    const c = await db.organisation.create({ data: { name: `Disposable Admin Delete ${suffix}`, slug: `atlas-check-delete-${suffix}`, isTest: true } }); companyIds.push(c.id);
+    const deleteParty = await db.party.create({ data: { organisationId: c.id, kind: "COMPANY", name: `DELETE_ONLY_${suffix}`, customerCode: "CHECK-DELETE", tags: [] } });
     const reader = await db.role.create({ data: { organisationId: a.id, key: "check-reader", name: "Check customer reader", capabilities: ["customers.read"] } }); roleIds.push(reader.id);
     const forged = await db.role.create({ data: { organisationId: a.id, key: "check-forged", name: "Check forged platform role", capabilities: ["customers.read", "atlas.staff.manage", "atlas.companies.manage"] } }); roleIds.push(forged.id);
     const customer = await db.user.create({ data: { email: `atlas-check-customer-${suffix}@example.test`, name: "Disposable customer", passwordHash: await bcrypt.hash(password, 12) } }); userIds.push(customer.id);
@@ -47,6 +49,11 @@ async function main() {
     for (const [route, text] of [["/atlas", "Company accounts"], ["/atlas/team", "Atlas team"], ["/atlas/activity", "Admin activity"], [`/atlas/${a.id}`, "Registered company profile"], [`/atlas/${a.id}/users`, "Users &amp; access"], [`/atlas/${a.id}/users/${member.id}`, "Roles &amp; individual access"], [`/atlas/${a.id}/offboarding`, "Download company data"]]) {
       const result = await page(route, ownerCookie); check(result.response.status === 200 && result.body.includes(text), `Authenticated portal ${text}`);
     }
+    const deletePage = await page(`/atlas/${c.id}`, ownerCookie);
+    check(deletePage.response.status === 200 && deletePage.body.includes('name="confirmName"') && !deletePage.body.includes('name="currentPassword"'), "Individual Test-company deletion asks for the exact name without a password during testing");
+    const deleted = await post("deleteTestCompany", { organisationId: c.id, confirmName: c.name }, ownerCookie, `/atlas/${c.id}`);
+    check(!deleted.body.includes("Minified React error #441") && !await db.organisation.findUnique({ where: { id: c.id } }) && !await db.party.findUnique({ where: { id: deleteParty.id } }), "Name-confirmed deletion removes only the disposable Test company without a React error");
+    companyIds.splice(companyIds.indexOf(c.id), 1);
     const forbidden = await page("/atlas", customerCookie);
     check(!forbidden.body.includes("Company accounts") && !forbidden.body.includes("Atlas team"), "Customer roles cannot forge platform access");
     await post("archiveAtlasCompany", { organisationId: b.id, confirmName: b.name, reason: "Forged", currentPassword: password }, customerCookie, `/atlas/${b.id}/offboarding`);
@@ -114,7 +121,9 @@ async function main() {
     await db.platformAdministrator.deleteMany({ where: { userId: { in: userIds } } });
     await db.membership.deleteMany({ where: { userId: { in: userIds }, organisation: { kind: "INTERNAL" } } });
     await db.auditEntry.deleteMany({ where: { actorUserId: { in: userIds }, organisation: { kind: "INTERNAL" } } });
-    for (const id of companyIds.reverse()) await wipeCompany(id);
+    for (const id of companyIds.reverse()) {
+      if (await db.organisation.findUnique({ where: { id } })) await wipeCompany(id);
+    }
     const cleanupRuns = await db.companyCleanupRun.findMany({ where: { actorUserId: "acceptance-cleanup" }, select: { id: true, companies: true } });
     const cleanupRunIds = cleanupRuns.filter(run => Array.isArray(run.companies) && run.companies.some(company => company && typeof company === "object" && !Array.isArray(company) && typeof company.id === "string" && companyIds.includes(company.id))).map(run => run.id);
     await db.companyCleanupRun.deleteMany({ where: { id: { in: cleanupRunIds } } });

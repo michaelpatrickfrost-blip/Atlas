@@ -1,20 +1,21 @@
 # Atlas current state
 
-## 8 October 2026 — Atlas Admin Test-company deletion fix (release candidate)
+## 8 October 2026 — Atlas Admin Test-company deletion (testing flow correction)
 
-- Added the signed-in administrator password field to individual Test-company
-  deletion and return to `/atlas` after successful deletion. Exact-name and
-  password checks, tenant/capability boundaries and shared wipe transaction are
-  preserved; failures remain inline and retain the form draft.
+- Individual disposable Test-company deletion is name-confirmed only during the
+  testing phase; real-company archive, bulk-cleanup password confirmation,
+  tenant/capability boundaries and shared wipe transaction remain unchanged.
+  Successful deletion navigates via the client router instead of throwing a
+  server redirect through the custom form submit lifecycle.
 - Updated `src/app/(app)/atlas/[organisationId]/page.tsx`,
-  `src/app/(app)/atlas/actions.ts`, `tests/atlas-delete-company.test.ts` and
-  `docs/ATLAS_ADMIN.md`.
-- Verification on the clean release candidate: focused delete/form tests pass
-  (7), scoped ESLint passes, `npx tsc --noEmit` passes and `npm run build` passes.
-- Live deployment is pending. Current live revision is `6483c96`; deploy only
-  after the reviewed candidate is committed and the staging release-switch gate
-  passes, then verify the delete workflow against a disposable central Test
-  company without changing real-company data.
+  `src/app/(app)/atlas/actions.ts`, `src/app/(app)/atlas/portal-action-form.tsx`,
+  `tests/atlas-delete-company.test.ts`, `tests/portal-action-form.test.tsx`,
+  `scripts/check-atlas-admin.ts` and `docs/ATLAS_ADMIN.md`.
+- The prior deployed password-required flow produced the reported React error
+  #441. The corrected isolated candidate passes the seven focused tests, scoped
+  ESLint, `npx tsc --noEmit`, production build and `git diff --check`.
+- Candidate release, staged switch/action tests and live disposable-company
+  deletion acceptance are pending.
 
 ## 8 October 2026 — Connections onboarding app (deployed & verified live)
 

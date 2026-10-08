@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
+const { replace } = vi.hoisted(() => ({ replace: vi.fn() }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ replace }) }));
 import { PortalActionForm } from "@/app/(app)/atlas/portal-action-form";
 afterEach(cleanup);
 
@@ -39,5 +41,13 @@ it("preserves an older Atlas tab draft and explains manual recovery without repl
   await waitFor(() => expect(screen.getByRole("alert").textContent).toContain("Copy your unsaved changes"));
   expect(screen.getByRole("alert").textContent).not.toContain("private-id");
   expect((screen.getByLabelText("Plan name") as HTMLInputElement).value).toBe("Unsaved plan");
+  expect(save).toHaveBeenCalledTimes(1);
+});
+
+it("navigates after a successful deletion without a server redirect", async () => {
+  const save = vi.fn().mockResolvedValue(undefined);
+  render(<PortalActionForm action={save} label="Delete permanently" successPath="/atlas">{fields}</PortalActionForm>);
+  fireEvent.click(screen.getByRole("button", { name: "Delete permanently" }));
+  await waitFor(() => expect(replace).toHaveBeenCalledWith("/atlas"));
   expect(save).toHaveBeenCalledTimes(1);
 });

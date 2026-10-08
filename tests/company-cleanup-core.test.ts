@@ -39,6 +39,22 @@ it("aborts the transaction on non-FK failure without starting file deletion", as
   await expect(wipeTestCompanies(["test-a"])).rejects.toThrow("storage failure");
   expect(state.create).not.toHaveBeenCalled(); expect(state.file).not.toHaveBeenCalled();
 });
+it.each(["23503", "23001"])("retries PostgreSQL FK and RESTRICT dependencies (%s)", async code => {
+  let attempts = 0;
+  state.raw.mockImplementation(async (sql:string) => {
+    if (sql.startsWith("SELECT id,name")) return state.companies;
+    if (sql.startsWith('DELETE FROM public."parties"') && attempts++ === 0) throw {meta:{code}};
+    return 1;
+  });
+  // Add a dependent table so the first pass can make progress before retrying its parent.
+  state.transaction.mockImplementation(async callback => callback({
+    $queryRawUnsafe:state.raw,$executeRawUnsafe:state.raw,
+    $queryRaw:async(parts:TemplateStringsArray)=>parts.join("").includes("information_schema")?[{table:"organisations",column:"id",type:"text"},{table:"parties",column:"organisationId",type:"text"},{table:"quotes",column:"organisationId",type:"text"}]:[],
+    membership:{findMany:async()=>[]},employee:{findMany:async()=>[]},serviceFile:{findMany:async()=>[]},organisation:{deleteMany:state.deleteCompany},companyCleanupRun:{create:state.create},auditEntry:{create:vi.fn()},
+  }));
+  await expect(wipeTestCompanies(["test-a"])).resolves.toMatchObject({status:"COMPLETE"});
+  expect(attempts).toBe(2);
+});
 it("records storage failures for an idempotent retry and treats missing files as removed", async () => {
   state.run.remainingFileKeys=["removed","missing","unavailable"];
   state.file.mockImplementation(async(key:string)=>{if(key==="missing")throw {code:"ENOENT"};if(key==="unavailable")throw {code:"EIO"};});

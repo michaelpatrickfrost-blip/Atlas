@@ -3982,3 +3982,14 @@ TypeScript and production build passed. The acceptance fixture initially needed 
 credential-form test now waits for the pending transition to finish before retry.
 Both corrected; the combined 33-test suite, final acceptance-script typecheck and
 production build passed. Live deployment/acceptance pending at this checkpoint.
+
+## 8 October 2026 — Cleanup live dependency correction
+
+Initial bulk release 931d3b5 deployed with migration 20261008160000_company_cleanup,
+after database/evidence backup atlas-pre-deploy-20261008-144256. Live negative checks
+passed, including ordinary Finance guards with the wipe flag. Positive acceptance
+found SQLSTATE 23001 (RESTRICT), distinct from 23503 (FK violation), during dependency
+ordering. The selected database sweep rolled back; expected dependency handling now
+retries both codes, with regression coverage. Synthetic Finance acceptance fixture
+cleanup also stopped and will be completed after the correction is deployed.
+No existing user company was selected or deleted. Final live recheck pending.

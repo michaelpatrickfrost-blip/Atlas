@@ -36,7 +36,7 @@ export async function wipeTestCompanies(organisationIds: string[], options?: Wip
           await tx.$executeRawUnsafe("ROLLBACK TO SAVEPOINT atlas_wipe");
           await tx.$executeRawUnsafe("RELEASE SAVEPOINT atlas_wipe");
           // Only FK dependencies are retried. Other failures roll back the whole sweep.
-          if (!error || typeof error !== "object" || !("meta" in error) || (error.meta as { code?: string } | undefined)?.code !== "23503") throw error;
+          if (!error || typeof error !== "object" || !("meta" in error) || !["23503", "23001"].includes((error.meta as { code?: string } | undefined)?.code ?? "")) throw error;
         }
       }
       if (!progress) throw new Error(`Company cleanup could not resolve dependencies: ${pending.join(", ")}`);

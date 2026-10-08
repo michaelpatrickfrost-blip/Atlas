@@ -1,5 +1,37 @@
 # Atlas current state
 
+## Guardian work assignment — 8 October 2026
+
+- Live pre-fix `2b7a486` (checkout `622259f`) reproduced false success: selecting
+  Unassigned and Update work retained the old query owner despite Saved feedback.
+  New independent central report `cmuzlnwu80000x0d5b8mxdfbn`; private fixture backup
+  `atlas-pre-guardian-query-20261008-135417`. Exact synthetic company retired and
+  sessions revoked, history retained. First harness attempt corrected an exact
+  select-label locator; it did not establish the control outcome.
+- `src/core/service-work/actions.ts` now treats explicitly empty ownership as null
+  and omitted ownership as unchanged, records readable unassignment history, and
+  preserves receiving-team, tenant, capability and optimistic-version checks.
+  Six new regressions include both Ticket and Query clearing, omitted field,
+  foreign member, forbidden mutation and stale-save rollback of events.
+- 22 focused checks passed; full suite 863 passed / 22 integration skips. Production
+  build, separate strict TypeScript and scoped lint passed. Ignored duplicate local
+  Prisma artifacts were removed/regenerated to unblock typecheck. Deployment/live
+  acceptance pending; no deployed-fix claim until original control succeeds live.
+- Added opt-in server-only `scripts/guardian/check-service-query.ts`: real case
+  query creation, receiving-team detail/assignment/unassignment, privacy, replies,
+  resolution, safe parent event, case/query links and observed report state. Only
+  its own Test company/profiles are used, then suspended/revoked; no customer mail.
+- Exact private journal correlates three original Service render digests with
+  missing React Client Manifest boundary/icon modules and the 07:25:52 UTC failure
+  with missing static /500. Six Service briefs now have precise NEEDS_AI evidence
+  and immutable-release/rollback next steps. Browser ScriptErrors remain only
+  timing-correlated; release reliability `cmuxsymb70000cmd5jgotzfwo` remains open.
+- Three recent Quality/Goals diagnostics classified IGNORED through staff UI and
+  verified current AI briefs after exact journal/source/previous acceptance review:
+  foreign NCR detail/closure and foreign goal connection intentionally reject.
+  Existing 22/37-assertion suites were reviewed, not rerun for this classification.
+  Guardian healthy, queue fully paginated; no permission rules weakened.
+
 ## 8 October 2026 — Connected Goals and KPIs deployed and verified
 
 - Runtime `2b7a486` live at https://atlassystem.online. Nine source-owned results:

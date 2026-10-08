@@ -86,7 +86,7 @@ export async function updateWork(form: FormData) {
     const definition = work.definition as { approval?: boolean; requiredEvidence?: boolean };
     if (status === "RESOLVED" && definition.requiredEvidence && !await tx.serviceFile.count({ where: { organisationId: session.organisationId, workId: id } })) throw new Error("Attach the required evidence before resolving.");
     if (status === "RESOLVED" && definition.approval && (!work.approvalId || !await tx.approvalInstance.findFirst({ where: { id: work.approvalId, organisationId: session.organisationId, subjectId: id, status: "APPROVED" } }))) throw new Error("Final approval is required before resolution.");
-    const ownerUserId = text(form, "ownerUserId", 100) || work.ownerUserId;
+    const ownerUserId = form.has("ownerUserId") ? text(form, "ownerUserId", 100) || null : work.ownerUserId;
     if (ownerUserId && !await tx.serviceQueueMember.findFirst({ where: { organisationId: session.organisationId, queueId: work.queueId, userId: ownerUserId } })) throw new Error("Assign to a member of this queue.");
     const sla = slaSchema.parse(work.sla), now = new Date(), pause = sla.pauseStates.includes(status);
     let due = work.resolutionDueAt;
@@ -96,7 +96,7 @@ export async function updateWork(form: FormData) {
       ...(status === "RESOLVED" ? { resolution: reason, resolvedAt: now } : {}),
       ...(reopening ? { resolvedAt: null, reopenCount: { increment: 1 } } : {}),
     });
-    await workEvent(tx, session, work, reopening ? "REOPENED" : status === "RESOLVED" ? "RESOLVED" : "STATUS_CHANGED", `${work.status} → ${status}. ${reason}${ownerUserId !== work.ownerUserId ? ` Owner: ${work.ownerUserId ?? "unassigned"} → ${ownerUserId}.` : ""}`, "REQUESTER");
+    await workEvent(tx, session, work, reopening ? "REOPENED" : status === "RESOLVED" ? "RESOLVED" : "STATUS_CHANGED", `${work.status} → ${status}. ${reason}${ownerUserId !== work.ownerUserId ? ` Owner: ${work.ownerUserId ?? "unassigned"} → ${ownerUserId ?? "unassigned"}.` : ""}`, "REQUESTER");
     if (pause !== !!work.pausedAt) await workEvent(tx, session, work, pause ? "SLA_PAUSED" : "SLA_RESUMED", `Resolution deadline: ${work.resolutionDueAt?.toISOString() ?? "none"} → ${due?.toISOString() ?? "none"}. ${reason}`);
   }, { isolationLevel: "Serializable" }); refresh();
 }

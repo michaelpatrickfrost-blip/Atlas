@@ -72,6 +72,7 @@ npm run guardian:worker -- --now
 ATLAS_GUARDIAN_COPY_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-atlas-code-copy.ts
 ATLAS_GUARDIAN_TICKET_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-ticket-pages.ts
 ATLAS_GUARDIAN_ACCESS_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-ticket-access.ts
+ATLAS_GUARDIAN_QUERY_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-service-query.ts
 node --env-file=.env.local --import tsx scripts/guardian/triage.ts list [page]
 node --env-file=.env.local --import tsx scripts/guardian/triage.ts show <issue-id>
 sudo systemctl status atlas-guardian.timer atlas-guardian.service
@@ -122,3 +123,13 @@ A source or browser sweep cannot prove every button and every combination of
 business state. Expand fixture-based workflow tests as features are built. Never
 claim blanket coverage, weaken a permission test or hide a broken page to clear
 an acceptance gate.
+
+The query regression also requires a private central backup and the release lock.
+It creates a disposable Test company with separate case requester and receiving
+agent profiles. It exercises the actual case/query links and creation, assignment,
+explicit unassignment, requester-visible reply and private team note, resolution,
+parent response-ready prompt and observed SLA report. Exact central state/history
+must match the displayed outcome; the parent stays unresolved with its original
+owner. Cleanup suspends only the exact fixture and revokes its sessions, retaining
+history. `--reproduce` proves the old false-success Unassigned control; the normal
+mode requires a null owner after reload and the complete connected workflow.

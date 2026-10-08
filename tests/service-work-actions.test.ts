@@ -16,3 +16,51 @@ describe("service-work boundaries",()=>{
  it("rejects stale writes before appending events",async()=>{state.tx.serviceWorkItem.updateMany.mockResolvedValue({count:0});await expect(commentWork(form({body:"Update",visibility:"REQUESTER"}))).rejects.toThrow("record changed");expect(state.tx.serviceWorkEntry.create).not.toHaveBeenCalled();});
  it("preserves the original first-response timestamp on later replies",async()=>{state.tx.serviceWorkItem.findFirst.mockResolvedValue({...work,firstResponseAt:new Date("2026-10-01")});await commentWork(form({body:"Update",visibility:"REQUESTER"}));expect(state.tx.serviceWorkItem.updateMany).toHaveBeenCalledWith(expect.objectContaining({data:{version:{increment:1}}}));});
 });
+
+describe("work assignment", () => {
+  it.each(["TICKET", "QUERY"])("clears an explicitly unassigned %s and records its ownership change", async kind => {
+    state.session.capabilities.add("service.ticket.read");
+    state.session.capabilities.add("service.ticket.update");
+    state.tx.serviceWorkItem.findFirst.mockResolvedValue({ ...work, kind });
+    await updateWork(form({ status: "IN_PROGRESS", ownerUserId: "" }));
+    expect(state.tx.serviceWorkItem.updateMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: { id: "work", organisationId: "org", version: 1 },
+      data: expect.objectContaining({ ownerUserId: null, version: { increment: 1 } }),
+    }));
+    expect(state.tx.serviceWorkEntry.create).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({ body: expect.stringContaining("Owner: agent → unassigned.") }),
+    }));
+    expect(state.tx.auditEntry.create).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({ organisationId: "org", entityId: "work", action: "service.work.status_changed" }),
+    }));
+  });
+
+  it("preserves the existing owner when the assignment field is omitted", async () => {
+    await updateWork(form({ status: "IN_PROGRESS" }));
+    expect(state.tx.serviceWorkItem.updateMany).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({ ownerUserId: "agent" }),
+    }));
+  });
+
+  it("rejects assigning a user outside the receiving queue without a write or event", async () => {
+    state.tx.serviceQueueMember.findFirst.mockResolvedValueOnce({ userId: "agent" }).mockResolvedValueOnce(null);
+    await expect(updateWork(form({ status: "IN_PROGRESS", ownerUserId: "foreign-user" }))).rejects.toThrow("member of this queue");
+    expect(state.tx.serviceQueueMember.findFirst).toHaveBeenLastCalledWith({ where: { organisationId: "org", queueId: "queue", userId: "foreign-user" } });
+    expect(state.tx.serviceWorkItem.updateMany).not.toHaveBeenCalled();
+    expect(state.tx.serviceWorkEntry.create).not.toHaveBeenCalled();
+  });
+
+  it("cannot unassign work without mutation permission", async () => {
+    state.session.capabilities.delete("tickets.ticket.manage");
+    await expect(updateWork(form({ status: "IN_PROGRESS", ownerUserId: "" }))).rejects.toThrow("tickets.ticket.manage");
+    expect(state.tx.serviceWorkItem.updateMany).not.toHaveBeenCalled();
+    expect(state.tx.serviceWorkEntry.create).not.toHaveBeenCalled();
+  });
+
+  it("rejects a stale unassignment before recording a change", async () => {
+    state.tx.serviceWorkItem.updateMany.mockResolvedValue({ count: 0 });
+    await expect(updateWork(form({ status: "IN_PROGRESS", ownerUserId: "" }))).rejects.toThrow("record changed");
+    expect(state.tx.serviceWorkEntry.create).not.toHaveBeenCalled();
+    expect(state.tx.auditEntry.create).not.toHaveBeenCalled();
+  });
+});

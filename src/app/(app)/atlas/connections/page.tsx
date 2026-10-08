@@ -1,10 +1,12 @@
-import { requireSession } from "@/core/auth/session";
+import { redirect } from "next/navigation";
+import { getSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { db } from "@/core/db/client";
 import { CONNECTION_TEMPLATES } from "@/modules/connections/domain/catalogue";
 import { ConnectionsWorkspace } from "./workspace";
 export default async function ConnectionsPage({ searchParams }: { searchParams: Promise<{ company?: string }> }) {
-  const session = await requireSession();
+  const session = await getSession();
+  if (!session) redirect("/login");
   assertCapability(session, "atlas.companies.manage");
   const { company } = await searchParams;
   const companies = await db.organisation.findMany({ where: { kind: "CUSTOMER", archivedAt: null }, select: { id: true, name: true, status: true }, orderBy: { name: "asc" } });

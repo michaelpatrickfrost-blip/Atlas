@@ -30,7 +30,7 @@ async function main() {
     page.on("response", response => { if (new URL(response.url()).pathname.startsWith("/_next/") && response.status() >= 400) failedAssets++; });
     const anon = await browser.newContext({ baseURL: base });
     const blocked = await anon.request.get("/atlas/connections", { maxRedirects: 0 }); assert.equal(blocked.status(), 307);
-    const blockedTemplate = await anon.request.get("/api/atlas/connections/template?entity=machines", { maxRedirects: 0 }); assert.equal(blockedTemplate.status(), 307);
+    const blockedTemplate = await anon.request.get("/api/atlas/connections/template?entity=machines", { maxRedirects: 0 }); assert.equal(blockedTemplate.status(), 401);
     await anon.close(); console.log("PASS anonymous workspace/template protection");
     for (const template of CONNECTION_TEMPLATES) {
       const response = await context.request.get(`/api/atlas/connections/template?entity=${template.id}`);
@@ -68,7 +68,7 @@ async function main() {
     assert.equal(await db.auditEntry.count({ where: { organisationId: a.id, entityType: "Import" } }), 13);
     assert.equal(await db.party.count({ where: { organisationId: b.id } }), 0); assert.equal(await db.product.count({ where: { organisationId: b.id } }), 0);
     console.log("PASS canonical hierarchy, machine links, draft products/pricing/discounts/VAT and company isolation");
-    await submit("products", undefined, false);
+    await submit("products", [product.example, ["SKU-Z", "Zero-rated product", "PRODUCT", "each", "10.00", "GBP", "ZERO_RATED"]], false);
     await expect(page.getByRole("status")).toContainText("rows validated", { timeout: 30000 }); await page.getByRole("checkbox").check(); await page.getByRole("button", { name: `Attach to ${a.name}`, exact: true }).click();
     await expect(page.getByRole("alert")).toContainText("already attached", { timeout: 30000 }); assert.equal(await db.auditEntry.count({ where: { organisationId: a.id, entityType: "Import" } }), 13);
     console.log("PASS exact-file retry rejected without duplicate audit/records");

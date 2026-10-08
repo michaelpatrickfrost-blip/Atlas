@@ -1,11 +1,13 @@
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
-import { requireSession } from "@/core/auth/session";
+import { getSession } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
 import { ATLAS_CAPABILITIES } from "@/core/admin/access";
 
 export default async function AtlasAdminLayout({ children }: { children: React.ReactNode }) {
-  const session = await requireSession();
+  const session = await getSession();
+  if (!session) redirect("/login");
   assertCapability(session, ATLAS_CAPABILITIES.companies);
   return <div className="mx-auto max-w-7xl space-y-7 pb-12">
     <header className="rounded-2xl border border-slate-200 bg-white px-5 py-5 sm:px-7">

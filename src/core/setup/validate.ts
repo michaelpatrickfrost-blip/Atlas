@@ -21,9 +21,9 @@ export function duplicateKeyIssue(rows: Record<string, string>[], keyFor: (row: 
   return null;
 }
 
-/** Parent codes may already exist. A loop inside the file is rejected. Existing records are not re-parented. */
-export function parentLoopIssue(rows: Array<{ code: string; parent: string }>, existing: Set<string>, indexFor: Map<string, number>) {
-  const parents = new Map(rows.map((row) => [row.code, row.parent]));
+/** Reject cycles/missing parents; savedParents includes existing edges when an upload updates hierarchy. */
+export function parentLoopIssue(rows: Array<{ code: string; parent: string }>, existing: Set<string>, indexFor: Map<string, number>, savedParents: Map<string, string> = new Map()) {
+  const parents = new Map([...savedParents, ...rows.map((row) => [row.code, row.parent] as const)]);
   for (const row of rows) {
     const seen = new Set<string>([row.code]);
     let parent = row.parent;

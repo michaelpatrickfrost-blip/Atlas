@@ -17,6 +17,9 @@ export type SetupImportInput = {
   applying: boolean;
   fileName: string;
   priceListId?: string;
+  /** Connections retry protection; digest of selected company, section and exact file. */
+  importKey?: string;
+  requiredModule?: string;
   /** Blank customer status. Company imports keep PROSPECT; owner setup uses ACTIVE. */
   customerStatusDefault?: "PROSPECT" | "ACTIVE";
 };
@@ -55,7 +58,7 @@ function priceDiscount(value: string | undefined, index: number) {
 }
 
 function day(value: string, index: number, label: string) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || Number.isNaN(new Date(`${value}T00:00:00.000Z`).getTime())) throw new Error(rowIssue(index, `${label} must be a date in YYYY-MM-DD form.`));
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || (Number.isNaN(new Date(`${value}T00:00:00.000Z`).getTime()) || new Date(`${value}T00:00:00.000Z`).toISOString().slice(0, 10) !== value)) throw new Error(rowIssue(index, `${label} must be a date in YYYY-MM-DD form.`));
   return new Date(`${value}T00:00:00.000Z`);
 }
 
@@ -193,6 +196,8 @@ async function importPriceLists(tx: Tx, input: SetupImportInput) {
     if (!/^[A-Z0-9][A-Z0-9-]{0,30}$/.test(key)) throw new Error(rowIssue(index, "price list key must use letters, numbers and hyphens, up to 31 characters."));
     if (!row.name || row.name.length > 120) throw new Error(rowIssue(index, "enter a price list name."));
     currency(row.currency, index);
+    const current = await tx.priceList.findUnique({ where: { organisationId_key: { organisationId: input.organisationId, key } }, include: { _count: { select: { entries: true } } } });
+    if (current && current.currency !== row.currency && current._count.entries > 0) throw new Error(rowIssue(index, `price list ${key} already has prices. Create a new list to change its currency.`));
   }
   if (!input.applying) return;
   for (const [index, row] of input.rows.entries()) {
@@ -259,12 +264,13 @@ async function importLocations(tx: Tx, input: SetupImportInput) {
     if (!byWarehouse.has(row.warehouseCode.toUpperCase())) throw new Error(rowIssue(index, `warehouse ${row.warehouseCode} was not found. Import warehouses first.`));
     if (!row.code || row.code.length > 40 || !row.name || row.name.length > 120) throw new Error(rowIssue(index, "enter a location code and name."));
   }
-  const existing = await tx.stockLocation.findMany({ where: { organisationId: input.organisationId, warehouseId: { in: [...byWarehouse.values()] } }, select: { code: true, warehouseId: true } });
+  const existing = await tx.stockLocation.findMany({ where: { organisationId: input.organisationId, warehouseId: { in: [...byWarehouse.values()] } }, select: { id: true, parentId: true, code: true, warehouseId: true } });
   const existingKeys = new Set(existing.map((location) => `${location.warehouseId}|${location.code}`));
   for (const warehouseId of new Set(input.rows.map((row) => byWarehouse.get(row.warehouseCode.toUpperCase())!))) {
     const scoped = input.rows.filter((row) => byWarehouse.get(row.warehouseCode.toUpperCase()) === warehouseId);
     const known = new Set([...existingKeys].filter((key) => key.startsWith(`${warehouseId}|`)).map((key) => key.slice(warehouseId.length + 1)));
-    fail(parentLoopIssue(scoped.map((row) => ({ code: row.code, parent: row.parentLocationCode ?? "" })), known, new Map(scoped.map((row) => [row.code, input.rows.indexOf(row)]))));
+    const savedParents = new Map(existing.filter(location => location.warehouseId === warehouseId).map(location => [location.code, existing.find(parent => parent.id === location.parentId)?.code ?? ""]));
+    fail(parentLoopIssue(scoped.map((row) => ({ code: row.code, parent: row.parentLocationCode || savedParents.get(row.code) || "" })), known, new Map(scoped.map((row) => [row.code, input.rows.indexOf(row)])), savedParents));
   }
   if (!input.applying) return;
   for (const row of input.rows) {
@@ -296,9 +302,10 @@ async function importEmployees(tx: Tx, input: SetupImportInput) {
     currency(row.currency, index);
     if ((row.phone || "").length > 50) throw new Error(rowIssue(index, "phone must be 50 characters or fewer."));
   }
-  const existing = await tx.employee.findMany({ where: { organisationId: input.organisationId }, select: { id: true, employeeNumber: true } });
+  const existing = await tx.employee.findMany({ where: { organisationId: input.organisationId }, select: { id: true, employeeNumber: true, managerId: true } });
   const known = new Set(existing.map((employee) => employee.employeeNumber));
-  fail(parentLoopIssue(input.rows.map((row) => ({ code: row.employeeNumber, parent: row.managerEmployeeNumber ?? "" })), known, new Map(input.rows.map((row, index) => [row.employeeNumber, index]))));
+  const savedManagers = new Map(existing.map(employee => [employee.employeeNumber, existing.find(manager => manager.id === employee.managerId)?.employeeNumber ?? ""]));
+  fail(parentLoopIssue(input.rows.map((row) => ({ code: row.employeeNumber, parent: row.managerEmployeeNumber || savedManagers.get(row.employeeNumber) || "" })), known, new Map(input.rows.map((row, index) => [row.employeeNumber, index])), savedManagers));
   if (!input.applying) return;
   const org = await tx.organisation.findUniqueOrThrow({ where: { id: input.organisationId }, select: { hrAppraisalCadenceMonths: true, hrOneToOneCadenceWeeks: true } });
   for (const [index, row] of input.rows.entries()) {
@@ -474,8 +481,21 @@ async function importSalesQuotes(tx: Tx, input: SetupImportInput) {
 }
 
 export async function runSetupImport(input: SetupImportInput) {
+  if (!input.rows.length || input.rows.length > 500) throw new Error("Import between 1 and 500 rows.");
   checkShape(input);
   await db.$transaction(async (tx) => {
+    if (input.importKey) {
+      const company = await tx.$queryRaw<Array<{ id: string }>>`SELECT id FROM organisations WHERE id = ${input.organisationId} AND kind = 'CUSTOMER' AND "archivedAt" IS NULL FOR UPDATE`;
+      if (!company.length) throw new Error("Choose an available customer company.");
+      const policy = await tx.organisation.findUniqueOrThrow({ where: { id: input.organisationId }, select: { allowCustomerCreation: true, allowProductCreation: true } });
+      if (input.entity === "customers" && !policy.allowCustomerCreation) throw new Error("Creating new customers is disabled by this company administrator.");
+      if (input.entity === "products" && !policy.allowProductCreation) {
+        const existingCodes = await tx.product.findMany({ where: { organisationId: input.organisationId, code: { in: input.rows.map(row => row.code) } }, select: { code: true } });
+        if (input.rows.some(row => !existingCodes.some(product => product.code === row.code))) throw new Error("Creating new products is disabled by this company administrator.");
+      }
+      if (input.requiredModule && !await tx.moduleState.findFirst({ where: { organisationId: input.organisationId, moduleId: input.requiredModule, enabled: true, entitled: true } })) throw new Error(`Enable ${input.requiredModule} for this company in Atlas Admin before importing.`);
+      if (input.applying && await tx.auditEntry.findFirst({ where: { organisationId: input.organisationId, entityType: "Import", entityId: input.importKey } })) throw new Error("This exact file was already attached to this company. Check import history.");
+    }
     if (input.entity === "customers") await importCustomers(tx, input);
     else if (input.entity === "contacts") await importContacts(tx, input);
     else if (input.entity === "customer-commercial") await importCommercial(tx, input);
@@ -488,7 +508,7 @@ export async function runSetupImport(input: SetupImportInput) {
     else if (input.entity === "sales-orders") await importSalesOrders(tx, input);
     else if (input.entity === "sales-quotes") await importSalesQuotes(tx, input);
     else throw new Error("Choose a supported import.");
-    if (input.applying) await tx.auditEntry.create({ data: { organisationId: input.organisationId, actorUserId: input.actorUserId, action: `import.${input.entity}`, entityType: "Import", entityId: crypto.randomUUID(), after: { rows: input.rows.length, fileName: input.fileName.slice(0, 120) } } });
+    if (input.applying) await tx.auditEntry.create({ data: { organisationId: input.organisationId, actorUserId: input.actorUserId, action: `import.${input.entity}`, entityType: "Import", entityId: input.importKey ?? crypto.randomUUID(), after: { rows: input.rows.length, fileName: input.fileName.slice(0, 120) } } });
   }, { isolationLevel: "Serializable", timeout: 60_000 });
   return { preview: input.rows.slice(0, 10) };
 }

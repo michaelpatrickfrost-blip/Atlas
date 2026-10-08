@@ -127,3 +127,7 @@ retries use a version check. Existing backups and external hosted files remain.
 This is an operator-selected sweep, not automatic retention or a reset of real
 company records. Historical acceptance cleanup may now remove explicitly disposable
 Test finance fixtures; retained earlier evidence is not silently purged.
+
+## Connections
+
+[Connections](CONNECTIONS.md) at `/atlas/connections` is the staff onboarding app: choose a company, download a section template, upload/review and attach canonical records. Thirteen sections include machines/work centres and draft Sales documents, with company-bound review, duplicate protection and import history. Destination app availability and creation policies remain authoritative.

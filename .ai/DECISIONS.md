@@ -1085,3 +1085,8 @@ and the operational-first Home ordering. Home shows accessible app icons first;
 attention/goals follow. Company and Atlas staff logins land on Home, with Admin
 still explicitly accessible. Reuse the existing server-filtered directory and
 compact topbar menu; presentation must not grant app or company access.
+
+## 8 October 2026 — Connections is privileged company onboarding
+
+Michael requested a separate Connections app for Atlas admins with section templates, uploads and company attachment. Keep it under Atlas administration with independent staff permission and a staff-only launcher entry, rather than granting platform access through customer roles. Import into canonical records; do not duplicate customer/product identity or create local stores. Require file/company-bound review, atomic audited attachment, duplicate protection and destination entitlement/creation checks. Sales imports create reviewed drafts through Sales-owned pricing/tax logic; no posting/fulfilment side effects. Original CSV files are transient inputs, with metadata retained in central audit.
+

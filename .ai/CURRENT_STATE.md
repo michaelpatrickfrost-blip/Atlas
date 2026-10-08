@@ -1,5 +1,16 @@
 # Atlas current state
 
+## 8 October 2026 — Connections onboarding app (release prepared)
+
+- Added Atlas-staff-only `/atlas/connections` and Apps/Admin links. Thirteen template/upload sections cover customer hierarchy/contacts/trading, catalogue/pricing, stock locations, people, work centres/machines and Sales drafts. Company search/selection, dependency rules, required fields, preview, explicit attach and latest-30 audit history are implemented.
+- HMAC review binds exact content/company/section/actor for 15 minutes; transactional digest audit and company locks prevent duplicate retries. Destination app entitlement/enablement and company creation policies remain enforced. Existing parent links participate in employee/location cycle checks. Sales-owned import resolves pricing/discounts/tax and retains product links, bounded dates/amounts and draft-only behaviour.
+- Paths: `src/app/(app)/atlas/connections`, `src/modules/connections`, `src/modules/sales/services/connection-import.ts`, template API, shared setup import/validation, `tests/connections.test.ts`, `scripts/check-connections.ts`, `docs/CONNECTIONS.md`. No schema change, user provisioning, original-file storage or local business cache.
+- Final isolated latest-main production build, strict typecheck, focused lint and full suite pass (1,044 passed/22 integration skips; 14 focused Connections/setup tests). Shared-workspace build failed on existing Turbopack persistence; clean managed worktree builds successfully. Deployment/live acceptance pending; preserve unrelated unfinished shared edits.
+- Confirmed pre-existing issue outside Connections: older setup/Sales CSV helpers directly construct sales lines with hardcoded VAT/base prices and omit quote product links. Connections uses the new Sales-owned path; do not treat older import workflows as corrected by this delivery.
+
+
+
+
 ## 8 October 2026 — Polished app icon landing screen deployed
 
 - Live runtime `dd66039` makes Home the sign-in landing for company users and Atlas

@@ -156,3 +156,7 @@ Current/internal workspaces and shared staff/users are protected. Database delet
 is atomic across the selection; durable history and retryable Service-file cleanup
 survive deletion. Posted Test records can be wiped only through this explicit path;
 ordinary financial guards remain. See docs/ATLAS_ADMIN.md and CURRENT_STATE.md.
+
+## Connections — 8 October 2026
+
+Atlas staff use `/atlas/connections` for company-selected, reviewed CSV onboarding across 13 canonical master-data and Sales draft sections, including machines/work centres. Staff access, company app availability and creation controls apply. File-bound review and transactional audit prevent duplicate retries; the original CSV is transient. See [Connections](../docs/CONNECTIONS.md) for supported sections and acceptance limits.

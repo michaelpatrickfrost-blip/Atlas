@@ -71,7 +71,7 @@ describe("goal privacy", () => {
     expect(modelScope(hr, "PerformancePlan")).toEqual({ organisationId: "org" });
     expect(modelScope(payroll, "Kpi")).toEqual(goalWhere(payroll));
     expect(JSON.stringify(modelScope(payroll, "PerformancePlan"))).not.toContain("\"organisationId\":\"org\"}");
-    expect(modelScope(profile, "KpiUpdate")).toEqual({ kpi: goalWhere(profile) });
+    expect(modelScope(profile, "KpiUpdate")).toEqual({kpi:{AND:[goalWhere(profile),{OR:[{visibility:"PRIVATE"},{metricId:""}]}]}});
     expect(modelScope(profile, "PerformanceReview")).toEqual({ plan: planWhere(profile) });
     expect(canReadModel(profile, "DisciplinaryCase")).toBe(false);
   });

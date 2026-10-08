@@ -9,6 +9,7 @@ import type { AnalyticsResult } from "@/core/analytics/types";
 import { widgetSpan, type StudioWidget } from "@/modules/analytics/definition";
 import { boardTemplates, widgetsFromTemplate } from "@/modules/analytics/templates";
 import { deleteAnalyticsDashboard, loadLiveMetrics, loadMetricSlice, saveAnalyticsDashboard } from "@/app/(app)/analytics/actions";
+import { useLiveGoals } from "@/modules/kpis/components/use-live-goals";
 import { GoalCompare } from "@/modules/kpis/components/goal-compare";
 import type { GoalMarker } from "@/modules/kpis/services/workspace";
 import { TileChart, palettes, visualOptions } from "./charts";
@@ -38,6 +39,7 @@ export function Studio({ metrics: initialMetrics, dashboards, selectedId, period
   const [addBreakdown, setAddBreakdown] = useState("");
   const [addVisual, setAddVisual] = useState<StudioWidget["visual"]>("column");
   const { metrics, updatedAt, refreshError, refreshing } = useLiveMetrics(initialMetrics, period, refreshSeconds, sample);
+  const liveGoals=useLiveGoals(goals,refreshSeconds,sample);
   const subjects = [...new Set(metrics.map((metric) => metric.subject))];
   const activeSubject = subjects.includes(addSubject) ? addSubject : subjects[0] ?? "";
   const addPool = metrics.filter((metric) => metric.subject === activeSubject);
@@ -173,7 +175,7 @@ export function Studio({ metrics: initialMetrics, dashboards, selectedId, period
         </div>}
         <TileHead metric={source} widget={widget} sample={sample} viewLabel={showBy ?? ""} />
         {metric ? <TileChart metric={metric} widget={widget} onPick={(picked) => canManage ? patchWidget(widget.id, { category: widget.category === picked ? "" : picked }) : undefined} /> : <p className="py-8 text-sm text-slate-500">This measure is no longer available to your account.</p>}
-        {source && !sample && <GoalCompare goals={goals} metric={source} period={period} />}
+        {source && !sample && <GoalCompare goals={liveGoals} metric={source} period={period} />}
       </section>;
     })}{!widgets.length && <div className={`${styles.tile} ${styles.empty}`}><ChartNoAxesCombined className="mb-3 text-[var(--color-atlas-blue)]" /><h2 className="text-lg font-semibold">Add the first chart</h2><p className="mt-2 max-w-md text-sm text-slate-500">Choose an app, what to show, and a chart. Orders can be split by status, product, category, customer or time.</p></div>}</div>
   </div>;

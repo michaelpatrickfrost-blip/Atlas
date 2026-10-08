@@ -146,12 +146,18 @@ is not full acceptance or installed desktop activation.
 
 ## 8. Goals & KPIs
 
-3 October: a department or team target can use a catalogue measure and show under that chart on a dashboard. Personal goals, development plans and performance-improvement plans stay private. Saving a plan in HR writes the same goals onto the person's profile and into Goals. Disciplinary cases stay in HR and are not listed on the scorecard. The shared database and installed Mac app do not have this release yet.
+8 October: connected targets read Sales value, Finance posted revenue/profit, valid
+CSAT, visible resolved cases, actual production completions/on-time performance and
+shipment dispatch. Bounded goal dates, direct rate/snapshot judgement, source access,
+existing-goal connections and source-app/dashboard views are implemented. See
+[Goals & KPIs](modules/GOALS_KPIS.md) and CURRENT_STATE for deployment verification.
+Private personal/PIP/development workflows retain their existing scope.
 
-- [x] Separate KPI app: team, owner, unit, target, direction, period, progress and update history. Department targets link to a live measure. Personal and plan goals are private to the person, their manager and HR.
-- [ ] Filter scorecards by team. Progress updates are audited; a dedicated team filter is not a separate screen.
-- [ ] Add calculation definitions, baseline/thresholds, weighting, roll-ups and recurring periods beyond the live measure and the straight-line pace.
-- [ ] Add team scoreboards, review meetings, trend charts, data freshness and permission-controlled dashboard sharing.
+- [x] Separate Goals app, shared/private access, owner/target/direction/period and notes.
+- [x] Team filtering and source-owned calculation definitions for nine connected results.
+- [x] Bounded actuals, denominator counts, source links, existing-goal connection and matching dashboard targets.
+- [ ] Arbitrary formulas, weighting/roll-ups, recurring periods and employee attribution.
+- [ ] Goal review meetings, historical snapshot/trend archive and automated notifications.
 
 ## 9. Finance and Purchasing
 

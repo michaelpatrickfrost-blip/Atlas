@@ -1,9 +1,10 @@
+import { readGoalMeasure } from "./read-measure";
 import { getAnalyticsMetrics } from "@/core/analytics/catalogue";
 import type { Session } from "@/core/auth/session";
 import { db } from "@/core/db/client";
 import { can } from "@/core/permissions/check";
 import { getEnabledModuleIds } from "@/core/modules/runtime";
-import { judgeGoal, readActual, type GoalDirection, type GoalVerdict, type MeasurePoint } from "@/modules/kpis/domain/progress";
+import { judgeGoal, type GoalDirection, type GoalVerdict, type MeasurePoint } from "@/modules/kpis/domain/progress";
 import { goalWhere, planWhere } from "./access";
 
 export type GoalMarker = {
@@ -19,6 +20,7 @@ export type GoalMarker = {
   startsAt: string;
   endsAt: string;
   ownerName: string;
+  score: { actual:number|null; verdict:GoalVerdict; summary:string; elapsed:number; currency?:string };
 };
 
 export type GoalCard = {
@@ -32,6 +34,8 @@ export type GoalCard = {
   metricId: string;
   metricName: string;
   metricDefinition: string;
+  sourceNote?: string;
+  sampleSize?: number;
   metricHref: string;
   sliceLabel: string;
   unit: string;
@@ -62,7 +66,7 @@ export type GoalCard = {
   contextName?: string;
   contextActual: number | null;
   contextNote?: string;
-  updates: { id: string; value: number; note: string; at: string; actor: string }[];
+  updates: { id: string; value: number|null; note: string; at: string; actor: string }[];
 };
 
 export type PlanCard = {
@@ -106,28 +110,20 @@ async function ownerNames(organisationId: string, ids: string[]) {
   return new Map(people.map((person) => [person.id, person.name]));
 }
 
-export async function loadGoalMarkers(session: Session): Promise<GoalMarker[]> {
+export async function loadGoalMarkers(session: Session, metricIds?:string[]): Promise<GoalMarker[]> {
   if (!can(session, "kpis.read")) return [];
   if (!(await getEnabledModuleIds(session.organisationId)).has("kpis")) return [];
   const rows = await db.kpi.findMany({
-    where: { organisationId: session.organisationId, visibility: "COMPANY", status: "ACTIVE", metricId: { not: "" } },
+    where: { organisationId: session.organisationId, visibility: "COMPANY", status: "ACTIVE", metricId: metricIds?{in:metricIds}:{ not: "" } },
     orderBy: { endsAt: "asc" },
     take: 100,
   });
   const names = await ownerNames(session.organisationId, rows.map((row) => row.ownerUserId));
-  return rows.map((row) => ({
-    id: row.id,
-    name: row.name,
-    department: row.department,
-    teamName: row.teamName,
-    metricId: row.metricId,
-    sliceLabel: row.sliceLabel,
-    direction: directionOf(row.direction),
-    target: row.target,
-    unit: row.unit,
-    startsAt: row.startsAt.toISOString(),
-    endsAt: row.endsAt.toISOString(),
-    ownerName: names.get(row.ownerUserId) ?? "Owner",
+  const metrics=await getAnalyticsMetrics(session);const byMetric=new Map(metrics.map(m=>[m.id,m]));
+  return Promise.all(rows.map(async row=>{
+   const metric=byMetric.get(row.metricId);const reading=await readGoalMeasure(session,metric,row.startsAt,row.endsAt,row.sliceLabel);
+   const judged=judgeGoal({actual:reading.actual,blocked:reading.blocked,target:row.target,direction:directionOf(row.direction),startsAt:row.startsAt,endsAt:row.endsAt,snapshot:metric?.snapshot,unit:row.unit,currency:reading.currency||row.sliceLabel});
+   return {id:row.id,name:row.name,department:row.department,teamName:row.teamName,metricId:row.metricId,sliceLabel:row.sliceLabel,direction:directionOf(row.direction),target:row.target,unit:row.unit,startsAt:row.startsAt.toISOString(),endsAt:row.endsAt.toISOString(),ownerName:names.get(row.ownerUserId)??"Owner",score:{actual:reading.actual,verdict:judged.verdict,summary:judged.summary,elapsed:judged.elapsed,currency:reading.currency||row.sliceLabel}};
   }));
 }
 
@@ -150,22 +146,11 @@ export async function loadGoalWorkspace(session: Session) {
   const nameOf = new Map(names.map((member) => [member.userId, member.user.name]));
   const metrics = await getAnalyticsMetrics(session).catch(() => []);
   const byMetric = new Map(metrics.map((metric) => [metric.id, metric]));
-  const cache = new Map<string, Promise<MeasurePoint[]>>();
-  const pointsFor = (metricId: string, since: Date | undefined) => {
-    const key = `${metricId}:${since?.toISOString() ?? "snapshot"}`;
-    let pending = cache.get(key);
-    if (!pending) {
-      const metric = byMetric.get(metricId);
-      pending = metric ? metric.query(session, since).catch(() => []) : Promise.resolve([]);
-      cache.set(key, pending);
-    }
-    return pending;
-  };
   const goals: GoalCard[] = await Promise.all(rows.map(async (row) => {
     const metric = row.metricId ? byMetric.get(row.metricId) : undefined;
-    const points = metric ? await pointsFor(metric.id, metric.snapshot ? undefined : row.startsAt) : [];
-    const reading = metric ? readActual(points, metric.unit, row.sliceLabel) : { actual: row.current, currency: undefined, blocked: undefined };
     const live = row.visibility === "COMPANY" && Boolean(row.metricId);
+    const reading = row.metricId ? await readGoalMeasure(session,metric,row.startsAt,row.endsAt,row.sliceLabel) : {points:[],actual:row.current,currency:undefined,blocked:undefined,sampleSize:undefined,note:undefined};
+    const points=reading.points;
     const actual = live ? reading.actual : row.current;
     const judged = judgeGoal({
       actual: live && reading.blocked ? null : actual,
@@ -189,6 +174,8 @@ export async function loadGoalWorkspace(session: Session) {
       metricId: row.metricId,
       metricName: metric?.name ?? "",
       metricDefinition: metric?.definition ?? "",
+      sourceNote:reading.note,
+      sampleSize:reading.sampleSize,
       metricHref: metric?.href ?? "",
       sliceLabel: row.sliceLabel,
       unit: row.unit,
@@ -219,7 +206,7 @@ export async function loadGoalWorkspace(session: Session) {
       contextName: !live && metric ? metric.name : undefined,
       contextActual: !live && metric ? reading.actual : null,
       contextNote: !live && metric ? reading.blocked : undefined,
-      updates: row.updates.map((update) => ({ id: update.id, value: update.value, note: update.note ?? "", at: update.createdAt.toISOString(), actor: nameOf.get(update.actorUserId) ?? "Someone" })),
+      updates: row.updates.map((update) => ({ id: update.id, value: live?null:update.value, note: update.note ?? "", at: update.createdAt.toISOString(), actor: nameOf.get(update.actorUserId) ?? "Someone" })),
     };
   }));
   const planCards: PlanCard[] = plans.map((plan) => ({
@@ -244,23 +231,11 @@ export async function loadGoalWorkspace(session: Session) {
 }
 
 export async function loadMeasureChoices(session: Session) {
-  const metrics = await getAnalyticsMetrics(session);
-  const settled = await Promise.allSettled(metrics.map(async (metric) => {
-    const since = metric.snapshot ? undefined : new Date(Date.now() - 90 * 86400000);
-    const points = await metric.query(session, since);
-    return {
-      id: metric.id,
-      name: metric.name,
-      subject: metric.subject,
-      definition: metric.definition,
-      grain: metric.grain,
-      unit: metric.unit ?? "count",
-      snapshot: metric.snapshot,
-      href: metric.href,
-      points: points.slice(0, 12),
-    };
+  const metrics=(await getAnalyticsMetrics(session)).filter(m=>m.goalQuery||m.snapshot);
+  return Promise.all(metrics.map(async metric=>{
+   const end=new Date(),start=new Date(end.getTime()-90*86400000);
+   const reading=await readGoalMeasure(session,metric,start,end,"");
+   return {id:metric.id,name:metric.name,subject:metric.subject,definition:metric.definition,grain:metric.grain,unit:metric.unit??"count",snapshot:metric.snapshot,href:metric.href,points:reading.points.slice(0,20),suggestion:metric.goalSuggestion,note:reading.note,blocked:reading.blocked};
   }));
-  return settled.flatMap((result) => result.status === "fulfilled" ? [result.value] : []);
 }
-
 export type MeasureChoice = Awaited<ReturnType<typeof loadMeasureChoices>>[number];

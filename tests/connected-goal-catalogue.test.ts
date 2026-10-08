@@ -1,0 +1,12 @@
+import {beforeEach,it,expect,vi} from "vitest";
+const mocks=vi.hoisted(()=>({enabled:vi.fn(),modules:vi.fn(),query:vi.fn(),goalQuery:vi.fn()}));
+vi.mock("@/core/modules/runtime",()=>({getEnabledModuleIds:mocks.enabled}));
+vi.mock("@/core/modules/registry",()=>({getImplementedModules:mocks.modules}));
+vi.mock("@/core/analytics/customer-metrics",()=>({customerAnalytics:[]}));
+import {getAnalyticsMetrics} from "@/core/analytics/catalogue";
+import {loadAnalyticsResults} from "@/core/analytics/load";
+import type {Session} from "@/core/auth/session";
+const session={organisationId:"org",capabilities:new Set(["csat.result.read","service.case.read"])} as Session;
+beforeEach(()=>{vi.resetAllMocks();mocks.enabled.mockResolvedValue(new Set(["csat","service"]));mocks.query.mockResolvedValue([{label:"Service",value:80}]);mocks.modules.mockReturnValue([{id:"csat",analyticsProvider:[{id:"csat.service",capability:"csat.result.read",requiredCapabilities:["service.case.read"],requiredModules:["service"],goalQuery:mocks.goalQuery,query:mocks.query}]}]);});
+it("dual-source result requires both capability and entitlement",async()=>{expect(await getAnalyticsMetrics(session)).toHaveLength(1);expect(await getAnalyticsMetrics({...session,capabilities:new Set(["csat.result.read"])})).toEqual([]);mocks.enabled.mockResolvedValue(new Set(["csat"]));expect(await getAnalyticsMetrics(session)).toEqual([]);});
+it("server query functions never cross into serialised dashboard props",async()=>{const results=await loadAnalyticsResults(session,"90");expect(results[0]).not.toHaveProperty("query");expect(results[0]).not.toHaveProperty("goalQuery");expect(results[0]).toHaveProperty("points");});

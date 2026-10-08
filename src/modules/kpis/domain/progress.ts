@@ -72,7 +72,8 @@ export function judgeGoal(input: {
   const days = Math.max(1, Math.round((end - start) / dayMs) + 1);
   const day = today < start ? 0 : today > end ? days : Math.round((today - start) / dayMs) + 1;
   const elapsed = day <= 0 ? 0 : day >= days ? 1 : (day - 1) / Math.max(days - 1, 1);
-  const expected = input.direction === "AT_LEAST" || input.direction === "AT_MOST" ? input.target * elapsed : null;
+  const direct = input.snapshot || input.unit === "percent";
+  const expected = direct ? null : input.target * elapsed;
   const base = {
     day, days, elapsed, expected,
     shortfall: input.actual === null ? null : input.direction === "AT_MOST" ? input.actual - input.target : input.target - input.actual,
@@ -89,6 +90,10 @@ export function judgeGoal(input: {
   if (day <= 0) {
     const early = input.direction === "AT_LEAST" && actual > 0;
     return { ...base, verdict: early ? "ahead" as const : "not_started" as const, summary: early ? `${pace}It has not started, and the figure is already ${figure}.` : `${pace}This goal starts on ${goalDateLabel(input.startsAt)}.` };
+  }
+  if (direct) {
+    const met=input.direction==="AT_MOST"?actual<=input.target:actual>=input.target;
+    return {...base,verdict:met?"met" as const:input.direction==="AT_MOST"?"over" as const:"behind" as const,summary:`${pace}${figure} against a target of ${show(input.target)}. ${input.unit==="percent"?"Rates are compared with the full target, not a straight-line pace.":"Current positions are compared with the full target."}`};
   }
   if (input.direction === "AT_MOST") {
     if (actual > input.target) return { ...base, verdict: "over" as const, summary: `${pace}Day ${day} of ${days}. The figure is ${figure}, which is over the limit of ${show(input.target)}.` };

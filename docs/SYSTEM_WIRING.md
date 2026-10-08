@@ -133,6 +133,7 @@ Arrows above summarise business relationships; the table below identifies the ac
 | Source modules + selected Plans → S&OP | `businessPlanningProvider`, `core/planning/business-read.ts`, `modules/sop/` | Module-owned tenant/capability projections; immutable versions retain source IDs, reasons, revisions and access requirements; 42 authenticated live acceptance checks passed; advanced coverage explicit in `SOP.md` |
 | Approved S&OP → Manufacturing MRP | `planningPublicationConsumer`, `ManufacturingDemandForecast.sourceSopVersionId` | Transactional/idempotent approved monthly totals; subtract gross booked demand once, add remaining firm demand; screen/calculation demand paths net once; current-month/retry/overlapping-cycle acceptance passed |
 | Safety → people/equipment/delivery context | Safety services and `src/core/safety/types.ts` | Training/permit/equipment risk restrictions and actual consumer registration; a declared optional hook is not proof of implementation |
+| Goals → source results | Optional analytics `goalQuery` on source-owned metrics; `src/modules/kpis/services/read-measure.ts` | Bounded goal dates, source capabilities/entitlements, tenant scopes; rates and current positions compare to full target. See `docs/modules/GOALS_KPIS.md`. |
 | Analytics → module metrics | `src/core/analytics/catalogue.ts`, `load.ts`; module `analyticsProvider` | Only enabled/accessible metrics; source record scopes and drilldowns; private dashboard ownership |
 | Audit / Echo / chat → business records | `src/core/audit/`, `src/core/chat/`; Audit module | Actor and record visibility; mentions/links must not grant recipient access to restricted records |
 
@@ -146,9 +147,10 @@ Each manifest below supplies these hooks. Omitted optional hooks do not acquire 
 | audit | `attentionProvider` |
 | crm | `analyticsProvider`, `attentionProvider`, `crmCustomerOverviewProvider`, `customerOverviewProvider`, `salesAttentionProvider`, `salesSearchProvider`, `searchProvider` |
 | finance | `analyticsProvider`, `customerOverviewProvider`, `deliveryInvoiceConsumer`, `salesCancellationGuard`, `salesFinanceProjectionProvider`, `salesInvoiceGenerator`, `searchProvider` |
+| csat | `analyticsProvider`, `serviceSurveyConsumer` |
 | kpis | `analyticsProvider` |
 | logistics | `analyticsProvider`, `attentionProvider`, `customerOverviewProvider`, `fulfilmentProjectionProvider`, `salesLogisticsConsumer`, `searchProvider`, `stockReplenishedConsumer` |
-| manufacturing | `attentionProvider`, `searchProvider` |
+| manufacturing | `analyticsProvider`, `attentionProvider`, `searchProvider`, `businessPlanningProvider`, `planningPublicationConsumer`, `recordContextProvider`, `recordRelationshipProvider` |
 | marketing | `analyticsProvider`, `attentionProvider`, `customerOverviewProvider`, `searchProvider` |
 | payroll | None |
 | people | `analyticsProvider`, `attentionProvider`, `expensePostingSourceProvider`, `peopleAttentionProvider`, `staffRosterProvider` |

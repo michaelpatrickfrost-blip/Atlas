@@ -1,5 +1,16 @@
 # Atlas decisions
 
+## 8 October 2026 — Goals read bounded results from their source owners
+
+Use the analytics registry's optional bounded goal-query contract rather than copy
+business actuals or reimplement Finance in Goals. Sales intake and posted ledger
+profit remain distinct. Goal dates include the final UTC day and stop at now;
+rates/snapshots compare with the full target. Missing source access/data never
+becomes zero or manual progress. Source access is independent of Goals permissions.
+Existing shared goals retain identity/history when connecting; never reinterpret
+old history numbers under a new unit/source. Private personal links remain context.
+See `docs/modules/GOALS_KPIS.md` for source definitions and verified delivery limits.
+
 ## 8 October 2026 — Quality issues close through verified corrective work
 
 Extend existing NonConformance/actions and canonical identities. Optional guided

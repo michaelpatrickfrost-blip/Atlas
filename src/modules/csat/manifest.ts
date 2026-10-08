@@ -1,9 +1,11 @@
+import { csatGoalMetrics } from "./services/goal-metrics";
 import { surveyResolvedServiceCase } from "./services/service-case";
 import { Smile } from "lucide-react";
 import type { ModuleManifest } from "@/core/modules/types";
 import { CSAT_CAPABILITIES } from "@/core/permissions/capabilities";
 
 export const csatManifest: ModuleManifest = {
+ analyticsProvider: csatGoalMetrics,
  serviceSurveyConsumer:surveyResolvedServiceCase,
   id: "csat",
   name: "Satisfaction (CSAT)",

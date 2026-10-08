@@ -1,11 +1,10 @@
 "use client";
 import { useState } from "react";
-import { ActionForm } from "@/components/ui/action-form";
+import { GoalActionForm as ActionForm } from "./action-form";
 import { Button } from "@/components/ui/button";
 import { saveGoal } from "@/app/(app)/kpis/actions";
-import { formatGoalValue, judgeGoal, readActual } from "@/modules/kpis/domain/progress";
+import { formatGoalValue, readActual } from "@/modules/kpis/domain/progress";
 import type { MeasureChoice } from "@/modules/kpis/services/workspace";
-import { GoalMeter } from "./goal-meter";
 
 const field = "mt-2 block w-full rounded-xl border border-[var(--color-border)] bg-white p-3 text-sm";
 const kinds = [
@@ -16,7 +15,7 @@ const kinds = [
   { id: "pip", group: "One person", title: "Performance improvement", detail: "A formal plan. The person, their manager and HR can see it. It is not put on a shared dashboard." },
 ] as const;
 
-export function GoalForm({ measures, people, members, initialKind, employeeId, personLabel, self }: {
+export function GoalForm({ measures, people, members, initialKind, employeeId, personLabel, self, initialMetricId = "" }: {
   measures: MeasureChoice[];
   people: { id: string; firstName: string; lastName: string; jobTitle: string; department: string | null }[];
   members: { userId: string; name: string }[];
@@ -24,29 +23,24 @@ export function GoalForm({ measures, people, members, initialKind, employeeId, p
   employeeId: string;
   personLabel: string;
   self: boolean;
+  initialMetricId?:string;
 }) {
   const allowed = self ? kinds.filter((item) => item.id === "personal") : kinds;
   const [kind, setKind] = useState(allowed.some((item) => item.id === initialKind) ? initialKind : allowed[0].id);
   const personal = kind === "personal" || kind === "pip" || kind === "development";
   const subjects = [...new Set(measures.map((item) => item.subject))];
-  const [subject, setSubject] = useState(subjects[0] ?? "");
+  const initialMetric=measures.find(m=>m.id===initialMetricId);
+  const [subject, setSubject] = useState(initialMetric?.subject ?? subjects[0] ?? "");
   const pool = measures.filter((item) => item.subject === subject);
-  const [metricId, setMetricId] = useState("");
+  const [metricId, setMetricId] = useState(initialMetric?.id ?? "");
   const metric = pool.find((item) => item.id === metricId);
-  const [slice, setSlice] = useState("");
-  const [target, setTarget] = useState("");
-  const [startsAt, setStartsAt] = useState("");
-  const [endsAt, setEndsAt] = useState("");
+  const [slice, setSlice] = useState(initialMetric?.unit==="money"?"GBP":"");
+  const [target, setTarget] = useState(initialMetric?.suggestion?.target?.toString()??"");
+  const today=new Date().toISOString().slice(0,10);
+  const [startsAt, setStartsAt] = useState(today.slice(0,8)+"01");
+  const [endsAt, setEndsAt] = useState(new Date(Date.UTC(Number(today.slice(0,4)),Number(today.slice(5,7)),0)).toISOString().slice(0,10));
   const [direction, setDirection] = useState<"AT_LEAST" | "AT_MOST">("AT_LEAST");
-  const preview = (() => {
-    if (!metric) return null;
-    const reading = readActual(metric.points, metric.unit, slice);
-    const amount = Number(target);
-    if (!Number.isFinite(amount) || !startsAt || !endsAt) return { reading, judged: null as null };
-    const stored = metric.unit === "money" ? Math.round(amount * 100) : amount;
-    const judged = judgeGoal({ actual: reading.blocked ? null : reading.actual, blocked: reading.blocked, target: stored, direction, startsAt: new Date(`${startsAt}T00:00:00Z`), endsAt: new Date(`${endsAt}T00:00:00Z`), snapshot: metric.snapshot, unit: metric.unit, currency: reading.currency || slice });
-    return { reading, judged };
-  })();
+  const preview = metric ? readActual(metric.points,metric.unit,slice) : null;
   const needsPerson = personal && !self && !employeeId;
   return <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
     <ActionForm action={saveGoal} className="space-y-6 rounded-2xl border border-[var(--color-border)] bg-white p-6">
@@ -66,17 +60,17 @@ export function GoalForm({ measures, people, members, initialKind, employeeId, p
         <label className="text-sm">Review date<input type="date" name="reviewOn" required className={field} /></label>
       </div>}
       <div className="grid gap-4 sm:grid-cols-2">
-        <label className="text-sm sm:col-span-2">{kind === "pip" || kind === "development" ? "First goal" : "Goal"}<input name="name" required maxLength={150} className={field} placeholder={kind === "department" ? "Confirmed orders this quarter" : "What done looks like"} /></label>
-        {kind === "team" && <label className="text-sm">Team<input name="teamName" required maxLength={100} className={field} /></label>}
-        <label className="text-sm">Owner<select name="ownerUserId" className={field} defaultValue={members[0]?.userId ?? ""}>{members.map((member) => <option key={member.userId} value={member.userId}>{member.name}</option>)}</select></label>
-        {(kind === "department" || kind === "team" || personal) && measures.length > 0 && <label className="text-sm">App<select className={field} value={subject} onChange={(event) => { setSubject(event.target.value); setMetricId(""); setSlice(""); }}>{subjects.map((item) => <option key={item}>{item}</option>)}</select></label>}
-        {measures.length > 0 && <label className="text-sm sm:col-span-2">{kind === "department" ? "Live measure" : "Link a live measure"}<select name="metricId" required={kind === "department"} className={field} value={metricId} onChange={(event) => { setMetricId(event.target.value); setSlice(""); }}><option value="">{kind === "department" ? "Choose a measure" : "No live measure — progress is recorded by hand"}</option>{pool.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>}
-        {metric && <label className="text-sm sm:col-span-2">Which part of the measure counts?<select name="sliceLabel" className={field} value={slice} onChange={(event) => setSlice(event.target.value)}><option value="">The whole measure</option>{metric.points.map((point) => <option key={point.label} value={point.label}>{point.label} · {formatGoalValue(point.value, metric.unit, metric.unit === "money" ? point.label : undefined)}</option>)}</select></label>}
+        <label className="text-sm sm:col-span-2">{kind === "pip" || kind === "development" ? "First goal" : "Goal"}<input aria-label="Goal" name="name" defaultValue={initialMetric?.suggestion?.name??""} required maxLength={150} className={field} placeholder={kind === "department" ? "Confirmed orders this quarter" : "What done looks like"} /></label>
+        {!personal && <label className="text-sm">Department / team<input aria-label="Department / team" name="teamName" maxLength={100} className={field} placeholder={metric?.subject??"Company"} /></label>}
+        <label className="text-sm">Owner<select aria-label="Owner" name="ownerUserId" className={field} defaultValue={members[0]?.userId ?? ""}>{members.map((member) => <option key={member.userId} value={member.userId}>{member.name}</option>)}</select></label>
+        {(kind === "department" || kind === "team" || personal) && measures.length > 0 && <label className="text-sm">App<select aria-label="App" className={field} value={subject} onChange={(event) => { setSubject(event.target.value); setMetricId(""); setSlice(""); }}>{subjects.map((item) => <option key={item}>{item}</option>)}</select></label>}
+        {measures.length > 0 && <label className="text-sm sm:col-span-2">{kind === "department" ? "Live measure" : "Link a live measure"}<select aria-label="Live measure" name="metricId" required={kind === "department"} className={field} value={metricId} onChange={(event) => { setMetricId(event.target.value); const next=pool.find(m=>m.id===event.target.value);setSlice(next?.unit==="money"?"GBP":"");setTarget(next?.suggestion?.target?.toString()??""); }}><option value="">{kind === "department" ? "Choose a measure" : "No live measure — progress is recorded by hand"}</option>{pool.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>}
+        {metric?.unit==="money"?<label className="text-sm">Currency<input aria-label="Currency" name="sliceLabel" value={slice} onChange={e=>setSlice(e.target.value.toUpperCase())} pattern="[A-Z]{3}" maxLength={3} required className={field}/><span className="text-xs text-slate-500">For example GBP or EUR. Currencies are scored separately.</span></label>:metric&&<label className="text-sm sm:col-span-2">Which part counts?<select aria-label="Measure group" name="sliceLabel" className={field} value={slice} onChange={e=>setSlice(e.target.value)}><option value="">The whole measure</option>{metric.points.map(point=><option key={point.label} value={point.label}>{point.label}</option>)}</select></label>}
         {!metric && <label className="text-sm">Unit<input name="unit" defaultValue="count" maxLength={30} className={field} /></label>}
-        <label className="text-sm">Success means<select name="direction" className={field} value={direction} onChange={(event) => setDirection(event.target.value === "AT_MOST" ? "AT_MOST" : "AT_LEAST")}><option value="AT_LEAST">Reach at least the target</option><option value="AT_MOST">Stay at or under the target</option></select></label>
-        <label className="text-sm">{metric?.unit === "money" ? "Target amount (£)" : "Target"}<input name="target" required type="number" min={0} step="any" value={target} onChange={(event) => setTarget(event.target.value)} className={field} /></label>
-        <label className="text-sm">Starts<input type="date" name="startsAt" required value={startsAt} onChange={(event) => setStartsAt(event.target.value)} className={field} /></label>
-        <label className="text-sm">Ends<input type="date" name="endsAt" required value={endsAt} onChange={(event) => setEndsAt(event.target.value)} className={field} /></label>
+        <label className="text-sm">Success means<select aria-label="Success means" name="direction" className={field} value={direction} onChange={(event) => setDirection(event.target.value === "AT_MOST" ? "AT_MOST" : "AT_LEAST")}><option value="AT_LEAST">Reach at least the target</option><option value="AT_MOST">Stay at or under the target</option></select></label>
+        <label className="text-sm">{metric?.unit === "money" ? "Target amount in selected currency" : "Target"}<input aria-label="Target" name="target" required type="number" min={0} max={metric?.unit==="percent"?100:undefined} step="any" value={target} onChange={(event) => setTarget(event.target.value)} className={field} /></label>
+        <label className="text-sm">Starts<input aria-label="Starts" type="date" name="startsAt" required value={startsAt} onChange={(event) => setStartsAt(event.target.value)} className={field} /></label>
+        <label className="text-sm">Ends<input aria-label="Ends" type="date" name="endsAt" required value={endsAt} onChange={(event) => setEndsAt(event.target.value)} className={field} /></label>
         <label className="text-sm sm:col-span-2">How we will know<textarea name="notes" rows={3} className={field} placeholder="The evidence, the customer, or the behaviour that shows this is done." /></label>
       </div>
       <Button type="submit" variant="primary">{kind === "pip" ? "Open the performance plan" : kind === "development" ? "Open the development plan" : "Set the goal"}</Button>
@@ -88,8 +82,9 @@ export function GoalForm({ measures, people, members, initialKind, employeeId, p
         <p className="font-semibold">{metric.subject} · {metric.name}</p>
         <p className="leading-relaxed text-[var(--color-ink-muted)]">{metric.definition}</p>
         <p className="text-xs text-[var(--color-ink-muted)]">{metric.grain}. {metric.snapshot ? "This is a current position." : "The preview uses the last 90 days."}</p>
-        {preview?.judged && preview.reading.actual !== null && <GoalMeter actual={preview.reading.actual} target={metric.unit === "money" ? Math.round(Number(target) * 100) : Number(target)} elapsed={preview.judged.elapsed} verdict={preview.judged.verdict} unit={metric.unit} currency={preview.reading.currency || slice} summary={preview.judged.summary} />}
-        {!preview?.judged && <p className="text-xs text-[var(--color-ink-muted)]">Enter a target and the dates to see pace against the current figure.</p>}
+        <p className="text-xs text-slate-500">Recent source figure: {preview?.actual!==null&&preview?.actual!==undefined?formatGoalValue(preview.actual,metric.unit,preview.currency||slice):"No reading yet"}. This reference uses the last 90 days; the saved goal will use its own dates.</p>
+        {metric.note&&<p className="text-xs text-slate-500">{metric.note}</p>}
+
       </div> : <p className="border-t border-[var(--color-border)] pt-4 text-sm text-[var(--color-ink-muted)]">Without a live measure, progress is the number the person or their manager records, with a note each time.</p>}
     </aside>
   </div>;

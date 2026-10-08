@@ -1,5 +1,23 @@
 # Atlas current state
 
+## 8 October 2026 — Connected Goals and KPIs (verification in progress)
+
+- User requested meaningful Sales/profit, Service CSAT and operations/production
+  links. Nine source-owned connected results, guided target starters, existing-goal
+  connection, source-app target panels and independently dated dashboard targets.
+- Bounded inclusive UTC periods capped at now; rates/snapshots judged against full
+  target. Source capability/entitlement/company scope, valid CSAT case/queue scope,
+  posted Finance document/project scope. Missing data/access never becomes zero.
+- Old numeric history retained centrally, rendered as notes for live goals to avoid
+  unit reinterpretation; generic data API hides shared source-linked updates.
+  Private/manual progress remains. No schema change/local business persistence.
+- Paths: analytics types/catalogue/load/period, source module metrics/manifests,
+  Goals services/components/routes, source pages/dashboard components,
+  data-api read policy, connected-goal tests and topic docs. Full suite 857 passed /
+  22 integration skips; production build, separate strict TypeScript, scoped ESLint
+  and whitespace pass. Server deployment/live acceptance pending. See
+  `docs/modules/GOALS_KPIS.md`.
+
 ## 8 October 2026 — Quality workspace deployed and verified
 
 - Deployed runtime `9c98eab` to https://atlassystem.online. Research from official

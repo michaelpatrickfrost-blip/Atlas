@@ -7,9 +7,9 @@ import { HR_CAPABILITIES as HR } from "@/core/permissions/capabilities";
 import { assertModuleEnabled } from "@/core/modules/access";
 import { getAnalyticsMetrics } from "@/core/analytics/catalogue";
 import { db } from "@/core/db/client";
-import { dateOnly } from "@/modules/people/domain/working-time";
+import { goalDate as dateOnly, GoalInputError } from "@/modules/kpis/domain/input";
+import { readGoalMeasure, validateGoalSelection } from "@/modules/kpis/services/read-measure";
 import { canEditConduct, employeeInConductScope } from "@/modules/people/services/conduct-access";
-import { readActual } from "@/modules/kpis/domain/progress";
 import { goalWhere, planWhere } from "@/modules/kpis/services/access";
 import { leadIdsFor } from "@/modules/kpis/services/leads";
 
@@ -24,8 +24,8 @@ function refresh() {
 }
 
 async function memberName(organisationId: string, userId: string) {
-  const membership = await db.membership.findFirst({ where: { organisationId, userId }, select: { user: { select: { name: true } } } });
-  if (!membership) throw new Error("Choose an owner in this company.");
+  const membership = await db.membership.findFirst({ where: { organisationId, userId, active:true }, select: { user: { select: { name: true } } } });
+  if (!membership) throw new GoalInputError("Choose an owner in this company.");
   return membership.user.name;
 }
 
@@ -34,28 +34,34 @@ async function personRecord(organisationId: string, employeeId: string) {
     where: { id: employeeId, organisationId },
     select: { id: true, userId: true, firstName: true, lastName: true, jobTitle: true, department: true, manager: { select: { userId: true } } },
   });
-  if (!employee) throw new Error("Choose a person in this company.");
+  if (!employee) throw new GoalInputError("Choose a person in this company.");
   return employee;
 }
 
 function readKind(value: string): Kind {
-  if (!(kinds as readonly string[]).includes(value)) throw new Error("Choose what kind of goal this is.");
+  if (!(kinds as readonly string[]).includes(value)) throw new GoalInputError("Choose what kind of goal this is.");
   return value as Kind;
 }
 
 function readTarget(raw: string, money: boolean) {
   const value = Number(raw);
-  if (!Number.isFinite(value) || value < 0) throw new Error("Enter a target of zero or more.");
-  return money ? Math.round(value * 100) : value;
+  if (!raw.trim() || !Number.isFinite(value) || value < 0) throw new GoalInputError("Enter a target of zero or more.");
+  const stored=money?Math.round(value*100):value;
+  if(!Number.isFinite(stored)||Math.abs(stored)>Number.MAX_SAFE_INTEGER)throw new GoalInputError("Enter a target within the supported numeric range.");
+  return stored;
 }
 
 export async function createKpi(form: FormData) {
+  const session=await requireSession();assertCapability(session,"kpis.manage");
   form.set("kind", "team");
-  await saveGoal(form);
+  return saveGoal(form);
 }
 
 export async function saveGoal(form: FormData) {
-  const session = await requireSession();
+ const session=await requireSession();assertCapability(session,"core.profile.self");
+ try {return await saveGoalInternal(session,form);}catch(error){if(error instanceof GoalInputError)return {error:error.message};throw error;}
+}
+async function saveGoalInternal(session:Awaited<ReturnType<typeof requireSession>>,form: FormData) {
   const kind = readKind(text(form, "kind"));
   const personal = kind === "personal" || kind === "pip" || kind === "development";
   if (personal) await assertModuleEnabled(session, "people");
@@ -68,7 +74,7 @@ export async function saveGoal(form: FormData) {
   const direction = text(form, "direction") === "AT_MOST" ? "AT_MOST" : "AT_LEAST";
   const startsAt = dateOnly(text(form, "startsAt"));
   const endsAt = dateOnly(text(form, "endsAt"));
-  if (endsAt < startsAt) throw new Error("The end date needs to be on or after the start.");
+  if (endsAt < startsAt) throw new GoalInputError("The end date needs to be on or after the start.");
   const reviewText = text(form, "reviewOn");
   const reviewOn = reviewText ? dateOnly(reviewText) : null;
   const ownerUserId = text(form, "ownerUserId") || session.userId;
@@ -77,29 +83,28 @@ export async function saveGoal(form: FormData) {
   const sliceLabel = text(form, "sliceLabel").slice(0, 200);
   const metrics = metricId ? await getAnalyticsMetrics(session) : [];
   const metric = metrics.find((item) => item.id === metricId);
-  if (metricId && !metric) throw new Error("Choose a measure you are allowed to see.");
-  if (kind === "department" && !metric) throw new Error("A department goal needs a live measure from that app.");
+  if (metricId && !metric) throw new GoalInputError("Choose a measure you are allowed to see.");
+  if (kind === "department" && !metric) throw new GoalInputError("A department goal needs a live measure from that app.");
   let unit = metric?.unit ?? (text(form, "unit").slice(0, 30) || "count");
   const target = readTarget(text(form, "target"), unit === "money");
   if (metric) {
-    const points = await metric.query(session, metric.snapshot ? undefined : startsAt);
-    const reading = readActual(points, metric.unit, sliceLabel);
-    if (reading.blocked) throw new Error(reading.blocked);
+    validateGoalSelection(metric,sliceLabel);
+    if(metric.unit==="percent"&&target>100)throw new GoalInputError("A percentage target must be between 0 and 100.");
     unit = metric.unit ?? "count";
   }
-  if (!name || name.length > 150) throw new Error("Give the goal a name of 150 characters or fewer.");
-  if (notes.length > 2000) throw new Error("Keep the description under 2,000 characters.");
+  if (!name || name.length > 150) throw new GoalInputError("Give the goal a name of 150 characters or fewer.");
+  if (notes.length > 2000) throw new GoalInputError("Keep the description under 2,000 characters.");
 
   if (!personal) {
     const teamName = (text(form, "teamName") || metric?.subject || "Company").slice(0, 100);
-    if (!teamName) throw new Error("Name the team.");
+    if (!teamName) throw new GoalInputError("Name the team.");
     const goal = await db.kpi.create({
       data: {
         organisationId: session.organisationId,
         name, teamName, ownerUserId, unit, direction, target, startsAt, endsAt, notes: notes || null, reviewOn,
         scope: kind === "department" ? "DEPARTMENT" : "TEAM",
         visibility: "COMPANY",
-        department: metric?.subject || teamName,
+        department: teamName,
         metricId: metric?.id ?? "",
         sliceLabel,
         status: "ACTIVE",
@@ -114,17 +119,17 @@ export async function saveGoal(form: FormData) {
   const self = text(form, "self") === "1";
   const employee = await personRecord(session.organisationId, employeeId);
   if (self) {
-    if (employee.userId !== session.userId) throw new Error("You can only set a personal goal for yourself.");
-    if (kind !== "personal") throw new Error("A performance plan is set by a manager or HR.");
+    if (employee.userId !== session.userId) throw new GoalInputError("You can only set a personal goal for yourself.");
+    if (kind !== "personal") throw new GoalInputError("A performance plan is set by a manager or HR.");
   } else if (employee.userId === session.userId) {
-    throw new Error("You cannot put yourself on a performance plan.");
+    throw new GoalInputError("You cannot put yourself on a performance plan.");
   } else if (!can(session, "kpis.manage")) {
     await employeeInConductScope(session, employee.id, "edit");
   }
   const leads = await leadIdsFor(session.organisationId, employee, ownerUserId);
   const personName = `${employee.firstName} ${employee.lastName}`.trim();
   const support = text(form, "support");
-  if (support.length > 4000) throw new Error("Keep the support under 4,000 characters.");
+  if (support.length > 4000) throw new GoalInputError("Keep the support under 4,000 characters.");
 
   if (kind === "personal") {
     const goal = await db.kpi.create({
@@ -141,10 +146,10 @@ export async function saveGoal(form: FormData) {
   }
 
   const reason = text(form, "reason");
-  if (reason.length < 10 || reason.length > 4000) throw new Error("Explain why this plan is needed, in at least a short sentence.");
+  if (reason.length < 10 || reason.length > 4000) throw new GoalInputError("Explain why this plan is needed, in at least a short sentence.");
   const title = (text(form, "planTitle") || (kind === "pip" ? "Performance improvement plan" : "Development plan")).slice(0, 160);
   const planReview = reviewOn ?? endsAt;
-  if (planReview < startsAt || endsAt < planReview) throw new Error("Put the review on or after the start, and the end on or after the review.");
+  if (planReview < startsAt || endsAt < planReview) throw new GoalInputError("Put the review on or after the start, and the end on or after the review.");
   const planKind = kind === "pip" ? "PIP" : "DEVELOPMENT";
   const objective = { goal: name, measure: notes || metric?.name || "Recorded on the goal", support, by: text(form, "endsAt") };
   const plan = await db.performancePlan.create({
@@ -198,13 +203,10 @@ export async function recordProgress(id: string, form: FormData) {
   if (live) {
     if (!note) throw new Error("Add a note. The number itself comes from the live measure.");
     const metrics = await getAnalyticsMetrics(session);
-    const metric = metrics.find((item) => item.id === goal.metricId);
-    if (metric) {
-      const points = await metric.query(session, metric.snapshot ? undefined : goal.startsAt);
-      const reading = readActual(points, metric.unit, goal.sliceLabel);
-      if (reading.actual !== null && !reading.blocked) value = reading.actual;
-    }
-    if (!Number.isFinite(value)) value = goal.current;
+    const metric = metrics.find(item=>item.id===goal.metricId);
+    const reading=await readGoalMeasure(session,metric,goal.startsAt,goal.endsAt,goal.sliceLabel);
+    if(reading.blocked||reading.actual===null)throw new Error("The live source has no available reading. Try again after checking the source.");
+    value=reading.actual;
   } else if (!Number.isFinite(value) || value < 0) throw new Error("Enter the current figure.");
   await db.kpi.update({
     where: { id: goal.id },
@@ -289,4 +291,24 @@ export async function commentOnPlan(planId: string, form: FormData) {
   if (employeeComment.length > 4000) throw new Error("Keep the comment under 4,000 characters.");
   await db.performancePlan.update({ where: { id: plan.id }, data: { employeeComment } });
   refresh();
+}
+
+/** Connect an existing shared goal without replacing its identity or history. */
+export async function connectGoal(id:string,form:FormData){
+ const session=await requireSession();assertCapability(session,"kpis.manage");
+ await assertModuleEnabled(session,"kpis");
+ try{
+  const goal=await db.kpi.findFirst({where:{id,organisationId:session.organisationId,visibility:"COMPANY",status:"ACTIVE"}});
+  if(!goal)throw new Error("Goal unavailable.");
+  const metric=(await getAnalyticsMetrics(session)).find(m=>m.id===text(form,"metricId"));if(!metric)throw new GoalInputError("Choose a source you are allowed to read.");
+  const slice=text(form,"sliceLabel").slice(0,200);validateGoalSelection(metric,slice);
+  const target=readTarget(text(form,"target"),metric.unit==="money");if(metric.unit==="percent"&&target>100)throw new GoalInputError("A percentage target must be between 0 and 100.");
+  if(text(form,"expectedConnection")!==JSON.stringify([goal.metricId,goal.sliceLabel,goal.target,goal.unit]))throw new GoalInputError("The source changed in another window. Reload before connecting.");
+  await db.$transaction(async tx=>{
+   const changed=await tx.kpi.updateMany({where:{id:goal.id,organisationId:session.organisationId,metricId:goal.metricId,sliceLabel:goal.sliceLabel,target:goal.target,unit:goal.unit,status:"ACTIVE"},data:{metricId:metric.id,sliceLabel:slice,unit:metric.unit??"count",target}});
+   if(!changed.count)throw new GoalInputError("The goal changed in another window. Reload before connecting.");
+   await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:"kpi.source.connected",entityType:"Kpi",entityId:goal.id,before:{metricId:goal.metricId,target:goal.target,unit:goal.unit},after:{metricId:metric.id,sliceLabel:slice,target,unit:metric.unit??"count"}}});
+  });
+  refresh();revalidatePath(`/kpis/${goal.id}`);return {saved:true};
+ }catch(error){if(error instanceof GoalInputError)return {error:error.message};throw error;}
 }

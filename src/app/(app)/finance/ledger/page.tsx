@@ -1,3 +1,4 @@
+import {SourceGoals} from "@/modules/kpis/components/source-goals";
 import Link from "next/link";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
@@ -14,6 +15,7 @@ export default async function GeneralLedger({ searchParams }: { searchParams: Pr
   const reconciliation = entity ? await getFinanceSubledgerReconciliation(entity.id) : null;
   const query = new URLSearchParams({ entity: entity?.id ?? "", account: filter.account ?? "", start: data.start.toISOString().slice(0, 10), end: data.end.toISOString().slice(0, 10), q: filter.q ?? "" });
   return <FinanceWorkspace title="General ledger" description="Posted balances, journals and the source transactions behind them. Draft journals appear only in the approval workspace and do not change these balances.">
+    <SourceGoals session={session} prefixes={["finance."]}/>
     <FinanceEntities entities={data.entities} selected={entity?.id} path="/finance/ledger"/>
     {!entity ? <p className="text-sm">Set up the first books in Finance overview.</p> : <>
       <form className="grid items-end gap-3 sm:grid-cols-5"><input type="hidden" name="entity" value={entity.id}/><label className="text-xs">From<input name="start" type="date" className={field} defaultValue={data.start.toISOString().slice(0, 10)}/></label><label className="text-xs">Through<input name="end" type="date" className={field} defaultValue={data.end.toISOString().slice(0, 10)}/></label><label className="text-xs">Account<select name="account" className={field} defaultValue={filter.account}><option value="">All accounts</option>{data.accounts.map(account => <option key={account.id} value={account.id}>{account.code} · {account.name}</option>)}</select></label><label className="text-xs">Journal reference / description<input name="q" className={field} defaultValue={filter.q}/></label><button className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white">Apply filters</button></form>

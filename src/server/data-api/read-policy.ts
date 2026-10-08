@@ -73,7 +73,7 @@ export function modelScope(session:Session,model:ModelName):Scope{
  if(model==='HrPolicy')return {organisationId,audience:{in:[...policyAudiences(session)]},...(session.capabilities.has('people.policy.manage')?{}:{status:'PUBLISHED'})};
  if(model==='Kpi')return goalWhere(session);
  if(model==='PerformancePlan')return goalPlanWhere(session);
- if(model==='KpiUpdate')return {kpi:goalWhere(session)};
+ if(model==='KpiUpdate')return {kpi:{AND:[goalWhere(session),{OR:[{visibility:'PRIVATE'},{metricId:''}]}]}};
  if(model==='PerformanceReview')return {plan:goalPlanWhere(session)};
  if(model==='AbsenceRecord')return allowed(session,'people.absence.read','people.absence.manage','people.employee.manage')?{organisationId}:session.capabilities.has('people.team.manage')?{organisationId,employee:{organisationId,OR:[{userId:session.userId},{manager:{organisationId,userId:session.userId}}]}}:{organisationId,employee:ownEmployee(session)};
  if(model==='Payslip'||model==='PayrollDocument')return allowed(session,'payroll.run.read','payroll.run.manage')?{organisationId}:{organisationId,employee:ownEmployee(session)};

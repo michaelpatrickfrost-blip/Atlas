@@ -1,0 +1,25 @@
+import {describe,it,expect,vi} from "vitest";
+import {goalPeriod,safeMetricNumber} from "@/core/analytics/goal-period";
+import {judgeGoal} from "@/modules/kpis/domain/progress";
+import {readGoalMeasure,validateGoalSelection} from "@/modules/kpis/services/read-measure";
+import {goalDate} from "@/modules/kpis/domain/input";
+import type {AnalyticsMetric} from "@/core/analytics/types";
+import type {Session} from "@/core/auth/session";
+const session={organisationId:"org",capabilities:new Set()} as Session;
+const start=new Date("2026-01-01"),end=new Date("2026-01-31"),now=new Date("2026-01-15T12:00:00Z");
+const metric=(query=vi.fn().mockResolvedValue({points:[{label:"CSAT",value:80}],sampleSize:10})):AnalyticsMetric=>({id:"csat",name:"CSAT",subject:"Service",definition:"test",grain:"response",href:"/csat",capability:"csat.result.read",unit:"percent",snapshot:false,query:vi.fn(),goalQuery:query});
+describe("connected goal scoring",()=>{
+ it("bounds an inclusive final UTC date, capped at now",()=>{expect(goalPeriod(start,end,new Date("2026-02-02"))).toEqual({start,until:new Date("2026-02-01")});expect(goalPeriod(start,end,now).until).toEqual(now);});
+ it.each(["2026-02-30","invalid","2026-13-01"])("rejects invalid dates %s",raw=>expect(()=>goalDate(raw)).toThrow("calendar"));
+ it("does not silently lose BigInt precision",()=>{expect(safeMetricNumber(123n)).toBe(123);expect(()=>safeMetricNumber(9007199254740992n)).toThrow("precision");});
+ it("compares CSAT against the full percentage, not accumulating pace",()=>{const judged=judgeGoal({actual:80,target:90,direction:"AT_LEAST",startsAt:start,endsAt:end,now,unit:"percent"});expect(judged.verdict).toBe("behind");expect(judged.expected).toBeNull();});
+ it("compares a snapshot against its full limit",()=>expect(judgeGoal({actual:8,target:10,direction:"AT_MOST",startsAt:start,endsAt:end,now,snapshot:true}).verdict).toBe("met"));
+ it("compares rates of zero without declaring no data",async()=>{const reading=await readGoalMeasure(session,metric(vi.fn().mockResolvedValue({points:[{label:"CSAT",value:0}],sampleSize:5})),start,end,"");expect(reading.actual).toBe(0);expect(reading.blocked).toBeUndefined();});
+ it("uses the exact goal period in the source contract",async()=>{const query=vi.fn().mockResolvedValue({points:[{label:"CSAT",value:80}],sampleSize:10});expect(await readGoalMeasure(session,metric(query),start,end,"")).toMatchObject({actual:80,sampleSize:10});expect(query).toHaveBeenCalledWith(session,{start,until:new Date("2026-02-01")});});
+ it("unavailable source never falls back to a manual zero",async()=>expect(await readGoalMeasure(session,undefined,start,end,"")).toMatchObject({actual:null,blocked:expect.stringContaining("access")}));
+ it("source failure is not a fabricated zero",async()=>expect(await readGoalMeasure(session,metric(vi.fn().mockRejectedValue(Error("private DB error"))),start,end,"")).toMatchObject({actual:null,blocked:expect.not.stringContaining("private DB")}));
+ it("no responses means no rate",async()=>expect(await readGoalMeasure(session,metric(vi.fn().mockResolvedValue({points:[],sampleSize:0})),start,end,"")).toMatchObject({actual:null,sampleSize:0}));
+ it("unsupported legacy flow cannot read past the end",async()=>{const m=metric();delete m.goalQuery;expect(await readGoalMeasure(session,m,start,end,"")).toMatchObject({actual:null,blocked:expect.stringContaining("older measure")});expect(m.query).not.toHaveBeenCalled();});
+ it("missing selected currency is not a fabricated zero",async()=>expect(await readGoalMeasure(session,{...metric(vi.fn().mockResolvedValue({points:[{label:"EUR",value:100}]})),unit:"money"},start,end,"GBP")).toMatchObject({actual:null,blocked:expect.stringContaining("selected currency")}));
+ it("money requires an explicit currency but rates can be set before responses arrive",()=>{expect(()=>validateGoalSelection({...metric(),unit:"money"},"")).toThrow("currency");expect(()=>validateGoalSelection(metric(),"")).not.toThrow();});
+});

@@ -1,3 +1,4 @@
+import { salesGoalMetrics } from "./goal-metrics";
 import { db } from "@/core/db/client";
 import { timeSeries } from "@/core/analytics/buckets";
 import type { AnalyticsProvider } from "@/core/analytics/types";
@@ -46,7 +47,7 @@ async function orderPoints(session: Session, since: Date | undefined, breakdown 
   return rows.map((row) => ({ label: row.commercialStatus.replaceAll("_", " "), value: row._count._all }));
 }
 
-export const salesAnalytics: AnalyticsProvider = [{
+export const salesAnalytics: AnalyticsProvider = [...salesGoalMetrics,{
   id: "sales.orders", name: "Orders received", subject: "Sales", definition: "Orders in the selected period. Open the chart and choose status, order type, product, category, customer or time. Product and category count lines. This is not recognised revenue.", grain: "One sales order, or one product line", capability: "sales.order.read", href: "/sales/orders", snapshot: false, breakdowns: orderViews,
   query: orderPoints,
 },

@@ -1,3 +1,4 @@
+import { SourceGoals } from "@/modules/kpis/components/source-goals";
 import Link from "next/link";
 import { requireSession } from "@/core/auth/session";
 import { db } from "@/core/db/client";
@@ -36,6 +37,7 @@ export default async function CsatResults({ searchParams }: { searchParams: Prom
       <div><h2 className="text-2xl font-semibold tracking-tight">Customer satisfaction</h2><p className="mt-1 text-sm text-slate-500">What customers scored, why, and who needs a call back.</p></div>
       {can(session, CSAT_CAPABILITIES.manage) && <Link href="/csat/surveys" className="inline-flex items-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700">Surveys and templates</Link>}
     </div>
+    <SourceGoals session={session} prefixes={["csat."]}/>
     <form className="flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-white p-4">
       <label className="min-w-48 flex-1 text-xs text-slate-500">Survey<select name="survey" defaultValue={surveyId} className="mt-1.5 block w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"><option value="">All surveys</option>{surveys.map((survey) => <option key={survey.id} value={survey.id}>{survey.name}</option>)}</select></label>
       <label className="text-xs text-slate-500">Sent in the last<select name="days" defaultValue={days} className="mt-1.5 block rounded-xl border border-slate-200 px-3 py-2 text-sm"><option value={30}>30 days</option><option value={90}>90 days</option><option value={365}>12 months</option></select></label>

@@ -11,7 +11,7 @@ const tone: Record<GoalVerdict, string> = {
   no_reading: "bg-slate-100 text-slate-600",
 };
 
-export function GoalMeter({ name, actual, target, elapsed, verdict, unit, currency, summary, status }: {
+export function GoalMeter({ name, actual, target, elapsed, verdict, unit, currency, summary, status, showPace = true }: {
   name?: string;
   actual: number | null;
   target: number;
@@ -21,6 +21,7 @@ export function GoalMeter({ name, actual, target, elapsed, verdict, unit, curren
   currency?: string;
   summary: string;
   status?: string;
+  showPace?:boolean;
 }) {
   const width = actual === null || target <= 0 ? 0 : Math.max(0, Math.min(100, actual / target * 100));
   const pace = Math.max(0, Math.min(100, elapsed * 100));
@@ -35,7 +36,7 @@ export function GoalMeter({ name, actual, target, elapsed, verdict, unit, curren
     </div>
     <div className="relative mt-3 h-2 rounded-full bg-[var(--color-surface-sunken)]">
       <div className="h-full rounded-full bg-[var(--color-atlas-blue)]" style={{ width: `${width}%` }} />
-      <span className="absolute top-[-3px] h-3.5 w-0.5 bg-slate-900/70" style={{ left: `${pace}%` }} title="Where a straight line would be today" />
+      {showPace&&unit!=="percent"&&<span className="absolute top-[-3px] h-3.5 w-0.5 bg-slate-900/70" style={{ left: `${pace}%` }} title="Where a straight line would be today" />}
     </div>
     <p className="mt-2 text-xs leading-relaxed text-[var(--color-ink-muted)]">{summary}</p>
   </div>;

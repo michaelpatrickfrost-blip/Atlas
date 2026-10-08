@@ -1,3 +1,4 @@
+import { SourceGoals } from "@/modules/kpis/components/source-goals";
 import Link from "next/link";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
@@ -30,6 +31,7 @@ export default async function ManufacturingToday() {
           </Link>
         ))}
       </div>
+      <SourceGoals session={session} prefixes={["manufacturing."]}/>
       <section>
         <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Needs attention</h2>
         <div className="mt-3 divide-y divide-[var(--color-border)] rounded-3xl border border-[var(--color-border)] bg-white">

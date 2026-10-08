@@ -1,4 +1,5 @@
 "use server";
+import { loadGoalMarkers } from "@/modules/kpis/services/workspace";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { assertModuleEnabled } from "@/core/modules/access";
@@ -55,3 +56,5 @@ export async function deleteAnalyticsDashboard(id: unknown) {
   revalidatePath("/analytics");
   revalidatePath("/board");
 }
+
+export async function loadLiveGoalMarkers(){const session=await authorised(false);return loadGoalMarkers(session);}

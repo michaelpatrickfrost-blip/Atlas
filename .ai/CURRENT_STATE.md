@@ -2,34 +2,54 @@
 
 ## Guardian Tickets access and recovery — 8 October 2026
 
-- Independently reproduced denied Tickets access as a generic production error on
-  `88c2e8b`; denied/disabled/unentitled disposable fixtures expose no private payload
-  and direct create actions reject without changing central records. Disabled views
-  already explain restriction, but lack an explicit Home link while hidden child
-  rendering still throws. Private journal/source confirm the capability/module guards.
+- Deployed application `7a7f005`. Missing Tickets read access previously showed a
+  generic production error. Disabled/unentitled layout screens hid child-render
+  module errors and had no explicit Home link. Pre-fix browser/unit checks reproduced
+  these cases on `88c2e8b`; private journal correlated the original capability/module
+  categories. No business guard was weakened or error broadly suppressed.
 - Tickets layout and leaf list/detail/create/queue/catalogue/knowledge/report views
-  now render server-known restrictions before business queries. Shared Service work
-  views use their existing capability and module scope. Core action guards, tenant/
-  restricted queue rules and enabled/entitled tests remain. No blanket error catching:
-  unexpected module/database/workspace failures still propagate.
-- New `tests/service-work-restriction.test.tsx` reproduced the missing permission
-  screen before repair. Nine regressions cover denied/disabled query exclusion,
-  authorised filters, independent queue/create/Service permissions, layout recovery
-  and real failure propagation. 30 focused tests and full suite 781 passed / 22
-  integration skips (126 files passed / 3 skipped). Production build and focused
-  lint and separate post-build TypeScript passed.
-- New server-only `scripts/guardian/check-ticket-access.ts`: three isolated companies
-  for missing read, disabled app and unentitled app; normal mode covers 24 requests,
-  phone fit, real Home links, no private response payload, rejected direct action
-  and unchanged work/queue/entry state. Cleanup suspends exact fixtures/revokes sessions,
-  retains central history. Pre-fix reproduction passed after correcting the harness
-  to recognise the existing disabled layout, rather than expecting a generic screen.
-- Pre-fixture database/private-evidence backup:
-  `/home/administrator/backups/atlas-pre-guardian-access-20261008-125227.dump` plus
-  matching archive. All pre-fix fixtures retired. Read all 46 active queue summaries
-  and full target/new briefs; timer/worker healthy. Original Tickets reports remain
-  NEEDS_AI until deploy and successful same-case verification. Deployment and full
-  post-fix fixture proof pending. Preserve concurrent Safety/Marketing releases.
+  now render server-known restrictions before work/queue queries. Shared Service
+  work views retain their own capabilities/module scope. Unexpected module/database/
+  workspace failures still propagate; action guards and tenant/restricted scopes remain.
+- Nine meaningful regressions cover denied/disabled query exclusion, authorised
+  filters, independent queue/create/Service permissions, layout recovery and failure
+  propagation. 30 focused tests passed; full suite 781 passed / 22 integration skips
+  (126 files passed / 3 skipped). Production build, separate post-build TypeScript,
+  focused lint and diff check passed. No schema changes or local business cache.
+- Server build/restart and HTTPS login passed; 96 migrations, none pending. Private
+  database/evidence backup `atlas-pre-deploy-20261008-125900` retained alongside
+  pre-fixture `atlas-pre-guardian-access-20261008-125227` in administrator backups.
+  Guardian timer restored; healthy service/heartbeat on `7a7f005`.
+- Live `scripts/guardian/check-ticket-access.ts` passed all 24 requests across three
+  disposable missing-read/disabled/unentitled companies: list/detail/create/queues/
+  catalogue/knowledge/reports/legacy queue redirect, real Home navigation, 390px fit,
+  no private synthetic response payload, zero browser errors and no new Tickets
+  server-render diagnostics. Direct create calls reject; original work version/name,
+  queue, row count and entries remain unchanged. Exact fixtures suspended/sessions
+  revoked, central history retained. The pre-fix harness was corrected to recognise
+  existing disabled views rather than incorrectly requiring generic error text.
+- Re-ran full enabled `check-ticket-pages.ts` on `7a7f005`: create queue/member,
+  concurrent save rejection/draft retention/newer record protection, refresh/retry,
+  create ticket/queue/requester/deadlines, following, exact reply and list/detail links
+  all pass with matching central state and zero browser errors. Fixture retired.
+- Original Tickets reports `cmuzhgq89000im6d5ilt7pxkq`, `cmuzh9azi0005pvd54gkrzs6u`
+  and reproduced duplicate `cmuzjdsri0006a8d54lmjb9ro` are FIXED with original live
+  proof. Reviewed prior deployed acceptance and exact journal/source correlation:
+  Safety reference collision `cmuzj62ad0004lmd5gxkd6m0l` FIXED at `88c2e8b` (recorded
+  20-assertion mixed-type proof); Marketing allocation error `cmuzi99qi0000qad54d26v0q4`
+  FIXED at `d77e7c4` (recorded 12-assertion rejected allocation/no partial record).
+  Those prior acceptance suites were reviewed, not re-run during this Guardian cycle.
+- Two exact deliberate negative action reports classified IGNORED through actual
+  staff Save progress and current downloaded AI briefs: disabled Tickets direct
+  create and read-only Safety mutation. Their capability/module guards stay required.
+  Read every queue page (46 initially, 48 after reproduction); 41 older NEEDS_AI remain
+  at this checkpoint. S&OP stream, generic older actions and non-atomic deployment
+  retain exact blockers. Next rotation: dynamic Service queries/report interaction
+  or original S&OP request correlation, with disposable authorised fixtures.
+- Owned code/docs/memory integrated into the canonical repo using base comparisons
+  and section-only updates, preserving concurrent Safety/Marketing changes. Evidence:
+  `docs/evidence/2026-10-08-guardian-ticket-access.md`. This is tested workflow coverage,
+  not a blanket pass for every screen, control or role.
 
 ## 8 October 2026 — Safety workplace register deployed and verified
 

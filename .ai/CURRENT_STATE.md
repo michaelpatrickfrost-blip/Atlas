@@ -1,25 +1,37 @@
 # Atlas current state
 
-## 8 October 2026 — Quality workspace improvements (verification in progress)
+## 8 October 2026 — Quality workspace deployed and verified
 
-- User requested substantial Quality improvements with external research. Official
-  Qualio, MasterControl and Reliance references mapped in
-  `docs/plans/QUALITY_WORKSPACE_RESEARCH.md`; behaviour in `docs/modules/QUALITY.md`.
-- Richer NCR reporting/editing, canonical product/active member owner, target date,
-  optional context/impact/evidence/five whys, action register and editable action
-  details, evidence-based effectiveness and guarded closure/reopening. Parent
-  submitted-version lock serialises all issue/action writes with atomic audit.
-- Fixes missing inspection results silently passing, positional/radio-group answer
-  bugs, manual failure not opening hold/NCR, missing tenant checks on control-point
-  references; adds readable inspection history and capability-filtered Quality Home.
-  Reports distinguish actual inspection pass rate and include all-date open ageing.
-- Additive migration `20261008130000_quality_workspace`: optional owner/date, default
-  JSON workspace and company owner/date index. Reviewed SQL: no destructive changes.
-  Existing holds/service-linked records and legacy metadata preserved.
-- Paths: Quality routes/components/domain/services/manifest, schema/migration,
-  `tests/quality-*`, Quality topic/research docs. 36 focused tests and full suite 808 passed / 22 integration skips; strict
-  TypeScript, Quality ESLint, production build and whitespace checks passed.
-  Server migration/deployment and live acceptance pending. No local business DB.
+- Deployed runtime `9c98eab` to https://atlassystem.online. Research from official
+  Qualio, MasterControl and Reliance sources mapped in
+  `docs/plans/QUALITY_WORKSPACE_RESEARCH.md`; behaviour/limits in `docs/modules/QUALITY.md`.
+- Rich NCR context, canonical product/active company owner, resolution target,
+  optional evidence/five whys, cross-issue action register and editable action details.
+  Effectiveness criteria/review evidence, major/critical closure gates, closed-record
+  locking and reasoned reopening. Submitted parent-version locking and atomic audit
+  protect every issue/action write; stale saves retain browser drafts.
+- Inspections reject missing/foreign/duplicate characteristics and missing/nonfinite
+  results; independently keyed answers, manual failure hold/NCR, tenant reference
+  checks, readable inspection history, capability-filtered Home. Reports correctly
+  label inspection pass rate and include all-date open ageing/unresolved actions.
+- Additive migration `20261008130000_quality_workspace` applied; 97 migrations and
+  server schema up to date. Private database/service-evidence backups preserved as
+  `atlas-pre-deploy-20261008-131137` in administrator backups. No local business DB.
+- 36 focused tests; rebased full suite 817 passed / 22 integration skips. Production
+  build, separate strict TypeScript, scoped Quality ESLint and whitespace passed.
+  Server build/restart and HTTPS login 200 passed. Live browser/raw-action acceptance
+  passed 22 assertions: rich records, filters, stale protection, effectiveness cycle,
+  closure/reopening, configured/manual failures, history, mobile fit, zero browser
+  errors, read-only/company/product restrictions and central audit. Synthetic test
+  companies suspended and credentials/membership sessions revoked; history retained.
+- Owned implementation integrated into canonical repo using base comparisons, narrow
+  schema/nav edits and section-only memory updates; primary's 36 focused tests pass.
+  Concurrent unfinished work excluded from release; previously deployed Tickets fixes
+  retained. Evidence: `docs/evidence/2026-10-08-quality-workspace.md`.
+- Remaining scope: evidence uploads/signatures, independent approvals, supplier scoring,
+  calibration, external notifications and full audit/change control. A quality hold
+  record is not proof automated stock quarantine succeeded; hold release remains a
+  separate permissioned workflow. No regulatory certification claim.
 
 ## Guardian Tickets access and recovery — 8 October 2026
 

@@ -1,32 +1,35 @@
 # Atlas current state
 
-## 8 October 2026 — Safety workplace register (live verification in progress)
+## 8 October 2026 — Safety workplace register deployed and verified
 
-- Adds `/safety/workplace`, 29 record types, guided findings, contacts/location,
-  review date, follow-up/evidence and editable record detail. Search/filter,
-  completion evidence, timestamp stale-save protection and atomic metadata audit.
-- Preserves restricted-record policy, requires risk read/create capabilities,
-  active module for mutation and signed tenant scope. Existing unknown JSON stays.
-  Safety Today includes overdue reviews and excludes completed workplace work.
-- Paths: `src/modules/safety/domain/workplace.ts`, `components/workplace-form.tsx`,
-  `services/commands.ts`, `services/queries.ts`, Safety pages/manifest;
-  `tests/safety-workplace*`; `docs/modules/SAFETY.md`.
-- Checks: production build and strict TypeScript passed; full suite 772 passed,
-  22 integration skips; Safety-scoped ESLint and diff whitespace passed. Global
-  lint reports 16 existing errors/24 warnings outside Safety. Deployment/live
-  acceptance in progress; server-only synthetic browser harness added. Initial
-  live create/audit/overdue checks passed; explicit accessible field names added
-  after browser exact-label checks exposed ambiguous implicit select labels.
-  Initial release ba2d17c deployed; follow-up production build, 32 focused tests
-  and full 771-test suite passed; label/search deployment pending. Adds
-  workplace records to Home attention/global search; fixes confirmed pre-existing
-  Safety search queries that ran without entity read capabilities.
-- Live mixed-type creation exposed a pre-existing reference collision: per-type
-  SFR counters violated the company-wide unique reference. New records now use
-  one `workplace_record` / `WSR` series; historical SFR records are unchanged.
-  Release 286653f deployed; reference fix build, strict TypeScript, Safety lint,
-  33 focused tests and full suite 772 passed / 22 skipped. Deployment and final
-  mixed-type/privacy browser acceptance pending.
+- Live `/safety/workplace`: 29 existing record types, guided findings, responsible
+  contact/team/location, review dates, follow-up/evidence, editable details,
+  search/review filters and completion evidence. Timestamp-checked writes,
+  preserved legacy JSON and atomic metadata-only audit. Restricted record policy,
+  signed tenant scope, entity capabilities and active module mutation gate kept.
+- Home/Safety Today shows overdue workplace reviews; completed work leaves due
+  lists. Global Safety search includes accessible workplace records and fixes
+  confirmed missing entity-capability checks for risks/incidents/permits.
+- Live testing caught legacy per-type SFR reference collisions. New records use
+  one WSR series; historical references stay intact. Explicit accessible labels
+  fix ambiguous select names in browser checks.
+- Runtime release `88c2e8b` deployed to atlassystem.online; 96 migrations current,
+  server production build/service/public login healthy. Private database/evidence
+  backups retained for all three deployments. See
+  `docs/evidence/2026-10-08-safety-workplace.md` for paths and acceptance results.
+- Checks: production build, strict TypeScript, Safety ESLint and whitespace pass;
+  full suite 772 passed / 22 integration skips; primary 33 focused tests pass.
+  Real public-HTTPS browser acceptance: 20 assertions pass (create/edit, completion,
+  stale drafts, mixed types, overdue views, 390px layout, read-only/private/foreign
+  access and direct mutation denial). Synthetic accounts revoked/tenants suspended;
+  central records/audit retained. Phone screenshot visually inspected.
+- Global lint still has 16 pre-existing errors/24 warnings outside Safety. Release
+  excluded unrelated concurrent primary edits. Relevant paths: Safety pages,
+  `src/modules/safety/{components,domain,services}`, manifest, `tests/safety-workplace*`,
+  `scripts/check-safety-workplace.ts`, `docs/modules/SAFETY.md` and decision memory.
+- No outstanding blocker for this delivered register. Evidence uses notes/references,
+  responsible contacts are recorded rather than automatically notified; operational
+  completion does not approve assessments, certify safety or release equipment holds.
 
 ## Marketing campaign information and workspace — 8 October 2026
 

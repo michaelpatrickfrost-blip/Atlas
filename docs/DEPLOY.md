@@ -15,12 +15,66 @@ Commit the reviewed compatible changes on main, then:
 npm run deploy:vps
 ```
 
-`scripts/deploy-vps.sh` pushes `main`, then over SSH on the VPS: takes a
-private `pg_dump` backup and configured service-evidence archive in `~/backups`
-(existing backups are preserved), `git pull --ff-only`, `npm ci`,
-`prisma generate`, `prisma migrate deploy`, builds, restarts the `atlas`
-systemd service and checks `/login`. It refuses to run with uncommitted changes. A clean detached release worktree may use `ATLAS_RELEASE_COMMIT=<full HEAD SHA> npm run deploy:vps` only after that exact commit is pushed to `origin/main`. The script verifies the pinned commit both locally and after the server pull, stopping if another release moved main. This lets a compatible reviewed release exclude concurrent unfinished edits. Login is SSH key only — no password is stored in the
-repo; on a new Mac run `ssh-copy-id -i ~/.ssh/id_ed25519.pub administrator@85.190.118.218` once.
+`scripts/deploy-vps.sh` pushes the reviewed pinned revision, then invokes the
+checked-in `scripts/deploy/vps-release.sh` over key-only SSH. A clean detached
+worktree uses `ATLAS_RELEASE_COMMIT=<full HEAD SHA>` after pushing that exact
+commit to `origin/main`. Main moving causes a safe stop for review.
+
+The server backs up PostgreSQL and configured private Service files into
+`~/backups`, then installs, generates, applies compatible migrations and builds in
+`/opt/atlas-releases/<revision>`. It never installs/builds over the running tree.
+Each release has its own dependencies, generated client, build and retained old
+hashed browser assets. Runtime files are root-owned; only disposable `.next/cache`
+is writable. `.env.local` links to the existing central configuration; private
+Service evidence must remain outside the checkout/releases. No business data is
+copied into a release. Existing backups and previous releases are retained.
+
+Before first activation, prepare and test the actual candidate and rollback:
+
+```bash
+ATLAS_RELEASE_MODE=prepare ATLAS_RELEASE_COMMIT=<full SHA> npm run deploy:vps
+ssh administrator@85.190.118.218 'ATLAS_GUARDIAN_RELEASE_TEST=1 bash /opt/atlas-releases/<full SHA>/scripts/deploy/check-release-switch.sh /opt/atlas <full SHA>'
+ATLAS_RELEASE_COMMIT=<full SHA> npm run deploy:vps
+```
+
+Prepare smoke-tests the sealed candidate on loopback 3011 without changing the
+production pointer/service. The opt-in staging script starts a separate temporary
+loopback service/proxy, continuously checks authorised pages and Apps menus with
+all writes blocked, switches old → candidate → old, and asserts both runtimes
+remain immutable. It cleans up its service/proxy and retains private test logs.
+It uses the existing Guardian QA membership, never creates/grants an account.
+
+Activation uses an atomic `/opt/atlas-current` symlink and graceful direct-Node
+systemd restart. `/api/health/release` must report the exact SHA before completion.
+Failure after switching restores the previous runtime; **database migrations are
+never rolled back**. Only backward-compatible reviewed migrations may be released.
+`/opt/atlas-previous` retains the rollback target. To restore it, hold both release
+locks, atomically change `atlas-current` with `release-files.mjs link`, restart
+Atlas, check login/revision and prove the affected workflow. Control checkout HEAD
+may remain newer after rollback; review it before another release.
+
+The control checkout remains `/opt/atlas` for Guardian/operator commands. Its
+`node_modules`, `.next` and generated Prisma client link through `atlas-current`.
+Original mutable directories are preserved in `/opt/atlas-maintenance-backups`.
+**Do not run npm ci, Prisma generation or a build in the control checkout.** Build
+only a fresh release through the deployer; stale in-place writes fail permissions.
+
+Deploy/staging acquire exclusive `/tmp/atlas-vps-deploy.lock` (legacy acceptance
+compatibility) and `/run/lock/atlas-vps-deploy.lock`. Guardian's systemd service
+uses a shared nonblocking global lock, exits successfully with 75 when busy and
+retries on its next timer tick. `/run/lock` is essential because Guardian has
+`PrivateTmp=true`. Activation preserves the timer's previous active state.
+
+Caddy retries connection gaps for up to five seconds, using its default safe
+request retry policy; no POST replay is enabled. Next's `NEXT_DEPLOYMENT_ID` handles
+navigation version changes and old static assets stay available. See installed
+Next `deploymentId.md` and [Caddy reverse_proxy documentation](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy).
+This is an isolated-build deployment with graceful restart, **not a guarantee of
+uninterrupted in-flight business writes**. Verify read-only continuity plus actual
+connected fixture workflows after activation. Login alone is insufficient.
+
+Login is SSH key only; no password is stored in the repo. On a new Mac run
+`ssh-copy-id -i ~/.ssh/id_ed25519.pub administrator@85.190.118.218` once.
 Overrides: `ATLAS_VPS_HOST`, `ATLAS_VPS_DIR`, `ATLAS_VPS_URL`.
 
 The Mac-app procedure below is unchanged and still applies to the installed app.
@@ -129,4 +183,4 @@ central data. Quitting Atlas.app stops the server; click the button again.
 - Back up before migrations and inspect pending changes; preserve records.
 - Do not include unrelated unfinished work merely to clear the release gate.
 
-Server deployments acquire a shared release lock and wait for an existing Next build before changing the checkout. A busy lock/build times out safely after ten minutes. Backups retain both the PostgreSQL dump and configured private service evidence (`-service-files.tar.gz`), with private file permissions.
+Server deployments acquire exclusive release locks and wait for an existing Next build before preparing a candidate. A busy lock/build times out safely after ten minutes. Backups retain both the PostgreSQL dump and configured private service evidence (`-service-files.tar.gz`), with private file permissions.

@@ -7,7 +7,8 @@ Type=oneshot
 User=administrator
 WorkingDirectory=/opt/atlas
 EnvironmentFile=/etc/atlas/guardian.env
-ExecStart=/usr/bin/node --env-file=.env.local --import tsx scripts/guardian/worker.ts
+ExecStart=/usr/bin/flock --shared --nonblock --conflict-exit-code 75 /run/lock/atlas-vps-deploy.lock /usr/bin/node --env-file=.env.local --import tsx scripts/guardian/worker.ts
+SuccessExitStatus=75
 TimeoutStartSec=40min
 Nice=10
 NoNewPrivileges=true

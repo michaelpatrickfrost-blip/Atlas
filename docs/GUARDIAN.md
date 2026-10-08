@@ -55,7 +55,10 @@ ATLAS_GUARDIAN_BROWSER=1
 The worker reads database/session configuration from `.env.local` in `/opt/atlas`.
 Never commit environment values or print authentication tokens. Install Chromium
 with `npx playwright install --with-deps --only-shell chromium`, then enable
-`atlas-guardian.timer`. A database advisory lock prevents overlapping workers.
+`atlas-guardian.timer`. A database advisory lock prevents overlapping workers. The service also takes a
+shared nonblocking `/run/lock/atlas-vps-deploy.lock`; a busy release exits 75
+(success) and retries on the next tick. This global path is shared despite
+`PrivateTmp=true`; the deployer holds it exclusively through preparation/activation.
 Runtime probe findings are buffered until the checkout and build remain stable
 through the full sweep. A changed revision/build aborts the run, discards incomplete
 probe evidence and retries at the next timer tick.
@@ -133,3 +136,10 @@ must match the displayed outcome; the parent stays unresolved with its original
 owner. Cleanup suspends only the exact fixture and revokes its sessions, retaining
 history. `--reproduce` proves the old false-success Unassigned control; the normal
 mode requires a null owner after reload and the complete connected workflow.
+
+The opt-in `scripts/guardian/check-release-pages.ts` uses the existing authorised
+QA membership, blocks every non-GET/HEAD request, and repeatedly renders Finance,
+Logistics, Manufacturing and Service pages while opening/closing their explicit
+safe Apps toggles. It asserts zero browser/chunk failures. This is release
+continuity evidence, not verification of business writes or every dynamic page.
+See `docs/DEPLOY.md` for isolated candidate/switch/rollback staging.

@@ -1,5 +1,16 @@
 # Atlas decisions
 
+## 8 October 2026 — Isolate release files from the running Atlas process
+
+Recurring streamed blank pages/ENOENT and Guardian sweep aborts correlated with
+in-place builds. Prepare root-owned versioned runtimes with separate dependencies,
+generated client and build; preserve shared central configuration/evidence and old
+browser chunks. Activate an atomic pointer with graceful restart and exact revision
+health, retaining the previous runtime. Do not roll back business migrations.
+Guardian and deploy share a global lock outside PrivateTmp. Require actual staged
+switch/rollback and live connected workflow evidence; do not infer complete button
+coverage or uninterrupted in-flight writes from a login response.
+
 ## 8 October 2026 — HR lifecycle records use the existing employee owner
 
 Internal recruitment hands accepted offers to canonical same-company onboarding

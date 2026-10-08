@@ -1,5 +1,22 @@
 # Atlas current state
 
+## 8 October 2026 — Guardian isolated release repair prepared
+
+- Recurring in-place build failures reproduced in central journal: reset-password
+  and company render ENOENT /500 at 14:43–14:44; monitor sweep aborted at 14:34.
+  Deployment reliability report `cmuxsymb70000cmd5jgotzfwo` remains NEEDS_AI until
+  staged and deployed proof. All 57 active reports across three pages read.
+- Prepared isolated immutable release deployer, retained browser assets, atomic
+  pointer/rollback, exact release health, global Guardian/deploy lock and read-only
+  continuous page/menu staging. No schema/business permission changes.
+- Initial local checks on base 5b21c68: full 952 pass / 22 skips, production build,
+  separate strict TypeScript, focused lint, six filesystem/health regressions and
+  shell/whitespace checks passed. Reviewed/merged concurrent user-provisioning and
+  S&OP evidence through d226ef8; final combined checks: 959 pass / 22 skips,
+  production build, strict TypeScript, scoped lint and 19 focused checks pass.
+- Staging, activation, live continuity/connected fixture and shared-project
+  integration remain pending; no FIXED claim or live architecture change yet.
+
 ## 8 October 2026 — Danielle staff setup and Michael-only provisioning verified
 
 - Live runtime `2fe33ad` deploys direct Atlas employee passwords and server-enforced

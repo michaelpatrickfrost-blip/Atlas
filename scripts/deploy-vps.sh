@@ -32,56 +32,11 @@ echo "==> Checking SSH key login to $HOST"
 }
 
 echo "==> Deploying on the VPS"
-"${SSH[@]}" bash -s "$DIR" "$COMMIT" <<'REMOTE'
-set -euo pipefail
-cd "$1"
-umask 077
-exec 9>/tmp/atlas-vps-deploy.lock
-flock -w 600 9 || { echo "Another Atlas deployment still owns the release lock." >&2; exit 1; }
-for i in $(seq 1 300); do
-  pgrep -f '[n]ext build' >/dev/null || break
-  [ "$i" != "1" ] || echo "Waiting for the existing Next build before changing the checkout."
-  sleep 2
-done
-if pgrep -f '[n]ext build' >/dev/null; then
-  echo "Existing Next build did not finish; checkout left unchanged." >&2
-  exit 1
+"${SSH[@]}" bash -s "$DIR" "$COMMIT" "${ATLAS_RELEASE_MODE:-activate}" < scripts/deploy/vps-release.sh
+if [ "${ATLAS_RELEASE_MODE:-activate}" = prepare ]; then
+  echo "Prepared candidate; live pointer unchanged."
+  exit 0
 fi
-set -a; . ./.env.local; set +a
-DB="${DATABASE_URL%%\?*}"
-
-mkdir -p ~/backups
-B=~/backups/atlas-pre-deploy-$(date +%Y%m%d-%H%M%S).dump
-pg_dump "$DB" -Fc -f "$B"
-chmod 600 "$B"
-echo "backup: $B"
-if [ -n "${ATLAS_SERVICE_FILE_ROOT:-}" ] && [ -d "$ATLAS_SERVICE_FILE_ROOT" ]; then
-  F="${B%.dump}-service-files.tar.gz"
-  tar -C "$ATLAS_SERVICE_FILE_ROOT" -czf "$F" .
-  chmod 600 "$F"
-  echo "private evidence backup: $F"
-fi
-# Preserve existing deployment backups; retention is an explicit operational task.
-
-PREV=$(git rev-parse --short HEAD)
-git pull -q --ff-only
-[ "$(git rev-parse HEAD)" = "$2" ] || { echo "Remote main changed during deployment; review the new commit before continuing." >&2; exit 1; }
-echo "commit: $PREV -> $(git rev-parse --short HEAD)"
-
-npm ci --no-audit --no-fund >/dev/null
-npx prisma generate --config prisma7.config.ts >/dev/null
-npx prisma migrate deploy --config prisma7.config.ts 2>&1 | tail -5
-NODE_OPTIONS=--max-old-space-size=6144 npm run build >/tmp/atlas-build.log 2>&1 || { tail -30 /tmp/atlas-build.log; echo "BUILD FAILED; running service left on the previous process" >&2; exit 1; }
-
-sudo systemctl restart atlas
-for i in $(seq 1 20); do
-  code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/login || true)
-  [ "$code" = "200" ] && break
-  sleep 2
-done
-[ "$code" = "200" ] || { journalctl -u atlas -n 30 --no-pager; echo "Atlas did not come back (http $code)" >&2; exit 1; }
-echo "service healthy"
-REMOTE
 
 echo "==> Public check"
 code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$URL/login" || true)

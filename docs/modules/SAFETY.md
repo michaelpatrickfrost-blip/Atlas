@@ -110,7 +110,9 @@ creation/editing additionally requires health-surveillance access. Existing
 sensitive read policy is preserved (sensitive-incident/health access or owner on
 the detail route); list filters never expose restricted records to normal readers.
 Writes use an expected `updatedAt` condition, preserve unknown legacy JSON, and
-record metadata-only audit in the same transaction. Explicit expected validation
+record metadata-only audit in the same transaction. New records use a shared
+`WSR` reference series; existing `SFR` references remain intact. This fixes the
+legacy per-type counters generating duplicate references in the same company. Explicit expected validation
 errors return safe results and retain entered work in production. Unexpected
 server errors remain protected. Safety Today shows overdue workplace reviews and
 excludes completed records from upcoming work. Home attention includes overdue

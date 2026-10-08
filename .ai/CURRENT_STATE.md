@@ -1,6 +1,6 @@
 # Atlas current state
 
-## 8 October 2026 — Safety workplace register (verification in progress)
+## 8 October 2026 — Safety workplace register (live verification in progress)
 
 - Adds `/safety/workplace`, 29 record types, guided findings, contacts/location,
   review date, follow-up/evidence and editable record detail. Search/filter,
@@ -11,7 +11,7 @@
 - Paths: `src/modules/safety/domain/workplace.ts`, `components/workplace-form.tsx`,
   `services/commands.ts`, `services/queries.ts`, Safety pages/manifest;
   `tests/safety-workplace*`; `docs/modules/SAFETY.md`.
-- Checks: production build and strict TypeScript passed; full suite 771 passed,
+- Checks: production build and strict TypeScript passed; full suite 772 passed,
   22 integration skips; Safety-scoped ESLint and diff whitespace passed. Global
   lint reports 16 existing errors/24 warnings outside Safety. Deployment/live
   acceptance in progress; server-only synthetic browser harness added. Initial
@@ -21,6 +21,12 @@
   and full 771-test suite passed; label/search deployment pending. Adds
   workplace records to Home attention/global search; fixes confirmed pre-existing
   Safety search queries that ran without entity read capabilities.
+- Live mixed-type creation exposed a pre-existing reference collision: per-type
+  SFR counters violated the company-wide unique reference. New records now use
+  one `workplace_record` / `WSR` series; historical SFR records are unchanged.
+  Release 286653f deployed; reference fix build, strict TypeScript, Safety lint,
+  33 focused tests and full suite 772 passed / 22 skipped. Deployment and final
+  mixed-type/privacy browser acceptance pending.
 
 ## Marketing campaign information and workspace — 8 October 2026
 

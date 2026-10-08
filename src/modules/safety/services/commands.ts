@@ -530,7 +530,7 @@ export async function saveWorkplaceRecord(formData: FormData) {
       const updated = await tx.safetyRecord.updateMany({ where: { id, organisationId: session.organisationId, updatedAt: previous.updatedAt }, data: { title: input.title, status: input.status, dueAt: input.dueAt, payload, updatedAt: new Date() } });
       if (!updated.count) return { error: "This record changed in another window. Reload before saving; your entered work is still here." };
     } else {
-      const reference = await nextSafetyReference(tx, session.organisationId, input.kind.toLowerCase(), "SFR");
+      const reference = await nextSafetyReference(tx, session.organisationId, "workplace_record", "WSR");
       const created = await tx.safetyRecord.create({ data: { organisationId: session.organisationId, reference, kind: input.kind, title: input.title, status: input.status, dueAt: input.dueAt, payload, ownerUserId: session.userId, sensitive: SENSITIVE_RECORD_KINDS.has(input.kind), commitment: "COMMITTED" } });
       recordId = created.id;
     }

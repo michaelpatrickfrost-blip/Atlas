@@ -84,8 +84,12 @@ async function main() {
     check(raw.includes(partyA.name) && !raw.includes(partyB.name) && !raw.includes('"passwordHash":') && !raw.includes('"tokenHash":') && !raw.includes('"passwordEnc":'), "Export excludes other company records and credential values");
     check(records.some(row => row.table === "hr_policies" && row.data?.content === `\\x${document.toString("hex")}`), "Stored binary document exported intact");
     const staffEmail = `atlas-check-employee-${suffix}@example.test`;
+    const wrongPassword = await post("createAtlasStaff", { name: "Disposable Atlas employee", email: staffEmail, staffRole: "EMPLOYEE", currentPassword: "incorrect-password" }, ownerCookie, "/atlas/team");
+    check(wrongPassword.body.includes("Your administrator password was not recognised") && !await db.user.findUnique({ where: { email: staffEmail } }), "Incorrect administrator password returns a clear error without creating staff");
     const created = await post("createAtlasStaff", { name: "Disposable Atlas employee", email: staffEmail, staffRole: "EMPLOYEE", currentPassword: password }, ownerCookie, "/atlas/team");
     const staff = await db.user.findUnique({ where: { email: staffEmail } }); assert(staff, `Atlas employee creation succeeds (HTTP ${created.response.status})`); userIds.push(staff.id);
+    const duplicate = await post("createAtlasStaff", { name: "Disposable Atlas employee", email: staffEmail, staffRole: "EMPLOYEE", currentPassword: password }, ownerCookie, "/atlas/team");
+    check(duplicate.body.includes("already listed in Atlas team"), "Duplicate employee returns a clear error");
     const staffCode = created.body.match(/"code":"([a-f0-9]{64})"/)?.[1]; check(!!staffCode, "Atlas employee created with platform setup code");
     await post("completePasswordRecovery", { code: staffCode!, password, confirmPassword: password }, "", "/reset-password");
     const staffCookie = await login(staffEmail, password);

@@ -86,3 +86,13 @@ a portable handover rather than a SQL restore backup.
 No automatic deletion/retention schedule, email delivery, MFA, SSO or customer
 impersonation is introduced. Backups are preserved. Release and live acceptance
 evidence belongs in `.ai/CURRENT_STATE.md`.
+
+## Employee creation feedback — 8 October 2026
+
+Adding Atlas staff requires the signed-in administrator's existing Atlas password.
+The new employee chooses their own password with the generated one-use setup code.
+Incorrect password, invalid identity/role and existing/duplicate-account errors are
+returned as explicit form results so production does not hide them. The form retains
+entered employee details for correction and disables fields during submission.
+Unexpected server failures use a generic retry message; capability checks remain
+server-side and no access is granted on validation failure.

@@ -3883,3 +3883,21 @@ full-access staff policy and validated platform company targeting. Delivery
 checkpoint completed; enduring context in PROJECT_MEMORY and scope/limitations in
 docs/ATLAS_ADMIN.md. Manual setup/recovery codes, 250 MB/120-second exports and
 external-file references remain documented limits. No Admin delivery blocker remains.
+
+## 8 October 2026 — Atlas employee creation feedback fix
+
+Live journal confirmed createAtlasStaff rejecting the administrator password at
+14:19 UTC. Its thrown validation error was masked in production, leaving users
+without a useful explanation. Employee creation now returns explicit password,
+identity/role and existing/duplicate-account errors. CredentialForm preserves the
+entered draft for retry, disables pending fields and keeps unexpected errors private.
+The team form explains whose password is required. Authentication/capabilities,
+existing-account confirmation and one-use setup credentials remain enforced.
+
+Paths: atlas/admin-actions.ts, credential-form.tsx, team/page.tsx, focused regression
+tests, scripts/check-atlas-admin.ts and docs/ATLAS_ADMIN.md. Live browser reproduction also confirmed React error #441 and automatic clearing
+of the employee draft after rejection. Regression suite: 19 passed. Scoped ESLint,
+Prisma generation, isolated TypeScript and production build passed. Initial local
+checks needed generated Prisma and the release's locked dependencies; both corrected.
+Deployment and final live acceptance pending at this checkpoint. A disposable browser
+QA identity is temporary and will be removed; no real identity/permissions changed.

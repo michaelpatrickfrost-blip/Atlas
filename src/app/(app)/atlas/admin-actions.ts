@@ -113,17 +113,19 @@ export async function issueAtlasUserRecovery(form: FormData) {
 export async function createAtlasStaff(form: FormData) {
   const session = await requireSession();
   assertCapability(session, ATLAS_CAPABILITIES.staff);
-  await confirmPassword(session, form);
-  const data = identity(form), role = value(form, "staffRole");
-  if (!isStaffRole(role)) throw new Error("Choose an Atlas staff role.");
+  const administrator = await db.user.findUniqueOrThrow({ where: { id: session.userId }, select: { passwordHash: true } });
+  if (!await bcrypt.compare(String(form.get("currentPassword") ?? ""), administrator.passwordHash)) return { error: "Your administrator password was not recognised. Enter the password you use to sign in to Atlas, then try again." };
+  const data = { name: value(form, "name"), email: value(form, "email").toLowerCase() }, role = value(form, "staffRole");
+  if (!data.name || data.name.length > 100 || data.email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return { error: "Enter a name and valid email." };
+  if (!isStaffRole(role)) return { error: "Choose an Atlas staff role." };
   const credential = createRecoveryCredential(), passwordHash = await bcrypt.hash(randomBytes(32).toString("hex"), 12);
-  const existingAccount = await db.$transaction(async tx => {
+  const outcome = await db.$transaction(async tx => {
     await tx.$queryRaw`SELECT pg_advisory_xact_lock(71423501)::text`;
     const existing = await tx.user.findUnique({ where: { email: data.email }, include: { platformAdmin: true } });
-    if (existing?.platformAdmin) throw new Error("This person is already listed in Atlas team.");
-    if (existing && form.get("existingAccount") !== "on") throw new Error("This email already exists. Confirm that you intend to grant this existing person Atlas staff access.");
+    if (existing?.platformAdmin) return { error: "This person is already listed in Atlas team. Find them in the staff list to manage their access." };
+    if (existing && form.get("existingAccount") !== "on") return { error: "This email already exists. Tick the existing-account confirmation to grant this person Atlas staff access." };
     const company = await tx.organisation.upsert({ where: { slug: "atlas-internal-staff" }, create: { slug: "atlas-internal-staff", name: "Atlas team", kind: "INTERNAL", status: "ACTIVE", subscriptionStatus: "ACTIVE", planName: "Internal" }, update: {} });
-    if (company.kind !== "INTERNAL" || company.status !== "ACTIVE") throw new Error("Atlas staff workspace is unavailable.");
+    if (company.kind !== "INTERNAL" || company.status !== "ACTIVE") return { error: "Atlas staff workspace is unavailable." };
     const user = existing ?? await tx.user.create({ data: { ...data, passwordHash } });
     const membership = await tx.membership.upsert({ where: { organisationId_userId: { organisationId: company.id, userId: user.id } }, create: { organisationId: company.id, userId: user.id }, update: { active: true, sessionVersion: { increment: 1 } } });
     await tx.platformAdministrator.create({ data: { userId: user.id, role } });
@@ -131,10 +133,11 @@ export async function createAtlasStaff(form: FormData) {
     if (!existing) await tx.passwordReset.create({ data: { membershipId: membership.id, purpose: "PLATFORM", tokenHash: credential.tokenHash, expiresAt: credential.expiresAt } });
     await tx.auditEntry.create({ data: { organisationId: company.id, actorUserId: session.userId, action: "atlas.staff.created", entityType: "User", entityId: user.id, after: { role, existingAccount: !!existing } } });
     if (existing && existing.id !== session.userId) await tx.user.update({ where: { id: user.id }, data: { authVersion: { increment: 1 } } });
-    return !!existing;
+    return { existingAccount: !!existing };
   }, { isolationLevel: "Serializable" });
+  if ("error" in outcome) return { error: outcome.error! };
   refresh();
-  return existingAccount ? { message: "Atlas access granted. This person keeps their existing password." } : { code: credential.code, expiresAt: credential.expiresAt.toISOString() };
+  return outcome.existingAccount ? { message: "Atlas access granted. This person keeps their existing password." } : { code: credential.code, expiresAt: credential.expiresAt.toISOString() };
 }
 
 export async function updateAtlasStaff(form: FormData) {

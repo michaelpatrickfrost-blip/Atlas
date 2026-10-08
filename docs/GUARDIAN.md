@@ -71,6 +71,7 @@ npm run guardian:audit
 npm run guardian:worker -- --now
 ATLAS_GUARDIAN_COPY_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-atlas-code-copy.ts
 ATLAS_GUARDIAN_TICKET_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-ticket-pages.ts
+ATLAS_GUARDIAN_ACCESS_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-ticket-access.ts
 node --env-file=.env.local --import tsx scripts/guardian/triage.ts list [page]
 node --env-file=.env.local --import tsx scripts/guardian/triage.ts show <issue-id>
 sudo systemctl status atlas-guardian.timer atlas-guardian.service
@@ -97,6 +98,14 @@ links, following and replies assert the matching central state. Cleanup suspends
 that exact company, revokes every fixture session and retains central audit/history;
 no credentials or business content are saved locally. `--reproduce` verifies the
 old draft loss. Shared save forms now reset only after successful completion.
+
+The access regression uses separate disposable denied, disabled and unentitled
+Tickets fixtures. It checks list/detail/create/queues/catalogue/knowledge/reports,
+legacy queue redirection, phone fit and real Home links. Response payloads must
+exclude seeded private records; direct actions still reject and leave central state
+unchanged. Both layout and leaf checks are necessary because layouts do not prevent
+child rendering. Normal mode also verifies no new Tickets render diagnostics. Only
+expected restrictions are rendered explicitly; unexpected query errors still fail.
 
 ## Repair agent
 

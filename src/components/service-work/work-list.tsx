@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { requireSession } from "@/core/auth/session";
-import { assertCapability } from "@/core/permissions/check";
+import { serviceWorkRestriction } from "./access-state";
 import { workList, deskQueues } from "@/core/service-work/queries";
 import { slaState } from "@/core/service-work/sla";
 import { Card } from "@/components/ui/card";
@@ -10,7 +10,8 @@ import { inputClass } from "@/components/ui/service-fields";
 const label = (value: string) => value.replaceAll("_", " ").toLowerCase();
 export async function WorkList({ filters, kind = "TICKET" }: { filters: { q?: string; mine?: string; queueId?: string; status?: string; type?: string; breach?: string }; kind?: string }) {
   const session = await requireSession();
-  assertCapability(session, kind === "TICKET" ? "tickets.ticket.read" : "service.ticket.read");
+  const restriction = await serviceWorkRestriction(session, kind);
+  if (restriction) return restriction;
   const [rows, queues] = await Promise.all([workList(session, { ...filters, kind, mine: filters.mine === "1", breach: filters.breach === "1" }), deskQueues(session)]);
   const open = rows.filter(row => !["RESOLVED", "CLOSED", "CANCELLED"].includes(row.status));
   return <div className="space-y-6">

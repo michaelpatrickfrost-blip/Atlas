@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireSession } from "@/core/auth/session";
-import { assertCapability } from "@/core/permissions/check";
+import { serviceWorkRestriction } from "./access-state";
 import { db } from "@/core/db/client";
 import { workScope } from "@/core/service-work/access";
 import { deskQueues } from "@/core/service-work/queries";
@@ -16,7 +16,8 @@ import { Card } from "@/components/ui/card";
 const label = (value: string) => value.replaceAll("_", " ").toLowerCase();
 export async function WorkDetail({ id, kind = "TICKET" }: { id: string; kind?: string }) {
   const session = await requireSession();
-  assertCapability(session, kind === "QUERY" ? "service.ticket.read" : "tickets.ticket.read");
+  const restriction = await serviceWorkRestriction(session, kind);
+  if (restriction) return restriction;
   const work = await db.serviceWorkItem.findFirst({ where: { AND: [workScope(session), { id, kind }] }, include: { queue: { include: { members: { where: { organisationId: session.organisationId } } } }, files: { where: { organisationId: session.organisationId } } } });
   if (!work) notFound();
   const agent = work.queue.members.some(member => member.userId === session.userId);

@@ -1,5 +1,36 @@
 # Atlas current state
 
+## Guardian Tickets access and recovery — 8 October 2026
+
+- Independently reproduced denied Tickets access as a generic production error on
+  `88c2e8b`; denied/disabled/unentitled disposable fixtures expose no private payload
+  and direct create actions reject without changing central records. Disabled views
+  already explain restriction, but lack an explicit Home link while hidden child
+  rendering still throws. Private journal/source confirm the capability/module guards.
+- Tickets layout and leaf list/detail/create/queue/catalogue/knowledge/report views
+  now render server-known restrictions before business queries. Shared Service work
+  views use their existing capability and module scope. Core action guards, tenant/
+  restricted queue rules and enabled/entitled tests remain. No blanket error catching:
+  unexpected module/database/workspace failures still propagate.
+- New `tests/service-work-restriction.test.tsx` reproduced the missing permission
+  screen before repair. Nine regressions cover denied/disabled query exclusion,
+  authorised filters, independent queue/create/Service permissions, layout recovery
+  and real failure propagation. 30 focused tests and full suite 781 passed / 22
+  integration skips (126 files passed / 3 skipped). Production build and focused
+  lint and separate post-build TypeScript passed.
+- New server-only `scripts/guardian/check-ticket-access.ts`: three isolated companies
+  for missing read, disabled app and unentitled app; normal mode covers 24 requests,
+  phone fit, real Home links, no private response payload, rejected direct action
+  and unchanged work/queue/entry state. Cleanup suspends exact fixtures/revokes sessions,
+  retains central history. Pre-fix reproduction passed after correcting the harness
+  to recognise the existing disabled layout, rather than expecting a generic screen.
+- Pre-fixture database/private-evidence backup:
+  `/home/administrator/backups/atlas-pre-guardian-access-20261008-125227.dump` plus
+  matching archive. All pre-fix fixtures retired. Read all 46 active queue summaries
+  and full target/new briefs; timer/worker healthy. Original Tickets reports remain
+  NEEDS_AI until deploy and successful same-case verification. Deployment and full
+  post-fix fixture proof pending. Preserve concurrent Safety/Marketing releases.
+
 ## 8 October 2026 — Safety workplace register deployed and verified
 
 - Live `/safety/workplace`: 29 existing record types, guided findings, responsible

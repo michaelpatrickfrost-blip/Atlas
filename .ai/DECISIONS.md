@@ -901,6 +901,11 @@ Shared save forms retain unsaved fields when validation, version or network chec
 reject a request. Only a successful save resets the form. The visible error and
 newer saved record stay intact, so users can recover without re-entering their work.
 
+Tickets restrictions render from server capability/module checks at both the layout
+and the leaf that reads records. A restricted layout alone does not stop parallel
+child rendering or protect an RSC payload. Expected restriction screens give a Home
+link; unexpected query failures remain errors and server action guards stay required.
+
 ## 7 October 2026 — Cases, Tickets and Queries keep separate ownership
 
 Customer cases stay in `ServiceCase`; new internal tickets and cross-team queries share Core `ServiceWorkItem` with an explicit kind and origin. Historical departmental tickets remain readable dependencies. This avoids duplicating customer identity and preserves historical records while sharing clocks, queues, approvals and evidence. Query completion records safe parent history without transferring the customer case or copying private receiving-team content.

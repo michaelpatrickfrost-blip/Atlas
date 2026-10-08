@@ -1,6 +1,5 @@
 import { requireSession } from '@/core/auth/session';
-import { assertCapability } from '@/core/permissions/check';
-import { requireWork } from '@/core/service-work/access';
+import { serviceWorkRestriction } from '@/components/service-work/access-state';
 import { deskQueues } from '@/core/service-work/queries';
 import { QueueEditor } from '@/components/service-work/queue-editor';
 import { changeDeskMember } from '@/core/service-work/actions';
@@ -10,7 +9,9 @@ import { db } from '@/core/db/client';
 import { ActionForm } from '@/components/ui/action-form';
 import { Field, Select, inputClass } from '@/components/ui/service-fields';
 export default async function Queues() {
- const session=await requireSession();assertCapability(session,'tickets.queue.read');await requireWork(session,'TICKET');
+ const session=await requireSession();
+ const restriction=await serviceWorkRestriction(session,'TICKET',['tickets.queue.read','tickets.ticket.read']);
+ if(restriction)return restriction;
  const queues=await deskQueues(session),manage=session.capabilities.has('tickets.queue.manage');
  const members=manage?await db.membership.findMany({where:{organisationId:session.organisationId,active:true},select:{userId:true,user:{select:{name:true}}}}):[];
  return <div className="space-y-6"><h2 className="text-3xl font-semibold">Teams & queues</h2><p className="text-sm text-slate-500">Each team owns its requests, catalogue and service commitments. Membership protects confidential queues.</p><div className="grid gap-5 xl:grid-cols-2">{queues.map(queue=>{const edit=manage&&(!queue.restricted||queue.members.some(m=>m.userId===session.userId));return <Card className="p-6" key={queue.id}><h3 className="text-lg font-semibold">{queue.name}</h3><p className="mt-1 text-xs text-slate-500">{queue.department} · {queue.restricted?'Restricted':'Standard'} · {queue.members.length} members</p>{edit&&<><details className="mt-4"><summary className="cursor-pointer text-sm font-medium">Configure queue</summary><div className="mt-4"><QueueEditor queue={queue}/></div></details><details className="mt-4"><summary className="cursor-pointer text-sm font-medium">Members & assignment</summary><p className="my-3 text-xs text-slate-500">{queue.members.map(m=>members.find(value=>value.userId===m.userId)?.user.name??'Colleague').join(', ')||'No members'}</p><ActionForm action={changeDeskMember} className="space-y-3" label="Update membership"><input type="hidden" name="queueId" value={queue.id}/><label className="block text-xs">Colleague<select name="userId" className={inputClass}>{members.map(m=><option key={m.userId} value={m.userId}>{m.user.name}</option>)}</select></label><Select title="Action" name="operation" options={['ADD','REMOVE']}/></ActionForm></details></>}</Card>;})}</div>{manage&&<><Card className="max-w-3xl p-6"><h3 className="mb-5 text-lg font-semibold">New queue</h3><QueueEditor/></Card><details className="max-w-3xl rounded-xl border border-slate-200 p-6"><summary className="cursor-pointer font-medium">Service approval routes</summary><p className="my-4 text-xs text-slate-500">Choose an independent approver. Finance credit routes are configured in Finance.</p><ActionForm action={saveServiceApprovalRoute} className="space-y-3" label="Save approval route"><Select title="Applies to" name="subjectType" options={['SERVICE_TICKET','SERVICE_RECOVERY']}/><Field title="Currency" name="currency" defaultValue="GBP"/><label className="block text-xs">Approver<select className={inputClass} name="approverUserId">{members.map(m=><option key={m.userId} value={m.userId}>{m.user.name}</option>)}</select></label></ActionForm></details></>}</div>;

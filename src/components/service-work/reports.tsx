@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { requireSession } from "@/core/auth/session";
-import { assertCapability } from "@/core/permissions/check";
+import { serviceWorkRestriction } from "./access-state";
 import { db } from "@/core/db/client";
 import { serviceCaseScope } from "@/core/permissions/service-access";
 import { workScope } from "@/core/service-work/access";
 import { Card } from "@/components/ui/card";
 export async function ServiceReports({ moduleId = "service" }: { moduleId?: string }) {
-  const session = await requireSession(); assertCapability(session, moduleId === "service" ? "service.case.read" : "tickets.ticket.read");
+  const session = await requireSession();
+  const restriction = await serviceWorkRestriction(session, moduleId === "service" ? "QUERY" : "TICKET", [moduleId === "service" ? "service.case.read" : "tickets.ticket.read"]);
+  if (restriction) return restriction;
   const cases = moduleId === "service" ? await db.serviceCase.findMany({ where: serviceCaseScope(session), select: { id: true, number: true, category: true, rootCause: true, context: true, createdAt: true, firstResponseAt: true, resolvedAt: true, firstResponseDueAt: true, resolutionDueAt: true, reopenCount: true }, orderBy: { createdAt: "desc" }, take: 5000 }) : [];
   const work = await db.serviceWorkItem.findMany({ where: { AND: [workScope(session), { kind: moduleId === "service" ? "QUERY" : "TICKET" }] }, include: { queue: { select: { name: true } } }, orderBy: { createdAt: "desc" }, take: 5000 });
   const duration = (created: Date, end: Date | null) => end ? (end.getTime() - created.getTime()) / 3600000 : null;

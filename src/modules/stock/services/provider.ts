@@ -165,9 +165,11 @@ export const stockProvider: StockProvider = {
       return { requestKey: command.requestKey, movementIds: [prior.id], replayed: prior.status !== "ACTIVE" };
     });
   },
-  async receiveStock(actor, command) {
+  async receiveStock(actor, command, transaction) {
     assertCommand(command);
-    const result = await run((tx) => receive(tx, actor, command, command.status ?? "AVAILABLE"));
+    const work = (tx: Tx) => receive(tx, actor, command, command.status ?? "AVAILABLE");
+    if (transaction) return work(transaction);
+    const result = await run(work);
     if ((command.status ?? "AVAILABLE") === "AVAILABLE") await replenished(actor, command.productId, command.warehouseId, `balance:${command.requestKey}`);
     return result;
   },
@@ -176,9 +178,9 @@ export const stockProvider: StockProvider = {
     const work = (tx: Tx) => receive(tx, actor, command, command.status ?? "QUARANTINE", ["RETURNS", "QUARANTINE"]);
     return transaction ? work(transaction) : run(work);
   },
-  shipStock(actor, command) {
+  shipStock(actor, command, transaction) {
     assertCommand(command);
-    return run(async (tx) => {
+    const work = async (tx: Tx): Promise<StockCommandResult> => {
       const done = await replay(tx, actor, command.requestKey, command.productId, command.quantity);
       if (done) return done;
       const place = await locationFor(tx, actor, command.warehouseId, ["PICK_FACE", "SHIPPING", "STORAGE"], command.locationId);
@@ -213,7 +215,8 @@ export const stockProvider: StockProvider = {
       }
       const movement = await tx.inventoryMovement.create({ data: { organisationId: actor.organisationId, warehouseId: command.warehouseId, productId: command.productId, delta: -command.quantity, reason: command.reason, shipmentId: command.shipmentId ?? null, receiptId: command.receiptId ?? null, manufacturingOrderId: command.manufacturingOrderId ?? null, workOrderId: command.workOrderId ?? null, reference: command.reference, requestKey: command.requestKey, actorUserId: actor.userId } });
       return { requestKey: command.requestKey, movementIds: [movement.id], replayed: false };
-    });
+    };
+    return transaction ? work(transaction) : run(work);
   },
   executeMovement(actor, command) {
     assertCommand(command);

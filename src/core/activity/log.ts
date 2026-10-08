@@ -1,3 +1,4 @@
+import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/core/db/client";
 
 export async function writeActivity(params: {
@@ -10,8 +11,8 @@ export async function writeActivity(params: {
    *  independent of entityType/entityId. See docs/CUSTOMER_MASTER.md §Activity. */
   partyId?: string;
   metadata?: unknown;
-}) {
-  await db.activity.create({
+}, client: Pick<Prisma.TransactionClient, "activity"> = db) {
+  await client.activity.create({
     data: {
       organisationId: params.organisationId,
       type: params.type,

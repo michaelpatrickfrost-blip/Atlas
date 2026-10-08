@@ -1,5 +1,26 @@
 # Atlas current state
 
+## Atomic manufacturing completion — 8 October 2026
+
+- Four regressions reproduced partial material commits, stock retained after a
+  completion conflict, unchecked overproduction and changed-payload request replay.
+- `manufacturing/services/commands.ts` now uses one serializable, bounded-retry
+  transaction for tenant-scoped parent/step versions, material issues, finished
+  receipt, completion status, audit and activity. Stock owner `receiveStock`/
+  `shipStock` accept the caller transaction; existing standalone behavior remains.
+  Core audit/activity helpers accept a transaction. Warehouse assignment rolls back
+  with failure; replenishment runs after commit. Final routing completion waits for
+  other steps and closes open production supply. Intermediate steps do not book stock.
+- Whole finite quantities, planned-quantity limit, enabled Inventory and identical
+  replay payload are enforced. Existing movement keys are preserved; oversize keys
+  fail instead of truncating identities. Thirteen regression tests passed. Full
+  suite: 712 passed / 22 integration skips (117 files). Production build, separate
+  TypeScript, changed-file lint and diff check passed. Live release proof pending.
+- Live acceptance extended with actual authenticated completion, second-component
+  shortage rollback, concurrent retry, lineage/progress/audit and denied access.
+  Legacy provider diagnostic now passes a transaction. Repeated partial reporting,
+  complete reservation/quality propagation and Finance WIP remain open.
+
 ## Work-first Home — 8 October 2026
 
 - Home now leads with authorised attention items and a direct My work link. The
@@ -13,7 +34,16 @@
   live acceptance now checks real overdue Manufacturing links, phone fit, My work
   and keyboard Apps disclosure. Full suite: 699 passed / 22 integration skips
   (116 files); production build, separate TypeScript, changed-file lint and diff
-  check passed. Deployment and live Home acceptance pending.
+  check passed. Release `77252b4` deployed with server build/restart and HTTPS
+  login 200. Backup: `/home/administrator/backups/atlas-pre-deploy-20261008-112902.dump`
+  plus matching private evidence archive. All 34 authenticated live assertions
+  passed, including actual Home urgency/source links, phone fit and keyboard Apps.
+  Test tenants suspended and credentials revoked; central evidence retained.
+- Changes merged into the dirty primary with base-equality checks, clean patches
+  or narrow manual integration; concurrent edits preserved. An introduced duplicate
+  Finance import was corrected before verification. Primary focused suite: 43 passed;
+  separate primary TypeScript still running. Clean compatible release remains the
+  deployment source; no claim that unrelated primary edits were validated.
 
 ## Simple connected record navigation — 8 October 2026
 

@@ -13,6 +13,7 @@ async function main() {
   const user = await db.user.create({ data: { name: "T", email: `mfgtest-${tag}@example.invalid`, passwordHash: "x" } });
   const session = { userId: user.id, userName: "T", userEmail: user.email, organisationId: org.id, organisationName: org.name, membershipId: "m", capabilities: new Set<string>() } as never;
   try {
+    await db.moduleState.create({ data: { organisationId: org.id, moduleId: "stock", enabled: true, entitled: true } });
     const wh = await db.warehouse.create({ data: { organisationId: org.id, name: "Main", code: "MAIN" } });
     const mk = (code: string) => db.product.create({ data: { organisationId: org.id, code, name: code, basePriceAmount: 100 } });
     const [flour, sugar, cake] = [await mk("FLOUR"), await mk("SUGAR"), await mk("CAKE")];
@@ -29,17 +30,18 @@ async function main() {
     await stock.receiveStock(session, { requestKey: `seed-sugar-${tag}`, productId: sugar.id, warehouseId: wh.id, quantity: 100, reason: "seed", reference: "seed", status: "AVAILABLE" });
 
     // first (not final) step does not touch stock
-    await backflushOnCompletion(session, op1, 4, 0, `r1-${tag}`);
+    await db.$transaction(tx => backflushOnCompletion(session, op1, 4, 0, `r1-${tag}`, tx));
+    await db.manufacturingWorkOrder.update({ where: { id: op1.id }, data: { status: "COMPLETE" } });
     ok("non-final step leaves stock alone", (await qty(flour.id)) === 100 && (await qty(cake.id)) === 0);
 
     // final step: 8 good + 2 scrap on the last step => components for 10 units
-    await backflushOnCompletion(session, op2, 8, 2, `r2-${tag}`);
+    await db.$transaction(tx => backflushOnCompletion(session, op2, 8, 2, `r2-${tag}`, tx));
     ok("flour used 2 x (8 good + 2 scrap) = 20", (await qty(flour.id)) === 80, `flour=${await qty(flour.id)}`);
     ok("sugar used 1 x 10 = 10", (await qty(sugar.id)) === 90, `sugar=${await qty(sugar.id)}`);
     ok("finished cakes received = 8", (await qty(cake.id)) === 8, `cake=${await qty(cake.id)}`);
 
     // retry with the same key must not double count
-    await backflushOnCompletion(session, op2, 8, 2, `r2-${tag}`);
+    await db.$transaction(tx => backflushOnCompletion(session, op2, 8, 2, `r2-${tag}`, tx));
     ok("repeat with same key is safe", (await qty(flour.id)) === 80 && (await qty(cake.id)) === 8);
 
     const moves = await db.inventoryMovement.findMany({ where: { organisationId: org.id, manufacturingOrderId: mo.id } });
@@ -50,7 +52,7 @@ async function main() {
 
     // insufficient components must be refused and change nothing
     let refused = false;
-    try { await backflushOnCompletion(session, op2, 100, 0, `r3-${tag}`); } catch { refused = true; }
+    try { await db.$transaction(tx => backflushOnCompletion(session, op2, 100, 0, `r3-${tag}`, tx)); } catch { refused = true; }
     ok("not enough components is refused", refused);
     ok("refused attempt changed nothing", (await qty(flour.id)) === 80 && (await qty(cake.id)) === 8);
   } finally {

@@ -1,3 +1,4 @@
+import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/core/db/client";
 
 export async function writeAudit(params: {
@@ -8,8 +9,8 @@ export async function writeAudit(params: {
   entityId: string;
   before?: unknown;
   after?: unknown;
-}) {
-  await db.auditEntry.create({
+}, client: Pick<Prisma.TransactionClient, "auditEntry"> = db) {
+  await client.auditEntry.create({
     data: {
       organisationId: params.organisationId,
       actorUserId: params.actorUserId,

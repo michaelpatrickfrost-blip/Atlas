@@ -188,31 +188,51 @@ export async function pauseWorkOrder(workOrderId: string, reason: string | null,
   if (!updated.count) throw new Error("Someone else just updated this step. Reload and try again.");
 }
 
-/** §73-75: idempotent completion with good/scrap quantities and partial completion.
- * Over-reporting past the production order's required quantity is rejected rather
- * than silently accepted (§65's tolerance engine is a later phase; this is the floor). */
+/** Complete a routing step atomically with its material/output ledger and progress.
+ * This reports one final good/scrap quantity; repeated partial output reporting
+ * and authorised overproduction tolerances remain separate workflows. */
 export async function completeWorkOrder(workOrderId: string, goodQuantity: number, scrapQuantity: number, requestKey: string) {
   const session = await requireSession();
   assertCapability(session, C.workOrderExecute);
-  if (goodQuantity < 0 || scrapQuantity < 0) throw new Error("Quantities cannot be negative.");
-  const workOrder = await workOrderOrThrow(session.organisationId, workOrderId);
-  if (workOrder.lastRequestKey === requestKey) return workOrder;
-  if (!canTransitionWorkOrder(workOrder.status, "COMPLETE")) throw new Error(`This step cannot complete from ${workOrder.status}.`);
-  await backflushOnCompletion(session, workOrder, goodQuantity, scrapQuantity, requestKey);
-  const updated = await db.manufacturingWorkOrder.updateMany({
-    where: { id: workOrderId, organisationId: session.organisationId, version: workOrder.version },
-    data: {
-      status: "COMPLETE",
-      actualEnd: new Date(),
-      producedQuantity: { increment: goodQuantity },
-      scrapQuantity: { increment: scrapQuantity },
-      version: { increment: 1 },
-      lastRequestKey: requestKey,
-    },
-  });
-  if (!updated.count) throw new Error("Someone else just updated this step. Reload and try again.");
-  if (scrapQuantity > 0) {
-    await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "manufacturing.scrap.reported", entityType: "ManufacturingWorkOrder", entityId: workOrderId, after: { scrapQuantity } });
+  if (!Number.isSafeInteger(goodQuantity) || !Number.isSafeInteger(scrapQuantity) || goodQuantity < 0 || scrapQuantity < 0 || goodQuantity + scrapQuantity <= 0) throw new Error("Enter whole good and scrap quantities greater than zero in total.");
+  if (!requestKey || requestKey.length > 80) throw new Error("A valid production request reference is required.");
+  let replenishment: Awaited<ReturnType<typeof backflushOnCompletion>>;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      replenishment = await db.$transaction(async tx => {
+        const workOrder = await tx.manufacturingWorkOrder.findFirst({ where: { id: workOrderId, organisationId: session.organisationId } });
+        if (!workOrder) throw new Error("This work order no longer exists.");
+        if (workOrder.lastRequestKey === requestKey && workOrder.status === "COMPLETE") {
+          if (Number(workOrder.producedQuantity) !== goodQuantity || Number(workOrder.scrapQuantity) !== scrapQuantity) throw new Error("This request was already completed with different quantities.");
+          return;
+        }
+        if (!canTransitionWorkOrder(workOrder.status, "COMPLETE")) throw new Error(`This step cannot complete from ${workOrder.status}.`);
+        const order = await tx.manufacturingOrder.findFirst({ where: { id: workOrder.productionOrderId, organisationId: session.organisationId } });
+        if (!order || !["RELEASED", "RUNNING"].includes(order.status)) throw new Error("Release this production order before completing work.");
+        if (Number(workOrder.producedQuantity) + Number(workOrder.scrapQuantity) + goodQuantity + scrapQuantity > Number(order.quantity)) throw new Error("Reported quantities exceed the planned production quantity.");
+        const parent = await tx.manufacturingOrder.updateMany({ where: { id: order.id, organisationId: session.organisationId, version: order.version }, data: { version: { increment: 1 } } });
+        if (!parent.count) throw new Error("Someone else just changed this order. Reload and try again.");
+        const updated = await tx.manufacturingWorkOrder.updateMany({
+          where: { id: workOrderId, organisationId: session.organisationId, version: workOrder.version },
+          data: { status: "COMPLETE", actualEnd: new Date(), producedQuantity: { increment: goodQuantity }, scrapQuantity: { increment: scrapQuantity }, version: { increment: 1 }, lastRequestKey: requestKey },
+        });
+        if (!updated.count) throw new Error("Someone else just updated this step. Reload and try again.");
+        const receipt = await backflushOnCompletion(session, workOrder, goodQuantity, scrapQuantity, requestKey, tx);
+        await tx.manufacturingOrder.updateMany({ where: { id: order.id, organisationId: session.organisationId }, data: receipt ? { status: "COMPLETE", actualFinish: new Date() } : { status: "RUNNING", actualStart: order.actualStart ?? new Date() } });
+        if (scrapQuantity > 0) await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "manufacturing.scrap.reported", entityType: "ManufacturingWorkOrder", entityId: workOrderId, after: { scrapQuantity } }, tx);
+        await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "manufacturing.work_order.completed", entityType: "ManufacturingWorkOrder", entityId: workOrderId, after: { goodQuantity, scrapQuantity, requestKey } }, tx);
+        await writeActivity({ organisationId: session.organisationId, type: "manufacturing.work_order.completed", summary: `${workOrder.operationName} completed — ${goodQuantity} good${scrapQuantity ? `, ${scrapQuantity} scrap` : ""}`, entityType: "ManufacturingWorkOrder", entityId: workOrder.id }, tx);
+        return receipt;
+      }, { isolationLevel: "Serializable" });
+      break;
+    } catch (error) {
+      const code = typeof error === "object" && error && "code" in error ? String(error.code) : "";
+      if (attempt < 2 && ["P2034", "P2002"].includes(code)) continue;
+      throw error;
+    }
   }
-  await writeActivity({ organisationId: session.organisationId, type: "manufacturing.work_order.completed", summary: `${workOrder.operationName} completed — ${goodQuantity} good${scrapQuantity ? `, ${scrapQuantity} scrap` : ""}`, entityType: "ManufacturingWorkOrder", entityId: workOrder.id });
+  if (replenishment) {
+    const { stockReplenished } = await import("@/core/stock/replenishment");
+    await stockReplenished(session, replenishment);
+  }
 }

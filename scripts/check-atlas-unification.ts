@@ -24,7 +24,7 @@ async function main() {
       for (const [key, value] of Object.entries(fields)) form.set(`_1_${key}`, value);
       form.set("0", JSON.stringify([...args, "$K1"])); body = form;
     } else { headers["Content-Type"] = "text/plain;charset=UTF-8"; body = JSON.stringify(args); }
-    const response = await fetch(base + (name === "loginAction" ? "/login" : "/sales/orders"), { method: "POST", headers, body, redirect: "manual" });
+    const response = await fetch(base + (name === "loginAction" ? "/login" : name === "completeWorkOrder" ? "/manufacturing/shop-floor" : "/sales/orders"), { method: "POST", headers, body, redirect: "manual" });
     return { response, body: await response.text() };
   };
   const call = async <T>(name: string, args: unknown[], cookie: string): Promise<T> => {
@@ -52,7 +52,7 @@ async function main() {
     };
     const caps = ["sales.order.read", "customers.read", "core.products.read", "stock.read", "logistics.fulfilment.read", "logistics.shipment.read", "manufacturing.order.read"];
     const viewer = await makeUser("viewer", caps), accountant = await makeUser("accountant", [...caps, "finance.receivables.read", "finance.overview.read"]), outside = await makeUser("outside", caps, companies[1]);
-    const operator = await makeUser("operator", ["manufacturing.order.read", "core.products.read"]);
+    const operator = await makeUser("operator", ["manufacturing.order.read", "manufacturing.work_order.execute", "core.products.read"]);
     const operatorCookie = await login(operator.email);
     const viewerCookie = await login(viewer.email), financeCookie = await login(accountant.email), outsideCookie = await login(outside.email);
     const product = await db.product.create({ data: { organisationId, code: "UNIFY", name: "Synthetic availability item", basePriceAmount: 100, baseCurrency: "GBP", unitOfMeasure: "each" } });
@@ -144,6 +144,35 @@ async function main() {
       check(!operatorHtml.includes("SO-UNIFY-LIVE") && !operatorHtml.includes(party.name), "Manufacturing-only operator receives no customer or Sales-order identity");
       await operatorContext.close();
     } finally { await browser.close(); }
+    // Real server action and real stock owner: the second component is deliberately short.
+    const makeMaterial = (code: string) => db.product.create({ data: { organisationId, code, name: `Synthetic atomic ${code}`, basePriceAmount: 100 } });
+    const firstMaterial = await makeMaterial("ATOMIC-A"), secondMaterial = await makeMaterial("ATOMIC-B"), finishedProduct = await makeMaterial("ATOMIC-FG");
+    const definition = await db.productDefinition.create({ data: { organisationId, productId: finishedProduct.id, version: 1, status: "ACTIVE", supply: "MAKE", batchQuantity: 1, yieldPercent: 100, createdByUserId: operator.id } });
+    await db.productBomLine.createMany({ data: [firstMaterial, secondMaterial].map((material, position) => ({ organisationId, definitionId: definition.id, componentProductId: material.id, quantityPerUnit: 1, position })) });
+    await db.inventoryBalance.create({ data: { organisationId, warehouseId: warehouse.id, productId: firstMaterial.id, quantity: 10 } });
+    const atomicOrder = await db.manufacturingOrder.create({ data: { organisationId, orderNumber: "MO-ATOMIC", productId: finishedProduct.id, definitionId: definition.id, quantity: 2, status: "RUNNING", createdByUserId: operator.id } });
+    const atomicStep = await db.manufacturingWorkOrder.create({ data: { organisationId, productionOrderId: atomicOrder.id, sequence: 1, operationName: "Synthetic final assembly", status: "RUNNING" } });
+    const requestKey = randomBytes(12).toString("hex");
+    const complete = (good = 2, key = requestKey, cookie = operatorCookie) => post("completeWorkOrder", [atomicStep.id, good, 0, key], cookie);
+    const hasError = (result: Awaited<ReturnType<typeof post>>) => result.response.status >= 400 || /(?:^|\n)\w+:E\{/.test(result.body);
+    const rejected = await complete();
+    check(hasError(rejected), "Actual completion action refuses a later material shortage");
+    const afterFailure = await db.manufacturingWorkOrder.findUniqueOrThrow({ where: { id: atomicStep.id } });
+    const parentAfterFailure = await db.manufacturingOrder.findUniqueOrThrow({ where: { id: atomicOrder.id } });
+    check(await db.inventoryMovement.count({ where: { organisationId, manufacturingOrderId: atomicOrder.id } }) === 0 && (await db.inventoryBalance.findFirstOrThrow({ where: { organisationId, productId: firstMaterial.id } })).quantity === 10 && afterFailure.status === "RUNNING" && afterFailure.version === 1 && parentAfterFailure.warehouseId === null && parentAfterFailure.version === 1, "Material shortage rolls back all movements, warehouse assignment and both progress versions");
+    check(hasError(await complete(3, "over-report")), "Actual completion rejects quantities above the production order");
+    check(hasError(await complete(2, "forbidden", viewerCookie)), "Sales viewer cannot execute manufacturing completion");
+    check(hasError(await complete(2, "outside", outsideCookie)), "Another company cannot execute the test production step");
+    await db.inventoryBalance.create({ data: { organisationId, warehouseId: warehouse.id, productId: secondMaterial.id, quantity: 10 } });
+    const completions = await Promise.all([complete(), complete()]);
+    check(completions.every(result => !hasError(result)), "Concurrent duplicate completion requests both settle safely");
+    const movements = await db.inventoryMovement.findMany({ where: { organisationId, manufacturingOrderId: atomicOrder.id } });
+    const parentAfterSuccess = await db.manufacturingOrder.findUniqueOrThrow({ where: { id: atomicOrder.id } });
+    const stepAfterSuccess = await db.manufacturingWorkOrder.findUniqueOrThrow({ where: { id: atomicStep.id } });
+    check(movements.length === 3 && movements.filter(item => item.delta === -2).length === 2 && movements.filter(item => item.productId === finishedProduct.id && item.delta === 2).length === 1 && movements.every(item => item.workOrderId === atomicStep.id), "Exactly two material issues and one finished-goods receipt retain order/step lineage");
+    check(parentAfterSuccess.status === "COMPLETE" && parentAfterSuccess.warehouseId === warehouse.id && stepAfterSuccess.status === "COMPLETE" && Number(stepAfterSuccess.producedQuantity) === 2, "Finished goods and production progress commit together, removing stale open supply");
+    check(await db.auditEntry.count({ where: { organisationId, entityId: atomicStep.id, action: "manufacturing.work_order.completed" } }) === 1 && await db.activity.count({ where: { organisationId, entityId: atomicStep.id, type: "manufacturing.work_order.completed" } }) === 1, "Completion retry creates one audit and one activity record");
+    check(hasError(await complete(1)), "Completed request keys cannot silently accept changed quantities");
     console.log(`LIVE ATLAS UNIFICATION ACCEPTANCE PASSED: ${checks} assertions`);
   } finally {
     for (const id of companies) { assert((await db.organisation.findUnique({ where: { id } }))?.isTest); await db.organisation.update({ where: { id }, data: { status: "SUSPENDED" } }); }

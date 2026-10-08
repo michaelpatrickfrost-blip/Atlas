@@ -903,3 +903,12 @@ Customer Master remains a Core contribution. Empty groups stay out of the user's
 way; partial relationship failures do not take down the operational page. Finance
 read scope, including private Projects, remains authoritative for linked metadata
 and quantities. No read-only operator gains Sales/customer access through a link.
+
+## 8 October 2026 — Manufacturing completion owns one transaction
+
+A completion cannot consume some materials while leaving the step uncompleted,
+or book output before losing a version check. Manufacturing orchestrates one
+serializable transaction with Inventory-owned ship/receive commands; audit and
+activity participate. Replenishment is notified after commit. Final routing
+completion closes parent supply; a retry with changed quantities is rejected.
+This does not authorise silent quantity tolerances or invent partial-output history.

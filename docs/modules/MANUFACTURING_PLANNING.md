@@ -263,3 +263,18 @@ originating Sales order appears only with Sales read and enabled Sales; operator
 without that permission receive neither its reference nor customer identity.
 Existing product/material/operation details remain. Manufacturing contributes exact
 source-line-linked production orders back to Sales; no product-match guessing.
+
+## Atomic routing completion — 8 October 2026
+
+The final routing step issues recipe components, receives good output and marks
+the parent complete in the same serializable transaction as step progress, audit
+and activity. Earlier steps must be complete; intermediate steps never book output.
+Failure rolls back warehouse selection and every material/output change. Stock
+commands remain Inventory-owned and use the caller transaction. Replenishment
+notifications run after commit. Duplicate completion keys preserve one ledger and
+one audit/activity; changed quantities under the same key fail. Whole quantities
+and the planned quantity ceiling apply; no silent overproduction tolerance.
+
+This repairs single completion atomicity; repeated partial outputs, returned
+materials, complete hold/reservation propagation, Finance WIP/costing and other
+requirements in the delivery map remain open. Historical records are preserved.

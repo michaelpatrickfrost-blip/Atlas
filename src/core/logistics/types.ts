@@ -134,8 +134,9 @@ export type StockProvider = {
   requestReservation(actor: LogisticsActor, command: StockCommand): Promise<StockCommandResult>;
   releaseReservation(actor: LogisticsActor, command: Pick<StockCommand, "requestKey" | "productId" | "warehouseId" | "quantity" | "sourceType" | "sourceId" | "reason" | "reference">): Promise<StockCommandResult>;
   executeMovement(actor: LogisticsActor, command: StockCommand): Promise<StockCommandResult>;
-  receiveStock(actor: LogisticsActor, command: StockCommand): Promise<StockCommandResult>;
-  shipStock(actor: LogisticsActor, command: StockCommand): Promise<StockCommandResult>;
+  /** Caller-owned transactions defer replenishment until after commit. */
+  receiveStock(actor: LogisticsActor, command: StockCommand, transaction?: import("@/generated/prisma/client").Prisma.TransactionClient): Promise<StockCommandResult>;
+  shipStock(actor: LogisticsActor, command: StockCommand, transaction?: import("@/generated/prisma/client").Prisma.TransactionClient): Promise<StockCommandResult>;
   returnStock(actor: LogisticsActor, command: StockCommand, transaction?: import("@/generated/prisma/client").Prisma.TransactionClient): Promise<StockCommandResult>;
   reportDiscrepancy(actor: LogisticsActor, input: { requestKey: string; productId: string; warehouseId: string; locationId?: string | null; systemQuantity: number; reportedQuantity: number; sourceType: string; sourceId: string }): Promise<StockCommandResult>;
 };

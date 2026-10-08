@@ -9,13 +9,13 @@ reproduced by tests are confirmed runtime defects. No claim of a full code audit
 | Finding | Evidence / implication |
 | --- | --- |
 | Repeated stock truth calculations | `stock/services/{provider,availability,business-planning}.ts`, `manufacturing/services/mrp-calculation.ts` use different restrictions. |
-| Cross-domain read aggregation | `stock/services/availability.ts` queries Sales, Logistics, Finance and Manufacturing directly; converge through owner contracts. |
+| Cross-domain read aggregation | `stock/services/availability.ts` still queries Sales, Logistics and Manufacturing directly; Finance now owns protected invoice projections. Converge remaining reads through owner contracts. |
 | Core imports module implementations | `core/events/sink.ts`, `core/scheduler/tick.ts` dynamically import module engines, contrary to registry-only wiring. |
 | Two durable event paths | `AutomationEvent` sink/scheduler and Sales `DomainOutbox` are separate; inspect delivery semantics before consolidation. |
 | Split attachment architecture | Finance attachments, Projects documents, Core templates/contracts and Service evidence use different APIs/access paths. |
 | Overlapping quality state | QualityHold and QUARANTINE StockPosition have no explicit common hold identity for safe deduplication. |
 | Aggregate plan/execution overlap | `availability/picture.ts` uses max(plan, production), without item-date-source pegging. |
-| Non-atomic manufacturing boundary | `manufacturing/services/stock.ts` loops separate provider transactions before completion state persists. |
+| Non-atomic manufacturing boundary | Reproduced and repaired: completion now shares one transaction with owner stock commands, progress and audit. Live failure/retry proof pending. |
 | Scattered contextual navigation | Sales commercial links, service panels and Finance sources were bespoke; shared relationships now implemented on five root types; remaining roots open. |
 | Release checkout fragmentation | Primary main is older with extensive concurrent edits; live main is newer. Pinned clean release prevents unrelated deployment. |
 
@@ -29,7 +29,7 @@ reproduced by tests are confirmed runtime defects. No claim of a full code audit
 | Receipt supply missing from projection | Arrivals contain receipts but aggregate incoming formerly omitted them; regression reproduced. |
 | Arrival truncation affects promise | `incomingArrivals` formerly slices inputs at 12; a later covering arrival is ignored. |
 | Incomplete quality propagation | MRP reads QualityHold; Sales availability reads restricted positions; safe shared identity/atomicity unresolved. |
-| Partial manufacturing failure | Backflush can commit earlier materials before a later issue fails; not yet proven with a live failure fixture. |
+| Partial manufacturing failure | Reproduced in regressions and repaired with transaction propagation; actual authenticated multi-material failure/retry proof pending. Repeated partial output remains open. |
 | Procurement suggestion stops short | Manufacturing delivery guide records executable BUY/transfer handoffs as open. |
 | Customer delay explanation incomplete | One sourceSalesOrderLine relationship and JSON suggestion pegging cannot yet explain the entire supply chain. |
 | Missing precise delivery receipt | S&OP acceptance marks partial received quantities unavailable; do not infer a delivery receipt from allocation. |
@@ -38,7 +38,7 @@ reproduced by tests are confirmed runtime defects. No claim of a full code audit
 
 | Finding | Evidence / implication |
 | --- | --- |
-| Home gives navigation before work | Implemented: Home leads with urgency-sorted attention and My work; Apps uses native disclosure. Live release proof pending. Broader role-specific workspaces remain open. |
+| Home gives navigation before work | Implemented: Home leads with urgency-sorted attention and My work; Apps uses native disclosure. Live `77252b4`, authenticated phone/keyboard checks passed. Broader role-specific workspaces remain open. |
 | Large sales record rendering | Sales order page composes many inline actions and panels; use tabs/context without losing workflows. |
 | Technical JSON in history | Sales History renders revision snapshots with JSON.stringify rather than meaningful field changes. |
 | Projected stock labelled Available | Order chain mixes future supply/open demand with an available label; corrected to Projected stock. |

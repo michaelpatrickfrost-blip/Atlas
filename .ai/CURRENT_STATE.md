@@ -19,8 +19,19 @@
   runtime unchanged. Strict combined TypeScript passed. The next prepare caught
   the existing absolute private evidence path under /opt/atlas/shared; corrected
   the guard to preserve that dedicated central directory, never copy or move it.
-- Staging, activation, live continuity/connected fixture and shared-project
-  integration remain pending; no FIXED claim or live architecture change yet.
+- Runtime 6028b1f activated after prepared smoke/staging: build-phase live probe
+  215 pages/Apps toggles and staged switch/rollback 40, zero browser/chunk failures.
+  Connected live Service fixture passes all seven groups; exact company suspended
+  and sessions revoked. Release health, root-owned runtime, preserved absolute
+  storage/env permissions and old hashed asset HTTP verified.
+- First production cutover browser timed out. Journal 15:17:33 shows legacy npm
+  parent exit immediately SIGKILLed Next child; new Node ready 15:17:34. Report is
+  NOT FIXED. Corrected first-transition kill mode to signal the whole old group,
+  retain direct-Node mixed mode thereafter. Staging now explicitly exercises npm
+  transition and direct-Node rollback. Added safe probe phase/count diagnostics.
+- Global lock tested under Guardian PrivateTmp: busy worker exits 75, Result=success.
+  Full stable sweep running. Revised staging and a fresh live continuity release,
+  report triage and shared-project integration remain pending.
 
 ## 8 October 2026 — Danielle staff setup and Michael-only provisioning verified
 

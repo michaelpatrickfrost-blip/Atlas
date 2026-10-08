@@ -139,6 +139,10 @@ PY
 fi
 sudo mkdir -p /etc/systemd/system/atlas.service.d
 if [[ -f /etc/systemd/system/atlas.service.d/release.conf ]]; then sudo cp -a /etc/systemd/system/atlas.service.d/release.conf "$BACKUP-release.conf"; fi
+KILL_MODE=mixed
+# The legacy npm parent can exit before its Next child drains. Signal the entire
+# old group on the first transition; subsequent direct-Node releases use mixed.
+if systemctl show atlas -p ExecStart --value | grep -q /usr/bin/npm; then KILL_MODE=control-group; fi
 cat > "$BACKUP-release.conf.next" <<UNIT
 [Service]
 WorkingDirectory=$CURRENT
@@ -146,7 +150,8 @@ EnvironmentFile=-$CURRENT/.release.env
 ExecStart=
 ExecStart=/usr/bin/node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3000
 KillSignal=SIGTERM
-KillMode=mixed
+KillMode=$KILL_MODE
+SuccessExitStatus=130 143
 TimeoutStopSec=30
 UNIT
 sudo /usr/bin/node "$CANDIDATE/scripts/deploy/release-files.mjs" link "$PREVIOUS" "$CURRENT"
@@ -168,6 +173,11 @@ for i in $(seq 1 30); do healthy 3000 && break; sleep 1; done
 healthy 3000
 curl --max-time 3 -fsS http://127.0.0.1:3000/api/health/release | /usr/bin/node -e 'let b="";process.stdin.on("data",v=>b+=v);process.stdin.on("end",()=>{if(JSON.parse(b).revision!==process.argv[1])process.exit(1)})' "$REV"
 curl --max-time 20 -fsS https://atlassystem.online/login -o /dev/null
+if [[ "$KILL_MODE" = control-group ]]; then
+  sed -i 's/^KillMode=control-group$/KillMode=mixed/' "$BACKUP-release.conf.next"
+  sudo install -m 644 "$BACKUP-release.conf.next" /etc/systemd/system/atlas.service.d/release.conf
+  sudo systemctl daemon-reload
+fi
 
 # The control checkout remains the shared operator/Guardian entrypoint. Dependencies,
 # build and generated client point to the active immutable runtime. Preserve old dirs.

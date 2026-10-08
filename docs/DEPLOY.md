@@ -45,6 +45,9 @@ all writes blocked, switches old → candidate → old, and asserts both runtime
 remain immutable. It cleans up its service/proxy and retains private test logs.
 It uses the existing Guardian QA membership, never creates/grants an account.
 
+The first transition from the old npm launcher sends SIGTERM to its entire process
+group so the Next child can drain; later direct-Node releases use mixed kill mode.
+
 Activation uses an atomic `/opt/atlas-current` symlink and graceful direct-Node
 systemd restart. `/api/health/release` must report the exact SHA before completion.
 Failure after switching restores the previous runtime; **database migrations are

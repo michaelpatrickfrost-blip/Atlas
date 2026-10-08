@@ -18,12 +18,13 @@ cleanup() {
   touch "$RUN/stop"
   if [[ -n "$WATCH_PID" ]]; then wait "$WATCH_PID" || result=1; fi
   if [[ -n "$CADDY_PID" ]]; then kill -TERM "$CADDY_PID" 2>/dev/null || true; wait "$CADDY_PID" 2>/dev/null || true; fi
-  if [[ "$INSTALLED" = 1 ]]; then sudo systemctl stop atlas-release-staging; sudo rm -f "$UNIT"; sudo systemctl daemon-reload; fi
+  if [[ "$INSTALLED" = 1 ]]; then sudo systemctl stop atlas-release-staging; sudo systemctl reset-failed atlas-release-staging 2>/dev/null || true; sudo rm -f "$UNIT"; sudo systemctl daemon-reload; fi
   echo "Private staging logs retained: $RUN"
   exit "$result"
 }
 trap cleanup EXIT
 node "$NEW/scripts/deploy/release-files.mjs" link "$OLD" "$POINTER"
+write_unit() {
 cat > "$RUN/unit" <<SERVICE
 [Unit]
 Description=Disposable Atlas immutable release staging
@@ -32,14 +33,19 @@ User=administrator
 WorkingDirectory=$POINTER
 EnvironmentFile=$ROOT/.env.local
 EnvironmentFile=-$POINTER/.release.env
-ExecStart=/usr/bin/node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3011
-KillMode=mixed
+ExecStart=$1
+KillMode=$2
+SuccessExitStatus=130 143
 TimeoutStopSec=30
 SERVICE
 sudo install -m 644 "$RUN/unit" "$UNIT"; INSTALLED=1; sudo systemctl daemon-reload
+}
+# Exercise the first legacy npm-parent transition as well as direct Node rollback.
+write_unit '/usr/bin/npm run start -- --hostname 127.0.0.1 --port 3011' mixed
 cat > "$RUN/Caddyfile" <<'CADDY'
 {
   admin off
+  persist_config off
 }
 http://127.0.0.1:3010 {
   reverse_proxy 127.0.0.1:3011 {
@@ -49,7 +55,7 @@ http://127.0.0.1:3010 {
 }
 CADDY
 caddy validate --config "$RUN/Caddyfile" --adapter caddyfile > "$RUN/caddy-validate.log" 2>&1
-caddy run --config "$RUN/Caddyfile" --adapter caddyfile > "$RUN/caddy.log" 2>&1 & CADDY_PID=$!
+XDG_CONFIG_HOME="$RUN/config" XDG_DATA_HOME="$RUN/data" caddy run --config "$RUN/Caddyfile" --adapter caddyfile > "$RUN/caddy.log" 2>&1 & CADDY_PID=$!
 healthy() { curl -fsS --max-time 2 http://127.0.0.1:3011/login -o /dev/null 2>/dev/null; }
 start() {
   sudo systemctl restart atlas-release-staging
@@ -71,11 +77,14 @@ advance() {
   return 1
 }
 advance
-node "$NEW/scripts/deploy/release-files.mjs" link "$NEW" "$POINTER"; start "$NEW"
+node "$NEW/scripts/deploy/release-files.mjs" link "$NEW" "$POINTER"
+write_unit '/usr/bin/node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3011' control-group
+start "$NEW"
+write_unit '/usr/bin/node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3011' mixed
 curl -fsS http://127.0.0.1:3011/api/health/release | node -e 'let b="";process.stdin.on("data",v=>b+=v);process.stdin.on("end",()=>{if(JSON.parse(b).revision!==process.argv[1])process.exit(1)})' "$REV"
 advance
 node "$NEW/scripts/deploy/release-files.mjs" link "$OLD" "$POINTER"; start "$OLD"
 advance
 touch "$RUN/stop"; wait "$WATCH_PID"; WATCH_PID=''; cat "$RUN/browser.log"
 [[ ! -w "$NEW/.next/server/app-paths-manifest.json" && ! -w "$OLD/.next/server/app-paths-manifest.json" ]]
-echo 'PASS real loopback candidate activation and rollback; both releases immutable, production pointer unchanged.'
+echo 'PASS real loopback legacy npm transition, candidate activation and direct-Node rollback; both releases immutable, production pointer unchanged.'

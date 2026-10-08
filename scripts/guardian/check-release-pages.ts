@@ -6,6 +6,7 @@ import { chromium, expect } from "@playwright/test";
 import { db } from "../../src/core/db/client";
 import { responseOutcome } from "./response-check";
 
+let phase = "configuration";
 async function main() {
   assert(process.platform === "linux" && process.env.ATLAS_GUARDIAN_RELEASE_TEST === "1");
   const base = new URL(process.env.ATLAS_RELEASE_TEST_URL ?? "https://atlassystem.online");
@@ -32,9 +33,11 @@ async function main() {
     const until = Date.now() + duration * 1000;
     do {
       for (const path of ["/finance", "/logistics", "/manufacturing", "/service/queries", "/service/reports"]) {
+        phase = `navigation ${path}`;
         const response = await page.goto(path, { waitUntil: "networkidle", timeout: 30_000 }); assert(response);
         assert.equal(responseOutcome(response.status(), await response.text()), "http-render-pass", "Original release page must render its authorised workspace.");
         await expect(page.locator("main")).toBeVisible();
+        phase = `Apps toggle ${path}`;
         const menu = page.locator('[data-guardian-safe="toggle"]').first();
         await expect(menu).toBeVisible(); await menu.click(); await expect(menu).toHaveAttribute("aria-expanded", "true");
         await menu.click(); await expect(menu).toHaveAttribute("aria-expanded", "false"); pages++; toggles++;
@@ -42,8 +45,9 @@ async function main() {
       if (process.env.ATLAS_RELEASE_TEST_READY) fs.writeFileSync(process.env.ATLAS_RELEASE_TEST_READY, `${pages}\n`, { mode: 0o600 });
       if (process.env.ATLAS_RELEASE_TEST_STOP && fs.existsSync(process.env.ATLAS_RELEASE_TEST_STOP)) break;
     } while (Date.now() < until);
+    phase = `final counts pages=${pages} toggles=${toggles} browserErrors=${errors} assetFailures=${assets}`;
     assert.equal(errors, 0); assert.equal(assets, 0); assert(pages >= 5 && toggles === pages);
     console.log(`PASS release continuity: ${pages} rendered page requests and ${toggles} Apps toggles; zero browser/chunk failures. All business writes blocked.`);
   } finally { await browser.close(); await db.$disconnect(); }
 }
-main().catch(error => { console.error(`Release continuity failed (${error instanceof Error ? error.name : "UnknownError"}); inspect securely without logging private data.`); process.exitCode = 1; });
+main().catch(error => { console.error(`Release continuity failed (${error instanceof Error ? error.name : "UnknownError"}); phase: ${phase}; inspect securely without logging private data.`); process.exitCode = 1; });

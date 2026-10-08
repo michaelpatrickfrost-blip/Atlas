@@ -8833,3 +8833,18 @@ model EmployeeTraining {
   @@index([organisationId,employeeId])
   @@map("hr_employee_training")
 }
+
+// Platform-owned durable record: deleted companies and attachment cleanup retries.
+model CompanyCleanupRun {
+  id String @id @default(cuid())
+  version Int @default(0)
+  actorUserId String
+  companies Json
+  remainingFileKeys String[] @default([])
+  removedFileCount Int @default(0)
+  status String @default("REMOVING_FILES")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([status,createdAt])
+  @@map("company_cleanup_runs")
+}

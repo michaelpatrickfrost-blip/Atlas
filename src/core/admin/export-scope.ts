@@ -11,13 +11,13 @@ export function redactExportSecrets(value: unknown): unknown {
 }
 
 /** Follow child -> tenant parent FKs only. Never follow a shared User into another company. */
-export function companyExportScopes(columns: ExportColumn[], foreignKeys: ExportForeignKey[]) {
+export function companyExportScopes(columns: ExportColumn[], foreignKeys: ExportForeignKey[], excludedTables = EXCLUDED_EXPORT_TABLES) {
   const tables = [...new Set(columns.map(column => column.table))].sort();
   const scopes = new Map<string, string>();
   let aliasSequence = 0;
   const q = quoteIdentifier;
   for (const table of tables) {
-    if (EXCLUDED_EXPORT_TABLES.has(table) || table === "users") continue;
+    if (excludedTables.has(table) || table === "users") continue;
     if (table === "organisations") scopes.set(table, 'r."id" = $1');
     else if (columns.some(column => column.table === table && column.column === "organisationId")) scopes.set(table, 'r."organisationId" = $1');
   }
@@ -27,7 +27,7 @@ export function companyExportScopes(columns: ExportColumn[], foreignKeys: Export
     // Each pass uses earlier scopes, so a cyclic FK can never create a recursive predicate.
     const parents = new Map(scopes);
     for (const table of tables) {
-      if (scopes.has(table) || EXCLUDED_EXPORT_TABLES.has(table) || table === "users") continue;
+      if (scopes.has(table) || excludedTables.has(table) || table === "users") continue;
       const anchors = foreignKeys.filter(key => key.table === table && key.parent !== "users" && parents.has(key.parent));
       if (!anchors.length) continue;
       const exists = anchors.map(key => {

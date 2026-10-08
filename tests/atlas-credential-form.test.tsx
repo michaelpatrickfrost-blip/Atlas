@@ -13,6 +13,7 @@ it("preserves employee details after validation failure and allows a corrected r
   fireEvent.submit(screen.getByRole("button", { name: "Create staff access" }).closest("form")!);
   await waitFor(() => expect(screen.getByRole("alert").textContent).toContain("password was not recognised"));
   expect((screen.getByLabelText("Full name") as HTMLInputElement).value).toBe("New Employee");
+  await screen.findByRole("button", { name: "Create staff access" });
   fireEvent.change(screen.getByLabelText("Administrator password"), { target: { value: "correct" } });
   fireEvent.submit(screen.getByRole("button", { name: "Create staff access" }).closest("form")!);
   await waitFor(() => expect(screen.getByRole("status").textContent).toContain("one-time-code"));

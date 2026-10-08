@@ -48,8 +48,8 @@ policy; every active classification currently has full access.
 
 User profile changes revoke sessions and unused recovery codes. Archived accounts
 remain read only until restored. A company's test designation is fixed at creation:
-production accounts cannot be relabelled as disposable and wiped. Existing test
-wipe requires platform access and exact-name confirmation.
+production accounts cannot be relabelled as disposable and wiped. Test cleanup at `/atlas/cleanup` requires platform access, a reviewed company list,
+an exact count confirmation, acknowledgement and the administrator’s own password.
 
 ## Offboarding and full export
 
@@ -96,3 +96,24 @@ returned as explicit form results so production does not hide them. The form ret
 entered employee details for correction and disables fields during submission.
 Unexpected server failures use a generic retry message; capability checks remain
 server-side and no access is granted on validation failure.
+
+## Bulk test cleanup — 8 October 2026
+
+`/atlas/cleanup` selects up to 1,000 Test companies in one sweep. Review lists exact
+names and record counts before an explicit permanent-delete confirmation. Ordinary
+companies, the internal staff workspace and the current workspace cannot be wiped;
+the Test designation stays fixed at creation. Selection names/versions are checked
+again under company row locks. All selected database records delete in one
+transaction, including indirect children, setup codes and posted/verified Test
+finance records. Financial immutability remains enforced for ordinary companies
+and for all updates; Test-only deletion requires the transaction-local wipe flag.
+
+Shared/global user identities remain when referenced by other memberships, staff
+grants or remaining database foreign keys. An internal audit event and a durable
+platform cleanup run survive company deletion. Uploaded Service evidence is removed
+after commit; remaining file keys survive storage/process failures and can be
+retried from Cleanup history. Missing files count as already removed. Concurrent
+retries use a version check. Existing backups and external hosted files remain.
+This is an operator-selected sweep, not automatic retention or a reset of real
+company records. Historical acceptance cleanup may now remove explicitly disposable
+Test finance fixtures; retained earlier evidence is not silently purged.

@@ -985,3 +985,20 @@ baselines. Successors are not silently moved: surface conflicts for review.
 Historical baseline views project current visible task IDs/date fields only.
 Use bounded calendar-day windows for long schedules; do not imply finite capacity,
 working-calendar scheduling or completed full source scope.
+
+## 8 October 2026 — Operator-reviewed bulk Test cleanup
+
+Michael needs to delete companies and test data in one sweep while testing. The
+first delivered cleanup scope is explicitly selected companies created as Test;
+ordinary-company deletion was offered as a scope question and is not assumed.
+Archive remains the ordinary-company lifecycle. Staff/current workspace and shared
+identities are preserved. A count phrase, acknowledgement, own password and a
+server-checked reviewed selection precede an atomic database sweep.
+
+This supersedes the requirement to retain disposable posted Test fixtures solely
+because Finance guards blocked deletion. Those guards now allow DELETE only with
+the transaction-local wipe flag AND a database-confirmed Test customer company;
+production financial immutability and all UPDATE guards remain. Existing retained
+acceptance evidence is not deleted by implementing this feature. A durable platform
+run and audit survive the deleted companies; file removal follows commit and records
+retries rather than risking dangling database attachments or falsely claiming clean.

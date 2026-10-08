@@ -144,3 +144,12 @@ brief asks for operational Home rather than leading with an app directory.
 [System map](../docs/atlas-system-map.md) and the other `atlas-*.md` guides index
 existing owners, evidence, gaps and continuous work; they do not replace `.ai/`
 shared memory or the detailed module delivery guides.
+
+## Bulk Test cleanup — 8 October 2026
+
+Atlas Admin `/atlas/cleanup` provides reviewed multi-company deletion while testing.
+Only companies created as Test are eligible; ordinary accounts use archive/export.
+Current/internal workspaces and shared staff/users are protected. Database deletion
+is atomic across the selection; durable history and retryable Service-file cleanup
+survive deletion. Posted Test records can be wiped only through this explicit path;
+ordinary financial guards remain. See docs/ATLAS_ADMIN.md and CURRENT_STATE.md.

@@ -1,0 +1,16 @@
+import Link from "next/link";
+import { requireSession } from "@/core/auth/session";
+import { assertCapability } from "@/core/permissions/check";
+import { db } from "@/core/db/client";
+import { CompanyCleanupForm, RetryFileCleanup } from "./cleanup-form";
+export default async function CompanyCleanup({ searchParams }: { searchParams: Promise<{ company?: string }> }) {
+  const session = await requireSession();
+  assertCapability(session, "atlas.companies.archive");
+  const params = await searchParams;
+  const [companies, total, runs] = await Promise.all([
+    db.organisation.findMany({ where: { kind: "CUSTOMER", isTest: true }, orderBy: [{ name: "asc" }, { id: "asc" }], take: 1000, include: { _count: { select: { memberships: true, parties: true, products: true, employees: true, serviceFiles: true } } } }),
+    db.organisation.count({ where: { kind: "CUSTOMER", isTest: true } }),
+    db.companyCleanupRun.findMany({ where: { OR: [{ status: { not: "COMPLETE" } }, { actorUserId: { not: "acceptance-cleanup" } }] }, orderBy: [{ status: "desc" }, { createdAt: "desc" }], take: 20 }),
+  ]);
+  return <div className="space-y-6"><div className="flex flex-wrap items-end justify-between gap-4"><div><h2 className="text-2xl font-semibold tracking-tight">Clean test data</h2><p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-500">Delete selected test companies and all their data in one sweep. Review the exact list before confirming. Ordinary companies use archive and export; Atlas staff are protected.</p></div><Link href="/atlas" className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm">Back to companies</Link></div>{total > 1000 && <p className="rounded-xl bg-amber-50 p-4 text-sm">Showing the first 1,000 of {total} test companies. Complete this sweep, then reload to clean the remainder.</p>}<CompanyCleanupForm initialCompany={params.company} companies={companies.map(company => ({ id: company.id, name: company.name, updatedAt: company.updatedAt.toISOString(), status: company.status, current: company.id === session.organisationId, users: company._count.memberships, customers: company._count.parties, products: company._count.products, employees: company._count.employees, files: company._count.serviceFiles }))} /><section className="rounded-2xl border border-slate-200 bg-white p-6"><h3 className="font-semibold">Cleanup history</h3><p className="mt-2 text-xs text-slate-500">A deletion record stays here after company data is removed. Outstanding file cleanup can be retried.</p><div className="mt-4 divide-y divide-slate-100">{runs.map(run => <article key={run.id} className="py-4"><p className="text-sm font-medium">{Array.isArray(run.companies) ? run.companies.map(company => company && typeof company === "object" && !Array.isArray(company) && typeof company.name === "string" ? company.name : "Deleted company").join(", ") : "Deleted companies"}</p><p className="mt-2 text-xs text-slate-500">{run.createdAt.toLocaleString("en-GB", { timeZone: "Europe/London" })} · {run.status === "COMPLETE" ? "Complete" : `${run.remainingFileKeys.length} uploaded files pending`} · {run.removedFileCount} files removed</p>{run.status !== "COMPLETE" && <RetryFileCleanup runId={run.id} />}</article>)}{!runs.length && <p className="py-4 text-sm text-slate-500">No cleanup sweeps yet.</p>}</div></section></div>;
+}

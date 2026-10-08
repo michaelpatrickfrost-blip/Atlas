@@ -3959,3 +3959,26 @@ TypeScript, local/server production builds and whitespace checks passed. Task-ow
 source/tests/docs and memory were merged back to the shared editable master without
 replacing concurrent changes. This supersedes this task's pending checkpoint above;
 no employee-creation delivery blocker remains.
+
+## 8 October 2026 — Bulk company/Test cleanup preparation
+
+Implemented `/atlas/cleanup`: selectable Test companies, review/count phrase/own
+password/acknowledgement, atomic sweep and surviving audit/history. Ordinary/internal/
+current companies and stale/forged selections are rejected. Removes direct/indirect
+tenant records and unreferenced test identities; preserves staff/shared users and
+any remaining incoming user references. Service files remove after commit with
+durable retry keys and version-protected progress. Existing single-Test action now
+requires the operator password and the same guarded service. Company list/nav and
+Test offboarding expose cleanup. No existing user companies were selected or deleted.
+
+Paths: atlas/cleanup, core/admin/wipe-company.ts, cleanup-input.ts, export-scope.ts,
+CompanyCleanupRun and additive migration 20261008160000_company_cleanup. Reviewed
+DDL adds durable tracking and permits Test-only Finance DELETE under the explicit
+wipe flag; no migration deletes/updates existing business records. Ordinary finance
+immutability/updates stay enforced. Decisions, project memory and Admin docs updated.
+
+Checks: 33 focused tests passed; scoped ESLint, Prisma validation/generation, isolated
+TypeScript and production build passed. The acceptance fixture initially needed required customer codes, and an earlier
+credential-form test now waits for the pending transition to finish before retry.
+Both corrected; the combined 33-test suite, final acceptance-script typecheck and
+production build passed. Live deployment/acceptance pending at this checkpoint.

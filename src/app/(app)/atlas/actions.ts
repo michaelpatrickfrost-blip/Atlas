@@ -8,7 +8,7 @@ import {STANDARD_ROLES} from '@/core/permissions/capabilities';
 import {createRecoveryCredential} from '@/core/auth/recovery';
 import {revalidatePath} from 'next/cache';
 import bcrypt from 'bcryptjs';
-import {wipeCompany} from '@/core/admin/wipe-company';
+import {wipeTestCompanies} from '@/core/admin/wipe-company';
 export async function updateCompanyAccount(form:FormData){
  const session=await requireSession();
  assertCapability(session,'atlas.companies.manage');
@@ -54,7 +54,9 @@ export async function deleteTestCompany(form:FormData){
  if(!org.isTest)throw new Error('Only companies created as Test can be deleted. Archive a real company instead.');
  if(org.id===session.organisationId)throw new Error('Switch to another company before deleting this one.');
  if(typedName!==org.name)throw new Error('Type the company name exactly to confirm.');
- await wipeCompany(organisationId);
+ const administrator=await db.user.findUniqueOrThrow({where:{id:session.userId},select:{passwordHash:true}});
+ if(!await bcrypt.compare(String(form.get('currentPassword')??''),administrator.passwordHash))throw new Error('Confirm your own Atlas sign-in password to delete this company.');
+ await wipeTestCompanies([organisationId],{actorUserId:session.userId,currentOrganisationId:session.organisationId,selection:[{id:org.id,name:org.name,updatedAt:org.updatedAt.toISOString()}]});
  console.info(`atlas.company.deleted org=${organisationId} name=${JSON.stringify(org.name)} by=${session.userId}`);
  revalidatePath('/atlas');
 }

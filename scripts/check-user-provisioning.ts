@@ -4,14 +4,16 @@ import { randomBytes } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { createInterface } from "node:readline/promises";
 import { chromium, expect } from "@playwright/test";
 import { db } from "../src/core/db/client";
 
 async function main() {
   assert(process.platform === "linux" && process.env.ATLAS_USER_SETUP === "1", "Explicit central-server setup only");
-  const chunks: Buffer[] = [];
-  for await (const chunk of process.stdin) chunks.push(Buffer.from(chunk));
-  const input = JSON.parse(Buffer.concat(chunks).toString()) as { name: string; email: string; password: string };
+  const reader = createInterface({ input: process.stdin });
+  const line = await reader.question("");
+  reader.close(); process.stdin.pause();
+  const input = JSON.parse(line) as { name: string; email: string; password: string };
   const email = input.email.toLowerCase(), base = "https://atlassystem.online";
   assert(input.name && email && input.password, "Supply requested staff credentials on stdin");
   const owner = await db.user.findUniqueOrThrow({ where: { email: "kickablur@icloud.com" }, include: { platformAdmin: true } });

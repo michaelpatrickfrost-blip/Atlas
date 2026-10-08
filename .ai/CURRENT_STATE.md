@@ -11,10 +11,11 @@
   promotion keeps explicit consent and existing password; other confirmations kept.
 - Updated Atlas Admin/permissions/company-admin guides, product memory and decision.
   Earlier staff creation acceptance describes the superseded setup-code workflow.
-- Checks so far: production build, 36 focused regressions, full suite (953 pass /
-  22 integration skips), scoped ESLint and whitespace pass. Separate strict typecheck
-  and live deployment, Danielle provisioning/sign-in and denied-creation verification
-  pending. No schema or local business database/cache introduced.
+- Checks so far: production build, separate strict TypeScript, 36 focused regressions,
+  full suite (953 pass / 22 integration skips), scoped ESLint and whitespace pass.
+  Refreshed disposable dependencies after cloned tree lacked Playwright. Live
+  deployment, Danielle provisioning/sign-in and denied-creation verification pending.
+  No schema or local business database/cache introduced.
 
 
 ## 8 October 2026 — S&OP guided usability deployed and verified

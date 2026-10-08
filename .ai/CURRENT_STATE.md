@@ -1,5 +1,26 @@
 # Atlas current state
 
+## 8 October 2026 — Marketing destructive-action audit in progress
+
+- On live `f89b48aedb919267c129d5d52afe07a346f370c0`, browser acceptance verified
+  Remove activity, Remove budget line and Remove paid spend against central
+  state. The next Social page visit with a synthetic DRAFT failed to render
+  (Guardian digest `4082705037`, server and browser reports OPEN): the Server
+  Component passed an ordinary render callback to client `CreateDialog`.
+- Replaced that callback with a serializable trigger class-name prop, preserving
+  the small Edit button and default dialog triggers. The acceptance script now
+  opens the Edit dialog and checks Social Delete/audit, locked-send cancellation
+  without sending, and Automation Delete. The wider Logistics/Manufacturing
+  action run passed 45 central-state assertions.
+- In the clean `origin/main` release worktree, targeted ESLint, `npx tsc --noEmit`,
+  `tests/marketing-draft-form.test.tsx` (2 tests) and `npm run build` passed.
+  `marketing-campaign-save` and `marketing-workspace-access` still have 16 failing
+  test cases because the test DB mock lacks `moduleState.findMany`; this is outside
+  the dialog change and remains recorded, not silently waived.
+- Pending: candidate deployment, live Social/Edit/Delete, cancellation and
+  Automation verification, Guardian digest recheck, then continue the other
+  uncovered destructive-action paths. The overall button audit is not complete.
+
 ## 8 October 2026 — Compact app launcher visual refinement deployed
 
 - Replaced large multi-colour app tiles with smaller, consistent blue icon marks

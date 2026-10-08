@@ -87,3 +87,36 @@ Reports separate leading signals (reviews, inspections, actions, competence) fro
 ## What this module does not do
 
 It is not a medical-record system, an occupational-health clinic, an emergency service, a legal adviser, a COMAH or nuclear process-safety platform, a PLC, a door-access system, or a lone-worker monitoring centre. It does not keep a local copy of safety records on the Mac. A record is committed only after the server has stored it.
+
+## Workplace register — 8 October 2026
+
+`/safety/workplace` exposes all 29 existing record types, independent of profile
+feature presets. Search title/reference and filter by type, overdue, upcoming
+30-day review or completion. Lists are capped at 200 with an explicit narrowing
+notice, not an assertion that the whole company has only 200 records.
+
+Guided prompts cover fire, emergency/evacuation, DSE, first aid, lifting/method
+statements, contractors/induction/toolbox talks, lone working, manual handling,
+height, noise/vibration, asbestos and legionella; remaining types use operational
+prompts. Every record supports location, responsible person/team (a recorded
+contact, not a new employee identity or automatic assignment), findings,
+follow-up, evidence references and a review date. No document upload or monitored
+emergency/check-in service is implied. Operational completion requires a note;
+it does not approve a risk assessment, remove an equipment hold or certify safety.
+
+Create/edit requires `safety.risk.create`, active Safety entitlement and signed
+tenant scope. Register/detail requires `safety.risk.read`. Restricted record
+creation/editing additionally requires health-surveillance access. Existing
+sensitive read policy is preserved (sensitive-incident/health access or owner on
+the detail route); list filters never expose restricted records to normal readers.
+Writes use an expected `updatedAt` condition, preserve unknown legacy JSON, and
+record metadata-only audit in the same transaction. Explicit expected validation
+errors return safe results and retain entered work in production. Unexpected
+server errors remain protected. Safety Today shows overdue workplace reviews and
+excludes completed records from upcoming work.
+
+Design references, consulted 8 October 2026:
+- [HSE risk assessment steps](https://www.hse.gov.uk/simple-health-safety/risk/steps-needed-to-manage-risk.htm): findings, controls, responsibility, further work and review.
+- [HSE managing health and safety](https://www.hse.gov.uk/managing/introduction/how-to-manage.htm): ongoing planning, implementation, monitoring and review.
+These inform record organisation; the prompts are not HSE-approved templates or
+an automated legal assessment.

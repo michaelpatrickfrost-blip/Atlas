@@ -1,5 +1,14 @@
 # Atlas decisions
 
+## 8 October 2026 — Workplace safety records retain their existing owner
+
+Extend SafetyRecord payload and due/status fields rather than create competing
+employee, equipment or assessment stores. Guided operational prompts stay optional;
+completion evidence is required but never grants risk approval or releases holds.
+Keep sensitive records restricted, preserve legacy metadata, use timestamp-checked
+updates and atomic audit excluding private free text. The register exposes all
+existing workplace types instead of hiding records behind profile presets.
+
 ## 8 October 2026 — Optional Marketing information stays with its campaign
 
 Extend existing campaign metadata (`brief.workspace`) for optional planning details,

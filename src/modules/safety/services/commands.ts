@@ -12,7 +12,8 @@ import { SAFETY_CAPABILITIES as C } from "@/core/permissions/capabilities";
 import type { Prisma } from "@/generated/prisma/client";
 import { DEFAULT_FIVE_BY_FIVE, explainRisk, FOUR_BY_FOUR, QUALITATIVE_MATRIX, THREE_BY_THREE, type RiskMatrixConfig } from "../domain/matrix";
 import { GB_OBLIGATION_TEMPLATES, GB_SAFETY_TEMPLATE_VERSION } from "../domain/localisation";
-import { PROFILE_FEATURES, SENSITIVE_RECORD_KINDS, RECORD_KINDS, nextCapa, suggestedInvestigationDepth } from "../domain/work";
+import { PROFILE_FEATURES, SENSITIVE_RECORD_KINDS, nextCapa, suggestedInvestigationDepth } from "../domain/work";
+import { workplaceInput, WorkplaceValidationError } from "../domain/workplace";
 import { assistRiddor, riddorDecisionComplete } from "../domain/riddor";
 import { nextSafetyReference } from "./numbers";
 
@@ -507,35 +508,40 @@ export async function verifyAction(formData: FormData) {
 export async function saveWorkplaceRecord(formData: FormData) {
   const session = await requireSession();
   assertCapability(session, C.riskCreate);
-  const kind = text(formData, "kind");
-  if (!RECORD_KINDS.includes(kind as (typeof RECORD_KINDS)[number])) throw new Error("That record type is not available.");
-  if (SENSITIVE_RECORD_KINDS.has(kind)) assertCapability(session, C.healthSurveillanceRead);
-  const title = text(formData, "title");
-  if (!title) throw new Error("Give the record a title.");
-  const payload = {
-    detail: optional(formData, "detail"),
-    hierarchy: optional(formData, "hierarchy"),
-    locationKind: optional(formData, "locationKind"),
-    scenario: optional(formData, "scenario"),
-    qualification: optional(formData, "qualification"),
-    expiresAt: optional(formData, "expiresAt"),
-  };
-  const record = await db.$transaction(async (tx) => {
-    const reference = await nextSafetyReference(tx, session.organisationId, kind.toLowerCase(), "SFR");
-    return tx.safetyRecord.create({
-      data: {
-        organisationId: session.organisationId,
-        kind,
-        reference,
-        title,
-        ownerUserId: session.userId,
-        dueAt: when(formData, "dueAt"),
-        payload,
-        sensitive: SENSITIVE_RECORD_KINDS.has(kind),
-        commitment: "COMMITTED",
-      },
-    });
+  const enabled = await db.moduleState.findFirst({ where: { organisationId: session.organisationId, moduleId: "safety", enabled: true, entitled: true } });
+  if (!enabled) throw new Error("Safety is not enabled for this company.");
+  let input;
+  try { input = workplaceInput(formData); } catch (error) {
+    if (error instanceof WorkplaceValidationError) return { error: error.message };
+    throw error;
+  }
+  if (SENSITIVE_RECORD_KINDS.has(input.kind)) assertCapability(session, C.healthSurveillanceRead);
+  const id = text(formData, "recordId");
+  const result = await db.$transaction(async (tx) => {
+    const previous = id ? await tx.safetyRecord.findFirst({ where: { id, organisationId: session.organisationId } }) : null;
+    if (id && !previous) throw new Error("Record unavailable.");
+    if (previous?.sensitive) assertCapability(session, C.healthSurveillanceRead);
+    if (previous && previous.kind !== input.kind) return { error: "Keep the record type unchanged. Create a separate record for another type." };
+    const payload = { ...(previous?.payload && typeof previous.payload === "object" && !Array.isArray(previous.payload) ? previous.payload : {}), ...input.payload };
+    let recordId = id;
+    if (previous) {
+      const version = text(formData, "version");
+      if (version !== previous.updatedAt.toISOString()) return { error: "This record changed in another window. Reload before saving; your entered work is still here." };
+      const updated = await tx.safetyRecord.updateMany({ where: { id, organisationId: session.organisationId, updatedAt: previous.updatedAt }, data: { title: input.title, status: input.status, dueAt: input.dueAt, payload, updatedAt: new Date() } });
+      if (!updated.count) return { error: "This record changed in another window. Reload before saving; your entered work is still here." };
+    } else {
+      const reference = await nextSafetyReference(tx, session.organisationId, input.kind.toLowerCase(), "SFR");
+      const created = await tx.safetyRecord.create({ data: { organisationId: session.organisationId, reference, kind: input.kind, title: input.title, status: input.status, dueAt: input.dueAt, payload, ownerUserId: session.userId, sensitive: SENSITIVE_RECORD_KINDS.has(input.kind), commitment: "COMMITTED" } });
+      recordId = created.id;
+    }
+    // Audit excludes free-text operational/private content; the authoritative record keeps it.
+    await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: previous ? "safety.record.updated" : "safety.record.created", entityType: "SafetyRecord", entityId: recordId, before: previous ? { status: previous.status, dueAt: previous.dueAt } : undefined, after: { kind: input.kind, status: input.status, dueAt: input.dueAt } }, tx);
+    return { recordId };
   });
+  if ("error" in result) return { error: result.error! };
   revalidatePath("/safety");
-  redirect(`/safety/records/${record.id}`);
+  revalidatePath("/safety/assurance");
+  revalidatePath("/safety/workplace");
+  revalidatePath(`/safety/records/${result.recordId}`);
+  redirect(`/safety/records/${result.recordId}`);
 }

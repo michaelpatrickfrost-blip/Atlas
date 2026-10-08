@@ -22,6 +22,7 @@ export const safetyManifest: ModuleManifest = {
   navigation: [
     { label: "Today", href: "/safety", capability: C.todayRead },
     { label: "Risk", href: "/safety/risk", capability: C.riskRead },
+    { label: "Workplace", href: "/safety/workplace", capability: C.riskRead },
     { label: "Incidents", href: "/safety/incidents", anyOf: [C.incidentRead, C.incidentReport] },
     { label: "Control", href: "/safety/control", anyOf: [C.permitRequest, C.holdManage, C.isolationApply, C.equipmentRead] },
     { label: "Assurance", href: "/safety/assurance", anyOf: [C.inspectionExecute, C.auditExecute, C.actionRead, C.statutoryManage, C.documentRead, C.competenceRead] },

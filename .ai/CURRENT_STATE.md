@@ -1,5 +1,21 @@
 # Atlas current state
 
+## 8 October 2026 — Safety workplace register (verification in progress)
+
+- Adds `/safety/workplace`, 29 record types, guided findings, contacts/location,
+  review date, follow-up/evidence and editable record detail. Search/filter,
+  completion evidence, timestamp stale-save protection and atomic metadata audit.
+- Preserves restricted-record policy, requires risk read/create capabilities,
+  active module for mutation and signed tenant scope. Existing unknown JSON stays.
+  Safety Today includes overdue reviews and excludes completed workplace work.
+- Paths: `src/modules/safety/domain/workplace.ts`, `components/workplace-form.tsx`,
+  `services/commands.ts`, `services/queries.ts`, Safety pages/manifest;
+  `tests/safety-workplace*`; `docs/modules/SAFETY.md`.
+- Checks: production build and strict TypeScript passed; full suite 768 passed,
+  22 integration skips; Safety-scoped ESLint and diff whitespace passed. Global
+  lint reports 16 existing errors/24 warnings outside Safety. Deployment/live
+  acceptance pending; server-only synthetic browser harness added.
+
 ## Marketing campaign information and workspace — 8 October 2026
 
 - Michael requested research into established marketing platforms and a stronger

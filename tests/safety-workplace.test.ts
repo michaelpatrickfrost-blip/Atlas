@@ -1,0 +1,7 @@
+import { expect, it } from 'vitest';
+import { workplaceInput, recordDue } from '@/modules/safety/domain/workplace';
+function form(values:Record<string,string>={}){const f=new FormData();for(const [k,v] of Object.entries({kind:'DSE_ASSESSMENT',title:'Workstation review',...values}))f.set(k,v);return f;}
+it.each(['2026-02-30','nonsense','2026-13-01'])('rejects impossible review dates: %s',dueAt=>expect(()=>workplaceInput(form({dueAt}))).toThrow('valid review date'));
+it('requires completion evidence without treating completion as safety approval',()=>{expect(()=>workplaceInput(form({status:'COMPLETE'}))).toThrow('completed or checked');expect(workplaceInput(form({status:'COMPLETE',completionNote:'Reviewed with the worker.'})).status).toBe('COMPLETE');expect(()=>workplaceInput(form({status:'APPROVED'}))).toThrow('available record status');});
+it('refuses unknown record types and oversized payload',()=>{expect(()=>workplaceInput(form({kind:'CLINICAL_NOTES'}))).toThrow('record type');expect(()=>workplaceInput(form({finding1:'a'.repeat(6001)}))).toThrow('too long');});
+it('handles review dates as whole UTC calendar days and excludes completed records from overdue',()=>{const now=new Date('2026-10-08T15:00:00Z');expect(recordDue(new Date('2026-10-08Z'),'OPEN',now)).toBe('Due within 30 days');expect(recordDue(new Date('2026-10-07Z'),'OPEN',now)).toBe('Overdue');expect(recordDue(new Date('2026-10-07Z'),'COMPLETE',now)).toBe('Complete');expect(recordDue(null,'OPEN',now)).toBe('No review date');});

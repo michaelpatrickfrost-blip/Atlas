@@ -37,6 +37,7 @@ export default async function SafetyToday() {
     );
   }
   const attention = [
+    ...board.records.filter(record => record.dueAt && record.dueAt < new Date(new Date().toISOString().slice(0, 10))).map(record => ({ href: `/safety/records/${record.id}`, title: record.title, meta: "Review overdue", tone: "attention" as const, detail: record.reference })),
     ...board.holds.map((hold) => ({ href: `/safety/control/holds/${hold.id}`, title: hold.targetLabel, meta: "Do not use", tone: "stop" as const, detail: hold.reason })),
     ...board.overdueActions.map((action) => ({ href: "/safety/assurance", title: action.title, meta: action.priority, tone: "stop" as const, detail: action.reference })),
     ...board.checks.map((check) => ({ href: `/safety/equipment/${check.id}`, title: check.assetLabel, meta: check.kind, tone: "attention" as const, detail: check.nextDueAt ? `Due ${check.nextDueAt.toLocaleDateString("en-GB", { weekday: "long" })}` : "Due" })),

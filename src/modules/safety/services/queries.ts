@@ -29,7 +29,7 @@ export async function todayBoard(session: Session) {
     allow(C.holdManage) || allow(C.equipmentRead) || allow(C.todayRead) ? db.safetyHold.findMany({ where: { organisationId, status: "ACTIVE" }, orderBy: { placedAt: "desc" }, take: 20 }) : [],
     allow(C.competenceRead) || allow(C.todayRead) ? db.safetyCompetence.findMany({ where: { organisationId, expiresAt: { lte: month } }, orderBy: { expiresAt: "asc" }, take: 20 }) : [],
     allow(C.riskRead) ? db.safetyReviewRequest.findMany({ where: { organisationId, status: "OPEN" }, take: 20, include: { risk: true } }) : [],
-    allow(C.riskRead) || allow(C.todayRead) ? db.safetyRecord.findMany({ where: { organisationId, ...(sensitive || allow(C.healthSurveillanceRead) ? {} : { sensitive: false }), status: { not: "CLOSED" } }, orderBy: { dueAt: "asc" }, take: 30 }) : [],
+    allow(C.riskRead) ? db.safetyRecord.findMany({ where: { organisationId, ...(sensitive || allow(C.healthSurveillanceRead) ? {} : { sensitive: false }), status: { notIn: ["CLOSED", "COMPLETE"] }, dueAt: { lte: month } }, orderBy: { dueAt: "asc" }, take: 30 }) : [],
   ]);
   const people = session.capabilities.has("people.employee.read") ? await db.employee.findMany({ where: { id: { in: competences.map((item) => item.employeeId) }, organisationId }, select: { id: true, firstName: true, lastName: true } }) : [];
   const names = new Map(people.map((person) => [person.id, `${person.firstName} ${person.lastName}`]));

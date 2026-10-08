@@ -248,6 +248,7 @@ export async function safetyAttention(session: Session): Promise<AttentionItem[]
   if (!session.capabilities.has(C.todayRead)) return [];
   const board = await todayBoard(session);
   return [
+    ...board.records.filter(record => record.dueAt && record.dueAt < new Date(new Date().toISOString().slice(0, 10))).slice(0, 3).map(record => ({ id: record.id, label: `${record.reference} workplace review is overdue`, href: `/safety/records/${record.id}`, severity: "warning" as const })),
     ...board.holds.slice(0, 3).map((hold) => ({ id: hold.id, label: `${hold.targetLabel} is on safety hold`, href: `/safety/control/holds/${hold.id}`, severity: "critical" as const })),
     ...board.overdueActions.slice(0, 3).map((action) => ({ id: action.id, label: `${action.reference} is overdue`, href: "/safety/assurance", severity: "warning" as const })),
     ...board.checks.slice(0, 2).map((check) => ({ id: check.id, label: `${check.assetLabel} examination is due`, href: `/safety/equipment/${check.id}`, severity: "warning" as const })),
@@ -258,13 +259,15 @@ export async function searchSafety(session: Session, query: string): Promise<Sea
   const q = query.trim();
   if (q.length < 2 || !session.capabilities.has(C.todayRead)) return [];
   const organisationId = session.organisationId;
-  const [risks, incidents, permits, holds] = await Promise.all([
-    db.safetyRisk.findMany({ where: { organisationId, OR: [{ reference: { contains: q, mode: "insensitive" } }, { title: { contains: q, mode: "insensitive" } }] }, take: 5 }),
-    db.safetyIncident.findMany({ where: { organisationId, confidential: canSeeSensitive(session) ? undefined : false, OR: [{ reference: { contains: q, mode: "insensitive" } }, { summary: { contains: q, mode: "insensitive" } }] }, take: 5 }),
-    db.safetyPermit.findMany({ where: { organisationId, OR: [{ reference: { contains: q, mode: "insensitive" } }, { title: { contains: q, mode: "insensitive" } }] }, take: 5 }),
+  const [risks, incidents, permits, holds, records] = await Promise.all([
+    session.capabilities.has(C.riskRead) ? db.safetyRisk.findMany({ where: { organisationId, OR: [{ reference: { contains: q, mode: "insensitive" } }, { title: { contains: q, mode: "insensitive" } }] }, take: 5 }) : [],
+    session.capabilities.has(C.incidentRead) || canSeeSensitive(session) ? db.safetyIncident.findMany({ where: { organisationId, confidential: canSeeSensitive(session) ? undefined : false, OR: [{ reference: { contains: q, mode: "insensitive" } }, { summary: { contains: q, mode: "insensitive" } }] }, take: 5 }) : [],
+    session.capabilities.has(C.permitRequest) || session.capabilities.has(C.permitAuthorise) ? db.safetyPermit.findMany({ where: { organisationId, OR: [{ reference: { contains: q, mode: "insensitive" } }, { title: { contains: q, mode: "insensitive" } }] }, take: 5 }) : [],
     db.safetyHold.findMany({ where: { organisationId, OR: [{ reference: { contains: q, mode: "insensitive" } }, { targetLabel: { contains: q, mode: "insensitive" } }] }, take: 5 }),
+    session.capabilities.has(C.riskRead) ? db.safetyRecord.findMany({ where: { organisationId, ...(canSeeSensitive(session) || session.capabilities.has(C.healthSurveillanceRead) ? {} : { sensitive: false }), OR: [{ reference: { contains: q, mode: "insensitive" } }, { title: { contains: q, mode: "insensitive" } }] }, take: 5 }) : [],
   ]);
   return [
+    ...records.map(record => ({ id: record.id, title: record.reference, subtitle: record.title, href: `/safety/records/${record.id}`, group: "Safety" })),
     ...risks.map((risk) => ({ id: risk.id, title: risk.reference, subtitle: risk.title, href: `/safety/risk/${risk.id}`, group: "Safety" })),
     ...incidents.map((incident) => ({ id: incident.id, title: incident.reference, subtitle: incident.summary, href: `/safety/incidents/${incident.id}`, group: "Safety" })),
     ...permits.map((permit) => ({ id: permit.id, title: permit.reference, subtitle: permit.title, href: `/safety/control/permits/${permit.id}`, group: "Safety" })),

@@ -113,7 +113,9 @@ Writes use an expected `updatedAt` condition, preserve unknown legacy JSON, and
 record metadata-only audit in the same transaction. Explicit expected validation
 errors return safe results and retain entered work in production. Unexpected
 server errors remain protected. Safety Today shows overdue workplace reviews and
-excludes completed records from upcoming work.
+excludes completed records from upcoming work. Home attention includes overdue
+workplace reviews; global Safety search includes accessible workplace records and
+checks entity capabilities before querying risks, incidents or permits.
 
 Design references, consulted 8 October 2026:
 - [HSE risk assessment steps](https://www.hse.gov.uk/simple-health-safety/risk/steps-needed-to-manage-risk.htm): findings, controls, responsibility, further work and review.

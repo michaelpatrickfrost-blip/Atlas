@@ -11,10 +11,16 @@
 - Paths: `src/modules/safety/domain/workplace.ts`, `components/workplace-form.tsx`,
   `services/commands.ts`, `services/queries.ts`, Safety pages/manifest;
   `tests/safety-workplace*`; `docs/modules/SAFETY.md`.
-- Checks: production build and strict TypeScript passed; full suite 768 passed,
+- Checks: production build and strict TypeScript passed; full suite 771 passed,
   22 integration skips; Safety-scoped ESLint and diff whitespace passed. Global
   lint reports 16 existing errors/24 warnings outside Safety. Deployment/live
-  acceptance pending; server-only synthetic browser harness added.
+  acceptance in progress; server-only synthetic browser harness added. Initial
+  live create/audit/overdue checks passed; explicit accessible field names added
+  after browser exact-label checks exposed ambiguous implicit select labels.
+  Initial release ba2d17c deployed; follow-up production build, 32 focused tests
+  and full 771-test suite passed; label/search deployment pending. Adds
+  workplace records to Home attention/global search; fixes confirmed pre-existing
+  Safety search queries that ran without entity read capabilities.
 
 ## Marketing campaign information and workspace — 8 October 2026
 

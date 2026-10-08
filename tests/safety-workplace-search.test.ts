@@ -1,0 +1,10 @@
+import { beforeEach, expect, it, vi } from 'vitest';
+const m=vi.hoisted(()=>({risk:vi.fn(),incident:vi.fn(),permit:vi.fn(),hold:vi.fn(),record:vi.fn()}));
+vi.mock('@/core/db/client',()=>({db:{safetyRisk:{findMany:m.risk},safetyIncident:{findMany:m.incident},safetyPermit:{findMany:m.permit},safetyHold:{findMany:m.hold},safetyRecord:{findMany:m.record}}}));
+import { searchSafety } from '@/modules/safety/services/queries';
+import type { Session } from '@/core/auth/session';
+const session=(caps:string[])=>({organisationId:'company',userId:'user',capabilities:new Set(caps)} as Session);
+beforeEach(()=>{vi.clearAllMocks();for(const fn of Object.values(m))fn.mockResolvedValue([]);});
+it('does not query risk, incident, permit or workplace information without their read capability',async()=>{await searchSafety(session(['safety.today.read']),'review');expect(m.risk).not.toHaveBeenCalled();expect(m.incident).not.toHaveBeenCalled();expect(m.permit).not.toHaveBeenCalled();expect(m.record).not.toHaveBeenCalled();});
+it('scopes workplace search to signed tenant and excludes restricted records for ordinary readers',async()=>{m.record.mockResolvedValue([{id:'record',reference:'SFR-001',title:'Review'}]);const found=await searchSafety(session(['safety.today.read','safety.risk.read']),'review');expect(m.record.mock.calls[0][0].where).toMatchObject({organisationId:'company',sensitive:false});expect(found).toContainEqual(expect.objectContaining({href:'/safety/records/record'}));});
+it('permits restricted workplace search only with explicit sensitive read access',async()=>{await searchSafety(session(['safety.today.read','safety.risk.read','safety.health_surveillance.read']),'review');expect(m.record.mock.calls[0][0].where).not.toHaveProperty('sensitive');expect(m.incident).not.toHaveBeenCalled();});

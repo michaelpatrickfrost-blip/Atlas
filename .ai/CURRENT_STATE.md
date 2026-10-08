@@ -33,7 +33,7 @@
   100 browser pages and 99 safe toggles with zero findings. All 42 active report
   summaries across both CLI pages were inspected. The three newer generic reports
   are now NEEDS_AI with exact evidence, investigated paths, blockers and next actions:
-  exact cause correlation: stream closed early on company render (digest
+  stream closed early on company render (digest
   1130916247), aborted home action/ECONNRESET (2313178152), and staff-page generic
   rejection. A reproduced copy defect does not prove the latter's original click.
   Atomic deployment reliability and older unresolved diagnostics remain open.

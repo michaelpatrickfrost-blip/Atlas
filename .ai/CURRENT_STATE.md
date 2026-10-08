@@ -9,16 +9,20 @@
   and cross-app data/integration checks still respect source app availability.
 - Applied the same staff exception to direct app gates for Audit, Marketing,
   Plan, Safety and Customer Service. Added targeted launcher acceptance requiring
-  an authenticated Atlas staff identity and at least one disabled/unentitled app
-  to both the launcher check and candidate release switch test.
+  an authenticated Atlas staff identity in the internal workspace, where apps are
+  disabled by default; the candidate release switch test checks its launcher and
+  opens a disabled app without writes.
 - Paths: `src/core/modules/runtime.ts`, `src/core/modules/access.ts`,
   `src/modules/{audit,marketing,plan,safety,service}/services/*`,
   `tests/module-entitlements.test.ts`,
-  `scripts/guardian/{check-app-launcher,check-release-pages}.ts`,
+  `scripts/guardian/check-app-launcher.ts`, `scripts/deploy/check-release-switch.sh`,
   `docs/{ARCHITECTURE,PERMISSIONS,SYSTEM_WIRING}.md`, `.ai/DECISIONS.md`.
 - Verification: focused module entitlement tests (4 passed), scoped ESLint,
   `npx tsc --noEmit`, production `npm run build` and `git diff --check` passed.
-  VPS candidate preparation, staging and live employee acceptance are pending.
+  First staging attempt stopped at its fixture gate because the QA company already
+  had every app enabled; no runtime switch occurred. Staging now checks the staff
+  member's internal workspace, where apps are off by default. Candidate
+  preparation, staging switch and live employee acceptance are pending.
 
 ## 8 October 2026 — Atlas Admin Test-company deletion (deployed and verified)
 

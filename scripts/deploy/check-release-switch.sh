@@ -79,6 +79,10 @@ advance
 node "$NEW/scripts/deploy/release-files.mjs" link "$NEW" "$POINTER"
 write_unit '/usr/bin/node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3011' control-group
 start "$NEW"
+if ! (cd "$NEW"; ATLAS_RELEASE_TEST_URL=http://127.0.0.1:3010 ATLAS_GUARDIAN_RELEASE_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-app-launcher.ts) > "$RUN/staff-launcher.log" 2>&1; then
+  cat "$RUN/staff-launcher.log"
+  exit 1
+fi
 write_unit '/usr/bin/node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3011' mixed
 curl -fsS http://127.0.0.1:3011/api/health/release | node -e 'let b="";process.stdin.on("data",v=>b+=v);process.stdin.on("end",()=>{if(JSON.parse(b).revision!==process.argv[1])process.exit(1)})' "$REV"
 advance

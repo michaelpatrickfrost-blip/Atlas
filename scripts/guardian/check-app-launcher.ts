@@ -11,9 +11,11 @@ import { getImplementedModules } from "../../src/core/modules/registry";
 
 async function main() {
   assert(process.platform === "linux" && process.env.ATLAS_GUARDIAN_RELEASE_TEST === "1");
-  assert(process.env.SESSION_SECRET && process.env.ATLAS_GUARDIAN_USER_ID && process.env.ATLAS_GUARDIAN_ORGANISATION_ID);
-  const base = "https://atlassystem.online";
-  const membership = await db.membership.findFirstOrThrow({ where: { userId: process.env.ATLAS_GUARDIAN_USER_ID, organisationId: process.env.ATLAS_GUARDIAN_ORGANISATION_ID, active: true }, include: { user: true } });
+  assert(process.env.SESSION_SECRET && process.env.ATLAS_GUARDIAN_USER_ID);
+  const base = process.env.ATLAS_RELEASE_TEST_URL ?? "https://atlassystem.online";
+  const baseUrl = new URL(base);
+  assert((baseUrl.protocol === "https:" && baseUrl.hostname === "atlassystem.online") || (baseUrl.protocol === "http:" && baseUrl.hostname === "127.0.0.1"));
+  const membership = await db.membership.findFirstOrThrow({ where: { userId: process.env.ATLAS_GUARDIAN_USER_ID, active: true, organisation: { kind: "INTERNAL", status: "ACTIVE" } }, include: { user: true } });
   const session = await sessionForUser(membership.organisationId, membership.userId);
   assert(session);
   assert(session.capabilities.has(ATLAS_CAPABILITIES.staff), "launcher acceptance requires an active Atlas staff identity");
@@ -22,6 +24,8 @@ async function main() {
   const enabledApps = await getEnabledModuleIds(session.organisationId);
   assert(expectedApps.some(module => !enabledApps.has(module.id)), "launcher acceptance requires at least one disabled or unentitled app");
   assert.deepEqual(apps.map(module => module.id), expectedApps.map(module => module.id), "Atlas staff should see every implemented app they can access");
+  const disabledApp = apps.find(module => !enabledApps.has(module.id));
+  assert(disabledApp);
   const token = jwt.sign({ userId: membership.userId, organisationId: membership.organisationId, authVersion: membership.user.authVersion, sessionVersion: membership.sessionVersion }, process.env.SESSION_SECRET, { expiresIn: "10m", algorithm: "HS256" });
   const browser = await chromium.launch();
   let failures = 0;
@@ -32,9 +36,12 @@ async function main() {
     const page = await context.newPage();
     page.on("pageerror", () => failures++);
     page.on("response", response => { if (response.url().includes("/_next/") && response.status() >= 400) failures++; });
+    const disabledResponse = await page.goto(disabledApp.rootPath, { waitUntil: "networkidle" });
+    assert(disabledResponse && disabledResponse.status() < 500, "Atlas staff must be able to open an app disabled in the internal workspace.");
+    await expect(page.locator("main")).not.toContainText(/disabled in your workspace|not enabled for this company/i);
     for (const width of [1440, 768, 390]) {
       await page.setViewportSize({ width, height: 1000 });
-      await page.goto("/", { waitUntil: "networkidle" });
+      await page.goto(`${base}/`, { waitUntil: "networkidle" });
       await expect(page).toHaveURL(`${base}/home`);
       await expect(page.getByRole("heading", { name: "Your apps", exact: true })).toBeVisible();
       const nav = page.getByRole("navigation", { name: "Apps", exact: true });

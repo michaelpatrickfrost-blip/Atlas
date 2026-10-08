@@ -22,7 +22,9 @@
   98 migrations current, service healthy/public login 200. Private pre-deploy DB and
   service-files backup `atlas-pre-deploy-20261008-142820` retained. First live run
   stopped on test reading a collapsed baseline table; test now opens comparison.
-  Fixture companies suspended and credentials revoked; full rerun pending.
+  Corrected run passed 14 UI assertions including save/reload/privacy/mobile;
+  browser error count stopped acceptance. Error capture added for diagnosis.
+  Fixture companies suspended and credentials revoked on every run; full rerun pending.
 - Next: deploy this compatible release, run central synthetic browser/security
   acceptance, preserve fixture history and revoke access; integrate owned primary files.
 

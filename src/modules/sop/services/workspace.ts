@@ -52,7 +52,7 @@ export async function createSopCycle(form:FormData){
  const currency=text(form,'currency')||'GBP';if(!/^[A-Z]{3}$/.test(currency))throw Error('Choose a currency.');
  const cycle=await db.sopCycle.create({data:{organisationId:session.organisationId,name,startsOn:new Date(`${start}-01T00:00:00Z`),endsOn:end,currency,ownerUserId:session.userId,settings:DEFAULT_SETTINGS,workflow:reviewWorkflow([],session.userName)}});
  await db.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:'sop.cycle.created',entityType:'SopCycle',entityId:cycle.id,after:{name,horizon}}});
- revalidatePath('/sop');redirect(`/sop?cycle=${cycle.id}`);
+ revalidatePath('/sop');redirect(`/sop?cycle=${cycle.id}&view=setup`);
 }
 export async function configureSopCycle(form:FormData){
  const session=await requireSession();
@@ -86,7 +86,7 @@ export async function generateSopForecast(form:FormData){
  const versionId=crypto.randomUUID();
  const name=text(form,'name')||`Consensus ${new Date().toISOString().slice(0,16).replace('T',' ')}`;
  await db.$transaction(async tx=>{for(const plan of data.planRevisions){const unchanged=await tx.businessPlan.findFirst({where:{id:plan.id,organisationId:session.organisationId,revision:plan.revision},select:{id:true}});if(!unchanged)throw Error('A connected plan changed while the forecast was calculating. Refresh and generate again.');}const changed=await tx.sopCycle.updateMany({where:{id:cycle.id,organisationId:session.organisationId,revision:Number(form.get('revision'))},data:{revision:{increment:1},workflow:reviewWorkflow(cycle.workflow,session.userName,versionId)}});if(changed.count!==1)throw Error('Cycle inputs changed. Refresh before generating.');const version=await tx.sopVersion.create({data:{id:versionId,organisationId:session.organisationId,cycleId:cycle.id,name,sourceRevision:cycle.inputRevision,payload:JSON.parse(JSON.stringify(payload)),requiredCapabilities:[...new Set([...data.requiredCapabilities,...(session.capabilities.has('sales.pipeline.manage')?['sales.pipeline.manage']:[])])],requiredModules:data.requiredModules,createdByUserId:session.userId}});await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:'sop.forecast.generated',entityType:'SopVersion',entityId:version.id,after:{name,rows:payload.rows.length,settings:config}}});});
- revalidatePath('/sop');redirect(`/sop?cycle=${cycle.id}&version=${versionId}&view=demand`);
+ revalidatePath('/sop');redirect(`/sop?cycle=${cycle.id}&version=${versionId}`);
 }
 export async function approveSopVersion(form:FormData){
  const session=await requireSession();
@@ -187,7 +187,7 @@ export async function promoteSopScenario(form:FormData){
  if(!version||version.kind!=='scenario')throw Error('Choose a private scenario to propose.');
  const reason=text(form,'reason');if(!reason||reason.length>2000)throw Error('Explain why this scenario should become the proposed consensus.');
  const proposedId=await saveDerivedConsensus(session,cycle,version,JSON.parse(JSON.stringify(version.payload)),text(form,'name')||`Proposed ${version.name}`,reason,Number(form.get('revision')));
- revalidatePath('/sop');redirect(`/sop?cycle=${cycle.id}&version=${proposedId}&view=cycle`);
+ revalidatePath('/sop');redirect(`/sop?cycle=${cycle.id}&version=${proposedId}`);
 }
 export async function overrideSopDemand(form:FormData){
  const session=await requireSession();

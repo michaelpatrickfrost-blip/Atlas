@@ -1,5 +1,29 @@
 # Atlas current state
 
+## 8 October 2026 — S&OP guided usability prepared
+
+- Researched SAP, Oracle and Kinaxis primary guidance; confirmed blank first use,
+  unexplained review rows, dense setup/decision screen and technical generation landing.
+  `docs/plans/SOP_USABILITY_RESEARCH.md` records findings and boundaries.
+- New guided Start here, selected monthly decision brief, basic Setup with collapsed
+  advanced controls, explained review checklists/evidence, owned Decisions & actions,
+  independent How-to/glossary/example. Cycle creation opens Setup; generation and
+  scenario promotion return home. Grouped navigation/old cycle compatibility retained.
+- Guidance follows selected version, cycle input revision and exact seven reviews;
+  unlike units kept separate and unknown supply/target/margin not fabricated.
+  Opening a view does not approve it. Existing server guards, immutable versions,
+  source access/signature checks, publication/MRP contracts and central records intact.
+  No new schema/capabilities/business store or calculation changes.
+- Paths: SOP components/domain guidance/manifest, three service redirects,
+  `tests/sop-guidance.test.tsx`, `scripts/check-sop-usability.ts`, owning guide/research.
+- Initial checks: 57 focused checks, full suite 928 pass / 22 skips, production
+  build, separate TypeScript and scoped ESLint (fixture prefer-const corrected).
+  Final compatible release validation/deployment/live acceptance still pending.
+- Next: preserve newly deployed concurrent admin cleanup commits, rebase and rebuild,
+  deploy, run old S&OP calculation/publication acceptance and new actual guided browser
+  journey, revoke synthetic fixture access, integrate owned shared-project files.
+
+
 ## 8 October 2026 — Projects detailed Gantt deployed and verified
 
 - Runtime `9d5a460` live at https://atlassystem.online. Project **Plan & Gantt**

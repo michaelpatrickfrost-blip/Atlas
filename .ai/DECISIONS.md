@@ -1002,3 +1002,13 @@ production financial immutability and all UPDATE guards remain. Existing retaine
 acceptance evidence is not deleted by implementing this feature. A durable platform
 run and audit survive the deleted companies; file removal follows commit and records
 retries rather than risking dangling database attachments or falsely claiming clean.
+
+## 8 October 2026 — S&OP guides decisions without bypassing approval
+
+The S&OP home must explain the next real business action and the selected monthly
+picture. Keep Setup, review checklists and Decisions & actions distinct; advanced
+forecast controls are secondary. Exact-version reviews, source checks and explicit
+approval/publication remain authoritative. A page visit is not a completed review.
+Missing evidence stays unavailable, unlike units stay separate and agreed demand
+stays visible beside supply cover. Help must remain accessible without snapshot
+source rights. No second planning store or sample business data for onboarding.

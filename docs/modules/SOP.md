@@ -1,5 +1,23 @@
 # Sales & Operations Planning
 
+## 8 October — guided workflow
+
+Start here explains what to do next from the selected version's actual status,
+cycle input revision and seven exact-version reviews. It leads into guided Setup,
+review evidence/checklists, owned Decisions & actions, then explicit approval and
+Manufacturing release. Creation opens Setup; generation and scenario promotion
+return to the guided home. Whole-horizon detail remains expandable.
+
+The monthly decision brief keeps units separate and missing targets, supply or
+margin unavailable. Help includes an unsaved example, a glossary and complete
+first-use instructions; it does not require access to a forecast snapshot.
+Setup retains advanced defaults behind an expandable section. New navigation
+separates work areas; old `view=cycle` remains compatible. All existing source,
+version, tenant and publication guards remain authoritative. No schema change.
+Research/design rationale: [S&OP usability research](../plans/SOP_USABILITY_RESEARCH.md).
+Compatible release validation and live acceptance are pending for this update.
+
+
 7 October 2026. Connected S&OP workflows are deployed and verified on the live server;
 advanced master-spec coverage remains below. See `SOP_ACCEPTANCE.md`.
 The supplied master specification is preserved in `docs/plans/SOP_IMPLEMENTATION_SPEC.md`.

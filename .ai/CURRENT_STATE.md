@@ -1,5 +1,18 @@
 # Atlas current state
 
+## 10 October 2026 — Studio deployment disk blocker safely recovered
+
+First af1338b deploy stopped during remote Git fetch: root disk 100%/zero space;
+no candidate build, migration or activation. Under both original deploy locks,
+cleared only disposable .next/cache contents from 86 older releases, excluding
+current 2ef5b4c and rollback 36d0d2d. Realpath checks preserved symlink boundaries.
+All release source/build outputs/assets, database/private files, backups and private
+acceptance evidence retained. Disk now 142G used/51G free (74%); public health and
+current/previous pointers unchanged. No application schema/data mutation.
+Retrying the same pinned af1338b Studio source; queued behind a separate 70ca23e
+Dashboard release under existing locks. Real Studio acceptance pending; no live
+cohort/decoder claim. Local retry log /tmp/atlas-studio-cohort-codec-retry.txt.
+
 ## 10 October 2026 — Studio cohort/decoder candidate with stable acceptance
 
 Preserved exact live Manufacturing/People 2ef5b4c, applied migrations unchanged.

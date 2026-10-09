@@ -312,6 +312,11 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
+First af1338b deployment stopped at remote fetch with root disk full. RESOLVED:
+cleared only disposable caches in 86 older releases under original locks, keeping
+current/rollback caches and all source/assets/backups/evidence. 51G free/74% used;
+public health unchanged. Same source retry and runtime acceptance pending.
+
 Full test/lint baseline failures are reproduced unchanged; focused checks pass.
 Earlier candidate publication/accessible-label/test-selector failures were fixed
 and rerun successfully. Home screenshot ownership interrupted the first combined
@@ -344,6 +349,10 @@ These checks derive from Sections 5–6, 14, 19, 25–28; no whole-system gate u
 prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
+
+Check the queued exact af1338b retry in /tmp/atlas-studio-cohort-codec-retry.txt.
+If it stops at ancestry after another release, preserve only that actual accepted
+source and regenerate/test/build before a new pinned attempt. No forced replacement.
 
 Deploy the exact reviewed cohort/decoder source preserving live 2ef5b4c with
 ATLAS_RELEASE_ACCEPTANCE=studio. Existing deployer must prove sealed candidate

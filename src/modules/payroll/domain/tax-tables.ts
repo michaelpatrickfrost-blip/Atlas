@@ -11,11 +11,8 @@ export type TaxYearTable = {
   /** Ascending bands: taxable income above `from` up to the next band's `from`
    *  is taxed at `rate`. The final band has no upper bound. */
   payeBands: { from: number; rate: number }[];
-  /** NI category A thresholds/rate, annualised. Other categories (B, C, H, M,
-   *  etc.) are out of scope for the first cut — category A covers the
-   *  overwhelming majority of employees and is the one the engine computes;
-   *  any other category is calculated at the category-A rate with a visible
-   *  note on the payslip rather than silently wrong. */
+  /** Reference NI thresholds/rates. ni.ts applies the recorded category and
+   * HMRC published weekly/monthly thresholds; unsupported categories fail. */
   niPrimaryThreshold: number;
   niUpperEarningsLimit: number;
   niMainRate: number;
@@ -30,7 +27,7 @@ export type TaxYearTable = {
   smpWeeklyRateAfterSixWeeks: number;
   smpEarningsReplacementRate: number; // first 6 weeks: this % of average weekly earnings
   /** Student loan plan thresholds (annual) and the single repayment rate. */
-  studentLoanThresholds: Record<"PLAN_1" | "PLAN_2" | "PLAN_4" | "POSTGRADUATE", number>;
+  studentLoanThresholds: Record<"PLAN_1" | "PLAN_2" | "PLAN_4" | "PLAN_5" | "POSTGRADUATE", number>;
   studentLoanRate: number;
   postgraduateLoanRate: number;
 };
@@ -50,14 +47,14 @@ export const TAX_YEAR_TABLES: Record<string, TaxYearTable> = {
     niUpperEarningsLimit: 50270,
     niMainRate: 0.08,
     niUpperRate: 0.02,
-    niSecondaryThreshold: 9100,
-    niEmployerRate: 0.138,
+    niSecondaryThreshold: 5000,
+    niEmployerRate: 0.15,
     pensionQualifyingLower: 6240,
     pensionQualifyingUpper: 50270,
-    sspWeeklyRate: 116.75,
-    smpWeeklyRateAfterSixWeeks: 184.03,
+    sspWeeklyRate: 123.25,
+    smpWeeklyRateAfterSixWeeks: 194.32,
     smpEarningsReplacementRate: 0.9,
-    studentLoanThresholds: { PLAN_1: 24990, PLAN_2: 27295, PLAN_4: 31395, POSTGRADUATE: 21000 },
+    studentLoanThresholds: { PLAN_1: 26900, PLAN_2: 29385, PLAN_4: 33795, PLAN_5: 25000, POSTGRADUATE: 21000 },
     studentLoanRate: 0.09,
     postgraduateLoanRate: 0.06,
   },

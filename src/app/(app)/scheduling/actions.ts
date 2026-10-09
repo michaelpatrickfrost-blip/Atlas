@@ -67,6 +67,7 @@ export async function createBulkShifts(form: FormData) {
       const overlap=await tx.rotaShift.count({where:{organisationId:session.organisationId,employeeId,status:{not:"CANCELLED"},startsAt:{lt:endsAt},endsAt:{gt:startsAt}}});
       if (overlap) throw new Error(`Overlapping shift for ${live.firstName} ${live.lastName} on ${day}. No shifts were saved.`);
       const lastDay=londonDate(new Date(endsAt.getTime()-1));
+      if(await tx.employeeAvailability.count({where:{organisationId:session.organisationId,employeeId,startsAt:{lt:endsAt},endsAt:{gt:startsAt}}}))throw new Error("The employee marked this time unavailable. No shifts were saved.");
       const absence=await tx.absenceRecord.count({where:{organisationId:session.organisationId,employeeId,status:"APPROVED",startDate:{lte:dateOnly(lastDay)},endDate:{gte:dateOnly(day)}}});
       if (absence) throw new Error(`${live.firstName} ${live.lastName} is absent on ${day}. No shifts were saved.`);
       await tx.rotaShift.create({data:{organisationId:session.organisationId,employeeId,startsAt,endsAt,breakMinutes,status,role:String(form.get("role") ?? "").trim().slice(0,100)||null,location:String(form.get("location") ?? "").trim().slice(0,100)||null,notes:String(form.get("instructions") ?? "").trim().slice(0,3000)||null,tasks:{create:tasks.map(title=>({organisationId:session.organisationId,title}))}}});
@@ -87,6 +88,7 @@ export async function setScheduledShift(id: string, form: FormData) {
   await db.$transaction(async tx=>{
     const shift=await tx.rotaShift.findFirstOrThrow({where:{id,organisationId:session.organisationId,employeeId:{in:roster.map(e=>e.id)},status:{not:"CANCELLED"}}});
     if(status==="CONFIRMED"){
+      if(await tx.employeeAvailability.count({where:{organisationId:session.organisationId,employeeId:shift.employeeId,startsAt:{lt:shift.endsAt},endsAt:{gt:shift.startsAt}}}))throw new Error("This employee marked the shift time unavailable.");
       const conflict=await tx.absenceRecord.count({where:{organisationId:session.organisationId,employeeId:shift.employeeId,status:"APPROVED",startDate:{lte:dateOnly(londonDate(new Date(shift.endsAt.getTime()-1)))},endDate:{gte:dateOnly(londonDate(shift.startsAt))}}});
       if(conflict)throw new Error("Approved absence now conflicts with this shift. Cancel it and reschedule.");
     }
@@ -118,7 +120,9 @@ export async function editScheduledShift(id: string, form: FormData) {
     if(!await tx.employee.findFirst({where:{id:shift.employeeId,organisationId:session.organisationId,status:{notIn:["LEFT","OFFBOARDING"]}}}))throw new Error("This employee is no longer available for scheduling.");
     if(await tx.rotaShift.count({where:{id:{not:id},organisationId:session.organisationId,employeeId:shift.employeeId,status:{not:"CANCELLED"},startsAt:{lt:endsAt},endsAt:{gt:startsAt}}}))throw new Error("This shift overlaps another shift. Choose a different time.");
     if(await tx.absenceRecord.count({where:{organisationId:session.organisationId,employeeId:shift.employeeId,status:"APPROVED",startDate:{lte:dateOnly(londonDate(new Date(endsAt.getTime()-1)))},endDate:{gte:dateOnly(day)}}}))throw new Error("Approved time off overlaps this shift.");
-    await tx.rotaShift.update({where:{id,organisationId:session.organisationId},data:{startsAt,endsAt,breakMinutes,role:String(form.get("role")??"").trim().slice(0,100)||null,location:String(form.get("location")??"").trim().slice(0,100)||null,notes:String(form.get("instructions")??"").trim().slice(0,3000)||null,status:shift.status==="CONFIRMED"||form.get("publish")==="on"?"CONFIRMED":"SCHEDULED"}});
+    if(await tx.employeeAvailability.count({where:{organisationId:session.organisationId,employeeId:shift.employeeId,startsAt:{lt:endsAt},endsAt:{gt:startsAt}}}))throw new Error("The employee marked this time unavailable.");
+    if(await tx.rotaActivity.count({where:{organisationId:session.organisationId,shiftId:id,OR:[{startsAt:{lt:startsAt}},{endsAt:{gt:endsAt}}]}}))throw new Error("Replan activities before changing the shift boundaries.");
+    await tx.rotaShift.update({where:{id,organisationId:session.organisationId},data:{startsAt,endsAt,breakMinutes,breakStartsAt:startsAt.getTime()===shift.startsAt.getTime()&&endsAt.getTime()===shift.endsAt.getTime()&&breakMinutes===shift.breakMinutes?shift.breakStartsAt:null,role:String(form.get("role")??"").trim().slice(0,100)||null,location:String(form.get("location")??"").trim().slice(0,100)||null,notes:String(form.get("instructions")??"").trim().slice(0,3000)||null,status:shift.status==="CONFIRMED"||form.get("publish")==="on"?"CONFIRMED":"SCHEDULED"}});
     await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:"scheduling.shift.updated",entityType:"RotaShift",entityId:id}});
   },{isolationLevel:"Serializable"});
   revalidatePath("/scheduling");revalidatePath("/people/me");revalidatePath("/people/rotas");revalidatePath("/profile");
@@ -139,6 +143,7 @@ export async function publishWeekShifts(form: FormData) {
     if(shifts.length>500)throw new Error("Publish a smaller staff group at a time.");
     if(!shifts.length)throw new Error("There are no draft shifts to publish in this view.");
     for(const shift of shifts){
+      if(await tx.employeeAvailability.count({where:{organisationId:session.organisationId,employeeId:shift.employeeId,startsAt:{lt:shift.endsAt},endsAt:{gt:shift.startsAt}}}))throw new Error("Resolve unavailable draft shifts before publishing.");
       if(await tx.absenceRecord.count({where:{organisationId:session.organisationId,employeeId:shift.employeeId,status:"APPROVED",startDate:{lte:dateOnly(londonDate(new Date(shift.endsAt.getTime()-1)))},endDate:{gte:dateOnly(londonDate(shift.startsAt))}}}))throw new Error("Time off conflicts with a draft. Resolve it before publishing this week.");
       if(await tx.rotaShift.count({where:{organisationId:session.organisationId,id:{not:shift.id},employeeId:shift.employeeId,status:{not:"CANCELLED"},startsAt:{lt:shift.endsAt},endsAt:{gt:shift.startsAt}}}))throw new Error("Overlapping shifts must be resolved before publishing.");
     }

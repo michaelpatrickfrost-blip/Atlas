@@ -137,3 +137,10 @@ changes disable downloads until applied. Tables scroll inside their panel on
 small screens; field filters stack and retain accessible labels. Home and Reports
 share the utility rail with correct active-page indication. Dashboards remains
 separate. See `docs/modules/REPORTS.md`.
+
+## People application workspaces — 9 October 2026
+
+Goals, HR, Scheduling, Payroll and Team planner share people-workspace.tsx: blue/
+white contextual headers, responsive totals, explicit views and progressive forms.
+Each retains its workflow/permissions. Dense rota/capacity grids scroll within
+panels; page-wide overflow is not intended.

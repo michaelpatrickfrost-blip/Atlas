@@ -1,3 +1,4 @@
+import {PeopleWorkspaceHeader,WorkspaceStats} from "@/components/ui/people-workspace";
 import Link from "next/link";
 import { requireSession } from "@/core/auth/session";
 import { ActionForm } from "@/components/ui/action-form";
@@ -10,12 +11,8 @@ export default async function TeamsPage() {
   const planner = await listPlanner(session);
   return (
     <div className="space-y-8">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-4xl font-semibold tracking-tight">Your teams</h1>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-[var(--color-ink-muted)]">Add the people who work together. They can see each other’s holidays, who is covering, and the tasks their lead has set.</p>
-        </div>
-      </header>
+      <PeopleWorkspaceHeader eyebrow="Delivery & collaboration" title="Team planner" description="Give each team a clear plan, a realistic workload and shared visibility of delivery. Employee availability comes from HR and published rotas; work stays on the same team records."/>
+      <WorkspaceStats items={[{label:"Teams",value:planner.teams.length},{label:"People",value:new Set(planner.teams.flatMap(t=>t.people.map(p=>p.id))).size},{label:"Open work",value:planner.teams.reduce((n,t)=>n+t.openTasks,0)},{label:"Plan together",value:"Work + Capacity",detail:"Weekly workload, calendar, cover and handovers."}]}/>
       {planner.teams.length === 0 && (
         <div className="rounded-3xl border border-dashed border-[var(--color-border)] bg-white px-6 py-10">
           <p className="text-lg font-medium">No team yet</p>
@@ -24,9 +21,9 @@ export default async function TeamsPage() {
       )}
       <div className="grid gap-4 md:grid-cols-2">
         {planner.teams.map((team) => (
-          <Link key={team.id} href={`/teams/${team.id}`} className="rounded-3xl border border-[var(--color-border)] bg-white p-5 transition hover:border-[var(--color-atlas-blue)]">
+          <Link key={team.id} href={`/teams/${team.id}/capacity`} className="rounded-3xl border border-[var(--color-border)] bg-white p-5 transition hover:border-[var(--color-atlas-blue)]">
             <p className="text-xl font-semibold tracking-tight">{team.name}</p>
-            <p className="mt-1 text-sm text-[var(--color-ink-muted)]">{team.people.length === 1 ? "1 person" : `${team.people.length} people`}</p>
+            <p className="mt-1 text-sm text-[var(--color-ink-muted)]">{team.people.length === 1 ? "1 person" : `${team.people.length} people`} · {team.openTasks} open tasks</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {team.people.slice(0, 8).map((person) => (
                 <span key={person.id} className="inline-flex items-center gap-2 rounded-full bg-[var(--color-surface-sunken)] px-3 py-1 text-sm">

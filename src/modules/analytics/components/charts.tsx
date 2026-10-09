@@ -75,6 +75,18 @@ export function headline(
   if (metric.overallValue !== undefined)
     return formatPoint(metric.overallValue, metric);
   if (!points.length) return "—";
+  if (metric.calculation === "average") {
+    const weight = points.reduce((sum, p) => sum + (p.sampleSize ?? 1), 0);
+    return formatPoint(
+      points.reduce((sum, p) => sum + p.value * (p.sampleSize ?? 1), 0) /
+        weight,
+      metric,
+    );
+  }
+  if (metric.calculation === "min")
+    return formatPoint(Math.min(...points.map((p) => p.value)), metric);
+  if (metric.calculation === "max")
+    return formatPoint(Math.max(...points.map((p) => p.value)), metric);
   if (metric.unit === "percent") return formatPoint(points[0].value, metric);
   if (metric.unit === "money") {
     if (metric.currency)
@@ -157,6 +169,18 @@ export function TileChart({
         color={colors[0]}
         onPick={pick}
       />
+    );
+  if (
+    widget.visual === "kpi" &&
+    metric.calculation === "distinct" &&
+    points.length > 1 &&
+    (widget.minimum !== undefined || widget.maximum !== undefined)
+  )
+    return (
+      <p className="py-8 text-sm text-slate-500">
+        Use record filters to calculate a distinct total across selected groups.
+        Group totals may overlap.
+      </p>
     );
   if (widget.visual === "kpi")
     return (

@@ -55,7 +55,9 @@ aggregation reads **all** matching records, up to 10,000, and fails with a narro
 instruction rather than aggregating a truncated page. Monetary calculations require
 one filterable currency and reject mixed results; no currency conversion occurs.
 Exact high-precision text that cannot safely become a chart number is rejected;
-Reports retains the exact values for Excel. Only aggregate points and metadata
+Reports retains the exact values for Excel. Empty/null-only averages and extrema show no reading; group averages retain their
+sample weights. Distinct KPI totals cannot add overlapping groups after value
+thresholds and instruct the reader to use record filters instead. Only aggregate points and metadata
 reach the browser, not underlying raw rows. Four record queries run concurrently
 at most. Source failures are isolated per widget. Query edits are briefly debounced
 and stale responses are discarded. No arbitrary SQL, formula execution or joins.

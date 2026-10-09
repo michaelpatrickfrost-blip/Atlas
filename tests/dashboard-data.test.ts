@@ -273,7 +273,38 @@ describe("Authorised personal dashboard data views", () => {
   });
 });
 
-describe('Monetary chart consistency',()=>{
- it('rejects mixed source currencies even when a source unexpectedly returns them',()=>{expect(()=>aggregateRows(dataset,[{amount:10,currency:'EUR'}],view({measure:'amount',aggregation:'sum',currency:'GBP'}))).toThrow('another currency');});
- it('distinguishes an empty count from an unavailable query',()=>{expect(aggregateRows(dataset,[],view())).toEqual([{label:'All records',value:0}]);});
+describe("Monetary chart consistency", () => {
+  it("rejects mixed source currencies even when a source unexpectedly returns them", () => {
+    expect(() =>
+      aggregateRows(
+        dataset,
+        [{ amount: 10, currency: "EUR" }],
+        view({ measure: "amount", aggregation: "sum", currency: "GBP" }),
+      ),
+    ).toThrow("another currency");
+  });
+  it("distinguishes an empty count from an unavailable query", () => {
+    expect(aggregateRows(dataset, [], view())).toEqual([
+      { label: "All records", value: 0 },
+    ]);
+  });
 });
+
+describe("Missing numeric readings", () => {
+  it("does not invent zero averages or extrema for empty or null-only records", () => {
+    for (const aggregation of ["average", "min", "max"]) {
+      expect(
+        aggregateRows(dataset, [], view({ aggregation, measure: "quantity" })),
+      ).toEqual([]);
+      expect(
+        aggregateRows(
+          dataset,
+          [{ quantity: null }],
+          view({ aggregation, measure: "quantity" }),
+        ),
+      ).toEqual([]);
+    }
+  });
+});
+
+describe('Unavailable average metadata',()=>{it('retains an absent reading through the server widget projection',async()=>{mock.read.mockResolvedValue({rows:[{quantity:null}],total:1});const result=await loadDataWidgets(session,[{...widget,data:view({aggregation:'average',measure:'quantity'})}],filters);expect(result.widget.points).toEqual([]);expect(result.widget.overallValue).toBeUndefined();});});

@@ -163,9 +163,14 @@ export function aggregateRows(
       distinct: new Set(),
     });
   return [...groups]
+    .filter(
+      ([, g]) =>
+        !["average", "min", "max"].includes(data.aggregation) || g.count > 0,
+    )
     .sort(([a], [b]) => (groupColumn?.type === "date" ? a.localeCompare(b) : 0))
     .map(([label, g]) => ({
       label,
+      ...(data.aggregation === "average" ? { sampleSize: g.count } : {}),
       value:
         data.aggregation === "count"
           ? g.count
@@ -227,6 +232,7 @@ export async function loadDataWidgets(
               ? "money"
               : "count",
           currency: data.currency || undefined,
+          calculation: data.aggregation,
           shape:
             spec.columns.find((c) => c.key === data.group)?.type === "date"
               ? "trend"
@@ -245,7 +251,7 @@ export async function loadDataWidgets(
             points: aggregateRows(dataset, loaded.rows, data),
             overallValue:
               aggregateRows(dataset, loaded.rows, { ...data, group: "" })[0]
-                ?.value ?? 0,
+                ?.value,
             definition: `${base.definition} · ${loaded.total.toLocaleString("en-GB")} records`,
           };
         } catch (error) {

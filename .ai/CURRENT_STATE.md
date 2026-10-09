@@ -99,6 +99,12 @@ now appear only for trends, not a single categorical bar. Two focused canvas/cha
 files/8 assertions, strict types, build and refinement lint PASS. Final source requires
 checks and fresh candidate acceptance. Home acceptance now checks actual utility
 icon/label bounds as well as page overflow. No public Dashboard activation yet.
+Final numeric review distinguishes empty/null-only averages/extrema from zero and
+keeps filtered-group averages weighted. Distinct KPI totals warn when group-value
+thresholds would combine overlapping groups; use source record filters instead.
+Numeric refinement: 10 focused files/53 assertions, then final projection
+regression (one file/14 assertions), strict types, build and scoped lint PASS.
+Final source requires candidate acceptance before activation.
 Next: prepare compatible combined candidate, run central
 Dashboard/Messages/Home/Reports checks, activate and repeat publicly.
 

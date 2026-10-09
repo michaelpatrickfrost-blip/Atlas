@@ -49,3 +49,15 @@ only retired synthetic central contact/history fixtures, not messages to real us
 
 Activation must follow passing candidate checks, preserve ancestry/current live
 work, then repeat against public HTTPS with health revision verified before/after.
+
+## Final refinements before activation
+
+Polished 650b13b candidate passed Dashboard, Home (including utility icon/label
+bounds), all 14 detailed Reports/Finance previews/workbooks/filters, summary scope
+and Messages history/order/draft/responsive checks. Screenshots inspected: ribbon
+background and all six phone utilities fit. Final numeric refinement distinguishes
+empty/null-only averages/extrema from zero and keeps group averages weighted;
+distinct KPIs warn when value thresholds would combine overlapping groups.
+Ten focused files/53 assertions and final projection suite (14 assertions), strict
+types, scoped lint and production build passed. Final source still needs candidate
+and public acceptance; earlier passing candidates do not substitute for that.

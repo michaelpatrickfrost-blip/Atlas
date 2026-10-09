@@ -22,7 +22,14 @@ appear in the shell. Do not invent a second visual language per module.
 
 ## Typography
 
-Plus Jakarta Sans. The Atlas wordmark is `public/brand/atlas-logo.png`. Page titles are confident (`text-2xl font-semibold
+Plus Jakarta Sans. The user-supplied blue ribbon identity (9 October 2026) uses
+`public/brand/atlas-logo.png` for the full logo with “Plan. Make. Deliver.” on
+sign-in, and `public/brand/atlas-wordmark.png` for compact wordmark placements.
+`public/brand/atlas-icon.png` supplies shell branding; `src/app/favicon.ico`,
+`src/app/icon.png` and `src/app/apple-icon.png` supply browser/home-screen icons.
+The Mac packaging master is `desktop/macos/icon/atlas-icon-1024.png`.
+Keep the supplied artwork's proportions; do not squeeze the full lockup into a
+small wordmark slot. Page titles are confident (`text-2xl font-semibold
 tracking-tight`), body copy readable at `text-sm`, tabular data uses
 `font-feature-settings: "tnum"` (set globally on `body`) for aligned numerals.
 

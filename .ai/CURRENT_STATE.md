@@ -1,5 +1,27 @@
 # Atlas current state
 
+## 9 October 2026 — User-supplied Atlas logo and app icon
+
+- Applied Michael's supplied blue ribbon A artwork. Full logo with “Plan. Make.
+  Deliver.” appears on sign-in; a cropped wordmark serves compact document
+  branding. Sign-in uses white behind the supplied artwork.
+- Updated `public/brand/atlas-logo.png`, `atlas-wordmark.png`, `atlas-icon.png`,
+  `src/components/shell/atlas-logo.tsx`, `auth-frame.tsx`, browser favicon,
+  `src/app/icon.png` (512px), `apple-icon.png` (180px), and the 1024px Mac icon
+  master. Artwork is cropped/resized from supplied files, not redrawn.
+- Updated `docs/DESIGN_SYSTEM.md` with canonical branding paths and usage.
+- Checks so far: focused ESLint passed with the existing img-element warning;
+  `git diff --check` passed. First build identified RGB PNG entries inside the
+  ICO; fixed to RGBA. Generated the missing Prisma client in this clean worktree
+  (no database changes); production build passed. Browser preview confirmed the
+  full logo renders on sign-in; live deployment checks pending.
+- Mac ICNS generated successfully with the existing Swift/iconutil packaging.
+  Updated the installed `Atlas in Browser.app` icon and verified its ad-hoc
+  signature; previous launcher retained as `Atlas in Browser-before-brand-20261009.app`.
+  No standalone Atlas.app is currently installed.
+- Next step: finish build, activate pinned release, and verify live sign-in and
+  exact logo/icon asset bytes at atlassystem.online.
+
 ## 9 October 2026 — Michael's end-to-end Test company seeded on the live server
 
 Request: "build a test company with some customers, products, and some orders

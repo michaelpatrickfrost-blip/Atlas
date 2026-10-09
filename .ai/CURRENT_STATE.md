@@ -5018,3 +5018,9 @@ Admin) and the relevant Guardian MRP guard/lineage repair from 0854b77. Retained
 providers and source history. Added-source access checks extend the Guardian guard;
 its positive test fixture now includes the required source permissions. Baseline
 comparison after integration and connected candidate acceptance remain pending.
+
+Integrated regression check: 53 tests in nine files passed, including Reports
+providers/catalogue, launcher entitlement fallback, current/legacy saved MRP
+lineage and direct planning action guards. Updated only the Guardian Test fixture
+inputs for newly required source access; no existing user grants changed. Historic
+branch source retained alongside exact live Reports/Admin ancestry.

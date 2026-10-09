@@ -5279,3 +5279,8 @@ advanced to Messages 9303039. Preserved that exact live shell/chat implementatio
 and its record/draft retention; console consolidation remains permission-filtered.
 Reconciled both tasks' decisions. Newer private Admin candidate is not included
 until its activation is observed. Combined source verification remains required.
+
+Messages-compatible source: production build, strict TypeScript and ten focused
+files/61 tests passed, including chat draft preservation and purchase retry inputs.
+No shared user drafts/records were replaced. Next: prepare the combined immutable
+candidate and repeat connected/public acceptance; no completion claimed yet.

@@ -17,6 +17,7 @@ export default async function PlanningCockpitPage() {
 
   const cockpit = await buildPlannerCockpit(session.organisationId);
   const canManage = session.capabilities.has(MANUFACTURING_CAPABILITIES.planManage);
+  const canReadCost = session.capabilities.has(MANUFACTURING_CAPABILITIES.costRead);
 
   return (
     <div className="space-y-8">
@@ -54,8 +55,8 @@ export default async function PlanningCockpitPage() {
           <div>
             <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Planned production</h2>
             <p className="mt-1 text-sm text-[var(--color-ink-muted)]">
-              What the plan says to make, the hours each takes and what it is expected to cost — the same rows the Planned
-              Orders screen shows in detail.
+              What the plan says to make and the hours each takes. Planned orders shows the same rows in detail.
+              {canReadCost && <> Estimated costs are included with cost access.</>}
             </p>
           </div>
           <Link href="/manufacturing/planning/planned-orders" className="text-sm font-medium text-[var(--color-atlas-blue)]">Open planned orders</Link>
@@ -73,7 +74,7 @@ export default async function PlanningCockpitPage() {
                   <th className="px-5 py-3 text-right">Qty</th>
                   <th className="px-5 py-3 text-right">Machine h</th>
                   <th className="px-5 py-3 text-right">Crew h</th>
-                  <th className="px-5 py-3 text-right">Cost</th>
+                  {canReadCost && <th className="px-5 py-3 text-right">Cost</th>}
                   <th className="px-5 py-3">Needed by</th>
                   <th className="px-5 py-3 text-right">Materials</th>
                 </tr>
@@ -88,7 +89,7 @@ export default async function PlanningCockpitPage() {
                     <td className="px-5 py-3 text-right tabular-nums">{whole(row.quantity)}</td>
                     <td className="px-5 py-3 text-right tabular-nums">{whole(row.machineHours)}</td>
                     <td className="px-5 py-3 text-right tabular-nums">{whole(row.crewHours)}</td>
-                    <td className="px-5 py-3 text-right tabular-nums font-semibold">{money(row.totalCostMinor)}</td>
+                    {canReadCost && <td className="px-5 py-3 text-right tabular-nums font-semibold">{money(row.totalCostMinor)}</td>}
                     <td className="px-5 py-3">{row.neededBy.toLocaleDateString("en-GB")}</td>
                     <td className="px-5 py-3 text-right">
                       {row.shortComponents > 0

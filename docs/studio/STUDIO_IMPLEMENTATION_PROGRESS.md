@@ -18,7 +18,7 @@ companion VERIFIED; detailed plans in STUDIO_PHASE_2_PLAN.md and STUDIO_PHASE_2_
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest observed live source 1dafe165f97545829d96242b1846e87d9c1f42b4; 2B2 local only.
+VERIFIED. Latest observed live source 2690c26cb0f5f3c28e21265820e8a713708ce699; 2B2 candidate only.
 The supplied source defines ten phases 0–9, not five. The original
 is preserved unchanged at `docs/studio/ATLAS_STUDIO_SOURCE.docx` (source
 `/Users/michael/Downloads/atlas_studio.docx`, SHA-256
@@ -264,6 +264,10 @@ These checks derive from Sections 5–6, 14, 19, 25–28; no whole-system gate u
 prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
+
+Preserve newly live supply 2690c26 (merged), rerun integrated checks and complete
+combined candidate/public acceptance including connected supply. Original upstream
+font licence files contain two trailing spaces; preserve the licences verbatim.
 
 2B2/local generated-key simplification checkpoint f2beb8b; exact live Messages
 9303039 and private Admin 1dafe16 (main 6870014) merged, source/evidence preserved.

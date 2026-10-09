@@ -93,6 +93,10 @@ export type ModuleManifest = {
   reportProvider?: import("@/core/reports/types").ReportDataset[];
   /** Studio contracts supplement existing providers during progressive migration. */
   studio?: import("@/core/studio/registry/types").StudioModuleContract;
+  supplySpendProvider?: import("@/core/supply/types").SupplySpendProvider;
+  supplyPurchaseProvider?: import("@/core/supply/types").SupplyPurchaseProvider;
+  /** Present this app inside an accessible workspace without removing its routes or licence. */
+  launcherConsolidatedInto?: string;
   recordContextProvider?: import("@/core/relationships/types").RecordContextProvider;
   recordRelationshipProvider?: import("@/core/relationships/types").RecordRelationshipProvider;
   salesInvoiceQuantitiesProvider?: import("@/core/finance/connections").SalesInvoiceQuantitiesProvider;

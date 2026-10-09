@@ -1038,6 +1038,8 @@ model Product {
   trackingMode String @default("NONE")
   barcode String?
   active          Boolean    @default(true)
+  /** Sales eligibility is independent of stock, BOM class and make/buy policy. */
+  sellable        Boolean    @default(true)
   /** Stock planning. 0 means not set. */
   safetyStockLevel Int @default(0)
   leadTimeDays Int @default(0)
@@ -3908,13 +3910,16 @@ model ManufacturingSupplySuggestion {
  status ManufacturingSuggestionStatus @default(PENDING)
  pegging Json @default("[]")
  resultingOrderId String?
+ resultingPurchaseDocumentId String?
  createdAt DateTime @default(now())
  updatedAt DateTime @updatedAt
  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
  run ManufacturingPlanningRun @relation(fields:[runId],references:[id],onDelete:Cascade)
  product Product @relation(fields:[productId],references:[id],onDelete:Restrict)
+ purchaseDocument FinanceDocument? @relation(fields:[resultingPurchaseDocumentId,organisationId],references:[id,organisationId],onDelete:Restrict,map:"manufacturing_supply_suggestions_purchase_document_fkey")
  @@index([organisationId,status,neededBy])
  @@index([organisationId,productId])
+ @@index([organisationId,resultingPurchaseDocumentId],map:"manufacturing_supply_suggestions_org_purchase_idx")
  @@map("manufacturing_supply_suggestions")
 }
 
@@ -5251,6 +5256,7 @@ model FinanceDocument {
  settlements FinanceSettlement[]
  collectionActivities FinanceCollectionActivity[]
  timeline FinanceTimeline[]
+ manufacturingSuggestions ManufacturingSupplySuggestion[]
  @@unique([organisationId,reference])
  @@unique([organisationId,duplicateKey])
  @@unique([organisationId,expenseClaimId])

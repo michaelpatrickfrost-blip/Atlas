@@ -1,3 +1,4 @@
 import { ModuleSpace } from "@/components/shell/module-space";
 import { stockManifest } from "@/modules/stock/manifest";
-export default function Layout({children}:{children:React.ReactNode}) {return <ModuleSpace module={stockManifest}>{children}</ModuleSpace>;}
+import { ConsoleReturn } from "@/modules/manufacturing/components/console-return";
+export default function Layout({children}:{children:React.ReactNode}) {return <ModuleSpace module={stockManifest}><ConsoleReturn />{children}</ModuleSpace>;}

@@ -35,24 +35,21 @@ Logistics is a registered module at `/logistics`. It consumes confirmed Sales or
 
 Plan (`/plan`) is the connected planning layer: targets, forecasts, scenarios, reviews and live actuals. It is not Production Planning (`/planning`), which remains the product-demand and stock-coverage workbench. See [Plan](../docs/modules/PLAN.md).
 
-Production Planning is a limited runtime foundation, not full MRP/finite scheduling.
-Read [planning research](../docs/modules/PLANNING_RESEARCH.md) and the manufacturing
-delivery gates. Saved product-target plans and team assignments are intentions,
-not WIP/production orders or stock receipts. A product's versioned make/buy/WIP
-recipe, category, standard cost and order coverage live on the product record.
-A recipe step points at a work centre and machine from Manufacturing → Plant; see
-[manufacturing planning](../docs/modules/MANUFACTURING_PLANNING.md). Shop-floor
-quantities and finance journals remain open.
+Manufacturing & Supply (`manufacturing`, `/manufacturing`) now presents the
+product-demand workbench, MRP, production schedule/execution, Products, Inventory
+and Finance purchasing/spend in one permission-filtered console. Planning routes
+and licences remain; their duplicate Home card consolidates only when the console
+is accessible. Today remains at `/manufacturing/today`. Business-wide Plan is
+separate. Shared Product sales eligibility is independent of class, stock and supply
+policy. Buy proposals create source-linked Finance purchase drafts atomically.
 
-Manufacturing (`manufacturing`, `/manufacturing`) is a registered module.
-Plant holds the work centres and machines a product step can run on. Today,
-Plan, Schedule, Produce, Shop Floor and Reports cover the production-order spine.
-MRP, a real production calendar, costing, traceability and most cross-module
-provider contracts remain open; see
-[coverage](../docs/modules/MANUFACTURING_COVERAGE.md) for the row-by-row status
-and [source](../docs/modules/MANUFACTURING_SOURCE_REQUIREMENTS.md) for the full
-brief. Its Phase 1 migration is written but not yet applied to the local dev
-database — see the inherited migration-ordering blocker in CURRENT_STATE.md.
+Rich recursive MRP, shifts and stock-linked execution exist; they are partial
+foundations rather than full Dynamics parity. Dated site/warehouse purchase/transfer
+netting, finite materials/labour/tools, scenarios/CTP and production WIP/variance
+remain open. Read [Manufacturing & Supply](../docs/modules/MANUFACTURING.md),
+[full coverage](../docs/modules/MANUFACTURING_COVERAGE.md) and
+[source](../docs/modules/MANUFACTURING_SOURCE_REQUIREMENTS.md). All data remains
+central, with existing owner permissions and records retained.
 
 Staff Scheduling is a separate HR-dependent app at `/scheduling`; HR owns My HR,
 holidays, company policy PDFs, performance plans, disciplinary cases, My Team, confidential notes and timesheets. Access is split so Staff can have holidays and policies without payroll or conduct. Source foundation/release limits:

@@ -14,13 +14,23 @@
   `git diff --check` passed. First build identified RGB PNG entries inside the
   ICO; fixed to RGBA. Generated the missing Prisma client in this clean worktree
   (no database changes); production build passed. Browser preview confirmed the
-  full logo renders on sign-in; live deployment checks pending.
+  full logo renders on sign-in. Phone preview at 390px confirmed the logo
+  loads and no horizontal overflow. Full `npx tsc --noEmit` was blocked by
+  missing `@playwright/test` in copied local dependencies and consequent script
+  callback type errors; no source errors reported.
 - Mac ICNS generated successfully with the existing Swift/iconutil packaging.
   Updated the installed `Atlas in Browser.app` icon and verified its ad-hoc
   signature; previous launcher retained as `Atlas in Browser-before-brand-20261009.app`.
   No standalone Atlas.app is currently installed.
-- Next step: finish build, activate pinned release, and verify live sign-in and
-  exact logo/icon asset bytes at atlassystem.online.
+- Deployed and live-verified: release `58b3610f73329264e5b48b92bde721daddeb6a74`
+  activated at atlassystem.online; previous `af030b0` release retained. Private
+  backup `atlas-pre-deploy-20261009-184525` taken. Live `/login` returned 200,
+  browser showed the new full logo, and all six logo/wordmark/icon/favicon/touch
+  endpoints returned 200 with exact SHA-256 matches to the committed files.
+  Browser head includes favicon, 512px icon and Apple touch-icon links.
+- Next step: none for web branding; future standalone Mac packages use the new
+  checked-in master. This evidence-only follow-up does not alter the live app.
+
 ## 9 October 2026 — Studio ordered implementation intake
 
 Michael requested exact five-phase Studio implementation, starting with Phase 1,
@@ -78,8 +88,9 @@ Phase 1, and continue sequentially after gates pass. No source rewrite/regroupin
   disposable unchanged HEAD baseline reproduces the exact same 85 failures
   (968 passes before added tests). Full lint: 9 errors/21 warnings, exactly the
   unchanged baseline; no changed-file lint failures. Additive migration has
-  NOT been applied, production release has NOT been deployed. Live currently
-  remains af030b0 (confirmed via SSH).
+  NOT been applied, production release has NOT been deployed. At that check, live
+  remained af030b0 (confirmed via SSH); the subsequent branding release is
+  recorded above.
 - Exact next: build two-tenant central acceptance script, run full regression,
   lint/TypeScript/build, review migration and prepared candidate, then activate
   and verify live. Ledger remains the authoritative execution checkpoint.

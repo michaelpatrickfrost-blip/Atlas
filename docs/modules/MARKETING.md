@@ -32,7 +32,9 @@ not acceptance of the complete brief.
 - Journey versions are immutable. Recorded events enrol into the published version;
   authorised processing persists waits/forward branches/goals/purchase exit/end,
   with participants pinned to their original version. No background worker or
-  message/webhook journey actions activated; no complete visual branch builder.
+  message/webhook journey actions activated. A visual forward-branch editor and
+  preview now cover the existing wait/event/goal/end engine; multi-path/action
+  splits, simulation and provider execution remain open.
 - Experiments freeze mutually exclusive control/variant/holdout assignments.
   No statistically supported winner or experiment delivery yet.
 - Forms/pages/social/ads/events retain production briefs only; no publishing or
@@ -87,8 +89,8 @@ supplier). Sending a place to Finance creates a spend request and asks
 Finance to approve it. Planned amounts are not posted spend. A journey map
 names who it is for and lays out stages with the touchpoints on each stage.
 It is a plan of the path, stored as MarketingProgram rows. It does not enrol
-contacts or send messages. The older automation journey stays off the main
-menu. A live send still waits for a delivery connection.
+contacts or send messages. Journey automation is now available under Customer journeys with versioned
+editing/publication. A live send still waits for a delivery connection.
 
 ### Live delivery evidence
 The installed Mac package was updated and its strict signature check passed.
@@ -99,3 +101,21 @@ and Chat isolation/behaviour acceptance on the live 3100 service. Synthetic
 fixtures were removed. Only the existing Northbridge administrator received
 Marketing grants; source permissions and explicit denials were preserved.
 External delivery, automatic scheduling and Finance reconciliation remain pending.
+
+## Commercial workspace refinement — 9 October 2026
+
+Campaign desk adds searchable/status-filtered campaigns, a clear workspace header,
+contextual destinations and truthful summary cards. Customer journeys now have a
+connected stage canvas with zoom, named branch/return paths, stage selection,
+reordering and touchpoint ownership/edit/archive. Experience lanes capture intent,
+emotion, friction, improvement and success measures. Existing maps retain their
+definitions; the new fields default when reading historical stages. Changes compare
+the parent map timestamp and validate tenant/map ownership in an audited transaction.
+
+Automation has a separate visual wait/branch/goal/end builder and published-version
+preview. Participants keep their original version. The branch editor preserves
+destinations on insertion and refuses removal of a referenced destination. Provider
+execution and background processing remain unavailable. Research and scope:
+[commercial workspace research](../plans/COMMERCIAL_WORKSPACE_RESEARCH.md). Final
+checks and live release evidence are in CURRENT_STATE.md; historical evidence above
+does not prove acceptance of this refinement.

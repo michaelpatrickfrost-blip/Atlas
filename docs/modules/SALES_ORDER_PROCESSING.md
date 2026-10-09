@@ -149,3 +149,17 @@ canonical customer/products. Each owning module scopes its contribution; unavail
 or disabled apps do not disclose linked records. Empty groups are omitted. Delivery
 links directly to the first actual fulfilment record; split deliveries remain
 individually listed in Connections. Existing Finance invoice actions are retained.
+
+## Order workspace refinement — 9 October 2026
+
+Orders is a dedicated destination alongside Quotations and All sales. Their
+workspace headers and summary cards preserve the existing filters, saved views,
+exports, selections and document actions. Quotation rows/counts/tag metadata are
+queried only with quotation read rights; combined status boards avoid duplicated
+quotation cards. Order detail brings its value, line count and next commercial step
+forward while retaining the existing approval, delivery and financial workflows.
+Order identity/value and selling actions come first; billing/reference details
+and recovery guidance are collapsible, while linked service, messages, campaigns
+and projects live in Connections. The UI refinement does not change order
+posting/fulfilment rules. Final source and
+live checks are recorded in CURRENT_STATE.md.

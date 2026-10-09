@@ -997,11 +997,17 @@ export async function createNote(partyId: string, body: string, pinned: boolean,
   assertCapability(session, restricted ? CUSTOMER_CAPABILITIES.restrictedNotesManage : CUSTOMER_CAPABILITIES.edit);
   await assertOwnedByOrg(session.organisationId, partyId);
 
-  const note = await db.note.create({
-    data: { partyId, body, pinned, restricted, authorUserId: session.userId },
+  const content = body.trim();
+  if (!content || content.length > 10000) throw new Error("Enter a note of up to 10,000 characters.");
+  const note = await db.$transaction(async tx => {
+    await tx.party.findFirstOrThrow({ where: { id: partyId, organisationId: session.organisationId, identityScrubbed: false } });
+    const row = await tx.note.create({ data: { partyId, body: content, pinned, restricted, authorUserId: session.userId } });
+    await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "customer.note_created", entityType: "Party", entityId: partyId, after: { noteId: row.id, pinned, restricted } }, tx);
+    return row;
   });
 
   revalidatePath(`/customers/${partyId}`);
+  revalidatePath(`/crm/accounts/${partyId}`);
   return note;
 }
 

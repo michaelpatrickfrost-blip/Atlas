@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { Megaphone, CalendarDays, Route, Users, Clock3, Palette, CheckCircle2 } from 'lucide-react';
+import { WorkspaceHeading, WorkspaceStats, WorkspaceLinks } from '@/components/ui/workspace';
 import type { Session } from '@/core/auth/session';
 import { db } from '@/core/db/client';
 import { StatusPill } from '@/components/ui/status-pill';
@@ -22,7 +24,7 @@ const STAGE: Record<string, string> = {
   ARCHIVED: 'Archived',
 };
 
-export async function CampaignDesk({ session, focus }: { session: Session; focus?: string }) {
+export async function CampaignDesk({ session, focus, search, status }: { session: Session; focus?: string; search?: string; status?: string }) {
   const [desk, audiences] = await Promise.all([
     marketingDesk(session.organisationId),
     session.capabilities.has('marketing.audience.read')
@@ -31,22 +33,33 @@ export async function CampaignDesk({ session, focus }: { session: Session; focus
   ]);
   const allocated = new Map<string, number>();
   for (const line of desk.lines) if (line.campaignId) allocated.set(line.campaignId, (allocated.get(line.campaignId) ?? 0) + line.plannedMinor);
-  const selected = desk.campaigns.find((campaign) => campaign.id === focus) ?? desk.campaigns[0] ?? null;
+  const campaigns = desk.campaigns.filter(campaign => (!search || `${campaign.name} ${campaign.code} ${campaign.description ?? ""}`.toLowerCase().includes(search.trim().toLowerCase())) && (!status || campaign.status === status));
+  const selected = campaigns.find((campaign) => campaign.id === focus) ?? campaigns[0] ?? null;
   const canCreate = session.capabilities.has('marketing.campaign.create');
   const canManage = session.capabilities.has('marketing.campaign.manage');
   const next = selected ? (CAMPAIGN_TRANSITIONS[selected.status] ?? []).filter((status) => status !== 'LIVE') : [];
   const places = selected ? desk.lines.filter((line) => line.campaignId === selected.id) : [];
   const upcoming = selected ? desk.activities.filter((activity) => activity.campaignId === selected.id && activity.status !== 'COMPLETE').sort((a, b) => a.dueAt.localeCompare(b.dueAt)) : [];
   return (
-    <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
+    <div className="min-w-0 space-y-5"><WorkspaceHeading eyebrow="Marketing workspace" title="Great campaigns start with a clear plan" description="Connect the brief, audience, creative work and customer journey. Keep deadlines, ownership and spend in view, then measure what the campaign contributes." actions={canCreate && <Link href="/marketing/campaigns/new" className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white">New campaign</Link>} /><WorkspaceStats items={[
+      { label: "Campaigns", value: campaigns.length, hint: "Matching this view", icon: Megaphone },
+      { label: "Creative in progress", value: campaigns.filter(campaign => campaign.status === "CONTENT").length, icon: Palette },
+      { label: "Waiting for review", value: campaigns.filter(campaign => campaign.status === "APPROVAL").length, icon: Clock3 },
+      { label: "Scheduled", value: campaigns.filter(campaign => campaign.status === "SCHEDULED").length, icon: CalendarDays },
+    ]} /><WorkspaceLinks items={[
+      { title: "Campaign calendar", description: "Plan dates, deliverables and owners", href: "/marketing/calendar", icon: CalendarDays },
+      { title: "Customer journey", description: "Map stages, touchpoints and branches", href: "/marketing/journey", icon: Route },
+      ...(session.capabilities.has("marketing.audience.read") ? [{ title: "Audiences", description: `${audiences.length} saved audiences · preview eligible contacts`, href: "/marketing/audiences", icon: Users }] : []),
+      { title: "Campaign budgets", description: "Plan spend and send it for Finance review", href: "/marketing/budgets", icon: CheckCircle2 },
+    ]} /><form className="flex flex-wrap gap-3 rounded-2xl border border-slate-200 bg-white p-4"><input aria-label="Search campaigns" name="q" type="search" defaultValue={search} placeholder="Search campaign name, code or brief" className="min-w-0 flex-1 rounded-xl border border-slate-200 px-4 py-3 text-sm" /><select name="status" aria-label="Campaign status" defaultValue={status ?? ""} className="rounded-xl border border-slate-200 px-3 py-3 text-sm"><option value="">All campaign stages</option>{Object.entries(STAGE).map(([value,label]) => <option key={value} value={value}>{label}</option>)}</select><button className="rounded-xl bg-blue-600 px-4 py-3 text-sm font-medium text-white">Search</button></form><div className="grid min-w-0 gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
       <section className="rounded-[28px] border border-slate-200 p-4">
         <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="font-semibold">Campaigns <span className="ml-1 text-sm font-normal text-[var(--color-ink-faint)]">{desk.campaigns.length}</span></h2>
-          {canCreate && <Link href="/marketing/campaigns/new" className="rounded-xl bg-blue-600 px-3 py-1.5 text-sm font-medium text-white">New campaign</Link>}
+          <h2 className="font-semibold">Campaigns <span className="ml-1 text-sm font-normal text-[var(--color-ink-faint)]">{campaigns.length}</span></h2>
+
         </div>
         <div className="space-y-2">
-          {desk.campaigns.map((campaign) => (
-            <Link key={campaign.id} href={`/marketing?focus=${campaign.id}`} className={`block rounded-2xl px-4 py-3 ${campaign.id === selected?.id ? 'bg-[var(--color-atlas-blue-soft)]' : 'bg-[var(--color-app-bg)]'}`}>
+          {campaigns.map((campaign) => (
+            <Link key={campaign.id} href={`/marketing?${new URLSearchParams({ focus: campaign.id, ...(search ? { q: search } : {}), ...(status ? { status } : {}) })}`} className={`block rounded-2xl px-4 py-3 ${campaign.id === selected?.id ? 'bg-[var(--color-atlas-blue-soft)]' : 'bg-[var(--color-app-bg)]'}`}>
               <div className="flex items-start justify-between gap-2">
                 <p className="font-semibold">{campaign.name}</p>
                 <StatusPill label={STAGE[campaign.status] ?? words(campaign.status)} tone={campaignTone(campaign.status)} />
@@ -54,7 +67,7 @@ export async function CampaignDesk({ session, focus }: { session: Session; focus
               <p className="mt-1 text-sm text-[var(--color-ink-muted)]">{money(campaign.budgetMinor, campaign.currency)} · {money(allocated.get(campaign.id) ?? 0, campaign.currency)} assigned</p>
             </Link>
           ))}
-          {!desk.campaigns.length && <p className="rounded-2xl bg-[var(--color-app-bg)] p-4 text-sm text-[var(--color-ink-muted)]">No campaigns yet. Start one on the right.</p>}
+          {!campaigns.length && <p className="rounded-2xl bg-[var(--color-app-bg)] p-4 text-sm text-[var(--color-ink-muted)]">No campaigns match this view. Clear the search or create a campaign.</p>}
         </div>
       </section>
       <div className="space-y-6">
@@ -69,8 +82,8 @@ export async function CampaignDesk({ session, focus }: { session: Session; focus
               <div className="flex items-center gap-3"><StatusPill label={STAGE[selected.status] ?? words(selected.status)} tone={campaignTone(selected.status)} /><Link href={`/marketing/campaigns/${selected.id}`} className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white">Open campaign</Link></div>
             </div>
             <div className="mt-6 grid gap-3 sm:grid-cols-4">
-              <Metric label="Envelope" value={money(selected.budgetMinor, selected.currency)} />
-              <Metric label="Assigned to places" value={money(allocated.get(selected.id) ?? 0, selected.currency)} />
+              <Metric label="Planned budget" value={money(selected.budgetMinor, selected.currency)} />
+              <Metric label="Allocated spend" value={money(allocated.get(selected.id) ?? 0, selected.currency)} />
               <Metric label="Runs" value={`${selected.startAt?.toLocaleDateString('en-GB') ?? 'Open'} – ${selected.endAt?.toLocaleDateString('en-GB') ?? 'Open'}`} />
               <Metric label="Goal" value={selected.goal ? `${selected.goal}${selected.goalTarget ? ` · ${selected.goalTarget}` : ''}` : 'Not set'} />
             </div>
@@ -87,7 +100,7 @@ export async function CampaignDesk({ session, focus }: { session: Session; focus
                   </div>
                   <p className="font-semibold">{money(line.plannedMinor, line.currency)}</p>
                 </div>
-              )) : <p className="text-sm text-[var(--color-ink-muted)]">Nothing is assigned yet. Put the envelope against the places it will be spent.</p>}
+              )) : <p className="text-sm text-[var(--color-ink-muted)]">No planned spend yet. Assign the budget to the channels and places where it will be used.</p>}
             </div>
             <div className="mt-6">
               <div className="mb-3 flex items-center justify-between">
@@ -111,7 +124,7 @@ export async function CampaignDesk({ session, focus }: { session: Session; focus
           </section>
         ) : null}
         {!selected && <section className="rounded-[28px] border border-slate-200 p-8 text-center"><h2 className="text-lg font-semibold">No campaigns yet</h2><p className="mt-1 text-sm text-[var(--color-ink-muted)]">Build the first one: brief, audience, channels, budget and launch plan.</p></section>}
-      </div>
+      </div></div>
     </div>
   );
 }

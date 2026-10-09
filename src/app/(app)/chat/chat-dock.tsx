@@ -246,7 +246,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
   }, [lastMessage, activeId, open]);
 
   useEffect(() => {
-    if (!activeId) return;
+    if (!activeId || !open || duplicate) return;
     let cancelled = false;
     const handle = setTimeout(() => {
       historyOptions.current = {
@@ -271,7 +271,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
       cancelled = true;
       clearTimeout(handle);
     };
-  }, [activeId, threadQuery, historyBefore]);
+  }, [activeId, threadQuery, historyBefore, open, duplicate]);
 
   useEffect(() => {
     if (page || !open || duplicate) return;
@@ -408,11 +408,14 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
     setAssignee(saved?.assignee ?? peerId ?? "");
     setError("");
     setMenu(false);
-    void load(id).catch((reason) =>
-      setError(
-        reason instanceof Error ? reason.message : "Chat could not be opened.",
-      ),
-    );
+    if (openRef.current)
+      void load(id).catch((reason) =>
+        setError(
+          reason instanceof Error
+            ? reason.message
+            : "Chat could not be opened.",
+        ),
+      );
   }
 
   useEffect(() => {

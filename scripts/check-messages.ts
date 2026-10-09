@@ -157,7 +157,9 @@ async function main() {
       .getByRole("button", { name: "Send message", exact: true })
       .click();
     await expect(
-      dialog.getByText("Review this order together.", { exact: true }),
+      dialog
+        .locator("article")
+        .getByText("Review this order together.", { exact: true }),
     ).toBeVisible();
     await expect(
       dialog.locator(`a[href="/sales/orders/${order.id}"]`),
@@ -194,7 +196,9 @@ async function main() {
       .getByRole("textbox", { name: "Search message history", exact: true })
       .fill("oldest needle");
     await expect(
-      dialog.getByText("QA history oldest needle", { exact: true }),
+      dialog
+        .locator("article")
+        .getByText("QA history oldest needle", { exact: true }),
     ).toBeVisible();
     await page
       .getByRole("button", { name: "Clear message search", exact: true })
@@ -203,13 +207,17 @@ async function main() {
       .getByRole("button", { name: "Earlier messages", exact: true })
       .click();
     await expect(
-      dialog.getByText("QA history oldest needle", { exact: true }),
+      dialog
+        .locator("article")
+        .getByText("QA history oldest needle", { exact: true }),
     ).toBeVisible();
     await page
       .getByRole("button", { name: "Latest messages", exact: true })
       .click();
     await expect(
-      dialog.getByText("Review this order together.", { exact: true }),
+      dialog
+        .locator("article")
+        .getByText("Review this order together.", { exact: true }),
     ).toBeVisible();
     console.log(
       "PASS real chat creation, send, order attachment persistence, details, full-history search and pagination.",

@@ -52,14 +52,58 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 describe("Modern chat composer", () => {
+  it("does not mark a restored conversation read while the pop-out remains closed", async () => {
+    const view = render(
+      <MessageDraftProvider>
+        <ChatDock key="page" variant="page" />
+      </MessageDraftProvider>,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: /Blair/ }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Message" }), {
+      target: { value: "Return to this draft" },
+    });
+    fetchMock.mockClear();
+    view.rerender(
+      <MessageDraftProvider>
+        <ChatDock key="dock" />
+      </MessageDraftProvider>,
+    );
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    });
+    expect(
+      fetchMock.mock.calls.some(
+        ([, init]) => JSON.parse(String(init.body)).activeId,
+      ),
+    ).toBe(false);
+    fireEvent.click(screen.getByRole("button", { name: "Open messages" }));
+    expect(
+      (screen.getByRole("textbox", { name: "Message" }) as HTMLTextAreaElement)
+        .value,
+    ).toBe("Return to this draft");
+  });
+
   it("carries the conversation and draft across dock and page mounts in the same authenticated shell", async () => {
-    const view = render(<MessageDraftProvider><ChatDock key="dock"/></MessageDraftProvider>);
-    fireEvent.click(screen.getByRole("button", {name:"Open messages"}));
-    fireEvent.click(await screen.findByRole("button", {name:/Blair/}));
-    fireEvent.change(screen.getByRole("textbox", {name:"Message"}), {target:{value:"Carry this draft"}});
-    view.rerender(<MessageDraftProvider><ChatDock key="page" variant="page"/></MessageDraftProvider>);
-    await screen.findByRole("heading", {name:"Blair"});
-    expect((screen.getByRole("textbox", {name:"Message"}) as HTMLTextAreaElement).value).toBe("Carry this draft");
+    const view = render(
+      <MessageDraftProvider>
+        <ChatDock key="dock" />
+      </MessageDraftProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Open messages" }));
+    fireEvent.click(await screen.findByRole("button", { name: /Blair/ }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Message" }), {
+      target: { value: "Carry this draft" },
+    });
+    view.rerender(
+      <MessageDraftProvider>
+        <ChatDock key="page" variant="page" />
+      </MessageDraftProvider>,
+    );
+    await screen.findByRole("heading", { name: "Blair" });
+    expect(
+      (screen.getByRole("textbox", { name: "Message" }) as HTMLTextAreaElement)
+        .value,
+    ).toBe("Carry this draft");
   });
 
   it("keeps separate drafts and restores them when switching conversations", async () => {

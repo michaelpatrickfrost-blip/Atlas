@@ -34,6 +34,13 @@ Screenshots inspected visually. Its synthetic contact/customer is retired centra
 Final expansion handoff uses the shared unsaved-draft context keyed by authenticated
 company/user; eight focused files/48 assertions, strict TypeScript, final production
 build and refinement lint (zero errors/one brand-image warning) passed.
+A final review guards both restored-conversation loading and history effects while
+the dock is closed, preventing unintended read markers after returning Home. Added
+a regression; eight files/49 assertions, TypeScript/build and scoped lint (no errors,
+three brand-image warnings) passed. Candidate 1f36fb9 prepared; acceptance initially
+hit an ambiguous preview selector after a second retained fixture existed. Scoped
+the checks to actual timeline articles; this is a test selector correction, not a
+passing acceptance claim. No activation until the final source passes.
 Next: prepare the final pinned revision, rerun exact chat acceptance plus Home/Reports
 regression, activate and repeat
 public verification. Synthetic QA fixtures stay central and are retired, no actual

@@ -1,34 +1,37 @@
 # Atlas current state
 
-## 9 October 2026 — Shared rounded typography in verification
+## 9 October 2026 — Shared rounded typography deployed and publicly verified
 
-Replaced Plus Jakarta Sans with Nunito across the shared root sans token/body,
-including business apps, sign-in/recovery and independent Atlas Admin. Bundled
-normal/true-italic variable fonts (200–1000) retain source character coverage and
-SIL OFL licence/provenance; Geist Mono, text hierarchy and aligned numerals remain.
+Exact runtime 5ebd700d3526b6fdaa70efa4514da0803301a285 is live at
+https://atlassystem.online, preserving deployed Studio e5d66e6 and the modern
+Apps menu. Replaced Plus Jakarta Sans with Nunito through the shared root sans
+family/body, covering business apps, authentication/recovery and Atlas Admin.
+Bundled normal/true-italic variable fonts (200–1000), full source character
+coverage and SIL OFL provenance; Geist Mono, hierarchy and aligned digits remain.
+No font-task schema, permissions, storage or business-record change.
 Paths: src/app/layout.tsx, globals.css, fonts and scripts/check-typography.ts;
-design guides/DECISIONS updated.
-Scoped codex/rounded-system-font starts from exact public live 2690c26, preserving
-its already-deployed Manufacturing/Studio compatibility source. No schema, records,
-permissions or storage change. Checks: exact-lockfile install, Prisma generation,
-production build, strict TypeScript, scoped lint and whitespace PASS. Initial
-checker types referenced an absent User.active field; corrected to membership
-active and strict types rerun successfully. Local production browser proves
-actual Nunito glyphs and equal numeral widths; desktop/phone login screenshots
-visually inspected. Candidate 4a0a230 prepared with central backup
-atlas-pre-deploy-20261009-214902; all 30 route/viewport typography checks PASS
-(actual Nunito glyphs, inherited controls, aligned digits, page fit, zero browser/
-asset errors/external font requests). Home desktop/phone, Admin phone and Reports
-desktop screenshots visually inspected. Private evidence: /tmp/atlas-typography-check-5XrNJu
-and /tmp/atlas-typography-staging-HfIoX2. Full suite not rerun for this presentation change.
-Activation safely stopped at ancestry after accepted Studio e5d66e6 became public
-live. Merged that exact source, retaining its typed fields and modern Apps design;
-only CURRENT_STATE header conflict required reconciliation. Combined production
-build, focused Apps menu test file/3 assertions, scoped lint and whitespace PASS;
-strict TypeScript in progress. Combined candidate/public typography acceptance
-and responsive Apps verification pending.
-Next: prepare and verify the compatible combined release, activate, prove fonts
-on public HTTPS and merge implementation/evidence into main before completion.
+design guides/DECISIONS updated. Final combined production build, Prisma generation,
+strict TypeScript, scoped lint, whitespace and Apps menu test file/3 assertions PASS.
+Full suite not rerun for this presentation change.
+
+Exact candidate and public HTTPS checks both PASS on ten routes at desktop,
+tablet and phone sizes: real Nunito glyphs, inherited headings/controls/table text,
+equal digit widths, page fit, zero browser/asset errors and external font requests.
+Home/Apps acceptance also PASS through 320px: authorised links, scroll/44px targets,
+Escape focus, closure/search and real My work navigation. All browser writes blocked;
+existing Guardian QA membership only, no records/grants/fixtures created. Inspected
+Home desktop/phone, Reports desktop, Admin phone and Apps desktop/phone screenshots.
+Private final evidence: candidate /tmp/atlas-typography-check-xXuFsi,
+/tmp/atlas-typography-staging-TlXW2K and /tmp/atlas-home-menu-check-fvYsxg;
+public evidence is recorded below. Prepare/activation central backups:
+atlas-pre-deploy-20261009-220106 and atlas-pre-deploy-20261009-221140.
+Source/evidence integration into main pending before handoff.
+
+Historical 4a0a230 candidate passed the same 30 typography checks after backup
+atlas-pre-deploy-20261009-214902. Ancestry safely stopped its activation when
+Studio e5d66e6 became live; merged that exact source, reconciled the memory header,
+rebuilt and reverified. Earlier evidence /tmp/atlas-typography-check-5XrNJu and
+/tmp/atlas-typography-staging-HfIoX2 remains. No guard bypass or data rollback.
 
 ## 9 October 2026 — Studio 2B2 candidate checkpoint; visual setup clarification
 

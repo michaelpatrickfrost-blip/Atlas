@@ -1,5 +1,27 @@
 # Atlas current state
 
+## 9 October 2026 — Studio Phase 2A contract checkpoint
+
+Implemented typed entity native-field/record policies and the registry's separate
+owner authorisation gateway. Extensible owners must register matching read queries,
+canonical route/label and native write capability; input/output and returned tenant,
+ID/revision are validated. Extension checks require expected revision and a trusted
+transaction, never accept client scope/native patches, and leave entities descriptive.
+Tickets registers tickets.ticket/list/get over canonical TICKET records, preserving
+workScope/private queues and strict company enablement, bounded keyset reads,
+transactional native row locks/recheck, final/merged/queue-member restrictions.
+Existing intake fields/answers and protected native operations remain unchanged.
+
+Paths: core/studio/registry/{types,entities,contracts,registry}, core/service-work/studio,
+tickets manifest, two focused suites and central acceptance helper; MODULE_SPEC,
+SERVICE_WORK_DESK, contract inventory, DECISIONS and implementation ledger updated.
+Local: 8 files/54 assertions, strict TypeScript, scoped lint and production build PASS;
+diff reviewed/whitespace check PASS. No schema change. Central acceptance helper is
+implemented but not run yet; live stays a642df0. Full-suite baseline remains previously
+confirmed 85 failures; no full-suite success claimed. Next: 2B typed field schema and
+compiler/persistence design, then additive models/constraints and versioned validation/
+atomic extension values. Do not begin 2C until 2B checks/checkpoint are complete.
+
 ## 9 October 2026 — Standalone modern Admin accepted; Phase 2 begins
 
 Exact live source a642df0555cd45a97d57d867621d189c7650cf19 preserves concurrent

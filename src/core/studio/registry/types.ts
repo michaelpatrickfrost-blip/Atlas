@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import type { Session } from "@/core/auth/session";
+import type { Prisma } from "@/generated/prisma/client";
 
 export type Classification = "public_internal" | "confidential" | "restricted";
 export type ContractKind = "entity" | "query" | "command" | "event" | "surface" | "decisionFact" | "template" | "metric" | "integration";
@@ -15,6 +16,7 @@ export type ContractIdentity = {
 };
 export type FieldDescriptor = {
   id: string;
+  label?: string;
   type: "string" | "integer" | "decimal" | "money" | "boolean" | "date" | "datetime" | "enum" | "reference";
   nullable: boolean;
   classification: Classification;
@@ -29,7 +31,20 @@ export type EntityDescriptor = ContractIdentity & {
   key: "uuid" | "string";
   fields: readonly FieldDescriptor[];
   extensionPolicy: { customFields: boolean; recordTypes: boolean; pageVariants: boolean };
+  /** Opt-in owners supply an access check; Studio never guesses table access. */
+  record?: {
+    writeCapability: string;
+    detailRoute: string;
+    labelField: string;
+    listQuery: { id: string; version: number };
+    getQuery: { id: string; version: number };
+    authorise(ctx: RecordContext, request: RecordRequest): Promise<RecordAnchor>;
+  };
 };
+export type RecordContext = { session: Session; transaction?: Prisma.TransactionClient };
+export type RecordRequest = { recordId: string; intent: "read" | "extend"; expectedRevision?: number };
+/** A canonical record reference, not a duplicate business record or mutation API. */
+export type RecordAnchor = { recordId: string; organisationId: string; revision: number };
 export type Context = { session: Session; idempotencyKey?: string };
 export type QueryDescriptor<I, O> = ContractIdentity & {
   kind: "query";
@@ -68,6 +83,7 @@ export type ContractMetadata = ContractIdentity & {
 export type Contribution = {
   metadata: Omit<ContractMetadata, "ownerModuleId" | "contractHash">;
   run?: (ctx: Context, input: unknown) => Promise<unknown>;
+  authoriseRecord?: (ctx: RecordContext, request: unknown) => Promise<RecordAnchor>;
 };
 export type StudioModuleContract = { contributions: readonly Contribution[] };
 export type ContractReference = { id: string; version: number; schemaHash: string; contractHash: string };

@@ -11,7 +11,8 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2A — Owner-approved entity/extension contracts — IN PROGRESS. Standalone Admin companion VERIFIED; detailed plan in STUDIO_PHASE_2_PLAN.md.
+2B — Typed field definitions/validation/persistence — IN PROGRESS. 2A VERIFIED locally;
+central acceptance helper pending. Standalone Admin companion VERIFIED; detailed plan in STUDIO_PHASE_2_PLAN.md.
 
 # Overall Status
 
@@ -38,8 +39,23 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 1D Release compatibility/security/live acceptance | VERIFIED | Exact candidate/public metadata and Home acceptance passed; dependency scans, backup, build, activation and public revision checked. |
 | Standalone modern Admin shell companion | VERIFIED | Live a642df0; metadata/Admin/business and Home/Reports checks passed; visible UI inspected. |
 | Companion Admin/business sign-in and provisioning | VERIFIED | Real Admin creates Test-company user; correct company setup/login passes; wrong company recovery/login and customer Admin access rejected. |
+| 2A Owner-approved entity/extension contracts | VERIFIED | 8 focused files/54 assertions, TypeScript, scoped lint/build; central runtime helper pending. No schema/native write changes. |
 
 # Current Workstream Detail
+
+2A delivered: strict entity metadata and projection ownership/hash checks, separate
+canonical record authorisation gateway, native write/expected revision/transaction
+requirement, output tenant/ID validation. Tickets owner registers bounded keyset
+list/get plus read-only native fields; workScope/private/member/final/merged guards
+remain owning-domain logic. Module enablement and record state are locked/rechecked
+inside the extension transaction. Core never imports a module implementation.
+
+2B purpose: strict versioned field metadata, typed central values with tenant-aware
+indexes/uniqueness/history, server validation and atomic owner-authorised writes.
+Dependencies: 2A contracts and Phase 1 metadata kernel. Next design must preserve
+stable keys, retirement/history and migration-plan requirements, and existing native
+intake fields. Expected files: core/studio/fields + compiler dispatch, Prisma additive
+models/migration, tests/central acceptance. No native-domain column conversion/reset.
 
 0A purpose: typed discoverable descriptors, stable IDs/versions/hash/lifecycle,
 fail-closed invocation through tenant session, owner module availability and domain
@@ -71,6 +87,10 @@ metadata lifecycle with two tenant scopes and missing publication permission.
 Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
+
+2A: registry/{types,entities,contracts,registry}, service-work/studio, tickets manifest,
+tests/studio-{entities,ticket-owner}, scripts/studio/check-ticket-contract and metadata
+driver, MODULE_SPEC, SERVICE_WORK_DESK, inventory/plan/ledger and .ai state/decisions.
 
 Admin follow-up: Atlas routes moved to `src/app/(admin)/atlas`; `components/admin`,
 Core Admin sign-out, data API action aliases/generator, selected-company Studio tabs,
@@ -110,6 +130,11 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+2A local checkpoint: 8 focused files/54 assertions PASS; strict TypeScript, changed-
+file lint and production build PASS, diff reviewed/whitespace check PASS. Central
+Test-tenant private/member/revision/tenant/disabled-source acceptance helper added
+to existing driver but not executed yet. No new migration/deployment at this point.
 
 Admin companion: 23 focused files /110 assertions passed; strict TypeScript and
 production build passed; scoped lint no errors/one brand-img warning. No schema
@@ -157,6 +182,10 @@ No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
 
+Phase 2 NOT PASSED: 2B–2F remain; owner contract local evidence alone is not the phase
+gate. Central owner checks must run on candidate/public release alongside full phase
+runtime, tenant, permissions and native module regressions.
+
 Phase 0 PASS (runtime/contract/regression tests + build + live compatibility). Phase 0 checks: (a) stable typed IDs/schema hashes/lifecycle, (b) existing provider
 behaviour through adapters, (c) server tenant/module/capability/input-output checks,
 (d) duplicate/compatibility/security tests, (e) production build/regressions.
@@ -171,9 +200,8 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement 2A typed entity record/extension contracts and the first Tickets owner
-contribution around ServiceWorkItem(kind=TICKET), preserving workScope, queue
-membership, locked/final records, source capabilities and enabled-module policy.
-Add bounded read projections and owner authorisation/expected-revision contracts;
-test tenant/private/missing-capability/disabled-owner/contract compatibility paths.
-No metadata/value persistence before 2A is checkpointed; no Phase 3+ engines.
+2B: define closed custom-field types/constraints and owner-approved policy, field
+definition compiler and additive typed value/history models with tenant indexes,
+uniqueness/CAS and retirement semantics. Add validation/security tests before native
+surface integration. Run pending owner central helper when candidate is prepared;
+do not mark Phase 2 PASS or begin 2C/Phase 3+ until the relevant preceding checks pass.

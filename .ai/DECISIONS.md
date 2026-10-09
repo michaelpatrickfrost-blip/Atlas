@@ -1,3 +1,20 @@
+## 9 October 2026 — Studio extensions require an atomic owner record policy
+
+Phase 2 opt-in binds a canonical entity to approved native read projections and a
+typed owner authorisation callback. The registry validates metadata, native field
+identity, projection ownership/read capabilities and returned tenant/record/revision.
+Extension intent needs native write capability, expected owner revision and the same
+transaction as future Studio value persistence. Owners lock/recheck their native row
+and enforce domain access/state; Studio receives no generic native patch API.
+
+Tickets is the initial owner over ServiceWorkItem/TICKET, preserving workScope,
+restricted-queue membership, enabled/entitled source and final/merged restrictions.
+Existing service catalogue intake fields and historical answers remain native.
+Rationale: the source requires module opt-in and domain ownership; a descriptor
+alone or separate permission/UI check cannot prevent races with native transitions.
+This is an implementation detail fulfilling that requirement, not a new domain or
+an early Process/Flow engine. Other entities remain unexposed until owner-approved.
+
 ## 9 October 2026 — Reports and Dashboards are separate destinations
 
 Michael requested a modern logo-based Reports workspace for filtered Excel

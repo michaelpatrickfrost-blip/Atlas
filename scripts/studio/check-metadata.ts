@@ -10,6 +10,7 @@ import { STUDIO_CAPABILITIES } from "../../src/core/studio/permissions";
 import { createDraft, updateDraft, validateDraft, publishDraft, activateVersion, activeDefinition, getDefinition } from "../../src/core/studio/definitions/service";
 import { studioRegistry } from "../../src/core/studio/registry/runtime";
 import { scanActiveStudioDependencies } from "../../src/core/studio/registry/compatibility";
+import { checkTicketContract } from "./check-ticket-contract";
 
 async function main() {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1", "Explicit server acceptance opt-in required");
@@ -33,6 +34,7 @@ async function main() {
     const [a,b] = companies;
     const staff = (org: typeof a): Session => ({userId:membership.userId,userName:membership.user.name,userEmail:membership.user.email,organisationId:org.id,organisationName:org.name,membershipId:membership.id,capabilities:new Set([...STANDARD_ROLES.find(role=>role.key==="admin")!.capabilities,...platform])});
     const actor=staff(a), other=staff(b);
+    await checkTicketContract(actor, other);
     const registry=studioRegistry();
     const descriptor=(await registry.discover(actor)).find(d=>d.ownerModuleId==="sales" && d.kind==="query"); assert(descriptor);
     const reference={id:descriptor.id,version:descriptor.version,schemaHash:descriptor.schemaHash,contractHash:descriptor.contractHash};

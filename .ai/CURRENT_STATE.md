@@ -1,5 +1,38 @@
 # Atlas current state
 
+## 9 October 2026 — Guardian Run MRP mutation boundary (verification in progress)
+
+Confirmed live c46bbef checks `manufacturing.plan.read` for a planning mutation
+and omits the app guard. Updated `manufacturing/planning/actions.ts` to require
+plan management and the selected workspace's Manufacturing enablement/entitlement
+before the engine writes; session company/actor and the shared staff exception
+remain authoritative. `tests/mrp-planning-access.test.ts`: original 4 failed/4
+passed, repaired 8 passed. Added opt-in `scripts/guardian/check-mrp-access.ts` with
+new central Test fixtures, actual action/button outcomes, saved-date pages/product
+links and unchanged historical/input/order/stock/Finance/audit/outbox assertions.
+Retained 585e9ba query reproduced the exact persisted JSON-date TypeError centrally
+without starting an old web server; existing af030b0 conversion passes the unit
+checks. First fixture lacked the Manufacturing layout's order-read grant and was
+retired; only fresh Test profiles receive the corrected read-only fixture grants.
+Server release lock is held by a parallel Reports candidate; no existing company
+or profile was changed. Source regression and scoped lint passed; full suite has
+1008 passed/88 failed/22 skipped, including unchanged module-mock failures and
+three Inventory timeouts under concurrent checks; a separate 54-assertion pass
+includes Inventory. Strict types and production build passed after regenerating
+disposable stale Next types (duplicated generated files referenced removed routes).
+Central c46bbef and 2a8522f checks reproduced all three forbidden writes; report
+cmv1e1cdw00007md5sakpls3v records the evidence. The real authorised button also
+exposed a newly saved Planned orders failure: engine `demandId/demandType/
+demandQuantity/sourceLabel` disagreed with the reader's older shape. Private
+19:59 journal correlated `toLocaleString` TypeError/digest 1480022851; runtime
+report cmv1e2kzn000avgd51damb97r. Updated `mrp-queries.ts` to adapt both saved demand
+shapes without rewriting history, retaining forecast/firm/safety-stock lineage.
+New pre-fix demand test failed; repaired six-file Manufacturing/planning suite:
+44 passed. Repeat lint passed. Final source types/build, full baseline comparison,
+completed central reproduction, candidate/live workflow proof and deployment
+remain pending. No report marked FIXED yet. Next: finish verification/deploy and
+repeat exact forbidden actions, real button, newly saved proposal and product pages.
+
 ## 9 October 2026 — Studio Phase 1 deployed and accepted
 
 Supersedes earlier Studio pending-candidate checkpoints below. Exact source

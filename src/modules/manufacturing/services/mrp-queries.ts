@@ -3,8 +3,8 @@ import { db } from "@/core/db/client";
 import { readAvailability } from "@/modules/stock/services/availability";
 import { OPEN_PRODUCTION_ORDER_STATUSES } from "../domain/lifecycle";
 import { manHoursInWindow } from "../domain/calendar";
-import type { MaterialShortage, NetRequirement, PlannedMaterial, PlannedOperation, PlannedOrder, PlannerCockpitView } from "../domain/mrp-types";
-import { MaterialReadiness, PlannedOrderStatus, SupplyType, type CostKind } from "../domain/mrp-types";
+import type { MaterialShortage, NetRequirement, PeggingLine, PlannedMaterial, PlannedOperation, PlannedOrder, PlannerCockpitView } from "../domain/mrp-types";
+import { DemandType, MaterialReadiness, PlannedOrderStatus, SupplyType, type CostKind } from "../domain/mrp-types";
 
 /** What `storeResultsPlanningRun` writes into `pegging`, read back for display. */
 export type SuggestionDetail = {
@@ -17,11 +17,17 @@ export type SuggestionDetail = {
 };
 
 export function readSuggestionDetail(pegging: unknown): SuggestionDetail {
-  const value = (pegging ?? {}) as Partial<SuggestionDetail> & { sourceType?: string };
+  type StoredDemand = SuggestionDetail["demand"][number] | PeggingLine;
+  const value = (pegging ?? {}) as Partial<Omit<SuggestionDetail, "demand">> & { demand?: StoredDemand[] };
+  // The engine persists PeggingLine; older runs use sourceId/label/quantity.
+  // Adapt both at the read boundary without rewriting immutable saved history.
+  const demand = (Array.isArray(pegging) ? pegging as StoredDemand[] : value.demand ?? []).map(peg => "demandId" in peg
+    ? { sourceId: peg.demandId, sourceType: peg.demandType, label: peg.sourceLabel, quantity: peg.demandQuantity }
+    : peg);
   // Tolerate the pre-existing shape (a bare array of demand pegs) so a run created
   // before this change still renders instead of throwing on a live page.
   if (Array.isArray(pegging)) {
-    return { demand: pegging as SuggestionDetail["demand"], operations: [], materials: [], cost: null, hours: null, batchCount: 0 };
+    return { demand, operations: [], materials: [], cost: null, hours: null, batchCount: 0 };
   }
   // Dates were written into the JSON pegging as Date objects; Prisma round-trips
   // them back as ISO strings, so coerce them so pages can call .getTime()/.toLocaleDateString().
@@ -29,7 +35,7 @@ export function readSuggestionDetail(pegging: unknown): SuggestionDetail {
   const operations = (value.operations ?? []).map((operation) => ({ ...operation, start: toDate(operation.start), end: toDate(operation.end) }));
   const materials = (value.materials ?? []).map((material) => ({ ...material, requiredBy: toDate(material.requiredBy) }));
   return {
-    demand: value.demand ?? [],
+    demand,
     operations,
     materials,
     cost: value.cost ?? null,
@@ -86,7 +92,7 @@ export async function plannedProposals(organisationId: string): Promise<PlannedO
       status: PlannedOrderStatus.PROPOSED,
       pegging: detail.demand.map((peg) => ({
         demandId: peg.sourceId,
-        demandType: "FIRM" as never,
+        demandType: peg.sourceType === DemandType.FORECAST ? DemandType.FORECAST : peg.sourceType === DemandType.SAFETY_STOCK ? DemandType.SAFETY_STOCK : DemandType.FIRM,
         demandQuantity: peg.quantity,
         sourceLabel: peg.label,
       })),

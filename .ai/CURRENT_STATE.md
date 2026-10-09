@@ -1,5 +1,41 @@
 # Atlas current state
 
+## 10 October 2026 — Company Settings and access-profile redesign in progress
+
+Settings now routes ordinary users to /profile/settings (own name, password,
+sessions, access-profile names and personal mailboxes). Company administration
+requires native core.modules/users/roles/it.manage capabilities; business record,
+audit-read and personal-email capabilities alone do not open it. Every nested
+Settings layout preserves this boundary; personal email moved to /profile/email
+with owner-only mailbox/history queries. Existing My work remains /profile.
+
+Company Settings adds a logo-based modern overview, searchable destinations,
+responsive section navigation, and a searchable access-profile selector. All
+implemented native permissions are offered once (including additional HR slices),
+with app and per-source-section None/Read/Write/Admin presets and individual
+checkboxes. Empty/copy profiles, same-ID rename, mixed profiles and exceptions
+reuse canonical Role/Membership storage. Mixing preserves unsaved exceptions;
+failed saves keep drafts, reset is explicit, profile changes warn if unsaved.
+Publication, activation, payroll completion and IT administration are Admin preset
+controls; existing stored grants and underlying native guards are unchanged.
+
+Company profile/access updates compare server-rendered snapshots inside audited
+Serializable transactions. Stale profile/catalogue/membership edits, unknown or
+foreign IDs, duplicate names and self-admin removal fail closed. Membership access
+saves invalidate older company sessions. Platform grants/provisioning policy remain
+independent; company users are not given Atlas user-creation powers.
+
+Checks: 14 focused files/63 assertions PASS; build PASS; scoped lint zero errors/two
+existing brand image warnings. Strict types found two checker/test typing issues; corrected focused four files/21
+assertions and strict types now PASS. Shell syntax/diff PASS. Linux opt-in
+central synthetic Settings checker and locked candidate/public deployment mode
+implemented but NOT RUN. No deployment claim; exact live CRM b57ba72 must be
+preserved before candidate preparation. No schema migration/local business store.
+Paths: settings/profile/email routes, shared AccessEditor, permission sections/
+snapshot helpers, shell utility navigation, checker/deployer and focused suites.
+Next: merge exact live source, final checks, sealed candidate acceptance, activation
+and public verification, then reconcile evidence and shared main.
+
 ## 10 October 2026 — Dashboards and Messages deployed and publicly verified
 
 Activated immutable runtime 70ca23ea83662c94e254488de717ee26de0e2c84 at

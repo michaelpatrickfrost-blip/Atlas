@@ -6,6 +6,7 @@ import {requireSession} from '@/core/auth/session';
 import {assertCapability} from '@/core/permissions/check';
 import {CORE_CAPABILITIES,CUSTOMER_CAPABILITIES} from '@/core/permissions/capabilities';
 import {MODULE_CATALOGUE} from '@/core/modules/registry';
+import {memberAccessRevision} from '@/core/permissions/access-revision';
 import {capabilityOverrides,effectiveRoleCapabilities} from '@/core/permissions/access-levels';
 import {createRecoveryCredential} from '@/core/auth/recovery';
 import {db} from '@/core/db/client';
@@ -21,12 +22,14 @@ export async function saveUserAccess(form:FormData){
  if([...selected].some(cap=>!knownCapabilities().has(cap)))throw new Error('Unknown permission.');
  await db.$transaction(async tx=>{
   const member=await tx.membership.findFirstOrThrow({where:{id,organisationId:session.organisationId},include:{roles:{include:{role:true}}}});
-  const roles=await tx.role.findMany({where:{organisationId:session.organisationId,id:{in:roleIds}}});if(roles.length!==roleIds.length)throw new Error('Invalid role.');
+  const catalogue=await tx.role.findMany({where:{organisationId:session.organisationId}});
+  if(String(form.get('accessRevision')??'')!==memberAccessRevision(member,catalogue))throw new Error('This user or an access profile changed. Reload before saving.');
+  const roles=catalogue.filter(role=>roleIds.includes(role.id));if(roles.length!==roleIds.length)throw new Error('Invalid role.');
   const overrides=capabilityOverrides(effectiveRoleCapabilities(roles),selected);
   await tx.roleOnMembership.deleteMany({where:{membershipId:id}});await tx.roleOnMembership.createMany({data:roleIds.map(roleId=>({membershipId:id,roleId}))});
   await tx.membership.update({where:{id,organisationId:session.organisationId},data:{...overrides,sessionVersion:{increment:1}}});
   await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:'membership.access.updated',entityType:'Membership',entityId:id,before:{roleIds:member.roles.map(r=>r.roleId),granted:member.grantedCapabilities,denied:member.deniedCapabilities},after:{roleIds,...overrides}}});
- });refresh();
+ },{isolationLevel:'Serializable'});refresh();
 }
 export async function setUserStatus(form:FormData){
  const session=await requireSession();
@@ -76,7 +79,7 @@ export async function createRole(form:FormData){
  const session=await requireSession();
  assertCapability(session,CORE_CAPABILITIES.rolesManage);
  const name=String(form.get('name')??'').trim(),source=String(form.get('sourceRoleId')??'');if(!name||name.length>80)throw new Error('Enter a role name (up to 80 characters).');
- await db.$transaction(async tx=>{const capabilities=source?(await tx.role.findFirstOrThrow({where:{id:source,organisationId:session.organisationId}})).capabilities:[];const role=await tx.role.create({data:{name,key:'custom_'+randomBytes(8).toString('hex'),organisationId:session.organisationId,capabilities}});await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:'role.created',entityType:'Role',entityId:role.id,after:{name,capabilities}}});});refresh();
+ await db.$transaction(async tx=>{if(await tx.role.findFirst({where:{organisationId:session.organisationId,name:{equals:name,mode:'insensitive'}}}))throw new Error('A profile with this name already exists.');const capabilities=source?(await tx.role.findFirstOrThrow({where:{id:source,organisationId:session.organisationId}})).capabilities:[];const role=await tx.role.create({data:{name,key:'custom_'+randomBytes(8).toString('hex'),organisationId:session.organisationId,capabilities}});await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:'role.created',entityType:'Role',entityId:role.id,after:{name,capabilities}}});},{isolationLevel:'Serializable'});refresh();
 }
 
 export async function saveManagementGroup(form:FormData){

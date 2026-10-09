@@ -11,6 +11,7 @@ import { managerPolicySchema } from "@/core/permissions/manager-level";
 import { db } from "@/core/db/client";
 import { revalidatePath } from "next/cache";
 import { writeAudit } from "@/core/audit/log";
+import {roleAccessRevision} from "@/core/permissions/access-revision";
 import { MODULE_CATALOGUE } from "@/core/modules/registry";
 export async function saveRole(form: FormData) {
  const session = await requireSession();
@@ -21,12 +22,15 @@ export async function saveRole(form: FormData) {
  if (capabilities.some(c => !known.has(c))) throw new Error("Unknown permission.");
  await db.$transaction(async tx => {
   const role = await tx.role.findFirstOrThrow({where:{id, organisationId:session.organisationId}});
+  if(String(form.get("accessRevision")??"")!==roleAccessRevision(role))throw new Error("This profile changed while you were editing. Reload it before saving.");
+  const name=String(form.get("profileName")??role.name).trim();
+  if(!name||name.length>80)throw new Error("Enter a profile name up to 80 characters.");
+  if(await tx.role.findFirst({where:{organisationId:session.organisationId,id:{not:id},name:{equals:name,mode:"insensitive"}}}))throw new Error("A profile with this name already exists.");
   const own = await tx.roleOnMembership.findFirst({where:{roleId:id, membershipId:session.membershipId}});
-  if (own && [CORE_CAPABILITIES.rolesManage, CORE_CAPABILITIES.usersManage].some(c => role.capabilities.includes(c) && !capabilities.includes(c))) throw new Error("You cannot remove your own access administration permissions.");
-  await tx.role.update({where:{id, organisationId:session.organisationId}, data:{capabilities}});
-  await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:"role.permissions.changed",entityType:"Role",entityId:id,before:{capabilities:role.capabilities},after:{capabilities}}});
- });
- await writeAudit({organisationId:session.organisationId, actorUserId:session.userId, action:"role.permissions.updated", entityType:"Role", entityId:id, after:{capabilities}});
+  if (own && [CORE_CAPABILITIES.rolesManage, CORE_CAPABILITIES.usersManage, CORE_CAPABILITIES.modulesManage].some(c => role.capabilities.includes(c) && !capabilities.includes(c))) throw new Error("You cannot remove your own access administration permissions.");
+  await tx.role.update({where:{id, organisationId:session.organisationId}, data:{capabilities,name}});
+  await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:"role.permissions.changed",entityType:"Role",entityId:id,before:{name:role.name,capabilities:role.capabilities},after:{name,capabilities}}});
+ },{isolationLevel:"Serializable"});
  revalidatePath("/", "layout");
 }
 export async function saveMemberRoles(form: FormData) {

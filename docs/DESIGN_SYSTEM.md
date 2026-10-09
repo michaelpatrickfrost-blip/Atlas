@@ -154,3 +154,11 @@ Goals, HR, Scheduling, Payroll and Team planner share people-workspace.tsx: blue
 white contextual headers, responsive totals, explicit views and progressive forms.
 Each retains its workflow/permissions. Dense rota/capacity grids scroll within
 panels; page-wide overflow is not intended.
+
+## Company and personal Settings — 10 October 2026
+
+Settings uses the Atlas blue/white shell and utility rail, rounded company header,
+searchable overview cards and section navigation (collapsed browser on smaller
+screens). Company access profiles have a searchable selector and one mounted
+editor; each app expands into source sections with RWA and fine-grained controls.
+Personal Settings is a separate own-account page without company controls.

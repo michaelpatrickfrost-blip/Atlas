@@ -1,3 +1,16 @@
+## 10 October 2026 — Company administration and personal Settings are distinct
+
+Michael requires Settings to be company administration for authorised administrators,
+and an own-profile destination for ordinary users. Use native administration
+capabilities, never role-name checks or business write permissions as an admin flag.
+Keep My work and personal mailbox configuration accessible without exposing company
+mailbox metadata. Company profiles reuse canonical Role/Membership grants and
+explicit denials. Break every implemented app into its actual permission sections;
+RWA presets expand to existing native capabilities, not invented bypass roles.
+Allow mixed profiles and granular exceptions, preserve source/tenant restrictions,
+and compare snapshots under Serializable audited writes to reject stale editing.
+Platform grants and existing business-user provisioning remain independently guarded.
+
 ## 10 October 2026 — Dashboard acceptance and activation share release locks
 
 Repeated concurrent live releases interleaved between accepted candidates and

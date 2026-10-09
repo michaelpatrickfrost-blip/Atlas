@@ -1,32 +1,369 @@
-import Link from 'next/link';
-import {Users,ShieldCheck,UserCheck,Search,ArrowUpRight,LockKeyhole} from 'lucide-react';
-import {CreateDialog} from '@/components/ui/create-dialog';
-import {ActionForm} from '@/components/ui/action-form';
-import {requireSession} from '@/core/auth/session';
-import {can} from '@/core/permissions/check';
-import {db} from '@/core/db/client';
-import {AccessEditor} from '@/components/admin/access-editor';
-import {saveRole} from './actions';
-import {BrandPanel} from './brand-panel';
-import {WorkspacePanel} from './workspace-panel';
-import {readCompanyProfile} from '@/core/setup/company-profile';
-import {readManagerPolicy} from '@/core/permissions/manager-level';
-import {ManagerPanel} from './manager-panel';
-import {createRole} from './user-actions';
-import {accessGroups} from './access-groups';
-import {redirect} from 'next/navigation';
-import {defaultSettingsHref} from './settings-menu';
-const input='mt-2 w-full rounded-xl border border-slate-200 bg-white p-3 text-sm';
-export default async function SettingsPage({searchParams}:{searchParams:Promise<Record<string,string|undefined>>}){
- const session=await requireSession(),params=await searchParams,editUsers=can(session,'core.users.manage'),editRoles=can(session,'core.roles.manage'),editCompany=can(session,'core.modules.manage');
- if(!params.tab) redirect(defaultSettingsHref(session));
- const tab=params.tab,q=(params.q??'').trim().slice(0,100),status=params.status,role=params.role;
- const [roles,company,members,total,active]=await Promise.all([
- editRoles||editUsers?db.role.findMany({where:{organisationId:session.organisationId},orderBy:{name:'asc'}}):[],
- db.organisation.findUniqueOrThrow({where:{id:session.organisationId},select:{name:true,logoDataUrl:true,companyProfile:true,managerPolicy:true,restrictedAccessAreas:true,allowCustomerCreation:true,allowProductCreation:true}}),
- editUsers?db.membership.findMany({where:{organisationId:session.organisationId,...(q?{user:{OR:[{name:{contains:q,mode:'insensitive'}},{email:{contains:q,mode:'insensitive'}}]}}:{}),...(['ACTIVE','SUSPENDED'].includes(status??'')?{active:status==='ACTIVE'}:{}),...(role?{roles:{some:{roleId:role}}}:{})},include:{user:{select:{id:true,name:true,email:true}},roles:{include:{role:true}}},orderBy:{user:{name:'asc'}},take:200}):[],
- editUsers?db.membership.count({where:{organisationId:session.organisationId}}):0,editUsers?db.membership.count({where:{organisationId:session.organisationId,active:true}}):0]);
- return <div className="space-y-6"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="text-[10px] font-semibold uppercase tracking-[.16em] text-blue-600">Your people. Your workspace.</p><h2 className="mt-2 text-3xl font-semibold tracking-tight">{tab==='roles'?'Roles & permissions':tab==='brand'?'Your brand':tab==='workspace'?'Workspace controls':tab==='managers'?'Manager level':tab==='security'?'Security & account recovery':'People & access'}</h2><p className="mt-2 text-sm text-slate-500">{tab==='brand'?'Upload the logo, colour, letterhead and terms your customers see on invoices.':tab==='users'?'Give everyone the right tools and the right level of access.':'Manage your company with clear, enforceable controls.'}</p></div>{tab==='roles'&&editRoles&&<CreateDialog title="Create a reusable role" label="New role"><ActionForm action={createRole} className="space-y-4"><label className="block text-xs">Role name<input name="name" required maxLength={80} className={input}/></label><label className="block text-xs">Start from<select name="sourceRoleId" className={input}><option value="">Empty role</option>{roles.map(r=><option key={r.id} value={r.id}>{r.name}</option>)}</select></label><button className="rounded-xl bg-blue-600 px-5 py-3 text-xs text-white">Create role</button></ActionForm></CreateDialog>}</div>
- {tab==='users'&&editUsers?<><div className="grid gap-3 sm:grid-cols-3">{[{label:'Company users',value:total,icon:Users},{label:'Active accounts',value:active,icon:UserCheck},{label:'Reusable roles',value:roles.length,icon:ShieldCheck}].map(stat=><div key={stat.label} className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5"><stat.icon size={20} className="text-blue-500"/><div><p className="text-2xl font-semibold">{stat.value}</p><p className="text-xs text-slate-400">{stat.label}</p></div></div>)}</div><section className="overflow-hidden rounded-2xl border border-slate-200 bg-white"><form className="flex flex-wrap gap-3 border-b border-slate-100 p-4"><input type="hidden" name="tab" value="users"/><div className="relative min-w-48 flex-1"><Search size={16} className="absolute left-3 top-3 text-slate-400"/><input name="q" aria-label="Search users" defaultValue={q} placeholder="Search by name or email…" className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-3 text-sm"/></div><select name="status" aria-label="Account status" defaultValue={status??''} className="rounded-xl border border-slate-200 px-3 py-2 text-xs"><option value="">All statuses</option><option value="ACTIVE">Active</option><option value="SUSPENDED">Suspended</option></select><select name="role" aria-label="Filter by role" defaultValue={role??''} className="rounded-xl border border-slate-200 px-3 py-2 text-xs"><option value="">All roles</option>{roles.map(r=><option key={r.id} value={r.id}>{r.name}</option>)}</select><button className="rounded-xl bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-600">Search</button></form><div className="divide-y divide-slate-100">{members.map(member=><Link key={member.id} href={`/settings/users/${member.id}`} className="group flex flex-wrap items-center gap-4 p-5 transition hover:bg-slate-50"><span className="flex size-11 items-center justify-center rounded-2xl bg-blue-50 text-sm font-semibold text-blue-600">{member.user.name.split(' ').map(n=>n[0]).slice(0,2).join('')}</span><div className="min-w-40 flex-1"><p className="text-sm font-semibold">{member.user.name}{member.id===session.membershipId&&<span className="ml-2 text-xs font-normal text-slate-400">You</span>}</p><p className="mt-1 break-all text-xs text-slate-400">{member.user.email}</p></div><div className="min-w-36"><p className="text-xs text-slate-600">{member.roles.map(r=>r.role.name).join(', ')||'No assigned roles'}</p><p className="mt-1 text-[10px] text-slate-400">{member.lastLoginAt?'Last sign-in '+member.lastLoginAt.toLocaleDateString('en-GB'):'Not signed in yet'}</p></div><span className={`rounded-full px-3 py-1.5 text-[10px] font-semibold ${member.active?'bg-emerald-50 text-emerald-600':'bg-amber-50 text-amber-600'}`}>{member.active?'Active':'Suspended'}</span><ArrowUpRight size={16} className="text-slate-300 group-hover:text-blue-600"/></Link>)}{!members.length&&<p className="p-8 text-center text-sm text-slate-400">No users match these filters.</p>}</div><p className="border-t border-slate-100 px-5 py-3 text-[10px] text-slate-400">Showing up to 200 matching users. Open a user to manage their access, employee link and security.</p></section></>:tab==='roles'&&editRoles?<div className="space-y-4">{roles.map(r=><details key={r.id} className="rounded-2xl border border-slate-200 bg-white"><summary className="flex cursor-pointer items-center justify-between p-5 text-sm font-semibold"><span>{r.name}</span><span className="text-xs font-normal text-slate-400">{r.capabilities.length} permissions · Configure</span></summary><div className="border-t border-slate-100 p-5"><AccessEditor key={r.capabilities.join(',')} roleId={r.id} capabilities={r.capabilities} groups={accessGroups()} action={saveRole}/></div></details>)}</div>:tab==='brand'&&editCompany?<BrandPanel name={company.name} logoDataUrl={company.logoDataUrl} profile={readCompanyProfile(company.companyProfile)}/>:tab==='workspace'&&editCompany?<WorkspacePanel company={company} profile={readCompanyProfile(company.companyProfile)} editCompany/>:tab==='managers'&&editCompany?<ManagerPanel policy={readManagerPolicy(company.managerPolicy)} currency={readCompanyProfile(company.companyProfile).defaultCurrency}/>:tab==='security'&&(editUsers||editCompany)?<div className="grid gap-5 sm:grid-cols-2"><section className="rounded-2xl border border-slate-200 bg-white p-6"><LockKeyhole className="mb-4 text-blue-500"/><h3 className="font-semibold">Account recovery</h3><p className="mt-3 text-sm leading-relaxed text-slate-500">Open a user to issue a single-use recovery code. Codes expire after 30 minutes. You must confirm your own password. Passwords need at least 12 characters.</p><p className="mt-3 text-xs leading-relaxed text-slate-400">Codes are shared manually; automated email is not configured. Shared accounts and Atlas platform accounts are recovered by their account owner.</p><Link href="/settings?tab=users" className="mt-5 inline-block text-xs text-blue-600">Manage users →</Link></section><section className="rounded-2xl border border-slate-200 bg-white p-6"><ShieldCheck className="mb-4 text-blue-500"/><h3 className="font-semibold">Sessions & access</h3><p className="mt-3 text-sm leading-relaxed text-slate-500">Suspend a user or revoke their company sessions from their account screen. Changes take effect on the next request. Password changes invalidate older sessions across their accounts.</p><Link href="/profile" className="mt-5 inline-block text-xs text-blue-600">Manage your password & devices →</Link><p className="mt-4 text-xs text-slate-400">MFA, SSO and automated invitations are not configured yet.</p></section></div>:<p className="rounded-2xl bg-white p-6 text-sm text-slate-500">You do not have access to this administration area.</p>}
- </div>;
+import Link from "next/link";
+import {
+  Users,
+  ShieldCheck,
+  UserCheck,
+  Search,
+  ArrowUpRight,
+  LockKeyhole,
+} from "lucide-react";
+import { CreateDialog } from "@/components/ui/create-dialog";
+import { ActionForm } from "@/components/ui/action-form";
+import { requireSession } from "@/core/auth/session";
+import { can } from "@/core/permissions/check";
+import { db } from "@/core/db/client";
+import { saveRole } from "./actions";
+import { BrandPanel } from "./brand-panel";
+import { WorkspacePanel } from "./workspace-panel";
+import { readCompanyProfile } from "@/core/setup/company-profile";
+import { readManagerPolicy } from "@/core/permissions/manager-level";
+import { ManagerPanel } from "./manager-panel";
+import { createRole } from "./user-actions";
+import { roleAccessRevision } from "@/core/permissions/access-revision";
+import { AccessProfiles } from "./access-profiles";
+import { SettingsOverview } from "./overview";
+import { settingsLinks } from "./settings-menu";
+import { accessGroups } from "./access-groups";
+import { redirect } from "next/navigation";
+import { defaultSettingsHref } from "./settings-menu";
+const input =
+  "mt-2 w-full rounded-xl border border-slate-200 bg-white p-3 text-sm";
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
+  const session = await requireSession(),
+    params = await searchParams,
+    editUsers = can(session, "core.users.manage"),
+    editRoles = can(session, "core.roles.manage"),
+    editCompany = can(session, "core.modules.manage");
+  if (!params.tab) redirect(defaultSettingsHref(session));
+  const tab = params.tab,
+    q = (params.q ?? "").trim().slice(0, 100),
+    status = params.status,
+    role = params.role;
+  const [roles, company, members, total, active] = await Promise.all([
+    editRoles || editUsers
+      ? db.role.findMany({
+          where: { organisationId: session.organisationId },
+          orderBy: { name: "asc" },
+        })
+      : [],
+    db.organisation.findUniqueOrThrow({
+      where: { id: session.organisationId },
+      select: {
+        name: true,
+        logoDataUrl: true,
+        companyProfile: true,
+        managerPolicy: true,
+        restrictedAccessAreas: true,
+        allowCustomerCreation: true,
+        allowProductCreation: true,
+      },
+    }),
+    editUsers
+      ? db.membership.findMany({
+          where: {
+            organisationId: session.organisationId,
+            ...(q
+              ? {
+                  user: {
+                    OR: [
+                      { name: { contains: q, mode: "insensitive" } },
+                      { email: { contains: q, mode: "insensitive" } },
+                    ],
+                  },
+                }
+              : {}),
+            ...(["ACTIVE", "SUSPENDED"].includes(status ?? "")
+              ? { active: status === "ACTIVE" }
+              : {}),
+            ...(role ? { roles: { some: { roleId: role } } } : {}),
+          },
+          include: {
+            user: { select: { id: true, name: true, email: true } },
+            roles: { include: { role: true } },
+          },
+          orderBy: { user: { name: "asc" } },
+          take: 200,
+        })
+      : [],
+    editUsers
+      ? db.membership.count({
+          where: { organisationId: session.organisationId },
+        })
+      : 0,
+    editUsers
+      ? db.membership.count({
+          where: { organisationId: session.organisationId, active: true },
+        })
+      : 0,
+  ]);
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[.16em] text-blue-600">
+            Your people. Your workspace.
+          </p>
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight">
+            {tab === "roles"
+              ? "Access profiles"
+              : tab === "overview"
+                ? "Your company, configured your way"
+                : tab === "brand"
+                  ? "Your brand"
+                  : tab === "workspace"
+                    ? "Workspace controls"
+                    : tab === "managers"
+                      ? "Manager level"
+                      : tab === "security"
+                        ? "Security & account recovery"
+                        : "People & access"}
+          </h2>
+          <p className="mt-2 text-sm text-slate-500">
+            {tab === "brand"
+              ? "Upload the logo, colour, letterhead and terms your customers see on invoices."
+              : tab === "users"
+                ? "Give everyone the right tools and the right level of access."
+                : "Manage your company with clear, enforceable controls."}
+          </p>
+        </div>
+        {tab === "roles" && editRoles && (
+          <CreateDialog title="Create an access profile" label="New profile">
+            <ActionForm action={createRole} className="space-y-4">
+              <label className="block text-xs">
+                Profile name
+                <input name="name" required maxLength={80} className={input} />
+              </label>
+              <label className="block text-xs">
+                Start from
+                <select name="sourceRoleId" className={input}>
+                  <option value="">Empty profile</option>
+                  {roles.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button className="rounded-xl bg-blue-600 px-5 py-3 text-xs text-white">
+                Create profile
+              </button>
+            </ActionForm>
+          </CreateDialog>
+        )}
+      </div>
+      {tab === "overview" ? (
+        <SettingsOverview
+          links={settingsLinks(session)}
+          companyName={company.name}
+          users={editUsers ? total : null}
+          active={editUsers ? active : null}
+          profiles={editRoles ? roles.length : null}
+        />
+      ) : tab === "users" && editUsers ? (
+        <>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              { label: "Company users", value: total, icon: Users },
+              { label: "Active accounts", value: active, icon: UserCheck },
+              {
+                label: "Reusable roles",
+                value: roles.length,
+                icon: ShieldCheck,
+              },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5"
+              >
+                <stat.icon size={20} className="text-blue-500" />
+                <div>
+                  <p className="text-2xl font-semibold">{stat.value}</p>
+                  <p className="text-xs text-slate-400">{stat.label}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            <form className="flex flex-wrap gap-3 border-b border-slate-100 p-4">
+              <input type="hidden" name="tab" value="users" />
+              <div className="relative min-w-48 flex-1">
+                <Search
+                  size={16}
+                  className="absolute left-3 top-3 text-slate-400"
+                />
+                <input
+                  name="q"
+                  aria-label="Search users"
+                  defaultValue={q}
+                  placeholder="Search by name or email…"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-3 text-sm"
+                />
+              </div>
+              <select
+                name="status"
+                aria-label="Account status"
+                defaultValue={status ?? ""}
+                className="rounded-xl border border-slate-200 px-3 py-2 text-xs"
+              >
+                <option value="">All statuses</option>
+                <option value="ACTIVE">Active</option>
+                <option value="SUSPENDED">Suspended</option>
+              </select>
+              <select
+                name="role"
+                aria-label="Filter by role"
+                defaultValue={role ?? ""}
+                className="rounded-xl border border-slate-200 px-3 py-2 text-xs"
+              >
+                <option value="">All roles</option>
+                {roles.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.name}
+                  </option>
+                ))}
+              </select>
+              <button className="rounded-xl bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-600">
+                Search
+              </button>
+            </form>
+            <div className="divide-y divide-slate-100">
+              {members.map((member) => (
+                <Link
+                  key={member.id}
+                  href={`/settings/users/${member.id}`}
+                  className="group flex flex-wrap items-center gap-4 p-5 transition hover:bg-slate-50"
+                >
+                  <span className="flex size-11 items-center justify-center rounded-2xl bg-blue-50 text-sm font-semibold text-blue-600">
+                    {member.user.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .slice(0, 2)
+                      .join("")}
+                  </span>
+                  <div className="min-w-40 flex-1">
+                    <p className="text-sm font-semibold">
+                      {member.user.name}
+                      {member.id === session.membershipId && (
+                        <span className="ml-2 text-xs font-normal text-slate-400">
+                          You
+                        </span>
+                      )}
+                    </p>
+                    <p className="mt-1 break-all text-xs text-slate-400">
+                      {member.user.email}
+                    </p>
+                  </div>
+                  <div className="min-w-36">
+                    <p className="text-xs text-slate-600">
+                      {member.roles.map((r) => r.role.name).join(", ") ||
+                        "No assigned roles"}
+                    </p>
+                    <p className="mt-1 text-[10px] text-slate-400">
+                      {member.lastLoginAt
+                        ? "Last sign-in " +
+                          member.lastLoginAt.toLocaleDateString("en-GB")
+                        : "Not signed in yet"}
+                    </p>
+                  </div>
+                  <span
+                    className={`rounded-full px-3 py-1.5 text-[10px] font-semibold ${member.active ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}
+                  >
+                    {member.active ? "Active" : "Suspended"}
+                  </span>
+                  <ArrowUpRight
+                    size={16}
+                    className="text-slate-300 group-hover:text-blue-600"
+                  />
+                </Link>
+              ))}
+              {!members.length && (
+                <p className="p-8 text-center text-sm text-slate-400">
+                  No users match these filters.
+                </p>
+              )}
+            </div>
+            <p className="border-t border-slate-100 px-5 py-3 text-[10px] text-slate-400">
+              Showing up to 200 matching users. Open a user to manage their
+              access, employee link and security.
+            </p>
+          </section>
+        </>
+      ) : tab === "roles" && editRoles ? (
+        <AccessProfiles
+          profiles={roles.map((role) => ({
+            ...role,
+            revision: roleAccessRevision(role),
+          }))}
+          groups={accessGroups()}
+          action={saveRole}
+        />
+      ) : tab === "brand" && editCompany ? (
+        <BrandPanel
+          name={company.name}
+          logoDataUrl={company.logoDataUrl}
+          profile={readCompanyProfile(company.companyProfile)}
+        />
+      ) : tab === "workspace" && editCompany ? (
+        <WorkspacePanel
+          company={company}
+          profile={readCompanyProfile(company.companyProfile)}
+          editCompany
+        />
+      ) : tab === "managers" && editCompany ? (
+        <ManagerPanel
+          policy={readManagerPolicy(company.managerPolicy)}
+          currency={readCompanyProfile(company.companyProfile).defaultCurrency}
+        />
+      ) : tab === "security" && (editUsers || editCompany) ? (
+        <div className="grid gap-5 sm:grid-cols-2">
+          <section className="rounded-2xl border border-slate-200 bg-white p-6">
+            <LockKeyhole className="mb-4 text-blue-500" />
+            <h3 className="font-semibold">Account recovery</h3>
+            <p className="mt-3 text-sm leading-relaxed text-slate-500">
+              Open a user to issue a single-use recovery code. Codes expire
+              after 30 minutes. You must confirm your own password. Passwords
+              need at least 12 characters.
+            </p>
+            <p className="mt-3 text-xs leading-relaxed text-slate-400">
+              Codes are shared manually; automated email is not configured.
+              Shared accounts and Atlas platform accounts are recovered by their
+              account owner.
+            </p>
+            <Link
+              href="/settings?tab=users"
+              className="mt-5 inline-block text-xs text-blue-600"
+            >
+              Manage users →
+            </Link>
+          </section>
+          <section className="rounded-2xl border border-slate-200 bg-white p-6">
+            <ShieldCheck className="mb-4 text-blue-500" />
+            <h3 className="font-semibold">Sessions & access</h3>
+            <p className="mt-3 text-sm leading-relaxed text-slate-500">
+              Suspend a user or revoke their company sessions from their account
+              screen. Changes take effect on the next request. Password changes
+              invalidate older sessions across their accounts.
+            </p>
+            <Link
+              href="/profile"
+              className="mt-5 inline-block text-xs text-blue-600"
+            >
+              Manage your password & devices →
+            </Link>
+            <p className="mt-4 text-xs text-slate-400">
+              MFA, SSO and automated invitations are not configured yet.
+            </p>
+          </section>
+        </div>
+      ) : (
+        <p className="rounded-2xl bg-white p-6 text-sm text-slate-500">
+          You do not have access to this administration area.
+        </p>
+      )}
+    </div>
+  );
 }

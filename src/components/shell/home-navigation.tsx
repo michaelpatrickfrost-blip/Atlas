@@ -19,9 +19,7 @@ export async function HomeNavigation({ session }: { session: Session }) {
         ...(can(session, CORE_CAPABILITIES.chatRead)
           ? [{ name: "Messages" as const, href: "/chat" }]
           : []),
-        ...(canOpenCompanyAdmin(session)
-          ? [{ name: "Settings" as const, href: "/settings" }]
-          : []),
+        {name:"Settings",href:canOpenCompanyAdmin(session)?"/settings":"/profile/settings"},
       ]}
     />
   );

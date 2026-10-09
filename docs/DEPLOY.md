@@ -318,3 +318,13 @@ for all real companies and active Test companies. Suspended Test companies retai
 immutable acceptance history and are excluded from runtime dependency checks;
 reactivating them restores the checks. Do not resolve a gate by deleting history,
 changing a real company's status or clearing another contributor's active pointers.
+
+## Company Settings release acceptance
+
+Use ATLAS_RELEASE_ACCEPTANCE=settings with the exact pinned scoped release.
+The locked deployer runs check-company-settings.ts and Home/Apps verification on
+the sealed candidate, then public HTTPS, with exact SHA checks bracketing both.
+Only synthetic central Test-company identities/profiles/settings are mutated;
+finally suspends companies/revokes sessions and retains audit history. No email
+transport is invoked. Existing backups/ancestry/compatibility/seal/rollback gates
+and other feature acceptance modes remain. Private evidence is printed per stage.

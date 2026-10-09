@@ -30,7 +30,7 @@ export function WorkspaceNavigation({
     >
       {links.map(({ name, href }) => {
         const Icon = icons[name],
-          active = pathname === href;
+          active = pathname === href.split("#")[0] || (name === "Settings" && (pathname.startsWith("/settings/") || pathname === "/profile/email"));
         return (
           <Link
             key={href}

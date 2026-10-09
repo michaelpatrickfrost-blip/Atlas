@@ -17,6 +17,8 @@ inputs; bound draft create/refresh, atomic YTD finalisation and guarded paid sta
 Corrected older values in the 2026–27 table; finalised/paid history retained. Generic
 gateway remains closed to new models; named central reads support desktop.
 Additive migration 20261010010000_people_workspaces and regenerated API metadata.
+Tenant-root ownership review adds 20261010020000_people_workspace_ownership
+(company FKs for scorecards, intervals and openings); no record deletion.
 
 Checkpoint checks: Prisma generation/validation and schema diff reviewed; production
 build and strict types PASS; 8 focused files/68 assertions PASS. Scoped lint PASS
@@ -37,7 +39,12 @@ merged strict check overlapped generation/build and read stale types; rerun afte
 generation required. Refinement tests: 3 files/29 then 2 files/14 PASS (including a new snapshot
 privacy assertion); scoped lint PASS. Initial e38dd4d queue rejected moved branch; 401129b prepare safely
 stopped at ancestry when font release activated. No People source activated. Next:
-font-merged build/candidate
+Font-merged production build/strict types and 16 focused files/109 tests PASS.
+First prepared 28a45e6 candidate/migration smoke PASS, backup
+atlas-pre-deploy-20261009-221347; real candidate acceptance queued behind other
+releases. Ownership client/API regenerated and production build PASS; strict types pending.
+Checker now also saves/reloads a real Analytics scorecard dashboard and confirms
+changed source figures render; not yet run. Next: candidate
 acceptance, activation/public verification. External scope stays explicit: RTI/bank,
 special tax/director/week53; telephony/adherence/queue forecasts; mutual swaps,
 notifications, e-sign/benefits and historical goal snapshots.

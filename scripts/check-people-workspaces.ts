@@ -28,7 +28,7 @@ async function main() {
   const userIds:string[]=[],browser=await chromium.launch({headless:true});
   const errors:string[]=[];
   try {
-    const caps=["core.profile.self","people.employee.read","people.employee.manage","people.rota.manage","people.team.manage","people.timesheet.manage","scheduling.read","scheduling.manage","teams.read","teams.manage","kpis.read","kpis.manage","payroll.run.read","payroll.run.manage","payroll.employee.manage","payroll.settings.manage","analytics.read","analytics.manage"];
+    const caps=["core.profile.self","people.employee.read","people.employee.manage","people.rota.manage","people.team.manage","people.timesheet.manage","scheduling.read","scheduling.manage","teams.read","teams.manage","kpis.read","kpis.manage","payroll.run.read","payroll.run.manage","payroll.employee.manage","payroll.settings.manage","analytics.dashboard.read","analytics.dashboard.manage"];
     async function actor(label:string,organisationId:string,capabilities:string[]) {
       const user=await db.user.create({data:{name:`${label} ${suffix}`,email:`${label.toLowerCase()}-${suffix}@example.test`,passwordHash:"!no-password-acceptance-only"}});userIds.push(user.id);
       const membership=await db.membership.create({data:{organisationId,userId:user.id,grantedCapabilities:capabilities}});
@@ -58,7 +58,9 @@ async function main() {
     await db.kpi.update({where:{id:goal.id},data:{current:90}});
     const metric=kpisAnalytics.find(item=>item.id==="kpis.attainment");assert(metric);assert.equal((await metric.query(manager.session,new Date("2026-10-01")))[0].value,90);
     assert.equal((await loadScorecards(outsider.session)).length,0);
-    console.log("PASS persisted weighted scorecards, changing actuals reach Analytics, personal goals excluded and cross-company reads empty");
+    await visit("/analytics?new=1");await page.getByLabel("Dashboard name",{exact:true}).fill("People performance");await page.getByLabel("App",{exact:true}).selectOption("Goals & KPIs");await page.getByLabel("What to show",{exact:true}).selectOption("kpis.attainment");await page.getByLabel("Chart to add",{exact:true}).selectOption("table");await page.getByRole("button",{name:"Add",exact:true}).click();await page.getByRole("button",{name:"Save dashboard",exact:true}).click();await expect.poll(()=>db.dashboard.count({where:{organisationId:company.id,userId:manager.user.id,name:"Analytics · People performance"}})).toBe(1);await page.reload({waitUntil:"networkidle"});await expect(page.getByRole("heading",{name:"Scorecard attainment",exact:true})).toBeVisible();await expect(page.getByText("Operations strategy",{exact:true})).toBeVisible();const dashboard=await db.dashboard.findFirstOrThrow({where:{organisationId:company.id,name:"Analytics · People performance"}});assert(dashboard.widgets.some(widget=>widget.includes("kpis.attainment")));await expect(page.getByRole("cell",{name:"90%",exact:true})).toBeVisible();await db.kpi.update({where:{id:goal.id},data:{current:95}});await page.reload({waitUntil:"networkidle"});await expect(page.getByRole("cell",{name:"95%",exact:true})).toBeVisible();
+    
+    console.log("PASS persisted weighted scorecards, saved dashboard UI, changing actuals reach Analytics, personal goals excluded and cross-company reads empty");
 
     await visit("/payroll/employees","Employee pay setup");
     const payDetails=page.locator('details').filter({has:page.locator(`input[name="employeeId"][value="${employee.id}"]`)}).first();await payDetails.locator('summary').first().click();

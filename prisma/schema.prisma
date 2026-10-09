@@ -229,6 +229,9 @@ model Organisation {
   safetyChanges SafetyChange[]
   safetyLinks SafetyLink[]
   safetyRecords SafetyRecord[]
+  kpiScorecards KpiScorecard[]
+  staffingIntervals StaffingInterval[]
+  openRotaShifts OpenRotaShift[]
   kpis Kpi[]
   projectTasks ProjectTask[]
   meetings Meeting[]
@@ -7368,6 +7371,7 @@ model PlannerTask {
 model KpiScorecard {
   id String @id @default(cuid())
   organisationId String
+  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
   title String
   description String @default("")
   ownerUserId String
@@ -7394,6 +7398,7 @@ model KpiScorecardItem {
 model StaffingInterval {
   id String @id @default(cuid())
   organisationId String
+  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
   department String
   label String
   role String @default("")
@@ -7442,6 +7447,7 @@ model EmployeeAvailability {
 model OpenRotaShift {
   id String @id @default(cuid())
   organisationId String
+  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
   department String
   role String
   location String @default("")

@@ -1209,6 +1209,24 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": true
     },
+    "kpiScorecards": {
+      "type": "KpiScorecard",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "staffingIntervals": {
+      "type": "StaffingInterval",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "openRotaShifts": {
+      "type": "OpenRotaShift",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "kpis": {
       "type": "Kpi",
       "list": true,
@@ -28957,6 +28975,12 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
     "title": {
       "type": "String",
       "list": false,
@@ -29044,6 +29068,12 @@ export const MODEL_FIELDS = {
       "list": false,
       "nullable": false,
       "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
     },
     "department": {
       "type": "String",
@@ -29248,6 +29278,12 @@ export const MODEL_FIELDS = {
       "list": false,
       "nullable": false,
       "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
     },
     "department": {
       "type": "String",

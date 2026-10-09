@@ -138,6 +138,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
   const [attachOpen, setAttachOpen] = useState(false);
   const [attachQuery, setAttachQuery] = useState("");
   const [hits, setHits] = useState<LinkHit[]>([]);
+  const [recordSearching, setRecordSearching] = useState(false);
   const [toasts, setToasts] = useState<Snapshot["notices"]>([]);
   const [menu, setMenu] = useState(false);
   const [details, setDetails] = useState(false);
@@ -262,7 +263,6 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
       cancelled = true;
       clearTimeout(handle);
     };
-     
   }, [activeId, threadQuery, historyBefore]);
 
   useEffect(() => {
@@ -329,7 +329,10 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
               ? reason.message
               : "Records could not be searched.",
           ),
-        );
+        )
+        .finally(() => {
+          if (!cancelled) setRecordSearching(false);
+        });
     }, 200);
     return () => {
       cancelled = true;
@@ -450,7 +453,6 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
             : "Chat could not be opened.",
         ),
       );
-     
   }, [open]);
 
   const tagQuery = /(?:^|\s)@([\p{L}\p{N}.'-]*)$/u.exec(draft)?.[1];
@@ -1205,7 +1207,11 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                           disabled={pending || attached.length >= 8}
                           aria-label="Attach a record"
                           title="Attach a record"
-                          onClick={() => setAttachOpen(true)}
+                          onClick={() => {
+                            setAttachOpen(true);
+                            setHits([]);
+                            setRecordSearching(true);
+                          }}
                           className="rounded-xl p-2.5 text-[#71809a] hover:bg-blue-50 hover:text-[#075bff] disabled:opacity-40"
                         >
                           <Paperclip size={18} />
@@ -1392,7 +1398,11 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                 autoFocus
                 aria-label="Search people"
                 value={peopleQuery}
-                onChange={(event) => setPeopleQuery(event.target.value)}
+                onChange={(event) => {
+                  setPeopleQuery(event.target.value);
+                  setPeopleHits([]);
+                  setPeopleSearching(Boolean(event.target.value.trim()));
+                }}
                 placeholder="Search by name or customer…"
                 className="min-w-0 flex-1 bg-transparent text-sm outline-none"
               />
@@ -1494,7 +1504,11 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                 autoFocus
                 aria-label="Search records to attach"
                 value={attachQuery}
-                onChange={(event) => setAttachQuery(event.target.value)}
+                onChange={(event) => {
+                  setAttachQuery(event.target.value);
+                  setHits([]);
+                  setRecordSearching(true);
+                }}
                 maxLength={80}
                 placeholder="Order number, customer, product…"
                 className="min-w-0 flex-1 bg-transparent text-sm outline-none"
@@ -1563,7 +1577,12 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                   </div>
                 ) : null;
               })}
-              {!hits.length && (
+              {recordSearching && (
+                <p className="py-8 text-center text-sm text-[#71809a]">
+                  Searching records…
+                </p>
+              )}
+              {!recordSearching && !hits.length && (
                 <p className="py-8 text-center text-sm text-[#71809a]">
                   No available records match this search.
                 </p>

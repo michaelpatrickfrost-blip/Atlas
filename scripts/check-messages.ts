@@ -97,6 +97,8 @@ async function main() {
     const page = await context.newPage(),
       errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
+    page.setDefaultTimeout(15_000);
+    page.setDefaultNavigationTimeout(30_000);
     await page.goto("/home");
     await page
       .getByRole("button", { name: "Open messages", exact: true })

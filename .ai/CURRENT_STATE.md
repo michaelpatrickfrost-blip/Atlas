@@ -19,7 +19,13 @@ No schema/migration, grants or existing business-record edits. Preserved concurr
 live Guardian MRP source `0ce9f4a` and Reports/Admin/Studio evidence while resolving
 CURRENT_STATE with both contributors' entries. Eight focused files/47 assertions,
 strict TypeScript and production build passed; scoped ESLint zero errors/three
-brand-image warnings; diff check pending final commit. Full suite not rerun.
+brand-image warnings. Candidate `4233b57` is prepared/smoke-verified with central
+backup `atlas-pre-deploy-20261009-202932`; live pointer unchanged. Browser acceptance
+waits for the shared release lock held by another verification run. Refined picker
+search loading, bounded test timeouts and removed formatter whitespace; 17 chat
+assertions, strict TypeScript and final production build passed again; focused
+refinement lint zero errors/one brand-image warning and diff check passed.
+Full suite not rerun.
 Next: prepare pinned candidate, run real synthetic-contact chat/order/history and
 three-size browser acceptance plus Home/Reports regression, activate and repeat
 public verification. Synthetic QA fixtures stay central and are retired, no actual

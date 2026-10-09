@@ -25,8 +25,10 @@
   membership, with every non-read request blocked. First candidate passed all three responsive layouts, authorised cards,
   loaded branding and no horizontal overflow. The mobile workspace Apps
   accessibility check caught a missing button name; corrected with aria-label.
-  Refined cards/hero after screenshot review; final acceptance and activation
-  pending.
+  Second candidate passed desktop/tablet/phone, search open/close and
+  workspace Apps navigation with all writes blocked. Final screenshot refinements
+  improve word spacing, short card descriptions and labelled mobile utilities.
+  Final acceptance and activation pending.
 - Next: prepare exact server candidate, run read-only acceptance, activate and
   verify live; merge this release branch/evidence into main while preserving
   the concurrent Studio implementation. No schema/business-data changes.

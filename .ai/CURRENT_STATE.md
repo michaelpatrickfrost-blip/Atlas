@@ -1,5 +1,17 @@
 # Atlas current state
 
+## 10 October 2026 — Cohort query integrated with verified live People source
+
+Preserved exact live 36d0d2d and its accepted source/evidence unchanged. Cohort
+query source integrated 21 files/128 assertions, Prisma generation, production
+build, strict post-build TypeScript and scoped lint PASS. No Studio schema change.
+Prepare the compatible pinned cohort candidate and run the new real private-access/
+unanchored/final-record cohort helper plus principal/retirement and combined
+native commercial/People acceptance. Owner cohort helper not run yet; no live
+cohort-query claim. Previous 234c68e preparation safely stopped at ancestry before
+backup/build; native live 36d0d2d preserves verified 7941f9b.
+
+
 ## 10 October 2026 — People overhaul live and publicly verified
 
 Accepted runtime `36d0d2de7e64340a5faf130a69b3bcf21db3a2fc` is live at

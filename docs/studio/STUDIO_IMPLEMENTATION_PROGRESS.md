@@ -20,7 +20,8 @@ durable job. Remaining Phase 2 dependencies retained.
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source 7941f9bfb9e4120d9726cea49f03590107a5750c;
+VERIFIED. Latest confirmed live source 36d0d2de7e64340a5faf130a69b3bcf21db3a2fc,
+preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
 The supplied source defines ten phases 0–9, not five. The original
@@ -205,6 +206,10 @@ platform grants and business-user provisioning regression cases.
 
 # Tests Run
 
+Latest integrated People/cohort source: 21 files/128 tests, Prisma generation,
+production build, strict post-build TypeScript and scoped lint PASS. Real cohort
+helper still pending; full suite not rerun.
+
 2B3c2a: 4 files/22 tests, build, strict post-build TypeScript and scoped lint PASS.
 New central cohort helper not run; no live cohort-query claim.
 
@@ -317,7 +322,8 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Prepare a pinned cohort-enabled source preserving live 7941f9b. Execute the updated
+Prepare a pinned cohort-enabled source preserving live People 36d0d2d and verified
+Studio 7941f9b. Integrated 21 files/128 tests, generation/types/lint/build PASS. Execute the updated
 combined candidate runner including real owner cohort count/private denial,
 refreshed principal/retirement and all native commercial regressions. On PASS
 activate exact source and repeat publicly. Preserve any newly advanced live source

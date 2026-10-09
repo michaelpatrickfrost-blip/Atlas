@@ -290,8 +290,8 @@ prematurely. Gates cannot PASS from file existence alone.
 # Exact Next Action
 
 2B3b service/tests/memory checkpointed; latest main 98cf934 and exact live 5ebd700
-(rounded typography preserving e5d66e6) merged unchanged. Run
-integrated build/types, prepare pinned candidate, execute central real retirement/
+(rounded typography preserving e5d66e6) merged unchanged. Integrated build/types
+PASS; prepare pinned candidate, execute central real retirement/
 conversion and combined native acceptance, then activate exact candidate on PASS
 and repeat publicly. New helper NOT RUN; no live 2B3a/b claim yet. Following verified
 retirement checkpoint, 2B3c reviewed preview/durable jobs, then target publication/

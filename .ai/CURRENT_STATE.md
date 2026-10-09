@@ -5,7 +5,7 @@
 Exact live 5ebd700 and final main 98cf934 source/evidence merged. No font code
 changed by Studio; existing public glyph/responsive evidence retained. Studio
 2B3a pure conversion and 2B3b retirement remain local only. Prior 35-test/types/
-scoped-lint/build checks PASS; integrated production build/types next, then real
+scoped-lint/build and integrated production build/strict TypeScript PASS; next real
 central helper and combined candidate/public acceptance. No new Prisma migration.
 
 

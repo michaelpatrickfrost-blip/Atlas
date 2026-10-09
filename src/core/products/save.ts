@@ -1,12 +1,12 @@
 import type {Session} from '@/core/auth/session';
 import {assertCapability} from '@/core/permissions/check';
 import {assertRecordCreationAllowed} from '@/core/policies/record-creation';
-import {getEnabledModuleIds} from '@/core/modules/runtime';
+import {enabledModulesForSession} from '@/core/modules/runtime';
 import {db} from '@/core/db/client';
 import {measuresFromInput} from '@/core/products/physical';
 import {productClassChoice} from '@/core/products/categories';
 export async function persistBusinessProduct(session:Session,form:FormData){
- assertCapability(session,'core.products.manage');const enabled=await getEnabledModuleIds(session.organisationId);if(!enabled.has('products')&&!enabled.has('stock'))throw new Error('Enable Inventory before maintaining products.');
+ assertCapability(session,'core.products.manage');const enabled=await enabledModulesForSession(session);if(!enabled.has('products')&&!enabled.has('stock'))throw new Error('Enable Inventory before maintaining products.');
  const code=String(form.get('code')??'').trim(),name=String(form.get('name')??'').trim(),basePriceAmount=Math.round(Number(form.get('price'))*100),baseCurrency=String(form.get('currency')??'GBP'),kind=String(form.get('kind')??'PRODUCT'),unitOfMeasure=String(form.get('unit')??'each').trim(),taxCategory=String(form.get('taxCategory')??'STANDARD');
  if(!code||code.length>60||!name||name.length>200||!unitOfMeasure||unitOfMeasure.length>30||!Number.isSafeInteger(basePriceAmount)||basePriceAmount<0||basePriceAmount>2147483647||!/^[A-Z]{3}$/.test(baseCurrency)||!['PRODUCT','SERVICE','CHARGE'].includes(kind)||!['STANDARD','ZERO_RATED','EXEMPT'].includes(taxCategory))throw new Error('Enter a SKU, name, unit, valid price, currency and tax category.');
  const categoryCode=(String(form.get('newCategoryCode')??'').trim()||String(form.get('categoryCode')??'').trim()).slice(0,60)||null;

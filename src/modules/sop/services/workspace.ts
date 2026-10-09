@@ -2,7 +2,7 @@
 import { requireSession,type Session } from '@/core/auth/session';
 import { assertCapability } from '@/core/permissions/check';
 import { assertModuleEnabled } from '@/core/modules/access';
-import { getEnabledModuleIds } from '@/core/modules/runtime';
+import { enabledModulesForSession } from '@/core/modules/runtime';
 import { readBusinessPlanning } from '@/core/planning/business-read';
 import { db } from '@/core/db/client';
 import { revalidatePath } from 'next/cache';
@@ -29,11 +29,11 @@ export async function getSopWorkspace(cycleId?:string,versionId?:string,includeS
  const plans=session.capabilities.has('plan.read')?await db.businessPlan.findMany({where:{organisationId:session.organisationId,...(!session.capabilities.has('plan.sensitive.read')?{sensitive:false}:{}),OR:[{ownerUserId:session.userId},{audience:'company'},{shares:{some:{organisationId:session.organisationId,userId:session.userId}}}]},select:{id:true,name:true,currency:true},take:100}):[];
  if(!cycle)return {inaccessibleVersions:0,cycles,plans,cycle:null,versions:[],version:null,capabilities:[...session.capabilities]};
  const allVersions=includeSnapshot?await db.sopVersion.findMany({where:{...versionWhere(session),cycleId:cycle.id},select:{id:true,name:true,status:true,kind:true,createdAt:true,approvedAt:true,publishedAt:true,sourceRevision:true,requiredCapabilities:true,requiredModules:true},orderBy:{createdAt:'desc'},take:100}):[];
- const enabledModules=await getEnabledModuleIds(session.organisationId);
+ const enabledModules=await enabledModulesForSession(session);
  const versions=allVersions.filter(v=>session.capabilities.has('plan.read')&&v.requiredCapabilities.every(c=>session.capabilities.has(c))&&v.requiredModules.every(m=>enabledModules.has(m)));
  const selected=includeSnapshot?(versionId??versions[0]?.id):undefined;
  const version=selected?await db.sopVersion.findFirst({where:{id:selected,cycleId:cycle.id,...versionWhere(session)}}):null;
- if(version){assertCapability(session,'plan.read');const enabled=await getEnabledModuleIds(session.organisationId);if(version.requiredCapabilities.some(c=>!session.capabilities.has(c))||version.requiredModules.some(m=>!enabled.has(m)))throw Error('This snapshot contains source data your current profile cannot read.');
+ if(version){assertCapability(session,'plan.read');const enabled=await enabledModulesForSession(session);if(version.requiredCapabilities.some(c=>!session.capabilities.has(c))||version.requiredModules.some(m=>!enabled.has(m)))throw Error('This snapshot contains source data your current profile cannot read.');
   // Recheck both current plan visibility and the historical snapshot's own source links.
   const payload=version.payload as unknown as SopPayload;
   await readBusinessPlanning(session,{startsOn:cycle.startsOn.toISOString().slice(0,10),endsOn:cycle.endsOn.toISOString().slice(0,10),historyStartsOn:cycle.startsOn.toISOString().slice(0,10),purpose:'forecast',modules:['plan'],productIds:payload.productIds,planIds:payload.sourcePlanIds});

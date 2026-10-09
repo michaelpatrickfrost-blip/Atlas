@@ -1,8 +1,8 @@
 "use server";
-import { requireSession } from "@/core/auth/session";
+import { requireSession, type Session } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
 import { assertModuleEnabled } from "@/core/modules/access";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { isModuleEnabled } from "@/core/modules/runtime";
 import { projectScope } from "@/core/permissions/work-access";
 import { db } from "@/core/db/client";
 import { revalidatePath } from "next/cache";
@@ -189,8 +189,8 @@ export async function raiseCallOff(form: FormData) {
   redirect(`/sales/orders/${orderId}`);
 }
 
-async function requireCallOffBooks(session: { organisationId: string }, currency: string) {
-  if (!(await getEnabledModuleIds(session.organisationId)).has("finance")) throw new Error("Turn on Finance before this delivery can be invoiced.");
+async function requireCallOffBooks(session: Session, currency: string) {
+  if (!(await isModuleEnabled(session, "finance"))) throw new Error("Turn on Finance before this delivery can be invoiced.");
   const books = await db.financeEntity.findFirst({ where: { organisationId: session.organisationId, currency }, select: { id: true } });
   if (!books) throw new Error(`Set up finance books in ${currency} before this quantity can be invoiced. Open Finance, create the books, then deliver again.`);
 }

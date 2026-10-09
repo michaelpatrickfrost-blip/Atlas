@@ -3,7 +3,7 @@ import { ownerRestriction } from "@/modules/crm/services/visibility";
 import type { ReactNode } from "react";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { enabledModulesForSession } from "@/core/modules/runtime";
 import { SALES_CAPABILITIES } from "@/core/permissions/capabilities";
 import { db } from "@/core/db/client";
 import { formatMoney } from "@/core/shared/money";
@@ -19,7 +19,7 @@ const STATUSES = new Set<ReportStatus>(["OPEN", "WON", "LOST"]);
 export default async function ReportsPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const session = await requireSession();
   assertCapability(session, SALES_CAPABILITIES.reportRead);
-  const enabled = await getEnabledModuleIds(session.organisationId);
+  const enabled = await enabledModulesForSession(session);
   const canPin = enabled.has("analytics") && can(session, "analytics.dashboard.manage");
   const params = await searchParams;
   const [members, industries, pipeline] = await Promise.all([

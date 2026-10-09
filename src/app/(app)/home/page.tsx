@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireSession } from "@/core/auth/session";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { enabledModulesForSession } from "@/core/modules/runtime";
 import { RefreshButton } from "@/components/ui/refresh-button";
 import { getAttentionOverview } from "@/core/attention/aggregate";
 import { AppDirectory } from "@/components/shell/app-directory";
@@ -13,7 +13,7 @@ const DOT = { critical: "bg-[#d12b45]", warning: "bg-[#c9820a]", info: "bg-[#c7c
 
 export default async function HomePage() {
   const session = await requireSession();
-  const [attention, enabled] = await Promise.all([getAttentionOverview(session), getEnabledModuleIds(session.organisationId)]);
+  const [attention, enabled] = await Promise.all([getAttentionOverview(session), enabledModulesForSession(session)]);
   const goalBoard = enabled.has("kpis") ? await loadGoalWorkspace(session).catch(() => null) : null;
   const highlights = goalBoard?.goals.filter((goal) => goal.status === "ACTIVE").slice(0, 4) ?? [];
   const today = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/London" }).format(new Date());

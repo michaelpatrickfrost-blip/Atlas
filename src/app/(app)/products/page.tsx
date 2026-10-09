@@ -1,4 +1,4 @@
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { enabledModulesForSession } from "@/core/modules/runtime";
 import { db } from "@/core/db/client";
 import { CreateDialog } from "@/components/ui/create-dialog";
 import Link from "next/link";
@@ -23,7 +23,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
   const category = (filters.category ?? "").trim();
   const itemClass = CATEGORY_CLASSES.some((item) => item.id === filters.class) ? filters.class : undefined;
   const archived = filters.archived === "1";
-  const enabled = await getEnabledModuleIds(session.organisationId);
+  const enabled = await enabledModulesForSession(session);
   const [products, categories, policy] = await Promise.all([
     db.product.findMany({ where: { organisationId: session.organisationId, ...(archived ? {} : { active: true }) }, orderBy: { name: "asc" } }),
     db.productCategory.findMany({ where: { organisationId: session.organisationId }, orderBy: [{ position: "asc" }, { name: "asc" }] }),

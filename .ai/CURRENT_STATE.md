@@ -1,5 +1,56 @@
 # Atlas current state
 
+## 9 October 2026 — Atlas staff app access fixed for real (pages, not just launcher)
+
+Michael reported "it's all disabled still did you deploy?" after the earlier
+staff-app fix. The server was genuinely deployed: live
+`https://atlassystem.online` reports revision
+`5abb2b061a54c0fbcf3a0a8dac97a47fdf68de9d` (= `origin/main` HEAD, running
+`/opt/atlas-releases/5abb2b0…`), which contains `2ac2fc8`, `1a031c9`, `387a55e`,
+and `/login` returned 200. The bug was real but incomplete, not undeployed.
+
+- **Reproduced live (read-only).** Minting each account's real server session and
+  requesting pages on `127.0.0.1:3000` showed the failure exactly: Home rendered
+  36 app tiles for both `kickablur@icloud.com` (OWNER) and
+  `dg@atlassystem.online` (EMPLOYEE), but `/people/workspace`, `/people/training`,
+  `/manufacturing`, `/fleet`, `/maintenance`, `/quality`, `/engineering`,
+  `/marketing` and `/analytics` each returned the hardcoded
+  `<name> is disabled` / `HR is disabled` screen whenever the session resolved to
+  the **Atlas team** internal company.
+- **Root cause (why the earlier fix missed it).** `2ac2fc8` only patched the
+  launcher (`getNavigableModules`) and `assertModuleEnabled`. The actual app pages
+  gate through a second path that was untouched: `ModuleSpace`
+  (`src/components/shell/module-space.tsx`, used by 29 module layouts) and
+  `hrPageRestriction` (`src/modules/people/services/platform-queries.ts`) both
+  read `getEnabledModuleIds(session.organisationId)` **directly** and had no staff
+  exception. The **Atlas team** internal org has **0** `module_states` rows, so
+  every app page there was disabled even though the tiles showed. Staff grant
+  itself was fine: `platform_administrators` has kickablur `OWNER` active and
+  dg `EMPLOYEE` active.
+- **Fix (one dispatch point).** `src/core/modules/runtime.ts` now exposes
+  `enabledModulesForSession(session)` and `isModuleEnabled(session, moduleId)`,
+  which return every implemented app for a session holding `atlas.staff.manage`
+  (independent platform grant) and fall back to per-company enablement otherwise.
+  `getNavigableModules`, `assertModuleEnabled`, `ModuleSpace`, `hrPageRestriction`,
+  `my-learning`, `my-hr-workspace` and 20+ other session-scoped reads now route
+  through them. The `/apps` "Manage apps" page deliberately keeps the raw
+  per-company state so the admin switch still tells the truth. Customer (non-staff)
+  sessions are unchanged: their per-company enablement still applies.
+- **Paths:** `src/core/modules/runtime.ts`, `src/core/modules/access.ts`,
+  `src/components/shell/module-space.tsx`,
+  `src/modules/people/services/platform-queries.ts`, plus the session-scoped read
+  sites listed in the commit.
+- **Checks run:** in a clean `origin/main` worktree — `npx prisma generate`,
+  `npx tsc --noEmit` (0 errors under `src/`), `npm run build` (passed), and a
+  focused `tsx` assertion of the staff/non-staff enablement dispatch (passed).
+- **Deployed:** revision recorded in the entry below once live.
+- **Next step:** after activation, re-run the read-only live page sweep for both
+  staff accounts against the new revision and confirm the disabled screens are
+  gone from the Atlas team workspace; then extend
+  `scripts/guardian/check-app-launcher.ts` (or a sibling) to assert a staff page
+  renders its workspace rather than the "is disabled" state, so this cannot
+  silently regress again.
+
 ## 8 October 2026 — Marketing destructive-action audit in progress
 
 - On live `f89b48aedb919267c129d5d52afe07a346f370c0`, browser acceptance verified

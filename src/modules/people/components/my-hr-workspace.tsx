@@ -13,7 +13,7 @@ import { PersonGoals } from "@/modules/kpis/components/person-goals";
 import { PLAN_STATUS_LABEL, CASE_STAGE_LABEL } from "@/modules/people/domain/conduct";
 import { workingLeaveDays } from "@/modules/people/domain/working-time";
 import { HolidayRequestFields } from "@/modules/people/components/holiday-request-fields";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { getEnabledModuleIds, isModuleEnabled } from "@/core/modules/runtime";
 import { getPersonSchedule } from "@/app/(app)/scheduling/actions";
 import { PersonSchedule } from "@/modules/scheduling/components/person-schedule";
 export async function MyHRWorkspace({holidayOnly=false}:{holidayOnly?:boolean}) {
@@ -27,7 +27,7 @@ export async function MyHRWorkspace({holidayOnly=false}:{holidayOnly?:boolean}) 
   const canBook = canRequestOwnHoliday(session);
   const policies = !holidayOnly && canReadPolicies(session) ? await listPolicies() : [];
   const mine = holidayOnly ? { plans: [], cases: [] } : await getMyConduct();
-  const schedulingOn = !holidayOnly && (await getEnabledModuleIds(session.organisationId)).has("scheduling");
+  const schedulingOn = !holidayOnly && (await isModuleEnabled(session, "scheduling"));
   const schedule = schedulingOn ? await getPersonSchedule() : [];
   return <div className="space-y-6"><div><h2 className="text-2xl font-semibold">{holidayOnly?"Time off":"My HR"}</h2><p className="mt-2 text-sm text-slate-500">{employee.firstName} {employee.lastName} · {employee.jobTitle}{employee.manager ? ` · Manager: ${employee.manager.firstName} ${employee.manager.lastName}` : ""}</p>{!holidayOnly && <div className="mt-3 flex flex-wrap gap-4 text-sm text-blue-600"><Link href="/profile">My work →</Link><Link href="/people/my-learning">My learning →</Link>{canBook && <Link href="/people/holidays">Book holiday →</Link>}{canReadPolicies(session) && <Link href="/people/policies">Company policies →</Link>}<Link href="/people/timesheets">Enter my hours →</Link><Link href="/scheduling">My shifts &amp; tasks →</Link></div>}</div>
     {schedulingOn && <PersonSchedule shifts={schedule} />}

@@ -2,7 +2,7 @@ import type { Session } from "@/core/auth/session";
 import { can } from "@/core/permissions/check";
 import { db } from "@/core/db/client";
 import { getModule } from "@/core/modules/registry";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { enabledModulesForSession } from "@/core/modules/runtime";
 import { dateOnly, addDays, mondayOf } from "@/modules/people/domain/working-time";
 import { londonDate, londonInstant, paidMinutes } from "../domain/time";
 import { STANDARD_WORK_TYPES, WORK_CATEGORIES, datesForWeekdays, eachDate, holidayBlockReason, monthDates, monthKey, patternPaidMinutes, requiredManMinutes, weekdayOf, type WorkCategory } from "../domain/planner";
@@ -104,7 +104,7 @@ export async function loadTeamPlan(session: Session, monthInput: string, teamId 
     db.schedulingCalendarRule.findMany({ where: { organisationId: session.organisationId, startsOn: { lte: dateOnly(days[days.length - 1]) }, endsOn: { gte: rangeStart } }, orderBy: { startsOn: "asc" }, take: 50 }),
     db.organisation.findUniqueOrThrow({ where: { id: session.organisationId }, select: { hrStandardWeeklyHours: true } }),
   ]);
-  const enabled = await getEnabledModuleIds(session.organisationId);
+  const enabled = await enabledModulesForSession(session);
   const traffic = new Map<string, { salesOrders: number; productionUnits: number }>();
   if (manage && enabled.has("sales") && can(session, "sales.order.read")) {
     const orders = await db.salesOrder.findMany({ where: { organisationId: session.organisationId, commercialStatus: { not: "CANCELLED" }, requestedDeliveryDate: { gte: rangeStart, lt: rangeEnd } }, select: { requestedDeliveryDate: true }, take: 5000 });

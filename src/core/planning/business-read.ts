@@ -1,11 +1,11 @@
 import { getImplementedModules } from '@/core/modules/registry';
-import { getEnabledModuleIds } from '@/core/modules/runtime';
+import { enabledModulesForSession } from '@/core/modules/runtime';
 import type { Session } from '@/core/auth/session';
 import type { BusinessPlanningData, BusinessPlanningRequest } from './business';
 /** Module-owned projections are the sole integration contract. Each provider
  * enforces source access and returns only authorised fields. No per-cell calls. */
 export async function readBusinessPlanning(session:Session,request:BusinessPlanningRequest) {
- const enabled=await getEnabledModuleIds(session.organisationId);
+ const enabled=await enabledModulesForSession(session);
  const result:Required<BusinessPlanningData>&{requiredModules:string[]}={sources:[],products:[],orders:[],deliveries:[],stock:[],supply:[],inputs:[],budgets:[],planRevisions:[],targets:[],requiredCapabilities:[],requiredModules:[],warnings:[]};
  const providers=getImplementedModules().filter(m=>enabled.has(m.id)&&m.businessPlanningProvider&&(!request.modules||request.modules.includes(m.id)));
  const pieces=await Promise.all(providers.map(async m=>({module:m.id,data:await m.businessPlanningProvider!(session,request)})));

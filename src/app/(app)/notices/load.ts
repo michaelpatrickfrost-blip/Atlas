@@ -1,7 +1,7 @@
 import { requireSession, type Session } from "@/core/auth/session";
 import { echoTarget } from "@/core/audit/systems";
 import { db } from "@/core/db/client";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { enabledModulesForSession } from "@/core/modules/runtime";
 import { assertCapability, can } from "@/core/permissions/check";
 import { CORE_CAPABILITIES, ECHO_CAPABILITIES } from "@/core/permissions/capabilities";
 import { projectScope, taskScope } from "@/core/permissions/work-access";
@@ -316,7 +316,7 @@ async function assignedWork(session: Session, enabled: Set<string>, cleared: Set
 }
 
 async function collect(session: Session): Promise<Notice[]> {
-  const [enabled, cleared] = await Promise.all([getEnabledModuleIds(session.organisationId), clearedKeys(session)]);
+  const [enabled, cleared] = await Promise.all([enabledModulesForSession(session), clearedKeys(session)]);
   const [tagged, inbox, work, chat] = await Promise.all([
     echoNotices(session, enabled),
     inboxNotices(session, enabled),

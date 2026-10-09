@@ -12,6 +12,30 @@ export async function getEnabledModuleIds(organisationId: string): Promise<Set<s
   return enabled;
 }
 
+/** True when this session belongs to active Atlas staff (independent platform grant). */
+function isAtlasStaff(session: Session): boolean {
+  return session.capabilities.has(ATLAS_CAPABILITIES.staff);
+}
+
+/** Every implemented app id. Atlas staff see all apps regardless of a company's enablement. */
+function allImplementedModuleIds(): Set<string> {
+  return new Set(getImplementedModules().map((module) => module.id));
+}
+
+/** Enabled app ids for this session's company, honouring the Atlas staff exception.
+ *  Atlas staff must be able to open every app in every company, including the
+ *  internal Atlas team workspace, which has no per-company enablement rows. */
+export async function enabledModulesForSession(session: Session): Promise<Set<string>> {
+  if (isAtlasStaff(session)) return allImplementedModuleIds();
+  return getEnabledModuleIds(session.organisationId);
+}
+
+/** Whether one app is enabled for this session's company, honouring the Atlas staff exception. */
+export async function isModuleEnabled(session: Session, moduleId: string): Promise<boolean> {
+  if (isAtlasStaff(session)) return true;
+  return (await getEnabledModuleIds(session.organisationId)).has(moduleId);
+}
+
 /** Modules enabled for this org AND accessible to this user, in catalogue order.
  *  This is what populates primary navigation — installing a module never requires
  *  editing navigation code. */
@@ -22,9 +46,7 @@ export function canOpenModule(session: Session, module: ModuleManifest) {
 
 export async function getNavigableModules(session: Session): Promise<ModuleManifest[]> {
   const modules = getImplementedModules();
-  const enabled = session.capabilities.has(ATLAS_CAPABILITIES.staff)
-    ? new Set(modules.map((module) => module.id))
-    : await getEnabledModuleIds(session.organisationId);
+  const enabled = await enabledModulesForSession(session);
   return modules.filter(
     (module) => module.launcherVisible!==false && enabled.has(module.id) && canOpenModule(session, module),
   ).map((module) => module.id === "scheduling" && !can(session, "scheduling.manage") && !can(session, "people.rota.manage")

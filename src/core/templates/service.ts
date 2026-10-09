@@ -2,13 +2,13 @@ import { db } from '@/core/db/client';
 import type { Session } from '@/core/auth/session';
 import { can, assertCapability } from '@/core/permissions/check';
 import { getModule } from '@/core/modules/registry';
-import { getEnabledModuleIds } from '@/core/modules/runtime';
+import { isModuleEnabled, enabledModulesForSession } from '@/core/modules/runtime';
 import { merge, parseBlocks } from './domain';
 import { loadBrand } from '@/core/email/render';
 import { TARGET_MODULES, type TemplateRecord } from './types';
-export async function requireTemplateWorkspace(session:Session){if(!(await getEnabledModuleIds(session.organisationId)).has('templates'))throw new Error('Templates is not enabled for this company.');}
+export async function requireTemplateWorkspace(session:Session){if(!(await isModuleEnabled(session,'templates')))throw new Error('Templates is not enabled for this company.');}
 export async function templateSources(session:Session){
- const enabled=await getEnabledModuleIds(session.organisationId);
+ const enabled=await enabledModulesForSession(session);
  return TARGET_MODULES.flatMap(id=>{const m=getModule(id);return enabled.has(id)&&m?.templateContextProvider?m.templateContextProvider.types.filter(t=>can(session,t.capability)).map(t=>({module:id,type:t.id,label:`${m.name} · ${t.label}`})):[];});
 }
 export async function templateRecord(session:Session,module:string,type:string,id:string):Promise<TemplateRecord>{

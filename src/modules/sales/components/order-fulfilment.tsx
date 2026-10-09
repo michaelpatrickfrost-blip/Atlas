@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { isModuleEnabled } from "@/core/modules/runtime";
 import { getModule } from "@/core/modules/registry";
 import { can } from "@/core/permissions/check";
 import { requireSession } from "@/core/auth/session";
@@ -7,7 +7,7 @@ import { readOrderChain } from "@/modules/stock/services/availability";
 
 export async function OrderFulfilment({ organisationId, orderId }: { organisationId: string; orderId: string }) {
   const session = await requireSession();
-  const logistics = (await getEnabledModuleIds(organisationId)).has("logistics");
+  const logistics = await isModuleEnabled(session, "logistics");
   const projection = logistics ? await getModule("logistics")?.fulfilmentProjectionProvider?.({ organisationId, orderId }) : null;
   return (
     <section className="mb-6 rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:col-span-2">

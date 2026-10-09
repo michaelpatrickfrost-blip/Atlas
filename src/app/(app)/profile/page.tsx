@@ -12,7 +12,7 @@ import { can } from "@/core/permissions/check";
 import { canRequestOwnHoliday } from "@/core/permissions/hr-access";
 import { requireSession } from "@/core/auth/session";
 import { db } from "@/core/db/client";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { enabledModulesForSession } from "@/core/modules/runtime";
 import { ActionForm } from "@/components/ui/action-form";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -38,7 +38,7 @@ function dayLabel(date: Date) {
 
 export default async function ProfilePage() {
   const session = await requireSession();
-  const enabled = await getEnabledModuleIds(session.organisationId);
+  const enabled = await enabledModulesForSession(session);
   const [employee, assignments, membership, company] = await Promise.all([
     enabled.has("people") ? getMyHR() : null,
     loadAssignedWork(),

@@ -1,6 +1,6 @@
 "use server";
 import { serviceCaseScope } from "@/core/permissions/service-access";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { enabledModulesForSession } from "@/core/modules/runtime";
 import { db } from "@/core/db/client";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
@@ -10,7 +10,7 @@ export async function casePurchaseContext(partyId: string, filter: { q?: string;
   assertCapability(session, "service.case.read");
   assertCapability(session, "customers.read"); await requireService(session);
   if (!await db.party.findFirst({ where: { id: partyId, organisationId: session.organisationId, archived: false, identityScrubbed: false } })) throw new Error("Customer unavailable.");
-  const enabled=await getEnabledModuleIds(session.organisationId);
+  const enabled=await enabledModulesForSession(session);
   const [contacts, orders, products, duplicates] = await Promise.all([
     db.contact.findMany({ where: { partyId, party: { organisationId: session.organisationId }, identityScrubbed: false }, select: { id: true, firstName: true, surname: true, email: true, phone: true }, take: 100 }),
     session.capabilities.has("sales.order.read") && enabled.has("sales") ? db.salesOrder.findMany({ where: { organisationId: session.organisationId, partyId,

@@ -3,7 +3,7 @@ import { getAnalyticsMetrics } from "@/core/analytics/catalogue";
 import type { Session } from "@/core/auth/session";
 import { db } from "@/core/db/client";
 import { can } from "@/core/permissions/check";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { isModuleEnabled } from "@/core/modules/runtime";
 import { judgeGoal, type GoalDirection, type GoalVerdict, type MeasurePoint } from "@/modules/kpis/domain/progress";
 import { goalWhere, planWhere } from "./access";
 
@@ -112,7 +112,7 @@ async function ownerNames(organisationId: string, ids: string[]) {
 
 export async function loadGoalMarkers(session: Session, metricIds?:string[]): Promise<GoalMarker[]> {
   if (!can(session, "kpis.read")) return [];
-  if (!(await getEnabledModuleIds(session.organisationId)).has("kpis")) return [];
+  if (!(await isModuleEnabled(session, "kpis"))) return [];
   const rows = await db.kpi.findMany({
     where: { organisationId: session.organisationId, visibility: "COMPANY", status: "ACTIVE", metricId: metricIds?{in:metricIds}:{ not: "" } },
     orderBy: { endsAt: "asc" },

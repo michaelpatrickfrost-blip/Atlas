@@ -1,13 +1,13 @@
 import Link from "next/link";
 import type {Session} from "@/core/auth/session";
 import {can} from "@/core/permissions/check";
-import {getEnabledModuleIds} from "@/core/modules/runtime";
+import {isModuleEnabled} from "@/core/modules/runtime";
 import {getAnalyticsMetrics} from "@/core/analytics/catalogue";
 import {loadGoalMarkers} from "../services/workspace";
 import {GoalMeter} from "./goal-meter";
 /** Shared targets only; source catalogue filters capabilities and entitlements. */
 export async function SourceGoals({session,prefixes}:{session:Session;prefixes:string[]}){
- if(!can(session,"kpis.read")||!(await getEnabledModuleIds(session.organisationId)).has("kpis"))return null;
+ if(!can(session,"kpis.read")||!(await isModuleEnabled(session,"kpis")))return null;
  const metrics=(await getAnalyticsMetrics(session)).filter(m=>prefixes.some(p=>m.id.startsWith(p))&&m.goalSuggestion);
  if(!metrics.length)return null;
  const ids=new Set(metrics.map(m=>m.id));const goals=(await loadGoalMarkers(session,[...ids])).filter(g=>ids.has(g.metricId));

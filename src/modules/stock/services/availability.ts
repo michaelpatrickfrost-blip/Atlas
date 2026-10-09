@@ -2,7 +2,7 @@
 
 import { db } from "@/core/db/client";
 import { readOrderInvoices, readInvoiceQuantities } from "@/core/finance/connections";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { isModuleEnabled, getEnabledModuleIds } from "@/core/modules/runtime";
 import { requireSession } from "@/core/auth/session";
 import { availabilityPicture, type AvailabilityPicture } from "@/core/availability/picture";
 import { incomingArrivals, type SupplyArrival } from "@/core/availability/stock-promise";
@@ -50,7 +50,7 @@ export async function readAvailability(): Promise<CommercialPicture> {
   const session = await requireSession();
   if (!READ.some((capability) => session.capabilities.has(capability))) throw new Error('FORBIDDEN: missing capability "stock.read"');
   const organisationId = session.organisationId;
-  const financeVisible = session.capabilities.has("finance.receivables.read") && (await getEnabledModuleIds(organisationId)).has("finance");
+  const financeVisible = session.capabilities.has("finance.receivables.read") && (await isModuleEnabled(session, "finance"));
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const [products, balances, reservations, positions, salesLines, fulfilment, plans, production, receipts] = await Promise.all([
@@ -158,7 +158,7 @@ export async function readOrderChain(orderId: string) {
   });
   if (!order) return null;
   const lineIds = order.lines.map((line) => line.id);
-  const financeVisible = session.capabilities.has("finance.receivables.read") && (await getEnabledModuleIds(session.organisationId)).has("finance");
+  const financeVisible = session.capabilities.has("finance.receivables.read") && (await isModuleEnabled(session, "finance"));
   const [fulfilment, invoices, picture] = await Promise.all([
     optional(db.fulfilmentLine.findMany({ where: { organisationId: session.organisationId, salesOrderLineId: { in: lineIds } }, select: { salesOrderLineId: true, allocatedQuantity: true, shippedQuantity: true, deliveredQuantity: true } }), []),
     financeVisible ? readOrderInvoices(session, orderId) : Promise.resolve([]),

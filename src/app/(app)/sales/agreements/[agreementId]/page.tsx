@@ -4,7 +4,7 @@ import { requireSession } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
 import { projectScope } from "@/core/permissions/work-access";
 import { db } from "@/core/db/client";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { isModuleEnabled } from "@/core/modules/runtime";
 import { formatMoney } from "@/core/shared/money";
 import { ActionForm } from "@/components/ui/action-form";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ export default async function AgreementPage({ params, searchParams }: { params: 
   const [projects, invoices, financeOn, books] = await Promise.all([
     can(session, "projects.read") ? db.project.findMany({ where: { AND: [projectScope(session), { partyId: agreement.partyId }] }, select: { id: true, name: true } }) : Promise.resolve([]),
     orderIds.length ? db.financeDocument.findMany({ where: { organisationId: session.organisationId, kind: "AR_INVOICE", status: { not: "CANCELLED" }, salesOrderId: { in: orderIds } }, select: { id: true, reference: true, status: true, documentDate: true, salesOrderId: true, lines: { select: { salesOrderLineId: true, quantity: true } } }, orderBy: { documentDate: "desc" } }) : Promise.resolve([]),
-    getEnabledModuleIds(session.organisationId).then((ids) => ids.has("finance")),
+    isModuleEnabled(session, "finance"),
     db.financeEntity.findFirst({ where: { organisationId: session.organisationId, currency: agreement.currency }, select: { id: true } }),
   ]);
   const orderLineToAgreement = new Map(liveOrders.flatMap((order) => order.lines.flatMap((line) => line.agreementLineId ? [[line.id, line.agreementLineId] as const] : [])));

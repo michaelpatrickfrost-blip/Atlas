@@ -1,7 +1,7 @@
 "use server";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { enabledModulesForSession } from "@/core/modules/runtime";
 import { db } from "@/core/db/client";
 
 export type WorkItem = { id: string; kind: string; title: string; detail: string; href: string };
@@ -15,7 +15,7 @@ function dated(date: Date | null | undefined) {
 export async function loadAssignedWork(): Promise<WorkItem[]> {
   const session = await requireSession();
   assertCapability(session, "core.profile.self");
-  const enabled = await getEnabledModuleIds(session.organisationId);
+  const enabled = await enabledModulesForSession(session);
   const items: WorkItem[] = [];
   const organisationId = session.organisationId;
 

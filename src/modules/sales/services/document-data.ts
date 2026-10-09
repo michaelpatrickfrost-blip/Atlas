@@ -1,5 +1,5 @@
 import {projectScope} from '@/core/permissions/work-access';
-import {getEnabledModuleIds} from "@/core/modules/runtime";
+import {enabledModulesForSession} from "@/core/modules/runtime";
 import { db } from "@/core/db/client";
 import type { Session } from "@/core/auth/session";
 import { can } from "@/core/permissions/check";
@@ -10,7 +10,7 @@ import { readAvailability } from "@/modules/stock/services/availability";
 import type { SupplyArrival } from "@/core/availability/stock-promise";
 const emptyPicture={products:[],deliveredByLine:{} as Record<string,number>,arrivals:{} as Record<string,SupplyArrival[]>};
 export async function getDocumentData(session:Session):Promise<DocumentData> {
- const organisationId=session.organisationId,enabled=await getEnabledModuleIds(organisationId);
+ const organisationId=session.organisationId,enabled=await enabledModulesForSession(session);
  const [customers,addresses,products,lists,contracts,terms,opportunities,projects,balances,policy,tradingLinks]=await Promise.all([
  db.party.findMany({where:{organisationId},include:{commercialSettings:true,creditProfile:true},orderBy:{name:'asc'}}),db.address.findMany({where:{active:true,party:{organisationId}},include:{party:{select:{name:true}}}}),db.product.findMany({where:{organisationId,active:true},orderBy:{name:'asc'}}),db.priceList.findMany({where:{organisationId},include:{entries:true},orderBy:{name:'asc'}}),db.customerProduct.findMany({where:{party:{organisationId},product:{organisationId},contractedPriceAmount:{not:null}}}),db.paymentTerm.findMany({where:{organisationId}}),can(session,'sales.opportunity.read')?db.opportunity.findMany({where:{organisationId},select:{id:true,name:true,partyId:true}}):[],(can(session,'projects.read')||can(session,'sales.site.read'))?db.project.findMany({where:projectScope(session),select:{id:true,name:true,partyId:true}}):[],(can(session,'stock.read')||can(session,'sales.quote.read')||can(session,'sales.order.read'))?readAvailability():Promise.resolve(emptyPicture),db.organisation.findUniqueOrThrow({where:{id:organisationId},select:{allowCustomerCreation:true,allowProductCreation:true,salesPolicy:true}}),db.customerTradingLink.findMany({where:{organisationId,active:true,account:{organisationId},tradingAccount:{organisationId}},select:{accountId:true,tradingAccountId:true}})]);
  const agreementRows=can(session,'sales.order.read')||can(session,'sales.quote.read')?await db.salesAgreement.findMany({where:{organisationId,status:'ACTIVE'},include:{lines:{orderBy:{lineNumber:'asc'}},callOffs:{where:{organisationId,commercialStatus:{not:'CANCELLED'}},include:{lines:true}}}}):[];

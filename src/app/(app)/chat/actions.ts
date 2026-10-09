@@ -2,7 +2,7 @@
 import { requireSession, type Session } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
 import { projectScope } from "@/core/permissions/work-access";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { enabledModulesForSession } from "@/core/modules/runtime";
 import { db } from "@/core/db/client";
 import { conversationKey, linkSelection, messageBody, CHAT_LINK_TYPES, CHAT_TASK_TYPES, type ChatLinkType } from "@/core/chat/policy";
 import { choice, dateValue, PRIORITIES } from "@/modules/projects/domain/work";
@@ -49,8 +49,8 @@ async function conversationFor(session: Session, id: string) {
   return conversation;
 }
 
-async function enabledModules(organisationId: string) {
-  return getEnabledModuleIds(organisationId);
+async function enabledModules(session: Session) {
+  return enabledModulesForSession(session);
 }
 
 function stamp(value: Date | null | undefined) {
@@ -179,7 +179,7 @@ export async function searchChatRecords(query: string) {
   assertCapability(session, "core.chat.read");
   const needle = String(query ?? "").trim();
   if (needle.length > 80) throw new Error("Search is too long.");
-  const enabled = await enabledModules(session.organisationId);
+  const enabled = await enabledModules(session);
   const text = textFilter(needle);
   const results: VisibleLink[] = [];
   if (canAttach(session, enabled, "SALES_ORDER")) {
@@ -248,7 +248,7 @@ export async function sendChat(input: {
   if (!["TEXT", "NOTE", "TASK", "MEETING"].includes(kind)) throw new Error("Choose a message, note, task or meeting.");
   const selected = linkSelection(input.links);
   const conversation = await conversationFor(session, input.conversationId);
-  const enabled = await enabledModules(session.organisationId);
+  const enabled = await enabledModules(session);
   const visible = selected.length ? await loadLinks(session, enabled, selected) : new Map<string, VisibleLink>();
   if (selected.some((item) => !visible.has(`${item.type}:${item.id}`))) throw new Error("That record is not available to attach.");
   const assigneeUserId = (input.assigneeUserId || conversation.participants.find((person) => person.userId && person.userId !== session.userId)?.userId || session.userId).trim();
@@ -335,7 +335,7 @@ export async function chatSnapshot(activeId?: string) {
     await conversationFor(session, activeId);
     await db.chatParticipant.updateMany({ where: { conversationId: activeId, organisationId: session.organisationId, userId: session.userId }, data: { lastReadAt: new Date() } });
   }
-  const enabled = await enabledModules(session.organisationId);
+  const enabled = await enabledModules(session);
   const [conversations, people, contactRows] = await Promise.all([
     db.chatConversation.findMany({
       where: { organisationId: session.organisationId, kind: { in: ["DIRECT", "GROUP"] }, participants: { some: { userId: session.userId } } },

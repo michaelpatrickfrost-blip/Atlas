@@ -13,7 +13,7 @@ import { calculateLeaveBalance, currentLeaveYearRange } from "@/modules/people/d
 import { PersonGoals } from "@/modules/kpis/components/person-goals";
 import { PersonSchedule } from "@/modules/scheduling/components/person-schedule";
 import { getPersonSchedule } from "@/app/(app)/scheduling/actions";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { isModuleEnabled } from "@/core/modules/runtime";
 import { updateEmployeeContact, updateEmployeeTask, changeEmployeeStatus, updateEmployeeProfile, completeEmployeeTask, addEmployeeTask, linkEmployeeToUser, addEmployeeDocument } from "../actions";
 
 const STATUS_TONE: Record<string, StatusTone> = { ONBOARDING: "warning", ACTIVE: "success", ON_LEAVE: "neutral", OFFBOARDING: "warning", LEFT: "danger" };
@@ -73,7 +73,7 @@ export default async function EmployeeRecordPage({ params }: { params: Promise<{
   const offboarding = employee.onboardingTasks.filter((t) => t.phase === "OFFBOARDING");
   const bradford = calculateBradfordFactor(employee.absences.filter((a) => a.type === "SICKNESS" && a.status === "APPROVED"));
   const leaveYear = currentLeaveYearRange();
-  const schedulingOn = (await getEnabledModuleIds(session.organisationId)).has("scheduling");
+  const schedulingOn = await isModuleEnabled(session, "scheduling");
   const schedule = schedulingOn ? await getPersonSchedule(employee.id) : [];
   const leaveBalance = calculateLeaveBalance({
     entitlementDays: employee.annualLeaveDaysEntitlement,

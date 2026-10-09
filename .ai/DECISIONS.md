@@ -1,5 +1,21 @@
 # Atlas decisions
 
+## 9 October 2026 — Staff app access must be enforced at every module-enablement read
+
+The 8 October staff exception was wired into only the app launcher and
+`assertModuleEnabled`. Continued reports ("still all disabled") showed the gap:
+page-level gates read `getEnabledModuleIds(organisationId)` directly, and the
+internal **Atlas team** workspace has no `module_states` rows, so staff saw the
+tiles but every app page rendered "is disabled". Decision: the staff exception
+lives in one place — `enabledModulesForSession(session)` and
+`isModuleEnabled(session, moduleId)` in `src/core/modules/runtime.ts` — and every
+session-scoped enablement read must go through them. `ModuleSpace` and
+`hrPageRestriction` were the two missing call sites that mattered most. The
+"Manage apps" (`/apps`) page intentionally still shows the raw per-company state
+so the enable/disable switch remains truthful. Reason: scattering the exception
+across ad-hoc call sites caused a silent partial fix; a single dispatch point
+keeps customer enablement honest while making staff access complete everywhere.
+
 ## 8 October 2026 — Atlas staff app access ignores company app switches
 
 Active Atlas staff can navigate to and use every implemented app in the

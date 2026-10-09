@@ -1,12 +1,12 @@
 import { customerRecordRelationships } from "@/core/customers/relationships";
 import type { Session } from "@/core/auth/session";
 import { getImplementedModules, getModule } from "@/core/modules/registry";
-import { getEnabledModuleIds } from "@/core/modules/runtime";
+import { enabledModulesForSession } from "@/core/modules/runtime";
 import type { RelationshipContext, RecordRef, RecordRelationship } from "./types";
 
 /** Source ownership authorises the record first; each target owner then authorises its links. */
 export async function loadRecordRelationships(session: Session, record: RecordRef) {
-  const enabled = await getEnabledModuleIds(session.organisationId);
+  const enabled = await enabledModulesForSession(session);
   if (!enabled.has(record.moduleId)) return null;
   let context: RelationshipContext | null | undefined;
   try {

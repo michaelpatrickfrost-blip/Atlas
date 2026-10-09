@@ -111,7 +111,9 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 Admin companion: 23 focused files /110 assertions passed; strict TypeScript and
 production build passed; scoped lint no errors/one brand-img warning. No schema
-change. Candidate/public acceptance pending before this companion is VERIFIED.
+change. Candidate 214cbad Studio/Admin/Home acceptance passed. New live Reports 2a8522f
+is merged; integrated 30 files/146 assertions, TypeScript/build pass. Merged
+candidate/public acceptance pending before this companion is VERIFIED.
 
 903/903 source paragraphs; original hash matches preserved copy. npm ci and
 Prisma generation succeeded. First registry-only run: 5 passed. Combined registry,
@@ -165,7 +167,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Commit and pin the implemented standalone Admin checkpoint on codex/studio-phase2.
-Prepare a backed-up candidate, run scripts/studio/check-metadata.ts (including
-absence of business tools and staff sign-out) and read-only Home acceptance; activate
-and repeat public HTTPS checks. Then begin Phase 2A per STUDIO_PHASE_2_PLAN.md.
+Review/test/build the merged current live Reports 2a8522f plus standalone Admin
+source; preserve Reports' modern UI/provider guards. Candidate 214cbad passed all
+Studio/Admin/Home checks, but ancestry guard prevented omitting the newer live
+release. Commit/pin the merged revision, prepare a new backed-up candidate, run
+Studio/Admin, Home and Reports acceptance, activate then repeat public HTTPS.
+After companion verification begin Phase 2A per STUDIO_PHASE_2_PLAN.md.

@@ -88,6 +88,9 @@ export type StaffRosterProvider = (session: Session, manage: boolean) => Promise
 }>>;
 
 export type ModuleManifest = {
+  /** Built-in utility; dataset source permissions and licences remain independent. */
+  utility?: boolean;
+  reportProvider?: import("@/core/reports/types").ReportDataset[];
   /** Studio contracts supplement existing providers during progressive migration. */
   studio?: import("@/core/studio/registry/types").StudioModuleContract;
   recordContextProvider?: import("@/core/relationships/types").RecordContextProvider;

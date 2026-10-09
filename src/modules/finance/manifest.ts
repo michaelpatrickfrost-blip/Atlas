@@ -1,3 +1,4 @@
+import { reports } from './services/reports';
 import { financeRecordContext, financeRecordRelationships } from "./services/relationships";
 import { salesInvoiceChain, salesInvoiceQuantities } from "./services/order-chain";
 import { financeBusinessPlanning } from "./services/business-planning";
@@ -11,7 +12,7 @@ import {Wallet} from 'lucide-react';
 import type {ModuleManifest} from '@/core/modules/types';
 import {FINANCE_CAPABILITIES as C} from './capabilities';
 import { financeAnalytics } from "./services/analytics";
-export const financeManifest:ModuleManifest={
+export const financeManifest:ModuleManifest={reportProvider:reports,
  recordContextProvider: financeRecordContext, recordRelationshipProvider: financeRecordRelationships,
  salesInvoiceChainProvider: salesInvoiceChain, salesInvoiceQuantitiesProvider: salesInvoiceQuantities,
  businessPlanningProvider:financeBusinessPlanning,

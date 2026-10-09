@@ -237,3 +237,10 @@ provider failure; the reusable Server Component is
 explicit more-records marker. This is navigation over canonical records, not a
 second graph database or a persistence cache. Current roots: Sales order,
 Manufacturing order, Logistics fulfilment/shipment, Finance document.
+
+## Report providers
+
+Modules may register `reportProvider` datasets using `src/core/reports/types.ts`.
+Providers retain typed tenant/record-scoped queries and safe column allowlists.
+Reports is a built-in utility and never bypasses source licences/capabilities.
+See [Reports](modules/REPORTS.md) for the contract and bounds.

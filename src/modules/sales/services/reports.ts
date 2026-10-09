@@ -1,0 +1,12 @@
+import { CommercialOrderStatus, QuoteStatus } from '@/generated/prisma/enums';
+import { db } from '@/core/db/client';
+import { recordDataset, money } from '@/core/reports/records';
+import { enumText, text, date, amount } from '@/core/reports/columns';
+const base=[text('reference','Reference'),text('customer','Customer','party.name'),enumText('status','Status',Object.values(CommercialOrderStatus),'commercialStatus'),text('currency','Currency'),amount('net','Net'),amount('tax','Tax'),amount('total','Total')];
+export const reports=[
+recordDataset({id:'sales.orders',name:'Sales orders',source:'Sales',description:'Commercial order values in each order currency; these are not posted revenue.',anyOf:['sales.order.read'],dateField:'orderDate',columns:[...base,date('orderDate','Order date'),date('requestedDeliveryDate','Requested delivery'),date('createdAt','Created')]},
+(s,w,take,skip)=>db.salesOrder.findMany({where:{AND:[{organisationId:s.organisationId},w]},select:{reference:true,party:{select:{name:true}},commercialStatus:true,currency:true,netAmount:true,taxAmount:true,grossAmount:true,orderDate:true,requestedDeliveryDate:true,createdAt:true},orderBy:[{orderDate:'desc'},{id:'asc'}],take,skip}),
+(s,w)=>db.salesOrder.count({where:{AND:[{organisationId:s.organisationId},w]}}),r=>({reference:r.reference,customer:r.party.name,status:r.commercialStatus,currency:r.currency,net:money(r.netAmount),tax:money(r.taxAmount),total:money(r.grossAmount),orderDate:r.orderDate,requestedDeliveryDate:r.requestedDeliveryDate,createdAt:r.createdAt})),
+recordDataset({id:'sales.quotes',name:'Quotations',source:'Sales',description:'Quotation values and expiry dates, in each quotation currency.',anyOf:['sales.quote.read'],dateField:'createdAt',columns:[...base.map(c=>c.key==='status'?{...c,path:'status',values:Object.values(QuoteStatus)}:c.key==='currency'?{...c,path:'totalCurrency'}:c),date('expiryDate','Valid until'),date('createdAt','Created')]},
+(s,w,take,skip)=>db.quote.findMany({where:{AND:[{organisationId:s.organisationId},w]},select:{reference:true,party:{select:{name:true}},status:true,totalCurrency:true,netAmount:true,taxAmount:true,totalAmount:true,expiryDate:true,createdAt:true},orderBy:[{createdAt:'desc'},{id:'asc'}],take,skip}),
+(s,w)=>db.quote.count({where:{AND:[{organisationId:s.organisationId},w]}}),r=>({reference:r.reference,customer:r.party.name,status:r.status,currency:r.totalCurrency,net:money(r.netAmount),tax:money(r.taxAmount),total:money(r.totalAmount),expiryDate:r.expiryDate,createdAt:r.createdAt}))];

@@ -1,5 +1,76 @@
 # Atlas current state
 
+## 9 October 2026 — Michael's end-to-end Test company seeded on the live server
+
+Request: "build a test company with some customers, products, and some orders
+and some deliveries, then we will move to manufacturing and try add some plant
+and machines and costs". Agreed scope: a dedicated company login (not just
+staff entry), Plant deliberately left **empty** for Michael to build in the UI,
+and a lean commercial dataset (no HR/finance back-office).
+
+- **Script:** `scripts/seed-michael-test-company.ts` (new; run on the central
+  server with `node_modules/.bin/tsx`). It is re-run safe: an existing Test
+  company with the same slug is wiped via `wipeCompany` first, and it refuses to
+  wipe a company that is not `isTest`.
+- **Company:** `Michael Test Works Ltd`, slug `michael-test-works`,
+  `isTest: true` (id `cmv0xhv7m000012d58bfgvjnn`). Apps entitled + enabled:
+  products, sales, stock, logistics, manufacturing.
+- **Logins:** `michael.demo@atlassystem.online` / `AtlasDemo-2026-test`
+  (dedicated company login, company administrator). `kickablur@icloud.com` was
+  also added as an active member with the administrator role, so Michael can
+  alternatively open it from `/atlas` → Open company workspace. Danielle was not
+  added. Both verified as `admin` members.
+- **Data:** 3 customers (contacts, delivery addresses, credit profiles);
+  9 products (bought parts, sub-assembly, CONV-1500/CONV-HEAVY, a service);
+  7 opening-stock receipts into MAIN + DEPOT; 4 CONFIRMED sales orders
+  (SO-8A2D538C £8,304.00 · SO-8F4B7474 £1,422.00 · SO-FEE59F9B £3,228.00 ·
+  SO-FC029D8D £3,259.20); 2 shipments (SH-00001, SH-00002) taken
+  pick → dispatch → **DELIVERED**; 11 inventory movements; 2 fulfilments left
+  OPEN (FF-00001, FF-00003) deliberately SHORT on stock.
+- **Why records were written directly rather than through the Sales/Customer
+  commands:** `createDraftOrder`/`confirmOrder`/`createCustomer`/`createAddress`
+  all begin with `requireSession()` (`src/core/auth/session.ts`), which reads
+  `next/headers` and throws outside a request scope — the same constraint the
+  existing live scripts work under (`scripts/check-manufacturing-stock.ts`,
+  `scripts/check-delivery-invoice.ts`). Sales orders are therefore inserted with
+  the fields and trail confirmation creates (lines, `settleSale` totals, revision,
+  order change event, audit row, outbox row), then Logistics is asked to consume
+  the confirmed order through the **real** handoff (`handoffSalesOrder` →
+  `consumeSalesOrder`). Everything downstream of that — allocations,
+  reservations, pick task, scans, shipment, stock issue, delivery, history — is
+  produced by the real Logistics and Stock services.
+- **Intentional zero-stock finished goods:** CONV-1500 and CONV-HEAVY have no
+  opening stock, so the two conveyor orders are genuine manufacturing demand and
+  are the two SHORT fulfilments left for Michael.
+- **Checks run:** typecheck of the script on the server (`tsc -p` with a temp
+  tsconfig extending the repo config) → 0 errors. Seeder run against the live
+  central database → completed. Post-run data audit confirmed org `isTest`,
+  module states, members/roles, order statuses and totals, shipment DELIVERED
+  states, movement count, `CONSUMED` reservations and the expected open
+  fulfilments.
+- **Live verification (real login, fresh session):** signed in as
+  `michael.demo@atlassystem.online` on https://atlassystem.online and read the
+  pages. `/home` "Needs attention 2", `/customers` 3, `/products` 9,
+  `/sales/documents` "4 matching documents" (all CONFIRMED), `/stock` shows the
+  stocked parts, `/logistics` lists FF-00001 + FF-00003 OPEN plus the two
+  delivered, `/manufacturing/plant` loads empty, `/manufacturing` says
+  "0 production orders active". No error or "not enabled" screen on any page.
+- **Unrelated pre-existing finding (not caused by this change):**
+  `/logistics/shipments` (list) 404s because only
+  `src/app/(app)/logistics/shipments/[id]/page.tsx` exists; the shipments
+  themselves are reachable on their detail pages and from each order's
+  Connections tab, and `/logistics/reports` counts 2. Recorded, not fixed here.
+- **Deployment blocker (honest):** no app code changed, so there is nothing to
+  activate; the live server already stores all it needs. `scripts/deploy-vps.sh`
+  additionally refuses to run while the desktop checkout
+  `/Users/michael/Desktop/RP SYSTEM` has uncommitted tracked changes (it has
+  extensive unrelated in-progress work), so the script and memory were committed
+  from the clean `origin/main` worktree `~/Library/Caches/atlas-manufacturing-demo`
+  instead of from the desktop tree. The desktop checkout was not modified.
+- **Next step:** Michael opens the company, then adds plant (work centre +
+  machine) and a recipe for CONV-1500 / CONV-HEAVY with machine/labour/overhead
+  rates, and releases one of the two SHORT fulfilments to see produce → stock.
+
 ## 9 October 2026 — Tickets/Service staff access (same class, different gate)
 
 After the module-page fix above, Michael reported one remaining screen:

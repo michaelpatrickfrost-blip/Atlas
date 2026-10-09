@@ -1,5 +1,33 @@
 # Atlas decisions
 
+## 9 October 2026 — Exploratory demo data is seeded by a script, not invented in the UI
+
+Decision: Michael's end-to-end Test company is created by a committed, re-run
+safe script (`scripts/seed-michael-test-company.ts`) that runs on the central
+server, rather than hand-entered in the browser or left as one-off SQL.
+Reason: the company has to be reproducible (wipe and rebuild on request) and it
+has to exercise the connected story — orders that really become warehouse
+demand, and deliveries that really move stock. Anything hand-entered cannot be
+rebuilt or reviewed, and ad-hoc SQL would bypass the invariants entirely.
+
+Decision: seed the *inputs* (customers, products, opening stock, confirmed
+orders) with direct Prisma writes, but generate everything *downstream* of
+demand through the real services (`handoffSalesOrder`, `allocateRequirement`,
+`releaseRequirement`, `claimTask`/`scanTask`/`completeTask`,
+`dispatchShipment`, `confirmDelivery`, `stockProvider.receiveStock`).
+Reason: `requireSession()` is request-scoped, so the Sales and Customer commands
+cannot run in a script at all. Where a service takes an explicit `Session`
+parameter (Logistics, Stock) it is used for real, so allocations, reservations,
+scans, stock issues and history carry genuine service-side audit and events.
+Direct inserts are limited to records whose own commands are unreachable from a
+script, and they mirror exactly what confirmation writes.
+
+Decision: leave Plant empty and leave the two conveyor fulfilments deliberately
+SHORT.
+Reason: Michael asked to build the plant himself, and a short fulfilment is what
+makes the next step (add plant → add recipe → release → produce) demonstrable
+rather than a dead end.
+
 ## 9 October 2026 — Tickets/Service gate on records, not only on pages
 
 The staff exception has now been needed at three distinct layers, in order of

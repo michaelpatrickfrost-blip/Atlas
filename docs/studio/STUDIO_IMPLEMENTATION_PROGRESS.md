@@ -11,21 +11,17 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c1 current principal/support access — IMPLEMENTED locally; 16 focused tests
-PASS; integrated 33 tests, types/lint/build PASS. No job/preview endpoint or new migration. 2B3b combined
-compatible release preparation pending; no public retirement claim yet.
-
-2B3b — Field retirement — IMPLEMENTED locally. Tenant/publish/module guards, CAS,
-audit, retained active schema/history; no purge. 35 focused tests/types/lint/build
-PASS; central helper PASS on candidate 8b99c1b; public proof pending. 2B3a pure library VERIFIED locally (22
-focused tests, types/scoped lint/build PASS); not yet live, no jobs/value API.
-2B2 VERIFIED on candidate/public e5d66e6. Ordered 2B3a–g plan in
-STUDIO_FIELD_EVOLUTION_PLAN.md; all remaining Phase 2 dependencies retained.
+2B3c1 — Refreshed migration principal and explicit audited support context —
+IMPLEMENTED locally. Seven principal tests plus integrated 23 files/118 tests,
+Prisma generation/types/lint/build PASS. Central helper ready but NOT RUN. No
+preview endpoint, durable job or new Studio migration. 2B3b retirement verified
+on two candidates; public activation/proof pending while newer live source is
+preserved. 2B2 remains VERIFIED on candidate/public e5d66e6.
 
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest observed live source 5ebd700d3526b6fdaa70efa4514da0803301a285;
+VERIFIED. Latest observed live source 94dd3e105e2757b5d16ed3e2fea277d09a4b7bee;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
 The supplied source defines ten phases 0–9, not five. The original
@@ -211,6 +207,12 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
+Latest 6085d70 combined candidate PASS; /tmp/atlas-studio-acceptance-wM3A1X.
+Exact native source subsequently advanced to 94dd3e, merged unchanged. New
+combined 23 files/118 assertions, Prisma generation/types/lint/build PASS; real
+principal helper pending. No public retirement/principal claim. Earlier exact
+checkpoint results below are historical evidence, not current next actions.
+
 Combined 6775044 candidate/public owner + metadata/Admin/company sign-in, Home,
 Reports and MRP checks all PASS; private logs /tmp/atlas-studio-acceptance-fHPgb0 and
 /tmp/atlas-studio-public-Af2xt5. Exact live source verified. Modern Admin screenshot
@@ -297,33 +299,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Check pinned 6085d70 retirement preparation and run exact combined candidate/public
-checks before live retirement claim. 2B3c1 types/lint/build PASS; execute its new real central principal
-helper in a separately prepared candidate before job persistence. No client identity endpoint or saved capabilities.
-
-Prepared exact 8b99c1b1c0e31e2640a0bd73300678f0de899f33 PASS after backup
-atlas-pre-deploy-20261009-222427. Check /tmp/atlas-studio-retirement-candidate.txt;
-new real helper/combined acceptance PASS (/tmp/atlas-studio-acceptance-oJKxve).
-Public runtime advanced to 56c9d88 with business/platform separation. Exact source
-merged unchanged; integrated 7 files/44 tests, build/types/scoped lint PASS (two
-existing brand-image warnings). Prepare and reverify combined candidate before
-activation/public checks. No
-activation/public retirement claim.
-Before 2B3c job models, resolve the explicit data/support context and refreshed
-principal dependency in STUDIO_FIELD_EVOLUTION_PLAN.md; metadata Admin context
-cannot authorise record/value queries. No new support context implemented yet.
-
-2B3b service/tests/memory checkpointed; latest main 98cf934 and exact live 5ebd700
-(rounded typography preserving e5d66e6) merged unchanged. Integrated build/types
-PASS; prepare pinned candidate, execute central real retirement/
-conversion and combined native acceptance, then activate exact candidate on PASS
-and repeat publicly. New helper NOT RUN; no live 2B3a/b claim yet. Following verified
-retirement checkpoint, 2B3c reviewed preview/durable jobs, then target publication/
-batches/cutover and 2B4 owner values. 2C–2F remain; no Phase 3+.
-
-2B2 exact acceptance source e5d66e6 VERIFIED LIVE; now preserved by 5ebd700.
-Preparation backup atlas-pre-deploy-20261009-214456; activation backup
-atlas-pre-deploy-20261009-215653; previous 2690c26 runtime retained.
-Complete candidate PASS: /tmp/atlas-studio-acceptance-fDWxDN; complete public PASS:
-/tmp/atlas-studio-public-1XT85A. Initial transient Messages viewport failure retained
-in /tmp/atlas-studio-public-3EmQ8d; standalone unchanged check and full rerun PASS.
+Prepare the source preserving live 94dd3e commercial workspaces and 56c9d88
+business/platform separation. Execute the updated combined candidate runner,
+including real check-field-principal and commercial forms/regressions. On PASS
+activate only the exact compatible pinned source and repeat publicly. Preserve
+newly advanced live source if the ancestry guard stops; never force replacement.
+After principal/retirement release proof, implement 2B3c2 reviewed preview and
+durable migration job/row persistence with source/target checksum/revision binding,
+authorised cohort and restricted live-preview policy. No 2C/2E or Phase 3+ yet.

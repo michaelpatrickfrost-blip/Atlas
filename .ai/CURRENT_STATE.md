@@ -1,5 +1,20 @@
 # Atlas current state
 
+## 9 October 2026 — Studio candidate integrated with current live commercial source
+
+Preserved exact activated 94dd3e source, including its additive appointment
+migration and commercial workspaces; no business-source correction removed.
+Studio principal/retirement integrated 23 files/118 tests, Prisma generation,
+production build, strict post-build TypeScript and scoped lint PASS.
+Prior combined candidate 6085d70 PASS with all owner/storage/retirement/metadata,
+Admin/business/Home/Apps/Reports/MRP/Messages/private Admin/supply checks; evidence
+/tmp/atlas-studio-acceptance-wM3A1X. It cannot safely replace newer live 94dd3e;
+no activation/public retirement claim. Latest principal helper remains NOT RUN.
+Next prepare/test this compatible source, including real refreshed principals and
+commercial regression, then activate on PASS and repeat exact public checks.
+No new Studio schema migration or preview/job/UI feature in this checkpoint.
+
+
 ## 9 October 2026 — Studio migration principal checkpoint
 
 2B3c1 IMPLEMENTED locally: fields/principal.ts captures only actual customer

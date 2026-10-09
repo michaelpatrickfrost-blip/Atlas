@@ -1,5 +1,58 @@
 # Atlas current state
 
+## 9 October 2026 — Modern Messages ready for candidate acceptance
+
+Implemented a wide logo-based pop-out and expanded `/chat` utility workspace,
+responsive conversation list/timeline, optional participants/shared-record details,
+grouped order/quotation/customer/project/product picker and horizontal composer.
+Drafts remain separate per chat in a company/user-keyed shell context; closing
+and expanding retains the conversation and current draft without local storage. Pending sends disable edits/re-entry; failures retain draft/attachments.
+References may be sent without a comment. Server history searches all message text
+with bounded stable 80-message cursor pages, same-tenant/participant cursor checks,
+and safe recipient placeholders; older/search views do not mark newer messages read.
+Closed docks only poll unread summaries. Source licences/native private Projects
+scope and existing work/meeting creation remain. Customer/contact picker excludes
+scrubbed/archived identities. Admin remains independent without business chat.
+Paths: chat actions/dock/API; shell utility/header variants/navigation; focused
+chat tests and scripts/check-messages.ts; docs/MESSAGES.md/design/roadmap/decisions.
+No schema/migration, grants or existing business-record edits. Preserved concurrent
+live Guardian MRP source `0ce9f4a` and Reports/Admin/Studio evidence while resolving
+CURRENT_STATE with both contributors' entries. Eight focused files/47 assertions,
+strict TypeScript and production build passed; scoped ESLint zero errors/three
+brand-image warnings. Candidate `4233b57` is prepared/smoke-verified with central
+backup `atlas-pre-deploy-20261009-202932`; live pointer unchanged. Browser acceptance
+waits for the shared release lock held by another verification run. Refined picker
+search loading, bounded test timeouts and removed formatter whitespace; 17 chat
+assertions, strict TypeScript and final production build passed again; focused
+refinement lint zero errors/one brand-image warning and diff check passed.
+Full suite not rerun.
+Initial `4233b57` candidate acceptance passed real chat/contact creation, message
+send/order-reference persistence, participant/shared-record details, history beyond
+80 messages/search, forged-record rejection, draft closure, utility entry, expanded
+workspace and desktop/tablet/phone viewport fit with no browser runtime errors.
+Screenshots inspected visually. Its synthetic contact/customer is retired centrally.
+Final expansion handoff uses the shared unsaved-draft context keyed by authenticated
+company/user; eight focused files/48 assertions, strict TypeScript, final production
+build and refinement lint (zero errors/one brand-image warning) passed.
+A final review guards both restored-conversation loading and history effects while
+the dock is closed, preventing unintended read markers after returning Home. Added
+a regression; eight files/49 assertions, TypeScript/build and scoped lint (no errors,
+three brand-image warnings) passed. Candidate 1f36fb9 prepared; acceptance initially
+hit an ambiguous preview selector after a second retained fixture existed. Scoped
+the checks to actual timeline articles; this is a test selector correction, not a
+passing acceptance claim. No activation until the final source passes.
+5798bc1 preparation stopped at the ancestry guard after live Studio 6775044
+advanced. Its exact already-live source is merged, preserving typed owner/field
+contracts and their evidence. The prematurely queued acceptance did not run
+(directory absent); no new fixture or passing check is claimed.
+Combined source: 11 focused files/69 assertions, strict TypeScript, production
+build and diff check passed; no schema change.
+Next: prepare the final pinned revision,
+rerun exact chat acceptance plus Home/Reports
+regression, activate and repeat
+public verification. Synthetic QA fixtures stay central and are retired, no actual
+colleague/customer receives a test message; no local business database/cache.
+
 ## 9 October 2026 — Phase 2B1 validators and visual setup requirements
 
 Added strict custom-field metadata/storage/value validation library for strings,
@@ -85,6 +138,7 @@ No shared general custom-field storage was found. Adapt existing intake fields
 where appropriate; do not rewrite historical answers. Next: implement typed
 owner-approved record/extension contracts and bounded Tickets projections with
 native read/write policy, tests, docs and checkpoint before metadata storage 2B.
+
 ## 9 October 2026 — Guardian MRP repair ready for server verification
 
 Isolated reviewed release preserves live Reports/Studio and standalone Admin
@@ -123,6 +177,7 @@ tests/mrp-planning-access.test.ts; docs/evidence/2026-10-09-guardian-mrp-workflo
 Next: prepare/deploy this compatible reviewed release, run the same actual Test
 POST/button/page/central-state check publicly, then mark only reproduced reports
 FIXED and integrate owned source/memory into the canonical dirty repo safely.
+
 
 ## 9 October 2026 — Admin candidate preserves current live Reports source
 
@@ -5218,3 +5273,9 @@ orders renders saved cost snapshots under plan.read without separately checking
 manufacturing.cost.read. This task's Finance report uses independent source gates;
 full manufacturing cost redaction needs a separate ownership-wide repair. Do not
 claim all historical Manufacturing profile boundaries have been verified.
+
+Form-refinement prepare stopped before writes because the shared live service
+advanced to Messages 9303039. Preserved that exact live shell/chat implementation
+and its record/draft retention; console consolidation remains permission-filtered.
+Reconciled both tasks' decisions. Newer private Admin candidate is not included
+until its activation is observed. Combined source verification remains required.

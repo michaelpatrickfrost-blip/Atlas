@@ -16,7 +16,7 @@ const state = vi.hoisted(() => ({
     product: { findMany: vi.fn() },
     contact: { findMany: vi.fn() },
     chatParticipant: { upsert: vi.fn(), updateMany: vi.fn() },
-    chatMessage: { create: vi.fn(), count: vi.fn(), findMany: vi.fn() },
+    chatMessage: { create: vi.fn(), count: vi.fn(), findMany: vi.fn(), findFirst: vi.fn() },
     projectTask: { create: vi.fn() },
     projectInboxItem: { create: vi.fn() },
     meeting: { create: vi.fn() },
@@ -28,10 +28,10 @@ const state = vi.hoisted(() => ({
 
 vi.mock("@/core/auth/session", () => ({ requireSession: vi.fn(async () => state.session) }));
 vi.mock("@/core/db/client", () => ({ db: state.db }));
-vi.mock("@/core/modules/runtime", () => ({ getEnabledModuleIds: vi.fn(async () => state.enabled) }));
+vi.mock("@/core/modules/runtime", () => ({ enabledModulesForSession: vi.fn(async () => state.enabled) }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 
-import { openChat, openDirectChat, postMessage, sendChat } from "@/app/(app)/chat/actions";
+import { openChat, openDirectChat, postMessage, sendChat, chatSnapshot } from "@/app/(app)/chat/actions";
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -105,9 +105,9 @@ describe("chat contact and work", () => {
     await expect(sendChat({ conversationId: "direct-1", body: "See this", links: [{ type: "SALES_ORDER", id: "hidden-order" }] })).rejects.toThrow("not available to attach");
     expect(state.db.chatMessage.create).not.toHaveBeenCalled();
     state.db.salesOrder.findMany.mockResolvedValueOnce([{ id: "order-1", reference: "SO-1", party: { name: "Northbridge" } }]);
-    await sendChat({ conversationId: "direct-1", body: "See SO-1", links: [{ type: "SALES_ORDER", id: "order-1" }] });
+    await sendChat({ conversationId: "direct-1", body: "", links: [{ type: "SALES_ORDER", id: "order-1" }] });
     expect(state.db.chatMessage.create).toHaveBeenCalledWith(expect.objectContaining({
-      data: expect.objectContaining({ conversationId: "direct-1", links: { create: [{ organisationId: "org-a", entityType: "SALES_ORDER", entityId: "order-1" }] } }),
+      data: expect.objectContaining({ conversationId: "direct-1", body: "Shared Atlas records.", links: { create: [{ organisationId: "org-a", entityType: "SALES_ORDER", entityId: "order-1" }] } }),
     }));
   });
 
@@ -136,4 +136,53 @@ describe("chat contact and work", () => {
     await expect(sendChat({ conversationId: "company", body: "Planning", kind: "MEETING", startsAt: "2026-10-04T09:00:00.000Z" })).rejects.toThrow("Turn on Projects");
     expect(state.db.meeting.create).not.toHaveBeenCalled();
   });
+});
+
+
+describe("participant-only searchable history", () => {
+  beforeEach(() => {
+    state.db.chatConversation.findFirst.mockResolvedValue({ id: "chat-a", participants: [{ userId: "user-a" }] });
+    state.db.chatConversation.findMany.mockResolvedValue([]);
+    state.db.membership.findMany.mockResolvedValue([]);
+    state.db.chatMessage.findMany.mockResolvedValue([]);
+  });
+  it("rejects history before reading messages or changing read state for a non-participant", async () => {
+    state.db.chatConversation.findFirst.mockResolvedValue(null);
+    await expect(chatSnapshot("other-chat", { query: "private" })).rejects.toThrow("not available");
+    expect(state.db.chatMessage.findMany).not.toHaveBeenCalled();
+    expect(state.db.chatParticipant.updateMany).not.toHaveBeenCalled();
+  });
+  it("keeps search tenant scoped and bounded without marking newer messages as read", async () => {
+    await chatSnapshot("chat-a", { query: "  delivery  " });
+    expect(state.db.chatMessage.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: { organisationId: "org-a", conversationId: "chat-a", body: { contains: "delivery", mode: "insensitive" } },
+      take: 81, orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    }));
+    expect(state.db.chatParticipant.updateMany).not.toHaveBeenCalled();
+  });
+  it("cannot use a cursor from another conversation and validates it within the tenant", async () => {
+    state.db.chatMessage.findFirst.mockResolvedValue(null);
+    await expect(chatSnapshot("chat-a", { before: "foreign-message" })).rejects.toThrow("not available");
+    expect(state.db.chatMessage.findFirst).toHaveBeenCalledWith({ where: { id: "foreign-message", organisationId: "org-a", conversationId: "chat-a" }, select: { id: true, createdAt: true } });
+    expect(state.db.chatMessage.findMany).not.toHaveBeenCalled();
+  });
+  it("pages older messages with a stable tie-breaker for identical timestamps", async () => {
+    const createdAt = new Date("2026-10-09T12:00:00Z");
+    state.db.chatMessage.findFirst.mockResolvedValue({ id: "message-z", createdAt });
+    await chatSnapshot("chat-a", { before: "message-z" });
+    expect(state.db.chatMessage.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: {
+      organisationId: "org-a", conversationId: "chat-a", OR: [{ createdAt: { lt: createdAt } }, { createdAt, id: { lt: "message-z" } }],
+    } }));
+  });
+});
+
+it("shows a safe placeholder when a participant cannot read an attached order", async () => {
+  state.db.chatConversation.findFirst.mockResolvedValue({ id: "chat-a", participants: [{ userId: "user-a" }] });
+  state.db.chatConversation.findMany.mockResolvedValue([]);
+  state.db.membership.findMany.mockResolvedValue([]);
+  state.db.user.findMany.mockResolvedValue([]);
+  state.db.chatMessage.findMany.mockResolvedValue([{ id: "msg", authorUserId: "user-a", body: "Shared record", kind: "TEXT", createdAt: new Date(), links: [{ entityType: "SALES_ORDER", entityId: "protected-order-id" }], task: null, meeting: null }]);
+  const snapshot = await chatSnapshot("chat-a");
+  expect(snapshot.thread[0].links).toEqual([{type: "SALES_ORDER", id: "", title: "Attached record", subtitle: "Not available to you", href: ""}]);
+  expect(state.db.salesOrder.findMany).not.toHaveBeenCalled();
 });

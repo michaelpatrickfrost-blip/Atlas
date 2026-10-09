@@ -26,6 +26,7 @@ export function Topbar({ session }: { session: Session }) {
     <div className="order-3 w-full min-w-0 sm:order-none sm:flex-1 lg:ml-12 lg:max-w-[450px]"><CommandPalette /></div>
     <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-3">
       <NoticeBell />
+      {can(session, CORE_CAPABILITIES.chatRead) && <ChatDock />}
       <Link href="/profile" aria-label="My work" title="My work" className="flex items-center gap-3 rounded-2xl px-2 py-1.5 transition hover:bg-white/70">
         <CompanyMark organisationId={session.organisationId} name={session.organisationName} size="md" />
         <span className="hidden max-w-[190px] text-left md:block"><span className="block truncate text-sm font-semibold tracking-tight text-slate-950">{session.organisationName}</span><span className="mt-1 block text-xs text-[#71809a]">{today}</span></span>

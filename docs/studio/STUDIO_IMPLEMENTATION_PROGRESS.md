@@ -4,18 +4,19 @@ Updated: 9 October 2026.
 
 # Current Phase
 
-Phase 1 — Metadata kernel. Phase 0 prerequisite local gate passed.
+Phase 1 — Metadata kernel. Gate PASS; Phase 0 prerequisite and live compatibility passed.
 Michael reconciled the source mismatch on 9 October: “do all as a plan do 1 then
 once done contiune”. Use the supplied Section 27 sequence; complete prerequisites
 and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-1D — Release compatibility, database acceptance and live verification.
+1D — Release compatibility, database acceptance and live verification — VERIFIED.
 
 # Overall Status
 
-IN PROGRESS. The supplied source defines ten phases 0–9, not five. The original
+VERIFIED for Phase 1. Live source c46bbefa737c81280daf38d62e87a4511420ffa5.
+The supplied source defines ten phases 0–9, not five. The original
 is preserved unchanged at `docs/studio/ATLAS_STUDIO_SOURCE.docx` (source
 `/Users/michael/Downloads/atlas_studio.docx`, SHA-256
 `4afb01d98ead51cd70ec4958620eb9d27a19a0298cd0fa1cb8bd0aee69d9198d`).
@@ -32,9 +33,9 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 0C Compatibility checks and prerequisite gate | VERIFIED | Catalogue hash snapshot, 21 tests, TypeScript, changed-file lint and production build passed. |
 | 1A Tenant metadata models/additive migration | VERIFIED | Central additive migration applied; real immutable update/delete, sealed-edge and cross-tenant pointer constraints passed in candidate 5f8d83. |
 | 1B Draft/validate/publish/activate service | VERIFIED | Central real publication/activation/rollback/history, simultaneous draft CAS, disabled sources, permissions and atomic audit passed after correcting nested Prisma FK mapping. |
-| 1C Configuration capabilities/admin interface | IMPLEMENTED | Customer Studio and selected-company staff setup; conflict diff, publication/history controls; build/live checks pending. |
-| 1D Release compatibility/security/live acceptance | IN PROGRESS | Release dependency scan wired before activation; acceptance script and production verification next. |
-| Companion Admin/business sign-in and provisioning | IMPLEMENTED | Separate Admin login, company-specific login/reset URLs, OWNER/ADMIN business-user creation; authentication/platform permission regressions pass. |
+| 1C Configuration capabilities/admin interface | VERIFIED | Candidate and public real forms, saved drafts/conflict diff, publication/activation and customer/Admin routes passed. |
+| 1D Release compatibility/security/live acceptance | VERIFIED | Exact candidate/public metadata and Home acceptance passed; dependency scans, backup, build, activation and public revision checked. |
+| Companion Admin/business sign-in and provisioning | VERIFIED | Real Admin creates Test-company user; correct company setup/login passes; wrong company recovery/login and customer Admin access rejected. |
 
 # Current Workstream Detail
 
@@ -74,7 +75,7 @@ Deployment must preserve central records, backups and concurrent contributions.
 `tests/studio-{registry,adapters}.test.ts`; `docs/MODULE_SPEC.md`; metadata compiler/services, four Prisma models/additive migration, Studio module
 and customer/Admin routes, login/reset company addresses, proxy login redirect,
 platform provisioning guards, deploy compatibility script, focused/regression tests,
-source copy, contract inventory, this ledger, CURRENT_STATE and DECISIONS.
+source copy, contract inventory, phase completion report, this ledger, CURRENT_STATE and DECISIONS.
 
 # Database / Prisma Changes
 
@@ -88,7 +89,9 @@ business records changed, no local business databases, no destructive reset.
 `20261009210000_studio_metadata_kernel` applied centrally by backed-up candidate
 preparation on 9 October. Backup prefix:
 `/home/administrator/backups/atlas-pre-deploy-20261009-184707`. Existing runtime
-was retained; concurrent completed branding release 58b3610 is preserved.
+was retained during preparation; branding 58b3610 and verified Home 329b60a are
+preserved. Final candidate/activation backup prefixes: `atlas-pre-deploy-20261009-193301`
+and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
 
@@ -111,8 +114,9 @@ Most recent focused run includes 15 test files and 64 assertions (registry,
 metadata, permissions, address binding and Proxy; all passed). TypeScript, changed-
 file lint and production build passed. Latest full tests: 85 failures/1003 passes; unchanged
 HEAD baseline reproduces the same 85 failures (968 passes before additions). Full
-lint: 9 errors/21 warnings, unchanged baseline. No central migration/live verification
-yet. Failures are existing stale module-availability mocks and existing lint errors,
+lint: 9 errors/21 warnings, unchanged baseline. Central candidate and public metadata lifecycle/browser acceptance and read-only
+Home desktop/tablet/phone checks passed on c46bbef. Failures are existing stale
+module-availability mocks and existing lint errors,
 not a reason to claim full-suite success.
 
 # Architecture Decisions
@@ -124,16 +128,12 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
-Source's initial five/ten-phase mismatch resolved by follow-up; no remaining scope
-blocker. Central migration applied; candidate acceptance caught nested Prisma dependency
-FK fields supplied twice. Publication rolled back atomically, fixture tenants
-suspended. Fix removes implicit nested FK fields and adds a regression assertion;
-Corrected candidate 5f8d83 passed central service acceptance including actual
-concurrent CAS and composite pointer isolation. Browser acceptance timed out on
-the exact Stable key accessible name including helper text; explicit input label
-added. Rerun browser forms on final candidate before activation. Full test/lint baseline
-failures are reproduced unchanged; focused checks pass. Phase 1 cannot PASS
-before database and live behaviour are verified. No later phases started.
+Full test/lint baseline failures are reproduced unchanged; focused checks pass.
+Earlier candidate publication/accessible-label/test-selector failures were fixed
+and rerun successfully. Home screenshot ownership interrupted the first combined
+runner; the matching read-only test environment passed candidate/public Home.
+No unresolved Phase 1 runtime gate failure. Later engines remain unimplemented.
+See `STUDIO_PHASE_1_COMPLETION.md` for evidence and practical limits.
 
 # Deferred Items
 
@@ -143,11 +143,10 @@ No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
 
-Phase 0 local PASS (runtime/contract/regression tests + build); live compatibility
-check remains required before completed release handoff. Phase 0 checks: (a) stable typed IDs/schema hashes/lifecycle, (b) existing provider
+Phase 0 PASS (runtime/contract/regression tests + build + live compatibility). Phase 0 checks: (a) stable typed IDs/schema hashes/lifecycle, (b) existing provider
 behaviour through adapters, (c) server tenant/module/capability/input-output checks,
 (d) duplicate/compatibility/security tests, (e) production build/regressions.
-Phase 1 pending: (a) tenant-owned metadata with immutable checksummed versions,
+Phase 1 PASS, candidate and public HTTPS evidence for each check: (a) tenant-owned metadata with immutable checksummed versions,
 (b) CAS drafts, (c) server validation/closed registry dependencies before publish,
 (d) separate activation and historical rollback, (e) distinct edit/publish/read
 permissions without domain privilege widening, (f) transactional audit,
@@ -158,12 +157,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Check/commit final legacy customer-only provisioning guards and explicit metadata
-Description labels; prepare their pinned `codex/studio-phase1-release` candidate.
-Live Home 329b60a is preserved. Candidate 70052eb passed central lifecycle; browser
-save proof timed out on the populated Description label, corrected explicitly.
-Candidate 2ba0382 reached business-user provisioning and expected recovery denial;
-feedback/selector correction and the rest of customer login remain to verify. Run
-`ATLAS_STUDIO_LIVE_TEST=1 ATLAS_STUDIO_TEST_URL=http://127.0.0.1:3011`
-with `scripts/studio/check-metadata.ts` against the prepared candidate, correct any
-failure before activation, then repeat against the public live URL.
+Phase 1 complete; no Phase 2 implementation started. Recover from this ledger and
+`STUDIO_PHASE_1_COMPLETION.md`, re-read supplied Section 27 Phase 2 plus Sections
+6.4–8, inspect existing extension/page owners and current Git status, then record
+Phase 2 workstreams before implementing 2A: module-approved extension policy and
+custom-field contracts. Preserve the live metadata kernel and existing domain
+ownership; do not start Decisions, Flow or durable-event engines early.

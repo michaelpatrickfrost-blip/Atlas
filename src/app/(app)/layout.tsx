@@ -1,3 +1,4 @@
+import { MessageDraftProvider } from "@/components/shell/message-drafts";
 import { GuardianObserver } from "@/components/shell/guardian-observer";
 import { redirect } from "next/navigation";
 import { getSession } from "@/core/auth/session";
@@ -9,5 +10,5 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const session = await getSession();
   if (!session) redirect("/login");
 
-  return <ShellChrome topbar={<Topbar session={session} />} homeNavigation={<HomeNavigation session={session} />}><GuardianObserver />{children}</ShellChrome>;
+  return <MessageDraftProvider key={`${session.organisationId}:${session.userId}`}><ShellChrome topbar={<Topbar session={session} />} homeNavigation={<HomeNavigation session={session} />}><GuardianObserver />{children}</ShellChrome></MessageDraftProvider>;
 }

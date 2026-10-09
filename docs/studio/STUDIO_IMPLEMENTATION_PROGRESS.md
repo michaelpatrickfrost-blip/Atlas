@@ -255,8 +255,8 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint reviewed 2B2/local generated-key simplification; merge exact live Messages
-9303039 and preserve its changes/evidence. Rerun integrated tests/types/build, prepare
+2B2/local generated-key simplification checkpoint f2beb8b; exact live Messages
+9303039 merged and source/evidence preserved. Rerun integrated tests/types/build, prepare
 the additive backed-up candidate, then run field lifecycle/SQL/history/tenant guards
 and existing Studio/Admin/business/Home/Reports/MRP/Messages acceptance before
 activation. Proceed to 2B3 reviewed evolution/retirement/conversion planning and

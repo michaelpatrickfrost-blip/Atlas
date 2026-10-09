@@ -57,7 +57,7 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
   The utility rail contains Home, Reports (built-in data workspace), My tasks,
   Messages (chat permission) and Settings (company-admin access). It does not
   repeat the apps. Tablet/phone use a compact utility bar. This supersedes the
-  older no-sidebar rule on Home and Reports.
+  older no-sidebar rule on Home, Reports and Messages.
   `AppDirectory` still uses `getNavigableModules` for both the launcher and compact
   Apps menu; counts reflect authorised entries. App labels/descriptions wrap and
   keyboard focus remains visible. Attention/goals stay below the app directory.
@@ -66,10 +66,15 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
   a scrollable, labelled bar on tablet/phone. Active sections and selected-company
   setup tabs remain explicit. Business launcher/search/chat/notices/My work are
   absent; staff identity and sign-out remain. Routes use their own `(admin)` group.
-- **Topbar** — Home and Reports use the Atlas ribbon mark, wordmark/tagline, search, notices,
+- **Topbar** — Home, Reports and Messages use the Atlas ribbon mark, wordmark/tagline, search, notices, chat,
   company identity/date, profile and sign-out. Other workspaces retain home,
   Apps, back, search, new window, notices, chat, profile and sign-out.
   `public/brand/atlas-mark.png` is a crop of Michael's supplied artwork.
+- **Messages** — wide blue/white pop-out, conversation list beside chat on desktop,
+  one pane at a time on phone, quiet date separators and structured record cards.
+  A horizontal composer groups attachments/work actions; conversation details
+  contain participants and records in the displayed messages. Full `/chat` uses
+  the Home utility shell. See [Messages](MESSAGES.md).
 - **CommandPalette** — ⌘K / Ctrl+K. Debounced query against `/api/search`,
   which aggregates navigation matches and each module's `searchProvider`.
 

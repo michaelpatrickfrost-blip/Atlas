@@ -64,7 +64,15 @@ tenant scope; central negative fixture verifies foreign time cannot affect pay,
 then removes only that intentionally invalid synthetic input. Final scoped
 3-file/33 tests, lint, production build and strict types PASS; full focused set
 18 files/125 PASS. Live advanced to accepted Commercial 94dd3e1 while ad7417e
-queued; exact source merged before release. Regenerate/check merged source next. Evidence /tmp/atlas-people-candidate-Q5RXLH; backup
+queued; exact source merged before release. Merged Prisma/API regeneration,
+production build/strict types PASS; 4 focused files/35 tests PASS. b12649a
+candidate built and actual dashboard PASS, then test-only foreign-time fixture
+hit the existing daily-minutes DB constraint. Corrected 60000 to valid 60 minutes;
+isolation still requires exactly 45 approved hours. No guard bypass or live switch.
+Evidence /tmp/atlas-people-candidate-3hRuWS; backup
+atlas-pre-deploy-20261009-225211. Test access retired. Checker strict types and
+incremental whitespace review PASS. Repeat sealed acceptance required.
+Earlier evidence /tmp/atlas-people-candidate-Q5RXLH; backup
 atlas-pre-deploy-20261009-223227. Test companies suspended/access revoked.
 Checker now also saves/reloads a real Analytics scorecard dashboard and confirms
 changed source figures render; not yet run. Next: candidate

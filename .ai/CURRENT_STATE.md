@@ -45,6 +45,12 @@ activation. Phase 1 gate remains pending; later phases not started.
   `585e9ba`: 256 requests, 100 rendered pages, 99 safe toggles, no findings/browser
   errors; inventory/capped read coverage does not prove dynamic writes. Anonymous
   login 200, staff-only Guardian inbox 307 and correct brief endpoint 401 verified.
+- Closing refresh: 171 active diagnostics after two new reports on `58b3610`.
+  Full Home/maintenance-work briefs (digest `3976028856`) read and triaged NEEDS_AI.
+  Private journal confirms the work digest; unknown-action categories surround the
+  Home observation but do not identify either original submitted control/profile.
+  Independent fresh reads and record fixture pass; original old-tab/control state
+  remains absent. Preserve draft recovery and never replay a POST automatically.
 - Final recovery evidence and shared guide reconciled; only this chat's completed
   four ephemeral server files removed. Sealed checker, reports, private logs and
   central backups retained. This follow-up changes documentation/triage only;

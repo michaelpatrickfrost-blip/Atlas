@@ -141,3 +141,10 @@ brief 401 pass. Removed only four completed Guardian ephemeral server files; sea
 checker, central reports, private logs and backups remain. Final follow-up edits
 are documentation and triage only; original repair tests/types/lint/build retain
 their dated scope above. No fresh full application build is claimed.
+
+Closing refresh: 171 active diagnostics after new Home and maintenance-work
+reports with digest 3976028856 on 58b3610. Full briefs read and NEEDS_AI notes
+written: private journal confirms the work digest, and Unknown Server Action
+categories surround the Home timestamp without identifying the exact control.
+Fresh reads and the complete record fixture still pass. Original profile/record/
+old-tab/control state remains missing; no speculative closure or mutation replay.

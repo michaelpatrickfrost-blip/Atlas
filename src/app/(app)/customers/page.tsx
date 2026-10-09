@@ -63,7 +63,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
   }));
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6">
+    <div className="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-6">
       <WorkspaceHeading eyebrow="Customer workspace" title={filter === "archived" ? "Archived accounts" : "Know your customers"} description="One place for every account, its people, relationships and shared history. Open a customer to see its details and the next steps." actions={<>{can(session, CUSTOMER_CAPABILITIES.create) && <Link href="/customers/new"><Button variant="primary">Add customer</Button></Link>}<CustomerCsvTools /></>} />
       <WorkspaceStats items={[
         { label: "Matching accounts", value: rows.length, hint: "In the current view", icon: Building2 },

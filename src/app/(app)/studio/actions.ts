@@ -18,7 +18,7 @@ export async function create(form: FormData) {
   const actor = await requireSession();
   assertCapability(actor, CAP.edit);
   const session = await studioActionContext(actor,text(form,"organisationId"));
-  const definition = await createDraft(session, { key: text(form, "key"), name: text(form, "name"), kind: "capabilitySet", payload: { schemaVersion: 1, description: text(form, "description"), references: [] } });
+  const definition = await createDraft(session, { key: `configuration.${crypto.randomUUID()}`, name: text(form, "name"), kind: "capabilitySet", payload: { schemaVersion: 1, description: text(form, "description"), references: [] } });
   const root = actor.capabilities.has("atlas.staff.manage") ? `/atlas/studio/${session.organisationId}` : "/studio";
   revalidatePath(root);
   redirect(`${root}/${definition.id}`);

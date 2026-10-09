@@ -12,13 +12,13 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 # Current Workstream
 
 2B2 — Versioned field compiler/identity and typed storage — IN PROGRESS. 2B1 pure
-validation VERIFIED locally; 2A central candidate acceptance PASS. Standalone Admin
+validation VERIFIED locally; 2A candidate/public acceptance PASS. Standalone Admin
 companion VERIFIED; detailed plans in STUDIO_PHASE_2_PLAN.md and STUDIO_PHASE_2_FIELDS.md.
 
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Live source a642df0555cd45a97d57d867621d189c7650cf19.
+VERIFIED. Latest observed live source 2690c26cb0f5f3c28e21265820e8a713708ce699; 2B2 candidate only.
 The supplied source defines ten phases 0–9, not five. The original
 is preserved unchanged at `docs/studio/ATLAS_STUDIO_SOURCE.docx` (source
 `/Users/michael/Downloads/atlas_studio.docx`, SHA-256
@@ -40,15 +40,35 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 1D Release compatibility/security/live acceptance | VERIFIED | Exact candidate/public metadata and Home acceptance passed; dependency scans, backup, build, activation and public revision checked. |
 | Standalone modern Admin shell companion | VERIFIED | Live a642df0; metadata/Admin/business and Home/Reports checks passed; visible UI inspected. |
 | Companion Admin/business sign-in and provisioning | VERIFIED | Real Admin creates Test-company user; correct company setup/login passes; wrong company recovery/login and customer Admin access rejected. |
-| 2A Owner-approved entity/extension contracts | VERIFIED | 8 focused files/54 assertions, TypeScript, scoped lint/build; central runtime helper pending. No schema/native write changes. |
+| 2A Owner-approved entity/extension contracts | VERIFIED | 8 focused files/54 assertions, TypeScript, scoped lint/build; central candidate/public owner checks PASS on 6775044. No native write changes. |
 | 2B1 Typed field/value validation | VERIFIED | 7 focused assertions, TypeScript/scoped lint; integrated 17 files/110 assertions and production build. Pure library, no storage/UI claim. |
 
 # Current Workstream Detail
 
+2B2 candidate schema/lifecycle VERIFIED, NOT DEPLOYED: closed compiler dispatch/lifecycle, permanent
+publication identity/generation binding, owner field limit, activation checks and
+cosmetic-only evolution until reviewed migrations. Tickets v2 preserves sealed v1
+hashes. Five additive typed models/SQL guards with immutable history/current pointers.
+Prisma validate/generate, 19 files/85 tests, scoped lint, production build and strict
+post-build types PASS. Backed-up central DDL transaction-only syntax check PASS after
+fixing CASE parentheses; rolled back and table absence confirmed. Migration applied on prepared fcfd512 after backup; data constraints/runtime
+checks PASS on candidate fcfd512 (privileged schema fixture, not value API).
+Full combined release failed a Messages viewport test selector with retained duplicate
+preview text; scoped it to timeline articles, rerun needed before activation. Real privileged schema/lifecycle
+acceptance helper added, distinct from the pending owner-authorised values API.
+
+Removed the visible internal-key input/display; server assigns stable UUID keys.
+Michael's bespoke business design studio/Sales clarification is permanently saved;
+visual preview/builder remains 2E, not claimed from the foundation UI.
+Latest follow-up adds easy template customisation, live business dashboards/screens
+and custom buttons to 2E acceptance. Existing Home/analytics/dashboard and Sales
+Templates source inspected; 2E5 reuses their engines, preserves personal boards and
+checks native button permissions. Requirements/plan saved; designer NOT STARTED.
+
 2B1 delivered closed typed field contracts/required/constraint validation, exact
 decimal/currency/calendar/UTC/duration semantics, stable enum options/retirement,
 contact/address/reference syntax and additional capability checks. Reference target
-authorisation is required in later 2B4. No field compiler/storage/UI yet. Subworkstreams
+authorisation is required in later 2B4. Compiler/storage now implemented locally in 2B2; no field builder/value API yet. Subworkstreams
 and storage/history/migration design saved in STUDIO_PHASE_2_FIELDS.md. Visual setup
 and responsive draft previews are a permanent 2E acceptance requirement in
 STUDIO_VISUAL_BUILDER_REQUIREMENTS.md; not an implemented builder.
@@ -98,6 +118,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+2B2 working-tree: registry policy/types/factory, service-work/studio (retained v1 + v2),
+compiler/fields, fields/schema, test compiler/sealed-hash regression, Prisma schema
+and proposed additive typed-field migration. These are not part of live 6775044.
+
 2B1: fields/{schema,validation}, tests/studio-field-values; visual requirements and
 field execution design, plan/ledger/state/decisions. Merged exact concurrent live
 Guardian MRP 0ce9f4a plus its source/tests/docs/evidence; no native correction removed.
@@ -119,12 +143,22 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+Pending 2B2: five typed field/storage models and additive migration
+20261009220000_studio_typed_fields. Prisma schema validation PASS; SQL/constraints
+central DDL syntax tested; migration applied on prepared fcfd512, full runtime
+acceptance PASS on prepared fcfd512; public not run. Published metadata/history and all
+existing domain records remain unchanged. Decimal physical capacity is 38,10 while
+metadata enforces explicit precision<=28/scale<=10 without automatic rounding.
+
 Four additive models: StudioDefinition, StudioDraft, StudioDefinitionVersion and
 StudioDependency. Migration `20261009210000_studio_metadata_kernel` creates only
 metadata tables/indexes/composite tenant foreign keys/constraints/guards. No existing
 business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
+
+`20261009220000_studio_typed_fields` applied during fcfd512 backed-up candidate
+preparation; new tables only, no native business changes. Candidate SQL/history/lifecycle checks PASS; production remains 1dafe16.
 
 `20261009210000_studio_metadata_kernel` applied centrally by backed-up candidate
 preparation on 9 October. Backup prefix:
@@ -144,6 +178,16 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+Combined 6775044 candidate/public owner + metadata/Admin/company sign-in, Home,
+Reports and MRP checks all PASS; private logs /tmp/atlas-studio-acceptance-fHPgb0 and
+/tmp/atlas-studio-public-Af2xt5. Exact live source verified. Modern Admin screenshot
+refreshed at /tmp/atlas-admin-console-live.jpg. Native MRP fixes preserved. Main
+eba8b49 includes live source and final concurrent evidence; newer field storage is
+working-tree only. Latest compiler 5 files/25 tests PASS; 4-case sealed v1 hashes
+regression PASS. Latest 2B2 checkpoint 19 files/85 tests, post-build TypeScript/scoped lint/build PASS.
+Central DDL transaction rolled back PASS; backup atlas-studio-field-ddl-TvSAMP.
+Latest live 9303039 is a concurrent Messages release to preserve before deployment.
 
 2A candidate ce175fb central owner checks PASS (real private/tenant/member/native
 capability/revision/disabled-source/final record cases), metadata/Admin/Home/Reports
@@ -197,7 +241,7 @@ See `STUDIO_PHASE_1_COMPLETION.md` for evidence and practical limits.
 
 # Deferred Items
 
-Phases 2–9 per Section 27: extension fields/pages, Decisions/Approvals, durable
+Remaining Phase 2 work is active, not deferred. Phases 3–9 per Section 27: Decisions/Approvals, durable
 outbox, Flow runtime, Automations migration, Process Studio, packages and adoption.
 No later-phase implementation before preceding gate passes.
 
@@ -221,9 +265,29 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Prepare/verify combined source preserving live MRP, repeat central/public owner,
-metadata/Admin/Home/Reports and MRP checks. Then 2B2: integrate a customField compiler
-into the versioned definition lifecycle, enforce permanent entity/key identity,
-add reviewed tenant/version-bound typed value/history models and constraints; generate
-Prisma and add relational/security tests. Migration/lifecycle and atomic services
-are 2B3/2B4. Do not start 2C or claim Phase 2 PASS from the validation library.
+Preserved newly live supply 2690c26 and reviewed modern Apps main f6e27cb.
+Prisma generation, 29 files/143 tests, scoped lint and production build PASS;
+strict post-build types PASS. Prepare exact source and complete
+combined candidate/public acceptance including connected supply. Original upstream
+font licence files contain two trailing spaces; preserve the licences verbatim.
+
+2B2/local generated-key simplification checkpoint f2beb8b; exact live Messages
+9303039 and private Admin 1dafe16 (main 6870014) merged, source/evidence preserved.
+Prisma regenerated, 27 files/140 tests, scoped lint and integrated build PASS.
+Strict post-build types PASS; candidate fcfd512 prepare/smoke PASS after backup
+atlas-pre-deploy-20261009-211931; additive migration applied. Candidate field/Studio/Admin/business/Home/Reports/MRP checks PASS. Corrected
+Messages viewport selector (retained preview text); types/scoped lint PASS. Revised
+candidate 770393f prepare/smoke/build PASS, backup atlas-pre-deploy-20261009-212757.
+Second run field/native checks PASS; Messages detached-node race during timeline
+restore, log /tmp/atlas-studio-acceptance-LiKMZK. Retry transient locator detachment
+then assert actual message in viewport; types/scoped lint PASS, checkpoint/prepare and
+rerun combined acceptance including private Admin.
+Activate only after PASS. Proceed to 2B3 reviewed evolution/retirement/conversion planning and
+resumable jobs only after 2B2 central checks PASS. 2B4 owner values, then 2C–2F.
+Phase 2 remains IN PROGRESS; do not start Phase 3+.
+
+Candidate fcfd512 combined evidence: /tmp/atlas-studio-acceptance-1hYTRO.
+Field publication/binding, failed-evolution atomicity, tenant FKs, exact 28-digit
+decimals/money/currency, required/type checks, immutable values, current pointers
+and unique-marker/duplicate guards PASS. Stable-key-free real form and native
+regressions PASS. Messages selector failure is NOT a combined acceptance PASS.

@@ -37,15 +37,15 @@ export function Topbar({ session }: { session: Session }) {
   return (
     <TopbarVariant home={home} regular={
     // Keep fixed chat/search overlays relative to the viewport; backdrop-filter traps them in this header.
-    <header className="flex h-[var(--atlas-topbar)] shrink-0 items-center gap-2 border-b border-black/[0.06] bg-white px-3 sm:gap-3 sm:px-5">
-      <Link href="/home" aria-label="Home" title="Home" className="flex size-9 shrink-0 items-center justify-center rounded-full hover:bg-black/[0.05]">
-        <img src="/brand/atlas-icon.png" alt="" className="size-6" />
+    <header className="flex h-[var(--atlas-topbar)] shrink-0 flex-wrap items-center gap-1 border-b border-black/[0.06] bg-white px-2 py-3 min-[360px]:gap-2 min-[360px]:px-3 sm:flex-nowrap sm:gap-4 sm:px-5 sm:py-0 xl:gap-5">
+      <Link href="/home" aria-label="Home" title="Home" className="flex size-10 shrink-0 items-center justify-center rounded-xl hover:bg-black/[0.05] focus-visible:outline-2 focus-visible:outline-blue-600 sm:size-12">
+        <img src="/brand/atlas-icon.png" alt="" className="size-8 sm:size-9" />
       </Link>
       <AppMenu><AppDirectory session={session} /></AppMenu>
       <WorkspaceBack />
-      {can(session, "atlas.companies.manage") && <Link href="/atlas" title={`Atlas staff · ${session.organisationName}`} className="hidden max-w-48 truncate rounded-lg bg-blue-50 px-3 py-2 text-xs text-blue-700 sm:block">{session.organisationName} · Admin</Link>}
-      <div className="min-w-0 flex-1 lg:max-w-md"><CommandPalette /></div>
-      <div className="ml-auto flex items-center gap-1 sm:gap-1.5">
+      {can(session, "atlas.companies.manage") && <Link href="/atlas" title={`Atlas staff · ${session.organisationName}`} className="hidden max-w-56 truncate rounded-xl bg-blue-50 px-4 py-3 text-base text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600 lg:block">{session.organisationName} · Admin</Link>}
+      <div className="order-3 w-full min-w-0 sm:order-none sm:w-auto sm:flex-1 xl:max-w-[720px]"><CommandPalette variant="workspace" /></div>
+      <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-1.5">
         <NewWindow />
         <NoticeBell />
         {can(session, CORE_CAPABILITIES.chatRead) && <ChatDock />}

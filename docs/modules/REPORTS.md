@@ -3,7 +3,7 @@
 Reports (`/reports`) is a built-in workspace utility for filtering authorised data
 and explicitly downloading Excel workbooks. Dashboards remains the separate
 Analytics app at `/analytics`. Reports appears in the Home utility rail and the
-compact Apps menu; it does not duplicate business apps in the rail or Home cards.
+workspace Apps menu; it does not duplicate business apps in the rail or Home cards.
 
 The initial record catalogue covers Customer Master, Products, Sales orders and
 quotations, Inventory balances and movements, Logistics shipments and fulfilment,

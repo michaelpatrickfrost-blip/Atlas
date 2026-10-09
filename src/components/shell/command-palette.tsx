@@ -9,7 +9,7 @@ type SearchResult = { id: string; title: string; subtitle?: string; href: string
 /** Global ⌘K / Ctrl+K command palette. Architecture supports future free-text
  *  commands (see docs/MODULE_SPEC.md §Search) — today it searches navigation and
  *  module-contributed entities honestly, with no simulated AI behaviour. */
-export function CommandPalette() {
+export function CommandPalette({ variant = "default" }: { variant?: "default" | "workspace" }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -67,11 +67,11 @@ export function CommandPalette() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex h-10 w-full min-w-0 items-center gap-3 rounded-full border border-white/80 bg-white/70 px-4 text-sm text-[#6e6e73] shadow-sm backdrop-blur-xl transition hover:bg-white"
+        className={`flex w-full min-w-0 items-center gap-3 rounded-full border text-[#6e6e73] shadow-sm transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${variant === "workspace" ? "h-11 border-black/[0.06] bg-white px-3 text-sm sm:h-14 sm:gap-4 sm:px-5 sm:text-lg" : "h-10 border-white/80 bg-white/70 px-4 text-sm backdrop-blur-xl"}`}
       >
-        <Search size={15} className="shrink-0" />
+        <Search size={variant === "workspace" ? 22 : 15} aria-hidden="true" className="shrink-0" />
         <span className="min-w-0 flex-1 truncate text-left">Search apps, people, reports...</span>
-        <kbd className="hidden shrink-0 rounded border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-1.5 py-0.5 text-xs sm:inline">⌘K</kbd>
+        <kbd className={`hidden shrink-0 rounded-md border border-[var(--color-border-strong)] bg-[var(--color-surface)] text-xs sm:inline ${variant === "workspace" ? "px-2 py-1.5" : "px-1.5 py-0.5"}`}>⌘K</kbd>
       </button>
 
       {open && (

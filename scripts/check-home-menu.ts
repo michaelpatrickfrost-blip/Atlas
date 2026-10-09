@@ -60,6 +60,11 @@ async function main() {
         : route.abort(),
     );
     const page = await context.newPage();
+    async function assertBusinessBoundary() {
+      await expect(page.locator('a[href="/atlas"], a[href^="/atlas/"]')).toHaveCount(0);
+      await expect(page.locator('[data-atlas-console="admin"]')).toHaveCount(0);
+      assert(!/Atlas Admin|Atlas console/i.test(await page.locator("body").innerText()), "Platform administration stays outside the business interface, including staff support workspaces.");
+    }
     const navigable = await getNavigableModules(session);
     const modules = navigable.filter((app) => app.id !== "analytics");
     for (const [name, width, height] of [
@@ -73,6 +78,7 @@ async function main() {
       await expect(
         page.getByRole("heading", { name: "Your apps", exact: true }),
       ).toBeVisible();
+      await assertBusinessBoundary();
       const utilities = page.locator(
         'nav[aria-label="Workspace utilities"]:visible',
       );
@@ -167,6 +173,7 @@ async function main() {
           exact: true,
         });
         await expect(panel).toBeVisible();
+        await assertBusinessBoundary();
         for (const app of navigable)
           await expect(panel.locator(`a[href="${app.rootPath}"]`)).toHaveCount(
             1,
@@ -248,9 +255,22 @@ async function main() {
         page.getByRole("region", { name: "Apps menu", exact: true }),
       ).toHaveCount(0);
     }
-    console.log(
-      "PASS search and existing workspace Apps menu remain usable; all writes blocked.",
-    );
+    for (const path of ["/settings?tab=workspace", "/settings?tab=users", "/settings/imports"]) {
+      const response = await page.goto(path, { waitUntil: "networkidle" });
+      assert.equal(response?.status(), 200);
+      await assertBusinessBoundary();
+    }
+    const search = await context.request.get("/api/search?q=Atlas%20Admin");
+    assert.equal(search.status(), 200);
+    const results = (await search.json()).results as Array<{ href: string }>;
+    assert(results.every((result) => result.href !== "/atlas" && !result.href.startsWith("/atlas/")), "Business search does not advertise platform tools.");
+    const adminResponse = await page.goto("/atlas", { waitUntil: "networkidle" });
+    assert.equal(adminResponse?.status(), 200);
+    await expect(page.locator('[data-atlas-console="admin"]')).toHaveCount(1);
+    assert(await page.locator('a[href="/atlas/connections"]').count() > 0, "Staff Connections remains in the separate console.");
+    await expect(page.getByRole("button", { name: "Apps", exact: true })).toHaveCount(0);
+    console.log("PASS business Home, Apps, header, settings and search exclude platform tools; staff console retains Connections.");
+    console.log("PASS search and existing workspace Apps menu remain usable; all writes blocked.");
     await context.close();
   } finally {
     await browser.close();

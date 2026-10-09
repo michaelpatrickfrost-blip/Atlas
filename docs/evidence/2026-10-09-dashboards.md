@@ -99,3 +99,21 @@ to 5ebd700d3526b6fdaa70efa4514da0803301a285 (rounded Nunito typography); its
 exact source is merged unchanged. Four UI files/18 assertions, strict types,
 production build, runner lint and whitespace PASS. Final candidate/public checks
 include the existing read-only typography checker.
+
+## Accepted final candidate; live business boundary preservation
+
+054dd1c29f158f55cb3dbefc361bb4214fae1ded prepared/smoke PASS, backup
+atlas-pre-deploy-20261009-222031. Exact candidate Dashboard, Home/Apps, Reports/
+Finance, typography (10 routes/3 sizes) and Messages (actual viewport after
+restore) all PASS: /tmp/atlas-dashboards-rounded-candidate.log. Main integration
+df58451 preserves source/evidence and explicitly records activation pending.
+Live advanced to 56c9d88a66ba2b257fe780a3174e699cfcd81261; obsolete activation
+was cancelled before acquiring a lock/switching. Preserved its already-deployed
+business/platform navigation boundary and updated Home runner assertions. Final
+merged boundary checks and preparation/public verification follow.
+
+Boundary merge validation: five UI files/24 assertions, strict types, production
+build, Home runner lint and diff PASS. Analytics/chat/font application source
+remains identical to fully accepted 054dd1c; candidate checks focus on changed
+Home/business navigation and Dashboard integration, then all five checks repeat
+on public HTTPS after activation. No Dashboard schema/grant change.

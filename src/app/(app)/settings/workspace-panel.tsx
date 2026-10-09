@@ -7,11 +7,10 @@ import { saveCompanyAccess, saveCompanyProfile, saveWorkspaceDetails } from "./a
 
 const input = "mt-2 w-full rounded-xl border border-slate-200 bg-white p-3 text-sm";
 
-export function WorkspacePanel({ company, profile, editCompany, owner }: {
+export function WorkspacePanel({ company, profile, editCompany }: {
   company: { name: string; allowCustomerCreation: boolean; allowProductCreation: boolean; restrictedAccessAreas: string[] };
   profile: CompanyProfile;
   editCompany: boolean;
-  owner: boolean;
 }) {
   return (
     <div className="space-y-5">
@@ -59,7 +58,6 @@ export function WorkspacePanel({ company, profile, editCompany, owner }: {
           <div className="mt-5 flex flex-wrap gap-4 text-xs text-blue-600">
             {editCompany && <Link href="/apps">Manage enabled modules →</Link>}
             <Link href="/settings/imports">Day-to-day imports →</Link>
-            {owner && <Link href="/atlas">Company setup portal →</Link>}
           </div>
         </section>
         {editCompany && (

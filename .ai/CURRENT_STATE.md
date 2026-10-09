@@ -1,5 +1,29 @@
 # Atlas current state
 
+## 9 October 2026 — Standalone modern Admin accepted; Phase 2 begins
+
+Exact live source a642df0555cd45a97d57d867621d189c7650cf19 preserves concurrent
+Reports 2a8522f and the verified Phase 1 kernel. Candidate/public central metadata,
+real Admin forms/provisioning/login isolation, no-business-tools/staff sign-out,
+Home desktop/tablet/phone and Reports previews/workbooks/permissions all passed.
+Live visible page also inspected through the user's browser: modern branded Admin
+rail/header, selected-company setup tabs, no business Apps/search/chat/notices/My
+work. Original user tab/input left intact; separate review tab used. Private
+candidate/public logs /tmp/atlas-studio-acceptance-5MbNoc and
+/tmp/atlas-studio-public-CMmn5v; local UI image /tmp/atlas-admin-console-live.jpg.
+Merged source checks: 30 files/146 assertions, strict TypeScript/build passed;
+scoped lint zero errors/one brand-img warning. Pre-merge full suite 1009 passes/
+85 baseline failures/22 skips, exact unchanged failure names. No new migration.
+Source/evidence checkpoint will be included in main; live runtime remains a642df0.
+
+Phase 2 IN PROGRESS, workstream 2A. Reviewed ServiceWorkItem (TICKET), not historical
+ServiceTicket or QUERY; native workScope/queue access, requireWork, locked versions,
+final/merged rules, existing catalogue fields and definition/context snapshots.
+No shared general custom-field storage was found. Adapt existing intake fields
+where appropriate; do not rewrite historical answers. Next: implement typed
+owner-approved record/extension contracts and bounded Tickets projections with
+native read/write policy, tests, docs and checkpoint before metadata storage 2B.
+
 ## 9 October 2026 — Admin candidate preserves current live Reports source
 
 Admin candidate 214cbad passed central metadata/forms/provisioning, standalone

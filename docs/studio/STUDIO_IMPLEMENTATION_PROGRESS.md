@@ -4,18 +4,19 @@ Updated: 9 October 2026.
 
 # Current Phase
 
-Phase 1 — Metadata kernel. Gate PASS; Phase 0 prerequisite and live compatibility passed.
+Phase 2 — Fields, record types and pages — IN PROGRESS. Phase 0/1 gates PASS.
 Michael reconciled the source mismatch on 9 October: “do all as a plan do 1 then
 once done contiune”. Use the supplied Section 27 sequence; complete prerequisites
 and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-Admin separation companion — IMPLEMENTED; release verification IN PROGRESS. Phase 1 remains VERIFIED; Phase 2 workstreams recorded in STUDIO_PHASE_2_PLAN.md.
+2A — Owner-approved entity/extension contracts — IN PROGRESS. Standalone Admin companion VERIFIED; detailed plan in STUDIO_PHASE_2_PLAN.md.
 
 # Overall Status
 
-IN PROGRESS for Michael's new Admin-only/modern-UI request and sequential continuation. VERIFIED for Phase 1. Live source c46bbefa737c81280daf38d62e87a4511420ffa5.
+IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
+VERIFIED. Live source a642df0555cd45a97d57d867621d189c7650cf19.
 The supplied source defines ten phases 0–9, not five. The original
 is preserved unchanged at `docs/studio/ATLAS_STUDIO_SOURCE.docx` (source
 `/Users/michael/Downloads/atlas_studio.docx`, SHA-256
@@ -35,6 +36,7 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 1B Draft/validate/publish/activate service | VERIFIED | Central real publication/activation/rollback/history, simultaneous draft CAS, disabled sources, permissions and atomic audit passed after correcting nested Prisma FK mapping. |
 | 1C Configuration capabilities/admin interface | VERIFIED | Candidate and public real forms, saved drafts/conflict diff, publication/activation and customer/Admin routes passed. |
 | 1D Release compatibility/security/live acceptance | VERIFIED | Exact candidate/public metadata and Home acceptance passed; dependency scans, backup, build, activation and public revision checked. |
+| Standalone modern Admin shell companion | VERIFIED | Live a642df0; metadata/Admin/business and Home/Reports checks passed; visible UI inspected. |
 | Companion Admin/business sign-in and provisioning | VERIFIED | Real Admin creates Test-company user; correct company setup/login passes; wrong company recovery/login and customer Admin access rejected. |
 
 # Current Workstream Detail
@@ -113,7 +115,9 @@ Admin companion: 23 focused files /110 assertions passed; strict TypeScript and
 production build passed; scoped lint no errors/one brand-img warning. No schema
 change. Candidate 214cbad Studio/Admin/Home acceptance passed. New live Reports 2a8522f
 is merged; integrated 30 files/146 assertions, TypeScript/build pass. Merged
-candidate/public acceptance pending before this companion is VERIFIED.
+candidate/public Studio/Admin, Home and Reports acceptance passed on a642df0;
+visible Admin UI verified. Pre-merge full suite: 1009 passes/85 unchanged baseline
+failures/22 skips. No new schema changes.
 
 903/903 source paragraphs; original hash matches preserved copy. npm ci and
 Prisma generation succeeded. First registry-only run: 5 passed. Combined registry,
@@ -167,9 +171,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Review/test/build the merged current live Reports 2a8522f plus standalone Admin
-source; preserve Reports' modern UI/provider guards. Candidate 214cbad passed all
-Studio/Admin/Home checks, but ancestry guard prevented omitting the newer live
-release. Commit/pin the merged revision, prepare a new backed-up candidate, run
-Studio/Admin, Home and Reports acceptance, activate then repeat public HTTPS.
-After companion verification begin Phase 2A per STUDIO_PHASE_2_PLAN.md.
+Implement 2A typed entity record/extension contracts and the first Tickets owner
+contribution around ServiceWorkItem(kind=TICKET), preserving workScope, queue
+membership, locked/final records, source capabilities and enabled-module policy.
+Add bounded read projections and owner authorisation/expected-revision contracts;
+test tenant/private/missing-capability/disabled-owner/contract compatibility paths.
+No metadata/value persistence before 2A is checkpointed; no Phase 3+ engines.

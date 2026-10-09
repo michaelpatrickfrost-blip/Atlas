@@ -8,9 +8,14 @@ modern UI. Confirmed /atlas currently inherits (app)/layout and visibly exposes
 those business controls. Phase 1 remains live/verified; this is a companion
 separation correction followed by ordered Phase 2 work. Clean starting 9ebd774;
 branch codex/studio-phase2. Workstreams recorded in docs/studio/STUDIO_PHASE_2_PLAN.md;
-ledger updated before edits. No new source/schema changes or checks yet. Next:
-separate route-group/Admin layout, preserve URLs/desktop action compatibility,
-run tests/build, deploy and verify before starting 2A owner extension contracts.
+ledger updated before edits. Implemented src/app/(admin)/atlas route move, components/admin shell/navigation,
+Admin-specific sign-out/error recovery and selected-company Studio tabs. Public
+URLs/action guards unchanged; legacy desktop action keys aliased to new route keys.
+23 focused files/110 assertions passed; alias regression rerun 2/2; strict TypeScript
+and production build passed. Scoped lint: no errors, one standard brand-img warning.
+No database change. Next: commit/pin this checkpoint, prepare candidate, run real
+Admin/no-business-tools/navigation/metadata and Home checks, activate and repeat
+public verification before 2A owner-extension contracts.
 
 ## 9 October 2026 — Studio Phase 1 deployed and accepted
 

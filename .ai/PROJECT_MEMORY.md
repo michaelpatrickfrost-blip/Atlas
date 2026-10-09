@@ -88,7 +88,9 @@ company handover. Michael currently requires every active Atlas administrator an
 employee to have full platform and selected-company permissions. On 9 October,
 Michael authorised OWNER/ADMIN Atlas administrators to create business users;
 EMPLOYEE cannot. Atlas staff creation remains Michael-only (`kickablur@icloud.com`).
-Staff sign in at `/atlas/login`; businesses use `/business/<slug>/login`, which
+Atlas Admin is a standalone administration-only layout with the modern UI; it
+does not mount the business launcher/search/chat/notices/My work. Staff sign in
+at `/atlas/login` and sign out there; businesses use `/business/<slug>/login`, which
 selects their own active membership server-side. Studio setup is under
 `/atlas/studio`, while customer Studio is `/studio`. New Atlas staff
 can sign in with the password Michael sets directly. Customer roles

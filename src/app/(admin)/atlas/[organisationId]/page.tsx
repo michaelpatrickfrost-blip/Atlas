@@ -4,7 +4,7 @@ import { requireSession } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
 import { db } from "@/core/db/client";
 import { getImplementedModules } from "@/core/modules/registry";
-import { PortalActionForm as ActionForm } from "@/app/(app)/atlas/portal-action-form";
+import { PortalActionForm as ActionForm } from "@/app/(admin)/atlas/portal-action-form";
 import { updateCompanyAccount, saveCompanyEntitlements, deleteTestCompany } from "../actions";
 import { saveAtlasCompanyProfile, openCompanyWorkspace } from "../admin-actions";
 import { ConsoleNav } from "../console-nav";

@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
-vi.mock("@/app/(app)/atlas/account-forms", () => ({ CodeReady: ({ code }: { code: string }) => <p role="status">Setup code: {code}</p> }));
-import { CredentialForm } from "@/app/(app)/atlas/credential-form";
+vi.mock("@/app/(admin)/atlas/account-forms", () => ({ CodeReady: ({ code }: { code: string }) => <p role="status">Setup code: {code}</p> }));
+import { CredentialForm } from "@/app/(admin)/atlas/credential-form";
 afterEach(cleanup);
 const fields = <><label>Full name<input name="name" /></label><label>Administrator password<input name="currentPassword" type="password" /></label></>;
 it("preserves employee details after validation failure and allows a corrected retry", async () => {

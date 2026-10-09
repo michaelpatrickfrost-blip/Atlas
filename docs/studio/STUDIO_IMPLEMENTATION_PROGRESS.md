@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-Admin separation companion — IN PROGRESS. Phase 1 remains VERIFIED; Phase 2 workstreams recorded in STUDIO_PHASE_2_PLAN.md.
+Admin separation companion — IMPLEMENTED; release verification IN PROGRESS. Phase 1 remains VERIFIED; Phase 2 workstreams recorded in STUDIO_PHASE_2_PLAN.md.
 
 # Overall Status
 
@@ -70,6 +70,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+Admin follow-up: Atlas routes moved to `src/app/(admin)/atlas`; `components/admin`,
+Core Admin sign-out, data API action aliases/generator, selected-company Studio tabs,
+Admin error boundary, tests and current Admin/architecture/design/shared memory docs.
+
 `src/core/studio/registry/{types,contracts,registry,adapters,runtime}.ts`;
 `src/core/modules/types.ts`; `src/core/templates/service.ts`;
 `tests/studio-{registry,adapters}.test.ts`; `docs/MODULE_SPEC.md`; metadata compiler/services, four Prisma models/additive migration, Studio module
@@ -104,6 +108,10 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+Admin companion: 23 focused files /110 assertions passed; strict TypeScript and
+production build passed; scoped lint no errors/one brand-img warning. No schema
+change. Candidate/public acceptance pending before this companion is VERIFIED.
 
 903/903 source paragraphs; original hash matches preserved copy. npm ci and
 Prisma generation succeeded. First registry-only run: 5 passed. Combined registry,
@@ -157,8 +165,7 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Move /atlas routes out of the business (app) layout into a standalone (admin)
-route group. Add a responsive Admin-only shell using the current brand/UI, preserve
-legacy desktop action keys and audited support entry, test guards/navigation,
-build and deploy/verify the coherent companion checkpoint. Then begin Phase 2A
-per STUDIO_PHASE_2_PLAN.md; do not start 2B or later engines early.
+Commit and pin the implemented standalone Admin checkpoint on codex/studio-phase2.
+Prepare a backed-up candidate, run scripts/studio/check-metadata.ts (including
+absence of business tools and staff sign-out) and read-only Home acceptance; activate
+and repeat public HTTPS checks. Then begin Phase 2A per STUDIO_PHASE_2_PLAN.md.

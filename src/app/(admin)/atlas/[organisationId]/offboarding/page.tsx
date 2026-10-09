@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { db } from "@/core/db/client";
-import { PortalActionForm as ActionForm } from "@/app/(app)/atlas/portal-action-form";
+import { PortalActionForm as ActionForm } from "@/app/(admin)/atlas/portal-action-form";
 import { archiveAtlasCompany } from "../../admin-actions";
 import { CompanyExportForm } from "../../export-form";
 import { ConsoleNav } from "../../console-nav";

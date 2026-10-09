@@ -19,7 +19,8 @@ Core logout routing, action registry/generator compatibility, related imports/te
 Admin/design/architecture docs. Database: none. Tests: staff/non-staff guard,
 standalone layout, legacy/new desktop actions, existing Admin/security suites;
 production build; candidate and live real navigation including responsive overflow
-and absence of business-shell controls. Status: IN PROGRESS.
+and absence of business-shell controls. Status: IMPLEMENTED (110 focused assertions,
+TypeScript/build pass; candidate/public runtime pending).
 
 ## Phase 2 workstreams (ordered; no later engines)
 

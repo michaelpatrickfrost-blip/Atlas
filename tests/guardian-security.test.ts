@@ -5,7 +5,7 @@ vi.mock("@/core/db/client", () => ({ db: { guardianIssue: { update: state.update
 vi.mock("@/core/guardian/store", () => ({ queueSweep: state.queue }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
-import { updateGuardianIssue, requestGuardianSweep } from "@/app/(app)/atlas/guardian/actions";
+import { updateGuardianIssue, requestGuardianSweep } from "@/app/(admin)/atlas/guardian/actions";
 import { GET } from "@/app/api/atlas/guardian/[issueId]/brief/route";
 function form(status = "FIXED") { const f = new FormData(); for (const [key, value] of Object.entries({ id: "issue", status, resolution: "", verifiedRevision: "" })) f.set(key, value); return f; }
 beforeEach(() => { vi.clearAllMocks(); state.session.capabilities = new Set(); });

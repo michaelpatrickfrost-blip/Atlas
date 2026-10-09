@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-vi.mock("@/app/(app)/atlas/actions", () => ({ createCompanyAccount: vi.fn() }));
-vi.mock("@/app/(app)/atlas/setup-actions", () => ({ createCompanyUser: vi.fn() }));
-import { CodeReady } from "@/app/(app)/atlas/account-forms";
+vi.mock("@/app/(admin)/atlas/actions", () => ({ createCompanyAccount: vi.fn() }));
+vi.mock("@/app/(admin)/atlas/setup-actions", () => ({ createCompanyUser: vi.fn() }));
+import { CodeReady } from "@/app/(admin)/atlas/account-forms";
 
 const code = "disposable-unit-test-code";
 const originalClipboard = Object.getOwnPropertyDescriptor(navigator, "clipboard");

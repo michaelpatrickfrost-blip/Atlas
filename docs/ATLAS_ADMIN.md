@@ -4,6 +4,18 @@ Atlas Admin at `/atlas` replaces the basic console. It manages companies
 subscribing to Atlas (`Organisation`). A company's own customers remain Core
 `Party` records and are not duplicated here.
 
+## Standalone console — 9 October 2026
+
+Michael clarified that Atlas Admin is administration only. Its routes live in
+`src/app/(admin)/atlas`, outside the business `(app)` shell. The modern blue/white
+console uses the supplied ribbon branding, responsive Admin navigation, selected-
+company tabs and staff sign-out to `/atlas/login`. Business Apps, global search,
+notifications, chat and My work do not mount in Admin. Customers retain their
+business shell and `/business/<slug>/login`. Explicit audited support-workspace
+entry is preserved; it is not part of the console's ordinary navigation.
+Legacy desktop action identifiers are aliases of the same guarded server functions,
+so moving the route group does not break installed callers or grant new privileges.
+
 ## Staff and customer access — 7 October 2026
 
 Michael explicitly requires Atlas administrators and employees to see and do

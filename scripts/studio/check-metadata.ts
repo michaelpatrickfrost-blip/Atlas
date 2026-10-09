@@ -91,6 +91,10 @@ async function main() {
     const page=await context.newPage();let errors=0,assets=0;
     page.on("pageerror",()=>errors++);page.on("response",r=>{if(new URL(r.url()).pathname.startsWith("/_next/")&&r.status()>=400)assets++;});
     await page.goto(`/atlas/studio/${a.id}`,{waitUntil:"networkidle"});
+    await expect(page.locator('[data-atlas-console="admin"]')).toBeVisible();
+    await expect(page.getByRole("navigation",{name:"Atlas administration",exact:true}).filter({visible:true})).toHaveCount(1);
+    for (const label of ["Apps","Search apps, people, reports... ⌘K","Open chat","Notifications"]) await expect(page.getByRole("button",{name:label,exact:true})).toHaveCount(0);
+    await expect(page.getByRole("link",{name:"My work",exact:true})).toHaveCount(0);
     await expect(page.getByRole("heading",{name:"Configuration library",exact:true})).toBeVisible();
     await page.getByLabel("Name",{exact:true}).fill("Browser accepted configuration");
     await page.getByLabel("Stable key",{exact:true}).fill(`browser.${suffix}`);
@@ -158,6 +162,11 @@ async function main() {
     await customerPage.goto(`/business/${a.slug}/login`,{waitUntil:"networkidle"});await customerPage.getByLabel("Email",{exact:true}).fill(email);await customerPage.getByLabel("Password",{exact:true}).fill(password);
     await customerPage.getByRole("button",{name:"Sign in",exact:true}).click();await expect(customerPage).toHaveURL(`${base}/home`);
     await business.close();console.log("PASS Atlas administrator provisions isolated business user; scoped setup/recovery/login rejects other company; customer Studio and Admin boundary; no existing identities changed");
+    await page.goto(`/atlas/studio/${a.id}`,{waitUntil:"networkidle"});
+    await expect(page.locator('[data-atlas-console="admin"]')).toBeVisible();
+    await page.getByRole("button",{name:"Sign out of Atlas Admin",exact:true}).click();
+    await expect(page).toHaveURL(`${base}/atlas/login`);
+    console.log("PASS standalone Admin layout excludes business tools and sign-out returns to staff login");
     assert.equal(errors,0);assert.equal(assets,0);
     console.log("PASS real Admin create/validate/publish/activate forms, staff/customer route separation, company login addresses, existing Atlas/Sales/Manufacturing/Templates pages; zero browser/asset errors");
     console.log("LIVE STUDIO PHASE 1 ACCEPTANCE PASSED");

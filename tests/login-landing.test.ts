@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-const mocks = vi.hoisted(() => ({ path:"/login", findUnique: vi.fn(), update: vi.fn(), compare: vi.fn(), cookie: vi.fn(), redirect: vi.fn((path: string) => { throw new Error(`REDIRECT:${path}`); }) }));
+const mocks = vi.hoisted(() => ({ path:"/login", findUnique: vi.fn(), update: vi.fn(), compare: vi.fn(), cookie: vi.fn(), clear: vi.fn(), redirect: vi.fn((path: string) => { throw new Error(`REDIRECT:${path}`); }) }));
 vi.mock("@/core/db/client", () => ({ db: { user: { findUnique: mocks.findUnique }, membership: { update: mocks.update } } }));
 vi.mock("bcryptjs", () => ({ default: { compare: mocks.compare } }));
 vi.mock("next/navigation", () => ({ redirect: mocks.redirect }));
-vi.mock("@/core/auth/session", () => ({ createSessionCookie: mocks.cookie, clearSessionCookie: vi.fn() }));
+vi.mock("@/core/auth/session", () => ({ createSessionCookie: mocks.cookie, clearSessionCookie: mocks.clear }));
 vi.mock("@/core/admin/access", () => ({ platformCapabilities: (admin: unknown) => admin ? ["atlas.companies.manage"] : [] }));
 vi.mock("next/headers",()=>({headers:async()=>new Headers({"x-atlas-request-path":mocks.path})}));
-import { loginAction } from "@/core/auth/actions";
+import { loginAction, logoutAdminAction } from "@/core/auth/actions";
 const form = new FormData(); form.set("email", "user@example.test"); form.set("password", "test-only");
 beforeEach(() => { vi.clearAllMocks(); mocks.path="/login"; mocks.compare.mockResolvedValue(true); });
 describe("sign-in landing", () => {
@@ -55,4 +55,9 @@ it("rejects a forged hidden company selector despite an eligible membership",asy
  forged.set("email","user@example.test");forged.set("password","test-only");
  forged.set("companySlug","second");
  expect(await loginAction(forged)).toHaveProperty("error");expect(mocks.cookie).not.toHaveBeenCalled();
+});
+
+it("signs out the Admin session back to its own staff login",async()=>{
+ await expect(logoutAdminAction()).rejects.toThrow("REDIRECT:/atlas/login");
+ expect(mocks.clear).toHaveBeenCalledOnce();
 });

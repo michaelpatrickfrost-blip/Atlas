@@ -144,3 +144,13 @@ Obsolete queued activation cancelled before lock acquisition; no switch/write.
 Exact source merged. Application, Dashboard/chat/Reports/fonts match accepted
 081e9c3; new helper functions have no runtime consumers. Validate helpers/types/
 build, retain prior app acceptance, prepare/activate and repeat all five publicly.
+
+## 10 October — locked acceptance integration
+
+Exact deployed People 36d0d2d and Supply 2ef5b4c are preserved. The People merge
+passed 28 focused files/138 assertions, Prisma/client/descriptors, Next route types,
+strict types, production build, scoped lint (zero errors/one brand-image warning),
+shell syntax and diff checks. The Dashboard acceptance mode now runs all five
+workflows on candidate and public URLs, bracketed by exact SHA checks, under the
+existing deployment locks. Existing People/Supply acceptance and all release gates
+remain; no source-record edits or new Dashboard migration. Activation pending.

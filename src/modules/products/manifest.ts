@@ -5,6 +5,7 @@ import { productsAnalytics } from "./services/analytics";
 import { Package } from "lucide-react";
 import type { ModuleManifest } from "@/core/modules/types";
 export const productsManifest:ModuleManifest={
+ launcherConsolidatedInto:'manufacturing',
  reportProvider: reports,
  recordRelationshipProvider: productRecordRelationships,
  businessPlanningProvider: productBusinessPlanning,

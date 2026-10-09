@@ -22,6 +22,9 @@ The full 173-section brief remains partially delivered; see coverage and Manufac
 
 ## Historical candidate evidence
 
+These earlier gate entries are retained as history and superseded by the final
+live acceptance below.
+
 Candidate `1f93216` prepared after central backup `atlas-pre-deploy-20261009-201307`;
 server build, Studio compatibility and smoke passed. Sales eligibility migration
 applied. Responsive console, real recursive MRP and Make conversion passed. Buy
@@ -48,7 +51,7 @@ Always hold deployment locks and take a central database/evidence backup before
 fixture writes. Never create a local business database or bypass financial guards.
 
 
-## Current release gate
+## Historical final refinement gate
 
 Candidate `f0807fa` fully passed desktop/tablet/phone console, actual MRP Make 10 /
 Buy 15 net of stock, single source-linked PO draft with preserved rejected inputs,
@@ -66,3 +69,104 @@ production build, explicit strict TypeScript, scoped ESLint and 14 files/67 test
 passed. Full suite was not rerun after later live integrations; no whole-suite
 pass is claimed. Prepare this exact corrected source, repeat connected acceptance,
 activate and verify public HTTPS before declaring the feature deployed.
+
+
+## Final live acceptance — PASS
+
+Application source **2690c26cb0f5f3c28e21265820e8a713708ce699** activated and
+verified at https://atlassystem.online. Exact health/pointer matched before and
+after public checks. Previous immutable runtime 1dafe16 remains retained.
+Preparation/activation central backup prefixes: `atlas-pre-deploy-20261009-213355`
+and `atlas-pre-deploy-20261009-213834`; public fixture backup
+`atlas-pre-supply-public-20261009-213846`, all under `/home/administrator/backups`.
+Candidate evidence `/tmp/atlas-supply-staging-igQlin`; public evidence
+`/tmp/atlas-supply-public-nqKaat`. Database/private evidence backups are retained.
+Both additive migrations applied; original production-order FK remains.
+
+The same exact-source candidate and public checks passed:
+
+- Desktop 1448, tablet 820 and phone 390 console; no root horizontal overflow;
+  Finance role view and optimistic bookmarkable shortcut customisation.
+- Real recursive plan: 10 assemblies need 20 internal components; five stocked
+  components leave Buy 15. Make converts once with saved source lineage.
+- A zero-price purchase save rejects safely and retains supplier/quantity; reviewed
+  15 units at GBP2.50 save as one GBP37.50 Finance draft. Source claim, tenant FK,
+  audit/timeline and actioned destination link persist; repeats create no duplicate.
+- Internal material remains usable in purchasing/stock/recipes and is rejected by
+  Sales eligibility. Existing sellable products remain eligible.
+- GBP posted supplier spend 85, unbilled commitment 100, accepted receipts 120 and
+  current gross payables 82 stay separate; EUR spend 30 remains separate. Restricted
+  source amounts are unavailable. Source document drill-through works.
+- All nine guide routes and responsive illustrations load; no browser exceptions.
+- Exact synthetic Test companies are suspended, fixture memberships revoked,
+  immutable financial/audit history retained and original QA membership/auth version
+  unchanged. No existing customer data or profile grants changed.
+
+Final source production build, explicit strict TypeScript, scoped ESLint and 14
+files/67 regressions pass, including lifecycle/expiry gates and rendered-page cost
+redaction. Earlier full-suite baseline failure counts above remain; no current
+full-suite pass claimed. Candidate/public screenshots reviewed visually. Read-only
+final revision check also matched 2690c26. This acceptance covers the connected
+console and listed workflows, not all remaining 173-section engines.
+
+Canonical source integration awaits reconciliation of 598 dirty/untracked entries
+in the main Desktop checkout, including 27 overlapping task paths. The complete
+release branch and shared memory remain committed in the same Git repository;
+no contributor's unfinished changes were reset or overwritten.
+
+## Single-app follow-up — candidate/public acceptance pending
+
+Inventory and Product route trees now share the Manufacturing & Supply shell;
+Inventory's launcher/switcher card joins the already folded Production Planning
+entry. Products remains hidden as before. Manage apps nests all three source access
+switches under one Manufacturing card, preserving current states and entitlement/
+dependency services. Search retains included source pages under the parent name.
+Build, explicit strict TypeScript, scoped lint and targeted workspace/access/search
+regressions passed. Extended checker asserts Home/switcher/Manage apps, existing
+Product/Stock/Planning route guards and desktop/tablet/phone fit. It must pass on
+the exact candidate and publicly after activation; no new live claim yet.
+
+Preserved exact observed live `e5d66e6` (Studio fields and modern Apps) after
+`18116af` stopped at the shared lock before preparation. Combined Prisma generation,
+production build, explicit post-build strict TypeScript, scoped ESLint and 14 files/
+67 regressions PASS. Candidate/public acceptance is still pending.
+
+`0010eab` preparation/smoke and complete candidate acceptance PASS, with backup
+`atlas-pre-deploy-20261009-220838` and private evidence `/tmp/atlas-supply-staging-wuDkuu`.
+All single-app route/launcher assertions and the full connected workflow passed.
+Before activation, exact public live advanced to `5ebd700` (Nunito typography);
+that source is preserved. Combined build, explicit strict TypeScript, scoped lint
+and five focused launcher/search/shell files/17 tests PASS. Final candidate/public
+acceptance remains pending.
+
+`6a12fc1` preparation/smoke and complete candidate acceptance PASS; backup
+`atlas-pre-deploy-20261009-221710`, evidence `/tmp/atlas-supply-staging-nfUzeE`.
+Product/Inventory desktop/phone and Manage apps screenshots visually inspected.
+Activation stopped safely at ancestry before backup/switch after public live
+advanced to `56c9d88` (business navigation excludes staff Admin tools). Preserved
+that exact source. Combined production build, explicit strict TypeScript, scoped
+lint and six launcher/search/business-boundary files/23 tests PASS. Final combined
+candidate/public acceptance remains pending.
+
+`ddb35f2` preparation/smoke and complete candidate acceptance PASS; backup
+`atlas-pre-deploy-20261009-223610`, evidence `/tmp/atlas-supply-staging-QdOOi5`.
+Activation stopped before backup/switch because live advanced to `94dd3e1`
+(commercial workspaces). Preserved its exact source and already-applied additive
+SalesActivity migration. Integrated Prisma generation, production build, explicit
+post-build strict TypeScript, scoped lint and 14 files/67 focused regressions PASS.
+Final combined candidate/public verification remains pending.
+
+`c8b49aa` preparation/smoke and complete candidate acceptance PASS; backup
+`atlas-pre-deploy-20261009-224802`, evidence `/tmp/atlas-supply-staging-yMKGrR`.
+Public advanced to Studio `7941f9b`, then People/payroll `36d0d2d` ahead of
+activation. Both exact deployed sources, central migrations and generated gateway
+are preserved. Integrated client generation, production build, scoped lint and
+15 files/95 focused regressions and explicit strict post-build TypeScript PASS.
+Extend the deployed People acceptance hook with `ATLAS_RELEASE_ACCEPTANCE=supply`
+so normal deploy locks cover candidate, activation and public verification together.
+Both supply fixture stages have separate central database/private-file backups;
+source pointers/revisions are verified afterward. All original release gates and
+public-failure runtime rollback remain. No inherited-lock mechanism is included.
+Final exact-source hooked acceptance remains pending. Imported People migration
+EOF whitespace is retained to preserve already-applied checksums; owned diff
+against exact live `36d0d2d` passes whitespace checks.

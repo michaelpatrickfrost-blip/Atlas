@@ -67,7 +67,7 @@ never create per-module/local business databases or silently fall back to local 
 
 ## Plan and Production Planning — 3 October 2026
 
-Plan at `/plan` is where the business sets targets, forecasts and scenarios across sales, operations, people and the other apps. A new plan is private to its owner until it is shared. Production Planning at `/planning` remains the product-demand workbench, now accessed through the Manufacturing & Supply console at `/manufacturing`. Plan reads live actuals and does not keep a second copy of orders, stock or payroll. See [Plan](../docs/modules/PLAN.md).
+Plan at `/plan` is where the business sets targets, forecasts and scenarios across sales, operations, people and the other apps. A new plan is private to its owner until it is shared. Production Planning at `/planning` is the product-demand workbench inside Manufacturing & Supply at `/manufacturing`, together with Products and Inventory. Companies using this console have one launcher/switcher app and shared navigation; existing routes, records and source access are retained. Plan reads live actuals and does not keep a second copy of orders, stock or payroll. See [Plan](../docs/modules/PLAN.md).
 
 ## Explicit CSV export exception — 3 October 2026
 

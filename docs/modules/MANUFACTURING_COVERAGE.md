@@ -45,8 +45,10 @@ Manufacturing's earlier foundation, shift and execution migrations are deployed 
 the central server. The earlier local shadow-database replay issue is historical;
 Atlas must not create a local business database to resolve it. Additive production
 migrations use the reviewed release procedure and central backup. The sales
-eligibility migration is `20261009210000_product_sales_eligibility`; its deployment
-status belongs in the acceptance record. Preserve all prior release evidence.
+eligibility migration `20261009210000_product_sales_eligibility` and tenant-bound
+purchase link `20261009220000_mrp_purchase_link` are applied centrally. The connected
+console passed candidate and public acceptance on 2690c26; exact backups and
+limits belong in the acceptance record. Preserve all prior release evidence.
 
 ## Next work
 

@@ -15,11 +15,18 @@ the directory. Search and six bookmarkable shortcuts make frequent work easier.
 These preferences change presentation only. Enabled apps and source permissions
 still determine every destination and action.
 
-Production Planning's `/planning` demand workbench and saved targets remain live,
-with a shared console menu. Its duplicate Home card disappears only when the
-console is accessible; otherwise the original Planning card remains. Existing
-Production Today moves to `/manufacturing/today`. Products, Inventory and Finance
-have a return link. The business-wide `/plan` app remains distinct.
+Production Planning, Inventory and Products are workspaces inside Manufacturing
+& Supply. Home and the Apps switcher show one Manufacturing & Supply entry when
+the console is enabled and accessible. Their existing routes, records and bookmarks
+remain usable, with the same console header and navigation on planning, product
+and stock pages. Warehouses/locations remain directly accessible from Products
+& plant. Manage apps shows their existing access switches beneath one Manufacturing
+& Supply card rather than separate app cards. Other companies without console
+access retain their licensed Inventory/Planning entry points. Products remains
+absent from the standalone launcher as before. Source permissions and enablement
+are not broadened. Production Today stays at `/manufacturing/today`; Finance
+retains its business-wide workspace and a console return link. Business-wide Plan
+and S&OP remain separate, with approved S&OP demand linked from the console.
 
 The [illustrated how-to library](/manufacturing/help) contains nine guides: getting
 started, products/materials/stock, demand, MRP, purchasing, receiving, scheduling,

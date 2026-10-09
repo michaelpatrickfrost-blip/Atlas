@@ -56,7 +56,7 @@ holidays, company policy PDFs, performance plans, disciplinary cases, My Team, c
 [Staff Scheduling](../docs/modules/STAFF_SCHEDULING.md). Central workflows and the installed planner/hours budgets are live
 and enabled; acceptance is recorded in CURRENT_STATE.
 
-People app overhaul (9 October 2026 candidate): weighted strategy scorecards and
+People app overhaul (10 October 2026 live): weighted strategy scorecards and
 Analytics attainment; HR organisation/skills and Pay & time; reviewed UK hourly/
 salaried payroll from approved actuals; interval/open-shift/availability rota planning;
 weekly team work/capacity. Existing native lifecycle/calendar records remain.

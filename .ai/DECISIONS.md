@@ -20,6 +20,18 @@ retired choices may survive representation conversion; ordinary user writes stil
 reject retired selections. The library does not authorise publication or writes;
 reviewed tenant plans, owner checks and resumable jobs remain subsequent 2B3 work.
 
+## 9 October 2026 — Business software excludes Atlas platform tools
+
+Michael clarified that Atlas Console and Atlas Admin tools do not belong in
+customer software. Home, Apps, the workspace header, company settings and business
+search must not advertise /atlas or its staff tools, including Connections, even
+when Atlas staff open an audited customer support workspace. Staff operate those
+tools only in the standalone Admin console. The business header identifies the
+selected company without an Admin badge or console link. Company administration,
+Manage apps, native imports and customer Studio remain company capabilities.
+Independent staff access, tenant guards and audited support entry are preserved;
+removing navigation is not a change to authentication or authorisation.
+
 ## 9 October 2026 — Studio business dashboards and custom buttons
 
 Michael requires easy visual template customisation and activated designs on each
@@ -1382,8 +1394,9 @@ New apps are enabled only for an authorised company, not globally for every tena
 Michael explicitly requests a polished, professional landing screen with each app
 as a recognisable icon. This supersedes the older no-tiles/list-only preference
 and the operational-first Home ordering. Home shows accessible app icons first;
-attention/goals follow. Company and Atlas staff logins land on Home, with Admin
-still explicitly accessible. Reuse the existing server-filtered directory and
+attention/goals follow. Company logins land on Home. Atlas staff login lands in its
+separate Admin console under the superseding 9 October administration boundary.
+Reuse the existing server-filtered directory and
 compact topbar menu; presentation must not grant app or company access. The home
 launcher uses compact, left-aligned rows with small, consistent brand-blue icons
 rather than large individually-coloured tiles: this keeps the requested app
@@ -1392,7 +1405,7 @@ Home treatment is superseded by the 9 October reference decision below.
 
 ## 8 October 2026 — Connections is privileged company onboarding
 
-Michael requested a separate Connections app for Atlas admins with section templates, uploads and company attachment. Keep it under Atlas administration with independent staff permission and a staff-only launcher entry, rather than granting platform access through customer roles. Import into canonical records; do not duplicate customer/product identity or create local stores. Require file/company-bound review, atomic audited attachment, duplicate protection and destination entitlement/creation checks. Sales imports create reviewed drafts through Sales-owned pricing/tax logic; no posting/fulfilment side effects. Original CSV files are transient inputs, with metadata retained in central audit. Unauthenticated visitors never receive a server error: Connections pages redirect to `/login`, and the template API answers `401` (signed out) / `403` (non-staff) rather than throwing through the auth guard.
+Michael requested a separate Connections app for Atlas admins with section templates, uploads and company attachment. Keep it under Atlas administration with independent staff permission and a console-only entry, rather than granting platform access through customer roles. Import into canonical records; do not duplicate customer/product identity or create local stores. Require file/company-bound review, atomic audited attachment, duplicate protection and destination entitlement/creation checks. Sales imports create reviewed drafts through Sales-owned pricing/tax logic; no posting/fulfilment side effects. Original CSV files are transient inputs, with metadata retained in central audit. Unauthenticated visitors never receive a server error: Connections pages redirect to `/login`, and the template API answers `401` (signed out) / `403` (non-staff) rather than throwing through the auth guard.
 
 ## 9 October 2026 — Home utility menu and modern grouped app cards
 

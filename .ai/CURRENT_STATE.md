@@ -1,8 +1,50 @@
 # Atlas current state
 
-## 9 October 2026 — Studio retirement integrated with latest live typography
+## 9 October 2026 — Business interface excludes Atlas platform tools, verified live
 
-Exact live 5ebd700 and final main 98cf934 source/evidence merged. No font code
+Exact release 56c9d88a66ba2b257fe780a3174e699cfcd81261 is live at
+https://atlassystem.online. It preserves previous accepted 5ebd700 typography,
+Studio, Supply, Messages and the modern Apps design. Previous immutable 5ebd700
+runtime is retained. Michael clarified that Atlas Console/Admin tools do not
+belong in customer software; the rule also applies to audited staff support
+workspaces.
+
+Removed Atlas Admin and Connections from both business Home/Apps directories,
+console links from the header and company users/workspace settings, the Admin
+badge and native-import help promoting the platform console. The header now shows
+selected company identity. Company admin, Manage apps, native imports, customer
+Studio and existing permissions remain. Staff tools stay in the standalone guarded
+/atlas console; no auth, grant, tenant, schema or business-record changes.
+
+Paths: shell app-directory/topbar; settings page/workspace-panel/imports; new
+business-shell-boundary regression suite and expanded read-only check-home-menu.
+Project/design/Admin/company/decision/delivery docs reconciled. Four focused files/
+14 tests, production build, strict post-build TypeScript and scoped lint PASS;
+lint has zero errors/two existing brand-image warnings. Rebuilt/types PASS after
+preserving exact live fonts. Final diff/whitespace reviewed; full suite not rerun.
+Main's separately reviewed Dashboard source/evidence is preserved for shared
+integration, not deployed by this task. Merged 14 focused tests, scoped runner/
+directory lint, production build and strict post-build TypeScript PASS.
+
+First prepare attempt safely stopped at ancestry before backup/build when the
+accepted font release advanced. Compatible candidate prepared/smoke-verified after
+backup atlas-pre-deploy-20261009-221529. Read-only candidate acceptance PASS;
+private evidence /tmp/atlas-home-menu-check-VRPo6o. Activation backup:
+atlas-pre-deploy-20261009-222947. Public HTTPS acceptance PASS at the exact release
+above before/after the run; private evidence /tmp/atlas-home-menu-check-fH23LQ.
+Home desktop/tablet/phone and Apps desktop/tablet/390px/320px, authorised entries,
+layout/scrolling/44px targets, focus/closure/search and actual My work navigation
+PASS. Home, Apps, header, company workspace/users/imports and business search expose
+no platform tools; staff /atlas retains its independent shell and Connections.
+All browser writes blocked; no accounts/grants/fixtures created. Desktop screenshot
+visually inspected. No remaining Apps/platform-boundary blocker or application
+work for this request; preserve the separate-console rule in future releases.
+
+
+## 9 October 2026 — Studio retirement candidate preserving current business separation
+
+Exact live 56c9d88 business separation merged with retirement candidate source.
+Live typography 5ebd700 and final main 98cf934 evidence retained. No font code
 changed by Studio; existing public glyph/responsive evidence retained. Studio
 2B3a pure conversion and 2B3b retirement remain local only. Prior 35-test/types/
 scoped-lint/build and integrated production build/strict TypeScript PASS; next real

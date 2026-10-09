@@ -295,10 +295,16 @@ async function main() {
       assert(
         await dialog.evaluate((node) => node.scrollWidth <= node.clientWidth),
       );
-      await dialog
-        .locator("article")
-        .getByText("Review this order together.", { exact: true })
-        .scrollIntoViewIfNeeded();
+      const timelineMessage = dialog.locator("article").getByText("Review this order together.", { exact: true });
+      // Reopening restores the timeline asynchronously. Retry a detached snapshot
+      // node while retaining the actual-message and viewport assertions.
+      await expect.poll(async () => {
+        try {
+          await timelineMessage.scrollIntoViewIfNeeded({ timeout: 2000 });
+          return await timelineMessage.isVisible();
+        } catch { return false; }
+      }, { timeout: 15000, message: "Restored message timeline must be visible" }).toBe(true);
+      await expect(timelineMessage).toBeInViewport();
       await page.screenshot({ path: `/tmp/atlas-messages-${device}.png` });
       console.log(
         `PASS ${device}: modern pop-out, composer and record cards fit the viewport.`,

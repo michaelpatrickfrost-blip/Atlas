@@ -39,3 +39,25 @@ publication and resulting runtime, plus desktop/tablet/phone screenshots and che
 for permissions, hidden queries, required fields and saved/unsaved state. A screenshot
 or preset selector alone is not a completed builder. Status: requirements recorded;
 visual builder NOT STARTED until 2B–2D dependencies pass their checkpoints.
+
+Michael also requires published designs to reach each business's live dashboards
+and screens, with configurable buttons. The editor must offer clear choices,
+useful starting templates, immediate preview and an understandable reviewed
+publication/activation outcome. Saving a draft must not change the live business.
+Acceptance includes seeing the activated version on the intended business's
+dashboard/screen, a different business retaining its own layout, and rollback.
+
+Use the existing Dashboards app, its chart/preset/rendering components and the
+Core analytics providers. Current saved Dashboard records are organisation/user
+scoped personal boards: company Studio publication must preserve those personal
+boards. Define an explicit published company-layout adapter and precedence in 2E;
+do not create a second analytics engine or silently overwrite personal layouts.
+Preserve Home's Apps directory, attention and goals when integrating live layouts.
+
+Custom buttons may have business-specific labels, icons and supported placements.
+Their behaviour must be selected from registered, owner-approved Atlas actions or
+permitted navigation. Preview never invokes them. Runtime checks the authenticated
+tenant, source availability, native capability and owning domain rules on every
+invocation. Configuration cannot grant privileges or supply arbitrary executable
+scripts. Verify permitted invocation, denied users, disabled sources, tenant
+isolation and native business outcomes. Later Flow actions remain later-phase work.

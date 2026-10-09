@@ -75,6 +75,7 @@ technical references. 2E is split before implementation into these dependencies:
 | 2E2 | Responsive screen preview using published rendering rules and approved/sample content | same structured page renderer and preview surface | Desktop/tablet/phone, hidden queries/fields, no preview commands | NOT STARTED |
 | 2E3 | Business-document authoring/preview entry using existing Templates engine and owner-approved Sales sources | existing Core templates/services + Studio authoring adapter | Bespoke document preview/render/publish compatibility; no duplicate template engine | NOT STARTED |
 | 2E4 | Native record forms/list/detail integration and business-specific publication | owner surfaces + Studio runtime | Actual Sales/Tickets representative behaviour, native permissions/rules, distinct tenant layouts | NOT STARTED |
+| 2E5 | Published business dashboard layouts and configurable buttons; reuse existing Dashboards/analytics and owner actions | existing analytics renderer/providers, Studio resolution adapter, owner command surfaces | Activated tenant layout appears live, personal boards retained, rollback, permitted/denied button invocation and native outcomes | NOT STARTED |
 
 Do not display unsupported choices as working. These are explicit Phase 2 owner/UI
 integration workstreams once 2B–2D pass, not permission to implement later Flow,

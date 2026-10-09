@@ -60,6 +60,10 @@ acceptance helper added, distinct from the pending owner-authorised values API.
 Removed the visible internal-key input/display; server assigns stable UUID keys.
 Michael's bespoke business design studio/Sales clarification is permanently saved;
 visual preview/builder remains 2E, not claimed from the foundation UI.
+Latest follow-up adds easy template customisation, live business dashboards/screens
+and custom buttons to 2E acceptance. Existing Home/analytics/dashboard and Sales
+Templates source inspected; 2E5 reuses their engines, preserves personal boards and
+checks native button permissions. Requirements/plan saved; designer NOT STARTED.
 
 2B1 delivered closed typed field contracts/required/constraint validation, exact
 decimal/currency/calendar/UTC/duration semantics, stable enum options/retirement,
@@ -266,8 +270,12 @@ prematurely. Gates cannot PASS from file existence alone.
 Prisma regenerated, 27 files/140 tests, scoped lint and integrated build PASS.
 Strict post-build types PASS; candidate fcfd512 prepare/smoke PASS after backup
 atlas-pre-deploy-20261009-211931; additive migration applied. Candidate field/Studio/Admin/business/Home/Reports/MRP checks PASS. Corrected
-Messages viewport selector (retained preview text); types/scoped lint PASS. Checkpoint and
-prepare a new exact candidate, then rerun combined acceptance including private Admin.
+Messages viewport selector (retained preview text); types/scoped lint PASS. Revised
+candidate 770393f prepare/smoke/build PASS, backup atlas-pre-deploy-20261009-212757.
+Second run field/native checks PASS; Messages detached-node race during timeline
+restore, log /tmp/atlas-studio-acceptance-LiKMZK. Retry transient locator detachment
+then assert actual message in viewport; types/scoped lint PASS, checkpoint/prepare and
+rerun combined acceptance including private Admin.
 Activate only after PASS. Proceed to 2B3 reviewed evolution/retirement/conversion planning and
 resumable jobs only after 2B2 central checks PASS. 2B4 owner values, then 2C–2F.
 Phase 2 remains IN PROGRESS; do not start Phase 3+.

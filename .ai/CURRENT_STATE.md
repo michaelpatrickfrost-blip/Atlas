@@ -1,8 +1,8 @@
 # Atlas current state
 
-## 9 October 2026 — Studio 2B2 local checkpoint; visual setup clarification
+## 9 October 2026 — Studio 2B2 candidate checkpoint; visual setup clarification
 
-Phase 2 active, 2B2 IMPLEMENTED locally, central value/runtime acceptance pending.
+Phase 2 active, 2B2 schema/lifecycle VERIFIED on candidate; combined release pending.
 Added closed compiler dispatch, typed owner field policy and Tickets entity v2
 (preserving exact v1 hashes), permanent entity/field-key/generation publication
 binding, generation/tenant checks at activation and cosmetic-only revisions until
@@ -18,8 +18,15 @@ should be entered by users: removed the stable-key input/display and create acti
 now generates configuration.<UUID> server-side. Persisted identities remain stable.
 STUDIO_VISUAL_BUILDER_REQUIREMENTS.md records both screen/document experiences and
 explicit Sales owner, screen/preset editor, responsive preview, existing Templates
-adapter and native-runtime integration substreams (2E0–2E4); Tickets is not
+adapter and native-runtime integration substreams (2E0–2E5); Tickets is not
 presented as Sales support.
+
+Latest visual requirement: easy template customisation, activated designs on each
+business's live dashboards/screens, and custom buttons. Saved in visual requirements
+and 2E5 plan, NOT IMPLEMENTED. Inspected existing Home/analytics routes, dashboard
+actions/definition/templates/renderers and Sales template provider: reuse existing
+Dashboards/analytics and Templates engines, preserve user-owned personal boards,
+and bind buttons to approved native actions with server permissions/tenant checks.
 
 Latest integrated Admin/Messages source: 27 focused/regression files/140 tests
 PASS, Prisma client regenerated, scoped lint and production build PASS. Strict
@@ -44,11 +51,18 @@ checks PASS, including generated-key form. Combined run FAIL in Messages
 viewport selector: retained conversation previews duplicate the exact timeline
 text. Scoped that locator to article, preserving the behaviour assertion. No app
 regression or complete combined PASS claimed. Private logs:
-/tmp/atlas-studio-acceptance-1hYTRO. These changes are NOT LIVE. Phase 2 gate NOT PASSED.
+/tmp/atlas-studio-acceptance-1hYTRO. Revised candidate 770393f22a4b76f7802794ecda6659226916d931 prepared/smoke PASS
+with backup atlas-pre-deploy-20261009-212757 and production build PASS. Second run again passed field/Studio/Admin/business/Home/Reports/MRP. Messages
+viewport scroll encountered a detached node while the reopened timeline restored
+asynchronously. Retry only transient locator detachment, then assert actual message
+is in viewport; application error assertions remain unchanged. Logs:
+/tmp/atlas-studio-acceptance-LiKMZK. Full combined acceptance still NOT PASS. These changes are NOT LIVE. Phase 2 gate
+NOT PASSED.
 
 Exact next: exact live Admin 1dafe16 and Messages 9303039 are merged with
 contributors' evidence preserved. Integrated local checks PASS; selector TypeScript/scoped lint PASS.
-Checkpoint source/evidence and prepare a new exact candidate and rerun complete Studio/Admin/business/Home/Reports/
+Async timeline assertion TypeScript/scoped lint PASS; checkpoint, then prepare and rerun
+exact candidate complete Studio/Admin/business/Home/Reports/
 MRP/Messages/private-Admin acceptance. Activate only on PASS.
 Then 2B3 evolution/retirement/conversion planning and resumable jobs, followed by
 2B4 owner-authorised values. No 2C or Phase 3+ before preceding workstream checks.

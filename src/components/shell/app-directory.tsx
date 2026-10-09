@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Briefcase, Cable, ChartNoAxesColumnIncreasing, ChevronRight, LayoutGrid, Settings, ShieldCheck, Users } from "lucide-react";
+import { Briefcase, ChartNoAxesColumnIncreasing, ChevronRight, LayoutGrid, Settings, ShieldCheck, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Session } from "@/core/auth/session";
 import { getNavigableModules } from "@/core/modules/runtime";
@@ -34,7 +34,6 @@ export async function AppDirectory({ session, variant = "menu" }: { session: Ses
     { id: "my-work", name: "My work", href: "/profile", icon: Briefcase, description: "Your tasks, meetings and personal details." },
     ...(canOpenCompanyAdmin(session) ? [{ id: "settings", name: "Company admin", href: "/settings", icon: Settings, description: "Company setup, users and permissions." }] : []),
     ...(can(session, CORE_CAPABILITIES.modulesManage) ? [{ id: "apps", name: "Manage apps", href: "/apps", icon: LayoutGrid, description: "Configure the apps in your workspace." }] : []),
-    ...(can(session, "atlas.companies.manage") ? [{ id: "atlas", name: "Atlas Admin", href: "/atlas", icon: ShieldCheck, description: "Manage companies and Atlas administration." }, { id: "connections", name: "Connections", href: "/atlas/connections", icon: Cable, description: "Review and attach company imports." }] : []),
   ];
   const columns = [...[...groups].filter(([, entries]) => entries.length > 0), ["Company", company] as const];
   if (variant === "launcher") return (

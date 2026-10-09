@@ -7,10 +7,13 @@ This is an execution design; the source specification remains unchanged.
 | Workstream | Purpose/dependencies | Files/database | Checks | Status |
 | --- | --- | --- | --- | --- |
 | 2B1 | Closed field/storage/value contracts and server validators | core/studio/fields/{schema,validation}, focused tests; no DB | Required/type/bounds/exact decimal/currency/calendar/enum/contact/reference-shape/address/extra-capability cases | VERIFIED locally |
-| 2B2 | Versioned field compiler, stable identity binding and typed current/history storage | Compiler dispatch/definition lifecycle + additive central models/migration | Immutable identity/version bindings, tenant FKs, typed-family constraints, indexes, immutable value history | IMPLEMENTED locally; compiler/lifecycle and models, central data acceptance pending |
+| 2B2 | Versioned field compiler, stable identity binding and typed current/history storage | Compiler dispatch/definition lifecycle + additive central models/migration | Immutable identity/version bindings, tenant FKs, typed-family constraints, indexes, immutable value history | VERIFIED on candidate/public e5d66e6; schema/lifecycle, not owner value API |
 | 2B3 | Safe definition evolution, retirement and explicit conversion planning | fields evolution/migration services and durable migration metadata | Compatibility/conversion preview/failures, no in-place conversion, resumable/idempotent batches/cutover/history | NOT STARTED |
 | 2B4 | Atomic owner-authorised read/write and reference validation | fields services + schema from 2B2 | Owner access/locks, field caps, CAS, required rules, uniqueness and audit; references independently owner-checked | NOT STARTED |
 | 2B5 | Central acceptance/checkpoint | tests, central driver, memory/docs | Real typed storage/history/constraints/retirement/tenant/security/compatibility; build and runtime proof | NOT STARTED |
+
+2B3 is subdivided in STUDIO_FIELD_EVOLUTION_PLAN.md. Its workstreams remain
+NOT STARTED; combined 2B2 candidate/public e5d66e6 release acceptance PASS.
 
 2B1 is a pure validation library, not a stored-field feature. The UI does not expose
 these schemas yet. Reference syntax validation does not prove target access: 2B4
@@ -55,18 +58,19 @@ current pointer and immutable typed FieldValue history. Decimal physical storage
 enforce exact logical bounds. New generation IDs permit source/target coexistence
 during future reviewed conversions. Tickets entity v2 declares approved types,
 reserved native keys and self-reference target; real sealed v1 hashes are regression
-tested. These models/migration/compiler are not yet deployed or SQL/runtime verified.
+tested. Central migration and candidate SQL/runtime checks PASS; activated e5d66e6,
+public HTTPS acceptance PASS. No customer value API is exposed.
 
 2B2 checkpoint: compiler dispatch and transactional permanent identity binding are
 connected to the existing metadata lifecycle. Owner field limits include retained
 retired identities. Only label/help revisions publish until reviewed evolution is
 available in 2B3. Activation requires the exact tenant-owned generation. Local
-checks and transaction-only central DDL syntax verification passed; migration/data
-guards remain unverified until candidate acceptance. Generic desktop model reads
+checks, transaction-only central DDL syntax verification and candidate migration/data
+guards PASS. Generic desktop model reads
 must remain denied for additional values: the future gateway must authorise native
 record, current field policy and written-schema policy before returning any value.
 
 Prepared fcfd512 central schema/lifecycle tests PASS (private logs in ledger);
-migration applied after backup. Full combined/public release acceptance is pending
-the Messages viewport selector rerun. No owner-authorised customer values API is
+migration applied after backup. Complete combined candidate/public e5d66e6 acceptance PASS, including Messages,
+private Admin and connected supply; source live with rollback runtime retained. No owner-authorised customer values API is
 claimed; that is 2B4.

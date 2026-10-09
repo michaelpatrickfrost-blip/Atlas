@@ -39,7 +39,10 @@ Password resets and changes increment the global account authentication version.
 and individual permissions, a separate Atlas team, admin activity, archive/restore
 and full company exports. All active Atlas staff currently have full platform and
 selected-company permissions as Michael explicitly requested. Customer roles cannot
-grant platform access. See [Atlas Admin](ATLAS_ADMIN.md) for scope and boundaries.
+grant platform access. Atlas platform tools and links do not appear in business
+Home/Apps, headers, settings or search, even during staff support. Company settings,
+Manage apps and native imports retain their existing permissions.
+See [Atlas Admin](ATLAS_ADMIN.md) for scope and boundaries.
 
 Data setup retains the nine CSV templates and transactional import. Brand setup
 now targets the selected company. Company administrators keep the smaller customer,

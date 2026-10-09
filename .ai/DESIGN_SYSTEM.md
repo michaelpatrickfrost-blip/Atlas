@@ -10,6 +10,9 @@ their top menus and the wide Apps switcher from Michael's second 9 October
 reference: four desktop columns, More/Company below, grey outline icons and
 larger labels; responsive columns, wrapped labels and scrolling on smaller screens.
 Workspace Apps/search controls are larger, with phone search on a separate row.
+Business navigation contains no Atlas Console/Admin, Connections or platform
+return links, including staff support workspaces. The header shows company identity.
+Company admin and Manage apps remain permission-filtered business tools.
 Attention/goals follow the launcher.
 Desktop, tablet and phone layouts require visual acceptance.
 

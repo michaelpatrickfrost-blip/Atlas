@@ -292,6 +292,8 @@ remain open. See CURRENT_STATE.md for fresh checks and activation evidence.
 - [x] Company accounts/profiles, entitlements, user roles and granular access,
   staff classifications and audited workspace switching implemented.
 - [x] Full access for active Atlas staff; customer roles cannot grant platform access.
+- [x] Platform Admin/Console and Connections stay outside business Home/Apps, headers
+  and company settings, including staff support workspaces (9 October clarification).
 - [x] Company/staff recovery, archive/restore and complete company handover implemented.
 - [x] Isolated typecheck/build, server deployment and all 31 authenticated live
   workflow checks passed; 40 focused tests and browser team review passed.

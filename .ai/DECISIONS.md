@@ -1,3 +1,21 @@
+## 9 October 2026 — Studio field validation and visual setup
+
+Michael requires easy visual page/template selection and responsive draft previews,
+using the current modern Atlas design. Make real preview/configuration/published
+runtime checks part of 2E's gate; presets are structured approved layouts, and preview
+uses the same renderer while suppressing commands. Existing Templates stays the
+rendering authority when exposed through Studio. Preview never grants record access.
+
+Persisted metadata must not introduce arbitrary regex backtracking. The source's
+regex constraint is implemented initially with an approved character-class and
+bounded-repeat grammar: it preserves server pattern validation and predictably
+bounded execution, while rejecting nested repeats/alternation/backreferences rather
+than executing untrusted expressions. Record this deliberate restriction; broader
+syntax needs a proven linear engine and a compatible contract change.
+Exact decimal/money values use explicit decimal strings/precision/scale/currency;
+calendar dates, UTC instants and duration seconds have distinct contracts. General
+field storage and migration execution are still subsequent 2B workstreams.
+
 ## 9 October 2026 — Studio extensions require an atomic owner record policy
 
 Phase 2 opt-in binds a canonical entity to approved native read projections and a

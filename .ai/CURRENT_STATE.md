@@ -1,5 +1,32 @@
 # Atlas current state
 
+## 9 October 2026 — Phase 2B1 validators and visual setup requirements
+
+Added strict custom-field metadata/storage/value validation library for strings,
+safe integers, exact decimals/money, booleans, calendar dates, UTC instants, explicit
+second durations, email/URL/E164 phone, stable enum/multi-enum choices, references
+and approved-country addresses. Required/constraint checks are independent of
+visibility; additional read/write capabilities narrow owner permissions. Bounded
+linear regex avoids untrusted backtracking. Reference parsing alone is not access:
+atomic field services must independently resolve/authorise target records in 2B4.
+No storage/compiler/UI is connected yet, no Prisma/schema change and no native
+intake conversion. Full 2B/Phase 2 remain IN PROGRESS, not VERIFIED/PASS.
+
+Michael's latest visual/easy-setup requirement is permanently recorded in
+docs/studio/STUDIO_VISUAL_BUILDER_REQUIREMENTS.md: choose an approved record/page or
+template preset, see a draft preview following published rendering rules, responsive
+desktop/tablet/phone, modern Atlas UI, preserved unsaved work and no preview commands
+or privilege expansion. 2E gate includes real configuration/preview/runtime proof.
+Detailed 2B subworkstreams/design: docs/studio/STUDIO_PHASE_2_FIELDS.md.
+
+Checks: 7 field validator assertions PASS, strict TypeScript/scoped lint PASS;
+integrated source with live Guardian MRP corrections: 17 files/110 assertions and
+production build PASS. Repeat strict types after build before release. Source 2A
+candidate ce175fb passed central owner/metadata/Admin/Home/Reports; ancestry stopped
+activation after 0ce9f4a went live. Exact MRP source/evidence merged; combined release
+must be prepared/verified, not assumed live. Next: merged release checks, then 2B2
+versioned field compiler/identity binding and additive typed storage/history models.
+
 ## 9 October 2026 — Studio preserves newer live MRP source
 
 Candidate ce175fb passed central Tickets owner/private/member/revision/tenant checks,

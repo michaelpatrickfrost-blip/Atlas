@@ -34,6 +34,11 @@ Studio/Admin, Home and Reports acceptance; visible browser UI checked).
 | 2F | Gate/release and representative native/customer integration. Depends on 2A–E. | tests, scripts/studio, documentation/ledger | Backed-up additive central migration; retained history | Contract/property/security/runtime regression, production build, candidate then public live acceptance | NOT STARTED |
 
 Each workstream must be reviewed, tested and checkpointed before the next begins.
+
+2B subworkstreams are detailed in STUDIO_PHASE_2_FIELDS.md. 2B1 typed validation
+library is VERIFIED locally; persistence/evolution/atomic services are not completed.
+Michael's visual/easy-setup requirements for 2E are in
+STUDIO_VISUAL_BUILDER_REQUIREMENTS.md and form part of its acceptance gate.
 Do not mark VERIFIED from code or schema existence. Reconcile the implementation
 against source requirements before Phase 2 PASS. Narrow owner opt-in is acceptable;
 unsupported protected domains must fail closed rather than appear configurable.

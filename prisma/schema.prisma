@@ -25,6 +25,7 @@ model AuthenticationRateLimit {
 
 model Organisation {
   studioDefinitions StudioDefinition[]
+  studioExtensionRecords StudioExtensionRecord[]
  operationalMeetingEntry MeetingEntry[]
  operationalMicrosoftCalendarConnection MicrosoftCalendarConnection[]
  operationalMeetingOAuthState MeetingOAuthState[]
@@ -9162,6 +9163,7 @@ model StudioDefinition {
   updatedAt DateTime @updatedAt
   organisation Organisation @relation(fields:[organisationId], references:[id], onDelete:Restrict)
   draft StudioDraft?
+  fieldBinding StudioFieldBinding?
   versions StudioDefinitionVersion[] @relation("StudioHistory")
   activeVersion StudioDefinitionVersion? @relation("StudioActive", fields:[activeVersionId,id,organisationId], references:[id,definitionId,organisationId], onDelete:NoAction, onUpdate:NoAction)
   @@unique([id,organisationId])
@@ -9204,6 +9206,9 @@ model StudioDefinitionVersion {
   activeFor StudioDefinition[] @relation("StudioActive")
   draftBases StudioDraft[] @relation("StudioDraftBase")
   dependencies StudioDependency[]
+  fieldOrigins StudioFieldBinding[] @relation("StudioFieldOrigin")
+  generationOrigins StudioFieldGeneration[] @relation("StudioGenerationOrigin")
+  fieldValues StudioFieldValue[] @relation("StudioFieldValueSchema")
   @@unique([id,definitionId,organisationId])
   @@unique([definitionId,organisationId,version])
   @@unique([definitionId,organisationId,semanticVersion])
@@ -9225,4 +9230,112 @@ model StudioDependency {
   @@unique([versionId,contractId,contractVersion])
   @@index([organisationId,ownerModuleId,contractId])
   @@map("studio_dependencies")
+}
+
+// Studio owns only additional values and canonical references, never business copies.
+model StudioFieldBinding {
+  definitionId String @id @db.Uuid
+  organisationId String
+  entityId String
+  fieldKey String
+  originVersionId String @db.Uuid
+  initialGenerationId String @db.Uuid
+  createdAt DateTime @default(now())
+  definition StudioDefinition @relation(fields:[definitionId,organisationId],references:[id,organisationId],onDelete:Restrict,onUpdate:NoAction)
+  originVersion StudioDefinitionVersion @relation("StudioFieldOrigin",fields:[originVersionId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction)
+  initialGeneration StudioFieldGeneration @relation("StudioInitialGeneration",fields:[initialGenerationId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:NoAction,onUpdate:NoAction)
+  generations StudioFieldGeneration[] @relation("StudioFieldGenerations")
+  @@unique([definitionId,organisationId])
+  @@unique([definitionId,organisationId,entityId])
+  @@unique([organisationId,entityId,fieldKey])
+  @@map("studio_field_bindings")
+}
+
+model StudioFieldGeneration {
+  id String @id @db.Uuid
+  definitionId String @db.Uuid
+  organisationId String
+  entityId String
+  valueType String
+  originVersionId String @db.Uuid
+  createdAt DateTime @default(now())
+  binding StudioFieldBinding @relation("StudioFieldGenerations",fields:[definitionId,organisationId,entityId],references:[definitionId,organisationId,entityId],onDelete:Restrict,onUpdate:NoAction)
+  originVersion StudioDefinitionVersion @relation("StudioGenerationOrigin",fields:[originVersionId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction)
+  initialFor StudioFieldBinding[] @relation("StudioInitialGeneration")
+  slots StudioFieldSlot[]
+  values StudioFieldValue[]
+  @@unique([id,definitionId,organisationId])
+  @@unique([id,definitionId,organisationId,entityId])
+  @@unique([id,definitionId,organisationId,valueType])
+  @@map("studio_field_generations")
+}
+
+model StudioExtensionRecord {
+  id String @id @default(uuid()) @db.Uuid
+  organisationId String
+  entityId String
+  recordId String
+  revision Int @default(0)
+  updatedAt DateTime @updatedAt
+  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict,onUpdate:NoAction)
+  slots StudioFieldSlot[]
+  @@unique([organisationId,entityId,recordId])
+  @@unique([id,organisationId,entityId])
+  @@map("studio_extension_records")
+}
+
+model StudioFieldSlot {
+  id String @id @default(uuid()) @db.Uuid
+  organisationId String
+  entityId String
+  extensionId String @db.Uuid
+  definitionId String @db.Uuid
+  generationId String @db.Uuid
+  revision Int @default(0)
+  activeValueId String? @db.Uuid
+  uniqueToken String? @db.Char(64)
+  extension StudioExtensionRecord @relation(fields:[extensionId,organisationId,entityId],references:[id,organisationId,entityId],onDelete:Restrict,onUpdate:NoAction)
+  generation StudioFieldGeneration @relation(fields:[generationId,definitionId,organisationId,entityId],references:[id,definitionId,organisationId,entityId],onDelete:Restrict,onUpdate:NoAction)
+  values StudioFieldValue[] @relation("StudioValueHistory")
+  activeValue StudioFieldValue? @relation("StudioCurrentValue",fields:[activeValueId,id,organisationId],references:[id,slotId,organisationId],onDelete:NoAction,onUpdate:NoAction)
+  @@unique([extensionId,definitionId,generationId])
+  @@unique([id,definitionId,generationId,organisationId])
+  @@unique([organisationId,definitionId,generationId,uniqueToken])
+  @@map("studio_field_slots")
+}
+
+model StudioFieldValue {
+  id String @id @default(uuid()) @db.Uuid
+  organisationId String
+  definitionId String @db.Uuid
+  generationId String @db.Uuid
+  slotId String @db.Uuid
+  versionId String @db.Uuid
+  revision Int
+  valueType String
+  isNull Boolean @default(false)
+  textValue String?
+  integerValue BigInt?
+  decimalValue Decimal? @db.Decimal(38,10)
+  currency String? @db.Char(3)
+  booleanValue Boolean?
+  dateValue DateTime? @db.Date
+  instantValue DateTime? @db.Timestamptz(3)
+  jsonValue Json?
+  referenceValue String?
+  fingerprint String @db.Char(64)
+  createdBy String
+  createdAt DateTime @default(now())
+  slot StudioFieldSlot @relation("StudioValueHistory",fields:[slotId,definitionId,generationId,organisationId],references:[id,definitionId,generationId,organisationId],onDelete:Restrict,onUpdate:NoAction)
+  generation StudioFieldGeneration @relation(fields:[generationId,definitionId,organisationId,valueType],references:[id,definitionId,organisationId,valueType],onDelete:Restrict,onUpdate:NoAction)
+  schemaVersion StudioDefinitionVersion @relation("StudioFieldValueSchema",fields:[versionId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction)
+  activeFor StudioFieldSlot[] @relation("StudioCurrentValue")
+  @@unique([id,slotId,organisationId])
+  @@unique([slotId,revision])
+  @@index([organisationId,definitionId,generationId,fingerprint],map:"studio_field_fingerprint_idx")
+  @@index([organisationId,definitionId,generationId,integerValue],map:"studio_field_integer_idx")
+  @@index([organisationId,definitionId,generationId,decimalValue],map:"studio_field_decimal_idx")
+  @@index([organisationId,definitionId,generationId,dateValue],map:"studio_field_date_idx")
+  @@index([organisationId,definitionId,generationId,instantValue],map:"studio_field_instant_idx")
+  @@map("studio_field_values")
 }

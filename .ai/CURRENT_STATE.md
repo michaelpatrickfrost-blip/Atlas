@@ -15,69 +15,185 @@ production build, strict TypeScript, scoped lint and whitespace PASS. Initial
 checker types referenced an absent User.active field; corrected to membership
 active and strict types rerun successfully. Local production browser proves
 actual Nunito glyphs and equal numeral widths; desktop/phone login screenshots
-visually inspected. Candidate/public typography acceptance pending. Full suite
-not rerun for this presentation change.
-Next: verify, prepare compatible immutable release, inspect responsive screens,
-activate and prove actual font loading on public HTTPS before completion.
+visually inspected. Candidate 4a0a230 prepared with central backup
+atlas-pre-deploy-20261009-214902; all 30 route/viewport typography checks PASS
+(actual Nunito glyphs, inherited controls, aligned digits, page fit, zero browser/
+asset errors/external font requests). Home desktop/phone, Admin phone and Reports
+desktop screenshots visually inspected. Private evidence: /tmp/atlas-typography-check-5XrNJu
+and /tmp/atlas-typography-staging-HfIoX2. Full suite not rerun for this presentation change.
+Activation safely stopped at ancestry after accepted Studio e5d66e6 became public
+live. Merged that exact source, retaining its typed fields and modern Apps design;
+only CURRENT_STATE header conflict required reconciliation. Combined production
+build, focused Apps menu test file/3 assertions, scoped lint and whitespace PASS;
+strict TypeScript in progress. Combined candidate/public typography acceptance
+and responsive Apps verification pending.
+Next: prepare and verify the compatible combined release, activate, prove fonts
+on public HTTPS and merge implementation/evidence into main before completion.
 
-## 9 October 2026 — Private Admin entry prepared for live verification
+## 9 October 2026 — Studio 2B2 candidate checkpoint; visual setup clarification
 
-User-requested `/19811171adminlogin` and `/recovery` replace the public staff
-addresses. Customer sign-in loses its Admin link and rejects staff; retired
-addresses/anonymous console return not found without a private-address redirect.
-Responsive dedicated Admin auth frame includes password visibility and accessible
-errors. Proxy/metadata exclude Admin auth/console/API from indexing, use
-no-referrer and private/no-store. No public robots/sitemap lists the entry.
+Phase 2 active, 2B2 schema/lifecycle VERIFIED on candidate; combined release pending.
+Added closed compiler dispatch, typed owner field policy and Tickets entity v2
+(preserving exact v1 hashes), permanent entity/field-key/generation publication
+binding, generation/tenant checks at activation and cosmetic-only revisions until
+2B3's reviewed migration path exists. Five additive typed models/migration support
+immutable history, current pointers, exact decimals/money, required constraints and
+per-generation uniqueness. No customer value API/builder is exposed yet. Existing
+native intake and canonical records are preserved. Privileged schema acceptance
+helper is included in scripts/studio/check-metadata.ts; owner write API remains 2B4.
 
-Core auth binds selectors to the observed address; platform recovery requires
-the staff entry. Private central HMAC-keyed authentication_rate_limits counters
-atomically enforce 10 identity/network and 60 network attempts per 15 minutes,
-fail closed and expire independently of business data. Additive migration
-20261009220000_authentication_attempt_limits; counter table excluded from exports
-and gateway metadata. Existing passwords/grants/tenant checks remain. Paths:
-src/core/auth, src/proxy.ts, src/components/admin/auth-frame.tsx, auth/admin
-route layouts, prisma/schema.prisma and migration. Active Admin/architecture/
-Studio requirements docs and Studio acceptance URLs reconciled; historical
-release evidence preserved.
+Michael requires a bespoke screen/document-template design studio for businesses,
+including Sales, with simple visual selection and previews. No internal identifiers
+should be entered by users: removed the stable-key input/display and create action
+now generates configuration.<UUID> server-side. Persisted identities remain stable.
+STUDIO_VISUAL_BUILDER_REQUIREMENTS.md records both screen/document experiences and
+explicit Sales owner, screen/preset editor, responsive preview, existing Templates
+adapter and native-runtime integration substreams (2E0–2E5); Tickets is not
+presented as Sales support.
 
-Checks so far: Prisma generation, focused lint, focused 5-file/35-test auth suite
-and production build PASS. Full suite: 1066 passed / 87 failed / 22 skipped
-(179 files); failures are outside changed authentication sources, principally
-stale module-availability mocks. Initial strict typecheck failed because the cloned dependency tree lacked
-@playwright/test (and cascading script types); install exact lockfile dependencies
-and rerun without exclusions. Live advanced to 6775044 during work; preserve that deployed Studio release
-before preparing this change. Deployed 6775044 source/evidence is now merged.
-Exact-lockfile dependency install fixed missing Playwright. Merged production
-build, focused lint and 9-file/62-assertion suite PASS; final strict types are
-PASS. New Admin entry is not yet deployed.
-Candidate 952aae0 prepared with central database/evidence backup
-atlas-pre-deploy-20261009-205119; migration and compatibility/smoke pass.
-First browser runner stopped before creating fixtures because Guardian QA config
-was not loaded; retry loads /etc/atlas/guardian.env. Concurrent Messages release
-9303039 became live; its exact source/evidence is now merged.
-Candidate checks confirmed private entry headers/metadata, anonymous/retired 404s,
-no public private-address link, desktop/mobile layout, recovery navigation and
-customer denial. The runner then stopped on an ambiguous alert selector matching
-Next's route announcer; scoped it to the real form. Full acceptance is not yet
-claimed. Preserve legacy bcrypt input compatibility at login (new-password byte
-limits remain at password creation/recovery). Merged with live Messages 9303039: production build, strict types, scoped lint
-and 7-file/47-assertion auth/chat/field suite PASS. Desktop/phone candidate
-screenshots visually inspected. Re-prepare corrected final runner/source, execute
-full central/browser acceptance, activate and repeat publicly.
-Final candidate 7a08075 prepared with backup atlas-pre-deploy-20261009-205709.
-Its runner exposed React action auto-reset after rejected sign-in: subsequent
-required-field submissions did not run. Keep email/password in component memory
-with controlled inputs so failed login preserves entries; no storage/cache.
-Rebuild/re-prepare and repeat the real rejection/throttle sequence; this is not
-yet a fully accepted/live Admin release.
-Controlled-input regression and authentication suite: 6 files/36 assertions PASS;
-production build and scoped lint PASS. Corrected the regression's Testing Library
-role options (Playwright exact is not a DOM-query option); strict types rerun.
-Next: review final diff, record checks, prepare backed-up immutable release,
-exercise private entry/denials/limits and staff console, activate and repeat
-public HTTPS acceptance. No MFA/SSO or immediate crawler removal is claimed.
+Latest visual requirement: easy template customisation, activated designs on each
+business's live dashboards/screens, and custom buttons. Saved in visual requirements
+and 2E5 plan, NOT IMPLEMENTED. Inspected existing Home/analytics routes, dashboard
+actions/definition/templates/renderers and Sales template provider: reuse existing
+Dashboards/analytics and Templates engines, preserve user-owned personal boards,
+and bind buttons to approved native actions with server permissions/tenant checks.
 
-## 9 October 2026 — Modern Messages ready for candidate acceptance
+Latest integrated Admin/Messages source: 27 focused/regression files/140 tests
+PASS, Prisma client regenerated, scoped lint and production build PASS. Strict
+post-build TypeScript PASS.
+Initial Prisma validate/generate PASS. Backed-up central transaction-only DDL check
+found one PL/pgSQL CASE-parentheses syntax error, fixed and rerun PASS; explicit
+rollback/table absence confirmed before preparation. Dry-run backup:
+atlas-studio-field-ddl-TvSAMP. Later migration/runtime evidence is recorded below.
+Full suite not rerun; previously reported baseline failures remain open, and no
+whole-suite success is claimed. Diff reviewed; no native domain code removed.
+
+Latest observed live source is now 2690c26cb0f5f3c28e21265820e8a713708ce699
+(connected supply/planning). Exact live source merged, preserving private Admin,
+Messages, purchasing fixes, central additive supply migrations and compatibility
+checks. Reviewed modern Apps source from main f6e27cb is also merged; preserve its supplied
+design and repeat responsive navigation acceptance. Integrated 29 files/143 tests, Prisma generation, scoped lint and production build
+PASS. Strict post-build TypeScript PASS; combined candidate/public acceptance
+will also exercise connected supply and the modern Apps menu. Earlier live source
+was 1dafe165f97545829d96242b1846e87d9c1f42b4 (private Admin entry). Merged origin/main 6870014,
+including exact live Admin and Messages, preserving their source/evidence. Previous Studio source
+6775044 passed public owner/metadata/Admin/business login/Home/Reports/MRP; its final
+evidence remains in main eba8b49 and historical entries below. 2B2 and generated-key
+UI changes are checkpointed at candidate fcfd5128e991b453badf1bd95477271645f0291a.
+Preparation PASS after backup atlas-pre-deploy-20261009-211931; additive field
+migration applied during preparation, immutable candidate smoke verified. Production
+pointer remains 1dafe16. Candidate field schema/lifecycle plus Studio/Admin/business/Home/Reports/MRP
+checks PASS, including generated-key form. Combined run FAIL in Messages
+viewport selector: retained conversation previews duplicate the exact timeline
+text. Scoped that locator to article, preserving the behaviour assertion. No app
+regression or complete combined PASS claimed. Private logs:
+/tmp/atlas-studio-acceptance-1hYTRO. Revised candidate 770393f22a4b76f7802794ecda6659226916d931 prepared/smoke PASS
+with backup atlas-pre-deploy-20261009-212757 and production build PASS. Second run again passed field/Studio/Admin/business/Home/Reports/MRP. Messages
+viewport scroll encountered a detached node while the reopened timeline restored
+asynchronously. Retry only transient locator detachment, then assert actual message
+is in viewport; application error assertions remain unchanged. Logs:
+/tmp/atlas-studio-acceptance-LiKMZK. Full combined acceptance still NOT PASS. These changes are NOT LIVE. Phase 2 gate
+NOT PASSED.
+
+Exact next: exact live supply 2690c26, Admin 1dafe16 and Messages 9303039 are merged with
+contributors' evidence preserved. Integrated local checks PASS; selector TypeScript/scoped lint PASS.
+Async timeline assertion TypeScript/scoped lint PASS; checkpoint, then prepare and rerun
+exact candidate complete Studio/Admin/business/Home/Reports/
+MRP/Messages/private-Admin acceptance. Activate only on PASS.
+Then 2B3 evolution/retirement/conversion planning and resumable jobs, followed by
+2B4 owner-authorised values. No 2C or Phase 3+ before preceding workstream checks.
+## 9 October 2026 — Apps menu candidate accepted; Studio contract blocks activation
+
+Business workspace Apps now follows Michael's supplied wide white panel: Customers,
+Operations, People and Business in the first desktop row; More and Company below.
+Larger grey outline icons, readable wrapped labels, spacious rounded Apps/search
+controls, responsive columns/internal scrolling and 44px links. Phone search has
+its own header row; narrow-screen spacing keeps utilities reachable. Escape returns
+focus to Apps; group headings retain the panel; links/outside clicks/routes close it.
+Existing Home/Reports/Messages and standalone Admin retain their designs; the same
+server directory/capability filtering supplies authorised entries. No schema,
+permission, central business-record or storage change.
+
+Paths: shell app-directory/app-menu/topbar/command-palette/workspace-back, globals,
+tests/app-menu and scripts/check-home-menu; design/Reports/scope guides, decision
+and roadmap updated.
+Release branch codex/apps-menu-design starts at exact public live 1dafe165,
+preserving accepted Messages/Studio/private Admin/sign-in source. Final local
+production build with exact lockfile dependencies PASS, 2 focused files/5 assertions PASS, scoped lint zero errors
+with two existing brand-img warnings, diff whitespace PASS. Initial strict types
+found missing @playwright/test in the cloned Desktop dependencies and cascading
+script types; exact-lockfile install and final strict TypeScript without exclusions PASS.
+Full suite not rerun. Exact 12d78a1 candidate prepared; read-only central QA checks
+PASS for Home desktop/tablet/phone and Apps desktop/tablet/phone/320px, authorised
+links, scrolling/44px targets, focus/closure/search and actual My work navigation.
+All four menu screenshots inspected: supplied desktop grouping/spacing and
+responsive wrapped phone/tablet labels confirmed. Private evidence:
+/tmp/atlas-home-menu-check-IUKhn5; prepare backup atlas-pre-deploy-20261009-211746.
+Activation stopped safely after backup atlas-pre-deploy-20261009-212330 because a
+retained Studio customField definition requires tickets.ticket@2. Read-only SQL
+confirmed its company is a SUSPENDED synthetic studio-check Test organisation;
+the compatibility scanner includes its still-active definition. Live remains
+1dafe165. No metadata/grants changed or gate bypassed. Concurrent Studio source
+supplies v2 and is still undergoing final acceptance. Next: preserve its exact
+accepted live source when deployed, rebuild compatible Apps candidate, repeat
+read-only menu checks, activate and verify public HTTPS. Apps is not yet live.
+The reviewed menu source and this blocker are merged into main at 910aac3.
+Final public revision check still reports 1dafe165; Studio's combined acceptance
+remains pending after Messages timeline-restoration assertions. Do not include
+that unaccepted source or change retained metadata merely to clear the gate.
+
+## 9 October 2026 — Private Admin entry deployed and publicly verified
+
+Exact tested runtime 1dafe165f97545829d96242b1846e87d9c1f42b4 is live at
+https://atlassystem.online. It preserves deployed Studio 6775044, Messages 9303039,
+Reports and Guardian MRP source/evidence; previous immutable 9303039 is retained.
+Michael's unlisted staff entry is `/19811171adminlogin`, recovery beneath it at
+`/recovery`. Public customer login has no Admin link and cannot authenticate staff.
+Retired staff addresses, legacy platform-recovery query links and anonymous Admin
+console requests return 404 without revealing the new address. Staff console,
+existing passwords, independent platform grants and tenant checks remain intact.
+
+Dedicated responsive Admin auth frame adds password reveal, accessible errors,
+pending state and controlled inputs that retain rejected entries in component
+memory only. No local storage/business cache. Login/recovery/console/API responses
+have noindex/nofollow/noarchive/nosnippet headers, no-referrer and private/no-store;
+HTML carries noindex metadata. No robots/sitemap advertises the entry. The address
+reduces discovery; crawler compliance/recrawling and authentication remain distinct.
+Core binds selectors to the observed route; platform recovery requires staff entry.
+Private central HMAC-keyed counters atomically allow 10 identity/IP and 60 IP
+attempts per 15 minutes, fail closed and expire independently of business data.
+Additive migration 20261009220000_authentication_attempt_limits is applied; table
+excluded from company exports/gateway. No existing identity password/grant changes.
+
+Checks: final production build, strict types, scoped lint and 6 files/36 auth
+assertions PASS, including failed-entry preservation/corrected retry. Earlier
+merged 9-file/62 and 7-file/47 auth/Admin/chat/field checks PASS. Pre-merge full
+suite 1066 passed/87 failed/22 skipped, principally unrelated module-availability
+mocks; no whole-suite success claimed. Final diff/whitespace reviewed. Active
+Admin/architecture/data/Studio requirements and deployment docs reconciled;
+CURRENT_STATE/DECISIONS/PROJECT_MEMORY updated with implementation.
+
+Candidate and public HTTPS acceptance both PASS: private headers/metadata and
+old/anonymous 404s without disclosure; no public login/robots/sitemap entry;
+desktop/phone fit, password reveal and recovery navigation; actual repeated-login
+blocking/customer Admin denial without cookies/writes; real customer login,
+signed secure/httpOnly cookie and correct tenant; wrong-portal recovery leaves
+code unused, correct-company recovery succeeds; existing QA staff console/Team/
+Studio/Connections and sign-out; concurrent central cap/expiry; zero login browser/
+asset errors. QA staff uses an existing signed session, not Michael's unknown
+password; correct staff password branch is unit-verified. Exact synthetic central
+Test companies suspended and sessions/codes revoked; retained history preserved.
+
+Private evidence: candidate /tmp/atlas-private-admin-candidate-v33eUI and public
+/tmp/atlas-private-admin-public-YX0fnR. Final prepare/activation backups:
+atlas-pre-deploy-20261009-210309 and atlas-pre-deploy-20261009-210614. Earlier
+952aae0/7a08075 prepared candidates/backups and partial-run logs are retained;
+QA-env/selector/form-reset failures were corrected before accepted activation.
+Checker: scripts/check-private-admin-login.ts. Source: src/core/auth, src/proxy.ts,
+Admin auth frame/route layouts, Prisma schema/migration and focused auth tests.
+Source and final evidence integrated with origin/main; no further Admin blocker.
+
+## 9 October 2026 — Messages historical implementation and candidate evidence
 
 Implemented a wide logo-based pop-out and expanded `/chat` utility workspace,
 responsive conversation list/timeline, optional participants/shared-record details,
@@ -192,6 +308,29 @@ confirmed 85 failures; no full-suite success claimed. Next: 2B typed field schem
 compiler/persistence design, then additive models/constraints and versioned validation/
 atomic extension values. Do not begin 2C until 2B checks/checkpoint are complete.
 
+## 9 October 2026 — Standalone modern Admin accepted; Phase 2 begins
+
+Exact live source a642df0555cd45a97d57d867621d189c7650cf19 preserves concurrent
+Reports 2a8522f and the verified Phase 1 kernel. Candidate/public central metadata,
+real Admin forms/provisioning/login isolation, no-business-tools/staff sign-out,
+Home desktop/tablet/phone and Reports previews/workbooks/permissions all passed.
+Live visible page also inspected through the user's browser: modern branded Admin
+rail/header, selected-company setup tabs, no business Apps/search/chat/notices/My
+work. Original user tab/input left intact; separate review tab used. Private
+candidate/public logs /tmp/atlas-studio-acceptance-5MbNoc and
+/tmp/atlas-studio-public-CMmn5v; local UI image /tmp/atlas-admin-console-live.jpg.
+Merged source checks: 30 files/146 assertions, strict TypeScript/build passed;
+scoped lint zero errors/one brand-img warning. Pre-merge full suite 1009 passes/
+85 baseline failures/22 skips, exact unchanged failure names. No new migration.
+Source/evidence checkpoint will be included in main; live runtime remains a642df0.
+
+Phase 2 IN PROGRESS, workstream 2A. Reviewed ServiceWorkItem (TICKET), not historical
+ServiceTicket or QUERY; native workScope/queue access, requireWork, locked versions,
+final/merged rules, existing catalogue fields and definition/context snapshots.
+No shared general custom-field storage was found. Adapt existing intake fields
+where appropriate; do not rewrite historical answers. Next: implement typed
+owner-approved record/extension contracts and bounded Tickets projections with
+native read/write policy, tests, docs and checkpoint before metadata storage 2B.
 ## 9 October 2026 — Guardian MRP repairs deployed and proved
 
 Public immutable runtime 0ce9f4a8202bdf2413a9eb712b1f0a61a8e4ec72 preserves the
@@ -246,30 +385,6 @@ warning); no full canonical build/typecheck claimed. Published release/source is
 the authoritative reviewed modern implementation. Continue rotating uncovered
 workflows, prioritising exact original request reconstruction and stable expected
 access-error classification; no bulk closure, customer writes or automatic replay.
-
-## 9 October 2026 — Standalone modern Admin accepted; Phase 2 begins
-
-Exact live source a642df0555cd45a97d57d867621d189c7650cf19 preserves concurrent
-Reports 2a8522f and the verified Phase 1 kernel. Candidate/public central metadata,
-real Admin forms/provisioning/login isolation, no-business-tools/staff sign-out,
-Home desktop/tablet/phone and Reports previews/workbooks/permissions all passed.
-Live visible page also inspected through the user's browser: modern branded Admin
-rail/header, selected-company setup tabs, no business Apps/search/chat/notices/My
-work. Original user tab/input left intact; separate review tab used. Private
-candidate/public logs /tmp/atlas-studio-acceptance-5MbNoc and
-/tmp/atlas-studio-public-CMmn5v; local UI image /tmp/atlas-admin-console-live.jpg.
-Merged source checks: 30 files/146 assertions, strict TypeScript/build passed;
-scoped lint zero errors/one brand-img warning. Pre-merge full suite 1009 passes/
-85 baseline failures/22 skips, exact unchanged failure names. No new migration.
-Source/evidence checkpoint will be included in main; live runtime remains a642df0.
-
-Phase 2 IN PROGRESS, workstream 2A. Reviewed ServiceWorkItem (TICKET), not historical
-ServiceTicket or QUERY; native workScope/queue access, requireWork, locked versions,
-final/merged rules, existing catalogue fields and definition/context snapshots.
-No shared general custom-field storage was found. Adapt existing intake fields
-where appropriate; do not rewrite historical answers. Next: implement typed
-owner-approved record/extension contracts and bounded Tickets projections with
-native read/write policy, tests, docs and checkpoint before metadata storage 2B.
 
 ## 9 October 2026 — Guardian MRP repair ready for server verification (historical)
 
@@ -3894,16 +4009,6 @@ Checks: `tests/hr-conduct.test.ts`, `tests/hr-self-service.test.ts`, `tests/hr-t
 
 Next step: restart local Next and confirm a policy PDF, a performance plan and a disciplinary case. Then apply the migration on the shared database and install the Mac app.
 
-## Manager level is a settings switch — 3 October 2026
-
-Company administrators open Company administration → Manager level. CRM, Finance and Customer Service each have a switch. CRM managers assign a prospect or task and push prospects and deals. Finance managers sign off documents at or above the company limit, or in another currency, and cannot approve their own document. Customer service managers sign off complaints and queries linked to an order at or above the limit. Agents can keep working the case. The switch does not grant a permission.
-
-Paths: `src/core/permissions/manager-level.ts`, `src/app/(app)/settings/manager-panel.tsx`, `src/app/(app)/settings/actions.ts`, `src/modules/crm/services/manager-level.ts`, `src/modules/finance/services/commands.ts`, `src/modules/service/services/commands.ts`, `prisma/migrations/20261003730000_manager_level/migration.sql`.
-
-Checks: `npx prisma generate` succeeded. `node scripts/generate-data-api.mjs` wrote 266 models and 524 actions. `npx vitest run tests/manager-level.test.ts tests/settings-menu.test.ts tests/customer-permissions.test.ts tests/sales-crm-permissions.test.ts` passed 19 tests. ESLint on the touched files reported only the existing unused `convert` warning in finance commands. Typecheck reported no errors in the touched files. Local `127.0.0.1:5433` has `organisations.managerPolicy` from `20261003730000_manager_level`. In the browser on local `next dev`, signed in as Sophie Green, Company administration → Manager level showed the three switches and £10,000 limits. Saving CRM on wrote `{crm:true}` for the demo company; saving it off restored all three switches off. The shared server migration is not applied, and `/Users/michael/Applications/Atlas.app` was not rebuilt. Do not install the new client before that column exists, because Company administration reads it.
-
-Next step: apply `20261003730000_manager_level` on the shared database with a backup, release the data service, then install the Mac app and confirm the Manager level switches.
-
 ## Safety is built, not yet live on the shared database — 3 October 2026
 
 Safety is a registered module at `/safety` with Today, Risk, Incidents, Control, Assurance and Reports. Risk revisions, incidents, RIDDOR review assistance, inspections, audits, permits, isolation, safety holds, PUWER/LOLER checks, COSHH, competence and workplace records are in the domain. A safety hold blocks a manufacturing work-order start, blocks logistics equipment assignment when competence or the hold fails, and shows a delivery risk on the linked sales order. Architecture: `docs/modules/SAFETY.md`. Migration: `prisma/migrations/20261003710000_safety_foundation`. Activation script: `deploy/enable-safety.mjs`.
@@ -3961,14 +4066,6 @@ Paths: `src/core/audit/systems.ts`, `src/core/audit/scope.ts`, `src/modules/audi
 Checked: `tests/audit-echo.test.ts`, `tests/modules.test.ts`, `tests/company-access.test.ts` and `tests/sales-crm-permissions.test.ts` passed (20). ESLint passed on the Audit and Echo sources. Typecheck reported only the existing Next layout-route cache for the new `/audit` path. Migration `20261003700000_audit_echo` was applied on the local database at `127.0.0.1:5433`. The local standard roles gained the new Echo and team-audit capabilities, and the local company had Audit enabled. In the browser, signed in as the demo administrator, Echo on a customer accepted a note and `/audit` showed the system map with that note under Echo. The shared server migration was not applied, and the installed Atlas app was not rebuilt.
 
 Next step: apply `20261003700000_audit_echo` on the shared database, grant `audit.team.read`, `echo.read` and `echo.write` to Michael’s administrator membership, enable the `audit` module for that company, then rebuild and install the Mac app.
-
-## Company settings are administrator-only — 3 October 2026
-
-Company identity, brand, workspace access, sales rules and HR company defaults save only with `core.modules.manage`. The company administration menu is grouped (Company, People, Records, Account) and highlights the current section. People without an administration permission no longer see Company admin in the sidebar; they keep Profile. HR managers can still maintain appraisal and one-to-one templates, and see company defaults read-only.
-
-Paths: `src/app/(app)/settings/settings-menu.ts`, `settings-nav.tsx`, `layout.tsx`, `page.tsx`, `actions.ts`, `workspace-panel.tsx`, `src/app/(app)/people/settings/`, `src/app/(app)/sales/settings/page.tsx`, `src/components/shell/nav-links.tsx`, `sidebar.tsx`, `topbar.tsx`, `src/core/modules/runtime.ts`.
-
-Checks: `tests/settings-menu.test.ts` passed (2). ESLint on the touched files reported only the existing `<img>` warnings in `brand-panel.tsx` and `sidebar.tsx`. Browser on local `next dev` as Sophie Green (Administrator): `/settings` opens Workspace; the menu groups are Company, People, Records and Account; Brand is the current item and shows Save logo; Users lists Sophie and highlights Users; HR Settings shows Save company defaults. `bash scripts/build-mac-client.sh` did not install. One attempt failed because the desktop snapshot was missing `analytics/page.tsx` mid-build. The next compiled, then failed prerendering `/login` with `TypeError: Cannot read properties of undefined (reading 'call')`. A typecheck in between failed on `DEFAULT_FIVE_BY_FIVE` in `src/modules/safety/domain/work.ts`; that name is now imported from `matrix.ts`. The installed `/Users/michael/Applications/Atlas.app` was not replaced, and the central data service was not switched, so the new save checks are not yet the live server copies.
 
 ## No page reload — 3 October 2026
 

@@ -15,6 +15,10 @@ export async function StudioDefinitionView({session,definitionId,root="/studio",
   assertCapability(session, CAP.read);
   const definition = await getDefinition(session, definitionId);
   if (!definition || !definition.draft) notFound();
+  if (definition.kind !== "capabilitySet") return <div className="space-y-6">
+    <Link className="text-sm text-blue-700" href={root}>← Configuration library</Link>
+    <Card className="p-6"><h2 className="text-2xl font-semibold">{definition.name}</h2><p className="mt-3 text-sm text-slate-600">The visual editor for this configuration is not available yet. Your saved definition is preserved.</p></Card>
+  </div>;
   const draft = definition.draft, payload = kernelPayloadSchema.parse(draft.payload);
   const catalogue = (await studioRegistry().discover(session)).filter(d => !["command", "integration"].includes(d.kind));
   const references = catalogue.map(d => ({ id: d.id, version: d.version, schemaHash: d.schemaHash, contractHash: d.contractHash }));
@@ -22,7 +26,7 @@ export async function StudioDefinitionView({session,definitionId,root="/studio",
   const comparison = compare && definition.versions[0] ? await compareVersions(session, definition.id, compare, definition.versions[0].id) : null;
   return <div className="space-y-6">
     <Link className="text-sm text-blue-700" href={root}>← Configuration library</Link>
-    <div><h2 className="text-2xl font-semibold">{definition.name}</h2><p className="mt-2 text-sm text-slate-500">{definition.key} · Draft revision {draft.revision} · {definition.activeVersionId ? "A published version is active" : "No active version"}</p></div>
+    <div><h2 className="text-2xl font-semibold">{definition.name}</h2><p className="mt-2 text-sm text-slate-500">Draft revision {draft.revision} · {definition.activeVersionId ? "A published version is active" : "No active version"}</p></div>
     <Card className="p-6"><h3 className="font-semibold">Draft</h3><p className="mt-2 text-sm text-slate-600">This capability set records approved references. It does not execute business operations.</p>
       {can(session, CAP.edit) ? <DraftEditor action={save}>
         {target && <input type="hidden" name="organisationId" value={target}/>}<input type="hidden" name="id" value={definition.id}/><input type="hidden" name="revision" value={draft.revision}/>

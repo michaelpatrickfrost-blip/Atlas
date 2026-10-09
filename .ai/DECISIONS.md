@@ -1,3 +1,35 @@
+## 9 October 2026 — Studio field generations and easy configuration
+
+Field families permanently bind tenant/entity/key to their published origin.
+Immutable storage generations allow future reviewed source/target coexistence;
+typed immutable values reference the written schema and retain history, with CAS
+current pointers and tenant/generation uniqueness. Physical decimal(38,10) supports
+all declared precision<=28/scale<=10; logical constraints stay exact. No native record
+copy or in-place type conversion. Only cosmetic publication is currently allowed;
+2B3 implements the first-class evolution/migration requirement rather than silently
+coercing existing values. This fulfils source Sections 6.4 and 24.
+
+Value read/write APIs must use the owner gateway, never expose these tables through
+generic desktop Prisma read permissions. History reads must satisfy both current
+field access and written-schema access, so lowering an ACL cannot reveal earlier
+restricted values. Implementation of those APIs is 2B4, not completed by the schema.
+
+Michael clarified that customers design bespoke screens/document templates and do
+not understand stable keys. Generate internal keys server-side; preserve existing
+published identities. Visual builders use plain-language choices/presets and real
+preview through the owning renderer. Sales needs explicit owner integration; the
+initial Tickets slice is not Sales support and does not replace native Templates.
+## 9 October 2026 — Workspace Apps follow the supplied grouped menu reference
+
+Michael supplied a wide, rounded white Apps menu with four primary desktop groups
+and More/Company below. Apply that design to business workspace navigation, retaining
+the existing Home/Reports/Messages launcher/utility design and independent Admin
+console. The directory remains server-filtered through getNavigableModules and
+existing capability checks; presentation never grants access or removes authorised
+apps. Labels wrap, 44px targets and scrollable responsive columns preserve access
+on phone/tablet. Route-keyed menu state and Escape focus return keep keyboard and
+back-navigation behaviour predictable. No business storage/schema/permissions change.
+
 ## 9 October 2026 — Studio field validation and visual setup
 
 Michael requires easy visual page/template selection and responsive draft previews,

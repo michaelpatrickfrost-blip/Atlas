@@ -9,6 +9,11 @@ This supersedes the older no-sidebar rule for Home and Reports. Other workspaces
 their existing top menus and Apps switcher. Attention/goals follow the launcher.
 Desktop, tablet and phone layouts require visual acceptance.
 
+Shared typography is Nunito, a rounded modern sans-serif inspired by Michael's
+Rensol Rounded reference. Bundled normal/italic variable fonts apply through the
+root layout to business apps, sign-in and Admin; Geist Mono remains for code.
+See the design system and src/app/fonts/README.md for tokens and licensed sources.
+
 Use [the delivery plan](../docs/IMPLEMENTATION_PLAN.md#design-direction) for the
 current direction and [design system](../docs/DESIGN_SYSTEM.md) for primitives,
 typography, accessibility and tokens. Inspect src/app/globals.css,

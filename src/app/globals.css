@@ -48,14 +48,15 @@
 @theme inline {
   --color-background: var(--color-app-bg);
   --color-foreground: var(--color-ink);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-atlas-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
   background: #f2f4f8;
   color: #1d1d1f;
-  font-feature-settings: "tnum" 1, "ss01" 1;
+  font-family: var(--font-sans);
+  font-feature-settings: "tnum" 1;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }

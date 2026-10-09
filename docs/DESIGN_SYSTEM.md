@@ -22,7 +22,15 @@ appear in the shell. Do not invent a second visual language per module.
 
 ## Typography
 
-Plus Jakarta Sans. The user-supplied blue ribbon identity (9 October 2026) uses
+Nunito is the shared rounded sans-serif, following Michael's 9 October request
+for a modern rounded font in the style of Rensol Rounded. Its normal and italic
+variable files are bundled with their SIL OFL licence and loaded through
+`next/font/local` in the root layout. `--font-atlas-sans` supplies the Tailwind
+sans token and inherited body/control text across business apps, sign-in and
+Atlas Admin. Keep existing size/weight hierarchy and Geist Mono for code and
+technical identifiers. No runtime external font service is required.
+
+The user-supplied blue ribbon identity (9 October 2026) uses
 `public/brand/atlas-logo.png` for the full logo with “Plan. Make. Deliver.” on
 sign-in, and `public/brand/atlas-wordmark.png` for compact wordmark placements.
 `public/brand/atlas-icon.png` supplies shell branding; `src/app/favicon.ico`,

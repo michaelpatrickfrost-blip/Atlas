@@ -8,11 +8,11 @@ This is an execution design; the source specification remains unchanged.
 | --- | --- | --- | --- | --- |
 | 2B1 | Closed field/storage/value contracts and server validators | core/studio/fields/{schema,validation}, focused tests; no DB | Required/type/bounds/exact decimal/currency/calendar/enum/contact/reference-shape/address/extra-capability cases | VERIFIED locally |
 | 2B2 | Versioned field compiler, stable identity binding and typed current/history storage | Compiler dispatch/definition lifecycle + additive central models/migration | Immutable identity/version bindings, tenant FKs, typed-family constraints, indexes, immutable value history | VERIFIED on candidate/public e5d66e6; schema/lifecycle, not owner value API |
-| 2B3 | Safe definition evolution, retirement and explicit conversion planning | fields evolution/migration services and durable migration metadata | Compatibility/conversion preview/failures, no in-place conversion, resumable/idempotent batches/cutover/history | NOT STARTED |
+| 2B3 | Safe definition evolution, retirement and explicit conversion planning | fields evolution/migration services and durable migration metadata | Compatibility/conversion preview/failures, no in-place conversion, resumable/idempotent batches/cutover/history | IN PROGRESS; pure conversion verified locally, retirement implemented; jobs not started |
 | 2B4 | Atomic owner-authorised read/write and reference validation | fields services + schema from 2B2 | Owner access/locks, field caps, CAS, required rules, uniqueness and audit; references independently owner-checked | NOT STARTED |
 | 2B5 | Central acceptance/checkpoint | tests, central driver, memory/docs | Real typed storage/history/constraints/retirement/tenant/security/compatibility; build and runtime proof | NOT STARTED |
 
-2B3 is subdivided in STUDIO_FIELD_EVOLUTION_PLAN.md. Its workstreams remain
+2B3 is subdivided in STUDIO_FIELD_EVOLUTION_PLAN.md. Its remaining job/publication/batch/cutover workstreams remain
 NOT STARTED; combined 2B2 candidate/public e5d66e6 release acceptance PASS.
 
 2B1 is a pure validation library, not a stored-field feature. The UI does not expose
@@ -74,3 +74,24 @@ Prepared fcfd512 central schema/lifecycle tests PASS (private logs in ledger);
 migration applied after backup. Complete combined candidate/public e5d66e6 acceptance PASS, including Messages,
 private Admin and connected supply; source live with rollback runtime retained. No owner-authorised customer values API is
 claimed; that is 2B4.
+
+## Remaining correctness requirements before the Phase 2 gate
+
+The current required flag is unconditional. Section 6.5 required-if remains
+unimplemented; add a closed typed server condition contract with appropriate
+field/record dependencies in 2B4/2C without building the Phase 3 Decision engine.
+Hiding a field must never relax server validation. Preserve sealed older field
+payloads and checksums when introducing the condition contract.
+
+Required-field publication/evolution coverage must include canonical owner records
+that have no Studio extension anchor or slot, not only existing stored values.
+Before opening the owner value API/native forms, implement the owner-authorised
+coverage/backfill gate and atomic required-field validation for native create/save.
+Unavailable records block review/cutover without disclosing private records.
+
+The existing release scan checks registry dependencies. New field/record-type/page
+metadata runtime schemas also need explicit compatibility validation before the
+Phase 2 gate: an older runtime must not accept a new payload merely because its
+entity descriptor still resolves. Preserve existing version/checksum contracts;
+introduce version-aware validation rather than adding defaults to sealed payloads.
+These are remaining requirements, not implemented features or passed checks.

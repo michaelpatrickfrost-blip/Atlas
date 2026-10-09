@@ -12,6 +12,9 @@ import { studioRegistry } from "../../src/core/studio/registry/runtime";
 import { scanActiveStudioDependencies } from "../../src/core/studio/registry/compatibility";
 import { checkTicketContract } from "./check-ticket-contract";
 import { checkFieldStorage } from "./check-field-storage";
+import { checkFieldPrincipal } from "./check-field-principal";
+import { sessionForUser } from "../../src/core/auth/session";
+import { openFieldMigrationSupportContext } from "../../src/core/studio/fields/principal";
 
 async function main() {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1", "Explicit server acceptance opt-in required");
@@ -168,6 +171,16 @@ async function main() {
     await customerPage.goto(`/business/${a.slug}/login`,{waitUntil:"networkidle"});await customerPage.getByLabel("Email",{exact:true}).fill(email);await customerPage.getByLabel("Password",{exact:true}).fill(password);
     await customerPage.getByRole("button",{name:"Sign in",exact:true}).click();await expect(customerPage).toHaveURL(`${base}/home`);
     await business.close();console.log("PASS Atlas administrator provisions isolated business user; scoped setup/recovery/login rejects other company; customer Studio and Admin boundary; no existing identities changed");
+    const originalStaff = await sessionForUser(membership.organisationId, membership.userId); assert(originalStaff);
+    assert.equal(await db.membership.count({ where: { organisationId: a.id, userId: originalStaff.userId } }), 0);
+    await assert.rejects(() => openFieldMigrationSupportContext(originalStaff, a.id), /FORBIDDEN/);
+    assert.equal(await db.membership.count({ where: { organisationId: a.id, userId: originalStaff.userId } }), 0, "Preview access never silently creates affiliation");
+    await page.goto(`/atlas/${a.id}`, { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "Open company workspace →", exact: true }).click();
+    await expect(page).toHaveURL(`${base}/home`);
+    await checkFieldPrincipal(storedUser.id, originalStaff, a.id, b.id);
+    // The helper revokes only its new Test affiliation, not the original QA session.
+    await context.addCookies([{name:"atlas_session",value:token,url:base,secure:base.startsWith("https"),httpOnly:true,sameSite:"Lax"}]);
     await page.goto(`/atlas/studio/${a.id}`,{waitUntil:"networkidle"});
     await expect(page.locator('[data-atlas-console="admin"]')).toBeVisible();
     await page.getByRole("button",{name:"Sign out of Atlas Admin",exact:true}).click();

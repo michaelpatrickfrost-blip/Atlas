@@ -1,3 +1,38 @@
+## 9 October 2026 — Migration data principal is distinct from metadata selection
+
+Configuration company selection cannot authorise native data. Customer migration
+access requires its actual active membership; Atlas support requires current
+independent staff access and existing target affiliation, plus explicit Audit.
+Do not silently create affiliation/grants when opening configuration or previews.
+Store identity/membership/auth-session versions and purpose-bound support audit,
+never capability snapshots; refresh permissions and availability on resume.
+Each row still requires native owner and current/written field-policy checks.
+The support service neither changes the browser session nor brings app tools into
+Admin. Existing audited openCompanyWorkspace remains the affiliation mechanism.
+No migration endpoint/job is implemented by this foundation.
+
+## 9 October 2026 — Retirement preserves the last active field policy
+
+Field retirement changes metadata eligibility using tenant/publish permission,
+server module availability locked/rechecked, field-only revision CAS and one
+transactional audit. Preserve activeVersionId for the later authorised-history
+reader's last active access policy; current resolution/editing exclude retiredAt.
+Bindings, generations, values and published schemas remain intact; keys cannot be
+recycled. Serialization races become explicit refresh conflicts without automatic
+mutation replay. No purge or history-value API is introduced by this service.
+
+## 9 October 2026 — Explicit typed field conversion rules
+
+The first pure evolution library uses a closed rule schema: same type, exact
+integer→decimal, explicit string→enum mapping/unmapped policy and UTC date/instant
+conversion with reviewed loss policy. It cannot infer money currency, replace
+reference targets, round numbers or execute arbitrary scripts. New generations
+are required for structural changes; stable field/entity and choice IDs are retained.
+Choice label changes advance the value-set version without new storage. Existing
+retired choices may survive representation conversion; ordinary user writes still
+reject retired selections. The library does not authorise publication or writes;
+reviewed tenant plans, owner checks and resumable jobs remain subsequent 2B3 work.
+
 ## 9 October 2026 — Business software excludes Atlas platform tools
 
 Michael clarified that Atlas Console and Atlas Admin tools do not belong in

@@ -3,7 +3,9 @@ import { db } from "../../src/core/db/client";
 import type { Session } from "../../src/core/auth/session";
 import type { Prisma } from "../../src/generated/prisma/client";
 import { studioRegistry } from "../../src/core/studio/registry/runtime";
-import { activateVersion, createDraft, getDefinition, publishDraft, updateDraft } from "../../src/core/studio/definitions/service";
+import { activeDefinition, activateVersion, createDraft, getDefinition, publishDraft, updateDraft, validateDraft } from "../../src/core/studio/definitions/service";
+import { retireFieldDefinition } from "../../src/core/studio/fields/retirement";
+import { createFieldConverter, analyseFieldEvolution } from "../../src/core/studio/fields/evolution";
 import { customFieldPayloadSchema, type CustomFieldPayload } from "../../src/core/studio/fields/schema";
 import { checksum } from "../../src/core/studio/registry/contracts";
 
@@ -73,6 +75,40 @@ export async function checkFieldStorage(actor: Session, other: Session) {
   await activateVersion(actor, { definitionId: def.id, versionId: cosmetic.versionId, revision: def.revision });
   def = await getDefinition(actor, decimal.definitionId); assert(def);
   await activateVersion(actor, { definitionId: def.id, versionId: decimal.versionId, revision: def.revision });
+  // Exercise pure conversion rules on real decoded storage, without migrating it.
+  const converted = createFieldConverter(decimal.payload, { ...decimal.payload, storageGeneration: crypto.randomUUID(), field: { ...decimal.payload.field, storage: { type: "decimal", precision: 28, scale: 0 } } }, { kind: "same_type" })(value.decimalValue!.toFixed(0));
+  assert.deepEqual(converted, { value: { type: "decimal", value: "9999999999999999999999999999" }, lossy: false });
+  assert.equal(analyseFieldEvolution(decimal.payload, { ...decimal.payload, field: { ...decimal.payload.field, label: "New display name" } }).kind, "cosmetic");
+  def = await getDefinition(actor, decimal.definitionId); assert(def?.draft);
+  const retainedValues = await db.studioFieldValue.findMany({ where: { definitionId: def.id, organisationId: actor.organisationId }, orderBy: { id: "asc" } });
+  const retainedGenerations = await db.studioFieldGeneration.findMany({ where: { definitionId: def.id, organisationId: actor.organisationId }, orderBy: { id: "asc" } });
+  const auditBefore = await db.auditEntry.count({ where: { organisationId: actor.organisationId, action: "studio.field.retired", entityId: def.id } });
+  await assert.rejects(() => retireFieldDefinition({ ...actor, capabilities: new Set(["studio.definition.edit"]) }, { definitionId: def!.id, revision: def!.revision }), /FORBIDDEN/);
+  await assert.rejects(() => retireFieldDefinition(other, { definitionId: def!.id, revision: def!.revision }), /CONFLICT/);
+  await assert.rejects(() => retireFieldDefinition(actor, { definitionId: def!.id, revision: def!.revision + 1 }), /CONFLICT/);
+  // Deliberate audit storage fault in this internal Test call: PostgreSQL text
+  // cannot store NUL. Real authenticated actor IDs never contain it. Prove the
+  // preceding metadata mutation rolls back when its audit INSERT fails.
+  await assert.rejects(() => retireFieldDefinition({ ...actor, userId: `${actor.userId}${String.fromCharCode(0)}` }, { definitionId: def!.id, revision: def!.revision }), /UTF8|0x00|invalid byte|zero byte|NUL/i);
+  const afterAuditFault = await getDefinition(actor, def.id); assert(afterAuditFault);
+  assert.equal(afterAuditFault.retiredAt, null); assert.equal(afterAuditFault.revision, def.revision);
+  assert.equal(await db.auditEntry.count({ where: { organisationId: actor.organisationId, action: "studio.field.retired", entityId: def.id } }), auditBefore);
+  const race = await Promise.allSettled([retireFieldDefinition(actor, { definitionId: def.id, revision: def.revision }), retireFieldDefinition(actor, { definitionId: def.id, revision: def.revision })]);
+  assert.equal(race.filter(result => result.status === "fulfilled").length, 1);
+  const rejected = race.find(result => result.status === "rejected"); assert(rejected?.status === "rejected"); assert.match(String(rejected.reason), /CONFLICT/);
+  const retired = await getDefinition(actor, def.id); assert(retired?.retiredAt);
+  assert.equal(retired.revision, def.revision + 1); assert.equal(retired.activeVersionId, def.activeVersionId);
+  assert.equal(retired.latestVersion, def.latestVersion); assert.deepEqual(retired.versions, def.versions);
+  assert.equal(await activeDefinition(actor, def.id), null);
+  await assert.rejects(() => updateDraft(actor, { definitionId: def!.id, revision: def!.draft!.revision, payload: decimal.payload }), /CONFLICT/);
+  await assert.rejects(() => validateDraft(actor, def!.id, def!.draft!.revision), /CONFLICT/);
+  await assert.rejects(() => publishDraft(actor, { definitionId: def!.id, revision: def!.draft!.revision, acknowledgeWarnings: true }), /CONFLICT/);
+  await assert.rejects(() => activateVersion(actor, { definitionId: def!.id, versionId: decimal.versionId, revision: retired.revision }), /CONFLICT/);
+  await assert.rejects(() => createDraft(actor, { key: `${entity.id}.${decimal.payload.field.key}`, name: "Cannot recycle", kind: "customField", payload: { ...decimal.payload, storageGeneration: crypto.randomUUID() } }), /Unique constraint/i);
+  assert.equal(await db.auditEntry.count({ where: { organisationId: actor.organisationId, action: "studio.field.retired", entityId: def.id } }), auditBefore + 1);
+  assert.deepEqual(await db.studioFieldValue.findMany({ where: { definitionId: def.id, organisationId: actor.organisationId }, orderBy: { id: "asc" } }), retainedValues);
+  assert.deepEqual(await db.studioFieldGeneration.findMany({ where: { definitionId: def.id, organisationId: actor.organisationId }, orderBy: { id: "asc" } }), retainedGenerations);
   assert.deepEqual(await db.serviceWorkItem.findUniqueOrThrow({ where: { id: ticket.id } }), ticket, "Schema acceptance does not mutate canonical ticket data");
+  console.log("PASS exact conversion analysis and real field retirement: tenant/publish/CAS race, one atomic audit, no editing/activation/key recycling, last active policy/versions/generations/typed history retained");
   console.log("PASS field publication/binding, cosmetic history and rollback, atomic failed evolution, tenant FKs, typed decimal/money, required values, immutable history, current pointers and scalar uniqueness (privileged schema fixture only; value API pending)");
 }

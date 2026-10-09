@@ -2,15 +2,15 @@
 
 Source: unchanged Studio specification Sections 6.4, 24–24.1 and 25–28.
 Dependencies: 2B2 permanent field identity, immutable generations/typed history and
-metadata publication. 2B3a pure library VERIFIED locally (tests/types/lint/build); combined 2B2 candidate/public e5d66e6 release acceptance PASS.
-2B3b retirement IMPLEMENTED locally (35 tests/types/lint/build PASS; central candidate helper PASS; public proof pending); reviewed jobs/publication/batches/cutover remain NOT STARTED; principal foundation below is IMPLEMENTED locally. This plan breaks the specified operation into
+metadata publication. 2B3a pure library VERIFIED on candidate/public 7941f9b (tests/types/lint/build); combined 2B2 candidate/public e5d66e6 release acceptance PASS.
+2B3b retirement VERIFIED on candidate/public 7941f9b (35 local tests/types/lint/build and real central checks PASS); reviewed jobs/publication/batches/cutover remain NOT STARTED; principal foundation below is IMPLEMENTED locally. This plan breaks the specified operation into
 reviewable checkpoints; it does not substitute for the supplied specification.
 
 | ID | Purpose and dependencies | Expected files / database | Required evidence | Status |
 | --- | --- | --- | --- | --- |
-| 2B3a | Typed compatibility analysis and deterministic conversion rules; depends on existing validators | fields/evolution and conversion tests; no DB | Stable field/entity identity; exact integer→decimal bounds; explicit string→enum mappings/unmapped policy; explicit date/UTC semantics; no inferred money currency or changed reference targets | VERIFIED locally; pure library only |
-| 2B3b | Retirement with CAS and audit, retaining published schema, binding and history | definitions/field lifecycle + tests; additive metadata only if required | Tenant/publish access, stale revisions, no further editing/activation, authorised history retained, keys not recycled | IMPLEMENTED; candidate real helper PASS, public proof pending |
-| 2B3c | First-class reviewed plan, preview and durable job/row state | fields/migrations, Prisma additive migration | Source/target version/checksum, affected count, bounded authorised examples/failures, index impact and rollback limits; forged/stale plans rejected | IN PROGRESS; c1 principal foundation local, preview/persistence not started |
+| 2B3a | Typed compatibility analysis and deterministic conversion rules; depends on existing validators | fields/evolution and conversion tests; no DB | Stable field/entity identity; exact integer→decimal bounds; explicit string→enum mappings/unmapped policy; explicit date/UTC semantics; no inferred money currency or changed reference targets | VERIFIED candidate/public; pure library only |
+| 2B3b | Retirement with CAS and audit, retaining published schema, binding and history | definitions/field lifecycle + tests; additive metadata only if required | Tenant/publish access, stale revisions, no further editing/activation, authorised history retained, keys not recycled | VERIFIED backend candidate/public 7941f9b; no history API/UI |
+| 2B3c | First-class reviewed plan, preview and durable job/row state | fields/migrations, Prisma additive migration | Source/target version/checksum, affected count, bounded authorised examples/failures, index impact and rollback limits; forged/stale plans rejected | IN PROGRESS; c1 principals verified candidate/public 7941f9b; preview/persistence not started |
 | 2B3d | Reviewed target publication into a new generation | compiler/binding/lifecycle, job FK constraints | Immutable old schemas/values, exact target plan required, unsupported structural changes fail closed, target publication does not activate it | NOT STARTED |
 | 2B3e | Bounded resumable/idempotent conversion batches | migration runner/codec, durable row outcomes and tests | Owner and field access rechecked, source value revision checked, atomic target value plus outcome, failure/restart/replay evidence, no native mutation | NOT STARTED |
 | 2B3f | Explicit cutover and rolling read compatibility | activation/resolver and subsequent 2B4 gateway | Source remains readable until cutover; all failures/conflicts resolved; uniqueness/required/access rechecked; CAS activation and auditable rollback limits | NOT STARTED |
@@ -72,7 +72,7 @@ Atlas staff permissions, real active company membership and Studio publish/modul
 checks. Expected files: fields/principal.ts and focused principal tests. Database:
 no new model/migration; one explicit support audit in the existing Audit engine.
 
-IMPLEMENTED locally: captureCustomerFieldMigrationPrincipal rejects metadata-only
+VERIFIED backend on candidate/public 7941f9b: captureCustomerFieldMigrationPrincipal rejects metadata-only
 membership and staff masquerading as customers. openFieldMigrationSupportContext
 requires refreshed platform access plus an existing active target affiliation,
 then saves a purpose-bound audit; it creates no affiliation/roles/grants and does
@@ -82,8 +82,7 @@ resolveFieldMigrationPrincipal reloads current grants and checks revocation and 
 exact audit stamp. It accepts server-stored identity only, not a client endpoint.
 Native owner/private-record and both current/written field checks remain mandatory.
 
-Checks: 3 files/16 assertions PASS; strict post-build TypeScript, scoped lint and production build PASS. New service not yet
-centrally checked or wired to an endpoint/job. 2B3c2 reviewed preview/job persistence
+Checks: 3 files/16 assertions PASS; strict post-build TypeScript, scoped lint and production build PASS. Real central checks on candidate/public 7941f9b PASS. No endpoint/job wiring. 2B3c2 reviewed preview/job persistence
 remains NOT STARTED. Retirement candidate release is separately awaiting combined
 acceptance/public proof with current live business separation preserved.
 

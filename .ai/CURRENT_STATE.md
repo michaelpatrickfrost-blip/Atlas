@@ -1,5 +1,29 @@
 # Atlas current state
 
+## 10 October 2026 — Studio retirement and refreshed principals verified live
+
+Exact runtime 7941f9bfb9e4120d9726cea49f03590107a5750c activated and confirmed
+before/after complete public HTTPS acceptance. Candidate and public owner/typed
+storage/retirement/metadata/Admin/business/Home/Apps/Reports/MRP/Messages/private
+Admin/supply/commercial checks all PASS. Real customer/support principals revoke
+on session/permission/membership changes, reject metadata impersonation/forged
+audits and use explicit existing Admin support entry. Retirement preserves active
+history policy/versions/generations/values, blocks further edit/activation/key reuse,
+and proves one CAS winner/audit plus audit-write failure rollback. These backend
+workstreams are VERIFIED; no designer, owner value API or durable job claim.
+Candidate /tmp/atlas-studio-acceptance-9ztRSn; public
+/tmp/atlas-studio-public-23i93X. Prepare/activation backups
+atlas-pre-deploy-20261009-224608 and atlas-pre-deploy-20261009-225700.
+Native live commercial 94dd3e, Admin separation 56c9d88 and typography retained;
+94dd3e immutable rollback retained. No new Studio migration applied.
+Local 23 files/118 tests, Prisma generation/build/types/scoped lint PASS; full
+suite not rerun. Separate cohort-query source b9fed87 remains locally implemented
+with 22 focused tests/sealed hashes/build/types/lint PASS, central helper pending.
+Next prepare/check cohort source, activate/publicly verify on PASS, then explicit
+representation policy and reviewed job persistence. Phase 2 gate NOT PASSED;
+visual templates/live dashboards/buttons remain mandatory 2E work, not delivered.
+
+
 Studio 2B3c2a owner cohort-access preflight IMPLEMENTED locally: new registry
 query tickets.ticket.migration_cohort uses native read/manage, serializable
 module-locked owner transaction and complete private-queue membership before

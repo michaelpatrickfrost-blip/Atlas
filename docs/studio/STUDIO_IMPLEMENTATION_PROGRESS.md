@@ -1,6 +1,6 @@
 # Atlas Studio implementation progress
 
-Updated: 9 October 2026.
+Updated: 10 October 2026.
 
 # Current Phase
 
@@ -11,22 +11,16 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c2a owner cohort-access query — IMPLEMENTED locally. 22 focused tests with
-sealed v1/v2, build/types/lint PASS; new real helper not run. No conversion write
-policy/job persistence. Prior principal/retirement 7941f9b candidate all PASS;
-exact 7941f9b activated; public proof pending.
-
-2B3c1 — Refreshed migration principal and explicit audited support context —
-IMPLEMENTED locally. Seven principal tests plus integrated 23 files/118 tests,
-Prisma generation/types/lint/build PASS. Central helper ready but NOT RUN. No
-preview endpoint, durable job or new Studio migration. 2B3b retirement verified
-on two candidates; public activation/proof pending while newer live source is
-preserved. 2B2 remains VERIFIED on candidate/public e5d66e6.
+2B3c2a — Owner cohort-access query — IMPLEMENTED locally. Four files/22 focused
+tests including sealed v1/v2, build/types/lint PASS. New real helper not run on
+cohort source. Retirement and refreshed-principal backend workstreams VERIFIED
+on exact candidate/public 7941f9b; no owner value API, conversion write policy or
+durable job. Remaining Phase 2 dependencies retained.
 
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest observed live source 94dd3e105e2757b5d16ed3e2fea277d09a4b7bee;
+VERIFIED. Latest confirmed live source 7941f9bfb9e4120d9726cea49f03590107a5750c;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
 The supplied source defines ten phases 0–9, not five. The original
@@ -52,7 +46,9 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | Companion Admin/business sign-in and provisioning | VERIFIED | Real Admin creates Test-company user; correct company setup/login passes; wrong company recovery/login and customer Admin access rejected. |
 | 2A Owner-approved entity/extension contracts | VERIFIED | 8 focused files/54 assertions, TypeScript, scoped lint/build; central candidate/public owner checks PASS on 6775044. No native write changes. |
 | 2B1 Typed field/value validation | VERIFIED | 7 focused assertions, TypeScript/scoped lint; integrated 17 files/110 assertions and production build. Pure library, no storage/UI claim. |
-| 2B3a Pure compatibility/conversion analysis | VERIFIED | 3 files/22 tests, strict TypeScript/scoped lint/build PASS; no DB or executable migration. Local checkpoint only. |
+| 2B3a Pure compatibility/conversion analysis | VERIFIED | 3 files/22 tests, strict TypeScript/scoped lint/build PASS; no DB or executable migration. Candidate/public 7941f9b pure converter evidence; no jobs. |
+| 2B3b Field retirement backend | VERIFIED | Exact 7941f9b candidate/public real CAS/atomic audit/failure rollback/history/tenant checks PASS; no purge/history API/UI. |
+| 2B3c1 Refreshed customer/support principals | VERIFIED | Exact candidate/public 7941f9b real revocation/permission/audit/metadata-context checks PASS; no preview/job endpoint. |
 | 2B2 Compiler/identity/generations/typed storage | VERIFIED | e5d66e6 candidate/public schema/lifecycle plus complete combined native acceptance PASS; 29 files/143 local tests, TypeScript/lint/build. Owner value API remains 2B4. |
 
 # Current Workstream Detail
@@ -223,6 +219,12 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
+Exact 7941f9b complete candidate/public checks PASS, including real principals,
+retirement and commercial/native regressions. Private evidence
+/tmp/atlas-studio-acceptance-9ztRSn and /tmp/atlas-studio-public-23i93X. Activation
+backup atlas-pre-deploy-20261009-225700; previous immutable 94dd3e retained.
+No new Studio migration, value API, designer or whole Phase 2 gate claim.
+
 Latest 6085d70 combined candidate PASS; /tmp/atlas-studio-acceptance-wM3A1X.
 Exact native source subsequently advanced to 94dd3e, merged unchanged. New
 combined 23 files/118 assertions, Prisma generation/types/lint/build PASS; real
@@ -315,17 +317,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Finish exact 7941f9b activation and combined public runner; source candidate
-PASS including refreshed principals and commercial regressions. Cohort-enabled
-source is a separate local checkpoint and must receive its own prepared candidate
-real helper/public proof. Then implement the remaining explicit owner
-representation-only policy and 2B3c2 reviewed job/row persistence.
-
-Prepare the source preserving live 94dd3e commercial workspaces and 56c9d88
-business/platform separation. Execute the updated combined candidate runner,
-including real check-field-principal and commercial forms/regressions. On PASS
-activate only the exact compatible pinned source and repeat publicly. Preserve
-newly advanced live source if the ancestry guard stops; never force replacement.
-After principal/retirement release proof, implement 2B3c2 reviewed preview and
-durable migration job/row persistence with source/target checksum/revision binding,
-authorised cohort and restricted live-preview policy. No 2C/2E or Phase 3+ yet.
+Prepare a pinned cohort-enabled source preserving live 7941f9b. Execute the updated
+combined candidate runner including real owner cohort count/private denial,
+refreshed principal/retirement and all native commercial regressions. On PASS
+activate exact source and repeat publicly. Preserve any newly advanced live source
+if ancestry stops; do not force replacement.
+Then implement the explicit owner representation-only policy and 2B3c2 reviewed
+preview/job/row persistence with exact checksum/revision binding, authorised
+cohort and restricted live-preview policy. No 2C/2E or Phase 3+ yet.

@@ -182,3 +182,14 @@ Test finance fixtures; retained earlier evidence is not silently purged.
 ## Connections
 
 [Connections](CONNECTIONS.md) at `/atlas/connections` is the staff onboarding app: choose a company, download a section template, upload/review and attach canonical records. Thirteen sections include machines/work centres and draft Sales documents, with company-bound review, duplicate protection and import history. Destination app availability and creation policies remain authoritative.
+
+## Private entry release verification — 9 October 2026
+
+Runtime `1dafe165f97545829d96242b1846e87d9c1f42b4` activated and passed public
+HTTPS acceptance after the same candidate checks. Real rejected/repeated login,
+customer login/tenant selection, wrong-portal code preservation and correct-company
+recovery, existing QA staff console/sign-out, desktop/phone layout and response
+indexing policies passed. Existing staff credentials/grants were not changed;
+correct staff password handling is unit-verified and the live staff checks use an
+existing signed QA session. Isolated Test-company users were suspended afterward.
+See CURRENT_STATE for private evidence/backups and the full-suite limitation.

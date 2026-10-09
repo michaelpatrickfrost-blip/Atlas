@@ -125,3 +125,8 @@ Build, explicit strict TypeScript, scoped lint and targeted workspace/access/sea
 regressions passed. Extended checker asserts Home/switcher/Manage apps, existing
 Product/Stock/Planning route guards and desktop/tablet/phone fit. It must pass on
 the exact candidate and publicly after activation; no new live claim yet.
+
+Preserved exact observed live `e5d66e6` (Studio fields and modern Apps) after
+`18116af` stopped at the shared lock before preparation. Combined Prisma generation,
+production build, explicit post-build strict TypeScript, scoped ESLint and 14 files/
+67 regressions PASS. Candidate/public acceptance is still pending.

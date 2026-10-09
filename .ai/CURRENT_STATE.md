@@ -47,7 +47,13 @@ contracts and their evidence. The prematurely queued acceptance did not run
 (directory absent); no new fixture or passing check is claimed.
 Combined source: 11 focused files/69 assertions, strict TypeScript, production
 build and diff check passed; no schema change.
-Next: prepare the final pinned revision,
+Combined candidate `9303039` is prepared/smoke-verified; private chat creation,
+send/order persistence, details, older-history search and pagination passed. Its
+screenshot scroll still used a multiline unscoped preview selector; corrected that
+remaining runner selector. This runner-only checkpoint does not change the app.
+Run the corrected acceptance harness against the exact immutable candidate without
+editing its sealed files, then activate 9303039 and repeat publicly.
+Next:
 rerun exact chat acceptance plus Home/Reports
 regression, activate and repeat
 public verification. Synthetic QA fixtures stay central and are retired, no actual

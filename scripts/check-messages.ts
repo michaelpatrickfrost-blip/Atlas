@@ -296,7 +296,7 @@ async function main() {
         await dialog.evaluate((node) => node.scrollWidth <= node.clientWidth),
       );
       await dialog
-        .getByText("Review this order together.", { exact: true })
+        .locator("article").getByText("Review this order together.", { exact: true })
         .scrollIntoViewIfNeeded();
       await page.screenshot({ path: `/tmp/atlas-messages-${device}.png` });
       console.log(

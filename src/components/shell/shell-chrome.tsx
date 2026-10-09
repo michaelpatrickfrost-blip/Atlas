@@ -2,20 +2,25 @@
 
 import { AppWindow } from "lucide-react";
 import type { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { Refresh } from "./refresh";
 
-/** The frame around every signed-in page: one top bar, then the page. There is no
- *  permanent sidebar; apps open from the home screen or the top bar's Apps menu. */
-export function ShellChrome({ topbar, children }: { topbar: ReactNode; children: ReactNode }) {
+/** Home has a utility rail; module workspaces retain their existing app menus. */
+export function ShellChrome({ topbar, homeNavigation, children }: { topbar: ReactNode; homeNavigation: ReactNode; children: ReactNode }) {
+  const home = usePathname() === "/home";
   return (
     <>
       <Refresh />
-      <div id="atlas-content-column" className="atlas-shell flex h-dvh min-w-0 flex-col overflow-hidden">
+      <div id="atlas-content-column" className={`atlas-shell flex h-dvh min-w-0 flex-col overflow-hidden ${home ? "atlas-home-shell" : ""}`}>
         {topbar}
         <div id="atlas-module-nav-slot" className="relative z-[62] shrink-0" />
-        <main className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-4 py-6 sm:px-7 sm:py-7 lg:px-9">
+        {home && <aside className="shrink-0 px-3 pb-2 lg:hidden">{homeNavigation}</aside>}
+        <div className="flex min-h-0 min-w-0 flex-1">
+        {home && <aside className="hidden w-[166px] shrink-0 pb-5 pl-5 pr-2 lg:block">{homeNavigation}</aside>}
+        <main className={`min-w-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain ${home ? "px-3 pb-6 sm:px-5 lg:pl-4 lg:pr-6" : "px-4 py-6 sm:px-7 sm:py-7 lg:px-9"}`}>
           <div className="atlas-page-enter">{children}</div>
         </main>
+        </div>
       </div>
     </>
   );

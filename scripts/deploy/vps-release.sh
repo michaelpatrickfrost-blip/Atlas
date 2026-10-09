@@ -2,6 +2,9 @@
 # Linux server implementation; invoked from the reviewed local release, never downloaded.
 set -euo pipefail
 ROOT="${1:?checkout required}"; REV="${2:?pinned revision required}"; MODE="${3:-activate}"
+SOURCE_BRANCH="${4:-main}"
+[[ "$SOURCE_BRANCH" = main || "$SOURCE_BRANCH" =~ ^codex/[a-zA-Z0-9._/-]+$ ]] || { echo 'Invalid release source branch.' >&2; exit 1; }
+git check-ref-format "refs/heads/$SOURCE_BRANCH"
 [[ "$REV" =~ ^[a-f0-9]{40}$ ]] || { echo 'Full pinned revision required.' >&2; exit 1; }
 [[ "$MODE" = prepare || "$MODE" = activate ]] || exit 1
 cd "$ROOT"
@@ -17,7 +20,7 @@ done
 ! pgrep -f '[n]ext build' >/dev/null || { echo 'Existing build still active; running release unchanged.' >&2; exit 1; }
 [[ -z "$(git status --porcelain --untracked-files=no)" ]] || { echo 'Server checkout has unfinished tracked changes.' >&2; exit 1; }
 git fetch -q origin
-[[ "$(git rev-parse origin/main)" = "$REV" ]] || { echo 'Main moved; review its new revision first.' >&2; exit 1; }
+[[ "$(git rev-parse "refs/remotes/origin/$SOURCE_BRANCH")" = "$REV" ]] || { echo 'Release branch moved; review its new revision first.' >&2; exit 1; }
 git merge-base --is-ancestor HEAD "$REV"
 PREVIOUS_REV=$(git rev-parse HEAD)
 RELEASES="${ROOT}-releases"; CURRENT="${ROOT}-current"; CANDIDATE="$RELEASES/$REV"

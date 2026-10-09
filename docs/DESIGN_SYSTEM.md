@@ -3,7 +3,7 @@
 ## Philosophy
 
 Precise, bold, quiet, premium, fast. Atlas should feel like a finished product:
-a dark company rail, a luminous workspace, icon-led navigation and soft elevated
+a light utility rail on Home, a luminous workspace, icon-led navigation and soft elevated
 surfaces. Dense screens stay calm. Company logos live on the organisation and
 appear in the shell. Do not invent a second visual language per module.
 
@@ -51,17 +51,20 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
 
 ## Shell (`src/components/shell/`)
 
-- **No sidebar.** After sign-in, Home leads with a compact, consistently
-  aligned grid of labelled app links. Small icons use a restrained brand-blue
-  treatment and are grouped by area; attention/goals follow below.
-  `AppDirectory` uses `getNavigableModules` for both the icon launcher and compact
-  topbar list. Areas in `src/core/modules/areas.ts` are presentation only; an
-  unlisted app falls under More. Company and Atlas staff logins both land on Home;
-  Atlas Admin remains an explicit authorised destination. Keyboard focus stays
-  visible and app labels wrap on narrow screens.
-- **Topbar** — home, an Apps menu (`AppMenu`, the same `AppDirectory` in a panel,
-  hidden on the home screen), back, search, new window, notices, chat, profile and
-  sign-out on a plain white bar.
+- **Home** — modern blue-and-white launcher based on Michael's 9 October reference.
+  A branded search header, light utility rail and grouped app cards with larger
+  blue icons and manifest descriptions replace the compact Home link grid.
+  The utility rail contains Home, Reports (accessible Analytics), My tasks,
+  Messages (chat permission) and Settings (company-admin access). It does not
+  repeat the apps. Tablet/phone use a compact utility bar. This supersedes the
+  older no-sidebar rule on Home only.
+  `AppDirectory` still uses `getNavigableModules` for both the launcher and compact
+  Apps menu; counts reflect authorised entries. App labels/descriptions wrap and
+  keyboard focus remains visible. Attention/goals stay below the app directory.
+- **Topbar** — Home uses the Atlas ribbon mark, wordmark/tagline, search, notices,
+  company identity/date, profile and sign-out. Other workspaces retain home,
+  Apps, back, search, new window, notices, chat, profile and sign-out.
+  `public/brand/atlas-mark.png` is a crop of Michael's supplied artwork.
 - **CommandPalette** — ⌘K / Ctrl+K. Debounced query against `/api/search`,
   which aggregates navigation matches and each module's `searchProvider`.
 

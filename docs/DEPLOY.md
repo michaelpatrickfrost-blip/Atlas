@@ -15,6 +15,21 @@ Commit the reviewed compatible changes on main, then:
 npm run deploy:vps
 ```
 
+When main contains another contributor's unfinished committed work, create a
+`codex/` release branch from the exact currently live revision and apply only the
+reviewed change and its shared-memory updates. Pin that branch explicitly:
+
+```bash
+ATLAS_RELEASE_BRANCH=codex/home-menu-release ATLAS_RELEASE_COMMIT=$(git rev-parse HEAD) npm run deploy:vps
+```
+
+This opt-in path keeps the same remote-tip SHA check, server ancestry check,
+locks, backups, immutable build, smoke tests and rollback behavior. The source
+branch must match the local checkout and the exact pinned commit. Merge the
+release branch and evidence back into main without deploying unrelated work;
+future main must include the deployed branch so the server can fast-forward.
+Do not rewrite the server checkout or bypass a moved-tip check.
+
 `scripts/deploy-vps.sh` pushes the reviewed pinned revision, then invokes the
 checked-in `scripts/deploy/vps-release.sh` over key-only SSH. A clean detached
 worktree uses `ATLAS_RELEASE_COMMIT=<full HEAD SHA>` after pushing that exact

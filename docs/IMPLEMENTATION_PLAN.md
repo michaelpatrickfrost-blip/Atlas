@@ -49,7 +49,7 @@ Research and remaining acceptance journeys: [ODOO_MODULE_GAP_ANALYSIS.md](./ODOO
 
 ## Design direction
 
-Icon-launcher home, crisp white workspaces and blue accents; no permanent sidebar. Rounded controls and bars, consistent top menus, clear active states, compact document layouts and short transitions. Desktop, tablet and phone are all supported targets. Projects uses Linear-like precision, Notion-like calm and Atlas business depth, per the full Projects brief; commercial documents follow the functional structure of the supplied Odoo screen with Atlas styling.
+Grouped app-card Home with a light workspace-utility rail (9 October reference), crisp white workspaces and blue accents. The rail does not repeat apps; module workspaces retain their existing top menus. Rounded controls and bars, consistent top menus, clear active states, compact document layouts and short transitions. Desktop, tablet and phone are all supported targets. Projects uses Linear-like precision, Notion-like calm and Atlas business depth, per the full Projects brief; commercial documents follow the functional structure of the supplied Odoo screen with Atlas styling.
 
 ## Delivery order
 

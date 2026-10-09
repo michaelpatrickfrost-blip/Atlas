@@ -33,8 +33,9 @@ integration limits below remain. Guard/evidence now integrates with origin/main 
 memory and post-release People/Dashboard evidence. Application, schema, scripts,
 tests and configuration match the exact publicly verified b57ba72 source; this
 memory/documentation merge does not require another live activation. Diff whitespace
-PASS; push to shared main remains next. Canonical Desktop's concurrent dirty
-checkout remains untouched.
+PASS. Integration d1102bd is pushed to shared main and remote tip confirmed;
+public runtime remains b57ba72. Canonical Desktop's concurrent dirty checkout
+remains untouched. Delivery complete within the recorded integration boundaries.
 
 ### Earlier guard preparations and source preservation
 

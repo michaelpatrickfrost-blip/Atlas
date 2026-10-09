@@ -29,7 +29,14 @@ fit; full Make/Buy/spend/eligibility/guides and unchanged QA permissions. While
 queued, observed live advanced to 5ebd700 (shared Nunito font); that exact deployed
 source is merged. Combined production build, explicit strict TypeScript, scoped
 lint and five launcher/search/shell files/17 tests PASS. Added source-page/Manage apps screenshots to
-the checker for visual review. Final combined candidate/public checks pending.
+the checker for visual review. 6a12fc1 prepared/smoke PASS after backup
+atlas-pre-deploy-20261009-221710; complete candidate acceptance PASS in
+/tmp/atlas-supply-staging-nfUzeE, screenshots visually inspected. Activation stopped
+at ancestry before a new backup/switch: public live advanced to 56c9d88 (business/
+staff navigation boundary). That exact deployed source is preserved. Integrated
+production build, explicit post-build strict TypeScript, scoped lint and six
+launcher/search/business-boundary files/23 tests PASS. Final candidate/public
+verification pending.
 No live single-app claim yet.
 
 ## 9 October 2026 — Manufacturing & Supply console live and verified
@@ -82,6 +89,30 @@ overwrite other contributors. Reconcile/merge this branch when those edits are
 ready. Final handoff includes evidence-only documentation, with no app code change
 after the exact publicly verified release.
 
+## 9 October 2026 — Business navigation excludes platform administration (candidate)
+
+Michael clarified that Atlas Console/Admin tools do not belong in customer software.
+Removed Atlas Admin and Connections from both business directories, the staff Admin
+return chip from the header, console links from company users/workspace settings,
+and platform-console promotion from native import help. The header shows selected
+company identity. Company admin, Manage apps, native imports, company permissions
+and customer Studio remain available. Staff tools remain in standalone /atlas;
+no auth, grant, tenant, record or schema changes. This applies to staff support
+workspaces as well as customer sessions.
+
+Paths: shell app-directory/topbar; settings page/workspace-panel/imports; new
+business-shell-boundary regression test; expanded read-only check-home-menu.
+Project/design/Admin/company/decision/delivery docs reconciled. Four focused files/
+14 tests PASS; scoped lint zero errors/two existing brand-img warnings. Production
+build and strict post-build TypeScript PASS. Full suite not rerun; final diff/
+whitespace reviewed. Candidate/public acceptance not yet run.
+First prepare attempt stopped safely before backup/build because the live release
+advanced to 5ebd700d3526b6fdaa70efa4514da0803301a285. Its accepted Nunito font
+source is merged unchanged. Integrated production build PASS; strict post-build
+TypeScript running.
+Next: prepare exact compatible release, verify business surfaces
+and retained staff console, activate and repeat public HTTPS checks.
+
 ## 9 October 2026 — Shared rounded typography in verification
 
 Replaced Plus Jakarta Sans with Nunito across the shared root sans token/body,
@@ -112,79 +143,124 @@ and responsive Apps verification pending.
 Next: prepare and verify the compatible combined release, activate, prove fonts
 on public HTTPS and merge implementation/evidence into main before completion.
 
-## 9 October 2026 — Studio 2B2 candidate checkpoint; visual setup clarification
 
-Phase 2 active, 2B2 schema/lifecycle VERIFIED on candidate; combined release pending.
-Added closed compiler dispatch, typed owner field policy and Tickets entity v2
-(preserving exact v1 hashes), permanent entity/field-key/generation publication
-binding, generation/tenant checks at activation and cosmetic-only revisions until
-2B3's reviewed migration path exists. Five additive typed models/migration support
-immutable history, current pointers, exact decimals/money, required constraints and
-per-generation uniqueness. No customer value API/builder is exposed yet. Existing
-native intake and canonical records are preserved. Privileged schema acceptance
-helper is included in scripts/studio/check-metadata.ts; owner write API remains 2B4.
+## 9 October 2026 — Reference Apps design live and publicly verified
 
-Michael requires a bespoke screen/document-template design studio for businesses,
-including Sales, with simple visual selection and previews. No internal identifiers
-should be entered by users: removed the stable-key input/display and create action
-now generates configuration.<UUID> server-side. Persisted identities remain stable.
-STUDIO_VISUAL_BUILDER_REQUIREMENTS.md records both screen/document experiences and
-explicit Sales owner, screen/preset editor, responsive preview, existing Templates
-adapter and native-runtime integration substreams (2E0–2E5); Tickets is not
-presented as Sales support.
+The supplied Apps design is live at https://atlassystem.online in exact release
+e5d66e6cf36b0fe228ac65287fdaa8d5ceb8be7c. The integrated release already includes
+all reviewed shell/menu styling and read-only acceptance source unchanged from
+candidate 644f50e. It preserves the accepted Manufacturing/supply, private Admin,
+Messages and Studio source; the existing Manufacturing & Supply parent continues
+to contain Production Planning. No additional activation is needed for this Apps
+handoff. The pending and blocked Apps checkpoints below are historical and
+superseded by this public acceptance. Studio Phase 2 as a whole remains active;
+this Apps verification does not claim completion of its remaining workstreams.
 
-Latest visual requirement: easy template customisation, activated designs on each
-business's live dashboards/screens, and custom buttons. Saved in visual requirements
-and 2E5 plan, NOT IMPLEMENTED. Inspected existing Home/analytics routes, dashboard
-actions/definition/templates/renderers and Sales template provider: reuse existing
-Dashboards/analytics and Templates engines, preserve user-owned personal boards,
-and bind buttons to approved native actions with server permissions/tenant checks.
+Behaviour: wide rounded white Apps panel with Customers, Operations, People and
+Business across desktop, More and Company below; larger grey outline icons and
+wrapped labels, spacious Apps/search controls, responsive columns and internal
+scrolling. All links have at least 44px targets. Phone search has its own row.
+Escape restores trigger focus; headings keep the panel open; links, outside clicks
+and route changes close it. Existing server capability/tenant filtering and Home
+launcher remain intact. No business-data, permission or cache change was introduced
+by the design task.
 
-Latest integrated Admin/Messages source: 27 focused/regression files/140 tests
-PASS, Prisma client regenerated, scoped lint and production build PASS. Strict
-post-build TypeScript PASS.
-Initial Prisma validate/generate PASS. Backed-up central transaction-only DDL check
-found one PL/pgSQL CASE-parentheses syntax error, fixed and rerun PASS; explicit
-rollback/table absence confirmed before preparation. Dry-run backup:
-atlas-studio-field-ddl-TvSAMP. Later migration/runtime evidence is recorded below.
-Full suite not rerun; previously reported baseline failures remain open, and no
-whole-suite success is claimed. Diff reviewed; no native domain code removed.
+Paths: src/components/shell/{app-directory,app-menu,topbar,command-palette,
+workspace-back}.tsx, src/app/globals.css, tests/app-menu.test.tsx and
+scripts/check-home-menu.ts. Shared design/Reports/scope/roadmap guides and lasting
+Apps decisions were reconciled with the implementation.
 
-Latest observed live source is now 2690c26cb0f5f3c28e21265820e8a713708ce699
-(connected supply/planning). Exact live source merged, preserving private Admin,
-Messages, purchasing fixes, central additive supply migrations and compatibility
-checks. Reviewed modern Apps source from main f6e27cb is also merged; preserve its supplied
-design and repeat responsive navigation acceptance. Integrated 29 files/143 tests, Prisma generation, scoped lint and production build
-PASS. Strict post-build TypeScript PASS; combined candidate/public acceptance
-will also exercise connected supply and the modern Apps menu. Earlier live source
-was 1dafe165f97545829d96242b1846e87d9c1f42b4 (private Admin entry). Merged origin/main 6870014,
-including exact live Admin and Messages, preserving their source/evidence. Previous Studio source
-6775044 passed public owner/metadata/Admin/business login/Home/Reports/MRP; its final
-evidence remains in main eba8b49 and historical entries below. 2B2 and generated-key
-UI changes are checkpointed at candidate fcfd5128e991b453badf1bd95477271645f0291a.
-Preparation PASS after backup atlas-pre-deploy-20261009-211931; additive field
-migration applied during preparation, immutable candidate smoke verified. Production
-pointer remains 1dafe16. Candidate field schema/lifecycle plus Studio/Admin/business/Home/Reports/MRP
-checks PASS, including generated-key form. Combined run FAIL in Messages
-viewport selector: retained conversation previews duplicate the exact timeline
-text. Scoped that locator to article, preserving the behaviour assertion. No app
-regression or complete combined PASS claimed. Private logs:
-/tmp/atlas-studio-acceptance-1hYTRO. Revised candidate 770393f22a4b76f7802794ecda6659226916d931 prepared/smoke PASS
-with backup atlas-pre-deploy-20261009-212757 and production build PASS. Second run again passed field/Studio/Admin/business/Home/Reports/MRP. Messages
-viewport scroll encountered a detached node while the reopened timeline restored
-asynchronously. Retry only transient locator detachment, then assert actual message
-is in viewport; application error assertions remain unchanged. Logs:
-/tmp/atlas-studio-acceptance-LiKMZK. Full combined acceptance still NOT PASS. These changes are NOT LIVE. Phase 2 gate
-NOT PASSED.
+Final integrated checks actually run: regenerated Prisma client, seven focused
+files/27 tests, production build and strict post-build TypeScript PASS. Scoped
+lint on the unchanged design source PASS with zero errors and two existing
+brand-img warnings; final diff/whitespace reviewed. Full suite was not rerun.
+Candidate 644f50e preparation and read-only navigation acceptance PASS after backup
+atlas-pre-deploy-20261009-214639; private evidence /tmp/atlas-home-menu-check-ssaZEO.
+Its separate activation stopped safely when the live revision advanced, and the
+new live release was confirmed to contain the exact reviewed design source.
 
-Exact next: exact live supply 2690c26, Admin 1dafe16 and Messages 9303039 are merged with
-contributors' evidence preserved. Integrated local checks PASS; selector TypeScript/scoped lint PASS.
-Async timeline assertion TypeScript/scoped lint PASS; checkpoint, then prepare and rerun
-exact candidate complete Studio/Admin/business/Home/Reports/
-MRP/Messages/private-Admin acceptance. Activate only on PASS.
-Then 2B3 evolution/retirement/conversion planning and resumable jobs, followed by
-2B4 owner-authorised values. No 2C or Phase 3+ before preceding workstream checks.
-## 9 October 2026 — Apps menu candidate accepted; Studio contract blocks activation
+Public HTTPS read-only browser acceptance PASS at the exact release above before
+and after the run: Home desktop/tablet/phone; Apps desktop/tablet/390px/320px;
+authorised links, section placement, viewport fit, internal scrolling, touch
+targets, Escape/focus, heading/outside/link closure, search and actual My work
+navigation. All browser writes were blocked. Private public evidence:
+/tmp/atlas-home-menu-check-GRWYNM. Public desktop screenshot visually inspected.
+Earlier backups and failed candidate evidence below are retained. No Apps blocker
+or further application work remains for this request.
+
+## 9 October 2026 — Studio 2B2 verified live; safe field evolution next
+
+Phase 2 IN PROGRESS; Phase 0/1 gates PASS. Exact live runtime:
+e5d66e6cf36b0fe228ac65287fdaa8d5ceb8be7c. Preserves previous live supply 2690c26,
+private Admin 1dafe16, Messages and reviewed modern Apps f6e27cb. Previous 2690c26
+runtime retained. Preparation backup atlas-pre-deploy-20261009-214456; activation
+backup atlas-pre-deploy-20261009-215653. Dependency scan/build/sealed smoke PASS.
+
+2B2 delivered typed owner field policy/Tickets v2 with exact sealed v1 hashes,
+closed compiler/lifecycle, permanent tenant/entity/key binding, immutable generations,
+cosmetic-only revisions until reviewed migration, activation integrity and five
+additive typed storage/history models. Migration 20261009220000_studio_typed_fields
+is applied centrally; no native schema/data changes or customer value API. Physical
+decimal(38,10) preserves supported logical precision<=28/scale<=10; exact input
+validation remains mandatory. Owner-authorised value API is 2B4, not schema acceptance.
+Stable-key input/display removed; server generates configuration.<UUID> and preserves
+published IDs. Native intake fields/answers and domain business rules remain intact.
+
+Integrated local Prisma generation, 29 files/143 tests, scoped lint, production build
+and strict post-build TypeScript PASS. Earlier 27 files/140 tests and backed-up
+transaction-only DDL check PASS; one CASE-parentheses syntax error repaired before
+migration application. Backup atlas-studio-field-ddl-TvSAMP. Full suite/full lint not
+rerun; historical baseline failures remain open; no whole-suite pass claimed.
+
+Complete candidate acceptance PASS: /tmp/atlas-studio-acceptance-fDWxDN, including
+field publication/identity/history/constraints/exact decimal/currency, owner/tenant/
+permission checks, metadata/forms/CAS, Admin provisioning/business login, responsive
+Home/Apps, Reports, actual MRP, Messages/private Admin and connected Make/Buy supply.
+Earlier candidate selector/async restoration failures retained in logs
+/tmp/atlas-studio-acceptance-1hYTRO and /tmp/atlas-studio-acceptance-LiKMZK.
+
+Public run /tmp/atlas-studio-public-3EmQ8d: field/Studio/Admin/business/Home/Apps/
+Reports/MRP PASS, then FAIL Messages desktop viewport following reopen/restore.
+Standalone public Messages reproduction on unchanged live source PASS for all three
+viewports and full workflow; /tmp/atlas-message-diagnostic-run.txt. No persistent
+app defect confirmed. Full unchanged-source public rerun PASS: /tmp/atlas-studio-public-1XT85A, including
+Messages, private Admin and connected supply. Exact public revision e5d66e6 checked
+before/after. 2B2 VERIFIED live; transient earlier failure retained for traceability.
+
+Michael requires easy bespoke visual screen/document templates (including Sales),
+responsive preview, activated designs on each business's live dashboards/screens
+and custom buttons. Recorded in STUDIO_VISUAL_BUILDER_REQUIREMENTS.md and 2E0–2E5
+plan. Inspected existing Home/analytics/dashboard and Sales Templates contracts;
+reuse their engines, preserve personal boards, enforce native button permissions.
+Visual designer NOT STARTED; the current foundation interface is not its acceptance.
+Source-based 2B3a–g conversion/retirement/reviewed-job/publication/batch/cutover plan
+saved in STUDIO_FIELD_EVOLUTION_PLAN.md; migration service NOT STARTED. Historical/
+final-record representation changes require explicit owner policy, never a bypass.
+
+Verified source/memory merged with latest main 644f50e; documentation only, no
+additional app changes. Exact next: implement 2B3a typed
+compatibility/conversion analysis and meaningful tests; next retirement and reviewed
+durable migration path. No owner value API/visual designer or Phase 2 gate PASS yet.
+No 2C or Phase 3+ before preceding workstream/phase gates.
+
+## 9 October 2026 — Historical Apps/Manufacturing integration checkpoint
+
+The earlier Studio dependency blocker below is superseded: exact public/control
+source 2690c26cb0f5f3c28e21265820e8a713708ce699 is now live and narrowly excludes
+SUSPENDED Test-company dependencies while still checking real companies and active
+Tests. Its Manufacturing/supply/cost guards, bundled fonts, release build gate and
+historical evidence are merged unchanged into codex/apps-menu-design. Unaccepted
+Studio field source and retained metadata are not changed to deploy this design.
+Apps styling/behaviour remains the reviewed reference implementation; navigable
+entries follow the currently deployed manifest/permission rules. Regenerated Prisma
+client; merged 5-file/18-assertion menu/compatibility/module/console suite,
+production build and strict TypeScript PASS. Scoped lint zero errors/two existing
+brand-image warnings; final diff/whitespace PASS. Do not claim the menu deployed
+yet. Next:
+prepare the exact compatible candidate, repeat read-only Home/Apps acceptance,
+activate and verify public HTTPS before completed handoff.
+
+## 9 October 2026 — Historical Apps candidate blocker (resolved by Studio e5d66e6)
 
 Business workspace Apps now follows Michael's supplied wide white panel: Customers,
 Operations, People and Business in the first desktop row; More and Company below.

@@ -76,7 +76,8 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
   two where space allows and one below 360px, with internal vertical scrolling,
   wrapped labels and 44px targets. Escape returns focus to Apps; outside clicks,
   chosen links and route changes close it. All entries retain server permission
-  and app-availability filtering; additional authorised apps remain listed.
+  and app-availability filtering. Atlas Admin/Console and Connections are absent
+  from both business directories, including staff support workspaces.
 - **Atlas Admin** — separate blue/white platform console using the same ribbon,
   wordmark, font and blue interaction colour. A light Admin navigation rail becomes
   a scrollable, labelled bar on tablet/phone. Active sections and selected-company
@@ -85,6 +86,7 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
 - **Topbar** — Home, Reports and Messages use the Atlas ribbon mark, wordmark/tagline, search, notices, chat,
   company identity/date, profile and sign-out. Other workspaces retain home,
   Apps, back, search, new window, notices, chat, profile and sign-out.
+  Company identity has no Admin badge or platform-console return link.
   Workspace controls use a larger Apps pill and search field. On phone search
   moves onto its own header row so utility controls remain reachable.
   `public/brand/atlas-mark.png` is a crop of Michael's supplied artwork.

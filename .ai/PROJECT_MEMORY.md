@@ -99,6 +99,9 @@ selects their own active membership server-side. Studio setup is under
 can sign in with the password Michael sets directly. Customer roles
 cannot create staff access and their permissions remain separately controlled.
 Staff open a customer workspace explicitly under their own audited identity.
+Business Home/Apps, header, settings and search exclude Atlas Console/Admin and
+Connections, including staff support workspaces. Staff use those tools only in
+the separate Admin console; company settings and business imports stay available.
 Archives preserve records, revoke sessions/codes and restore to suspended. Exports
 include stored documents and linked records while excluding credentials; no local
 business database/cache is introduced. See docs/ATLAS_ADMIN.md and CURRENT_STATE.

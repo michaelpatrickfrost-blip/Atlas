@@ -13,6 +13,10 @@ company tabs and staff sign-out to `/19811171adminlogin`. Business Apps, global 
 notifications, chat and My work do not mount in Admin. Customers retain their
 business shell and `/business/<slug>/login`. Explicit audited support-workspace
 entry is preserved; it is not part of the console's ordinary navigation.
+Business Home/Apps, header, company settings and search do not link to Atlas
+Admin/Console or Connections, including when staff provide audited support. Those
+tools remain in this separate staff console. Company-owned administration and
+native imports remain in the business interface with their existing permissions.
 Legacy desktop action identifiers are aliases of the same guarded server functions,
 so moving the route group does not break installed callers or grant new privileges.
 
@@ -52,8 +56,9 @@ remains reserved to Michael as described below.
 An internal Atlas team workspace provides independent staff sign-in. Existing
 owners receive an internal membership in the additive migration. Opening a company
 creates/restores the staff membership, switches the signed company session and
-audits the operator's own identity. The top bar identifies the workspace and links
-back to Atlas Admin. Staff never impersonate a customer. No customer grants change.
+audits the operator's own identity. The business top bar identifies the selected
+company without a console link or Admin badge. Staff use the separate console for
+platform work. Staff never impersonate a customer. No customer grants change.
 
 Atlas team maintains staff classification, name/email, active status and recovery.
 Changes revoke global sessions and pending recovery codes. Self-access changes and

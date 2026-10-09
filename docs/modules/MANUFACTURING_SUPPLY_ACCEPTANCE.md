@@ -138,3 +138,12 @@ Before activation, exact public live advanced to `5ebd700` (Nunito typography);
 that source is preserved. Combined build, explicit strict TypeScript, scoped lint
 and five focused launcher/search/shell files/17 tests PASS. Final candidate/public
 acceptance remains pending.
+
+`6a12fc1` preparation/smoke and complete candidate acceptance PASS; backup
+`atlas-pre-deploy-20261009-221710`, evidence `/tmp/atlas-supply-staging-nfUzeE`.
+Product/Inventory desktop/phone and Manage apps screenshots visually inspected.
+Activation stopped safely at ancestry before backup/switch after public live
+advanced to `56c9d88` (business navigation excludes staff Admin tools). Preserved
+that exact source. Combined production build, explicit strict TypeScript, scoped
+lint and six launcher/search/business-boundary files/23 tests PASS. Final combined
+candidate/public acceptance remains pending.

@@ -188,3 +188,33 @@ and all native acceptance modes. Review caught dispatcher omission of Studio aft
 merge; fixed before deployment. Five mode dispatch probes and shell syntax PASS.
 Regenerated client/descriptors, 28 files/164 tests, production build, strict post-
 build TypeScript and scoped lint PASS. Combined Studio runtime proof pending.
+
+## Next persistence/owner checkpoint dependency (DESIGN; NOT STARTED)
+
+After current cohort candidate/public proof, introduce immutable review identity,
+separate resumable job state and tenant-owned per-record observations/outcomes.
+A review pins definition/draft/source versions and checksums, closed target/rule,
+refreshed principal, actual owner cohort and observed value revisions. Rows include
+canonical records without slots; reference immutable source values rather than
+copying their business payload into job metadata. Live examples require explicit
+live-data-test authority plus native/current/written field and reference access;
+redacted classes/counts cannot reveal inaccessible identities. No new live-test
+permission, preview service or model is implemented yet.
+
+Refine the local order: review/job/row persistence precedes the executable final/
+merged representation hook. A hook accepting a caller's `reviewed: true` cannot
+establish a real reviewed source. The owner hook instead takes a server-stored job
+row identity, rechecks its tenant/source/job state and current native scope under
+one transaction, and preserves all native fields. Core verifies the exact reviewed
+conversion, source pointer/revision and both field policies before target storage.
+Use a new entity contract version; sealed v1/v2 and ordinary `extend` stay unchanged.
+This refines the implementation plan, not the specification's phase order or safety
+requirement. No conversion executes before both persistence and owner policy pass.
+
+Cutover coverage must prove the exact current canonical set against reviewed rows,
+not just equal counts (a deleted record plus new record can preserve a count).
+Prefer an owner-approved transactional missing/extra-row check using tenant/entity
+job references; never expose hidden IDs/counts or use visible-list pagination as
+proof. Add owner evidence for absent anchors, final/merged work, foreign/missing
+records, incomplete queue access and concurrent set changes. These are remaining
+requirements, not implemented checks or authority to write final records.

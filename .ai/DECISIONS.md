@@ -1622,3 +1622,16 @@ Reason: accepted independent releases repeatedly advanced between standalone
 candidate/activation checks. No lock inheritance or second mechanism is needed.
 Fixture writes remain isolated central Tests; no permission grants or local DB.
 Partial field checkpoints still cannot pass the complete Phase 2 gate.
+
+## 10 October 2026 — Stored review proof precedes final-record migration authority
+
+A future owner representation hook must take a persisted, tenant-bound reviewed
+job row, not a caller's boolean claiming review. Build reviewed identity/job/row
+persistence before that executable hook; previews remain read-only and conversion
+cannot start until both pass. Core enforces immutable source/target/rule/revision
+and field policies; owner preserves native fields and rechecks source scope under
+the same transaction. New entity version preserves sealed v1/v2 and ordinary
+final/merged write guards. This refines local workstream dependencies while meeting
+the specification's reviewed-source and domain-ownership requirements.
+Cutover must validate exact canonical set membership; equal counts alone can hide
+a deleted row replaced by a new row. No such hook/model/cutover is implemented yet.

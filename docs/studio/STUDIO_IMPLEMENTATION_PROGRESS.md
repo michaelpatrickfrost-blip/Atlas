@@ -146,6 +146,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+Combined native integration: check-people-workspaces.ts selectors updated for
+already-live Dashboard library/inspector; exact saved metric/90→95% assertions retained.
+
 2B3c2c: scripts/deploy/check-studio-release.sh, vps-release.sh, DEPLOY, evolution
 plan and shared ledger/memory/decision docs. Existing acceptance modes retained.
 
@@ -258,6 +261,13 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+8133299 candidate Studio/owner cohort/private/final/unanchored/principals/decoder/
+retirement/metadata and Dashboard/Home/Reports/MRP/Messages/private Admin/Supply/
+Commercial PASS. Final People script hit obsolete Dashboard App selector; no switch.
+Evidence /tmp/atlas-studio-candidate-5wV4P4. Updated to current real controls with
+all persistence/exact metric/90→95%/privacy/tenant assertions retained. Public proof
+pending. No schema/application/security change; strict types/helper lint PASS; full runtime rerun pending.
 
 0af763d candidate build/storage/decoder/retirement/metadata/draft/Dashboard checks
 PASS, then authenticated Admin-denial transport assertion failed 404!=307; no
@@ -374,10 +384,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Deploy the new reviewed pin preserving b57ba720 appointment guard and 70ca23e
-modern Dashboard. Browser-based Admin denial retains 307/home and no Admin shell;
-29 files/171 tests, generation/build/strict types/scoped lint PASS. Full combined
-candidate must PASS before switch, then repeat exactly on public under original
-locks. Real owner cohort helper remains unrun after the earlier test-transport
-failure. Record runtime results before reviewed job/row persistence and owner
-representation-only authority. Phase 2 NOT PASSED; no visual Studio/value API.
+Check strict TypeScript and helper lint after adapting People checker to the current
+Dashboard widget library/inspector. Retain exact kpis.attainment and 90→95% assertions.
+Review/checkpoint memory, then deploy new pin preserving b57ba720 with Studio
+held-lock acceptance. 8133299 passed real Studio cohort/decoder and all other native
+checks but final obsolete People selector prevented activation. Full candidate PASS
+must precede switch and exact public repeat. Phase 2 NOT PASSED; designer/value API
+not delivered. Next after proof: review/job/row persistence, then owner job-backed
+representation-only policy; sealed entity v1/v2 and normal final guards retained.

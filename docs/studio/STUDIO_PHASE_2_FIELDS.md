@@ -95,3 +95,12 @@ Phase 2 gate: an older runtime must not accept a new payload merely because its
 entity descriptor still resolves. Preserve existing version/checksum contracts;
 introduce version-aware validation rather than adding defaults to sealed payloads.
 These are remaining requirements, not implemented features or passed checks.
+
+Runtime consumers and builder permissions remain a 2B4/2C design dependency.
+Business operators must be able to use approved native forms/pages without being
+given configuration-edit privileges. Resolve only the schema needed by that owner
+runtime, enforce native and additional field permissions on the server, and never
+turn schema access into data access. Disabling the Studio authoring UI must not
+silently bypass published required/unique policies. Define and test disable/retire/
+rollback behavior before opening native writes; this is not implemented by the
+Phase 1 metadata `activeDefinition` helper.

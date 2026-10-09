@@ -1,5 +1,32 @@
 # Atlas current state
 
+## 10 October 2026 — Studio combined candidate native People selector update
+
+8133299 candidate passed corrected authenticated 307, real owner cohort/private/
+final/unanchored access, refreshed principals, SQL decoder/retirement/metadata,
+Dashboard/Home/Reports/MRP/Messages/private Admin/Supply and Commercial. Final
+People check timed out waiting for old Dashboard `App` selector replaced in already-
+live 70ca23e. No activation; production remains b57ba720. Evidence
+/tmp/atlas-studio-candidate-5wV4P4; backup atlas-pre-deploy-20261009-234134 and
+fixture backup atlas-pre-studio-candidate-20261009-234318. Native Test access retired,
+history retained. No cohort/decoder PUBLIC claim yet.
+Updated People checker to real Add widget / Business measures / searchable library /
+Table visual / Save controls. Retains same persisted dashboard, exact kpis.attainment
+widget, 90→95% cells, privacy/tenant checks and all subsequent People workflows.
+No native application/security/schema change. Strict TypeScript and changed-helper lint PASS; next
+checkpoint and rerun entire combined candidate/public acceptance on new pin.
+
+## 10 October 2026 — Studio current candidate and next dependency memory
+
+8133299 retry is building after backup atlas-pre-deploy-20261009-234134. No current
+candidate/public success claim. Preserved b57ba720 and corrected the browser-based
+307 assertion. Ledger/plan now record the next persistence-before-owner-proof
+order and exact cohort set coverage (equal counts alone are insufficient). Native
+runtime/builder permissions and disabled-authoring validation behavior remain
+unimplemented 2B4 requirements. No additional code/schema/permission here.
+Next inspect /tmp/atlas-studio-browser-cohort-deploy.txt; fix real failure or record
+complete candidate/public evidence before starting review/job/row models.
+
 ## 10 October 2026 — Studio preserves current appointment guard source
 
 Preserved exact observed live b57ba720: native legacy completion cannot bypass

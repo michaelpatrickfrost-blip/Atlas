@@ -23,10 +23,15 @@ export function readSuggestionDetail(pegging: unknown): SuggestionDetail {
   if (Array.isArray(pegging)) {
     return { demand: pegging as SuggestionDetail["demand"], operations: [], materials: [], cost: null, hours: null, batchCount: 0 };
   }
+  // Dates were written into the JSON pegging as Date objects; Prisma round-trips
+  // them back as ISO strings, so coerce them so pages can call .getTime()/.toLocaleDateString().
+  const toDate = (value: unknown) => (value ? new Date(value as string) : null);
+  const operations = (value.operations ?? []).map((operation) => ({ ...operation, start: toDate(operation.start), end: toDate(operation.end) }));
+  const materials = (value.materials ?? []).map((material) => ({ ...material, requiredBy: toDate(material.requiredBy) }));
   return {
     demand: value.demand ?? [],
-    operations: value.operations ?? [],
-    materials: value.materials ?? [],
+    operations,
+    materials,
     cost: value.cost ?? null,
     hours: value.hours ?? null,
     batchCount: value.batchCount ?? 0,
@@ -152,7 +157,7 @@ export async function getMaterialShortages(organisationId: string, limit = 50): 
     if (order[row.priority] < order[existing.priority]) existing.priority = row.priority;
   }
   return [...merged.values()]
-    .sort((a, b) => order[a.priority] - order[b.priority] || a.requiredDate.getTime() - b.requiredDate.getTime())
+    .sort((a, b) => order[a.priority] - order[b.priority] || new Date(a.requiredDate).getTime() - new Date(b.requiredDate).getTime())
     .slice(0, limit);
 }
 

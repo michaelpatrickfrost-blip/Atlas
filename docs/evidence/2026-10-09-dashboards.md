@@ -133,3 +133,14 @@ descriptors match exact live 94dd3e1. Authentication counters remain omitted.
 Next route types generated; 24 files/103 assertions, strict types, production
 build, scoped lint (zero errors/one decorative brand-image warning) and diff PASS.
 Final combined preparation/candidate acceptance/activation/public proof follow.
+
+## 10 October — identical application source, new Studio helper preservation
+
+081e9c396720bc8c93eecb5a515ba8228ba0e398 prepared/smoke PASS, backup
+atlas-pre-deploy-20261009-225519; all five candidate workflows PASS:
+/tmp/atlas-dashboards-commercial-candidate.log. Live advanced to 7941f9b with
+new Studio field helper libraries, tests, acceptance helpers and documentation.
+Obsolete queued activation cancelled before lock acquisition; no switch/write.
+Exact source merged. Application, Dashboard/chat/Reports/fonts match accepted
+081e9c3; new helper functions have no runtime consumers. Validate helpers/types/
+build, retain prior app acceptance, prepare/activate and repeat all five publicly.

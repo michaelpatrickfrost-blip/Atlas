@@ -78,6 +78,7 @@ ATLAS_GUARDIAN_ACCESS_TEST=1 node --env-file=.env.local --import tsx scripts/gua
 ATLAS_GUARDIAN_QUERY_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-service-query.ts
 ATLAS_GUARDIAN_ACTION_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-action-recovery.ts
 ATLAS_GUARDIAN_RECORD_TEST=1 node --env-file=.env.local --import tsx scripts/guardian/check-unavailable-records.ts
+ATLAS_GUARDIAN_MRP_TEST=1 ATLAS_MRP_TEST_REVISION=<full-live-SHA> node --env-file=.env.local --import tsx scripts/guardian/check-mrp-access.ts
 node --env-file=.env.local --import tsx scripts/guardian/triage.ts list [page]
 node --env-file=.env.local --import tsx scripts/guardian/triage.ts show <issue-id>
 sudo systemctl status atlas-guardian.timer atlas-guardian.service
@@ -170,6 +171,30 @@ history retained. `--reproduce` requires the old generic failures. Optional
 runtime SHA stays unchanged throughout. Independent proof does not close historical
 render reports whose original fixture/profile/action remains unidentified.
 Deployed reproduction evidence: [8 October record recovery](evidence/2026-10-08-guardian-record-recovery.md).
+
+## MRP write access and saved planning dates
+
+Run MRP requires `manufacturing.plan.manage` and the selected company's enabled,
+entitled Manufacturing app before creating a planning run. The existing Atlas
+staff app exception is preserved. Read permission alone allows viewing a plan.
+
+The opt-in MRP check requires a private central DB/evidence backup and both
+deployment locks. It creates three disposable Test companies with distinct
+read-only, management, disabled-app and unentitled-app customer profiles. Actual
+Server Action POSTs prove rejection and exact unchanged runs/suggestions. The real
+Run MRP button creates one session-scoped central run and asserts MAKE/BUY proposals,
+BOM quantities, machine/routing and persisted date strings; saved planning pages,
+shortage dates/quantities and product links must render without browser errors.
+The checker separately challenges the old doubled BOM/BUY shortage projection;
+the read projection aggregates component consumption against one shared stock
+snapshot and retains independently required BUY quantities. Historical
+proposals and input/order/stock/Finance/audit/outbox records remain unchanged.
+Only the fixture planner's exact Run MRP action is allowed through browser writes.
+Synthetic companies are suspended and their sessions/grants revoked afterwards;
+central history is retained. `--reproduce` proves the old forbidden writes.
+Optional `ATLAS_MRP_LEGACY_REVISION` names a sealed retained release whose query
+module must reproduce the JSON-date TypeError against the same central fixture;
+the check does not start a legacy web server. It exports no private record data.
 
 ## Rejected drafts and older tabs
 

@@ -34,6 +34,7 @@ business databases/caches. Preserve historical deployment evidence.
 - [Architecture](ARCHITECTURE.md): ownership, security and technical documentation map.
 - [Modules](MODULES.md): registered foundations, planned apps and delivery sources.
 - [Design](DESIGN_SYSTEM.md): current direction and implementation references.
+- [Messages](../docs/MESSAGES.md): private pop-out chat, record attachments and history.
 - [Agent instructions](../AGENTS.md): commands, repository rules and update protocol.
 
 ## Keeping memory useful

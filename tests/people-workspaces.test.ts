@@ -1,7 +1,7 @@
 import {describe,it,expect} from "vitest";
 import {attainment,weightedAttainment} from "@/modules/kpis/domain/scorecards";
 import {requiredPeople,intervalCoverage,skillsMatch} from "@/modules/scheduling/domain/coverage";
-import {distributeWork} from "@/modules/teams/domain/capacity";
+import {distributeWork,shiftCapacityHours} from "@/modules/teams/domain/capacity";
 import {calculateNi} from "@/modules/payroll/domain/ni";
 import {calculatePaye} from "@/modules/payroll/domain/paye";
 import {calculatePayslip,calculateStudentLoan} from "@/modules/payroll/domain/payroll-run";
@@ -32,4 +32,9 @@ describe("UK 2026–27 payroll calculations",()=>{
   it("keeps explicit month-one codes non-cumulative",()=>{expect(calculatePaye({grossMinorUnits:300000,taxCode:"1257L M1",payPeriodsPerYear:12,taxYear:"2026-27",priorGrossMinorUnits:2000000,priorTaxMinorUnits:200000,taxPeriod:7}).taxMinorUnits).toBe(39050);expect(()=>calculatePaye({grossMinorUnits:300000,taxCode:"S1257L",payPeriodsPerYear:12,taxYear:"2026-27"})).toThrow("Unsupported");});
   it("uses new student-loan thresholds and whole-pound deductions",()=>{expect(calculateStudentLoan({grossMinorUnits:300000,plan:"PLAN_1",payPeriodsPerYear:12,taxYear:"2026-27"})).toBe(6800);expect(calculateStudentLoan({grossMinorUnits:300000,plan:"PLAN_5",payPeriodsPerYear:12,taxYear:"2026-27"})).toBe(8200);});
   it("pays approved hourly work once, adding only the overtime premium",()=>{const result=calculatePayslip({annualSalaryMinorUnits:null,currency:"GBP",taxCode:"NT",niCategory:"A",studentLoanPlan:null,pensionOptOut:true,payFrequency:"WEEKLY",taxYear:"2026-27",employeePensionPercent:5,employerPensionPercent:3,confirmedShiftHours:45,standardWeeklyHours:37.5,overtimeMultiplier:1.5,unpaidDaysInPeriod:0,statutoryPayMinorUnits:0,manualAdjustmentMinorUnits:0,periodStart:new Date("2026-10-12"),periodEnd:new Date("2026-10-19"),payBasis:"HOURLY",hourlyRateMinorUnits:1500});expect(result.grossMinorUnits).toBe(67500);expect(result.overtimeHours).toBe(7.5);expect(result.overtimeMinorUnits).toBe(5625);});
+});
+
+describe("rota-backed team capacity",()=>{
+  it("deducts training and a break as a union",()=>{expect(shiftCapacityHours({startsAt:instant("09:00"),endsAt:instant("17:00"),breakMinutes:30,breakStartsAt:instant("12:00"),activities:[{kind:"TRAINING",startsAt:instant("12:00"),endsAt:instant("13:00")}]},instant("00:00"),new Date("2026-10-13T00:00:00Z"))).toBe(7);});
+  it("keeps work activities within capacity and bounds non-work to the day",()=>{expect(shiftCapacityHours({startsAt:instant("09:00"),endsAt:instant("17:00"),breakMinutes:0,breakStartsAt:null,activities:[{kind:"WORK",startsAt:instant("09:00"),endsAt:instant("12:00")},{kind:"MEETING",startsAt:instant("16:00"),endsAt:instant("17:00")}]},instant("09:00"),instant("16:30"))).toBe(7);});
 });

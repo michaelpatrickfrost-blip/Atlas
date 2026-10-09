@@ -12,7 +12,8 @@ and audit atomically. Completion removes open demand without deleting the task.
 Estimates describe planned work, not recorded actual time.
 
 Capacity uses published paid rota hours per day, otherwise contracted pattern/
-company standard; approved leave/unavailable days remove it and employment dates
+company standard; breaks and non-work rota activities reduce it without double
+counting overlap. Approved leave/unavailable days remove it and employment dates
 bound it. Unavailable published shifts flag conflict without changing the rota.
 Effort spreads over working days; a non-working deadline remains visible demand.
 

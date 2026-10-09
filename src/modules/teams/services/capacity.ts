@@ -5,7 +5,7 @@ import { assertModuleEnabled } from "@/core/modules/access";
 import { isModuleEnabled } from "@/core/modules/runtime";
 import { requireTeam,managesTeams } from "./access";
 import { civilDate } from "../domain/board";
-import { distributeWork } from "../domain/capacity";
+import { distributeWork,shiftCapacityHours } from "../domain/capacity";
 import { londonInstant,londonDate } from "@/modules/scheduling/domain/time";
 
 export async function loadCapacity(session:Session,teamId:string,day:string) {
@@ -19,7 +19,7 @@ export async function loadCapacity(session:Session,teamId:string,day:string) {
     db.employee.findMany({where:{organisationId,id:{in:ids},status:{not:"LEFT"}},select:{id:true,firstName:true,lastName:true,department:true,jobTitle:true,skills:true,contractedWeeklyHours:true,workingDays:true,startDate:true,endDate:true,userId:true}}),
     db.plannerTask.findMany({where:{organisationId,teamId},orderBy:[{priority:"asc"},{dueOn:"asc"},{createdAt:"desc"}],take:500}),
     db.plannerTask.findMany({where:{organisationId,assigneeEmployeeId:{in:ids},status:{not:"DONE"},dueOn:{gte:monday},OR:[{startsOn:null,dueOn:{lt:until}},{startsOn:{lt:until}}],...(managesTeams(session)?{}:{team:{members:{some:{employee:{userId:session.userId,organisationId}}}}})},select:{id:true,assigneeEmployeeId:true,estimatedHours:true,startsOn:true,dueOn:true},orderBy:{dueOn:"asc"},take:3000}),
-    scheduling?db.rotaShift.findMany({where:{organisationId,employeeId:{in:ids},status:"CONFIRMED",startsAt:{lt:until},endsAt:{gt:from}},select:{employeeId:true,startsAt:true,endsAt:true,breakMinutes:true,breakStartsAt:true},take:2000}):[],
+    scheduling?db.rotaShift.findMany({where:{organisationId,employeeId:{in:ids},status:"CONFIRMED",startsAt:{lt:until},endsAt:{gt:from}},select:{employeeId:true,startsAt:true,endsAt:true,breakMinutes:true,breakStartsAt:true,activities:{select:{kind:true,startsAt:true,endsAt:true}}},take:2000}):[],
     db.absenceRecord.findMany({where:{organisationId,employeeId:{in:ids},status:"APPROVED",startDate:{lt:until},endDate:{gte:monday}},select:{employeeId:true,startDate:true,endDate:true}}),
     scheduling?db.employeeAvailability.findMany({where:{organisationId,employeeId:{in:ids},startsAt:{lt:until},endsAt:{gt:from}},select:{employeeId:true,startsAt:true,endsAt:true}}):[],
     db.organisation.findUniqueOrThrow({where:{id:organisationId},select:{hrStandardWeeklyHours:true}}),
@@ -31,7 +31,7 @@ export async function loadCapacity(session:Session,teamId:string,day:string) {
       const away=absences.some(a=>a.employeeId===employee.id&&a.startDate<=civilDate(day)&&a.endDate>=civilDate(day));
       const unavailableDay=unavailable.some(a=>a.employeeId===employee.id&&a.startsAt<end&&a.endsAt>start);
       const contracted=employee.workingDays.includes(civilDate(day).getUTCDay())?(employee.contractedWeeklyHours??org.hrStandardWeeklyHours)/Math.max(1,employee.workingDays.length):0;
-      const shiftHours=published.reduce((n,s)=>{const overlap=(Math.min(end.getTime(),s.endsAt.getTime())-Math.max(start.getTime(),s.startsAt.getTime()))/3600000;const breakHours=s.breakStartsAt?Math.max(0,Math.min(end.getTime(),s.breakStartsAt.getTime()+s.breakMinutes*60000)-Math.max(start.getTime(),s.breakStartsAt.getTime()))/3600000:s.breakMinutes/60*overlap/((s.endsAt.getTime()-s.startsAt.getTime())/3600000);return n+Math.max(0,overlap-breakHours);},0);
+      const shiftHours=published.reduce((n,shift)=>n+shiftCapacityHours(shift,start,end),0);
       const employed=employee.startDate<end&&(!employee.endDate||employee.endDate>=civilDate(day));const capacity=away||unavailableDay||!employed?0:published.length?shiftHours:contracted;
       const planned=allocations.filter(a=>a.day===day).reduce((n,a)=>n+a.hours,0);return {day,capacity,planned,remaining:capacity-planned,source:away?"Approved leave":unavailableDay?"Unavailable":!employed?"Outside employment":published.length?"Published rota":"Contract",conflict:unavailableDay&&published.length>0};
     });return { ...employee,name:`${employee.firstName} ${employee.lastName}`,cells,capacity:cells.reduce((n,c)=>n+c.capacity,0),planned:cells.reduce((n,c)=>n+c.planned,0)};

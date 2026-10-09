@@ -57,7 +57,12 @@ Latest live 56c9d88 is merged, preserving the business/Admin navigation boundary
 Merged production build/strict types and 18 files/123 tests PASS. Exact 2ede4a0
 activation stopped before pointer switch: dashboard saved but checker reloaded
 before client navigation completed. Added explicit saved-board URL wait; not a
-product-data failure. Evidence /tmp/atlas-people-candidate-Q5RXLH; backup
+product-data failure. Final connection review also deducts non-work rota activities
+from team capacity, unioning timed breaks to prevent double deductions; domain/
+browser cases added. Payroll nested source reads/upserts now explicitly repeat
+tenant scope; central negative fixture verifies foreign time cannot affect pay,
+then removes only that intentionally invalid synthetic input. Final scoped
+3-file/33 tests, lint, production build and strict types PASS. Evidence /tmp/atlas-people-candidate-Q5RXLH; backup
 atlas-pre-deploy-20261009-223227. Test companies suspended/access revoked.
 Checker now also saves/reloads a real Analytics scorecard dashboard and confirms
 changed source figures render; not yet run. Next: candidate

@@ -48,7 +48,8 @@ and offline/training/meeting activity cannot promise capacity. Role/activity fil
 separate queues; unfiltered overlapping requirements share the department pool.
 
 **Team planner:** the new work/capacity view uses existing PlannerTeam/PlannerTask,
-employee hours, approved absence, published rotas and availability. Estimated
+employee hours, approved absence, published rotas, non-work activities and
+availability. Timed breaks/activities are unioned to avoid double deductions. Estimated
 effort spreads over recorded working days; a deadline on a non-working day remains
 visible demand. Inaccessible teams' tasks are excluded from workload; displayed
 totals therefore describe visible work, not unrestricted company utilisation.

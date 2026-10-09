@@ -26,11 +26,11 @@ export async function preparePayroll(session:Session,start:string,end:string,fre
     tx.employee.findMany({
       where:{organisationId,payFrequency:frequency,status:{in:["ACTIVE","ON_LEAVE","OFFBOARDING","LEFT"]},startDate:{lt:until},OR:[{endDate:null},{endDate:{gte:periodStart}}]},
       include:{
-        timesheets:{where:{entries:{some:{workedOn:{gte:periodStart,lte:periodEnd}}}},include:{entries:{where:{workedOn:{gte:periodStart,lte:periodEnd}},orderBy:{workedOn:"asc"}}}},
-        absences:{where:{status:"APPROVED",startDate:{lte:periodEnd},endDate:{gte:periodStart}},orderBy:{id:"asc"}},
-        taxYearToDates:{where:{taxYear:CURRENT_TAX_YEAR}},
-        payrollAdjustments:{where:{periodStart,periodEnd}},
-        payslips:{where:{payrollRun:{status:{in:["FINALISED","PAID"]},periodEnd:{lt:periodStart,gte:taxYearStart}}},orderBy:{id:"asc"}}
+        timesheets:{where:{organisationId,entries:{some:{organisationId,workedOn:{gte:periodStart,lte:periodEnd}}}},include:{entries:{where:{organisationId,workedOn:{gte:periodStart,lte:periodEnd}},orderBy:{workedOn:"asc"}}}},
+        absences:{where:{organisationId,status:"APPROVED",startDate:{lte:periodEnd},endDate:{gte:periodStart}},orderBy:{id:"asc"}},
+        taxYearToDates:{where:{organisationId,taxYear:CURRENT_TAX_YEAR}},
+        payrollAdjustments:{where:{organisationId,periodStart,periodEnd}},
+        payslips:{where:{organisationId,payrollRun:{organisationId,status:{in:["FINALISED","PAID"]},periodEnd:{lt:periodStart,gte:taxYearStart}}},orderBy:{id:"asc"}}
       },orderBy:{id:"asc"}
     }),
     tx.organisation.findUniqueOrThrow({where:{id:organisationId},select:{hrStandardWeeklyHours:true,hrOvertimeMultiplier:true}}),

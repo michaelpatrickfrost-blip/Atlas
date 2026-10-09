@@ -9,12 +9,34 @@ subscribing to Atlas (`Organisation`). A company's own customers remain Core
 Michael clarified that Atlas Admin is administration only. Its routes live in
 `src/app/(admin)/atlas`, outside the business `(app)` shell. The modern blue/white
 console uses the supplied ribbon branding, responsive Admin navigation, selected-
-company tabs and staff sign-out to `/atlas/login`. Business Apps, global search,
+company tabs and staff sign-out to `/19811171adminlogin`. Business Apps, global search,
 notifications, chat and My work do not mount in Admin. Customers retain their
 business shell and `/business/<slug>/login`. Explicit audited support-workspace
 entry is preserved; it is not part of the console's ordinary navigation.
 Legacy desktop action identifiers are aliases of the same guarded server functions,
 so moving the route group does not break installed callers or grant new privileges.
+
+## Private staff entry — 9 October 2026
+
+The unlisted staff address is `/19811171adminlogin`, with recovery beneath it at
+`/recovery`. Customer sign-in has no Admin link and cannot authenticate staff.
+Retired `/atlas/login`, `/atlas/reset-password`, legacy platform-recovery query
+links and anonymous Admin console requests return not found without revealing
+the new address. Signed-in staff retain `/atlas` and its capability checks.
+
+Login, recovery, Admin pages and Admin API responses have `X-Robots-Tag: noindex,
+nofollow, noarchive, nosnippet`, no-referrer and private/no-store policies; HTML
+pages also have noindex metadata. No sitemap or robots.txt advertises the address.
+Noindex requires compliant crawlers to read it and is not access control or an
+immediate search-removal guarantee.
+
+Atomic PostgreSQL counters allow 10 attempts per identity/network and 60 per
+network in 15 minutes, across login/recovery, and survive app restarts. HMAC keys
+store no email, IP or credentials. A missing limiter rejects login; unknown
+accounts still perform bcrypt. Platform recovery cannot consume codes through
+the generic customer page. The new screen supports password reveal, pending
+state, accessible errors and desktop/phone layouts. Existing credentials and
+independent staff permissions remain authoritative; MFA/SSO are not introduced.
 
 ## Staff and customer access — 7 October 2026
 
@@ -107,13 +129,13 @@ evidence belongs in `.ai/CURRENT_STATE.md`.
 
 ## Separate administration and business sign-in — 9 October 2026
 
-Atlas staff sign in at `/atlas/login` and land in `/atlas`. The customer Studio
+Atlas staff sign in at `/19811171adminlogin` and land in `/atlas`. The customer Studio
 app at `/studio` is separate from staff setup at `/atlas/studio`; staff choose
 an active customer there under their own audited identity. Company overview
 shows its sign-in URL `/business/<slug>/login`, with matching password recovery.
 The company URL selects an active membership in that exact business on the
 server, with the submitted selector bound to the observed URL. Atlas recovery
-lives at `/atlas/reset-password`. Generic customer login remains compatible for a single active company;
+lives at `/19811171adminlogin/recovery`. Generic customer login remains compatible for a single active company;
 ambiguous multi-company login asks for the company's own address.
 
 ## User creation — 9 October 2026

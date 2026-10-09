@@ -10,7 +10,17 @@ describe("server sign-in address binding",()=>{
   expect(()=>signInAddress("/login",{portal:"",companySlug:"company-a"})).toThrow("sign-in address");
  });
  it("keeps Admin and legacy generic addresses distinct",()=>{
-  expect(signInAddress("/atlas/reset-password",{portal:"atlas",companySlug:""})).toEqual({portal:"atlas",companySlug:""});
+  expect(signInAddress("/19811171adminlogin/recovery",{portal:"atlas",companySlug:""})).toEqual({portal:"atlas",companySlug:""});
   expect(signInAddress("/login",{portal:"",companySlug:""})).toEqual({portal:"",companySlug:""});
  });
+});
+
+it("rejects retired and unrelated addresses without revealing the private address",()=>{
+ for(const path of ["/atlas/login","/atlas/reset-password","/home","/api/desktop/action"]) expect(()=>signInAddress(path,{portal:"atlas",companySlug:""})).toThrow("sign-in address");
+});
+it("binds staff login and recovery only to the new private address",()=>{
+ for(const path of ["/19811171adminlogin","/19811171adminlogin/recovery"]) {
+ expect(signInAddress(path,{portal:"atlas",companySlug:""})).toEqual({portal:"atlas",companySlug:""});
+ expect(()=>signInAddress(path,{portal:"",companySlug:""})).toThrow("sign-in address");
+ }
 });

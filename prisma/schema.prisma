@@ -13,6 +13,16 @@ datasource db {
 
 // ---------- Core: tenancy & identity ----------
 
+// Private pre-authentication infrastructure; not exposed through the data gateway.
+model AuthenticationRateLimit {
+  key       String   @id
+  attempts  Int      @default(0)
+  expiresAt DateTime
+
+  @@index([expiresAt])
+  @@map("authentication_rate_limits")
+}
+
 model Organisation {
   studioDefinitions StudioDefinition[]
  operationalMeetingEntry MeetingEntry[]

@@ -2,6 +2,7 @@
 
 import { EmptyState } from "@/components/ui/empty-state";
 import Link from "next/link";
+import { ADMIN_LOGIN_PATH } from "@/core/auth/admin-address";
 import { useEffect } from "react";
 import { safePath } from "@/core/guardian/report";
 
@@ -15,7 +16,7 @@ export default function AdminError({ error, retry }: { error: Error & { digest?:
   }, [error.digest, isForbidden, isUnauthenticated]);
 
   if (isUnauthenticated) {
-    return <div><EmptyState title="Your session has expired." description="Sign in again to continue." /><div className="text-center"><Link href="/atlas/login" className="text-sm text-blue-700">Sign in</Link></div></div>;
+    return <div><EmptyState title="Your session has expired." description="Sign in again to continue." /><div className="text-center"><Link href={ADMIN_LOGIN_PATH} className="text-sm text-blue-700">Sign in</Link></div></div>;
   }
 
   return (

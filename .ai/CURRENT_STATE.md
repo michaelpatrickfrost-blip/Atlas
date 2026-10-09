@@ -1,5 +1,25 @@
 # Atlas current state
 
+## 9 October 2026 — Business navigation excludes platform administration (candidate)
+
+Michael clarified that Atlas Console/Admin tools do not belong in customer software.
+Removed Atlas Admin and Connections from both business directories, the staff Admin
+return chip from the header, console links from company users/workspace settings,
+and platform-console promotion from native import help. The header shows selected
+company identity. Company admin, Manage apps, native imports, company permissions
+and customer Studio remain available. Staff tools remain in standalone /atlas;
+no auth, grant, tenant, record or schema changes. This applies to staff support
+workspaces as well as customer sessions.
+
+Paths: shell app-directory/topbar; settings page/workspace-panel/imports; new
+business-shell-boundary regression test; expanded read-only check-home-menu.
+Project/design/Admin/company/decision/delivery docs reconciled. Four focused files/
+14 tests PASS; scoped lint zero errors/two existing brand-img warnings. Production
+build and strict post-build TypeScript PASS. Full suite not rerun; final diff/
+whitespace reviewed. Candidate/public acceptance not yet run.
+Next: prepare exact compatible release, verify business surfaces
+and retained staff console, activate and repeat public HTTPS checks.
+
 ## 9 October 2026 — Reference Apps design live and publicly verified
 
 The supplied Apps design is live at https://atlassystem.online in exact release

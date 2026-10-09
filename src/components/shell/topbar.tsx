@@ -43,7 +43,7 @@ export function Topbar({ session }: { session: Session }) {
       </Link>
       <AppMenu><AppDirectory session={session} /></AppMenu>
       <WorkspaceBack />
-      {can(session, "atlas.companies.manage") && <Link href="/atlas" title={`Atlas staff · ${session.organisationName}`} className="hidden max-w-56 truncate rounded-xl bg-blue-50 px-4 py-3 text-base text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600 lg:block">{session.organisationName} · Admin</Link>}
+      <span title={session.organisationName} className="hidden max-w-56 truncate rounded-xl bg-blue-50 px-4 py-3 text-base text-blue-600 lg:block">{session.organisationName}</span>
       <div className="order-3 w-full min-w-0 sm:order-none sm:w-auto sm:flex-1 xl:max-w-[720px]"><CommandPalette variant="workspace" /></div>
       <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-1.5">
         <NewWindow />

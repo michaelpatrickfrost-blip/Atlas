@@ -21,10 +21,21 @@ export type MapPerson = {
   reportsToContactId: string | null;
 };
 
-export async function loadCustomerMap(organisationId: string, includeInvoices: boolean) {
+export async function loadCustomerMap(organisationId: string, includeInvoices: boolean, focusId?: string) {
+  // Traverse only the selected corporate family; unrelated customer contacts never enter the map payload.
+  const family = focusId ? await db.$queryRaw<{ id: string }[]>`
+    WITH RECURSIVE family AS (
+      SELECT id, "parentPartyId" FROM parties
+      WHERE id = ${focusId} AND "organisationId" = ${organisationId} AND "identityScrubbed" = false
+      UNION
+      SELECT p.id, p."parentPartyId" FROM parties p JOIN family f
+        ON p.id = f."parentPartyId" OR p."parentPartyId" = f.id
+      WHERE p."organisationId" = ${organisationId} AND p."identityScrubbed" = false
+    ) SELECT id FROM family LIMIT 501
+  ` : null;
   const [parties, users, links] = await Promise.all([
     db.party.findMany({
-      where: { organisationId, identityScrubbed: false },
+      where: { organisationId, identityScrubbed: false, ...(family ? { id: { in: family.map(row => row.id) } } : {}) },
       select: {
         id: true,
         name: true,
@@ -41,7 +52,7 @@ export async function loadCustomerMap(organisationId: string, includeInvoices: b
         },
       },
       orderBy: { name: "asc" },
-      take: 500,
+      take: family ? 501 : 500,
     }),
     db.user.findMany({
       where: { memberships: { some: { organisationId, active: true } } },
@@ -62,7 +73,11 @@ export async function loadCustomerMap(organisationId: string, includeInvoices: b
     if (!invoiceByAccount.has(link.accountId)) invoiceByAccount.set(link.accountId, { id: link.tradingAccountId, name: link.tradingAccount.name });
   }
 
-  const accounts: MapAccount[] = parties.map((party) => ({
+  // Keep the selected customer visible even when a large family hits the display bound.
+  const keep = new Set<string>();
+  for (let party = parties.find(row => row.id === focusId); party && !keep.has(party.id); party = parties.find(row => row.id === party?.parentPartyId)) keep.add(party.id);
+  const shown = parties.length > 500 ? [...parties.filter(party => keep.has(party.id)), ...parties.filter(party => !keep.has(party.id))].slice(0, 500) : parties;
+  const accounts: MapAccount[] = shown.map((party) => ({
     id: party.id,
     name: party.name,
     customerCode: party.customerCode,
@@ -74,7 +89,7 @@ export async function loadCustomerMap(organisationId: string, includeInvoices: b
     invoiceAccountId: invoiceByAccount.get(party.id)?.id ?? null,
     invoiceAccountName: invoiceByAccount.get(party.id)?.name ?? null,
   }));
-  const people: MapPerson[] = parties.flatMap((party) =>
+  const people: MapPerson[] = shown.flatMap((party) =>
     party.contacts.map((contact) => ({
       id: contact.id,
       partyId: contact.partyId,
@@ -83,5 +98,7 @@ export async function loadCustomerMap(organisationId: string, includeInvoices: b
       reportsToContactId: contact.reportsToContactId,
     })),
   );
-  return { accounts, people, truncated: parties.length === 500 };
+  const lookupRows = focusId ? await db.party.findMany({ where: { organisationId, identityScrubbed: false, archived: false }, select: { id: true, name: true, customerCode: true, parentPartyId: true, hierarchyRole: true, customerGroup: true, status: true }, orderBy: { name: "asc" }, take: 500 }) : [];
+  const choices: MapAccount[] = lookupRows.map(row => ({ ...row, accountManager: null, invoiceAccountId: null, invoiceAccountName: null }));
+  return { accounts, people, choices, truncated: family ? family.length > 500 || parties.length > 500 : parties.length === 500 };
 }

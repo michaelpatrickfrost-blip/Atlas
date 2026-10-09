@@ -1707,6 +1707,11 @@ model SalesActivity {
   salesProjectId  String?
 
   dueAt       DateTime?
+  endsAt      DateTime?
+  location    String?
+  cancelledAt DateTime?
+  version     Int @default(1)
+  requestKey  String?
   completedAt DateTime?
   outcome     String?
 
@@ -1718,6 +1723,7 @@ model SalesActivity {
   opportunity   Opportunity?   @relation(fields: [opportunityId], references: [id])
   salesProject  SalesProject?  @relation(fields: [salesProjectId], references: [id])
 
+  @@unique([organisationId, requestKey])
   @@index([organisationId, ownerUserId, dueAt])
   @@index([organisationId, completedAt])
   @@index([organisationId, salesProjectId])

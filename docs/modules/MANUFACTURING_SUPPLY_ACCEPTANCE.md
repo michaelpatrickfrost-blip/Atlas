@@ -147,3 +147,11 @@ advanced to `56c9d88` (business navigation excludes staff Admin tools). Preserve
 that exact source. Combined production build, explicit strict TypeScript, scoped
 lint and six launcher/search/business-boundary files/23 tests PASS. Final combined
 candidate/public acceptance remains pending.
+
+`ddb35f2` preparation/smoke and complete candidate acceptance PASS; backup
+`atlas-pre-deploy-20261009-223610`, evidence `/tmp/atlas-supply-staging-QdOOi5`.
+Activation stopped before backup/switch because live advanced to `94dd3e1`
+(commercial workspaces). Preserved its exact source and already-applied additive
+SalesActivity migration. Integrated Prisma generation, production build, explicit
+post-build strict TypeScript, scoped lint and 14 files/67 focused regressions PASS.
+Final combined candidate/public verification remains pending.

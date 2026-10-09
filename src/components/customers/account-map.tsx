@@ -37,6 +37,7 @@ function avatarClass(name: string) {
 export function AccountMap({
   accounts,
   people,
+  choices = [],
   focusId,
   canEdit,
   canCreate,
@@ -45,12 +46,14 @@ export function AccountMap({
 }: {
   accounts: MapAccount[];
   people: MapPerson[];
+  choices?: MapAccount[];
   focusId?: string;
   canEdit: boolean;
   canCreate: boolean;
   canInvoice: boolean;
   canPeople: boolean;
 }) {
+  const allAccounts = useMemo(() => [...accounts, ...choices.filter(choice => !accounts.some(account => account.id === choice.id))], [accounts, choices]);
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [role, setRole] = useState("");
@@ -61,7 +64,7 @@ export function AccountMap({
   const [pending, startTransition] = useTransition();
 
   const pool = useMemo(() => {
-    if (!focusId) return accounts;
+    if (!focusId) return [];
     const family = new Set(hierarchyAccountIds(accounts, focusId));
     return accounts.filter((account) => family.has(account.id));
   }, [accounts, focusId]);
@@ -155,8 +158,8 @@ export function AccountMap({
     const Icon = account.hierarchyRole === "GROUP" ? Network : account.hierarchyRole === "BRANCH" ? MapPin : account.hierarchyRole === "DELIVERY" ? Truck : Building2;
     const active = selected === `account:${account.id}`;
     const team = peopleUnder(account.id, null);
-    const canUp = nextHierarchyParent(accounts, account.id, "up") !== undefined;
-    const canDown = nextHierarchyParent(accounts, account.id, "down") !== undefined;
+    const canUp = nextHierarchyParent(allAccounts, account.id, "up") !== undefined;
+    const canDown = nextHierarchyParent(allAccounts, account.id, "down") !== undefined;
     return (
       <li className="min-w-0">
         <div className={`rounded-2xl border bg-white shadow-[0_10px_30px_-24px_rgba(15,23,42,0.45)] ${active ? "border-blue-300 ring-2 ring-blue-100" : "border-slate-200"}`}>
@@ -208,7 +211,7 @@ export function AccountMap({
   }
 
   const parentChoices = selectedAccount
-    ? accounts.filter((account) => !descendantAccountIds(accounts, [selectedAccount.id]).includes(account.id)).sort((a, b) => roleLabel(a.hierarchyRole).localeCompare(roleLabel(b.hierarchyRole)) || a.name.localeCompare(b.name))
+    ? allAccounts.filter((account) => !descendantAccountIds(allAccounts, [selectedAccount.id]).includes(account.id)).sort((a, b) => roleLabel(a.hierarchyRole).localeCompare(roleLabel(b.hierarchyRole)) || a.name.localeCompare(b.name))
     : [];
   const managerChoices = selectedPerson
     ? (() => {
@@ -232,9 +235,9 @@ export function AccountMap({
         </select>
         <button type="button" onClick={() => setCollapsed(new Set())} className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-medium text-slate-600">Expand</button>
         <button type="button" onClick={() => setCollapsed(new Set(pool.map((account) => account.id)))} className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-medium text-slate-600">Collapse</button>
-        {focusId && <Link href="/customers/map" className="text-xs font-medium text-blue-700">Whole map</Link>}
+        {focusId && <Link href="/customers/map" className="text-xs font-medium text-blue-700">Choose another customer</Link>}
         {canCreate && selectedAccount && <Link href={`/customers/new?parent=${selectedAccount.id}`} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600">New account inside</Link>}
-        {canEdit && selectedAccount && <HierarchyBuilder accounts={accounts} accountId={selectedAccount.id} />}
+        {canEdit && selectedAccount && <HierarchyBuilder accounts={allAccounts} accountId={selectedAccount.id} />}
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-4">
@@ -247,8 +250,8 @@ export function AccountMap({
               <div className="mt-3 flex flex-wrap gap-2">
                 {canEdit && (
                   <>
-                    <button type="button" disabled={pending || nextHierarchyParent(accounts, selectedAccount.id, "up") === undefined} onClick={() => run(() => moveCustomer(selectedAccount.id, "up"))} className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:border-blue-300 disabled:opacity-40">Move up</button>
-                    <button type="button" disabled={pending || nextHierarchyParent(accounts, selectedAccount.id, "down") === undefined} onClick={() => run(() => moveCustomer(selectedAccount.id, "down"))} className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:border-blue-300 disabled:opacity-40">Move down</button>
+                    <button type="button" disabled={pending || nextHierarchyParent(allAccounts, selectedAccount.id, "up") === undefined} onClick={() => run(() => moveCustomer(selectedAccount.id, "up"))} className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:border-blue-300 disabled:opacity-40">Move up</button>
+                    <button type="button" disabled={pending || nextHierarchyParent(allAccounts, selectedAccount.id, "down") === undefined} onClick={() => run(() => moveCustomer(selectedAccount.id, "down"))} className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:border-blue-300 disabled:opacity-40">Move down</button>
                   </>
                 )}
                 {canEdit && (["GROUP", "CUSTOMER", "BRANCH", "DELIVERY"] as const).map((level) => (
@@ -268,7 +271,7 @@ export function AccountMap({
               {canInvoice ? (
                 <select aria-label="Invoice customer" disabled={pending} className={`${selectClass} mt-2 normal-case`} value={selectedAccount.invoiceAccountId ?? ""} onChange={(event) => run(() => setInvoiceAccount(selectedAccount.id, event.target.value || null))}>
                   <option value="">This account</option>
-                  {accounts.filter((account) => account.id !== selectedAccount.id).map((account) => <option key={account.id} value={account.id}>{account.name} · {account.customerCode}</option>)}
+                  {allAccounts.filter((account) => account.id !== selectedAccount.id).map((account) => <option key={account.id} value={account.id}>{account.name} · {account.customerCode}</option>)}
                 </select>
               ) : <span className="mt-2 block text-sm font-medium normal-case text-slate-800">{selectedAccount.invoiceAccountName ?? "This account"}</span>}
             </label>

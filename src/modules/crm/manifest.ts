@@ -14,7 +14,7 @@ export const crmManifest: ModuleManifest = {
  analyticsProvider: crmAnalytics,
   id: "crm",
   name: "CRM",
-  description: "Prospecting, pipeline, forecasting and reporting.",
+  description: "Customer relationships, sales appointments, pipeline and forecasts.",
   icon: Handshake,
   version: "0.2.0",
   minimumCoreVersion: "0.1.0",
@@ -27,7 +27,9 @@ export const crmManifest: ModuleManifest = {
   // Each tab is a CRM section. Dashboards is its own app; reports can link there.
   navigation: [
     { label: "Today", href: "/crm/today", capability: SALES_CAPABILITIES.opportunityRead },
-    { label: "Prospect", href: "/crm/prospect", capability: SALES_CAPABILITIES.prospectRead },
+    { label: "Appointments", href: "/crm/appointments", capability: SALES_CAPABILITIES.opportunityRead },
+    { label: "Accounts", href: "/crm/accounts", capability: "customers.read" },
+    { label: "Prospects", href: "/crm/prospect", capability: SALES_CAPABILITIES.prospectRead },
     { label: "Pipeline", href: "/crm/pipeline", capability: SALES_CAPABILITIES.opportunityRead },
     { label: "Projects", href: "/crm/projects", capability: SALES_CAPABILITIES.opportunityRead },
     { label: "Forecast", href: "/crm/forecast", capability: SALES_CAPABILITIES.forecastRead },

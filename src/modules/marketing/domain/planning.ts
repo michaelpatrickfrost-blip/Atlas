@@ -6,5 +6,7 @@ export const budgetLineSchema=z.object({channel:z.enum(PLAN_CHANNELS),place:z.st
 export function moneyMinor(value:string){if(!/^\d{1,8}(\.\d{1,2})?$/.test(value.trim()))throw new Error('Enter an amount with up to two decimal places.');const [major,minor='']=value.trim().split('.');const amount=Number(major)*100+Number(minor.padEnd(2,'0'));if(amount>2147483647)throw new Error('Amount exceeds the planning limit.');return amount;}
 export const STARTER_STAGES=['Notice','Look','Choose','Buy','Stay'] as const;
 export const journeyMapSchema=z.object({who:z.string().min(1).max(250)}).strict();
-export const journeyStageSchema=z.object({journeyId:z.string().min(1).max(100),order:z.number().int().min(0).max(30),customerIntent:z.string().max(500)}).strict();
+export const journeyStageSchema=z.object({journeyId:z.string().min(1).max(100),order:z.number().int().min(0).max(30),customerIntent:z.string().max(500),emotion:z.enum(['UNKNOWN','POSITIVE','NEUTRAL','FRUSTRATED']).default('UNKNOWN'),painPoint:z.string().max(1000).default(''),opportunity:z.string().max(1000).default(''),successMeasure:z.string().max(500).default('')}).strict();
 export const journeyTouchSchema=z.object({journeyId:z.string().min(1).max(100),stageId:z.string().min(1).max(100),channel:z.enum(PLAN_CHANNELS),moment:z.string().min(1).max(500),owner:z.string().max(250)}).strict();
+
+export const journeyPathSchema = z.object({journeyId:z.string().min(1).max(100),fromStageId:z.string().min(1).max(100),toStageId:z.string().min(1).max(100),label:z.string().trim().min(1).max(150),kind:z.enum(['BRANCH','RETURN'])}).strict().refine(value=>value.fromStageId!==value.toStageId,{message:'Connect two different stages.'});

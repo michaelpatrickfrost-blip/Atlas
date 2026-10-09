@@ -1,5 +1,36 @@
 # Atlas current state
 
+## 9 October 2026 — Private Admin entry prepared for live verification
+
+User-requested `/19811171adminlogin` and `/recovery` replace the public staff
+addresses. Customer sign-in loses its Admin link and rejects staff; retired
+addresses/anonymous console return not found without a private-address redirect.
+Responsive dedicated Admin auth frame includes password visibility and accessible
+errors. Proxy/metadata exclude Admin auth/console/API from indexing, use
+no-referrer and private/no-store. No public robots/sitemap lists the entry.
+
+Core auth binds selectors to the observed address; platform recovery requires
+the staff entry. Private central HMAC-keyed authentication_rate_limits counters
+atomically enforce 10 identity/network and 60 network attempts per 15 minutes,
+fail closed and expire independently of business data. Additive migration
+20261009220000_authentication_attempt_limits; counter table excluded from exports
+and gateway metadata. Existing passwords/grants/tenant checks remain. Paths:
+src/core/auth, src/proxy.ts, src/components/admin/auth-frame.tsx, auth/admin
+route layouts, prisma/schema.prisma and migration. Active Admin/architecture/
+Studio requirements docs and Studio acceptance URLs reconciled; historical
+release evidence preserved.
+
+Checks so far: Prisma generation, focused lint, focused 5-file/35-test auth suite
+and production build PASS. Full suite: 1066 passed / 87 failed / 22 skipped
+(179 files); failures are outside changed authentication sources, principally
+stale module-availability mocks. Strict types remain running with no diagnostics
+yet. Live advanced to 6775044 during work; preserve that deployed Studio release
+before preparing this change. New Admin entry is not yet deployed.
+Next: review final diff, record checks, prepare backed-up immutable release,
+exercise private entry/denials/limits and staff console, activate and repeat
+public HTTPS acceptance. No MFA/SSO or immediate crawler removal is claimed.
+
+
 ## 9 October 2026 — Guardian MRP repairs deployed and proved
 
 Public immutable runtime 0ce9f4a8202bdf2413a9eb712b1f0a61a8e4ec72 preserves the

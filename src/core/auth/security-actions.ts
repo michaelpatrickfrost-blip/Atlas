@@ -9,19 +9,22 @@ import {hashRecoveryCode,validNewPassword} from './recovery';
 import {revalidatePath} from 'next/cache';
 import {redirect} from 'next/navigation';
 import {platformCapabilities} from '@/core/admin/access';
+import {allowAuthenticationAttempt,AUTH_LIMIT_ERROR} from './attempt-limit';
 /** Public recovery is authorised by possession of a hashed, single-use credential. */
 export async function completePasswordRecovery(form:FormData){
  const code=String(form.get('code')??'').trim(),password=String(form.get('password')??'');
  if(!validNewPassword(password))throw new Error('Use 12–128 characters, up to 72 UTF-8 bytes.');
  if(password!==String(form.get('confirmPassword')??''))throw new Error('Passwords do not match.');
  if(!/^[a-f0-9]{64}$/.test(code))throw new Error('This recovery code is invalid or expired.');
- const address=signInAddress((await headers()).get('x-atlas-request-path')??'/reset-password',{companySlug:String(form.get('companySlug')??''),portal:String(form.get('portal')??'')});
+ const requestHeaders=await headers();
+ const address=signInAddress(requestHeaders.get('x-atlas-request-path')??'/reset-password',{companySlug:String(form.get('companySlug')??''),portal:String(form.get('portal')??'')});
+ if(!await allowAuthenticationAttempt(requestHeaders,hashRecoveryCode(code),'recovery'))throw new Error(AUTH_LIMIT_ERROR);
  const passwordHash=await bcrypt.hash(password,12),now=new Date();
  const token=await db.$transaction(async tx=>{const reset=await tx.passwordReset.findUnique({where:{tokenHash:hashRecoveryCode(code)},include:{membership:{include:{organisation:true,user:{include:{platformAdmin:true,_count:{select:{memberships:true}}}}}}}});
   if(!reset||reset.usedAt||reset.expiresAt<=now||!reset.membership.active||reset.membership.organisation.status!=='ACTIVE')throw new Error('This recovery code is invalid or expired.');
   const platform=reset.purpose==='PLATFORM';
   const {companySlug,portal}=address;
-  if((companySlug && (platform || reset.membership.organisation.slug!==companySlug)) || (portal==='atlas' && !platform))throw new Error('This code does not belong to this sign-in address.');
+  if((companySlug && (platform || reset.membership.organisation.slug!==companySlug)) || platform!==(portal==='atlas'))throw new Error('This code does not belong to this sign-in address.');
   if(platform ? (!platformCapabilities(reset.membership.user.platformAdmin).length||reset.membership.organisation.kind!=='INTERNAL') : (!!reset.membership.user.platformAdmin||reset.membership.user._count.memberships!==1))throw new Error('This recovery code is invalid or expired.');
   const claimed=await tx.passwordReset.updateMany({where:{id:reset.id,usedAt:null,expiresAt:{gt:now}},data:{usedAt:now}});if(claimed.count!==1)throw new Error('This recovery code is invalid or expired.');
   await tx.user.update({where:{id:reset.membership.userId},data:{passwordHash,authVersion:{increment:1}}});await tx.passwordReset.updateMany({where:{membership:{userId:reset.membership.userId},usedAt:null},data:{usedAt:now}});

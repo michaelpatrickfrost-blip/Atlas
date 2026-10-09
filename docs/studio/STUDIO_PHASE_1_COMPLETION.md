@@ -5,6 +5,10 @@ hardening. This is not completion of the whole Studio specification. The source
 Section 27 sequence and Michael's follow-ups are recorded in the implementation
 ledger; no Phase 2–9 engines were built.
 
+Later 9 October Admin-entry update supersedes the historical `/atlas/login`
+address below: staff use `/19811171adminlogin`; anonymous console requests are
+not found. The original Phase 1 acceptance evidence is retained.
+
 ## Completed
 
 - Typed capability registry: stable owner/IDs/versions, schema and contract hashes,

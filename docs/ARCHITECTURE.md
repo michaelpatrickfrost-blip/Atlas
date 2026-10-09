@@ -130,7 +130,7 @@ later artefact compilers follow the supplied source's phase gates. PostgreSQL
 guards immutable identity/history and sealed dependency edges.
 
 Staff setup uses `/atlas/studio` with independently authorised target companies;
-customer Studio `/studio` uses its authenticated company. `/atlas/login` and
+customer Studio `/studio` uses its authenticated company. `/19811171adminlogin` and
 `/business/<slug>/login` share the canonical identity service with distinct server
 membership selection. Proxy overwrites the path hint on page/API requests for sign-in routing;
 membership/capability checks remain the permission boundary. See the permanent Studio ledger for verified

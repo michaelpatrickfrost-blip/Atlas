@@ -2,7 +2,7 @@
 export const quoteIdentifier = (name: string) => `"${name.replaceAll('"', '""')}"`;
 export type ExportColumn = { table: string; column: string; type: string };
 export type ExportForeignKey = { table: string; parent: string; columns: string[]; parentColumns: string[] };
-export const EXCLUDED_EXPORT_TABLES = new Set(["_prisma_migrations", "platform_administrators", "password_resets", "guardian_issues", "guardian_runs", "guardian_workers", "guardian_rate_limits"]);
+export const EXCLUDED_EXPORT_TABLES = new Set(["_prisma_migrations", "platform_administrators", "password_resets", "authentication_rate_limits", "guardian_issues", "guardian_runs", "guardian_workers", "guardian_rate_limits"]);
 export const protectedExportField = (field: string) => /password|credential|secret|token|authVersion|sessionVersion/i.test(field);
 export function redactExportSecrets(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(redactExportSecrets);

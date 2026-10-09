@@ -1,12 +1,16 @@
 # Atlas current state
 
-## 10 October 2026 — Studio candidate preserves live Manufacturing and People
+## 10 October 2026 — Studio cohort/decoder candidate with stable acceptance
 
-Merged exact public 2ef5b4c source and applied migrations unchanged. Latest supply
-release evidence is retained below. No local business DB or Studio schema change.
-Cohort/decoder local checks passed before merge; integrated checks now pending.
-No cohort/decoder candidate or public verification yet. Current next action:
-regenerate, run integrated tests/build/types/lint, then prepare exact reviewed source.
+Preserved exact live Manufacturing/People 2ef5b4c, applied migrations unchanged.
+Generation, 23 files/135 focused assertions, production build, strict post-build
+TypeScript, scoped lint PASS. Full suite not rerun. 2B3c2c IMPLEMENTED: closed
+Studio selector reuses deployed release acceptance/locks; combined checked-in
+runner covers Studio + native regressions before switch and on public. Shell
+syntax and three invalid selector/URL/phase rejections PASS. No schema change.
+Real cohort/decoder/held-lock candidate-public checks NOT RUN yet. Next deploy
+exact reviewed pinned source with ATLAS_RELEASE_ACCEPTANCE=studio; acceptance
+must PASS before activation and repeat publicly. Phase 2 gate NOT PASSED.
 
 ## 10 October 2026 — Studio stored-value decoder local checkpoint
 

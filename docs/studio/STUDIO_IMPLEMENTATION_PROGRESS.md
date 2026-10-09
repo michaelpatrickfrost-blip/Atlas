@@ -11,12 +11,10 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c2b — Stored-value decoder — IMPLEMENTED locally (24 tests/build/types/lint PASS).
-2B3c2a owner cohort-access query remains IMPLEMENTED locally. Four files/22 focused
-tests including sealed v1/v2, build/types/lint PASS. New real helper not run on
-cohort source. Retirement and refreshed-principal backend workstreams VERIFIED
-on exact candidate/public 7941f9b; no owner value API, conversion write policy or
-durable job. Remaining Phase 2 dependencies retained.
+2B3c2c — Stable combined release acceptance — IMPLEMENTED; shell syntax/three
+invalid argument checks PASS. Integrated cohort/decoder/Manufacturing/People
+23 files/135 tests, generation/build/types/scoped lint PASS. Real cohort/decoder
+candidate/public checks pending. Retirement/principals VERIFIED on 7941f9b.
 
 # Overall Status
 
@@ -140,6 +138,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+2B3c2c: scripts/deploy/check-studio-release.sh, vps-release.sh, DEPLOY, evolution
+plan and shared ledger/memory/decision docs. Existing acceptance modes retained.
+
 2B3c2b: fields/codec.ts, tests/studio-field-codec.test.ts, exact-Test SQL helper,
 evolution plan, ledger/CURRENT_STATE/DECISIONS.
 
@@ -220,6 +221,10 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+Latest integrated source preserving live 2ef5b4c: 23 files/135 tests, generation,
+production build, strict post-build TypeScript, scoped lint PASS. Acceptance shell
+syntax and three invalid argument rejection cases PASS; runtime pending.
 
 Codec: three files/24 tests, production build, strict post-build TypeScript and
 changed-file lint PASS. No current cohort/codec candidate/public claim.
@@ -340,10 +345,12 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Preserve exact live 2ef5b4c Manufacturing/People source in the cohort/codec candidate;
-regenerate and run integrated focused tests/build/types/lint. Prepare the exact
-reviewed source, run combined candidate checks including real private/unanchored/
-final owner cohort and SQL decoder checks; activate only on PASS and repeat publicly.
-Then implement explicit owner representation-only policy and reviewed preview/job/
-row persistence with exact checksums/revisions/current principal/field ACL. Phase 2
-NOT PASSED; no 2C/2E or Phase 3+ yet.
+Deploy the exact reviewed cohort/decoder source preserving live 2ef5b4c with
+ATLAS_RELEASE_ACCEPTANCE=studio. Existing deployer must prove sealed candidate
+including real private/unanchored/final owner cohort and SQL decoder checks before
+activation, then repeat on exact public runtime while retaining original locks.
+Record evidence and any real failure before progressing. Then implement explicit
+owner representation-only policy and reviewed preview/job/row persistence with
+checksum/revision/current principal/field ACL. No 2C/2E or Phase 3+ yet; Phase 2
+NOT PASSED. Visual designer, business dashboard publication and custom buttons
+remain recorded Phase 2 requirements, not delivered by this checkpoint.

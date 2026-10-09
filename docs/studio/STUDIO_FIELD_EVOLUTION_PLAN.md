@@ -165,3 +165,20 @@ TypeScript and changed-file lint PASS. Seven codec tests cover all 15 field type
 First fixture run failed four assertions; corrected duration/timezone/phone policy
 and normalised address fixtures, preserving validation. Real SQL decimal/money
 helper assertions added but NOT RUN on a codec-enabled candidate/public runtime.
+
+### 2B3c2c — Stable combined release acceptance (IMPLEMENTED)
+
+Purpose: complete cohort/decoder proof without another verified release advancing
+between candidate and activation. Dependencies: deployed People/Supply acceptance
+hook and existing proven combined Test runners. Files: deploy/check-studio-release.sh,
+vps-release.sh and deployment/memory/ledger docs. Database: no schema change;
+back up central Test writes before each candidate/public run. Tests: shell syntax,
+closed selector rejection, exact revision/pointer, real Studio/storage/cohort and
+existing Home/Reports/MRP/Messages/Admin/supply/commercial/People acceptance.
+Reuse original locks, build/compatibility/backup/switch/rollback; no second locking
+mechanism or arbitrary shell hook. Other acceptance selectors remain unchanged.
+
+2B3c2c local evidence: shell syntax and three unrecognised selector/foreign URL/
+wrong phase-URL rejection checks PASS before database/service actions. Integrated
+23 files/135 assertions, generation/build/strict types/scoped lint PASS. Combined
+runtime candidate/public proof pending. No Phase 2 gate or designer completion.

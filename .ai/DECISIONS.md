@@ -1587,3 +1587,13 @@ activation and public checks, with separate backed-up central Test fixtures.
 Reuse all pinned-source, remote-tip, ancestry, compatibility, immutable build,
 smoke and runtime rollback gates. No lock inheritance mechanism or gate bypass is
 needed; default and People releases retain their existing behavior.
+
+## 10 October 2026 — Studio acceptance reuses continuous release locks
+
+Extend deployed People/Supply acceptance selection with a closed Studio selector.
+Run the existing combined fixture checks on candidate, then switch and repeat on
+public under the original locks, backups, source pin, compatibility and rollback.
+Reason: accepted independent releases repeatedly advanced between standalone
+candidate/activation checks. No lock inheritance or second mechanism is needed.
+Fixture writes remain isolated central Tests; no permission grants or local DB.
+Partial field checkpoints still cannot pass the complete Phase 2 gate.

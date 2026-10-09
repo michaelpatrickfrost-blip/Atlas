@@ -17,8 +17,43 @@ Project/design/Admin/company/decision/delivery docs reconciled. Four focused fil
 14 tests PASS; scoped lint zero errors/two existing brand-img warnings. Production
 build and strict post-build TypeScript PASS. Full suite not rerun; final diff/
 whitespace reviewed. Candidate/public acceptance not yet run.
+First prepare attempt stopped safely before backup/build because the live release
+advanced to 5ebd700d3526b6fdaa70efa4514da0803301a285. Its accepted Nunito font
+source is merged unchanged. Integrated production build PASS; strict post-build
+TypeScript running.
 Next: prepare exact compatible release, verify business surfaces
 and retained staff console, activate and repeat public HTTPS checks.
+
+## 9 October 2026 — Shared rounded typography in verification
+
+Replaced Plus Jakarta Sans with Nunito across the shared root sans token/body,
+including business apps, sign-in/recovery and independent Atlas Admin. Bundled
+normal/true-italic variable fonts (200–1000) retain source character coverage and
+SIL OFL licence/provenance; Geist Mono, text hierarchy and aligned numerals remain.
+Paths: src/app/layout.tsx, globals.css, fonts and scripts/check-typography.ts;
+design guides/DECISIONS updated.
+Scoped codex/rounded-system-font starts from exact public live 2690c26, preserving
+its already-deployed Manufacturing/Studio compatibility source. No schema, records,
+permissions or storage change. Checks: exact-lockfile install, Prisma generation,
+production build, strict TypeScript, scoped lint and whitespace PASS. Initial
+checker types referenced an absent User.active field; corrected to membership
+active and strict types rerun successfully. Local production browser proves
+actual Nunito glyphs and equal numeral widths; desktop/phone login screenshots
+visually inspected. Candidate 4a0a230 prepared with central backup
+atlas-pre-deploy-20261009-214902; all 30 route/viewport typography checks PASS
+(actual Nunito glyphs, inherited controls, aligned digits, page fit, zero browser/
+asset errors/external font requests). Home desktop/phone, Admin phone and Reports
+desktop screenshots visually inspected. Private evidence: /tmp/atlas-typography-check-5XrNJu
+and /tmp/atlas-typography-staging-HfIoX2. Full suite not rerun for this presentation change.
+Activation safely stopped at ancestry after accepted Studio e5d66e6 became public
+live. Merged that exact source, retaining its typed fields and modern Apps design;
+only CURRENT_STATE header conflict required reconciliation. Combined production
+build, focused Apps menu test file/3 assertions, scoped lint and whitespace PASS;
+strict TypeScript in progress. Combined candidate/public typography acceptance
+and responsive Apps verification pending.
+Next: prepare and verify the compatible combined release, activate, prove fonts
+on public HTTPS and merge implementation/evidence into main before completion.
+
 
 ## 9 October 2026 — Reference Apps design live and publicly verified
 

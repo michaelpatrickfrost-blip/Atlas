@@ -6,6 +6,15 @@ Source: [123-section implementation specification](../plans/CUSTOMER_SERVICE_TIC
 
 Customer cases (`ServiceCase`, new `CS` references) belong to Customer Service and the canonical Party. Internal tickets and cross-team queries share `ServiceWorkItem` with distinct TICKET / QUERY kinds and `TKT` / `QRY` references. A query requires an accessible originating case or work item. Historical `CASE` cases and departmental `ServiceTicket` records remain intact; they continue to block resolution while unfinished. Team work never changes the case owner or resolves its parent automatically.
 
+Studio Phase 2 contract opt-in targets only canonical TICKET records. The owner
+contribution in `src/core/service-work/studio.ts` registers bounded, private-scoped
+number/subject/status/type/priority/date projections and native record access. It
+does not expose descriptions, conversation, evidence, intake answers or arbitrary
+native writes. Added-value authorisation requires ticket management, active company
+entitlement, queue membership for restricted queues, a current record revision and
+a transaction lock; final/merged tickets fail closed. Existing intake configuration
+and frozen answers remain authoritative and are not silently converted.
+
 Historical department work is available at `/service/tickets`, with search, status,
 assigned-to-me and case filters. Each preserved `ServiceTicket` has its own detail
 route (`/service/tickets/[ticketId]`); case Linked work opens that exact record.

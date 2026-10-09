@@ -41,10 +41,103 @@ three brand-image warnings) passed. Candidate 1f36fb9 prepared; acceptance initi
 hit an ambiguous preview selector after a second retained fixture existed. Scoped
 the checks to actual timeline articles; this is a test selector correction, not a
 passing acceptance claim. No activation until the final source passes.
-Next: prepare the final pinned revision, rerun exact chat acceptance plus Home/Reports
+5798bc1 preparation stopped at the ancestry guard after live Studio 6775044
+advanced. Its exact already-live source is merged, preserving typed owner/field
+contracts and their evidence. The prematurely queued acceptance did not run
+(directory absent); no new fixture or passing check is claimed.
+Combined source: 11 focused files/69 assertions, strict TypeScript, production
+build and diff check passed; no schema change.
+Next: prepare the final pinned revision,
+rerun exact chat acceptance plus Home/Reports
 regression, activate and repeat
 public verification. Synthetic QA fixtures stay central and are retired, no actual
 colleague/customer receives a test message; no local business database/cache.
+
+## 9 October 2026 — Phase 2B1 validators and visual setup requirements
+
+Added strict custom-field metadata/storage/value validation library for strings,
+safe integers, exact decimals/money, booleans, calendar dates, UTC instants, explicit
+second durations, email/URL/E164 phone, stable enum/multi-enum choices, references
+and approved-country addresses. Required/constraint checks are independent of
+visibility; additional read/write capabilities narrow owner permissions. Bounded
+linear regex avoids untrusted backtracking. Reference parsing alone is not access:
+atomic field services must independently resolve/authorise target records in 2B4.
+No storage/compiler/UI is connected yet, no Prisma/schema change and no native
+intake conversion. Full 2B/Phase 2 remain IN PROGRESS, not VERIFIED/PASS.
+
+Michael's latest visual/easy-setup requirement is permanently recorded in
+docs/studio/STUDIO_VISUAL_BUILDER_REQUIREMENTS.md: choose an approved record/page or
+template preset, see a draft preview following published rendering rules, responsive
+desktop/tablet/phone, modern Atlas UI, preserved unsaved work and no preview commands
+or privilege expansion. 2E gate includes real configuration/preview/runtime proof.
+Detailed 2B subworkstreams/design: docs/studio/STUDIO_PHASE_2_FIELDS.md.
+
+Checks: 7 field validator assertions PASS, strict TypeScript/scoped lint PASS;
+integrated source with live Guardian MRP corrections: 17 files/110 assertions and
+production build PASS. Repeat strict types after build before release. Source 2A
+candidate ce175fb passed central owner/metadata/Admin/Home/Reports; ancestry stopped
+activation after 0ce9f4a went live. Exact MRP source/evidence merged; combined release
+must be prepared/verified, not assumed live. Next: merged release checks, then 2B2
+versioned field compiler/identity binding and additive typed storage/history models.
+
+## 9 October 2026 — Studio preserves newer live MRP source
+
+Candidate ce175fb passed central Tickets owner/private/member/revision/tenant checks,
+metadata/Admin/business login and Home/Reports regressions. Private logs:
+/tmp/atlas-studio-acceptance-wsnN9L. Activation stopped at ancestry after concurrent
+Guardian MRP source 0ce9f4a became live; merge its exact source and historical evidence
+without undoing native corrections. Candidate/application remains unactivated until
+merged production verification. No schema change. Michael also requires easy visual
+page/template selection and desktop/tablet/phone preview; requirements saved in
+docs/studio/STUDIO_VISUAL_BUILDER_REQUIREMENTS.md for 2E, not a completed builder.
+Next: finish merged validation, checkpoint typed field validation, prepare combined
+source and run central/public checks before claiming deployment.
+
+## 9 October 2026 — Studio Phase 2A contract checkpoint
+
+Implemented typed entity native-field/record policies and the registry's separate
+owner authorisation gateway. Extensible owners must register matching read queries,
+canonical route/label and native write capability; input/output and returned tenant,
+ID/revision are validated. Extension checks require expected revision and a trusted
+transaction, never accept client scope/native patches, and leave entities descriptive.
+Tickets registers tickets.ticket/list/get over canonical TICKET records, preserving
+workScope/private queues and strict company enablement, bounded keyset reads,
+transactional native row locks/recheck, final/merged/queue-member restrictions.
+Existing intake fields/answers and protected native operations remain unchanged.
+
+Paths: core/studio/registry/{types,entities,contracts,registry}, core/service-work/studio,
+tickets manifest, two focused suites and central acceptance helper; MODULE_SPEC,
+SERVICE_WORK_DESK, contract inventory, DECISIONS and implementation ledger updated.
+Local: 8 files/54 assertions, strict TypeScript, scoped lint and production build PASS;
+diff reviewed/whitespace check PASS. No schema change. Central acceptance helper is
+implemented but not run yet; live stays a642df0. Full-suite baseline remains previously
+confirmed 85 failures; no full-suite success claimed. Next: 2B typed field schema and
+compiler/persistence design, then additive models/constraints and versioned validation/
+atomic extension values. Do not begin 2C until 2B checks/checkpoint are complete.
+
+## 9 October 2026 — Standalone modern Admin accepted; Phase 2 begins
+
+Exact live source a642df0555cd45a97d57d867621d189c7650cf19 preserves concurrent
+Reports 2a8522f and the verified Phase 1 kernel. Candidate/public central metadata,
+real Admin forms/provisioning/login isolation, no-business-tools/staff sign-out,
+Home desktop/tablet/phone and Reports previews/workbooks/permissions all passed.
+Live visible page also inspected through the user's browser: modern branded Admin
+rail/header, selected-company setup tabs, no business Apps/search/chat/notices/My
+work. Original user tab/input left intact; separate review tab used. Private
+candidate/public logs /tmp/atlas-studio-acceptance-5MbNoc and
+/tmp/atlas-studio-public-CMmn5v; local UI image /tmp/atlas-admin-console-live.jpg.
+Merged source checks: 30 files/146 assertions, strict TypeScript/build passed;
+scoped lint zero errors/one brand-img warning. Pre-merge full suite 1009 passes/
+85 baseline failures/22 skips, exact unchanged failure names. No new migration.
+Source/evidence checkpoint will be included in main; live runtime remains a642df0.
+
+Phase 2 IN PROGRESS, workstream 2A. Reviewed ServiceWorkItem (TICKET), not historical
+ServiceTicket or QUERY; native workScope/queue access, requireWork, locked versions,
+final/merged rules, existing catalogue fields and definition/context snapshots.
+No shared general custom-field storage was found. Adapt existing intake fields
+where appropriate; do not rewrite historical answers. Next: implement typed
+owner-approved record/extension contracts and bounded Tickets projections with
+native read/write policy, tests, docs and checkpoint before metadata storage 2B.
 
 ## 9 October 2026 — Guardian MRP repair ready for server verification
 
@@ -84,30 +177,6 @@ tests/mrp-planning-access.test.ts; docs/evidence/2026-10-09-guardian-mrp-workflo
 Next: prepare/deploy this compatible reviewed release, run the same actual Test
 POST/button/page/central-state check publicly, then mark only reproduced reports
 FIXED and integrate owned source/memory into the canonical dirty repo safely.
-
-## 9 October 2026 — Standalone modern Admin accepted; Phase 2 begins
-
-Exact live source a642df0555cd45a97d57d867621d189c7650cf19 preserves concurrent
-Reports 2a8522f and the verified Phase 1 kernel. Candidate/public central metadata,
-real Admin forms/provisioning/login isolation, no-business-tools/staff sign-out,
-Home desktop/tablet/phone and Reports previews/workbooks/permissions all passed.
-Live visible page also inspected through the user's browser: modern branded Admin
-rail/header, selected-company setup tabs, no business Apps/search/chat/notices/My
-work. Original user tab/input left intact; separate review tab used. Private
-candidate/public logs /tmp/atlas-studio-acceptance-5MbNoc and
-/tmp/atlas-studio-public-CMmn5v; local UI image /tmp/atlas-admin-console-live.jpg.
-Merged source checks: 30 files/146 assertions, strict TypeScript/build passed;
-scoped lint zero errors/one brand-img warning. Pre-merge full suite 1009 passes/
-85 baseline failures/22 skips, exact unchanged failure names. No new migration.
-Source/evidence checkpoint will be included in main; live runtime remains a642df0.
-
-Phase 2 IN PROGRESS, workstream 2A. Reviewed ServiceWorkItem (TICKET), not historical
-ServiceTicket or QUERY; native workScope/queue access, requireWork, locked versions,
-final/merged rules, existing catalogue fields and definition/context snapshots.
-No shared general custom-field storage was found. Adapt existing intake fields
-where appropriate; do not rewrite historical answers. Next: implement typed
-owner-approved record/extension contracts and bounded Tickets projections with
-native read/write policy, tests, docs and checkpoint before metadata storage 2B.
 
 
 ## 9 October 2026 — Admin candidate preserves current live Reports source

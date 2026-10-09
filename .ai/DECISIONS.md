@@ -3,7 +3,11 @@
 Michael requested a modern logo-based Reports workspace for filtered Excel
 exports, including Finance. Keep Reports as a built-in utility with source-owned
 allowlisted providers; a Reports entry does not grant data permissions or licences.
-Dashboards remains Analytics. Explicit XLSX downloads extend the existing
+Dashboards remains Analytics. Summary measures retain the original Analytics
+entitlement/dashboard permission, while detailed source exports do not require
+Analytics. CRM summaries enforce the documented owner restriction. Monetary
+column selections keep the matching currency to prevent ambiguous Excel values.
+Explicit XLSX downloads extend the existing
 user-chosen export exception; central records remain authoritative with no local
 business store or automatic cache. Raw exports preserve each source scope and
 currency. Summaries retain definitions/period semantics and cannot masquerade as

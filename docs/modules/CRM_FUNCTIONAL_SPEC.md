@@ -4616,3 +4616,12 @@ And the director thinks:
 > **"I can see pipeline, forecast, sales and actual commercial performance in one system."**
 
 That is where Atlas can move beyond being another CRM and become the commercial operating system for the business.
+## Authorised summary measures — 9 October 2026
+
+CRM Analytics/Reports summaries use `ownerRestriction(session)` like the prospect
+list and pipeline: sales reps see their own records; `sales.pipeline.manage`
+permits all owners within the session company. Win rate uses grouped counts of all
+matching WON/LOST opportunities instead of an unlabelled 8,000-row slice. The
+prospect trend still explicitly declares its latest-8,000 source limit. Reports
+keeps the Analytics licence/dashboard capability for summaries and adds literal
+Excel output, definitions and selected columns. No CRM records are changed.

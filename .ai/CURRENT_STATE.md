@@ -28,7 +28,18 @@
   10 focused files/58 assertions passed (Reports, permissions, provisioning and
   Studio registry/admin regressions); standalone TypeScript and production build
   passed. Source includes Studio's `9ebd774` accepted-release evidence. Candidate
-  dataset/export acceptance and live activation remain pending.
+  `75f1a1f` built/smoke-tested with live pointer unchanged. Final review found CRM
+  Analytics lacked its documented owner restriction: corrected all six providers,
+  with exact grouped win-rate counts. Reports summaries retain the original
+  Analytics entitlement/dashboard capability; raw source exports stay independent.
+  Summary money conversion also preserves large exact minor-unit values. The `75f1a1f` candidate passed all 14 record previews/workbooks,
+  search/empty state/field filters/browser download, all 3 layouts and Home/menu
+  regressions. Final scope fixes passed 11 files/61 assertions, typecheck/build;
+  currency columns now remain alongside selected money columns and browser
+  acceptance checks selected-column files and restricted CRM owner summaries.
+  Final revalidation: 11 focused files/63 assertions passed, standalone TypeScript
+  passed, focused lint passed (one decorative image warning), production build and
+  diff whitespace passed. Revised final candidate/live acceptance remain pending.
 
 ## 9 October 2026 — Studio Phase 1 deployed and accepted
 

@@ -31,7 +31,9 @@ function fieldValue(column: ReportColumn, value: string): string | number | bool
 }
 export function selectedReportColumns(spec: ReportSpec, input: ReportInput) {
  if(new Set(input.columns).size!==input.columns.length || input.columns.some(k=>!spec.columns.some(c=>c.key===k)))throw new ReportError("Choose available report columns.");
- return input.columns.length ? input.columns.map(k=>spec.columns.find(c=>c.key===k)!) : spec.columns;
+ const selected=input.columns.length ? input.columns.map(k=>spec.columns.find(c=>c.key===k)!) : [...spec.columns];
+ for(const column of [...selected])if(column.currencyKey&&!selected.some(c=>c.key===column.currencyKey)){const currency=spec.columns.find(c=>c.key===column.currencyKey);if(!currency)throw new ReportError('Currency is unavailable for this amount.',503);selected.push(currency);}
+ return selected;
 }
 export function reportWhere(spec: ReportSpec, input: ReportInput): Record<string, unknown> {
  selectedReportColumns(spec,input);

@@ -8,7 +8,9 @@ compact Apps menu; it does not duplicate business apps in the rail or Home cards
 The initial record catalogue covers Customer Master, Products, Sales orders and
 quotations, Inventory balances and movements, Logistics shipments and fulfilment,
 Manufacturing orders/work centres/resources, and Finance documents/accounts/ledger
-entries. Other apps contribute their existing authorised summary measures.
+entries. Other apps contribute their existing authorised summary measures. Summary measures
+retain the Analytics entitlement and `analytics.dashboard.read` gate in addition
+to each source metric permission; detailed datasets do not require Analytics.
 Summary measures are labelled as summaries, retain their definitions, and support
 label search and a start-to-now period when applicable. Snapshots cannot pretend
 to be historical date-range reports. Broad Finance overview counts are excluded;
@@ -31,7 +33,9 @@ are not accepted. Customer Master excludes archived/scrubbed identities. Protect
 product pricing, shipping costs, bank details, credential fields and free-text
 private notes are not exposed. Finance uses `documentScope` for both preview and
 export; whole journals with hidden documents or private project lines are excluded.
-Base ledger and transaction currencies are distinct. Exact large monetary amounts
+CRM summary queries apply the same `ownerRestriction` as its prospects/pipeline,
+including exact grouped win-rate counts. Base ledger and transaction currencies are distinct. Currency columns stay included
+whenever their corresponding money columns are selected. Exact large monetary amounts
 are written as text to preserve Excel precision.
 
 ## Filters and download

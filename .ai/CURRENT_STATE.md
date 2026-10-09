@@ -44,6 +44,15 @@ limits remain at password creation/recovery). Merged with live Messages 9303039:
 and 7-file/47-assertion auth/chat/field suite PASS. Desktop/phone candidate
 screenshots visually inspected. Re-prepare corrected final runner/source, execute
 full central/browser acceptance, activate and repeat publicly.
+Final candidate 7a08075 prepared with backup atlas-pre-deploy-20261009-205709.
+Its runner exposed React action auto-reset after rejected sign-in: subsequent
+required-field submissions did not run. Keep email/password in component memory
+with controlled inputs so failed login preserves entries; no storage/cache.
+Rebuild/re-prepare and repeat the real rejection/throttle sequence; this is not
+yet a fully accepted/live Admin release.
+Controlled-input regression and authentication suite: 6 files/36 assertions PASS;
+production build and scoped lint PASS. Corrected the regression's Testing Library
+role options (Playwright exact is not a DOM-query option); strict types rerun.
 Next: review final diff, record checks, prepare backed-up immutable release,
 exercise private entry/denials/limits and staff console, activate and repeat
 public HTTPS acceptance. No MFA/SSO or immediate crawler removal is claimed.

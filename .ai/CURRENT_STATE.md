@@ -60,13 +60,18 @@ and a lean commercial dataset (no HR/finance back-office).
   `src/app/(app)/logistics/shipments/[id]/page.tsx` exists; the shipments
   themselves are reachable on their detail pages and from each order's
   Connections tab, and `/logistics/reports` counts 2. Recorded, not fixed here.
-- **Deployment blocker (honest):** no app code changed, so there is nothing to
-  activate; the live server already stores all it needs. `scripts/deploy-vps.sh`
-  additionally refuses to run while the desktop checkout
-  `/Users/michael/Desktop/RP SYSTEM` has uncommitted tracked changes (it has
-  extensive unrelated in-progress work), so the script and memory were committed
-  from the clean `origin/main` worktree `~/Library/Caches/atlas-manufacturing-demo`
-  instead of from the desktop tree. The desktop checkout was not modified.
+- **Deployment (completed):** committed as `98907f5` and released to
+  https://atlassystem.online with `ATLAS_RELEASE_MODE=activate` — the live
+  pointer `/opt/atlas-current` now resolves to
+  `/opt/atlas-releases/98907f5…`, previous release `a9ffc82…` retained, private
+  DB/evidence backup `atlas-pre-deploy-20261009-122641` taken, and
+  `https://atlassystem.online/login -> 200`. No app code changed, so the release
+  only reconciles the live revision with GitHub; the data itself was already
+  written to the central database. The commit and release were made from the
+  clean `origin/main` worktree `~/Library/Caches/atlas-manufacturing-demo`
+  because `scripts/deploy-vps.sh` refuses to run from the desktop checkout
+  `/Users/michael/Desktop/RP SYSTEM` while it holds extensive unrelated
+  uncommitted tracked changes. The desktop checkout was not modified.
 - **Next step:** Michael opens the company, then adds plant (work centre +
   machine) and a recipe for CONV-1500 / CONV-HEAVY with machine/labour/overhead
   rates, and releases one of the two SHORT fulfilments to see produce → stock.

@@ -44,6 +44,14 @@ failure follows the normal runtime rollback. Synthetic companies are suspended
 and sessions revoked; audited history is retained. This prevents another release
 interleaving between final feature acceptance and activation. The default is none.
 
+For the Dashboard/Messages release use `ATLAS_RELEASE_ACCEPTANCE=dashboards`.
+The checked-in harness runs Dashboard, Home/business-navigation, Reports/Finance,
+typography and Messages against the sealed candidate, then repeats all five on
+public HTTPS under the same locks. Revision checks bracket both runs. Only
+synthetic personal boards/chat fixtures are written; underlying source records
+are read-only, explicit exports audited, and fixtures cleaned/retired in finally.
+It keeps the same preparation, backup, compatibility and runtime rollback gates.
+
 For the Manufacturing & Supply console, use `ATLAS_RELEASE_ACCEPTANCE=supply`
 with the pinned scoped branch. Its existing central Test checker runs against the
 sealed smoke candidate and publicly before completion, under this same lock pair.

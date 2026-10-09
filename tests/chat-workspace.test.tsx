@@ -52,6 +52,18 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 describe("Modern chat composer", () => {
+  it("sends an explicit current-user assignment when Me is selected", async () => {
+    render(<ChatDock variant="page"/>);
+    fireEvent.click(await screen.findByRole("button", {name:/Blair/}));
+    fireEvent.click(screen.getByRole("button", {name:"Create work from chat"}));
+    fireEvent.click(screen.getByRole("button", {name:"Task"}));
+    fireEvent.change(screen.getByRole("combobox", {name:"Assign to"}), {target:{value:""}});
+    fireEvent.change(screen.getByRole("textbox", {name:"Message"}), {target:{value:"My own follow-up"}});
+    fireEvent.submit(screen.getByRole("form", {name:"Message composer"}));
+    const send = fetchMock.mock.calls.find(([, init]) => JSON.parse(String(init.body)).op === "send");
+    expect(JSON.parse(String(send?.[1].body)).input.assigneeUserId).toBe("me");
+  });
+
   it("does not mark a restored conversation read while the pop-out remains closed", async () => {
     const view = render(
       <MessageDraftProvider>

@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="${1:?checkout required}"; REV="${2:?pinned revision required}"; MODE="${3:-activate}"
 SOURCE_BRANCH="${4:-main}"
 ACCEPTANCE="${5:-none}"
-[[ "$ACCEPTANCE" = none || "$ACCEPTANCE" = people || "$ACCEPTANCE" = supply ]] || { echo 'Unknown release acceptance workflow.' >&2; exit 1; }
+[[ "$ACCEPTANCE" = none || "$ACCEPTANCE" = people || "$ACCEPTANCE" = dashboards || "$ACCEPTANCE" = supply ]] || { echo 'Unknown release acceptance workflow.' >&2; exit 1; }
 [[ "$SOURCE_BRANCH" = main || "$SOURCE_BRANCH" =~ ^codex/[a-zA-Z0-9._/-]+$ ]] || { echo 'Invalid release source branch.' >&2; exit 1; }
 git check-ref-format "refs/heads/$SOURCE_BRANCH"
 [[ "$REV" =~ ^[a-f0-9]{40}$ ]] || { echo 'Full pinned revision required.' >&2; exit 1; }
@@ -132,6 +132,22 @@ feature_acceptance() {
     curl --max-time 10 -fsS "$url/api/health/release" | /usr/bin/node -e 'let b="";process.stdin.on("data",v=>b+=v);process.stdin.on("end",()=>{if(JSON.parse(b).revision!==process.argv[1])process.exit(1)})' "$REV"
   fi
 }
+dashboard_acceptance() {
+  [[ "$ACCEPTANCE" = dashboards ]] || return 0
+  local url="$1" phase="$2" evidence
+  evidence=$(mktemp -d "/tmp/atlas-dashboards-$phase-XXXXXX"); chmod 700 "$evidence"
+  echo "Dashboards $phase acceptance; private evidence: $evidence"
+  # Independent shell keeps fail-closed stage handling when this call is conditional.
+  sudo bash "$CANDIDATE/scripts/deploy/check-dashboard-release.sh" "$url" "$phase" "$REV" > "$evidence/browser.log" 2>&1 || { cat "$evidence/browser.log"; return 1; }
+  cat "$evidence/browser.log"
+}
+release_acceptance() {
+  case "$ACCEPTANCE" in
+    people|supply) feature_acceptance "$@" ;;
+    dashboards) dashboard_acceptance "$@" ;;
+    none) return 0 ;;
+  esac
+}
 # Smoke the exact sealed candidate before touching the production pointer/unit.
 ! ss -ltn | grep -q ':3011 ' || { echo 'Release smoke port 3011 is busy.' >&2; exit 1; }
 (
@@ -141,7 +157,7 @@ feature_acceptance() {
 for i in $(seq 1 30); do healthy 3011 && break; sleep 1; done
 healthy 3011
 curl --max-time 3 -fsS http://127.0.0.1:3011/api/health/release | /usr/bin/node -e 'let b="";process.stdin.on("data",v=>b+=v);process.stdin.on("end",()=>{if(JSON.parse(b).revision!==process.argv[1])process.exit(1)})' "$REV"
-feature_acceptance http://127.0.0.1:3011 candidate
+release_acceptance http://127.0.0.1:3011 candidate
 kill -TERM "$PROBE_PID"; wait "$PROBE_PID" || true; PROBE_PID=''
 echo "Prepared and smoke-verified immutable release: $CANDIDATE"
 echo "Previous immutable runtime: $PREVIOUS"
@@ -202,7 +218,7 @@ for i in $(seq 1 30); do healthy 3000 && break; sleep 1; done
 healthy 3000
 curl --max-time 3 -fsS http://127.0.0.1:3000/api/health/release | /usr/bin/node -e 'let b="";process.stdin.on("data",v=>b+=v);process.stdin.on("end",()=>{if(JSON.parse(b).revision!==process.argv[1])process.exit(1)})' "$REV"
 curl --max-time 20 -fsS https://atlassystem.online/login -o /dev/null
-feature_acceptance https://atlassystem.online public
+release_acceptance https://atlassystem.online public
 if [[ "$KILL_MODE" = control-group ]]; then
   sed -i 's/^KillMode=control-group$/KillMode=mixed/' "$BACKUP-release.conf.next"
   sudo install -m 644 "$BACKUP-release.conf.next" /etc/systemd/system/atlas.service.d/release.conf

@@ -11,7 +11,8 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c2a — Owner cohort-access query — IMPLEMENTED locally. Four files/22 focused
+2B3c2b — Stored-value decoder — IMPLEMENTED locally (24 tests/build/types/lint PASS).
+2B3c2a owner cohort-access query remains IMPLEMENTED locally. Four files/22 focused
 tests including sealed v1/v2, build/types/lint PASS. New real helper not run on
 cohort source. Retirement and refreshed-principal backend workstreams VERIFIED
 on exact candidate/public 7941f9b; no owner value API, conversion write policy or
@@ -20,7 +21,7 @@ durable job. Remaining Phase 2 dependencies retained.
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source 36d0d2de7e64340a5faf130a69b3bcf21db3a2fc,
+VERIFIED. Latest confirmed live source 2ef5b4c2f9dffaa2dd92c7df894a5587e45a12de,
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -53,6 +54,14 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B2 Compiler/identity/generations/typed storage | VERIFIED | e5d66e6 candidate/public schema/lifecycle plus complete combined native acceptance PASS; 29 files/143 local tests, TypeScript/lint/build. Owner value API remains 2B4. |
 
 # Current Workstream Detail
+
+2B3c2b: pure stored-value decoder implements exact decimals/currency, safe integers,
+UTC dates/instants, strict storage families, historical enum selections and redacted
+failures. Three files/24 assertions, production build, strict post-build TypeScript
+and scoped lint PASS. Initial four fixture errors corrected, rerun PASS. Real SQL
+decimal/money assertions added; not run yet on candidate/public codec source.
+No encoder, data API, permission change or migration. Preserve current live 2ef5b4c
+before candidate proof. 6795f08 preparation has no confirmed success evidence.
 
 2B2 candidate schema/lifecycle VERIFIED and exact tested e5d66e6 ACTIVATED.
 Complete combined candidate PASS; logs /tmp/atlas-studio-acceptance-fDWxDN.
@@ -131,6 +140,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+2B3c2b: fields/codec.ts, tests/studio-field-codec.test.ts, exact-Test SQL helper,
+evolution plan, ledger/CURRENT_STATE/DECISIONS.
+
 2B3c2a: core/service-work/studio.ts, tests/studio-ticket-cohort.test.ts, central
 check-field-principal helper, MODULE_SPEC/SERVICE_WORK_DESK, plan/ledger and
 CURRENT_STATE/DECISIONS. Read-only owner query; no schema migration.
@@ -197,6 +209,9 @@ and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
 
+Seven codec cases cover all 15 field types, exact decimals and invalid/redacted
+storage; real decimal/money assertions added to privileged Test helper (NOT RUN).
+
 2B3c2a owner cohort suite: complete/private/capability/source/tenant/empty coverage
 cases. 2B3c1 principal suite: real membership/current permission/revocation/audit
 stamps, metadata-context denial and audit-failure cases.
@@ -205,6 +220,9 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+Codec: three files/24 tests, production build, strict post-build TypeScript and
+changed-file lint PASS. No current cohort/codec candidate/public claim.
 
 Latest integrated People/cohort source: 21 files/128 tests, Prisma generation,
 production build, strict post-build TypeScript and scoped lint PASS. Real cohort
@@ -322,12 +340,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Prepare a pinned cohort-enabled source preserving live People 36d0d2d and verified
-Studio 7941f9b. Integrated 21 files/128 tests, generation/types/lint/build PASS. Execute the updated
-combined candidate runner including real owner cohort count/private denial,
-refreshed principal/retirement and all native commercial regressions. On PASS
-activate exact source and repeat publicly. Preserve any newly advanced live source
-if ancestry stops; do not force replacement.
-Then implement the explicit owner representation-only policy and 2B3c2 reviewed
-preview/job/row persistence with exact checksum/revision binding, authorised
-cohort and restricted live-preview policy. No 2C/2E or Phase 3+ yet.
+Preserve exact live 2ef5b4c Manufacturing/People source in the cohort/codec candidate;
+regenerate and run integrated focused tests/build/types/lint. Prepare the exact
+reviewed source, run combined candidate checks including real private/unanchored/
+final owner cohort and SQL decoder checks; activate only on PASS and repeat publicly.
+Then implement explicit owner representation-only policy and reviewed preview/job/
+row persistence with exact checksums/revisions/current principal/field ACL. Phase 2
+NOT PASSED; no 2C/2E or Phase 3+ yet.

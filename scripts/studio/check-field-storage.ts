@@ -6,6 +6,7 @@ import { studioRegistry } from "../../src/core/studio/registry/runtime";
 import { activeDefinition, activateVersion, createDraft, getDefinition, publishDraft, updateDraft, validateDraft } from "../../src/core/studio/definitions/service";
 import { retireFieldDefinition } from "../../src/core/studio/fields/retirement";
 import { createFieldConverter, analyseFieldEvolution } from "../../src/core/studio/fields/evolution";
+import { decodeStoredFieldValue } from "../../src/core/studio/fields/codec";
 import { customFieldPayloadSchema, type CustomFieldPayload } from "../../src/core/studio/fields/schema";
 import { checksum } from "../../src/core/studio/registry/contracts";
 
@@ -61,6 +62,7 @@ export async function checkFieldStorage(actor: Session, other: Session) {
   assert.equal(await db.studioFieldSlot.count({ where: { extensionId: extension.id } }), 0, "Every rejected value rolls back slot/value/pointer");
   const value = await store(decimal, { decimalValue: "9999999999999999999999999999" }, fingerprint);
   assert.equal(value.decimalValue?.toFixed(0), "9999999999999999999999999999", "All 28 declared digits preserved exactly");
+  assert.deepEqual(decodeStoredFieldValue(decimal.payload.field, value), { type: "decimal", value: "9999999999999999999999999999" });
   await assert.rejects(() => db.studioFieldValue.update({ where: { id: value.id }, data: { decimalValue: "2" } }), /immutable/);
   await assert.rejects(() => db.studioFieldValue.delete({ where: { id: value.id } }), /immutable/);
   const second = await db.studioExtensionRecord.create({ data: { organisationId: actor.organisationId, entityId: entity.id, recordId: `schema-check-${crypto.randomUUID()}`, revision: 1 } });
@@ -71,6 +73,7 @@ export async function checkFieldStorage(actor: Session, other: Session) {
   await assert.rejects(() => store(money, { decimalValue: "12.34", textValue: "GBP" }, null), /typed_family|check constraint/);
   const storedMoney = await store(money, { decimalValue: "12.34", currency: "GBP" }, null);
   assert.equal(storedMoney.currency, "GBP"); assert.equal(storedMoney.decimalValue?.toFixed(2), "12.34");
+  assert.deepEqual(decodeStoredFieldValue(money.payload.field, storedMoney), { type: "money", value: { amount: "12.34", currency: "GBP" } });
   def = await getDefinition(actor, decimal.definitionId); assert(def);
   await activateVersion(actor, { definitionId: def.id, versionId: cosmetic.versionId, revision: def.revision });
   def = await getDefinition(actor, decimal.definitionId); assert(def);

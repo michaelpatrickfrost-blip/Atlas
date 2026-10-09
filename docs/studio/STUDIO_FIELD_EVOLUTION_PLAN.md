@@ -146,3 +146,22 @@ a real final record and unanchored native ticket, removes/restores only its exac
 new Test queue membership to prove denial before counts, and checks unchanged
 canonical records. Helper NOT RUN on a cohort-enabled candidate. No final/merged
 representation write hook or durable job implemented.
+
+### 2B3c2b — Typed stored-value decoder for previews (IMPLEMENTED)
+
+Purpose: convert typed SQL columns into validated logical values using the written
+field schema before conversion preview. Dependencies: 2B1 validators, 2B2 typed
+storage, 2B3a converter; no new data authority. Expected files: fields/codec and
+focused codec tests; existing privileged exact-Test storage helper. Database: none.
+Checks: exact 28-digit decimals/money, safe integer/duration bounds, zero/false/null
+distinction, UTC calendar/instant semantics, closed family/type matching, historical
+retired enum IDs, malformed address/reference/extra columns and redacted failures.
+This pure library is not an authorised value API. Native owner plus current/written
+field ACL and reference-target checks remain mandatory in preview/2B4 services.
+No encoder/value writer, migration job or later engine in this checkpoint.
+
+Local evidence: three files/24 assertions, production build, strict post-build
+TypeScript and changed-file lint PASS. Seven codec tests cover all 15 field types.
+First fixture run failed four assertions; corrected duration/timezone/phone policy
+and normalised address fixtures, preserving validation. Real SQL decimal/money
+helper assertions added but NOT RUN on a codec-enabled candidate/public runtime.

@@ -1,5 +1,20 @@
 # Atlas current state
 
+## 10 October 2026 — Studio stored-value decoder local checkpoint
+
+2B3c2b IMPLEMENTED: pure written-schema decoder in fields/codec.ts, seven
+focused tests and exact SQL decimal/money helper assertions. Three files/24 tests,
+production build, strict post-build TypeScript and changed-file lint PASS. Initial
+four test-fixture mistakes corrected to the existing constraints; rerun PASS.
+No new DB/schema migration, encoder, value API or permission. Current/written
+field ACL, native owner and reference checks remain future service requirements.
+Real SQL decoder and cohort helper NOT RUN on this source. Public source now
+2ef5b4c2f9dffaa2dd92c7df894a5587e45a12de, preserving verified Studio 7941f9b.
+Next preserve that exact source, regenerate/build/test, then prepare and prove the
+cohort/decoder candidate before activation and exact public checks. Prior 6795f08
+prepare log stops at server invocation; no candidate/backup success claim.
+Phase 2 gate NOT PASSED; visual designer/publication/buttons remain planned 2E.
+
 ## 10 October 2026 — Cohort query integrated with verified live People source
 
 Preserved exact live 36d0d2d and its accepted source/evidence unchanged. Cohort

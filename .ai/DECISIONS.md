@@ -1551,3 +1551,14 @@ locks, backups, source/ancestry and rollback gates. Default releases keep their
 current behavior. Rationale: concurrent releases repeatedly advanced between
 preparation, queued feature checks and activation; the accepted revision must
 stay stable through the switch. No lock bypass or arbitrary shell hook.
+
+## 10 October 2026 — Studio written-value decoding is pure and lossless
+
+Decode typed storage with its written field policy before conversion preview.
+Retain exact decimals and known historical retired choices; ordinary new-write
+validation is unchanged. Reject mismatched/extra families, unsafe integers and
+non-null blanks; errors contain no persisted contents. Decoder grants no access:
+preview/value services must enforce native owner, current/written field ACL and
+reference-target permissions. No encoder, database mutation or metadata API is
+introduced by this prerequisite. Rationale: previews must not round or silently
+reinterpret stored values, or turn historical decoding into selection permission.

@@ -255,6 +255,13 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
+0af763d candidate build/storage/decoder/retirement/metadata/draft/Dashboard checks
+PASS, then authenticated Admin-denial transport assertion failed 404!=307; no
+activation. Evidence /tmp/atlas-studio-candidate-Fjw1UR. Separate HTTP API context
+omitted Secure browser cookie; helper corrected to real browser navigation while
+retaining exact 307/home and adding no-Admin-shell checks. Real cohort helper not
+reached; no public cohort/decoder verification. Application cookies unchanged.
+
 Exact 7941f9b complete candidate/public checks PASS, including real principals,
 retirement and commercial/native regressions. Private evidence
 /tmp/atlas-studio-acceptance-9ztRSn and /tmp/atlas-studio-public-23i93X. Activation
@@ -363,11 +370,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Deploy the exact reviewed native Dashboard 70ca23e + Studio cohort/decoder pin
-with ATLAS_RELEASE_ACCEPTANCE=studio. Integrated 28 files/164 tests, generation/
-descriptors, production build, strict post-build TypeScript and scoped lint PASS;
-shell syntax/all five dispatch probes PASS. Original locks must cover candidate,
-activation and public checks, including actual native Dashboard editing, owner
-cohort/private denial and SQL decoder checks. Record the result before starting
-reviewed job/row persistence and explicit owner representation-only policy.
-No value API/designer delivered; Phase 2 NOT PASSED.
+Customer-browser denial correction types/lint PASS; checkpoint then preserve new
+observed live b57ba720 appointment guard. Run integrated build/checks before retry,
+retaining exact 307/home and no Admin shell. Prepare a new reviewed pin preserving
+70ca23e with Studio held-lock acceptance; real cohort helper remains unrun after
+0af763d candidate harness failure. Full combined candidate must PASS before switch,
+then repeat exact public checks. Phase 2 NOT PASSED; no visual designer/value API.

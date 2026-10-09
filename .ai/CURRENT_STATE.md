@@ -1,5 +1,23 @@
 # Atlas current state
 
+## 10 October 2026 — Studio candidate secure-cookie harness correction
+
+Exact 0af763d candidate build completed after backup atlas-pre-deploy-20261009-
+233308; fixture backup atlas-pre-studio-candidate-20261009-233453. Dashboard,
+Tickets owner, real field retirement/storage/decoder, metadata lifecycle and draft
+CAS checks PASS, then customer Admin assertion failed 404!=307. Candidate evidence
+/tmp/atlas-studio-candidate-Fjw1UR; production remains accepted 70ca23e, no switch.
+Production Secure cookie remains enabled on HTTP loopback smoke runtime. Browser
+uses its real cookie, but separate APIRequestContext HTTP omits it, so that assertion
+tested anonymous 404 rather than authenticated customer denial. Existing native
+private-Admin checker uses browser navigation. Studio helper now uses the actual
+customer browser, captures original navigation response and retains exact 307/home
+checks, adding no-Admin-shell check. No cookie/security/application change or relaxed
+expected status. Strict TypeScript and helper lint PASS; application build unchanged from tested
+0af763d, runtime helper rerun pending; next review/checkpoint and prepare
+new pinned candidate, then run the full unchanged acceptance sequence.
+Cohort real helper still NOT RUN (after failed assertion); Phase 2 NOT PASSED.
+
 ## 10 October 2026 — Studio preserves observed live Dashboard source
 
 Merged exact observed public/control 70ca23e; preserves modern Dashboard and

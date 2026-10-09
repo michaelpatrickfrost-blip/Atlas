@@ -163,7 +163,14 @@ async function main() {
     await customerPage.getByRole("button",{name:"Save password",exact:true}).click();await expect(customerPage).toHaveURL(`${base}/home`);
     await customerPage.goto("/studio",{waitUntil:"networkidle"});await expect(customerPage.getByRole("heading",{name:"Configuration library",exact:true})).toBeVisible();
     await expect(customerPage.getByText("Browser accepted configuration",{exact:true})).toBeVisible();
-    const deniedAdmin=await business.request.get("/atlas/studio",{maxRedirects:0});assert.equal(deniedAdmin.status(),307);assert.match(deniedAdmin.headers().location,/\/home$/);
+    // Browser navigation preserves the real Secure session on trusted loopback;
+    // APIRequestContext omits that cookie on HTTP and would test anonymous 404.
+    const deniedAdminResponse = customerPage.waitForResponse(response => new URL(response.url()).pathname === "/atlas/studio" && response.request().isNavigationRequest());
+    await customerPage.goto("/atlas/studio", { waitUntil: "networkidle" });
+    const deniedAdmin = await deniedAdminResponse;
+    assert.equal(deniedAdmin.status(), 307); assert.match(deniedAdmin.headers().location, /\/home$/);
+    await expect(customerPage).toHaveURL(`${base}/home`);
+    await expect(customerPage.locator('[data-atlas-console="admin"]')).toHaveCount(0);
     await business.clearCookies();await customerPage.goto(`/business/${b.slug}/login`,{waitUntil:"networkidle"});
     await customerPage.getByLabel("Email",{exact:true}).fill(email);await customerPage.getByLabel("Password",{exact:true}).fill(password);
     await customerPage.getByRole("button",{name:"Sign in",exact:true}).click();await expect(customerPage.getByText("This account has no active access to this workspace. Contact your administrator.",{exact:true})).toBeVisible();

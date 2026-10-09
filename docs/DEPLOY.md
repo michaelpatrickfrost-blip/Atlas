@@ -71,6 +71,24 @@ rejected drafts, no automatic POST replay, exact unchanged records, and intentio
 reload/re-entry/save after restoring the candidate. It reuses existing Guardian
 staff rights, retires synthetic access and leaves the production pointer unchanged.
 
+For the Customers/CRM/Sales/Marketing refinement, exercise the actual commercial
+forms and responsive layouts on a sealed candidate before activation:
+
+```bash
+ssh administrator@85.190.118.218 'ATLAS_COMMERCIAL_CHECK=1 bash /opt/atlas-releases/<candidate SHA>/scripts/deploy/check-commercial-workspaces.sh /opt/atlas <candidate SHA>'
+```
+
+This check holds both release locks, takes a central backup, starts a temporary
+loopback service and creates isolated central Test companies with manager, reader
+and rep profiles. It checks selected-customer hierarchy, shared/private notes,
+appointment lifecycle and isolation, visual journey editing, automation versions
+and desktop/tablet/phone layouts. External calls and background writes are blocked.
+Only its exact Test access is revoked; records and audit remain. The temporary
+service is removed and the production pointer must remain unchanged. Repeat
+`scripts/check-commercial-workspaces.ts` against public HTTPS after activation,
+with the exact release environment and `ATLAS_TEST_REVISION` set; retain evidence
+in CURRENT_STATE.md. No existing business company is used for fixture writes.
+
 The first transition from the old npm launcher sends SIGTERM to its entire process
 group so the Next child can drain; later direct-Node releases use mixed kill mode.
 

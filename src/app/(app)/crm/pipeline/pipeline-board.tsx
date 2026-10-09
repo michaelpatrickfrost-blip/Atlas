@@ -26,6 +26,9 @@ export function PipelineBoard({
   items: Item[];
   editable: boolean;
 }) {
+  const [query, setQuery] = useState("");
+  const [needsAction, setNeedsAction] = useState(false);
+  const visibleItems = items.filter(item => `${item.name} ${item.party.name}`.toLowerCase().includes(query.trim().toLowerCase()) && (!needsAction || !item.nextActionAt || new Date(item.nextActionAt) < new Date()));
   const [dragged, setDragged] = useState<string | null>(null);
   const [over, setOver] = useState<string | null>(null);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -51,13 +54,14 @@ export function PipelineBoard({
   }
 
   return (
-    <div>
+    <div className="min-w-0">
+      <div className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3"><input type="search" aria-label="Search pipeline" value={query} onChange={event => setQuery(event.target.value)} placeholder="Find a deal or customer" className="min-w-0 flex-1 rounded-xl border border-slate-100 bg-slate-50 px-4 py-2.5 text-sm" /><label className="flex items-center gap-2 text-xs text-slate-600"><input type="checkbox" checked={needsAction} onChange={event => setNeedsAction(event.target.checked)} />Needs a next action</label><span className="text-xs text-slate-400">{visibleItems.length} deals</span></div>
       <p role="status" aria-live="polite" className="mb-5 text-xs text-[var(--color-ink-faint)]">
         {pending ? "Saving stage…" : message || (editable ? "Drag a deal into another stage, or use Move." : "Pipeline overview")}
       </p>
       <div className="flex gap-5 overflow-x-auto pb-6">
         {stages.map((stage) => {
-          const cards = items.filter((item) => item.stageId === stage.id);
+          const cards = visibleItems.filter((item) => item.stageId === stage.id);
           const totals = cards.reduce<Record<string, number>>((sum, item) => {
             sum[item.valueCurrency] = (sum[item.valueCurrency] ?? 0) + item.valueAmount;
             return sum;
@@ -87,7 +91,7 @@ export function PipelineBoard({
                 <span className="text-xs tabular-nums text-[var(--color-ink-faint)]">{cards.length}</span>
               </header>
               <p className="mb-3 min-h-4 px-1 text-xs text-[var(--color-ink-muted)]">{totalLabel || "Empty"}</p>
-              <div className={`flex min-h-48 flex-1 flex-col gap-2.5 rounded-2xl p-1.5 ${over === stage.id ? "bg-[var(--color-atlas-blue-soft)]" : ""}`}>
+              <div className={`flex min-h-48 flex-1 flex-col gap-2.5 rounded-2xl p-1.5 ${over === stage.id ? "bg-[var(--color-atlas-blue-soft)]" : "bg-slate-50 border border-slate-100"}`}>
                 {cards.map((item) => (
                   <article
                     key={item.id}

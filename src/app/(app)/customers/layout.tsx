@@ -9,7 +9,7 @@ export default async function CustomersLayout({ children }: { children: React.Re
   assertCapability(session, "customers.read");
   const links = [
     { href: "/customers", label: "Accounts", icon: Building2 },
-    { href: "/customers/map", label: "Map", icon: Map },
+    { href: "/customers/map", label: "Customer hierarchy", icon: Map },
   ];
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-6">

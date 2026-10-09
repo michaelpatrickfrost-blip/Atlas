@@ -24,7 +24,9 @@ export const salesManifest: ModuleManifest = {
  rootPath: "/sales", accessCapability: SALES_CAPABILITIES.orderRead, status: "available",
  accessAnyOf: [SALES_CAPABILITIES.orderRead, "core.pricing.read"],
  navigation: [
-  { label: "All Sales", href: "/sales/documents", capability: SALES_CAPABILITIES.orderRead },
+  { label: "All sales", href: "/sales/documents", capability: SALES_CAPABILITIES.orderRead },
+  { label: "Orders", href: "/sales/orders", capability: SALES_CAPABILITIES.orderRead },
+  { label: "Quotations", href: "/sales/quotes", capability: SALES_CAPABILITIES.quoteRead },
   { label: "All price lists", href: "/sales/price-lists", capability: "core.pricing.read", group: "Price lists" },
   { label: "New price list", href: "/sales/price-lists/new", capability: "core.pricing.manage", group: "Price lists" },
   { label: "Projects", href: "/sales/projects", capability: SALES_CAPABILITIES.opportunityRead },

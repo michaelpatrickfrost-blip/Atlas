@@ -46,14 +46,14 @@ Every numbered requirement from the supplied brief is retained below. Implemente
 | 40 | PREFERENCE CENTRE | Pending |
 | 41 | TRANSACTIONAL VS MARKETING | Implemented source contract |
 | 42 | COMMUNICATION ELIGIBILITY SERVICE | Partial foundation; remaining acceptance required |
-| 43 | JOURNEY BUILDER | Partial foundation; remaining acceptance required |
+| 43 | JOURNEY BUILDER | Visual wait/forward-branch/goal/end editor and preview; full provider/simulation scope remains partial |
 | 44 | JOURNEY TRIGGERS | Partial foundation; remaining acceptance required |
 | 45 | ERP JOURNEY TRIGGERS | Pending |
 | 46 | JOURNEY ENTRY RULE | Partial foundation; remaining acceptance required |
 | 47 | RE-ENTRY | Partial foundation; remaining acceptance required |
 | 48 | EXIT RULES | Partial foundation; remaining acceptance required |
 | 49 | JOURNEY STEPS | Partial foundation; remaining acceptance required |
-| 50 | DECISION SPLIT | Partial foundation; remaining acceptance required |
+| 50 | DECISION SPLIT | Two-way event branch inputs, destination validation and visual preview; richer conditions remain partial |
 | 51 | MULTI-PATH SPLIT | Pending |
 | 52 | ACTION SPLIT | Pending |
 | 53 | WAIT | Partial foundation; remaining acceptance required |

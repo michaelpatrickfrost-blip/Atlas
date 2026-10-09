@@ -1346,3 +1346,26 @@ live references to authorised orders, quotations, customers, projects and produc
 with recipient-specific inaccessible placeholders. A record may be shared without
 an additional comment. Contact conversations remain stored in Atlas without email
 or external delivery. The standalone Admin console does not mount business chat.
+
+## 9 October 2026 — Focused commercial workspaces and shared account context
+
+Customers hierarchy starts with one customer and displays its corporate family.
+Keep unrelated accounts in authorised relationship pickers only, because the user
+explicitly rejected a chart containing everyone. CRM Accounts reuses Party, Contact
+and Note rather than a second customer identity. Restricted-note manage and read
+rights stay independent. Sales Orders gets its own list destination without
+removing All sales or Quotations.
+
+Sales appointments extend canonical SalesActivity with additive duration/location/
+version/cancellation/idempotency fields. A dedicated agenda/weekly diary supports
+London time, preparation and completion outcomes; server tenant/owner/link/overlap
+checks and atomic audit preserve existing CRM scope. External calendar invitations
+and synchronisation need a separately configured provider.
+
+Marketing experience maps and executable automation are separate destinations.
+Experience maps use existing MarketingProgram rows with historical-compatible
+fields, connected alternative paths and parent-map stale-write protection. Visual
+automation editing uses immutable versions and the existing forward-only engine.
+Provider choices remain blank under the earlier user decision; no sending/worker
+is inferred from drawing or publishing a flow. Primary-source research and scope
+are in docs/plans/COMMERCIAL_WORKSPACE_RESEARCH.md.

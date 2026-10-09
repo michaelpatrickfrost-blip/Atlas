@@ -1,5 +1,37 @@
 # Atlas current state
 
+## 9 October 2026 — Customers, Sales, CRM and Marketing refinement prepared
+
+Scoped branch codex/customer-sales-experience starts from exact live 1dafe16.
+Customers has polished list/record context, canonical notes and a selected-family
+hierarchy; unrelated accounts/people stay off the visual. CRM adds canonical
+Accounts and a weekly appointment agenda/diary, preparation/location, customer/
+prospect/deal links, overlap and stale-write guards, idempotent create, reschedule,
+completion outcomes and retained cancellation. Today/Pipeline navigation/search
+prioritise selling work. Sales Orders is distinct from All sales/Quotations, with
+permitted document reads and clearer order summaries. Marketing adds campaign
+search/status/context, a connected journey canvas/experience lanes with editable
+intent/emotion/friction/improvements/measures/touchpoints/branch paths, and a visual
+versioned automation builder/preview. Existing central identities/history and
+tenant/capability/CRM owner checks remain. External providers remain blank.
+
+Additive migration 20261009234500_sales_appointment_diary extends SalesActivity only;
+no existing business rows are removed. Source: customers routes/components/core;
+crm accounts/appointments/domain/services; sales document list/order detail;
+marketing campaign/journey/builders/services. Research, Customer Master, CRM, Sales,
+Marketing coverage and decisions reconciled. Acceptance scripts use exact synthetic
+central Test tenants, retire access and retain audit; no local database/cache.
+
+Checks: initial production build and strict types passed; changed source lint has
+zero errors (one pre-existing unused-variable warning in Sales). New behavioural
+unit/command tests cover permissions, isolation, overlap, duplicate saves, stale
+updates, London DST and branch destinations. Corrected a stale Marketing command
+module-availability mock to current findMany API. Focused 20-file/98-assertion suite passed, followed by two production-feedback
+regressions and 16 refreshed campaign-save/access checks. Broader suite before
+the latter test refresh: 1126 passed / 78 failed / 22 skipped; failures were stale
+module mocks outside the new feature tests. Final broad counts being reconciled. Final candidate/server/public
+acceptance and activation are pending; this checkpoint is not live delivery.
+
 ## 9 October 2026 — Private Admin entry prepared for live verification
 
 User-requested `/19811171adminlogin` and `/recovery` replace the public staff

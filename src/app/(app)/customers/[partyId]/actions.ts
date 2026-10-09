@@ -134,7 +134,7 @@ export async function toggleCreditHoldFormAction(partyId: string, onHold: boolea
 }
 
 export async function createNoteFormAction(partyId: string, formData: FormData) {
-  await createNote(partyId, String(formData.get("body")), formData.get("pinned") === "on", formData.get("restricted") === "on");
+  await createNote(partyId, String(formData.get("body") ?? ""), formData.get("pinned") === "on", formData.get("restricted") === "on");
 }
 
 export async function updateStatusFormAction(partyId: string, formData: FormData) {

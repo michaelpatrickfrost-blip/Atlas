@@ -10,6 +10,20 @@ Manage apps, native imports and customer Studio remain company capabilities.
 Independent staff access, tenant guards and audited support entry are preserved;
 removing navigation is not a change to authentication or authorisation.
 
+## 9 October 2026 — Personal dashboard canvas and authorised record views
+
+Michael requested a major modern, flexible dashboard redesign and sidebar placement.
+Dashboards joins the utility navigation visually while retaining its existing
+Analytics entitlement and capabilities; do not mark it as an always-enabled utility.
+Use existing personal Dashboard definitions, approved module measure contributions
+and the Reports record catalogue. Configuration manipulates the view, not the
+underlying business records. Require one currency, calculate all matching rows or
+reject above 10,000, and reject chart-unsafe exact financial text. No arbitrary
+SQL/joins/formula execution or broadened record access. Rename by owned ID with an
+optimistic revision; new/copy cannot overwrite a same-name board accidentally.
+Rationale: flexible personal views should preserve source privacy, exact financial
+meaning and existing saved work without creating another business datastore.
+
 ## 9 October 2026 — Studio business dashboards and custom buttons
 
 Michael requires easy visual template customisation and activated designs on each

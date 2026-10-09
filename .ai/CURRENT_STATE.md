@@ -1,61 +1,150 @@
 # Atlas current state
 
-## 9 October 2026 — Business navigation excludes platform administration (candidate)
+## 9 October 2026 — Business interface excludes Atlas platform tools, verified live
 
-Michael clarified that Atlas Console/Admin tools do not belong in customer software.
-Removed Atlas Admin and Connections from both business directories, the staff Admin
-return chip from the header, console links from company users/workspace settings,
-and platform-console promotion from native import help. The header shows selected
-company identity. Company admin, Manage apps, native imports, company permissions
-and customer Studio remain available. Staff tools remain in standalone /atlas;
-no auth, grant, tenant, record or schema changes. This applies to staff support
-workspaces as well as customer sessions.
+Exact release 56c9d88a66ba2b257fe780a3174e699cfcd81261 is live at
+https://atlassystem.online. It preserves previous accepted 5ebd700 typography,
+Studio, Supply, Messages and the modern Apps design. Previous immutable 5ebd700
+runtime is retained. Michael clarified that Atlas Console/Admin tools do not
+belong in customer software; the rule also applies to audited staff support
+workspaces.
+
+Removed Atlas Admin and Connections from both business Home/Apps directories,
+console links from the header and company users/workspace settings, the Admin
+badge and native-import help promoting the platform console. The header now shows
+selected company identity. Company admin, Manage apps, native imports, customer
+Studio and existing permissions remain. Staff tools stay in the standalone guarded
+/atlas console; no auth, grant, tenant, schema or business-record changes.
 
 Paths: shell app-directory/topbar; settings page/workspace-panel/imports; new
-business-shell-boundary regression test; expanded read-only check-home-menu.
+business-shell-boundary regression suite and expanded read-only check-home-menu.
 Project/design/Admin/company/decision/delivery docs reconciled. Four focused files/
-14 tests PASS; scoped lint zero errors/two existing brand-img warnings. Production
-build and strict post-build TypeScript PASS. Full suite not rerun; final diff/
-whitespace reviewed. Candidate/public acceptance not yet run.
-First prepare attempt stopped safely before backup/build because the live release
-advanced to 5ebd700d3526b6fdaa70efa4514da0803301a285. Its accepted Nunito font
-source is merged unchanged. Integrated production build PASS; strict post-build
-TypeScript running.
-Next: prepare exact compatible release, verify business surfaces
-and retained staff console, activate and repeat public HTTPS checks.
+14 tests, production build, strict post-build TypeScript and scoped lint PASS;
+lint has zero errors/two existing brand-image warnings. Rebuilt/types PASS after
+preserving exact live fonts. Final diff/whitespace reviewed; full suite not rerun.
+Main's separately reviewed Dashboard source/evidence is preserved for shared
+integration, not deployed by this task. Merged 14 focused tests, scoped runner/
+directory lint, production build and strict post-build TypeScript PASS.
+
+First prepare attempt safely stopped at ancestry before backup/build when the
+accepted font release advanced. Compatible candidate prepared/smoke-verified after
+backup atlas-pre-deploy-20261009-221529. Read-only candidate acceptance PASS;
+private evidence /tmp/atlas-home-menu-check-VRPo6o. Activation backup:
+atlas-pre-deploy-20261009-222947. Public HTTPS acceptance PASS at the exact release
+above before/after the run; private evidence /tmp/atlas-home-menu-check-fH23LQ.
+Home desktop/tablet/phone and Apps desktop/tablet/390px/320px, authorised entries,
+layout/scrolling/44px targets, focus/closure/search and actual My work navigation
+PASS. Home, Apps, header, company workspace/users/imports and business search expose
+no platform tools; staff /atlas retains its independent shell and Connections.
+All browser writes blocked; no accounts/grants/fixtures created. Desktop screenshot
+visually inspected. No remaining Apps/platform-boundary blocker or application
+work for this request; preserve the separate-console rule in future releases.
+
+## 9 October 2026 — Reviewed Dashboard source integrated; activation pending
+
+Reviewed Dashboard implementation and shared memory from release 054dd1c are
+integrated with main, preserving deployed rounded typography, Studio, Apps,
+Supply and their historical evidence. Final release is prepared/smoke-verified
+with backup atlas-pre-deploy-20261009-222031; public runtime last observed 5ebd700.
+Local combined 23 files/97 assertions, final four UI files/18 assertions, strict
+types, builds and scoped lint PASS (two decorative brand image warnings). These
+checks apply to the pinned release source, not a claim about future main edits.
+Earlier candidate Dashboard/Home/Apps/Reports PASS; revised chat viewport check
+and typography are in the final acceptance sequence. Activation/public proof is
+pending behind shared server operations; no Dashboard deployment claim yet.
+Next: finish pinned acceptance/activation/public checks and commit final evidence.
+
+
+## 9 October 2026 — Dashboard redesign, final release acceptance
+
+Dashboards is in the utility sidebar under its existing Analytics entitlement and
+read/manage capabilities; Home no longer repeats its app card. The modern Atlas
+canvas has a searchable widget library, inspector, eleven visuals, personal boards
+and four starters. Widgets support grouping/count/distinct/sum/average/min/max,
+typed source/date/search filters, currency validation, width/height/colour/tone,
+reorder/duplicate/remove and undo/redo. Manual or timed refresh is saved with board
+period/default filters and respected by the monitor. Existing curated measures,
+central definitions and source permissions remain; ID/revision-checked rename and
+unique-name copies prevent silent replacement. No Dashboard migration or grants.
+
+Fourteen detailed record datasets include Customers, Products, Sales, Inventory,
+Logistics, Manufacturing and Finance. Queries calculate all matching rows up to
+10,000, reject truncation/mixed currencies/unsafe money precision, preserve missing
+average/extrema and weighted groups, and return aggregates rather than raw rows.
+Broader sharing, formulas, arbitrary joins and fiscal features remain open.
+Paths: modules/analytics, analytics/board routes, shell, Reports dataset selection,
+generated gateway descriptors, four dashboard suites and check-dashboards.ts.
+Analytics/design/decisions documentation reconciled; auth counter metadata excluded.
+
+Exact already-live Supply source 2690c26 and integrated Studio/Apps source e5d66e6
+are merged with private Admin and Messages source. Combined 19 files/79 assertions, strict types, production
+build, scoped lint and diff check PASS. Prepared 885baa5 passed central Dashboard,
+Home, Reports/Finance and Messages acceptance. Earlier prepared candidates/backups
+and ancestry stops remain in docs/evidence/2026-10-09-dashboards.md. Final currency
+input guard: two suites/19 assertions, strict types, scoped lint and build PASS.
+No Dashboard activation is claimed yet. Next: prepare the integrated final source,
+repeat candidate acceptance, activate and verify through public HTTPS.
+The global suite was not rerun; its unrelated baseline failures remain recorded.
+Final 73fcdb9 candidate Dashboard/Home/Reports/Messages checks PASS. Public source
+advanced to e5d66e6 during acceptance; merge its exact deployed Studio/Apps source,
+preserve source schema/lifecycle. Combined 23 files/97 assertions, strict types,
+production build, scoped lint (zero errors, two decorative brand-image warnings)
+and diff check PASS. Generated descriptors match its already-live typed field models.
+Candidate bc8fc2e Dashboard/Home/Apps/Reports PASS; Messages fixture/history PASS,
+viewport assertion FAIL after reopened timeline restoration. Runner now scrolls
+and retries the actual viewport assertion instead of accepting DOM visibility.
+Exact public font source 5ebd700 is merged unchanged; no new Dashboard app code.
+Runner/font integration: four UI files/18 assertions, strict types, production
+build, runner lint and diff check PASS. Next: prepare and complete candidate/public
+checks before activation/handoff.
+
+Messages 9303039 was publicly verified; final Me-assignment 4be24b3 is included
+and candidate-verified in this combined source. Synthetic chat fixtures are retired;
+no real colleague/customer was messaged. Its final public proof accompanies this
+release. Only already-deployed contributors' source is included in this release.
+
 
 ## 9 October 2026 — Shared rounded typography in verification
 
-Replaced Plus Jakarta Sans with Nunito across the shared root sans token/body,
-including business apps, sign-in/recovery and independent Atlas Admin. Bundled
-normal/true-italic variable fonts (200–1000) retain source character coverage and
-SIL OFL licence/provenance; Geist Mono, text hierarchy and aligned numerals remain.
-Paths: src/app/layout.tsx, globals.css, fonts and scripts/check-typography.ts;
-design guides/DECISIONS updated.
-Scoped codex/rounded-system-font starts from exact public live 2690c26, preserving
-its already-deployed Manufacturing/Studio compatibility source. No schema, records,
-permissions or storage change. Checks: exact-lockfile install, Prisma generation,
-production build, strict TypeScript, scoped lint and whitespace PASS. Initial
-checker types referenced an absent User.active field; corrected to membership
-active and strict types rerun successfully. Local production browser proves
-actual Nunito glyphs and equal numeral widths; desktop/phone login screenshots
-visually inspected. Candidate 4a0a230 prepared with central backup
-atlas-pre-deploy-20261009-214902; all 30 route/viewport typography checks PASS
-(actual Nunito glyphs, inherited controls, aligned digits, page fit, zero browser/
-asset errors/external font requests). Home desktop/phone, Admin phone and Reports
-desktop screenshots visually inspected. Private evidence: /tmp/atlas-typography-check-5XrNJu
-and /tmp/atlas-typography-staging-HfIoX2. Full suite not rerun for this presentation change.
-Activation safely stopped at ancestry after accepted Studio e5d66e6 became public
-live. Merged that exact source, retaining its typed fields and modern Apps design;
-only CURRENT_STATE header conflict required reconciliation. Combined production
-build, focused Apps menu test file/3 assertions, scoped lint and whitespace PASS;
-strict TypeScript in progress. Combined candidate/public typography acceptance
-and responsive Apps verification pending.
-Next: prepare and verify the compatible combined release, activate, prove fonts
-on public HTTPS and merge implementation/evidence into main before completion.
+## 9 October 2026 — Shared rounded typography deployed and publicly verified
 
+Exact runtime 5ebd700d3526b6fdaa70efa4514da0803301a285 is live at
+https://atlassystem.online, preserving deployed Studio e5d66e6 and the modern
+Apps menu. This supersedes e5d66e6 as current runtime; earlier Apps/Studio entries
+retain their exact acceptance revisions. Replaced Plus Jakarta Sans with Nunito
+through the shared root sans
+family/body, covering business apps, authentication/recovery and Atlas Admin.
+Bundled normal/true-italic variable fonts (200–1000), full source character
+coverage and SIL OFL provenance; Geist Mono, hierarchy and aligned digits remain.
+No font-task schema, permissions, storage or business-record change.
+Paths: src/app/layout.tsx, globals.css, fonts and scripts/check-typography.ts;
+design guides/DECISIONS updated. Final combined production build, Prisma generation,
+strict TypeScript, scoped lint, whitespace and Apps menu test file/3 assertions PASS.
+Full suite not rerun for this presentation change.
+
+Exact candidate and public HTTPS checks both PASS on ten routes at desktop,
+tablet and phone sizes: real Nunito glyphs, inherited headings/controls/table text,
+equal digit widths, page fit, zero browser/asset errors and external font requests.
+Home/Apps acceptance also PASS through 320px: authorised links, scroll/44px targets,
+Escape focus, closure/search and real My work navigation. All browser writes blocked;
+existing Guardian QA membership only, no records/grants/fixtures created. Inspected
+Home desktop/phone, Reports desktop, Admin phone and Apps desktop/phone screenshots.
+Private final evidence: candidate /tmp/atlas-typography-check-xXuFsi,
+/tmp/atlas-typography-staging-TlXW2K and /tmp/atlas-home-menu-check-fvYsxg;
+public /tmp/atlas-typography-check-tpkU5n and /tmp/atlas-home-menu-check-1HLgZC.
+Prepare/activation central backups:
+atlas-pre-deploy-20261009-220106 and atlas-pre-deploy-20261009-221140.
+Source and evidence integrated with current main in this handoff; contributors'
+acceptance entries retained. No font release blocker or further task work remains.
+
+Historical 4a0a230 candidate passed the same 30 typography checks after backup
+atlas-pre-deploy-20261009-214902. Ancestry safely stopped its activation when
+Studio e5d66e6 became live; merged that exact source, reconciled the memory header,
+rebuilt and reverified. Earlier evidence /tmp/atlas-typography-check-5XrNJu and
+/tmp/atlas-typography-staging-HfIoX2 remains. No guard bypass or data rollback.
 
 ## 9 October 2026 — Reference Apps design live and publicly verified
+
 
 The supplied Apps design is live at https://atlassystem.online in exact release
 e5d66e6cf36b0fe228ac65287fdaa8d5ceb8be7c. The integrated release already includes
@@ -262,58 +351,6 @@ Checker: scripts/check-private-admin-login.ts. Source: src/core/auth, src/proxy.
 Admin auth frame/route layouts, Prisma schema/migration and focused auth tests.
 Source and final evidence integrated with origin/main; no further Admin blocker.
 
-## 9 October 2026 — Messages historical implementation and candidate evidence
-
-Implemented a wide logo-based pop-out and expanded `/chat` utility workspace,
-responsive conversation list/timeline, optional participants/shared-record details,
-grouped order/quotation/customer/project/product picker and horizontal composer.
-Drafts remain separate per chat in a company/user-keyed shell context; closing
-and expanding retains the conversation and current draft without local storage. Pending sends disable edits/re-entry; failures retain draft/attachments.
-References may be sent without a comment. Server history searches all message text
-with bounded stable 80-message cursor pages, same-tenant/participant cursor checks,
-and safe recipient placeholders; older/search views do not mark newer messages read.
-Closed docks only poll unread summaries. Source licences/native private Projects
-scope and existing work/meeting creation remain. Customer/contact picker excludes
-scrubbed/archived identities. Admin remains independent without business chat.
-Paths: chat actions/dock/API; shell utility/header variants/navigation; focused
-chat tests and scripts/check-messages.ts; docs/MESSAGES.md/design/roadmap/decisions.
-No schema/migration, grants or existing business-record edits. Preserved concurrent
-live Guardian MRP source `0ce9f4a` and Reports/Admin/Studio evidence while resolving
-CURRENT_STATE with both contributors' entries. Eight focused files/47 assertions,
-strict TypeScript and production build passed; scoped ESLint zero errors/three
-brand-image warnings. Candidate `4233b57` is prepared/smoke-verified with central
-backup `atlas-pre-deploy-20261009-202932`; live pointer unchanged. Browser acceptance
-waits for the shared release lock held by another verification run. Refined picker
-search loading, bounded test timeouts and removed formatter whitespace; 17 chat
-assertions, strict TypeScript and final production build passed again; focused
-refinement lint zero errors/one brand-image warning and diff check passed.
-Full suite not rerun.
-Initial `4233b57` candidate acceptance passed real chat/contact creation, message
-send/order-reference persistence, participant/shared-record details, history beyond
-80 messages/search, forged-record rejection, draft closure, utility entry, expanded
-workspace and desktop/tablet/phone viewport fit with no browser runtime errors.
-Screenshots inspected visually. Its synthetic contact/customer is retired centrally.
-Final expansion handoff uses the shared unsaved-draft context keyed by authenticated
-company/user; eight focused files/48 assertions, strict TypeScript, final production
-build and refinement lint (zero errors/one brand-image warning) passed.
-A final review guards both restored-conversation loading and history effects while
-the dock is closed, preventing unintended read markers after returning Home. Added
-a regression; eight files/49 assertions, TypeScript/build and scoped lint (no errors,
-three brand-image warnings) passed. Candidate 1f36fb9 prepared; acceptance initially
-hit an ambiguous preview selector after a second retained fixture existed. Scoped
-the checks to actual timeline articles; this is a test selector correction, not a
-passing acceptance claim. No activation until the final source passes.
-5798bc1 preparation stopped at the ancestry guard after live Studio 6775044
-advanced. Its exact already-live source is merged, preserving typed owner/field
-contracts and their evidence. The prematurely queued acceptance did not run
-(directory absent); no new fixture or passing check is claimed.
-Combined source: 11 focused files/69 assertions, strict TypeScript, production
-build and diff check passed; no schema change.
-Next: prepare the final pinned revision,
-rerun exact chat acceptance plus Home/Reports
-regression, activate and repeat
-public verification. Synthetic QA fixtures stay central and are retired, no actual
-colleague/customer receives a test message; no local business database/cache.
 
 ## 9 October 2026 — Phase 2B1 validators and visual setup requirements
 

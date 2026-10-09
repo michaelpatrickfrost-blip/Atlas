@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import type { Session } from "@/core/auth/session";
-vi.mock("@/core/modules/runtime",()=>({getEnabledModuleIds:vi.fn(async()=>new Set(["people","sales"]))}));
+vi.mock("@/core/modules/runtime",()=>({enabledModulesForSession:vi.fn(async()=>new Set(["people","sales"]))}));
 vi.mock("@/core/modules/registry",()=>({getImplementedModules:()=>[
  {id:"people",analyticsProvider:[{id:"hr.directory",capability:"people.employee.read"},{id:"hr.pay",capability:"payroll.run.read"}]},
  {id:"sales",analyticsProvider:[{id:"sales.orders",capability:"sales.order.read"}]},

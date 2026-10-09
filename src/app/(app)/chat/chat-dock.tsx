@@ -566,7 +566,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
           conversationId: activeId,
           body: draft,
           kind,
-          assigneeUserId: assignee || undefined,
+          assigneeUserId: assignee || snapshot.me,
           dueAt: due,
           startsAt: starts,
           priority,

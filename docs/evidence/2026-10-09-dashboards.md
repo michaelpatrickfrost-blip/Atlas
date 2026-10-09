@@ -1,5 +1,41 @@
 # Dashboard redesign acceptance — 9 October 2026
 
+## Final activation and public acceptance — 10 October 2026
+
+Activated source **70ca23ea83662c94e254488de717ee26de0e2c84** through the pinned
+codex/dashboard-redesign-release with ATLAS_RELEASE_ACCEPTANCE=dashboards.
+Candidate and public revision checks bracketed all five acceptance workflows
+under the existing two release locks. All five PASS on both URLs: Dashboard
+builder/personal save/rename/reload/monitor/Reports source, Home/Apps and business
+boundary, Reports/Finance previews and actual XLSX exports (63 authorised datasets),
+Nunito typography (ten routes at three viewports), Messages send/order attachment/
+history/pagination/details/drafts/forged-reference rejection. Desktop, tablet and
+phone checks PASS; no browser/asset errors. Public login returned 200.
+
+Backup atlas-pre-deploy-20261009-232442 includes central database/private files.
+Private server evidence: /tmp/atlas-dashboards-candidate-Y0aKmw/browser.log and
+/tmp/atlas-dashboards-public-t3dAEj/browser.log. Local deployment transcript:
+/tmp/atlas-dashboards-locked-deploy-retry.log. Public SHA verified after completion.
+Previous /opt/atlas-releases/2ef5b4c2f9dffaa2dd92c7df894a5587e45a12de retained.
+Exact already-live People/Supply/Studio/commercial/typography source preserved.
+No new Dashboard migration, grants or source-record changes. Synthetic owned boards
+removed and synthetic chat fixtures retired in finally; no real person messaged.
+
+Final combined checks: 28 files/138 assertions; subsequent Supply integration
+seven files/35 assertions; client/descriptors, route types, strict types, production
+build, scoped lint (zero errors/one brand-image warning), shell syntax and diff PASS.
+The full baseline suite was not rerun. Earlier candidates below are historical.
+
+First activation attempt failed at remote Git fetch due to disk exhaustion before
+backup/switch. Under both locks, removed only reproducible node_modules from ten
+inactive October 8 releases (6028b1f, 0c742ff, 6ef3cdf, 9ef1414, dbd5c91, 2bda114,
+2d25bd2, dd66039, c471fb0, 6483c96). Source/build assets/evidence/backups retained;
+ready markers preserved as .atlas-ready-retired-dependencies, preventing reuse
+without restoration. Active and previous runtimes excluded. Recovered 13 GB;
+unchanged live SHA verified, then same reviewed source retry passed completely.
+
+## Historical preparation evidence
+
 ## Source and release
 
 Application candidate `d61e5c461fb8ac83b55bdecf6b9773492619a2a5` includes

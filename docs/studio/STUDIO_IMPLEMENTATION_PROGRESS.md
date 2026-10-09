@@ -45,14 +45,16 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 # Current Workstream Detail
 
-2B2 IMPLEMENTED locally, NOT DEPLOYED: closed compiler dispatch/lifecycle, permanent
+2B2 candidate schema/lifecycle VERIFIED, NOT DEPLOYED: closed compiler dispatch/lifecycle, permanent
 publication identity/generation binding, owner field limit, activation checks and
 cosmetic-only evolution until reviewed migrations. Tickets v2 preserves sealed v1
 hashes. Five additive typed models/SQL guards with immutable history/current pointers.
 Prisma validate/generate, 19 files/85 tests, scoped lint, production build and strict
 post-build types PASS. Backed-up central DDL transaction-only syntax check PASS after
-fixing CASE parentheses; rolled back and table absence confirmed. Migration NOT
-APPLIED; data constraints/runtime NOT VERIFIED. Real privileged schema/lifecycle
+fixing CASE parentheses; rolled back and table absence confirmed. Migration applied on prepared fcfd512 after backup; data constraints/runtime
+checks PASS on candidate fcfd512 (privileged schema fixture, not value API).
+Full combined release failed a Messages viewport test selector with retained duplicate
+preview text; scoped it to timeline articles, rerun needed before activation. Real privileged schema/lifecycle
 acceptance helper added, distinct from the pending owner-authorised values API.
 
 Removed the visible internal-key input/display; server assigns stable UUID keys.
@@ -139,7 +141,8 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 Pending 2B2: five typed field/storage models and additive migration
 20261009220000_studio_typed_fields. Prisma schema validation PASS; SQL/constraints
-not centrally tested, migration not applied. Published metadata/history and all
+central DDL syntax tested; migration applied on prepared fcfd512, full runtime
+acceptance PASS on prepared fcfd512; public not run. Published metadata/history and all
 existing domain records remain unchanged. Decimal physical capacity is 38,10 while
 metadata enforces explicit precision<=28/scale<=10 without automatic rounding.
 
@@ -149,6 +152,9 @@ metadata tables/indexes/composite tenant foreign keys/constraints/guards. No exi
 business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
+
+`20261009220000_studio_typed_fields` applied during fcfd512 backed-up candidate
+preparation; new tables only, no native business changes. Candidate SQL/history/lifecycle checks PASS; production remains 1dafe16.
 
 `20261009210000_studio_metadata_kernel` applied centrally by backed-up candidate
 preparation on 9 October. Backup prefix:
@@ -258,9 +264,16 @@ prematurely. Gates cannot PASS from file existence alone.
 2B2/local generated-key simplification checkpoint f2beb8b; exact live Messages
 9303039 and private Admin 1dafe16 (main 6870014) merged, source/evidence preserved.
 Prisma regenerated, 27 files/140 tests, scoped lint and integrated build PASS.
-Strict post-build types PASS; record checkpoint, then prepare
-the additive backed-up candidate, then run field lifecycle/SQL/history/tenant guards
-and existing Studio/Admin/business/Home/Reports/MRP/Messages acceptance before
-activation. Proceed to 2B3 reviewed evolution/retirement/conversion planning and
+Strict post-build types PASS; candidate fcfd512 prepare/smoke PASS after backup
+atlas-pre-deploy-20261009-211931; additive migration applied. Candidate field/Studio/Admin/business/Home/Reports/MRP checks PASS. Corrected
+Messages viewport selector (retained preview text); types/scoped lint PASS. Checkpoint and
+prepare a new exact candidate, then rerun combined acceptance including private Admin.
+Activate only after PASS. Proceed to 2B3 reviewed evolution/retirement/conversion planning and
 resumable jobs only after 2B2 central checks PASS. 2B4 owner values, then 2C–2F.
 Phase 2 remains IN PROGRESS; do not start Phase 3+.
+
+Candidate fcfd512 combined evidence: /tmp/atlas-studio-acceptance-1hYTRO.
+Field publication/binding, failed-evolution atomicity, tenant FKs, exact 28-digit
+decimals/money/currency, required/type checks, immutable values, current pointers
+and unique-marker/duplicate guards PASS. Stable-key-free real form and native
+regressions PASS. Messages selector failure is NOT a combined acceptance PASS.

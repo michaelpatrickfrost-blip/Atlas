@@ -65,3 +65,8 @@ checks and transaction-only central DDL syntax verification passed; migration/da
 guards remain unverified until candidate acceptance. Generic desktop model reads
 must remain denied for additional values: the future gateway must authorise native
 record, current field policy and written-schema policy before returning any value.
+
+Prepared fcfd512 central schema/lifecycle tests PASS (private logs in ledger);
+migration applied after backup. Full combined/public release acceptance is pending
+the Messages viewport selector rerun. No owner-authorised customer values API is
+claimed; that is 2B4.

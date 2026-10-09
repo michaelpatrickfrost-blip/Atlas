@@ -24,26 +24,32 @@ presented as Sales support.
 Latest integrated Admin/Messages source: 27 focused/regression files/140 tests
 PASS, Prisma client regenerated, scoped lint and production build PASS. Strict
 post-build TypeScript PASS.
-Earlier checks: strict TypeScript
-(after production build) PASS, scoped ESLint PASS, production build PASS, Prisma
-validate/generate PASS. Backed-up central transaction-only DDL check found one
-PL/pgSQL CASE-parentheses syntax error, fixed and rerun PASS; explicit rollback and
-absence of proposed tables confirmed. Backup: atlas-studio-field-ddl-TvSAMP. No
-migration applied or central field values stored yet. SQL data/tenant/history guards
-are NOT VERIFIED until real candidate tests run. Full-suite known baseline failures
-remain; no full-suite success claimed. Diff reviewed; no domain code removed.
+Initial Prisma validate/generate PASS. Backed-up central transaction-only DDL check
+found one PL/pgSQL CASE-parentheses syntax error, fixed and rerun PASS; explicit
+rollback/table absence confirmed before preparation. Dry-run backup:
+atlas-studio-field-ddl-TvSAMP. Later migration/runtime evidence is recorded below.
+Full suite not rerun; previously reported baseline failures remain open, and no
+whole-suite success is claimed. Diff reviewed; no native domain code removed.
 
 Latest observed live source is now 1dafe165f97545829d96242b1846e87d9c1f42b4 (private
 Admin entry), server pointer/control HEAD verified. Merged origin/main 6870014,
 including exact live Admin and Messages, preserving their source/evidence. Previous Studio source
 6775044 passed public owner/metadata/Admin/business login/Home/Reports/MRP; its final
 evidence remains in main eba8b49 and historical entries below. 2B2 and generated-key
-UI changes are local only and have NOT been deployed. Phase 2 gate NOT PASSED.
+UI changes are checkpointed at candidate fcfd5128e991b453badf1bd95477271645f0291a.
+Preparation PASS after backup atlas-pre-deploy-20261009-211931; additive field
+migration applied during preparation, immutable candidate smoke verified. Production
+pointer remains 1dafe16. Candidate field schema/lifecycle plus Studio/Admin/business/Home/Reports/MRP
+checks PASS, including generated-key form. Combined run FAIL in Messages
+viewport selector: retained conversation previews duplicate the exact timeline
+text. Scoped that locator to article, preserving the behaviour assertion. No app
+regression or complete combined PASS claimed. Private logs:
+/tmp/atlas-studio-acceptance-1hYTRO. These changes are NOT LIVE. Phase 2 gate NOT PASSED.
 
 Exact next: exact live Admin 1dafe16 and Messages 9303039 are merged with
-contributors' evidence preserved. Integrated local checks PASS; prepare
-backed-up additive candidate and run real field schema/lifecycle plus existing
-Studio/Admin/business/Home/Reports/MRP/Messages acceptance. Activate only on PASS.
+contributors' evidence preserved. Integrated local checks PASS; selector TypeScript/scoped lint PASS.
+Checkpoint source/evidence and prepare a new exact candidate and rerun complete Studio/Admin/business/Home/Reports/
+MRP/Messages/private-Admin acceptance. Activate only on PASS.
 Then 2B3 evolution/retirement/conversion planning and resumable jobs, followed by
 2B4 owner-authorised values. No 2C or Phase 3+ before preceding workstream checks.
 ## 9 October 2026 — Private Admin entry deployed and publicly verified

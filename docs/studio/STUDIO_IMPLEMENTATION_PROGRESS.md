@@ -265,7 +265,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Preserve newly live supply 2690c26 (merged), rerun integrated checks and complete
+Preserved newly live supply 2690c26 and reviewed modern Apps main f6e27cb.
+Prisma generation, 29 files/143 tests, scoped lint and production build PASS;
+strict post-build types PASS. Prepare exact source and complete
 combined candidate/public acceptance including connected supply. Original upstream
 font licence files contain two trailing spaces; preserve the licences verbatim.
 

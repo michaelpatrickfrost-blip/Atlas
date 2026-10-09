@@ -19,7 +19,7 @@ candidate/public checks pending. Retirement/principals VERIFIED on 7941f9b.
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source 70ca23ea83662c94e254488de717ee26de0e2c84,
+VERIFIED. Latest confirmed live source b57ba7209889c0096f47475d6a0659741834f11b,
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -230,6 +230,10 @@ platform grants and business-user provisioning regression cases.
 
 # Tests Run
 
+Latest b57ba720-preserving source: generation, 29 files/171 focused assertions,
+production build, strict post-build TypeScript and scoped lint PASS. Browser Admin
+redirect helper correction retains 307; runtime proof pending.
+
 Latest integrated source preserving live 2ef5b4c: 23 files/135 tests, generation,
 production build, strict post-build TypeScript, scoped lint PASS. Acceptance shell
 syntax and three invalid argument rejection cases PASS; runtime pending.
@@ -370,9 +374,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Customer-browser denial correction types/lint PASS; checkpoint then preserve new
-observed live b57ba720 appointment guard. Run integrated build/checks before retry,
-retaining exact 307/home and no Admin shell. Prepare a new reviewed pin preserving
-70ca23e with Studio held-lock acceptance; real cohort helper remains unrun after
-0af763d candidate harness failure. Full combined candidate must PASS before switch,
-then repeat exact public checks. Phase 2 NOT PASSED; no visual designer/value API.
+Deploy the new reviewed pin preserving b57ba720 appointment guard and 70ca23e
+modern Dashboard. Browser-based Admin denial retains 307/home and no Admin shell;
+29 files/171 tests, generation/build/strict types/scoped lint PASS. Full combined
+candidate must PASS before switch, then repeat exactly on public under original
+locks. Real owner cohort helper remains unrun after the earlier test-transport
+failure. Record runtime results before reviewed job/row persistence and owner
+representation-only authority. Phase 2 NOT PASSED; no visual Studio/value API.

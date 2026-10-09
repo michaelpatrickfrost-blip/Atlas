@@ -6,9 +6,10 @@ Preserved exact observed live b57ba720: native legacy completion cannot bypass
 booked-appointment diary, owner/tenant/state checks retained. Studio candidate
 0af763d failed before switch on the Secure-cookie API test transport; browser
 correction types/lint PASS. Added native legacy completion regression to integrated
-suite. Generation/build/types/tests/lint now pending on the compatible source.
+suite. Prisma generation, 29 files/171 focused tests, production build, strict post-build
+TypeScript and scoped lint PASS on the compatible source.
 No Studio schema change; new real cohort helper remains unrun. Next prepare/test
-new pin with corrected browser denial and all combined native acceptance.
+new reviewed pin with corrected browser denial and all combined native acceptance.
 
 ## 10 October 2026 — Studio candidate secure-cookie harness correction
 

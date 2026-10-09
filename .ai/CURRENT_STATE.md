@@ -1,37 +1,34 @@
 # Atlas current state
 
-## 9 October 2026 — Modern Home menu from Michael's reference
+## 9 October 2026 — Modern Home menu deployed and verified
 
-- Home now has a light utility rail (Home, accessible Reports, My tasks,
-  authorised Messages/Settings), branded header/search and grouped app cards
-  with larger blue icons, app descriptions and permission-filtered counts.
-  The rail never repeats the business apps; tablet/phone use a utility bar.
-  Attention/goals and other apps' top menus remain connected.
+- Michael's reference now drives Home: branded search header, grouped app cards
+  with large blue icons and concise descriptions, and a separate light utility
+  rail. The rail contains only Home, accessible Reports, My tasks, authorised
+  Messages and Settings. Tablet/phone use labelled compact utilities. Existing
+  app access filters, attention/goals, module menus and records are preserved.
 - Paths: Home page/layout, `globals.css`, shell `app-directory`, `topbar`,
   `topbar-variant`, `home-navigation`, `shell-chrome`, `command-palette`,
-  `app-menu` (mobile accessible name), and `public/brand/atlas-mark.png`
-  (crop of supplied logo).
-- Isolated from live `58b3610` on `codex/home-menu-release`, because main also
-  contains unaccepted Studio work. Deployer supports explicitly pinned codex
-  branches with the same remote-tip/ancestry/lock/backup/immutable-build checks;
-  default main behavior remains. See `docs/DEPLOY.md`.
-- Reconciled `.ai/DESIGN_SYSTEM.md`, decisions, design system and delivery plan.
-- Checks: production build passed; strict TypeScript passed after installing
-  lockfile dependencies; focused ESLint passed (img-element warnings only);
-  4 focused navigation/release test files, 15 assertions passed. Shell syntax
-  and five mocked deploy guards passed (main, scoped branch, rejected unpinned,
-  wrong checkout and invalid ref). `git diff --check` passed.
-- Added read-only `scripts/check-home-menu.ts` using the existing Guardian QA
-  membership, with every non-read request blocked. First candidate passed all three responsive layouts, authorised cards,
-  loaded branding and no horizontal overflow. The mobile workspace Apps
-  accessibility check caught a missing button name; corrected with aria-label.
-  Second candidate passed desktop/tablet/phone, search open/close and
-  workspace Apps navigation with all writes blocked. Final screenshot refinements
-  improve word spacing, short card descriptions and labelled mobile utilities.
-  Final acceptance and activation pending.
-- Next: prepare exact server candidate, run read-only acceptance, activate and
-  verify live; merge this release branch/evidence into main while preserving
-  the concurrent Studio implementation. No schema/business-data changes.
+  `app-menu` (mobile accessible name), `public/brand/atlas-mark.png`, and
+  read-only acceptance `scripts/check-home-menu.ts`.
+- Live release: `329b60ab86fac7cc4e14ccb4c5d94d2d16bb3316` activated at
+  atlassystem.online. Exact public health revision and `/login` 200 confirmed;
+  previous `58b3610` retained. Private activation backup:
+  `atlas-pre-deploy-20261009-190825`. No schema/business-data changes from this task.
+- Checks run on the scoped release: production build, strict TypeScript, focused
+  ESLint (img-element warnings only), four navigation/release test files with
+  15 assertions, shell syntax, five mocked deploy guards and diff whitespace
+  passed. Candidate AND public live acceptance passed desktop 1448px, tablet
+  820px and phone 390px: authorised cards, utility-only rail, branding loads,
+  no horizontal overflow, search open/close, real app navigation and Apps menu.
+  All non-read requests were blocked; existing Guardian QA membership reused.
+- Used `codex/home-menu-release` from the prior live commit to exclude pending
+  Studio work. Deployer's explicit branch option preserves tip/ancestry checks,
+  locks, backups and immutable build/smoke/rollback protections; main remains
+  the default. Source branch merged into main (`94bcdba`, `1091518`) preserving
+  concurrent Studio/Guardian changes. See `docs/DEPLOY.md`.
+- Reconciled design memory, project context, decisions, design system and delivery
+  plan. Next: none for this Home menu; Studio's separate acceptance stays pending.
 
 ## 9 October 2026 — Studio candidate publication correction
 

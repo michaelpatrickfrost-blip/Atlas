@@ -53,7 +53,7 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
 
 - **Home** — modern blue-and-white launcher based on Michael's 9 October reference.
   A branded search header, light utility rail and grouped app cards with larger
-  blue icons and manifest descriptions replace the compact Home link grid.
+  blue icons and concise purpose descriptions (manifest fallback) replace the compact Home link grid.
   The utility rail contains Home, Reports (accessible Analytics), My tasks,
   Messages (chat permission) and Settings (company-admin access). It does not
   repeat the apps. Tablet/phone use a compact utility bar. This supersedes the

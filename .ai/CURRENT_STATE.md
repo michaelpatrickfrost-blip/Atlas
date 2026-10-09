@@ -43,13 +43,27 @@ and `/login` returned 200. The bug was real but incomplete, not undeployed.
 - **Checks run:** in a clean `origin/main` worktree — `npx prisma generate`,
   `npx tsc --noEmit` (0 errors under `src/`), `npm run build` (passed), and a
   focused `tsx` assertion of the staff/non-staff enablement dispatch (passed).
-- **Deployed:** revision recorded in the entry below once live.
-- **Next step:** after activation, re-run the read-only live page sweep for both
-  staff accounts against the new revision and confirm the disabled screens are
-  gone from the Atlas team workspace; then extend
-  `scripts/guardian/check-app-launcher.ts` (or a sibling) to assert a staff page
-  renders its workspace rather than the "is disabled" state, so this cannot
-  silently regress again.
+- **Deployed:** live `https://atlassystem.online` now reports revision
+  `06387c7034a99f9a44ab88d2117c774f43933493` (`/api/health/release`); previous
+  release retained at `/opt/atlas-releases/5abb2b0…`. Pre-deploy private backup:
+  `/home/administrator/backups/atlas-pre-deploy-20261009-101845`.
+- **Live verification (read-only, post-deploy):** minting each account's real
+  server session and requesting the pages that previously failed returned 200
+  with **no** "is disabled" text for both `kickablur@icloud.com` (OWNER) and
+  `dg@atlassystem.online` (EMPLOYEE), in both the Atlas team internal company and
+  the Michael Test company: `/people/workspace`, `/people/training`,
+  `/manufacturing`, `/fleet`, `/maintenance`, `/quality`, `/engineering`,
+  `/marketing`, `/analytics`, `/sop`, `/projects`, `/finance`; Home still renders
+  36 tiles.
+- **Not changed for customers:** the new branch only fires for a session holding
+  `atlas.staff.manage`; non-staff sessions fall through to the identical
+  `getEnabledModuleIds(organisationId)` call, so customer enablement is
+  unchanged. No live non-staff customer login exists to exercise it on the server,
+  so this is verified by construction (and by the unchanged `/apps` switch), not
+  by a live customer page request.
+- **Next step:** extend `scripts/guardian/check-app-launcher.ts` (or a sibling) to
+  assert a staff page renders its workspace rather than the "is disabled" state,
+  so this cannot silently regress again.
 
 ## 8 October 2026 — Marketing destructive-action audit in progress
 

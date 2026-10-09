@@ -11,14 +11,18 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3a — Typed compatibility/conversion analysis — NOT STARTED; exact next work.
-2B2 VERIFIED on candidate/public e5d66e6. Ordered 2B3a–g plan in
-STUDIO_FIELD_EVOLUTION_PLAN.md; all remaining Phase 2 dependencies retained.
+2B3c1 — Refreshed migration principal and explicit audited support context —
+IMPLEMENTED locally. Seven principal tests plus integrated 23 files/118 tests,
+Prisma generation/types/lint/build PASS. Central helper ready but NOT RUN. No
+preview endpoint, durable job or new Studio migration. 2B3b retirement verified
+on two candidates; public activation/proof pending while newer live source is
+preserved. 2B2 remains VERIFIED on candidate/public e5d66e6.
 
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest observed live source e5d66e6cf36b0fe228ac65287fdaa8d5ceb8be7c;
+VERIFIED. Latest observed live source 94dd3e105e2757b5d16ed3e2fea277d09a4b7bee;
+2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
 The supplied source defines ten phases 0–9, not five. The original
 is preserved unchanged at `docs/studio/ATLAS_STUDIO_SOURCE.docx` (source
@@ -43,6 +47,7 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | Companion Admin/business sign-in and provisioning | VERIFIED | Real Admin creates Test-company user; correct company setup/login passes; wrong company recovery/login and customer Admin access rejected. |
 | 2A Owner-approved entity/extension contracts | VERIFIED | 8 focused files/54 assertions, TypeScript, scoped lint/build; central candidate/public owner checks PASS on 6775044. No native write changes. |
 | 2B1 Typed field/value validation | VERIFIED | 7 focused assertions, TypeScript/scoped lint; integrated 17 files/110 assertions and production build. Pure library, no storage/UI claim. |
+| 2B3a Pure compatibility/conversion analysis | VERIFIED | 3 files/22 tests, strict TypeScript/scoped lint/build PASS; no DB or executable migration. Local checkpoint only. |
 | 2B2 Compiler/identity/generations/typed storage | VERIFIED | e5d66e6 candidate/public schema/lifecycle plus complete combined native acceptance PASS; 29 files/143 local tests, TypeScript/lint/build. Owner value API remains 2B4. |
 
 # Current Workstream Detail
@@ -66,9 +71,9 @@ Latest follow-up adds easy template customisation, live business dashboards/scre
 and custom buttons to 2E acceptance. Existing Home/analytics/dashboard and Sales
 Templates source inspected; 2E5 reuses their engines, preserves personal boards and
 checks native button permissions. Requirements/plan saved; designer NOT STARTED.
-2B3a–g checkpoints saved in STUDIO_FIELD_EVOLUTION_PLAN.md; compatibility,
-retirement, reviewed jobs/publication/batches/cutover and acceptance remain
-NOT STARTED; 2B2 combined candidate/public release now PASS. Historical/final-record owner
+2B3a–g checkpoints saved in STUDIO_FIELD_EVOLUTION_PLAN.md; compatibility/conversion
+pure library VERIFIED locally. Retirement IMPLEMENTED locally (35 tests/types/lint/build PASS); reviewed jobs/
+publication/batches/cutover and acceptance remain NOT STARTED; 2B2 combined candidate/public release now PASS. Historical/final-record owner
 policy must be resolved in code without bypassing existing native restrictions.
 
 2B1 delivered closed typed field contracts/required/constraint validation, exact
@@ -123,6 +128,16 @@ metadata lifecycle with two tenant scopes and missing publication permission.
 Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
+
+2B3c1: fields/principal.ts, tests/studio-field-principal.test.ts, central
+check-field-principal helper and metadata driver; evolution
+plan/ledger/CURRENT_STATE/DECISIONS. Existing audit only; no DB/schema migration.
+
+2B3b: fields/retirement.ts, tests/studio-field-retirement.test.ts, central
+check-field-storage helper, plan/ledger/CURRENT_STATE/DECISIONS. No new migration.
+
+2B3a: core/studio/fields/evolution.ts, tests/studio-field-evolution.test.ts, evolution
+plan/ledger/CURRENT_STATE/DECISIONS. No DB/Prisma change. No values written.
 
 2B2 committed/activated source: registry policy/types/factory, service-work/studio (retained v1 + v2),
 compiler/fields, fields/schema, test compiler/sealed-hash regression, Prisma schema
@@ -181,10 +196,22 @@ platform grants and business-user provisioning regression cases.
 
 # Tests Run
 
+2B3b: 5 files/35 assertions, scoped lint, production build and strict TypeScript
+PASS. Central helper and combined candidate checks PASS on 8b99c1b; no public retirement claim.
+
+2B3a: 3 files/22 assertions PASS; scoped lint, production build and strict TypeScript
+PASS (narrowing error fixed and checks rerun). Pure library not yet invoked by UI/jobs.
+
 Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+Latest 6085d70 combined candidate PASS; /tmp/atlas-studio-acceptance-wM3A1X.
+Exact native source subsequently advanced to 94dd3e, merged unchanged. New
+combined 23 files/118 assertions, Prisma generation/types/lint/build PASS; real
+principal helper pending. No public retirement/principal claim. Earlier exact
+checkpoint results below are historical evidence, not current next actions.
 
 Combined 6775044 candidate/public owner + metadata/Admin/company sign-in, Home,
 Reports and MRP checks all PASS; private logs /tmp/atlas-studio-acceptance-fHPgb0 and
@@ -272,17 +299,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-2B2 live evidence and next-workstream plan checkpointed; latest main 644f50e
-merged preserving concurrent entries (documentation only). Implement 2B3a typed
-compatibility/conversion rules and tests according to STUDIO_FIELD_EVOLUTION_PLAN.md,
-followed by retirement/reviewed resumable jobs. 2B4 owner values follows 2B3; 2C–2F
-remain. Do not start Phase 3+.
-
-Exact e5d66e6cf36b0fe228ac65287fdaa8d5ceb8be7c VERIFIED LIVE.
-Preparation backup atlas-pre-deploy-20261009-214456; activation backup
-atlas-pre-deploy-20261009-215653; previous 2690c26 runtime retained.
-Complete candidate PASS: /tmp/atlas-studio-acceptance-fDWxDN.
-Initial public run passed Studio/native checks but failed Messages viewport after
-restore (/tmp/atlas-studio-public-3EmQ8d). Standalone unchanged-source public Messages
-PASS, then complete unchanged-source public rerun PASS:
-/tmp/atlas-studio-public-1XT85A. No persistent app defect confirmed.
+Prepare the source preserving live 94dd3e commercial workspaces and 56c9d88
+business/platform separation. Execute the updated combined candidate runner,
+including real check-field-principal and commercial forms/regressions. On PASS
+activate only the exact compatible pinned source and repeat publicly. Preserve
+newly advanced live source if the ancestry guard stops; never force replacement.
+After principal/retirement release proof, implement 2B3c2 reviewed preview and
+durable migration job/row persistence with source/target checksum/revision binding,
+authorised cohort and restricted live-preview policy. No 2C/2E or Phase 3+ yet.

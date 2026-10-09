@@ -102,7 +102,7 @@ export function ProductView({ data, back, itemHref, actions }: { data: Workspace
     <Link href={back.href} className="text-xs text-slate-500">{back.label}</Link>
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <p className="text-xs font-medium uppercase tracking-wider text-slate-400">SKU {product.code} · {categoryLabel(product.itemClass)}{data.categoryName ? ` · ${data.categoryName}` : ""}{product.kind !== "PRODUCT" ? ` · ${product.kind}` : ""}{!product.active ? " · Archived" : ""}{perPallet ? ` · ${perPallet.toLocaleString("en-GB")} per pallet` : ""}</p>
+        <p className="text-xs font-medium uppercase tracking-wider text-slate-400">SKU {product.code} · {product.sellable ? "Sellable" : "Internal / not sellable"} · {categoryLabel(product.itemClass)}{data.categoryName ? ` · ${data.categoryName}` : ""}{product.kind !== "PRODUCT" ? ` · ${product.kind}` : ""}{!product.active ? " · Archived" : ""}{perPallet ? ` · ${perPallet.toLocaleString("en-GB")} per pallet` : ""}</p>
         <h2 className="mt-2 text-2xl font-semibold tracking-tight">{product.name}</h2>
         <p className="mt-2 text-sm text-slate-500">{product.kind === "PRODUCT" ? `${supplyLabel(data.supply)}${data.version ? ` · version ${data.version}` : ""} · ${product.unitOfMeasure}` : "Sold as a service or charge. It has a price, not a recipe."}</p>
         {product.description && <p className="mt-2 max-w-2xl text-sm text-slate-600">{product.description}</p>}

@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { firmPlannedOrderAction, dismissPlannedOrderAction } from "../actions";
 
-export function SuggestionActions({ id, kind, status, canFirm, canManage }: { id: string; kind: string; status: string; canFirm: boolean; canManage: boolean }) {
+export function SuggestionActions({ id, kind, status, canFirm, canManage, canPurchase = false }: { id: string; kind: string; status: string; canFirm: boolean; canManage: boolean; canPurchase?: boolean }) {
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +37,8 @@ export function SuggestionActions({ id, kind, status, canFirm, canManage }: { id
           {pending ? "Working…" : "Firm to production order"}
         </button>
       )}
-      {kind !== "MAKE" && <span className="text-xs text-[var(--color-ink-muted)]">{kind === "BUY" ? "Hand to Purchasing" : "Hand to Logistics"}</span>}
+      {kind === "BUY" && (canPurchase ? <Link className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white" href={`/finance/documents/new?kind=PO&suggestion=${encodeURIComponent(id)}`}>Review purchase draft →</Link> : <span className="text-xs text-slate-500">A purchasing planner can convert this proposal.</span>)}
+      {kind === "TRANSFER" && <span className="text-xs text-slate-500">Review an internal move in Inventory.</span>}
     </div>
   );
 }

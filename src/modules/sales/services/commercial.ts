@@ -117,7 +117,7 @@ export async function openCallOffOrder(form: FormData) {
   const party = await db.party.findFirstOrThrow({ where: { id: partyId, organisationId: session.organisationId }, include: { commercialSettings: true, creditProfile: true } });
   if (["ON_HOLD", "INACTIVE", "CLOSED"].includes(party.status)) throw new Error("This customer account is unavailable for new sales.");
   if (party.commercialSettings?.customerPoRequired && !customerPoReference) throw new Error("This customer requires a purchase order number.");
-  const products = await db.product.findMany({ where: { organisationId: session.organisationId, id: { in: inputs.map((line) => line.productId) }, active: true } });
+  const products = await db.product.findMany({ where: { organisationId: session.organisationId, id: { in: inputs.map((line) => line.productId) }, active: true, sellable: true } });
   const priced = [];
   for (const [index, input] of inputs.entries()) {
     const product = products.find((item) => item.id === input.productId);
@@ -162,6 +162,7 @@ async function createCallOffRelease(session: Awaited<ReturnType<typeof requireSe
     const products = await tx.product.findMany({ where: { organisationId: session.organisationId, id: { in: selected.flatMap((item) => item.line.productId ? [item.line.productId] : []) } } });
     const lines = await Promise.all(selected.map(async ({ line, quantity }, index) => {
       const product = products.find((item) => item.id === line.productId);
+      if (line.productId && (!product || product.sellable === false || !product.active)) throw new Error("This item is internal or inactive and cannot be used for a new sale.");
       const netAmount = line.unitPriceAmount * quantity;
       const taxCategory = product?.taxCategory ?? "STANDARD";
       const tax = await resolveStandardUkVat({ sellingOrganisationId: session.organisationId, partyId: agreement.partyId, deliveryCountry: delivery.country, productTaxCategory: taxCategory, transactionDate: requestedDeliveryDate ?? new Date(), netAmount });

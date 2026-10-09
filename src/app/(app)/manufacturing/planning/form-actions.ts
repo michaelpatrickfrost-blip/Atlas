@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { runMrpAction, firmPlannedOrderAction, dismissPlannedOrderAction } from "./actions";
 
 function refresh() {
+  revalidatePath("/manufacturing");
   revalidatePath("/manufacturing/planning");
   revalidatePath("/manufacturing/planning/planned-orders");
   revalidatePath("/manufacturing/planning/shortages");

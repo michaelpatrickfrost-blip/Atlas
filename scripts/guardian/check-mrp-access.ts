@@ -37,12 +37,12 @@ async function main() {
       for (const mode of ["enabled", "disabled", "unentitled"] as const) {
         const slug = `${prefix}-${mode}`;
         const org = await tx.organisation.create({ data: { name: "Disposable Guardian MRP verification", slug, isTest: true,
-          moduleStates: { create: ["manufacturing", "products"].map(moduleId => ({ moduleId, enabled: moduleId !== "manufacturing" || mode !== "disabled", entitled: moduleId !== "manufacturing" || mode !== "unentitled" })) } } });
+          moduleStates: { create: ["manufacturing", "products", "stock", "sales"].map(moduleId => ({ moduleId, enabled: moduleId !== "manufacturing" || mode !== "disabled", entitled: moduleId !== "manufacturing" || mode !== "unentitled" })) } } });
         const users = [];
         const fixture = { organisationId: org.id, slug, userIds: [] as string[] }; fixtures.push(fixture);
         for (const role of mode === "enabled" ? ["reader", "planner"] : ["planner"]) {
           const user = await tx.user.create({ data: { name: `Guardian MRP ${role}`, email: `${slug}-${role}@example.test`, passwordHash: await bcrypt.hash(randomBytes(32).toString("hex"), 10) } });
-          const caps = ["core.profile.self", "core.products.read", "manufacturing.order.read", "manufacturing.plan.read", ...(role === "planner" ? ["manufacturing.plan.manage"] : [])];
+          const caps = ["core.profile.self", "core.products.read", "manufacturing.order.read", "manufacturing.plan.read", ...(role === "planner" ? ["manufacturing.plan.manage", "sales.order.read", "stock.read", "customers.read"] : [])];
           const member = await tx.membership.create({ data: { organisationId: org.id, userId: user.id, grantedCapabilities: caps } });
           fixture.userIds.push(user.id);
           users.push({ user, token: jwt.sign({ userId: user.id, organisationId: org.id, authVersion: user.authVersion, sessionVersion: member.sessionVersion }, process.env.SESSION_SECRET!, { algorithm: "HS256", expiresIn: "15m" }) });

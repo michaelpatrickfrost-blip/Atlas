@@ -14,7 +14,7 @@ const APP_SUMMARIES: Record<string, string> = {
   crm: "Sales pipeline and customer insights.", sales: "Quotes, orders and sales management.",
   service: "Customer support and service management.", marketing: "Campaigns and customer engagement.",
   stock: "Stock, materials and warehouse management.", planning: "Product demand, stock cover and shortages.",
-  logistics: "Warehouse fulfilment, dispatch and deliveries.", manufacturing: "Production planning and shop-floor execution.",
+  logistics: "Warehouse fulfilment, dispatch and deliveries.", manufacturing: "Demand, materials, production, procurement and spend.",
   safety: "Workplace safety, risks and compliance.", quality: "Quality management and control.",
   kpis: "Track performance and business goals.", people: "People, contracts and HR management.",
   scheduling: "Workforce planning and scheduling.", teams: "Team capacity, holidays and resourcing.",

@@ -83,6 +83,17 @@ See `docs/modules/REPORTS.md`.
 
 # Atlas decisions
 
+## 9 October 2026 — Rounded typography is shared across Atlas
+
+Michael requests a modern rounded font across the system, similar to Rensol
+Rounded. Use Nunito's bundled normal/italic variable fonts for the shared sans
+family: rounded terminals and a full weight range preserve readable dense forms
+and tables. Apply it once in the root layout and shared Tailwind/body token,
+covering business, authentication and independent Admin layouts. Keep established
+text sizes/weight hierarchy, tabular numerals and Geist Mono for technical text.
+Official pinned fonts and SIL OFL provenance remain in src/app/fonts/README.md;
+no external runtime font service or per-module typography copies.
+
 ## 9 October 2026 — Unlisted Admin entry and central sign-in limits
 
 Michael requested `/19811171adminlogin` and exclusion from search. Remove public

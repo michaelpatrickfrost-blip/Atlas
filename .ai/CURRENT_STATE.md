@@ -2,6 +2,24 @@
 
 ## 9 October 2026 — Customers, Sales, CRM and Marketing refinement prepared
 
+Latest checkpoint: sealed f5948cf prepared with central backup
+atlas-pre-deploy-20261009-220433. Candidate real forms and all ten screens at
+1448/820/390 widths PASS; 15 allowed form POSTs, no browser errors, anonymous
+redirects and tenant/capability/owner isolation PASS. Exact Test access revoked,
+records/audit retained. Evidence: /tmp/atlas-commercial-acceptance-3EeehS;
+staging logs /tmp/atlas-commercial-staging-5USGxq; fixture backup
+atlas-pre-commercial-test-20261009-221109. Journey desktop and appointment phone
+screenshots visually inspected. Rounded typography 5ebd700 became live before
+activation; preserve that exact source and all shared memory, build and rerun
+commercial layouts with Nunito, then activate and verify public HTTPS.
+Merged Nunito production build, strict TypeScript, scoped font/checker lint and
+whitespace PASS. Earlier f594 activation safely stopped at server ancestry;
+production was not changed by that attempt.
+Latest full run: 1201 passed / 63 failed / 22 skipped; 62 failures are older module
+mocks outside this feature, plus one existing Inventory 5-second compilation
+timeout. Inventory alone repeats that timeout; with a 20-second test allowance all
+12 assertions PASS (initial transform takes 9 seconds). No whole-suite green claim.
+
 While final acceptance ran, live advanced to 2690c26 (Manufacturing/Supply and
 Studio dependency/cost guards). Its exact deployed source and all contributor
 memory are merged; only a decisions append conflicted, and both entries remain.
@@ -18,8 +36,8 @@ Studio schema, modern Apps navigation and contributor evidence are now merged.
 Customers layout/list had a margin-auto flex child growing to the table intrinsic
 width; explicit full width/min-width zero contains the table. Merged Prisma generation,
 strict TypeScript, scoped lint, production build and 30-file/145-test suite PASS.
-Responsive browser recheck is required before activation. Linked-deal scope test
-suite (8 assertions) and strict types PASS; final acceptance remains pending.
+Responsive browser recheck subsequently PASS on f5948cf as recorded above. Linked-deal scope
+test suite (8 assertions) and strict types PASS; public acceptance remains pending.
 
 Scoped branch codex/customer-sales-experience starts from exact live 1dafe16.
 Customers has polished list/record context, canonical notes and a selected-family
@@ -59,9 +77,39 @@ page load instead. Visual inspection also prompted order-first layout, secondary
 Connections panels and collapsible recovery/references. Large-family selection
 now retains the focus/ancestors within its explicit display bound; Overview reads
 that same family. Added cancellation and focused-map regression coverage. Updated 23-file/119-test
-suite, strict TypeScript, scoped ESLint, shell syntax and production build PASS. Final
-updated candidate, responsive/public acceptance and activation remain pending;
-this checkpoint is not live delivery.
+suite, strict TypeScript, scoped ESLint, shell syntax and production build PASS. At that earlier checkpoint, final
+updated candidate, responsive/public acceptance and activation remained pending.
+Subsequent candidate evidence is recorded above; public delivery is still pending.
+
+## 9 October 2026 — Shared rounded typography in verification
+
+Replaced Plus Jakarta Sans with Nunito across the shared root sans token/body,
+including business apps, sign-in/recovery and independent Atlas Admin. Bundled
+normal/true-italic variable fonts (200–1000) retain source character coverage and
+SIL OFL licence/provenance; Geist Mono, text hierarchy and aligned numerals remain.
+Paths: src/app/layout.tsx, globals.css, fonts and scripts/check-typography.ts;
+design guides/DECISIONS updated.
+Scoped codex/rounded-system-font starts from exact public live 2690c26, preserving
+its already-deployed Manufacturing/Studio compatibility source. No schema, records,
+permissions or storage change. Checks: exact-lockfile install, Prisma generation,
+production build, strict TypeScript, scoped lint and whitespace PASS. Initial
+checker types referenced an absent User.active field; corrected to membership
+active and strict types rerun successfully. Local production browser proves
+actual Nunito glyphs and equal numeral widths; desktop/phone login screenshots
+visually inspected. Candidate 4a0a230 prepared with central backup
+atlas-pre-deploy-20261009-214902; all 30 route/viewport typography checks PASS
+(actual Nunito glyphs, inherited controls, aligned digits, page fit, zero browser/
+asset errors/external font requests). Home desktop/phone, Admin phone and Reports
+desktop screenshots visually inspected. Private evidence: /tmp/atlas-typography-check-5XrNJu
+and /tmp/atlas-typography-staging-HfIoX2. Full suite not rerun for this presentation change.
+Activation safely stopped at ancestry after accepted Studio e5d66e6 became public
+live. Merged that exact source, retaining its typed fields and modern Apps design;
+only CURRENT_STATE header conflict required reconciliation. Combined production
+build, focused Apps menu test file/3 assertions, scoped lint and whitespace PASS;
+strict TypeScript in progress. Combined candidate/public typography acceptance
+and responsive Apps verification pending.
+Next: prepare and verify the compatible combined release, activate, prove fonts
+on public HTTPS and merge implementation/evidence into main before completion.
 
 ## 9 October 2026 — Studio 2B2 candidate checkpoint; visual setup clarification
 

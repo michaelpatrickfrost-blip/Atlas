@@ -40,6 +40,12 @@ export function dataViewInput(
   if (
     measure?.type === "money" &&
     data.aggregation !== "count" &&
+    !/^[A-Z]{3}$/.test(data.currency)
+  )
+    throw new ChartError("Use a three-letter currency code, such as GBP.");
+  if (
+    measure?.type === "money" &&
+    data.aggregation !== "count" &&
     (!measure.currencyKey ||
       !dataset.columns.some((c) => c.key === measure.currencyKey && c.path))
   )

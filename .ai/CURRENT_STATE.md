@@ -51,68 +51,41 @@ Checker: scripts/check-private-admin-login.ts. Source: src/core/auth, src/proxy.
 Admin auth frame/route layouts, Prisma schema/migration and focused auth tests.
 Source and final evidence integrated with origin/main; no further Admin blocker.
 
-## 9 October 2026 — Dashboard redesign implemented, verification in progress
+## 9 October 2026 — Dashboard redesign, final release acceptance
 
-Dashboards moves into the business utility rail with its existing Analytics
-entitlement/read/manage gate; Home removes its duplicate business card. Modern
-logo-based gallery/canvas/library/inspector; personal widgets support typed source
-record grouping/count/distinct/sum/average/min/max, field/date/search filters,
-currency checks, flexible width/height/style/order, duplicate and undo/redo. Saved
-filters/period and monitor use the same source-authorised queries. Existing Dashboard
-storage and curated measures remain; rename uses owner/tenant ID and optimistic
-revision, copies cannot silently overwrite a same-name board. No new schema/grants,
-local business cache or authoritative record mutations. Source query limit is
-10,000 full matching rows; broader sharing/joins/formula/fiscal features remain open.
-Paths: modules/analytics, analytics/board routes, shell navigation, Reports dataset
-selection, generated action/model descriptors, four dashboard suites and central
-check-dashboards.ts; Analytics/design/decisions documentation reconciled.
-Exact current live Admin source 1dafe165 is merged, retaining its compatible auth
-migration and earlier Studio/MRP source/evidence. Generated data descriptors now
-match the already-live Studio models/actions plus new Dashboard read actions;
-the generator explicitly omits private authentication counters as Admin requires.
-Checks: 13 focused files/58 assertions PASS, strict TypeScript and production build
-PASS; scoped ESLint zero errors/two decorative brand-image warnings, diff check
-PASS. Full suite not rerun. Final currency/acceptance-harness refinements are being
-checked before candidate preparation. A generator regression asserts private
-authentication counters remain absent from gateway metadata. Final refinement: four dashboard suites/25 assertions, private-counter/query
-regressions (two files/13 assertions), strict types and final production build PASS.
-No Dashboard activation has occurred.
+Dashboards is in the utility sidebar under its existing Analytics entitlement and
+read/manage capabilities; Home no longer repeats its app card. The modern Atlas
+canvas has a searchable widget library, inspector, eleven visuals, personal boards
+and four starters. Widgets support grouping/count/distinct/sum/average/min/max,
+typed source/date/search filters, currency validation, width/height/colour/tone,
+reorder/duplicate/remove and undo/redo. Manual or timed refresh is saved with board
+period/default filters and respected by the monitor. Existing curated measures,
+central definitions and source permissions remain; ID/revision-checked rename and
+unique-name copies prevent silent replacement. No Dashboard migration or grants.
 
-Messages 9303039 was deployed and passed actual public chat/order/history/details,
-expanded draft handoff, desktop/tablet/phone, Home and Reports/Finance acceptance.
-Final Me-assignment fix 4be24b3 passed 11 files/70 assertions, types/build/lint and
-corrected sealed candidate Chat/Home/Reports acceptance. It is retained in this
-combined source; its public deployment verification will accompany Dashboards.
-Synthetic central chat fixtures are retired; no real colleague/customer was messaged.
-Candidate d61e5c4 is prepared and smoke-verified with central database/file backup
-atlas-pre-deploy-20261009-212614; live pointer unchanged. Browser acceptance waits
-for a concurrent build to release the shared lock. Acceptance runner now recognises the new
-Dashboard utility destination and scopes its rail check to the visible responsive
-nav; rename acceptance waits for the central save rather than its optimistic title.
-These are runner-only refinements; sealed application source remains d61e5c4.
-Local checks and pending live gates are recorded in docs/evidence/2026-10-09-dashboards.md.
-Candidate d61e5c4 Dashboard/Messages/Home/Reports browser workflows PASS, including actual saves,
-rename/reload, currency guard, undo/redo, monitor and three viewport fits. Visual
-inspection found clipped phone Settings and a white rectangle behind the hero mark;
-fixed utility padding/icon shrink and mark blending before activation. KPI sparklines
-now appear only for trends, not a single categorical bar. Two focused canvas/chart
-files/8 assertions, strict types, build and refinement lint PASS. Final source requires
-checks and fresh candidate acceptance. Home acceptance now checks actual utility
-icon/label bounds as well as page overflow. No public Dashboard activation yet.
-Final numeric review distinguishes empty/null-only averages/extrema from zero and
-keeps filtered-group averages weighted. Distinct KPI totals warn when group-value
-thresholds would combine overlapping groups; use source record filters instead.
-Numeric refinement: 10 focused files/53 assertions, then final projection
-regression (one file/14 assertions), strict types, build and scoped lint PASS.
-Final source requires candidate acceptance before activation.
-Preparation of 726b860 stopped at ancestry after exact live Supply/Manufacturing
-2690c26 advanced. Merged that deployed source, preserving purchasing migrations,
-planning cost guards, retired-Test Studio compatibility and bundled fonts. Generated
-client/descriptors now match it and continue to exclude auth counters. Nineteen
-focused files/79 assertions, strict types, production build and scoped lint PASS
-for this combined source before preparation. No Dashboard activation yet.
-Next: prepare compatible combined candidate, run central
-Dashboard/Messages/Home/Reports checks, activate and repeat publicly.
+Fourteen detailed record datasets include Customers, Products, Sales, Inventory,
+Logistics, Manufacturing and Finance. Queries calculate all matching rows up to
+10,000, reject truncation/mixed currencies/unsafe money precision, preserve missing
+average/extrema and weighted groups, and return aggregates rather than raw rows.
+Broader sharing, formulas, arbitrary joins and fiscal features remain open.
+Paths: modules/analytics, analytics/board routes, shell, Reports dataset selection,
+generated gateway descriptors, four dashboard suites and check-dashboards.ts.
+Analytics/design/decisions documentation reconciled; auth counter metadata excluded.
+
+Exact already-live Supply source 2690c26 is merged with private Admin, Studio/MRP
+and Messages source. Combined 19 files/79 assertions, strict types, production
+build, scoped lint and diff check PASS. Prepared 885baa5 passed central Dashboard,
+Home, Reports/Finance and Messages acceptance. Earlier prepared candidates/backups
+and ancestry stops remain in docs/evidence/2026-10-09-dashboards.md. Final currency
+input guard: two suites/19 assertions, strict types, scoped lint and build PASS.
+No Dashboard activation is claimed yet. Next: prepare the final source, repeat
+candidate acceptance, activate and verify the same workflows through public HTTPS.
+The global suite was not rerun; its unrelated baseline failures remain recorded.
+
+Messages 9303039 was publicly verified; final Me-assignment 4be24b3 is included
+and candidate-verified in this combined source. Synthetic chat fixtures are retired;
+no real colleague/customer was messaged. Its final public proof accompanies this
+release. Unrelated unfinished Apps source on main is excluded from deployment.
 
 ## 9 October 2026 — Phase 2B1 validators and visual setup requirements
 

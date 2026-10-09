@@ -77,6 +77,7 @@ describe("Authorised personal dashboard data views", () => {
       view({ group: "secret" }),
       view({ measure: "name", aggregation: "sum" }),
       view({ measure: "amount", aggregation: "sum" }),
+      view({ measure: "amount", aggregation: "sum", currency: "INVALID" }),
       view({ filters: [{ field: "secret", operator: "equals", value: "x" }] }),
       view({
         filters: [{ field: "status", operator: "equals", value: "FORGED" }],

@@ -41,6 +41,7 @@ export async function preparePayroll(session:Session,start:string,end:string,fre
   const rows=employees.map(employee=>{
     const approved=employee.timesheets.filter(t=>t.status==="APPROVED"),unapproved=employee.timesheets.filter(t=>t.status!=="APPROVED"&&t.entries.some(e=>e.minutes>0));
     const approvedHours=approved.flatMap(t=>t.entries).reduce((n,e)=>n+e.minutes/60,0),issues:string[]=[],adjustment=employee.payrollAdjustments[0];
+    if(employee.timesheets.some(sheet=>sheet.entries.some(entry=>entry.minutes>0&&(entry.workedOn<employee.startDate||(employee.endDate&&entry.workedOn>employee.endDate)))))issues.push("Review actual time outside the employee’s employment dates.");
     if(employee.status==="LEFT"&&!employee.endDate)issues.push("Confirm the leaver’s employment end date.");
     if(employee.currency!=="GBP")issues.push("UK payroll requires GBP pay.");
     if(employee.payBasis==="HOURLY"? !employee.hourlyRateMinorUnits||employee.hourlyRateMinorUnits<0 : !employee.annualSalaryMinorUnits||employee.annualSalaryMinorUnits<0)issues.push("Set a positive pay rate for the recorded hourly or salaried contract.");

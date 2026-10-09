@@ -45,6 +45,15 @@ First prepared 28a45e6 candidate/migration smoke PASS, backup
 atlas-pre-deploy-20261009-221347; real candidate acceptance queued behind other
 releases. Ownership client/API regenerated and production build PASS; strict types PASS.
 Release build failure gate: 1 file/7 tests PASS; deploy scripts bash syntax PASS.
+First 28a45e6 browser acceptance PASS for all workflows, negatives and desktop/
+phone/zero browser errors; evidence /tmp/atlas-people-candidate-cxMJP1, backup
+atlas-pre-people-test-20261009-222213. Four screenshot layouts visually inspected.
+Final review corrected inclusive employment-day eligibility and blocks payroll
+actuals outside employment; new domain/browser cases added. Employment regression: 4 files/36 PASS,
+scoped lint/production build PASS; strict types pending. Second ff2b3df candidate
+PASS including actual saved Analytics dashboard updates 90→95%; tenant ownership
+FK migration applied, no live switch. Evidence /tmp/atlas-people-candidate-rt4owH.
+Latest live became 56c9d88; preserve its exact navigation source before activation.
 Checker now also saves/reloads a real Analytics scorecard dashboard and confirms
 changed source figures render; not yet run. Next: candidate
 acceptance, activation/public verification. External scope stays explicit: RTI/bank,

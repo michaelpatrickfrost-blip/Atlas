@@ -77,10 +77,10 @@ export async function createOpening(session:Session,form:FormData) {
 }
 
 async function eligible(tx:Prisma.TransactionClient,session:Session,employeeId:string,opening:{department:string;requiredSkills:string[];startsAt:Date;endsAt:Date}) {
-  const employee=await tx.employee.findFirst({where:{id:employeeId,organisationId:session.organisationId,status:{in:["ACTIVE","ON_LEAVE"]},startDate:{lte:opening.startsAt},OR:[{endDate:null},{endDate:{gte:opening.endsAt}}]},select:{id:true,skills:true,department:true}});
+  const lastDay=londonDate(new Date(opening.endsAt.getTime()-1));
+  const employee=await tx.employee.findFirst({where:{id:employeeId,organisationId:session.organisationId,status:{in:["ACTIVE","ON_LEAVE"]},startDate:{lte:dateOnly(londonDate(opening.startsAt))},OR:[{endDate:null},{endDate:{gte:dateOnly(lastDay)}}]},select:{id:true,skills:true,department:true}});
   if(!employee||employee.department!==opening.department||!skillsMatch(employee.skills,opening.requiredSkills))throw new Error("This shift needs an active employee in the department with every required skill.");
   if(opening.startsAt<new Date())throw new Error("This shift has already started.");
-  const lastDay=londonDate(new Date(opening.endsAt.getTime()-1));
   if(await tx.absenceRecord.count({where:{organisationId:session.organisationId,employeeId,status:"APPROVED",startDate:{lte:dateOnly(lastDay)},endDate:{gte:dateOnly(londonDate(opening.startsAt))}}}))throw new Error("This shift overlaps approved time off.");
   if(await tx.employeeAvailability.count({where:{organisationId:session.organisationId,employeeId,startsAt:{lt:opening.endsAt},endsAt:{gt:opening.startsAt}}}))throw new Error("The employee has marked this time unavailable.");
   if(await tx.rotaShift.count({where:{organisationId:session.organisationId,employeeId,status:{not:"CANCELLED"},startsAt:{lt:opening.endsAt},endsAt:{gt:opening.startsAt}}}))throw new Error("The employee already has a shift at that time.");

@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Session } from "@/core/auth/session";
-const mocks = vi.hoisted(() => ({ findFirst: vi.fn(), findMany: vi.fn(), updateMany: vi.fn(), transaction: vi.fn(), moduleGate: vi.fn() }));
+const mocks = vi.hoisted(() => ({ findFirst: vi.fn(), findMany: vi.fn(), updateMany: vi.fn(), transaction: vi.fn(), moduleGate: vi.fn(), resolve: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: { studioDefinition: { findFirst:mocks.findFirst, findMany:mocks.findMany }, studioDraft: { findFirst:mocks.findFirst, updateMany:mocks.updateMany }, studioDefinitionVersion: { findFirst:mocks.findFirst, findMany:mocks.findMany }, $transaction:mocks.transaction } }));
 vi.mock("@/core/modules/access", () => ({ assertModuleEnabled:mocks.moduleGate }));
-vi.mock("@/core/studio/registry/runtime", () => ({ studioRegistry: () => ({ resolve:vi.fn() }) }));
+vi.mock("@/core/studio/registry/runtime", () => ({ studioRegistry: () => ({ resolve:mocks.resolve }) }));
 import { activeDefinition, createDraft, getDefinition, listDefinitions, publishDraft, updateDraft, activateVersion, validateDraft } from "@/core/studio/definitions/service";
 const id = "cb95de8f-3183-46d5-9e01-f101e0ead6f7";
 const s: Session = { organisationId:"tenant-a",organisationName:"A",userId:"u",userName:"U",userEmail:"u@example.invalid",membershipId:"m",capabilities:new Set(["studio.definition.read","studio.definition.edit","studio.definition.publish"]) };
-beforeEach(()=>{vi.clearAllMocks();mocks.moduleGate.mockResolvedValue(undefined);mocks.findFirst.mockResolvedValue(null);mocks.findMany.mockResolvedValue([]);});
+beforeEach(()=>{vi.clearAllMocks();mocks.moduleGate.mockResolvedValue(undefined);mocks.findFirst.mockResolvedValue(null);mocks.findMany.mockResolvedValue([]);mocks.resolve.mockResolvedValue({id:"sales.order.get",version:1,ownerModuleId:"sales",kind:"query",classification:"confidential",lifecycle:"active"});});
 describe("Studio metadata security and draft concurrency",()=>{
   it("denies each operation before touching records when its capability is missing",async()=>{
     const denied={...s,capabilities:new Set<string>()};
@@ -34,4 +34,16 @@ describe("Studio metadata security and draft concurrency",()=>{
     mocks.moduleGate.mockRejectedValue(new Error("disabled"));
     await expect(listDefinitions(s)).rejects.toThrow("disabled");expect(mocks.findMany).not.toHaveBeenCalled();
   });
+});
+
+it("publishes sealed dependencies through Prisma-inferred tenant keys and audits in the same transaction",async()=>{
+ const payload={schemaVersion:1,description:"Sources",references:[{id:"sales.order.get",version:1,schemaHash:"a".repeat(64),contractHash:"b".repeat(64)}]};
+ mocks.findFirst.mockResolvedValue({id:"draft",payload,definition:{kind:"capabilitySet",revision:0,latestVersion:0},baseVersion:null});
+ const create=vi.fn().mockResolvedValue({id:"version"}),audit=vi.fn().mockResolvedValue({id:"audit"});
+ mocks.transaction.mockImplementation(async cb=>cb({moduleState:{count:vi.fn().mockResolvedValue(1)},studioDefinition:{updateMany:vi.fn().mockResolvedValue({count:1})},studioDraft:{updateMany:vi.fn().mockResolvedValue({count:1})},studioDefinitionVersion:{create},auditEntry:{create:audit}}));
+ expect(await publishDraft(s,{definitionId:id,revision:0,acknowledgeWarnings:true})).toEqual({versionId:"version",version:1,revision:1});
+ const data=create.mock.calls[0][0].data;
+ expect(data.organisationId).toBe(s.organisationId);
+ expect(data.dependencies.create).toEqual([{ownerModuleId:"sales",contractId:"sales.order.get",contractVersion:1,schemaHash:"a".repeat(64),contractHash:"b".repeat(64)}]);
+ expect(audit).toHaveBeenCalledWith(expect.objectContaining({data:expect.objectContaining({organisationId:s.organisationId,actorUserId:s.userId,action:"studio.definition.published"})}));
 });

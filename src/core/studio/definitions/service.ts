@@ -88,7 +88,7 @@ export async function publishDraft(session: Session, input: unknown) {
     const number = draft.definition.latestVersion + 1;
     const version = await tx.studioDefinitionVersion.create({ data: { organisationId: session.organisationId, definitionId: value.definitionId, version: number, semanticVersion: `1.0.${number - 1}`, schemaVersion: 1,
       payload: compiled.payload, compiledPlan: compiled.plan, checksum: compiled.checksum, createdBy: session.userId,
-      dependencies: { create: compiled.plan.dependencies.map(ref => ({ organisationId: session.organisationId, definitionId: value.definitionId, ownerModuleId: ref.ownerModuleId, contractId: ref.id, contractVersion: ref.version, schemaHash: ref.schemaHash, contractHash: ref.contractHash })) } } });
+      dependencies: { create: compiled.plan.dependencies.map(ref => ({ ownerModuleId: ref.ownerModuleId, contractId: ref.id, contractVersion: ref.version, schemaHash: ref.schemaHash, contractHash: ref.contractHash } satisfies Prisma.StudioDependencyCreateWithoutVersionInput)) } } });
     const updated = await tx.studioDraft.updateMany({ where: { id: draft.id, organisationId: session.organisationId, revision: value.revision }, data: { revision: { increment: 1 }, baseVersionId: version.id, validation: { checksum: compiled.checksum, warnings: compiled.warnings, validatedRevision: value.revision } } });
     if (updated.count !== 1) conflict();
     await audit(session, "studio.definition.published", value.definitionId, { versionId: version.id, version: number, checksum: compiled.checksum, warnings: compiled.warnings }, tx);

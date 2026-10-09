@@ -1,5 +1,20 @@
 # Atlas current state
 
+## 9 October 2026 — Studio candidate publication correction
+
+Foundation checkpoint 314fd06 includes concurrent branding 58b3610 without
+overwriting it. Candidate built and compatibility scan passed; additive metadata
+migration applied centrally with backup
+`/home/administrator/backups/atlas-pre-deploy-20261009-184707`. Runtime remains
+58b3610. Central acceptance found duplicate inferred tenant/definition keys in
+nested dependency creation; the transaction rolled back without partial history.
+Corrected nested mapping with explicit generated Prisma input contract and added
+a publication regression assertion. Six service tests, TypeScript, scoped lint and
+production build passed. Acceptance additionally tests actual concurrent edits,
+cross-tenant pointer foreign keys and immutable deletes. Next: prepare corrected
+candidate, repeat central lifecycle/forms acceptance before
+activation. Phase 1 gate remains pending; later phases not started.
+
 ## 9 October 2026 — User-supplied Atlas logo and app icon
 
 - Applied Michael's supplied blue ribbon A artwork. Full logo with “Plan. Make.

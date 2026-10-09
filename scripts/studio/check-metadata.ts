@@ -36,6 +36,7 @@ async function main() {
     const registry=studioRegistry();
     const descriptor=(await registry.discover(actor)).find(d=>d.ownerModuleId==="sales" && d.kind==="query"); assert(descriptor);
     const reference={id:descriptor.id,version:descriptor.version,schemaHash:descriptor.schemaHash,contractHash:descriptor.contractHash};
+    assert.deepEqual(await registry.invoke(actor,reference,{}),[],"Existing owner provider reads the isolated tenant through the adapter");
     const payload={schemaVersion:1 as const,description:"First accepted version",references:[reference]};
     const def=await createDraft(actor,{key:`acceptance.${suffix}`,name:"Acceptance lifecycle",kind:"capabilitySet",payload});
     assert.equal(await getDefinition(other,def.id),null);
@@ -70,6 +71,15 @@ async function main() {
     assert.deepEqual(await scanActiveStudioDependencies(db,registry),[]);
     assert.equal(await db.studioDefinition.count({where:{organisationId:b.id}}),0);
     assert.equal(await db.auditEntry.count({where:{organisationId:a.id,entityType:"StudioDefinition"}}),7);
+    const foreign=await createDraft(other,{key:`acceptance.${suffix}`,name:"Independent tenant identity",kind:"capabilitySet",payload:{schemaVersion:1,description:"",references:[]}});
+    await assert.rejects(()=>db.studioDefinition.update({where:{id:foreign.id},data:{activeVersionId:version1.versionId}}),/foreign key/i);
+    const race=await createDraft(actor,{key:`race.${suffix}`,name:"Concurrent draft",kind:"capabilitySet",payload:{schemaVersion:1,description:"",references:[]}});
+    const outcomes=await Promise.allSettled(["Editor one","Editor two"].map(description=>updateDraft(actor,{definitionId:race.id,revision:0,payload:{schemaVersion:1,description,references:[]}})));
+    assert.equal(outcomes.filter(result=>result.status==="fulfilled").length,1);
+    assert.equal((await getDefinition(actor,race.id))?.draft?.revision,1);
+    await assert.rejects(()=>db.studioDefinitionVersion.delete({where:{id:version1.versionId}}),/immutable/);
+    const dependency=await db.studioDependency.findFirstOrThrow({where:{versionId:version1.versionId,organisationId:a.id}});
+    await assert.rejects(()=>db.studioDependency.delete({where:{id:dependency.id}}),/immutable/);
     console.log("PASS central lifecycle, no automatic activation, rollback/history, immutable SQL guards, sealed dependencies, tenant isolation, permissions, conflicts, disabled sources and transactional audit");
 
     const anon=await browser.newContext({baseURL:base});
@@ -93,6 +103,9 @@ async function main() {
     await expect(page.getByRole("button",{name:"Activate this version",exact:true})).toBeVisible();
     await page.getByRole("button",{name:"Activate this version",exact:true}).click();
     await expect(page.getByText("A published version is active",{exact:false})).toBeVisible();
+    await page.setViewportSize({width:390,height:844});
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),"Studio mobile overflow");
+    await page.setViewportSize({width:1440,height:1000});
     await page.goto("/studio",{waitUntil:"networkidle"}); assert(new URL(page.url()).pathname.startsWith("/atlas/studio"));
     for (const address of ["/atlas","/home","/sales","/manufacturing","/templates"]) {
       const response=await page.goto(address,{waitUntil:"networkidle"});assert(response && response.status()<400,`Existing page ${address}`);

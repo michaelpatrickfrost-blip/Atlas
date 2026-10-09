@@ -85,7 +85,10 @@ business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
 
-None.
+`20261009210000_studio_metadata_kernel` applied centrally by backed-up candidate
+preparation on 9 October. Backup prefix:
+`/home/administrator/backups/atlas-pre-deploy-20261009-184707`. Existing runtime
+was retained; concurrent completed branding release 58b3610 is preserved.
 
 # Tests Added
 
@@ -121,7 +124,10 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 # Known Issues
 
 Source's initial five/ten-phase mismatch resolved by follow-up; no remaining scope
-blocker. Central migration and live acceptance remain pending. Full test/lint baseline
+blocker. Central migration applied; candidate acceptance caught nested Prisma dependency
+FK fields supplied twice. Publication rolled back atomically, fixture tenants
+suspended. Fix removes implicit nested FK fields and adds a regression assertion;
+rerun central acceptance before activation. Live acceptance remains pending. Full test/lint baseline
 failures are reproduced unchanged; focused checks pass. Phase 1 cannot PASS
 before database and live behaviour are verified. No later phases started.
 
@@ -148,8 +154,8 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Review/stage/commit the coherent foundation and Admin-boundary checkpoint, push
-the exact revision, prepare a fresh backed-up candidate through deploy:vps. Run
+Test/commit the nested dependency mapping fix, prepare its backed-up candidate
+through deploy:vps (first candidate 314fd06 is not activated). Run
 `ATLAS_STUDIO_LIVE_TEST=1 ATLAS_STUDIO_TEST_URL=http://127.0.0.1:3011`
 with `scripts/studio/check-metadata.ts` against the prepared candidate, correct any
 failure before activation, then repeat against the public live URL.

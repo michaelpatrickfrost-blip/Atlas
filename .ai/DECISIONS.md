@@ -883,7 +883,7 @@ out of the company. A message can attach an order, quotation, customer, project
 or product the sender is allowed to read; someone who cannot read that record
 sees that an attachment exists and cannot open it. Company-wide messages are
 not sent. Generic chat reads cannot cross the participant boundary.
-History search remains open. See the chat dock and `docs/MODULE_ROADMAP.md`.
+History search was completed on 9 October; see `docs/MESSAGES.md` and the chat dock.
 
 ## 3 October 2026 — Enable finished apps at deployment
 
@@ -1331,3 +1331,18 @@ another contributor's unfinished committed work. Preserve remote-tip and ancestr
 checks, backup/lock/immutable-build/smoke/rollback protections. Merge that branch
 back into main so future main releases include the live ancestor. Rationale:
 ship the reviewed Home change without shipping the unrelated pending Studio work.
+
+
+## 9 October 2026 — Modern Messages keeps conversations connected to real records
+
+Messages opens a wide pop-out from the business header or utility rail, with an
+expanded `/chat` workspace in the logo-based blue/white shell. A conversation
+list, readable timeline, single composer and optional participants/shared-record
+panel replace the narrow stacked dock. History search and stable 80-message
+pages read central messages, including older matches; search/history does not
+mark newer messages read. Drafts stay with their conversation in a company/user-keyed shell context
+and survive pop-out closure and expansion into the full workspace; no local storage or business cache. Attachments remain
+live references to authorised orders, quotations, customers, projects and products,
+with recipient-specific inaccessible placeholders. A record may be shared without
+an additional comment. Contact conversations remain stored in Atlas without email
+or external delivery. The standalone Admin console does not mount business chat.

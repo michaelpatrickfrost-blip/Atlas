@@ -29,11 +29,68 @@ and rerun without exclusions. Live advanced to 6775044 during work; preserve tha
 before preparing this change. Deployed 6775044 source/evidence is now merged.
 Exact-lockfile dependency install fixed missing Playwright. Merged production
 build, focused lint and 9-file/62-assertion suite PASS; final strict types are
-still running. New Admin entry is not yet deployed.
+PASS. New Admin entry is not yet deployed.
+Candidate 952aae0 prepared with central database/evidence backup
+atlas-pre-deploy-20261009-205119; migration and compatibility/smoke pass.
+First browser runner stopped before creating fixtures because Guardian QA config
+was not loaded; retry loads /etc/atlas/guardian.env. Concurrent Messages release
+9303039 became live; preserve its exact source/evidence before final activation.
 Next: review final diff, record checks, prepare backed-up immutable release,
 exercise private entry/denials/limits and staff console, activate and repeat
 public HTTPS acceptance. No MFA/SSO or immediate crawler removal is claimed.
 
+## 9 October 2026 — Modern Messages ready for candidate acceptance
+
+Implemented a wide logo-based pop-out and expanded `/chat` utility workspace,
+responsive conversation list/timeline, optional participants/shared-record details,
+grouped order/quotation/customer/project/product picker and horizontal composer.
+Drafts remain separate per chat in a company/user-keyed shell context; closing
+and expanding retains the conversation and current draft without local storage. Pending sends disable edits/re-entry; failures retain draft/attachments.
+References may be sent without a comment. Server history searches all message text
+with bounded stable 80-message cursor pages, same-tenant/participant cursor checks,
+and safe recipient placeholders; older/search views do not mark newer messages read.
+Closed docks only poll unread summaries. Source licences/native private Projects
+scope and existing work/meeting creation remain. Customer/contact picker excludes
+scrubbed/archived identities. Admin remains independent without business chat.
+Paths: chat actions/dock/API; shell utility/header variants/navigation; focused
+chat tests and scripts/check-messages.ts; docs/MESSAGES.md/design/roadmap/decisions.
+No schema/migration, grants or existing business-record edits. Preserved concurrent
+live Guardian MRP source `0ce9f4a` and Reports/Admin/Studio evidence while resolving
+CURRENT_STATE with both contributors' entries. Eight focused files/47 assertions,
+strict TypeScript and production build passed; scoped ESLint zero errors/three
+brand-image warnings. Candidate `4233b57` is prepared/smoke-verified with central
+backup `atlas-pre-deploy-20261009-202932`; live pointer unchanged. Browser acceptance
+waits for the shared release lock held by another verification run. Refined picker
+search loading, bounded test timeouts and removed formatter whitespace; 17 chat
+assertions, strict TypeScript and final production build passed again; focused
+refinement lint zero errors/one brand-image warning and diff check passed.
+Full suite not rerun.
+Initial `4233b57` candidate acceptance passed real chat/contact creation, message
+send/order-reference persistence, participant/shared-record details, history beyond
+80 messages/search, forged-record rejection, draft closure, utility entry, expanded
+workspace and desktop/tablet/phone viewport fit with no browser runtime errors.
+Screenshots inspected visually. Its synthetic contact/customer is retired centrally.
+Final expansion handoff uses the shared unsaved-draft context keyed by authenticated
+company/user; eight focused files/48 assertions, strict TypeScript, final production
+build and refinement lint (zero errors/one brand-image warning) passed.
+A final review guards both restored-conversation loading and history effects while
+the dock is closed, preventing unintended read markers after returning Home. Added
+a regression; eight files/49 assertions, TypeScript/build and scoped lint (no errors,
+three brand-image warnings) passed. Candidate 1f36fb9 prepared; acceptance initially
+hit an ambiguous preview selector after a second retained fixture existed. Scoped
+the checks to actual timeline articles; this is a test selector correction, not a
+passing acceptance claim. No activation until the final source passes.
+5798bc1 preparation stopped at the ancestry guard after live Studio 6775044
+advanced. Its exact already-live source is merged, preserving typed owner/field
+contracts and their evidence. The prematurely queued acceptance did not run
+(directory absent); no new fixture or passing check is claimed.
+Combined source: 11 focused files/69 assertions, strict TypeScript, production
+build and diff check passed; no schema change.
+Next: prepare the final pinned revision,
+rerun exact chat acceptance plus Home/Reports
+regression, activate and repeat
+public verification. Synthetic QA fixtures stay central and are retired, no actual
+colleague/customer receives a test message; no local business database/cache.
 
 ## 9 October 2026 — Phase 2B1 validators and visual setup requirements
 
@@ -175,6 +232,48 @@ No shared general custom-field storage was found. Adapt existing intake fields
 where appropriate; do not rewrite historical answers. Next: implement typed
 owner-approved record/extension contracts and bounded Tickets projections with
 native read/write policy, tests, docs and checkpoint before metadata storage 2B.
+
+## 9 October 2026 — Guardian MRP repair ready for server verification (historical)
+
+Superseded by the deployed Guardian MRP acceptance entry above.
+
+Isolated reviewed release preserves live Reports/Studio and standalone Admin
+source a642df0. Own changes require `manufacturing.plan.manage` and enabled/
+entitled Manufacturing before Run MRP, preserve the shared staff exception and
+session company/actor, adapt current/legacy saved demand fields without rewriting
+history, and stop counting component demand plus its BUY supply twice. Shared
+stock is netted once across parent proposals; independent BUY demand and canonical
+scoped product labels remain visible. Source: planning/actions.ts and
+manufacturing/services/mrp-queries.ts. No schema/migration/permission grants changed.
+
+Backed-up central Test fixtures on c46bbef, 2a8522f and a642df0 reproduced all three
+forbidden POST writes, the newly saved Planned orders crash and doubled 10/20 →
+20/40 shortage cells. Retained sealed 585e9ba query reproduced the exact persisted
+JSON-date TypeError; deployed af030b0 date conversion is retained. Actual manager
+button produces exactly one run with matching actor, MAKE/BUY quantities, BOM,
+machine/routing and dates. Historical/input/order/stock/Finance/audit/outbox
+records remain unchanged. Only fresh Test profiles receive fixture permissions;
+exact companies are suspended and synthetic grants/sessions revoked afterwards.
+Latest reproduction backup: /home/administrator/backups/atlas-pre-mrp-test-20261009-201240.
+Reports: cmv1e1cdw00007md5sakpls3v (access), cmv1e2kzn000avgd51damb97r (proposal
+render), cmv1elqb900007rd5rx35bbq6 (quantities); original runtime/newer digest briefs
+remain open until deployed proof. No historical generic report is closed by an
+independent fresh-page pass.
+
+Checks: 13 focused files/89 assertions passed; final full suite 1050 passed,
+85 failed, 22 skipped. Exact 85 failure names match unchanged a642df0 baseline
+(1036 passed/85 failed/22 skipped); no new failures. Initial high-concurrency
+Inventory timeouts passed in stable runs. Production build and scoped lint passed.
+Plain worktree typecheck sees an untouched untracked duplicate test importing the
+old Admin route; preserve it. Fresh tracked-only verification worktree generated
+Next types and strict `tsc --noEmit` passed without exclusions or relaxed checks.
+No local business database or record cache created. Exact original central check,
+source regressions and aggregate-quantity cases: scripts/guardian/check-mrp-access.ts,
+tests/mrp-planning-access.test.ts; docs/evidence/2026-10-09-guardian-mrp-workflow.md.
+Next: prepare/deploy this compatible reviewed release, run the same actual Test
+POST/button/page/central-state check publicly, then mark only reproduced reports
+FIXED and integrate owned source/memory into the canonical dirty repo safely.
+
 
 ## 9 October 2026 — Admin candidate preserves current live Reports source
 

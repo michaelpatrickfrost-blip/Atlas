@@ -3,13 +3,14 @@ import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { MANUFACTURING_CAPABILITIES } from "@/core/permissions/capabilities";
 import { plannedProposals, readSuggestionDetail, getLatestMrpRun } from "@/modules/manufacturing/services/mrp-queries";
+import { isModuleEnabled } from "@/core/modules/runtime";
 import { db } from "@/core/db/client";
 import { Card } from "@/components/ui/card";
 import { StatusPill } from "@/components/ui/status-pill";
 import { SuggestionActions } from "./suggestion-actions";
 
 const money = (minor: number) => `£${(minor / 100).toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-const whole = (value: number) => value.toLocaleString("en-GB", { maximumFractionDigits: 2 });
+const whole = (value: number) => value.toLocaleString("en-GB", { maximumFractionDigits: 6 });
 const hours = (minutes: number) => `${(minutes / 60).toFixed(1)} h`;
 
 const COST_LABELS: Record<string, string> = {
@@ -38,8 +39,11 @@ export default async function PlannedOrdersPage() {
     plannedProposals(session.organisationId),
     db.manufacturingSupplySuggestion.findMany({ where: { organisationId: session.organisationId, runId: run.runId }, include: { product: { select: { name: true, code: true, unitOfMeasure: true } } }, orderBy: { neededBy: "asc" } }),
   ]);
+  const canPurchase = ["manufacturing.plan.firm", "finance.purchase.manage", "finance.overview.read", "core.products.read", "customers.read"].every((cap) => session.capabilities.has(cap)) && await isModuleEnabled(session, "finance");
+  const canViewPurchase = ["finance.purchase.read", "finance.overview.read"].every((cap) => session.capabilities.has(cap)) && await isModuleEnabled(session, "finance");
   const canFirm = session.capabilities.has(MANUFACTURING_CAPABILITIES.planFirm);
   const canManage = session.capabilities.has(MANUFACTURING_CAPABILITIES.planManage);
+  const canReadCost = session.capabilities.has(MANUFACTURING_CAPABILITIES.costRead);
   const decided = allSuggestions.filter((row) => row.status !== "PENDING");
 
   return (
@@ -47,8 +51,9 @@ export default async function PlannedOrdersPage() {
       <header>
         <h1 className="text-3xl font-semibold tracking-tight">Planned orders</h1>
         <p className="mt-2 max-w-2xl text-sm text-[var(--color-ink-muted)]">
-          Each proposal shows the materials it consumes, the machines it runs on, the hours it takes and what it costs.
-          Firming one creates a real production order using the recipe as it stands now.
+          Each proposal shows the materials it consumes, the machines it runs on and the hours it takes.
+          {canReadCost && <> Estimated costs are shown with cost access.</>}
+          Firm Make proposals into production orders; review Buy proposals as purchase drafts.
         </p>
         <p className="mt-2 text-xs text-[var(--color-ink-faint)]">Run {run.startedAt.toLocaleString("en-GB")} · {proposals.length} awaiting a decision · {decided.length} already actioned</p>
       </header>
@@ -63,13 +68,13 @@ export default async function PlannedOrdersPage() {
         {proposals.map((proposal) => {
           const suggestion = allSuggestions.find((row) => row.id === proposal.id)!;
           const shortages = (proposal.materials ?? []).filter((row) => row.shortage > 0);
-          const cost = proposal.cost;
+          const cost = canReadCost ? proposal.cost : undefined;
           return (
             <Card key={proposal.id} className="overflow-hidden p-0">
               <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[var(--color-border)] px-5 py-4">
                 <div>
                   <p className="text-lg font-semibold">
-                    Make {whole(proposal.quantity)} {suggestion.product.unitOfMeasure ?? "each"}{" "}
+                    {suggestion.kind === "MAKE" ? "Make" : suggestion.kind === "BUY" ? "Buy" : "Transfer"} {whole(proposal.quantity)} {suggestion.product.unitOfMeasure ?? "each"}{" "}
                     <Link href={`/products/${proposal.productId}`} className="text-[var(--color-atlas-blue)] hover:underline">{suggestion.product.name}</Link>{" "}
                     <span className="text-[var(--color-ink-faint)]">{suggestion.product.code}</span>
                   </p>
@@ -86,10 +91,10 @@ export default async function PlannedOrdersPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <StatusPill
-                    label={shortages.length ? "Components short" : "Materials ready"}
-                    tone={shortages.length ? "warning" : "success"}
+                    label={suggestion.kind === "BUY" ? "Purchase required" : suggestion.kind === "TRANSFER" ? "Move required" : shortages.length ? "Components short" : "Materials ready"}
+                    tone={suggestion.kind !== "MAKE" || shortages.length ? "warning" : "success"}
                   />
-                  <span className="text-lg font-semibold tabular-nums">{cost ? money(Object.values(cost).reduce((sum, value) => sum + value, 0)) : "—"}</span>
+                  {canReadCost && <span className="text-lg font-semibold tabular-nums">{cost ? money(Object.values(cost).reduce((sum, value) => sum + value, 0)) : "—"}</span>}
                 </div>
               </div>
 
@@ -141,7 +146,8 @@ export default async function PlannedOrdersPage() {
                 <section>
                   <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Estimated cost</h3>
                   <div className="mt-2 space-y-1 text-sm">
-                    {!cost && <p className="text-[var(--color-ink-muted)]">No costed recipe.</p>}
+                    {!canReadCost && <p className="text-[var(--color-ink-muted)]">Cost access is required to view estimates.</p>}
+                    {canReadCost && !cost && <p className="text-[var(--color-ink-muted)]">No costed recipe.</p>}
                     {cost && Object.entries(cost).filter(([, value]) => value > 0).map(([kind, value]) => (
                       <div key={kind} className="flex items-baseline justify-between gap-3">
                         <span className="text-[var(--color-ink-muted)]">{COST_LABELS[kind] ?? kind}</span>
@@ -160,7 +166,7 @@ export default async function PlannedOrdersPage() {
 
               {(canFirm || canManage) && (
                 <div className="flex justify-end border-t border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-5 py-3">
-                  <SuggestionActions id={proposal.id!} kind={suggestion.kind} status="PENDING" canFirm={canFirm} canManage={canManage} />
+                  <SuggestionActions id={proposal.id!} kind={suggestion.kind} status="PENDING" canFirm={canFirm} canManage={canManage} canPurchase={canPurchase} />
                 </div>
               )}
             </Card>
@@ -174,7 +180,7 @@ export default async function PlannedOrdersPage() {
           <div className="mt-3 divide-y divide-[var(--color-border)] rounded-3xl border border-[var(--color-border)] bg-white">
             {decided.map((suggestion) => {
               const detail = readSuggestionDetail(suggestion.pegging);
-              const total = detail.cost ? Object.values(detail.cost).reduce((sum, value) => sum + value, 0) : null;
+              const total = canReadCost && detail.cost ? Object.values(detail.cost).reduce((sum, value) => sum + value, 0) : null;
               return (
                 <div key={suggestion.id} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 text-sm">
                   <div>
@@ -184,8 +190,11 @@ export default async function PlannedOrdersPage() {
                   </div>
                   <div className="flex items-center gap-4">
                     <StatusPill label={suggestion.status} tone={suggestion.status === "FIRMED" ? "success" : "neutral"} />
-                    {suggestion.resultingOrderId && (
-                      <Link href={`/manufacturing/produce/${suggestion.resultingOrderId}`} className="text-[var(--color-atlas-blue)] hover:underline">View order</Link>
+                    {suggestion.kind === "MAKE" && suggestion.resultingOrderId && (
+                      <Link href={`/manufacturing/produce/${suggestion.resultingOrderId}`} className="text-[var(--color-atlas-blue)] hover:underline">View production order</Link>
+                    )}
+                    {suggestion.kind === "BUY" && canViewPurchase && suggestion.resultingPurchaseDocumentId && (
+                      <Link href={`/finance/documents/${suggestion.resultingPurchaseDocumentId}`} className="text-[var(--color-atlas-blue)] hover:underline">View purchase draft</Link>
                     )}
                   </div>
                 </div>

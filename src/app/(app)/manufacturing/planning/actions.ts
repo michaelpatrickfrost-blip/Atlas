@@ -13,10 +13,13 @@ import { MANUFACTURING_CAPABILITIES } from "@/core/permissions/capabilities";
 export async function runMrpAction() {
   const session = await requireSession();
   assertCapability(session, MANUFACTURING_CAPABILITIES.planManage);
-  await assertModuleEnabled(session, "manufacturing");
+  for (const capability of ["sales.order.read", "stock.read", "core.products.read", "customers.read"]) assertCapability(session, capability);
+  for (const moduleId of ["manufacturing", "sales", "stock", "products"]) await assertModuleEnabled(session, moduleId);
+
   try {
     const result = await runMrp(session.organisationId, session.userId);
     revalidatePath("/manufacturing/planning");
+    revalidatePath("/manufacturing");
     revalidatePath("/manufacturing/planning/planned-orders");
     revalidatePath("/manufacturing/planning/shortages");
     return {

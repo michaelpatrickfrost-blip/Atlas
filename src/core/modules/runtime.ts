@@ -28,7 +28,7 @@ function allImplementedModuleIds(): Set<string> {
 export async function enabledModulesForSession(session: Session): Promise<Set<string>> {
   if (isAtlasStaff(session)) return allImplementedModuleIds();
   const enabled = await getEnabledModuleIds(session.organisationId);
-  for (const module of getImplementedModules()) if (module.utility) enabled.add(module.id);
+  for (const entry of getImplementedModules()) if (entry.utility) enabled.add(entry.id);
   return enabled;
 }
 
@@ -47,12 +47,17 @@ export function canOpenModule(session: Session, module: ModuleManifest) {
   return can(session, module.accessCapability);
 }
 
-export async function getNavigableModules(session: Session): Promise<ModuleManifest[]> {
+/** Source owners remain discoverable inside a consolidated workspace. No launcher filtering. */
+export async function getAccessibleModules(session: Session): Promise<ModuleManifest[]> {
   const modules = getImplementedModules();
   const enabled = await enabledModulesForSession(session);
-  const accessible = modules.filter(
-    (module) => module.launcherVisible!==false && enabled.has(module.id) && canOpenModule(session, module),
+  return modules.filter(
+    (module) => enabled.has(module.id) && canOpenModule(session, module),
   );
+}
+
+export async function getNavigableModules(session: Session): Promise<ModuleManifest[]> {
+  const accessible = (await getAccessibleModules(session)).filter(module => module.launcherVisible !== false);
   return accessible.filter((module) => !module.launcherConsolidatedInto || !accessible.some((target) => target.id === module.launcherConsolidatedInto)).map((module) => module.id === "scheduling" && !can(session, "scheduling.manage") && !can(session, "people.rota.manage")
     ? { ...module, name: "My rota", description: "Your published shifts, hours and team." }
     : module);

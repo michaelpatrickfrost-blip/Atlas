@@ -7,6 +7,7 @@ import type { ModuleManifest } from '@/core/modules/types';
 import { inventorySnapshot } from './services/queries';
 import { stockProvider } from './services/provider';
 export const stockManifest:ModuleManifest={
+ launcherConsolidatedInto:'manufacturing',
  reportProvider: reports,
  businessPlanningProvider: stockBusinessPlanning,financeReceiptConsumer:receiveFinanceGoods,
  analyticsProvider: stockAnalytics,

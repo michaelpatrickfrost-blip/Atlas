@@ -37,9 +37,11 @@ Plan (`/plan`) is the connected planning layer: targets, forecasts, scenarios, r
 
 Manufacturing & Supply (`manufacturing`, `/manufacturing`) now presents the
 product-demand workbench, MRP, production schedule/execution, Products, Inventory
-and Finance purchasing/spend in one permission-filtered console. Planning routes
-and licences remain; their duplicate Home card consolidates only when the console
-is accessible. Today remains at `/manufacturing/today`. Business-wide Plan is
+and Finance purchasing/spend in one permission-filtered console. Planning/Stock/
+Product routes share its header/navigation. Duplicate Planning/Inventory launcher
+and switcher cards disappear when the console is accessible; Products stays hidden
+as before. Manage apps nests their original access switches under one parent app
+card. Existing source routes, records, licences and capability gates remain. Today remains at `/manufacturing/today`. Business-wide Plan is
 separate. Shared Product sales eligibility is independent of class, stock and supply
 policy. Buy proposals create source-linked Finance purchase drafts atomically.
 

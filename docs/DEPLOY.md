@@ -44,6 +44,27 @@ failure follows the normal runtime rollback. Synthetic companies are suspended
 and sessions revoked; audited history is retained. This prevents another release
 interleaving between final feature acceptance and activation. The default is none.
 
+For the Dashboard/Messages release use `ATLAS_RELEASE_ACCEPTANCE=dashboards`.
+The checked-in harness runs Dashboard, Home/business-navigation, Reports/Finance,
+typography and Messages against the sealed candidate, then repeats all five on
+public HTTPS under the same locks. Revision checks bracket both runs. Only
+synthetic personal boards/chat fixtures are written; underlying source records
+are read-only, explicit exports audited, and fixtures cleaned/retired in finally.
+It keeps the same preparation, backup, compatibility and runtime rollback gates.
+
+For the Manufacturing & Supply console, use `ATLAS_RELEASE_ACCEPTANCE=supply`
+with the pinned scoped branch. Its existing central Test checker runs against the
+sealed smoke candidate and publicly before completion, under this same lock pair.
+Both fixture stages take their own database/private-file backup. The original
+clean-tree/pinned push, remote-tip, ancestry, compatibility, immutability, smoke and
+rollback gates remain; public failure restores the previous runtime without a
+database rollback. This prevents another release overtaking final acceptance.
+Use activate (the default) to complete the whole checked sequence in one run:
+
+```bash
+ATLAS_RELEASE_BRANCH=codex/manufacturing-supply-console ATLAS_RELEASE_COMMIT=$(git rev-parse HEAD) ATLAS_RELEASE_ACCEPTANCE=supply npm run deploy:vps
+```
+
 The server backs up PostgreSQL and configured private Service files into
 `~/backups`, then installs, generates, applies compatible migrations and builds in
 `/opt/atlas-releases/<revision>`. It never installs/builds over the running tree.

@@ -3,11 +3,14 @@ import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { ActiveLink } from "@/components/shell/active-link";
 import { AppHeader } from "@/components/shell/app-header";
-import { ConsoleReturn } from "@/modules/manufacturing/components/console-return";
+import { canOpenSupplyConsole } from "@/modules/manufacturing/services/console";
+import { ConsoleSpace } from "@/modules/manufacturing/components/console-space";
+import { manufacturingManifest } from "@/modules/manufacturing/manifest";
 
 export default async function CatalogueLayout({ children }: { children: React.ReactNode }) {
   const session = await requireSession();
   assertCapability(session, "core.products.read");
+  if (await canOpenSupplyConsole(session)) return <ConsoleSpace module={manufacturingManifest}>{children}</ConsoleSpace>;
   const links = [
     { label: "Catalogue", href: "/products", icon: Package },
   ];
@@ -21,7 +24,7 @@ export default async function CatalogueLayout({ children }: { children: React.Re
           </ActiveLink>
         ))}
       </AppHeader>
-      <ConsoleReturn />{children}
+      {children}
     </div>
   );
 }

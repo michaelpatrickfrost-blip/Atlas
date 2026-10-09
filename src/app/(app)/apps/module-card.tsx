@@ -7,17 +7,20 @@ import { StatusPill } from "@/components/ui/status-pill";
 import { toggleModuleAction } from "@/app/(app)/apps/actions";
 import { accentColorForModule } from "@/core/shared/module-colors";
 import type { ModuleManifest } from "@/core/modules/types";
+import type { WorkspaceFeature } from "@/core/modules/workspaces";
 
 export function ModuleCard({
   module,
   enabled,
   entitled,
   missingDependencies,
+  features = [],
 }: {
   module: ModuleManifest;
   enabled: boolean;
   entitled: boolean;
   missingDependencies: string[];
+  features?: WorkspaceFeature[];
 }) {
   const comingSoon = module.status === "coming_soon";
   const blocked = missingDependencies.length > 0 || !entitled;
@@ -38,6 +41,14 @@ export function ModuleCard({
           {!entitled ? "Contact your Atlas administrator to add this app." : `Requires: ${missingDependencies.join(", ")}`}
         </p>
       )}
+      {features.length > 0 && <section aria-label={`${module.name} features`} className="border-t border-[var(--color-border)] pt-4">
+        <h3 className="text-xs font-semibold text-[var(--color-ink)]">Included workspaces</h3>
+        <p className="mt-1 text-xs leading-5 text-[var(--color-ink-muted)]">Open these from {module.name}. Their access settings and records stay attached to this app.</p>
+        <div className="mt-3 divide-y divide-[var(--color-border)]">{features.map((feature) => <div key={feature.module.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
+          <div><p className="text-sm font-medium">{feature.module.name}</p><p className="mt-1 text-xs text-[var(--color-ink-muted)]">{feature.enabled ? "On" : feature.entitled ? "Off" : "Not included in your account"}</p></div>
+          <form action={toggleModuleAction.bind(null, feature.module.id, !feature.enabled)}><Button variant="secondary" type="submit" disabled={!feature.entitled}>{feature.enabled ? "Disable" : "Enable"} {feature.module.name}</Button></form>
+        </div>)}</div>
+      </section>}
 
       {module.previewPath && <Link href={module.previewPath} className="flex items-center gap-1 text-xs font-medium text-[var(--color-atlas-blue)]">Preview design <ArrowUpRight size={13}/></Link>}
       {comingSoon ? (

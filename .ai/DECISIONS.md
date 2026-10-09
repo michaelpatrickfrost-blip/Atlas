@@ -1,3 +1,28 @@
+## 10 October 2026 — Dashboard acceptance and activation share release locks
+
+Repeated concurrent live releases interleaved between accepted candidates and
+activation. Extend the existing reviewed People acceptance hook with a closed
+Dashboards option. Run the checked-in five feature checkers and revision checks
+inside the existing deployer's locks before and after switching. Retain backups,
+branch/ancestry checks, sealing, Studio compatibility and public-failure runtime
+rollback; never accept an arbitrary script path or bypass a moved live source.
+Synthetic fixture cleanup remains each checker's responsibility; real underlying
+records are read-only. Independent Bash stages preserve fail-closed handling.
+
+## 9 October 2026 — Personal dashboard canvas and authorised record views
+
+Michael requested a major modern, flexible dashboard redesign and sidebar placement.
+Dashboards joins the utility navigation visually while retaining its existing
+Analytics entitlement and capabilities; do not mark it as an always-enabled utility.
+Use existing personal Dashboard definitions, approved module measure contributions
+and the Reports record catalogue. Configuration manipulates the view, not the
+underlying business records. Require one currency, calculate all matching rows or
+reject above 10,000, and reject chart-unsafe exact financial text. No arbitrary
+SQL/joins/formula execution or broadened record access. Rename by owned ID with an
+optimistic revision; new/copy cannot overwrite a same-name board accidentally.
+Rationale: flexible personal views should preserve source privacy, exact financial
+meaning and existing saved work without creating another business datastore.
+
 ## 9 October 2026 — Migration data principal is distinct from metadata selection
 
 Configuration company selection cannot authorise native data. Customer migration
@@ -1545,6 +1570,21 @@ history, clear another task's active pointers or bypass hash/version/expiry gate
 Reason: a retired candidate fixture referencing a future contract blocked a release
 that preserved the currently live contracts and passed connected acceptance.
 
+
+## 9 October 2026 — One Manufacturing app includes product and stock workspaces
+
+Michael explicitly requests removal of other apps doing the same work. Production
+Planning, Inventory and Products are presented inside Manufacturing & Supply, with
+one Home/switcher entry and shared header/navigation across existing route trees.
+Manage apps nests their existing access switches under the parent rather than
+listing separate app cards. Keep canonical records, source capabilities/licences,
+providers, exports and existing bookmarks. No module-state migration, capability
+grants or destructive business-record removal. For companies without console
+access, existing Inventory/Planning entry points remain. Product-only readers may
+open the console but receive only their authorised source destinations, with no
+Manufacturing write/financial permission. Business-wide Finance, Plan and S&OP
+remain available to their wider teams; their manufacturing connections remain.
+
 ## 9 October 2026 — People feature acceptance stays under release locks
 
 An explicit People acceptance selector runs the checked-in central Test harness
@@ -1553,3 +1593,13 @@ locks, backups, source/ancestry and rollback gates. Default releases keep their
 current behavior. Rationale: concurrent releases repeatedly advanced between
 preparation, queued feature checks and activation; the accepted revision must
 stay stable through the switch. No lock bypass or arbitrary shell hook.
+
+## 10 October 2026 — Supply uses the existing held-lock acceptance hook
+
+Accepted concurrent releases repeatedly advanced the server between supply
+candidate checks and activation. Extend the already deployed People acceptance
+hook with an explicit supply workflow. Keep both existing locks across candidate,
+activation and public checks, with separate backed-up central Test fixtures.
+Reuse all pinned-source, remote-tip, ancestry, compatibility, immutable build,
+smoke and runtime rollback gates. No lock inheritance mechanism or gate bypass is
+needed; default and People releases retain their existing behavior.

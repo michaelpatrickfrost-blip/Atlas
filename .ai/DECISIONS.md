@@ -1301,3 +1301,11 @@ existing `resultingOrderId` SQL FK belongs to Make/production and is retained.
 Reason: a purchase reference must not bypass or weaken production integrity.
 Expected save failures return readable feedback; refreshing an actioned source
 shows review guidance rather than throwing during server-page rendering.
+
+## 9 October 2026 — Release builds fail closed and fonts are bundled
+
+Run preparation stages in an independent shell so a caller's conditional cannot
+suppress errexit. A ready marker requires successful stages and complete build
+outputs. Keep failed source/logs, backups and the active pointer. Bundle the
+existing official font families/licences rather than depend on live Google CSS
+and font-query parsing during deployment; full character coverage is retained.

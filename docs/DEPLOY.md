@@ -230,3 +230,18 @@ real services and Admin forms and suspends its exact fixture companies afterward
 An isolated Test-company business user is created through the real Admin form to
 verify provisioning and company login/recovery. No staff grants or existing
 identities change; fixture companies are suspended and audit history retained.
+
+### Build-stage failures — 9 October 2026
+
+Candidate preparation runs `scripts/deploy/build-release.sh` in an independent
+shell. An outer OR handler must not suppress `set -e` during installation,
+generation, migration, build or Studio compatibility checks. Readiness is written
+only after all stages and nonempty BUILD_ID/server manifest checks. Failure keeps
+the live pointer unchanged and retains the candidate/logs for review. Six injected
+stage failures and a successful preparation are covered in
+`tests/release-build-gate.test.ts`. Never activate a ready marker alone.
+
+Atlas bundles the same Plus Jakarta Sans and Geist Mono families from the pinned
+official Google Fonts source with SIL OFL licences in `src/app/fonts/`. The
+`next/font/local` path avoids Google CSS/font-query parsing during release builds;
+full variable character coverage and existing font variables are retained.

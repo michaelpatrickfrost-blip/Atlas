@@ -5086,3 +5086,17 @@ Combined source after preserving live 0ce9f4a: production build, explicit strict
 TypeScript, scoped ESLint, Prisma validation and seven focused files/40 tests
 passed. Migration is additive and retains the production FK. Candidate acceptance
 is still pending; the new purchase-link migration has not yet been applied.
+
+Candidate 61a36d1 applied the additive purchase relation after central backup
+atlas-pre-deploy-20261009-203333, then server Turbopack font-query bundling failed.
+Live stayed on 0ce9f4a; no activation. Confirmed release-script flaw: OR-handled
+subshell disables errexit and could write readiness after failed build. Extracted
+independent build shell with output guards, added injected-stage regressions.
+Bundled existing Atlas font families from pinned official Google Fonts/SIL OFL
+sources via next/font/local, preserving variables/full font character coverage.
+Build and new gate tests pending; failed immutable source/logs retained.
+
+Release-gate repair verified: three release files/13 tests passed, including all
+six injected preparation failures under a parent OR condition. Bundled-font
+production build, explicit TypeScript, scoped ESLint, shell syntax and diff check
+passed. The candidate remains to be rebuilt and fully exercised before activation.

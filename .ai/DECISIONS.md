@@ -1388,3 +1388,18 @@ again. Read bounded dependency/tenant flags, never record payloads. Do not delet
 history, clear another task's active pointers or bypass hash/version/expiry gates.
 Reason: a retired candidate fixture referencing a future contract blocked a release
 that preserved the currently live contracts and passed connected acceptance.
+
+
+## 9 October 2026 — One Manufacturing app includes product and stock workspaces
+
+Michael explicitly requests removal of other apps doing the same work. Production
+Planning, Inventory and Products are presented inside Manufacturing & Supply, with
+one Home/switcher entry and shared header/navigation across existing route trees.
+Manage apps nests their existing access switches under the parent rather than
+listing separate app cards. Keep canonical records, source capabilities/licences,
+providers, exports and existing bookmarks. No module-state migration, capability
+grants or destructive business-record removal. For companies without console
+access, existing Inventory/Planning entry points remain. Product-only readers may
+open the console but receive only their authorised source destinations, with no
+Manufacturing write/financial permission. Business-wide Finance, Plan and S&OP
+remain available to their wider teams; their manufacturing connections remain.

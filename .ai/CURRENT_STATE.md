@@ -1,5 +1,24 @@
 # Atlas current state
 
+## 9 October 2026 — Single Manufacturing app consolidation in progress
+
+User follow-up requires other apps doing this work to disappear. Inventory joins
+Production Planning under the accessible Manufacturing launcher/switcher entry;
+Products was already hidden and now shares the console chrome. Product/Stock
+route layouts use the same Manufacturing & Supply header/navigation, retaining
+source guards and bookmarks. Warehouses/locations added to Products & plant.
+Manage apps nests Inventory/Planning/Products access switches under one parent
+card, retaining original service/entitlement/dependency checks and state flags.
+No schema, records, role grants or company switches changed. Product-only readers
+can open the console with only their permitted source destinations. Finance and
+business-wide Plan/S&OP remain separate for other teams unless clarified otherwise.
+Paths: app layouts/apps page/card; module manifests/console destinations; generic
+core/modules/workspaces.ts grouping; checker and module/workspace tests.
+Checks actually run: three focused files/12 tests, scoped ESLint and diff checks
+PASS. Build/strict types/candidate/public acceptance still pending. Current live
+remains 2690c26. Extend exact-source browser acceptance for Home/switcher/Manage
+apps and legacy Product/Inventory/Planning routes before activation.
+
 ## 9 October 2026 — Manufacturing & Supply console live and verified
 
 Activated exact application source 2690c26cb0f5f3c28e21265820e8a713708ce699 at
@@ -5490,3 +5509,13 @@ later live integrations; earlier exact-baseline 85 failures remain documented.
 Next: prepare pinned clean source, recheck complete central/browser workflow,
 activate and verify public HTTPS. Preserve other contributors' dirty canonical
 checkout; integration must not overwrite unfinished content.
+
+Consolidation checks: production build and explicit strict TypeScript PASS; nine
+focused files/47 regressions PASS, then the final four-file/14-test runtime/search/
+workspace check PASS. Scoped lint PASS after renaming a pre-existing `module`
+iterator rejected by Next's lint rule; no permission/enablement logic changed.
+Search now reads permitted source owners independently of launcher consolidation,
+labels their navigation under the parent workspace, and retains source access.
+Getting-started instructions reconciled with shared chrome and warehouse access.
+The extended checker includes tablet/phone Stock and Product viewport checks.
+No full-suite rerun. Prepare and real candidate/public acceptance remain pending.

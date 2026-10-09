@@ -113,3 +113,15 @@ Canonical source integration awaits reconciliation of 598 dirty/untracked entrie
 in the main Desktop checkout, including 27 overlapping task paths. The complete
 release branch and shared memory remain committed in the same Git repository;
 no contributor's unfinished changes were reset or overwritten.
+
+## Single-app follow-up — candidate/public acceptance pending
+
+Inventory and Product route trees now share the Manufacturing & Supply shell;
+Inventory's launcher/switcher card joins the already folded Production Planning
+entry. Products remains hidden as before. Manage apps nests all three source access
+switches under one Manufacturing card, preserving current states and entitlement/
+dependency services. Search retains included source pages under the parent name.
+Build, explicit strict TypeScript, scoped lint and targeted workspace/access/search
+regressions passed. Extended checker asserts Home/switcher/Manage apps, existing
+Product/Stock/Planning route guards and desktop/tablet/phone fit. It must pass on
+the exact candidate and publicly after activation; no new live claim yet.

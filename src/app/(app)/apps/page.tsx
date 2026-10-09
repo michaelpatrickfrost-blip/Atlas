@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireSession } from "@/core/auth/session";
 import { getModuleStatesForOrg, getEnabledModuleIds } from "@/core/modules/runtime";
 import { getMissingDependencies } from "@/core/modules/registry";
+import { groupWorkspaceApps, type WorkspaceApp } from "@/core/modules/workspaces";
 import { assertCapability } from "@/core/permissions/check";
 import { CORE_CAPABILITIES } from "@/core/permissions/capabilities";
 import { ModuleCard } from "@/app/(app)/apps/module-card";
@@ -14,10 +15,11 @@ export default async function AppsPage() {
 
   const states = await getModuleStatesForOrg(session.organisationId);
   const enabledIds = await getEnabledModuleIds(session.organisationId);
+  const apps = groupWorkspaceApps(states);
 
-  const installed = states.filter((entry) => entry.enabled && entry.module.id !== "pricing");
-  const available = states.filter((entry) => !entry.enabled && entry.module.status !== "coming_soon" && entry.module.id !== "pricing");
-  const comingSoon = states.filter((entry) => entry.module.status === "coming_soon");
+  const installed = apps.filter((entry) => entry.enabled && entry.module.id !== "pricing");
+  const available = apps.filter((entry) => !entry.enabled && entry.module.status !== "coming_soon" && entry.module.id !== "pricing");
+  const comingSoon = apps.filter((entry) => entry.module.status === "coming_soon");
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-8">
@@ -40,7 +42,7 @@ function Section({
   enabledIds,
 }: {
   title: string;
-  entries: Awaited<ReturnType<typeof getModuleStatesForOrg>>;
+  entries: WorkspaceApp[];
   enabledIds: Set<string>;
 }) {
   if (entries.length === 0) return null;
@@ -48,12 +50,13 @@ function Section({
     <section>
       <h2 className="mb-3 text-sm font-medium text-[var(--color-ink-muted)]">{title}</h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {entries.map(({ module, enabled, entitled }) => (
+        {entries.map(({ module, enabled, entitled, features }) => (
           <ModuleCard
             key={module.id}
             module={module}
             enabled={enabled} entitled={entitled}
             missingDependencies={getMissingDependencies(module.id, enabledIds)}
+            features={features}
           />
         ))}
       </div>

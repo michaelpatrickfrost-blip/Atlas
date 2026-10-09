@@ -9,11 +9,22 @@ import type {Session} from '@/core/auth/session';
 beforeEach(()=>vi.clearAllMocks());
 const session=(capabilities:string[]):Session=>({userId:'user',userName:'User',userEmail:'user@example.test',organisationId:'company',organisationName:'Company',membershipId:'membership',capabilities:new Set(capabilities)});
 describe('licensed module runtime',()=>{
- it('consolidates Planning only when Manufacturing & Supply can actually open',async()=>{
-  state.findMany.mockResolvedValue([{moduleId:'planning',enabled:true,entitled:true},{moduleId:'manufacturing',enabled:true,entitled:true}]);
-  expect((await getNavigableModules(session(['planning.demand.read']))).map(m=>m.id)).toEqual(['manufacturing']);
-  state.findMany.mockResolvedValue([{moduleId:'planning',enabled:true,entitled:true},{moduleId:'manufacturing',enabled:false,entitled:true}]);
-  expect((await getNavigableModules(session(['planning.demand.read']))).map(m=>m.id)).toEqual(['planning']);
+ it('consolidates Planning, Inventory and Products only when Manufacturing & Supply can actually open',async()=>{
+  const sources=['planning','stock','products'].map(moduleId=>({moduleId,enabled:true,entitled:true}));
+  const user=session(['planning.demand.read','stock.read','core.products.read']);
+  state.findMany.mockResolvedValue([...sources,{moduleId:'manufacturing',enabled:true,entitled:true}]);
+  expect((await getNavigableModules(user)).map(m=>m.id)).toEqual(['manufacturing']);
+  state.findMany.mockResolvedValue([...sources,{moduleId:'manufacturing',enabled:false,entitled:true}]);
+  expect((await getNavigableModules(user)).map(m=>m.id).sort()).toEqual(['planning','stock']);
+  state.findMany.mockResolvedValue([...sources,{moduleId:'manufacturing',enabled:true,entitled:false}]);
+  expect((await getNavigableModules(user)).map(m=>m.id).sort()).toEqual(['planning','stock']);
+ });
+ it('provides the unified app to product-only readers without granting Manufacturing writes or other source access',async()=>{
+  state.findMany.mockResolvedValue(['products','manufacturing'].map(moduleId=>({moduleId,enabled:true,entitled:true})));
+  const user=session(['core.products.read']);
+  expect((await getNavigableModules(user)).map(m=>m.id)).toEqual(['manufacturing']);
+  expect(user.capabilities.size).toBe(1);
+  await expect(assertModuleEnabled(user,'stock')).rejects.toThrow('disabled');
  });
  it('does not enable an unlicensed app or infer a CRM licence from Sales',async()=>{state.findMany.mockResolvedValue([{moduleId:'sales',enabled:true,entitled:true},{moduleId:'stock',enabled:true,entitled:false}]);expect([...await getEnabledModuleIds('company')]).toEqual(['sales']);expect(state.findMany).toHaveBeenCalledWith({where:{organisationId:'company'}});});
  it('rejects enabling an unlicensed app before changing state',async()=>{state.findUnique.mockResolvedValue({entitled:false});await expect(setModuleEnabled('company','stock',true)).rejects.toThrow('not included');expect(state.upsert).not.toHaveBeenCalled();});

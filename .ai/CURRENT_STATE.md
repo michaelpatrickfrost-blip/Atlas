@@ -1,5 +1,17 @@
 # Atlas current state
 
+## 9 October 2026 — Admin-only console and next Studio phase exploration
+
+Michael clarified that Atlas Admin must contain administration only, without the
+business Apps/search/chat/notifications/My work shell, and should use the new
+modern UI. Confirmed /atlas currently inherits (app)/layout and visibly exposes
+those business controls. Phase 1 remains live/verified; this is a companion
+separation correction followed by ordered Phase 2 work. Clean starting 9ebd774;
+branch codex/studio-phase2. Workstreams recorded in docs/studio/STUDIO_PHASE_2_PLAN.md;
+ledger updated before edits. No new source/schema changes or checks yet. Next:
+separate route-group/Admin layout, preserve URLs/desktop action compatibility,
+run tests/build, deploy and verify before starting 2A owner extension contracts.
+
 ## 9 October 2026 — Studio Phase 1 deployed and accepted
 
 Supersedes earlier Studio pending-candidate checkpoints below. Exact source

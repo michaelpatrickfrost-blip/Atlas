@@ -11,11 +11,11 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-1D — Release compatibility, database acceptance and live verification — VERIFIED.
+Admin separation companion — IN PROGRESS. Phase 1 remains VERIFIED; Phase 2 workstreams recorded in STUDIO_PHASE_2_PLAN.md.
 
 # Overall Status
 
-VERIFIED for Phase 1. Live source c46bbefa737c81280daf38d62e87a4511420ffa5.
+IN PROGRESS for Michael's new Admin-only/modern-UI request and sequential continuation. VERIFIED for Phase 1. Live source c46bbefa737c81280daf38d62e87a4511420ffa5.
 The supplied source defines ten phases 0–9, not five. The original
 is preserved unchanged at `docs/studio/ATLAS_STUDIO_SOURCE.docx` (source
 `/Users/michael/Downloads/atlas_studio.docx`, SHA-256
@@ -157,9 +157,8 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Phase 1 complete; no Phase 2 implementation started. Recover from this ledger and
-`STUDIO_PHASE_1_COMPLETION.md`, re-read supplied Section 27 Phase 2 plus Sections
-6.4–8, inspect existing extension/page owners and current Git status, then record
-Phase 2 workstreams before implementing 2A: module-approved extension policy and
-custom-field contracts. Preserve the live metadata kernel and existing domain
-ownership; do not start Decisions, Flow or durable-event engines early.
+Move /atlas routes out of the business (app) layout into a standalone (admin)
+route group. Add a responsive Admin-only shell using the current brand/UI, preserve
+legacy desktop action keys and audited support entry, test guards/navigation,
+build and deploy/verify the coherent companion checkpoint. Then begin Phase 2A
+per STUDIO_PHASE_2_PLAN.md; do not start 2B or later engines early.

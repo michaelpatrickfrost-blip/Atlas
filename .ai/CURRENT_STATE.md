@@ -5,8 +5,8 @@
 Implemented a wide logo-based pop-out and expanded `/chat` utility workspace,
 responsive conversation list/timeline, optional participants/shared-record details,
 grouped order/quotation/customer/project/product picker and horizontal composer.
-Drafts remain separate per chat in component memory; closing retains the current
-draft. Pending sends disable edits/re-entry; failures retain draft/attachments.
+Drafts remain separate per chat in a company/user-keyed shell context; closing
+and expanding retains the conversation and current draft without local storage. Pending sends disable edits/re-entry; failures retain draft/attachments.
 References may be sent without a comment. Server history searches all message text
 with bounded stable 80-message cursor pages, same-tenant/participant cursor checks,
 and safe recipient placeholders; older/search views do not mark newer messages read.
@@ -26,8 +26,16 @@ search loading, bounded test timeouts and removed formatter whitespace; 17 chat
 assertions, strict TypeScript and final production build passed again; focused
 refinement lint zero errors/one brand-image warning and diff check passed.
 Full suite not rerun.
-Next: prepare pinned candidate, run real synthetic-contact chat/order/history and
-three-size browser acceptance plus Home/Reports regression, activate and repeat
+Initial `4233b57` candidate acceptance passed real chat/contact creation, message
+send/order-reference persistence, participant/shared-record details, history beyond
+80 messages/search, forged-record rejection, draft closure, utility entry, expanded
+workspace and desktop/tablet/phone viewport fit with no browser runtime errors.
+Screenshots inspected visually. Its synthetic contact/customer is retired centrally.
+Final expansion handoff uses the shared unsaved-draft context keyed by authenticated
+company/user; eight focused files/48 assertions, strict TypeScript, final production
+build and refinement lint (zero errors/one brand-image warning) passed.
+Next: prepare the final pinned revision, rerun exact chat acceptance plus Home/Reports
+regression, activate and repeat
 public verification. Synthetic QA fixtures stay central and are retired, no actual
 colleague/customer receives a test message; no local business database/cache.
 

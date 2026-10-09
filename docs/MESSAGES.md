@@ -27,8 +27,10 @@ Tasks, follow-ups, requests, notes and meetings retain the existing central work
 Tasks and meetings are actual Projects records rather than a second chat task store.
 Chat `core.chat.read`/`core.chat.write`, source licences/capabilities and tenant scope
 remain server enforced. Company broadcasts remain disabled. Chat drafts are separate
-per conversation in component memory and survive pop-out closure/switching. They
-are not persistent across page navigation, reload or sign-out. While sending, the
+per conversation in a company/user-keyed shell context and survive pop-out closure,
+conversation switching and expansion into the full workspace. The context holds
+unsaved composer state only, without local storage or a record cache. Reload and
+sign-out clear the buffer. While sending, the
 composer is disabled; a failed send retains its draft and attachments for review.
 
 Search in a conversation matches message text across central history, rather than

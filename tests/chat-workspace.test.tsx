@@ -8,6 +8,7 @@ import {
   render,
   screen,
 } from "@testing-library/react";
+import { MessageDraftProvider } from "@/components/shell/message-drafts";
 import { ChatDock } from "@/app/(app)/chat/chat-dock";
 vi.mock("next/navigation", () => ({ usePathname: () => "/home" }));
 const conversations = ["Blair", "Casey"].map((name) => ({
@@ -51,6 +52,16 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 describe("Modern chat composer", () => {
+  it("carries the conversation and draft across dock and page mounts in the same authenticated shell", async () => {
+    const view = render(<MessageDraftProvider><ChatDock key="dock"/></MessageDraftProvider>);
+    fireEvent.click(screen.getByRole("button", {name:"Open messages"}));
+    fireEvent.click(await screen.findByRole("button", {name:/Blair/}));
+    fireEvent.change(screen.getByRole("textbox", {name:"Message"}), {target:{value:"Carry this draft"}});
+    view.rerender(<MessageDraftProvider><ChatDock key="page" variant="page"/></MessageDraftProvider>);
+    await screen.findByRole("heading", {name:"Blair"});
+    expect((screen.getByRole("textbox", {name:"Message"}) as HTMLTextAreaElement).value).toBe("Carry this draft");
+  });
+
   it("keeps separate drafts and restores them when switching conversations", async () => {
     render(<ChatDock variant="page" />);
     fireEvent.click(await screen.findByRole("button", { name: /Blair/ }));

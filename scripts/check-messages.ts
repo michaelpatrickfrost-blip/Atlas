@@ -287,6 +287,9 @@ async function main() {
       assert(
         await dialog.evaluate((node) => node.scrollWidth <= node.clientWidth),
       );
+      await dialog
+        .getByText("Review this order together.", { exact: true })
+        .scrollIntoViewIfNeeded();
       await page.screenshot({ path: `/tmp/atlas-messages-${device}.png` });
       console.log(
         `PASS ${device}: modern pop-out, composer and record cards fit the viewport.`,
@@ -297,6 +300,12 @@ async function main() {
       .getByRole("link", { name: "Expand messages", exact: true })
       .click();
     await page.waitForURL("**/chat");
+    await expect(
+      page.getByRole("textbox", { name: "Message", exact: true }),
+    ).toHaveValue("Preserve my draft");
+    await expect(
+      page.getByRole("heading", { name, exact: true }),
+    ).toBeVisible();
     await expect(
       page.getByRole("heading", { name: "Messages", exact: true }),
     ).toHaveCount(1);

@@ -1,6 +1,10 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import {
+  MessageDraftContext,
+  type MessageDraft,
+} from "@/components/shell/message-drafts";
 import { usePathname } from "next/navigation";
 import {
   ArrowLeft,
@@ -114,16 +118,31 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
   const page = variant === "page";
   const pathname = usePathname();
   const duplicate = !page && pathname === "/chat";
+  const sharedDrafts = useContext(MessageDraftContext);
+  const localDrafts = useRef({
+    drafts: new Map<string, MessageDraft>(),
+    lastConversation: null as string | null,
+  });
+  const buffer = sharedDrafts ?? localDrafts;
+  const initialConversation = useRef(
+    page ? buffer.current.lastConversation : null,
+  ).current;
+  const initialDraft = useRef(
+    initialConversation
+      ? buffer.current.drafts.get(initialConversation)
+      : undefined,
+  ).current;
+
   const [open, setOpen] = useState(page);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(initialConversation);
   const [query, setQuery] = useState("");
-  const [mode, setMode] = useState<Mode>("message");
-  const [draft, setDraft] = useState("");
-  const [assignee, setAssignee] = useState("");
-  const [due, setDue] = useState("");
-  const [starts, setStarts] = useState("");
-  const [priority, setPriority] = useState("NORMAL");
+  const [mode, setMode] = useState<Mode>(initialDraft?.mode ?? "message");
+  const [draft, setDraft] = useState(initialDraft?.body ?? "");
+  const [assignee, setAssignee] = useState(initialDraft?.assignee ?? "");
+  const [due, setDue] = useState(initialDraft?.due ?? "");
+  const [starts, setStarts] = useState(initialDraft?.starts ?? "");
+  const [priority, setPriority] = useState(initialDraft?.priority ?? "NORMAL");
   const [error, setError] = useState("");
   const [loadError, setLoadError] = useState("");
   const [pending, setPending] = useState(false);
@@ -134,7 +153,9 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
   const [peopleHits, setPeopleHits] = useState<PersonHit[]>([]);
   const [peopleSearching, setPeopleSearching] = useState(false);
   const [pickedNames, setPickedNames] = useState<Record<string, string>>({});
-  const [attached, setAttached] = useState<LinkHit[]>([]);
+  const [attached, setAttached] = useState<LinkHit[]>(
+    initialDraft?.links ?? [],
+  );
   const [attachOpen, setAttachOpen] = useState(false);
   const [attachQuery, setAttachQuery] = useState("");
   const [hits, setHits] = useState<LinkHit[]>([]);
@@ -150,24 +171,11 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
   const pendingRef = useRef(false);
   const nearBottom = useRef(true);
   const focusPanel = useRef<HTMLDivElement>(null);
-  const drafts = useRef(
-    new Map<
-      string,
-      {
-        body: string;
-        links: LinkHit[];
-        mode: Mode;
-        assignee: string;
-        due: string;
-        starts: string;
-        priority: string;
-      }
-    >(),
-  );
+  const drafts = buffer.current.drafts;
   const seen = useRef(new Set<string>());
   const primed = useRef(false);
   const scroller = useRef<HTMLDivElement>(null);
-  const activeIdRef = useRef<string | null>(null);
+  const activeIdRef = useRef<string | null>(initialConversation);
   const openRef = useRef(page);
   useEffect(() => {
     activeIdRef.current = activeId;
@@ -380,7 +388,8 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
 
   function choose(id: string, peerId: string | null, force = false) {
     if (pendingRef.current && !force) return;
-    const saved = drafts.current.get(id);
+    buffer.current.lastConversation = id;
+    const saved = drafts.get(id);
     setDraft(saved?.body ?? "");
     setAttached(saved?.links ?? []);
     setMode(saved?.mode ?? "message");
@@ -423,7 +432,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
   useEffect(() => {
     pendingRef.current = pending;
     if (activeId)
-      drafts.current.set(activeId, {
+      drafts.set(activeId, {
         body: draft,
         links: attached,
         mode,
@@ -433,6 +442,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
         priority,
       });
   }, [
+    drafts,
     activeId,
     draft,
     attached,
@@ -443,6 +453,12 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
     priority,
     pending,
   ]);
+
+  useEffect(() => {
+    if (!page && !duplicate && buffer.current.lastConversation)
+      choose(buffer.current.lastConversation, null, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [duplicate, page]);
 
   useEffect(() => {
     if (open)
@@ -560,7 +576,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
           links: attached.map((item) => ({ type: item.type, id: item.id })),
         },
       });
-      drafts.current.delete(activeId);
+      drafts.delete(activeId);
       nearBottom.current = true;
       historyOptions.current = { query: "", before: "" };
       setThreadQuery("");

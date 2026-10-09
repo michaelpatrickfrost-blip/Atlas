@@ -1286,8 +1286,8 @@ expanded `/chat` workspace in the logo-based blue/white shell. A conversation
 list, readable timeline, single composer and optional participants/shared-record
 panel replace the narrow stacked dock. History search and stable 80-message
 pages read central messages, including older matches; search/history does not
-mark newer messages read. Drafts stay with their conversation in component memory
-and survive pop-out closure; no local storage or business cache. Attachments remain
+mark newer messages read. Drafts stay with their conversation in a company/user-keyed shell context
+and survive pop-out closure and expansion into the full workspace; no local storage or business cache. Attachments remain
 live references to authorised orders, quotations, customers, projects and products,
 with recipient-specific inaccessible placeholders. A record may be shared without
 an additional comment. Contact conversations remain stored in Atlas without email

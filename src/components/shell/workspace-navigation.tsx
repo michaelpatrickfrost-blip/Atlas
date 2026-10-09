@@ -52,9 +52,14 @@ export function WorkspaceNavigation({
                 : undefined
             }
             aria-current={active ? "page" : undefined}
-            className={`flex min-h-11 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-3 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:flex-row sm:gap-3 lg:min-h-12 lg:flex-none lg:justify-start ${active ? "bg-[#eaf3ff] text-[#075bff]" : "text-[#526587] hover:bg-blue-50 hover:text-blue-700"}`}
+            className={`flex min-h-11 min-w-0 flex-1 basis-0 flex-col items-center justify-center gap-1 rounded-2xl px-1 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:flex-row sm:gap-3 sm:px-3 lg:min-h-12 lg:flex-none lg:px-2 lg:justify-start ${active ? "bg-[#eaf3ff] text-[#075bff]" : "text-[#526587] hover:bg-blue-50 hover:text-blue-700"}`}
           >
-            <Icon aria-hidden="true" size={19} strokeWidth={1.8} />
+            <Icon
+              aria-hidden="true"
+              size={19}
+              strokeWidth={1.8}
+              className="shrink-0"
+            />
             <span className="text-[9px] sm:text-xs">{name}</span>
           </Link>
         );

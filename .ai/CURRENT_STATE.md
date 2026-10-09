@@ -91,6 +91,14 @@ Dashboard utility destination and scopes its rail check to the visible responsiv
 nav; rename acceptance waits for the central save rather than its optimistic title.
 These are runner-only refinements; sealed application source remains d61e5c4.
 Local checks and pending live gates are recorded in docs/evidence/2026-10-09-dashboards.md.
+Candidate d61e5c4 Dashboard/Messages/Home/Reports browser workflows PASS, including actual saves,
+rename/reload, currency guard, undo/redo, monitor and three viewport fits. Visual
+inspection found clipped phone Settings and a white rectangle behind the hero mark;
+fixed utility padding/icon shrink and mark blending before activation. KPI sparklines
+now appear only for trends, not a single categorical bar. Two focused canvas/chart
+files/8 assertions, strict types, build and refinement lint PASS. Final source requires
+checks and fresh candidate acceptance. Home acceptance now checks actual utility
+icon/label bounds as well as page overflow. No public Dashboard activation yet.
 Next: prepare compatible combined candidate, run central
 Dashboard/Messages/Home/Reports checks, activate and repeat publicly.
 

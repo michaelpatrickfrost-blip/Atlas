@@ -258,17 +258,19 @@ function Kpi({
             ? `${points.length} ${points.length === 1 ? "group" : "groups"}`
             : `${trend > 0 ? "+" : ""}${formatPoint(trend, metric)} vs prior`}
         </p>
-        <div aria-hidden="true" className={styles.spark}>
-          {points.slice(-12).map((point, index) => (
-            <span
-              key={`${point.label}-${index}`}
-              style={{
-                height: `${Math.max(8, (point.value / max) * 100)}%`,
-                background: color,
-              }}
-            />
-          ))}
-        </div>
+        {metric.shape === "trend" && points.length > 1 && (
+          <div aria-hidden="true" className={styles.spark}>
+            {points.slice(-12).map((point, index) => (
+              <span
+                key={`${point.label}-${index}`}
+                style={{
+                  height: `${Math.max(8, (point.value / max) * 100)}%`,
+                  background: color,
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

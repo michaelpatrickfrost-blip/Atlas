@@ -358,6 +358,7 @@
   right: 28px;
   top: 0;
   opacity: 0.8;
+  mix-blend-mode: multiply;
   transform: rotate(-8deg);
 }
 .eyebrow {

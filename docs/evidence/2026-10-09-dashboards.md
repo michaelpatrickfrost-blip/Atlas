@@ -10,8 +10,11 @@ runner-only navigation/rename assertion corrections outside the sealed runtime.
 
 Prepared immutable candidate with database/private-file backup
 `atlas-pre-deploy-20261009-212614`. Production pointer remained on `1dafe165`.
-Preparation/compatibility/startup smoke passed. Candidate browser acceptance is
-pending; no public Dashboard activation or acceptance is claimed by this checkpoint.
+Preparation/compatibility/startup smoke passed. Candidate Dashboard/Messages/Home/Reports browser acceptance passed. Visual
+inspection found phone Settings clipping and a white hero-logo rectangle; utility
+padding/icon sizing and logo blending were corrected before activation. KPI
+sparklines now render only meaningful trends. A new candidate must pass its own
+acceptance; no public Dashboard activation is claimed by this checkpoint.
 
 ## Local verification
 

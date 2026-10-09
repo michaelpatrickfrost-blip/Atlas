@@ -89,6 +89,16 @@ async function main() {
         ),
         "Rail only contains utilities.",
       );
+      assert(
+        await utilities.evaluate((nav) => {
+          const bounds = nav.getBoundingClientRect();
+          return [...nav.querySelectorAll("a svg,a span")].every((n) => {
+            const r = n.getBoundingClientRect();
+            return r.left >= bounds.left && r.right <= bounds.right;
+          });
+        }),
+        `${name} utility icons and labels must fit the rail.`,
+      );
       const apps = page.locator('main nav[aria-label="Apps"]');
       await expect(apps.locator('a[href="/analytics"]')).toHaveCount(0);
       if (navigable.some((app) => app.id === "analytics"))

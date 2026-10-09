@@ -4,13 +4,13 @@ import { taxYearTable } from "./tax-tables";
  *  × 10. "BR" taxes everything at the basic rate, "0T" gives no allowance,
  *  "NT" takes no tax, "D0"/"D1" tax everything at the higher/additional rate. */
 export function allowanceFromTaxCode(taxCode: string | null, defaultAllowance: number): number {
-  const code = (taxCode ?? "").trim().toUpperCase();
+  const code = (taxCode ?? "").trim().toUpperCase().replace(/\s+(W1|M1|X)$/," ").trim();
   if (!code) return defaultAllowance;
   if (code === "NT") return Infinity;
   if (code === "BR" || code === "D0" || code === "D1" || code === "0T") return 0;
   const numeric = code.match(/^(\d+)L$/);
   if (numeric) return Number(numeric[1]) * 10;
-  return defaultAllowance;
+  throw new Error("Unsupported tax code. Use a verified payroll calculation for this employee.");
 }
 
 function annualTax(taxableAnnual: number, taxYear: string): number {
@@ -29,18 +29,28 @@ function annualTax(taxableAnnual: number, taxYear: string): number {
 
 /** Flat-rate (non-cumulative) PAYE for one pay period: proportion the annual
  *  allowance and bands by the number of pay periods in the year, then tax
- *  this period's pay on its own. This is the standard "week 1 / month 1"
- *  basis — correct for most employees and far simpler than true cumulative
- *  PAYE, which needs the full year-to-date history replayed every period. */
+ *  this period's pay on its own. Explicit W1/M1/X codes use a non-cumulative basis. With taxPeriod, ordinary
+ * codes use reviewed opening figures and finalised prior Atlas pay/tax. */
 export function calculatePaye(params: {
   grossMinorUnits: number;
   taxCode: string | null;
   payPeriodsPerYear: 12 | 52;
   taxYear: string;
+  priorGrossMinorUnits?: number;
+  priorTaxMinorUnits?: number;
+  taxPeriod?: number;
 }): { taxMinorUnits: number } {
   const table = taxYearTable(params.taxYear);
   const allowance = allowanceFromTaxCode(params.taxCode, table.personalAllowance);
-  const code = (params.taxCode ?? "").trim().toUpperCase();
+  const rawCode=(params.taxCode??"").trim().toUpperCase();
+  const code=rawCode.replace(/\s+(W1|M1|X)$/," ").trim();
+  if(code==="NT")return {taxMinorUnits:0};
+  if(params.taxPeriod&&!/\s+(W1|M1|X)$/.test(rawCode)) {
+    const fraction=params.taxPeriod/params.payPeriodsPerYear;
+    const totalGross=(params.grossMinorUnits+(params.priorGrossMinorUnits??0))/100;
+    const totalTax=code==="NT"?0:code==="BR"?totalGross*.2:code==="D0"?totalGross*.4:code==="D1"?totalGross*.45:annualTax(Math.max(0,totalGross-allowance*fraction)/fraction,params.taxYear)*fraction;
+    return {taxMinorUnits:Math.round(totalTax*100)-(params.priorTaxMinorUnits??0)};
+  }
   if (code === "BR") return { taxMinorUnits: Math.round((params.grossMinorUnits / 100) * table.payeBands[0].rate * 100) };
   if (code === "D0") return { taxMinorUnits: Math.round((params.grossMinorUnits / 100) * table.payeBands[1].rate * 100) };
   if (code === "D1") return { taxMinorUnits: Math.round((params.grossMinorUnits / 100) * table.payeBands[2].rate * 100) };

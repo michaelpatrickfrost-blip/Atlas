@@ -1,4 +1,5 @@
 "use client";
+import { PeopleWorkspaceHeader, WorkspaceStats } from "@/components/ui/people-workspace";
 import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -28,7 +29,6 @@ export function TeamPlanner({ data, query }: { data: Data; query: { month?: stri
   const [pattern, setPattern] = useState(data.workTypes[0]?.id ?? "");
   const [selected, setSelected] = useState(data.employees.map((employee) => employee.id));
   const [demandMode, setDemandMode] = useState<"traffic" | "hours">("traffic");
-  useEffect(() => { setSelected(data.employees.map((employee) => employee.id)); }, [data.month, data.employees]);
   useEffect(() => { if (editor && !dialog.current?.open) dialog.current?.showModal(); if (!editor && dialog.current?.open) dialog.current?.close(); }, [editor]);
 
   const href = (month: string, own = query.view === "mine") => {
@@ -65,16 +65,9 @@ export function TeamPlanner({ data, query }: { data: Data; query: { month?: stri
   }
 
   return <div className="space-y-5">
-    <div className="flex flex-wrap items-start justify-between gap-4">
-      <div>
-        <h2 className="text-2xl font-semibold tracking-tight">{data.manage ? "People planner" : "Your month"}</h2>
-        <p className="mt-1 max-w-2xl text-sm text-slate-500">{data.manage ? "Plan the month by team. Office, production and contact-centre patterns are hours you can reuse. Traffic or a man-hour target shows whether the team is short, and leave or sickness opens a replan." : "Published shifts for this month. The same plan is on your profile."}</p>
-      </div>
-      {data.manage && <div className="flex flex-wrap gap-2">
-        <Button disabled={pending || !draftCount} onClick={() => { const form = new FormData(); form.set("month", data.month); for (const id of selected) form.append("employeeId", id); run(() => publishMonth(form), "This month is published on their profiles."); }}>Publish {draftCount || ""} drafts</Button>
-        <Button variant="primary" disabled={pending || !chosen || !selected.length} onClick={() => { const form = new FormData(); form.set("month", data.month); form.set("workTypeId", chosen.id); form.set("publish", "on"); if (query.team) form.set("teamId", query.team); for (const id of selected) form.append("employeeId", id); run(() => fillTeamMonth(form), ""); }}>Fill month with {chosen?.name ?? "a pattern"}</Button>
-      </div>}
-    </div>
+    <PeopleWorkspaceHeader eyebrow="Workforce scheduling" title={data.manage ? "People planner" : "Your month"} description={data.manage ? "Build a flexible rota across departments, teams and work patterns. Match hours to demand, resolve cover and publish a clear plan to each person." : "Your published shifts, work pattern and upcoming time off."} actions={<>{data.manage&&<Link href={`/scheduling/workforce${query.department?`?department=${encodeURIComponent(query.department)}`:""}`} className="rounded-xl border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700">Coverage & open shifts →</Link>}<Link href="/scheduling/workforce" className="rounded-xl border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700">Availability</Link></>}/>
+    <WorkspaceStats items={[{label:"People in view",value:data.total,detail:`${data.employees.length} shown in the rota`},{label:"Planned paid hours",value:hours(data.shifts.reduce((n,s)=>n+shiftMinutes(s),0))},{label:"Draft shifts",value:draftCount,detail:"Publish when the team plan is ready."},{label:"Days short of demand",value:coverage.filter(c=>(c.short??0)>0).length,tone:"warning"}]}/>
+    {data.manage&&<div className="flex flex-wrap justify-end gap-2"><Button disabled={pending || !draftCount} onClick={() => { const form = new FormData(); form.set("month", data.month); for (const id of selected) form.append("employeeId", id); run(() => publishMonth(form), "This month is published on their profiles."); }}>Publish {draftCount || ""} drafts</Button><Button variant="primary" disabled={pending || !chosen || !selected.length} onClick={() => { const form = new FormData(); form.set("month", data.month); form.set("workTypeId", chosen.id); if (query.team) form.set("teamId", query.team); for (const id of selected) form.append("employeeId", id); run(() => fillTeamMonth(form), ""); }}>Fill draft month with {chosen?.name ?? "a pattern"}</Button></div>}
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3">
       <div className="flex items-center gap-2">
         <Link aria-label="Previous month" href={href(moveMonth(-1))} className="rounded-lg border p-2 hover:bg-slate-50"><ChevronLeft size={17} /></Link>

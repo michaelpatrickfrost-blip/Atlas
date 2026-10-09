@@ -1,6 +1,6 @@
 import {beforeEach,it,expect,vi} from "vitest";
 const mocks=vi.hoisted(()=>({enabled:vi.fn(),modules:vi.fn(),query:vi.fn(),goalQuery:vi.fn()}));
-vi.mock("@/core/modules/runtime",()=>({getEnabledModuleIds:mocks.enabled}));
+vi.mock("@/core/modules/runtime",()=>({enabledModulesForSession:mocks.enabled}));
 vi.mock("@/core/modules/registry",()=>({getImplementedModules:mocks.modules}));
 vi.mock("@/core/analytics/customer-metrics",()=>({customerAnalytics:[]}));
 import {getAnalyticsMetrics} from "@/core/analytics/catalogue";

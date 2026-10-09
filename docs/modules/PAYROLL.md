@@ -1,62 +1,77 @@
-# Payroll
+# UK payroll
 
-Payroll is its own module (`src/modules/payroll/`, routes under `/payroll`), split out of HR
-(`people`). It depends on `people` (employee records, absence, tax/bank fields on `Employee`)
-and `scheduling` (confirmed rota hours). HR keeps employee records, holidays, conduct and
-policies; Payroll owns the pay run and the statutory calculation.
+Updated 9 October 2026. Payroll remains an independent module dependent on HR and
+Scheduling. HR gets a limited readiness summary through the Payroll manifest
+provider. No duplicate employee ledger/local cache. See
+[research and delivery scope](../plans/PEOPLE_PLATFORM_OVERHAUL.md).
 
-## Scope — what this is, and what it is not
+## Workspaces
 
-Payroll calculates UK PAYE, National Insurance, pension (auto-enrolment qualifying earnings)
-and statutory pay (SSP/SMP) against HMRC's published rates for the organisation's current tax
-year (`src/modules/payroll/domain/tax-tables.ts`). It produces payslips and P45/P60-style
-documents for export.
+- `/payroll/employees`: hourly/salaried pay, frequency, tax/NI/loans, pension
+  opt-out, bank details, contracted hours and reviewed opening pay history.
+- `/payroll/prepare`: weekly/monthly period, approved actual time, employee issues,
+  estimated pay and verified statutory/holiday/additional inputs.
+- `/payroll`: draft/finalised/paid register; `/payroll/[runId]` reviews payslips,
+  net deductions and source refresh before finalisation.
+- `/people/pay`: HR links these steps; readiness needs Payroll reading and enablement.
 
-**It is not an RTI/HMRC submission.** There is no Government Gateway integration, no FPS/EPS
-filing, and no live reporting to HMRC. Figures are calculated for the organisation to use, the
-same boundary Safety already draws for regulator submission (see DECISIONS.md, "Safety assists
-decisions and does not store them on the Mac") — Atlas calculates and records; the business
-still files.
+## Calculation and human review
 
-NI category A is the only category the engine calculates correctly; any other category is
-still computed (at the category A rate) with no silent substitution, so a payroll manager
-always sees a figure, never a blank, but should treat a non-A category payslip as needing
-manual review. SSP/SMP qualifying-day and average-weekly-earnings rules are simplified (see
-`domain/statutory-pay.ts`) — a payroll manager confirms eligibility before finalising a run.
+2026–27 UK salaried/hourly weekly/monthly GBP contracts, supported tax codes,
+recorded NI categories and qualifying-earnings pension. Rates checked against
+[HMRC](https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027).
+The former table labelled 2026–27 contained older employer NI/statutory/loan
+values. New calculations use current values; finalised records retain their figures.
 
-## How a pay run is built
+Hours are APPROVED daily TimesheetEntry minutes in the inclusive pay period.
+Entered unapproved time blocks preparation; missing salaried time needs explicit
+review and adds no overtime. Hourly pay requires approved actual time. Base hourly
+pay includes all approved hours; only the extra overtime premium is added above
+the prorated contracted threshold. Rota hours never substitute for actual time.
+Salaried starters/leavers prorate on employed working days. Approved unpaid absence
+deducts working days using the recorded pattern's daily rate.
 
-`createPayrollRun` (`services/commands.ts`) reads, per active employee, for the chosen period:
+Supported ordinary tax codes use reviewed opening pay/tax and finalised prior Atlas
+pay; explicit W1/M1/X uses non-cumulative PAYE. Opening balances, including zero,
+need a recorded review and lock after first finalisation. NI applies the recorded
+supported category and published periodic thresholds. Loan plans 1/2/4/5 and
+concurrent postgraduate repayment use whole-pound deductions.
 
-- **Rota hours** — confirmed `RotaShift`s (scheduling's shared table), for overtime beyond
-  prorated contracted/standard weekly hours.
-- **Approved sickness/maternity-paternity absence** — becomes a `StatutoryPayRecord` (SSP/SMP)
-  linked to the `AbsenceRecord`, included in that payslip's gross.
-- **Approved unpaid absence** — a daily-rate deduction (unchanged from the HR-embedded feature
-  this module replaces).
-- **Approved holiday** — paid as normal salary (no deduction); HR's leave-balance accounting is
-  unaffected by payroll.
+Absence type does not establish statutory entitlement. Payroll staff verify
+eligibility, actual earnings, qualifying days, payment kind and salary replacement
+with authoritative records/calculators. Hourly holiday similarly needs verified
+reference-period pay. Reviewed amounts and evidence reference are stored per
+employee/period; additional gross pay can include verified holiday/other pay.
+Explicit salary reduction avoids adding replacement pay on top of full salary.
 
-Gross then runs through PAYE, NI, pension and student-loan calculators to net pay. Each
-employee's `EmployeeTaxYearToDate` accumulates for correct period-over-period calculation and
-for the eventual P45/P60.
+RTI/FPS/EPS, bank transfers, Scottish/special tax codes, director NI, week 53,
+automatic pension-enrolment eligibility and statutory entitlement decisions remain
+external. This is a controlled calculation/review workflow, not certified filing.
 
-## Sensitive data
+## Drafts and finalisation
 
-`Employee.taxCode`, `niNumber`, `bankAccountName/sortCode/accountNumber` are gated by
-`payroll.employee.manage`, not by `people.employee.manage` — a person who can edit someone's
-job title cannot see their tax code or bank details. `payroll.payslip.self` lets a person read
-their own payslips/P45/P60 on their profile without any run-level capability.
+Create/refresh binds reviewed inputs to current employee pay, time, absence,
+adjustments, settings and finalised prior pay. Rejects blocking issues, stale review
+and overlapping employee periods. Refresh changes only a draft, preserving manual
+net deductions and rejecting negative pay. Drafts do not advance YTD.
 
-## Capabilities
+Finalisation rechecks current inputs/payslips, rejects out-of-sequence earlier pay
+after a later finalisation, and atomically changes DRAFT→FINALISED and recomputes
+YTD from opening plus finalised records. Changed inputs or a legacy draft need a
+reviewed refresh. FINALISED→PAID is guarded/audited and records status only.
+Mutations use tenant scope, serializable transactions and atomic audit entries.
 
-`payroll.run.read`, `payroll.run.manage`, `payroll.employee.manage`, `payroll.settings.manage`,
-`payroll.payslip.self`. These replace the retired `people.payroll.read`/`people.payroll.manage`
-— existing roles are migrated by `prisma/migrations/20261004090000_payroll_module_foundation`.
+Employee pay setup binds existing updatedAt; pay runs/tasks use versions.
+P45/P60-style records check same-company employee and use stored year totals;
+they remain exports. Historical payroll records are retained.
 
-## Activation
+## Permissions and deployment
 
-Enabling Payroll for an organisation needs `prisma/migrations/20261004090000_payroll_module_foundation`
-applied on the shared database and `deploy/enable-payroll.mjs <slug> <admin-email>` run on the
-central server (grants the new capabilities to that organisation's `admin` role and turns the
-module on). Both are operator-run on the server, not from a desktop session.
+Existing payroll.run.read/manage, payroll.employee.manage, payroll.settings.manage
+and payroll.payslip.self apply. Directory/HR editing does not grant tax/bank/payroll
+access. Preparation returns necessary pay inputs; bank/NI-number setup requires
+separate employee-pay management. Own payslips remain on the profile.
+
+Migration 20261010010000_people_workspaces is additive. Named authenticated central
+reads support desktop; new models stay closed in the generic gateway. Existing
+grants/module states are preserved. Evidence is in .ai/CURRENT_STATE.md.

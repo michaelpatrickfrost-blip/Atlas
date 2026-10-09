@@ -70,7 +70,8 @@ that display limit. Shifts count towards the week in which they start.
 - `/people/timesheets`: weekly daily hours in quarter-hour increments with work
   descriptions, own or managed-staff entry, save draft/submit, inspection/approval/
   return with correction reason. Submitted/approved sheets lock; returned sheets can
-  be edited and resubmitted. Approved hours are not posted automatically to payroll.
+  be edited and resubmitted. Approved actual hours feed Payroll preparation;
+  creating and finalising a reviewed payroll run remains explicit.
 - `/people/my-team/[employeeId]`: append-only MANAGER_HR and HR_ONLY notes. Only the
   current direct manager with team capability and HR management can read manager
   notes; HR-only notes require HR employee management. Staff (including authors on
@@ -111,3 +112,19 @@ timezones, public holidays, half-days and notification delivery remain open.
 Demand, cover after absence, and busy-period holiday limits are in the month
 planner. This supersedes the old decision that HR scheduling must remain only
 inside one People app.
+
+## 9 October 2026 — Intraday and open shifts
+
+/scheduling/workforce adds department/skill/role intervals, workload estimates,
+occupancy/shrinkage, conservative eligible cover, timed breaks and work/training/
+meeting/offline activities. Unfiltered intervals share the department pool; role/
+activity filters separate queues. No ACD/service-level/live adherence is implied.
+
+Staff mark unavailable time and request shifts. Managers fill/review within their
+HR roster scope. Atomic assignment rechecks employment, department, skills,
+absence, availability and overlap, creates one published shift, closes competing
+requests and retains history. Legacy placement/edit/publication respects unavailable
+time. Activities reject boundary/overlap conflicts; untimed breaks cannot promise
+cover. Month patterns fill drafts for explicit later publication. Named central
+reads preserve desktop boundaries; no private HR/payroll facts in workforce payloads.
+See [People overhaul](../plans/PEOPLE_PLATFORM_OVERHAUL.md).

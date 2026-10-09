@@ -6,9 +6,9 @@ import { searchTeams, teamAttention } from "./services/queries";
 export const teamsManifest: ModuleManifest = {
   id: "teams",
   name: "Team planner",
-  description: "Your team, their holidays, cover, and the work the lead sets.",
+  description: "Team workload and weekly capacity, work boards, goals, shared availability, cover and handovers.",
   icon: Users,
-  version: "0.1.0",
+  version: "0.2.0",
   minimumCoreVersion: "0.1.0",
   dependencies: ["people"],
   capabilities: Object.values(TEAMS_CAPABILITIES),

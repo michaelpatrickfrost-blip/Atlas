@@ -16,7 +16,7 @@ export const peopleManifest: ModuleManifest = {
   name: "HR",
   description: "People operations, recruitment, employee records, learning, documents, leave and performance.",
   icon: Users,
-  version: "0.1.0",
+  version: "0.2.0",
   minimumCoreVersion: "0.1.0",
   dependencies: [],
   capabilities: Object.values(HR_CAPABILITIES),
@@ -24,6 +24,8 @@ export const peopleManifest: ModuleManifest = {
   accessCapability: "core.profile.self",
   status: "available",
   navigation: [
+    { label: "Pay & time", href: "/people/pay", group: "Pay & policy" },
+    { label: "Organisation", href: "/people/organisation", capability: HR_CAPABILITIES.employeeRead, group: "People" },
     { label: "HR home", href: "/people/workspace", capability: HR_CAPABILITIES.employeeRead },
     { label: "My HR", href: "/people/me" },
     { label: "My learning", href: "/people/my-learning", group: "My work" },

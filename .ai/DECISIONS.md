@@ -1346,3 +1346,20 @@ live references to authorised orders, quotations, customers, projects and produc
 with recipient-specific inaccessible placeholders. A record may be shared without
 an additional comment. Contact conversations remain stored in Atlas without email
 or external delivery. The standalone Admin console does not mount business chat.
+
+## 9 October 2026 — Connected People apps and UK payroll review
+
+Michael requested substantive Goals & KPIs, HR, People planner and Team planner
+workspaces; UK payroll first was explicitly selected. Each stays independent around
+canonical employee/goal/shift/task records. Weighted scorecards keep source rights
+and missing readings unscored. Interval cover is a conservative workload estimate
+with role/skill/break/activity filters. Team capacity labels visible work and uses
+leave, hours and published rotas rather than claiming unrestricted utilisation.
+
+Payroll uses approved time, reviewed opening history and verified statutory/holiday
+replacement inputs. No planned-hour fallback; drafts do not advance YTD. Input
+binding, serializable finalisation, overlap/sequence guards and payment transitions
+prevent stale/duplicate pay. Corrected 2026–27 rates apply to new calculations;
+finalised history is retained. RTI/bank/special tax and telephony/adherence remain
+external. Existing grants, privacy and central storage persist. Research/rationale:
+docs/plans/PEOPLE_PLATFORM_OVERHAUL.md.

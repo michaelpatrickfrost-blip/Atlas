@@ -23,6 +23,7 @@ export async function listPlanner(session: Session) {
     where: visibleWhere(session, employee?.id),
     orderBy: { name: "asc" },
     include: {
+      _count: { select: { tasks: {where:{status:{not:"DONE"}}} } },
       members: { include: { employee: { select: personSelect } }, orderBy: { createdAt: "asc" } },
     },
   });
@@ -31,6 +32,7 @@ export async function listPlanner(session: Session) {
     teams: teams.map((team) => ({
       id: team.id,
       name: team.name,
+      openTasks: team._count.tasks,
       people: team.members.filter((member) => member.employee.status !== "LEFT").map((member, index) => ({
         id: member.employee.id,
         name: displayName(member.employee),
@@ -157,6 +159,7 @@ export async function loadBoard(session: Session, teamId: string, monthValue: st
     const away = due && assignee ? personAway(absenceByEmployee.get(assignee.employeeId) ?? [], due) : null;
     return {
       id: task.id,
+      version: task.version,
       title: task.title,
       detail: task.detail,
       status: task.status,

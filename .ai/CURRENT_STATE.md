@@ -1,5 +1,36 @@
 # Atlas current state
 
+## 9 October 2026 — People overhaul, candidate preparation
+
+Implemented distinct connected Goals, HR, People planner and Team planner
+workspaces with a shared blue/white UI. UK payroll first confirmed by Michael.
+Weighted company strategy scorecards feed Analytics attainment and preserve source
+privacy/missing readings. HR adds organisation/skills and Pay & time via a Payroll
+provider. Workforce adds role/skill intervals, timed breaks/activities, availability
+and audited open-shift decisions into canonical rotas. Team planner adds weekly
+visible workload/capacity, versioned effort/reassignment, priorities and goal links.
+Existing lifecycle/calendar records and workflows remain.
+
+UK payroll adds hourly/salaried setup, tax/NI/loans/pension/bank details, reviewed
+opening history, approved actual time and verified statutory/holiday/additional
+inputs; bound draft create/refresh, atomic YTD finalisation and guarded paid status.
+Corrected older values in the 2026–27 table; finalised/paid history retained. Generic
+gateway remains closed to new models; named central reads support desktop.
+Additive migration 20261010010000_people_workspaces and regenerated API metadata.
+
+Checkpoint checks: Prisma generation/validation and schema diff reviewed; production
+build and strict types PASS; 8 focused files/68 assertions PASS. Scoped lint PASS
+after correcting existing touched-file effect/apostrophe issues. Final reruns,
+candidate mutations/privacy/tenant/concurrency/mobile checks, activation and public
+verification pending. Live advanced concurrently to e5d66e6; merge that exact
+already-live source before this release. Existing data/credentials/grants unchanged;
+no local business database. Docs/plans/PEOPLE_PLATFORM_OVERHAUL.md and affected
+module/design docs, DECISIONS/PROJECT_MEMORY updated. Central Test acceptance
+checker scripts/check-people-workspaces.ts added; not yet run. Next: compatible merge/commit, candidate
+acceptance, activation/public verification. External scope stays explicit: RTI/bank,
+special tax/director/week53; telephony/adherence/queue forecasts; mutual swaps,
+notifications, e-sign/benefits and historical goal snapshots.
+
 ## 9 October 2026 — Private Admin entry deployed and publicly verified
 
 Exact tested runtime 1dafe165f97545829d96242b1846e87d9c1f42b4 is live at

@@ -3,6 +3,8 @@
 set -euo pipefail
 ROOT="${1:?checkout required}"; REV="${2:?pinned revision required}"; MODE="${3:-activate}"
 SOURCE_BRANCH="${4:-main}"
+ACCEPTANCE="${5:-none}"
+[[ "$ACCEPTANCE" = none || "$ACCEPTANCE" = people ]] || { echo 'Unknown release acceptance workflow.' >&2; exit 1; }
 [[ "$SOURCE_BRANCH" = main || "$SOURCE_BRANCH" =~ ^codex/[a-zA-Z0-9._/-]+$ ]] || { echo 'Invalid release source branch.' >&2; exit 1; }
 git check-ref-format "refs/heads/$SOURCE_BRANCH"
 [[ "$REV" =~ ^[a-f0-9]{40}$ ]] || { echo 'Full pinned revision required.' >&2; exit 1; }
@@ -101,6 +103,17 @@ cleanup() {
   exit "$result"
 }
 trap cleanup EXIT
+people_acceptance() {
+  [[ "$ACCEPTANCE" = people ]] || return 0
+  local url="$1" phase="$2" evidence
+  evidence=$(mktemp -d "/tmp/atlas-people-$phase-XXXXXX"); chmod 700 "$evidence"
+  echo "People $phase acceptance; private evidence: $evidence"
+  (
+    cd "$CANDIDATE"; set -a; . /etc/atlas/guardian.env; set +a
+    NODE_ENV=production ATLAS_PEOPLE_TEST=1 ATLAS_PEOPLE_TEST_URL="$url" ATLAS_PEOPLE_EVIDENCE="$evidence" node --env-file=.env.local --import tsx scripts/check-people-workspaces.ts
+  ) > "$evidence/browser.log" 2>&1 || { cat "$evidence/browser.log"; return 1; }
+  cat "$evidence/browser.log"
+}
 # Smoke the exact sealed candidate before touching the production pointer/unit.
 ! ss -ltn | grep -q ':3011 ' || { echo 'Release smoke port 3011 is busy.' >&2; exit 1; }
 (
@@ -110,6 +123,7 @@ trap cleanup EXIT
 for i in $(seq 1 30); do healthy 3011 && break; sleep 1; done
 healthy 3011
 curl --max-time 3 -fsS http://127.0.0.1:3011/api/health/release | /usr/bin/node -e 'let b="";process.stdin.on("data",v=>b+=v);process.stdin.on("end",()=>{if(JSON.parse(b).revision!==process.argv[1])process.exit(1)})' "$REV"
+people_acceptance http://127.0.0.1:3011 candidate
 kill -TERM "$PROBE_PID"; wait "$PROBE_PID" || true; PROBE_PID=''
 echo "Prepared and smoke-verified immutable release: $CANDIDATE"
 echo "Previous immutable runtime: $PREVIOUS"
@@ -170,6 +184,7 @@ for i in $(seq 1 30); do healthy 3000 && break; sleep 1; done
 healthy 3000
 curl --max-time 3 -fsS http://127.0.0.1:3000/api/health/release | /usr/bin/node -e 'let b="";process.stdin.on("data",v=>b+=v);process.stdin.on("end",()=>{if(JSON.parse(b).revision!==process.argv[1])process.exit(1)})' "$REV"
 curl --max-time 20 -fsS https://atlassystem.online/login -o /dev/null
+people_acceptance https://atlassystem.online public
 if [[ "$KILL_MODE" = control-group ]]; then
   sed -i 's/^KillMode=control-group$/KillMode=mixed/' "$BACKUP-release.conf.next"
   sudo install -m 644 "$BACKUP-release.conf.next" /etc/systemd/system/atlas.service.d/release.conf

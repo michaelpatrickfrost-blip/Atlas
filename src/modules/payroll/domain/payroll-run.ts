@@ -35,9 +35,9 @@ export function calculateOvertime(params: {
 
 const WORKING_DAYS_PER_YEAR = 260;
 
-export function calculateUnpaidLeaveDeduction(params: { unpaidDaysInPeriod: number; annualSalaryMinorUnits: number | null }): number {
+export function calculateUnpaidLeaveDeduction(params: { unpaidDaysInPeriod: number; annualSalaryMinorUnits: number | null;workingDaysPerWeek?:number }): number {
   if (!params.annualSalaryMinorUnits || params.unpaidDaysInPeriod <= 0) return 0;
-  const dailyRate = params.annualSalaryMinorUnits / WORKING_DAYS_PER_YEAR;
+  const dailyRate = params.annualSalaryMinorUnits / (params.workingDaysPerWeek?52*params.workingDaysPerWeek:WORKING_DAYS_PER_YEAR);
   return Math.round(dailyRate * params.unpaidDaysInPeriod);
 }
 
@@ -51,17 +51,17 @@ export function daysWithinPeriod(absenceStart: Date, absenceEnd: Date, periodSta
 
 export function calculateStudentLoan(params: {
   grossMinorUnits: number;
-  plan: "PLAN_1" | "PLAN_2" | "PLAN_4" | "POSTGRADUATE" | null;
+  plan: "PLAN_1" | "PLAN_2" | "PLAN_4" | "PLAN_5" | "POSTGRADUATE" | null;
   payPeriodsPerYear: 12 | 52;
   taxYear: string;
 }): number {
   if (!params.plan) return 0;
   const table = taxYearTable(params.taxYear);
-  const thresholdPerPeriod = table.studentLoanThresholds[params.plan] / params.payPeriodsPerYear;
+  const thresholdPerPeriod = Math.floor(table.studentLoanThresholds[params.plan] / params.payPeriodsPerYear * 100) / 100;
   const grossPerPeriod = params.grossMinorUnits / 100;
   const above = Math.max(0, grossPerPeriod - thresholdPerPeriod);
   const rate = params.plan === "POSTGRADUATE" ? table.postgraduateLoanRate : table.studentLoanRate;
-  return Math.round(above * rate * 100);
+  return Math.floor(above * rate) * 100;
 }
 
 /** Full gross-to-net for one employee, one period: salary + overtime, minus
@@ -72,7 +72,7 @@ export function calculatePayslip(params: {
   currency: string;
   taxCode: string | null;
   niCategory: string;
-  studentLoanPlan: "PLAN_1" | "PLAN_2" | "PLAN_4" | "POSTGRADUATE" | null;
+  studentLoanPlan: "PLAN_1" | "PLAN_2" | "PLAN_4" | "PLAN_5" | "POSTGRADUATE" | null;
   pensionOptOut: boolean;
   payFrequency: "MONTHLY" | "WEEKLY";
   taxYear: string;
@@ -86,30 +86,43 @@ export function calculatePayslip(params: {
   manualAdjustmentMinorUnits: number;
   periodStart: Date;
   periodEnd: Date;
+  salaryFactor?: number;
+  workingDaysPerWeek?: number;
+  payBasis?: string;
+  hourlyRateMinorUnits?: number | null;
+  postgraduateLoan?: boolean;
+  additionalPayMinorUnits?: number;
+  salaryReductionMinorUnits?: number;
+  priorGrossMinorUnits?: number;
+  priorTaxMinorUnits?: number;
+  taxPeriod?: number;
 }) {
   const payPeriodsPerYear = params.payFrequency === "WEEKLY" ? 52 : 12;
-  const grossForPeriod = params.payFrequency === "WEEKLY"
+  const baseSalary = params.payBasis === "HOURLY" ? Math.round(params.confirmedShiftHours * (params.hourlyRateMinorUnits ?? 0)) : params.payFrequency === "WEEKLY"
     ? Math.round((params.annualSalaryMinorUnits ?? 0) / 52)
     : Math.round((params.annualSalaryMinorUnits ?? 0) / 12);
+  const grossForPeriod = Math.round(baseSalary * (params.payBasis === "HOURLY" ? 1 : params.salaryFactor ?? 1)) - (params.salaryReductionMinorUnits ?? 0);
 
-  const { overtimeHours, overtimeMinorUnits } = calculateOvertime({
+  const overtime = calculateOvertime({
     confirmedShiftHours: params.confirmedShiftHours,
     periodStart: params.periodStart,
     periodEnd: params.periodEnd,
     standardWeeklyHours: params.standardWeeklyHours,
     overtimeMultiplier: params.overtimeMultiplier,
-    annualSalaryMinorUnits: params.annualSalaryMinorUnits,
+    annualSalaryMinorUnits: params.payBasis === "HOURLY" ? (params.hourlyRateMinorUnits??0)*52*params.standardWeeklyHours : params.annualSalaryMinorUnits,
   });
-  const unpaidLeaveDeductionMinorUnits = calculateUnpaidLeaveDeduction({ unpaidDaysInPeriod: params.unpaidDaysInPeriod, annualSalaryMinorUnits: params.annualSalaryMinorUnits });
+  const overtimeHours=overtime.overtimeHours;
+  const overtimeMinorUnits=params.payBasis === "HOURLY" ? Math.round(overtimeHours*(params.hourlyRateMinorUnits??0)*Math.max(0,params.overtimeMultiplier-1)) : overtime.overtimeMinorUnits;
+  const unpaidLeaveDeductionMinorUnits = calculateUnpaidLeaveDeduction({ unpaidDaysInPeriod: params.unpaidDaysInPeriod, annualSalaryMinorUnits: params.payBasis === "HOURLY" ? null : params.annualSalaryMinorUnits,workingDaysPerWeek:params.workingDaysPerWeek });
 
-  const grossMinorUnits = grossForPeriod + overtimeMinorUnits - unpaidLeaveDeductionMinorUnits + params.statutoryPayMinorUnits;
+  const grossMinorUnits = grossForPeriod + overtimeMinorUnits - unpaidLeaveDeductionMinorUnits + params.statutoryPayMinorUnits + (params.additionalPayMinorUnits??0);
 
-  const { taxMinorUnits } = calculatePaye({ grossMinorUnits, taxCode: params.taxCode, payPeriodsPerYear, taxYear: params.taxYear });
+  const { taxMinorUnits } = calculatePaye({ grossMinorUnits, taxCode: params.taxCode, payPeriodsPerYear, taxYear: params.taxYear, priorGrossMinorUnits:params.priorGrossMinorUnits,priorTaxMinorUnits:params.priorTaxMinorUnits,taxPeriod:params.taxPeriod });
   const { employeeNiMinorUnits, employerNiMinorUnits } = calculateNi({ grossMinorUnits, niCategory: params.niCategory, payPeriodsPerYear, taxYear: params.taxYear });
   const { employeePensionMinorUnits, employerPensionMinorUnits } = calculatePension({
     grossMinorUnits, payPeriodsPerYear, employeePercent: params.employeePensionPercent, employerPercent: params.employerPensionPercent, optedOut: params.pensionOptOut, taxYear: params.taxYear,
   });
-  const studentLoanMinorUnits = calculateStudentLoan({ grossMinorUnits, plan: params.studentLoanPlan, payPeriodsPerYear, taxYear: params.taxYear });
+  const studentLoanMinorUnits = (params.postgraduateLoan && params.studentLoanPlan !== "POSTGRADUATE" ? calculateStudentLoan({grossMinorUnits,plan:"POSTGRADUATE",payPeriodsPerYear,taxYear:params.taxYear}) : 0) + calculateStudentLoan({ grossMinorUnits, plan: params.studentLoanPlan, payPeriodsPerYear, taxYear: params.taxYear });
 
   const netMinorUnits = grossMinorUnits - taxMinorUnits - employeeNiMinorUnits - employeePensionMinorUnits - studentLoanMinorUnits - params.manualAdjustmentMinorUnits;
 
@@ -125,6 +138,7 @@ export function calculatePayslip(params: {
     employerPensionMinorUnits,
     studentLoanMinorUnits,
     statutoryPayMinorUnits: params.statutoryPayMinorUnits,
+    additionalPayMinorUnits: params.additionalPayMinorUnits??0,
     deductionsMinorUnits: params.manualAdjustmentMinorUnits,
     netMinorUnits,
     currency: params.currency,

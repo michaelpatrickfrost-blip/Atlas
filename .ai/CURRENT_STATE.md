@@ -2,6 +2,13 @@
 
 ## 10 October 2026 — Appointment completion entry-point guard in verification
 
+Guard 1e4597 preparation safely stopped at ancestry after People 36d0d2d became
+live. Its exact deployed source, additive schema and contributor memory are now
+merged. Prisma generation, production build, strict TypeScript and 9-file/76-test
+appointment/Studio/People regression suite PASS. Guard-source whitespace PASS.
+Two EOF blank-line warnings in the already-deployed People migration files are
+retained to preserve their applied checksums; no migration was edited.
+
 Final review confirmed the older completeActivity action is still compiled and
 registered in the desktop API. Its update was tenant-scoped but could complete
 booked/cancelled appointments without the diary outcome/version checks and did
@@ -70,6 +77,89 @@ remain blank per the recorded user decision. Final source/evidence is merged bac
 into main without deploying unrelated concurrent work; canonical Desktop's dirty
 checkout is preserved.
 
+
+## 9 October 2026 — People overhaul, candidate preparation
+
+Implemented distinct connected Goals, HR, People planner and Team planner
+workspaces with a shared blue/white UI. UK payroll first confirmed by Michael.
+Weighted company strategy scorecards feed Analytics attainment and preserve source
+privacy/missing readings. HR adds organisation/skills and Pay & time via a Payroll
+provider. Workforce adds role/skill intervals, timed breaks/activities, availability
+and audited open-shift decisions into canonical rotas. Team planner adds weekly
+visible workload/capacity, versioned effort/reassignment, priorities and goal links.
+Existing lifecycle/calendar records and workflows remain.
+
+UK payroll adds hourly/salaried setup, tax/NI/loans/pension/bank details, reviewed
+opening history, approved actual time and verified statutory/holiday/additional
+inputs; bound draft create/refresh, atomic YTD finalisation and guarded paid status.
+Corrected older values in the 2026–27 table; finalised/paid history retained. Generic
+gateway remains closed to new models; named central reads support desktop.
+Additive migration 20261010010000_people_workspaces and regenerated API metadata.
+Tenant-root ownership review adds 20261010020000_people_workspace_ownership
+(company FKs for scorecards, intervals and openings); no record deletion.
+
+Checkpoint checks: Prisma generation/validation and schema diff reviewed; production
+build and strict types PASS; 8 focused files/68 assertions PASS. Scoped lint PASS
+after correcting existing touched-file effect/apostrophe issues. Final reruns,
+candidate mutations/privacy/tenant/concurrency/mobile checks, activation and public
+verification pending. Exact already-live e5d66e6, then rounded font 5ebd700,
+are merged for this release,
+preserving Studio/Supply/Apps and their contributor evidence. Existing data/credentials/grants unchanged;
+no local business database. Docs/plans/PEOPLE_PLATFORM_OVERHAUL.md and affected
+module/design docs, DECISIONS/PROJECT_MEMORY updated. Central Test acceptance
+checker scripts/check-people-workspaces.ts and backed-up candidate/public runner
+scripts/deploy/check-people-release.sh added; not yet run. Explicit ATLAS_RELEASE_ACCEPTANCE=people now runs candidate/public
+checks within existing deployment locks; no interleaving or guard bypass. Merged 11 files/81 tests
+PASS; merged production build PASS and 4 auth regression files/23 tests PASS.
+Refined production build and post-generation strict types PASS.
+Scoped lint and runner shell syntax PASS. Added full reviewed payroll calculation snapshots and explicit form feedback
+for new People mutations; expected production validation retains drafts. Initial
+merged strict check overlapped generation/build and read stale types; rerun after
+generation required. Refinement tests: 3 files/29 then 2 files/14 PASS (including a new snapshot
+privacy assertion); scoped lint PASS. Initial e38dd4d queue rejected moved branch; 401129b prepare safely
+stopped at ancestry when font release activated. No People source activated. Next:
+Font-merged production build/strict types and 16 focused files/109 tests PASS.
+First prepared 28a45e6 candidate/migration smoke PASS, backup
+atlas-pre-deploy-20261009-221347; real candidate acceptance queued behind other
+releases. Ownership client/API regenerated and production build PASS; strict types PASS.
+Release build failure gate: 1 file/7 tests PASS; deploy scripts bash syntax PASS.
+First 28a45e6 browser acceptance PASS for all workflows, negatives and desktop/
+phone/zero browser errors; evidence /tmp/atlas-people-candidate-cxMJP1, backup
+atlas-pre-people-test-20261009-222213. Four screenshot layouts visually inspected.
+Final review corrected inclusive employment-day eligibility and blocks payroll
+actuals outside employment; new domain/browser cases added. Employment regression: 4 files/36 PASS,
+scoped lint/production build PASS; strict types PASS. Second ff2b3df candidate
+PASS including actual saved Analytics dashboard updates 90→95%; tenant ownership
+FK migration applied, no live switch. Evidence /tmp/atlas-people-candidate-rt4owH.
+Latest live 56c9d88 is merged, preserving the business/Admin navigation boundary.
+Merged production build/strict types and 18 files/123 tests PASS. Exact 2ede4a0
+activation stopped before pointer switch: dashboard saved but checker reloaded
+before client navigation completed. Added explicit saved-board URL wait; not a
+product-data failure. Final connection review also deducts non-work rota activities
+from team capacity, unioning timed breaks to prevent double deductions; domain/
+browser cases added. Payroll nested source reads/upserts now explicitly repeat
+tenant scope; central negative fixture verifies foreign time cannot affect pay,
+then removes only that intentionally invalid synthetic input. Final scoped
+3-file/33 tests, lint, production build and strict types PASS; full focused set
+18 files/125 PASS. Live advanced to accepted Commercial 94dd3e1 while ad7417e
+queued; exact source merged before release. Merged Prisma/API regeneration,
+production build/strict types PASS; 4 focused files/35 tests PASS. b12649a
+candidate built and actual dashboard PASS, then test-only foreign-time fixture
+hit the existing daily-minutes DB constraint. Corrected 60000 to valid 60 minutes;
+isolation still requires exactly 45 approved hours. No guard bypass or live switch.
+Evidence /tmp/atlas-people-candidate-3hRuWS; backup
+atlas-pre-deploy-20261009-225211. Test access retired. Checker strict types and
+incremental whitespace review PASS. 60a814b retry safely stopped at ancestry
+after accepted Studio 7941f9b became live. Its exact source/evidence are now
+merged unchanged; merged production build/strict types and 7 files/59 tests PASS.
+Repeat sealed acceptance required.
+Earlier evidence /tmp/atlas-people-candidate-Q5RXLH; backup
+atlas-pre-deploy-20261009-223227. Test companies suspended/access revoked.
+Checker now also saves/reloads a real Analytics scorecard dashboard and confirms
+changed source figures render; not yet run. Next: candidate
+acceptance, activation/public verification. External scope stays explicit: RTI/bank,
+special tax/director/week53; telephony/adherence/queue forecasts; mutual swaps,
+notifications, e-sign/benefits and historical goal snapshots.
 ## 9 October 2026 — Studio candidate integrated with current live commercial source
 
 Preserved exact activated 94dd3e source, including its additive appointment

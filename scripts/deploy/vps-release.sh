@@ -119,7 +119,7 @@ feature_acceptance() {
     if [[ "$ACCEPTANCE" = people ]]; then
       NODE_ENV=production ATLAS_PEOPLE_TEST=1 ATLAS_PEOPLE_TEST_URL="$url" ATLAS_PEOPLE_EVIDENCE="$evidence" node --env-file=.env.local --import tsx scripts/check-people-workspaces.ts
     elif [[ "$ACCEPTANCE" = studio ]]; then
-      NODE_ENV=production bash scripts/deploy/check-studio-release.sh "$url" "$phase" "$REV" "$evidence"
+      sudo bash scripts/deploy/check-studio-release.sh "$url" "$phase" "$REV" "$evidence"
     else
       NODE_ENV=production ATLAS_SUPPLY_CHECK=1 ATLAS_SUPPLY_URL="$url" ATLAS_SUPPLY_OUTPUT="$evidence" node --env-file=.env.local --import tsx scripts/check-manufacturing-supply.ts
     fi
@@ -145,7 +145,7 @@ dashboard_acceptance() {
 }
 release_acceptance() {
   case "$ACCEPTANCE" in
-    people|supply) feature_acceptance "$@" ;;
+    people|supply|studio) feature_acceptance "$@" ;;
     dashboards) dashboard_acceptance "$@" ;;
     none) return 0 ;;
   esac

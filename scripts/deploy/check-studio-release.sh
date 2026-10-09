@@ -8,7 +8,7 @@ STUDIO_EVIDENCE="${4:?private evidence directory}"
 [[ "$STUDIO_REV" =~ ^[a-f0-9]{40}$ && "$STUDIO_PHASE" =~ ^(candidate|public)$ ]]
 [[ ( "$STUDIO_PHASE" = candidate && "$STUDIO_URL" = http://127.0.0.1:3011 ) || ( "$STUDIO_PHASE" = public && "$STUDIO_URL" = https://atlassystem.online ) ]]
 [[ -d "$STUDIO_EVIDENCE" && "$(cat .atlas-ready)" = "$STUDIO_REV" ]]
-set -a; . .release.env; set +a
+set -a; . .env.local; . /etc/atlas/guardian.env; . .release.env; set +a
 export PLAYWRIGHT_BROWSERS_PATH=/home/administrator/.cache/ms-playwright
 verify_revision() {
   curl --max-time 20 -fsS "$STUDIO_URL/api/health/release" | node -e 'let b="";process.stdin.on("data",v=>b+=v);process.stdin.on("end",()=>{if(JSON.parse(b).revision!==process.argv[1])process.exit(1)})' "$STUDIO_REV"

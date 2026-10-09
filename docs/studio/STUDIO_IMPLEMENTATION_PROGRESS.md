@@ -19,7 +19,7 @@ candidate/public checks pending. Retirement/principals VERIFIED on 7941f9b.
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source 2ef5b4c2f9dffaa2dd92c7df894a5587e45a12de,
+VERIFIED. Latest confirmed live source 70ca23ea83662c94e254488de717ee26de0e2c84,
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -52,6 +52,14 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B2 Compiler/identity/generations/typed storage | VERIFIED | e5d66e6 candidate/public schema/lifecycle plus complete combined native acceptance PASS; 29 files/143 local tests, TypeScript/lint/build. Owner value API remains 2B4. |
 
 # Current Workstream Detail
+
+Preserved exact publicly verified native Dashboard source 70ca23e, including its
+modern UI, protected data datasets and final Messages assignment. 28 files/164
+focused tests, generation/descriptors/build/scoped lint and strict types PASS.
+Added Dashboard workflow to Studio combined acceptance. Fixed merged dispatcher
+omission before deploying; all five mode-dispatch probes and shell syntax PASS.
+Prior af1338b retry stopped at ancestry before backup/build after 70ca23e advanced.
+No cohort/decoder candidate/public claim. Native release evidence retained.
 
 2B3c2b: pure stored-value decoder implements exact decimals/currency, safe integers,
 UTC dates/instants, strict storage families, historical enum selections and redacted
@@ -312,6 +320,11 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
+The separately verified Dashboard release also cleared reproducible dependencies
+from ten inactive October 8 releases; its evidence documents those retained sources
+requiring dependency restoration to run. This was distinct from Studio disposable
+cache cleanup. Current/previous runtimes remain available.
+
 First af1338b deployment stopped at remote fetch with root disk full. RESOLVED:
 cleared only disposable caches in 86 older releases under original locks, keeping
 current/rollback caches and all source/assets/backups/evidence. 51G free/74% used;
@@ -350,16 +363,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Check the queued exact af1338b retry in /tmp/atlas-studio-cohort-codec-retry.txt.
-If it stops at ancestry after another release, preserve only that actual accepted
-source and regenerate/test/build before a new pinned attempt. No forced replacement.
-
-Deploy the exact reviewed cohort/decoder source preserving live 2ef5b4c with
-ATLAS_RELEASE_ACCEPTANCE=studio. Existing deployer must prove sealed candidate
-including real private/unanchored/final owner cohort and SQL decoder checks before
-activation, then repeat on exact public runtime while retaining original locks.
-Record evidence and any real failure before progressing. Then implement explicit
-owner representation-only policy and reviewed preview/job/row persistence with
-checksum/revision/current principal/field ACL. No 2C/2E or Phase 3+ yet; Phase 2
-NOT PASSED. Visual designer, business dashboard publication and custom buttons
-remain recorded Phase 2 requirements, not delivered by this checkpoint.
+Deploy the exact reviewed native Dashboard 70ca23e + Studio cohort/decoder pin
+with ATLAS_RELEASE_ACCEPTANCE=studio. Integrated 28 files/164 tests, generation/
+descriptors, production build, strict post-build TypeScript and scoped lint PASS;
+shell syntax/all five dispatch probes PASS. Original locks must cover candidate,
+activation and public checks, including actual native Dashboard editing, owner
+cohort/private denial and SQL decoder checks. Record the result before starting
+reviewed job/row persistence and explicit owner representation-only policy.
+No value API/designer delivered; Phase 2 NOT PASSED.

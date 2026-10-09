@@ -182,3 +182,9 @@ mechanism or arbitrary shell hook. Other acceptance selectors remain unchanged.
 wrong phase-URL rejection checks PASS before database/service actions. Integrated
 23 files/135 assertions, generation/build/strict types/scoped lint PASS. Combined
 runtime candidate/public proof pending. No Phase 2 gate or designer completion.
+
+Dashboard live integration: preserved exact publicly verified 70ca23e modern UI
+and all native acceptance modes. Review caught dispatcher omission of Studio after
+merge; fixed before deployment. Five mode dispatch probes and shell syntax PASS.
+Regenerated client/descriptors, 28 files/164 tests, production build, strict post-
+build TypeScript and scoped lint PASS. Combined Studio runtime proof pending.

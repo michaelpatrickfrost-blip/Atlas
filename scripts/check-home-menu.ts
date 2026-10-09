@@ -80,6 +80,7 @@ async function main() {
         utilityHrefs.every((href) =>
           [
             "/home",
+            "/analytics",
             "/reports",
             "/profile#assigned",
             "/chat",
@@ -91,11 +92,7 @@ async function main() {
       const apps = page.locator('main nav[aria-label="Apps"]');
       await expect(apps.locator('a[href="/analytics"]')).toHaveCount(0);
       if (navigable.some((app) => app.id === "analytics"))
-        await expect(
-          page.locator(
-            'nav[aria-label="Workspace utilities"] a[href="/analytics"]',
-          ),
-        ).toBeVisible();
+        await expect(utilities.locator('a[href="/analytics"]')).toBeVisible();
       for (const app of modules)
         await expect(apps.locator(`a[href="${app.rootPath}"]`)).toHaveCount(1);
       const overflow = await page.evaluate(() => ({

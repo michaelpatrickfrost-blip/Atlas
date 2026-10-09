@@ -215,14 +215,16 @@ async function main() {
     await expect(
       page.getByRole("heading", { name: `${prefix} renamed`, exact: true }),
     ).toBeVisible();
-    assert.equal(
-      (
-        await db.dashboard.findFirstOrThrow({
-          where: { id, userId, organisationId },
-        })
-      ).name,
-      DASHBOARD_PREFIX + `${prefix} renamed`,
-    );
+    await expect
+      .poll(
+        async () =>
+          (
+            await db.dashboard.findFirstOrThrow({
+              where: { id, userId, organisationId },
+            })
+          ).name,
+      )
+      .toBe(DASHBOARD_PREFIX + `${prefix} renamed`);
     assert.equal(
       await db.dashboard.count({
         where: {

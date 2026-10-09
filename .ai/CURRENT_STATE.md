@@ -1,6 +1,44 @@
 # Atlas current state
 
+## 9 October 2026 — Shared rounded typography deployed and publicly verified
+
+Exact runtime 5ebd700d3526b6fdaa70efa4514da0803301a285 is live at
+https://atlassystem.online, preserving deployed Studio e5d66e6 and the modern
+Apps menu. This supersedes e5d66e6 as current runtime; earlier Apps/Studio entries
+retain their exact acceptance revisions. Replaced Plus Jakarta Sans with Nunito
+through the shared root sans
+family/body, covering business apps, authentication/recovery and Atlas Admin.
+Bundled normal/true-italic variable fonts (200–1000), full source character
+coverage and SIL OFL provenance; Geist Mono, hierarchy and aligned digits remain.
+No font-task schema, permissions, storage or business-record change.
+Paths: src/app/layout.tsx, globals.css, fonts and scripts/check-typography.ts;
+design guides/DECISIONS updated. Final combined production build, Prisma generation,
+strict TypeScript, scoped lint, whitespace and Apps menu test file/3 assertions PASS.
+Full suite not rerun for this presentation change.
+
+Exact candidate and public HTTPS checks both PASS on ten routes at desktop,
+tablet and phone sizes: real Nunito glyphs, inherited headings/controls/table text,
+equal digit widths, page fit, zero browser/asset errors and external font requests.
+Home/Apps acceptance also PASS through 320px: authorised links, scroll/44px targets,
+Escape focus, closure/search and real My work navigation. All browser writes blocked;
+existing Guardian QA membership only, no records/grants/fixtures created. Inspected
+Home desktop/phone, Reports desktop, Admin phone and Apps desktop/phone screenshots.
+Private final evidence: candidate /tmp/atlas-typography-check-xXuFsi,
+/tmp/atlas-typography-staging-TlXW2K and /tmp/atlas-home-menu-check-fvYsxg;
+public /tmp/atlas-typography-check-tpkU5n and /tmp/atlas-home-menu-check-1HLgZC.
+Prepare/activation central backups:
+atlas-pre-deploy-20261009-220106 and atlas-pre-deploy-20261009-221140.
+Source and evidence integrated with current main in this handoff; contributors'
+acceptance entries retained. No font release blocker or further task work remains.
+
+Historical 4a0a230 candidate passed the same 30 typography checks after backup
+atlas-pre-deploy-20261009-214902. Ancestry safely stopped its activation when
+Studio e5d66e6 became live; merged that exact source, reconciled the memory header,
+rebuilt and reverified. Earlier evidence /tmp/atlas-typography-check-5XrNJu and
+/tmp/atlas-typography-staging-HfIoX2 remains. No guard bypass or data rollback.
+
 ## 9 October 2026 — Reference Apps design live and publicly verified
+
 
 The supplied Apps design is live at https://atlassystem.online in exact release
 e5d66e6cf36b0fe228ac65287fdaa8d5ceb8be7c. The integrated release already includes

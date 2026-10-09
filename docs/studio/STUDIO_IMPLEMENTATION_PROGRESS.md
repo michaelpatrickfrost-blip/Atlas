@@ -4,18 +4,21 @@ Updated: 9 October 2026.
 
 # Current Phase
 
-Phase 1 — Metadata kernel. Gate PASS; Phase 0 prerequisite and live compatibility passed.
+Phase 2 — Fields, record types and pages — IN PROGRESS. Phase 0/1 gates PASS.
 Michael reconciled the source mismatch on 9 October: “do all as a plan do 1 then
 once done contiune”. Use the supplied Section 27 sequence; complete prerequisites
 and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-Admin separation companion — IMPLEMENTED; release verification IN PROGRESS. Phase 1 remains VERIFIED; Phase 2 workstreams recorded in STUDIO_PHASE_2_PLAN.md.
+2B2 — Versioned field compiler/identity and typed storage — IN PROGRESS. 2B1 pure
+validation VERIFIED locally; 2A central candidate acceptance PASS. Standalone Admin
+companion VERIFIED; detailed plans in STUDIO_PHASE_2_PLAN.md and STUDIO_PHASE_2_FIELDS.md.
 
 # Overall Status
 
-IN PROGRESS for Michael's new Admin-only/modern-UI request and sequential continuation. VERIFIED for Phase 1. Live source c46bbefa737c81280daf38d62e87a4511420ffa5.
+IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
+VERIFIED. Live source a642df0555cd45a97d57d867621d189c7650cf19.
 The supplied source defines ten phases 0–9, not five. The original
 is preserved unchanged at `docs/studio/ATLAS_STUDIO_SOURCE.docx` (source
 `/Users/michael/Downloads/atlas_studio.docx`, SHA-256
@@ -35,9 +38,34 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 1B Draft/validate/publish/activate service | VERIFIED | Central real publication/activation/rollback/history, simultaneous draft CAS, disabled sources, permissions and atomic audit passed after correcting nested Prisma FK mapping. |
 | 1C Configuration capabilities/admin interface | VERIFIED | Candidate and public real forms, saved drafts/conflict diff, publication/activation and customer/Admin routes passed. |
 | 1D Release compatibility/security/live acceptance | VERIFIED | Exact candidate/public metadata and Home acceptance passed; dependency scans, backup, build, activation and public revision checked. |
+| Standalone modern Admin shell companion | VERIFIED | Live a642df0; metadata/Admin/business and Home/Reports checks passed; visible UI inspected. |
 | Companion Admin/business sign-in and provisioning | VERIFIED | Real Admin creates Test-company user; correct company setup/login passes; wrong company recovery/login and customer Admin access rejected. |
+| 2A Owner-approved entity/extension contracts | VERIFIED | 8 focused files/54 assertions, TypeScript, scoped lint/build; central runtime helper pending. No schema/native write changes. |
+| 2B1 Typed field/value validation | VERIFIED | 7 focused assertions, TypeScript/scoped lint; integrated 17 files/110 assertions and production build. Pure library, no storage/UI claim. |
 
 # Current Workstream Detail
+
+2B1 delivered closed typed field contracts/required/constraint validation, exact
+decimal/currency/calendar/UTC/duration semantics, stable enum options/retirement,
+contact/address/reference syntax and additional capability checks. Reference target
+authorisation is required in later 2B4. No field compiler/storage/UI yet. Subworkstreams
+and storage/history/migration design saved in STUDIO_PHASE_2_FIELDS.md. Visual setup
+and responsive draft previews are a permanent 2E acceptance requirement in
+STUDIO_VISUAL_BUILDER_REQUIREMENTS.md; not an implemented builder.
+
+2A delivered: strict entity metadata and projection ownership/hash checks, separate
+canonical record authorisation gateway, native write/expected revision/transaction
+requirement, output tenant/ID validation. Tickets owner registers bounded keyset
+list/get plus read-only native fields; workScope/private/member/final/merged guards
+remain owning-domain logic. Module enablement and record state are locked/rechecked
+inside the extension transaction. Core never imports a module implementation.
+
+2B purpose: strict versioned field metadata, typed central values with tenant-aware
+indexes/uniqueness/history, server validation and atomic owner-authorised writes.
+Dependencies: 2A contracts and Phase 1 metadata kernel. Next design must preserve
+stable keys, retirement/history and migration-plan requirements, and existing native
+intake fields. Expected files: core/studio/fields + compiler dispatch, Prisma additive
+models/migration, tests/central acceptance. No native-domain column conversion/reset.
 
 0A purpose: typed discoverable descriptors, stable IDs/versions/hash/lifecycle,
 fail-closed invocation through tenant session, owner module availability and domain
@@ -69,6 +97,14 @@ metadata lifecycle with two tenant scopes and missing publication permission.
 Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
+
+2B1: fields/{schema,validation}, tests/studio-field-values; visual requirements and
+field execution design, plan/ledger/state/decisions. Merged exact concurrent live
+Guardian MRP 0ce9f4a plus its source/tests/docs/evidence; no native correction removed.
+
+2A: registry/{types,entities,contracts,registry}, service-work/studio, tickets manifest,
+tests/studio-{entities,ticket-owner}, scripts/studio/check-ticket-contract and metadata
+driver, MODULE_SPEC, SERVICE_WORK_DESK, inventory/plan/ledger and .ai state/decisions.
 
 Admin follow-up: Atlas routes moved to `src/app/(admin)/atlas`; `components/admin`,
 Core Admin sign-out, data API action aliases/generator, selected-company Studio tabs,
@@ -109,11 +145,25 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
+2A candidate ce175fb central owner checks PASS (real private/tenant/member/native
+capability/revision/disabled-source/final record cases), metadata/Admin/Home/Reports
+regressions PASS; logs /tmp/atlas-studio-acceptance-wsnN9L. Activation safely stopped
+at ancestry after 0ce9f4a became live. Combined source needs prepared/public proof.
+2B1 7 assertions PASS; integrated merged 17 files/110 assertions and production
+build PASS, scoped field lint/TypeScript PASS. No field values are stored yet.
+
+2A local checkpoint: 8 focused files/54 assertions PASS; strict TypeScript, changed-
+file lint and production build PASS, diff reviewed/whitespace check PASS. Central
+Test-tenant private/member/revision/tenant/disabled-source acceptance helper added
+to existing driver but not executed yet. No new migration/deployment at this point.
+
 Admin companion: 23 focused files /110 assertions passed; strict TypeScript and
 production build passed; scoped lint no errors/one brand-img warning. No schema
 change. Candidate 214cbad Studio/Admin/Home acceptance passed. New live Reports 2a8522f
 is merged; integrated 30 files/146 assertions, TypeScript/build pass. Merged
-candidate/public acceptance pending before this companion is VERIFIED.
+candidate/public Studio/Admin, Home and Reports acceptance passed on a642df0;
+visible Admin UI verified. Pre-merge full suite: 1009 passes/85 unchanged baseline
+failures/22 skips. No new schema changes.
 
 903/903 source paragraphs; original hash matches preserved copy. npm ci and
 Prisma generation succeeded. First registry-only run: 5 passed. Combined registry,
@@ -153,6 +203,10 @@ No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
 
+Phase 2 NOT PASSED: 2B–2F remain; owner contract local evidence alone is not the phase
+gate. Central owner checks must run on candidate/public release alongside full phase
+runtime, tenant, permissions and native module regressions.
+
 Phase 0 PASS (runtime/contract/regression tests + build + live compatibility). Phase 0 checks: (a) stable typed IDs/schema hashes/lifecycle, (b) existing provider
 behaviour through adapters, (c) server tenant/module/capability/input-output checks,
 (d) duplicate/compatibility/security tests, (e) production build/regressions.
@@ -167,9 +221,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Review/test/build the merged current live Reports 2a8522f plus standalone Admin
-source; preserve Reports' modern UI/provider guards. Candidate 214cbad passed all
-Studio/Admin/Home checks, but ancestry guard prevented omitting the newer live
-release. Commit/pin the merged revision, prepare a new backed-up candidate, run
-Studio/Admin, Home and Reports acceptance, activate then repeat public HTTPS.
-After companion verification begin Phase 2A per STUDIO_PHASE_2_PLAN.md.
+Prepare/verify combined source preserving live MRP, repeat central/public owner,
+metadata/Admin/Home/Reports and MRP checks. Then 2B2: integrate a customField compiler
+into the versioned definition lifecycle, enforce permanent entity/key identity,
+add reviewed tenant/version-bound typed value/history models and constraints; generate
+Prisma and add relational/security tests. Migration/lifecycle and atomic services
+are 2B3/2B4. Do not start 2C or claim Phase 2 PASS from the validation library.

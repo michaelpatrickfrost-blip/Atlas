@@ -244,3 +244,25 @@ Modules may register `reportProvider` datasets using `src/core/reports/types.ts`
 Providers retain typed tenant/record-scoped queries and safe column allowlists.
 Reports is a built-in utility and never bypasses source licences/capabilities.
 See [Reports](modules/REPORTS.md) for the contract and bounds.
+
+## Studio entity opt-in — Phase 2 contracts
+
+An extensible entity registers `entity()` with unique native read-field IDs and an
+owner `record` policy. The policy names registered same-owner/same-capability list
+and get queries, a canonical route/label, the native write capability and an
+`authorise` callback. All policy metadata participates in the compatibility hash.
+The registry rejects missing callbacks, dangling projections and client tenant IDs.
+Entity descriptors remain non-executable through the query/command gateway.
+
+`authoriseRecord()` returns only a tenant-checked canonical ID and positive owner
+revision. Extension intent requires native read/write permission, expected owner
+revision and the trusted transaction client. The owner locks/rechecks the canonical
+record inside that transaction and enforces private-record, final-state and source
+availability rules. This permits Studio-owned additional values, never generic
+patches of native status, priority, assignment, SLA or protected domain columns.
+Studio configuration permission alone cannot authorise a record write.
+
+Tickets is the first opt-in: `tickets.ticket`, `.list` and `.get`, version 1,
+over canonical `ServiceWorkItem(kind=TICKET)`. Existing intake definitions/answers
+stay with the service desk. Phase 2 persistence/builders are separate workstreams;
+these contracts do not establish completed custom-field/page runtime.

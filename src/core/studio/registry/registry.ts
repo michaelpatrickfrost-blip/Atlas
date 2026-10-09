@@ -2,7 +2,8 @@ import { z } from "zod";
 import type { Session } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
 import { checksum } from "./contracts";
-import type { ContractMetadata, ContractReference, Contribution, StudioModuleContract } from "./types";
+import type { ContractMetadata, ContractReference, Contribution, RecordAnchor, RecordContext, StudioModuleContract } from "./types";
+import { entityDetailsSchema, recordAnchorSchema, recordRequestSchema } from "./entities";
 
 const logicalId = /^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/;
 const identity = z.object({ id: z.string().regex(logicalId), version: z.number().int().positive(),
@@ -18,24 +19,38 @@ function freezeJson<T>(value: T): T {
 }
 export type ModuleAvailability = (session: Session, ownerModuleId: string) => Promise<boolean>;
 export class CapabilityRegistry {
-  private readonly items = new Map<string, { metadata: ContractMetadata; run?: Contribution["run"] }>();
+  private readonly items = new Map<string, { metadata: ContractMetadata; run?: Contribution["run"]; authoriseRecord?: Contribution["authoriseRecord"] }>();
   constructor(private readonly available: ModuleAvailability) {}
 
   register(ownerModuleId: string, bundle: StudioModuleContract): void {
     if (!/^[a-z][a-z0-9_]*$/.test(ownerModuleId)) throw new Error("Invalid Studio contract owner.");
     // Validate an entire bundle before adding anything; duplicate failures are atomic.
-    const additions = new Map<string, { metadata: ContractMetadata; run?: Contribution["run"] }>();
+    const additions = new Map<string, { metadata: ContractMetadata; run?: Contribution["run"]; authoriseRecord?: Contribution["authoriseRecord"] }>();
     for (const item of bundle.contributions) {
       const m = identity.parse(item.metadata);
       if (!m.id.startsWith(`${ownerModuleId}.`)) throw new Error("Studio identifier must belong to its owner.");
       if (m.lifecycle === "deprecated" && !m.supportedUntil) throw new Error("Deprecated contracts need a support window.");
       if (["query", "command"].includes(m.kind) !== Boolean(item.run)) throw new Error("Invalid Studio executable contract.");
+      if (m.kind === "entity") {
+        const details = entityDetailsSchema.parse(item.metadata.details);
+        if (checksum(details) !== m.schemaHash) throw new Error("Invalid Studio entity schema hash.");
+        if (Boolean(details.record) !== Boolean(item.authoriseRecord)) throw new Error("Missing Studio owner record authorisation.");
+      } else if (item.authoriseRecord) throw new Error("Only entities can authorise records.");
       const key = `${m.id}@${m.version}`;
       if (this.items.has(key) || additions.has(key)) throw new Error(`Duplicate Studio contract: ${key}`);
       const snapshot = JSON.parse(JSON.stringify({ ...item.metadata, ownerModuleId })) as Omit<ContractMetadata, "contractHash">;
       const contract = Object.fromEntries(Object.entries(snapshot).filter(([key]) => key !== "label"));
       const metadata = freezeJson({ ...snapshot, contractHash: checksum(contract) });
-      additions.set(key, { metadata, run: item.run });
+      additions.set(key, { metadata, run: item.run, authoriseRecord: item.authoriseRecord });
+    }
+    for (const { metadata: m } of additions.values()) {
+      if (m.kind !== "entity") continue;
+      const { record } = entityDetailsSchema.parse(m.details);
+      if (!record) continue;
+      for (const ref of [record.listQuery, record.getQuery]) {
+        const target = additions.get(`${ref.id}@${ref.version}`) ?? this.items.get(`${ref.id}@${ref.version}`);
+        if (!target || target.metadata.kind !== "query" || target.metadata.ownerModuleId !== ownerModuleId || target.metadata.capability !== m.capability) throw new Error("Entity projections must reference registered owner queries with the same read capability.");
+      }
     }
     for (const [key, item] of additions) this.items.set(key, item);
   }
@@ -69,6 +84,23 @@ export class CapabilityRegistry {
     if (!run) throw new Error("This Studio contract is descriptive, not executable.");
     if (m.kind === "command" && m.details.idempotency === "required" && !idempotencyKey?.trim()) throw new Error("This command requires an idempotency key.");
     return run({ session, idempotencyKey }, input);
+  }
+  /** Owner access only. This does not update native fields or execute a domain command. */
+  async authoriseRecord(context: RecordContext, reference: ContractReference, input: unknown): Promise<RecordAnchor> {
+    const m = await this.resolve(context.session, reference);
+    if (m.kind !== "entity") throw new Error("Record authorisation requires an entity contract.");
+    const { record } = entityDetailsSchema.parse(m.details);
+    const authorise = this.items.get(`${m.id}@${m.version}`)!.authoriseRecord;
+    if (!record || !authorise) throw new Error("This entity has no approved record policy.");
+    const request = recordRequestSchema.parse(input);
+    if (request.intent === "extend") {
+      if (!context.transaction) throw new Error("Extension authorisation requires an atomic transaction.");
+      assertCapability(context.session, record.writeCapability);
+    }
+    const anchor = recordAnchorSchema.parse(await authorise(context, request));
+    if (anchor.recordId !== request.recordId || anchor.organisationId !== context.session.organisationId) throw new Error("Owner returned an invalid canonical record scope.");
+    if (request.expectedRevision !== undefined && anchor.revision !== request.expectedRevision) throw new Error("This record changed. Refresh before saving.");
+    return anchor;
   }
   checkCompatibility(references: readonly ContractReference[]): string[] {
     return references.flatMap(ref => {

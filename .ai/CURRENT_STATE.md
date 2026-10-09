@@ -35,6 +35,10 @@ the compatibility scanner includes its still-active definition. Live remains
 supplies v2 and is still undergoing final acceptance. Next: preserve its exact
 accepted live source when deployed, rebuild compatible Apps candidate, repeat
 read-only menu checks, activate and verify public HTTPS. Apps is not yet live.
+The reviewed menu source and this blocker are merged into main at 910aac3.
+Final public revision check still reports 1dafe165; Studio's combined acceptance
+remains pending after Messages timeline-restoration assertions. Do not include
+that unaccepted source or change retained metadata merely to clear the gate.
 
 ## 9 October 2026 — Private Admin entry deployed and publicly verified
 

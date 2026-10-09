@@ -61,6 +61,11 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
   `AppDirectory` still uses `getNavigableModules` for both the launcher and compact
   Apps menu; counts reflect authorised entries. App labels/descriptions wrap and
   keyboard focus remains visible. Attention/goals stay below the app directory.
+- **Atlas Admin** — separate blue/white platform console using the same ribbon,
+  wordmark, font and blue interaction colour. A light Admin navigation rail becomes
+  a scrollable, labelled bar on tablet/phone. Active sections and selected-company
+  setup tabs remain explicit. Business launcher/search/chat/notices/My work are
+  absent; staff identity and sign-out remain. Routes use their own `(admin)` group.
 - **Topbar** — Home and Reports use the Atlas ribbon mark, wordmark/tagline, search, notices,
   company identity/date, profile and sign-out. Other workspaces retain home,
   Apps, back, search, new window, notices, chat, profile and sign-out.

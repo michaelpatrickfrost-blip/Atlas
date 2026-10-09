@@ -4,7 +4,7 @@ import { assertCapability } from "@/core/permissions/check";
 import { db } from "@/core/db/client";
 import { ATLAS_STAFF_ROLES } from "@/core/admin/access";
 import { CreateDialog } from "@/components/ui/create-dialog";
-import { PortalActionForm as ActionForm } from "@/app/(app)/atlas/portal-action-form";
+import { PortalActionForm as ActionForm } from "@/app/(admin)/atlas/portal-action-form";
 import { CredentialForm } from "../credential-form";
 import { createAtlasStaff, updateAtlasStaff, issueAtlasStaffRecovery, saveAtlasStaffProfile } from "../admin-actions";
 const input = "mt-2 w-full rounded-xl border border-slate-200 bg-white p-3 text-sm";

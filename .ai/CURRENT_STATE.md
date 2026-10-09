@@ -1,6 +1,63 @@
 # Atlas current state
 
+## 9 October 2026 — Standalone modern Admin accepted; Phase 2 begins
+
+Exact live source a642df0555cd45a97d57d867621d189c7650cf19 preserves concurrent
+Reports 2a8522f and the verified Phase 1 kernel. Candidate/public central metadata,
+real Admin forms/provisioning/login isolation, no-business-tools/staff sign-out,
+Home desktop/tablet/phone and Reports previews/workbooks/permissions all passed.
+Live visible page also inspected through the user's browser: modern branded Admin
+rail/header, selected-company setup tabs, no business Apps/search/chat/notices/My
+work. Original user tab/input left intact; separate review tab used. Private
+candidate/public logs /tmp/atlas-studio-acceptance-5MbNoc and
+/tmp/atlas-studio-public-CMmn5v; local UI image /tmp/atlas-admin-console-live.jpg.
+Merged source checks: 30 files/146 assertions, strict TypeScript/build passed;
+scoped lint zero errors/one brand-img warning. Pre-merge full suite 1009 passes/
+85 baseline failures/22 skips, exact unchanged failure names. No new migration.
+Source/evidence checkpoint will be included in main; live runtime remains a642df0.
+
+Phase 2 IN PROGRESS, workstream 2A. Reviewed ServiceWorkItem (TICKET), not historical
+ServiceTicket or QUERY; native workScope/queue access, requireWork, locked versions,
+final/merged rules, existing catalogue fields and definition/context snapshots.
+No shared general custom-field storage was found. Adapt existing intake fields
+where appropriate; do not rewrite historical answers. Next: implement typed
+owner-approved record/extension contracts and bounded Tickets projections with
+native read/write policy, tests, docs and checkpoint before metadata storage 2B.
+
+## 9 October 2026 — Admin candidate preserves current live Reports source
+
+Admin candidate 214cbad passed central metadata/forms/provisioning, standalone
+console/no-business-tools/staff sign-out, and Home desktop/tablet/phone checks.
+Private candidate logs /tmp/atlas-studio-acceptance-K0GO2P. Activation stopped
+safely at the ancestry guard because concurrent Reports 2a8522f became live during
+acceptance. Merge that exact live source, preserving Reports providers/UI/security
+and its historical evidence alongside the new Admin route group. No schema change.
+Pre-merge full suite: 1009 passed/85 failed/22 skipped; exact baseline failure names
+match (no new failures). Merged source: 30 focused files/146 assertions, strict
+TypeScript, production build and diff checks passed; scoped lint no errors/one
+brand image warning. Prepare the merged pinned candidate,
+run Studio/Admin, Home and Reports acceptance, activate then repeat public checks.
+Phase 2 contracts remain NOT STARTED while this companion release is verified.
+
+## 9 October 2026 — Admin-only console and next Studio phase exploration
+
+Michael clarified that Atlas Admin must contain administration only, without the
+business Apps/search/chat/notifications/My work shell, and should use the new
+modern UI. Confirmed /atlas currently inherits (app)/layout and visibly exposes
+those business controls. Phase 1 remains live/verified; this is a companion
+separation correction followed by ordered Phase 2 work. Clean starting 9ebd774;
+branch codex/studio-phase2. Workstreams recorded in docs/studio/STUDIO_PHASE_2_PLAN.md;
+ledger updated before edits. Implemented src/app/(admin)/atlas route move, components/admin shell/navigation,
+Admin-specific sign-out/error recovery and selected-company Studio tabs. Public
+URLs/action guards unchanged; legacy desktop action keys aliased to new route keys.
+23 focused files/110 assertions passed; alias regression rerun 2/2; strict TypeScript
+and production build passed. Scoped lint: no errors, one standard brand-img warning.
+No database change. Next: commit/pin this checkpoint, prepare candidate, run real
+Admin/no-business-tools/navigation/metadata and Home checks, activate and repeat
+public verification before 2A owner-extension contracts.
+
 ## 9 October 2026 — Modern Reports deployed and verified
+
 
 - `/reports` is a modern logo-based utility separate from Dashboards (`/analytics`).
   Home/Reports share the branded header and utility rail; business apps remain in
@@ -18,7 +75,8 @@
 - Paths: `src/core/reports`, `src/modules/reports`, source report providers/manifests,
   Reports page/API and shell utilities; `docs/modules/REPORTS.md`, CRM guide and
   design/module/shared-memory guides reconciled.
-- Exact live source: `2a8522fa3f2233bf42d06613f9dd3cf3521cd81a`. Public health SHA
+- Reports activated source: `2a8522fa3f2233bf42d06613f9dd3cf3521cd81a`; subsequent
+  live Admin release `a642df0` preserves the Reports source unchanged. Public health SHA
   and login 200 confirmed from the server and Mac. Previous runtime `c46bbef`
   retained; private activation backup `atlas-pre-deploy-20261009-195737`.
 - Checks: production build, standalone TypeScript, 11 focused files/63 assertions,

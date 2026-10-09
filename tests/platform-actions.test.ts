@@ -3,7 +3,7 @@ const state=vi.hoisted(()=>({session:{userId:'owner',organisationId:'company',ca
 vi.mock('@/core/auth/session',()=>({requireSession:async()=>state.session}));
 vi.mock('@/core/db/client',()=>({db:{organisation:state.organisation,$transaction:state.transaction}}));
 vi.mock('next/cache',()=>({revalidatePath:vi.fn()}));
-import {saveCompanyEntitlements,updateCompanyAccount} from '@/app/(app)/atlas/actions';
+import {saveCompanyEntitlements,updateCompanyAccount} from '@/app/(admin)/atlas/actions';
 beforeEach(()=>{vi.clearAllMocks();state.session.capabilities=new Set();state.organisation.findFirstOrThrow.mockResolvedValue({id:'company'});});
 describe('owner console mutations',()=>{
  it('rejects company administrators before looking up a different company',async()=>{state.session.capabilities.add('core.users.manage');const form=new FormData();form.set('organisationId','other-company');await expect(saveCompanyEntitlements(form)).rejects.toThrow('FORBIDDEN');expect(state.organisation.findUniqueOrThrow).not.toHaveBeenCalled();expect(state.transaction).not.toHaveBeenCalled();});

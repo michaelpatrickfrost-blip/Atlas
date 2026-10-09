@@ -3,7 +3,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-libra
 import { afterEach, expect, it, vi } from "vitest";
 const { replace } = vi.hoisted(() => ({ replace: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace }) }));
-import { PortalActionForm } from "@/app/(app)/atlas/portal-action-form";
+import { PortalActionForm } from "@/app/(admin)/atlas/portal-action-form";
 afterEach(cleanup);
 
 const fields = <><label>Company name<input name="name" defaultValue="Original company" /></label><label>Plan name<input name="planName" defaultValue="Original plan" /></label></>;

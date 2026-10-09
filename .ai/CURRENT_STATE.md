@@ -84,10 +84,13 @@ Final Me-assignment fix 4be24b3 passed 11 files/70 assertions, types/build/lint 
 corrected sealed candidate Chat/Home/Reports acceptance. It is retained in this
 combined source; its public deployment verification will accompany Dashboards.
 Synthetic central chat fixtures are retired; no real colleague/customer was messaged.
-Candidate d61e5c4 preparation started. Acceptance runner now recognises the new
+Candidate d61e5c4 is prepared and smoke-verified with central database/file backup
+atlas-pre-deploy-20261009-212614; live pointer unchanged. Browser acceptance waits
+for a concurrent build to release the shared lock. Acceptance runner now recognises the new
 Dashboard utility destination and scopes its rail check to the visible responsive
 nav; rename acceptance waits for the central save rather than its optimistic title.
 These are runner-only refinements; sealed application source remains d61e5c4.
+Local checks and pending live gates are recorded in docs/evidence/2026-10-09-dashboards.md.
 Next: prepare compatible combined candidate, run central
 Dashboard/Messages/Home/Reports checks, activate and repeat publicly.
 

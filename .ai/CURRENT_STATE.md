@@ -1,6 +1,52 @@
 # Atlas current state
 
-## 9 October 2026 — Customers, Sales, CRM and Marketing refinement prepared
+## 9 October 2026 — Customers, Sales, CRM and Marketing live and accepted
+
+Deployed immutable 94dd3e105e2757b5d16ed3e2fea277d09a4b7bee from scoped
+codex/customer-sales-experience. Previous runtime 56c9d88 retained. Server
+compatibility/build/smoke and public release health/login PASS; central database/
+private-file activation backup atlas-pre-deploy-20261009-224305. Additive appointment
+migration is applied; no existing business record or external provider was replaced.
+Live source retains accepted Manufacturing/Studio, Apps, rounded typography and
+business navigation boundaries. Main's separate Dashboard work is not deployed
+by this scoped release.
+
+Actual public HTTPS acceptance PASS at the exact SHA: selected-customer family
+only; canonical CRM/Customer notes and restricted rights; appointment create/link,
+overlap rejection, reschedule, completion outcome and retained cancellation;
+reader/rep/tenant/capability isolation; visual journey experience/touchpoint/branch/
+zoom/reorder; immutable automation publication with zero outbound deliveries.
+All ten commercial screens at desktop 1448, tablet 820 and phone 390 widths PASS
+with no page overflow/browser errors. Anonymous access redirects PASS. Exactly
+15 allowed form POSTs; external/background writes blocked. Exact synthetic Test
+companies suspended, memberships revoked and auth versions advanced; audit/records
+retained. Public fixture backup atlas-pre-commercial-public-test-20261009-224515;
+logs /tmp/atlas-commercial-public-6dMlQj; screenshots/evidence
+/tmp/atlas-commercial-acceptance-AXm3WE. Candidate evidence
+/tmp/atlas-commercial-acceptance-W6QlsD and /tmp/atlas-commercial-staging-E7NNYT;
+fixture backup atlas-pre-commercial-test-20261009-223938; preparation backup
+atlas-pre-deploy-20261009-223427. Visual journey/phone diary screenshots inspected.
+
+Checks actually run: commercial/regression 30-file/145-test suite PASS, followed by
+8-file/34-test regression after navigation merge; strict TypeScript and production
+build PASS after each live-source merge; scoped lint zero errors (pre-existing
+Sales unused-variable and navigation img warnings), shell syntax and diff whitespace
+PASS. Full run on the earlier f594 integrated source: 1201 passed / 63 failed /
+22 skipped, comprising 62 older module-mock failures and one Inventory 5-second
+initial compilation timeout. Inventory alone reproduces that timeout, then all
+12 tests PASS with a 20-second allowance. Whole-suite success is not claimed.
+
+Shared docs/decisions/research and implementation are included together. Source:
+Customers/core/account notes and family maps; CRM Accounts/Appointments/Today/
+Pipeline; Sales Orders list/detail; Marketing campaign desk, experience mapper,
+visual automation and audited commands; central acceptance helpers. External
+calendar sync, email/SMS delivery, advertising execution and background journey
+processing still require separately configured integration work. Provider choices
+remain blank per the recorded user decision. Final source/evidence is merged back
+into main without deploying unrelated concurrent work; canonical Desktop's dirty
+checkout is preserved.
+
+## 9 October 2026 — Historical commercial candidates and safe ancestry stops
 
 Latest navigation checkpoint: 422ad3 sealed candidate, full commercial forms and
 30 route/viewport cases PASS with Nunito; 15 allowed form POSTs, no browser errors.

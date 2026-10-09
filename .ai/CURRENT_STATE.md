@@ -1,5 +1,26 @@
 # Atlas current state
 
+## 10 October 2026 — Appointment completion entry-point guard in verification
+
+Final review confirmed the older completeActivity action is still compiled and
+registered in the desktop API. Its update was tenant-scoped but could complete
+booked/cancelled appointments without the diary outcome/version checks and did
+not apply CRM owner restrictions. Atomic update predicates now restrict it to
+uncompleted, uncancelled legacy activities without an appointment end; CRM owner
+scope applies and successful legacy completion increments version. The diary's
+existing guarded appointment commands remain the only booked completion path.
+Source: src/modules/crm/services/activities.ts; meaningful unit and central
+acceptance regressions cover this boundary. Initial 3-file/19-test suite, strict
+TypeScript, production build, scoped lint and whitespace PASS. Preserve newly live
+Studio 7941f9b (the commercial source 94dd3e is its ancestor). Candidate/public guard verification
+and deployment remain required; the underlying commercial release 94dd3e is live.
+
+Public typography follow-up on 94dd3e PASS: actual Nunito glyphs, inherited inputs,
+aligned numerals and page fit across 10 routes/3 widths, no browser/asset errors or
+external fonts; all writes blocked. Evidence /tmp/atlas-typography-check-FnJiZt.
+Initial standalone checker lacked /etc/atlas/guardian.env; rerun with that existing
+QA configuration passed. No credentials or grants were changed.
+
 ## 9 October 2026 — Customers, Sales, CRM and Marketing live and accepted
 
 Deployed immutable 94dd3e105e2757b5d16ed3e2fea277d09a4b7bee from scoped

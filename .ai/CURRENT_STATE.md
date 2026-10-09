@@ -12,8 +12,11 @@ existing guarded appointment commands remain the only booked completion path.
 Source: src/modules/crm/services/activities.ts; meaningful unit and central
 acceptance regressions cover this boundary. Initial 3-file/19-test suite, strict
 TypeScript, production build, scoped lint and whitespace PASS. Preserve newly live
-Studio 7941f9b (the commercial source 94dd3e is its ancestor). Candidate/public guard verification
-and deployment remain required; the underlying commercial release 94dd3e is live.
+Studio 7941f9b (the commercial source 94dd3e is its ancestor), now merged with
+all contributor evidence. Candidate/public guard verification
+and deployment remain required; the underlying commercial source 94dd3e is already
+deployed and preserved. Merged Studio/guard 6-file/43-test suite, strict TypeScript,
+production build and whitespace PASS.
 
 Public typography follow-up on 94dd3e PASS: actual Nunito glyphs, inherited inputs,
 aligned numerals and page fit across 10 routes/3 widths, no browser/asset errors or
@@ -66,6 +69,42 @@ processing still require separately configured integration work. Provider choice
 remain blank per the recorded user decision. Final source/evidence is merged back
 into main without deploying unrelated concurrent work; canonical Desktop's dirty
 checkout is preserved.
+
+## 9 October 2026 — Studio candidate integrated with current live commercial source
+
+Preserved exact activated 94dd3e source, including its additive appointment
+migration and commercial workspaces; no business-source correction removed.
+Studio principal/retirement integrated 23 files/118 tests, Prisma generation,
+production build, strict post-build TypeScript and scoped lint PASS.
+Prior combined candidate 6085d70 PASS with all owner/storage/retirement/metadata,
+Admin/business/Home/Apps/Reports/MRP/Messages/private Admin/supply checks; evidence
+/tmp/atlas-studio-acceptance-wM3A1X. It cannot safely replace newer live 94dd3e;
+no activation/public retirement claim. Latest principal helper remains NOT RUN.
+Next prepare/test this compatible source, including real refreshed principals and
+commercial regression, then activate on PASS and repeat exact public checks.
+No new Studio schema migration or preview/job/UI feature in this checkpoint.
+
+
+## 9 October 2026 — Studio migration principal checkpoint
+
+2B3c1 IMPLEMENTED locally: fields/principal.ts captures only actual customer
+membership or explicit audited staff support access with existing affiliation.
+No account/grant creation/session switch; metadata target context is insufficient.
+Refresh current permissions, company/source availability and captured auth/session
+versions on resume, bind support audit to tenant/actor/membership/versions.
+3 focused files/16 assertions and integrated five files/33 assertions PASS; strict post-build TypeScript, scoped lint and production build PASS. New exact-Test helper exercises real customer revocation/permission changes,
+explicit existing Admin support entry and support-audit identity, without changing
+existing QA identity/grants. Helper NOT RUN. No endpoint/jobs, preview UI, schema
+migration or central/live claim. 2B3c2 remains not started.
+Compatible retirement source 6085d70 prepared/smoke-verified after backup
+atlas-pre-deploy-20261009-224009; combined candidate running. Public source
+advanced to 94dd3e (Sales/customer/CRM/Marketing), now merged unchanged;
+new combined checks required with its additive appointment schema preserved.
+Previous prior 8b99c1b all combined
+candidate checks PASS, activation safely rejected after release branch moved.
+Need candidate/public proof with deployed 56c9d88 business separation preserved.
+
+
 
 ## 9 October 2026 — Historical commercial candidates and safe ancestry stops
 
@@ -161,62 +200,113 @@ suite, strict TypeScript, scoped ESLint, shell syntax and production build PASS.
 updated candidate, responsive/public acceptance and activation remained pending.
 Subsequent candidate evidence is recorded above; public delivery is still pending.
 
-## 9 October 2026 — Business navigation excludes platform administration (candidate)
 
-Michael clarified that Atlas Console/Admin tools do not belong in customer software.
-Removed Atlas Admin and Connections from both business directories, the staff Admin
-return chip from the header, console links from company users/workspace settings,
-and platform-console promotion from native import help. The header shows selected
-company identity. Company admin, Manage apps, native imports, company permissions
-and customer Studio remain available. Staff tools remain in standalone /atlas;
-no auth, grant, tenant, record or schema changes. This applies to staff support
-workspaces as well as customer sessions.
+## 9 October 2026 — Business interface excludes Atlas platform tools, verified live
+
+Exact release 56c9d88a66ba2b257fe780a3174e699cfcd81261 is live at
+https://atlassystem.online. It preserves previous accepted 5ebd700 typography,
+Studio, Supply, Messages and the modern Apps design. Previous immutable 5ebd700
+runtime is retained. Michael clarified that Atlas Console/Admin tools do not
+belong in customer software; the rule also applies to audited staff support
+workspaces.
+
+Removed Atlas Admin and Connections from both business Home/Apps directories,
+console links from the header and company users/workspace settings, the Admin
+badge and native-import help promoting the platform console. The header now shows
+selected company identity. Company admin, Manage apps, native imports, customer
+Studio and existing permissions remain. Staff tools stay in the standalone guarded
+/atlas console; no auth, grant, tenant, schema or business-record changes.
 
 Paths: shell app-directory/topbar; settings page/workspace-panel/imports; new
-business-shell-boundary regression test; expanded read-only check-home-menu.
+business-shell-boundary regression suite and expanded read-only check-home-menu.
 Project/design/Admin/company/decision/delivery docs reconciled. Four focused files/
-14 tests PASS; scoped lint zero errors/two existing brand-img warnings. Production
-build and strict post-build TypeScript PASS. Full suite not rerun; final diff/
-whitespace reviewed. Candidate/public acceptance not yet run.
-First prepare attempt stopped safely before backup/build because the live release
-advanced to 5ebd700d3526b6fdaa70efa4514da0803301a285. Its accepted Nunito font
-source is merged unchanged. Integrated production build PASS; strict post-build
-TypeScript running.
-Next: prepare exact compatible release, verify business surfaces
-and retained staff console, activate and repeat public HTTPS checks.
+14 tests, production build, strict post-build TypeScript and scoped lint PASS;
+lint has zero errors/two existing brand-image warnings. Rebuilt/types PASS after
+preserving exact live fonts. Final diff/whitespace reviewed; full suite not rerun.
+Main's separately reviewed Dashboard source/evidence is preserved for shared
+integration, not deployed by this task. Merged 14 focused tests, scoped runner/
+directory lint, production build and strict post-build TypeScript PASS.
 
-## 9 October 2026 — Shared rounded typography in verification
+First prepare attempt safely stopped at ancestry before backup/build when the
+accepted font release advanced. Compatible candidate prepared/smoke-verified after
+backup atlas-pre-deploy-20261009-221529. Read-only candidate acceptance PASS;
+private evidence /tmp/atlas-home-menu-check-VRPo6o. Activation backup:
+atlas-pre-deploy-20261009-222947. Public HTTPS acceptance PASS at the exact release
+above before/after the run; private evidence /tmp/atlas-home-menu-check-fH23LQ.
+Home desktop/tablet/phone and Apps desktop/tablet/390px/320px, authorised entries,
+layout/scrolling/44px targets, focus/closure/search and actual My work navigation
+PASS. Home, Apps, header, company workspace/users/imports and business search expose
+no platform tools; staff /atlas retains its independent shell and Connections.
+All browser writes blocked; no accounts/grants/fixtures created. Desktop screenshot
+visually inspected. No remaining Apps/platform-boundary blocker or application
+work for this request; preserve the separate-console rule in future releases.
 
-Replaced Plus Jakarta Sans with Nunito across the shared root sans token/body,
-including business apps, sign-in/recovery and independent Atlas Admin. Bundled
-normal/true-italic variable fonts (200–1000) retain source character coverage and
-SIL OFL licence/provenance; Geist Mono, text hierarchy and aligned numerals remain.
+
+## 9 October 2026 — Studio retirement candidate preserving current business separation
+
+Exact live 56c9d88 business separation merged with retirement candidate source.
+Live typography 5ebd700 and final main 98cf934 evidence retained. No font code
+changed by Studio; existing public glyph/responsive evidence retained. Studio
+2B3a pure conversion and 2B3b retirement remain local only. Prior 35-test/types/
+scoped-lint/build and integrated production build/strict TypeScript PASS; next real
+central helper and combined candidate/public acceptance. No new Prisma migration.
+Prepared exact 8b99c1b1c0e31e2640a0bd73300678f0de899f33 after backup
+atlas-pre-deploy-20261009-222427; schema/dependency/build/sealed smoke PASS.
+Full candidate acceptance PASS on exact 8b99c1b; private evidence
+/tmp/atlas-studio-acceptance-oJKxve. Actual conversion/retirement, audit-write
+failure rollback, CAS race and eight combined native checks PASS. Public runtime
+advanced to 56c9d88 (business/platform separation); queued activation must retain
+ancestry guard. Preserve its reviewed source and reverify the combined candidate
+before activation/public proof. Integrated seven files/44 assertions, production
+build, strict post-build TypeScript and scoped lint PASS (zero errors, two existing
+brand-image warnings). No new retirement public verification yet.
+Confirmed next-workstream access dependency: adminStudioContext is metadata-only;
+never use it for migration value/native-record queries. sessionForUser reloads real
+target membership/current grants; Admin openCompanyWorkspace is the existing
+explicit audited staff-affiliation path. Before 2B3c persistence, define a refreshed
+principal and explicit support data context while retaining the standalone Admin
+shell. Saved in STUDIO_FIELD_EVOLUTION_PLAN.md; no new context implemented.
+
+
+## 9 October 2026 — Shared rounded typography deployed and publicly verified
+
+Exact runtime 5ebd700d3526b6fdaa70efa4514da0803301a285 is live at
+https://atlassystem.online, preserving deployed Studio e5d66e6 and the modern
+Apps menu. This supersedes e5d66e6 as current runtime; earlier Apps/Studio entries
+retain their exact acceptance revisions. Replaced Plus Jakarta Sans with Nunito
+through the shared root sans
+family/body, covering business apps, authentication/recovery and Atlas Admin.
+Bundled normal/true-italic variable fonts (200–1000), full source character
+coverage and SIL OFL provenance; Geist Mono, hierarchy and aligned digits remain.
+No font-task schema, permissions, storage or business-record change.
 Paths: src/app/layout.tsx, globals.css, fonts and scripts/check-typography.ts;
-design guides/DECISIONS updated.
-Scoped codex/rounded-system-font starts from exact public live 2690c26, preserving
-its already-deployed Manufacturing/Studio compatibility source. No schema, records,
-permissions or storage change. Checks: exact-lockfile install, Prisma generation,
-production build, strict TypeScript, scoped lint and whitespace PASS. Initial
-checker types referenced an absent User.active field; corrected to membership
-active and strict types rerun successfully. Local production browser proves
-actual Nunito glyphs and equal numeral widths; desktop/phone login screenshots
-visually inspected. Candidate 4a0a230 prepared with central backup
-atlas-pre-deploy-20261009-214902; all 30 route/viewport typography checks PASS
-(actual Nunito glyphs, inherited controls, aligned digits, page fit, zero browser/
-asset errors/external font requests). Home desktop/phone, Admin phone and Reports
-desktop screenshots visually inspected. Private evidence: /tmp/atlas-typography-check-5XrNJu
-and /tmp/atlas-typography-staging-HfIoX2. Full suite not rerun for this presentation change.
-Activation safely stopped at ancestry after accepted Studio e5d66e6 became public
-live. Merged that exact source, retaining its typed fields and modern Apps design;
-only CURRENT_STATE header conflict required reconciliation. Combined production
-build, focused Apps menu test file/3 assertions, scoped lint and whitespace PASS;
-strict TypeScript in progress. Combined candidate/public typography acceptance
-and responsive Apps verification pending.
-Next: prepare and verify the compatible combined release, activate, prove fonts
-on public HTTPS and merge implementation/evidence into main before completion.
+design guides/DECISIONS updated. Final combined production build, Prisma generation,
+strict TypeScript, scoped lint, whitespace and Apps menu test file/3 assertions PASS.
+Full suite not rerun for this presentation change.
 
+Exact candidate and public HTTPS checks both PASS on ten routes at desktop,
+tablet and phone sizes: real Nunito glyphs, inherited headings/controls/table text,
+equal digit widths, page fit, zero browser/asset errors and external font requests.
+Home/Apps acceptance also PASS through 320px: authorised links, scroll/44px targets,
+Escape focus, closure/search and real My work navigation. All browser writes blocked;
+existing Guardian QA membership only, no records/grants/fixtures created. Inspected
+Home desktop/phone, Reports desktop, Admin phone and Apps desktop/phone screenshots.
+Private final evidence: candidate /tmp/atlas-typography-check-xXuFsi,
+/tmp/atlas-typography-staging-TlXW2K and /tmp/atlas-home-menu-check-fvYsxg;
+public /tmp/atlas-typography-check-tpkU5n and /tmp/atlas-home-menu-check-1HLgZC.
+Prepare/activation central backups:
+atlas-pre-deploy-20261009-220106 and atlas-pre-deploy-20261009-221140.
+Source and evidence integrated with current main in this handoff; contributors'
+acceptance entries retained. No font release blocker or further task work remains.
+
+Historical 4a0a230 candidate passed the same 30 typography checks after backup
+atlas-pre-deploy-20261009-214902. Ancestry safely stopped its activation when
+Studio e5d66e6 became live; merged that exact source, reconciled the memory header,
+rebuilt and reverified. Earlier evidence /tmp/atlas-typography-check-5XrNJu and
+/tmp/atlas-typography-staging-HfIoX2 remains. No guard bypass or data rollback.
 
 ## 9 October 2026 — Reference Apps design live and publicly verified
+
 
 The supplied Apps design is live at https://atlassystem.online in exact release
 e5d66e6cf36b0fe228ac65287fdaa8d5ceb8be7c. The integrated release already includes
@@ -310,9 +400,25 @@ saved in STUDIO_FIELD_EVOLUTION_PLAN.md; migration service NOT STARTED. Historic
 final-record representation changes require explicit owner policy, never a bypass.
 
 Verified source/memory merged with latest main 644f50e; documentation only, no
-additional app changes. Exact next: implement 2B3a typed
-compatibility/conversion analysis and meaningful tests; next retirement and reviewed
-durable migration path. No owner value API/visual designer or Phase 2 gate PASS yet.
+additional app changes. 2B3a pure analysis/conversion VERIFIED locally: fields/evolution.ts
+and studio-field-evolution.test.ts; 3 files/22 tests, scoped lint, production build
+and strict TypeScript PASS. Initial callback narrowing error corrected and checks
+rerun. Stable identities/generations, explicit choice maps/retirement/versioning,
+exact integer→decimal bounds, UTC/loss policies, required/null/false and closed
+conversion schema verified. No database/API/job execution; library not yet live.
+2B3b IMPLEMENTED locally: fields/retirement.ts, focused tests and central helper.
+Tenant/publish/module checks, enablement lock/recheck, field-only CAS, serialization
+conflict normalisation and atomic audit; last active policy/versions/generations/
+values retained. No purge/UI/value API. Five files/35 tests, scoped lint, production
+build and strict TypeScript PASS. Central helper now challenges real retirement
+race, audit-storage failure rollback, missing permission/foreign tenant/stale revision,
+blocked edits/publication/activation/key recycling and unchanged native data;
+NOT RUN yet. 2B3a converter is also exercised against real decoded schema fixture.
+Latest observed live is now 5ebd700d3526b6fdaa70efa4514da0803301a285 (rounded typography),
+which preserves accepted Studio e5d66e6. Next: merge exact live/font source and final
+main evidence, rerun integrated build/types, prepare pinned candidate, execute real
+central retirement and native regression acceptance, activate and verify public HTTPS.
+No owner value API/visual designer or Phase 2 gate PASS yet.
 No 2C or Phase 3+ before preceding workstream/phase gates.
 
 ## 9 October 2026 — Historical Apps/Manufacturing integration checkpoint
@@ -5787,3 +5893,5 @@ later live integrations; earlier exact-baseline 85 failures remain documented.
 Next: prepare pinned clean source, recheck complete central/browser workflow,
 activate and verify public HTTPS. Preserve other contributors' dirty canonical
 checkout; integration must not overwrite unfinished content.
+
+Studio remaining Phase 2 correctness requirements recorded in STUDIO_PHASE_2_FIELDS.md: required-if, owner canonical-record coverage for new required fields and metadata-runtime schema compatibility. These remain unimplemented; Phase 2 gate not passed.

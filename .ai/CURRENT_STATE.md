@@ -41,7 +41,9 @@ whole-suite success is claimed. Diff reviewed; no native domain code removed.
 Latest observed live source is now 2690c26cb0f5f3c28e21265820e8a713708ce699
 (connected supply/planning). Exact live source merged, preserving private Admin,
 Messages, purchasing fixes, central additive supply migrations and compatibility
-checks. Integrated checks must be rerun before another release. Earlier live source
+checks. Reviewed modern Apps source from main f6e27cb is also merged; preserve its supplied
+design and repeat responsive navigation acceptance. Integrated checks must be
+rerun before another release. Earlier live source
 was 1dafe165f97545829d96242b1846e87d9c1f42b4 (private Admin entry). Merged origin/main 6870014,
 including exact live Admin and Messages, preserving their source/evidence. Previous Studio source
 6775044 passed public owner/metadata/Admin/business login/Home/Reports/MRP; its final
@@ -69,6 +71,46 @@ exact candidate complete Studio/Admin/business/Home/Reports/
 MRP/Messages/private-Admin acceptance. Activate only on PASS.
 Then 2B3 evolution/retirement/conversion planning and resumable jobs, followed by
 2B4 owner-authorised values. No 2C or Phase 3+ before preceding workstream checks.
+## 9 October 2026 — Apps menu candidate accepted; Studio contract blocks activation
+
+Business workspace Apps now follows Michael's supplied wide white panel: Customers,
+Operations, People and Business in the first desktop row; More and Company below.
+Larger grey outline icons, readable wrapped labels, spacious rounded Apps/search
+controls, responsive columns/internal scrolling and 44px links. Phone search has
+its own header row; narrow-screen spacing keeps utilities reachable. Escape returns
+focus to Apps; group headings retain the panel; links/outside clicks/routes close it.
+Existing Home/Reports/Messages and standalone Admin retain their designs; the same
+server directory/capability filtering supplies authorised entries. No schema,
+permission, central business-record or storage change.
+
+Paths: shell app-directory/app-menu/topbar/command-palette/workspace-back, globals,
+tests/app-menu and scripts/check-home-menu; design/Reports/scope guides, decision
+and roadmap updated.
+Release branch codex/apps-menu-design starts at exact public live 1dafe165,
+preserving accepted Messages/Studio/private Admin/sign-in source. Final local
+production build with exact lockfile dependencies PASS, 2 focused files/5 assertions PASS, scoped lint zero errors
+with two existing brand-img warnings, diff whitespace PASS. Initial strict types
+found missing @playwright/test in the cloned Desktop dependencies and cascading
+script types; exact-lockfile install and final strict TypeScript without exclusions PASS.
+Full suite not rerun. Exact 12d78a1 candidate prepared; read-only central QA checks
+PASS for Home desktop/tablet/phone and Apps desktop/tablet/phone/320px, authorised
+links, scrolling/44px targets, focus/closure/search and actual My work navigation.
+All four menu screenshots inspected: supplied desktop grouping/spacing and
+responsive wrapped phone/tablet labels confirmed. Private evidence:
+/tmp/atlas-home-menu-check-IUKhn5; prepare backup atlas-pre-deploy-20261009-211746.
+Activation stopped safely after backup atlas-pre-deploy-20261009-212330 because a
+retained Studio customField definition requires tickets.ticket@2. Read-only SQL
+confirmed its company is a SUSPENDED synthetic studio-check Test organisation;
+the compatibility scanner includes its still-active definition. Live remains
+1dafe165. No metadata/grants changed or gate bypassed. Concurrent Studio source
+supplies v2 and is still undergoing final acceptance. Next: preserve its exact
+accepted live source when deployed, rebuild compatible Apps candidate, repeat
+read-only menu checks, activate and verify public HTTPS. Apps is not yet live.
+The reviewed menu source and this blocker are merged into main at 910aac3.
+Final public revision check still reports 1dafe165; Studio's combined acceptance
+remains pending after Messages timeline-restoration assertions. Do not include
+that unaccepted source or change retained metadata merely to clear the gate.
+
 ## 9 October 2026 — Private Admin entry deployed and publicly verified
 
 Exact tested runtime 1dafe165f97545829d96242b1846e87d9c1f42b4 is live at

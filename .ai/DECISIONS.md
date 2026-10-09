@@ -19,6 +19,16 @@ not understand stable keys. Generate internal keys server-side; preserve existin
 published identities. Visual builders use plain-language choices/presets and real
 preview through the owning renderer. Sales needs explicit owner integration; the
 initial Tickets slice is not Sales support and does not replace native Templates.
+## 9 October 2026 — Workspace Apps follow the supplied grouped menu reference
+
+Michael supplied a wide, rounded white Apps menu with four primary desktop groups
+and More/Company below. Apply that design to business workspace navigation, retaining
+the existing Home/Reports/Messages launcher/utility design and independent Admin
+console. The directory remains server-filtered through getNavigableModules and
+existing capability checks; presentation never grants access or removes authorised
+apps. Labels wrap, 44px targets and scrollable responsive columns preserve access
+on phone/tablet. Route-keyed menu state and Escape focus return keep keyboard and
+back-navigation behaviour predictable. No business storage/schema/permissions change.
 
 ## 9 October 2026 — Studio field validation and visual setup
 

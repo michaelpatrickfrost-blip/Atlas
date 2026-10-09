@@ -15,6 +15,25 @@ actual partial delivery. Historical release evidence later in this document must
 not be read as a current completion claim. The Phase 1 migration is already on
 the central server; no local business database is required or permitted.
 
+### 9 October 2026 — Current Run MRP boundary
+
+`/manufacturing/planning` shows Run MRP only to planning managers. Its server
+action independently requires `manufacturing.plan.manage` and an enabled/entitled
+Manufacturing app, deriving company and actor from the signed session. Existing
+Atlas staff policy remains in the shared app guard. Read-only planning access
+does not authorise creating runs or suggestions. The saved-date query conversion
+supports ISO JSON dates and older demand-array proposals. The read boundary also
+adapts the engine's `demandId/demandType/demandQuantity/sourceLabel` into display
+fields while retaining old `sourceId/sourceType/quantity/label` history and demand
+lineage. It does not rewrite stored planning history. Shortages aggregate component
+consumption against the shared stock snapshot once. A matching BUY supply proposal
+is not added again as gross demand; a larger BUY total retains independent direct
+or safety-stock requirements. Canonical scoped suggestion products fill missing
+component labels. Guardian's opt-in central
+fixture check covers actual forbidden POSTs, the authorised button, persisted
+BOM/routing proposals, date-bearing pages and canonical product links; broader
+planning/execution coverage remains separately tracked.
+
 
 ## One record with many connected views
 

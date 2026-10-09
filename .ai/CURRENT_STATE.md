@@ -1,37 +1,44 @@
 # Atlas current state
 
-## 9 October 2026 — Guardian Run MRP mutation boundary (verification in progress)
+## 9 October 2026 — Guardian MRP repair ready for server verification
 
-Confirmed live c46bbef checks `manufacturing.plan.read` for a planning mutation
-and omits the app guard. Updated `manufacturing/planning/actions.ts` to require
-plan management and the selected workspace's Manufacturing enablement/entitlement
-before the engine writes; session company/actor and the shared staff exception
-remain authoritative. `tests/mrp-planning-access.test.ts`: original 4 failed/4
-passed, repaired 8 passed. Added opt-in `scripts/guardian/check-mrp-access.ts` with
-new central Test fixtures, actual action/button outcomes, saved-date pages/product
-links and unchanged historical/input/order/stock/Finance/audit/outbox assertions.
-Retained 585e9ba query reproduced the exact persisted JSON-date TypeError centrally
-without starting an old web server; existing af030b0 conversion passes the unit
-checks. First fixture lacked the Manufacturing layout's order-read grant and was
-retired; only fresh Test profiles receive the corrected read-only fixture grants.
-Server release lock is held by a parallel Reports candidate; no existing company
-or profile was changed. Source regression and scoped lint passed; full suite has
-1008 passed/88 failed/22 skipped, including unchanged module-mock failures and
-three Inventory timeouts under concurrent checks; a separate 54-assertion pass
-includes Inventory. Strict types and production build passed after regenerating
-disposable stale Next types (duplicated generated files referenced removed routes).
-Central c46bbef and 2a8522f checks reproduced all three forbidden writes; report
-cmv1e1cdw00007md5sakpls3v records the evidence. The real authorised button also
-exposed a newly saved Planned orders failure: engine `demandId/demandType/
-demandQuantity/sourceLabel` disagreed with the reader's older shape. Private
-19:59 journal correlated `toLocaleString` TypeError/digest 1480022851; runtime
-report cmv1e2kzn000avgd51damb97r. Updated `mrp-queries.ts` to adapt both saved demand
-shapes without rewriting history, retaining forecast/firm/safety-stock lineage.
-New pre-fix demand test failed; repaired six-file Manufacturing/planning suite:
-44 passed. Repeat lint passed. Final source types/build, full baseline comparison,
-completed central reproduction, candidate/live workflow proof and deployment
-remain pending. No report marked FIXED yet. Next: finish verification/deploy and
-repeat exact forbidden actions, real button, newly saved proposal and product pages.
+Isolated reviewed release preserves live Reports/Studio and standalone Admin
+source a642df0. Own changes require `manufacturing.plan.manage` and enabled/
+entitled Manufacturing before Run MRP, preserve the shared staff exception and
+session company/actor, adapt current/legacy saved demand fields without rewriting
+history, and stop counting component demand plus its BUY supply twice. Shared
+stock is netted once across parent proposals; independent BUY demand and canonical
+scoped product labels remain visible. Source: planning/actions.ts and
+manufacturing/services/mrp-queries.ts. No schema/migration/permission grants changed.
+
+Backed-up central Test fixtures on c46bbef, 2a8522f and a642df0 reproduced all three
+forbidden POST writes, the newly saved Planned orders crash and doubled 10/20 →
+20/40 shortage cells. Retained sealed 585e9ba query reproduced the exact persisted
+JSON-date TypeError; deployed af030b0 date conversion is retained. Actual manager
+button produces exactly one run with matching actor, MAKE/BUY quantities, BOM,
+machine/routing and dates. Historical/input/order/stock/Finance/audit/outbox
+records remain unchanged. Only fresh Test profiles receive fixture permissions;
+exact companies are suspended and synthetic grants/sessions revoked afterwards.
+Latest reproduction backup: /home/administrator/backups/atlas-pre-mrp-test-20261009-201240.
+Reports: cmv1e1cdw00007md5sakpls3v (access), cmv1e2kzn000avgd51damb97r (proposal
+render), cmv1elqb900007rd5rx35bbq6 (quantities); original runtime/newer digest briefs
+remain open until deployed proof. No historical generic report is closed by an
+independent fresh-page pass.
+
+Checks: 13 focused files/89 assertions passed; final full suite 1050 passed,
+85 failed, 22 skipped. Exact 85 failure names match unchanged a642df0 baseline
+(1036 passed/85 failed/22 skipped); no new failures. Initial high-concurrency
+Inventory timeouts passed in stable runs. Production build and scoped lint passed.
+Plain worktree typecheck sees an untouched untracked duplicate test importing the
+old Admin route; preserve it. Fresh tracked-only verification worktree generated
+Next types and strict `tsc --noEmit` passed without exclusions or relaxed checks.
+No local business database or record cache created. Exact original central check,
+source regressions and aggregate-quantity cases: scripts/guardian/check-mrp-access.ts,
+tests/mrp-planning-access.test.ts; docs/evidence/2026-10-09-guardian-mrp-workflow.md.
+Next: prepare/deploy this compatible reviewed release, run the same actual Test
+POST/button/page/central-state check publicly, then mark only reproduced reports
+FIXED and integrate owned source/memory into the canonical dirty repo safely.
+
 ## 9 October 2026 — Admin candidate preserves current live Reports source
 
 Admin candidate 214cbad passed central metadata/forms/provisioning, standalone
@@ -5068,3 +5075,9 @@ explicit TypeScript, scoped ESLint and five focused files/23 tests passed. Added
 real browser assertions for rejected zero-price drafts and revisiting a converted
 source. The newly deployed 0ce9f4a MRP shortage correction is being integrated
 before the next immutable candidate; final combined checks still required.
+
+Console integration preserves observed live 0ce9f4a and its Guardian correction:
+component demand and matching BUY supply are counted once, with shared stock
+netted once. Reconciled current planning guidance without restoring obsolete
+separate-app or unapplied-foundation claims. Guardian's independent public repair
+acceptance remains owned by its task; this console check does not close its reports.

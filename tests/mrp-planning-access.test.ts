@@ -116,4 +116,29 @@ describe("saved MRP dates", () => {
     expect(rows.every(row => row.requiredDate instanceof Date)).toBe(true);
     expect(mocks.suggestions).toHaveBeenCalledWith(expect.objectContaining({ where: { organisationId: "fixture-company", runId: "stored-run", status: "PENDING" } }));
   });
+  const shortageRows = async (materials: { quantity: number; onHand: number; shortage: number }[], buyQuantity: number) => {
+    mocks.latest.mockResolvedValue({ id: "stored-run", startedAt: new Date(), warnings: [], suggestions: [] });
+    const due = new Date("2026-10-11T09:00:00Z");
+    mocks.suggestions.mockResolvedValue([
+      ...materials.map((material, i) => ({ id: `parent-${i}`, productId: `parent-${i}`, kind: "MAKE", product: { name: "Assembly" }, pegging: { materials: [{ ...material, productId: "component", productName: null, productCode: null, requiredBy: due.toISOString() }] } })),
+      { id: "purchase", productId: "component", kind: "BUY", quantity: buyQuantity, neededBy: due, product: { name: "Canonical component", code: "PART" }, pegging: {} },
+    ]);
+    return getMaterialShortages("fixture-company");
+  };
+  it("counts a component requirement once when its BUY proposal covers the same shortage", async () => {
+    const rows = await shortageRows([{ quantity: 10, onHand: 0, shortage: 10 }], 10);
+    expect(rows).toMatchObject([{ productId: "component", productName: "Canonical component", productCode: "PART", requiredQuantity: 10, availableQuantity: 0, shortageQuantity: 10 }]);
+  });
+  it("nets shared component stock once across multiple parent makes", async () => {
+    const rows = await shortageRows([{ quantity: 10, onHand: 3, shortage: 7 }, { quantity: 10, onHand: 3, shortage: 7 }], 17);
+    expect(rows).toMatchObject([{ requiredQuantity: 20, availableQuantity: 3, shortageQuantity: 17 }]);
+  });
+  it("retains combined shortages when each parent separately appears covered", async () => {
+    const rows = await shortageRows([{ quantity: 10, onHand: 12, shortage: 0 }, { quantity: 10, onHand: 12, shortage: 0 }], 8);
+    expect(rows).toMatchObject([{ requiredQuantity: 20, availableQuantity: 12, shortageQuantity: 8, priority: "HIGH" }]);
+  });
+  it("retains independent direct demand in the component BUY total", async () => {
+    const rows = await shortageRows([{ quantity: 10, onHand: 0, shortage: 10 }], 15);
+    expect(rows).toMatchObject([{ requiredQuantity: 15, shortageQuantity: 15 }]);
+  });
 });

@@ -112,16 +112,22 @@ export async function plannedProposals(organisationId: string): Promise<PlannedO
 export async function getMaterialShortages(organisationId: string, limit = 50): Promise<MaterialShortage[]> {
   const suggestions = await pendingSuggestions(organisationId);
   const shortages: MaterialShortage[] = [];
-  for (const suggestion of suggestions) {
-    const detail = readSuggestionDetail(suggestion.pegging);
+  const details = suggestions.map(suggestion => ({ suggestion, detail: readSuggestionDetail(suggestion.pegging) }));
+  const componentIds = new Set(details.flatMap(({ detail }) => detail.materials.map(material => material.productId)));
+  const products = new Map(suggestions.map(suggestion => [suggestion.productId, suggestion.product]));
+  const buys = new Map<string, { quantity: number; neededBy: Date | null }>();
+  for (const suggestion of suggestions) if (suggestion.kind === "BUY") {
+    const previous = buys.get(suggestion.productId), neededBy = suggestion.neededBy ?? null;
+    buys.set(suggestion.productId, { quantity: (previous?.quantity ?? 0) + Number(suggestion.quantity), neededBy: previous?.neededBy && (!neededBy || previous.neededBy < neededBy) ? previous.neededBy : neededBy });
+  }
+  for (const { suggestion, detail } of details) {
     // A short component is a shortage of the component, not only of the parent:
     // the buyer needs to know which part is missing.
     for (const material of detail.materials) {
-      if (material.shortage <= 0) continue;
       shortages.push({
         productId: material.productId,
-        productName: material.productName ?? "Component",
-        productCode: material.productCode ?? material.productId,
+        productName: material.productName ?? products.get(material.productId)?.name ?? "Component",
+        productCode: material.productCode ?? products.get(material.productId)?.code ?? material.productId,
         requiredQuantity: material.quantity,
         availableQuantity: material.onHand,
         shortageQuantity: material.shortage,
@@ -133,7 +139,9 @@ export async function getMaterialShortages(organisationId: string, limit = 50): 
         priority: material.shortage / Math.max(material.quantity, 1) > 0.5 ? "CRITICAL" : material.shortage / Math.max(material.quantity, 1) > 0.2 ? "HIGH" : "NORMAL",
       });
     }
-    if (!detail.materials.length && suggestion.kind === "BUY") {
+    // A component's BUY proposal is supply for the same requirement, not another
+    // gross requirement. Standalone purchases still represent direct demand.
+    if (!detail.materials.length && suggestion.kind === "BUY" && !componentIds.has(suggestion.productId)) {
       shortages.push({
         productId: suggestion.productId,
         productName: suggestion.product?.name ?? "Part",
@@ -162,7 +170,19 @@ export async function getMaterialShortages(organisationId: string, limit = 50): 
     if (row.requiredDate < existing.requiredDate) existing.requiredDate = row.requiredDate;
     if (order[row.priority] < order[existing.priority]) existing.priority = row.priority;
   }
+  for (const row of merged.values()) if (componentIds.has(row.productId)) {
+    // Every make sees the same stock snapshot: net it once after aggregating
+    // consumption. A larger BUY total also retains direct/safety-stock demand.
+    const buy = buys.get(row.productId);
+    row.shortageQuantity = Math.max(0, row.requiredQuantity - row.availableQuantity, buy?.quantity ?? 0);
+    row.requiredQuantity = Math.max(row.requiredQuantity, row.availableQuantity + row.shortageQuantity);
+    if (buy?.neededBy && buy.neededBy < row.requiredDate) row.requiredDate = buy.neededBy;
+    const ratio = row.shortageQuantity / Math.max(row.requiredQuantity, 1);
+    row.priority = ratio > 0.5 ? "CRITICAL" : ratio > 0.2 ? "HIGH" : "NORMAL";
+    row.suggestedActions = [{ action: "EXPEDITE_SUPPLY", description: `Buy or expedite ${row.shortageQuantity} for the plan`, canApply: true }];
+  }
   return [...merged.values()]
+    .filter(row => row.shortageQuantity > 0)
     .sort((a, b) => order[a.priority] - order[b.priority] || new Date(a.requiredDate).getTime() - new Date(b.requiredDate).getTime())
     .slice(0, limit);
 }

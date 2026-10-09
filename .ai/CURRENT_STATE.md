@@ -63,6 +63,11 @@ before handoff; all permissions/central native work services remain unchanged.
 Final mapping check: 11 files/70 assertions and production build passed; strict
 TypeScript passed after correcting a test-only unsupported Testing Library option.
 Scoped final lint zero errors/one brand-image warning; diff check passed.
+4be24b3 candidate chat/create/send/order/history/details passed; screenshot
+scroll helper raced a polling render and detached its element. The runner now
+scrolls the stable dialog container synchronously after confirming its article,
+without changing application code or sealed runtime files. Rerun this corrected
+harness against exact 4be24b3, activate it and repeat publicly.
 Next:
 rerun exact chat acceptance plus Home/Reports
 regression, activate and repeat

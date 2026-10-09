@@ -295,9 +295,8 @@ async function main() {
       assert(
         await dialog.evaluate((node) => node.scrollWidth <= node.clientWidth),
       );
-      await dialog
-        .locator("article").getByText("Review this order together.", { exact: true })
-        .scrollIntoViewIfNeeded();
+      await expect(dialog.locator("article").getByText("Review this order together.", {exact: true})).toBeVisible();
+      await dialog.evaluate((node) => {for (const pane of node.querySelectorAll<HTMLElement>("section .overflow-y-auto")) pane.scrollTop = pane.scrollHeight;});
       await page.screenshot({ path: `/tmp/atlas-messages-${device}.png` });
       console.log(
         `PASS ${device}: modern pop-out, composer and record cards fit the viewport.`,

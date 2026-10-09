@@ -17,10 +17,14 @@ including Sales, with simple visual selection and previews. No internal identifi
 should be entered by users: removed the stable-key input/display and create action
 now generates configuration.<UUID> server-side. Persisted identities remain stable.
 STUDIO_VISUAL_BUILDER_REQUIREMENTS.md records both screen/document experiences and
-explicit future Sales owner integration; Tickets is not presented as Sales support.
+explicit Sales owner, screen/preset editor, responsive preview, existing Templates
+adapter and native-runtime integration substreams (2E0–2E4); Tickets is not
+presented as Sales support.
 
-Checks actually run before latest Admin merge: 22 focused/regression files/107 tests
-PASS (including Messages), strict TypeScript
+Latest integrated Admin/Messages source: 27 focused/regression files/140 tests
+PASS, Prisma client regenerated, scoped lint and production build PASS. Strict
+post-build TypeScript PASS.
+Earlier checks: strict TypeScript
 (after production build) PASS, scoped ESLint PASS, production build PASS, Prisma
 validate/generate PASS. Backed-up central transaction-only DDL check found one
 PL/pgSQL CASE-parentheses syntax error, fixed and rerun PASS; explicit rollback and
@@ -37,8 +41,7 @@ evidence remains in main eba8b49 and historical entries below. 2B2 and generated
 UI changes are local only and have NOT been deployed. Phase 2 gate NOT PASSED.
 
 Exact next: exact live Admin 1dafe16 and Messages 9303039 are merged with
-contributors' evidence preserved; regenerate Prisma for additive auth model,
-rerun integrated types/tests/build, then prepare
+contributors' evidence preserved. Integrated local checks PASS; prepare
 backed-up additive candidate and run real field schema/lifecycle plus existing
 Studio/Admin/business/Home/Reports/MRP/Messages acceptance. Activate only on PASS.
 Then 2B3 evolution/retirement/conversion planning and resumable jobs, followed by

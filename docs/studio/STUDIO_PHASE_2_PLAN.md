@@ -62,3 +62,20 @@ private-record scoped. Extension writes require source permission and owner poli
 not Studio edit permission. Future field storage is separate from protected native
 columns, with transactions/expected native revision supported by the owner contract.
 No fields/record-type/page persistence or later engines are part of 2A.
+
+## Visual designer integration within 2E — Michael's clarification
+
+The intended product is a bespoke business design studio, not a catalogue of
+technical references. 2E is split before implementation into these dependencies:
+
+| ID | Purpose | Expected source | Verification | Status |
+| --- | --- | --- | --- | --- |
+| 2E0 | Owner-approved Sales order screen contracts, building on native Sales queries/actions and preserving commercial/financial invariants | modules/sales/services/studio, manifest, contract tests | Tenant/native access, protected fields/statuses, no new Sales datastore | NOT STARTED |
+| 2E1 | Plain-language business/screen/preset selection and structured layout editor | modules/studio + pages/components | Real selection/editing, preserved drafts, generated internal identifiers | NOT STARTED |
+| 2E2 | Responsive screen preview using published rendering rules and approved/sample content | same structured page renderer and preview surface | Desktop/tablet/phone, hidden queries/fields, no preview commands | NOT STARTED |
+| 2E3 | Business-document authoring/preview entry using existing Templates engine and owner-approved Sales sources | existing Core templates/services + Studio authoring adapter | Bespoke document preview/render/publish compatibility; no duplicate template engine | NOT STARTED |
+| 2E4 | Native record forms/list/detail integration and business-specific publication | owner surfaces + Studio runtime | Actual Sales/Tickets representative behaviour, native permissions/rules, distinct tenant layouts | NOT STARTED |
+
+Do not display unsupported choices as working. These are explicit Phase 2 owner/UI
+integration workstreams once 2B–2D pass, not permission to implement later Flow,
+Process, Packages or broad module migration early.

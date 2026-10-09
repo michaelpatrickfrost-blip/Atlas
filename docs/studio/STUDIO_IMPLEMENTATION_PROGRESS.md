@@ -257,7 +257,8 @@ prematurely. Gates cannot PASS from file existence alone.
 
 2B2/local generated-key simplification checkpoint f2beb8b; exact live Messages
 9303039 and private Admin 1dafe16 (main 6870014) merged, source/evidence preserved.
-Regenerate Prisma and rerun integrated tests/types/build, prepare
+Prisma regenerated, 27 files/140 tests, scoped lint and integrated build PASS.
+Strict post-build types PASS; record checkpoint, then prepare
 the additive backed-up candidate, then run field lifecycle/SQL/history/tenant guards
 and existing Studio/Admin/business/Home/Reports/MRP/Messages acceptance before
 activation. Proceed to 2B3 reviewed evolution/retirement/conversion planning and

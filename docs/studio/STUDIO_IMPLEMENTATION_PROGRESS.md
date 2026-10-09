@@ -11,11 +11,11 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-1D — Release compatibility, database acceptance and live verification — VERIFIED.
+Admin separation companion — IMPLEMENTED; release verification IN PROGRESS. Phase 1 remains VERIFIED; Phase 2 workstreams recorded in STUDIO_PHASE_2_PLAN.md.
 
 # Overall Status
 
-VERIFIED for Phase 1. Live source c46bbefa737c81280daf38d62e87a4511420ffa5.
+IN PROGRESS for Michael's new Admin-only/modern-UI request and sequential continuation. VERIFIED for Phase 1. Live source c46bbefa737c81280daf38d62e87a4511420ffa5.
 The supplied source defines ten phases 0–9, not five. The original
 is preserved unchanged at `docs/studio/ATLAS_STUDIO_SOURCE.docx` (source
 `/Users/michael/Downloads/atlas_studio.docx`, SHA-256
@@ -70,6 +70,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+Admin follow-up: Atlas routes moved to `src/app/(admin)/atlas`; `components/admin`,
+Core Admin sign-out, data API action aliases/generator, selected-company Studio tabs,
+Admin error boundary, tests and current Admin/architecture/design/shared memory docs.
+
 `src/core/studio/registry/{types,contracts,registry,adapters,runtime}.ts`;
 `src/core/modules/types.ts`; `src/core/templates/service.ts`;
 `tests/studio-{registry,adapters}.test.ts`; `docs/MODULE_SPEC.md`; metadata compiler/services, four Prisma models/additive migration, Studio module
@@ -104,6 +108,12 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+Admin companion: 23 focused files /110 assertions passed; strict TypeScript and
+production build passed; scoped lint no errors/one brand-img warning. No schema
+change. Candidate 214cbad Studio/Admin/Home acceptance passed. New live Reports 2a8522f
+is merged; integrated 30 files/146 assertions, TypeScript/build pass. Merged
+candidate/public acceptance pending before this companion is VERIFIED.
 
 903/903 source paragraphs; original hash matches preserved copy. npm ci and
 Prisma generation succeeded. First registry-only run: 5 passed. Combined registry,
@@ -157,9 +167,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Phase 1 complete; no Phase 2 implementation started. Recover from this ledger and
-`STUDIO_PHASE_1_COMPLETION.md`, re-read supplied Section 27 Phase 2 plus Sections
-6.4–8, inspect existing extension/page owners and current Git status, then record
-Phase 2 workstreams before implementing 2A: module-approved extension policy and
-custom-field contracts. Preserve the live metadata kernel and existing domain
-ownership; do not start Decisions, Flow or durable-event engines early.
+Review/test/build the merged current live Reports 2a8522f plus standalone Admin
+source; preserve Reports' modern UI/provider guards. Candidate 214cbad passed all
+Studio/Admin/Home checks, but ancestry guard prevented omitting the newer live
+release. Commit/pin the merged revision, prepare a new backed-up candidate, run
+Studio/Admin, Home and Reports acceptance, activate then repeat public HTTPS.
+After companion verification begin Phase 2A per STUDIO_PHASE_2_PLAN.md.

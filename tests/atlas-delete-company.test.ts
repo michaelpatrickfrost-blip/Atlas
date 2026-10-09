@@ -20,7 +20,7 @@ vi.mock("@/core/db/client", () => ({
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/core/admin/wipe-company", () => ({ wipeTestCompanies: state.wipe }));
 
-import { deleteTestCompany } from "@/app/(app)/atlas/actions";
+import { deleteTestCompany } from "@/app/(admin)/atlas/actions";
 
 function form(values: Record<string, string>) {
   const result = new FormData();

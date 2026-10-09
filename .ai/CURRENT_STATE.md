@@ -46,6 +46,38 @@ suggestion product names fill missing component labels. No stored rows are chang
 Own release preserves deployed Reports 2a8522f; parallel standalone Admin a642df0
 became live before activation, so that exact deployed source must be retained too.
 
+## 9 October 2026 — Admin candidate preserves current live Reports source
+
+Admin candidate 214cbad passed central metadata/forms/provisioning, standalone
+console/no-business-tools/staff sign-out, and Home desktop/tablet/phone checks.
+Private candidate logs /tmp/atlas-studio-acceptance-K0GO2P. Activation stopped
+safely at the ancestry guard because concurrent Reports 2a8522f became live during
+acceptance. Merge that exact live source, preserving Reports providers/UI/security
+and its historical evidence alongside the new Admin route group. No schema change.
+Pre-merge full suite: 1009 passed/85 failed/22 skipped; exact baseline failure names
+match (no new failures). Merged source: 30 focused files/146 assertions, strict
+TypeScript, production build and diff checks passed; scoped lint no errors/one
+brand image warning. Prepare the merged pinned candidate,
+run Studio/Admin, Home and Reports acceptance, activate then repeat public checks.
+Phase 2 contracts remain NOT STARTED while this companion release is verified.
+
+## 9 October 2026 — Admin-only console and next Studio phase exploration
+
+Michael clarified that Atlas Admin must contain administration only, without the
+business Apps/search/chat/notifications/My work shell, and should use the new
+modern UI. Confirmed /atlas currently inherits (app)/layout and visibly exposes
+those business controls. Phase 1 remains live/verified; this is a companion
+separation correction followed by ordered Phase 2 work. Clean starting 9ebd774;
+branch codex/studio-phase2. Workstreams recorded in docs/studio/STUDIO_PHASE_2_PLAN.md;
+ledger updated before edits. Implemented src/app/(admin)/atlas route move, components/admin shell/navigation,
+Admin-specific sign-out/error recovery and selected-company Studio tabs. Public
+URLs/action guards unchanged; legacy desktop action keys aliased to new route keys.
+23 focused files/110 assertions passed; alias regression rerun 2/2; strict TypeScript
+and production build passed. Scoped lint: no errors, one standard brand-img warning.
+No database change. Next: commit/pin this checkpoint, prepare candidate, run real
+Admin/no-business-tools/navigation/metadata and Home checks, activate and repeat
+public verification before 2A owner-extension contracts.
+
 ## 9 October 2026 — Reports workspace in progress
 
 - Added modern `/reports` utility separate from Dashboards, shared Home utility

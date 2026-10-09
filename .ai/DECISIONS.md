@@ -16,6 +16,17 @@ See `docs/modules/REPORTS.md`.
 
 # Atlas decisions
 
+## 9 October 2026 — Administration owns a separate route layout
+
+Michael clarified that the Atlas console must contain administration only and use
+the modern UI. Move /atlas to the (admin) route group with its own guarded shell.
+Do not hide business buttons inside the shared shell: Next layouts retain state
+between navigation, and business components would still mount/fetch data. Separate
+layouts preserve actual boundaries and public URLs. Keep explicit audited support
+entry, original mutation capabilities, Guardian observation and customer layouts.
+New/legacy desktop action keys resolve to the same guarded functions; alias
+collisions fail closed. Admin sign-out returns to its own staff login.
+
 ## 9 October 2026 — Login selectors are bound to the observed request path
 
 Company/Admin login and recovery derive address context from the server's request

@@ -7,7 +7,7 @@ vi.mock("@/core/db/client", () => ({ db: { user: { findUniqueOrThrow: state.user
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
 vi.mock("bcryptjs", () => ({ default: { compare: async (value: string) => value === "correct-password" } }));
-import { archiveAtlasCompany, saveAtlasUserAccess, saveAtlasUserProfile, issueAtlasUserRecovery, updateAtlasStaff, saveAtlasCompanyBrand } from "@/app/(app)/atlas/admin-actions";
+import { archiveAtlasCompany, saveAtlasUserAccess, saveAtlasUserProfile, issueAtlasUserRecovery, updateAtlasStaff, saveAtlasCompanyBrand } from "@/app/(admin)/atlas/admin-actions";
 const form = (values: Record<string, string | string[]>) => { const result = new FormData(); for (const [key, value] of Object.entries(values)) for (const item of Array.isArray(value) ? value : [value]) result.append(key, item); return result; };
 beforeEach(() => {
   vi.clearAllMocks(); state.session.capabilities = new Set();

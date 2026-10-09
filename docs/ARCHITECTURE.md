@@ -135,3 +135,12 @@ customer Studio `/studio` uses its authenticated company. `/atlas/login` and
 membership selection. Proxy overwrites the path hint on page/API requests for sign-in routing;
 membership/capability checks remain the permission boundary. See the permanent Studio ledger for verified
 status and deferred work.
+
+## Separate platform console
+
+Atlas `/atlas` routes are under `src/app/(admin)/atlas`; their guarded AdminShell
+is independent of `src/app/(app)/layout.tsx`. Business launcher/search/chat/profile
+components are not mounted by the console. Public URLs and mutation guards remain
+unchanged. Platform staff can explicitly open an audited business support workspace;
+customer sessions still cannot enter Admin. Installed desktop operation keys for
+`(app)/atlas` remain aliases of `(admin)/atlas` guarded actions.

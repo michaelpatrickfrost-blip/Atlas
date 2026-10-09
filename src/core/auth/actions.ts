@@ -57,3 +57,9 @@ export async function logoutAction() {
   await clearSessionCookie();
   redirect("/login");
 }
+
+/** Atlas console sign-out returns to its own staff login. */
+export async function logoutAdminAction() {
+  await clearSessionCookie();
+  redirect("/atlas/login");
+}

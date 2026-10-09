@@ -6,7 +6,7 @@ import { db } from "@/core/db/client";
 import { effectiveRoleCapabilities } from "@/core/permissions/access-levels";
 import { applyCompanyAccessRestrictions, COMPANY_ACCESS_AREAS, hasCompanyAreaAccess } from "@/core/permissions/company-access";
 import { AccessEditor } from "@/components/admin/access-editor";
-import { PortalActionForm as ActionForm } from "@/app/(app)/atlas/portal-action-form";
+import { PortalActionForm as ActionForm } from "@/app/(admin)/atlas/portal-action-form";
 import { accessGroups } from "@/app/(app)/settings/access-groups";
 import { ConsoleNav } from "../../../console-nav";
 import { CredentialForm } from "../../../credential-form";

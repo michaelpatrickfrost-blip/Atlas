@@ -72,13 +72,15 @@ async function main(){
    await expect(page.getByRole('heading',{name:'Manufacturing & Supply',exact:true})).toHaveCount(1);
    await expect(page.getByRole('heading',{name:'Inventory',exact:true})).toHaveCount(0);
    await noOverflow();
+   if(href==='/stock'||href==='/products')await page.screenshot({path:`${out}/${href==='/stock'?'inventory':'products'}-console-desktop.png`,fullPage:false});
   }
-  await page.screenshot({path:`${out}/inventory-console-desktop.png`,fullPage:false});
+  await page.screenshot({path:`${out}/inventory-item-console-desktop.png`,fullPage:false});
   for(const width of [820,390]){
    await page.setViewportSize({width,height:844});
    for(const href of ['/stock','/products']){
     await page.goto(href,{waitUntil:'networkidle'});
     await expect(page.getByRole('heading',{name:'Manufacturing & Supply',exact:true})).toHaveCount(1);await noOverflow();
+    await page.screenshot({path:`${out}/${href==='/stock'?'inventory':'products'}-console-${width===390?'phone':'tablet'}.png`,fullPage:false});
    }
   }
   await page.setViewportSize({width:1448,height:1086});
@@ -93,6 +95,7 @@ async function main(){
   for(const name of ['Open Inventory','Open Production Planning','Open Products'])await expect(page.getByRole('link',{name,exact:true})).toHaveCount(0);
   const features=page.getByRole('region',{name:'Manufacturing & Supply features',exact:true});
   for(const name of ['Inventory','Production Planning','Products'])await expect(features.getByText(name,{exact:true})).toBeVisible();
+  await page.screenshot({path:`${out}/manage-apps-desktop.png`,fullPage:false});
   console.log('PASS one app on Home, Apps switcher and Manage apps; Products/Inventory/Planning retain unified console navigation and existing routes.');
   await page.goto('/manufacturing',{waitUntil:'networkidle'});
   await page.getByRole('navigation',{name:'Console views'}).getByRole('link',{name:'Finance',exact:true}).click();await expect(page.getByRole('link',{name:/Supply spend report/}).last()).toBeVisible();

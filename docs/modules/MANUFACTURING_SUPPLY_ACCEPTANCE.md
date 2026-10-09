@@ -130,3 +130,11 @@ Preserved exact observed live `e5d66e6` (Studio fields and modern Apps) after
 `18116af` stopped at the shared lock before preparation. Combined Prisma generation,
 production build, explicit post-build strict TypeScript, scoped ESLint and 14 files/
 67 regressions PASS. Candidate/public acceptance is still pending.
+
+`0010eab` preparation/smoke and complete candidate acceptance PASS, with backup
+`atlas-pre-deploy-20261009-220838` and private evidence `/tmp/atlas-supply-staging-wuDkuu`.
+All single-app route/launcher assertions and the full connected workflow passed.
+Before activation, exact public live advanced to `5ebd700` (Nunito typography);
+that source is preserved. Combined build, explicit strict TypeScript, scoped lint
+and five focused launcher/search/shell files/17 tests PASS. Final candidate/public
+acceptance remains pending.

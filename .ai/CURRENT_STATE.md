@@ -13,7 +13,11 @@
   API/permission/workbook/client-state and Atlas admin/provisioning regressions. A first lint pass caught effect-driven synchronous
   state setup; replaced with server-loaded initial preview. Final production build passed. Final standalone TypeScript passed after correcting two test-only annotations.
   Focused ESLint passed (one decorative img-element warning only), and
-  `git diff --check` passed. Candidate/live acceptance and activation pending. No schema migration.
+  `git diff --check` passed. First candidate `41d4ac6` built and smoke-tested; desktop/tablet/phone
+  overflow/branding/utility checks passed. Visual review caught compressed mobile
+  dates: widened controls and removed a duplicate chevron. Signed-out Reports
+  redirects explicitly. Acceptance selectors exclude Next's route announcer from
+  report error checks. Revised combined candidate/export and live checks pending. No schema migration.
 - Initial release isolated from then-live `329b60a` on `codex/reports-release`.
   Concurrent Studio release `c46bbef` became live during acceptance; the ancestry
   gate stopped the old candidate safely. Reports now applies to `c46bbef` on

@@ -53,7 +53,12 @@ actuals outside employment; new domain/browser cases added. Employment regressio
 scoped lint/production build PASS; strict types PASS. Second ff2b3df candidate
 PASS including actual saved Analytics dashboard updates 90→95%; tenant ownership
 FK migration applied, no live switch. Evidence /tmp/atlas-people-candidate-rt4owH.
-Latest live 56c9d88 is now merged, preserving the business/Admin navigation boundary.
+Latest live 56c9d88 is merged, preserving the business/Admin navigation boundary.
+Merged production build/strict types and 18 files/123 tests PASS. Exact 2ede4a0
+activation stopped before pointer switch: dashboard saved but checker reloaded
+before client navigation completed. Added explicit saved-board URL wait; not a
+product-data failure. Evidence /tmp/atlas-people-candidate-Q5RXLH; backup
+atlas-pre-deploy-20261009-223227. Test companies suspended/access revoked.
 Checker now also saves/reloads a real Analytics scorecard dashboard and confirms
 changed source figures render; not yet run. Next: candidate
 acceptance, activation/public verification. External scope stays explicit: RTI/bank,

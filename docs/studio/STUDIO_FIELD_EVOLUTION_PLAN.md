@@ -62,3 +62,26 @@ Every record still passes native owner/private-queue and current/written field
 checks. Inaccessible records block review/cutover without leaking their values or
 identities. Provide approved sample content for design previews where live record
 access is not authorised. This is a planned dependency, not an implemented context.
+
+## 2B3c1 — Current principal and explicit data support context
+
+Purpose: authorise migration preview/job data without treating configuration target
+selection as company membership. Dependencies: existing sessionForUser, independent
+Atlas staff permissions, real active company membership and Studio publish/module
+checks. Expected files: fields/principal.ts and focused principal tests. Database:
+no new model/migration; one explicit support audit in the existing Audit engine.
+
+IMPLEMENTED locally: captureCustomerFieldMigrationPrincipal rejects metadata-only
+membership and staff masquerading as customers. openFieldMigrationSupportContext
+requires refreshed platform access plus an existing active target affiliation,
+then saves a purpose-bound audit; it creates no affiliation/roles/grants and does
+not change the browser session or mount business tools. Jobs will store identity,
+membership and auth/session versions, with support audit identity where applicable.
+resolveFieldMigrationPrincipal reloads current grants and checks revocation and the
+exact audit stamp. It accepts server-stored identity only, not a client endpoint.
+Native owner/private-record and both current/written field checks remain mandatory.
+
+Checks: 3 files/16 assertions PASS; strict post-build TypeScript, scoped lint and production build PASS. New service not yet
+centrally checked or wired to an endpoint/job. 2B3c2 reviewed preview/job persistence
+remains NOT STARTED. Retirement candidate release is separately awaiting combined
+acceptance/public proof with current live business separation preserved.

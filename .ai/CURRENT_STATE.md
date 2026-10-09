@@ -1,5 +1,21 @@
 # Atlas current state
 
+## 9 October 2026 — Studio migration principal checkpoint
+
+2B3c1 IMPLEMENTED locally: fields/principal.ts captures only actual customer
+membership or explicit audited staff support access with existing affiliation.
+No account/grant creation/session switch; metadata target context is insufficient.
+Refresh current permissions, company/source availability and captured auth/session
+versions on resume, bind support audit to tenant/actor/membership/versions.
+3 focused files/16 assertions and integrated five files/33 assertions PASS; strict post-build TypeScript, scoped lint and production build PASS. New exact-Test helper exercises real customer revocation/permission changes,
+explicit existing Admin support entry and support-audit identity, without changing
+existing QA identity/grants. Helper NOT RUN. No endpoint/jobs, preview UI, schema
+migration or central/live claim. 2B3c2 remains not started.
+Compatible retirement source 6085d70 preparation queued; prior 8b99c1b all combined
+candidate checks PASS, activation safely rejected after release branch moved.
+Need candidate/public proof with deployed 56c9d88 business separation preserved.
+
+
 ## 9 October 2026 — Business interface excludes Atlas platform tools, verified live
 
 Exact release 56c9d88a66ba2b257fe780a3174e699cfcd81261 is live at

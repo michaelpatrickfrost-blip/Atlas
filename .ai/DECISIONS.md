@@ -1,3 +1,16 @@
+## 9 October 2026 — Migration data principal is distinct from metadata selection
+
+Configuration company selection cannot authorise native data. Customer migration
+access requires its actual active membership; Atlas support requires current
+independent staff access and existing target affiliation, plus explicit Audit.
+Do not silently create affiliation/grants when opening configuration or previews.
+Store identity/membership/auth-session versions and purpose-bound support audit,
+never capability snapshots; refresh permissions and availability on resume.
+Each row still requires native owner and current/written field-policy checks.
+The support service neither changes the browser session nor brings app tools into
+Admin. Existing audited openCompanyWorkspace remains the affiliation mechanism.
+No migration endpoint/job is implemented by this foundation.
+
 ## 9 October 2026 — Retirement preserves the last active field policy
 
 Field retirement changes metadata eligibility using tenant/publish permission,

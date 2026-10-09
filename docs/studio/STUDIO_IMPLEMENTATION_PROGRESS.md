@@ -11,6 +11,10 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
+2B3c1 current principal/support access — IMPLEMENTED locally; 16 focused tests
+PASS; integrated 33 tests, types/lint/build PASS. No job/preview endpoint or new migration. 2B3b combined
+compatible release preparation pending; no public retirement claim yet.
+
 2B3b — Field retirement — IMPLEMENTED locally. Tenant/publish/module guards, CAS,
 audit, retained active schema/history; no purge. 35 focused tests/types/lint/build
 PASS; central helper PASS on candidate 8b99c1b; public proof pending. 2B3a pure library VERIFIED locally (22
@@ -128,6 +132,10 @@ metadata lifecycle with two tenant scopes and missing publication permission.
 Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
+
+2B3c1: fields/principal.ts, tests/studio-field-principal.test.ts, central
+check-field-principal helper and metadata driver; evolution
+plan/ledger/CURRENT_STATE/DECISIONS. Existing audit only; no DB/schema migration.
 
 2B3b: fields/retirement.ts, tests/studio-field-retirement.test.ts, central
 check-field-storage helper, plan/ledger/CURRENT_STATE/DECISIONS. No new migration.
@@ -288,6 +296,10 @@ These checks derive from Sections 5–6, 14, 19, 25–28; no whole-system gate u
 prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
+
+Check pinned 6085d70 retirement preparation and run exact combined candidate/public
+checks before live retirement claim. 2B3c1 types/lint/build PASS; execute its new real central principal
+helper in a separately prepared candidate before job persistence. No client identity endpoint or saved capabilities.
 
 Prepared exact 8b99c1b1c0e31e2640a0bd73300678f0de899f33 PASS after backup
 atlas-pre-deploy-20261009-222427. Check /tmp/atlas-studio-retirement-candidate.txt;

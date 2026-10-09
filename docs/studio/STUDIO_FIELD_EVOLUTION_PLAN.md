@@ -91,3 +91,59 @@ Before exposing restricted live conversion examples, enforce the specification's
 explicit live-data test permission as well as owner/current/written field access.
 Absent that authority use approved samples/redaction; counts and job details must
 not reveal inaccessible records. No live-preview permission or UI added here.
+
+## 2B3c2 — Preview and job persistence design checkpoint (NOT STARTED)
+
+Purpose: make a reviewed conversion a durable, tenant-owned operation with stable
+source/target identity and explicit per-record outcomes. Prerequisites: 2B3c1 real
+principal acceptance and native owner cohort/representation authority. Expected
+files: fields/migrations, additive Prisma job/row models and SQL guards, focused
+service/schema tests and central helper. No domain tables or local datastore.
+
+Before coding persistence, resolve owner cohort coverage: registry list projections
+are intentionally scoped to visible records and cannot prove whole-tenant coverage.
+Add an owner-approved, versioned preflight that can reject incomplete private-queue
+access generically, without revealing inaccessible IDs/counts. It must include
+canonical records with absent Studio anchors for required-policy coverage. Keep
+sealed Tickets v1/v2 hashes unchanged and ordinary final/merged write restrictions.
+Representation-only migration requires an explicit owner hook and a reviewed
+source value; it must never become another normal-write intent.
+
+Durable review binds exact definition/draft revisions, active source version and
+checksum, target payload/checksum, closed conversion rule, refreshed initiating
+principal and deterministic observed owner/value revisions. Store redacted preview
+examples/failure classes, index/unique impact and rollback limits. Job rows record
+source identity/revision and outcome atomically with any target value; duplicate
+invocation and restart must resolve the same outcome. Do not hold a business
+transaction across batches. Current/written field ACL and owner policy govern
+preview, job detail and every batch. No preview count or source value from a client
+can authorise publication, conversion or cutover.
+
+A reviewed source must stay readable until explicit cutover; preserve all source
+generations/history. Coordinate native record/value writes and configuration
+retirement/publication/activation with a server-enforced migration gate before
+opening 2B4. Stale source revisions require explicit re-review rather than silently
+converting a different value. A changed mapping/target is a new immutable review;
+retry cannot replace a reviewed plan. These are design dependencies, not delivered
+job models, preflight or runtime behaviour.
+
+### 2B3c2a — Owner cohort-access preflight (IMPLEMENTED locally)
+
+Implement a closed Tickets registry query for whole canonical TICKET access
+coverage/count, using a short serializable owner transaction, source module lock,
+native read/manage capabilities and private-queue membership. Reject incomplete
+coverage generically before returning any count. Include final/merged records and
+records without Studio anchors in the count; this grants no final/merged write or
+representation-conversion authority. Preserve sealed entity v1/v2 and normal owner
+writer. Expected files: service-work/studio, new focused owner tests and real
+principal helper. Database: none. Tests: missing native access, disabled source,
+private nonmember denial without identity/count, scoped count including no anchors,
+empty tenant and unchanged sealed contracts. Remaining representation hook and job
+persistence are separate NOT STARTED dependencies.
+
+2B3c2a local evidence: 4 files/22 tests including sealed v1/v2 hashes, production
+build, strict post-build TypeScript and scoped lint PASS. New central helper tests
+a real final record and unanchored native ticket, removes/restores only its exact
+new Test queue membership to prove denial before counts, and checks unchanged
+canonical records. Helper NOT RUN on a cohort-enabled candidate. No final/merged
+representation write hook or durable job implemented.

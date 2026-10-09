@@ -1,5 +1,20 @@
 # Atlas current state
 
+Studio 2B3c2a owner cohort-access preflight IMPLEMENTED locally: new registry
+query tickets.ticket.migration_cohort uses native read/manage, serializable
+module-locked owner transaction and complete private-queue membership before
+returning a canonical count (including final/merged and absent Studio anchors).
+Generic denial discloses no unavailable IDs/counts. 4 files/22 tests including
+sealed v1/v2 hashes, types/lint/production build PASS. Extended real exact-Test
+helper NOT RUN for this query. No final/merged write authority, schema migration
+or job runtime introduced. Contract/owner docs updated.
+
+Prepared/candidate exact 7941f9b all combined checks PASS, including real principal
+revocation/audit and commercial forms: /tmp/atlas-studio-acceptance-9ztRSn. Backup
+atlas-pre-deploy-20261009-224608. Activation queued using exact committed script;
+new cohort source excluded. Public principal/retirement checks pending.
+
+
 ## 9 October 2026 — Studio candidate integrated with current live commercial source
 
 Preserved exact activated 94dd3e source, including its additive appointment
@@ -13,6 +28,10 @@ no activation/public retirement claim. Latest principal helper remains NOT RUN.
 Next prepare/test this compatible source, including real refreshed principals and
 commercial regression, then activate on PASS and repeat exact public checks.
 No new Studio schema migration or preview/job/UI feature in this checkpoint.
+2B3c2 design records a confirmed native dependency: scoped list projections cannot
+prove full cohort coverage. Before persistence implement a versioned owner
+preflight/representation hook preserving v1/v2 hashes, private/final/merged rules
+and generic denial without inaccessible IDs/counts. No new owner hook implemented.
 
 
 ## 9 October 2026 — Studio migration principal checkpoint

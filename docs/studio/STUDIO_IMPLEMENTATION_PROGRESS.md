@@ -11,6 +11,11 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
+2B3c2a owner cohort-access query — IMPLEMENTED locally. 22 focused tests with
+sealed v1/v2, build/types/lint PASS; new real helper not run. No conversion write
+policy/job persistence. Prior principal/retirement 7941f9b candidate all PASS;
+activation/public proof pending.
+
 2B3c1 — Refreshed migration principal and explicit audited support context —
 IMPLEMENTED locally. Seven principal tests plus integrated 23 files/118 tests,
 Prisma generation/types/lint/build PASS. Central helper ready but NOT RUN. No
@@ -196,6 +201,9 @@ platform grants and business-user provisioning regression cases.
 
 # Tests Run
 
+2B3c2a: 4 files/22 tests, build, strict post-build TypeScript and scoped lint PASS.
+New central cohort helper not run; no live cohort-query claim.
+
 2B3b: 5 files/35 assertions, scoped lint, production build and strict TypeScript
 PASS. Central helper and combined candidate checks PASS on 8b99c1b; no public retirement claim.
 
@@ -298,6 +306,12 @@ These checks derive from Sections 5–6, 14, 19, 25–28; no whole-system gate u
 prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
+
+Finish exact 7941f9b activation and combined public runner; source candidate
+PASS including refreshed principals and commercial regressions. Cohort-enabled
+source is a separate local checkpoint and must receive its own prepared candidate
+real helper/public proof. Then implement the remaining explicit owner
+representation-only policy and 2B3c2 reviewed job/row persistence.
 
 Prepare the source preserving live 94dd3e commercial workspaces and 56c9d88
 business/platform separation. Execute the updated combined candidate runner,

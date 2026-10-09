@@ -266,3 +266,11 @@ Tickets is the first opt-in: `tickets.ticket`, `.list` and `.get`, version 1,
 over canonical `ServiceWorkItem(kind=TICKET)`. Existing intake definitions/answers
 stay with the service desk. Phase 2 persistence/builders are separate workstreams;
 these contracts do not establish completed custom-field/page runtime.
+
+Studio field-migration coverage is an owning-module query, not a count of paginated
+visible projections. Tickets registers `tickets.ticket.migration_cohort@1` with
+native read/manage checks and complete private-queue access before a canonical
+count. Its one serializable snapshot includes records without extension anchors;
+generic denial returns no inaccessible identity/count. It grants no final/merged
+write or representation conversion authority. Future migration jobs pin that
+contract separately and must still enforce owner and current/written value access.

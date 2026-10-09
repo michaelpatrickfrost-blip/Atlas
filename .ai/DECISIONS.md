@@ -1,3 +1,15 @@
+## 9 October 2026 — Complete owner cohort access before migration counts
+
+A paginated visible list cannot prove full canonical coverage for field evolution.
+Tickets publishes a separate read-only migration_cohort query requiring native
+read/manage plus complete private-queue membership. Check and count share a
+serializable source-locked transaction; incomplete coverage fails generically
+before counts. Count includes final/merged records and records without Studio
+anchors, but grants no write/conversion permission for those records. Existing
+ordinary extension guards and sealed entity v1/v2 remain unchanged. Future jobs
+pin this query contract and independently apply reviewed representation policy
+and per-value ACL/revision checks. This avoids a hidden native-table scan in Studio.
+
 ## 9 October 2026 — Migration data principal is distinct from metadata selection
 
 Configuration company selection cannot authorise native data. Customer migration

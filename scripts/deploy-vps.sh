@@ -37,7 +37,7 @@ echo "==> Checking SSH key login to $HOST"
 }
 
 echo "==> Deploying on the VPS"
-"${SSH[@]}" bash -s "$DIR" "$COMMIT" "${ATLAS_RELEASE_MODE:-activate}" "$SOURCE_BRANCH" < scripts/deploy/vps-release.sh
+"${SSH[@]}" bash -s "$DIR" "$COMMIT" "${ATLAS_RELEASE_MODE:-activate}" "$SOURCE_BRANCH" "${ATLAS_RELEASE_ACCEPTANCE:-none}" < scripts/deploy/vps-release.sh
 if [ "${ATLAS_RELEASE_MODE:-activate}" = prepare ]; then
   echo "Prepared candidate; live pointer unchanged."
   exit 0

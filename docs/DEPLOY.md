@@ -35,6 +35,15 @@ checked-in `scripts/deploy/vps-release.sh` over key-only SSH. A clean detached
 worktree uses `ATLAS_RELEASE_COMMIT=<full HEAD SHA>` after pushing that exact
 commit to `origin/main`. Main moving causes a safe stop for review.
 
+For People releases, set `ATLAS_RELEASE_ACCEPTANCE=people` on prepare/activation.
+The checked-in People harness verifies real central Test workflows against the
+smoke candidate before switching and against public HTTPS before completion,
+under the same release locks. Existing backup/ancestry/immutability/rollback gates
+still apply; a failure before switching leaves production unchanged, and a public
+failure follows the normal runtime rollback. Synthetic companies are suspended
+and sessions revoked; audited history is retained. This prevents another release
+interleaving between final feature acceptance and activation. The default is none.
+
 The server backs up PostgreSQL and configured private Service files into
 `~/backups`, then installs, generates, applies compatible migrations and builds in
 `/opt/atlas-releases/<revision>`. It never installs/builds over the running tree.

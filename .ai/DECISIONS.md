@@ -1447,3 +1447,12 @@ again. Read bounded dependency/tenant flags, never record payloads. Do not delet
 history, clear another task's active pointers or bypass hash/version/expiry gates.
 Reason: a retired candidate fixture referencing a future contract blocked a release
 that preserved the currently live contracts and passed connected acceptance.
+
+## 9 October 2026 — People feature acceptance stays under release locks
+
+An explicit People acceptance selector runs the checked-in central Test harness
+on the sealed smoke candidate and public HTTPS under the existing deployment
+locks, backups, source/ancestry and rollback gates. Default releases keep their
+current behavior. Rationale: concurrent releases repeatedly advanced between
+preparation, queued feature checks and activation; the accepted revision must
+stay stable through the switch. No lock bypass or arbitrary shell hook.

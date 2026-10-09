@@ -30,7 +30,8 @@ preserving Studio/Supply/Apps and their contributor evidence. Existing data/cred
 no local business database. Docs/plans/PEOPLE_PLATFORM_OVERHAUL.md and affected
 module/design docs, DECISIONS/PROJECT_MEMORY updated. Central Test acceptance
 checker scripts/check-people-workspaces.ts and backed-up candidate/public runner
-scripts/deploy/check-people-release.sh added; not yet run. Merged 11 files/81 tests
+scripts/deploy/check-people-release.sh added; not yet run. Explicit ATLAS_RELEASE_ACCEPTANCE=people now runs candidate/public
+checks within existing deployment locks; no interleaving or guard bypass. Merged 11 files/81 tests
 PASS; merged production build PASS and 4 auth regression files/23 tests PASS.
 Refined production build and post-generation strict types PASS.
 Scoped lint and runner shell syntax PASS. Added full reviewed payroll calculation snapshots and explicit form feedback
@@ -42,7 +43,8 @@ stopped at ancestry when font release activated. No People source activated. Nex
 Font-merged production build/strict types and 16 focused files/109 tests PASS.
 First prepared 28a45e6 candidate/migration smoke PASS, backup
 atlas-pre-deploy-20261009-221347; real candidate acceptance queued behind other
-releases. Ownership client/API regenerated and production build PASS; strict types pending.
+releases. Ownership client/API regenerated and production build PASS; strict types PASS.
+Release build failure gate: 1 file/7 tests PASS; deploy scripts bash syntax PASS.
 Checker now also saves/reloads a real Analytics scorecard dashboard and confirms
 changed source figures render; not yet run. Next: candidate
 acceptance, activation/public verification. External scope stays explicit: RTI/bank,

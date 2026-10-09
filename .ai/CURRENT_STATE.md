@@ -26,7 +26,10 @@ and production build PASS. Full suite: 1066 passed / 87 failed / 22 skipped
 stale module-availability mocks. Initial strict typecheck failed because the cloned dependency tree lacked
 @playwright/test (and cascading script types); install exact lockfile dependencies
 and rerun without exclusions. Live advanced to 6775044 during work; preserve that deployed Studio release
-before preparing this change. New Admin entry is not yet deployed.
+before preparing this change. Deployed 6775044 source/evidence is now merged.
+Exact-lockfile dependency install fixed missing Playwright. Merged production
+build, focused lint and 9-file/62-assertion suite PASS; final strict types are
+still running. New Admin entry is not yet deployed.
 Next: review final diff, record checks, prepare backed-up immutable release,
 exercise private entry/denials/limits and staff console, activate and repeat
 public HTTPS acceptance. No MFA/SSO or immediate crawler removal is claimed.

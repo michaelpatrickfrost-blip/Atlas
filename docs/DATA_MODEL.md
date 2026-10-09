@@ -129,3 +129,13 @@ store copies of domain records. The additive migration is
 and runtime verification. Immutable history deletion is only permitted by the
 existing explicitly authorised Test-company cleanup flag for database-confirmed
 Test customer organisations. Production history is retained.
+
+## Pre-authentication infrastructure — 9 October 2026
+
+`AuthenticationRateLimit` (`authentication_rate_limits`) stores HMAC keys, attempt
+counts and expiry for central atomic login/recovery throttling. It deliberately
+has no tenant identity: it runs before a session exists and exposes no email, IP
+or credential. It is private server infrastructure, excluded from company exports
+and data-gateway reads. Additive migration `20261009220000_authentication_attempt_limits`
+changes no business records or permissions. Expired counters are disposable;
+see `docs/ATLAS_ADMIN.md` for the enforced limits and private staff address.

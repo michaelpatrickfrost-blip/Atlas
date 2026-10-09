@@ -230,3 +230,22 @@ real services and Admin forms and suspends its exact fixture companies afterward
 An isolated Test-company business user is created through the real Admin form to
 verify provisioning and company login/recovery. No staff grants or existing
 identities change; fixture companies are suspended and audit history retained.
+
+## Private Admin entry acceptance — 9 October 2026
+
+After preparing the backed-up candidate, run `scripts/check-private-admin-login.ts`
+on the server with `ATLAS_PRIVATE_ADMIN_TEST=1` and
+`ATLAS_PRIVATE_ADMIN_TEST_URL` set to the loopback candidate, then repeat on public
+HTTPS after activation. It uses existing Guardian staff for console GETs/sign-out,
+creates one isolated central Test-company customer for real login/denial/recovery
+checks, tests concurrent central counters and expires only its own counter keys.
+It changes no existing password or staff grant. Its exact Test company is suspended
+and sessions/recovery invalidated afterward; fixture history is retained.
+
+Check retired/anonymous Admin URLs return 404 without private-address disclosure,
+public customer login has no Admin link, `/19811171adminlogin` and recovery carry
+noindex metadata/headers and no-referrer/no-store, mobile/desktop controls work,
+customer credentials cannot enter Admin and repeated login is blocked. Existing
+staff console/Team/Studio/Connections and sign-out must still work. Correct staff
+password branching is unit-verified; this runner uses an existing signed QA staff
+session and does not claim to test Michael's unknown password.

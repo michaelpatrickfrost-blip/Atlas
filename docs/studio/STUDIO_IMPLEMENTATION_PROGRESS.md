@@ -272,8 +272,8 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Commit the reviewed 2B2 live evidence and next-workstream plan; merge verified source/
-memory with latest main preserving concurrent entries. Then implement 2B3a typed
+2B2 live evidence and next-workstream plan checkpointed; latest main 644f50e
+merged preserving concurrent entries (documentation only). Implement 2B3a typed
 compatibility/conversion rules and tests according to STUDIO_FIELD_EVOLUTION_PLAN.md,
 followed by retirement/reviewed resumable jobs. 2B4 owner values follows 2B3; 2C–2F
 remain. Do not start Phase 3+.

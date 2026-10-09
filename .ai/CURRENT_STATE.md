@@ -49,10 +49,28 @@ Source-based 2B3a–g conversion/retirement/reviewed-job/publication/batch/cutov
 saved in STUDIO_FIELD_EVOLUTION_PLAN.md; migration service NOT STARTED. Historical/
 final-record representation changes require explicit owner policy, never a bypass.
 
-Exact next: merge verified source/memory with latest main, then implement 2B3a typed
+Verified source/memory merged with latest main 644f50e; documentation only, no
+additional app changes. Exact next: implement 2B3a typed
 compatibility/conversion analysis and meaningful tests; next retirement and reviewed
 durable migration path. No owner value API/visual designer or Phase 2 gate PASS yet.
 No 2C or Phase 3+ before preceding workstream/phase gates.
+
+## 9 October 2026 — Historical Apps/Manufacturing integration checkpoint
+
+The earlier Studio dependency blocker below is superseded: exact public/control
+source 2690c26cb0f5f3c28e21265820e8a713708ce699 is now live and narrowly excludes
+SUSPENDED Test-company dependencies while still checking real companies and active
+Tests. Its Manufacturing/supply/cost guards, bundled fonts, release build gate and
+historical evidence are merged unchanged into codex/apps-menu-design. Unaccepted
+Studio field source and retained metadata are not changed to deploy this design.
+Apps styling/behaviour remains the reviewed reference implementation; navigable
+entries follow the currently deployed manifest/permission rules. Regenerated Prisma
+client; merged 5-file/18-assertion menu/compatibility/module/console suite,
+production build and strict TypeScript PASS. Scoped lint zero errors/two existing
+brand-image warnings; final diff/whitespace PASS. Do not claim the menu deployed
+yet. Next:
+prepare the exact compatible candidate, repeat read-only Home/Apps acceptance,
+activate and verify public HTTPS before completed handoff.
 
 ## 9 October 2026 — Historical Apps candidate blocker (resolved by Studio e5d66e6)
 

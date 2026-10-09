@@ -5186,3 +5186,9 @@ had activated Studio release 6775044. Preserved that exact live source and its
 Tickets owner contracts/typed field validation; no unfinished newer Messages
 source included. Combined verification and candidate/public acceptance remain
 pending. This retains both live systems rather than overwriting parallel releases.
+
+Preserved live Studio integration: combined production build and 13 focused
+files/73 tests passed (Studio contracts/fields, MRP, console/report/purchase and
+release gates). Concurrent type generation briefly removed .next/types/routes;
+explicit TypeScript is being rerun after the completed build. No source exclusions
+or relaxed checks. Next candidate must pass full connected acceptance before live.

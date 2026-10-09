@@ -1229,7 +1229,8 @@ still explicitly accessible. Reuse the existing server-filtered directory and
 compact topbar menu; presentation must not grant app or company access. The home
 launcher uses compact, left-aligned rows with small, consistent brand-blue icons
 rather than large individually-coloured tiles: this keeps the requested app
-icons while making dense groups faster to scan and visually calmer.
+icons while making dense groups faster to scan and visually calmer. The compact
+Home treatment is superseded by the 9 October reference decision below.
 
 ## 8 October 2026 — Connections is privileged company onboarding
 

@@ -148,6 +148,9 @@ Ease of use is vital: expose context, exceptions and useful next actions; keep t
 technical complexity behind owning-domain engines and contextual detail. The later
 8 October app-launcher request places polished app icons first on Home after login,
 with operational attention and goals below.
+The 9 October reference adds a modern grouped-card Home and a separate light
+utility rail; it does not repeat business apps. Tablet/phone use labelled utility
+controls, while other apps retain their existing top menus.
 [System map](../docs/atlas-system-map.md) and the other `atlas-*.md` guides index
 existing owners, evidence, gaps and continuous work; they do not replace `.ai/`
 shared memory or the detailed module delivery guides.

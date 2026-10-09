@@ -158,8 +158,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Validate/commit the final recovery-feedback and browser-conflict test checkpoint
-on `codex/studio-phase1-release`, prepare its pinned candidate through deploy:vps.
+Prepare the pinned merged `codex/studio-phase1-release` candidate after preserving
+the completed live Home 329b60a source/evidence. The ancestry guard safely stopped
+the older preparation; feedback/test checkpoint is committed as 0f0cf71.
 Candidate 2ba0382 reached business-user provisioning and expected recovery denial;
 feedback/selector correction and the rest of customer login remain to verify. Run
 `ATLAS_STUDIO_LIVE_TEST=1 ATLAS_STUDIO_TEST_URL=http://127.0.0.1:3011`

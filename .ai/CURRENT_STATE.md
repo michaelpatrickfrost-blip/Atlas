@@ -33,6 +33,19 @@ completed central reproduction, candidate/live workflow proof and deployment
 remain pending. No report marked FIXED yet. Next: finish verification/deploy and
 repeat exact forbidden actions, real button, newly saved proposal and product pages.
 
+Complete baseline reproduction on live 2a8522f passed at 20:04 UTC after private
+backup /home/administrator/backups/atlas-pre-mrp-test-20261009-200431: three
+forbidden writes, newly saved proposal crash, actual manager button with one run,
+MAKE/BUY quantities/routing/material dates and unchanged historical/input/order/
+stock/Finance/audit/outbox state. Final connected quantity review also found BUY
+proposals counted again as component demand (10 needed displayed 20). Four new
+regressions failed before repair. Shortage read projection now aggregates BOM
+requirements, nets the shared stock snapshot once and retains a larger independent
+BUY demand total without adding the same requirement twice; canonical scoped
+suggestion product names fill missing component labels. No stored rows are changed.
+Own release preserves deployed Reports 2a8522f; parallel standalone Admin a642df0
+became live before activation, so that exact deployed source must be retained too.
+
 ## 9 October 2026 — Reports workspace in progress
 
 - Added modern `/reports` utility separate from Dashboards, shared Home utility

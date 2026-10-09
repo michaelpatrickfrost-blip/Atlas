@@ -25,7 +25,11 @@ does not authorise creating runs or suggestions. The saved-date query conversion
 supports ISO JSON dates and older demand-array proposals. The read boundary also
 adapts the engine's `demandId/demandType/demandQuantity/sourceLabel` into display
 fields while retaining old `sourceId/sourceType/quantity/label` history and demand
-lineage. It does not rewrite stored planning history. Guardian's opt-in central
+lineage. It does not rewrite stored planning history. Shortages aggregate component
+consumption against the shared stock snapshot once. A matching BUY supply proposal
+is not added again as gross demand; a larger BUY total retains independent direct
+or safety-stock requirements. Canonical scoped suggestion products fill missing
+component labels. Guardian's opt-in central
 fixture check covers actual forbidden POSTs, the authorised button, persisted
 BOM/routing proposals, date-bearing pages and canonical product links; broader
 planning/execution coverage remains separately tracked.

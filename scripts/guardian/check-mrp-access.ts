@@ -196,6 +196,13 @@ async function main() {
       await expect(page.getByText("Guardian synthetic forecast · 10", { exact: true }).first()).toBeVisible();
     }
     await view(page, "/manufacturing/planning/shortages", "Shortages"); assert.equal(await page.locator("tbody tr").count(), 2);
+    for (const [position, component] of seeded.components.entries()) {
+      const row = page.locator("tbody tr").filter({ has: page.locator(`a[href="/products/${component.id}"]`) });
+      await expect(row.locator("td").nth(1)).toHaveText(String((position + 1) * 10 * (reproduce ? 2 : 1)));
+      await expect(row.locator("td").nth(3)).toHaveText(String((position + 1) * 10 * (reproduce ? 2 : 1)));
+      if (!reproduce) await expect(row.getByRole("link", { name: component.name, exact: true })).toBeVisible();
+    }
+    console.log(reproduce ? "REPRODUCED doubled component need/shortage after BUY proposals were added to the same BOM requirement." : "PASS exact shortage quantities and canonical component names; BUY supply is not counted again as demand.");
     assert.equal(await otherState(), unchanged, "Inputs, versions, orders, stock, finance, audit and outbox unchanged in every fixture company");
     assert.equal(JSON.stringify(await db.manufacturingPlanningRun.findUnique({ where: { id: seeded.historical.id }, include: { suggestions: true } })), history, "Historical planning run and suggestions preserved");
     if (!reproduce) assert.equal(errors, 0, "No browser runtime errors on valid workflows"); assert.equal(await release(), revision);

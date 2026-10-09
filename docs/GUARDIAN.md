@@ -184,7 +184,10 @@ read-only, management, disabled-app and unentitled-app customer profiles. Actual
 Server Action POSTs prove rejection and exact unchanged runs/suggestions. The real
 Run MRP button creates one session-scoped central run and asserts MAKE/BUY proposals,
 BOM quantities, machine/routing and persisted date strings; saved planning pages,
-shortage dates and product links must render without browser errors. Historical
+shortage dates/quantities and product links must render without browser errors.
+The checker separately challenges the old doubled BOM/BUY shortage projection;
+the read projection aggregates component consumption against one shared stock
+snapshot and retains independently required BUY quantities. Historical
 proposals and input/order/stock/Finance/audit/outbox records remain unchanged.
 Only the fixture planner's exact Run MRP action is allowed through browser writes.
 Synthetic companies are suspended and their sessions/grants revoked afterwards;

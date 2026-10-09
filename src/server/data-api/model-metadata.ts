@@ -1,6 +1,18 @@
 // Generated from the application schema.
 export const MODEL_FIELDS = {
   "Organisation": {
+    "studioDefinitions": {
+      "type": "StudioDefinition",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "studioExtensionRecords": {
+      "type": "StudioExtensionRecord",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "operationalMeetingEntry": {
       "type": "MeetingEntry",
       "list": true,
@@ -3912,6 +3924,12 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "active": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "sellable": {
       "type": "Boolean",
       "list": false,
       "nullable": false,
@@ -13707,6 +13725,12 @@ export const MODEL_FIELDS = {
       "nullable": true,
       "relation": false
     },
+    "resultingPurchaseDocumentId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
     "createdAt": {
       "type": "DateTime",
       "list": false,
@@ -13735,6 +13759,12 @@ export const MODEL_FIELDS = {
       "type": "Product",
       "list": false,
       "nullable": false,
+      "relation": true
+    },
+    "purchaseDocument": {
+      "type": "FinanceDocument",
+      "list": false,
+      "nullable": true,
       "relation": true
     }
   },
@@ -19595,6 +19625,12 @@ export const MODEL_FIELDS = {
     },
     "timeline": {
       "type": "FinanceTimeline",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "manufacturingSuggestions": {
+      "type": "ManufacturingSupplySuggestion",
       "list": true,
       "nullable": false,
       "relation": true
@@ -35820,6 +35856,780 @@ export const MODEL_FIELDS = {
     "job": {
       "type": "FieldServiceJob",
       "list": false,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "StudioDefinition": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "key": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "kind": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "name": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "revision": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "latestVersion": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "activeVersionId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "retiredAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "createdBy": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "draft": {
+      "type": "StudioDraft",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "fieldBinding": {
+      "type": "StudioFieldBinding",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "versions": {
+      "type": "StudioDefinitionVersion",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "activeVersion": {
+      "type": "StudioDefinitionVersion",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    }
+  },
+  "StudioDraft": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definitionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "revision": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "baseVersionId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "editorUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "payload": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "validation": {
+      "type": "Json",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definition": {
+      "type": "StudioDefinition",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "baseVersion": {
+      "type": "StudioDefinitionVersion",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    }
+  },
+  "StudioDefinitionVersion": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definitionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "semanticVersion": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "schemaVersion": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "payload": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "compiledPlan": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "checksum": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdBy": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "publishedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definition": {
+      "type": "StudioDefinition",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "activeFor": {
+      "type": "StudioDefinition",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "draftBases": {
+      "type": "StudioDraft",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "dependencies": {
+      "type": "StudioDependency",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "fieldOrigins": {
+      "type": "StudioFieldBinding",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "generationOrigins": {
+      "type": "StudioFieldGeneration",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "fieldValues": {
+      "type": "StudioFieldValue",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "StudioDependency": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definitionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "versionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "ownerModuleId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "contractId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "contractVersion": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "schemaHash": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "contractHash": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "version": {
+      "type": "StudioDefinitionVersion",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "StudioFieldBinding": {
+    "definitionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "entityId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "fieldKey": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "originVersionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "initialGenerationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definition": {
+      "type": "StudioDefinition",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "originVersion": {
+      "type": "StudioDefinitionVersion",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "initialGeneration": {
+      "type": "StudioFieldGeneration",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "generations": {
+      "type": "StudioFieldGeneration",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "StudioFieldGeneration": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definitionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "entityId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "valueType": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "originVersionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "binding": {
+      "type": "StudioFieldBinding",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "originVersion": {
+      "type": "StudioDefinitionVersion",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "initialFor": {
+      "type": "StudioFieldBinding",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "slots": {
+      "type": "StudioFieldSlot",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "values": {
+      "type": "StudioFieldValue",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "StudioExtensionRecord": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "entityId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "recordId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "revision": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "slots": {
+      "type": "StudioFieldSlot",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "StudioFieldSlot": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "entityId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "extensionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definitionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "generationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "revision": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "activeValueId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "uniqueToken": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "extension": {
+      "type": "StudioExtensionRecord",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "generation": {
+      "type": "StudioFieldGeneration",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "values": {
+      "type": "StudioFieldValue",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "activeValue": {
+      "type": "StudioFieldValue",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    }
+  },
+  "StudioFieldValue": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definitionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "generationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "slotId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "versionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "revision": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "valueType": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "isNull": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "textValue": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "integerValue": {
+      "type": "BigInt",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "decimalValue": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "currency": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "booleanValue": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "dateValue": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "instantValue": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "jsonValue": {
+      "type": "Json",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "referenceValue": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "fingerprint": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdBy": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "slot": {
+      "type": "StudioFieldSlot",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "generation": {
+      "type": "StudioFieldGeneration",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "schemaVersion": {
+      "type": "StudioDefinitionVersion",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "activeFor": {
+      "type": "StudioFieldSlot",
+      "list": true,
       "nullable": false,
       "relation": true
     }

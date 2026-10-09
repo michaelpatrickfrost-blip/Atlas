@@ -6,6 +6,9 @@ point to Atlas's existing owners and central records. It is not a claim of
 Dynamics parity. The [173-section source](MANUFACTURING_SOURCE_REQUIREMENTS.md)
 remains complete; [coverage](MANUFACTURING_COVERAGE.md) records unfinished work.
 
+Single-app consolidation is live and publicly verified on 10 October 2026; see
+[acceptance evidence](MANUFACTURING_SUPPLY_ACCEPTANCE.md).
+
 ## The working experience
 
 Open `/manufacturing` from Home. The modern blue-and-white console groups work in

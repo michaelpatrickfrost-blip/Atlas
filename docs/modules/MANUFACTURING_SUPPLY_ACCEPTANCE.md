@@ -114,7 +114,7 @@ in the main Desktop checkout, including 27 overlapping task paths. The complete
 release branch and shared memory remain committed in the same Git repository;
 no contributor's unfinished changes were reset or overwritten.
 
-## Single-app follow-up — candidate/public acceptance pending
+## Single-app follow-up — historical preparation (superseded below)
 
 Inventory and Product route trees now share the Manufacturing & Supply shell;
 Inventory's launcher/switcher card joins the already folded Production Planning
@@ -170,3 +170,102 @@ public-failure runtime rollback remain. No inherited-lock mechanism is included.
 Final exact-source hooked acceptance remains pending. Imported People migration
 EOF whitespace is retained to preserve already-applied checksums; owned diff
 against exact live `36d0d2d` passes whitespace checks.
+
+## Detailed consolidation preparation history
+
+This dated history is superseded by the final public acceptance below.
+
+## 9 October 2026 — Single Manufacturing app consolidation in progress
+
+User follow-up requires other apps doing this work to disappear. Inventory joins
+Production Planning under the accessible Manufacturing launcher/switcher entry;
+Products was already hidden and now shares the console chrome. Product/Stock
+route layouts use the same Manufacturing & Supply header/navigation, retaining
+source guards and bookmarks. Warehouses/locations added to Products & plant.
+Manage apps nests Inventory/Planning/Products access switches under one parent
+card, retaining original service/entitlement/dependency checks and state flags.
+No schema, records, role grants or company switches changed. Product-only readers
+can open the console with only their permitted source destinations. Finance and
+business-wide Plan/S&OP remain separate for other teams unless clarified otherwise.
+Paths: app layouts/apps page/card; module manifests/console destinations; generic
+core/modules/workspaces.ts grouping; checker and module/workspace tests.
+Checks before source preservation: local production build, strict TypeScript,
+scoped ESLint PASS; nine regressions/47 tests and four launcher/search files/14
+tests PASS. Extended candidate checker covers Home/switcher/Manage apps and legacy
+Product/Inventory/Planning routes at desktop/tablet/phone. Source 18116af preparation
+stopped while waiting for the shared deployment lock, before new backup/fixture.
+Observed live e5d66e6 (Studio fields and modern Apps) is merged exactly to preserve
+its deployed source. Integrated Prisma generation, production build, scoped ESLint
+and 14 files/67 regression tests PASS. Explicit strict post-build TypeScript PASS.
+Candidate 0010eab prepared/smoke PASS after backup atlas-pre-deploy-20261009-220838;
+complete candidate acceptance PASS in /tmp/atlas-supply-staging-wuDkuu, including
+Home/Apps/Manage apps, eight existing route pages and responsive Product/Inventory
+fit; full Make/Buy/spend/eligibility/guides and unchanged QA permissions. While
+queued, observed live advanced to 5ebd700 (shared Nunito font); that exact deployed
+source is merged. Combined production build, explicit strict TypeScript, scoped
+lint and five launcher/search/shell files/17 tests PASS. Added source-page/Manage apps screenshots to
+the checker for visual review. 6a12fc1 prepared/smoke PASS after backup
+atlas-pre-deploy-20261009-221710; complete candidate acceptance PASS in
+/tmp/atlas-supply-staging-nfUzeE, screenshots visually inspected. Activation stopped
+at ancestry before a new backup/switch: public live advanced to 56c9d88 (business/
+staff navigation boundary). That exact deployed source is preserved. Integrated
+production build, explicit post-build strict TypeScript, scoped lint and six
+launcher/search/business-boundary files/23 tests PASS. ddb35f2 prepared/smoke
+PASS with backup atlas-pre-deploy-20261009-223610; complete candidate PASS in
+/tmp/atlas-supply-staging-QdOOi5, screenshots visually inspected. Live advanced to
+94dd3e1 (commercial workspaces) ahead of activation; that exact source and its
+already-applied SalesActivity additive migration are preserved. Integrated Prisma
+generation, production build, explicit strict post-build TypeScript, scoped lint
+and 14 files/67 focused regressions PASS. c8b49aa prepared/smoke PASS after
+backup atlas-pre-deploy-20261009-224802; complete candidate PASS in
+/tmp/atlas-supply-staging-yMKGrR. Public advanced to 7941f9b (Studio field policy
+helpers) ahead of activation; that exact deployed source is preserved.
+10 October: integrated Studio helpers production build, strict TypeScript, scoped
+lint and 12 files/62 tests PASS. Linux global-lock ownership/inheritance/rejection
+prototype checks PASS without app/database/service writes. Observed public live
+advanced to 36d0d2d (People/payroll). It already supplies a native acceptance hook
+inside the normal release lock scope; preserve that exact source and extend the
+hook for supply instead of introducing a second locking mechanism. 36d0d2d exact People/payroll source, migrations and generated gateway are merged.
+Supply now extends its deployed held-lock acceptance hook, with separate candidate
+and public fixture backups and normal public-failure runtime rollback. Prisma generation, production build, scoped lint, shell syntax and 15 files/95
+focused regressions and explicit strict post-build TypeScript PASS. Final hooked
+candidate/public acceptance pending. Owned diff against exact live 36d0d2d passes
+whitespace; imported applied People migration EOF whitespace is preserved for
+checksum integrity. No inherited-lock mechanism is included.
+No live single-app claim yet.
+
+
+## Single-app public acceptance — PASS, 10 October 2026
+
+Exact application **2ef5b4c2f9dffaa2dd92c7df894a5587e45a12de** is live and
+publicly verified. Current pointer/control HEAD and public health match; previous
+immutable `36d0d2d` is retained. One held-lock invocation used the original deploy
+path with `ATLAS_RELEASE_ACCEPTANCE=supply`, preserving every gate and all exact
+intervening public sources. No inherited-lock mechanism is shipped.
+
+Backups under `/home/administrator/backups`:
+`atlas-pre-deploy-20261009-231158`,
+`atlas-pre-supply-candidate-20261009-231340`,
+`atlas-pre-supply-public-20261009-231425`.
+Candidate evidence `/tmp/atlas-supply-candidate-3owMAy`; public evidence
+`/tmp/atlas-supply-public-7GlYCp`. Database/private-file backups remain retained.
+
+Both exact-source runs PASS: one Manufacturing app on Home, Apps switcher and
+Manage apps; no separate Inventory/Production Planning/Products app links;
+three source controls inside the parent card; unified header on eight existing
+Product/Stock/Planning routes; desktop 1448/tablet 820/phone 390 with no root
+overflow. Full Make/Buy/spend/eligibility/drill-through/nine-guide workflow also
+passes with the exact values and fixture-retirement checks listed above. Public
+Product/Inventory/Manage apps screenshots visually inspected; zero page exceptions.
+Original QA account/auth version/profile grants remain unchanged, Test affiliation
+revoked/company suspended and financial/audit history retained.
+
+Final production build, explicit strict post-build TypeScript, scoped lint, shell
+syntax and 15 files/95 focused regressions PASS. Full suite not rerun; previous
+baseline failures are not represented as passing. Owned diff against `36d0d2d`
+passes whitespace; imported applied migration trailing blank lines are retained
+for checksum integrity. Canonical Desktop checkout still has 598 pre-existing
+changes at ed54a6c; preserve them and reconcile this committed release branch later.
+No app code changed after public verification. Finance and business-wide Plan/S&OP
+remain available; the requested product/inventory/production-planning consolidation
+is complete. The broader 173-section engine programme remains as documented.

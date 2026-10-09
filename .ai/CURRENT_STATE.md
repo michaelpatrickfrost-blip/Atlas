@@ -1,6 +1,38 @@
 # Atlas current state
 
-## 10 October 2026 — Appointment completion entry-point guard in verification
+## 10 October 2026 — Commercial workspaces and completion guard live and verified
+
+Activated immutable b57ba7209889c0096f47475d6a0659741834f11b at
+https://atlassystem.online, preserving accepted Dashboard/People/Manufacturing/
+Studio source. Previous 70ca23e is retained. Final server preparation/build/smoke,
+activation, login and exact public revision checks PASS. Preparation backup
+atlas-pre-deploy-20261009-233524; activation backup
+atlas-pre-deploy-20261009-233756. No additional migration or provider change.
+
+Complete candidate AND public HTTPS commercial acceptance PASS: selected-customer
+family, shared/restricted notes, appointment create/overlap/reschedule/outcome/
+cancellation, reader/rep/capability/tenant boundaries, visual journey experience/
+touchpoint/branch/zoom/reorder, automation publication with zero deliveries and all
+ten screens at desktop/tablet/phone. Direct actual legacy action rejects booked/
+cancelled appointments and unauthorised owners; ordinary authorised legacy work
+completes once, advances its version and cannot be overwritten by replay.
+No browser errors; 15 permitted browser form POSTs and 51 blocked background writes.
+Synthetic Test access suspended/revoked, record and audit history retained.
+Candidate evidence /tmp/atlas-commercial-acceptance-7xxeAm and staging
+/tmp/atlas-commercial-staging-OY35yM; fixture backup
+atlas-pre-commercial-test-20261009-233723. Public logs
+/tmp/atlas-commercial-public-Xc3qM0, evidence
+/tmp/atlas-commercial-acceptance-ugXTmv; fixture backup
+atlas-pre-commercial-public-test-20261009-233807.
+
+Latest integrated local Prisma generation, 7 files/47 regression tests, production
+build, strict TypeScript, scoped lint, shell syntax and diff whitespace PASS.
+Earlier commercial 30-file/145-test acceptance and full-suite limitations below
+remain accurate. This closes the final completion boundary; the broader provider
+integration limits below remain. Verified guard/evidence integration into shared
+main is next; canonical Desktop's concurrent dirty checkout remains untouched.
+
+### Earlier guard preparations and source preservation
 
 Final 2b8759f candidate build stopped at ENOSPC after compilation; running release
 was unchanged. Backup atlas-pre-deploy-20261009-232112 and private build/smoke logs
@@ -10,7 +42,8 @@ task. Exact accepted Dashboard runtime 70ca23e and its documentation-only public
 evidence 56f4cb2 are now merged. This supersedes the earlier Dashboard-is-pending
 boundary: only its already-deployed source is included. Integrated Prisma generation, 7 files/47 regression tests, production build,
 strict TypeScript, scoped lint, shell syntax and diff whitespace PASS. Fresh immutable
-preparation, candidate acceptance and public guard checks remain required. Failed unsealed 2b8759f is preserved; use a fresh reviewed revision.
+preparation and public checks subsequently passed on b57ba72 above. Failed unsealed
+2b8759f is retained with its failure evidence.
 
 Candidate 7d9fc3e real forms, direct legacy-action rejection/positive/replay proof
 and all 30 commercial route/viewport cases PASS. Evidence
@@ -20,7 +53,7 @@ atlas-pre-deploy-20261009-230931. Test access revoked, history retained. Activat
 safely stopped after accepted Manufacturing workspace consolidation 2ef5b4c became
 live. Its exact source and contributor evidence are merged. Merged production
 build, strict TypeScript and 6-file/30-test completion/entitlement/workspace suite
-PASS. Final guard/public release checks remain required. Dashboard source was
+PASS. Final guard/public checks were pending at this point. Dashboard source was
 excluded at that attempt; its subsequent accepted live source is preserved above.
 
 Guard 1e4597 preparation safely stopped at ancestry after People 36d0d2d became
@@ -42,7 +75,7 @@ acceptance regressions cover this boundary. Initial 3-file/19-test suite, strict
 TypeScript, production build, scoped lint and whitespace PASS. Preserve newly live
 Studio 7941f9b (the commercial source 94dd3e is its ancestor), now merged with
 all contributor evidence. Candidate/public guard verification
-and deployment remain required; the underlying commercial source 94dd3e is already
+and deployment were pending at this point; the underlying commercial source 94dd3e is already
 deployed and preserved. Merged Studio/guard 6-file/43-test suite, strict TypeScript,
 production build and whitespace PASS.
 

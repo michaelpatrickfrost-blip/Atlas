@@ -274,3 +274,16 @@ count. Its one serializable snapshot includes records without extension anchors;
 generic denial returns no inaccessible identity/count. It grants no final/merged
 write or representation conversion authority. Future migration jobs pin that
 contract separately and must still enforce owner and current/written value access.
+
+
+## Consolidated workspaces
+
+A manifest may set `launcherConsolidatedInto` to an implemented parent workspace
+ID. Home and the Apps switcher hide that source app only when the parent is enabled,
+entitled and accessible to the current person. Manage apps nests the source access
+switches under its parent app card; enabling/disabling still uses the original
+module service, dependency and entitlement checks. Use a single direct parent, not
+nested/cyclic consolidation. Retain source routes, record identity, capabilities,
+audit, providers and exports. Shared workspace layouts must enforce their original
+source guards. Manufacturing & Supply includes Planning, Inventory and Products;
+companies without console access retain their existing licensed entry points.

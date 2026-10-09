@@ -1,6 +1,6 @@
 import type { Session } from "@/core/auth/session";
 import type { SearchResult } from "@/core/modules/types";
-import { getNavigableModules, getModuleNavigation } from "@/core/modules/runtime";
+import { getAccessibleModules, getModuleNavigation } from "@/core/modules/runtime";
 import { searchCustomers } from "@/core/customers/search";
 
 /**
@@ -13,7 +13,9 @@ export async function searchAtlas(session: Session, query: string): Promise<Sear
   const trimmed = query.trim();
   if (trimmed.length === 0) return [];
 
-  const modules = await getNavigableModules(session);
+  const accessible = await getAccessibleModules(session);
+  const modules = accessible.filter(module => module.launcherVisible !== false ||
+    module.launcherConsolidatedInto && accessible.some(parent => parent.id === module.launcherConsolidatedInto));
 
   const navigationMatches: SearchResult[] = modules.flatMap((module) => {
     const items = getModuleNavigation(module, session);
@@ -22,7 +24,7 @@ export async function searchAtlas(session: Session, query: string): Promise<Sear
       .map((item) => ({
         id: `nav:${module.id}:${item.href}`,
         title: item.label,
-        subtitle: module.name,
+        subtitle: accessible.find(parent => parent.id === module.launcherConsolidatedInto)?.name ?? module.name,
         href: item.href,
         group: "Navigation",
       }));

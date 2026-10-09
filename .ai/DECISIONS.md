@@ -1543,6 +1543,21 @@ history, clear another task's active pointers or bypass hash/version/expiry gate
 Reason: a retired candidate fixture referencing a future contract blocked a release
 that preserved the currently live contracts and passed connected acceptance.
 
+
+## 9 October 2026 — One Manufacturing app includes product and stock workspaces
+
+Michael explicitly requests removal of other apps doing the same work. Production
+Planning, Inventory and Products are presented inside Manufacturing & Supply, with
+one Home/switcher entry and shared header/navigation across existing route trees.
+Manage apps nests their existing access switches under the parent rather than
+listing separate app cards. Keep canonical records, source capabilities/licences,
+providers, exports and existing bookmarks. No module-state migration, capability
+grants or destructive business-record removal. For companies without console
+access, existing Inventory/Planning entry points remain. Product-only readers may
+open the console but receive only their authorised source destinations, with no
+Manufacturing write/financial permission. Business-wide Finance, Plan and S&OP
+remain available to their wider teams; their manufacturing connections remain.
+
 ## 9 October 2026 — People feature acceptance stays under release locks
 
 An explicit People acceptance selector runs the checked-in central Test harness
@@ -1562,3 +1577,13 @@ preview/value services must enforce native owner, current/written field ACL and
 reference-target permissions. No encoder, database mutation or metadata API is
 introduced by this prerequisite. Rationale: previews must not round or silently
 reinterpret stored values, or turn historical decoding into selection permission.
+
+## 10 October 2026 — Supply uses the existing held-lock acceptance hook
+
+Accepted concurrent releases repeatedly advanced the server between supply
+candidate checks and activation. Extend the already deployed People acceptance
+hook with an explicit supply workflow. Keep both existing locks across candidate,
+activation and public checks, with separate backed-up central Test fixtures.
+Reuse all pinned-source, remote-tip, ancestry, compatibility, immutable build,
+smoke and runtime rollback gates. No lock inheritance mechanism or gate bypass is
+needed; default and People releases retain their existing behavior.

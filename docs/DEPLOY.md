@@ -44,6 +44,19 @@ failure follows the normal runtime rollback. Synthetic companies are suspended
 and sessions revoked; audited history is retained. This prevents another release
 interleaving between final feature acceptance and activation. The default is none.
 
+For the Manufacturing & Supply console, use `ATLAS_RELEASE_ACCEPTANCE=supply`
+with the pinned scoped branch. Its existing central Test checker runs against the
+sealed smoke candidate and publicly before completion, under this same lock pair.
+Both fixture stages take their own database/private-file backup. The original
+clean-tree/pinned push, remote-tip, ancestry, compatibility, immutability, smoke and
+rollback gates remain; public failure restores the previous runtime without a
+database rollback. This prevents another release overtaking final acceptance.
+Use activate (the default) to complete the whole checked sequence in one run:
+
+```bash
+ATLAS_RELEASE_BRANCH=codex/manufacturing-supply-console ATLAS_RELEASE_COMMIT=$(git rev-parse HEAD) ATLAS_RELEASE_ACCEPTANCE=supply npm run deploy:vps
+```
+
 The server backs up PostgreSQL and configured private Service files into
 `~/backups`, then installs, generates, applies compatible migrations and builds in
 `/opt/atlas-releases/<revision>`. It never installs/builds over the running tree.

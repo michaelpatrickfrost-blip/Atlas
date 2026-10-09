@@ -1,5 +1,13 @@
 # Atlas current state
 
+## 10 October 2026 — Studio candidate preserves live Manufacturing and People
+
+Merged exact public 2ef5b4c source and applied migrations unchanged. Latest supply
+release evidence is retained below. No local business DB or Studio schema change.
+Cohort/decoder local checks passed before merge; integrated checks now pending.
+No cohort/decoder candidate or public verification yet. Current next action:
+regenerate, run integrated tests/build/types/lint, then prepare exact reviewed source.
+
 ## 10 October 2026 — Studio stored-value decoder local checkpoint
 
 2B3c2b IMPLEMENTED: pure written-schema decoder in fields/codec.ts, seven
@@ -14,6 +22,56 @@ Next preserve that exact source, regenerate/build/test, then prepare and prove t
 cohort/decoder candidate before activation and exact public checks. Prior 6795f08
 prepare log stops at server invocation; no candidate/backup success claim.
 Phase 2 gate NOT PASSED; visual designer/publication/buttons remain planned 2E.
+
+## 10 October 2026 — Single Manufacturing & Supply app live and verified
+
+Exact source 2ef5b4c2f9dffaa2dd92c7df894a5587e45a12de is live at
+https://atlassystem.online. Public health, current pointer and control HEAD match;
+exact candidate/public checks passed under one continuous original release lock.
+Previous immutable 36d0d2d is retained. Deployment backup
+atlas-pre-deploy-20261009-231158; candidate/public fixture backups
+atlas-pre-supply-candidate-20261009-231340 and
+atlas-pre-supply-public-20261009-231425. Private evidence:
+/tmp/atlas-supply-candidate-3owMAy and /tmp/atlas-supply-public-7GlYCp.
+
+One Home/Apps-switcher/Manage-apps entry: Manufacturing & Supply. Product,
+Inventory and Production Planning routes share its header/navigation; source
+switches are nested in its one app card. Warehouses/locations and included pages
+remain discoverable, including source search. Existing routes/records, source
+capabilities/licences and profiles are preserved; no consolidation schema/grants
+or company switches changed. Product-only readers can open their permitted
+console destinations. Finance and business-wide Plan/S&OP remain separate, with
+purchasing/spend/S&OP destinations connected to the console.
+
+Candidate and public PASS: desktop/tablet/phone; eight existing route pages;
+no duplicate app entries; actual recursive Make 10 / Buy 15 net of five stocked;
+one source-linked GBP37.50 purchase draft with rejected-input retention/repeat
+protection; internal material Sales exclusion; separate GBP/EUR spend and denied
+source redaction; document drill-through; all nine illustrated guides; zero browser
+exceptions. Exact Test companies/access retired, immutable history retained and
+existing QA authentication/permissions unchanged. Public screenshots inspected.
+Final local production build, explicit strict TypeScript, scoped lint, shell
+syntax and 15 files/95 focused tests PASS. Owned diff versus exact live base
+36d0d2d passes whitespace; imported applied migration EOF whitespace retained for
+checksum integrity. Full suite not rerun; known baseline failures remain, with no
+whole-suite claim. All intervening exact public Studio/Apps/fonts/business-nav/
+commercial/People sources and migrations are preserved.
+
+Supply extends the already deployed acceptance hook using
+ATLAS_RELEASE_ACCEPTANCE=supply. Existing locks cover candidate, activation and
+public checks together; original pinned/remote-tip/ancestry/backup/compatibility/
+smoke/rollback gates remain. No inherited-lock mechanism is shipped. Paths and
+full history: docs/modules/MANUFACTURING_SUPPLY_ACCEPTANCE.md; generic module
+workspace/search runtime; source layouts/manifests; scripts/deploy/vps-release.sh.
+
+Canonical integration remains blocked by ed54a6c and 598 existing dirty/untracked
+entries in /Users/michael/Desktop/RP SYSTEM. Source and shared memory are committed
+on codex/manufacturing-supply-console in the same repository; preserve other
+contributors and reconcile that checkout later. This handoff adds only evidence/
+documentation after the exact publicly verified app release. The full researched
+173-section MRP programme remains partial as documented in coverage; this completes
+the requested consolidation, not all remaining planning/cost/execution engines.
+
 
 ## 10 October 2026 — Cohort query integrated with verified live People source
 

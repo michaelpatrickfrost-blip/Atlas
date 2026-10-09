@@ -11,10 +11,12 @@ Service checkpoints updated 7 October 2026; other checkpoints retain their recor
 
 ## Reports workspace — 9 October 2026
 
-- [ ] Modern Reports utility, distinct from Dashboards; initial detailed coverage
+- [x] Modern Reports utility, distinct from Dashboards; initial detailed coverage
   Customers, Products, Sales, Inventory, Logistics, Manufacturing and Finance,
-  plus authorised summaries from other apps. Implementation and focused checks
-  complete; candidate/live feature acceptance and activation pending.
+  plus authorised summaries from other apps. Live source `2a8522f` accepted:
+  all 14 detailed datasets and 48 authorised summaries passed public preview/XLSX
+  checks, with filters, selected columns, permissions and responsive layouts.
+  Evidence: `docs/evidence/2026-10-09-reports.md`.
 - Reports preserves source permissions and private Finance scope, supports top
   filters/columns/preview and explicit formatted Excel downloads (10,000-row bound).
   See [Reports](modules/REPORTS.md) for scope; this does not mark the broader Finance

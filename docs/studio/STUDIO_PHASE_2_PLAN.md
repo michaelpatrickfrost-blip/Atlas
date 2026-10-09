@@ -19,14 +19,14 @@ Core logout routing, action registry/generator compatibility, related imports/te
 Admin/design/architecture docs. Database: none. Tests: staff/non-staff guard,
 standalone layout, legacy/new desktop actions, existing Admin/security suites;
 production build; candidate and live real navigation including responsive overflow
-and absence of business-shell controls. Status: IMPLEMENTED (110 focused assertions,
-TypeScript/build pass; candidate/public runtime pending).
+and absence of business-shell controls. Status: VERIFIED (merged 146 focused assertions, TypeScript/build; candidate/public
+Studio/Admin, Home and Reports acceptance; visible browser UI checked).
 
 ## Phase 2 workstreams (ordered; no later engines)
 
 | ID | Purpose and dependencies | Expected files | Database implications | Verification | Status |
 | --- | --- | --- | --- | --- | --- |
-| 2A | Owner-approved entity/extension contracts; inspect existing fields/page/settings before adding systems. Depends on Phase 1 registry. | core/studio/registry, owner manifests/services, contract inventory, MODULE_SPEC | None for contracts | Unique IDs, schema/hash compatibility, tenant and native access, protected native fields | NOT STARTED |
+| 2A | Owner-approved entity/extension contracts; inspect existing fields/page/settings before adding systems. Depends on Phase 1 registry. | core/studio/registry, owner manifests/services, contract inventory, MODULE_SPEC | None for contracts | Unique IDs, schema/hash compatibility, tenant and native access, protected native fields | IN PROGRESS |
 | 2B | Versioned custom-field definitions, typed values, lifecycle/validation and indexed/unique strategies. Depends on 2A and metadata kernel. | core/studio/fields, compiler dispatch, schema/migration | Additive tenant-owned field/value models, stable identity/history, relational/index constraints; no canonical entity copy | Types/required/uniqueness, two tenants, access, retirement/history, atomic writes | NOT STARTED |
 | 2C | Record types and shallow deterministic configuration resolution. Depends on 2A–B. | core/studio/definitions, compiler, record-type policies | Versioned metadata; canonical record associations only where approved | Base + one overlay, deterministic precedence/conflict rejection, incompatible references | NOT STARTED |
 | 2D | Structured page schemas/compiler, variants, dependency impact and validation. Depends on 2A–C. | core/studio/pages, compiler, compatibility | Published metadata/dependency graph | Safe components/references, mobile representation, permission visibility, no arbitrary scripts/SQL | NOT STARTED |
@@ -45,3 +45,15 @@ unsupported protected domains must fail closed rather than appear configurable.
 8 packages/environments; 9 broad module adoption. All NOT STARTED. Each receives
 its detailed workstreams and hard gate when preceding phase has passed. Keep
 existing Templates and Automations authoritative until their specified migration.
+
+## 2A exploration evidence and first owner
+
+Tickets' current canonical record is ServiceWorkItem with kind TICKET, governed by
+Core service-work access/queues/versions/final-state rules. Historical ServiceTicket
+and QUERY records remain separate and are excluded from this first target. Existing
+service catalogue fields store frozen intake definitions and answers; these are
+not silently converted/replaced. Approved native projections are bounded and
+private-record scoped. Extension writes require source permission and owner policy,
+not Studio edit permission. Future field storage is separate from protected native
+columns, with transactions/expected native revision supported by the owner contract.
+No fields/record-type/page persistence or later engines are part of 2A.

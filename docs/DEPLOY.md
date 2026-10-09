@@ -264,3 +264,9 @@ customer credentials cannot enter Admin and repeated login is blocked. Existing
 staff console/Team/Studio/Connections and sign-out must still work. Correct staff
 password branching is unit-verified; this runner uses an existing signed QA staff
 session and does not claim to test Michael's unknown password.
+
+Studio release compatibility scans preserve missing/changed/expired-contract gates
+for all real companies and active Test companies. Suspended Test companies retain
+immutable acceptance history and are excluded from runtime dependency checks;
+reactivating them restores the checks. Do not resolve a gate by deleting history,
+changing a real company's status or clearing another contributor's active pointers.

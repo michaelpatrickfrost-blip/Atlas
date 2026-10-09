@@ -1377,3 +1377,14 @@ live references to authorised orders, quotations, customers, projects and produc
 with recipient-specific inaccessible placeholders. A record may be shared without
 an additional comment. Contact conversations remain stored in Atlas without email
 or external delivery. The standalone Admin console does not mount business chat.
+
+## 9 October 2026 — Suspended Test history is not a runtime release dependency
+
+Acceptance retains immutable published Studio history when suspending an isolated
+Test company. Ignore only isTest=true/status=SUSPENDED in release scans; keep every
+real company, active Test and unknown lifecycle checked, including suspended real
+companies that may resume. Restoring a Test to active makes its dependencies required
+again. Read bounded dependency/tenant flags, never record payloads. Do not delete
+history, clear another task's active pointers or bypass hash/version/expiry gates.
+Reason: a retired candidate fixture referencing a future contract blocked a release
+that preserved the currently live contracts and passed connected acceptance.

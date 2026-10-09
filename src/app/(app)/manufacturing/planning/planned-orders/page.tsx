@@ -43,6 +43,7 @@ export default async function PlannedOrdersPage() {
   const canViewPurchase = ["finance.purchase.read", "finance.overview.read"].every((cap) => session.capabilities.has(cap)) && await isModuleEnabled(session, "finance");
   const canFirm = session.capabilities.has(MANUFACTURING_CAPABILITIES.planFirm);
   const canManage = session.capabilities.has(MANUFACTURING_CAPABILITIES.planManage);
+  const canReadCost = session.capabilities.has(MANUFACTURING_CAPABILITIES.costRead);
   const decided = allSuggestions.filter((row) => row.status !== "PENDING");
 
   return (
@@ -50,7 +51,8 @@ export default async function PlannedOrdersPage() {
       <header>
         <h1 className="text-3xl font-semibold tracking-tight">Planned orders</h1>
         <p className="mt-2 max-w-2xl text-sm text-[var(--color-ink-muted)]">
-          Each proposal shows the materials it consumes, the machines it runs on, the hours it takes and what it costs.
+          Each proposal shows the materials it consumes, the machines it runs on and the hours it takes.
+          {canReadCost && <> Estimated costs are shown with cost access.</>}
           Firm Make proposals into production orders; review Buy proposals as purchase drafts.
         </p>
         <p className="mt-2 text-xs text-[var(--color-ink-faint)]">Run {run.startedAt.toLocaleString("en-GB")} · {proposals.length} awaiting a decision · {decided.length} already actioned</p>
@@ -66,7 +68,7 @@ export default async function PlannedOrdersPage() {
         {proposals.map((proposal) => {
           const suggestion = allSuggestions.find((row) => row.id === proposal.id)!;
           const shortages = (proposal.materials ?? []).filter((row) => row.shortage > 0);
-          const cost = proposal.cost;
+          const cost = canReadCost ? proposal.cost : undefined;
           return (
             <Card key={proposal.id} className="overflow-hidden p-0">
               <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[var(--color-border)] px-5 py-4">
@@ -92,7 +94,7 @@ export default async function PlannedOrdersPage() {
                     label={suggestion.kind === "BUY" ? "Purchase required" : suggestion.kind === "TRANSFER" ? "Move required" : shortages.length ? "Components short" : "Materials ready"}
                     tone={suggestion.kind !== "MAKE" || shortages.length ? "warning" : "success"}
                   />
-                  <span className="text-lg font-semibold tabular-nums">{cost ? money(Object.values(cost).reduce((sum, value) => sum + value, 0)) : "—"}</span>
+                  {canReadCost && <span className="text-lg font-semibold tabular-nums">{cost ? money(Object.values(cost).reduce((sum, value) => sum + value, 0)) : "—"}</span>}
                 </div>
               </div>
 
@@ -144,7 +146,8 @@ export default async function PlannedOrdersPage() {
                 <section>
                   <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Estimated cost</h3>
                   <div className="mt-2 space-y-1 text-sm">
-                    {!cost && <p className="text-[var(--color-ink-muted)]">No costed recipe.</p>}
+                    {!canReadCost && <p className="text-[var(--color-ink-muted)]">Cost access is required to view estimates.</p>}
+                    {canReadCost && !cost && <p className="text-[var(--color-ink-muted)]">No costed recipe.</p>}
                     {cost && Object.entries(cost).filter(([, value]) => value > 0).map(([kind, value]) => (
                       <div key={kind} className="flex items-baseline justify-between gap-3">
                         <span className="text-[var(--color-ink-muted)]">{COST_LABELS[kind] ?? kind}</span>
@@ -177,7 +180,7 @@ export default async function PlannedOrdersPage() {
           <div className="mt-3 divide-y divide-[var(--color-border)] rounded-3xl border border-[var(--color-border)] bg-white">
             {decided.map((suggestion) => {
               const detail = readSuggestionDetail(suggestion.pegging);
-              const total = detail.cost ? Object.values(detail.cost).reduce((sum, value) => sum + value, 0) : null;
+              const total = canReadCost && detail.cost ? Object.values(detail.cost).reduce((sum, value) => sum + value, 0) : null;
               return (
                 <div key={suggestion.id} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 text-sm">
                   <div>

@@ -178,3 +178,9 @@ tenant/capability, decimal/unit, currency, failure/rollback and real browser
 acceptance. A destination card or schema field cannot close its workflow gate.
 Current validation and live evidence belong in `.ai/CURRENT_STATE.md` and the
 [acceptance record](MANUFACTURING_SUPPLY_ACCEPTANCE.md).
+
+Saved estimates on the Production planning cockpit and Planned orders (including
+already actioned proposals) require `manufacturing.cost.read` independently of
+`manufacturing.plan.read`. Planning access retains quantities, readiness and hours;
+restricted users see cost-access guidance rather than hidden totals in page output.
+Supplier spend remains separately governed by Finance's source permissions.

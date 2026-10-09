@@ -5382,11 +5382,12 @@ views. Target custom fields/forms/dashboards/workflows use owner-approved Studio
 contracts with preview/publication/rollback; current console supplies bookmarkable
 role/shortcut views only. No later Studio compiler is claimed implemented here.
 
-Inspection also confirmed a pre-existing planning-cost visibility gap: Planned
-orders renders saved cost snapshots under plan.read without separately checking
-manufacturing.cost.read. This task's Finance report uses independent source gates;
-full manufacturing cost redaction needs a separate ownership-wide repair. Do not
-claim all historical Manufacturing profile boundaries have been verified.
+Inspection confirmed a pre-existing planning-cost visibility gap in the legacy
+cockpit and Planned orders. This is now repaired: manufacturing.cost.read gates
+pending/actioned estimates and cockpit cost cells independently of plan.read.
+Operational quantities remain visible. Rendered-page regressions check restricted
+and permitted profiles. This is not verification of every historical Manufacturing
+profile boundary; the new Finance report uses independent source gates.
 
 Form-refinement prepare stopped before writes because the shared live service
 advanced to Messages 9303039. Preserved that exact live shell/chat implementation
@@ -5417,3 +5418,25 @@ build, strict TypeScript and 13 focused files/72 tests passed, including central
 authentication limits, private/customer selectors, rejected-input preservation,
 MRP/source conversion, spend permissions and release failure gates. Preparing
 compatible source; complete public feature acceptance remains pending.
+
+Candidate f0807fa passed the complete central Manufacturing & Supply browser
+workflow; private evidence /tmp/atlas-supply-staging-6nLSJ6. Activation stopped at
+Studio compatibility after backup atlas-pre-deploy-20261009-212304: one active
+metadata pointer in a suspended Test company references tickets.ticket@2 from
+another candidate. No live pointer change or missing real-customer contract.
+Read-only diagnosis confirmed isTest=true/status=SUSPENDED; retained history was
+being scanned as runtime configuration. Compatibility scanning now selects only
+metadata and skips suspended Test history. All real companies (including suspended),
+active Tests and unknown statuses remain checked; a resumed Test is checked again.
+No metadata/tenant status or other contributor's records are modified. Added
+lifecycle/expiry/pagination regressions. Build/types, prepared candidate and live
+acceptance must be repeated for this source; no completed deployment claim yet.
+
+Final lifecycle/cost refinement: production build, explicit strict TypeScript,
+scoped ESLint, diff check and 14 focused files/67 assertions PASS. The first cockpit
+redaction test fixture lacked shortagesByPriority; completed the fixture and all
+three real rendered-page permission regressions pass. Full suite not rerun after
+later live integrations; earlier exact-baseline 85 failures remain documented.
+Next: prepare pinned clean source, recheck complete central/browser workflow,
+activate and verify public HTTPS. Preserve other contributors' dirty canonical
+checkout; integration must not overwrite unfinished content.

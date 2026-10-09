@@ -34,7 +34,16 @@ Candidate 952aae0 prepared with central database/evidence backup
 atlas-pre-deploy-20261009-205119; migration and compatibility/smoke pass.
 First browser runner stopped before creating fixtures because Guardian QA config
 was not loaded; retry loads /etc/atlas/guardian.env. Concurrent Messages release
-9303039 became live; preserve its exact source/evidence before final activation.
+9303039 became live; its exact source/evidence is now merged.
+Candidate checks confirmed private entry headers/metadata, anonymous/retired 404s,
+no public private-address link, desktop/mobile layout, recovery navigation and
+customer denial. The runner then stopped on an ambiguous alert selector matching
+Next's route announcer; scoped it to the real form. Full acceptance is not yet
+claimed. Preserve legacy bcrypt input compatibility at login (new-password byte
+limits remain at password creation/recovery). Merged with live Messages 9303039: production build, strict types, scoped lint
+and 7-file/47-assertion auth/chat/field suite PASS. Desktop/phone candidate
+screenshots visually inspected. Re-prepare corrected final runner/source, execute
+full central/browser acceptance, activate and repeat publicly.
 Next: review final diff, record checks, prepare backed-up immutable release,
 exercise private entry/denials/limits and staff console, activate and repeat
 public HTTPS acceptance. No MFA/SSO or immediate crawler removal is claimed.

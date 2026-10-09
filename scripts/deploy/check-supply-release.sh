@@ -29,5 +29,5 @@ umask 077; set -a; . "$ROOT/.env.local"; . /etc/atlas/guardian.env; set +a
 BACKUP="$HOME/backups/atlas-pre-supply-test-$(date +%Y%m%d-%H%M%S)"
 pg_dump "${DATABASE_URL%%\?*}" -Fc -f "$BACKUP.dump"
 if [[ -n "${ATLAS_SERVICE_FILE_ROOT:-}" && -d "$ATLAS_SERVICE_FILE_ROOT" ]]; then tar -C "$ATLAS_SERVICE_FILE_ROOT" -czf "$BACKUP-service-files.tar.gz" .; fi
-(cd "$CANDIDATE"; ATLAS_SUPPLY_URL=http://127.0.0.1:3014 ATLAS_SUPPLY_OUTPUT="$RUN" node --env-file=.env.local --import tsx scripts/check-manufacturing-supply.ts) > "$RUN/browser.log" 2>&1
+(cd "$CANDIDATE"; ATLAS_SUPPLY_URL=http://127.0.0.1:3014 ATLAS_SUPPLY_OUTPUT="$RUN" node --env-file=.env.local --import tsx "${ATLAS_SUPPLY_CHECKER:-scripts/check-manufacturing-supply.ts}") > "$RUN/browser.log" 2>&1
 cat "$RUN/browser.log"

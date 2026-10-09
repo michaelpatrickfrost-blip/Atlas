@@ -5031,3 +5031,40 @@ passed, 14 failed, three skipped; 1,071 passed/85 failed/22 skipped. The same 85
 failures are established exact-live baseline issues. No task regression remains in
 that comparison; no full-suite pass claimed. A prior transfer import timeout passed
 its isolated 12-test recheck and final suite. Candidate prepare still pending.
+
+Candidate 1f93216 prepared after backup atlas-pre-deploy-20261009-201307; additive
+sales-eligibility migration applied and server build/Studio compatibility/smoke
+passed. First candidate check passed desktop/tablet/phone console rendering and no
+root overflow, then stopped in console navigation before business actions. Exact
+Test company/session retired; existing QA unchanged. Tightened view selector and
+added private diagnostic output/checker override for acceptance iterations; next
+step is the complete connected check. No activation/completion claimed yet.
+
+Finance report supplier grouping now includes the canonical account code, so two
+accounts with the same legal name cannot collapse into one supplier total. Added
+regression coverage; final check/release pending alongside acceptance refinements.
+
+Candidate navigation check identified delayed checkbox feedback while shortcut URL
+navigation resolves. The console now applies optimistic shortcut state within the
+router transition; URL/server permission validation remains authoritative. Recheck
+with explicit click then URL-state assertion; connected fixture still pending.
+
+Added a real console screenshot from the isolated Test fixture to the getting-
+started guide, alongside workflow illustrations. It contains no customer records.
+The guided example explicitly explains company/profile differences.
+
+Connected candidate passed recursive MRP (10 assemblies, 20 components less five
+on hand produces Buy 15) and Make firming. Buy draft creation safely rolled back:
+existing SQL `resultingOrderId` FK targets production orders. Added a separate
+`resultingPurchaseDocumentId` with tenant-bound Finance FK; retained Make FK.
+Updated source claim, actioned links and acceptance assertion. No partial PO was
+left by failed checks. Test companies retired; existing QA membership unchanged.
+Draft saves now return readable validation/conflict feedback and stale proposal
+prefill renders guidance instead of a production React render error. The current
+refinement still requires build and backed-up candidate/public acceptance.
+
+Refinement checks actually run: Prisma validation/generation, production build,
+explicit TypeScript, scoped ESLint and five focused files/23 tests passed. Added
+real browser assertions for rejected zero-price drafts and revisiting a converted
+source. The newly deployed 0ce9f4a MRP shortage correction is being integrated
+before the next immutable candidate; final combined checks still required.

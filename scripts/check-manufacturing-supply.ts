@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
 import fs from 'node:fs';
 import jwt from 'jsonwebtoken';
-import { chromium, expect } from '@playwright/test';
+import { chromium, expect, type Page } from '@playwright/test';
 import { db } from '../src/core/db/client';
 import { sessionForUser } from '../src/core/auth/session';
 import { getModule } from '../src/core/modules/registry';
@@ -26,7 +26,7 @@ async function main(){
  const original=await db.membership.findUniqueOrThrow({where:{id:qa.membershipId}});
  const user=await db.user.findUniqueOrThrow({where:{id:qa.userId}});
  const slug=`supply-check-${randomBytes(10).toString('hex')}`;
- let fixtureId:string|undefined;
+ let fixtureId:string|undefined;let currentPage:Page|undefined;
  const out=process.env.ATLAS_SUPPLY_OUTPUT??'/tmp/atlas-supply-evidence';fs.mkdirSync(out,{recursive:true,mode:0o700});
  const browser=await chromium.launch({headless:true});
  try{
@@ -52,7 +52,7 @@ async function main(){
   await context.addCookies([{name:'atlas_session',value:token,url:base.origin,httpOnly:true,secure:base.protocol==='https:',sameSite:'Lax'}]);
   let writes=0;const errors:string[]=[];
   await context.route('**/*',route=>{const request=route.request(),url=new URL(request.url());if(url.origin!==base.origin)return route.abort();if(url.pathname==='/api/guardian/telemetry')return route.fulfill({status:204});if(['GET','HEAD','OPTIONS'].includes(request.method()))return route.continue();if(request.method()==='POST'&&['/manufacturing','/manufacturing/planning/planned-orders','/finance/documents/new'].includes(url.pathname)){writes++;return route.continue();}return route.abort();});
-  const page=await context.newPage();page.on('pageerror',error=>errors.push(error.name));
+  const page=await context.newPage();currentPage=page;page.on('pageerror',error=>errors.push(error.name));
   const noOverflow=async()=>assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'No root horizontal overflow');
   phase='responsive console';
   for(const [name,width,height]of [['desktop',1448,1086],['tablet',820,1180],['phone',390,844]]as const){
@@ -62,8 +62,8 @@ async function main(){
   }
   await page.setViewportSize({width:1448,height:1086});
   const modules=await getNavigableModules(session);assert(modules.some(m=>m.id==='manufacturing'));assert(!modules.some(m=>m.id==='planning'));
-  await page.getByRole('link',{name:'Finance',exact:true}).click();await expect(page.getByRole('link',{name:/Supply spend report/}).last()).toBeVisible();
-  await page.getByRole('button',{name:'Customise shortcuts'}).click();await page.getByLabel('Product targets',{exact:true}).check();await page.waitForURL(/pins=/);assert(new URL(page.url()).searchParams.get('pins')?.includes('targets'));
+  await page.getByRole('navigation',{name:'Console views'}).getByRole('link',{name:'Finance',exact:true}).click();await expect(page.getByRole('link',{name:/Supply spend report/}).last()).toBeVisible();
+  await page.getByRole('button',{name:'Customise shortcuts'}).click();await page.getByLabel('Product targets',{exact:true}).click();await page.waitForURL(/pins=/);assert(new URL(page.url()).searchParams.get('pins')?.includes('targets'));
   await page.goto('/manufacturing',{waitUntil:'networkidle'});
   phase='real MRP calculation';await page.getByRole('button',{name:'Run material plan'}).click();
   await expect.poll(()=>db.manufacturingPlanningRun.count({where:{organisationId:org.id,finishedAt:{not:null}}})).toBe(1);
@@ -76,14 +76,16 @@ async function main(){
   console.log('PASS rich saved proposal converts to one production order with source audit.');
   phase='real Buy conversion';await page.getByRole('link',{name:/Review purchase draft/}).click();
   await expect(page.getByRole('textbox',{name:'Quantity',exact:true})).toHaveValue('15');await expect(page.getByRole('combobox',{name:'Shared product'})).toHaveValue(raw.id);
-  await page.locator('select[name="partyId"]').selectOption(supplier.id);await page.getByRole('textbox',{name:'Unit price',exact:true}).fill('2.50');await page.getByRole('button',{name:'Save draft',exact:true}).click();
+  await page.locator('select[name="partyId"]').selectOption(supplier.id);await page.getByRole('button',{name:'Save draft',exact:true}).click();await expect(page.getByRole('alert')).toContainText('positive total');assert.equal(await db.financeDocument.count({where:{organisationId:org.id,duplicateKey:`mrp-buy:${buy.id}`}}),0);await expect(page.getByRole('textbox',{name:'Quantity',exact:true})).toHaveValue('15');
+  await page.getByRole('textbox',{name:'Unit price',exact:true}).fill('2.50');await page.getByRole('button',{name:'Save draft',exact:true}).click();
   await page.waitForURL(/\/finance\/documents\/[^/?]+$/);const converted=await db.financeDocument.findFirstOrThrow({where:{organisationId:org.id,duplicateKey:`mrp-buy:${buy.id}`},include:{lines:true}});
   assert.equal(converted.status,'DRAFT');assert.equal(converted.net,3750n);assert.equal(converted.lines[0].productId,raw.id);assert.equal(converted.lines[0].quantity.toString(),'15');
-  assert.equal((await db.manufacturingSupplySuggestion.findUniqueOrThrow({where:{id:buy.id}})).resultingOrderId,converted.id);
+  const savedBuy=await db.manufacturingSupplySuggestion.findUniqueOrThrow({where:{id:buy.id}});assert.equal(savedBuy.resultingPurchaseDocumentId,converted.id);assert.equal(savedBuy.resultingOrderId,null);
   assert.equal(await db.financeTimeline.count({where:{organisationId:org.id,documentId:converted.id,action:'MRP_SOURCE'}}),1);
   await assert.rejects(()=>supplyPurchaseProvider.read(session,buy.id),/actioned/);
   assert.equal(await db.financeDocument.count({where:{organisationId:org.id,duplicateKey:`mrp-buy:${buy.id}`}}),1);
   await page.goto('/manufacturing/planning/planned-orders',{waitUntil:'networkidle'});await expect(page.getByRole('link',{name:'View purchase draft'})).toHaveAttribute('href',`/finance/documents/${converted.id}`);
+  await page.goto(`/finance/documents/new?suggestion=${buy.id}`,{waitUntil:'networkidle'});await expect(page.getByRole('alert')).toContainText('already been actioned');assert.equal(await db.financeDocument.count({where:{organisationId:org.id,duplicateKey:`mrp-buy:${buy.id}`}}),1);
   console.log('PASS real source-linked purchase draft, exact values, timeline and repeat refusal.');
   await assert.rejects(()=>assertProductsSellable(db,org.id,[raw.id]),/internal|inactive/);await assertProductsSellable(db,org.id,[finished.id]);
   await page.goto(`/products/${raw.id}`,{waitUntil:'networkidle'});await expect(page.getByText(/Internal \/ not sellable/)).toBeVisible();
@@ -113,10 +115,11 @@ async function main(){
   assert.equal(errors.length,0);assert(writes>=3);console.log('PASS report drill-through, nine illustrated guides, responsive pictures and zero browser exceptions.');
   await context.close();
  }finally{
+  if(currentPage&&!currentPage.isClosed()){await currentPage.screenshot({path:`${out}/final-state.png`,fullPage:false}).catch(()=>{});fs.writeFileSync(`${out}/alerts.txt`,JSON.stringify(await currentPage.getByRole("alert").allTextContents().catch(()=>[])),{mode:0o600});}
   await browser.close();
   if(fixtureId)await db.$transaction(async tx=>{await tx.organisation.findFirstOrThrow({where:{id:fixtureId,slug,isTest:true}});await tx.organisation.update({where:{id:fixtureId},data:{status:'SUSPENDED',name:'Retired manufacturing verification · Test'}});await tx.membership.updateMany({where:{organisationId:fixtureId,userId:qa.userId},data:{active:false,sessionVersion:{increment:1}}});});
   assert.deepEqual(await db.membership.findUniqueOrThrow({where:{id:original.id}}),original,'Existing QA membership unchanged');assert.equal((await db.user.findUniqueOrThrow({where:{id:user.id}})).authVersion,user.authVersion);
   await db.$disconnect();console.log('PASS exact Test company retired and fixture session revoked; history retained; existing QA account/permissions unchanged.');
  }
 }
-main().catch(error=>{console.error(`Supply acceptance failed at ${phase}: ${error instanceof Error?error.name:'UnknownError'}. Inspect private evidence; no credentials or customer data logged.`);process.exitCode=1;});
+main().catch(error=>{const out=process.env.ATLAS_SUPPLY_OUTPUT??'/tmp/atlas-supply-evidence';fs.mkdirSync(out,{recursive:true,mode:0o700});fs.writeFileSync(`${out}/failure.txt`,error instanceof Error?error.stack??error.message:'UnknownError',{mode:0o600});console.error(`Supply acceptance failed at ${phase}: ${error instanceof Error?error.name:'UnknownError'}. Inspect private evidence; no credentials or customer data logged.`);process.exitCode=1;});

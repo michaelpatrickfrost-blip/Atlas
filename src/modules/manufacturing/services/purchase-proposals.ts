@@ -22,7 +22,7 @@ export const supplyPurchaseProvider: SupplyPurchaseProvider = {
     const latest = await tx.manufacturingPlanningRun.findFirst({ where: { organisationId, finishedAt: { not: null } }, orderBy: { startedAt: "desc" }, select: { id: true } });
     if (!proposal || proposal.updatedAt.toISOString() !== input.version || proposal.runId !== latest?.id) throw new Error("The Buy proposal changed or a newer plan exists. Review it before purchasing.");
     if (proposal.productId !== input.productId || !proposal.quantity.eq(new Prisma.Decimal(input.quantity))) throw new Error("Keep the proposed product and quantity when converting. Use a separate reviewed purchase for another requirement.");
-    const claimed = await tx.manufacturingSupplySuggestion.updateMany({ where: { id: input.id, organisationId, status: "PENDING", updatedAt: proposal.updatedAt }, data: { status: "FIRMED", resultingOrderId: input.documentId } });
+    const claimed = await tx.manufacturingSupplySuggestion.updateMany({ where: { id: input.id, organisationId, status: "PENDING", updatedAt: proposal.updatedAt }, data: { status: "FIRMED", resultingPurchaseDocumentId: input.documentId } });
     if (claimed.count !== 1) throw new Error("This Buy proposal has already been converted.");
     await tx.auditEntry.create({ data: { organisationId, actorUserId: session.userId, action: "manufacturing.buy.converted", entityType: "ManufacturingSupplySuggestion", entityId: proposal.id, after: { runId: proposal.runId, purchaseDocumentId: input.documentId, productId: input.productId, quantity: input.quantity } } });
   },

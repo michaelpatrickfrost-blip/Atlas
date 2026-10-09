@@ -16,6 +16,10 @@ describe("Supply Finance reporting", () => {
     expect(unbilledCommitment(doc({ children: [{ net: 11000n, currency: "GBP" }] }))).toBe(0n);
     expect(() => unbilledCommitment(doc({ children: [{ net: 1n, currency: "EUR" }] }))).toThrow("different currency");
   });
+  it("keeps separate shared suppliers with the same legal name", () => {
+    const rows = spendBreakdown([doc({party:{name:"Supplier",customerCode:"S1"}}),doc({party:{name:"Supplier",customerCode:"S2"}})], "supplier");
+    expect(rows).toHaveLength(2);expect(rows.map(row => row.label)).toEqual(["Supplier · S1", "Supplier · S2"]);
+  });
   it("retains integer precision for large posted values", () => {
     expect(signedSpend("AP_CREDIT", 900719925474099300n)).toBe(-900719925474099300n);
     expect(spendBreakdown([doc({ net: 900719925474099301n })], "site")[0].net).toBe("900719925474099301");

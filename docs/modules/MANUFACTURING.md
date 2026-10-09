@@ -85,6 +85,9 @@ proposal atomically. The tenant-bound unique `mrp-buy:<suggestion>` key and
 version/status comparison prevent duplicate conversion. A changed product,
 quantity, proposal or newer run is rejected. Finance timelines and Manufacturing
 audit retain the link; the actioned proposal opens the purchase document.
+Buy uses a separate tenant-bound Finance document relation; Make retains its
+production-order relation. Validation retains form entries and gives readable
+guidance. Revisiting an already converted proposal directs users to the plan.
 
 No conversion approves, receives, posts or pays automatically. Receipts retain the
 existing whole accepted-unit stock rule and damaged-quantity exclusion. Transfer

@@ -1295,3 +1295,9 @@ checks and an atomic source claim, not automatic approval/posting. Keep spend,
 unbilled commitments, receipts and current payables distinct, by source currency.
 Supplier spend is not production WIP/COGS. Preserve all 173 requirements; advanced
 engine gaps stay explicit in the researched coverage map.
+
+Buy source links use a separate tenant-bound Finance document foreign key. The
+existing `resultingOrderId` SQL FK belongs to Make/production and is retained.
+Reason: a purchase reference must not bypass or weaken production integrity.
+Expected save failures return readable feedback; refreshing an actioned source
+shows review guidance rather than throwing during server-page rendering.

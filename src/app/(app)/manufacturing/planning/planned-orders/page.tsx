@@ -187,8 +187,11 @@ export default async function PlannedOrdersPage() {
                   </div>
                   <div className="flex items-center gap-4">
                     <StatusPill label={suggestion.status} tone={suggestion.status === "FIRMED" ? "success" : "neutral"} />
-                    {suggestion.resultingOrderId && (suggestion.kind === "MAKE" || suggestion.kind === "BUY" && canViewPurchase) && (
-                      <Link href={suggestion.kind === "BUY" ? `/finance/documents/${suggestion.resultingOrderId}` : `/manufacturing/produce/${suggestion.resultingOrderId}`} className="text-[var(--color-atlas-blue)] hover:underline">{suggestion.kind === "BUY" ? "View purchase draft" : "View production order"}</Link>
+                    {suggestion.kind === "MAKE" && suggestion.resultingOrderId && (
+                      <Link href={`/manufacturing/produce/${suggestion.resultingOrderId}`} className="text-[var(--color-atlas-blue)] hover:underline">View production order</Link>
+                    )}
+                    {suggestion.kind === "BUY" && canViewPurchase && suggestion.resultingPurchaseDocumentId && (
+                      <Link href={`/finance/documents/${suggestion.resultingPurchaseDocumentId}`} className="text-[var(--color-atlas-blue)] hover:underline">View purchase draft</Link>
                     )}
                   </div>
                 </div>

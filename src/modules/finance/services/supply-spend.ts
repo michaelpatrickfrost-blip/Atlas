@@ -2,7 +2,7 @@ import { z } from "zod";
 import { db } from "@/core/db/client";
 import type { SupplySpendProvider } from "@/core/supply/types";
 import { documentScope, requireFinance } from "./access";
-import { signedSpend, spendBreakdown, unbilledCommitment } from "../domain/supply-spend";
+import { signedSpend, spendBreakdown, spendSupplier, unbilledCommitment } from "../domain/supply-spend";
 
 const day = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine((value) => { const date = new Date(value); return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value; }, "Choose a valid date.");
 export const spendRequestSchema = z.object({ entity: z.string().max(100).optional(), start: day, end: day, group: z.enum(["supplier", "category", "costCentre", "site", "month"]) }).refine((input) => input.start <= input.end, "Reporting end must follow start.");
@@ -19,7 +19,7 @@ export const supplySpendProvider: SupplySpendProvider = async (session, input) =
   const payables = session.capabilities.has("finance.payables.read"), purchasing = session.capabilities.has("finance.purchase.read");
   const scope = documentScope(session);
   const [posted, orders, receipts, open] = await Promise.all([
-    payables ? db.financeDocument.findMany({ where: { AND: [scope, { entityId: entity.id, kind: { in: ["AP_INVOICE", "AP_CREDIT", "AP_DEBIT"] }, status: "POSTED", OR: [{ accountingDate: { gte: start, lte: end } }, { accountingDate: null, documentDate: { gte: start, lte: end } }] }] }, include: { party: { select: { name: true } } }, orderBy: [{ accountingDate: "desc" }, { documentDate: "desc" }], take: 10001 }) : [],
+    payables ? db.financeDocument.findMany({ where: { AND: [scope, { entityId: entity.id, kind: { in: ["AP_INVOICE", "AP_CREDIT", "AP_DEBIT"] }, status: "POSTED", OR: [{ accountingDate: { gte: start, lte: end } }, { accountingDate: null, documentDate: { gte: start, lte: end } }] }] }, include: { party: { select: { name: true, customerCode: true } } }, orderBy: [{ accountingDate: "desc" }, { documentDate: "desc" }], take: 10001 }) : [],
     purchasing && payables ? db.financeDocument.findMany({ where: { AND: [scope, { entityId: entity.id, kind: "PO", status: { in: ["APPROVED", "PART_RECEIVED", "RECEIVED"] }, documentDate: { lte: end } }] }, select: { net: true, currency: true, children: { where: { AND: [scope, { kind: "AP_INVOICE", status: "POSTED", OR: [{ accountingDate: { lte: end } }, { accountingDate: null, documentDate: { lte: end } }] }] }, select: { net: true, currency: true } } }, take: 10001 }) : [],
     purchasing ? db.financeDocument.groupBy({ by: ["currency"], where: { AND: [scope, { entityId: entity.id, kind: "RECEIPT", status: "POSTED", documentDate: { gte: start, lte: end } }] }, _sum: { net: true } }) : [],
     payables ? db.financeDocument.groupBy({ by: ["currency", "kind"], where: { AND: [scope, { entityId: entity.id, kind: { in: ["AP_INVOICE", "AP_CREDIT", "AP_DEBIT"] }, status: "POSTED" }] }, _sum: { gross: true, settled: true } }) : [],
@@ -41,7 +41,7 @@ export const supplySpendProvider: SupplySpendProvider = async (session, input) =
       openPayables: payables ? open.filter((row) => row.currency === currency).reduce((sum, row) => sum + signedSpend(row.kind, (row._sum.gross ?? 0n) - (row._sum.settled ?? 0n)), 0n).toString() : null,
     })),
     groups: spendBreakdown(posted.map((doc) => ({ ...doc, children: [] })), request.group),
-    documents: posted.slice(0, 200).map((doc) => ({ id: doc.id, reference: doc.reference, supplier: doc.party?.name ?? "Unassigned supplier", kind: doc.kind, date: (doc.accountingDate ?? doc.documentDate).toISOString().slice(0, 10), currency: doc.currency, net: signedSpend(doc.kind, doc.net).toString(), sourceId: null, sourceReference: null })),
+    documents: posted.slice(0, 200).map((doc) => ({ id: doc.id, reference: doc.reference, supplier: spendSupplier(doc.party), kind: doc.kind, date: (doc.accountingDate ?? doc.documentDate).toISOString().slice(0, 10), currency: doc.currency, net: signedSpend(doc.kind, doc.net).toString(), sourceId: null, sourceReference: null })),
     purchaseCount: orders.length, warnings,
   };
 };

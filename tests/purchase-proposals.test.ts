@@ -16,7 +16,7 @@ describe("MRP Buy handoff", () => {
   });
   it("claims once with a linked document and transaction audit", async () => {
     await supplyPurchaseProvider.claim(session, state.db as unknown as Prisma.TransactionClient, input);
-    expect(state.db.manufacturingSupplySuggestion.updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ organisationId: "tenant", status: "PENDING", updatedAt: row().updatedAt }), data: { status: "FIRMED", resultingOrderId: "purchase" } }));
+    expect(state.db.manufacturingSupplySuggestion.updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ organisationId: "tenant", status: "PENDING", updatedAt: row().updatedAt }), data: { status: "FIRMED", resultingPurchaseDocumentId: "purchase" } }));
     expect(state.db.auditEntry.create).toHaveBeenCalledOnce();
   });
   it("refuses a stale plan, forged product or changed quantity before claiming", async () => {

@@ -6,7 +6,11 @@ with blue icons and short descriptions. A slim separate utility rail contains
 Home, Reports, My tasks, authorised Messages and Settings; it does
 not repeat the business apps. On tablet/phone it becomes a compact utility bar.
 This supersedes the older no-sidebar rule for Home and Reports. Other workspaces retain
-their existing top menus and Apps switcher. Attention/goals follow the launcher.
+their top menus and the wide Apps switcher from Michael's second 9 October
+reference: four desktop columns, More/Company below, grey outline icons and
+larger labels; responsive columns, wrapped labels and scrolling on smaller screens.
+Workspace Apps/search controls are larger, with phone search on a separate row.
+Attention/goals follow the launcher.
 Desktop, tablet and phone layouts require visual acceptance.
 
 Use [the delivery plan](../docs/IMPLEMENTATION_PLAN.md#design-direction) for the

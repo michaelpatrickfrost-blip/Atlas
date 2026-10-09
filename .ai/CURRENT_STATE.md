@@ -1,5 +1,159 @@
 # Atlas current state
 
+## 9 October 2026 — Dashboard redesign, final release acceptance
+
+Dashboards is in the utility sidebar under its existing Analytics entitlement and
+read/manage capabilities; Home no longer repeats its app card. The modern Atlas
+canvas has a searchable widget library, inspector, eleven visuals, personal boards
+and four starters. Widgets support grouping/count/distinct/sum/average/min/max,
+typed source/date/search filters, currency validation, width/height/colour/tone,
+reorder/duplicate/remove and undo/redo. Manual or timed refresh is saved with board
+period/default filters and respected by the monitor. Existing curated measures,
+central definitions and source permissions remain; ID/revision-checked rename and
+unique-name copies prevent silent replacement. No Dashboard migration or grants.
+
+Fourteen detailed record datasets include Customers, Products, Sales, Inventory,
+Logistics, Manufacturing and Finance. Queries calculate all matching rows up to
+10,000, reject truncation/mixed currencies/unsafe money precision, preserve missing
+average/extrema and weighted groups, and return aggregates rather than raw rows.
+Broader sharing, formulas, arbitrary joins and fiscal features remain open.
+Paths: modules/analytics, analytics/board routes, shell, Reports dataset selection,
+generated gateway descriptors, four dashboard suites and check-dashboards.ts.
+Analytics/design/decisions documentation reconciled; auth counter metadata excluded.
+
+Exact already-live Supply source 2690c26 and integrated Studio/Apps source e5d66e6
+are merged with private Admin and Messages source. Combined 19 files/79 assertions, strict types, production
+build, scoped lint and diff check PASS. Prepared 885baa5 passed central Dashboard,
+Home, Reports/Finance and Messages acceptance. Earlier prepared candidates/backups
+and ancestry stops remain in docs/evidence/2026-10-09-dashboards.md. Final currency
+input guard: two suites/19 assertions, strict types, scoped lint and build PASS.
+No Dashboard activation is claimed yet. Next: prepare the integrated final source,
+repeat candidate acceptance, activate and verify through public HTTPS.
+The global suite was not rerun; its unrelated baseline failures remain recorded.
+Final 73fcdb9 candidate Dashboard/Home/Reports/Messages checks PASS. Public source
+advanced to e5d66e6 during acceptance; merge its exact deployed Studio/Apps source,
+preserve source schema/lifecycle. Combined 23 files/97 assertions, strict types,
+production build, scoped lint (zero errors, one decorative brand-image warning)
+and diff check PASS. Generated descriptors match its already-live typed field models.
+
+Messages 9303039 was publicly verified; final Me-assignment 4be24b3 is included
+and candidate-verified in this combined source. Synthetic chat fixtures are retired;
+no real colleague/customer was messaged. Its final public proof accompanies this
+release. Only already-deployed contributors' source is included in this release.
+
+
+## 9 October 2026 — Studio 2B2 candidate checkpoint; visual setup clarification
+
+Phase 2 active, 2B2 schema/lifecycle VERIFIED on candidate; combined release pending.
+Added closed compiler dispatch, typed owner field policy and Tickets entity v2
+(preserving exact v1 hashes), permanent entity/field-key/generation publication
+binding, generation/tenant checks at activation and cosmetic-only revisions until
+2B3's reviewed migration path exists. Five additive typed models/migration support
+immutable history, current pointers, exact decimals/money, required constraints and
+per-generation uniqueness. No customer value API/builder is exposed yet. Existing
+native intake and canonical records are preserved. Privileged schema acceptance
+helper is included in scripts/studio/check-metadata.ts; owner write API remains 2B4.
+
+Michael requires a bespoke screen/document-template design studio for businesses,
+including Sales, with simple visual selection and previews. No internal identifiers
+should be entered by users: removed the stable-key input/display and create action
+now generates configuration.<UUID> server-side. Persisted identities remain stable.
+STUDIO_VISUAL_BUILDER_REQUIREMENTS.md records both screen/document experiences and
+explicit Sales owner, screen/preset editor, responsive preview, existing Templates
+adapter and native-runtime integration substreams (2E0–2E5); Tickets is not
+presented as Sales support.
+
+Latest visual requirement: easy template customisation, activated designs on each
+business's live dashboards/screens, and custom buttons. Saved in visual requirements
+and 2E5 plan, NOT IMPLEMENTED. Inspected existing Home/analytics routes, dashboard
+actions/definition/templates/renderers and Sales template provider: reuse existing
+Dashboards/analytics and Templates engines, preserve user-owned personal boards,
+and bind buttons to approved native actions with server permissions/tenant checks.
+
+Latest integrated Admin/Messages source: 27 focused/regression files/140 tests
+PASS, Prisma client regenerated, scoped lint and production build PASS. Strict
+post-build TypeScript PASS.
+Initial Prisma validate/generate PASS. Backed-up central transaction-only DDL check
+found one PL/pgSQL CASE-parentheses syntax error, fixed and rerun PASS; explicit
+rollback/table absence confirmed before preparation. Dry-run backup:
+atlas-studio-field-ddl-TvSAMP. Later migration/runtime evidence is recorded below.
+Full suite not rerun; previously reported baseline failures remain open, and no
+whole-suite success is claimed. Diff reviewed; no native domain code removed.
+
+Latest observed live source is now 2690c26cb0f5f3c28e21265820e8a713708ce699
+(connected supply/planning). Exact live source merged, preserving private Admin,
+Messages, purchasing fixes, central additive supply migrations and compatibility
+checks. Reviewed modern Apps source from main f6e27cb is also merged; preserve its supplied
+design and repeat responsive navigation acceptance. Integrated 29 files/143 tests, Prisma generation, scoped lint and production build
+PASS. Strict post-build TypeScript PASS; combined candidate/public acceptance
+will also exercise connected supply and the modern Apps menu. Earlier live source
+was 1dafe165f97545829d96242b1846e87d9c1f42b4 (private Admin entry). Merged origin/main 6870014,
+including exact live Admin and Messages, preserving their source/evidence. Previous Studio source
+6775044 passed public owner/metadata/Admin/business login/Home/Reports/MRP; its final
+evidence remains in main eba8b49 and historical entries below. 2B2 and generated-key
+UI changes are checkpointed at candidate fcfd5128e991b453badf1bd95477271645f0291a.
+Preparation PASS after backup atlas-pre-deploy-20261009-211931; additive field
+migration applied during preparation, immutable candidate smoke verified. Production
+pointer remains 1dafe16. Candidate field schema/lifecycle plus Studio/Admin/business/Home/Reports/MRP
+checks PASS, including generated-key form. Combined run FAIL in Messages
+viewport selector: retained conversation previews duplicate the exact timeline
+text. Scoped that locator to article, preserving the behaviour assertion. No app
+regression or complete combined PASS claimed. Private logs:
+/tmp/atlas-studio-acceptance-1hYTRO. Revised candidate 770393f22a4b76f7802794ecda6659226916d931 prepared/smoke PASS
+with backup atlas-pre-deploy-20261009-212757 and production build PASS. Second run again passed field/Studio/Admin/business/Home/Reports/MRP. Messages
+viewport scroll encountered a detached node while the reopened timeline restored
+asynchronously. Retry only transient locator detachment, then assert actual message
+is in viewport; application error assertions remain unchanged. Logs:
+/tmp/atlas-studio-acceptance-LiKMZK. Full combined acceptance still NOT PASS. These changes are NOT LIVE. Phase 2 gate
+NOT PASSED.
+
+Exact next: exact live supply 2690c26, Admin 1dafe16 and Messages 9303039 are merged with
+contributors' evidence preserved. Integrated local checks PASS; selector TypeScript/scoped lint PASS.
+Async timeline assertion TypeScript/scoped lint PASS; checkpoint, then prepare and rerun
+exact candidate complete Studio/Admin/business/Home/Reports/
+MRP/Messages/private-Admin acceptance. Activate only on PASS.
+Then 2B3 evolution/retirement/conversion planning and resumable jobs, followed by
+2B4 owner-authorised values. No 2C or Phase 3+ before preceding workstream checks.
+## 9 October 2026 — Apps menu candidate accepted; Studio contract blocks activation
+
+Business workspace Apps now follows Michael's supplied wide white panel: Customers,
+Operations, People and Business in the first desktop row; More and Company below.
+Larger grey outline icons, readable wrapped labels, spacious rounded Apps/search
+controls, responsive columns/internal scrolling and 44px links. Phone search has
+its own header row; narrow-screen spacing keeps utilities reachable. Escape returns
+focus to Apps; group headings retain the panel; links/outside clicks/routes close it.
+Existing Home/Reports/Messages and standalone Admin retain their designs; the same
+server directory/capability filtering supplies authorised entries. No schema,
+permission, central business-record or storage change.
+
+Paths: shell app-directory/app-menu/topbar/command-palette/workspace-back, globals,
+tests/app-menu and scripts/check-home-menu; design/Reports/scope guides, decision
+and roadmap updated.
+Release branch codex/apps-menu-design starts at exact public live 1dafe165,
+preserving accepted Messages/Studio/private Admin/sign-in source. Final local
+production build with exact lockfile dependencies PASS, 2 focused files/5 assertions PASS, scoped lint zero errors
+with two existing brand-img warnings, diff whitespace PASS. Initial strict types
+found missing @playwright/test in the cloned Desktop dependencies and cascading
+script types; exact-lockfile install and final strict TypeScript without exclusions PASS.
+Full suite not rerun. Exact 12d78a1 candidate prepared; read-only central QA checks
+PASS for Home desktop/tablet/phone and Apps desktop/tablet/phone/320px, authorised
+links, scrolling/44px targets, focus/closure/search and actual My work navigation.
+All four menu screenshots inspected: supplied desktop grouping/spacing and
+responsive wrapped phone/tablet labels confirmed. Private evidence:
+/tmp/atlas-home-menu-check-IUKhn5; prepare backup atlas-pre-deploy-20261009-211746.
+Activation stopped safely after backup atlas-pre-deploy-20261009-212330 because a
+retained Studio customField definition requires tickets.ticket@2. Read-only SQL
+confirmed its company is a SUSPENDED synthetic studio-check Test organisation;
+the compatibility scanner includes its still-active definition. Live remains
+1dafe165. No metadata/grants changed or gate bypassed. Concurrent Studio source
+supplies v2 and is still undergoing final acceptance. Next: preserve its exact
+accepted live source when deployed, rebuild compatible Apps candidate, repeat
+read-only menu checks, activate and verify public HTTPS. Apps is not yet live.
+The reviewed menu source and this blocker are merged into main at 910aac3.
+Final public revision check still reports 1dafe165; Studio's combined acceptance
+remains pending after Messages timeline-restoration assertions. Do not include
+that unaccepted source or change retained metadata merely to clear the gate.
+
 ## 9 October 2026 — Private Admin entry deployed and publicly verified
 
 Exact tested runtime 1dafe165f97545829d96242b1846e87d9c1f42b4 is live at
@@ -51,41 +205,6 @@ Checker: scripts/check-private-admin-login.ts. Source: src/core/auth, src/proxy.
 Admin auth frame/route layouts, Prisma schema/migration and focused auth tests.
 Source and final evidence integrated with origin/main; no further Admin blocker.
 
-## 9 October 2026 — Dashboard redesign, final release acceptance
-
-Dashboards is in the utility sidebar under its existing Analytics entitlement and
-read/manage capabilities; Home no longer repeats its app card. The modern Atlas
-canvas has a searchable widget library, inspector, eleven visuals, personal boards
-and four starters. Widgets support grouping/count/distinct/sum/average/min/max,
-typed source/date/search filters, currency validation, width/height/colour/tone,
-reorder/duplicate/remove and undo/redo. Manual or timed refresh is saved with board
-period/default filters and respected by the monitor. Existing curated measures,
-central definitions and source permissions remain; ID/revision-checked rename and
-unique-name copies prevent silent replacement. No Dashboard migration or grants.
-
-Fourteen detailed record datasets include Customers, Products, Sales, Inventory,
-Logistics, Manufacturing and Finance. Queries calculate all matching rows up to
-10,000, reject truncation/mixed currencies/unsafe money precision, preserve missing
-average/extrema and weighted groups, and return aggregates rather than raw rows.
-Broader sharing, formulas, arbitrary joins and fiscal features remain open.
-Paths: modules/analytics, analytics/board routes, shell, Reports dataset selection,
-generated gateway descriptors, four dashboard suites and check-dashboards.ts.
-Analytics/design/decisions documentation reconciled; auth counter metadata excluded.
-
-Exact already-live Supply source 2690c26 is merged with private Admin, Studio/MRP
-and Messages source. Combined 19 files/79 assertions, strict types, production
-build, scoped lint and diff check PASS. Prepared 885baa5 passed central Dashboard,
-Home, Reports/Finance and Messages acceptance. Earlier prepared candidates/backups
-and ancestry stops remain in docs/evidence/2026-10-09-dashboards.md. Final currency
-input guard: two suites/19 assertions, strict types, scoped lint and build PASS.
-No Dashboard activation is claimed yet. Next: prepare the final source, repeat
-candidate acceptance, activate and verify the same workflows through public HTTPS.
-The global suite was not rerun; its unrelated baseline failures remain recorded.
-
-Messages 9303039 was publicly verified; final Me-assignment 4be24b3 is included
-and candidate-verified in this combined source. Synthetic chat fixtures are retired;
-no real colleague/customer was messaged. Its final public proof accompanies this
-release. Unrelated unfinished Apps source on main is excluded from deployment.
 
 ## 9 October 2026 — Phase 2B1 validators and visual setup requirements
 

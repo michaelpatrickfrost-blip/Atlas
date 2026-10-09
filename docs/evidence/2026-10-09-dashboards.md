@@ -72,3 +72,17 @@ synchronised without including private authentication counters. Nineteen focused
 files/79 assertions, combined strict types, production build, scoped lint and
 diff check passed. Exact combined candidate/public acceptance follows.
 This does not activate unrelated unfinished Apps work from main.
+
+## Final input guard and integrated live source
+
+73fcdb94987ee97bf63b48f62808b024b80d7b3a rejects invalid three-letter
+monetary currency input per widget, with 19 focused assertions, strict types,
+scoped lint and build PASS. Prepared backup atlas-pre-deploy-20261009-215512;
+exact candidate Dashboard/Home/Reports/Messages acceptance PASS, private log
+/tmp/atlas-dashboards-final-candidate.log. Production advanced independently to
+e5d66e6cf36b0fe228ac65287fdaa8d5ceb8be7c, integrated Studio/Apps source.
+Merged that exact already-deployed source and preserved both contributors'
+acceptance refinements. Combined 23 files/97 assertions, strict types, production
+build, scoped lint (zero errors/one decorative brand-image warning) and diff PASS.
+Schema/client/descriptors now match its already-live typed fields; private auth
+counters remain excluded. Candidate preparation/acceptance and public proof follow.

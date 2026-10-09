@@ -1,5 +1,6 @@
 /** Read-only acceptance using the existing Guardian QA membership; no records or grants created. */
 import assert from "node:assert/strict";
+import { mkdtemp, chmod } from "node:fs/promises";
 import jwt from "jsonwebtoken";
 import { chromium, expect } from "@playwright/test";
 import { db } from "../src/core/db/client";
@@ -36,6 +37,9 @@ async function main() {
     base.protocol === "https:" ||
       ["localhost", "127.0.0.1"].includes(base.hostname),
   );
+  const evidence = await mkdtemp("/tmp/atlas-home-menu-check-");
+  await chmod(evidence, 0o700);
+  console.log(`Private browser evidence: ${evidence}`);
   const browser = await chromium.launch({ headless: true });
   try {
     const context = await browser.newContext({ baseURL: base.origin });
@@ -127,7 +131,7 @@ async function main() {
           ),
       );
       await page.screenshot({
-        path: `/tmp/atlas-home-${name}.png`,
+        path: `${evidence}/home-${name}.png`,
         fullPage: false,
       });
       console.log(
@@ -149,11 +153,100 @@ async function main() {
         .locator(`main nav[aria-label="Apps"] a[href="${modules[0].rootPath}"]`)
         .click();
       await page.waitForURL(`**${modules[0].rootPath}`);
-      await expect(
-        page.getByRole("button", { name: "Apps", exact: true }),
-      ).toBeVisible();
+      for (const [name, width, height] of [
+        ["desktop", 1448, 1086],
+        ["tablet", 820, 1180],
+        ["phone", 390, 844],
+        ["small-phone", 320, 740],
+      ] as const) {
+        await page.setViewportSize({ width, height });
+        const trigger = page.getByRole("button", { name: "Apps", exact: true });
+        await trigger.click();
+        const panel = page.getByRole("region", {
+          name: "Apps menu",
+          exact: true,
+        });
+        await expect(panel).toBeVisible();
+        for (const app of navigable)
+          await expect(panel.locator(`a[href="${app.rootPath}"]`)).toHaveCount(
+            1,
+          );
+        await expect(
+          panel.getByRole("link", { name: "Reports", exact: true }),
+        ).toHaveCount(1);
+        const fit = await panel.evaluate((node) => {
+          const bounds = node.getBoundingClientRect();
+          return (
+            bounds.left >= 0 &&
+            bounds.right <= innerWidth &&
+            bounds.bottom <= innerHeight &&
+            node.scrollWidth <= node.clientWidth &&
+            document.documentElement.scrollWidth <= innerWidth
+          );
+        });
+        assert(
+          fit,
+          `${name} Apps panel fits viewport with internal vertical scrolling.`,
+        );
+        const links = panel.getByRole("link");
+        assert(
+          await links.evaluateAll((nodes) =>
+            nodes.every((node) => node.getBoundingClientRect().height >= 44),
+          ),
+          "Links retain 44px touch targets.",
+        );
+        await panel.getByRole("heading").first().click();
+        await expect(panel).toBeVisible();
+        if (name === "desktop") {
+          const customers = await panel
+            .getByRole("region", { name: "Customers", exact: true })
+            .boundingBox();
+          const more = await panel
+            .getByRole("region", { name: "More", exact: true })
+            .boundingBox();
+          const company = await panel
+            .getByRole("region", { name: "Company", exact: true })
+            .boundingBox();
+          if (customers && more && company)
+            assert(
+              more.y > customers.y &&
+                Math.abs(more.y - company.y) < 2 &&
+                company.x > more.x,
+              "More and Company form the second desktop row.",
+            );
+        }
+        await page.screenshot({
+          path: `${evidence}/apps-menu-${name}.png`,
+          fullPage: false,
+        });
+        await links.last().focus();
+        await page.keyboard.press("Escape");
+        await expect(panel).toHaveCount(0);
+        await expect(trigger).toBeFocused();
+        console.log(
+          `PASS ${name}: grouped Apps, authorised links, viewport fit, touch targets and Escape focus.`,
+        );
+      }
       await page.getByRole("button", { name: "Apps", exact: true }).click();
-      await expect(page.locator('nav[aria-label="Apps"]')).toBeVisible();
+      await page
+        .getByRole("button", { name: /Search apps, people, reports/ })
+        .click();
+      await expect(
+        page.getByRole("region", { name: "Apps menu", exact: true }),
+      ).toHaveCount(0);
+      await expect(
+        page.getByRole("dialog", { name: "Search Atlas" }),
+      ).toBeVisible();
+      await page.keyboard.press("Escape");
+      await page.getByRole("button", { name: "Apps", exact: true }).click();
+      await page
+        .getByRole("region", { name: "Apps menu", exact: true })
+        .getByRole("link", { name: "My work", exact: true })
+        .click();
+      await page.waitForURL("**/profile");
+      await expect(
+        page.getByRole("region", { name: "Apps menu", exact: true }),
+      ).toHaveCount(0);
     }
     console.log(
       "PASS search and existing workspace Apps menu remain usable; all writes blocked.",

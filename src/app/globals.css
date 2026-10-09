@@ -27,7 +27,7 @@
   --radius-atlas-sm: 12px;
   --radius-atlas-md: 18px;
   --radius-atlas-lg: 28px;
-  --atlas-topbar: 4.25rem;
+  --atlas-topbar: 7.5rem;
   --shadow-atlas: 0 1px 1px rgba(16, 24, 40, 0.04), 0 16px 40px -24px rgba(16, 24, 40, 0.28);
   --shadow-atlas-lg: 0 30px 70px -36px rgba(16, 24, 40, 0.45);
 
@@ -43,6 +43,10 @@
   --color-accent-rose-soft: #fde8ee;
   --color-accent-indigo: #4f46e5;
   --color-accent-indigo-soft: #ecebff;
+}
+
+@media (min-width: 640px) {
+  :root { --atlas-topbar: 4.75rem; }
 }
 
 @theme inline {

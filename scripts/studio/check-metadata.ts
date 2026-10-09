@@ -11,6 +11,7 @@ import { createDraft, updateDraft, validateDraft, publishDraft, activateVersion,
 import { studioRegistry } from "../../src/core/studio/registry/runtime";
 import { scanActiveStudioDependencies } from "../../src/core/studio/registry/compatibility";
 import { checkTicketContract } from "./check-ticket-contract";
+import { checkFieldStorage } from "./check-field-storage";
 
 async function main() {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1", "Explicit server acceptance opt-in required");
@@ -82,6 +83,7 @@ async function main() {
     await assert.rejects(()=>db.studioDefinitionVersion.delete({where:{id:version1.versionId}}),/immutable/);
     const dependency=await db.studioDependency.findFirstOrThrow({where:{versionId:version1.versionId,organisationId:a.id}});
     await assert.rejects(()=>db.studioDependency.delete({where:{id:dependency.id}}),/immutable/);
+    await checkFieldStorage(actor, other);
     console.log("PASS central lifecycle, no automatic activation, rollback/history, immutable SQL guards, sealed dependencies, tenant isolation, permissions, conflicts, disabled sources and transactional audit");
 
     const anon=await browser.newContext({baseURL:base});
@@ -99,7 +101,7 @@ async function main() {
     await expect(page.getByRole("link",{name:"My work",exact:true})).toHaveCount(0);
     await expect(page.getByRole("heading",{name:"Configuration library",exact:true})).toBeVisible();
     await page.getByLabel("Name",{exact:true}).fill("Browser accepted configuration");
-    await page.getByLabel("Stable key",{exact:true}).fill(`browser.${suffix}`);
+    await expect(page.getByLabel("Stable key",{exact:true})).toHaveCount(0);
     await page.getByLabel("Description",{exact:true}).fill("Created through the real Admin form");
     await page.getByRole("button",{name:"Create draft",exact:true}).click();
     await expect(page.getByRole("heading",{name:"Browser accepted configuration",exact:true})).toBeVisible();
@@ -114,7 +116,9 @@ async function main() {
     await expect(secondEditor.getByText(/^CONFLICT:/)).toBeVisible();
     await expect(secondEditor.getByText("Compare the current saved draft with your unsaved changes",{exact:true})).toBeVisible();
     await expect(secondEditor.getByLabel("Description",{exact:true})).toHaveValue("Unsaved changes from the second editor");
-    const browserDraft=await db.studioDraft.findFirstOrThrow({where:{organisationId:a.id,definition:{key:`browser.${suffix}`}}});
+    const browserDefinitionId=new URL(page.url()).pathname.split("/").at(-1); assert(browserDefinitionId);
+    const browserDraft=await db.studioDraft.findFirstOrThrow({where:{organisationId:a.id,definitionId:browserDefinitionId},include:{definition:{select:{key:true}}}});
+    assert.match(browserDraft.definition.key,/^configuration\.[a-f0-9-]{36}$/, "The server assigns the permanent key without asking the user");
     assert.equal((browserDraft.payload as {description:string}).description,"First editor saved this revision");assert.equal(browserDraft.revision,1);
     await secondEditor.close();console.log("PASS real draft save and stale-editor structural diff preserves unsaved input without overwriting accepted changes");
     await page.getByRole("button",{name:"Validate saved draft",exact:true}).click();

@@ -58,9 +58,17 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
   Messages (chat permission) and Settings (company-admin access). It does not
   repeat the apps. Tablet/phone use a compact utility bar. This supersedes the
   older no-sidebar rule on Home, Reports and Messages.
-  `AppDirectory` still uses `getNavigableModules` for both the launcher and compact
+  `AppDirectory` still uses `getNavigableModules` for both the launcher and workspace
   Apps menu; counts reflect authorised entries. App labels/descriptions wrap and
   keyboard focus remains visible. Attention/goals stay below the app directory.
+- **Workspace Apps menu** — follows Michael's second 9 October reference: a wide,
+  rounded white panel with Customers, Operations, People and Business across the
+  first desktop row, then More and Company. Larger grey outline icons and readable
+  text replace the narrow six-column dropdown. Tablet uses two columns; phone uses
+  two where space allows and one below 360px, with internal vertical scrolling,
+  wrapped labels and 44px targets. Escape returns focus to Apps; outside clicks,
+  chosen links and route changes close it. All entries retain server permission
+  and app-availability filtering; additional authorised apps remain listed.
 - **Atlas Admin** — separate blue/white platform console using the same ribbon,
   wordmark, font and blue interaction colour. A light Admin navigation rail becomes
   a scrollable, labelled bar on tablet/phone. Active sections and selected-company
@@ -69,6 +77,8 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
 - **Topbar** — Home, Reports and Messages use the Atlas ribbon mark, wordmark/tagline, search, notices, chat,
   company identity/date, profile and sign-out. Other workspaces retain home,
   Apps, back, search, new window, notices, chat, profile and sign-out.
+  Workspace controls use a larger Apps pill and search field. On phone search
+  moves onto its own header row so utility controls remain reachable.
   `public/brand/atlas-mark.png` is a crop of Michael's supplied artwork.
 - **Messages** — wide blue/white pop-out, conversation list beside chat on desktop,
   one pane at a time on phone, quiet date separators and structured record cards.

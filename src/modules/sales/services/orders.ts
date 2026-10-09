@@ -1,4 +1,5 @@
 "use server";
+import { assertProductsSellable } from "@/core/products/sales-eligibility";
 import {guardFinancialCancellation} from '@/core/finance/connections';
 import {assertSalesTradingLink} from './trading-check';
 import {salesHandoff} from './handoff';
@@ -121,7 +122,7 @@ export async function addOrderLine(input: AddOrderLineInput) {
   let taxCategory: string | undefined;
 
   if (input.productId) {
-    const product = await db.product.findFirstOrThrow({ where: { id: input.productId, organisationId: session.organisationId } });
+    const product = await db.product.findFirstOrThrow({ where: { id: input.productId, organisationId: session.organisationId, active: true, sellable: true } });
     const resolved = await resolvePrice({
       organisationId: session.organisationId,
       productId: input.productId,
@@ -237,6 +238,7 @@ export async function confirmOrder(orderId: string) {
   if(order.orderType==="BLANKET")throw new Error("A blanket commitment is a call-off agreement, not a sales order.");
   if(order.orderType==="CALL_OFF"&&!order.agreementId)throw new Error("Choose the call-off agreement before confirming.");
   await assertSalesTradingLink(session.organisationId,order.partyId,order.pricingPartyId);
+  await assertProductsSellable(db, session.organisationId, order.lines.map((line) => line.productId));
   const credit = await checkOrderCredit(orderId);
   if (credit.status === "HOLD") {
     await db.orderHold.create({
@@ -257,6 +259,7 @@ export async function confirmOrder(orderId: string) {
   }
 
   const confirmed=await db.$transaction(async tx=>{
+   await assertProductsSellable(tx, session.organisationId, order.lines.map((line) => line.productId));
    if(order.orderType==='CALL_OFF'&&order.agreementId){const {assertCallOffCapacity,lockAgreement}=await import('./call-off-balance');await lockAgreement(tx,session.organisationId,order.agreementId);await assertCallOffCapacity(tx,{organisationId:session.organisationId,agreementId:order.agreementId,partyId:order.partyId,pricingPartyId:order.pricingPartyId,currency:order.currency,orderId,lines:order.lines});}
    const confirmed=await tx.salesOrder.update({where:{id:orderId,organisationId:session.organisationId,updatedAt:order.updatedAt,commercialStatus:order.commercialStatus},data:{commercialStatus:'CONFIRMED',confirmationDate:new Date()}});
    await issueExportProforma(tx,session.organisationId,orderId);

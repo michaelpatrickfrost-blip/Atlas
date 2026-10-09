@@ -249,6 +249,20 @@ An isolated Test-company business user is created through the real Admin form to
 verify provisioning and company login/recovery. No staff grants or existing
 identities change; fixture companies are suspended and audit history retained.
 
+### Build-stage failures — 9 October 2026
+
+Candidate preparation runs `scripts/deploy/build-release.sh` in an independent
+shell. An outer OR handler must not suppress `set -e` during installation,
+generation, migration, build or Studio compatibility checks. Readiness is written
+only after all stages and nonempty BUILD_ID/server manifest checks. Failure keeps
+the live pointer unchanged and retains the candidate/logs for review. Six injected
+stage failures and a successful preparation are covered in
+`tests/release-build-gate.test.ts`. Never activate a ready marker alone.
+
+Atlas bundles the same Plus Jakarta Sans and Geist Mono families from the pinned
+official Google Fonts source with SIL OFL licences in `src/app/fonts/`. The
+`next/font/local` path avoids Google CSS/font-query parsing during release builds;
+full variable character coverage and existing font variables are retained.
 ## Private Admin entry acceptance — 9 October 2026
 
 After preparing the backed-up candidate, run `scripts/check-private-admin-login.ts`
@@ -268,3 +282,9 @@ customer credentials cannot enter Admin and repeated login is blocked. Existing
 staff console/Team/Studio/Connections and sign-out must still work. Correct staff
 password branching is unit-verified; this runner uses an existing signed QA staff
 session and does not claim to test Michael's unknown password.
+
+Studio release compatibility scans preserve missing/changed/expired-contract gates
+for all real companies and active Test companies. Suspended Test companies retain
+immutable acceptance history and are excluded from runtime dependency checks;
+reactivating them restores the checks. Do not resolve a gate by deleting history,
+changing a real company's status or clearing another contributor's active pointers.

@@ -3,6 +3,7 @@ import { planningAnalytics } from "./services/analytics";
 import { CalendarRange } from 'lucide-react';
 import type { ModuleManifest } from '@/core/modules/types';
 export const planningManifest:ModuleManifest={
+ launcherConsolidatedInto:'manufacturing',
  businessPlanningProvider: productionBusinessPlanning,
  analyticsProvider: planningAnalytics,
  id:'planning',name:'Production Planning',description:'See confirmed product demand, physical stock coverage and shortages in one connected workbench.',

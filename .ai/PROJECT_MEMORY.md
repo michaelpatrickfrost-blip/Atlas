@@ -65,7 +65,7 @@ never create per-module/local business databases or silently fall back to local 
 
 ## Plan and Production Planning — 3 October 2026
 
-Plan at `/plan` is where the business sets targets, forecasts and scenarios across sales, operations, people and the other apps. A new plan is private to its owner until it is shared. Production Planning at `/planning` remains the product-demand workbench. Plan reads live actuals and does not keep a second copy of orders, stock or payroll. See [Plan](../docs/modules/PLAN.md).
+Plan at `/plan` is where the business sets targets, forecasts and scenarios across sales, operations, people and the other apps. A new plan is private to its owner until it is shared. Production Planning at `/planning` remains the product-demand workbench, now accessed through the Manufacturing & Supply console at `/manufacturing`. Plan reads live actuals and does not keep a second copy of orders, stock or payroll. See [Plan](../docs/modules/PLAN.md).
 
 ## Explicit CSV export exception — 3 October 2026
 
@@ -180,3 +180,12 @@ Read `docs/modules/REPORTS.md` for source-owned dataset registration, filtering,
 permissions, Finance scope and workbook format. User-requested Excel downloads
 extend the explicit CSV exception: user-chosen files are permitted; local business
 databases, offline stores and automatic caches remain prohibited.
+## Manufacturing & Supply — 9 October 2026
+
+One console connects demand, material planning, procurement, scheduling, production,
+Products, Inventory and Finance spend. Keep the existing canonical identities,
+owner controls and central ledger. Sales eligibility is independent of class and
+make/buy; internal materials remain stockable/purchasable. Dynamics 365 SCM is the
+researched capability benchmark; current delivery is partial. The full 173-section
+source and coverage remain binding. Read [Manufacturing & Supply](../docs/modules/MANUFACTURING.md)
+and its illustrated working-instruction library at `/manufacturing/help`.

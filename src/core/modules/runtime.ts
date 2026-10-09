@@ -40,6 +40,7 @@ export async function isModuleEnabled(session: Session, moduleId: string): Promi
  *  This is what populates primary navigation — installing a module never requires
  *  editing navigation code. */
 export function canOpenModule(session: Session, module: ModuleManifest) {
+  if (module.audience === "customer" && isAtlasStaff(session)) return false;
   if (module.accessAnyOf?.length) return canAny(session, module.accessAnyOf);
   return can(session, module.accessCapability);
 }

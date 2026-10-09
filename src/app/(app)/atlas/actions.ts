@@ -1,5 +1,5 @@
 "use server";
-import { assertUserProvisioner } from "@/core/admin/access";
+import { assertBusinessUserProvisioner } from "@/core/admin/access";
 import {randomBytes} from 'node:crypto';
 import {requireSession} from '@/core/auth/session';
 import {assertCapability} from '@/core/permissions/check';
@@ -36,7 +36,7 @@ export async function saveCompanyEntitlements(form:FormData){
 export async function createCompanyAccount(form:FormData){
  const session=await requireSession();
  assertCapability(session,'atlas.companies.manage');
-  assertUserProvisioner(session);
+  assertBusinessUserProvisioner(session);
  const name=String(form.get('name')??'').trim(),ownerName=String(form.get('ownerName')??'').trim(),email=String(form.get('email')??'').trim().toLowerCase();
  if(!name||name.length>150||!ownerName||ownerName.length>100||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||email.length>254)throw new Error('Enter the company, administrator name and a valid email.');
  if(await db.user.findUnique({where:{email}}))throw new Error('This account already exists. A verified invitation flow is needed to join it to another company.');

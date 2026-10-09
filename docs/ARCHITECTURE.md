@@ -113,3 +113,25 @@ full source coverage and activation limits.
 ## Reusable documents and contract sharing
 
 Core `templates/` and `contracts/` own template rendering, snapshots, PDFs and public customer responses. The separate Templates app registers normally. CRM owns contract operations. Each source module contributes `templateContextProvider` through its manifest for scoped record choices/fields; Core calls the registry contract and never imports source implementations directly. See [Contracts and Templates](plans/CONTRACTS_TEMPLATES.md).
+
+## Studio foundation — Phase 1
+
+Core Studio owns the typed registry and tenant metadata lifecycle under
+`src/core/studio`. Module manifests contribute descriptors/owner callbacks; Core
+resolves only stable IDs and validates permissions, source availability and schemas.
+Template providers are compatibility adapters over the existing Templates engine.
+No duplicate workflow/template engine or shadow business records are introduced.
+
+Definition/Draft/Version/Dependency form an additive metadata kernel. Drafts use
+CAS revisions; publication recompiles on the server, persists immutable plans and
+audit atomically, and activation moves a separate tenant-bound pointer. Rollback
+activates retained history. The first compiler supports read capability sets only;
+later artefact compilers follow the supplied source's phase gates. PostgreSQL
+guards immutable identity/history and sealed dependency edges.
+
+Staff setup uses `/atlas/studio` with independently authorised target companies;
+customer Studio `/studio` uses its authenticated company. `/atlas/login` and
+`/business/<slug>/login` share the canonical identity service with distinct server
+membership selection. Proxy supplies a trusted path hint only for sign-in routing;
+it is never the permission boundary. See the permanent Studio ledger for verified
+status and deferred work.

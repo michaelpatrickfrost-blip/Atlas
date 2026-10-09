@@ -189,6 +189,22 @@ real uninstall flow (data export + confirmed deletion) is designed.
 
 ## Version compatibility
 
+Studio capability discovery supplements the existing providers through an optional
+`studio` bundle on ModuleManifest. Use typed factories in
+`src/core/studio/registry/contracts.ts`; identifiers are owner-prefixed logical IDs
+with explicit versions, classifications and permission strings. Registry inputs and
+outputs are schema-validated; invocations retain the resolved tenant Session and
+owning-domain guards. Never register arbitrary configuration-provided functions.
+
+Existing template-context providers are adapted into template/list/get descriptors.
+The shared renderer and original source permission/private-record queries remain
+authoritative. Template compatibility access preserves existing staff-aware app
+gates; Studio composition uses company enablement/entitlement. A display-label
+rename does not break contract references. All other descriptor/schema hash changes
+are conservatively breaking at the same version: retain the old version or republish
+dependent metadata. Custom refinements/business rules require an explicit contract
+version change even when their JSON schema representation is unchanged.
+
 `minimumCoreVersion` on the manifest is informational today (no Core version
 gate is enforced yet) — set it, and revisit when Core starts versioning
 releases.

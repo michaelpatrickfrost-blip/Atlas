@@ -88,6 +88,8 @@ export type StaffRosterProvider = (session: Session, manage: boolean) => Promise
 }>>;
 
 export type ModuleManifest = {
+  /** Studio contracts supplement existing providers during progressive migration. */
+  studio?: import("@/core/studio/registry/types").StudioModuleContract;
   recordContextProvider?: import("@/core/relationships/types").RecordContextProvider;
   recordRelationshipProvider?: import("@/core/relationships/types").RecordRelationshipProvider;
   salesInvoiceQuantitiesProvider?: import("@/core/finance/connections").SalesInvoiceQuantitiesProvider;
@@ -129,6 +131,8 @@ export type ModuleManifest = {
   rootPath: string;
   /** Shared sub-apps can be reached from their owning workspace without a launcher tile. */
   launcherVisible?: boolean;
+  /** Customer apps may keep Atlas staff setup exclusively in the Admin portal. */
+  audience?: "customer" | "all";
   /** Public sample-only preview; never reads tenant records. */
   previewPath?: string;
   /** Capability required to see this module in navigation and the Apps screen "open" action. */

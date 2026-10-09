@@ -12,7 +12,8 @@ grants give all platform and standard company capabilities in the explicitly
 selected workspace. Customer roles, overrides and restrictions never grant
 platform access; their existing permission behavior is retained. Module availability,
 tenant scoping, private record ownership, secrets and financial controls still apply.
-User creation is reserved to Michael as described below.
+Business-user creation is available to Atlas OWNER/ADMIN; staff-account creation
+remains reserved to Michael as described below.
 
 An internal Atlas team workspace provides independent staff sign-in. Existing
 owners receive an internal membership in the additive migration. Opening a company
@@ -92,13 +93,25 @@ No automatic deletion/retention schedule, email delivery, MFA, SSO or customer
 impersonation is introduced. Backups are preserved. Release and live acceptance
 evidence belongs in `.ai/CURRENT_STATE.md`.
 
-## User creation — 8 October 2026
+## Separate administration and business sign-in — 9 October 2026
 
-Only the signed-in `kickablur@icloud.com` identity with independent Atlas staff
-permission can create users. The server checks this after each existing capability
-guard, including Atlas staff, company users, Company administration and new-company
-first administrators. Creation controls are hidden for everyone else. Existing user
-management, selected-company permissions and tenant boundaries remain unchanged.
+Atlas staff sign in at `/atlas/login` and land in `/atlas`. The customer Studio
+app at `/studio` is separate from staff setup at `/atlas/studio`; staff choose
+an active customer there under their own audited identity. Company overview
+shows its sign-in URL `/business/<slug>/login`, with matching password recovery.
+The company URL selects an active membership in that exact business on the
+server. Generic customer login remains compatible for a single active company;
+ambiguous multi-company login asks for the company's own address.
+
+## User creation — 9 October 2026
+
+Michael explicitly authorised Atlas administrators to create business users.
+Independent OWNER/ADMIN grants include `atlas.business_users.create`; EMPLOYEE
+and customer roles cannot create business identities. First company administrator
+and existing business-user creation paths enforce that server guard after their
+original capability checks. Business creation controls sit in Atlas Admin.
+Only the signed-in `kickablur@icloud.com` identity with independent staff access
+can create Atlas staff accounts; business-user permission cannot grant staff.
 
 Atlas team → Add Atlas employee asks Michael for the employee's name, email, role
 and sign-in password. New passwords use the existing 12–128 character/72 UTF-8 byte

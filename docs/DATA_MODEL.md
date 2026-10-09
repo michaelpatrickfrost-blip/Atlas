@@ -114,3 +114,18 @@ use cases, not the generic database read allowlist. The additive migration is
 applied on the live server; a database trigger also blocks calculated evidence
 rewrites. Activation and 42 authenticated acceptance checks passed. See
 [the S&OP module](modules/SOP.md) for implemented behaviour and genuine gaps.
+
+## Studio metadata kernel
+
+`StudioDefinition` is a tenant-owned UUID plus non-recyclable key/kind; the active
+version is a separate pointer. `StudioDraft` stores revision, base published
+version, editor, validated payload and validation results. `StudioDefinitionVersion`
+stores immutable payload/compiled plan, schema/semantic versions, checksum and
+publication actor/time. `StudioDependency` pins owner contract IDs/versions/hashes.
+Composite foreign keys require every draft/history/dependency/pointer to share the
+definition's tenant. Publication is serializable and audited. Metadata tables never
+store copies of domain records. The additive migration is
+`20261009210000_studio_metadata_kernel`; the execution ledger records application
+and runtime verification. Immutable history deletion is only permitted by the
+existing explicitly authorised Test-company cleanup flag for database-confirmed
+Test customer organisations. Production history is retained.

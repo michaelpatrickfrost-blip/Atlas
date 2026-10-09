@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 const initialState = { error: "" };
 
-export function LoginForm() {
+export function LoginForm({portal,companySlug}:{portal?:"atlas";companySlug?:string} = {}) {
   const [state, formAction, pending] = useActionState(async (_: typeof initialState, formData: FormData) => {
     const result = await loginAction(formData);
     return result ?? initialState;
@@ -15,6 +15,8 @@ export function LoginForm() {
 
   return (
     <form action={formAction} className="flex flex-col gap-4 rounded-2xl border border-black/[0.06] bg-white p-5">
+      {portal && <input type="hidden" name="portal" value={portal}/>}
+      {companySlug && <input type="hidden" name="companySlug" value={companySlug}/>}
       <label className="flex flex-col gap-1 text-sm">
         <span className="text-[var(--color-ink-muted)]">Email</span>
         <input
@@ -38,7 +40,7 @@ export function LoginForm() {
       <Button type="submit" variant="primary" className="mt-2" disabled={pending}>
         {pending ? "Signing in…" : "Sign in"}
       </Button>
-      <Link href="/reset-password" className="text-center text-[13px] text-[#0071e3]">Use a setup or recovery code</Link>
+      <Link href={companySlug ? `/business/${companySlug}/reset-password` : portal === "atlas" ? "/reset-password?portal=atlas" : "/reset-password"} className="text-center text-[13px] text-[#0071e3]">Use a setup or recovery code</Link>
     </form>
   );
 }

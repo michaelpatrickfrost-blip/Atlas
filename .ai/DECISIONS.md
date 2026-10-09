@@ -1,5 +1,47 @@
 # Atlas decisions
 
+## 9 October 2026 — Studio kernel scope and administration boundaries
+
+Phase 1 implements a metadata-only `capabilitySet` compiler for approved read
+references. Page/field/flow compilers remain in their specified later phases.
+The specification describes a generic definition kernel rather than a required
+Phase 1 business builder; this narrow first compiler proves the draft/publication/
+activation contract without prematurely executing later engines. Unknown kinds
+and executable commands/integrations fail closed. History is append-only in
+PostgreSQL; tenant composite keys guard pointers and dependencies.
+
+Michael requested all Atlas setup under a separate Admin login/console, with
+customer Studio in customer workspaces. Staff setup validates an active selected
+customer and preserves the staff actor/capabilities for audit. It grants no
+customer identity. Company login paths use existing stable slugs on the current
+site; no new DNS is needed. The URL selects an eligible membership server-side;
+ambiguous generic customer login fails rather than choosing an arbitrary company.
+
+Michael explicitly authorised Atlas administrators to create business users.
+`atlas.business_users.create` is an independent OWNER/ADMIN grant, excluded from
+EMPLOYEE and customer role grants. This supersedes 8 October Michael-only
+business-user creation; Atlas staff account creation remains Michael-only.
+
+
+## 9 October 2026 — Studio evolves providers through versioned contracts
+
+Michael reconciled the supplied ten-phase source with the initial five-phase
+request by instructing an ordered plan and continuation. Use Section 27 as written:
+contract hardening precedes the metadata kernel. Gate checklists derive from that
+phase's architectural/security/test requirements; do not require later engines early.
+
+Registry metadata snapshots identify owner, stable logical ID, version, lifecycle,
+classification, required permission and schema/contract hashes. Unknown/changed
+references fail closed. Label-only renames are compatible; other changes are
+conservatively breaking at the same version. Business/refinement changes require
+version bumps even if JSON-schema conversion cannot describe the change.
+Existing TemplateContextProvider reads are wrapped, retaining the shared renderer,
+owner whitelist and private-record guards. Templates retains its staff-aware app
+availability; Studio composition checks the company's enabled/entitled sources.
+Reason: migrate existing contracts without creating another engine or widening
+tenant/user access. Required idempotency is enforced by the owning command; the
+registry requires its operation key but does not claim that a key alone deduplicates.
+
 ## 9 October 2026 — Exploratory demo data is seeded by a script, not invented in the UI
 
 Decision: Michael's end-to-end Test company is created by a committed, re-run

@@ -1,3 +1,4 @@
+import { STUDIO_CAPABILITIES } from "@/core/studio/permissions";
 /**
  * Capability strings follow `<module>.<entity>.<action>`. Core capabilities use
  * the `core` module namespace. Capabilities are declared by module manifests
@@ -323,6 +324,7 @@ export const STANDARD_ROLES: Array<{ key: string; name: string; capabilities: st
       ...Object.values(MEETINGS_CAPABILITIES), ...Object.values(MAINTENANCE_CAPABILITIES),
       ...Object.values(ENGINEERING_CAPABILITIES), ...Object.values(FLEET_CAPABILITIES), ...Object.values(FIELDSERVICE_CAPABILITIES),
       ...Object.values(CORE_CAPABILITIES),
+      ...Object.values(STUDIO_CAPABILITIES),
       ...Object.values(AUDIT_CAPABILITIES),
       ...Object.values(ECHO_CAPABILITIES),
       "planning.demand.read", "planning.plan.manage", "planning.team.manage",

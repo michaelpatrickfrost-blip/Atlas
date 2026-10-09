@@ -1,0 +1,155 @@
+# Atlas Studio implementation progress
+
+Updated: 9 October 2026.
+
+# Current Phase
+
+Phase 1 — Metadata kernel. Phase 0 prerequisite local gate passed.
+Michael reconciled the source mismatch on 9 October: “do all as a plan do 1 then
+once done contiune”. Use the supplied Section 27 sequence; complete prerequisites
+and Phase 1 first, then proceed sequentially only after each gate passes.
+
+# Current Workstream
+
+1D — Release compatibility, database acceptance and live verification.
+
+# Overall Status
+
+IN PROGRESS. The supplied source defines ten phases 0–9, not five. The original
+is preserved unchanged at `docs/studio/ATLAS_STUDIO_SOURCE.docx` (source
+`/Users/michael/Downloads/atlas_studio.docx`, SHA-256
+`4afb01d98ead51cd70ec4958620eb9d27a19a0298cd0fa1cb8bd0aee69d9198d`).
+All 903 body/table paragraphs and additional footer read. No specification rewrite.
+
+# Completed Workstreams
+
+| Workstream | Status | Evidence |
+| --- | --- | --- |
+| Specification intake and repository recovery | VERIFIED | Full document read; clean detached starting HEAD af030b0; source/provider/schema inspection. |
+| Source sequence reconciliation | VERIFIED | Michael's 9 October follow-up authorises ordered plan and continuation. |
+| 0A Registry contracts/runtime | VERIFIED | Five focused tests and full TypeScript check passed before adapter work. |
+| 0B Existing template provider adapters | VERIFIED | Seven Studio tests plus 13 existing module/template/permission assertions passed; changed-file lint passed. |
+| 0C Compatibility checks and prerequisite gate | VERIFIED | Catalogue hash snapshot, 21 tests, TypeScript, changed-file lint and production build passed. |
+| 1A Tenant metadata models/additive migration | IMPLEMENTED | Prisma validation/generation passed; four additive tables, composite tenant keys and immutable-history triggers; database application pending. |
+| 1B Draft/validate/publish/activate service | IMPLEMENTED | Strict compiler, CAS drafts, immutable transactional publication/audit, activation and rollback; focused tests pass, central database acceptance pending. |
+| 1C Configuration capabilities/admin interface | IMPLEMENTED | Customer Studio and selected-company staff setup; conflict diff, publication/history controls; build/live checks pending. |
+| 1D Release compatibility/security/live acceptance | IN PROGRESS | Release dependency scan wired before activation; acceptance script and production verification next. |
+| Companion Admin/business sign-in and provisioning | IMPLEMENTED | Separate Admin login, company-specific login/reset URLs, OWNER/ADMIN business-user creation; authentication/platform permission regressions pass. |
+
+# Current Workstream Detail
+
+0A purpose: typed discoverable descriptors, stable IDs/versions/hash/lifecycle,
+fail-closed invocation through tenant session, owner module availability and domain
+capability, validated inputs/outputs. Files: `src/core/studio/registry/*`, manifest
+optional bundle, focused tests. No database change. Checks: duplicate/invalid IDs,
+schema changes, missing capability, disabled owner, two-tenant contexts, malformed
+inputs/results and immutability.
+
+0B purpose: adapt existing TemplateContextProvider list/get without replacing the
+renderer/provider or expanding source fields. Files: registry adapter/runtime,
+template service and tests. No database change. Preserve project/CRM/service scopes.
+
+0C purpose: dependency snapshots and breaking-change detection; document module
+contract and run prerequisite build/regressions. No active Studio definitions yet.
+
+1A purpose: Definition/Draft/Version/Dependency, tenant indexes/composite foreign
+keys, append-only versions, CAS drafts, activation pointer. Schema + additive SQL;
+no reset/backfill of business records. Check relational/immutability constraints.
+
+1B purpose: strict metadata payload/reference validation, compilation/checksums,
+transactional immutable publication, audit, version compare/activation/rollback.
+Core services + tests. No domain writes; published metadata is configuration only.
+
+1C purpose: narrow Studio permissions and administration shell for draft lifecycle.
+Core permissions/module manifest/routes. No generated domain pages/fields/flows.
+
+1D purpose: candidate release dependency scan, regression/security checks and live
+metadata lifecycle with two tenant scopes and missing publication permission.
+Deployment must preserve central records, backups and concurrent contributions.
+
+# Files Changed
+
+`src/core/studio/registry/{types,contracts,registry,adapters,runtime}.ts`;
+`src/core/modules/types.ts`; `src/core/templates/service.ts`;
+`tests/studio-{registry,adapters}.test.ts`; `docs/MODULE_SPEC.md`; metadata compiler/services, four Prisma models/additive migration, Studio module
+and customer/Admin routes, login/reset company addresses, proxy login redirect,
+platform provisioning guards, deploy compatibility script, focused/regression tests,
+source copy, contract inventory, this ledger, CURRENT_STATE and DECISIONS.
+
+# Database / Prisma Changes
+
+Four additive models: StudioDefinition, StudioDraft, StudioDefinitionVersion and
+StudioDependency. Migration `20261009210000_studio_metadata_kernel` creates only
+metadata tables/indexes/composite tenant foreign keys/constraints/guards. No existing
+business records changed, no local business databases, no destructive reset.
+
+# Migrations Applied
+
+None.
+
+# Tests Added
+
+Registry/adapters/catalogue/compiler/service/admin-context suites; company login,
+platform grants and business-user provisioning regression cases.
+
+# Tests Run
+
+Document structure/phase searches; repository status/diff/source inspection.
+`npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
+
+# Test Results
+
+903/903 source paragraphs; original hash matches preserved copy. npm ci and
+Prisma generation succeeded. First registry-only run: 5 passed. Combined registry,
+adapter, module, template, permission run: 20 passed (after fixing one test fixture
+syntax error). First registry TypeScript pass: exit 0. Changed-file lint: exit 0.
+Second TypeScript and production build passed. Catalogue snapshot: 1 passed.
+Most recent focused run: 13 test files, 55 assertions passed. TypeScript, changed-
+file lint and production build passed. Full tests: 85 failures/992 passes; unchanged
+HEAD baseline reproduces the same 85 failures (968 passes before additions). Full
+lint: 9 errors/21 warnings, unchanged baseline. No central migration/live verification
+yet. Failures are existing stale module-availability mocks and existing lint errors,
+not a reason to claim full-suite success.
+
+# Architecture Decisions
+
+Use supplied document sequence under Michael's follow-up. Existing template and
+automation engines/providers stay authoritative. Registry adapters precede metadata.
+Gate checklists below derive from the supplied sections rather than renumbering or
+rewriting the specification. Implementation decisions recorded in DECISIONS.
+
+# Known Issues
+
+Source's initial five/ten-phase mismatch resolved by follow-up; no remaining scope
+blocker. Central migration and live acceptance remain pending. Full test/lint baseline
+failures are reproduced unchanged; focused checks pass. Phase 1 cannot PASS
+before database and live behaviour are verified. No later phases started.
+
+# Deferred Items
+
+Phases 2–9 per Section 27: extension fields/pages, Decisions/Approvals, durable
+outbox, Flow runtime, Automations migration, Process Studio, packages and adoption.
+No later-phase implementation before preceding gate passes.
+
+# Acceptance Gate Status
+
+Phase 0 local PASS (runtime/contract/regression tests + build); live compatibility
+check remains required before completed release handoff. Phase 0 checks: (a) stable typed IDs/schema hashes/lifecycle, (b) existing provider
+behaviour through adapters, (c) server tenant/module/capability/input-output checks,
+(d) duplicate/compatibility/security tests, (e) production build/regressions.
+Phase 1 pending: (a) tenant-owned metadata with immutable checksummed versions,
+(b) CAS drafts, (c) server validation/closed registry dependencies before publish,
+(d) separate activation and historical rollback, (e) distinct edit/publish/read
+permissions without domain privilege widening, (f) transactional audit,
+(g) two-tenant/conflict/security/immutability/compatibility tests, (h) build and
+backward-compatible live deployment/representative lifecycle verification.
+These checks derive from Sections 5–6, 14, 19, 25–28; no whole-system gate used
+prematurely. Gates cannot PASS from file existence alone.
+
+# Exact Next Action
+
+Review/stage/commit the coherent foundation and Admin-boundary checkpoint, push
+the exact revision, prepare a fresh backed-up candidate through deploy:vps. Run
+`ATLAS_STUDIO_LIVE_TEST=1 ATLAS_STUDIO_TEST_URL=http://127.0.0.1:3011`
+with `scripts/studio/check-metadata.ts` against the prepared candidate, correct any
+failure before activation, then repeat against the public live URL.

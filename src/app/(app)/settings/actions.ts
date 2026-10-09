@@ -1,5 +1,5 @@
 "use server";
-import { assertUserProvisioner } from "@/core/admin/access";
+import { assertBusinessUserProvisioner } from "@/core/admin/access";
 import {validNewPassword} from "@/core/auth/recovery";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
@@ -49,7 +49,7 @@ export async function saveMemberRoles(form: FormData) {
 export async function createUser(form:FormData) {
  const session = await requireSession();
  assertCapability(session,CORE_CAPABILITIES.usersManage);
-  assertUserProvisioner(session);
+  assertBusinessUserProvisioner(session);
  const name=String(form.get("name")??"").trim(), email=String(form.get("email")??"").trim().toLowerCase(),password=String(form.get("password")??"");
  if(!name || name.length>100 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length>254 || !validNewPassword(password)) throw new Error("Enter a name, valid email and a password with 12–128 characters.");
  const roleIds=[...new Set(form.getAll("roleId").map(String))];

@@ -1,5 +1,5 @@
 "use server";
-import { assertUserProvisioner } from "@/core/admin/access";
+import { assertBusinessUserProvisioner } from "@/core/admin/access";
 import { randomBytes } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
@@ -48,7 +48,7 @@ export async function importCompanySetup(_state: SetupResult, form: FormData): P
 export async function createCompanyUser(form: FormData) {
   const session = await requireSession();
   assertCapability(session, "atlas.users.manage");
-  assertUserProvisioner(session);
+  assertBusinessUserProvisioner(session);
   const organisationId = String(form.get("organisationId") ?? "");
   await ownerOrganisation(organisationId);
   const name = String(form.get("name") ?? "").trim();

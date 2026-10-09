@@ -1,0 +1,96 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Studio catalogue compatibility baseline > adapts existing source owners with valid stable hashes and permissions 1`] = `
+[
+  {
+    "contractHash": "818fc2e496787f4fcc88e9424f18328b799c4eb981f13c9a9ee7fedc502976c5",
+    "id": "crm.template.deal",
+    "schemaHash": "7dd1e5720ef88cb57ecd138a94b1913009799d0e303b5afc403429d7b5bf824b",
+    "version": 1,
+  },
+  {
+    "contractHash": "8ad35244aa42df6c7aa282132f8f5e65fcd3f78297ccf0330f0b6c2936656643",
+    "id": "crm.template.deal.get",
+    "schemaHash": "0956326230590bfceda7ba965e0c0cb8fd757582e2200a916ae831c5e1deb0cc",
+    "version": 1,
+  },
+  {
+    "contractHash": "b52a13148f8645b749b0aff0eed6f02b521897f48639ca4f6250f167297091ed",
+    "id": "crm.template.deal.list",
+    "schemaHash": "943ffda6bf08780148ad1447e8eec5fee9df48672ee713656516bed450c17200",
+    "version": 1,
+  },
+  {
+    "contractHash": "50f89e9cb10bdd48c5ee6e0b79429f7bca796e05b46959e2661786217941d710",
+    "id": "projects.template.project",
+    "schemaHash": "5f6327339b41565b25d63ade1a602c4cf3e9517b93d9bbd3ed84f750da1d8ce8",
+    "version": 1,
+  },
+  {
+    "contractHash": "8ab6c0c0b3d974308bfdc337c773dce02dd5e0baec23a2e7614126e36ff1834b",
+    "id": "projects.template.project.get",
+    "schemaHash": "96c2c359438cc35a7d3db9140d377014bd77790826cbed28806440ea988339ae",
+    "version": 1,
+  },
+  {
+    "contractHash": "7f06e01ba5cc99781f7efca117132abe97616f7b83e41ebcd2443a0fa4c01e3d",
+    "id": "projects.template.project.list",
+    "schemaHash": "2cb4a750baac7ca8ac19463355f8430ae6f15fca119b1d3e4a9fa157bb66a8e6",
+    "version": 1,
+  },
+  {
+    "contractHash": "a1ad88e5d084fbaad27e9ddf1ce11d262115a7c784ce93d242b02f55142dac28",
+    "id": "sales.template.order",
+    "schemaHash": "e06f03c34e308ff7b9c795c4e959d3e3f64cb97caa5dabf137ea596a047a12c9",
+    "version": 1,
+  },
+  {
+    "contractHash": "23e07b8fee690a62c6793ee6312dcb4df639de04a27bcb16a497be6aadc1a4d8",
+    "id": "sales.template.order.get",
+    "schemaHash": "784c568e846f591d408e61111235f96fe3d74f1f2e227f0a35d0b1130666f916",
+    "version": 1,
+  },
+  {
+    "contractHash": "15a12a55344800f6252828ab3b8eaa14b73e873db0fcaa0b54d977330dee6937",
+    "id": "sales.template.order.list",
+    "schemaHash": "62dd94cf5771337a436a4c2c367b56d24207e43de385012b9ff4cdae6c2f78cf",
+    "version": 1,
+  },
+  {
+    "contractHash": "8de6461253f51aa46381eea37687da18c3c26c27278994d0255d67d07b777cad",
+    "id": "sales.template.quote",
+    "schemaHash": "02bcebbc46964b822a9c2b9f82198d31e93862b3c7ec8fd1526c3a689a166676",
+    "version": 1,
+  },
+  {
+    "contractHash": "9da18d261efee3753d67b8634404d043e95be10592d415a1983ac6604d5ead81",
+    "id": "sales.template.quote.get",
+    "schemaHash": "61183101bb55ebdb536ab2fc7899262fea9ac2236809f6b6d91e91974b2f57eb",
+    "version": 1,
+  },
+  {
+    "contractHash": "7465e266c11b5aad57debb4c4b251655236df17461583cd7e0cf6fde578dc7b4",
+    "id": "sales.template.quote.list",
+    "schemaHash": "b639079661c97dbff587762851d0c26b17b6c0bbc2099f40c1145223e8f8ac8e",
+    "version": 1,
+  },
+  {
+    "contractHash": "5ae942eb498fe9bc73581887cb2b083f6fea9d27ff42de989e4b80e0b44d5f01",
+    "id": "service.template.case",
+    "schemaHash": "4b39200f62d151c320c278cf1d3d121510d355e0389e89d237021a123b500bac",
+    "version": 1,
+  },
+  {
+    "contractHash": "7906db787a851775452c8781833f68cd71fd487f37034f80772358d50c8a81c1",
+    "id": "service.template.case.get",
+    "schemaHash": "c57b28be129dad12e085ab9aa29594da091750786faafb7ffdcb491c584eac5f",
+    "version": 1,
+  },
+  {
+    "contractHash": "ab22a82a8555e1c4605651399ffeaad3ebc7838e660908723dc72558b64c8cfd",
+    "id": "service.template.case.list",
+    "schemaHash": "04bedac937fffd8c98f71f64963001eca8e952989ed39b32924eb0103860fd7c",
+    "version": 1,
+  },
+]
+`;

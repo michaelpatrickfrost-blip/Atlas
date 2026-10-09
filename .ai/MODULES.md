@@ -136,3 +136,11 @@ Fleet replaces its catalogue placeholder. See [scope and genuine integration
 boundaries](../docs/modules/OPERATIONAL_APPS.md) and CURRENT_STATE for release truth.
 Microsoft calendar application configuration/consent and provider proof remain
 required; no external delivery is inferred from a connected UI or manual draft.
+
+## Studio — foundation in progress, 9 October 2026
+
+Customer app `/studio`; independent staff setup `/atlas/studio`. Core registry and
+metadata services are under `src/core/studio`; module UI/manifest under
+`src/modules/studio`. This is the Phase 1 metadata kernel, not completed Page/
+Process/Flow Studio. Later builders/engines remain deferred. Recovery and gate
+evidence: `docs/studio/STUDIO_IMPLEMENTATION_PROGRESS.md`.

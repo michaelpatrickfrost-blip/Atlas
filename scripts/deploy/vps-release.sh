@@ -81,6 +81,7 @@ if [[ ! -f "$CANDIDATE/.atlas-ready" ]]; then
     # Caller must review compatibility before release; no schema rollback occurs.
     npx prisma migrate deploy --config prisma7.config.ts > "$BACKUP-migrate.log" 2>&1
     NODE_OPTIONS=--max-old-space-size=6144 npm run build > "$BACKUP-build.log" 2>&1
+    node --env-file=.env.local --import tsx scripts/studio/check-compatibility.ts > "$BACKUP-studio-compatibility.log" 2>&1
     node scripts/deploy/release-files.mjs assets "$PREVIOUS/.next/static" .next/static
     printf 'ATLAS_RELEASE_REVISION=%s\nNEXT_DEPLOYMENT_ID=%s\n' "$REV" "$REV" > .release.env
     printf '%s\n' "$REV" > .atlas-ready
@@ -119,6 +120,8 @@ kill -TERM "$PROBE_PID"; wait "$PROBE_PID" || true; PROBE_PID=''
 echo "Prepared and smoke-verified immutable release: $CANDIDATE"
 echo "Previous immutable runtime: $PREVIOUS"
 [[ "$MODE" = activate ]] || exit 0
+# Re-scan a prepared candidate: active metadata may have changed since preparation.
+(cd "$CANDIDATE" && node --env-file=.env.local --import tsx scripts/studio/check-compatibility.ts)
 if systemctl is-active --quiet atlas-guardian.timer; then TIMER_WAS_ACTIVE=1; sudo systemctl stop atlas-guardian.timer; fi
 for i in $(seq 1 300); do systemctl is-active --quiet atlas-guardian.service || break; sleep 1; done
 ! systemctl is-active --quiet atlas-guardian.service || { echo 'Guardian still active; activation deferred.' >&2; exit 1; }

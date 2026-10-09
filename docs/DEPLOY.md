@@ -199,3 +199,17 @@ central data. Quitting Atlas.app stops the server; click the button again.
 - Do not include unrelated unfinished work merely to clear the release gate.
 
 Server deployments acquire exclusive release locks and wait for an existing Next build before preparing a candidate. A busy lock/build times out safely after ten minutes. Backups retain both the PostgreSQL dump and configured private service evidence (`-service-files.tar.gz`), with private file permissions.
+
+## Studio release checks
+
+Candidate preparation and activation run `scripts/studio/check-compatibility.ts`
+against all active dependency metadata before claiming release compatibility. A
+missing, changed or expired registered contract blocks release. Ordinary runtime
+reads also recheck tenant/module/permission boundaries. Metadata migration is
+additive; database rollback is not part of release rollback.
+
+Run `ATLAS_STUDIO_LIVE_TEST=1` with the existing server environment and
+`scripts/studio/check-metadata.ts` against the prepared loopback candidate, then
+the live URL. It creates isolated central Test-company configuration, exercises
+real services and Admin forms and suspends its exact fixture companies afterward.
+No new users or staff grants are created; audited fixture history is retained.

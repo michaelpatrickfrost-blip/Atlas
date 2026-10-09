@@ -21,15 +21,32 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
     return { error: "Incorrect email or password." };
   }
 
-  const active = user.memberships.filter(m => m.active && m.organisation.status === "ACTIVE" && (m.organisation.kind !== "INTERNAL" || platformCapabilities(user.platformAdmin).length > 0));
-  const membership = active.find(m => m.organisation.kind === "INTERNAL") ?? active[0];
-  if (!membership) {
-    return { error: "This account has no active workspace access. Contact your administrator." };
+  const portal = String(formData.get("portal") ?? "");
+  const companySlug = String(formData.get("companySlug") ?? "").trim();
+  const staff = platformCapabilities(user.platformAdmin).length > 0;
+  const active = user.memberships.filter(m => m.active && m.organisation.status === "ACTIVE" && !m.organisation.archivedAt);
+  let membership;
+  if (portal === "atlas") {
+    if (!staff) return { error: "This account does not have Atlas administration access." };
+    membership = active.find(m => m.organisation.kind === "INTERNAL");
+  } else if (companySlug) {
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(companySlug) || staff) return { error: "Use the sign-in address provided for your account. Atlas staff sign in through Atlas Admin." };
+    membership = active.find(m => m.organisation.kind === "CUSTOMER" && m.organisation.slug === companySlug);
+  } else if (!portal) {
+    // Existing single-company links remain usable; a multi-company identity must
+    // choose a company's dedicated address rather than silently choosing active[0].
+    if (staff) membership = active.find(m => m.organisation.kind === "INTERNAL");
+    else {
+      const companies = active.filter(m => m.organisation.kind === "CUSTOMER");
+      if (companies.length > 1) return { error: "Use your company's sign-in address to choose the correct business." };
+      membership = companies[0];
+    }
   }
+  if (!membership) return { error: "This account has no active access to this workspace. Contact your administrator." };
 
   await db.membership.update({where:{id:membership.id,organisationId:membership.organisationId},data:{lastLoginAt:new Date()}});
   await createSessionCookie({ userId: user.id, organisationId: membership.organisationId });
-  redirect("/home");
+  redirect(staff ? "/atlas" : "/home");
 }
 
 export async function logoutAction() {

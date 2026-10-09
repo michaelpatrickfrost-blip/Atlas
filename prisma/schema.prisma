@@ -14,6 +14,7 @@ datasource db {
 // ---------- Core: tenancy & identity ----------
 
 model Organisation {
+  studioDefinitions StudioDefinition[]
  operationalMeetingEntry MeetingEntry[]
  operationalMicrosoftCalendarConnection MicrosoftCalendarConnection[]
  operationalMeetingOAuthState MeetingOAuthState[]
@@ -9127,4 +9128,85 @@ model FieldServiceEntry {
  job FieldServiceJob @relation(fields:[jobId,organisationId],references:[id,organisationId])
  @@index([organisationId,jobId])
  @@map("field_service_entries")
+}
+
+// ---------- Core Studio: configuration metadata, never business record copies ----------
+model StudioDefinition {
+  id String @id @default(uuid()) @db.Uuid
+  organisationId String
+  key String
+  kind String
+  name String
+  revision Int @default(0)
+  latestVersion Int @default(0)
+  activeVersionId String? @db.Uuid
+  retiredAt DateTime?
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  organisation Organisation @relation(fields:[organisationId], references:[id], onDelete:Restrict)
+  draft StudioDraft?
+  versions StudioDefinitionVersion[] @relation("StudioHistory")
+  activeVersion StudioDefinitionVersion? @relation("StudioActive", fields:[activeVersionId,id,organisationId], references:[id,definitionId,organisationId], onDelete:NoAction, onUpdate:NoAction)
+  @@unique([id,organisationId])
+  @@unique([organisationId,kind,key])
+  @@index([organisationId,retiredAt])
+  @@map("studio_definitions")
+}
+
+model StudioDraft {
+  id String @id @default(uuid()) @db.Uuid
+  organisationId String
+  definitionId String @unique @db.Uuid
+  revision Int @default(0)
+  baseVersionId String? @db.Uuid
+  editorUserId String
+  payload Json
+  validation Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  definition StudioDefinition @relation(fields:[definitionId,organisationId], references:[id,organisationId], onDelete:Restrict)
+  baseVersion StudioDefinitionVersion? @relation("StudioDraftBase", fields:[baseVersionId,definitionId,organisationId], references:[id,definitionId,organisationId], onDelete:NoAction, onUpdate:NoAction)
+  @@unique([definitionId,organisationId])
+  @@index([organisationId,updatedAt])
+  @@map("studio_drafts")
+}
+
+model StudioDefinitionVersion {
+  id String @id @default(uuid()) @db.Uuid
+  organisationId String
+  definitionId String @db.Uuid
+  version Int
+  semanticVersion String
+  schemaVersion Int
+  payload Json
+  compiledPlan Json
+  checksum String
+  createdBy String
+  publishedAt DateTime @default(now())
+  definition StudioDefinition @relation("StudioHistory", fields:[definitionId,organisationId], references:[id,organisationId], onDelete:Restrict)
+  activeFor StudioDefinition[] @relation("StudioActive")
+  draftBases StudioDraft[] @relation("StudioDraftBase")
+  dependencies StudioDependency[]
+  @@unique([id,definitionId,organisationId])
+  @@unique([definitionId,organisationId,version])
+  @@unique([definitionId,organisationId,semanticVersion])
+  @@index([organisationId,publishedAt])
+  @@map("studio_definition_versions")
+}
+
+model StudioDependency {
+  id String @id @default(uuid()) @db.Uuid
+  organisationId String
+  definitionId String @db.Uuid
+  versionId String @db.Uuid
+  ownerModuleId String
+  contractId String
+  contractVersion Int
+  schemaHash String
+  contractHash String
+  version StudioDefinitionVersion @relation(fields:[versionId,definitionId,organisationId], references:[id,definitionId,organisationId], onDelete:Restrict)
+  @@unique([versionId,contractId,contractVersion])
+  @@index([organisationId,ownerModuleId,contractId])
+  @@map("studio_dependencies")
 }

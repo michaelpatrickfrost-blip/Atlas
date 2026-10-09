@@ -115,7 +115,17 @@ Recovery benefits similarly require independent approval before Sales redemption
 Configuring a queue or catalogue service never grants unrelated business permissions.
 See [service work security and behavior](modules/SERVICE_WORK_DESK.md).
 
-User creation exception (8 October 2026): only Michael’s authenticated
-`kickablur@icloud.com` Atlas staff identity can provision staff/company users or a
-new company’s first administrator. Existing capability and tenant checks still run;
-other user management remains separately permissioned. See [Atlas Admin](ATLAS_ADMIN.md).
+User creation policy (9 October 2026, supersedes the 8 October business-user
+restriction): independent Atlas OWNER/ADMIN grants include
+`atlas.business_users.create`. Those administrators may create business users
+and first business administrators. EMPLOYEE and customer role grants cannot.
+Atlas staff creation remains limited to Michael's authenticated staff identity.
+All original selected-company/capability validation remains in place. Customer
+roles cannot manufacture platform grants. See [Atlas Admin](ATLAS_ADMIN.md).
+
+Studio uses `studio.definition.read`, `.edit` and `.publish` independently.
+Editing does not grant publication, and none grants domain permissions. Every
+reference resolves through its owner's permission and tenant module availability.
+Atlas setup selects an active customer with independent staff authorisation;
+customer requests cannot supply another organisation. Published versions and
+activation revalidate dependencies; hiding controls is supplementary only.

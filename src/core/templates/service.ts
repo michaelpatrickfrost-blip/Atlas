@@ -6,6 +6,8 @@ import { isModuleEnabled, enabledModulesForSession } from '@/core/modules/runtim
 import { merge, parseBlocks } from './domain';
 import { loadBrand } from '@/core/email/render';
 import { TARGET_MODULES, type TemplateRecord } from './types';
+import { templateRegistry } from '@/core/studio/registry/runtime';
+import { templateRecordSchema } from '@/core/studio/registry/adapters';
 export async function requireTemplateWorkspace(session:Session){if(!(await isModuleEnabled(session,'templates')))throw new Error('Templates is not enabled for this company.');}
 export async function templateSources(session:Session){
  const enabled=await enabledModulesForSession(session);
@@ -13,11 +15,14 @@ export async function templateSources(session:Session){
 }
 export async function templateRecord(session:Session,module:string,type:string,id:string):Promise<TemplateRecord>{
  const sources=await templateSources(session);if(!sources.some(s=>s.module===module&&s.type===type))throw new Error('You cannot use that source app.');
- const record=await getModule(module)!.templateContextProvider!.get(session,type,id);if(!record)throw new Error('This source record is unavailable or outside your access.');return record;
+ const registry=templateRegistry();
+ const record=templateRecordSchema.nullable().parse(await registry.invoke(session,registry.describe(`${module}.template.${type}.get`,1),{id}));
+ if(!record)throw new Error('This source record is unavailable or outside your access.');return record;
 }
 export async function templateRecords(session:Session,module:string,type:string){
  const sources=await templateSources(session);if(!sources.some(s=>s.module===module&&s.type===type))return [];
- return getModule(module)!.templateContextProvider!.list(session,type);
+ const registry=templateRegistry();
+ return templateRecordSchema.array().parse(await registry.invoke(session,registry.describe(`${module}.template.${type}.list`,1),{}));
 }
 export async function renderTemplate(session:Session,id:string,input:{sourceModule?:string;sourceType?:string;sourceId?:string;partyId?:string;values?:Record<string,string>}){
  assertCapability(session,'core.contract.manage');await requireTemplateWorkspace(session);

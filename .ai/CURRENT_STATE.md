@@ -21,6 +21,68 @@
   No standalone Atlas.app is currently installed.
 - Next step: finish build, activate pinned release, and verify live sign-in and
   exact logo/icon asset bytes at atlassystem.online.
+## 9 October 2026 — Studio ordered implementation intake
+
+Michael requested exact five-phase Studio implementation, starting with Phase 1,
+with mandatory per-phase acceptance gates and no later-phase work. The supplied
+`/Users/michael/Downloads/atlas_studio.docx` was read completely (903 body/table
+paragraphs plus footer). Its title is *Atlas Studio Platform Architecture and
+Implementation Specification*, v1.0, 9 October 2026; Section 27 actually defines
+ten phases 0–9: registry/adapters are Phase 0, metadata is Phase 1. Section 29
+provides whole-system acceptance, not a separate Phase 1 gate. No matching
+five-phase Studio source found in tracked docs/memory or the Downloads filename
+search. Michael then instructed “do all as a plan do 1 then once done contiune”:
+use the supplied Section 27 sequence, establish its Phase 0 prerequisite, implement
+Phase 1, and continue sequentially after gates pass. No source rewrite/regrouping.
+
+- Preserved original unchanged in `docs/studio/ATLAS_STUDIO_SOURCE.docx` and
+  created `docs/studio/STUDIO_IMPLEMENTATION_PROGRESS.md` with source provenance,
+  inspected baseline, blocker, statuses and exact recovery action.
+- Initial clean detached HEAD `af030b0`; inspected existing module providers,
+  registry/runtime, permission checks, Templates, Automations, events, schema and
+  module tests. No dedicated Core Studio implementation or Studio metadata models
+  found. Existing engines/providers must be adapted at their authorised phase.
+- `npm ci --no-audit --no-fund` succeeded in this worktree; no app checks or
+  migrations yet. Registry and metadata workstreams/gates derived from the source
+  are recorded in the ledger, with all later work deferred until preceding gates.
+- Registry contracts/runtime and template adapters implemented. Existing provider
+  properties remain; shared Templates reads invoke owner code through validated
+  descriptors. Added `src/core/studio/registry/*`, registry/adapter tests and
+  contract inventory; updated MODULE_SPEC and DECISIONS.
+- Checks: registry-only 5 tests and initial full typecheck passed; combined
+  Studio/module/template/permission suite 20 passed; changed-file lint passed.
+  Source hash verified and diff whitespace clean. Production build and second typecheck passed; catalogue compatibility snapshot
+  passed (21 assertions total).
+- Phase 0 local gate passed. Phase 1 **IN PROGRESS**, 1A additive metadata schema.
+  Next: validate four metadata models, generate/review additive migration and
+  immutable history guards, then implement draft/publication service. Live
+  template compatibility remains part of the combined release gate.
+
+## 9 October 2026 — Studio metadata and separate administration checkpoint
+
+- Phase 1 metadata kernel IMPLEMENTED, not live-verified: four additive Prisma
+  models/migration, strict read-capability-set compiler, CAS drafts, immutable
+  version/dependency history, separate activation/rollback, transactional audit.
+  Registry/provider adapters preserve existing Templates and domain ownership.
+- Added customer `/studio` and staff `/atlas/studio/<organisationId>` setup;
+  staff target selection is independently authorised and never impersonates a
+  customer. Structural conflict diff retains submitted changes.
+- Michael additionally requested separate Admin/business logins and explicitly
+  authorised Atlas administrators to create business users. `/atlas/login` and
+  `/business/<slug>/login` plus scoped recovery implemented; company membership
+  is selected server-side. Generic single-company login remains compatible.
+  OWNER/ADMIN receive `atlas.business_users.create`; EMPLOYEE/customer roles do
+  not. Atlas staff provisioning remains Michael-only.
+- Latest focused run: 13 files, 55 assertions passed; TypeScript and changed-file
+  lint passed. Production build passed. Full tests: 85 failures/992 passes; a
+  disposable unchanged HEAD baseline reproduces the exact same 85 failures
+  (968 passes before added tests). Full lint: 9 errors/21 warnings, exactly the
+  unchanged baseline; no changed-file lint failures. Additive migration has
+  NOT been applied, production release has NOT been deployed. Live currently
+  remains af030b0 (confirmed via SSH).
+- Exact next: build two-tenant central acceptance script, run full regression,
+  lint/TypeScript/build, review migration and prepared candidate, then activate
+  and verify live. Ledger remains the authoritative execution checkpoint.
 
 ## 9 October 2026 — Michael's end-to-end Test company seeded on the live server
 

@@ -4,7 +4,7 @@ vi.mock("@/core/auth/session", () => ({ requireSession: async () => state.sessio
 vi.mock("@/core/db/client", () => ({ db: { user: { findUnique: state.read, findUniqueOrThrow: state.read }, organisation: { findFirstOrThrow: state.read }, $transaction: state.transaction } }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
-import { canCreateUsers } from "@/core/admin/access";
+import { canCreateUsers, canCreateBusinessUsers, platformCapabilities } from "@/core/admin/access";
 import { createAtlasStaff } from "@/app/(app)/atlas/admin-actions";
 import { createCompanyAccount } from "@/app/(app)/atlas/actions";
 import { createCompanyUser } from "@/app/(app)/atlas/setup-actions";
@@ -14,7 +14,7 @@ beforeEach(() => { vi.clearAllMocks(); state.session.userEmail = "other@example.
 describe("Michael-only user provisioning", () => {
   it.each([createAtlasStaff, createCompanyAccount, createCompanyUser, createUser, createManagedUser])("rejects other staff at %s before reading or writing records", async action => {
     const form = new FormData(); form.set("userEmail", "kickablur@icloud.com"); form.set("email", "kickablur@icloud.com");
-    await expect(action(form)).rejects.toThrow("Only Michael");
+    await expect(action(form)).rejects.toThrow(action === createAtlasStaff ? "Only Michael" : "Atlas administrator");
     expect(state.read).not.toHaveBeenCalled(); expect(state.transaction).not.toHaveBeenCalled();
   });
   it("requires both Michael's identity and independent platform permission", () => {
@@ -25,4 +25,12 @@ describe("Michael-only user provisioning", () => {
     expect(canCreateUsers(state.session)).toBe(false);
     expect(canCreateUsers({ capabilities: new Set(["atlas.staff.manage"]) })).toBe(false);
   });
+});
+
+
+it("grants business provisioning only through independent Atlas administrator permissions",()=>{
+ const admin={userEmail:"admin@example.test",capabilities:new Set(platformCapabilities({role:"ADMIN",active:true}))};
+ expect(canCreateBusinessUsers(admin)).toBe(true);expect(canCreateUsers(admin)).toBe(false);
+ expect(canCreateBusinessUsers({...admin,capabilities:new Set(platformCapabilities({role:"EMPLOYEE",active:true}))})).toBe(false);
+ expect(canCreateBusinessUsers({...admin,capabilities:new Set(["core.users.manage","atlas.business_users.create"])})).toBe(false);
 });

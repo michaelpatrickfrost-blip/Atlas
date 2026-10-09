@@ -1,5 +1,21 @@
 # Atlas decisions
 
+## 9 October 2026 — Tickets/Service gate on records, not only on pages
+
+The staff exception has now been needed at three distinct layers, in order of
+discovery: (1) the app launcher, (2) `ModuleSpace`/page gates, and (3) the
+Service-application gate used by Tickets and Service, which read `db.moduleState`
+directly **and** embedded a per-company `organisation.moduleStates` filter inside
+its record scopes (`workScope`, `serviceCaseScope`, `serviceTicketScope`).
+Decision: for every such gate, staff-aware page access alone is insufficient —
+the record scopes must also drop the per-company `moduleStates` filter for staff,
+or the page renders with an empty list. The rule going forward: when adding a
+module-enablement check, use `isModuleEnabled(session, moduleId)` /
+`enabledModulesForSession(session)` for page and action gates, and gate any
+`moduleStates` filter embedded in a query scope on the same staff condition.
+Reason: the internal Atlas team workspace has no `moduleStates` rows, so every
+per-company filter silently excludes staff data.
+
 ## 9 October 2026 — Staff app access must be enforced at every module-enablement read
 
 The 8 October staff exception was wired into only the app launcher and

@@ -1,5 +1,41 @@
 # Atlas current state
 
+## 9 October 2026 — Tickets/Service staff access (same class, different gate)
+
+After the module-page fix above, Michael reported one remaining screen:
+`/tickets` still showed "This app is not enabled for your company." Tickets and
+the Service workspace do **not** use `ModuleSpace`; they have their own gate that
+read `db.moduleState` directly, so they were outside the first fix.
+
+- **Gates fixed (all now staff-aware):**
+  - `src/components/service-work/access-state.tsx` — `serviceWorkRestriction`
+    (renders the exact "This app is not enabled for your company." screen used by
+    the Tickets layout, list, detail, queues, catalogue, create, knowledge,
+    reports and the Service equivalents) now calls `isModuleEnabled`.
+  - `src/core/service-work/access.ts` — `requireWork` (throws "This service
+    application is not enabled.") now calls `isModuleEnabled`; and `workScope`
+    no longer applies its per-company `organisation.moduleStates` source filter
+    for staff. This mattered independently: without it, even after bypassing the
+    page gate a staff session would see an **empty** ticket list, because the
+    internal Atlas team workspace has no `moduleStates` rows.
+  - `src/core/permissions/service-access.ts` — `serviceCaseScope` and
+    `serviceTicketScope` (shared with the secured data API) drop the
+    `moduleStates` filter for staff.
+  - `src/core/audit/scope.ts` — `echoNoteScope` / `echoMentionScope` same class.
+  - `src/core/service-work/connections.ts` — `serviceOrderProjection` and
+    `triggerCaseSurvey` now use `isModuleEnabled`, so staff get the connected
+    Service/Finance/CSAT data instead of silent empties.
+- **Paths:** the five files above.
+- **Checks run:** clean `origin/main` worktree — `npx tsc --noEmit` (0 errors
+  under `src/`), `npm run build` (passed).
+- **Deployed:** live revision recorded below once activated.
+- **Customer path unchanged:** the new branches only fire for sessions holding
+  `atlas.staff.manage`; non-staff sessions keep the identical original
+  `moduleStates` filters, so customer enablement still gates records.
+- **Next step:** the Guardian acceptance should cover a Service-application staff
+  page (e.g. `/tickets` and `/service/queries`) rendering real rows, not just the
+  launcher, so this third gate path cannot silently regress.
+
 ## 9 October 2026 — Atlas staff app access fixed for real (pages, not just launcher)
 
 Michael reported "it's all disabled still did you deploy?" after the earlier
@@ -61,6 +97,9 @@ and `/login` returned 200. The bug was real but incomplete, not undeployed.
   unchanged. No live non-staff customer login exists to exercise it on the server,
   so this is verified by construction (and by the unchanged `/apps` switch), not
   by a live customer page request.
+- **Follow-up found by this work:** the Tickets/Service apps were a **third**
+  gate path (`db.moduleState` read directly, plus `moduleStates` filters inside
+  `workScope`/`serviceCaseScope`) not covered here — fixed in the entry above.
 - **Next step:** extend `scripts/guardian/check-app-launcher.ts` (or a sibling) to
   assert a staff page renders its workspace rather than the "is disabled" state,
   so this cannot silently regress again.

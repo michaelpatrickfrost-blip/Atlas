@@ -2,6 +2,7 @@ import { Ticket as TicketIcon } from "lucide-react";
 import { ticketSearch, ticketAttention } from "@/core/service-work/queries";
 import type { ModuleManifest } from "@/core/modules/types";
 import { TICKETING_CAPABILITIES } from "@/core/permissions/capabilities";
+import { ticketStudioContract } from "@/core/service-work/studio";
 
 export const ticketingManifest: ModuleManifest = {
   id: "tickets",
@@ -17,6 +18,7 @@ export const ticketingManifest: ModuleManifest = {
   status: "available",
   searchProvider: ticketSearch,
   attentionProvider: ticketAttention,
+  studio: ticketStudioContract,
   navigation: [
     { label: "Overview", href: "/tickets", capability: TICKETING_CAPABILITIES.ticketRead },
     { label: "Queues", href: "/tickets/queues", capability: TICKETING_CAPABILITIES.queueRead, group: "Admin" },

@@ -23,13 +23,76 @@ release evidence preserved.
 Checks so far: Prisma generation, focused lint, focused 5-file/35-test auth suite
 and production build PASS. Full suite: 1066 passed / 87 failed / 22 skipped
 (179 files); failures are outside changed authentication sources, principally
-stale module-availability mocks. Strict types remain running with no diagnostics
-yet. Live advanced to 6775044 during work; preserve that deployed Studio release
+stale module-availability mocks. Initial strict typecheck failed because the cloned dependency tree lacked
+@playwright/test (and cascading script types); install exact lockfile dependencies
+and rerun without exclusions. Live advanced to 6775044 during work; preserve that deployed Studio release
 before preparing this change. New Admin entry is not yet deployed.
 Next: review final diff, record checks, prepare backed-up immutable release,
 exercise private entry/denials/limits and staff console, activate and repeat
 public HTTPS acceptance. No MFA/SSO or immediate crawler removal is claimed.
 
+
+## 9 October 2026 — Phase 2B1 validators and visual setup requirements
+
+Added strict custom-field metadata/storage/value validation library for strings,
+safe integers, exact decimals/money, booleans, calendar dates, UTC instants, explicit
+second durations, email/URL/E164 phone, stable enum/multi-enum choices, references
+and approved-country addresses. Required/constraint checks are independent of
+visibility; additional read/write capabilities narrow owner permissions. Bounded
+linear regex avoids untrusted backtracking. Reference parsing alone is not access:
+atomic field services must independently resolve/authorise target records in 2B4.
+No storage/compiler/UI is connected yet, no Prisma/schema change and no native
+intake conversion. Full 2B/Phase 2 remain IN PROGRESS, not VERIFIED/PASS.
+
+Michael's latest visual/easy-setup requirement is permanently recorded in
+docs/studio/STUDIO_VISUAL_BUILDER_REQUIREMENTS.md: choose an approved record/page or
+template preset, see a draft preview following published rendering rules, responsive
+desktop/tablet/phone, modern Atlas UI, preserved unsaved work and no preview commands
+or privilege expansion. 2E gate includes real configuration/preview/runtime proof.
+Detailed 2B subworkstreams/design: docs/studio/STUDIO_PHASE_2_FIELDS.md.
+
+Checks: 7 field validator assertions PASS, strict TypeScript/scoped lint PASS;
+integrated source with live Guardian MRP corrections: 17 files/110 assertions and
+production build PASS. Repeat strict types after build before release. Source 2A
+candidate ce175fb passed central owner/metadata/Admin/Home/Reports; ancestry stopped
+activation after 0ce9f4a went live. Exact MRP source/evidence merged; combined release
+must be prepared/verified, not assumed live. Next: merged release checks, then 2B2
+versioned field compiler/identity binding and additive typed storage/history models.
+
+## 9 October 2026 — Studio preserves newer live MRP source
+
+Candidate ce175fb passed central Tickets owner/private/member/revision/tenant checks,
+metadata/Admin/business login and Home/Reports regressions. Private logs:
+/tmp/atlas-studio-acceptance-wsnN9L. Activation stopped at ancestry after concurrent
+Guardian MRP source 0ce9f4a became live; merge its exact source and historical evidence
+without undoing native corrections. Candidate/application remains unactivated until
+merged production verification. No schema change. Michael also requires easy visual
+page/template selection and desktop/tablet/phone preview; requirements saved in
+docs/studio/STUDIO_VISUAL_BUILDER_REQUIREMENTS.md for 2E, not a completed builder.
+Next: finish merged validation, checkpoint typed field validation, prepare combined
+source and run central/public checks before claiming deployment.
+
+## 9 October 2026 — Studio Phase 2A contract checkpoint
+
+Implemented typed entity native-field/record policies and the registry's separate
+owner authorisation gateway. Extensible owners must register matching read queries,
+canonical route/label and native write capability; input/output and returned tenant,
+ID/revision are validated. Extension checks require expected revision and a trusted
+transaction, never accept client scope/native patches, and leave entities descriptive.
+Tickets registers tickets.ticket/list/get over canonical TICKET records, preserving
+workScope/private queues and strict company enablement, bounded keyset reads,
+transactional native row locks/recheck, final/merged/queue-member restrictions.
+Existing intake fields/answers and protected native operations remain unchanged.
+
+Paths: core/studio/registry/{types,entities,contracts,registry}, core/service-work/studio,
+tickets manifest, two focused suites and central acceptance helper; MODULE_SPEC,
+SERVICE_WORK_DESK, contract inventory, DECISIONS and implementation ledger updated.
+Local: 8 files/54 assertions, strict TypeScript, scoped lint and production build PASS;
+diff reviewed/whitespace check PASS. No schema change. Central acceptance helper is
+implemented but not run yet; live stays a642df0. Full-suite baseline remains previously
+confirmed 85 failures; no full-suite success claimed. Next: 2B typed field schema and
+compiler/persistence design, then additive models/constraints and versioned validation/
+atomic extension values. Do not begin 2C until 2B checks/checkpoint are complete.
 
 ## 9 October 2026 — Guardian MRP repairs deployed and proved
 

@@ -37,5 +37,13 @@ sources cap lists at 200; the adapter validates that bound and internal record l
 
 Hash/reference compatibility is conservative: labels may change; schemas, owner,
 capability, classification and execution policy changes require retaining the old
-version or republishing compatible dependent definitions. Later metadata provides
-the active dependency scan; no active Studio definitions exist at this checkpoint.
+version or republishing compatible dependent definitions. Phase 1 now supplies the
+active dependency scan; historical initial inventory evidence above is retained.
+
+Phase 2A adds the first canonical entity opt-in: Tickets registers `tickets.ticket`,
+`tickets.ticket.list` and `tickets.ticket.get`, version 1, through its manifest.
+Native field IDs: number, subject, status, type, priority, created_at, updated_at.
+Lists use bounded keyset pagination (maximum 50), and all reads preserve workScope.
+The entity's owner policy locks/rechecks native tenant/revision/private queue and
+final/merged state before permitting Studio-owned additional data. No schema change,
+native mutation endpoint or parallel intake-field engine is introduced by 2A.

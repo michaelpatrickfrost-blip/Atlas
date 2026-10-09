@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
 import type { CommandDescriptor, ContractIdentity, Contribution, DeclarativeDescriptor, EntityDescriptor, QueryDescriptor } from "./types";
+import { entityDetailsSchema, recordAnchorSchema, recordRequestSchema } from "./entities";
 
 export function canonicalJson(value: unknown): string {
   if (value === null || typeof value !== "object") {
@@ -35,8 +36,12 @@ export function command<I, O>(d: CommandDescriptor<I, O>): Contribution {
     run: async (ctx, value) => d.output.parseAsync(await d.invoke(ctx, await d.input.parseAsync(value))) };
 }
 export function entity(d: EntityDescriptor): Contribution {
-  const details = { key: d.key, fields: d.fields, extensionPolicy: d.extensionPolicy };
-  return { metadata: { ...identity(d), kind: d.kind, details, schemaHash: checksum(details) } };
+  const details = entityDetailsSchema.parse({ key: d.key, fields: d.fields, extensionPolicy: d.extensionPolicy,
+    ...(d.record ? { record: { writeCapability: d.record.writeCapability, detailRoute: d.record.detailRoute,
+      labelField: d.record.labelField, listQuery: d.record.listQuery, getQuery: d.record.getQuery,
+      nativeFields: "read_only", revision: "owner_positive_integer" } } : {}) });
+  return { metadata: { ...identity(d), kind: d.kind, details, schemaHash: checksum(details) },
+    ...(d.record ? { authoriseRecord: async (ctx, value) => recordAnchorSchema.parseAsync(await d.record!.authorise(ctx, recordRequestSchema.parse(value))) } : {}) };
 }
 export function declarative(d: DeclarativeDescriptor): Contribution {
   const outputSchema = z.toJSONSchema(d.schema);

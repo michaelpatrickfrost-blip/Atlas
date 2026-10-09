@@ -1,10 +1,11 @@
+import {WorkspaceTabs} from "@/components/ui/people-workspace";
 import Link from "next/link";
 import { requireSession } from "@/core/auth/session";
 import { ActionForm } from "@/components/ui/action-form";
 import { Button } from "@/components/ui/button";
 import { loadBoard } from "@/modules/teams/services/queries";
 import {
-  addMember, removeMember, renameTeam, saveCover, removeCover, saveHandover,
+  addMember, removeMember, renameTeam, saveCover, saveHandover,
   saveMoment, removeMoment, savePlace, saveTask, setTaskStatus, removeTask,
 } from "@/modules/teams/services/commands";
 import { PLACE_LABELS, MOMENT_LABELS, shiftMonth } from "@/modules/teams/domain/board";
@@ -49,9 +50,10 @@ export default async function TeamBoardPage({
         )}
       </header>
 
+      <WorkspaceTabs active="calendar" items={[{id:"work",label:"Work & capacity",href:`/teams/${board.team.id}/capacity`},{id:"calendar",label:"Calendar, people & cover",href:`/teams/${board.team.id}`}]}/>
       <section className="rounded-3xl border border-[var(--color-border)] bg-white p-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Who's on {board.dayLabel}</h2>
+          <h2 className="text-lg font-semibold">Who&rsquo;s on {board.dayLabel}</h2>
           <nav className="flex items-center gap-3 text-sm">
             <Link href={`/teams/${board.team.id}?month=${prevMonth}`} className="text-[var(--color-ink-muted)] hover:text-[var(--color-atlas-blue)]">← Prev</Link>
             <span className="font-medium">{board.monthLabel}</span>
@@ -175,17 +177,20 @@ export default async function TeamBoardPage({
                   <ActionForm action={setTaskStatus} className="flex items-center gap-2">
                     <input type="hidden" name="teamId" value={board.team.id} />
                     <input type="hidden" name="taskId" value={task.id} />
-                    <select name="status" defaultValue={task.status} className="rounded-2xl border border-[var(--color-border)] px-2 py-1 text-xs" onChange={(event) => event.currentTarget.form?.requestSubmit()}>
+                    <input type="hidden" name="version" value={task.version} />
+                    <select name="status" defaultValue={task.status} className="rounded-2xl border border-[var(--color-border)] px-2 py-1 text-xs">
                       <option value="OPEN">Open</option>
                       <option value="DOING">Doing</option>
                       <option value="DONE">Done</option>
                     </select>
+                    <Button type="submit" variant="ghost">Update</Button>
                   </ActionForm>
                 )}
                 {board.manage && (
                   <ActionForm action={removeTask}>
                     <input type="hidden" name="teamId" value={board.team.id} />
                     <input type="hidden" name="taskId" value={task.id} />
+                    <input type="hidden" name="version" value={task.version} />
                     <Button type="submit" variant="ghost" className="text-xs">Remove</Button>
                   </ActionForm>
                 )}
@@ -218,13 +223,13 @@ export default async function TeamBoardPage({
       </section>
 
       <section className="rounded-3xl border border-[var(--color-border)] bg-white p-5">
-        <h2 className="text-lg font-semibold">Who's covering</h2>
+        <h2 className="text-lg font-semibold">Who&rsquo;s covering</h2>
         <p className="mt-1 text-sm text-[var(--color-ink-muted)]">Set this when someone is away or stepping out, so the team knows who to ask.</p>
         {board.manage && (
           <ActionForm action={saveCover} className="mt-4 flex flex-wrap items-end gap-2">
             <input type="hidden" name="teamId" value={board.team.id} />
             <label className="text-xs">
-              <span className="mb-1 block font-medium">Who's away</span>
+              <span className="mb-1 block font-medium">Who&rsquo;s away</span>
               <select name="employeeId" required className="rounded-2xl border border-[var(--color-border)] px-3 py-2">
                 {board.people.map((person) => <option key={person.employeeId} value={person.employeeId}>{person.name}</option>)}
               </select>

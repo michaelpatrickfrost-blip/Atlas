@@ -1189,6 +1189,24 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": true
     },
+    "kpiScorecards": {
+      "type": "KpiScorecard",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "staffingIntervals": {
+      "type": "StaffingInterval",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "openRotaShifts": {
+      "type": "OpenRotaShift",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "kpis": {
       "type": "Kpi",
       "list": true,
@@ -9240,6 +9258,12 @@ export const MODEL_FIELDS = {
       "list": true,
       "nullable": false,
       "relation": true
+    },
+    "scorecardItems": {
+      "type": "KpiScorecardItem",
+      "list": true,
+      "nullable": false,
+      "relation": true
     }
   },
   "KpiUpdate": {
@@ -10545,6 +10569,18 @@ export const MODEL_FIELDS = {
       "nullable": true,
       "relation": false
     },
+    "payBasis": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "hourlyRateMinorUnits": {
+      "type": "Int",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
     "currency": {
       "type": "String",
       "list": false,
@@ -10591,6 +10627,12 @@ export const MODEL_FIELDS = {
       "type": "StudentLoanPlan",
       "list": false,
       "nullable": true,
+      "relation": false
+    },
+    "postgraduateLoan": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
       "relation": false
     },
     "pensionOptOut": {
@@ -10682,6 +10724,24 @@ export const MODEL_FIELDS = {
       "list": true,
       "nullable": false,
       "relation": false
+    },
+    "availability": {
+      "type": "EmployeeAvailability",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "shiftRequests": {
+      "type": "OpenShiftRequest",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "payrollAdjustments": {
+      "type": "PayrollPeriodAdjustment",
+      "list": true,
+      "nullable": false,
+      "relation": true
     },
     "appraisalCadenceMonths": {
       "type": "Int",
@@ -11429,6 +11489,24 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "breakStartsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "requiredSkills": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "activities": {
+      "type": "RotaActivity",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "workTypeId": {
       "type": "String",
       "list": false,
@@ -11527,6 +11605,36 @@ export const MODEL_FIELDS = {
       "nullable": true,
       "relation": false
     },
+    "taxYear": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "inputDigest": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "inputSnapshot": {
+      "type": "Json",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "payFrequency": {
+      "type": "PayFrequency",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
     "createdAt": {
       "type": "DateTime",
       "list": false,
@@ -11542,6 +11650,98 @@ export const MODEL_FIELDS = {
     "payslips": {
       "type": "Payslip",
       "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "PayrollPeriodAdjustment": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "employeeId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "periodStart": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "periodEnd": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "statutoryPayMinorUnits": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "additionalPayMinorUnits": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "salaryReductionMinorUnits": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "statutoryReviewed": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "note": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "reviewedByUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "employee": {
+      "type": "Employee",
+      "list": false,
       "nullable": false,
       "relation": true
     }
@@ -11580,6 +11780,18 @@ export const MODEL_FIELDS = {
     "overtimeHours": {
       "type": "Float",
       "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "approvedHours": {
+      "type": "Float",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "sourceTimesheetIds": {
+      "type": "String",
+      "list": true,
       "nullable": false,
       "relation": false
     },
@@ -11638,6 +11850,12 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "statutoryPayMinorUnits": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "additionalPayMinorUnits": {
       "type": "Int",
       "list": false,
       "nullable": false,
@@ -11793,6 +12011,30 @@ export const MODEL_FIELDS = {
     },
     "niToDateMinorUnits": {
       "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "openingGrossMinorUnits": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "openingTaxMinorUnits": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "openingReviewNote": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "openingReviewed": {
+      "type": "Boolean",
       "list": false,
       "nullable": false,
       "relation": false
@@ -28657,6 +28899,36 @@ export const MODEL_FIELDS = {
       "nullable": true,
       "relation": false
     },
+    "startsOn": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "estimatedHours": {
+      "type": "Float",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "priority": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "goalId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
     "status": {
       "type": "PlannerTaskStatus",
       "list": false,
@@ -28697,6 +28969,476 @@ export const MODEL_FIELDS = {
       "type": "Employee",
       "list": false,
       "nullable": true,
+      "relation": true
+    }
+  },
+  "KpiScorecard": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "title": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "description": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "ownerUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "items": {
+      "type": "KpiScorecardItem",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "KpiScorecardItem": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "scorecardId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "goalId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "weight": {
+      "type": "Float",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "scorecard": {
+      "type": "KpiScorecard",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "goal": {
+      "type": "Kpi",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "StaffingInterval": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "department": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "label": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "role": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "requiredSkills": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "startsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "endsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "volume": {
+      "type": "Float",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "handlingMinutes": {
+      "type": "Float",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "shrinkagePercent": {
+      "type": "Float",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "occupancyPercent": {
+      "type": "Float",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "minimumPeople": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdByUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    }
+  },
+  "RotaActivity": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "shiftId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "label": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "kind": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "startsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "endsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "shift": {
+      "type": "RotaShift",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "EmployeeAvailability": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "employeeId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "startsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "endsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "note": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdByUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "employee": {
+      "type": "Employee",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "OpenRotaShift": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "department": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "role": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "location": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "requiredSkills": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "startsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "endsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "breakMinutes": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "breakStartsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "status": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "assignedShiftId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdByUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "requests": {
+      "type": "OpenShiftRequest",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "OpenShiftRequest": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "openingId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "employeeId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "status": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "reviewedByUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "reviewedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "opening": {
+      "type": "OpenRotaShift",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "employee": {
+      "type": "Employee",
+      "list": false,
+      "nullable": false,
       "relation": true
     }
   },

@@ -12,10 +12,11 @@ export function daysWithinPeriod(absenceStart: Date, absenceEnd: Date, periodSta
   return Math.round((end.getTime() - start.getTime()) / 86_400_000) + 1;
 }
 
-export function calculateSsp(params: { qualifyingDays: number; taxYear: string }): { weeklyRateMinorUnits: number; totalMinorUnits: number } {
+export function calculateSsp(params: { qualifyingDays: number; qualifyingDaysPerWeek:number; averageWeeklyEarningsMinorUnits:number; taxYear: string }): { weeklyRateMinorUnits: number; totalMinorUnits: number } {
   const table = taxYearTable(params.taxYear);
-  const weeklyRateMinorUnits = Math.round(table.sspWeeklyRate * 100);
-  const totalMinorUnits = Math.round((weeklyRateMinorUnits / 7) * params.qualifyingDays);
+  if(!Number.isInteger(params.qualifyingDaysPerWeek)||params.qualifyingDaysPerWeek<1||params.qualifyingDaysPerWeek>7||!Number.isInteger(params.qualifyingDays)||params.qualifyingDays<0||!Number.isSafeInteger(params.averageWeeklyEarningsMinorUnits)||params.averageWeeklyEarningsMinorUnits<0)throw new Error("Confirm qualifying days and actual average weekly earnings.");
+  const weeklyRateMinorUnits = Math.min(Math.round(table.sspWeeklyRate * 100),Math.round(params.averageWeeklyEarningsMinorUnits*.8));
+  const totalMinorUnits = Math.round((weeklyRateMinorUnits / params.qualifyingDaysPerWeek) * params.qualifyingDays);
   return { weeklyRateMinorUnits, totalMinorUnits };
 }
 
@@ -23,6 +24,8 @@ export function calculateSsp(params: { qualifyingDays: number; taxYear: string }
  *  nothing — AWE can be below the flat rate), then the lower of the flat
  *  rate and 90% of AWE for the remaining weeks, up to 39 weeks total. */
 export function calculateSmp(params: { averageWeeklyEarningsMinorUnits: number; weekNumber: number; taxYear: string }): { weeklyRateMinorUnits: number } {
+  if(!Number.isInteger(params.weekNumber)||params.weekNumber<1)throw new Error("Enter a valid maternity-pay week.");
+  if(params.weekNumber>39)return {weeklyRateMinorUnits:0};
   const table = taxYearTable(params.taxYear);
   const earningsReplacement = Math.round(params.averageWeeklyEarningsMinorUnits * table.smpEarningsReplacementRate);
   if (params.weekNumber <= 6) return { weeklyRateMinorUnits: earningsReplacement };

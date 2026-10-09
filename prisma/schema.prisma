@@ -229,6 +229,9 @@ model Organisation {
   safetyChanges SafetyChange[]
   safetyLinks SafetyLink[]
   safetyRecords SafetyRecord[]
+  kpiScorecards KpiScorecard[]
+  staffingIntervals StaffingInterval[]
+  openRotaShifts OpenRotaShift[]
   kpis Kpi[]
   projectTasks ProjectTask[]
   meetings Meeting[]
@@ -2579,6 +2582,8 @@ model Kpi {
  employee Employee? @relation(fields:[employeeId],references:[id],onDelete:Cascade)
  plan PerformancePlan? @relation(fields:[planId],references:[id],onDelete:Cascade)
  updates KpiUpdate[]
+ scorecardItems KpiScorecardItem[]
+ @@unique([id,organisationId])
  @@index([organisationId,endsAt])
  @@index([organisationId,visibility])
  @@index([organisationId,employeeId])
@@ -2904,6 +2909,8 @@ model Employee {
   leaveReason    String?
 
   annualSalaryMinorUnits Int?
+  payBasis String @default("SALARIED")
+  hourlyRateMinorUnits Int?
   currency               String @default("GBP")
   annualLeaveDaysEntitlement Int @default(25)
 
@@ -2916,6 +2923,7 @@ model Employee {
   niCategory          String       @default("A")
   starterDeclaration  StarterDeclaration?
   studentLoanPlan     StudentLoanPlan?
+  postgraduateLoan Boolean @default(false)
   pensionOptOut       Boolean      @default(false)
   bankAccountName     String?
   bankSortCode        String?
@@ -2935,6 +2943,9 @@ model Employee {
   reports      Employee[]   @relation("EmployeeManager")
 
   skills String[] @default([])
+  availability EmployeeAvailability[]
+  shiftRequests OpenShiftRequest[]
+  payrollAdjustments PayrollPeriodAdjustment[]
   appraisalCadenceMonths Int?
   oneToOneCadenceWeeks   Int?
   /** Overrides the org's standard weekly hours for overtime calculation — set
@@ -3172,6 +3183,9 @@ model RotaShift {
   status         RotaShiftStatus @default(SCHEDULED)
   notes          String?
   breakMinutes Int @default(0)
+  breakStartsAt DateTime?
+  requiredSkills String[] @default([])
+  activities RotaActivity[]
   workTypeId String?
   teamId String?
   workType SchedulingWorkType? @relation(fields: [workTypeId], references: [id], onDelete: SetNull)
@@ -3183,6 +3197,7 @@ model RotaShift {
   employee     Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
   @@index([organisationId, startsAt])
+  @@unique([id,organisationId])
   @@index([organisationId, workTypeId])
   @@index([organisationId, teamId])
   @@map("hr_rota_shifts")
@@ -3203,6 +3218,11 @@ model PayrollRun {
   status         PayrollRunStatus @default(DRAFT)
   finalisedAt    DateTime?
   paidAt         DateTime?
+  taxYear String?
+  inputDigest String?
+  inputSnapshot Json?
+  payFrequency PayFrequency?
+  version Int @default(0)
   createdAt      DateTime         @default(now())
 
   organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
@@ -3213,6 +3233,27 @@ model PayrollRun {
   @@map("hr_payroll_runs")
 }
 
+model PayrollPeriodAdjustment {
+  id String @id @default(cuid())
+  organisationId String
+  employeeId String
+  periodStart DateTime @db.Date
+  periodEnd DateTime @db.Date
+  statutoryPayMinorUnits Int @default(0)
+  additionalPayMinorUnits Int @default(0)
+  salaryReductionMinorUnits Int @default(0)
+  statutoryReviewed Boolean @default(false)
+  note String
+  reviewedByUserId String
+  version Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  employee Employee @relation(fields:[employeeId,organisationId],references:[id,organisationId],onDelete:Cascade)
+  @@unique([organisationId,employeeId,periodStart,periodEnd])
+  @@index([organisationId,periodStart])
+  @@map("payroll_period_adjustments")
+}
+
 model Payslip {
   id                  String     @id @default(cuid())
   organisationId      String
@@ -3220,6 +3261,8 @@ model Payslip {
   employeeId          String
   grossMinorUnits      Int
   overtimeHours        Float @default(0)
+  approvedHours Float @default(0)
+  sourceTimesheetIds String[] @default([])
   overtimeMinorUnits   Int @default(0)
   unpaidLeaveDays      Int @default(0)
   unpaidLeaveDeductionMinorUnits Int @default(0)
@@ -3233,6 +3276,7 @@ model Payslip {
   employerPensionMinorUnits   Int @default(0)
   studentLoanMinorUnits       Int @default(0)
   statutoryPayMinorUnits      Int @default(0)
+  additionalPayMinorUnits Int @default(0)
   // Manual, human-entered adjustment for anything the engine doesn't cover.
   deductionsMinorUnits Int @default(0)
   netMinorUnits        Int
@@ -3264,6 +3308,7 @@ enum StudentLoanPlan {
   PLAN_1
   PLAN_2
   PLAN_4
+  PLAN_5
   POSTGRADUATE
 }
 
@@ -3296,6 +3341,10 @@ model EmployeeTaxYearToDate {
   grossToDateMinorUnits Int    @default(0)
   taxToDateMinorUnits   Int    @default(0)
   niToDateMinorUnits    Int    @default(0)
+  openingGrossMinorUnits Int @default(0)
+  openingTaxMinorUnits Int @default(0)
+  openingReviewNote String?
+  openingReviewed Boolean @default(false)
   updatedAt             DateTime @updatedAt
 
   organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
@@ -7304,6 +7353,11 @@ model PlannerTask {
   detail             String?
   assigneeEmployeeId String?
   dueOn              DateTime?         @db.Date
+  startsOn DateTime? @db.Date
+  estimatedHours Float @default(0)
+  priority String @default("NORMAL")
+  goalId String?
+  version Int @default(0)
   status             PlannerTaskStatus @default(OPEN)
   createdByUserId    String
   createdAt          DateTime          @default(now())
@@ -7316,6 +7370,123 @@ model PlannerTask {
   @@index([organisationId, teamId, status])
   @@index([organisationId, assigneeEmployeeId])
   @@map("planner_tasks")
+}
+
+// People workspaces extend canonical employee, shift, task and goal records.
+// These writes are available only through capability-checked module commands.
+model KpiScorecard {
+  id String @id @default(cuid())
+  organisationId String
+  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+  title String
+  description String @default("")
+  ownerUserId String
+  createdAt DateTime @default(now())
+  items KpiScorecardItem[]
+  @@unique([id, organisationId])
+  @@index([organisationId])
+  @@map("kpi_scorecards")
+}
+
+model KpiScorecardItem {
+  id String @id @default(cuid())
+  organisationId String
+  scorecardId String
+  goalId String
+  weight Float @default(1)
+  scorecard KpiScorecard @relation(fields:[scorecardId,organisationId], references:[id,organisationId],onDelete:Cascade)
+  goal Kpi @relation(fields:[goalId,organisationId],references:[id,organisationId],onDelete:Cascade)
+  @@unique([scorecardId,goalId])
+  @@index([organisationId])
+  @@map("kpi_scorecard_items")
+}
+
+model StaffingInterval {
+  id String @id @default(cuid())
+  organisationId String
+  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+  department String
+  label String
+  role String @default("")
+  requiredSkills String[] @default([])
+  startsAt DateTime
+  endsAt DateTime
+  volume Float @default(0)
+  handlingMinutes Float @default(0)
+  shrinkagePercent Float @default(0)
+  occupancyPercent Float @default(85)
+  minimumPeople Int @default(0)
+  createdByUserId String
+  createdAt DateTime @default(now())
+  @@index([organisationId,startsAt])
+  @@map("staffing_intervals")
+}
+
+model RotaActivity {
+  id String @id @default(cuid())
+  organisationId String
+  shiftId String
+  label String
+  kind String @default("WORK")
+  startsAt DateTime
+  endsAt DateTime
+  createdAt DateTime @default(now())
+  shift RotaShift @relation(fields:[shiftId,organisationId],references:[id,organisationId],onDelete:Cascade)
+  @@index([organisationId,shiftId,startsAt])
+  @@map("rota_activities")
+}
+
+model EmployeeAvailability {
+  id String @id @default(cuid())
+  organisationId String
+  employeeId String
+  startsAt DateTime
+  endsAt DateTime
+  note String @default("")
+  createdByUserId String
+  createdAt DateTime @default(now())
+  employee Employee @relation(fields:[employeeId,organisationId],references:[id,organisationId],onDelete:Cascade)
+  @@index([organisationId,employeeId,startsAt])
+  @@map("employee_availability")
+}
+
+model OpenRotaShift {
+  id String @id @default(cuid())
+  organisationId String
+  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+  department String
+  role String
+  location String @default("")
+  requiredSkills String[] @default([])
+  startsAt DateTime
+  endsAt DateTime
+  breakMinutes Int @default(0)
+  breakStartsAt DateTime?
+  status String @default("OPEN")
+  assignedShiftId String?
+  version Int @default(0)
+  createdByUserId String
+  createdAt DateTime @default(now())
+  requests OpenShiftRequest[]
+  @@unique([id,organisationId])
+  @@index([organisationId,status,startsAt])
+  @@map("open_rota_shifts")
+}
+
+model OpenShiftRequest {
+  id String @id @default(cuid())
+  organisationId String
+  openingId String
+  employeeId String
+  status String @default("PENDING")
+  reviewedByUserId String?
+  reviewedAt DateTime?
+  createdAt DateTime @default(now())
+  opening OpenRotaShift @relation(fields:[openingId,organisationId],references:[id,organisationId],onDelete:Cascade)
+  employee Employee @relation(fields:[employeeId,organisationId],references:[id,organisationId],onDelete:Cascade)
+  @@unique([openingId,employeeId])
+  @@index([organisationId,status])
+  @@map("open_shift_requests")
 }
 
 model PlannerCover {

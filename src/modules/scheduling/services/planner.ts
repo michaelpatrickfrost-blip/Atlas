@@ -239,6 +239,7 @@ async function placeShift(tx: Tx, organisationId: string, input: { employeeId: s
   paidMinutes(startsAt, endsAt, input.breakMinutes);
   const lastDay = londonDate(new Date(endsAt.getTime() - 1));
   if (await tx.absenceRecord.count({ where: { organisationId, employeeId: input.employeeId, status: "APPROVED", startDate: { lte: dateOnly(lastDay) }, endDate: { gte: dateOnly(input.day) } } })) return "leave" as const;
+  if (await tx.employeeAvailability.count({where:{organisationId,employeeId:input.employeeId,startsAt:{lt:endsAt},endsAt:{gt:startsAt}}}))return "unavailable" as const;
   if (await tx.rotaShift.count({ where: { organisationId, employeeId: input.employeeId, status: { not: "CANCELLED" }, startsAt: { lt: endsAt }, endsAt: { gt: startsAt } } })) return "overlap" as const;
   await tx.rotaShift.create({ data: { organisationId, employeeId: input.employeeId, startsAt, endsAt, breakMinutes: input.breakMinutes, status: input.status, workTypeId: input.workTypeId, teamId: input.teamId, role: input.role } });
   return "saved" as const;
@@ -256,7 +257,7 @@ export async function fillMonth(session: Session, form: FormData) {
   const days = datesForWeekdays(monthDates(month), workType.weekdays);
   if (people.length * days.length > 600) throw new Error("Fill one team, or a shorter pattern. A month can place up to 600 shifts at once.");
   const status = form.get("publish") === "on" ? "CONFIRMED" : "SCHEDULED";
-  const counts = { saved: 0, leave: 0, overlap: 0, left: 0 };
+  const counts = { saved: 0, leave: 0, overlap: 0, left: 0,unavailable:0 };
   await db.$transaction(async (tx) => {
     for (const employeeId of people) for (const day of days) {
       const result = await placeShift(tx as Tx, session.organisationId, { employeeId, day, startTime: workType.startTime, endTime: workType.endTime, breakMinutes: workType.breakMinutes, status, workTypeId: workType.id, teamId, role: workType.name });
@@ -310,7 +311,8 @@ export async function publishMonthPlan(session: Session, form: FormData) {
     if (shifts.length > 2000) throw new Error("Publish one team at a time.");
     if (!shifts.length) throw new Error("There are no draft shifts to publish this month.");
     for (const shift of shifts) {
-      const day = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit" }).format(shift.startsAt);
+      const day = londonDate(shift.startsAt);
+      if(await tx.employeeAvailability.count({where:{organisationId:session.organisationId,employeeId:shift.employeeId,startsAt:{lt:shift.endsAt},endsAt:{gt:shift.startsAt}}}))throw new Error("An employee marked a draft shift unavailable. Resolve it before publishing.");
       if (await tx.absenceRecord.count({ where: { organisationId: session.organisationId, employeeId: shift.employeeId, status: "APPROVED", startDate: { lte: dateOnly(day) }, endDate: { gte: dateOnly(day) } } })) throw new Error("Time off conflicts with a draft. Replan it before publishing.");
     }
     await tx.rotaShift.updateMany({ where: { organisationId: session.organisationId, id: { in: shifts.map((shift) => shift.id) }, status: "SCHEDULED" }, data: { status: "CONFIRMED" } });
@@ -362,7 +364,9 @@ export async function saveOneShift(session: Session, form: FormData) {
       const endsAt = londonInstant(endTime <= startTime ? addDays(dateOnly(day), 1).toISOString().slice(0, 10) : day, endTime);
       if (await tx.absenceRecord.count({ where: { organisationId: session.organisationId, employeeId: shift.employeeId, status: "APPROVED", startDate: { lte: dateOnly(londonDate(new Date(endsAt.getTime() - 1))) }, endDate: { gte: dateOnly(day) } } })) throw new Error("Approved time off covers this day.");
       if (await tx.rotaShift.count({ where: { id: { not: id }, organisationId: session.organisationId, employeeId: shift.employeeId, status: { not: "CANCELLED" }, startsAt: { lt: endsAt }, endsAt: { gt: startsAt } } })) throw new Error("This overlaps another shift.");
-      await tx.rotaShift.update({ where: { id, organisationId: session.organisationId }, data: { startsAt, endsAt, breakMinutes, workTypeId, teamId, role: text(form, "role", 100) || null, status } });
+      if(await tx.employeeAvailability.count({where:{organisationId:session.organisationId,employeeId:shift.employeeId,startsAt:{lt:endsAt},endsAt:{gt:startsAt}}}))throw new Error("This employee marked the time unavailable.");
+      if(await tx.rotaActivity.count({where:{organisationId:session.organisationId,shiftId:id,OR:[{startsAt:{lt:startsAt}},{endsAt:{gt:endsAt}}]}}))throw new Error("Replan the shift activities before changing its boundaries.");
+      await tx.rotaShift.update({ where: { id, organisationId: session.organisationId }, data: { startsAt, endsAt, breakMinutes,breakStartsAt:startsAt.getTime()===shift.startsAt.getTime()&&endsAt.getTime()===shift.endsAt.getTime()&&breakMinutes===shift.breakMinutes?shift.breakStartsAt:null, workTypeId, teamId, role: text(form, "role", 100) || null, status } });
       await tx.auditEntry.create({ data: { organisationId: session.organisationId, actorUserId: session.userId, action: "scheduling.shift.updated", entityType: "RotaShift", entityId: id } });
       return;
     }

@@ -36,6 +36,7 @@ business databases/caches. Preserve historical deployment evidence.
 - [Design](DESIGN_SYSTEM.md): current direction and implementation references.
 - [Dashboards](../docs/modules/ANALYTICS_STUDIO.md): personal canvas and authorised data views.
 - [Messages](../docs/MESSAGES.md): private pop-out chat, record attachments and history.
+- [People workspaces](../docs/plans/PEOPLE_PLATFORM_OVERHAUL.md): Goals scorecards, HR/payroll, rota coverage and team capacity; UK payroll scope and external integrations.
 - [Agent instructions](../AGENTS.md): commands, repository rules and update protocol.
 
 ## Keeping memory useful

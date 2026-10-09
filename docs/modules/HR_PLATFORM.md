@@ -1,7 +1,15 @@
 # HR platform workspace
 
-Updated 8 October 2026. Extends the existing `people` module and canonical Employee;
+Updated 9 October 2026. Extends the existing `people` module and canonical Employee;
 Payroll and Staff Scheduling retain their own modules, data and permission groups.
+
+## Connected workspaces
+
+HR home uses the shared People presentation. /people/organisation shows canonical
+departments, reporting lines and skills; /people/pay connects pay setup, approved
+actual time and UK payroll via the Payroll readiness provider. Payroll permissions
+and enablement apply independently. See [People overhaul](../plans/PEOPLE_PLATFORM_OVERHAUL.md)
+and [Payroll](PAYROLL.md) for delivered scope and external boundaries.
 
 ## Everyday work
 

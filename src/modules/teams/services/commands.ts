@@ -126,7 +126,8 @@ export async function setTaskStatus(formData: FormData) {
   if (!task) throw new Error("That task is not on this team.");
   const mine = Boolean(access.employee && task.assigneeEmployeeId === access.employee.id);
   if (!access.manage && !mine) throw new Error("You can update a task assigned to you.");
-  await db.plannerTask.update({ where: { id: task.id }, data: { status: status as "OPEN" | "DOING" | "DONE" } });
+  const changed=await db.plannerTask.updateMany({ where: { id: task.id,organisationId:session.organisationId,version:Number(formData.get("version")) }, data: { status: status as "OPEN" | "DOING" | "DONE",version:{increment:1} } });
+  if(changed.count!==1)throw new Error("This task changed in another window. Refresh the board.");
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "teams.task.updated", entityType: "PlannerTask", entityId: task.id, after: { status } });
   refresh(access.team.id);
 }

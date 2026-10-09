@@ -7,7 +7,7 @@ This is an execution design; the source specification remains unchanged.
 | Workstream | Purpose/dependencies | Files/database | Checks | Status |
 | --- | --- | --- | --- | --- |
 | 2B1 | Closed field/storage/value contracts and server validators | core/studio/fields/{schema,validation}, focused tests; no DB | Required/type/bounds/exact decimal/currency/calendar/enum/contact/reference-shape/address/extra-capability cases | VERIFIED locally |
-| 2B2 | Versioned field compiler, stable identity binding and typed current/history storage | Compiler dispatch/definition lifecycle + additive central models/migration | Immutable identity/version bindings, tenant FKs, typed-family constraints, indexes, immutable value history | NOT STARTED |
+| 2B2 | Versioned field compiler, stable identity binding and typed current/history storage | Compiler dispatch/definition lifecycle + additive central models/migration | Immutable identity/version bindings, tenant FKs, typed-family constraints, indexes, immutable value history | IMPLEMENTED locally; compiler/lifecycle and models, central data acceptance pending |
 | 2B3 | Safe definition evolution, retirement and explicit conversion planning | fields evolution/migration services and durable migration metadata | Compatibility/conversion preview/failures, no in-place conversion, resumable/idempotent batches/cutover/history | NOT STARTED |
 | 2B4 | Atomic owner-authorised read/write and reference validation | fields services + schema from 2B2 | Owner access/locks, field caps, CAS, required rules, uniqueness and audit; references independently owner-checked | NOT STARTED |
 | 2B5 | Central acceptance/checkpoint | tests, central driver, memory/docs | Real typed storage/history/constraints/retirement/tenant/security/compatibility; build and runtime proof | NOT STARTED |
@@ -47,3 +47,21 @@ Do not claim 2B VERIFIED or start 2C from the 2B1 library alone.
 Next: implement the compiler/identity binding and reviewed additive models/constraints
 for 2B2, generate Prisma, then add relational/type/version/history tests. No destructive
 reset, local business datastore or publication of unvalidated client plans.
+
+Working-tree design now uses five models: permanent FieldBinding, immutable storage
+Generation, canonical ExtensionRecord association/CAS, per-generation FieldSlot
+current pointer and immutable typed FieldValue history. Decimal physical storage
+38,10 supports every declared precision<=28/scale<=10; validators and SQL guard
+enforce exact logical bounds. New generation IDs permit source/target coexistence
+during future reviewed conversions. Tickets entity v2 declares approved types,
+reserved native keys and self-reference target; real sealed v1 hashes are regression
+tested. These models/migration/compiler are not yet deployed or SQL/runtime verified.
+
+2B2 checkpoint: compiler dispatch and transactional permanent identity binding are
+connected to the existing metadata lifecycle. Owner field limits include retained
+retired identities. Only label/help revisions publish until reviewed evolution is
+available in 2B3. Activation requires the exact tenant-owned generation. Local
+checks and transaction-only central DDL syntax verification passed; migration/data
+guards remain unverified until candidate acceptance. Generic desktop model reads
+must remain denied for additional values: the future gateway must authorise native
+record, current field policy and written-schema policy before returning any value.

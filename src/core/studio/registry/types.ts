@@ -26,6 +26,13 @@ export type FieldDescriptor = {
   decision: boolean;
   template: boolean;
 };
+export type ExtensionFieldType = "string" | "integer" | "decimal" | "money" | "boolean" | "date" | "datetime" | "duration" | "email" | "url" | "phone" | "enum" | "multi_enum" | "reference" | "address";
+export type ExtensionFieldPolicy = {
+  types: readonly ExtensionFieldType[];
+  reservedKeys: readonly string[];
+  referenceEntities: readonly string[];
+  maxFields: number;
+};
 export type EntityDescriptor = ContractIdentity & {
   kind: "entity";
   key: "uuid" | "string";
@@ -38,6 +45,7 @@ export type EntityDescriptor = ContractIdentity & {
     labelField: string;
     listQuery: { id: string; version: number };
     getQuery: { id: string; version: number };
+    fieldPolicy?: ExtensionFieldPolicy;
     authorise(ctx: RecordContext, request: RecordRequest): Promise<RecordAnchor>;
   };
 };

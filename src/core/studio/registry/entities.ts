@@ -4,6 +4,13 @@ const logicalId = z.string().regex(/^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/);
 const fieldId = z.string().regex(/^[a-z][a-z0-9_]*$/).max(100);
 const classification = z.enum(["public_internal", "confidential", "restricted"]);
 const queryReference = z.strictObject({ id: logicalId, version: z.number().int().positive() });
+export const extensionFieldPolicySchema = z.strictObject({
+  types: z.array(z.enum(["string", "integer", "decimal", "money", "boolean", "date", "datetime", "duration", "email", "url", "phone", "enum", "multi_enum", "reference", "address"])).min(1).max(15),
+  reservedKeys: z.array(fieldId).max(200), referenceEntities: z.array(logicalId).max(30),
+  maxFields: z.number().int().min(1).max(100),
+}).superRefine((value, ctx) => {
+  for (const list of [value.types, value.reservedKeys, value.referenceEntities]) if (new Set(list).size !== list.length) ctx.addIssue({ code: "custom", message: "Duplicate extension policy entry." });
+});
 
 /** Only native read projections are exposed; extension storage is owned by Studio. */
 export const entityDetailsSchema = z.strictObject({
@@ -19,6 +26,7 @@ export const entityDetailsSchema = z.strictObject({
     writeCapability: logicalId,
     detailRoute: z.string().regex(/^\/[a-z0-9/_-]+\/\{recordId\}$/),
     labelField: fieldId, listQuery: queryReference, getQuery: queryReference,
+    fieldPolicy: extensionFieldPolicySchema.optional(),
     nativeFields: z.literal("read_only"), revision: z.literal("owner_positive_integer"),
   }).optional(),
 }).superRefine((value, ctx) => {

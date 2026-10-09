@@ -3,7 +3,7 @@ import { db } from "@/core/db/client";
 import type { Prisma } from "@/generated/prisma/client";
 import { assertCapability } from "@/core/permissions/check";
 import { entity, query } from "@/core/studio/registry/contracts";
-import type { RecordContext, RecordRequest, StudioModuleContract } from "@/core/studio/registry/types";
+import type { EntityDescriptor, RecordContext, RecordRequest, StudioModuleContract } from "@/core/studio/registry/types";
 import { workScope } from "./access";
 import { FINAL_WORK, WORK_STATUSES } from "./config";
 
@@ -64,6 +64,16 @@ export async function authoriseTicketRecord(ctx: RecordContext, request: RecordR
 }
 
 const identity = { version: 1, capability: "tickets.ticket.read", lifecycle: "active" as const, classification: "confidential" as const };
+const ticketEntity: EntityDescriptor = { ...identity, id: "tickets.ticket", label: "Ticket", kind: "entity", key: "string",
+  fields: [
+    ["number", "Number", "string"], ["subject", "Subject", "string"], ["status", "Status", "enum"],
+    ["type", "Request type", "enum"], ["priority", "Priority", "enum"],
+    ["created_at", "Created", "datetime"], ["updated_at", "Updated", "datetime"],
+  ].map(([id, label, type]) => ({ id, label, type: type as "string" | "enum" | "datetime", nullable: false, classification: "confidential" as const,
+    filterable: ["number", "subject", "status"].includes(id), sortable: id === "updated_at", decision: false, template: false })),
+  extensionPolicy: { customFields: true, recordTypes: true, pageVariants: true },
+  record: { writeCapability: "tickets.ticket.manage", detailRoute: "/tickets/{recordId}", labelField: "number",
+    listQuery: { id: "tickets.ticket.list", version: 1 }, getQuery: { id: "tickets.ticket.get", version: 1 }, authorise: authoriseTicketRecord } };
 /** Canonical ServiceWorkItem/TICKET only. Existing intake answers stay native. */
 export const ticketStudioContract: StudioModuleContract = { contributions: [
   query({ ...identity, id: "tickets.ticket.list", label: "Tickets", kind: "query", input: listInput,
@@ -88,14 +98,11 @@ export const ticketStudioContract: StudioModuleContract = { contributions: [
       if (!row) throw new Error("Ticket unavailable.");
       return project(row);
     } }),
-  entity({ ...identity, id: "tickets.ticket", label: "Ticket", kind: "entity", key: "string",
-    fields: [
-      ["number", "Number", "string"], ["subject", "Subject", "string"], ["status", "Status", "enum"],
-      ["type", "Request type", "enum"], ["priority", "Priority", "enum"],
-      ["created_at", "Created", "datetime"], ["updated_at", "Updated", "datetime"],
-    ].map(([id, label, type]) => ({ id, label, type: type as "string" | "enum" | "datetime", nullable: false, classification: "confidential" as const,
-      filterable: ["number", "subject", "status"].includes(id), sortable: id === "updated_at", decision: false, template: false })),
-    extensionPolicy: { customFields: true, recordTypes: true, pageVariants: true },
-    record: { writeCapability: "tickets.ticket.manage", detailRoute: "/tickets/{recordId}", labelField: "number",
-      listQuery: { id: "tickets.ticket.list", version: 1 }, getQuery: { id: "tickets.ticket.get", version: 1 }, authorise: authoriseTicketRecord } }),
+  // Version 1 hashes remain unchanged for already saved metadata references.
+  entity(ticketEntity),
+  entity({ ...ticketEntity, version: 2, record: { ...ticketEntity.record!, fieldPolicy: {
+    types: ["string", "integer", "decimal", "money", "boolean", "date", "datetime", "duration", "email", "url", "phone", "enum", "multi_enum", "reference", "address"],
+    maxFields: 100, referenceEntities: ["tickets.ticket"],
+    reservedKeys: ["id", "organisation_id", "number", "kind", "subject", "description", "type", "category", "priority", "severity", "impact", "urgency", "status", "queue_id", "requester_user_id", "requested_for_user_id", "owner_user_id", "watcher_ids", "parent_case_id", "parent_id", "merged_into_id", "context", "definition", "sla", "first_response_due_at", "resolution_due_at", "first_response_at", "paused_at", "resolved_at", "resolution", "reopen_count", "version", "revision", "approval_id", "created_at", "updated_at", "entries", "files"],
+  } } }),
 ] };

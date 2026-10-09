@@ -4,6 +4,16 @@ Michael's 9 October follow-up makes visual preview and simple setup a Phase 2
 acceptance requirement. This supplements the supplied specification's structured,
 responsive Page Studio; it does not move later engines into the current phase.
 
+His subsequent clarification: Studio is a design studio for bespoke business
+screens and document templates, including Sales. Never require customers to type
+internal identifiers or understand registry terminology. Generate stable keys
+server-side and preserve them when display names change. The present capability-set
+form is foundation tooling, not acceptance of the intended design experience.
+Both record-screen design and business-document design need clear choices and
+visual preview; they retain their owning domain/renderer rather than becoming a
+second Sales app or document engine. Add supported Sales contracts as an explicit
+owner integration workstream; do not present the Tickets slice as Sales support.
+
 Customers should choose an available owning app/record, select a suitable page or
 template layout, configure clearly labelled sections, and see the resulting screen
 before publication. Use the modern Atlas blue/white ribbon, typography, cards and

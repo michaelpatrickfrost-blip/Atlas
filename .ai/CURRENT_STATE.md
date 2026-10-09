@@ -1,5 +1,47 @@
 # Atlas current state
 
+## 9 October 2026 — Studio 2B2 local checkpoint; visual setup clarification
+
+Phase 2 active, 2B2 IMPLEMENTED locally, central value/runtime acceptance pending.
+Added closed compiler dispatch, typed owner field policy and Tickets entity v2
+(preserving exact v1 hashes), permanent entity/field-key/generation publication
+binding, generation/tenant checks at activation and cosmetic-only revisions until
+2B3's reviewed migration path exists. Five additive typed models/migration support
+immutable history, current pointers, exact decimals/money, required constraints and
+per-generation uniqueness. No customer value API/builder is exposed yet. Existing
+native intake and canonical records are preserved. Privileged schema acceptance
+helper is included in scripts/studio/check-metadata.ts; owner write API remains 2B4.
+
+Michael requires a bespoke screen/document-template design studio for businesses,
+including Sales, with simple visual selection and previews. No internal identifiers
+should be entered by users: removed the stable-key input/display and create action
+now generates configuration.<UUID> server-side. Persisted identities remain stable.
+STUDIO_VISUAL_BUILDER_REQUIREMENTS.md records both screen/document experiences and
+explicit future Sales owner integration; Tickets is not presented as Sales support.
+
+Checks actually run: 19 focused/regression files/85 tests PASS, strict TypeScript
+(after production build) PASS, scoped ESLint PASS, production build PASS, Prisma
+validate/generate PASS. Backed-up central transaction-only DDL check found one
+PL/pgSQL CASE-parentheses syntax error, fixed and rerun PASS; explicit rollback and
+absence of proposed tables confirmed. Backup: atlas-studio-field-ddl-TvSAMP. No
+migration applied or central field values stored yet. SQL data/tenant/history guards
+are NOT VERIFIED until real candidate tests run. Full-suite known baseline failures
+remain; no full-suite success claimed. Diff reviewed; no domain code removed.
+
+Latest observed live source is now 9303039cfd307224f5af77bf7350776508a86bc2 (Messages
+release), server pointer/control HEAD verified. Must merge it before another Studio
+release, preserving its native chat/drafts/history work. Previous Studio source
+6775044 passed public owner/metadata/Admin/business login/Home/Reports/MRP; its final
+evidence remains in main eba8b49 and historical entries below. 2B2 and generated-key
+UI changes are local only and have NOT been deployed. Phase 2 gate NOT PASSED.
+
+Exact next: checkpoint these reviewed changes; merge exact live Messages 9303039
+and preserve concurrent evidence, rerun integrated types/tests/build, then prepare
+backed-up additive candidate and run real field schema/lifecycle plus existing
+Studio/Admin/business/Home/Reports/MRP/Messages acceptance. Activate only on PASS.
+Then 2B3 evolution/retirement/conversion planning and resumable jobs, followed by
+2B4 owner-authorised values. No 2C or Phase 3+ before preceding workstream checks.
+
 ## 9 October 2026 — Phase 2B1 validators and visual setup requirements
 
 Added strict custom-field metadata/storage/value validation library for strings,

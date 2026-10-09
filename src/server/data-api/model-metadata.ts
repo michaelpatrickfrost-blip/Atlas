@@ -1,25 +1,5 @@
 // Generated from the application schema.
 export const MODEL_FIELDS = {
-  "AuthenticationRateLimit": {
-    "key": {
-      "type": "String",
-      "list": false,
-      "nullable": false,
-      "relation": false
-    },
-    "attempts": {
-      "type": "Int",
-      "list": false,
-      "nullable": false,
-      "relation": false
-    },
-    "expiresAt": {
-      "type": "DateTime",
-      "list": false,
-      "nullable": false,
-      "relation": false
-    }
-  },
   "Organisation": {
     "studioDefinitions": {
       "type": "StudioDefinition",

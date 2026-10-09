@@ -44,8 +44,11 @@ Earlier positive/partial runs, stopped attempts and corrections are retained in
 [release evidence](../docs/evidence/2026-10-10-people-platform.md).
 Research/scope: [People overhaul](../docs/plans/PEOPLE_PLATFORM_OVERHAUL.md).
 CURRENT_STATE/DECISIONS/PROJECT_MEMORY, module/design/data/deployment guides
-reconciled with implementation. Next: integrate code/evidence into main without
-activating unrelated pending source. External scope remains explicit: RTI/bank,
+reconciled with implementation. Code/evidence integration preserves main's
+pending Dashboard source: regenerated API (385 descriptors/905 actions), merged
+production build/strict types and 11 files/74 regression tests PASS. That separate
+source was not activated by this task; accepted live runtime remains above.
+No People release blocker. External scope remains explicit: RTI/bank,
 special tax/director/week53; telephony/adherence/queue forecasts; mutual swaps,
 notifications, e-sign/benefits and historical goal snapshots.
 
@@ -85,7 +88,57 @@ Need candidate/public proof with deployed 56c9d88 business separation preserved.
 
 
 
-## 9 October 2026 — Customers, Sales, CRM and Marketing refinement prepared
+## 9 October 2026 — Customers, Sales, CRM and Marketing live and accepted
+
+Deployed immutable 94dd3e105e2757b5d16ed3e2fea277d09a4b7bee from scoped
+codex/customer-sales-experience. Previous runtime 56c9d88 retained. Server
+compatibility/build/smoke and public release health/login PASS; central database/
+private-file activation backup atlas-pre-deploy-20261009-224305. Additive appointment
+migration is applied; no existing business record or external provider was replaced.
+Live source retains accepted Manufacturing/Studio, Apps, rounded typography and
+business navigation boundaries. Main's separate Dashboard work is not deployed
+by this scoped release.
+
+Actual public HTTPS acceptance PASS at the exact SHA: selected-customer family
+only; canonical CRM/Customer notes and restricted rights; appointment create/link,
+overlap rejection, reschedule, completion outcome and retained cancellation;
+reader/rep/tenant/capability isolation; visual journey experience/touchpoint/branch/
+zoom/reorder; immutable automation publication with zero outbound deliveries.
+All ten commercial screens at desktop 1448, tablet 820 and phone 390 widths PASS
+with no page overflow/browser errors. Anonymous access redirects PASS. Exactly
+15 allowed form POSTs; external/background writes blocked. Exact synthetic Test
+companies suspended, memberships revoked and auth versions advanced; audit/records
+retained. Public fixture backup atlas-pre-commercial-public-test-20261009-224515;
+logs /tmp/atlas-commercial-public-6dMlQj; screenshots/evidence
+/tmp/atlas-commercial-acceptance-AXm3WE. Candidate evidence
+/tmp/atlas-commercial-acceptance-W6QlsD and /tmp/atlas-commercial-staging-E7NNYT;
+fixture backup atlas-pre-commercial-test-20261009-223938; preparation backup
+atlas-pre-deploy-20261009-223427. Visual journey/phone diary screenshots inspected.
+
+Checks actually run: commercial/regression 30-file/145-test suite PASS, followed by
+8-file/34-test regression after navigation merge; strict TypeScript and production
+build PASS after each live-source merge; scoped lint zero errors (pre-existing
+Sales unused-variable and navigation img warnings), shell syntax and diff whitespace
+PASS. Full run on the earlier f594 integrated source: 1201 passed / 63 failed /
+22 skipped, comprising 62 older module-mock failures and one Inventory 5-second
+initial compilation timeout. Inventory alone reproduces that timeout, then all
+12 tests PASS with a 20-second allowance. Whole-suite success is not claimed.
+
+Main integration with the existing Dashboard source: strict TypeScript and
+8-file/34-test commercial/navigation regression PASS; diff whitespace PASS.
+No deployment of that separate Dashboard source is performed by this merge.
+
+Shared docs/decisions/research and implementation are included together. Source:
+Customers/core/account notes and family maps; CRM Accounts/Appointments/Today/
+Pipeline; Sales Orders list/detail; Marketing campaign desk, experience mapper,
+visual automation and audited commands; central acceptance helpers. External
+calendar sync, email/SMS delivery, advertising execution and background journey
+processing still require separately configured integration work. Provider choices
+remain blank per the recorded user decision. Final source/evidence is merged back
+into main without deploying unrelated concurrent work; canonical Desktop's dirty
+checkout is preserved.
+
+## 9 October 2026 — Historical commercial candidates and safe ancestry stops
 
 Latest navigation checkpoint: 422ad3 sealed candidate, full commercial forms and
 30 route/viewport cases PASS with Nunito; 15 allowed form POSTs, no browser errors.
@@ -245,6 +298,68 @@ target membership/current grants; Admin openCompanyWorkspace is the existing
 explicit audited staff-affiliation path. Before 2B3c persistence, define a refreshed
 principal and explicit support data context while retaining the standalone Admin
 shell. Saved in STUDIO_FIELD_EVOLUTION_PLAN.md; no new context implemented.
+## 9 October 2026 — Reviewed Dashboard source integrated; activation pending
+
+Reviewed Dashboard implementation and shared memory from release 054dd1c are
+integrated with main, preserving deployed rounded typography, Studio, Apps,
+Supply and their historical evidence. Final release is prepared/smoke-verified
+with backup atlas-pre-deploy-20261009-222031; public runtime last observed 5ebd700.
+Local combined 23 files/97 assertions, final four UI files/18 assertions, strict
+types, builds and scoped lint PASS (two decorative brand image warnings). These
+checks apply to the pinned release source, not a claim about future main edits.
+Earlier candidate Dashboard/Home/Apps/Reports PASS; revised chat viewport check
+and typography are in the final acceptance sequence. Activation/public proof is
+pending behind shared server operations; no Dashboard deployment claim yet.
+Next: finish pinned acceptance/activation/public checks and commit final evidence.
+
+
+## 9 October 2026 — Dashboard redesign, final release acceptance
+
+Dashboards is in the utility sidebar under its existing Analytics entitlement and
+read/manage capabilities; Home no longer repeats its app card. The modern Atlas
+canvas has a searchable widget library, inspector, eleven visuals, personal boards
+and four starters. Widgets support grouping/count/distinct/sum/average/min/max,
+typed source/date/search filters, currency validation, width/height/colour/tone,
+reorder/duplicate/remove and undo/redo. Manual or timed refresh is saved with board
+period/default filters and respected by the monitor. Existing curated measures,
+central definitions and source permissions remain; ID/revision-checked rename and
+unique-name copies prevent silent replacement. No Dashboard migration or grants.
+
+Fourteen detailed record datasets include Customers, Products, Sales, Inventory,
+Logistics, Manufacturing and Finance. Queries calculate all matching rows up to
+10,000, reject truncation/mixed currencies/unsafe money precision, preserve missing
+average/extrema and weighted groups, and return aggregates rather than raw rows.
+Broader sharing, formulas, arbitrary joins and fiscal features remain open.
+Paths: modules/analytics, analytics/board routes, shell, Reports dataset selection,
+generated gateway descriptors, four dashboard suites and check-dashboards.ts.
+Analytics/design/decisions documentation reconciled; auth counter metadata excluded.
+
+Exact already-live Supply source 2690c26 and integrated Studio/Apps source e5d66e6
+are merged with private Admin and Messages source. Combined 19 files/79 assertions, strict types, production
+build, scoped lint and diff check PASS. Prepared 885baa5 passed central Dashboard,
+Home, Reports/Finance and Messages acceptance. Earlier prepared candidates/backups
+and ancestry stops remain in docs/evidence/2026-10-09-dashboards.md. Final currency
+input guard: two suites/19 assertions, strict types, scoped lint and build PASS.
+No Dashboard activation is claimed yet. Next: prepare the integrated final source,
+repeat candidate acceptance, activate and verify through public HTTPS.
+The global suite was not rerun; its unrelated baseline failures remain recorded.
+Final 73fcdb9 candidate Dashboard/Home/Reports/Messages checks PASS. Public source
+advanced to e5d66e6 during acceptance; merge its exact deployed Studio/Apps source,
+preserve source schema/lifecycle. Combined 23 files/97 assertions, strict types,
+production build, scoped lint (zero errors, two decorative brand-image warnings)
+and diff check PASS. Generated descriptors match its already-live typed field models.
+Candidate bc8fc2e Dashboard/Home/Apps/Reports PASS; Messages fixture/history PASS,
+viewport assertion FAIL after reopened timeline restoration. Runner now scrolls
+and retries the actual viewport assertion instead of accepting DOM visibility.
+Exact public font source 5ebd700 is merged unchanged; no new Dashboard app code.
+Runner/font integration: four UI files/18 assertions, strict types, production
+build, runner lint and diff check PASS. Next: prepare and complete candidate/public
+checks before activation/handoff.
+
+Messages 9303039 was publicly verified; final Me-assignment 4be24b3 is included
+and candidate-verified in this combined source. Synthetic chat fixtures are retired;
+no real colleague/customer was messaged. Its final public proof accompanies this
+release. Only already-deployed contributors' source is included in this release.
 
 
 ## 9 October 2026 — Shared rounded typography deployed and publicly verified
@@ -508,58 +623,6 @@ Checker: scripts/check-private-admin-login.ts. Source: src/core/auth, src/proxy.
 Admin auth frame/route layouts, Prisma schema/migration and focused auth tests.
 Source and final evidence integrated with origin/main; no further Admin blocker.
 
-## 9 October 2026 — Messages historical implementation and candidate evidence
-
-Implemented a wide logo-based pop-out and expanded `/chat` utility workspace,
-responsive conversation list/timeline, optional participants/shared-record details,
-grouped order/quotation/customer/project/product picker and horizontal composer.
-Drafts remain separate per chat in a company/user-keyed shell context; closing
-and expanding retains the conversation and current draft without local storage. Pending sends disable edits/re-entry; failures retain draft/attachments.
-References may be sent without a comment. Server history searches all message text
-with bounded stable 80-message cursor pages, same-tenant/participant cursor checks,
-and safe recipient placeholders; older/search views do not mark newer messages read.
-Closed docks only poll unread summaries. Source licences/native private Projects
-scope and existing work/meeting creation remain. Customer/contact picker excludes
-scrubbed/archived identities. Admin remains independent without business chat.
-Paths: chat actions/dock/API; shell utility/header variants/navigation; focused
-chat tests and scripts/check-messages.ts; docs/MESSAGES.md/design/roadmap/decisions.
-No schema/migration, grants or existing business-record edits. Preserved concurrent
-live Guardian MRP source `0ce9f4a` and Reports/Admin/Studio evidence while resolving
-CURRENT_STATE with both contributors' entries. Eight focused files/47 assertions,
-strict TypeScript and production build passed; scoped ESLint zero errors/three
-brand-image warnings. Candidate `4233b57` is prepared/smoke-verified with central
-backup `atlas-pre-deploy-20261009-202932`; live pointer unchanged. Browser acceptance
-waits for the shared release lock held by another verification run. Refined picker
-search loading, bounded test timeouts and removed formatter whitespace; 17 chat
-assertions, strict TypeScript and final production build passed again; focused
-refinement lint zero errors/one brand-image warning and diff check passed.
-Full suite not rerun.
-Initial `4233b57` candidate acceptance passed real chat/contact creation, message
-send/order-reference persistence, participant/shared-record details, history beyond
-80 messages/search, forged-record rejection, draft closure, utility entry, expanded
-workspace and desktop/tablet/phone viewport fit with no browser runtime errors.
-Screenshots inspected visually. Its synthetic contact/customer is retired centrally.
-Final expansion handoff uses the shared unsaved-draft context keyed by authenticated
-company/user; eight focused files/48 assertions, strict TypeScript, final production
-build and refinement lint (zero errors/one brand-image warning) passed.
-A final review guards both restored-conversation loading and history effects while
-the dock is closed, preventing unintended read markers after returning Home. Added
-a regression; eight files/49 assertions, TypeScript/build and scoped lint (no errors,
-three brand-image warnings) passed. Candidate 1f36fb9 prepared; acceptance initially
-hit an ambiguous preview selector after a second retained fixture existed. Scoped
-the checks to actual timeline articles; this is a test selector correction, not a
-passing acceptance claim. No activation until the final source passes.
-5798bc1 preparation stopped at the ancestry guard after live Studio 6775044
-advanced. Its exact already-live source is merged, preserving typed owner/field
-contracts and their evidence. The prematurely queued acceptance did not run
-(directory absent); no new fixture or passing check is claimed.
-Combined source: 11 focused files/69 assertions, strict TypeScript, production
-build and diff check passed; no schema change.
-Next: prepare the final pinned revision,
-rerun exact chat acceptance plus Home/Reports
-regression, activate and repeat
-public verification. Synthetic QA fixtures stay central and are retired, no actual
-colleague/customer receives a test message; no local business database/cache.
 
 ## 9 October 2026 — Phase 2B1 validators and visual setup requirements
 

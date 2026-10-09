@@ -1,225 +1,1649 @@
 "use client";
-// Builder uses dropdowns on the board. Do not restore the measure-card catalogue or chart-thumbnail menu.
-import { useEffect, useState, useTransition, type CSSProperties, type SetStateAction } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+  type CSSProperties,
+} from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowUpRight, ChartNoAxesCombined, GripVertical, Monitor, Plus, Save, Trash2, LayoutTemplate, Radio } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpRight,
+  ChartNoAxesCombined,
+  Copy,
+  GripVertical,
+  LayoutTemplate,
+  Monitor,
+  Plus,
+  RefreshCw,
+  Save,
+  Search,
+  Settings2,
+  Trash2,
+  Undo2,
+  Redo2,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AnalyticsResult } from "@/core/analytics/types";
-import { widgetSpan, type StudioWidget } from "@/modules/analytics/definition";
-import { boardTemplates, widgetsFromTemplate } from "@/modules/analytics/templates";
-import { deleteAnalyticsDashboard, loadLiveMetrics, loadMetricSlice, saveAnalyticsDashboard } from "@/app/(app)/analytics/actions";
+import type { ReportSpec } from "@/core/reports/types";
+import {
+  dataViewSchema,
+  widgetSpan,
+  type BoardFilters,
+  type StudioWidget,
+} from "@/modules/analytics/definition";
+import {
+  boardTemplates,
+  widgetsFromTemplate,
+} from "@/modules/analytics/templates";
+import {
+  deleteAnalyticsDashboard,
+  loadDashboardData,
+  loadLiveMetrics,
+  loadMetricSlice,
+  saveAnalyticsDashboard,
+} from "@/app/(app)/analytics/actions";
 import { useLiveGoals } from "@/modules/kpis/components/use-live-goals";
 import { GoalCompare } from "@/modules/kpis/components/goal-compare";
 import type { GoalMarker } from "@/modules/kpis/services/workspace";
-import { TileChart, palettes, visualOptions } from "./charts";
+import { TileChart, MiniVisual, palettes, visualOptions } from "./charts";
 import styles from "./studio.module.css";
-
-export type SavedBoard = { id: string; name: string; widgets: StudioWidget[]; refreshSeconds: number; updatedAt: string; updatedLabel: string };
-const subjectColor: Record<string, StudioWidget["color"]> = { Sales: "blue", CRM: "violet", Customers: "teal", HR: "teal", Scheduling: "teal", Inventory: "amber", Logistics: "amber", Finance: "slate", "Customer Service": "rose", Marketing: "rose", Projects: "violet", Planning: "amber", Products: "blue", Pricing: "slate", "Goals & KPIs": "violet" };
-const colours = Object.keys(palettes) as StudioWidget["color"][];
-
-export function Studio({ metrics: initialMetrics, dashboards, selectedId, period, canManage, company, sample = false, createNew = false, templateId, startEditing = false, openMenuMetric, goals = [] }: { metrics: AnalyticsResult[]; dashboards: SavedBoard[]; selectedId?: string; period: string; canManage: boolean; company: string; sample?: boolean; createNew?: boolean; templateId?: string; startEditing?: boolean; openMenuMetric?: string; goals?: GoalMarker[] }) {
-  const router = useRouter();
-  const selected = dashboards.find((board) => board.id === selectedId);
-  const template = boardTemplates.find((item) => item.id === templateId);
-  const building = createNew || Boolean(selected);
-  const initialWidgets = selected?.widgets ?? (template ? widgetsFromTemplate(template, new Set(initialMetrics.map((metric) => metric.id))) : []);
-  const [name, setName] = useState(selected?.name ?? template?.name ?? "Untitled board");
-  const [widgets, setWidgetsState] = useState<StudioWidget[]>(initialWidgets);
-  const [refreshSeconds, setRefreshSeconds] = useState(selected?.refreshSeconds ?? 30);
-  const [opened, setOpened] = useState(building);
-  const [editing, setEditing] = useState(startEditing && !createNew);
-  const [message, setMessage] = useState("");
-  const [pending, startTransition] = useTransition();
-  const [undoStack, setUndoStack] = useState<StudioWidget[][]>([]);
-  const [slices, setSlices] = useState<Record<string, { points: AnalyticsResult["points"]; shape?: "breakdown" | "trend"; error?: string }>>({});
-  const [addSubject, setAddSubject] = useState("Sales");
-  const [addMetricId, setAddMetricId] = useState(openMenuMetric ?? "");
-  const [addBreakdown, setAddBreakdown] = useState("");
-  const [addVisual, setAddVisual] = useState<StudioWidget["visual"]>("column");
-  const { metrics, updatedAt, refreshError, refreshing } = useLiveMetrics(initialMetrics, period, refreshSeconds, sample);
-  const liveGoals=useLiveGoals(goals,refreshSeconds,sample);
-  const subjects = [...new Set(metrics.map((metric) => metric.subject))];
-  const activeSubject = subjects.includes(addSubject) ? addSubject : subjects[0] ?? "";
-  const addPool = metrics.filter((metric) => metric.subject === activeSubject);
-  const addMetric = addPool.find((metric) => metric.id === addMetricId) ?? addPool[0];
-  const base = sample ? "/analytics-preview" : "/analytics";
-  const sliceRequest = widgets.map((widget) => `${widget.metricId}:${widget.breakdown ?? ""}`).join("|");
-
+export type SavedBoard = {
+  id: string;
+  name: string;
+  widgets: StudioWidget[];
+  refreshSeconds: number;
+  filters?: BoardFilters;
+  updatedAt: string;
+  updatedLabel: string;
+};
+type BoardState = {
+  name: string;
+  widgets: StudioWidget[];
+  refreshSeconds: number;
+  filters: BoardFilters;
+};
+const emptyFilters: BoardFilters = { from: "", to: "", search: "" };
+const colours = Object.keys(palettes) as NonNullable<StudioWidget["color"]>[];
+export function Studio({
+  metrics: initialMetrics,
+  datasets = [],
+  dashboards,
+  selectedId,
+  period: initialPeriod,
+  canManage,
+  company,
+  sample = false,
+  createNew = false,
+  templateId,
+  startEditing = false,
+  openMenuMetric,
+  goals = [],
+}: {
+  metrics: AnalyticsResult[];
+  datasets?: ReportSpec[];
+  dashboards: SavedBoard[];
+  selectedId?: string;
+  period: string;
+  canManage: boolean;
+  company: string;
+  sample?: boolean;
+  createNew?: boolean;
+  templateId?: string;
+  startEditing?: boolean;
+  openMenuMetric?: string;
+  goals?: GoalMarker[];
+}) {
+  const router = useRouter(),
+    selected = dashboards.find((b) => b.id === selectedId),
+    template = boardTemplates.find((t) => t.id === templateId);
+  const initial: BoardState = {
+    name: selected?.name ?? template?.name ?? "Untitled dashboard",
+    widgets:
+      selected?.widgets ??
+      (template
+        ? widgetsFromTemplate(
+            template,
+            new Set(initialMetrics.map((m) => m.id)),
+          )
+        : []),
+    refreshSeconds: selected?.refreshSeconds ?? 30,
+    filters: selected?.filters ?? emptyFilters,
+  };
+  const [board, setBoard] = useState(initial),
+    [opened, setOpened] = useState(createNew || !!selected),
+    [editing, setEditing] = useState(
+      createNew || startEditing || !!openMenuMetric,
+    ),
+    [focused, setFocused] = useState<string | null>(
+      initial.widgets.find((w) => w.metricId === openMenuMetric)?.id ?? null,
+    ),
+    [library, setLibrary] = useState(
+      (createNew && !template) || !!openMenuMetric,
+    ),
+    [libraryKind, setLibraryKind] = useState<"measures" | "records">(
+      "measures",
+    ),
+    [search, setSearch] = useState(""),
+    [subject, setSubject] = useState("All apps"),
+    [message, setMessage] = useState(""),
+    [dirty, setDirty] = useState(false),
+    [period, setPeriod] = useState(initialPeriod),
+    [history, setHistory] = useState<BoardState[]>([]),
+    [future, setFuture] = useState<BoardState[]>([]),
+    [pending, startTransition] = useTransition(),
+    [tick, setTick] = useState(0);
+  const [data, setData] = useState<Record<string, AnalyticsResult>>({}),
+    [slices, setSlices] = useState<
+      Record<string, Pick<AnalyticsResult, "points" | "shape" | "error">>
+    >({}),
+    [dataLoading, setDataLoading] = useState(false);
+  const [loadedKey, setLoadedKey] = useState("");
+  const { metrics, updated, refreshError, refreshing } = useLiveMetrics(
+    initialMetrics,
+    period,
+    board.refreshSeconds,
+    sample,
+    tick,
+  );
+  const liveGoals = useLiveGoals(goals, board.refreshSeconds, sample || board.refreshSeconds<=0),
+    active = board.widgets.find((w) => w.id === focused),
+    activeMetric = active?.data
+      ? data[active.id]
+      : metrics.find((m) => m.id === active?.metricId),
+    base = sample ? "/analytics-preview" : "/analytics";
+  const queryKey = JSON.stringify({
+    widgets: board.widgets.map((w) => ({
+      id: w.id,
+      metricId: w.metricId,
+      visual: w.visual,
+      wide: w.wide,
+      data: w.data,
+      breakdown: w.breakdown,
+    })),
+    filters: board.filters,
+  });
   useEffect(() => {
-    if (sample) return;
-    const jobs = widgets.flatMap((widget) => {
-      const metric = metrics.find((item) => item.id === widget.metricId);
-      if (!widget.breakdown || !metric?.breakdowns || widget.breakdown === metric.breakdowns[0]?.id) return [];
-      return [{ metricId: widget.metricId, breakdown: widget.breakdown }];
+    if (!dirty) return;
+    const guard = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", guard);
+    return () => window.removeEventListener("beforeunload", guard);
+  }, [dirty]);
+  useEffect(() => {
+    if (sample || !opened) return;
+    let stopped = false;
+    const jobs = board.widgets.flatMap((w) => {
+      const m = metrics.find((m) => m.id === w.metricId);
+      return !w.data && w.breakdown && w.breakdown !== m?.breakdowns?.[0]?.id
+        ? [{ metricId: w.metricId, breakdown: w.breakdown }]
+        : [];
     });
-    if (!jobs.length) return;
-    let stop = false;
-    const reportingPeriod = period === "30" || period === "365" || period === "all" ? period : "90";
-    Promise.all(jobs.map(async (job) => {
+    const run = async () => {
       try {
-        const slice = await loadMetricSlice({ ...job, period: reportingPeriod });
-        return [`${job.metricId}:${job.breakdown}`, slice] as const;
-      } catch (error) {
-        return [`${job.metricId}:${job.breakdown}`, { points: [], error: error instanceof Error ? error.message : "Could not load this view." }] as const;
+        const result = await loadDashboardData({
+          widgets: board.widgets.filter((w) => w.data),
+          filters: board.filters,
+        });
+        if (!stopped) setData(result);
+      } catch {
+        if (!stopped)
+          setMessage("Some data views could not load. Refresh to try again.");
       }
-    })).then((entries) => { if (!stop) setSlices(Object.fromEntries(entries)); });
-    return () => { stop = true; };
-  }, [sliceRequest, period, updatedAt, sample, widgets, metrics]);
-
-  function setWidgets(next: SetStateAction<StudioWidget[]>) {
-    setUndoStack((stack) => [...stack.slice(-29), widgets]);
-    setWidgetsState(typeof next === "function" ? next(widgets) : next);
+      const entries = [];
+      for (const job of jobs) {
+        try {
+          entries.push([
+            `${job.metricId}:${job.breakdown}`,
+            await loadMetricSlice({ ...job, period }),
+          ] as const);
+        } catch {
+          entries.push([
+            `${job.metricId}:${job.breakdown}`,
+            { points: [], error: "This view could not load." },
+          ] as const);
+        }
+      }
+      if (!stopped) {
+        setLoadedKey(queryKey);
+        setSlices(Object.fromEntries(entries));
+        setDataLoading(false);
+      }
+    };
+    const timer = window.setTimeout(() => {
+      setDataLoading(true);
+      setData({});
+      setSlices({});
+      void run();
+    }, 200);
+    return () => {
+      stopped = true;
+      window.clearTimeout(timer);
+    };
+    // queryKey is the serialised data query; styling edits do not refetch source records.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryKey, period, updated, sample, opened, tick]);
+  function change(next: BoardState) {
+    setHistory((h) => [...h.slice(-29), board]);
+    setFuture([]);
+    setBoard(next);
+    setDirty(true);
     setMessage("");
   }
+  function patch(id: string, p: Partial<StudioWidget>) {
+    change({
+      ...board,
+      widgets: board.widgets.map((w) => (w.id === id ? { ...w, ...p } : w)),
+    });
+  }
+  function patchData(p: Partial<NonNullable<StudioWidget["data"]>>) {
+    if (active?.data) patch(active.id, { data: { ...active.data, ...p } });
+  }
   function undo() {
-    const previous = undoStack.at(-1);
-    if (!previous) return;
-    setUndoStack((stack) => stack.slice(0, -1));
-    setWidgetsState(previous);
+    const prev = history.at(-1);
+    if (!prev) return;
+    setFuture((f) => [board, ...f]);
+    setHistory((h) => h.slice(0, -1));
+    setBoard(prev);
+    setDirty(true);
   }
-  function go(query: string) { router.push(query ? `${base}?${query}` : base); }
-  function openMonitor(id?: string) {
-    if (sample || !id) { setMessage("Save the board first, then open it on a monitor. Each board can have its own window."); return; }
-    const popup = window.open(`/board?dashboard=${encodeURIComponent(id)}&period=${period}`, `atlas-board-${id}`, "popup,width=1680,height=980");
-    if (!popup) setMessage("Allow pop-up windows so this board can sit on another monitor.");
+  function redo() {
+    const next = future[0];
+    if (!next) return;
+    setHistory((h) => [...h, board]);
+    setFuture((f) => f.slice(1));
+    setBoard(next);
+    setDirty(true);
   }
-  function applyTemplate(id: string) {
-    if (sample) {
-      const next = boardTemplates.find((item) => item.id === id);
-      if (!next) return;
-      setName(next.name);
-      setWidgets(widgetsFromTemplate(next, new Set(metrics.map((metric) => metric.id))));
-      setOpened(true);
+  function go(query = "") {
+    if (
+      dirty &&
+      !window.confirm("Leave this dashboard and discard unsaved changes?")
+    )
+      return;
+    router.push(query ? `${base}?${query}` : base);
+  }
+  function add(metric?: AnalyticsResult, dataset?: ReportSpec) {
+    if (board.widgets.length >= 24) return;
+    const w: StudioWidget = {
+      id: crypto.randomUUID(),
+      metricId: metric?.id ?? `data.${dataset!.id}`,
+      visual: metric?.shape === "trend" ? "area" : "column",
+      wide: true,
+      span: 6,
+      color: "blue",
+      breakdown: metric?.breakdowns?.[0]?.id,
+      data: dataset
+        ? dataViewSchema.parse({
+            dataset: dataset.id,
+            group: dataset.columns.find((c) => c.values)?.key ?? "",
+          })
+        : undefined,
+    };
+    change({ ...board, widgets: [...board.widgets, w] });
+    setFocused(w.id);
+    setEditing(true);
+    setLibrary(false);
+  }
+  function move(id: string, offset: number) {
+    const from = board.widgets.findIndex((w) => w.id === id),
+      to = from + offset;
+    if (from < 0 || to < 0 || to >= board.widgets.length) return;
+    const next = [...board.widgets];
+    next.splice(to, 0, next.splice(from, 1)[0]);
+    change({ ...board, widgets: next });
+  }
+  function duplicate(id: string) {
+    const source = board.widgets.find((w) => w.id === id);
+    if (!source || board.widgets.length >= 24) return;
+    const w = {
+      ...source,
+      id: crypto.randomUUID(),
+      title: `${source.title || metrics.find((m) => m.id === source.metricId)?.name || "Chart"} copy`,
+    };
+    change({ ...board, widgets: [...board.widgets, w] });
+    setFocused(w.id);
+  }
+  function resolve(w: StudioWidget): AnalyticsResult | undefined {
+    if (w.data)
+      return (
+        (loadedKey === queryKey ? data[w.id] : undefined) ?? {
+          id: w.id,
+          name:
+            datasets.find((d) => d.id === w.data!.dataset)?.name ?? "Data view",
+          subject:
+            datasets.find((d) => d.id === w.data!.dataset)?.source ?? "Atlas",
+          definition: "",
+          grain: "Authorised matching records",
+          href: "/reports",
+          snapshot: false,
+          points: [],
+          error:
+            dataLoading || loadedKey !== queryKey
+              ? "Loading matching data…"
+              : "Apply data settings to load this view.",
+        }
+      );
+    const m = metrics.find((m) => m.id === w.metricId);
+    if (!m || !w.breakdown || w.breakdown === m.breakdowns?.[0]?.id) return m;
+    return {
+      ...m,
+      ...(sample
+        ? m.previewSlices?.[w.breakdown]
+        : slices[`${m.id}:${w.breakdown}`]),
+      points:
+        (sample
+          ? m.previewSlices?.[w.breakdown]?.points
+          : slices[`${m.id}:${w.breakdown}`]?.points) ?? [],
+      shape: m.breakdowns?.find((b) => b.id === w.breakdown)?.shape ?? m.shape,
+    };
+  }
+  function monitor() {
+    if (dirty || !selected) {
+      setMessage("Save your dashboard before opening its monitor view.");
       return;
     }
-    go(`new=1&template=${encodeURIComponent(id)}&period=${period}`);
+    if (
+      !window.open(
+        `/board?dashboard=${selected.id}&period=${period}`,
+        `atlas-board-${selected.id}`,
+        "popup,width=1680,height=980",
+      )
+    )
+      setMessage("Allow pop-up windows to open this dashboard on a monitor.");
   }
-  function changePeriod(value: string) {
-    const params = new URLSearchParams({ period: value });
-    if (selectedId) params.set("dashboard", selectedId);
-    if (createNew) params.set("new", "1");
-    if (templateId) params.set("template", templateId);
-    if (editing) params.set("edit", "1");
-    go(params.toString());
+  function save(asCopy = false) {
+    startTransition(async () => {
+      try {
+        const id = await saveAnalyticsDashboard({
+          ...board,
+          period,
+          name: asCopy ? `${board.name.slice(0, 60)} copy` : board.name,
+          id: asCopy ? undefined : selected?.id,
+          expectedUpdatedAt: asCopy ? undefined : selected?.updatedAt,
+        });
+        setDirty(false);
+        router.push(`/analytics?dashboard=${id}&period=${period}`);
+        router.refresh();
+      } catch (e) {
+        setMessage(
+          e instanceof Error && e.message.includes("Unique constraint")
+            ? "A dashboard with that name already exists. Choose another name."
+            : e instanceof Error
+              ? e.message
+              : "Could not save. Your changes are still here.",
+        );
+      }
+    });
   }
-  function shownMetric(metric: AnalyticsResult, widget: StudioWidget): AnalyticsResult {
-    const id = widget.breakdown;
-    if (!id || id === metric.breakdowns?.[0]?.id) return metric;
-    const preview = metric.previewSlices?.[id];
-    const live = slices[`${metric.id}:${id}`];
-    const shape = live?.shape ?? preview?.shape ?? metric.breakdowns?.find((item) => item.id === id)?.shape ?? metric.shape;
-    const points = live?.points ?? preview?.points;
-    if (!points) return { ...metric, points: [], shape, error: live?.error ?? (sample ? undefined : "Loading this view…") };
-    return { ...metric, points, shape, error: live?.error };
-  }
-  function patchWidget(widgetId: string, patch: Partial<StudioWidget>) {
-    setWidgets((current) => current.map((item) => item.id === widgetId ? { ...item, ...patch } : item));
-  }
-  function chooseVisual(metric: AnalyticsResult, breakdownId: string, visual: StudioWidget["visual"]): StudioWidget["visual"] {
-    const shape = metric.breakdowns?.find((item) => item.id === breakdownId)?.shape ?? metric.shape;
-    if (shape === "trend" && ["donut", "pie", "funnel", "gauge", "stacked"].includes(visual)) return "area";
-    if (shape !== "trend" && (visual === "line" || visual === "area")) return "column";
-    return visual;
-  }
-  function addChart() {
-    if (!addMetric || widgets.length >= 24) return;
-    const breakdown = addBreakdown || addMetric.breakdowns?.[0]?.id || "";
-    setWidgets((current) => [...current, { id: crypto.randomUUID(), metricId: addMetric.id, visual: chooseVisual(addMetric, breakdown, addVisual), wide: addVisual !== "kpi", span: addVisual === "kpi" ? 4 : 6, breakdown, color: subjectColor[addMetric.subject] ?? "blue" }]);
-  }
-
-  if (!opened) return <Gallery company={company} dashboards={dashboards} metrics={metrics} canManage={canManage} sample={sample} period={period} onCreate={() => sample ? (setOpened(true), setName("Untitled board"), setWidgets([])) : go(`new=1&period=${period}`)} onTemplate={applyTemplate} onMonitor={openMonitor} onDelete={(id) => { const board = dashboards.find((item) => item.id === id); if (!board || !window.confirm(`Delete ${board.name}?`)) return; startTransition(async () => { await deleteAnalyticsDashboard(id); router.refresh(); }); }} />;
-
-  return <div className={`${styles.studio} space-y-4 pb-8`}>
-    <header className={styles.command}>
-      <div className="min-w-0 flex-1">
-        <button onClick={() => sample ? (setOpened(false), setEditing(false), setWidgetsState([])) : go(period === "90" ? "" : `period=${period}`)} className="text-xs font-medium text-[var(--color-atlas-blue)]">All dashboards</button>
-        {canManage ? <input aria-label="Dashboard name" value={name} maxLength={70} onChange={(event) => setName(event.target.value)} className="mt-1 w-full bg-transparent text-3xl font-semibold tracking-tight outline-none" /> : <h1 className="mt-1 truncate text-3xl font-semibold tracking-tight">{name}</h1>}
-        <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500"><span className={styles.live}><Radio size={12} />{sample ? "Sample figures" : refreshing ? "Refreshing" : "Live company data"}</span><span>{company}</span>{updatedAt && <span>Updated {updatedAt.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}</span>}{refreshError && <span className="text-amber-700">{refreshError}</span>}</p>
+  const subjects = [
+    "All apps",
+    ...new Set([
+      ...metrics.map((m) => m.subject),
+      ...datasets.map((d) => d.source),
+    ]),
+  ];
+  const match = (name: string, source: string, description: string) =>
+    (subject === "All apps" || source === subject) &&
+    `${name} ${description}`.toLowerCase().includes(search.toLowerCase());
+  if (!opened)
+    return (
+      <div className={`${styles.studio} space-y-6 pb-8`}>
+        <section className={styles.hero}>
+          <div className="relative z-10 max-w-2xl">
+            <p className={styles.eyebrow}>YOUR WORKSPACE · {company}</p>
+            <h1 className="mt-3 text-4xl font-semibold tracking-[-.04em] sm:text-5xl">
+              Your business.
+              <br />
+              Your perspective.
+            </h1>
+            <p className="mt-4 max-w-lg text-sm leading-6 text-slate-500">
+              Build dashboards around what matters to you. Bring live data
+              together, explore the details and make every view your own.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {canManage && (
+                <Button
+                  variant="primary"
+                  onClick={() =>
+                    sample
+                      ? (setOpened(true), setEditing(true), setLibrary(true))
+                      : go(`new=1&period=${period}`)
+                  }
+                >
+                  <Plus size={16} />
+                  New dashboard
+                </Button>
+              )}
+              <Link href="/reports" className={styles.textLink}>
+                Explore reports <ArrowUpRight size={15} />
+              </Link>
+            </div>
+          </div>
+          <img
+            src="/brand/atlas-mark.png"
+            alt=""
+            aria-hidden="true"
+            className={styles.heroMark}
+          />
+        </section>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight">
+              Your dashboards
+            </h2>
+            <p className="mt-1 text-xs text-slate-500">
+              Private to your account · {dashboards.length} saved views
+            </p>
+          </div>
+          <span className={styles.tag}>
+            <ChartNoAxesCombined size={14} />
+            {metrics.length} live measures · {datasets.length} record datasets
+          </span>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {dashboards.map((b) => (
+            <article key={b.id} className={styles.boardCard}>
+              <button
+                className="w-full text-left"
+                onClick={() => go(`dashboard=${b.id}`)}
+              >
+                <div className={styles.boardPreview}>
+                  {b.widgets.slice(0, 4).map((w) => (
+                    <div key={w.id}>
+                      <MiniVisual type={w.visual} />
+                    </div>
+                  ))}
+                </div>
+                <h3 className="mt-4 text-base font-semibold">{b.name}</h3>
+                <p className="mt-1 text-xs text-slate-500">
+                  {b.widgets.length} widgets · Updated {b.updatedLabel}
+                </p>
+              </button>
+              <div className="mt-4 flex items-center gap-2">
+                <Button onClick={() => go(`dashboard=${b.id}`)}>
+                  Open dashboard <ArrowUpRight size={14} />
+                </Button>
+                {canManage && (
+                  <button
+                    aria-label={`Delete ${b.name}`}
+                    className="ml-auto rounded-lg p-2 text-slate-400 hover:text-rose-600"
+                    onClick={() => {
+                      if (window.confirm(`Delete ${b.name}?`))
+                        startTransition(async () => {
+                          try {
+                            await deleteAnalyticsDashboard(b.id);
+                            router.refresh();
+                          } catch {
+                            setMessage("Could not delete this dashboard.");
+                          }
+                        });
+                    }}
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                )}
+              </div>
+            </article>
+          ))}
+          {!dashboards.length && (
+            <div
+              className={`${styles.boardCard} md:col-span-2 xl:col-span-3 py-10 text-center`}
+            >
+              <ChartNoAxesCombined
+                className="mx-auto text-blue-600"
+                size={34}
+              />
+              <h3 className="mt-3 font-semibold">
+                A clearer picture starts here
+              </h3>
+              <p className="mt-2 text-sm text-slate-500">
+                Start with a blank canvas or choose a layout below.
+              </p>
+            </div>
+          )}
+        </div>
+        {canManage && (
+          <section>
+            <h2 className="mb-3 flex items-center gap-2 text-lg font-semibold">
+              <LayoutTemplate size={18} className="text-blue-600" />
+              Start with a little inspiration
+            </h2>
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {boardTemplates.map((t) => (
+                <button
+                  key={t.id}
+                  className={styles.template}
+                  onClick={() =>
+                    sample
+                      ? (setBoard({
+                          ...initial,
+                          name: t.name,
+                          widgets: widgetsFromTemplate(
+                            t,
+                            new Set(metrics.map((m) => m.id)),
+                          ),
+                        }),
+                        setOpened(true),
+                        setEditing(true))
+                      : go(`new=1&template=${t.id}&period=${period}`)
+                  }
+                >
+                  <div className="mb-4 flex gap-2 text-blue-600">
+                    {t.picks.slice(0, 3).map((w, i) => (
+                      <MiniVisual key={i} type={w.visual} />
+                    ))}
+                  </div>
+                  <span className="font-semibold">{t.name}</span>
+                  <span className="mt-2 block text-xs leading-5 text-slate-500">
+                    {t.description}
+                  </span>
+                  <span className="mt-3 block text-xs font-semibold text-blue-600">
+                    Use this layout →
+                  </span>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+        {message && (
+          <p role="status" className={styles.notice}>
+            {message}
+          </p>
+        )}
+        {sample && (
+          <p className={styles.notice}>
+            Design preview · sample figures. Sign in to save your own dashboard.
+          </p>
+        )}
       </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <div className={styles.pills} role="group" aria-label="Refresh">{([[0, "Off"], [15, "15s"], [30, "30s"], [60, "1m"], [120, "2m"]] as const).map(([value, label]) => <button type="button" key={value} aria-pressed={refreshSeconds === value} className={styles.pill} onClick={() => setRefreshSeconds(value)}>{label}</button>)}</div>
-        <div className={styles.pills} role="group" aria-label="Reporting period">{([["30", "30 days"], ["90", "90 days"], ["365", "Year"], ["all", "All"]] as const).map(([value, label]) => <button type="button" key={value} aria-pressed={period === value} className={styles.pill} onClick={() => changePeriod(value)}>{label}</button>)}</div>
-        {canManage && <Button onClick={undo} disabled={!undoStack.length}>Undo</Button>}
-        {canManage && <Button onClick={() => setEditing((value) => !value)}>{editing ? "Done arranging" : "Arrange"}</Button>}
-        <Button onClick={() => openMonitor(selected?.id)}><Monitor size={15} />On a monitor</Button>
-        {!sample && canManage && <Button variant="primary" disabled={pending || !widgets.length} onClick={() => startTransition(async () => { setMessage(""); try { const id = await saveAnalyticsDashboard({ name, widgets, refreshSeconds }); setMessage("Saved to your account."); go(`dashboard=${id}&period=${period}`); } catch (error) { setMessage(error instanceof Error ? error.message : "Could not save this dashboard."); } })}><Save size={15} />{pending ? "Saving" : "Save dashboard"}</Button>}
-        {selected && !sample && canManage && <button type="button" className="text-xs text-rose-600" onClick={() => startTransition(async () => { if (!window.confirm(`Delete ${selected.name}?`)) return; await deleteAnalyticsDashboard(selected.id); go(""); })}>Delete</button>}
+    );
+  const inspectorDataset = datasets.find((d) => d.id === active?.data?.dataset);
+  return (
+    <fieldset
+      disabled={pending}
+      aria-busy={pending}
+      className={`${styles.studio} min-w-0 space-y-4 pb-8`}
+    >
+      <header className={styles.command}>
+        <div className="min-w-0 flex-1">
+          <button
+            onClick={() => (sample ? setOpened(false) : go())}
+            className="text-xs font-semibold text-blue-600"
+          >
+            ← Your dashboards
+          </button>
+          <h1 className="mt-2 truncate text-2xl font-semibold tracking-tight sm:text-3xl">
+            {board.name}
+          </h1>
+          <p className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+            <span className={styles.live}>
+              <span className="size-1.5 rounded-full bg-emerald-500" />
+              {sample
+                ? "Sample figures"
+                : refreshing || dataLoading
+                  ? "Refreshing data"
+                  : "Live company data"}
+            </span>
+            <span>· {company}</span>
+            {dirty && <span className="text-amber-700">· Unsaved changes</span>}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            onClick={() => setTick((t) => t + 1)}
+            aria-label="Refresh dashboard"
+            disabled={refreshing || dataLoading}
+          >
+            <RefreshCw size={15} />
+          </Button>
+          <Button onClick={monitor}>
+            <Monitor size={15} />
+            <span className="hidden sm:inline">Monitor</span>
+          </Button>
+          {canManage && (
+            <Button
+              onClick={() => {
+                setEditing(!editing);
+                setFocused(null);
+                setLibrary(false);
+              }}
+            >
+              <Settings2 size={15} />
+              {editing ? "View dashboard" : "Edit dashboard"}
+            </Button>
+          )}
+          {canManage && !sample && (
+            <Button
+              variant="primary"
+              disabled={pending || !board.widgets.length}
+              onClick={() => save()}
+            >
+              <Save size={15} />
+              {pending ? "Saving…" : "Save"}
+            </Button>
+          )}
+        </div>
+      </header>
+      <div className={styles.filters}>
+        <label>
+          Measure period
+          <select
+            aria-label="Measure period"
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+          >
+            {[
+              ["30", "Last 30 days"],
+              ["90", "Last 90 days"],
+              ["365", "Last year"],
+              ["all", "All time"],
+            ].map(([v, l]) => (
+              <option key={v} value={v}>
+                {l}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Records from
+          <input
+            aria-label="Records from"
+            type="date"
+            value={board.filters.from}
+            onChange={(e) =>
+              change({
+                ...board,
+                filters: { ...board.filters, from: e.target.value },
+              })
+            }
+          />
+        </label>
+        <label>
+          Records to
+          <input
+            aria-label="Records to"
+            type="date"
+            value={board.filters.to}
+            onChange={(e) =>
+              change({
+                ...board,
+                filters: { ...board.filters, to: e.target.value },
+              })
+            }
+          />
+        </label>
+        <label className="flex-1">
+          Record search
+          <input
+            aria-label="Record search"
+            placeholder="Customer, reference, product…"
+            value={board.filters.search}
+            maxLength={200}
+            onChange={(e) =>
+              change({
+                ...board,
+                filters: { ...board.filters, search: e.target.value },
+              })
+            }
+          />
+        </label>
+        <Button onClick={() => change({ ...board, filters: emptyFilters })}>
+          Reset
+        </Button>
+        <p className="w-full text-[11px] text-slate-400">
+          Date ranges and search apply to supporting record datasets. Curated
+          measures use the measure period; current snapshots stay current.
+          Widget filters can override the board.
+        </p>
       </div>
-    </header>
-    {message && <p role="status" className={styles.notice}>{message}</p>}
-    {canManage && <div className={styles.addBar}>
-      <label>App<select aria-label="App" className={styles.select} value={activeSubject} onChange={(event) => { setAddSubject(event.target.value); setAddMetricId(""); setAddBreakdown(""); }}>{subjects.map((item) => <option key={item}>{item}</option>)}</select></label>
-      <label>What to show<select aria-label="What to show" className={styles.select} value={addMetric?.id ?? ""} onChange={(event) => { setAddMetricId(event.target.value); setAddBreakdown(""); }}>{addPool.map((metric) => <option key={metric.id} value={metric.id}>{metric.name}</option>)}</select></label>
-      {addMetric?.breakdowns && <label>Show by<select aria-label="Show by" className={styles.select} value={addBreakdown || addMetric.breakdowns[0]?.id || ""} onChange={(event) => setAddBreakdown(event.target.value)}>{addMetric.breakdowns.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label>}
-      <label>Chart<select aria-label="Chart to add" className={styles.select} value={addVisual} onChange={(event) => setAddVisual(event.target.value as StudioWidget["visual"])}>{visualOptions.map((visual) => <option key={visual.id} value={visual.id}>{visual.label}</option>)}</select></label>
-      <Button variant="primary" disabled={!addMetric || widgets.length >= 24} onClick={addChart}><Plus size={15} />Add</Button>
-      <label>Layout<select aria-label="Starting layout" className={styles.select} value="" onChange={(event) => { if (event.target.value) applyTemplate(event.target.value); }}><option value="">Start from…</option>{boardTemplates.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
-    </div>}
-    <div className={styles.grid}>{widgets.map((widget) => {
-      const source = metrics.find((item) => item.id === widget.metricId);
-      const metric = source ? shownMetric(source, widget) : undefined;
-      const showBy = source?.breakdowns?.find((item) => item.id === (widget.breakdown || source.breakdowns?.[0]?.id))?.label;
-      return <section key={widget.id} style={{ "--span": widgetSpan(widget), "--accent": palettes[widget.color ?? "blue"][0] } as CSSProperties} className={`${styles.tile} ${widget.visual === "kpi" && widget.tone === "ink" ? styles.ink : ""}`} onDragOver={(event) => { if (editing) event.preventDefault(); }} onDrop={(event) => { event.preventDefault(); const id = event.dataTransfer.getData("text/plain"); setWidgets((current) => { const from = current.findIndex((item) => item.id === id); const to = current.findIndex((item) => item.id === widget.id); if (from < 0 || from === to) return current; const next = [...current]; const [item] = next.splice(from, 1); next.splice(to, 0, item); return next; }); }}>
-        {canManage && source && <div className={styles.tileBar}>
-          {editing && <span className={styles.grip} draggable onDragStart={(event) => event.dataTransfer.setData("text/plain", widget.id)} aria-label="Drag to rearrange"><GripVertical size={14} /></span>}
-          <select aria-label="What this chart shows" className={styles.miniSelect} value={widget.metricId} onChange={(event) => { const next = metrics.find((item) => item.id === event.target.value); patchWidget(widget.id, { metricId: event.target.value, breakdown: next?.breakdowns?.[0]?.id ?? "", category: "", title: "", color: subjectColor[next?.subject ?? ""] ?? "blue" }); }}>{subjects.map((group) => <optgroup key={group} label={group}>{metrics.filter((item) => item.subject === group).map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</optgroup>)}</select>
-          {source.breakdowns && <select aria-label="Show by" className={styles.miniSelect} value={widget.breakdown || source.breakdowns[0]?.id || ""} onChange={(event) => patchWidget(widget.id, { breakdown: event.target.value, category: "", visual: chooseVisual(source, event.target.value, widget.visual) })}>{source.breakdowns.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select>}
-          <select aria-label="Chart type" className={styles.miniSelect} value={widget.visual} onChange={(event) => patchWidget(widget.id, { visual: event.target.value as StudioWidget["visual"] })}>{visualOptions.map((visual) => <option key={visual.id} value={visual.id}>{visual.label}</option>)}</select>
-          {editing && metric && metric.shape !== "trend" && metric.points.length > 1 && <select aria-label="Focus" className={styles.miniSelect} value={widget.category ?? ""} onChange={(event) => patchWidget(widget.id, { category: event.target.value })}><option value="">All</option>{metric.points.map((point) => <option key={point.label} value={point.label}>{point.label}</option>)}</select>}
-          {editing && <select aria-label="Width" className={styles.miniSelect} value={String(widgetSpan(widget))} onChange={(event) => { const span = Number(event.target.value) as 4 | 6 | 8 | 12; patchWidget(widget.id, { span, wide: span >= 6 }); }}><option value="4">Quarter</option><option value="6">Half</option><option value="8">Wide</option><option value="12">Full</option></select>}
-          {editing && <select aria-label="Colour" className={styles.miniSelect} value={widget.color ?? "blue"} onChange={(event) => patchWidget(widget.id, { color: event.target.value as StudioWidget["color"] })}>{colours.map((colour) => colour && <option key={colour} value={colour}>{colour[0].toUpperCase() + colour.slice(1)}</option>)}</select>}
-          {editing && <input aria-label="Chart title" className={styles.miniSelect} value={widget.title ?? ""} placeholder="Title" maxLength={100} onChange={(event) => patchWidget(widget.id, { title: event.target.value })} />}
-          <button type="button" aria-label="Remove chart" onClick={() => setWidgets((current) => current.filter((item) => item.id !== widget.id))} className="rounded-lg p-1.5 text-slate-400"><Trash2 size={14} /></button>
-        </div>}
-        <TileHead metric={source} widget={widget} sample={sample} viewLabel={showBy ?? ""} />
-        {metric ? <TileChart metric={metric} widget={widget} onPick={(picked) => canManage ? patchWidget(widget.id, { category: widget.category === picked ? "" : picked }) : undefined} /> : <p className="py-8 text-sm text-slate-500">This measure is no longer available to your account.</p>}
-        {source && !sample && <GoalCompare goals={liveGoals} metric={source} period={period} />}
-      </section>;
-    })}{!widgets.length && <div className={`${styles.tile} ${styles.empty}`}><ChartNoAxesCombined className="mb-3 text-[var(--color-atlas-blue)]" /><h2 className="text-lg font-semibold">Add the first chart</h2><p className="mt-2 max-w-md text-sm text-slate-500">Choose an app, what to show, and a chart. Orders can be split by status, product, category, customer or time.</p></div>}</div>
-  </div>;
+      {(message || refreshError) && (
+        <p role="status" className={styles.notice}>
+          {message || refreshError}
+        </p>
+      )}
+      {editing && canManage && (
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="primary"
+            disabled={board.widgets.length >= 24}
+            onClick={() => {
+              setLibrary(!library);
+              setFocused(null);
+            }}
+          >
+            <Plus size={15} />
+            Add widget
+          </Button>
+          <Button
+            aria-label="Undo dashboard change"
+            onClick={undo}
+            disabled={!history.length}
+          >
+            <Undo2 size={15} />
+          </Button>
+          <Button
+            aria-label="Redo dashboard change"
+            onClick={redo}
+            disabled={!future.length}
+          >
+            <Redo2 size={15} />
+          </Button>
+          <label className="ml-1 flex min-w-0 flex-1 items-center gap-2 text-xs text-slate-500">
+            Name
+            <input
+              aria-label="Dashboard name"
+              maxLength={70}
+              value={board.name}
+              onChange={(e) => change({ ...board, name: e.target.value })}
+              className={styles.select}
+            />
+          </label>
+          <label className="flex items-center gap-2 text-xs text-slate-500">
+            Refresh
+            <select
+              aria-label="Dashboard refresh"
+              className={styles.select}
+              value={board.refreshSeconds}
+              onChange={(e) =>
+                change({ ...board, refreshSeconds: Number(e.target.value) })
+              }
+            >
+              {[
+                [0, "Manual"],
+                [15, "15 seconds"],
+                [30, "30 seconds"],
+                [60, "1 minute"],
+                [120, "2 minutes"],
+              ].map(([v, l]) => (
+                <option key={v} value={v}>
+                  {l}
+                </option>
+              ))}
+            </select>
+          </label>
+          {selected && !sample && (
+            <Button disabled={pending} onClick={() => save(true)}>
+              <Copy size={14} />
+              Save a copy
+            </Button>
+          )}
+          <span className="text-xs text-slate-400">
+            {board.widgets.length}/24 widgets
+          </span>
+        </div>
+      )}
+      {editing && library && (
+        <section className={styles.library} aria-label="Widget library">
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold">What would you like to show?</h2>
+            <button
+              onClick={() => setLibrary(false)}
+              aria-label="Close widget library"
+            >
+              <X size={18} />
+            </button>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className={styles.pills}>
+              <button
+                className={styles.pill}
+                aria-pressed={libraryKind === "measures"}
+                onClick={() => setLibraryKind("measures")}
+              >
+                Business measures
+              </button>
+              <button
+                className={styles.pill}
+                aria-pressed={libraryKind === "records"}
+                onClick={() => setLibraryKind("records")}
+              >
+                Build from records
+              </button>
+            </div>
+            <label className="relative flex-1">
+              <Search
+                size={15}
+                className="absolute left-3 top-3 text-slate-400"
+              />
+              <input
+                aria-label="Search widget data"
+                className={`${styles.select} w-full pl-9`}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search data and measures…"
+              />
+            </label>
+            <select
+              aria-label="Filter widget apps"
+              className={styles.select}
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+            >
+              {subjects.map((s) => (
+                <option key={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+          <div className={styles.libraryGrid}>
+            {libraryKind === "measures"
+              ? metrics
+                  .filter((m) => match(m.name, m.subject, m.definition))
+                  .map((m) => (
+                    <button
+                      key={m.id}
+                      className={styles.metric}
+                      onClick={() => add(m)}
+                    >
+                      <span>
+                        <span className={styles.eyebrow}>{m.subject}</span>
+                        <span className="mt-1 block text-sm font-semibold">
+                          {m.name}
+                        </span>
+                        <span className="mt-1 line-clamp-2 block text-xs leading-5 text-slate-500">
+                          {m.definition}
+                        </span>
+                      </span>
+                      <Plus size={17} className="shrink-0 text-blue-600" />
+                    </button>
+                  ))
+              : datasets
+                  .filter((d) => match(d.name, d.source, d.description))
+                  .map((d) => (
+                    <button
+                      key={d.id}
+                      className={styles.metric}
+                      onClick={() => add(undefined, d)}
+                    >
+                      <span>
+                        <span className={styles.eyebrow}>{d.source}</span>
+                        <span className="mt-1 block text-sm font-semibold">
+                          {d.name}
+                        </span>
+                        <span className="mt-1 block text-xs text-slate-500">
+                          {d.columns.length} fields · Group, calculate and
+                          filter
+                        </span>
+                      </span>
+                      <Plus size={17} className="shrink-0 text-blue-600" />
+                    </button>
+                  ))}
+          </div>
+          {libraryKind === "records" && !datasets.length && (
+            <p className="text-sm text-slate-500">
+              Record datasets appear when your profile has access to their
+              source apps.
+            </p>
+          )}
+        </section>
+      )}
+      <div
+        className={`${styles.workspace} ${editing && active ? styles.withInspector : ""}`}
+      >
+        <div className={styles.grid} aria-label="Dashboard canvas">
+          {board.widgets.map((w, index) => {
+            const m = resolve(w);
+            return (
+              <section
+                key={w.id}
+                data-widget-id={w.id}
+                className={`${styles.tile} ${editing && focused === w.id ? styles.selected : ""} ${w.tone === "ink" ? styles.ink : w.tone === "blue" ? styles.soft : ""} ${w.borderless ? styles.borderless : ""}`}
+                style={
+                  {
+                    "--span": widgetSpan(w),
+                    "--accent": palettes[w.color ?? "blue"][0],
+                    "--tile-height":
+                      w.height === "tall"
+                        ? "420px"
+                        : w.height === "compact"
+                          ? "180px"
+                          : "280px",
+                  } as CSSProperties
+                }
+                onDragOver={(e) => {
+                  if (editing) e.preventDefault();
+                }}
+                onDrop={(e) => {
+                  if (!editing) return;
+                  e.preventDefault();
+                  const id = e.dataTransfer.getData("text/plain"),
+                    from = board.widgets.findIndex((w) => w.id === id);
+                  if (from >= 0) move(id, index - from);
+                }}
+              >
+                <div className="mb-3 flex items-start gap-2">
+                  <div className="min-w-0 flex-1">
+                    <p className={styles.eyebrow}>
+                      {m?.subject ?? "Unavailable"}
+                      {w.data ? " · Data view" : ""}
+                    </p>
+                    <h2 className="mt-1 text-sm font-semibold">
+                      {w.title || m?.name || "Unavailable measure"}
+                    </h2>
+                    {w.category && (
+                      <button
+                        className="mt-1 text-xs text-blue-600"
+                        onClick={() => patch(w.id, { category: "" })}
+                      >
+                        Focus: {w.category} ×
+                      </button>
+                    )}
+                  </div>
+                  {editing && canManage && (
+                    <>
+                      <span
+                        draggable
+                        onDragStart={(e) =>
+                          e.dataTransfer.setData("text/plain", w.id)
+                        }
+                        title="Drag to reorder"
+                        className={styles.grip}
+                      >
+                        <GripVertical size={17} />
+                      </span>
+                      <button
+                        aria-label={`Configure widget ${index + 1}`}
+                        onClick={() => {
+                          setFocused(focused === w.id ? null : w.id);
+                          setLibrary(false);
+                        }}
+                        className="rounded-lg p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-600"
+                      >
+                        <Settings2 size={17} />
+                      </button>
+                    </>
+                  )}
+                </div>
+                <div className={styles.chartBody}>
+                  {m ? (
+                    <TileChart
+                      metric={m}
+                      widget={w}
+                      onPick={(label) =>
+                        patch(w.id, {
+                          category: w.category === label ? "" : label,
+                        })
+                      }
+                    />
+                  ) : (
+                    <p className="py-8 text-sm text-slate-500">
+                      This measure is no longer available to your account.
+                    </p>
+                  )}
+                </div>
+                {m && !w.data && !sample && (
+                  <GoalCompare goals={liveGoals} metric={m} period={period} />
+                )}
+                <div className="mt-4 flex items-end gap-2 border-t border-slate-100 pt-3">
+                  <p className="min-w-0 flex-1 text-[10px] leading-4 text-slate-400">
+                    {m?.grain}
+                    {m?.snapshot ? " · Current snapshot" : ""}
+                    {w.data && m?.definition ? ` · ${m.definition}` : ""}
+                  </p>
+                  {m && (
+                    <Link
+                      prefetch={false}
+                      href={
+                        w.data
+                          ? `/reports?dataset=${encodeURIComponent(w.data.dataset)}`
+                          : m.href
+                      }
+                      aria-label={`Open source for widget ${index + 1}`}
+                      className="shrink-0 text-blue-600"
+                    >
+                      <ArrowUpRight size={15} />
+                    </Link>
+                  )}
+                </div>
+              </section>
+            );
+          })}
+          {!board.widgets.length && (
+            <div className={`${styles.tile} ${styles.empty}`}>
+              <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+                <ChartNoAxesCombined size={30} />
+              </div>
+              <h2 className="mt-4 text-xl font-semibold">
+                Make room for what matters
+              </h2>
+              <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-500">
+                Add a business measure or build a chart from records. Choose the
+                data, shape the view and arrange it your way.
+              </p>
+              {canManage && (
+                <Button
+                  className="mt-5"
+                  variant="primary"
+                  onClick={() => setLibrary(true)}
+                >
+                  <Plus size={15} />
+                  Choose your first widget
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+        {editing && active && canManage && (
+          <aside className={styles.panel} aria-label="Widget inspector">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold">Widget settings</h2>
+              <button
+                onClick={() => setFocused(null)}
+                aria-label="Close widget settings"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <p className="mt-1 text-xs text-slate-500">
+              Make this view work for you.
+            </p>
+            <Field label="Chart title">
+              <input
+                aria-label="Chart title"
+                maxLength={100}
+                value={active.title ?? ""}
+                placeholder={activeMetric?.name}
+                onChange={(e) => patch(active.id, { title: e.target.value })}
+              />
+            </Field>
+            {active.data && inspectorDataset ? (
+              <>
+                <Field label="Dataset">
+                  <select
+                    aria-label="Widget dataset"
+                    value={active.data.dataset}
+                    onChange={(e) =>
+                      patch(active.id, {
+                        data: dataViewSchema.parse({ dataset: e.target.value }),
+                        category: "",
+                      })
+                    }
+                  >
+                    {datasets.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.source} · {d.name}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label="Group by">
+                  <select
+                    aria-label="Group by"
+                    value={active.data.group}
+                    onChange={(e) => patchData({ group: e.target.value })}
+                  >
+                    <option value="">All records</option>
+                    {inspectorDataset.columns.map((c) => (
+                      <option key={c.key} value={c.key}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                {inspectorDataset.columns.find(
+                  (c) => c.key === active.data?.group,
+                )?.type === "date" && (
+                  <Field label="Date grouping">
+                    <select
+                      aria-label="Date grouping"
+                      value={active.data.bucket}
+                      onChange={(e) =>
+                        patchData({
+                          bucket: e.target.value as "day" | "month" | "year",
+                        })
+                      }
+                    >
+                      <option value="day">Day</option>
+                      <option value="month">Month</option>
+                      <option value="year">Year</option>
+                    </select>
+                  </Field>
+                )}
+                <Field label="Calculation">
+                  <select
+                    aria-label="Calculation"
+                    value={active.data.aggregation}
+                    onChange={(e) =>
+                      patchData({
+                        aggregation: e.target.value as NonNullable<
+                          StudioWidget["data"]
+                        >["aggregation"],
+                        measure: "",
+                      })
+                    }
+                  >
+                    {[
+                      ["count", "Count records"],
+                      ["sum", "Total"],
+                      ["average", "Average"],
+                      ["min", "Lowest value"],
+                      ["max", "Highest value"],
+                      ["distinct", "Count distinct values"],
+                    ].map(([v, l]) => (
+                      <option key={v} value={v}>
+                        {l}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                {active.data.aggregation !== "count" && (
+                  <Field label="Value field">
+                    <select
+                      aria-label="Value field"
+                      value={active.data.measure}
+                      onChange={(e) => patchData({ measure: e.target.value })}
+                    >
+                      <option value="">Choose a field</option>
+                      {inspectorDataset.columns
+                        .filter(
+                          (c) =>
+                            active.data?.aggregation === "distinct" ||
+                            ["number", "money"].includes(c.type || ""),
+                        )
+                        .map((c) => (
+                          <option key={c.key} value={c.key}>
+                            {c.label}
+                          </option>
+                        ))}
+                    </select>
+                  </Field>
+                )}
+                {inspectorDataset.columns.find(
+                  (c) => c.key === active.data?.measure,
+                )?.type === "money" &&
+                  active.data.aggregation !== "count" && (
+                    <Field label="Currency">
+                      <input
+                        aria-label="Widget currency"
+                        maxLength={10}
+                        placeholder="GBP"
+                        value={active.data.currency}
+                        onChange={(e) =>
+                          patchData({ currency: e.target.value.toUpperCase() })
+                        }
+                      />
+                    </Field>
+                  )}
+                <details className={styles.details}>
+                  <summary>
+                    Record filters{" "}
+                    <span className="text-slate-400">
+                      ({active.data.filters.length})
+                    </span>
+                  </summary>
+                  <Field label="Search">
+                    <input
+                      aria-label="Widget record search"
+                      maxLength={200}
+                      value={active.data.search}
+                      onChange={(e) => patchData({ search: e.target.value })}
+                      placeholder="Use board search"
+                    />
+                  </Field>
+                  {inspectorDataset.dateField && (
+                    <>
+                      <Field label="From">
+                        <input
+                          type="date"
+                          aria-label="Widget from"
+                          value={active.data.from}
+                          onChange={(e) => patchData({ from: e.target.value })}
+                        />
+                      </Field>
+                      <Field label="To">
+                        <input
+                          type="date"
+                          aria-label="Widget to"
+                          value={active.data.to}
+                          onChange={(e) => patchData({ to: e.target.value })}
+                        />
+                      </Field>
+                    </>
+                  )}
+                  {active.data.filters.map((f, i) => {
+                    const col = inspectorDataset.columns.find(
+                      (c) => c.key === f.field,
+                    );
+                    const update = (p: Partial<typeof f>) =>
+                      patchData({
+                        filters: active.data!.filters.map((v, n) =>
+                          n === i ? { ...v, ...p } : v,
+                        ),
+                      });
+                    return (
+                      <div
+                        key={i}
+                        className="mt-3 space-y-2 rounded-xl bg-slate-50 p-2"
+                      >
+                        <select
+                          aria-label={`Filter ${i + 1} field`}
+                          value={f.field}
+                          onChange={(e) =>
+                            update({
+                              field: e.target.value,
+                              operator: "equals",
+                              value: "",
+                            })
+                          }
+                        >
+                          {inspectorDataset.columns
+                            .filter((c) => c.path)
+                            .map((c) => (
+                              <option key={c.key} value={c.key}>
+                                {c.label}
+                              </option>
+                            ))}
+                        </select>
+                        <select
+                          aria-label={`Filter ${i + 1} operator`}
+                          value={f.operator}
+                          onChange={(e) =>
+                            update({
+                              operator: e.target.value as typeof f.operator,
+                            })
+                          }
+                        >
+                          <option value="equals">Equals</option>
+                          {(!col?.type || col.type === "text") &&
+                            col?.searchable && (
+                              <option value="contains">Contains</option>
+                            )}
+                          {["date", "number", "money"].includes(
+                            col?.type || "",
+                          ) && (
+                            <>
+                              <option value="gte">At least / from</option>
+                              <option value="lte">At most / to</option>
+                            </>
+                          )}
+                        </select>
+                        {col?.values ? (
+                          <select
+                            aria-label={`Filter ${i + 1} value`}
+                            value={f.value}
+                            onChange={(e) => update({ value: e.target.value })}
+                          >
+                            <option value="">Choose value</option>
+                            {col.values.map((v) => (
+                              <option key={v}>{v}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            aria-label={`Filter ${i + 1} value`}
+                            value={f.value}
+                            type={col?.type === "date" ? "date" : "text"}
+                            maxLength={200}
+                            onChange={(e) => update({ value: e.target.value })}
+                          />
+                        )}
+                        <button
+                          className="text-xs text-rose-600"
+                          onClick={() =>
+                            patchData({
+                              filters: active.data!.filters.filter(
+                                (_, n) => n !== i,
+                              ),
+                            })
+                          }
+                        >
+                          Remove filter
+                        </button>
+                      </div>
+                    );
+                  })}
+                  <Button
+                    className="mt-3"
+                    disabled={
+                      active.data.filters.length >= 12 ||
+                      !inspectorDataset.columns.some((c) => c.path)
+                    }
+                    onClick={() =>
+                      patchData({
+                        filters: [
+                          ...active.data!.filters,
+                          {
+                            field: inspectorDataset.columns.find((c) => c.path)!
+                              .key,
+                            operator: "equals",
+                            value: "",
+                          },
+                        ],
+                      })
+                    }
+                  >
+                    <Plus size={14} />
+                    Add field filter
+                  </Button>
+                </details>
+              </>
+            ) : (
+              <>
+                <Field label="Business measure">
+                  <select
+                    aria-label="Business measure"
+                    value={active.metricId}
+                    onChange={(e) => {
+                      const m = metrics.find((m) => m.id === e.target.value);
+                      patch(active.id, {
+                        metricId: e.target.value,
+                        breakdown: m?.breakdowns?.[0]?.id,
+                        category: "",
+                      });
+                    }}
+                  >
+                    {metrics.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.subject} · {m.name}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                {activeMetric?.breakdowns && (
+                  <Field label="Show by">
+                    <select
+                      aria-label="Show by"
+                      value={active.breakdown || activeMetric.breakdowns[0]?.id}
+                      onChange={(e) =>
+                        patch(active.id, {
+                          breakdown: e.target.value,
+                          category: "",
+                        })
+                      }
+                    >
+                      {activeMetric.breakdowns.map((b) => (
+                        <option key={b.id} value={b.id}>
+                          {b.label}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                )}
+              </>
+            )}
+            <div className="mt-5">
+              <p className={styles.menuLabel}>Visual</p>
+              <div className="grid grid-cols-3 gap-1.5">
+                {visualOptions.map((v) => (
+                  <button
+                    key={v.id}
+                    aria-label={`${v.label} visual`}
+                    aria-pressed={active.visual === v.id}
+                    className={`${styles.visualPick} ${active.visual === v.id ? styles.visualOn : ""}`}
+                    onClick={() => patch(active.id, { visual: v.id })}
+                  >
+                    <MiniVisual type={v.id} />
+                    <span>{v.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <Field label="Width">
+                <select
+                  aria-label="Widget width"
+                  value={widgetSpan(active)}
+                  onChange={(e) =>
+                    patch(active.id, {
+                      span: Number(e.target.value) as 4 | 6 | 8 | 12,
+                    })
+                  }
+                >
+                  {[
+                    [4, "One third"],
+                    [6, "Half"],
+                    [8, "Two thirds"],
+                    [12, "Full"],
+                  ].map(([v, l]) => (
+                    <option key={v} value={v}>
+                      {l}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Height">
+                <select
+                  aria-label="Widget height"
+                  value={active.height ?? "standard"}
+                  onChange={(e) =>
+                    patch(active.id, {
+                      height: e.target.value as StudioWidget["height"],
+                    })
+                  }
+                >
+                  <option value="compact">Compact</option>
+                  <option value="standard">Standard</option>
+                  <option value="tall">Tall</option>
+                </select>
+              </Field>
+            </div>
+            <Field label="Sort">
+              <select
+                aria-label="Widget sort"
+                value={active.sort ?? "source"}
+                onChange={(e) =>
+                  patch(active.id, {
+                    sort: e.target.value as StudioWidget["sort"],
+                  })
+                }
+              >
+                <option value="source">Source order</option>
+                <option value="descending">Highest first</option>
+                <option value="ascending">Lowest first</option>
+                <option value="label">Label A–Z</option>
+              </select>
+            </Field>
+            <Field label="Display groups">
+              <input
+                aria-label="Display groups"
+                type="number"
+                min={1}
+                max={50}
+                value={active.maxCategories ?? 8}
+                onChange={(e) =>
+                  patch(active.id, {
+                    maxCategories: Math.max(
+                      1,
+                      Math.min(50, Number(e.target.value)),
+                    ),
+                  })
+                }
+              />
+            </Field>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              {(
+                [
+                  ["minimum", "Minimum value"],
+                  ["maximum", "Maximum value"],
+                ] as const
+              ).map(([key, label]) => (
+                <Field key={key} label={label}>
+                  <input
+                    aria-label={label}
+                    type="number"
+                    value={
+                      active[key] === undefined
+                        ? ""
+                        : active[key]! /
+                          (activeMetric?.unit === "money" ? 100 : 1)
+                    }
+                    onChange={(e) =>
+                      patch(active.id, {
+                        [key]:
+                          e.target.value === ""
+                            ? undefined
+                            : Number(e.target.value) *
+                              (activeMetric?.unit === "money" ? 100 : 1),
+                      })
+                    }
+                  />
+                </Field>
+              ))}
+            </div>
+            <Field label="Focus category">
+              <select
+                aria-label="Focus category"
+                value={active.category ?? ""}
+                onChange={(e) => patch(active.id, { category: e.target.value })}
+              >
+                <option value="">All groups</option>
+                {activeMetric?.points.map((p) => (
+                  <option key={p.label}>{p.label}</option>
+                ))}
+              </select>
+            </Field>
+            <div className="mt-4">
+              <p className={styles.menuLabel}>Colour</p>
+              <div className="flex gap-2">
+                {colours.map((c) => (
+                  <button
+                    key={c}
+                    aria-label={`${c} colour`}
+                    aria-pressed={(active.color ?? "blue") === c}
+                    onClick={() => patch(active.id, { color: c })}
+                    className="size-7 rounded-full border-2 border-white outline-offset-2 aria-pressed:outline"
+                    style={{ background: palettes[c][0] }}
+                  />
+                ))}
+              </div>
+            </div>
+            <Field label="Card style">
+              <select
+                aria-label="Card style"
+                value={active.tone ?? "neutral"}
+                onChange={(e) =>
+                  patch(active.id, {
+                    tone: e.target.value as StudioWidget["tone"],
+                  })
+                }
+              >
+                <option value="neutral">White</option>
+                <option value="blue">Soft blue</option>
+                <option value="ink">Midnight</option>
+              </select>
+            </Field>
+            <label className="mt-3 flex items-center gap-2 text-xs">
+              <input
+                type="checkbox"
+                checked={active.borderless ?? false}
+                onChange={(e) =>
+                  patch(active.id, { borderless: e.target.checked })
+                }
+              />
+              Borderless
+            </label>
+            <div className="mt-5 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
+              <Button
+                aria-label="Move widget earlier"
+                onClick={() => move(active.id, -1)}
+                disabled={board.widgets[0]?.id === active.id}
+              >
+                <ArrowUp size={15} />
+              </Button>
+              <Button
+                aria-label="Move widget later"
+                onClick={() => move(active.id, 1)}
+                disabled={board.widgets.at(-1)?.id === active.id}
+              >
+                <ArrowDown size={15} />
+              </Button>
+              <Button
+                disabled={board.widgets.length >= 24}
+                onClick={() => duplicate(active.id)}
+              >
+                <Copy size={14} />
+                Duplicate
+              </Button>
+              <button
+                className="p-2 text-rose-600"
+                aria-label="Remove widget"
+                onClick={() => {
+                  change({
+                    ...board,
+                    widgets: board.widgets.filter((w) => w.id !== active.id),
+                  });
+                  setFocused(null);
+                }}
+              >
+                <Trash2 size={15} />
+              </button>
+            </div>
+            <p className="mt-4 text-[11px] leading-5 text-slate-400">
+              {activeMetric?.definition || inspectorDataset?.description}{" "}
+              {active.data
+                ? "Calculations use all matching records, up to 10,000. Narrow filters for larger sets."
+                : ""}
+            </p>
+          </aside>
+        )}
+      </div>
+    </fieldset>
+  );
 }
-
-function TileHead({ metric, widget, sample, viewLabel }: { metric?: AnalyticsResult; widget: StudioWidget; sample: boolean; viewLabel: string }) {
-  if (!metric) return null;
-  return <div className="flex items-start justify-between gap-3"><div><p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">{metric.subject} · {metric.snapshot ? "Now" : "Period"}</p><h3 className="mt-1 text-sm font-semibold" title={metric.definition}>{widget.title || metric.name}</h3>{viewLabel && <p className="mt-1 text-[11px] font-medium text-[var(--color-atlas-blue)]">{viewLabel}</p>}</div>{sample ? <span className="text-[10px] text-slate-400">Sample</span> : <Link href={metric.href} className="text-[var(--color-atlas-blue)]" aria-label={`Open ${metric.subject}`}><ArrowUpRight size={16} /></Link>}</div>;
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className={styles.field}>
+      <span>{label}</span>
+      {children}
+    </label>
+  );
 }
-
-function Gallery({ company, dashboards, metrics, canManage, sample, period, onCreate, onTemplate, onMonitor, onDelete }: { company: string; dashboards: SavedBoard[]; metrics: AnalyticsResult[]; canManage: boolean; sample: boolean; period: string; onCreate: () => void; onTemplate: (id: string) => void; onMonitor: (id: string) => void; onDelete: (id: string) => void }) {
-  const router = useRouter();
-  const base = sample ? "/analytics-preview" : "/analytics";
-  const subjectsFor = (board: SavedBoard) => [...new Set(board.widgets.map((widget) => metrics.find((metric) => metric.id === widget.metricId)?.subject).filter(Boolean))].slice(0, 4);
-  return <div className="space-y-8 pb-10">
-    <section className={styles.hero}>
-      <div className="max-w-2xl"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-100/80">Dashboards · {company}</p><h1 className="mt-3 text-4xl font-semibold tracking-tight">Every part of the business, on one board</h1><p className="mt-4 max-w-xl text-sm leading-relaxed text-blue-100/80">Pull live figures from any app you can open. Change the chart, mix sales with service, stock and people, and put each board on its own monitor.</p></div>
-      {canManage && <Button className="bg-white text-slate-900 hover:bg-white" onClick={onCreate}><Plus size={16} />New dashboard</Button>}
-    </section>
-    <section><div className="mb-3 flex items-center gap-2"><LayoutTemplate size={16} className="text-[var(--color-atlas-blue)]" /><h2 className="text-sm font-semibold">Start from the business</h2></div><div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">{boardTemplates.map((template) => <button key={template.id} onClick={() => onTemplate(template.id)} className={styles.template}><span className="text-sm font-semibold">{template.name}</span><span className="mt-2 block text-xs leading-relaxed text-slate-500">{template.description}</span><span className="mt-4 block text-xs font-medium text-[var(--color-atlas-blue)]">Use this layout</span></button>)}</div></section>
-    <section><div className="mb-3 flex items-center justify-between"><h2 className="text-sm font-semibold">Your dashboards</h2><span className="text-xs text-slate-400">{dashboards.length ? `${dashboards.length} saved` : "None yet"}</span></div>{dashboards.length ? <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{dashboards.map((board) => <article key={board.id} className={styles.boardCard}><button onClick={() => router.push(`${base}?dashboard=${board.id}&period=${period}`)} className="block w-full text-left"><h3 className="text-lg font-semibold">{board.name}</h3><p className="mt-2 text-xs text-slate-500">{board.widgets.length} charts · {subjectsFor(board).join(" · ") || "Mixed"}</p><p className="mt-1 text-[11px] text-slate-400">Updated {board.updatedLabel} · refreshes every {board.refreshSeconds ? `${board.refreshSeconds}s` : "manual load"}</p></button><div className="mt-4 flex flex-wrap gap-2"><Button onClick={() => router.push(`${base}?dashboard=${board.id}&period=${period}`)}>Open</Button><Button onClick={() => onMonitor(board.id)}><Monitor size={14} />Monitor</Button>{canManage && <Button onClick={() => router.push(`${base}?dashboard=${board.id}&period=${period}&edit=1`)}>Arrange</Button>}{canManage && !sample && <Button onClick={() => onDelete(board.id)} aria-label={`Delete ${board.name}`}><Trash2 size={14} /></Button>}</div></article>)}</div> : <div className={styles.boardCard}><h3 className="text-lg font-semibold">No dashboards yet</h3><p className="mt-2 max-w-lg text-sm text-slate-500">Create one and add orders, pipeline, cases, headcount, stock, finance documents or anything else your profile can see.</p>{canManage && <Button variant="primary" className="mt-5" onClick={onCreate}><Plus size={16} />New dashboard</Button>}</div>}</section>
-    {sample && <p className={styles.notice}>This preview uses sample figures. Saving and monitor windows use the live Dashboards app.</p>}
-  </div>;
-}
-
-function useLiveMetrics(initial: AnalyticsResult[], period: string, seconds: number, sample: boolean) {
-  const [metrics, setMetrics] = useState(initial);
-  const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
-  const [refreshError, setRefreshError] = useState("");
-  const [refreshing, setRefreshing] = useState(false);
+function useLiveMetrics(
+  initial: AnalyticsResult[],
+  period: string,
+  seconds: number,
+  sample: boolean,
+  tick: number,
+) {
+  const [metrics, setMetrics] = useState(initial),
+    [updated, setUpdated] = useState(0),
+    [refreshError, setRefreshError] = useState(""),
+    [refreshing, setRefreshing] = useState(false);
+  const first = useRef(true);
   useEffect(() => {
-    if (sample || seconds <= 0) return;
-    let stop = false;
-    const tick = async () => {
-      if (document.hidden) return;
+    if (sample) return;
+    let stopped = false,
+      inFlight = false;
+    async function load() {
+      if (document.hidden || inFlight) return;
+      inFlight = true;
       setRefreshing(true);
       try {
-        const next = await loadLiveMetrics(period);
-        if (!stop) { setMetrics(next); setUpdatedAt(new Date()); setRefreshError(""); }
-      } catch { if (!stop) setRefreshError("Refresh paused. The last figures are still showing."); }
-      finally { if (!stop) setRefreshing(false); }
+        const result = await loadLiveMetrics(period);
+        if (!stopped) {
+          setMetrics(result);
+          setUpdated(Date.now());
+          setRefreshError("");
+        }
+      } catch {
+        if (!stopped)
+          setRefreshError(
+            "Refresh paused. The last available figures are still showing.",
+          );
+      } finally {
+        inFlight = false;
+        if (!stopped) setRefreshing(false);
+      }
+    }
+    if (first.current) first.current = false;
+    else void load();
+    const timer =
+      seconds > 0 ? window.setInterval(load, seconds * 1000) : undefined;
+    return () => {
+      stopped = true;
+      if (timer) window.clearInterval(timer);
     };
-    const timer = window.setInterval(tick, seconds * 1000);
-    return () => { stop = true; window.clearInterval(timer); };
-  }, [period, seconds, sample]);
-  return { metrics, updatedAt, refreshError, refreshing };
+  }, [period, seconds, sample, tick]);
+  return { metrics, updated, refreshError, refreshing };
 }

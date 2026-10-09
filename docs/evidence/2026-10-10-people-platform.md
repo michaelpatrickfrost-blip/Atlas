@@ -39,7 +39,14 @@ final Commercial schema/API regression: 4 files/35; final Studio merge regressio
 7 files/59, all PASS. Scoped lint and deployment shell syntax PASS. Full suite was
 not rerun for this task; earlier unrelated baseline failures remain distinguished.
 Post-release private Admin login HTML and HTTP headers still carry noindex,
-private/no-store and no-referrer. The public login responds 200.
+private/no-store and no-referrer. The public login responds 200; anonymous `/atlas`
+and retired `/platform-login` respond 404.
+
+Final source/evidence integration preserves main's separate pending Dashboard
+work. Regenerated API metadata/allowlist, merged build/strict types and 11 files/
+74 People/Dashboard/Chat/privacy regression tests PASS. That source integration
+does not activate unrelated Dashboard changes. The canonical Desktop checkout
+and its concurrent uncommitted work are untouched.
 
 ## Preserved preparation history
 
@@ -58,8 +65,8 @@ private/no-store and no-referrer. The public login responds 200.
   minutes; the assertion still requires exactly 45 legitimate approved hours.
   Backup `atlas-pre-deploy-20261009-225211`; evidence
   `/tmp/atlas-people-candidate-3hRuWS`. No guard bypass or production switch.
-- Queued e38dd4d/ad7417e attempts stopped on moved branch; 401129b/60a814b
-  stopped on live ancestry changes. Exact deployed font, business navigation,
+- Queued e38dd4d stopped on moved branch; ad7417e was superseded while live
+  advanced. 401129b/60a814b stopped on live ancestry changes. Exact deployed font, business navigation,
   Commercial and Studio source was reviewed/merged before subsequent releases.
   No other contributor's release, metadata or runtime was overwritten.
 

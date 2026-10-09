@@ -144,3 +144,12 @@ Goals, HR, Scheduling, Payroll and Team planner share people-workspace.tsx: blue
 white contextual headers, responsive totals, explicit views and progressive forms.
 Each retains its workflow/permissions. Dense rota/capacity grids scroll within
 panels; page-wide overflow is not intended.
+## 9 October 2026 — Dashboards follows the Atlas ribbon workspace
+
+Dashboards uses the pale-blue/white Home utility shell and existing logo mark,
+with a personal-board gallery, searchable widget library, spacious canvas and
+responsive inspector. Editing tools belong in the inspector; view mode keeps
+figures clear. Width/height, title, palette/tone, borderless style and ordering are
+configurable. The utility rail groups Dashboards separately from Reports and
+business-app cards, without changing Analytics entitlement. See
+[Dashboards](modules/ANALYTICS_STUDIO.md) for actual query and persistence limits.

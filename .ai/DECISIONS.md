@@ -1,3 +1,15 @@
+## 9 October 2026 — Studio business dashboards and custom buttons
+
+Michael requires easy visual template customisation and activated designs on each
+business's live dashboards/screens, including configurable buttons. Existing
+Dashboards/analytics providers and Templates renderer remain authoritative. Reuse
+their approved rendering contracts; a published company-layout adapter must preserve
+personal Dashboard records rather than overwrite them. Draft preview uses the same
+rules, with invocation disabled. Runtime buttons use registered owner-approved
+commands/navigation and enforce native capabilities, tenant scope and domain rules.
+This is the planned 2E5 integration, not an implemented dashboard/button feature;
+publication and activation remain distinct under source Section 6.3.
+
 ## 9 October 2026 — Studio field generations and easy configuration
 
 Field families permanently bind tenant/entity/key to their published origin.

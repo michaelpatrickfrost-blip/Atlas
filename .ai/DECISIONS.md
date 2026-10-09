@@ -1,3 +1,15 @@
+## 9 October 2026 — Explicit typed field conversion rules
+
+The first pure evolution library uses a closed rule schema: same type, exact
+integer→decimal, explicit string→enum mapping/unmapped policy and UTC date/instant
+conversion with reviewed loss policy. It cannot infer money currency, replace
+reference targets, round numbers or execute arbitrary scripts. New generations
+are required for structural changes; stable field/entity and choice IDs are retained.
+Choice label changes advance the value-set version without new storage. Existing
+retired choices may survive representation conversion; ordinary user writes still
+reject retired selections. The library does not authorise publication or writes;
+reviewed tenant plans, owner checks and resumable jobs remain subsequent 2B3 work.
+
 ## 9 October 2026 — Studio business dashboards and custom buttons
 
 Michael requires easy visual template customisation and activated designs on each

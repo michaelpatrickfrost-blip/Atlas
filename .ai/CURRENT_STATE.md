@@ -50,9 +50,16 @@ saved in STUDIO_FIELD_EVOLUTION_PLAN.md; migration service NOT STARTED. Historic
 final-record representation changes require explicit owner policy, never a bypass.
 
 Verified source/memory merged with latest main 644f50e; documentation only, no
-additional app changes. Exact next: implement 2B3a typed
-compatibility/conversion analysis and meaningful tests; next retirement and reviewed
-durable migration path. No owner value API/visual designer or Phase 2 gate PASS yet.
+additional app changes. 2B3a pure analysis/conversion VERIFIED locally: fields/evolution.ts
+and studio-field-evolution.test.ts; 3 files/22 tests, scoped lint, production build
+and strict TypeScript PASS. Initial callback narrowing error corrected and checks
+rerun. Stable identities/generations, explicit choice maps/retirement/versioning,
+exact integer→decimal bounds, UTC/loss policies, required/null/false and closed
+conversion schema verified. No database/API/job execution; library not yet live.
+Next: 2B3b retirement with tenant/publish guards, CAS and transactional audit;
+retain last active schema/binding/values for authorised history, deny further edits/
+activation and key recycling; add tests and real isolated central acceptance.
+No owner value API/visual designer or Phase 2 gate PASS yet.
 No 2C or Phase 3+ before preceding workstream/phase gates.
 
 ## 9 October 2026 — Historical Apps/Manufacturing integration checkpoint

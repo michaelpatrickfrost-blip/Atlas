@@ -87,8 +87,8 @@ async function main() {
     console.log("PASS central lifecycle, no automatic activation, rollback/history, immutable SQL guards, sealed dependencies, tenant isolation, permissions, conflicts, disabled sources and transactional audit");
 
     const anon=await browser.newContext({baseURL:base});
-    const locked=await anon.request.get("/atlas/studio",{maxRedirects:0}); assert.equal(locked.status(),307); assert.match(locked.headers().location,/\/atlas\/login/);
-    for(const address of ["/atlas/login",`/business/${a.slug}/login`,`/business/${a.slug}/reset-password`]) assert.equal((await anon.request.get(address)).status(),200);
+    const locked=await anon.request.get("/atlas/studio",{maxRedirects:0}); assert.equal(locked.status(),404); assert.equal(locked.headers().location,undefined);
+    for(const address of ["/19811171adminlogin",`/business/${a.slug}/login`,`/business/${a.slug}/reset-password`]) assert.equal((await anon.request.get(address)).status(),200);
     assert.equal((await anon.request.get("/business/nonexistent-studio-check/login")).status(),404); await anon.close();
     const context=await browser.newContext({baseURL:base,viewport:{width:1440,height:1000}});
     await context.addCookies([{name:"atlas_session",value:token,url:base,secure:base.startsWith("https"),httpOnly:true,sameSite:"Lax"}]);
@@ -171,7 +171,7 @@ async function main() {
     await page.goto(`/atlas/studio/${a.id}`,{waitUntil:"networkidle"});
     await expect(page.locator('[data-atlas-console="admin"]')).toBeVisible();
     await page.getByRole("button",{name:"Sign out of Atlas Admin",exact:true}).click();
-    await expect(page).toHaveURL(`${base}/atlas/login`);
+    await expect(page).toHaveURL(`${base}/19811171adminlogin`);
     console.log("PASS standalone Admin layout excludes business tools and sign-out returns to staff login");
     assert.equal(errors,0);assert.equal(assets,0);
     console.log("PASS real Admin create/validate/publish/activate forms, staff/customer route separation, company login addresses, existing Atlas/Sales/Manufacturing/Templates pages; zero browser/asset errors");

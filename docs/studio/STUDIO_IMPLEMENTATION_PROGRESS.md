@@ -18,7 +18,7 @@ companion VERIFIED; detailed plans in STUDIO_PHASE_2_PLAN.md and STUDIO_PHASE_2_
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest observed live source 9303039cfd307224f5af77bf7350776508a86bc2; 2B2 local only.
+VERIFIED. Latest observed live source 1dafe165f97545829d96242b1846e87d9c1f42b4; 2B2 local only.
 The supplied source defines ten phases 0–9, not five. The original
 is preserved unchanged at `docs/studio/ATLAS_STUDIO_SOURCE.docx` (source
 `/Users/michael/Downloads/atlas_studio.docx`, SHA-256
@@ -256,7 +256,8 @@ prematurely. Gates cannot PASS from file existence alone.
 # Exact Next Action
 
 2B2/local generated-key simplification checkpoint f2beb8b; exact live Messages
-9303039 merged and source/evidence preserved. Rerun integrated tests/types/build, prepare
+9303039 and private Admin 1dafe16 (main 6870014) merged, source/evidence preserved.
+Regenerate Prisma and rerun integrated tests/types/build, prepare
 the additive backed-up candidate, then run field lifecycle/SQL/history/tenant guards
 and existing Studio/Admin/business/Home/Reports/MRP/Messages acceptance before
 activation. Proceed to 2B3 reviewed evolution/retirement/conversion planning and

@@ -141,3 +141,12 @@ with deferred initial/current pointer cycles and typed SQL checks. Decimal physi
 capacity is 38,10; declared logical precision/scale/currency is separately enforced.
 Migration 20261009220000_studio_typed_fields is additive. See the Studio ledger for
 actual application/verification status; schema existence is not a working value API.
+## Pre-authentication infrastructure — 9 October 2026
+
+`AuthenticationRateLimit` (`authentication_rate_limits`) stores HMAC keys, attempt
+counts and expiry for central atomic login/recovery throttling. It deliberately
+has no tenant identity: it runs before a session exists and exposes no email, IP
+or credential. It is private server infrastructure, excluded from company exports
+and data-gateway reads. Additive migration `20261009220000_authentication_attempt_limits`
+changes no business records or permissions. Expired counters are disposable;
+see `docs/ATLAS_ADMIN.md` for the enforced limits and private staff address.

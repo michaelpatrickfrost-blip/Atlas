@@ -19,7 +19,8 @@ now generates configuration.<UUID> server-side. Persisted identities remain stab
 STUDIO_VISUAL_BUILDER_REQUIREMENTS.md records both screen/document experiences and
 explicit future Sales owner integration; Tickets is not presented as Sales support.
 
-Checks actually run: 19 focused/regression files/85 tests PASS, strict TypeScript
+Checks actually run before latest Admin merge: 22 focused/regression files/107 tests
+PASS (including Messages), strict TypeScript
 (after production build) PASS, scoped ESLint PASS, production build PASS, Prisma
 validate/generate PASS. Backed-up central transaction-only DDL check found one
 PL/pgSQL CASE-parentheses syntax error, fixed and rerun PASS; explicit rollback and
@@ -28,23 +29,72 @@ migration applied or central field values stored yet. SQL data/tenant/history gu
 are NOT VERIFIED until real candidate tests run. Full-suite known baseline failures
 remain; no full-suite success claimed. Diff reviewed; no domain code removed.
 
-Latest observed live source is now 9303039cfd307224f5af77bf7350776508a86bc2 (Messages
-release), server pointer/control HEAD verified. Merged before another Studio
-release, preserving its native chat/drafts/history work. Previous Studio source
+Latest observed live source is now 1dafe165f97545829d96242b1846e87d9c1f42b4 (private
+Admin entry), server pointer/control HEAD verified. Merged origin/main 6870014,
+including exact live Admin and Messages, preserving their source/evidence. Previous Studio source
 6775044 passed public owner/metadata/Admin/business login/Home/Reports/MRP; its final
 evidence remains in main eba8b49 and historical entries below. 2B2 and generated-key
 UI changes are local only and have NOT been deployed. Phase 2 gate NOT PASSED.
 
-Exact next: exact live Messages 9303039 is merged with native code and both
-contributors' evidence preserved; rerun integrated types/tests/build, then prepare
+Exact next: exact live Admin 1dafe16 and Messages 9303039 are merged with
+contributors' evidence preserved; regenerate Prisma for additive auth model,
+rerun integrated types/tests/build, then prepare
 backed-up additive candidate and run real field schema/lifecycle plus existing
 Studio/Admin/business/Home/Reports/MRP/Messages acceptance. Activate only on PASS.
 Then 2B3 evolution/retirement/conversion planning and resumable jobs, followed by
 2B4 owner-authorised values. No 2C or Phase 3+ before preceding workstream checks.
-## 9 October 2026 — Messages release historical implementation evidence
+## 9 October 2026 — Private Admin entry deployed and publicly verified
 
-Source 9303039 is currently live and preserved. The following contributor notes
-record its implementation/candidate history, not Studio field acceptance.
+Exact tested runtime 1dafe165f97545829d96242b1846e87d9c1f42b4 is live at
+https://atlassystem.online. It preserves deployed Studio 6775044, Messages 9303039,
+Reports and Guardian MRP source/evidence; previous immutable 9303039 is retained.
+Michael's unlisted staff entry is `/19811171adminlogin`, recovery beneath it at
+`/recovery`. Public customer login has no Admin link and cannot authenticate staff.
+Retired staff addresses, legacy platform-recovery query links and anonymous Admin
+console requests return 404 without revealing the new address. Staff console,
+existing passwords, independent platform grants and tenant checks remain intact.
+
+Dedicated responsive Admin auth frame adds password reveal, accessible errors,
+pending state and controlled inputs that retain rejected entries in component
+memory only. No local storage/business cache. Login/recovery/console/API responses
+have noindex/nofollow/noarchive/nosnippet headers, no-referrer and private/no-store;
+HTML carries noindex metadata. No robots/sitemap advertises the entry. The address
+reduces discovery; crawler compliance/recrawling and authentication remain distinct.
+Core binds selectors to the observed route; platform recovery requires staff entry.
+Private central HMAC-keyed counters atomically allow 10 identity/IP and 60 IP
+attempts per 15 minutes, fail closed and expire independently of business data.
+Additive migration 20261009220000_authentication_attempt_limits is applied; table
+excluded from company exports/gateway. No existing identity password/grant changes.
+
+Checks: final production build, strict types, scoped lint and 6 files/36 auth
+assertions PASS, including failed-entry preservation/corrected retry. Earlier
+merged 9-file/62 and 7-file/47 auth/Admin/chat/field checks PASS. Pre-merge full
+suite 1066 passed/87 failed/22 skipped, principally unrelated module-availability
+mocks; no whole-suite success claimed. Final diff/whitespace reviewed. Active
+Admin/architecture/data/Studio requirements and deployment docs reconciled;
+CURRENT_STATE/DECISIONS/PROJECT_MEMORY updated with implementation.
+
+Candidate and public HTTPS acceptance both PASS: private headers/metadata and
+old/anonymous 404s without disclosure; no public login/robots/sitemap entry;
+desktop/phone fit, password reveal and recovery navigation; actual repeated-login
+blocking/customer Admin denial without cookies/writes; real customer login,
+signed secure/httpOnly cookie and correct tenant; wrong-portal recovery leaves
+code unused, correct-company recovery succeeds; existing QA staff console/Team/
+Studio/Connections and sign-out; concurrent central cap/expiry; zero login browser/
+asset errors. QA staff uses an existing signed session, not Michael's unknown
+password; correct staff password branch is unit-verified. Exact synthetic central
+Test companies suspended and sessions/codes revoked; retained history preserved.
+
+Private evidence: candidate /tmp/atlas-private-admin-candidate-v33eUI and public
+/tmp/atlas-private-admin-public-YX0fnR. Final prepare/activation backups:
+atlas-pre-deploy-20261009-210309 and atlas-pre-deploy-20261009-210614. Earlier
+952aae0/7a08075 prepared candidates/backups and partial-run logs are retained;
+QA-env/selector/form-reset failures were corrected before accepted activation.
+Checker: scripts/check-private-admin-login.ts. Source: src/core/auth, src/proxy.ts,
+Admin auth frame/route layouts, Prisma schema/migration and focused auth tests.
+Source and final evidence integrated with origin/main; no further Admin blocker.
+
+## 9 October 2026 — Messages historical implementation and candidate evidence
 
 Implemented a wide logo-based pop-out and expanded `/chat` utility workspace,
 responsive conversation list/timeline, optional participants/shared-record details,
@@ -237,6 +287,46 @@ the authoritative reviewed modern implementation. Continue rotating uncovered
 workflows, prioritising exact original request reconstruction and stable expected
 access-error classification; no bulk closure, customer writes or automatic replay.
 
+## 9 October 2026 — Guardian MRP repair ready for server verification (historical)
+
+Superseded by the deployed Guardian MRP acceptance entry above.
+
+Isolated reviewed release preserves live Reports/Studio and standalone Admin
+source a642df0. Own changes require `manufacturing.plan.manage` and enabled/
+entitled Manufacturing before Run MRP, preserve the shared staff exception and
+session company/actor, adapt current/legacy saved demand fields without rewriting
+history, and stop counting component demand plus its BUY supply twice. Shared
+stock is netted once across parent proposals; independent BUY demand and canonical
+scoped product labels remain visible. Source: planning/actions.ts and
+manufacturing/services/mrp-queries.ts. No schema/migration/permission grants changed.
+
+Backed-up central Test fixtures on c46bbef, 2a8522f and a642df0 reproduced all three
+forbidden POST writes, the newly saved Planned orders crash and doubled 10/20 →
+20/40 shortage cells. Retained sealed 585e9ba query reproduced the exact persisted
+JSON-date TypeError; deployed af030b0 date conversion is retained. Actual manager
+button produces exactly one run with matching actor, MAKE/BUY quantities, BOM,
+machine/routing and dates. Historical/input/order/stock/Finance/audit/outbox
+records remain unchanged. Only fresh Test profiles receive fixture permissions;
+exact companies are suspended and synthetic grants/sessions revoked afterwards.
+Latest reproduction backup: /home/administrator/backups/atlas-pre-mrp-test-20261009-201240.
+Reports: cmv1e1cdw00007md5sakpls3v (access), cmv1e2kzn000avgd51damb97r (proposal
+render), cmv1elqb900007rd5rx35bbq6 (quantities); original runtime/newer digest briefs
+remain open until deployed proof. No historical generic report is closed by an
+independent fresh-page pass.
+
+Checks: 13 focused files/89 assertions passed; final full suite 1050 passed,
+85 failed, 22 skipped. Exact 85 failure names match unchanged a642df0 baseline
+(1036 passed/85 failed/22 skipped); no new failures. Initial high-concurrency
+Inventory timeouts passed in stable runs. Production build and scoped lint passed.
+Plain worktree typecheck sees an untouched untracked duplicate test importing the
+old Admin route; preserve it. Fresh tracked-only verification worktree generated
+Next types and strict `tsc --noEmit` passed without exclusions or relaxed checks.
+No local business database or record cache created. Exact original central check,
+source regressions and aggregate-quantity cases: scripts/guardian/check-mrp-access.ts,
+tests/mrp-planning-access.test.ts; docs/evidence/2026-10-09-guardian-mrp-workflow.md.
+Next: prepare/deploy this compatible reviewed release, run the same actual Test
+POST/button/page/central-state check publicly, then mark only reproduced reports
+FIXED and integrate owned source/memory into the canonical dirty repo safely.
 
 
 ## 9 October 2026 — Admin candidate preserves current live Reports source
@@ -3820,16 +3910,6 @@ Checks: `tests/hr-conduct.test.ts`, `tests/hr-self-service.test.ts`, `tests/hr-t
 
 Next step: restart local Next and confirm a policy PDF, a performance plan and a disciplinary case. Then apply the migration on the shared database and install the Mac app.
 
-## Manager level is a settings switch — 3 October 2026
-
-Company administrators open Company administration → Manager level. CRM, Finance and Customer Service each have a switch. CRM managers assign a prospect or task and push prospects and deals. Finance managers sign off documents at or above the company limit, or in another currency, and cannot approve their own document. Customer service managers sign off complaints and queries linked to an order at or above the limit. Agents can keep working the case. The switch does not grant a permission.
-
-Paths: `src/core/permissions/manager-level.ts`, `src/app/(app)/settings/manager-panel.tsx`, `src/app/(app)/settings/actions.ts`, `src/modules/crm/services/manager-level.ts`, `src/modules/finance/services/commands.ts`, `src/modules/service/services/commands.ts`, `prisma/migrations/20261003730000_manager_level/migration.sql`.
-
-Checks: `npx prisma generate` succeeded. `node scripts/generate-data-api.mjs` wrote 266 models and 524 actions. `npx vitest run tests/manager-level.test.ts tests/settings-menu.test.ts tests/customer-permissions.test.ts tests/sales-crm-permissions.test.ts` passed 19 tests. ESLint on the touched files reported only the existing unused `convert` warning in finance commands. Typecheck reported no errors in the touched files. Local `127.0.0.1:5433` has `organisations.managerPolicy` from `20261003730000_manager_level`. In the browser on local `next dev`, signed in as Sophie Green, Company administration → Manager level showed the three switches and £10,000 limits. Saving CRM on wrote `{crm:true}` for the demo company; saving it off restored all three switches off. The shared server migration is not applied, and `/Users/michael/Applications/Atlas.app` was not rebuilt. Do not install the new client before that column exists, because Company administration reads it.
-
-Next step: apply `20261003730000_manager_level` on the shared database with a backup, release the data service, then install the Mac app and confirm the Manager level switches.
-
 ## Safety is built, not yet live on the shared database — 3 October 2026
 
 Safety is a registered module at `/safety` with Today, Risk, Incidents, Control, Assurance and Reports. Risk revisions, incidents, RIDDOR review assistance, inspections, audits, permits, isolation, safety holds, PUWER/LOLER checks, COSHH, competence and workplace records are in the domain. A safety hold blocks a manufacturing work-order start, blocks logistics equipment assignment when competence or the hold fails, and shows a delivery risk on the linked sales order. Architecture: `docs/modules/SAFETY.md`. Migration: `prisma/migrations/20261003710000_safety_foundation`. Activation script: `deploy/enable-safety.mjs`.
@@ -3887,14 +3967,6 @@ Paths: `src/core/audit/systems.ts`, `src/core/audit/scope.ts`, `src/modules/audi
 Checked: `tests/audit-echo.test.ts`, `tests/modules.test.ts`, `tests/company-access.test.ts` and `tests/sales-crm-permissions.test.ts` passed (20). ESLint passed on the Audit and Echo sources. Typecheck reported only the existing Next layout-route cache for the new `/audit` path. Migration `20261003700000_audit_echo` was applied on the local database at `127.0.0.1:5433`. The local standard roles gained the new Echo and team-audit capabilities, and the local company had Audit enabled. In the browser, signed in as the demo administrator, Echo on a customer accepted a note and `/audit` showed the system map with that note under Echo. The shared server migration was not applied, and the installed Atlas app was not rebuilt.
 
 Next step: apply `20261003700000_audit_echo` on the shared database, grant `audit.team.read`, `echo.read` and `echo.write` to Michael’s administrator membership, enable the `audit` module for that company, then rebuild and install the Mac app.
-
-## Company settings are administrator-only — 3 October 2026
-
-Company identity, brand, workspace access, sales rules and HR company defaults save only with `core.modules.manage`. The company administration menu is grouped (Company, People, Records, Account) and highlights the current section. People without an administration permission no longer see Company admin in the sidebar; they keep Profile. HR managers can still maintain appraisal and one-to-one templates, and see company defaults read-only.
-
-Paths: `src/app/(app)/settings/settings-menu.ts`, `settings-nav.tsx`, `layout.tsx`, `page.tsx`, `actions.ts`, `workspace-panel.tsx`, `src/app/(app)/people/settings/`, `src/app/(app)/sales/settings/page.tsx`, `src/components/shell/nav-links.tsx`, `sidebar.tsx`, `topbar.tsx`, `src/core/modules/runtime.ts`.
-
-Checks: `tests/settings-menu.test.ts` passed (2). ESLint on the touched files reported only the existing `<img>` warnings in `brand-panel.tsx` and `sidebar.tsx`. Browser on local `next dev` as Sophie Green (Administrator): `/settings` opens Workspace; the menu groups are Company, People, Records and Account; Brand is the current item and shows Save logo; Users lists Sophie and highlights Users; HR Settings shows Save company defaults. `bash scripts/build-mac-client.sh` did not install. One attempt failed because the desktop snapshot was missing `analytics/page.tsx` mid-build. The next compiled, then failed prerendering `/login` with `TypeError: Cannot read properties of undefined (reading 'call')`. A typecheck in between failed on `DEFAULT_FIVE_BY_FIVE` in `src/modules/safety/domain/work.ts`; that name is now imported from `matrix.ts`. The installed `/Users/michael/Applications/Atlas.app` was not replaced, and the central data service was not switched, so the new save checks are not yet the live server copies.
 
 ## No page reload — 3 October 2026
 

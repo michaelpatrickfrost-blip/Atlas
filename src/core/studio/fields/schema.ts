@@ -51,7 +51,7 @@ export const customFieldSchema = z.strictObject({
   if ((value.indexed || value.unique) && ["multi_enum", "address"].includes(value.storage.type)) ctx.addIssue({ code: "custom", message: "This structured type does not support scalar indexing or uniqueness." });
 });
 
-export const customFieldPayloadSchema = z.strictObject({ schemaVersion: z.literal(1), entity: referenceSchema, field: customFieldSchema });
+export const customFieldPayloadSchema = z.strictObject({ schemaVersion: z.literal(1), entity: referenceSchema, storageGeneration: z.uuid(), field: customFieldSchema });
 export type CustomField = z.infer<typeof customFieldSchema>;
 export type FieldStorage = z.infer<typeof fieldStorageSchema>;
 export type CustomFieldPayload = z.infer<typeof customFieldPayloadSchema>;

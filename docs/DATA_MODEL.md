@@ -130,6 +130,17 @@ and runtime verification. Immutable history deletion is only permitted by the
 existing explicitly authorised Test-company cleanup flag for database-confirmed
 Test customer organisations. Production history is retained.
 
+## Studio additional fields — Phase 2B2 source checkpoint
+
+Five additive models reuse the metadata kernel: permanent StudioFieldBinding and
+immutable StudioFieldGeneration; canonical-ID StudioExtensionRecord CAS anchor;
+per-generation StudioFieldSlot current pointer/uniqueness marker; immutable typed
+StudioFieldValue history bound to its exact published schema. No native business
+columns are copied or changed. Composite FKs bind tenant/entity/family/generation,
+with deferred initial/current pointer cycles and typed SQL checks. Decimal physical
+capacity is 38,10; declared logical precision/scale/currency is separately enforced.
+Migration 20261009220000_studio_typed_fields is additive. See the Studio ledger for
+actual application/verification status; schema existence is not a working value API.
 ## Pre-authentication infrastructure — 9 October 2026
 
 `AuthenticationRateLimit` (`authentication_rate_limits`) stores HMAC keys, attempt

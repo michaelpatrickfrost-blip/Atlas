@@ -28,10 +28,20 @@ read `db.moduleState` directly, so they were outside the first fix.
 - **Paths:** the five files above.
 - **Checks run:** clean `origin/main` worktree — `npx tsc --noEmit` (0 errors
   under `src/`), `npm run build` (passed).
-- **Deployed:** live revision recorded below once activated.
-- **Customer path unchanged:** the new branches only fire for sessions holding
-  `atlas.staff.manage`; non-staff sessions keep the identical original
-  `moduleStates` filters, so customer enablement still gates records.
+- **Deployed:** `825a2e6` activated on the VPS; `/opt/atlas-current` →
+  `/opt/atlas-releases/825a2e6762eb52d08246708bb5849fd757fe045b` (previous
+  `06387c7` retained). `atlas` service active; `https://atlassystem.online/login`
+  → 200.
+- **Live verification (real staff identity, not a fixture):** minted a session for
+  `kickablur@icloud.com` in the internal `atlas-internal-staff` workspace (which
+  has **0** `moduleStates` rows) and requested the pages over loopback. Before
+  this change `/tickets` returned the "not enabled for your company" screen;
+  after, all returned 200 with a real workspace and no restriction screen:
+  `/tickets` (64 959 B), `/tickets/queues`, `/tickets/reports`,
+  `/tickets/catalogue`, `/service/queries`, `/apps`.
+- **Negative verification:** a disposable non-staff test org (created and deleted
+  in one run) with `tickets` disabled but `tickets.ticket.*` capabilities granted
+  still receives `disabled=true` on `/tickets` — customer gating is unchanged.
 - **Next step:** the Guardian acceptance should cover a Service-application staff
   page (e.g. `/tickets` and `/service/queries`) rendering real rows, not just the
   launcher, so this third gate path cannot silently regress.

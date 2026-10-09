@@ -21,6 +21,9 @@ describe('Make proposal conversion',()=>{
   s.suggestion.findFirst.mockResolvedValue({...proposal,status:'FIRMED',resultingOrderId:'existing'});s.order.findFirstOrThrow.mockResolvedValue({id:'existing'});
   expect(await firmSuggestion('make')).toEqual({id:'existing'});expect(s.order.create).not.toHaveBeenCalled();
  });
+ it('retains firm Sales lineage from the current engine fields',async()=>{
+  s.suggestion.findFirst.mockResolvedValue({...proposal,pegging:{demand:[{demandId:'line',demandType:'FIRM',sourceLabel:'Order',demandQuantity:12}]}});await firmSuggestion('make');expect(s.order.create.mock.calls[0][0].data.sourceSalesOrderLineId).toBe('line');
+ });
  it('continues to accept historical array pegging',async()=>{
   s.suggestion.findFirst.mockResolvedValue({...proposal,pegging:proposal.pegging.demand});await firmSuggestion('make');expect(s.order.create).toHaveBeenCalledOnce();
  });

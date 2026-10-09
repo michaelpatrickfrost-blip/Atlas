@@ -1,4 +1,6 @@
 // Generated allowlist: public calls still enforce their own server capabilities.
+import {withAdminActionAliases} from "./action-aliases";
+import {logoutAdminAction as logoutAdmin} from "@/core/auth/actions";
 import {loadEmailRecord as action0} from "@/app/(app)/_shared/record-email-actions";
 import {sendRecordEmailAction as action1} from "@/app/(app)/_shared/record-email-actions";
 import {sendRecordContractAction as action2} from "@/app/(app)/_shared/record-email-actions";
@@ -9,30 +11,30 @@ import {saveAnalyticsDashboard as action6} from "@/app/(app)/analytics/actions";
 import {deleteAnalyticsDashboard as action7} from "@/app/(app)/analytics/actions";
 import {loadLiveGoalMarkers as action8} from "@/app/(app)/analytics/actions";
 import {toggleModuleAction as action9} from "@/app/(app)/apps/actions";
-import {updateCompanyAccount as action10} from "@/app/(app)/atlas/actions";
-import {saveCompanyEntitlements as action11} from "@/app/(app)/atlas/actions";
-import {createCompanyAccount as action12} from "@/app/(app)/atlas/actions";
-import {deleteTestCompany as action13} from "@/app/(app)/atlas/actions";
-import {openCompanyWorkspace as action14} from "@/app/(app)/atlas/admin-actions";
-import {saveAtlasUserProfile as action15} from "@/app/(app)/atlas/admin-actions";
-import {saveAtlasUserAccess as action16} from "@/app/(app)/atlas/admin-actions";
-import {revokeAtlasUserSessions as action17} from "@/app/(app)/atlas/admin-actions";
-import {issueAtlasUserRecovery as action18} from "@/app/(app)/atlas/admin-actions";
-import {createAtlasStaff as action19} from "@/app/(app)/atlas/admin-actions";
-import {updateAtlasStaff as action20} from "@/app/(app)/atlas/admin-actions";
-import {saveAtlasStaffProfile as action21} from "@/app/(app)/atlas/admin-actions";
-import {issueAtlasStaffRecovery as action22} from "@/app/(app)/atlas/admin-actions";
-import {archiveAtlasCompany as action23} from "@/app/(app)/atlas/admin-actions";
-import {saveAtlasCompanyProfile as action24} from "@/app/(app)/atlas/admin-actions";
-import {saveAtlasCompanyBrand as action25} from "@/app/(app)/atlas/admin-actions";
-import {deleteSelectedTestCompanies as action26} from "@/app/(app)/atlas/cleanup/actions";
-import {retryCompanyFileCleanup as action27} from "@/app/(app)/atlas/cleanup/actions";
-import {attachConnection as action28} from "@/app/(app)/atlas/connections/actions";
-import {requestGuardianSweep as action29} from "@/app/(app)/atlas/guardian/actions";
-import {updateGuardianIssue as action30} from "@/app/(app)/atlas/guardian/actions";
-import {importCompanySetup as action31} from "@/app/(app)/atlas/setup-actions";
-import {createCompanyUser as action32} from "@/app/(app)/atlas/setup-actions";
-import {setCompanyUserStatus as action33} from "@/app/(app)/atlas/setup-actions";
+import {updateCompanyAccount as action10} from "@/app/(admin)/atlas/actions";
+import {saveCompanyEntitlements as action11} from "@/app/(admin)/atlas/actions";
+import {createCompanyAccount as action12} from "@/app/(admin)/atlas/actions";
+import {deleteTestCompany as action13} from "@/app/(admin)/atlas/actions";
+import {openCompanyWorkspace as action14} from "@/app/(admin)/atlas/admin-actions";
+import {saveAtlasUserProfile as action15} from "@/app/(admin)/atlas/admin-actions";
+import {saveAtlasUserAccess as action16} from "@/app/(admin)/atlas/admin-actions";
+import {revokeAtlasUserSessions as action17} from "@/app/(admin)/atlas/admin-actions";
+import {issueAtlasUserRecovery as action18} from "@/app/(admin)/atlas/admin-actions";
+import {createAtlasStaff as action19} from "@/app/(admin)/atlas/admin-actions";
+import {updateAtlasStaff as action20} from "@/app/(admin)/atlas/admin-actions";
+import {saveAtlasStaffProfile as action21} from "@/app/(admin)/atlas/admin-actions";
+import {issueAtlasStaffRecovery as action22} from "@/app/(admin)/atlas/admin-actions";
+import {archiveAtlasCompany as action23} from "@/app/(admin)/atlas/admin-actions";
+import {saveAtlasCompanyProfile as action24} from "@/app/(admin)/atlas/admin-actions";
+import {saveAtlasCompanyBrand as action25} from "@/app/(admin)/atlas/admin-actions";
+import {deleteSelectedTestCompanies as action26} from "@/app/(admin)/atlas/cleanup/actions";
+import {retryCompanyFileCleanup as action27} from "@/app/(admin)/atlas/cleanup/actions";
+import {attachConnection as action28} from "@/app/(admin)/atlas/connections/actions";
+import {requestGuardianSweep as action29} from "@/app/(admin)/atlas/guardian/actions";
+import {updateGuardianIssue as action30} from "@/app/(admin)/atlas/guardian/actions";
+import {importCompanySetup as action31} from "@/app/(admin)/atlas/setup-actions";
+import {createCompanyUser as action32} from "@/app/(admin)/atlas/setup-actions";
+import {setCompanyUserStatus as action33} from "@/app/(admin)/atlas/setup-actions";
 import {postMessage as action34} from "@/app/(app)/chat/actions";
 import {searchChatPeople as action35} from "@/app/(app)/chat/actions";
 import {openChat as action36} from "@/app/(app)/chat/actions";
@@ -860,7 +862,8 @@ import {saveHandover as action857} from "@/modules/teams/services/commands";
 import {savePlace as action858} from "@/modules/teams/services/commands";
 import {saveMoment as action859} from "@/modules/teams/services/commands";
 import {removeMoment as action860} from "@/modules/teams/services/commands";
-export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>={
+export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>=withAdminActionAliases({
+"src/core/auth/actions:logoutAdminAction":logoutAdmin,
 "src/app/(app)/_shared/record-email-actions:loadEmailRecord":action0 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/_shared/record-email-actions:sendRecordEmailAction":action1 as (...args:never[])=>Promise<unknown>,
 "src/app/(app)/_shared/record-email-actions:sendRecordContractAction":action2 as (...args:never[])=>Promise<unknown>,
@@ -1722,4 +1725,4 @@ export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>={
 "src/modules/teams/services/commands:savePlace":action858 as (...args:never[])=>Promise<unknown>,
 "src/modules/teams/services/commands:saveMoment":action859 as (...args:never[])=>Promise<unknown>,
 "src/modules/teams/services/commands:removeMoment":action860 as (...args:never[])=>Promise<unknown>
-};
+});

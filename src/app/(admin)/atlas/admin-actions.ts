@@ -11,7 +11,7 @@ import { db } from "@/core/db/client";
 import { validNewPassword, createRecoveryCredential } from "@/core/auth/recovery";
 import { capabilityOverrides, effectiveRoleCapabilities } from "@/core/permissions/access-levels";
 import { companyProfileSchema, readCompanyProfile } from "@/core/setup/company-profile";
-import { accessGroups } from "../settings/access-groups";
+import { accessGroups } from "@/app/(app)/settings/access-groups";
 import { assertPrintableAccent } from "@/core/documents/company-brand";
 
 const value = (form: FormData, key: string) => String(form.get(key) ?? "").trim();

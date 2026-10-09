@@ -6,7 +6,7 @@ vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("bcryptjs", () => ({ default: { compare: async (password: string) => password === "correct-password" } }));
 vi.mock("@/core/admin/wipe-company", () => ({ wipeTestCompanies: state.wipe, finishCompanyFileCleanup: state.retry }));
 import { cleanupConfirmation, readCleanupSelection, CleanupValidationError } from "@/core/admin/cleanup-input";
-import { deleteSelectedTestCompanies, retryCompanyFileCleanup } from "@/app/(app)/atlas/cleanup/actions";
+import { deleteSelectedTestCompanies, retryCompanyFileCleanup } from "@/app/(admin)/atlas/cleanup/actions";
 const selection = [{ id: "test-a", name: "Test A", updatedAt: "2026-10-08T10:00:00.000Z" }, { id: "test-b", name: "Test B", updatedAt: "2026-10-08T10:00:00.000Z" }];
 function form(extra: Record<string, string> = {}) { const result = new FormData(); for (const [key, value] of Object.entries({ selectedCompanies: JSON.stringify(selection), confirmation: cleanupConfirmation(2), acknowledge: "on", currentPassword: "correct-password", ...extra })) result.set(key, value); return result; }
 beforeEach(() => { vi.clearAllMocks(); state.session.capabilities = new Set(["atlas.companies.archive"]); state.user.mockResolvedValue({ passwordHash: "hash" }); state.wipe.mockResolvedValue({ id: "run-a", remainingFileKeys: [] }); });

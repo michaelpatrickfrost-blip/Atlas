@@ -8,7 +8,7 @@ vi.mock("@/core/auth/session", () => ({ requireSession: mocks.session }));
 vi.mock("@/core/db/client", () => ({ db: { organisation: { findFirst: mocks.company } } }));
 vi.mock("@/modules/connections/services/import", () => ({ runConnectionImport: mocks.importer }));
 vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidate }));
-import { attachConnection } from "@/app/(app)/atlas/connections/actions";
+import { attachConnection } from "@/app/(admin)/atlas/connections/actions";
 import { importDay, salesGroupIssue } from "@/modules/sales/services/connection-import";
 const empty = { error: "", message: "", token: "", preview: [] };
 function form(mode = "preview", content = "code,name,kind,price,currency,taxCategory\nA,Widget,PRODUCT,1.00,GBP,STANDARD") {

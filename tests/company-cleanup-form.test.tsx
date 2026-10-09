@@ -2,8 +2,8 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 const state=vi.hoisted(()=>({remove:vi.fn()}));
-vi.mock("@/app/(app)/atlas/cleanup/actions",()=>({deleteSelectedTestCompanies:state.remove,retryCompanyFileCleanup:vi.fn()}));
-import { CompanyCleanupForm, type CleanupCompany } from "@/app/(app)/atlas/cleanup/cleanup-form";
+vi.mock("@/app/(admin)/atlas/cleanup/actions",()=>({deleteSelectedTestCompanies:state.remove,retryCompanyFileCleanup:vi.fn()}));
+import { CompanyCleanupForm, type CleanupCompany } from "@/app/(admin)/atlas/cleanup/cleanup-form";
 afterEach(cleanup);
 const companies:CleanupCompany[]=["A","B"].map(letter=>({id:`test-${letter}`,name:`Test ${letter}`,updatedAt:"2026-10-08T10:00:00Z",status:"ACTIVE",current:false,users:1,customers:2,products:3,employees:4,files:5}));
 it("reviews the exact selected companies before deletion and keeps a rejected confirmation draft",async()=>{

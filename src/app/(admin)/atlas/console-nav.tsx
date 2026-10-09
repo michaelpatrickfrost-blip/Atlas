@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export function ConsoleNav({ organisationId, current }: { organisationId?: string; current: "companies" | "account" | "setup" | "users" | "offboarding" }) {
+export function ConsoleNav({ organisationId, current }: { organisationId?: string; current: "companies" | "account" | "setup" | "users" | "studio" | "offboarding" }) {
   if (!organisationId) return null;
   const links = [
     { id: "account", href: `/atlas/${organisationId}`, label: "Account & profile" },

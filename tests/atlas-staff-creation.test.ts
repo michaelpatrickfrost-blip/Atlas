@@ -8,7 +8,7 @@ vi.mock("@/core/db/client", () => ({ db: { user: { findUniqueOrThrow: state.admi
 vi.mock("next/cache", () => ({ revalidatePath: state.refresh }));
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
 vi.mock("bcryptjs", () => ({ default: { compare: async (value: string) => value === "correct-password", hash: async () => "random-password-hash" } }));
-import { createAtlasStaff } from "@/app/(app)/atlas/admin-actions";
+import { createAtlasStaff } from "@/app/(admin)/atlas/admin-actions";
 const form = (extra: Record<string, string> = {}) => {
   const result = new FormData();
   for (const [key, value] of Object.entries({ name: "New Employee", email: "employee@example.test", staffRole: "EMPLOYEE", newPassword: "employee-passphrase", ...extra })) result.set(key, value);

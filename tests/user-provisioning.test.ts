@@ -5,9 +5,9 @@ vi.mock("@/core/db/client", () => ({ db: { user: { findUnique: state.read, findU
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
 import { canCreateUsers, canCreateBusinessUsers, platformCapabilities } from "@/core/admin/access";
-import { createAtlasStaff } from "@/app/(app)/atlas/admin-actions";
-import { createCompanyAccount } from "@/app/(app)/atlas/actions";
-import { createCompanyUser } from "@/app/(app)/atlas/setup-actions";
+import { createAtlasStaff } from "@/app/(admin)/atlas/admin-actions";
+import { createCompanyAccount } from "@/app/(admin)/atlas/actions";
+import { createCompanyUser } from "@/app/(admin)/atlas/setup-actions";
 import { createUser } from "@/app/(app)/settings/actions";
 import { createManagedUser } from "@/app/(app)/settings/user-actions";
 beforeEach(() => { vi.clearAllMocks(); state.session.userEmail = "other@example.test"; state.session.capabilities = new Set(["atlas.staff.manage", "atlas.users.manage", "atlas.companies.manage", "core.users.manage"]); });

@@ -22,7 +22,7 @@ import { getMaterialShortages, plannedProposals, readSuggestionDetail } from "@/
 
 beforeEach(() => {
   vi.resetAllMocks();
-  mocks.session.capabilities = new Set(["manufacturing.plan.read", "manufacturing.plan.manage"]);
+  mocks.session.capabilities = new Set(["manufacturing.plan.read", "manufacturing.plan.manage", "sales.order.read", "stock.read", "core.products.read", "customers.read"]);
   mocks.requireSession.mockResolvedValue(mocks.session);
   mocks.enabled.mockResolvedValue(undefined);
   mocks.run.mockResolvedValue({ runId: "fixture-run", plannedOrders: [1, 2], shortages: [1] });
@@ -60,7 +60,7 @@ describe("Run MRP mutation boundary", () => {
     expect(mocks.run).toHaveBeenCalledExactlyOnceWith("fixture-company", "fixture-planner");
     expect(mocks.enabled).toHaveBeenCalledWith(mocks.session, "manufacturing");
     expect(new Set(mocks.refresh.mock.calls.flat())).toEqual(new Set([
-      "/manufacturing/planning", "/manufacturing/planning/planned-orders", "/manufacturing/planning/shortages",
+      "/manufacturing", "/manufacturing/planning", "/manufacturing/planning/planned-orders", "/manufacturing/planning/shortages",
     ]));
   });
 });

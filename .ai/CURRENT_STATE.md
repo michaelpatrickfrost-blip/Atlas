@@ -5024,3 +5024,10 @@ providers/catalogue, launcher entitlement fallback, current/legacy saved MRP
 lineage and direct planning action guards. Updated only the Guardian Test fixture
 inputs for newly required source access; no existing user grants changed. Historic
 branch source retained alongside exact live Reports/Admin ancestry.
+
+Compatible final source checks: production build, explicit TypeScript, scoped ESLint
+and diff checks passed. Full suite with four workers/30-second timeout: 167 files
+passed, 14 failed, three skipped; 1,071 passed/85 failed/22 skipped. The same 85
+failures are established exact-live baseline issues. No task regression remains in
+that comparison; no full-suite pass claimed. A prior transfer import timeout passed
+its isolated 12-test recheck and final suite. Candidate prepare still pending.

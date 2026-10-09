@@ -1,3 +1,13 @@
+## 9 October 2026 — Retirement preserves the last active field policy
+
+Field retirement changes metadata eligibility using tenant/publish permission,
+server module availability locked/rechecked, field-only revision CAS and one
+transactional audit. Preserve activeVersionId for the later authorised-history
+reader's last active access policy; current resolution/editing exclude retiredAt.
+Bindings, generations, values and published schemas remain intact; keys cannot be
+recycled. Serialization races become explicit refresh conflicts without automatic
+mutation replay. No purge or history-value API is introduced by this service.
+
 ## 9 October 2026 — Explicit typed field conversion rules
 
 The first pure evolution library uses a closed rule schema: same type, exact

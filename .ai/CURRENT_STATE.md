@@ -56,9 +56,18 @@ and strict TypeScript PASS. Initial callback narrowing error corrected and check
 rerun. Stable identities/generations, explicit choice maps/retirement/versioning,
 exact integer→decimal bounds, UTC/loss policies, required/null/false and closed
 conversion schema verified. No database/API/job execution; library not yet live.
-Next: 2B3b retirement with tenant/publish guards, CAS and transactional audit;
-retain last active schema/binding/values for authorised history, deny further edits/
-activation and key recycling; add tests and real isolated central acceptance.
+2B3b IMPLEMENTED locally: fields/retirement.ts, focused tests and central helper.
+Tenant/publish/module checks, enablement lock/recheck, field-only CAS, serialization
+conflict normalisation and atomic audit; last active policy/versions/generations/
+values retained. No purge/UI/value API. Five files/35 tests, scoped lint, production
+build and strict TypeScript PASS. Central helper now challenges real retirement
+race, audit-storage failure rollback, missing permission/foreign tenant/stale revision,
+blocked edits/publication/activation/key recycling and unchanged native data;
+NOT RUN yet. 2B3a converter is also exercised against real decoded schema fixture.
+Latest observed live is now 5ebd700d3526b6fdaa70efa4514da0803301a285 (rounded typography),
+which preserves accepted Studio e5d66e6. Next: merge exact live/font source and final
+main evidence, rerun integrated build/types, prepare pinned candidate, execute real
+central retirement and native regression acceptance, activate and verify public HTTPS.
 No owner value API/visual designer or Phase 2 gate PASS yet.
 No 2C or Phase 3+ before preceding workstream/phase gates.
 

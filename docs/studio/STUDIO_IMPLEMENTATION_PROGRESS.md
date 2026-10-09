@@ -11,8 +11,10 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3a — Typed compatibility/conversion analysis — VERIFIED locally. Pure library;
-22 focused tests, types/scoped lint/build PASS. Not yet live; no jobs/value API.
+2B3b — Field retirement — IMPLEMENTED locally. Tenant/publish/module guards, CAS,
+audit, retained active schema/history; no purge. 35 focused tests/types/lint/build
+PASS; central helper added, not run. 2B3a pure library VERIFIED locally (22
+focused tests, types/scoped lint/build PASS); not yet live, no jobs/value API.
 2B2 VERIFIED on candidate/public e5d66e6. Ordered 2B3a–g plan in
 STUDIO_FIELD_EVOLUTION_PLAN.md; all remaining Phase 2 dependencies retained.
 
@@ -126,6 +128,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+2B3b: fields/retirement.ts, tests/studio-field-retirement.test.ts, central
+check-field-storage helper, plan/ledger/CURRENT_STATE/DECISIONS. No new migration.
+
 2B3a: core/studio/fields/evolution.ts, tests/studio-field-evolution.test.ts, evolution
 plan/ledger/CURRENT_STATE/DECISIONS. No DB/Prisma change. No values written.
 
@@ -185,6 +190,9 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+2B3b: 5 files/35 assertions, scoped lint, production build and strict TypeScript
+PASS. Central helper NOT RUN yet; no live retirement claim.
 
 2B3a: 3 files/22 assertions PASS; scoped lint, production build and strict TypeScript
 PASS (narrowing error fixed and checks rerun). Pure library not yet invoked by UI/jobs.
@@ -280,16 +288,17 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint reviewed 2B3a pure library/tests/memory (3 files/22 tests, types/scoped
-lint/build PASS). Then implement 2B3b retirement: tenant/publish/module checks, CAS,
-transactional audit, preserved last active schema/binding/history, blocked editing/
-activation/key recycling, unit tests and isolated central acceptance helper. No
-owner value API or migration executor is implemented yet. 2C–2F remain; no Phase 3+.
+Checkpoint reviewed 2B3b retirement service/tests/memory; merge latest main 98cf934
+and exact observed live 5ebd700 (rounded typography preserving e5d66e6). Rerun
+integrated build/types, prepare pinned candidate, execute central real retirement/
+conversion and combined native acceptance, then activate exact candidate on PASS
+and repeat publicly. New helper NOT RUN; no live 2B3a/b claim yet. Following verified
+retirement checkpoint, 2B3c reviewed preview/durable jobs, then target publication/
+batches/cutover and 2B4 owner values. 2C–2F remain; no Phase 3+.
 
-Exact e5d66e6cf36b0fe228ac65287fdaa8d5ceb8be7c VERIFIED LIVE for 2B2.
+2B2 exact acceptance source e5d66e6 VERIFIED LIVE; now preserved by 5ebd700.
 Preparation backup atlas-pre-deploy-20261009-214456; activation backup
 atlas-pre-deploy-20261009-215653; previous 2690c26 runtime retained.
-Complete candidate PASS: /tmp/atlas-studio-acceptance-fDWxDN.
-Initial public Messages transient viewport failure retained in /tmp/atlas-studio-public-3EmQ8d;
-standalone unchanged Messages and complete unchanged public rerun PASS:
-/tmp/atlas-studio-public-1XT85A. No persistent app defect confirmed.
+Complete candidate PASS: /tmp/atlas-studio-acceptance-fDWxDN; complete public PASS:
+/tmp/atlas-studio-public-1XT85A. Initial transient Messages viewport failure retained
+in /tmp/atlas-studio-public-3EmQ8d; standalone unchanged check and full rerun PASS.

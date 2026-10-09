@@ -190,3 +190,8 @@ CRM availability, activity capability, owner scope, all linked records and time
 overlaps inside a serializable transaction, with audit/customer activity. No external
 calendar sync or invitation delivery is claimed. See
 [research and acceptance](../plans/COMMERCIAL_WORKSPACE_RESEARCH.md).
+
+Booked appointments cannot be completed through the older generic activity action.
+That action atomically checks tenant/owner, absence of appointment duration,
+uncancelled/uncompleted state and advances the legacy record version on success.
+Use the diary to record a booked appointment outcome.

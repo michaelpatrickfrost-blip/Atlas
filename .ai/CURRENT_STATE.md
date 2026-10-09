@@ -1,3 +1,5 @@
+# Atlas current state
+
 ## 9 October 2026 — Reports workspace in progress
 
 - Added modern `/reports` utility separate from Dashboards, shared Home utility
@@ -22,10 +24,11 @@
   Concurrent Studio release `c46bbef` became live during acceptance; the ancestry
   gate stopped the old candidate safely. Reports now applies to `c46bbef` on
   `codex/reports-live-release`, preserving the new live guards and Studio work.
-  Prior local checks apply to the original Reports source; combined source
-  revalidation, candidate/export acceptance and live activation remain pending.
-
-# Atlas current state
+  Combined source revalidated after generating the existing Studio Prisma client:
+  10 focused files/58 assertions passed (Reports, permissions, provisioning and
+  Studio registry/admin regressions); standalone TypeScript and production build
+  passed. Source includes Studio's `9ebd774` accepted-release evidence. Candidate
+  dataset/export acceptance and live activation remain pending.
 
 ## 9 October 2026 — Studio Phase 1 deployed and accepted
 

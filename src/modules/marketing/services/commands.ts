@@ -216,7 +216,7 @@ export async function submitBudgetToFinance(f:FormData){
  refresh();
  return {message};
 }
-const STARTER: Array<[string, string]> = [['Notice', 'They hear the name.'], ['Look', 'They compare what they need.'], ['Choose', 'They pick a supplier.'], ['Buy', 'They place the order.'], ['Stay', 'They come back.']];
+const STARTER: Array<[string, string]> = [['Awareness', 'They discover the business and their options.'], ['Consideration', 'They research and compare solutions.'], ['Decision', 'They choose the right supplier.'], ['Purchase', 'They place and receive their order.'], ['Retention', 'They succeed, return and recommend.']];
 export async function createJourneyMap(f:FormData){
  const s=await requireSession();
  assertCapability(s,'marketing.program.manage');
@@ -243,7 +243,8 @@ export async function addJourneyStage(f:FormData){
  const {journeyStageSchema}=await import('../domain/planning');
  await db.$transaction(async tx=>{
   const map=await tx.marketingProgram.findFirstOrThrow({where:{id:text(f,'journeyId',100,true),organisationId:s.organisationId,kind:'JOURNEY_MAP'}});
-  const existing=await tx.marketingProgram.findMany({where:{organisationId:s.organisationId,kind:'JOURNEY_STAGE'},select:{definition:true}});
+  await tx.marketingProgram.update({where:{id:map.id,organisationId:s.organisationId},data:{updatedAt:new Date()}});
+  const existing=await tx.marketingProgram.findMany({where:{organisationId:s.organisationId,kind:'JOURNEY_STAGE',definition:{path:['journeyId'],equals:map.id}},select:{definition:true}});
   const order=existing.reduce((max,row)=>{const parsed=journeyStageSchema.safeParse(row.definition);return parsed.success&&parsed.data.journeyId===map.id?Math.max(max,parsed.data.order):max;},-1)+1;
   const definition=journeyStageSchema.parse({journeyId:map.id,order,customerIntent:text(f,'customerIntent',500)});
   const row=await tx.marketingProgram.create({data:{organisationId:s.organisationId,name:text(f,'name',250,true),kind:'JOURNEY_STAGE',definition,campaignId:map.campaignId,ownerUserId:s.userId}});
@@ -260,6 +261,7 @@ export async function addJourneyTouch(f:FormData){
   const stage=await tx.marketingProgram.findFirstOrThrow({where:{id:text(f,'stageId',100,true),organisationId:s.organisationId,kind:'JOURNEY_STAGE'}});
   const parsed=journeyStageSchema.parse(stage.definition);
   const map=await tx.marketingProgram.findFirstOrThrow({where:{id:parsed.journeyId,organisationId:s.organisationId,kind:'JOURNEY_MAP'}});
+  await tx.marketingProgram.update({where:{id:map.id,organisationId:s.organisationId},data:{updatedAt:new Date()}});
   const definition=journeyTouchSchema.parse({journeyId:map.id,stageId:stage.id,channel:text(f,'channel'),moment:text(f,'moment',500,true),owner:text(f,'owner',250)});
   const row=await tx.marketingProgram.create({data:{organisationId:s.organisationId,name:text(f,'name',250,true),kind:'JOURNEY_TOUCH',definition,campaignId:map.campaignId,ownerUserId:s.userId}});
   await audit(tx,s,'journey.touch','MarketingProgram',row.id);

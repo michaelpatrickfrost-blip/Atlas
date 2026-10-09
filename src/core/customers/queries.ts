@@ -5,7 +5,7 @@ export type CustomerListFilter = "active" | "prospects" | "on_hold" | "my_custom
 
 export async function listCustomers(
   organisationId: string,
-  opts: { search?: string; filter?: CustomerListFilter; accountManagerUserId?: string } = {},
+  opts: { search?: string; filter?: CustomerListFilter; accountManagerUserId?: string; salesSince?: Date; salesRead?: boolean } = {},
 ) {
   const where: Prisma.PartyWhereInput = {
     organisationId,
@@ -34,7 +34,7 @@ export async function listCustomers(
     include: {
       creditProfile: true,
       addresses: { where: { type: "BILLING" }, take: 1 },
-      salesOrders: { select: { grossAmount: true, currency: true } },
+      salesOrders: { where: { ...(opts.salesRead === false ? { id: "__no_sales_access__" } : {}), ...(opts.salesSince ? { createdAt: { gte: opts.salesSince } } : {}) }, select: { grossAmount: true, currency: true } },
     },
     orderBy: { name: "asc" },
   });

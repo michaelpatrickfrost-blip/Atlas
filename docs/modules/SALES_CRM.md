@@ -172,3 +172,21 @@ stage-history writes and conversion correctness were verified end-to-end
 in-browser against a real local Postgres (login → Today → Prospect →
 convert → Opportunity → Customer 360), not re-asserted as integration tests
 in this slice.
+
+## CRM commercial workspace — 9 October 2026
+
+Today now leads into Appointments, Accounts, Pipeline and Prospects. The pipeline
+adds search and a missing-next-action filter. CRM Accounts uses canonical customer
+contacts and shared notes, with links back to Customer Master and its selected
+hierarchy. Opportunities and upcoming appointments retain CRM owner restrictions;
+restricted notes require their own read capability.
+
+Appointments is a weekly agenda/diary for meetings, calls, demos, site visits and
+follow-ups. It supports an active salesperson, account/prospect and optional deal,
+start/end in London time, location/link, preparation, reschedule, completion outcome
+and retained cancellation. Additive SalesActivity fields provide duration, location,
+cancellation, optimistic version and per-tenant unique request key. Commands check
+CRM availability, activity capability, owner scope, all linked records and time
+overlaps inside a serializable transaction, with audit/customer activity. No external
+calendar sync or invitation delivery is claimed. See
+[research and acceptance](../plans/COMMERCIAL_WORKSPACE_RESEARCH.md).

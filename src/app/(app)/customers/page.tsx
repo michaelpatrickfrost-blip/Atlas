@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Building2, Users, ShieldCheck, UserRound, Network } from "lucide-react";
+import { WorkspaceHeading, WorkspaceStats } from "@/components/ui/workspace";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
 import { CUSTOMER_CAPABILITIES } from "@/core/permissions/capabilities";
@@ -39,8 +41,11 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
       ? (requestedFilter as CustomerListFilter)
       : undefined;
 
+  const salesSince = new Date(); salesSince.setFullYear(salesSince.getFullYear() - 1);
+  const salesRead = can(session, "sales.order.read");
+  const creditRead = can(session, CUSTOMER_CAPABILITIES.creditRead);
   const [customers, accountManagers] = await Promise.all([
-    listCustomers(session.organisationId, { search: params.q, filter, accountManagerUserId: session.userId }),
+    listCustomers(session.organisationId, { search: params.q, filter, accountManagerUserId: session.userId, salesSince, salesRead }),
     db.user.findMany({ where: { memberships: { some: { organisationId: session.organisationId } } }, select: { id: true, name: true } }),
   ]);
 
@@ -53,28 +58,22 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
     status: customer.status,
     location: customer.addresses[0] ? [customer.addresses[0].city, customer.addresses[0].country].filter(Boolean).join(", ") : "—",
     accountManager: customer.accountManagerUserId ? (managerNameById.get(customer.accountManagerUserId) ?? "—") : "—",
-    sales12m: customer.salesOrders.reduce((sum, order) => sum + order.grossAmount, 0),
+    sales12m: Object.entries(customer.salesOrders.reduce<Record<string, number>>((sum, order) => { sum[order.currency] = (sum[order.currency] ?? 0) + order.grossAmount; return sum; }, {})).map(([currency, amount]) => formatMoney(amount, currency)).join(" · ") || "—",
     onHold: customer.creditProfile?.onHold ?? false,
   }));
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--color-ink)]">
-            {filter === "archived" ? "Archived customers" : "Customers"}
-          </h1>
-        <div className="flex gap-2">
-          {can(session, CUSTOMER_CAPABILITIES.create) && (
-            <Link href="/customers/new">
-              <Button variant="primary">Add customer</Button>
-            </Link>
-          )}
-          <CustomerCsvTools />
-        </div>
-      </div>
-
+    <div className="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-6">
+      <WorkspaceHeading eyebrow="Customer workspace" title={filter === "archived" ? "Archived accounts" : "Know your customers"} description="One place for every account, its people, relationships and shared history. Open a customer to see its details and the next steps." actions={<>{can(session, CUSTOMER_CAPABILITIES.create) && <Link href="/customers/new"><Button variant="primary">Add customer</Button></Link>}<CustomerCsvTools /></>} />
+      <WorkspaceStats items={[
+        { label: "Matching accounts", value: rows.length, hint: "In the current view", icon: Building2 },
+        { label: "Active", value: rows.filter(row => row.status === "ACTIVE").length, hint: "Ready to do business", icon: ShieldCheck },
+        { label: "Prospects", value: rows.filter(row => row.status === "PROSPECT").length, hint: "Relationships to develop", icon: Users },
+        { label: "Managed by you", value: customers.filter(row => row.accountManagerUserId === session.userId).length, hint: "Your account portfolio", icon: UserRound },
+      ]} />
       <form className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3">
         <input
+          aria-label="Search customers"
           type="search"
           name="q"
           defaultValue={params.q}
@@ -88,7 +87,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
         {FILTERS.map((item) => (
           <Link
             key={item.key}
-            href={item.key === "all" ? "/customers" : `/customers?filter=${item.key}`}
+            href={`/customers?${new URLSearchParams({ ...(item.key !== "all" ? { filter: item.key } : {}), ...(params.q ? { q: params.q } : {}) })}`}
             className={`shrink-0 rounded-full px-3 py-1.5 text-sm ${
               (filter ?? "all") === item.key
                 ? "bg-[var(--color-atlas-blue-soft)] text-[var(--color-atlas-blue)]"
@@ -103,27 +102,25 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
       <DataTable<(typeof rows)[number]>
         rows={rows}
         getHref={(row) => `/customers/${row.id}`}
-        emptyLabel="No customers yet."
+        emptyLabel={params.q ? "No customers match this search." : "No customers in this view yet."}
         columns={[
           {
             header: "Customer",
             render: (row) => (
-              <span className="flex flex-col">
-                <span className="font-medium text-[var(--color-ink)]">{row.name}</span>
-                <span className="text-xs text-[var(--color-ink-faint)]">{row.customerCode}</span>
-              </span>
+              <span className="flex items-center gap-3"><span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-sm font-semibold text-blue-700">{row.name.slice(0, 2).toUpperCase()}</span><span className="flex flex-col"><span className="font-semibold text-slate-800">{row.name}</span><span className="text-xs text-slate-400">{row.customerCode}</span></span></span>
             ),
           },
           { header: "Location", render: (row) => row.location },
           { header: "Account manager", render: (row) => row.accountManager },
-          { header: "12m sales", render: (row) => formatMoney(row.sales12m, "GBP"), align: "right" },
-          {
+          ...(salesRead ? [{ header: "12m order value", render: (row: (typeof rows)[number]) => row.sales12m, align: "right" as const }] : []),
+          ...(creditRead ? [{
             header: "Credit status",
-            render: (row) => (row.onHold ? <StatusPill label="On hold" tone="danger" /> : <StatusPill label="OK" tone="success" />),
-          },
+            render: (row: (typeof rows)[number]) => (row.onHold ? <StatusPill label="On hold" tone="danger" /> : <StatusPill label="OK" tone="success" />),
+          }] : []),
           { header: "Status", render: (row) => <StatusPill label={row.status.replace("_", " ")} tone={STATUS_TONE[row.status]} /> },
         ]}
       />
+      <Link href="/customers/map" className="inline-flex items-center gap-2 text-sm font-medium text-blue-600"><Network size={16} />Explore a customer hierarchy</Link>
     </div>
   );
 }

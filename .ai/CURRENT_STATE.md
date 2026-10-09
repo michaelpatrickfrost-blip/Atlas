@@ -1,5 +1,38 @@
 # Atlas current state
 
+## 9 October 2026 — Studio Phase 1 deployed and accepted
+
+Supersedes earlier Studio pending-candidate checkpoints below. Exact source
+c46bbefa737c81280daf38d62e87a4511420ffa5 activated at atlassystem.online and public
+revision checked before/after acceptance. Phase 0 contracts and Phase 1 metadata
+gates PASS; no Phase 2–9 engines started. Typed registry/provider adapters, additive
+four-table metadata kernel, immutable versions/dependencies, CAS drafts, validated
+publication/separate activation/rollback and audit are verified centrally. Real
+Admin/customer forms, two-editor conflict diff, administrator business-user
+creation, company-bound recovery/login and denied customer Admin access passed
+on candidate and public HTTPS. Existing Atlas/Sales/Manufacturing/Templates pages
+loaded; read-only Home desktop/tablet/phone/search/Apps-menu checks passed, retaining
+live Home source/evidence. Synthetic central Test companies suspended; history
+retained; existing QA identity/grants unchanged. Studio has no protected domain
+write compiler and no duplicate Templates/Automations engine.
+
+15 focused files/64 assertions, strict TypeScript, scoped ESLint, Prisma and
+production build passed. Full suite: 1003 passed/85 failed/22 skipped; the exact
+85 failures match unchanged baseline. Full lint: baseline 9 errors/21 warnings;
+neither whole-repository check is green. Candidate Home screenshot ownership was
+corrected in its read-only test runner, then candidate/public checks passed.
+Central migration 20261009210000_studio_metadata_kernel applied additively;
+final prepare/activation database/private-file backups retained at
+/home/administrator/backups/atlas-pre-deploy-20261009-193301 and -193700.
+Private public acceptance logs: /tmp/atlas-studio-public-kJpeTa.
+
+See docs/studio/STUDIO_PHASE_1_COMPLETION.md and
+STUDIO_IMPLEMENTATION_PROGRESS.md for gates, paths, evidence and deferred scope.
+Next: re-read Phase 2/extension sections, inspect existing owners/current diff,
+record Phase 2 workstreams, then implement 2A approved-extension contracts. Do not
+jump ahead to Decisions, events or Flow. No additional application release is
+needed for this evidence-only checkpoint; live source remains c46bbef.
+
 ## 9 October 2026 — Legacy business-user routes stay customer scoped
 
 Final review found the legacy Settings creation actions could target the internal

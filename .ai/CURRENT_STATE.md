@@ -1,6 +1,6 @@
 # Atlas current state
 
-## 9 October 2026 — Apps menu reference design awaiting server acceptance
+## 9 October 2026 — Apps menu candidate accepted; Studio contract blocks activation
 
 Business workspace Apps now follows Michael's supplied wide white panel: Customers,
 Operations, People and Business in the first desktop row; More and Company below.
@@ -13,18 +13,28 @@ server directory/capability filtering supplies authorised entries. No schema,
 permission, central business-record or storage change.
 
 Paths: shell app-directory/app-menu/topbar/command-palette/workspace-back, globals,
-tests/app-menu and scripts/check-home-menu; design guides/decision/roadmap updated.
+tests/app-menu and scripts/check-home-menu; design/Reports/scope guides, decision
+and roadmap updated.
 Release branch codex/apps-menu-design starts at exact public live 1dafe165,
 preserving accepted Messages/Studio/private Admin/sign-in source. Final local
 production build with exact lockfile dependencies PASS, 2 focused files/5 assertions PASS, scoped lint zero errors
 with two existing brand-img warnings, diff whitespace PASS. Initial strict types
 found missing @playwright/test in the cloned Desktop dependencies and cascading
 script types; exact-lockfile install and final strict TypeScript without exclusions PASS.
-Full suite not rerun. Read-only central QA acceptance covers Home and Apps desktop,
-tablet, phone/320px, authorised links, focus/closure and actual My work navigation;
-each run retains a unique private screenshot directory. Next: commit,
-prepare immutable backed-up candidate, inspect screenshots, activate and repeat
-public checks; this change is not yet deployed or accepted.
+Full suite not rerun. Exact 12d78a1 candidate prepared; read-only central QA checks
+PASS for Home desktop/tablet/phone and Apps desktop/tablet/phone/320px, authorised
+links, scrolling/44px targets, focus/closure/search and actual My work navigation.
+All four menu screenshots inspected: supplied desktop grouping/spacing and
+responsive wrapped phone/tablet labels confirmed. Private evidence:
+/tmp/atlas-home-menu-check-IUKhn5; prepare backup atlas-pre-deploy-20261009-211746.
+Activation stopped safely after backup atlas-pre-deploy-20261009-212330 because a
+retained Studio customField definition requires tickets.ticket@2. Read-only SQL
+confirmed its company is a SUSPENDED synthetic studio-check Test organisation;
+the compatibility scanner includes its still-active definition. Live remains
+1dafe165. No metadata/grants changed or gate bypassed. Concurrent Studio source
+supplies v2 and is still undergoing final acceptance. Next: preserve its exact
+accepted live source when deployed, rebuild compatible Apps candidate, repeat
+read-only menu checks, activate and verify public HTTPS. Apps is not yet live.
 
 ## 9 October 2026 — Private Admin entry deployed and publicly verified
 

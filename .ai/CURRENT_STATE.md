@@ -11,8 +11,10 @@ or job runtime introduced. Contract/owner docs updated.
 
 Prepared/candidate exact 7941f9b all combined checks PASS, including real principal
 revocation/audit and commercial forms: /tmp/atlas-studio-acceptance-9ztRSn. Backup
-atlas-pre-deploy-20261009-224608. Activation queued using exact committed script;
-new cohort source excluded. Public principal/retirement checks pending.
+atlas-pre-deploy-20261009-224608. Activated exact 7941f9b using its committed script; public revision confirmed.
+Activation backup atlas-pre-deploy-20261009-225700. Previous immutable 94dd3e
+retained; new cohort source excluded. Full public
+principal/retirement checks queued; /tmp/atlas-studio-principal-public.txt.
 
 
 ## 9 October 2026 — Studio candidate integrated with current live commercial source

@@ -14,7 +14,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 2B3c2a owner cohort-access query — IMPLEMENTED locally. 22 focused tests with
 sealed v1/v2, build/types/lint PASS; new real helper not run. No conversion write
 policy/job persistence. Prior principal/retirement 7941f9b candidate all PASS;
-activation/public proof pending.
+exact 7941f9b activated; public proof pending.
 
 2B3c1 — Refreshed migration principal and explicit audited support context —
 IMPLEMENTED locally. Seven principal tests plus integrated 23 files/118 tests,
@@ -134,6 +134,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+2B3c2a: core/service-work/studio.ts, tests/studio-ticket-cohort.test.ts, central
+check-field-principal helper, MODULE_SPEC/SERVICE_WORK_DESK, plan/ledger and
+CURRENT_STATE/DECISIONS. Read-only owner query; no schema migration.
+
 2B3c1: fields/principal.ts, tests/studio-field-principal.test.ts, central
 check-field-principal helper and metadata driver; evolution
 plan/ledger/CURRENT_STATE/DECISIONS. Existing audit only; no DB/schema migration.
@@ -195,6 +199,10 @@ preserved. Final candidate/activation backup prefixes: `atlas-pre-deploy-2026100
 and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
+
+2B3c2a owner cohort suite: complete/private/capability/source/tenant/empty coverage
+cases. 2B3c1 principal suite: real membership/current permission/revocation/audit
+stamps, metadata-context denial and audit-failure cases.
 
 Registry/adapters/catalogue/compiler/service/admin-context suites; company login,
 platform grants and business-user provisioning regression cases.

@@ -7,6 +7,20 @@ changed by Studio; existing public glyph/responsive evidence retained. Studio
 2B3a pure conversion and 2B3b retirement remain local only. Prior 35-test/types/
 scoped-lint/build and integrated production build/strict TypeScript PASS; next real
 central helper and combined candidate/public acceptance. No new Prisma migration.
+Prepared exact 8b99c1b1c0e31e2640a0bd73300678f0de899f33 after backup
+atlas-pre-deploy-20261009-222427; schema/dependency/build/sealed smoke PASS.
+Full candidate acceptance PASS on exact 8b99c1b; private evidence
+/tmp/atlas-studio-acceptance-oJKxve. Actual conversion/retirement, audit-write
+failure rollback, CAS race and eight combined native checks PASS. Public runtime
+advanced to 56c9d88 (business/platform separation); queued activation must retain
+ancestry guard. Preserve its reviewed source and reverify the combined candidate
+before activation/public proof. No new retirement public verification yet.
+Confirmed next-workstream access dependency: adminStudioContext is metadata-only;
+never use it for migration value/native-record queries. sessionForUser reloads real
+target membership/current grants; Admin openCompanyWorkspace is the existing
+explicit audited staff-affiliation path. Before 2B3c persistence, define a refreshed
+principal and explicit support data context while retaining the standalone Admin
+shell. Saved in STUDIO_FIELD_EVOLUTION_PLAN.md; no new context implemented.
 
 
 ## 9 October 2026 — Shared rounded typography deployed and publicly verified
@@ -5634,3 +5648,5 @@ later live integrations; earlier exact-baseline 85 failures remain documented.
 Next: prepare pinned clean source, recheck complete central/browser workflow,
 activate and verify public HTTPS. Preserve other contributors' dirty canonical
 checkout; integration must not overwrite unfinished content.
+
+Studio remaining Phase 2 correctness requirements recorded in STUDIO_PHASE_2_FIELDS.md: required-if, owner canonical-record coverage for new required fields and metadata-runtime schema compatibility. These remain unimplemented; Phase 2 gate not passed.

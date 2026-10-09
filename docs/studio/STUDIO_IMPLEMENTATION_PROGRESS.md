@@ -13,7 +13,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 2B3b — Field retirement — IMPLEMENTED locally. Tenant/publish/module guards, CAS,
 audit, retained active schema/history; no purge. 35 focused tests/types/lint/build
-PASS; central helper added, not run. 2B3a pure library VERIFIED locally (22
+PASS; central helper PASS on candidate 8b99c1b; public proof pending. 2B3a pure library VERIFIED locally (22
 focused tests, types/scoped lint/build PASS); not yet live, no jobs/value API.
 2B2 VERIFIED on candidate/public e5d66e6. Ordered 2B3a–g plan in
 STUDIO_FIELD_EVOLUTION_PLAN.md; all remaining Phase 2 dependencies retained.
@@ -193,7 +193,7 @@ platform grants and business-user provisioning regression cases.
 # Tests Run
 
 2B3b: 5 files/35 assertions, scoped lint, production build and strict TypeScript
-PASS. Central helper NOT RUN yet; no live retirement claim.
+PASS. Central helper and combined candidate checks PASS on 8b99c1b; no public retirement claim.
 
 2B3a: 3 files/22 assertions PASS; scoped lint, production build and strict TypeScript
 PASS (narrowing error fixed and checks rerun). Pure library not yet invoked by UI/jobs.
@@ -288,6 +288,16 @@ These checks derive from Sections 5–6, 14, 19, 25–28; no whole-system gate u
 prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
+
+Prepared exact 8b99c1b1c0e31e2640a0bd73300678f0de899f33 PASS after backup
+atlas-pre-deploy-20261009-222427. Check /tmp/atlas-studio-retirement-candidate.txt;
+new real helper/combined acceptance PASS (/tmp/atlas-studio-acceptance-oJKxve).
+Public runtime advanced to 56c9d88 with business/platform separation. Preserve
+that source and reverify combined candidate before activation/public checks. No
+activation/public retirement claim.
+Before 2B3c job models, resolve the explicit data/support context and refreshed
+principal dependency in STUDIO_FIELD_EVOLUTION_PLAN.md; metadata Admin context
+cannot authorise record/value queries. No new support context implemented yet.
 
 2B3b service/tests/memory checkpointed; latest main 98cf934 and exact live 5ebd700
 (rounded typography preserving e5d66e6) merged unchanged. Integrated build/types

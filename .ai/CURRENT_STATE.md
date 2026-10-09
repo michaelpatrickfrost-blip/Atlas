@@ -1,5 +1,24 @@
 # Atlas current state
 
+## 9 October 2026 — Legacy business-user routes stay customer scoped
+
+Final review found the legacy Settings creation actions could target the internal
+Atlas workspace under an authorised staff session. They now require a non-archived
+CUSTOMER organisation inside the creation transaction; they cannot create unusable
+internal business identities. Internal Settings links to the company selector in
+Atlas Admin, while selected customer Settings links to that company's users.
+Staff provisioning still uses Michael-only Atlas team actions. Nine provisioning
+assertions, strict TypeScript, scoped lint and production build passed. Candidate
+70052eb central lifecycle passed; new browser save proof exposed Description label
+matching with populated textarea content, so the metadata controls now have an
+explicit accessible name. Final focused suite: 15 files/64 assertions passed;
+strict TypeScript passed after build completed (an initial concurrent run hit a
+transient regenerated Next routes type). Scoped lint/build passed. Full suite:
+1003 passed/85 failed/22 skipped; all 85 failure names match unchanged HEAD.
+Next: commit these final guards/labels, rerun
+complete candidate acceptance, then release the final
+verified source. No domain records or later Studio phases changed.
+
 ## 9 October 2026 — Studio integrates the completed live Home release
 
 Home 329b60a is now verified and live; its source/evidence is merged into the

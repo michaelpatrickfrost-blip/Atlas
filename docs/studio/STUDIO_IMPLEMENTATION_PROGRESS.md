@@ -107,9 +107,9 @@ Prisma generation succeeded. First registry-only run: 5 passed. Combined registr
 adapter, module, template, permission run: 20 passed (after fixing one test fixture
 syntax error). First registry TypeScript pass: exit 0. Changed-file lint: exit 0.
 Second TypeScript and production build passed. Catalogue snapshot: 1 passed.
-Most recent focused run includes 15 test files and 62 assertions (registry,
+Most recent focused run includes 15 test files and 64 assertions (registry,
 metadata, permissions, address binding and Proxy; all passed). TypeScript, changed-
-file lint and production build passed. Latest full tests: 85 failures/999 passes; unchanged
+file lint and production build passed. Latest full tests: 85 failures/1003 passes; unchanged
 HEAD baseline reproduces the same 85 failures (968 passes before additions). Full
 lint: 9 errors/21 warnings, unchanged baseline. No central migration/live verification
 yet. Failures are existing stale module-availability mocks and existing lint errors,
@@ -158,9 +158,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Prepare the pinned merged `codex/studio-phase1-release` candidate after preserving
-the completed live Home 329b60a source/evidence. The ancestry guard safely stopped
-the older preparation; feedback/test checkpoint is committed as 0f0cf71.
+Check/commit final legacy customer-only provisioning guards and explicit metadata
+Description labels; prepare their pinned `codex/studio-phase1-release` candidate.
+Live Home 329b60a is preserved. Candidate 70052eb passed central lifecycle; browser
+save proof timed out on the populated Description label, corrected explicitly.
 Candidate 2ba0382 reached business-user provisioning and expected recovery denial;
 feedback/selector correction and the rest of customer login remain to verify. Run
 `ATLAS_STUDIO_LIVE_TEST=1 ATLAS_STUDIO_TEST_URL=http://127.0.0.1:3011`

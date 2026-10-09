@@ -34,3 +34,12 @@ it("grants business provisioning only through independent Atlas administrator pe
  expect(canCreateBusinessUsers({...admin,capabilities:new Set(platformCapabilities({role:"EMPLOYEE",active:true}))})).toBe(false);
  expect(canCreateBusinessUsers({...admin,capabilities:new Set(["core.users.manage","atlas.business_users.create"])})).toBe(false);
 });
+
+it.each([createUser,createManagedUser])("does not provision business identities in the internal Atlas workspace",async action=>{
+ state.session.capabilities.add("atlas.business_users.create");
+ const count=vi.fn().mockResolvedValue(0),create=vi.fn();
+ state.transaction.mockImplementation(async callback=>callback({organisation:{count},user:{create}}));
+ const form=new FormData();form.set("name","Business fixture");form.set("email","fixture@example.test");form.set("password","Valid-test-password-123");
+ await expect(action(form)).rejects.toThrow("selected customer company");
+ expect(count).toHaveBeenCalledWith({where:{id:state.session.organisationId,kind:"CUSTOMER",archivedAt:null}});expect(create).not.toHaveBeenCalled();
+});

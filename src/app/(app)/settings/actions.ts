@@ -56,6 +56,7 @@ export async function createUser(form:FormData) {
  const {default:bcrypt}=await import("bcryptjs");
  const passwordHash=await bcrypt.hash(password,12);
  await db.$transaction(async tx=>{
+  if(await tx.organisation.count({where:{id:session.organisationId,kind:"CUSTOMER",archivedAt:null}})!==1)throw new Error("Create business users from a selected customer company in Atlas Admin.");
   const roles=await tx.role.findMany({where:{id:{in:roleIds},organisationId:session.organisationId}});
   if(roles.length!==roleIds.length) throw new Error("Invalid role.");
   if(await tx.user.findUnique({where:{email}})) throw new Error("This email is already registered. Use another email; adding existing accounts requires an invitation flow.");

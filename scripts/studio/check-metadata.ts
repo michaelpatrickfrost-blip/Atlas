@@ -97,6 +97,8 @@ async function main() {
     await page.getByLabel("Description",{exact:true}).fill("Created through the real Admin form");
     await page.getByRole("button",{name:"Create draft",exact:true}).click();
     await expect(page.getByRole("heading",{name:"Browser accepted configuration",exact:true})).toBeVisible();
+    await page.waitForURL(/\/atlas\/studio\/[^/]+\/[a-f0-9-]{36}$/);
+    console.log("CHECK draft save and two-editor conflict");
     const secondEditor=await context.newPage();await secondEditor.goto(page.url(),{waitUntil:"networkidle"});
     await page.getByLabel("Description",{exact:true}).fill("First editor saved this revision");
     await page.getByRole("button",{name:"Save draft",exact:true}).click();

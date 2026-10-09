@@ -16,7 +16,7 @@ export async function StudioLibrary({session,root="/studio",target}: {session:Se
       {target && <input type="hidden" name="organisationId" value={target}/>}
       <label className="grid gap-1 text-sm">Name<input name="name" required maxLength={150} className="rounded-lg border p-2" /></label>
       <label className="grid gap-1 text-sm">Stable key<input name="key" aria-label="Stable key" required pattern="[a-z][a-z0-9_.-]{0,99}" maxLength={100} className="rounded-lg border p-2" /><span className="text-xs text-slate-500">A permanent identifier, such as service.routing_sources.</span></label>
-      <label className="grid gap-1 text-sm">Description<textarea name="description" maxLength={2000} className="rounded-lg border p-2" /></label>
+      <label className="grid gap-1 text-sm">Description<textarea name="description" aria-label="Description" maxLength={2000} className="rounded-lg border p-2" /></label>
     </ActionForm></Card>}
   </div>;
 }

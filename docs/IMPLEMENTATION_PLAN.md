@@ -9,6 +9,17 @@
 
 Service checkpoints updated 7 October 2026; other checkpoints retain their recorded dates. This is the working delivery tracker, not a declaration that Atlas is a complete ERP. Checkboxes describe specific accepted workflows. A module's catalogue entry or schema alone never earns a tick.
 
+## Reports workspace — 9 October 2026
+
+- [ ] Modern Reports utility, distinct from Dashboards; initial detailed coverage
+  Customers, Products, Sales, Inventory, Logistics, Manufacturing and Finance,
+  plus authorised summaries from other apps. Implementation and focused checks
+  complete; candidate/live feature acceptance and activation pending.
+- Reports preserves source permissions and private Finance scope, supports top
+  filters/columns/preview and explicit formatted Excel downloads (10,000-row bound).
+  See [Reports](modules/REPORTS.md) for scope; this does not mark the broader Finance
+  reporting checkpoints complete.
+
 ## Current position and first delivery batch
 
 **Legend:** `[x]` is a completed, evidenced checkpoint; `[ ]` is still open. “Foundation exists” means there is working code to build on, not a finished ERP module. The detailed feature checkboxes below stay open until their complete acceptance checks pass.

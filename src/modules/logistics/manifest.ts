@@ -1,3 +1,4 @@
+import { reports } from './services/reports';
 import { logisticsRecordContext, logisticsRecordRelationships } from "./services/relationships";
 import { requestServiceReturn } from "./services/service-return";
 import { logisticsBusinessPlanning } from "./services/business-planning";
@@ -10,6 +11,7 @@ import { logisticsAnalytics } from "./services/analytics";
 import { customerLogistics, logisticsAttention, searchLogistics } from "./services/queries";
 
 export const logisticsManifest: ModuleManifest = {
+ reportProvider: reports,
  recordContextProvider: logisticsRecordContext, recordRelationshipProvider: logisticsRecordRelationships,
  serviceOperationProvider:requestServiceReturn,
  businessPlanningProvider: logisticsBusinessPlanning,

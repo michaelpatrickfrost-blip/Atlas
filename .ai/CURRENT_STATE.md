@@ -1,3 +1,23 @@
+## 9 October 2026 — Reports workspace in progress
+
+- Added modern `/reports` utility separate from Dashboards, shared Home utility
+  navigation, top source/dataset/search/date/field/column filters, paginated preview
+  and formatted explicit Excel downloads.
+- Source-owned providers cover Customers, Products, Sales, Inventory, Logistics,
+  Manufacturing and Finance; authorised other-app summaries keep source definitions.
+  Finance preserves document/private-project scope and separate currencies.
+- Paths: `src/core/reports`, `src/modules/reports`, module report providers/manifests,
+  Reports page/API, shell utilities; `docs/modules/REPORTS.md` and shared guides.
+- Checks so far: strict TypeScript passed on first implementation; first 3 focused
+  test files passed (18 tests); final 8 focused files passed (48 tests), including
+  API/permission/workbook/client-state and Atlas admin/provisioning regressions. A first lint pass caught effect-driven synchronous
+  state setup; replaced with server-loaded initial preview. Final production build passed. Final standalone TypeScript passed after correcting two test-only annotations.
+  Focused ESLint passed (one decorative img-element warning only), and
+  `git diff --check` passed. Candidate/live acceptance and activation pending. No schema migration.
+- Release isolated from current live `329b60a` on `codex/reports-release` to avoid
+  unrelated unaccepted Studio changes. Next: complete verification, prepare and
+  accept candidate, activate live, merge implementation/memory into main.
+
 # Atlas current state
 
 ## 9 October 2026 — Modern Home menu from Michael's reference

@@ -136,3 +136,10 @@ Fleet replaces its catalogue placeholder. See [scope and genuine integration
 boundaries](../docs/modules/OPERATIONAL_APPS.md) and CURRENT_STATE for release truth.
 Microsoft calendar application configuration/consent and provider proof remain
 required; no external delivery is inferred from a connected UI or manual draft.
+
+## Reports utility — 9 October 2026
+
+`reports` (`/reports`) is a built-in utility, hidden from Home app cards and
+company entitlement toggles. It is distinct from Analytics/Dashboards. Source
+apps register allowlisted `reportProvider` datasets and retain their permissions,
+entitlements and record scopes. See `docs/modules/REPORTS.md`.

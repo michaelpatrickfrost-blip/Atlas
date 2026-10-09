@@ -88,6 +88,9 @@ export type StaffRosterProvider = (session: Session, manage: boolean) => Promise
 }>>;
 
 export type ModuleManifest = {
+  /** Built-in workspace utility; source datasets still require their own app entitlements. */
+  utility?: boolean;
+  reportProvider?: import("@/core/reports/types").ReportDataset[];
   recordContextProvider?: import("@/core/relationships/types").RecordContextProvider;
   recordRelationshipProvider?: import("@/core/relationships/types").RecordRelationshipProvider;
   salesInvoiceQuantitiesProvider?: import("@/core/finance/connections").SalesInvoiceQuantitiesProvider;

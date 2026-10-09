@@ -1,3 +1,15 @@
+## 9 October 2026 — Reports and Dashboards are separate destinations
+
+Michael requested a modern logo-based Reports workspace for filtered Excel
+exports, including Finance. Keep Reports as a built-in utility with source-owned
+allowlisted providers; a Reports entry does not grant data permissions or licences.
+Dashboards remains Analytics. Explicit XLSX downloads extend the existing
+user-chosen export exception; central records remain authoritative with no local
+business store or automatic cache. Raw exports preserve each source scope and
+currency. Summaries retain definitions/period semantics and cannot masquerade as
+raw data; broad Finance overview counts are excluded from export sources.
+See `docs/modules/REPORTS.md`.
+
 # Atlas decisions
 
 ## 9 October 2026 — Exploratory demo data is seeded by a script, not invented in the UI

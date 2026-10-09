@@ -20,6 +20,11 @@ describe('licensed module runtime',()=>{
   await expect(assertModuleEnabled(session(capabilities),'sales')).resolves.toBeUndefined();
   expect(state.findMany).not.toHaveBeenCalled();
  });
+ it('makes Reports available as a built-in utility without licensing or enabling source apps',async()=>{
+  state.findMany.mockResolvedValue([]);await expect(assertModuleEnabled(session(['core.profile.self']),'reports')).resolves.toBeUndefined();
+  await expect(assertModuleEnabled(session(['stock.read']),'stock')).rejects.toThrow('disabled');
+  await expect(setModuleEnabled('company','reports',false)).rejects.toThrow('cannot be toggled');expect(state.upsert).not.toHaveBeenCalled();
+ });
  it('continues to hide disabled apps from customer users',async()=>{
   const sales=getModule('sales');
   if(!sales) throw new Error('Sales module is not registered');

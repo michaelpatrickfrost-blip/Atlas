@@ -72,7 +72,9 @@ The user requested CSV downloads. User-chosen CSV exports from Planning, Invento
 Sales and the Logistics courier file may be saved locally. This supersedes earlier blanket statements that
 all native business-data downloads are disabled; shared authoritative records,
 attachments and backups still remain server-side. Do not introduce automatic
-business-data caching or an offline/local business database.
+business-data caching or an offline/local business database. The 9 October Reports
+request extends this exception to explicit user-chosen XLSX exports; see
+`docs/modules/REPORTS.md`.
 
 - Historical, superseded 7 October: Michael explicitly instructed “always deploy”. Finish Atlas changes by building, installing the Mac client and deploying the compatible private data API when changed, then verify the installed app and live service. UI/software stays on Mac; server holds secure data API and records. Preserve Blocwrite.
 
@@ -160,3 +162,11 @@ ordinary financial guards remain. See docs/ATLAS_ADMIN.md and CURRENT_STATE.md.
 ## Connections — 8 October 2026
 
 Atlas staff use `/atlas/connections` for company-selected, reviewed CSV onboarding across 13 canonical master-data and Sales draft sections, including machines/work centres. Staff access, company app availability and creation controls apply. File-bound review and transactional audit prevent duplicate retries; the original CSV is transient. See [Connections](../docs/CONNECTIONS.md) for supported sections and acceptance limits.
+
+## Reports workspace (9 October 2026)
+
+Reports (`/reports`) is a built-in utility distinct from Dashboards (`/analytics`).
+Read `docs/modules/REPORTS.md` for source-owned dataset registration, filtering,
+permissions, Finance scope and workbook format. User-requested Excel downloads
+extend the explicit CSV exception: user-chosen files are permitted; local business
+databases, offline stores and automatic caches remain prohibited.

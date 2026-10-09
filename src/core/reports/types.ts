@@ -1,0 +1,11 @@
+import type { Session } from "@/core/auth/session";
+export type ReportValue = string | number | boolean | Date | null;
+export type ReportRow = Record<string, ReportValue>;
+export type ReportColumn = { key: string; label: string; type?: "text" | "number" | "money" | "date" | "boolean"; path?: string; searchable?: boolean; values?: string[]; integer?: boolean };
+export type ReportFilter = { field: string; operator: "contains" | "equals" | "gte" | "lte"; value: string };
+export type ReportInput = { dataset: string; search: string; from: string; to: string; period: string; filters: ReportFilter[]; columns: string[]; page: number };
+export type ReportSpec = { id: string; name: string; source: string; description: string; columns: ReportColumn[]; dateField?: string; summary?: boolean; snapshot?: boolean };
+export type ReportDataset = ReportSpec & { anyOf: string[]; read: (session: Session, input: ReportInput, exporting: boolean) => Promise<{ rows: ReportRow[]; total: number }> };
+export type ReportResult = { spec: ReportSpec; columns: ReportColumn[]; rows: ReportRow[]; total: number; page: number };
+export const REPORT_PAGE_SIZE = 100;
+export const REPORT_EXPORT_LIMIT = 10_000;

@@ -32,7 +32,7 @@ async function main() {
       const utilities = page.locator('nav[aria-label="Workspace utilities"]:visible');
       await expect(utilities).toHaveCount(1);
       const utilityHrefs = await utilities.locator("a").evaluateAll((links) => links.map((link) => link.getAttribute("href")));
-      assert(utilityHrefs.every((href) => ["/home", "/analytics", "/profile#assigned", "/chat", "/settings"].includes(href ?? "")), "Rail only contains utilities.");
+      assert(utilityHrefs.every((href) => ["/home", "/reports", "/profile#assigned", "/chat", "/settings"].includes(href ?? "")), "Rail only contains utilities.");
       const apps = page.locator('main nav[aria-label="Apps"]');
       for (const app of modules) await expect(apps.locator(`a[href="${app.rootPath}"]`)).toHaveCount(1);
       const overflow = await page.evaluate(() => ({ root: document.documentElement.scrollWidth > innerWidth, main: Array.from(document.querySelectorAll("main")).some((node) => node.scrollWidth > node.clientWidth) }));

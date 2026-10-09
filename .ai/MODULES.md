@@ -144,3 +144,10 @@ metadata services are under `src/core/studio`; module UI/manifest under
 `src/modules/studio`. This is the Phase 1 metadata kernel, not completed Page/
 Process/Flow Studio. Later builders/engines remain deferred. Recovery and gate
 evidence: `docs/studio/STUDIO_IMPLEMENTATION_PROGRESS.md`.
+
+## Reports utility — 9 October 2026
+
+`reports` (`/reports`) is a built-in utility, hidden from Home app cards and
+company entitlement toggles. It is distinct from Analytics/Dashboards. Source
+apps register allowlisted `reportProvider` datasets and retain their permissions,
+entitlements and record scopes. See `docs/modules/REPORTS.md`.

@@ -1,3 +1,26 @@
+## 9 October 2026 — Reports workspace in progress
+
+- Added modern `/reports` utility separate from Dashboards, shared Home utility
+  navigation, top source/dataset/search/date/field/column filters, paginated preview
+  and formatted explicit Excel downloads.
+- Source-owned providers cover Customers, Products, Sales, Inventory, Logistics,
+  Manufacturing and Finance; authorised other-app summaries keep source definitions.
+  Finance preserves document/private-project scope and separate currencies.
+- Paths: `src/core/reports`, `src/modules/reports`, module report providers/manifests,
+  Reports page/API, shell utilities; `docs/modules/REPORTS.md` and shared guides.
+- Checks so far: strict TypeScript passed on first implementation; first 3 focused
+  test files passed (18 tests); final 8 focused files passed (48 tests), including
+  API/permission/workbook/client-state and Atlas admin/provisioning regressions. A first lint pass caught effect-driven synchronous
+  state setup; replaced with server-loaded initial preview. Final production build passed. Final standalone TypeScript passed after correcting two test-only annotations.
+  Focused ESLint passed (one decorative img-element warning only), and
+  `git diff --check` passed. Candidate/live acceptance and activation pending. No schema migration.
+- Initial release isolated from then-live `329b60a` on `codex/reports-release`.
+  Concurrent Studio release `c46bbef` became live during acceptance; the ancestry
+  gate stopped the old candidate safely. Reports now applies to `c46bbef` on
+  `codex/reports-live-release`, preserving the new live guards and Studio work.
+  Prior local checks apply to the original Reports source; combined source
+  revalidation, candidate/export acceptance and live activation remain pending.
+
 # Atlas current state
 
 ## 9 October 2026 — Legacy business-user routes stay customer scoped

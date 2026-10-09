@@ -54,14 +54,14 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
 - **Home** — modern blue-and-white launcher based on Michael's 9 October reference.
   A branded search header, light utility rail and grouped app cards with larger
   blue icons and concise purpose descriptions (manifest fallback) replace the compact Home link grid.
-  The utility rail contains Home, Reports (accessible Analytics), My tasks,
+  The utility rail contains Home, Reports (built-in data workspace), My tasks,
   Messages (chat permission) and Settings (company-admin access). It does not
   repeat the apps. Tablet/phone use a compact utility bar. This supersedes the
-  older no-sidebar rule on Home only.
+  older no-sidebar rule on Home and Reports.
   `AppDirectory` still uses `getNavigableModules` for both the launcher and compact
   Apps menu; counts reflect authorised entries. App labels/descriptions wrap and
   keyboard focus remains visible. Attention/goals stay below the app directory.
-- **Topbar** — Home uses the Atlas ribbon mark, wordmark/tagline, search, notices,
+- **Topbar** — Home and Reports use the Atlas ribbon mark, wordmark/tagline, search, notices,
   company identity/date, profile and sign-out. Other workspaces retain home,
   Apps, back, search, new window, notices, chat, profile and sign-out.
   `public/brand/atlas-mark.png` is a crop of Michael's supplied artwork.
@@ -97,3 +97,13 @@ without a genuine need), and within Overview a metrics row built from
 whatever modules contribute. Only sections with actual data (and capability)
 render — this is the template any future record view should follow for
 shared entities.
+
+## Reports workspace
+
+Reports extends the Atlas logo palette with a pale blue backdrop, white rounded
+filter/preview panels, blue outline icons and a single primary blue action.
+Source/dataset/search controls sit above dates, field filters and columns. Pending
+changes disable downloads until applied. Tables scroll inside their panel on
+small screens; field filters stack and retain accessible labels. Home and Reports
+share the utility rail with correct active-page indication. Dashboards remains
+separate. See `docs/modules/REPORTS.md`.

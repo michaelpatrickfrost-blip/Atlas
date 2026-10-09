@@ -1,3 +1,4 @@
+import { reportsManifest } from '@/modules/reports/manifest';
 import { studioManifest } from "@/modules/studio/manifest";
 import {meetingsManifest} from '@/modules/meetings/manifest';
 import {maintenanceManifest} from '@/modules/maintenance/manifest';
@@ -40,6 +41,7 @@ import { stubModules } from "@/modules/stubs";
  * enable/disable state lives in the database (ModuleState) — see runtime.ts.
  */
 const implemented = [
+ reportsManifest,
   studioManifest,
  meetingsManifest,maintenanceManifest,engineeringManifest,fleetManifest,fieldserviceManifest,
   templatesManifest,

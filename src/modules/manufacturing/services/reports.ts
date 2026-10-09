@@ -1,0 +1,14 @@
+import { ManufacturingOrderStatus, ManufacturingResourceType } from '@/generated/prisma/enums';
+import { db } from '@/core/db/client';
+import { recordDataset, decimal } from '@/core/reports/records';
+import { enumText, text, date, number, boolean } from '@/core/reports/columns';
+export const reports=[
+recordDataset({id:'manufacturing.orders',name:'Manufacturing orders',source:'Manufacturing',description:'Production orders, quantities and planned dates.',anyOf:['manufacturing.order.read'],dateField:'createdAt',columns:[text('orderNumber','Order'),text('product','Product','product.name'),enumText('status','Status',Object.values(ManufacturingOrderStatus)),number('quantity','Quantity','quantity'),text('unitOfMeasure','Unit'),date('requiredDate','Required date'),date('plannedStart','Planned start'),date('plannedFinish','Planned finish'),date('createdAt','Created')]},
+(s,w,take,skip)=>db.manufacturingOrder.findMany({where:{AND:[{organisationId:s.organisationId},w]},select:{orderNumber:true,product:{select:{name:true}},status:true,quantity:true,unitOfMeasure:true,requiredDate:true,plannedStart:true,plannedFinish:true,createdAt:true},orderBy:[{createdAt:'desc'},{id:'asc'}],take,skip}),
+(s,w)=>db.manufacturingOrder.count({where:{AND:[{organisationId:s.organisationId},w]}}),r=>({...r,product:r.product.name,quantity:decimal(r.quantity)})),
+recordDataset({id:'manufacturing.centres',name:'Work centres',source:'Manufacturing',description:'Plant work centre codes and availability.',anyOf:['manufacturing.order.read'],columns:[text('code','Code'),text('name','Work centre'),boolean('active','Active')]},
+(s,w,take,skip)=>db.manufacturingWorkCentre.findMany({where:{AND:[{organisationId:s.organisationId},w]},select:{code:true,name:true,active:true},orderBy:[{code:'asc'},{id:'asc'}],take,skip}),
+(s,w)=>db.manufacturingWorkCentre.count({where:{AND:[{organisationId:s.organisationId},w]}}),r=>({...r})),
+recordDataset({id:'manufacturing.resources',name:'Production resources',source:'Manufacturing',description:'Machines and people resources assigned to work centres.',anyOf:['manufacturing.order.read'],columns:[text('name','Resource'),text('centre','Work centre','workCentre.name'),enumText('type','Type',Object.values(ManufacturingResourceType)),number('rate','Units per hour'),number('efficiency','Planning efficiency %'),boolean('active','Active')]},
+(s,w,take,skip)=>db.manufacturingResource.findMany({where:{AND:[{organisationId:s.organisationId},w]},select:{name:true,type:true,workCentre:{select:{name:true}},nominalUnitsPerHour:true,planningEfficiencyPercent:true,active:true},orderBy:[{name:'asc'},{id:'asc'}],take,skip}),
+(s,w)=>db.manufacturingResource.count({where:{AND:[{organisationId:s.organisationId},w]}}),r=>({name:r.name,centre:r.workCentre.name,type:r.type,rate:r.nominalUnitsPerHour===null?null:decimal(r.nominalUnitsPerHour),efficiency:decimal(r.planningEfficiencyPercent),active:r.active}))];

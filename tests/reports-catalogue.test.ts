@@ -1,0 +1,19 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+const mock=vi.hoisted(()=>({modules:vi.fn(),enabled:vi.fn(),metrics:vi.fn(),read:vi.fn()}));
+vi.mock('@/core/modules/registry',()=>({getImplementedModules:mock.modules}));
+vi.mock('@/core/modules/runtime',()=>({enabledModulesForSession:mock.enabled}));
+vi.mock('@/core/analytics/catalogue',()=>({getAnalyticsMetrics:mock.metrics}));
+vi.mock('@/core/reports/customers',()=>({customerReports:[]}));
+import { loadReport, reportDatasets } from '@/core/reports/catalogue';
+import type { Session } from '@/core/auth/session';
+const session:Session={userId:'reader',userName:'Reader',userEmail:'test@invalid.test',organisationId:'tenant',organisationName:'Test',membershipId:'m',capabilities:new Set(['source.read'])};
+const dataset={id:'source.records',name:'Records',source:'Source',description:'Definition',anyOf:['source.read'],columns:[{key:'name',label:'Name'},{key:'secret',label:'Other permitted field'}],read:mock.read};
+const input={dataset:'source.records',search:'',from:'',to:'',period:'all',columns:['name'],filters:[],page:1};
+beforeEach(()=>{vi.clearAllMocks();mock.enabled.mockResolvedValue(new Set(['source']));mock.modules.mockReturnValue([{id:'source',reportProvider:[dataset]}]);mock.metrics.mockResolvedValue([]);mock.read.mockResolvedValue({rows:[{name:'Name',secret:'Omitted value'}],total:1});});
+describe('Reports catalogue authority',()=>{
+ it('omits disabled source apps and never invokes their provider',async()=>{mock.enabled.mockResolvedValue(new Set());expect(await reportDatasets(session)).toEqual([]);await expect(loadReport(session,input)).rejects.toThrow('unavailable');expect(mock.read).not.toHaveBeenCalled();});
+ it('omits datasets requiring capabilities the reader lacks',async()=>{expect(await reportDatasets({...session,capabilities:new Set()})).toEqual([]);});
+ it('returns only selected column values',async()=>{const result=await loadReport(session,input);expect(result.rows).toEqual([{name:'Name'}]);expect(result.columns).toEqual([{key:'name',label:'Name'}]);});
+ it('rejects inaccessible columns before reading source data',async()=>{await expect(loadReport(session,{...input,columns:['bankDetails']})).rejects.toThrow('available report columns');expect(mock.read).not.toHaveBeenCalled();});
+ it('does not expose broad Finance overview summaries as exports',async()=>{mock.metrics.mockResolvedValue([{id:'finance.documents',name:'All documents',subject:'Finance',definition:'Broad overview',grain:'Document',capability:'finance.overview.read'},{id:'finance.posted.revenue',name:'Posted revenue',subject:'Finance',definition:'Scoped journals',grain:'Line',capability:'finance.ledger.read',snapshot:false,unit:'money',query:vi.fn().mockResolvedValue([{label:'GBP',value:12345}])}]);const summaries=(await reportDatasets(session)).filter(d=>d.summary);expect(summaries.map(d=>d.id)).toEqual(['summary.finance.posted.revenue']);const result=await summaries[0].read(session,{...input,dataset:summaries[0].id,columns:[]},true);expect(result.rows).toEqual([{label:'GBP',value:123.45}]);});
+});

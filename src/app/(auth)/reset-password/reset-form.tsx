@@ -5,18 +5,19 @@ import { completePasswordRecovery } from "@/core/auth/security-actions";
 
 const input = "mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3 py-2.5 text-sm";
 
-export function ResetForm({companySlug,portal}:{companySlug?:string;portal?:"atlas"}={}) {
+export function ResetForm({companySlug,portal,loginHref="/login"}:{companySlug?:string;portal?:"atlas";loginHref?:string}={}) {
   const router = useRouter();
   // Saving opens the person's company. An older data service only saves the password, so fall back to sign-in.
   async function save(form: FormData) {
     try { await completePasswordRecovery(form); }
     catch (error) {
       if (typeof error === "object" && error && "digest" in error && String(error.digest).startsWith("NEXT_REDIRECT")) throw error;
+      if (error instanceof Error && error.message.startsWith("Too many attempts.")) throw error;
       throw new Error(companySlug
         ? "This code could not be used for this business. Check the code and password, or ask your Atlas administrator for a new code."
         : "Could not set your password. Check the code and password, or request a new code.");
     }
-    router.push(companySlug ? `/business/${companySlug}/login` : portal === "atlas" ? "/atlas/login" : "/login");
+    router.push(companySlug ? `/business/${companySlug}/login` : loginHref);
   }
   return (
     <ActionForm action={save} className="rounded-2xl border border-black/[0.06] bg-white p-5">

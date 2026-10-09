@@ -196,6 +196,11 @@ Optional `ATLAS_MRP_LEGACY_REVISION` names a sealed retained release whose query
 module must reproduce the JSON-date TypeError against the same central fixture;
 the check does not start a legacy web server. It exports no private record data.
 
+Deployed original reproduction and exact central outcomes are recorded in
+[9 October MRP workflow evidence](evidence/2026-10-09-guardian-mrp-workflow.md).
+Only verified original causes are closed; unknown older actions and shared
+expected-denial classification remain explicit AI work.
+
 ## Rejected drafts and older tabs
 
 Atlas administration shares ActionForm's draft-preserving submit lifecycle.

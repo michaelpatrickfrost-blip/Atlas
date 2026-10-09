@@ -51,6 +51,24 @@ See `docs/modules/REPORTS.md`.
 
 # Atlas decisions
 
+## 9 October 2026 — Unlisted Admin entry and central sign-in limits
+
+Michael requested `/19811171adminlogin` and exclusion from search. Remove public
+Admin sign-in links, return not found at retired URLs and anonymous console
+requests, and bind staff login/recovery exclusively to the new entry. Customer
+login no longer authenticates staff; authenticated staff keep the Admin console
+and existing permissions. The address is a discovery reduction, not a credential.
+Use noindex metadata and response headers, no-referrer and private/no-store. Do
+not advertise the address in robots.txt or a sitemap, or block crawlers from
+reading noindex. Search removals still depend on crawler recrawling.
+
+A central atomic private counter allows 10 attempts per identity/network and
+60 per network over 15 minutes, including recovery. HMAC keys avoid stored email,
+IP and credentials; expired counters are disposable infrastructure excluded from
+company exports and the data gateway. Counter failure rejects login. No MFA or
+SSO is claimed; existing passwords, staff grants and signed-cookie checks remain.
+
+
 ## 9 October 2026 — Administration owns a separate route layout
 
 Michael clarified that the Atlas console must contain administration only and use
@@ -69,7 +87,8 @@ path, compare untrusted hidden selectors, and then require an eligible canonical
 membership. Proxy overwrites the hint on page/API requests, preventing a supplied
 header from becoming authoritative. Existing generic desktop public actions use
 empty selectors and retain single-company compatibility. Separate platform recovery
-uses `/atlas/reset-password`; old `?portal=atlas` links redirect there. Permission
+now uses `/19811171adminlogin/recovery`; retired staff URLs and
+`?portal=atlas` links return not found. Permission
 and tenant boundaries remain in authenticated services, not Proxy.
 
 ## 9 October 2026 — Studio kernel scope and administration boundaries

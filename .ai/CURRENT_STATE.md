@@ -1,5 +1,44 @@
 # Atlas current state
 
+## 9 October 2026 — Private Admin entry prepared for live verification
+
+User-requested `/19811171adminlogin` and `/recovery` replace the public staff
+addresses. Customer sign-in loses its Admin link and rejects staff; retired
+addresses/anonymous console return not found without a private-address redirect.
+Responsive dedicated Admin auth frame includes password visibility and accessible
+errors. Proxy/metadata exclude Admin auth/console/API from indexing, use
+no-referrer and private/no-store. No public robots/sitemap lists the entry.
+
+Core auth binds selectors to the observed address; platform recovery requires
+the staff entry. Private central HMAC-keyed authentication_rate_limits counters
+atomically enforce 10 identity/network and 60 network attempts per 15 minutes,
+fail closed and expire independently of business data. Additive migration
+20261009220000_authentication_attempt_limits; counter table excluded from exports
+and gateway metadata. Existing passwords/grants/tenant checks remain. Paths:
+src/core/auth, src/proxy.ts, src/components/admin/auth-frame.tsx, auth/admin
+route layouts, prisma/schema.prisma and migration. Active Admin/architecture/
+Studio requirements docs and Studio acceptance URLs reconciled; historical
+release evidence preserved.
+
+Checks so far: Prisma generation, focused lint, focused 5-file/35-test auth suite
+and production build PASS. Full suite: 1066 passed / 87 failed / 22 skipped
+(179 files); failures are outside changed authentication sources, principally
+stale module-availability mocks. Initial strict typecheck failed because the cloned dependency tree lacked
+@playwright/test (and cascading script types); install exact lockfile dependencies
+and rerun without exclusions. Live advanced to 6775044 during work; preserve that deployed Studio release
+before preparing this change. Deployed 6775044 source/evidence is now merged.
+Exact-lockfile dependency install fixed missing Playwright. Merged production
+build, focused lint and 9-file/62-assertion suite PASS; final strict types are
+PASS. New Admin entry is not yet deployed.
+Candidate 952aae0 prepared with central database/evidence backup
+atlas-pre-deploy-20261009-205119; migration and compatibility/smoke pass.
+First browser runner stopped before creating fixtures because Guardian QA config
+was not loaded; retry loads /etc/atlas/guardian.env. Concurrent Messages release
+9303039 became live; preserve its exact source/evidence before final activation.
+Next: review final diff, record checks, prepare backed-up immutable release,
+exercise private entry/denials/limits and staff console, activate and repeat
+public HTTPS acceptance. No MFA/SSO or immediate crawler removal is claimed.
+
 ## 9 October 2026 — Modern Messages ready for candidate acceptance
 
 Implemented a wide logo-based pop-out and expanded `/chat` utility workspace,
@@ -115,6 +154,61 @@ confirmed 85 failures; no full-suite success claimed. Next: 2B typed field schem
 compiler/persistence design, then additive models/constraints and versioned validation/
 atomic extension values. Do not begin 2C until 2B checks/checkpoint are complete.
 
+## 9 October 2026 — Guardian MRP repairs deployed and proved
+
+Public immutable runtime 0ce9f4a8202bdf2413a9eb712b1f0a61a8e4ec72 preserves the
+reviewed live Reports/Studio and standalone Admin source a642df0. Run MRP now
+requires plan management and shared Manufacturing availability before engine;
+current/legacy saved demand decodes without rewriting history; component shortages
+no longer count BUY supply as a second gross requirement. Shared stock is netted
+once, independent BUY demand and scoped component labels retained. Source:
+planning/actions.ts and manufacturing/services/mrp-queries.ts. No schema migration,
+existing profile/permission change or local business database/cache.
+
+Backed-up central Test fixtures reproduced forbidden writes on c46bbef/2a8522f/
+a642df0, newly saved Planned orders crashes and doubled 10/20 → 20/40 cells. Retained
+585e9ba query reproduced exact saved ISO-date TypeError without a legacy web server;
+parallel af030b0 date conversion preserved. Same public check on 0ce9f4a PASSED:
+three forbidden actual POSTs leave exact run/suggestion state unchanged; manager's
+real Run MRP creates one session-scoped run with correct actor, MAKE 10/BUY 10/20,
+BOM/machine/routing/material dates. Historical date-bearing planning pages, actual
+links, three product pages, current forecast label/quantity and shortage cells
+10/20 pass with zero browser errors. Full history/input/order/stock/Finance/audit/
+outbox snapshots unchanged; 10 background writes blocked. Fresh exact Test
+companies suspended and synthetic grants/sessions revoked, history retained.
+Private backups: atlas-pre-deploy-20261009-202221 and atlas-pre-mrp-test-20261009-202521.
+
+Six identified access/proposal/quantity/date render-browser reports marked FIXED
+only after live proof. Historical unknown MRP action remains NEEDS_AI; fresh action
+success does not identify its original control. Three Home, five business reset,
+one staged Finance P2003 and one expected app-denial monitor brief have precise
+NEEDS_AI evidence, source paths, attempts, original-state blockers and next actions.
+The two disabled-app test denials are correctly rejected but instrumented as
+SERVER_ERROR; do not weaken the guard or silence genuine errors to clear the queue.
+All eight final queue pages read through hasMore=false: 179 active diagnostics.
+Atlas/timer active, worker fresh on 0ce9f4a, Result=success. Inventory/capped sweeps
+remain distinct from dynamic control verification.
+
+Checks: 13 focused files/89 assertions, production build, scoped lint and strict
+tracked-only Next typegen/TypeScript passed. Full suite 1050 passed/85 failed/22
+skipped; exact 85 failure names match unchanged a642df0 baseline (1036/85/22), no
+new failures. Untouched duplicate old-route test preserved in original worktree.
+Public read-only Finance/Logistics/Manufacturing/Service pages and five real Apps
+toggles pass; Home desktop/tablet/phone, branding, overflow, search/Escape and
+actual app link/menu pass with all writes blocked. Initial screenshot hit an
+existing private file permission; owned private path resolved the harness issue.
+Evidence: docs/evidence/2026-10-09-guardian-mrp-workflow.md; checker:
+scripts/guardian/check-mrp-access.ts; regressions: tests/mrp-planning-access.test.ts.
+
+Owned repairs also ported narrowly into the older dirty canonical desktop checkout:
+existing transactional firm/dismiss/restore, legacy cockpit Map, concurrent domain
+and engine edits preserved; additive read types/adapters and guard only. Canonical
+14 regressions and scoped lint pass (one pre-existing unused cockpit variable
+warning); no full canonical build/typecheck claimed. Published release/source is
+the authoritative reviewed modern implementation. Continue rotating uncovered
+workflows, prioritising exact original request reconstruction and stable expected
+access-error classification; no bulk closure, customer writes or automatic replay.
+
 ## 9 October 2026 — Standalone modern Admin accepted; Phase 2 begins
 
 Exact live source a642df0555cd45a97d57d867621d189c7650cf19 preserves concurrent
@@ -139,7 +233,9 @@ where appropriate; do not rewrite historical answers. Next: implement typed
 owner-approved record/extension contracts and bounded Tickets projections with
 native read/write policy, tests, docs and checkpoint before metadata storage 2B.
 
-## 9 October 2026 — Guardian MRP repair ready for server verification
+## 9 October 2026 — Guardian MRP repair ready for server verification (historical)
+
+Superseded by the deployed Guardian MRP acceptance entry above.
 
 Isolated reviewed release preserves live Reports/Studio and standalone Admin
 source a642df0. Own changes require `manufacturing.plan.manage` and enabled/
@@ -5284,3 +5380,11 @@ Messages-compatible source: production build, strict TypeScript and ten focused
 files/61 tests passed, including chat draft preservation and purchase retry inputs.
 No shared user drafts/records were replaced. Next: prepare the combined immutable
 candidate and repeat connected/public acceptance; no completion claimed yet.
+
+Candidate 265ab11 fully passed the connected Test workflow: responsive console,
+real MRP/Make/Buy (including retained supplier retry), repeat refusal, internal
+sales eligibility, GBP/EUR/restricted spend, drill-through, nine guides and zero
+browser exceptions. Visual screenshots reviewed. Backup atlas-pre-deploy-20261009-
+210052; private candidate evidence /tmp/atlas-supply-staging-3NQkiH. Activation
+stopped before writes because private Admin/auth release 1dafe16 had become live.
+Preserving its exact source and login-rate controls before combined preparation.

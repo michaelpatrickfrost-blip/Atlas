@@ -28,7 +28,8 @@ no local business database. Docs/plans/PEOPLE_PLATFORM_OVERHAUL.md and affected
 module/design docs, DECISIONS/PROJECT_MEMORY updated. Central Test acceptance
 checker scripts/check-people-workspaces.ts and backed-up candidate/public runner
 scripts/deploy/check-people-release.sh added; not yet run. Merged 11 files/81 tests
-PASS; final build/types still running. Next: candidate
+PASS; merged production build PASS and 4 auth regression files/23 tests PASS.
+Scoped lint and runner shell syntax PASS; strict types still running. Next: candidate
 acceptance, activation/public verification. External scope stays explicit: RTI/bank,
 special tax/director/week53; telephony/adherence/queue forecasts; mutual swaps,
 notifications, e-sign/benefits and historical goal snapshots.

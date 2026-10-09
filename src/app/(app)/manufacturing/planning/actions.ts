@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
+import { assertModuleEnabled } from "@/core/modules/access";
 import { runMrp } from "@/modules/manufacturing/services/mrp-calculation";
 import { firmSuggestion, dismissSuggestion } from "@/modules/manufacturing/services/mrp";
 import { MANUFACTURING_CAPABILITIES } from "@/core/permissions/capabilities";
@@ -11,7 +12,8 @@ import { MANUFACTURING_CAPABILITIES } from "@/core/permissions/capabilities";
  * per-order hours/machinery/materials/cost), then refresh the planning pages. */
 export async function runMrpAction() {
   const session = await requireSession();
-  assertCapability(session, MANUFACTURING_CAPABILITIES.planRead);
+  assertCapability(session, MANUFACTURING_CAPABILITIES.planManage);
+  await assertModuleEnabled(session, "manufacturing");
   try {
     const result = await runMrp(session.organisationId, session.userId);
     revalidatePath("/manufacturing/planning");

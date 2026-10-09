@@ -83,6 +83,19 @@ exact candidate Dashboard/Home/Reports/Messages acceptance PASS, private log
 e5d66e6cf36b0fe228ac65287fdaa8d5ceb8be7c, integrated Studio/Apps source.
 Merged that exact already-deployed source and preserved both contributors'
 acceptance refinements. Combined 23 files/97 assertions, strict types, production
-build, scoped lint (zero errors/one decorative brand-image warning) and diff PASS.
+build, scoped lint (zero errors/two decorative brand-image warnings) and diff PASS.
 Schema/client/descriptors now match its already-live typed fields; private auth
 counters remain excluded. Candidate preparation/acceptance and public proof follow.
+
+## Combined acceptance and font preservation
+
+Prepared bc8fc2e with backup atlas-pre-deploy-20261009-220614; Dashboard,
+Home/Apps (including 320px), Reports/Finance all PASS. Chat fixtures/history PASS,
+viewport assertion FAIL: the incoming runner accepted DOM visibility before the
+restored timeline was on screen. It now retries scrolling with the actual
+toBeInViewport assertion; no application behaviour assertion is relaxed. Failed
+log retained: /tmp/atlas-dashboards-integrated-candidate.log. Public runtime advanced
+to 5ebd700d3526b6fdaa70efa4514da0803301a285 (rounded Nunito typography); its
+exact source is merged unchanged. Four UI files/18 assertions, strict types,
+production build, runner lint and whitespace PASS. Final candidate/public checks
+include the existing read-only typography checker.

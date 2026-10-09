@@ -33,14 +33,51 @@ The global suite was not rerun; its unrelated baseline failures remain recorded.
 Final 73fcdb9 candidate Dashboard/Home/Reports/Messages checks PASS. Public source
 advanced to e5d66e6 during acceptance; merge its exact deployed Studio/Apps source,
 preserve source schema/lifecycle. Combined 23 files/97 assertions, strict types,
-production build, scoped lint (zero errors, one decorative brand-image warning)
+production build, scoped lint (zero errors, two decorative brand-image warnings)
 and diff check PASS. Generated descriptors match its already-live typed field models.
+Candidate bc8fc2e Dashboard/Home/Apps/Reports PASS; Messages fixture/history PASS,
+viewport assertion FAIL after reopened timeline restoration. Runner now scrolls
+and retries the actual viewport assertion instead of accepting DOM visibility.
+Exact public font source 5ebd700 is merged unchanged; no new Dashboard app code.
+Runner/font integration: four UI files/18 assertions, strict types, production
+build, runner lint and diff check PASS. Next: prepare and complete candidate/public
+checks before activation/handoff.
 
 Messages 9303039 was publicly verified; final Me-assignment 4be24b3 is included
 and candidate-verified in this combined source. Synthetic chat fixtures are retired;
 no real colleague/customer was messaged. Its final public proof accompanies this
 release. Only already-deployed contributors' source is included in this release.
 
+
+## 9 October 2026 — Shared rounded typography in verification
+
+Replaced Plus Jakarta Sans with Nunito across the shared root sans token/body,
+including business apps, sign-in/recovery and independent Atlas Admin. Bundled
+normal/true-italic variable fonts (200–1000) retain source character coverage and
+SIL OFL licence/provenance; Geist Mono, text hierarchy and aligned numerals remain.
+Paths: src/app/layout.tsx, globals.css, fonts and scripts/check-typography.ts;
+design guides/DECISIONS updated.
+Scoped codex/rounded-system-font starts from exact public live 2690c26, preserving
+its already-deployed Manufacturing/Studio compatibility source. No schema, records,
+permissions or storage change. Checks: exact-lockfile install, Prisma generation,
+production build, strict TypeScript, scoped lint and whitespace PASS. Initial
+checker types referenced an absent User.active field; corrected to membership
+active and strict types rerun successfully. Local production browser proves
+actual Nunito glyphs and equal numeral widths; desktop/phone login screenshots
+visually inspected. Candidate 4a0a230 prepared with central backup
+atlas-pre-deploy-20261009-214902; all 30 route/viewport typography checks PASS
+(actual Nunito glyphs, inherited controls, aligned digits, page fit, zero browser/
+asset errors/external font requests). Home desktop/phone, Admin phone and Reports
+desktop screenshots visually inspected. Private evidence: /tmp/atlas-typography-check-5XrNJu
+and /tmp/atlas-typography-staging-HfIoX2. Full suite not rerun for this presentation change.
+Activation safely stopped at ancestry after accepted Studio e5d66e6 became public
+live. Merged that exact source, retaining its typed fields and modern Apps design;
+only CURRENT_STATE header conflict required reconciliation. Combined production
+build, focused Apps menu test file/3 assertions, scoped lint and whitespace PASS;
+strict TypeScript in progress. Combined candidate/public typography acceptance
+and responsive Apps verification pending.
+Next: prepare and verify the compatible combined release, activate, prove fonts
+on public HTTPS and merge implementation/evidence into main before completion.
 
 ## 9 October 2026 — Studio 2B2 candidate checkpoint; visual setup clarification
 

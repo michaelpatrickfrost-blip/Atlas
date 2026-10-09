@@ -304,8 +304,13 @@ async function main() {
         .poll(
           async () => {
             try {
+              await dialog.evaluate((node) => {
+                for (const pane of node.querySelectorAll<HTMLElement>("section .overflow-y-auto"))
+                  pane.scrollTop = pane.scrollHeight;
+              });
               await timelineMessage.scrollIntoViewIfNeeded({ timeout: 2000 });
-              return await timelineMessage.isVisible();
+              await expect(timelineMessage).toBeInViewport({ timeout: 1000 });
+              return true;
             } catch {
               return false;
             }
@@ -316,7 +321,6 @@ async function main() {
           },
         )
         .toBe(true);
-      await expect(timelineMessage).toBeInViewport();
       await page.screenshot({ path: `/tmp/atlas-messages-${device}.png` });
       console.log(
         `PASS ${device}: modern pop-out, composer and record cards fit the viewport.`,

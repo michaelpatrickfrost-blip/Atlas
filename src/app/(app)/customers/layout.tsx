@@ -9,10 +9,10 @@ export default async function CustomersLayout({ children }: { children: React.Re
   assertCapability(session, "customers.read");
   const links = [
     { href: "/customers", label: "Accounts", icon: Building2 },
-    { href: "/customers/map", label: "Map", icon: Map },
+    { href: "/customers/map", label: "Customer hierarchy", icon: Map },
   ];
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-6">
+    <div className="mx-auto flex w-full min-w-0 max-w-7xl flex-col gap-6">
       <AppHeader icon={Users} title="Customers" eyebrow="Relationships">
         {links.map((link) => (
           <ActiveLink key={link.href} href={link.href} className="atlas-tab inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-medium">

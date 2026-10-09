@@ -11,9 +11,109 @@ versions on resume, bind support audit to tenant/actor/membership/versions.
 explicit existing Admin support entry and support-audit identity, without changing
 existing QA identity/grants. Helper NOT RUN. No endpoint/jobs, preview UI, schema
 migration or central/live claim. 2B3c2 remains not started.
-Compatible retirement source 6085d70 preparation queued; prior 8b99c1b all combined
+Compatible retirement source 6085d70 prepared/smoke-verified after backup
+atlas-pre-deploy-20261009-224009; combined candidate running. Public source
+advanced to 94dd3e (Sales/customer/CRM/Marketing), now merged unchanged;
+new combined checks required with its additive appointment schema preserved.
+Previous prior 8b99c1b all combined
 candidate checks PASS, activation safely rejected after release branch moved.
 Need candidate/public proof with deployed 56c9d88 business separation preserved.
+
+
+
+## 9 October 2026 — Customers, Sales, CRM and Marketing refinement prepared
+
+Latest navigation checkpoint: 422ad3 sealed candidate, full commercial forms and
+30 route/viewport cases PASS with Nunito; 15 allowed form POSTs, no browser errors.
+Backup atlas-pre-deploy-20261009-221850; fixture backup
+atlas-pre-commercial-test-20261009-222357; evidence
+/tmp/atlas-commercial-acceptance-a8MbgM and /tmp/atlas-commercial-staging-43QnIJ.
+Journey screenshot visually inspected. Activation stopped at ancestry after the
+business navigation boundary 56c9d88 became live. Its exact deployed source and
+updated shared memory are merged, preserving business/company controls and the
+separate platform administration entry. No new schema is introduced by this merge.
+Merged production build, strict TypeScript, 8 focused/regression files (34 tests)
+and scoped navigation lint PASS (zero errors; two existing img warnings). Layout
+recheck and final activation/public acceptance remain required.
+
+Latest checkpoint: sealed f5948cf prepared with central backup
+atlas-pre-deploy-20261009-220433. Candidate real forms and all ten screens at
+1448/820/390 widths PASS; 15 allowed form POSTs, no browser errors, anonymous
+redirects and tenant/capability/owner isolation PASS. Exact Test access revoked,
+records/audit retained. Evidence: /tmp/atlas-commercial-acceptance-3EeehS;
+staging logs /tmp/atlas-commercial-staging-5USGxq; fixture backup
+atlas-pre-commercial-test-20261009-221109. Journey desktop and appointment phone
+screenshots visually inspected. Rounded typography 5ebd700 became live before
+activation; preserve that exact source and all shared memory, build and rerun
+commercial layouts with Nunito, then activate and verify public HTTPS.
+Merged Nunito production build, strict TypeScript, scoped font/checker lint and
+whitespace PASS. Earlier f594 activation safely stopped at server ancestry;
+production was not changed by that attempt.
+Latest full run: 1201 passed / 63 failed / 22 skipped; 62 failures are older module
+mocks outside this feature, plus one existing Inventory 5-second compilation
+timeout. Inventory alone repeats that timeout; with a 20-second test allowance all
+12 assertions PASS (initial transform takes 9 seconds). No whole-suite green claim.
+
+While final acceptance ran, live advanced to 2690c26 (Manufacturing/Supply and
+Studio dependency/cost guards). Its exact deployed source and all contributor
+memory are merged; only a decisions append conflicted, and both entries remain.
+Merged Prisma generation, strict TypeScript, production build and 27-file/133-test
+commercial/eligibility/Studio/cost suite PASS. Prepared merged candidate 95d993a after backup atlas-pre-deploy-20261009-215242;
+compatibility/build/smoke PASS. Final relationship review binds appointment deal
+pickers/saves to a same-tenant, unarchived customer as well as the deal itself.
+Candidate 95d993a central forms and all ten desktop screens PASS, including
+retained cancellation; tablet caught horizontal overflow on Customers. Fixtures
+suspended/access revoked; evidence /tmp/atlas-commercial-acceptance-jOheYQ and
+backup atlas-pre-commercial-test-20261009-215709. Fix responsive overflow, preserve
+newly live e5d66e6 and repeat candidate/public acceptance. Its exact source, typed
+Studio schema, modern Apps navigation and contributor evidence are now merged.
+Customers layout/list had a margin-auto flex child growing to the table intrinsic
+width; explicit full width/min-width zero contains the table. Merged Prisma generation,
+strict TypeScript, scoped lint, production build and 30-file/145-test suite PASS.
+Responsive browser recheck subsequently PASS on f5948cf as recorded above. Linked-deal scope
+test suite (8 assertions) and strict types PASS; public acceptance remains pending.
+
+Scoped branch codex/customer-sales-experience starts from exact live 1dafe16.
+Customers has polished list/record context, canonical notes and a selected-family
+hierarchy; unrelated accounts/people stay off the visual. CRM adds canonical
+Accounts and a weekly appointment agenda/diary, preparation/location, customer/
+prospect/deal links, overlap and stale-write guards, idempotent create, reschedule,
+completion outcomes and retained cancellation. Today/Pipeline navigation/search
+prioritise selling work. Sales Orders is distinct from All sales/Quotations, with
+permitted document reads and clearer order summaries. Marketing adds campaign
+search/status/context, a connected journey canvas/experience lanes with editable
+intent/emotion/friction/improvements/measures/touchpoints/branch paths, and a visual
+versioned automation builder/preview. Existing central identities/history and
+tenant/capability/CRM owner checks remain. External providers remain blank.
+
+Additive migration 20261009234500_sales_appointment_diary extends SalesActivity only;
+no existing business rows are removed. Source: customers routes/components/core;
+crm accounts/appointments/domain/services; sales document list/order detail;
+marketing campaign/journey/builders/services. Research, Customer Master, CRM, Sales,
+Marketing coverage and decisions reconciled. Acceptance scripts use exact synthetic
+central Test tenants, retire access and retain audit; no local database/cache.
+
+Checks: initial production build and strict types passed; changed source lint has
+zero errors (one pre-existing unused-variable warning in Sales). New behavioural
+unit/command tests cover permissions, isolation, overlap, duplicate saves, stale
+updates, London DST and branch destinations. Corrected a stale Marketing command
+module-availability mock to current findMany API. Focused 20-file/98-assertion suite passed, followed by two production-feedback
+regressions and 16 refreshed campaign-save/access checks. Broader suite before
+the latter test refresh: 1126 passed / 78 failed / 22 skipped; failures were stale
+module mocks outside the new feature tests. Broad result after refreshing relevant Marketing mocks: 1144 passed / 62 failed /
+22 skipped (189 files); remaining failures are in untouched older module mocks. Candidate 51e4616 prepared after database/evidence backup atlas-pre-deploy-20261009-213646.
+Central browser forms passed family isolation, shared/private notes, appointment
+create/overlap/reschedule/completion, owner/capability/tenant denials, and journey
+experience/touchpoint/branch/reorder/zoom plus automation publication. Runner fixed
+a duplicate-text selector; responsive traversal then hit networkidle timeout on
+an otherwise rendered Sales record with ongoing background requests. Wait for
+page load instead. Visual inspection also prompted order-first layout, secondary
+Connections panels and collapsible recovery/references. Large-family selection
+now retains the focus/ancestors within its explicit display bound; Overview reads
+that same family. Added cancellation and focused-map regression coverage. Updated 23-file/119-test
+suite, strict TypeScript, scoped ESLint, shell syntax and production build PASS. At that earlier checkpoint, final
+updated candidate, responsive/public acceptance and activation remained pending.
+Subsequent candidate evidence is recorded above; public delivery is still pending.
 
 
 ## 9 October 2026 — Business interface excludes Atlas platform tools, verified live

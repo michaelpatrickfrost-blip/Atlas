@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AccountNotes } from "@/components/customers/account-notes";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusPill } from "@/components/ui/status-pill";
@@ -57,6 +58,7 @@ export function CustomerOverview({
         </Card>
       )}
 
+      <AccountNotes partyId={customer.id} notes={customer.notes} session={session} compact />
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="p-5">
           <h2 className="text-sm font-medium text-[var(--color-ink-muted)]">Hashtags</h2>

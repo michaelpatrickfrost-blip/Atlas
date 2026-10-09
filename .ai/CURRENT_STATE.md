@@ -22,14 +22,125 @@ Checkpoint checks: Prisma generation/validation and schema diff reviewed; produc
 build and strict types PASS; 8 focused files/68 assertions PASS. Scoped lint PASS
 after correcting existing touched-file effect/apostrophe issues. Final reruns,
 candidate mutations/privacy/tenant/concurrency/mobile checks, activation and public
-verification pending. Live advanced concurrently to e5d66e6; merge that exact
-already-live source before this release. Existing data/credentials/grants unchanged;
+verification pending. Exact already-live e5d66e6 is merged for this release,
+preserving Studio/Supply/Apps and their contributor evidence. Existing data/credentials/grants unchanged;
 no local business database. Docs/plans/PEOPLE_PLATFORM_OVERHAUL.md and affected
 module/design docs, DECISIONS/PROJECT_MEMORY updated. Central Test acceptance
 checker scripts/check-people-workspaces.ts added; not yet run. Next: compatible merge/commit, candidate
 acceptance, activation/public verification. External scope stays explicit: RTI/bank,
 special tax/director/week53; telephony/adherence/queue forecasts; mutual swaps,
 notifications, e-sign/benefits and historical goal snapshots.
+## 9 October 2026 — Studio 2B2 candidate checkpoint; visual setup clarification
+
+Phase 2 active, 2B2 schema/lifecycle VERIFIED on candidate; combined release pending.
+Added closed compiler dispatch, typed owner field policy and Tickets entity v2
+(preserving exact v1 hashes), permanent entity/field-key/generation publication
+binding, generation/tenant checks at activation and cosmetic-only revisions until
+2B3's reviewed migration path exists. Five additive typed models/migration support
+immutable history, current pointers, exact decimals/money, required constraints and
+per-generation uniqueness. No customer value API/builder is exposed yet. Existing
+native intake and canonical records are preserved. Privileged schema acceptance
+helper is included in scripts/studio/check-metadata.ts; owner write API remains 2B4.
+
+Michael requires a bespoke screen/document-template design studio for businesses,
+including Sales, with simple visual selection and previews. No internal identifiers
+should be entered by users: removed the stable-key input/display and create action
+now generates configuration.<UUID> server-side. Persisted identities remain stable.
+STUDIO_VISUAL_BUILDER_REQUIREMENTS.md records both screen/document experiences and
+explicit Sales owner, screen/preset editor, responsive preview, existing Templates
+adapter and native-runtime integration substreams (2E0–2E5); Tickets is not
+presented as Sales support.
+
+Latest visual requirement: easy template customisation, activated designs on each
+business's live dashboards/screens, and custom buttons. Saved in visual requirements
+and 2E5 plan, NOT IMPLEMENTED. Inspected existing Home/analytics routes, dashboard
+actions/definition/templates/renderers and Sales template provider: reuse existing
+Dashboards/analytics and Templates engines, preserve user-owned personal boards,
+and bind buttons to approved native actions with server permissions/tenant checks.
+
+Latest integrated Admin/Messages source: 27 focused/regression files/140 tests
+PASS, Prisma client regenerated, scoped lint and production build PASS. Strict
+post-build TypeScript PASS.
+Initial Prisma validate/generate PASS. Backed-up central transaction-only DDL check
+found one PL/pgSQL CASE-parentheses syntax error, fixed and rerun PASS; explicit
+rollback/table absence confirmed before preparation. Dry-run backup:
+atlas-studio-field-ddl-TvSAMP. Later migration/runtime evidence is recorded below.
+Full suite not rerun; previously reported baseline failures remain open, and no
+whole-suite success is claimed. Diff reviewed; no native domain code removed.
+
+Latest observed live source is now 2690c26cb0f5f3c28e21265820e8a713708ce699
+(connected supply/planning). Exact live source merged, preserving private Admin,
+Messages, purchasing fixes, central additive supply migrations and compatibility
+checks. Reviewed modern Apps source from main f6e27cb is also merged; preserve its supplied
+design and repeat responsive navigation acceptance. Integrated 29 files/143 tests, Prisma generation, scoped lint and production build
+PASS. Strict post-build TypeScript PASS; combined candidate/public acceptance
+will also exercise connected supply and the modern Apps menu. Earlier live source
+was 1dafe165f97545829d96242b1846e87d9c1f42b4 (private Admin entry). Merged origin/main 6870014,
+including exact live Admin and Messages, preserving their source/evidence. Previous Studio source
+6775044 passed public owner/metadata/Admin/business login/Home/Reports/MRP; its final
+evidence remains in main eba8b49 and historical entries below. 2B2 and generated-key
+UI changes are checkpointed at candidate fcfd5128e991b453badf1bd95477271645f0291a.
+Preparation PASS after backup atlas-pre-deploy-20261009-211931; additive field
+migration applied during preparation, immutable candidate smoke verified. Production
+pointer remains 1dafe16. Candidate field schema/lifecycle plus Studio/Admin/business/Home/Reports/MRP
+checks PASS, including generated-key form. Combined run FAIL in Messages
+viewport selector: retained conversation previews duplicate the exact timeline
+text. Scoped that locator to article, preserving the behaviour assertion. No app
+regression or complete combined PASS claimed. Private logs:
+/tmp/atlas-studio-acceptance-1hYTRO. Revised candidate 770393f22a4b76f7802794ecda6659226916d931 prepared/smoke PASS
+with backup atlas-pre-deploy-20261009-212757 and production build PASS. Second run again passed field/Studio/Admin/business/Home/Reports/MRP. Messages
+viewport scroll encountered a detached node while the reopened timeline restored
+asynchronously. Retry only transient locator detachment, then assert actual message
+is in viewport; application error assertions remain unchanged. Logs:
+/tmp/atlas-studio-acceptance-LiKMZK. Full combined acceptance still NOT PASS. These changes are NOT LIVE. Phase 2 gate
+NOT PASSED.
+
+Exact next: exact live supply 2690c26, Admin 1dafe16 and Messages 9303039 are merged with
+contributors' evidence preserved. Integrated local checks PASS; selector TypeScript/scoped lint PASS.
+Async timeline assertion TypeScript/scoped lint PASS; checkpoint, then prepare and rerun
+exact candidate complete Studio/Admin/business/Home/Reports/
+MRP/Messages/private-Admin acceptance. Activate only on PASS.
+Then 2B3 evolution/retirement/conversion planning and resumable jobs, followed by
+2B4 owner-authorised values. No 2C or Phase 3+ before preceding workstream checks.
+## 9 October 2026 — Apps menu candidate accepted; Studio contract blocks activation
+
+Business workspace Apps now follows Michael's supplied wide white panel: Customers,
+Operations, People and Business in the first desktop row; More and Company below.
+Larger grey outline icons, readable wrapped labels, spacious rounded Apps/search
+controls, responsive columns/internal scrolling and 44px links. Phone search has
+its own header row; narrow-screen spacing keeps utilities reachable. Escape returns
+focus to Apps; group headings retain the panel; links/outside clicks/routes close it.
+Existing Home/Reports/Messages and standalone Admin retain their designs; the same
+server directory/capability filtering supplies authorised entries. No schema,
+permission, central business-record or storage change.
+
+Paths: shell app-directory/app-menu/topbar/command-palette/workspace-back, globals,
+tests/app-menu and scripts/check-home-menu; design/Reports/scope guides, decision
+and roadmap updated.
+Release branch codex/apps-menu-design starts at exact public live 1dafe165,
+preserving accepted Messages/Studio/private Admin/sign-in source. Final local
+production build with exact lockfile dependencies PASS, 2 focused files/5 assertions PASS, scoped lint zero errors
+with two existing brand-img warnings, diff whitespace PASS. Initial strict types
+found missing @playwright/test in the cloned Desktop dependencies and cascading
+script types; exact-lockfile install and final strict TypeScript without exclusions PASS.
+Full suite not rerun. Exact 12d78a1 candidate prepared; read-only central QA checks
+PASS for Home desktop/tablet/phone and Apps desktop/tablet/phone/320px, authorised
+links, scrolling/44px targets, focus/closure/search and actual My work navigation.
+All four menu screenshots inspected: supplied desktop grouping/spacing and
+responsive wrapped phone/tablet labels confirmed. Private evidence:
+/tmp/atlas-home-menu-check-IUKhn5; prepare backup atlas-pre-deploy-20261009-211746.
+Activation stopped safely after backup atlas-pre-deploy-20261009-212330 because a
+retained Studio customField definition requires tickets.ticket@2. Read-only SQL
+confirmed its company is a SUSPENDED synthetic studio-check Test organisation;
+the compatibility scanner includes its still-active definition. Live remains
+1dafe165. No metadata/grants changed or gate bypassed. Concurrent Studio source
+supplies v2 and is still undergoing final acceptance. Next: preserve its exact
+accepted live source when deployed, rebuild compatible Apps candidate, repeat
+read-only menu checks, activate and verify public HTTPS. Apps is not yet live.
+The reviewed menu source and this blocker are merged into main at 910aac3.
+Final public revision check still reports 1dafe165; Studio's combined acceptance
+remains pending after Messages timeline-restoration assertions. Do not include
+that unaccepted source or change retained metadata merely to clear the gate.
 
 ## 9 October 2026 — Private Admin entry deployed and publicly verified
 
@@ -82,7 +193,7 @@ Checker: scripts/check-private-admin-login.ts. Source: src/core/auth, src/proxy.
 Admin auth frame/route layouts, Prisma schema/migration and focused auth tests.
 Source and final evidence integrated with origin/main; no further Admin blocker.
 
-## 9 October 2026 — Modern Messages ready for candidate acceptance
+## 9 October 2026 — Messages historical implementation and candidate evidence
 
 Implemented a wide logo-based pop-out and expanded `/chat` utility workspace,
 responsive conversation list/timeline, optional participants/shared-record details,
@@ -5242,3 +5353,207 @@ concurrent work. Updated Admin acceptance finally block removes its own durable
 helper cleanup records. No existing user company/data selected or deleted. Ordinary
 companies continue to use archive/export; bulk permanent cleanup is Test-only.
 This supersedes the pending checkpoints above; no delivery blocker remains.
+
+## 9 October 2026 — Manufacturing & Supply console release checkpoint
+
+Implemented on `codex/manufacturing-supply-console` from exact live c46bbef, retaining
+its verified Studio work after live advanced. New console unifies existing demand,
+MRP, schedule/execution, Products/Inventory and Finance purchasing/spend; Planning
+launcher consolidates only when the target is accessible. Today preserved at
+`/manufacturing/today`. Role/search/bookmarkable shortcuts and nine illustrated
+working guides at `/manufacturing/help`. Additive Product.sellable defaults true;
+internal items remain active for Stock/recipes/purchasing and are blocked from new
+Sales activity. Atomic version/quantity-checked Buy-to-PO draft with source timeline
+and duplicate protection; Make firmer now accepts rich pegging, preserves unit and
+records claim/order/audit/activity together. Only completed plans are current.
+
+Finance-owned `/manufacturing/spend` separates posted AP net, unbilled PO net,
+receipt net and current open gross payables by currency, with entity/project/source
+permission gates and drill-through. It is not production WIP/COGS or historic cash.
+Research uses official Dynamics documentation; full 173-section coverage reconciled
+and retained. Dated site/warehouse supply netting, finite labour/material/tools,
+scenarios/CTP and WIP/variance remain open. Source, decisions, module map and topic
+docs updated; no local business data store or existing customer record changes.
+
+Checks actually run: initial production build, scoped TypeScript/ESLint passed;
+128 focused tests in 18 files passed, including rich firming/report access/conversion.
+Final production build, explicit TypeScript, scoped ESLint, Prisma validation/
+generation and deployment-check shell syntax passed. Full-suite exact-live baseline reproduces 85 failures in
+14 older files (primarily incomplete entitlement mocks); current has the same
+failures after correcting new Sales test fixtures. No full-suite pass claimed.
+Release prepare, migration and connected candidate/public acceptance remain pending.
+Next: finish final checks, prepare backed-up immutable release, exercise isolated
+central Test workflow, activate and verify exact public revision. Evidence tracked in
+`docs/modules/MANUFACTURING_SUPPLY_ACCEPTANCE.md`.
+
+Integration checkpoint: the release includes exact live a642df0 (Reports + standalone
+Admin) and the relevant Guardian MRP guard/lineage repair from 0854b77. Retained all
+providers and source history. Added-source access checks extend the Guardian guard;
+its positive test fixture now includes the required source permissions. Baseline
+comparison after integration and connected candidate acceptance remain pending.
+
+Integrated regression check: 53 tests in nine files passed, including Reports
+providers/catalogue, launcher entitlement fallback, current/legacy saved MRP
+lineage and direct planning action guards. Updated only the Guardian Test fixture
+inputs for newly required source access; no existing user grants changed. Historic
+branch source retained alongside exact live Reports/Admin ancestry.
+
+Compatible final source checks: production build, explicit TypeScript, scoped ESLint
+and diff checks passed. Full suite with four workers/30-second timeout: 167 files
+passed, 14 failed, three skipped; 1,071 passed/85 failed/22 skipped. The same 85
+failures are established exact-live baseline issues. No task regression remains in
+that comparison; no full-suite pass claimed. A prior transfer import timeout passed
+its isolated 12-test recheck and final suite. Candidate prepare still pending.
+
+Candidate 1f93216 prepared after backup atlas-pre-deploy-20261009-201307; additive
+sales-eligibility migration applied and server build/Studio compatibility/smoke
+passed. First candidate check passed desktop/tablet/phone console rendering and no
+root overflow, then stopped in console navigation before business actions. Exact
+Test company/session retired; existing QA unchanged. Tightened view selector and
+added private diagnostic output/checker override for acceptance iterations; next
+step is the complete connected check. No activation/completion claimed yet.
+
+Finance report supplier grouping now includes the canonical account code, so two
+accounts with the same legal name cannot collapse into one supplier total. Added
+regression coverage; final check/release pending alongside acceptance refinements.
+
+Candidate navigation check identified delayed checkbox feedback while shortcut URL
+navigation resolves. The console now applies optimistic shortcut state within the
+router transition; URL/server permission validation remains authoritative. Recheck
+with explicit click then URL-state assertion; connected fixture still pending.
+
+Added a real console screenshot from the isolated Test fixture to the getting-
+started guide, alongside workflow illustrations. It contains no customer records.
+The guided example explicitly explains company/profile differences.
+
+Connected candidate passed recursive MRP (10 assemblies, 20 components less five
+on hand produces Buy 15) and Make firming. Buy draft creation safely rolled back:
+existing SQL `resultingOrderId` FK targets production orders. Added a separate
+`resultingPurchaseDocumentId` with tenant-bound Finance FK; retained Make FK.
+Updated source claim, actioned links and acceptance assertion. No partial PO was
+left by failed checks. Test companies retired; existing QA membership unchanged.
+Draft saves now return readable validation/conflict feedback and stale proposal
+prefill renders guidance instead of a production React render error. The current
+refinement still requires build and backed-up candidate/public acceptance.
+
+Refinement checks actually run: Prisma validation/generation, production build,
+explicit TypeScript, scoped ESLint and five focused files/23 tests passed. Added
+real browser assertions for rejected zero-price drafts and revisiting a converted
+source. The newly deployed 0ce9f4a MRP shortage correction is being integrated
+before the next immutable candidate; final combined checks still required.
+
+Console integration preserves observed live 0ce9f4a and its Guardian correction:
+component demand and matching BUY supply are counted once, with shared stock
+netted once. Reconciled current planning guidance without restoring obsolete
+separate-app or unapplied-foundation claims. Guardian's independent public repair
+acceptance remains owned by its task; this console check does not close its reports.
+
+Combined source after preserving live 0ce9f4a: production build, explicit strict
+TypeScript, scoped ESLint, Prisma validation and seven focused files/40 tests
+passed. Migration is additive and retains the production FK. Candidate acceptance
+is still pending; the new purchase-link migration has not yet been applied.
+
+Candidate 61a36d1 applied the additive purchase relation after central backup
+atlas-pre-deploy-20261009-203333, then server Turbopack font-query bundling failed.
+Live stayed on 0ce9f4a; no activation. Confirmed release-script flaw: OR-handled
+subshell disables errexit and could write readiness after failed build. Extracted
+independent build shell with output guards, added injected-stage regressions.
+Bundled existing Atlas font families from pinned official Google Fonts/SIL OFL
+sources via next/font/local, preserving variables/full font character coverage.
+Build and new gate tests pending; failed immutable source/logs retained.
+
+Release-gate repair verified: three release files/13 tests passed, including all
+six injected preparation failures under a parent OR condition. Bundled-font
+production build, explicit TypeScript, scoped ESLint, shell syntax and diff check
+passed. The candidate remains to be rebuilt and fully exercised before activation.
+
+Retry 2b08356 stopped at the ancestry gate before any preparation: another task
+had activated Studio release 6775044. Preserved that exact live source and its
+Tickets owner contracts/typed field validation; no unfinished newer Messages
+source included. Combined verification and candidate/public acceptance remain
+pending. This retains both live systems rather than overwriting parallel releases.
+
+Preserved live Studio integration: combined production build and 13 focused
+files/73 tests passed (Studio contracts/fields, MRP, console/report/purchase and
+release gates). Concurrent type generation briefly removed .next/types/routes;
+explicit TypeScript is being rerun after the completed build. No source exclusions
+or relaxed checks. Next candidate must pass full connected acceptance before live.
+
+Candidate 96bffb7 built/smoke/Studio compatibility passed after backup
+atlas-pre-deploy-20261009-204409. Stable explicit TypeScript passed. Connected
+responsive/MRP/Make and readable zero-price rejection passed. Corrected acceptance
+selector for Next's empty route-announcer alert. Screenshot then confirmed React
+form actions reset the uncontrolled supplier after a resolved validation result,
+blocking retry at native required-field validation. DocumentEditor now prevents
+native submission and invokes the guarded server action directly, preserving all
+entries on error. Added supplier-retention assertion; new build/acceptance pending.
+
+Form correction verified: production build, strict TypeScript, scoped ESLint and
+three files/10 tests passed. New UI regression retains supplier, title, cost centre
+and line entries after validation, retries the same inputs, and retains an older-
+tab draft with readable recovery. Candidate checker now scopes business alerts and
+checks retained supplier explicitly. Full candidate/public acceptance still pending.
+
+Research now explicitly covers Microsoft workspace personalisation and saved
+views. Target custom fields/forms/dashboards/workflows use owner-approved Studio
+contracts with preview/publication/rollback; current console supplies bookmarkable
+role/shortcut views only. No later Studio compiler is claimed implemented here.
+
+Inspection confirmed a pre-existing planning-cost visibility gap in the legacy
+cockpit and Planned orders. This is now repaired: manufacturing.cost.read gates
+pending/actioned estimates and cockpit cost cells independently of plan.read.
+Operational quantities remain visible. Rendered-page regressions check restricted
+and permitted profiles. This is not verification of every historical Manufacturing
+profile boundary; the new Finance report uses independent source gates.
+
+Form-refinement prepare stopped before writes because the shared live service
+advanced to Messages 9303039. Preserved that exact live shell/chat implementation
+and its record/draft retention; console consolidation remains permission-filtered.
+Reconciled both tasks' decisions. Newer private Admin candidate is not included
+until its activation is observed. Combined source verification remains required.
+
+Messages-compatible source: production build, strict TypeScript and ten focused
+files/61 tests passed, including chat draft preservation and purchase retry inputs.
+No shared user drafts/records were replaced. Next: prepare the combined immutable
+candidate and repeat connected/public acceptance; no completion claimed yet.
+
+Candidate 265ab11 fully passed the connected Test workflow: responsive console,
+real MRP/Make/Buy (including retained supplier retry), repeat refusal, internal
+sales eligibility, GBP/EUR/restricted spend, drill-through, nine guides and zero
+browser exceptions. Visual screenshots reviewed. Backup atlas-pre-deploy-20261009-
+210052; private candidate evidence /tmp/atlas-supply-staging-3NQkiH. Activation
+stopped before writes because private Admin/auth release 1dafe16 had become live.
+Preserving its exact source and login-rate controls before combined preparation.
+
+The observed private Admin baseline is exact 1dafe16, including retained rejected
+sign-in inputs and verified retry. Preserved its central authentication limits and
+Company/Admin path binding. It does not change Manufacturing/Finance capabilities;
+no existing user grants, passwords or profile data were altered by this task.
+
+Exact live sign-in source integration: Prisma generation/validation, production
+build, strict TypeScript and 13 focused files/72 tests passed, including central
+authentication limits, private/customer selectors, rejected-input preservation,
+MRP/source conversion, spend permissions and release failure gates. Preparing
+compatible source; complete public feature acceptance remains pending.
+
+Candidate f0807fa passed the complete central Manufacturing & Supply browser
+workflow; private evidence /tmp/atlas-supply-staging-6nLSJ6. Activation stopped at
+Studio compatibility after backup atlas-pre-deploy-20261009-212304: one active
+metadata pointer in a suspended Test company references tickets.ticket@2 from
+another candidate. No live pointer change or missing real-customer contract.
+Read-only diagnosis confirmed isTest=true/status=SUSPENDED; retained history was
+being scanned as runtime configuration. Compatibility scanning now selects only
+metadata and skips suspended Test history. All real companies (including suspended),
+active Tests and unknown statuses remain checked; a resumed Test is checked again.
+No metadata/tenant status or other contributor's records are modified. Added
+lifecycle/expiry/pagination regressions. Build/types, prepared candidate and live
+acceptance must be repeated for this source; no completed deployment claim yet.
+
+Final lifecycle/cost refinement: production build, explicit strict TypeScript,
+scoped ESLint, diff check and 14 focused files/67 assertions PASS. The first cockpit
+redaction test fixture lacked shortagesByPriority; completed the fixture and all
+three real rendered-page permission regressions pass. Full suite not rerun after
+later live integrations; earlier exact-baseline 85 failures remain documented.
+Next: prepare pinned clean source, recheck complete central/browser workflow,
+activate and verify public HTTPS. Preserve other contributors' dirty canonical
+checkout; integration must not overwrite unfinished content.

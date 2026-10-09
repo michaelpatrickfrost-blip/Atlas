@@ -25,7 +25,7 @@ export async function importSalesDrafts(tx: Prisma.TransactionClient, input: Set
   const quotes = input.entity === "sales-quotes";
   const dateKey = quotes ? "expiryDate" : "deliveryDate";
   const customers = await tx.party.findMany({ where: { organisationId: input.organisationId, customerCode: { in: input.rows.map(row => row.customerCode) } }, include: { addresses: { where: { active: true }, orderBy: { createdAt: "asc" } }, commercialSettings: true } });
-  const products = await tx.product.findMany({ where: { organisationId: input.organisationId, code: { in: input.rows.map(row => row.productCode) }, active: true } });
+  const products = await tx.product.findMany({ where: { organisationId: input.organisationId, code: { in: input.rows.map(row => row.productCode) }, active: true, sellable: true } });
   const groups = new Map<string, Array<{ row: Record<string, string>; index: number }>>();
   for (const [index, row] of input.rows.entries()) {
     if (!/^\d+$/.test(row.quantity) || Number(row.quantity) < 1 || Number(row.quantity) > 1_000_000) throw new Error(rowIssue(index, "quantity must be a whole number from 1 to 1,000,000."));

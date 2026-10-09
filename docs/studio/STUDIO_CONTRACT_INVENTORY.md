@@ -47,3 +47,9 @@ Lists use bounded keyset pagination (maximum 50), and all reads preserve workSco
 The entity's owner policy locks/rechecks native tenant/revision/private queue and
 final/merged state before permitting Studio-owned additional data. No schema change,
 native mutation endpoint or parallel intake-field engine is introduced by 2A.
+
+Release scans exclude only suspended Test companies: acceptance cleanup retains
+immutable metadata/history, which is no longer runtime configuration. Real companies
+(including suspended), active Tests and unknown lifecycle states retain missing,
+changed and expired-contract blockers. Reactivating a Test restores its dependency
+checks. Scans read bounded dependency metadata and tenant flags, not business payloads.

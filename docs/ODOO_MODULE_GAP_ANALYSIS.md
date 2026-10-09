@@ -4,7 +4,7 @@ Reviewed 3 October 2026 against Odoo 19 documentation. These are implementation 
 
 ## Product experience and shared data
 
-The latest agreed design is an icon launcher home, crisp white workspaces, blue accents, rounded controls and compact horizontal module menus. No permanent sidebar. Every app follows the same patterns: overview, work queue, records, reporting and configuration. Creation opens a focused dialog or document editor; advanced fields appear in sections. Mobile tables scroll inside their container, while navigation remains usable without a desktop mouse. Never make an enabled app tile imply that unfinished workflows work.
+The latest agreed design (9 October 2026) uses grouped Home app cards, a separate workspace-utility rail, crisp white workspaces, blue accents, rounded controls and compact horizontal module menus. Business workspaces use the supplied wide Apps panel with responsive grouped columns. Every app follows the same patterns: overview, work queue, records, reporting and configuration. Creation opens a focused dialog or document editor; advanced fields appear in sections. Mobile tables scroll inside their container, while navigation remains usable without a desktop mouse. Never make an enabled app tile imply that unfinished workflows work.
 
 Customer Master owns Group → Customer → Branch identity, contacts and addresses. Products owns the business catalogue. Pricing owns price rules. Sales references these records and snapshots the commercial agreement. Inventory owns availability and movements; Logistics owns physical fulfilment; Finance owns postings and payments. A customer view aggregates those capabilities through providers rather than maintaining duplicate customer tables.
 

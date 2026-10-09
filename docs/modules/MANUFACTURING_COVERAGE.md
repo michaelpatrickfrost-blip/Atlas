@@ -1,83 +1,56 @@
-# Manufacturing section coverage — 3 October 2026
+# Manufacturing coverage — 9 October 2026
 
-Tracks the 173 numbered sections of the current brief
-([source](MANUFACTURING_SOURCE_REQUIREMENTS.md)) against delivery phase and
-status. This replaces the previous 143-section coverage map built against the
-superseded brief — see Git history for that version. Every row not marked
-"Delivered" remains open target scope, not completed functionality.
+All 173 sections of [the source brief](MANUFACTURING_SOURCE_REQUIREMENTS.md) remain
+in scope. This replaces stale Phase 1-only claims; historical wording is in Git.
+Read [Manufacturing & Supply](MANUFACTURING.md) for the researched benchmark,
+current workflows, ownership and remaining programme. A partial row stays open.
+Current live validation is recorded separately in
+[acceptance](MANUFACTURING_SUPPLY_ACCEPTANCE.md) and `.ai/CURRENT_STATE.md`.
 
-Ownership split (unchanged target, restated against the new numbering):
-Products/engineering owns BOM & routing definition (§9–20); Manufacturing owns
-capacity resources and execution (§21–27, §57–127); Stock owns inventory truth
-(§61–64, §78–83, §113); Logistics owns physical staging/put-away (§61, §83,
-§111); Purchasing owns commercial supply (§40, §91–94, §112); Quality/
-Maintenance extend at defined points (§95–99); Finance owns ledger/WIP
-valuation (§107–108); Sales/CRM own demand and projection (§109–110).
+| Sections | Topic | Confirmed implementation and open scope |
+| --- | --- | --- |
+| 1–8 | Purpose, workflow, ownership, navigation | Connected Manufacturing & Supply console, demand workbench and role views; business owners/data identities remain separate. Full bidirectional supply genealogy remains partial. |
+| 9–16 | Product/BOM profile and versions | Canonical Product, independent sales eligibility, active recipe versions, multi-level components, make/buy/WIP, yield/scrap/batch and cost estimates. Open: effective alternates, substitution, variants and complete engineering-to-production governance. |
+| 17–20 | Routing/operations/dependencies | Ordered recipe operations with actual work-centre/machine references, release-generated work orders and ordered execution. Open: separate effective routing versions, parallel/overlapping dependencies and alternative routings. |
+| 21–27 | Resources/calendars/capacity | Plant resources and weekly centre/machine shifts with man-hour capacity. Open: capability matching, alternate resources, complete exception calendars and efficiency rules. |
+| 28 | Bottlenecks | Load/capacity and overlap conflicts exist. Open: complete constraint attribution and optimization. |
+| 29–43 | MPS/MRP/forecasts/pegging/suggestions | Recursive BOM netting, consumed forecasts, usable stock/holds/reservations, batch sizing, saved rich run/pegging/cost/hour output, shortages, atomic Make conversion and Buy-to-Finance draft. Open: MPS period grid, dated site-specific purchase/transfer supply, action-message taxonomy, time fences, CTP and scenario publication. |
+| 44–56 | Finite scheduling/Gantt/cascade/locks | Machine Gantt, conflict/next-slot/cascade preview, force/lock controls, shifts. Open: backward and multi-constraint finite scheduling, setup-family optimization, material/skill/tool gates and fine drag precision. |
+| 57–60 | Production orders/lifecycle/readiness | Guarded production lifecycle and release-generated routing work. Open: complete materials/capacity/tool/document readiness review. |
+| 61–65 | Staging/reservation/issues/consumption | Inventory reservation/issue owner contracts and final-operation transactional component backflush exist. Open: complete production-specific stage/pick/actual-issue/overconsumption flow and decimal stock execution. |
+| 66–68 | Work orders/status/concurrency | Work orders, times, good/scrap counts, optimistic version and request keys. Open: broader exception/reversal acceptance. |
+| 69–77 | Floor/partial/backorders/split/merge | Start/pause/complete UI, recorded reasons, repeat-safe completion and preceding-operation gates. Open: controlled production split/merge/backorders and full operator scanning/documents. |
+| 78–83 | Lots/serials/genealogy/output/put-away | Stock lot/serial foundations, output movements linked to production/work order and shared warehouse. Open: complete component-to-output genealogy and scan-led put-away. |
+| 84–90 | Scrap/yield/rework/co-products/process | Good/scrap capture and recipe yield/scrap calculations. Open: reason taxonomy, rework orders, co/by-product allocation and full batch/formula manufacturing. |
+| 91–94 | Subcontract | Recipe supply/cost concept exists. Open: executable vendor operation, shipped components, receipt and actual allocation. |
+| 95–99 | Quality/maintenance | Quality and Maintenance owners exist; active quality holds reduce usable MRP stock. Open: full production inspection gates, disposition/genealogy and breakdown-calendar replanning. |
+| 100–102 | People/labour/tooling | Crew and estimated labour, shared People/rota and planning teams exist. Open: finite skilled labour, attendance actuals and tool reservations. |
+| 103–108 | Cost/Finance/WIP | Recipe/planned cost estimates; Finance owns purchasing/receiving/posting/matching; new source-currency supplier spend report. Open: approved production cost versions, actual labour/overheads, WIP/variance/COGS and inventory valuation reconciliation. |
+| 109–117 | Sales/CRM/Inventory/Procurement/Logistics/CTP | Canonical demand/products/stock, Sales handoffs, transactional production output and Buy-to-purchase source link. Open: complete dated supply/change/cancellation reconciliation, transfer/subcontract conversion and protected CTP. |
+| 118–127 | Workspace/documents/scanning/progress/alerts | Connected console, Production Today, orders, floor, schedule and progress; source providers/attention. Open: scanning, contextual operator documents and comprehensive delay/schedule notifications. |
+| 128–143 | Reporting/saved views | Customer risk, load/capacity, basic production analytics and supplier spend; bookmarkable role/shortcut views. Open: OEE/downtime/yield/material-cost variance/adherence/throughput/WIP/subcontract/genealogy suites and persisted shared reporting views. |
+| 144–147 | Attention/activity/commands/events | Registered attention/search/activity, guarded actions and domain events. Open: full durable event/reconciliation coverage. |
+| 148–150 | Providers/idempotency/concurrency | Shared Stock contracts, owner module providers, Finance spend/Buy proposal contracts; serializable conversion and version/CAS/duplicate keys. Open: comprehensive cross-module lifecycle contracts and retries/reconciliation. |
+| 151–154 | Permissions/audit/reversals | Tenant/capability/module gates, transactional conversion audits, existing execution controls. Open: controlled production material/cost reversals and full exception permissions acceptance. |
+| 155–158 | Performance/run/explainability/AI | Identified completed runs, saved explanatory input/output and guarded source access. Open: scale/parallel-run input consistency and deeper performance acceptance; AI remains optional. |
+| 159–162 | Design/mobile/demo | New responsive console/report/help follow current Atlas visual direction; synthetic Test scenario. Existing workspaces retained. Open: full detailed-workbench visual consolidation and richer realistic demo packs. |
+| 163–166 | Automated/cross-module checks | Actual domain/owner tests cover recipes, schedules, MRP/S&OP, stock completion, product eligibility, reports and source conversion. Full-suite baseline still has unrelated failures; see acceptance. Remaining engines need acceptance, not merely test names. |
+| 167 | Visual review | Console/report/guides reviewed at desktop/tablet/phone during release acceptance; see exact evidence. Further detailed workspace reviews remain open. |
+| 168 | Documentation | Consolidated researched Manufacturing guide, full coverage and nine illustrated working guides. Further features must add instructions and acceptance. |
+| 169–173 | Scope/build/done/final experience | Process requirements remain binding. Current release acceptance is distinct from complete brief acceptance. No row is closed merely by navigation, docs or schema. |
 
-| Sections | Topic | Phase | Status |
-| --- | --- | --- | --- |
-| 1–8 | Role, product goal, primary workflow, pegging concept, domain ownership, navigation | 0 (framing) | Delivered as this document + source/coverage docs |
-| 9–16 | Product manufacturing profile, BOM, BOM line, multi-level BOM, BOM versions/change control, alternate BOM, substitution | 1 | Partially delivered — `ProductDefinition`/`ProductBomLine` (version, status, lines) already exist on Product; alternate BOM, substitute groups, change-control workflow states are open |
-| 17–20 | Routings, routing versioning, operation, operation dependencies | 1 | Partially delivered — `ProductOperation` now carries a real FK (`workCentreId`/`resourceId`) to the specific machine a step runs on, not just a free-text name (built by a concurrent session's Plant tool at `/manufacturing/plant`, with a name-match fallback in `src/modules/manufacturing/domain/plant.ts::releasedAssignment` for older routings); `releaseOrder` resolves and copies this onto each Work Order. Routing-level versioning/effectivity separate from BOM version, and operation dependencies/overlap, are open |
-| 21–27 | Work centres, resources, resource capability, alternate resources, production calendar, capacity, resource efficiency | 1 | Substantially delivered — Plant (`/manufacturing/plant`) manages work centres and machines; `ManufacturingShift` (migration `20261003750000_manufacturing_shifts_and_forecast`) is a real, planner-editable weekly man-hours calendar per work centre or specific machine (days, hours, crew headcount) via `/manufacturing/schedule`'s Shifts &amp; man-hours section — `capacityByWorkCentre()` uses it for real labour-hours-vs-available when shifts exist, falling back to a naive 40h/week estimate only when they don't (verified against real shift rows). Capability matching and alternate-resource selection rules are open |
-| 28 | Bottlenecks | 4 | Partially delivered — `capacityByWorkCentre()` shows scheduled-vs-naive-capacity overload hours per centre on the Schedule page; does not yet identify *which* orders cause the overload |
-| 29–43 | Planning vs scheduling, MPS, MPS UX, planning periods, forecast, MRP, MRP output, action messages, pegging, planning exceptions, customer impact, supply suggestions, firming, time fences, what-if planning | 2–3 | Substantially delivered — `runMrp()` computes net requirement from confirmed Sales demand **plus** forecast demand, minus Stock availability, minus open Manufacturing Order supply, for manufactured products; persists an identified `ManufacturingPlanningRun` + `ManufacturingSupplySuggestion` rows with pegging (now distinguishing `SALES_ORDER` vs `FORECAST` peg lines); `firmSuggestion()` turns one into a real `ManufacturingOrder`. Forecast itself is `ManufacturingDemandForecast` — a plain planner-entered monthly quantity per product, editable on `/manufacturing/plan`, standing in for §33's statistical/commercial forecast split since CRM Opportunities carry deal value, not product/quantity lines, so there is nothing upstream yet to consume automatically. Each suggestion also carries `startBy` — the needed-by date minus the product's actual manufacturing lead time, computed from its live routing at the suggested quantity (`totalLeadTimeMinutes`, verified against real routing data) — surfaced on the Plan page and flagged when already overdue to start. Open: the MPS period grid UI, Buy/Transfer suggestion hand-off to Purchasing/Logistics, time fences, what-if scenarios, the full exception taxonomy beyond simple shortage |
-| 44–56 | Scheduling (forward/backward/finite capacity/finite material), Gantt, drag-and-drop, auto-reschedule, lock, priority, setup optimisation | 4 | Substantially delivered — `src/modules/manufacturing/services/scheduler.ts` is a real planner's tool at `/manufacturing/schedule`: a drag-and-drop Gantt (one row per resource, 14-day window, native HTML5 DnD, no new dependency), finite-capacity conflict detection (`findConflicts`) with a suggested next-feasible slot (`nextFeasibleSlot`, §47-48), cascading reschedule of dependent later operations in the same routing (`cascadeFrom`, §52's "1 dependent operation moves"), a preview-before-commit dialog showing conflicts/cascade/customer-delivery impact (§52), a hard refusal to silently overbook unless the planner explicitly forces it (§47), and a schedule lock (§54, `ManufacturingWorkOrder.locked`, migration `20261003720000_manufacturing_work_order_lock`). Gated behind `manufacturing.schedule.manage`/`.lock` — the `shop_floor_operator` role has neither, so operators never see the planning tool, only its published result (§152's "only certain people" requirement). Verified against real Postgres: conflict detection, next-feasible-slot, and the full reschedule+cascade transaction. Open: backward scheduling, true resource calendars (the naive 40h/week capacity stand-in), setup-family optimisation, drag precision finer than whole days |
-| 57–60 | Production Order definition, lifecycle, ready check | 1 | Delivered — `ManufacturingOrder` with the six-state visible lifecycle (`PLANNED/READY/RELEASED/RUNNING/COMPLETE/CLOSED`), guarded transitions, and a minimal ready check (BOM snapshot + quantity present); material/capacity/document/tooling readiness are open |
-| 61–65 | Material staging, reservation, issue methods, actual consumption, over/under consumption | 3 | Open — MRP reads Stock *availability* through the shared `StockProvider` contract (§113), but nothing reserves or consumes material yet; `ManufacturingOrder` carries a `definitionId` snapshot only |
-| 66–68 | Work Orders, Work Order fields, status | 1 | Delivered — `ManufacturingWorkOrder` with the six-state status, scheduled/actual times, produced/scrap quantities, optimistic `version` lock and idempotency key; now actually generated by `releaseOrder` from the routing snapshot (previously a gap — released orders had no Work Orders at all) |
-| 69–77 | Shop Floor UX, start/pause/complete, partial completion, backorder, split, merge | 5 | Partially delivered — a real large/touch-friendly `/manufacturing/shop-floor` page (Now/Next/Blocked) drives the idempotent `startWorkOrder`/`pauseWorkOrder` (with reason)/`completeWorkOrder` (good+scrap, partial-completion-safe) commands end-to-end-verified against Postgres. Open: backorder/split/merge, documents, scanning |
-| 78–83 | Lot/serial traceability, genealogy, finished output, report-as-finished, put-away | 6–7 | Open |
-| 84–90 | Scrap, scrap reasons, yield, rework, by-products, co-products, process manufacturing | 5–6 | Partially delivered — `scrapQuantity` is captured on completion and audited; reasons, yield reporting, rework, by/co-products are open |
-| 91–94 | Subcontracting (order, components, cost) | 7 | Open |
-| 95–99 | Quality integration, quality check, quality hold, maintenance integration, breakdown | 7 | Open |
-| 100–102 | People/skills, labour, tooling | 7 | Open |
-| 103–108 | Costing (planned/actual/variance), Finance integration, WIP | 8 | Open |
-| 109–117 | Sales/CRM/Logistics/Purchasing/Stock integration, production availability, shortage resolution, customer promise (CTP) | 7 (integrations), 8 (CTP) | Open |
-| 118–127 | Produce workspace, order list/UI, shop-floor documents, barcode, real-time progress, delay detection, rescheduling impact, schedule alerts, MPS vs execution | 1 (minimal), 4–5 (rest) | Partially delivered — a Produce list and single Production Order view exist (§118–120); real-time progress updates via `revalidatePath` after each shop-floor action. Documents, scanning, delay detection, rescheduling impact, alerts are open |
-| 128–143 | Reporting suite (performance, capacity, OEE, downtime, yield, variance, cost, adherence, throughput, WIP, customer risk, MRP performance, subcontracting, traceability, saved views) | 8 | Partially delivered — `/manufacturing/reports` has §139 Customer Orders at Risk (named in the brief as a signature report) joining production progress to the pegged sales order/customer; §130 capacity-vs-load also exists on the Schedule page. The other dozen+ reports (OEE, downtime, yield, variance, cost, adherence, throughput, WIP, MRP performance, subcontracting, traceability, saved views) are open |
-| 144–147 | Attention provider, activity provider, commands, events | 9 | Partially delivered — a minimal attention provider (overdue/blocked orders) and search provider are registered; activity writes exist on order/work-order transitions; the command palette and the full `manufacturing.*` event list are open |
-| 148–150 | Provider interfaces, idempotency, concurrency | 9 | Partially delivered — optimistic `version` locks and `requestKey`/`lastRequestKey` idempotency exist on both order tables; the cross-module provider contracts (Stock/Purchasing/Logistics/Quality/Maintenance/People/Finance/AdvancedScheduler) are not yet defined |
-| 151–154 | Permissions, shop-floor permissions, audit, reversals | 1 (permissions), 9 (rest) | Partially delivered — `MANUFACTURING_CAPABILITIES` and the `manufacturing_planner`/`shop_floor_operator` roles exist; audit entries are written on create/release/scrap; controlled reversal workflows are open |
-| 155–158 | Performance, planning run identity, explainability, AI | 2–4, 9 | Open |
-| 159–162 | Visual design, planning colour, mobile/tablet, demo data | 9 | Open — current UI reuses Atlas's existing design tokens/components but has not had a dedicated design pass; no manufacturing demo data seeded |
-| 163–166 | Critical planning/scheduling/execution/cross-module tests | 9 | Open — no automated tests written for this module yet beyond the production build/typecheck/lint gate |
-| 167 | Visual review | 9 | Open |
-| 168 | Documentation (`docs/modules/MANUFACTURING.md`) | 9 | Open — this coverage doc and `MANUFACTURING_PLANNING.md` exist; the consolidated `MANUFACTURING.md` described by §168 has not been written yet |
-| 169–173 | Build order, scope control, definition of done, final experience test, final response format | — | Process guidance, not a deliverable row |
+## Data and release truth
 
-## What exists in the database today
+Manufacturing's earlier foundation, shift and execution migrations are deployed on
+the central server. The earlier local shadow-database replay issue is historical;
+Atlas must not create a local business database to resolve it. Additive production
+migrations use the reviewed release procedure and central backup. The sales
+eligibility migration is `20261009210000_product_sales_eligibility`; its deployment
+status belongs in the acceptance record. Preserve all prior release evidence.
 
-`ManufacturingCounter`, `ManufacturingWorkCentre`, `ManufacturingResource`,
-`ManufacturingOrder`, `ManufacturingWorkOrder` (migration
-`20261003670000_manufacturing_phase1_foundation`, written by hand against the
-schema — **not yet applied** to the local dev database; see the blocker below).
-`ProductDefinition`/`ProductBomLine`/`ProductOperation` on Product predate this
-task and already cover part of §9–20.
+## Next work
 
-## Blocker inherited from a previous session (not introduced by this task)
-
-`prisma migrate dev` cannot run — `migrate dev`'s shadow-database replay fails
-earlier in migration history (`20261003155019_add_hr_module` references
-`domain_outbox`, which a still-earlier migration apparently fails to create in
-the shadow DB). This was already flagged in CURRENT_STATE.md after the HR
-module build and is unresolved. The manufacturing migration SQL was therefore
-written by hand and is ready to apply with `prisma migrate deploy` once that
-ordering issue is fixed — it was validated with `prisma validate`/`prisma
-generate` and the full `npm run build`, `npx tsc --noEmit`, `npx eslint`, and
-`npm test` gates, all against the generated client rather than a live table.
-
-## Next steps, in build order
-
-1. Fix the inherited migration-ordering blocker, then `prisma migrate deploy`
-   (or `migrate resolve` + `migrate dev`) to apply
-   `20261003670000_manufacturing_phase1_foundation`, then re-verify with a real
-   create/read round-trip against Postgres (the HR module's precedent for this
-   kind of check).
-2. Finish Phase 1: routing versioning/effectivity separate from BOM version,
-   resource capability matching, alternate resources, a real production
-   calendar.
-3. Phase 2: MPS/MRP engine, pegging, planning action messages, exceptions,
-   customer-impact view — the single biggest remaining capability gap.
-4. Phase 3: Stock integration contracts (reservation, consumption, backflush).
-5. Phases 4–9 follow the brief's build order (§169).
+Follow the complete seven-part programme in [Manufacturing & Supply](MANUFACTURING.md).
+Start with canonical dated site/warehouse/unit/supply inputs; those are prerequisites
+for dependable purchase/transfer netting, constraint scheduling and customer promises.
+Production cost/WIP is a Finance integration programme, not a renamed spend total.

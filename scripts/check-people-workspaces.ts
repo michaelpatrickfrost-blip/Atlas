@@ -117,7 +117,7 @@ async function main() {
     console.log("PASS real effort/goal-linked allocation, status and reassignment UI; weekly rota/availability capacity, persisted reloads and member/tenant boundaries");
     for(const width of [1440,390]) {
       await page.setViewportSize({width,height:900});
-      for(const [path,title,label] of [["/kpis/scorecards","Strategy scorecards","goals"],["/people/workspace",undefined,"hr"],["/people/organisation",undefined,"organisation"],["/people/pay",undefined,"pay-time"],["/payroll/prepare?start=2026-10-12&end=2026-10-18&frequency=WEEKLY","Prepare payroll","payroll"],[`/scheduling/workforce?day=${day}&department=Contact%20centre`,"Coverage & open shifts","rota"],[`/teams/${team.id}/capacity?day=${day}`,team.name,"teams"]]) {
+      for(const [path,title,label] of [["/kpis/scorecards","Strategy scorecards","goals"],["/people/workspace",undefined,"hr"],["/people/organisation",undefined,"organisation"],["/people/pay",undefined,"pay-time"],["/payroll/prepare?start=2026-10-12&end=2026-10-18&frequency=WEEKLY","Prepare payroll","payroll"],[`/scheduling/workforce?day=${day}&department=Contact%20centre`,"Coverage & open shifts","rota"],[`/teams/${team.id}/capacity?day=${day}`,team.name,"teams"]] as const) {
         await visit(path,title);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`Viewport overflow ${path} ${width}`);if(evidence)await page.screenshot({path:`${evidence}/${label}-${width}.png`,fullPage:true});
       }
     }

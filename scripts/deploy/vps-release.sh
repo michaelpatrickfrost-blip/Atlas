@@ -76,23 +76,14 @@ if [[ ! -f "$CANDIDATE/.atlas-ready" ]]; then
   mkdir "$CANDIDATE"
   git archive "$REV" | tar -x -C "$CANDIDATE"
   ln -s "$ROOT/.env.local" "$CANDIDATE/.env.local"
-  (
-    cd "$CANDIDATE"
-    export ATLAS_RELEASE_REVISION="$REV" NEXT_DEPLOYMENT_ID="$REV"
-    npm ci --no-audit --no-fund > "$BACKUP-install.log" 2>&1
-    npx prisma generate --config prisma7.config.ts > "$BACKUP-generate.log" 2>&1
-    # Caller must review compatibility before release; no schema rollback occurs.
-    npx prisma migrate deploy --config prisma7.config.ts > "$BACKUP-migrate.log" 2>&1
-    NODE_OPTIONS=--max-old-space-size=6144 npm run build > "$BACKUP-build.log" 2>&1
-    node --env-file=.env.local --import tsx scripts/studio/check-compatibility.ts > "$BACKUP-studio-compatibility.log" 2>&1
-    node scripts/deploy/release-files.mjs assets "$PREVIOUS/.next/static" .next/static
-    printf 'ATLAS_RELEASE_REVISION=%s\nNEXT_DEPLOYMENT_ID=%s\n' "$REV" "$REV" > .release.env
-    printf '%s\n' "$REV" > .atlas-ready
-  ) || { echo "Candidate failed; running release unchanged. Private logs: $BACKUP-*" >&2; exit 1; }
+  # Caller reviews additive migration compatibility; there is no schema rollback.
+  # Use an independent shell so this failure handler cannot disable stage errexit.
+  bash "$CANDIDATE/scripts/deploy/build-release.sh" "$CANDIDATE" "$PREVIOUS" "$BACKUP" "$REV" || { echo "Candidate failed; running release unchanged. Private logs: $BACKUP-*" >&2; exit 1; }
   mkdir -p "$CANDIDATE/.next/cache"
   seal "$CANDIDATE"
 fi
 [[ "$(cat "$CANDIDATE/.atlas-ready")" = "$REV" ]] || exit 1
+[[ -s "$CANDIDATE/.next/BUILD_ID" && -f "$CANDIDATE/.next/server/app-paths-manifest.json" ]] || { echo 'Candidate build outputs are incomplete; running release unchanged.' >&2; exit 1; }
 [[ ! -w "$CANDIDATE/.next/server/app-paths-manifest.json" ]] || { echo 'Candidate code is not immutable.' >&2; exit 1; }
 
 PROBE_PID=''; SWITCHED=0; TIMER_WAS_ACTIVE=0

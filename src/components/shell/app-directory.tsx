@@ -14,7 +14,7 @@ const APP_SUMMARIES: Record<string, string> = {
   crm: "Sales pipeline and customer insights.", sales: "Quotes, orders and sales management.",
   service: "Customer support and service management.", marketing: "Campaigns and customer engagement.",
   stock: "Stock, materials and warehouse management.", planning: "Product demand, stock cover and shortages.",
-  logistics: "Warehouse fulfilment, dispatch and deliveries.", manufacturing: "Production planning and shop-floor execution.",
+  logistics: "Warehouse fulfilment, dispatch and deliveries.", manufacturing: "Demand, materials, production, procurement and spend.",
   safety: "Workplace safety, risks and compliance.", quality: "Quality management and control.",
   kpis: "Track performance and business goals.", people: "People, contracts and HR management.",
   scheduling: "Workforce planning and scheduling.", teams: "Team capacity, holidays and resourcing.",
@@ -23,7 +23,7 @@ const APP_SUMMARIES: Record<string, string> = {
   finance: "Accounts, payments and financial reporting.", analytics: "Live dashboards across your business.",
 };
 
-/** One permission-filtered directory, with an icon launcher on Home and compact menu elsewhere. */
+/** One permission-filtered directory, with an icon launcher on Home and a grouped workspace menu. */
 export async function AppDirectory({ session, variant = "menu" }: { session: Session; variant?: "menu" | "launcher" }) {
   const modules = await getNavigableModules(session);
   const groups = new Map<string, Entry[]>(APP_AREAS.map((area) => [area, []]));
@@ -65,21 +65,21 @@ export async function AppDirectory({ session, variant = "menu" }: { session: Ses
     </nav>
   );
   return (
-    <nav aria-label="Apps" className="grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
+    <nav aria-label="Apps" className="grid grid-cols-1 gap-x-6 gap-y-8 min-[360px]:grid-cols-2 sm:gap-x-10 sm:gap-y-10 lg:grid-cols-4 lg:gap-y-12">
       {columns.map(([area, entries]) => (
-        <div key={area} className="min-w-0">
-          <p className="px-2 text-[11px] font-medium text-[#86868b]">{area}</p>
-          <ul className="mt-1.5">
+        <section key={area} aria-label={area} className="min-w-0">
+          <h2 className="px-2 text-sm font-medium text-[#86868b] sm:px-3 sm:text-base">{area}</h2>
+          <ul className="mt-3 space-y-1 sm:mt-4 sm:space-y-2">
             {entries.map((entry) => (
               <li key={entry.id}>
-                <Link href={entry.href} className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-[13px] text-[#1d1d1f] hover:bg-black/[0.045]">
-                  <entry.icon size={15} strokeWidth={1.75} className="shrink-0 text-[#6e6e73]" />
-                  <span className="truncate">{entry.name}</span>
+                <Link href={entry.href} prefetch={false} className="flex min-h-11 items-center gap-3 rounded-xl px-2 py-2 text-sm leading-5 text-[#1d1d1f] transition-colors hover:bg-black/[0.045] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:gap-3.5 sm:px-3 sm:text-[18px] sm:leading-6 xl:gap-4 xl:text-xl">
+                  <entry.icon size={22} strokeWidth={1.75} aria-hidden="true" className="size-5 shrink-0 text-[#77777d] sm:size-[22px]" />
+                  <span className="min-w-0 break-words">{entry.name}</span>
                 </Link>
               </li>
             ))}
           </ul>
-        </div>
+        </section>
       ))}
     </nav>
   );

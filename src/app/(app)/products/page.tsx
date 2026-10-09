@@ -44,6 +44,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
         <label className="text-xs">Product name<input name="name" required className="mt-2 block w-full border border-[var(--color-border)] p-3 text-sm" /></label>
         <label className="text-xs sm:col-span-2">Description<textarea name="description" rows={2} className="mt-2 block w-full border border-[var(--color-border)] p-3 text-sm" /></label>
         <label className="text-xs">Class<select name="itemClass" className="mt-2 block w-full border border-[var(--color-border)] bg-white p-3 text-sm"><option value="">Same as the category</option>{CATEGORY_CLASSES.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
+        <label className="text-xs">Sales eligibility<select name="sellable" defaultValue="" className="mt-2 block w-full rounded-xl border border-slate-200 bg-white p-3 text-sm"><option value="">Keep current setting (new items are sellable)</option><option value="true">Sellable</option><option value="false">Internal material / not sellable</option></select></label>
         <label className="text-xs">Category<select name="categoryCode" className="mt-2 block w-full border border-[var(--color-border)] bg-white p-3 text-sm"><option value="">No category</option>{categories.filter((item) => item.active).map((item) => <option key={item.id} value={item.code}>{item.name}</option>)}</select></label>
         <label className="text-xs">Or a new category code<input name="newCategoryCode" className="mt-2 block w-full border border-[var(--color-border)] p-3 text-sm" /></label>
         <label className="text-xs">Standard price<input name="price" required type="number" min={0} step="0.01" defaultValue="0" className="mt-2 block w-full border border-[var(--color-border)] p-3 text-sm" /></label>
@@ -73,6 +74,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
       { header: "Category", render: (product) => product.categoryCode ? `${categoryName.get(product.categoryCode)?.name ?? product.categoryCode}` : "—" },
       { header: "Product", render: (product) => product.name },
       { header: "Type", render: (product) => product.kind },
+      { header: "Sales", render: (product) => product.sellable ? "Sellable" : "Internal only" },
       { header: "Unit", render: (product) => product.unitOfMeasure },
       { header: "Per pallet", align: "right", render: (product) => { const count = product.kind === "PRODUCT" ? unitsPerPallet(product) : null; return count ? count.toLocaleString("en-GB") : "—"; } },
       { header: "Standard price", render: (product) => formatMoney(product.basePriceAmount, product.baseCurrency), align: "right" },

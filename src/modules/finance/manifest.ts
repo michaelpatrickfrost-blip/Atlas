@@ -12,7 +12,9 @@ import {Wallet} from 'lucide-react';
 import type {ModuleManifest} from '@/core/modules/types';
 import {FINANCE_CAPABILITIES as C} from './capabilities';
 import { financeAnalytics } from "./services/analytics";
+import { supplySpendProvider } from "./services/supply-spend";
 export const financeManifest:ModuleManifest={reportProvider:reports,
+ supplySpendProvider,
  recordContextProvider: financeRecordContext, recordRelationshipProvider: financeRecordRelationships,
  salesInvoiceChainProvider: salesInvoiceChain, salesInvoiceQuantitiesProvider: salesInvoiceQuantities,
  businessPlanningProvider:financeBusinessPlanning,

@@ -15,7 +15,9 @@ export async function persistBusinessProduct(session:Session,form:FormData){
  return db.$transaction(async tx=>{
   const category=categoryCode?await tx.productCategory.upsert({where:{organisationId_code:{organisationId:session.organisationId,code:categoryCode}},create:{organisationId:session.organisationId,code:categoryCode,name:categoryCode,itemClass:'OTHER',description:''},update:{}}):null;
   const itemClass=form.has('itemClass')||!existing?productClassChoice(String(form.get('itemClass')??''),category?.itemClass):undefined;
-  const values={name,basePriceAmount,baseCurrency,kind:kind as 'PRODUCT'|'SERVICE'|'CHARGE',unitOfMeasure,taxCategory,categoryCode,...(itemClass?{itemClass}:{}),...(description!==undefined?{description}:{})};
+  const salesEligibility = form.has('sellable') ? String(form.get('sellable')) : '';
+  if (salesEligibility && !['true','false'].includes(salesEligibility)) throw new Error('Choose whether this item is sellable.');
+  const values={...(salesEligibility?{sellable:salesEligibility==='true'}:{}),name,basePriceAmount,baseCurrency,kind:kind as 'PRODUCT'|'SERVICE'|'CHARGE',unitOfMeasure,taxCategory,categoryCode,...(itemClass?{itemClass}:{}),...(description!==undefined?{description}:{})};
   const product=await tx.product.upsert({where:{organisationId_code:{organisationId:session.organisationId,code}},create:{organisationId:session.organisationId,code,...values},update:values});
   if (String(form.get('itemsPerPallet')??'').trim() && product.kind==='PRODUCT') {
     const packed=measuresFromInput({itemsPerPallet:form.get('itemsPerPallet'),unitsPerPack:form.get('unitsPerPack')});

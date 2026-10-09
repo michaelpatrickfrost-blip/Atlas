@@ -13481,6 +13481,30 @@ export const MODEL_FIELDS = {
       "nullable": true,
       "relation": false
     },
+    "plannedMinutes": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "setupMinutes": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "runMinutes": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "actualMinutes": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
     "producedQuantity": {
       "type": "Decimal",
       "list": false,

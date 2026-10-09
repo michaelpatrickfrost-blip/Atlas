@@ -3822,9 +3822,18 @@ model ManufacturingWorkOrder {
  status ManufacturingWorkOrderStatus @default(WAITING)
  scheduledStart DateTime?
  scheduledEnd DateTime?
- actualStart DateTime?
- actualEnd DateTime?
- producedQuantity Decimal @db.Decimal(18,6) @default(0)
+  actualStart DateTime?
+  actualEnd DateTime?
+  // §20/§48 plan-vs-actual: the routing step's expected duration for this order's
+  // quantity, frozen when the order is released, so the shop can see what the plan
+  // promised against what the step actually took.
+  plannedMinutes Int @default(0)
+  setupMinutes Int @default(0)
+  runMinutes Int @default(0)
+  // §20 plan-vs-actual: elapsed clock time between actualStart and actualEnd,
+  // written when the step completes.
+  actualMinutes Int @default(0)
+  producedQuantity Decimal @db.Decimal(18,6) @default(0)
  scrapQuantity Decimal @db.Decimal(18,6) @default(0)
  pauseReason String?
  version Int @default(1)

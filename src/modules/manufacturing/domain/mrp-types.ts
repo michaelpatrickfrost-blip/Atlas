@@ -26,24 +26,26 @@ export interface DemandLine {
   requiredDate: Date;
   sourceId: string; // SalesOrderId, ForecastId, etc
   sourceLineId?: string;
-  forecastIsResidual?: boolean; // S&OP already consumed whole-period firm bookings, including fulfilled orders.
+  forecastIsResidual?: boolean; // S&OP has already consumed gross firm bookings.
   probability?: number; // 0-100 for forecast/CRM demand
   notes?: string;
 }
 
+/** Physical state for one product, aggregated across every warehouse. Keys are
+ * ALWAYS product ids: an earlier version keyed balances as product-site while
+ * reading them by product, which silently reported zero stock. */
 export interface InventoryState {
   productId: string;
-  siteId: string;
   onHand: number; // Physical stock
-  allocated: number; // Reserved for firm orders
-  qualityHeld: number; // Quality hold
-  available: number; // onHand - allocated - qualityHeld
+  allocated: number; // Reserved for stock movements still to go out
+  qualityHeld: number; // Active quality hold
+  available: number; // max(0, onHand - allocated - qualityHeld)
   safetyStock: number; // Target safety stock level
 }
 
-// ===== BOM & PRODUCTION STRUCTURE =====
+// ===== RECIPE INPUT (owned by Products) =====
 
-export interface BomComponent {
+export interface RecipeComponent {
   componentProductId: string;
   quantityPerUnit: number;
   scrapPercent: number; // 0-100
@@ -51,30 +53,38 @@ export interface BomComponent {
   notes?: string;
 }
 
-export interface ProductionOperation {
+/** One routing step. Machine/labour/overhead rates mirror the Products recipe so
+ * the plan and the product page price the same work the same way. */
+export interface RecipeOperation {
   position: number;
   name: string;
   setupMinutes: number;
   runMinutesPerUnit: number;
-  workCentreId?: string;
-  resourceId?: string;
   crewSize: number;
-  setupCost: number; // minor units
-  runCost: number; // minor units per unit
-  labourCost: number;
-  overheadCost: number;
+  workCentreId: string | null;
+  workCentreCode: string | null;
+  workCentreName: string | null;
+  resourceId: string | null;
+  resourceName: string | null;
+  resourceType: string | null;
+  machineMinorPerHour: number;
+  labourMinorPerHour: number;
+  overheadMinorPerHour: number;
+  logisticsMinorPerBatch: number;
+  machineIncludesLabour: boolean;
+  machineIncludesOverhead: boolean;
 }
 
-export interface ProductionVersion {
-  definitionId: string;
+export interface Recipe {
   productId: string;
-  bomComponents: BomComponent[];
-  operations: ProductionOperation[];
-  yield: number; // Expected yield %
-  scrapPercent: number;
-  minBatchSize: number;
-  maxBatchSize: number;
-  preferredBatchSize: number;
+  definitionId: string;
+  version: number;
+  supply: string; // MAKE | WIP | BUY | SUBCONTRACT
+  batchQuantity: number;
+  yieldPercent: number; // 0-100
+  subcontractMinorPerUnit: number;
+  components: RecipeComponent[];
+  operations: RecipeOperation[];
 }
 
 // ===== NET REQUIREMENTS =====
@@ -98,12 +108,48 @@ export interface PeggingLine {
 
 // ===== PLANNED ORDERS & SUPPLY PLANNING =====
 
+export type CostKind = "material" | "machine" | "labour" | "overhead" | "subcontract" | "logistics";
+export type CostBuckets = Record<CostKind, number>;
+
+/** A routing step of a proposed order: the machine, the people and the hours. */
+export interface PlannedOperation {
+  sequence: number;
+  name: string;
+  workCentreId: string | null;
+  workCentreCode: string | null;
+  workCentreName: string | null;
+  resourceId: string | null;
+  resourceName: string | null;
+  batches: number;
+  setupMinutes: number;
+  runMinutes: number;
+  /** Machine-occupied minutes: setup + run for the whole order. */
+  durationMinutes: number;
+  crewSize: number;
+  /** crew size × machine hours. */
+  labourHours: number;
+  start: Date | null;
+  end: Date | null;
+}
+
+/** A component the make will consume, netted against what is on hand now. */
+export interface PlannedMaterial {
+  productId: string;
+  productCode: string | null;
+  productName: string | null;
+  quantity: number;
+  onHand: number;
+  covered: number;
+  shortage: number;
+  requiredBy: Date | null;
+}
+
 export interface PlannedOrder {
   id?: string;
   productId: string;
   quantity: number;
   requiredDate: Date; // When it's needed
-  startDate: Date; // Suggested start (based on lead time)
+  startDate: Date; // Suggested start (from the real routing or lead time)
   finishDate: Date; // Suggested finish
   supplyType: SupplyType;
   status: PlannedOrderStatus;
@@ -111,6 +157,12 @@ export interface PlannedOrder {
   materialStatus?: MaterialReadiness;
   capacityStatus?: CapacityStatus;
   plannedCost?: number; // Estimated cost in minor units
+  /** Breakdown of `plannedCost` and the time the order occupies. */
+  cost?: CostBuckets;
+  hours?: { setup: number; run: number; crew: number };
+  operations?: PlannedOperation[];
+  materials?: PlannedMaterial[];
+  batchCount?: number;
 }
 
 export enum SupplyType {
@@ -195,6 +247,20 @@ export interface MrpRunResult {
   peggingMap: Map<string, PeggingLine[]>; // productId -> pegging
 }
 
+/** Capacity load per work centre, from the pending plan against the real calendar. */
+export interface WorkCentreCapacity {
+  workCentreId: string;
+  workCentre: string;
+  code: string;
+  requiredHours: number;
+  availableHours: number;
+  utilization: number; // 0-100+%
+  orders: number;
+  /** False means the naive weekday figure was used, which the board says out loud. */
+  usingConfiguredShifts: boolean;
+  overloaded: boolean;
+}
+
 export interface PlannerCockpitView {
   // Attention section
   shortageCount: number;
@@ -213,8 +279,49 @@ export interface PlannerCockpitView {
     workCentre: string;
     utilization: number;
     capacity: number;
+    requiredHours: number;
+    usingConfiguredShifts: boolean;
+  }>;
+
+  capacity: WorkCentreCapacity[];
+
+  // The plan in plain terms: one row per thing to make, with its hours, cost and
+  // any component it cannot cover — so "what will production get" reads at a glance.
+  plan: Array<{
+    productId: string;
+    productName: string;
+    productCode: string;
+    quantity: number;
+    neededBy: Date;
+    machineHours: number;
+    crewHours: number;
+    totalCostMinor: number;
+    costByKind: Record<string, number>;
+    shortComponents: number;
   }>;
 
   // Supply risk
-  shortagesByPriority: Map<string, MaterialShortage[]>;
+  shortagesByPriority: {
+    CRITICAL: MaterialShortage[];
+    HIGH: MaterialShortage[];
+    NORMAL: MaterialShortage[];
+  };
+
+  mrpRun: { startedAt: Date; productCount: number; suggestionCount: number; warnings: string[] } | null;
+}
+
+/** Inputs the engine plans from. `recipes` is the reachable manufacturing
+ * catalogue keyed by product, which drives exploding and the cost split.
+ * `prices` is the standard price of a bought unit, used wherever a product has no
+ * recipe (or the recipe is bought), so a bought part is never costed at zero.
+ * `names` exists so the engine can label a shortage without touching the database. */
+export interface MrpInput {
+  demand: DemandLine[];
+  inventory: Map<string, InventoryState>;
+  recipes: Map<string, Recipe>;
+  prices: Map<string, number>;
+  existingSupply: Map<string, number>;
+  leadTimes: Map<string, number>;
+  safetyStock: Map<string, number>;
+  names: Map<string, { name: string; code: string }>;
 }

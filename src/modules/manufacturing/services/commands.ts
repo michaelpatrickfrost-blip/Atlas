@@ -98,7 +98,7 @@ export async function releaseOrder(orderId: string) {
         Number(order.quantity),
         new Date(),
       );
-      workOrderRows = buildWorkOrderRows(scheduled, session.organisationId, order.id);
+      workOrderRows = buildWorkOrderRows(scheduled, session.organisationId, order.id, Number(order.quantity));
       plannedStart = scheduled[0].start;
       plannedFinish = scheduled[scheduled.length - 1].end;
     }
@@ -117,7 +117,7 @@ export async function releaseOrder(orderId: string) {
   await writeActivity({ organisationId: session.organisationId, type: "manufacturing.order.released", summary: `${order.orderNumber} released${workOrderRows.length ? ` with ${workOrderRows.length} operations` : ""}`, entityType: "ManufacturingOrder", entityId: order.id });
 }
 
-function buildWorkOrderRows(scheduled: ReturnType<typeof forwardSchedule>, organisationId: string, productionOrderId: string) {
+function buildWorkOrderRows(scheduled: ReturnType<typeof forwardSchedule>, organisationId: string, productionOrderId: string, quantity: number) {
   return scheduled.map((op, index) => ({
     organisationId,
     productionOrderId,
@@ -127,6 +127,12 @@ function buildWorkOrderRows(scheduled: ReturnType<typeof forwardSchedule>, organ
     resourceId: op.resourceId,
     scheduledStart: op.start,
     scheduledEnd: op.end,
+    // §20/§48: the plan the shop is committing to — setup, run for this quantity,
+    // and their sum — frozen with the scheduling snapshot so a later routing edit
+    // cannot silently rewrite history.
+    setupMinutes: Math.round(op.setupMinutes),
+    runMinutes: Math.round(op.runMinutesPerUnit * quantity),
+    plannedMinutes: Math.round(op.durationMinutes),
   }));
 }
 
@@ -214,7 +220,18 @@ export async function completeWorkOrder(workOrderId: string, goodQuantity: numbe
         if (!parent.count) throw new Error("Someone else just changed this order. Reload and try again.");
         const updated = await tx.manufacturingWorkOrder.updateMany({
           where: { id: workOrderId, organisationId: session.organisationId, version: workOrder.version },
-          data: { status: "COMPLETE", actualEnd: new Date(), producedQuantity: { increment: goodQuantity }, scrapQuantity: { increment: scrapQuantity }, version: { increment: 1 }, lastRequestKey: requestKey },
+          data: {
+            status: "COMPLETE",
+            actualEnd: new Date(),
+            // §20 plan-vs-actual: wall-clock time the step actually took, from the
+            // moment it started. A step started and finished together records 0,
+            // which is honest — we have no finer operator time entry yet.
+            actualMinutes: workOrder.actualStart ? Math.max(0, Math.round((Date.now() - workOrder.actualStart.getTime()) / 60_000)) : 0,
+            producedQuantity: { increment: goodQuantity },
+            scrapQuantity: { increment: scrapQuantity },
+            version: { increment: 1 },
+            lastRequestKey: requestKey,
+          },
         });
         if (!updated.count) throw new Error("Someone else just updated this step. Reload and try again.");
         const receipt = await backflushOnCompletion(session, workOrder, goodQuantity, scrapQuantity, requestKey, tx);

@@ -1,22 +1,46 @@
-// Query services for MRP results
+// Query services for MRP results.
 import { db } from "@/core/db/client";
-import type { PlannerCockpitView, MaterialShortage } from "../domain/mrp-types";
-import { MaterialReadiness } from "../domain/mrp-types";
+import { readAvailability } from "@/modules/stock/services/availability";
+import { OPEN_PRODUCTION_ORDER_STATUSES } from "../domain/lifecycle";
+import { manHoursInWindow } from "../domain/calendar";
+import type { MaterialShortage, NetRequirement, PlannedMaterial, PlannedOperation, PlannedOrder, PlannerCockpitView } from "../domain/mrp-types";
+import { MaterialReadiness, PlannedOrderStatus, SupplyType, type CostKind } from "../domain/mrp-types";
 
-/**
- * Get the latest MRP run results for planner cockpit.
- */
+/** What `storeResultsPlanningRun` writes into `pegging`, read back for display. */
+export type SuggestionDetail = {
+  demand: { sourceType: string; sourceId: string; label: string; quantity: number }[];
+  operations: PlannedOperation[];
+  materials: PlannedMaterial[];
+  cost: Record<CostKind, number> | null;
+  hours: { setup: number; run: number; crew: number } | null;
+  batchCount: number;
+};
+
+export function readSuggestionDetail(pegging: unknown): SuggestionDetail {
+  const value = (pegging ?? {}) as Partial<SuggestionDetail> & { sourceType?: string };
+  // Tolerate the pre-existing shape (a bare array of demand pegs) so a run created
+  // before this change still renders instead of throwing on a live page.
+  if (Array.isArray(pegging)) {
+    return { demand: pegging as SuggestionDetail["demand"], operations: [], materials: [], cost: null, hours: null, batchCount: 0 };
+  }
+  return {
+    demand: value.demand ?? [],
+    operations: value.operations ?? [],
+    materials: value.materials ?? [],
+    cost: value.cost ?? null,
+    hours: value.hours ?? null,
+    batchCount: value.batchCount ?? 0,
+  };
+}
+
+/** Latest identified run, with its suggestions. */
 export async function getLatestMrpRun(organisationId: string) {
   const run = await db.manufacturingPlanningRun.findFirst({
     where: { organisationId },
     orderBy: { startedAt: "desc" },
-    include: {
-      suggestions: true,
-    },
+    include: { suggestions: true },
   });
-
   if (!run) return null;
-
   return {
     runId: run.id,
     startedAt: run.startedAt,
@@ -28,213 +52,281 @@ export async function getLatestMrpRun(organisationId: string) {
   };
 }
 
-/**
- * Get material shortages from latest MRP run.
- */
-export async function getMaterialShortages(organisationId: string, limit = 50): Promise<MaterialShortage[]> {
+/** Suggestions still awaiting a decision, newest run first. */
+export async function pendingSuggestions(organisationId: string) {
   const run = await getLatestMrpRun(organisationId);
   if (!run) return [];
-
-  const suggestions = await db.manufacturingSupplySuggestion.findMany({
-    where: {
-      organisationId,
-      runId: run.runId,
-      status: "PENDING",
-    },
-    include: {
-      product: true,
-    },
-    take: limit,
-  });
-
-  const shortages: MaterialShortage[] = [];
-
-  for (const suggestion of suggestions) {
-    // Check if there's actually a shortage
-    const inventory = await db.inventoryBalance.aggregate({
-      where: {
-        organisationId,
-        productId: suggestion.productId,
-      },
-      _sum: { quantity: true },
-    });
-
-    const available = inventory._sum.quantity ?? 0;
-    const required = Number(suggestion.quantity);
-
-    if (available < required) {
-      shortages.push({
-        productId: suggestion.productId,
-        productName: suggestion.product.name,
-        productCode: suggestion.product.code,
-        requiredQuantity: required,
-        availableQuantity: available,
-        shortageQuantity: required - available,
-        requiredDate: suggestion.neededBy || new Date(),
-        affectedDemand: [], // TODO: load affected demand from pegging
-        suggestedActions: [
-          {
-            action: "EXPEDITE_SUPPLY",
-            description: `Expedite purchase or production of ${required - available} units`,
-            canApply: true,
-          },
-        ],
-        priority:
-          (required - available) / required > 0.5
-            ? "CRITICAL"
-            : (required - available) / required > 0.2
-              ? "HIGH"
-              : "NORMAL",
-      });
-    }
-  }
-
-  return shortages.sort((a, b) => {
-    const priorityOrder = { CRITICAL: 0, HIGH: 1, NORMAL: 2 };
-    return priorityOrder[a.priority] - priorityOrder[b.priority];
+  return db.manufacturingSupplySuggestion.findMany({
+    where: { organisationId, runId: run.runId, status: "PENDING" },
+    include: { product: { select: { id: true, name: true, code: true, basePriceAmount: true } } },
+    orderBy: [{ neededBy: "asc" }],
+    take: 500,
   });
 }
 
-/**
- * Build planner cockpit view with key metrics and status.
- */
+/** A suggestion as the planner needs to read it: what to make, from which
+ * components, on which machines, for how many hours and at what cost. */
+export async function plannedProposals(organisationId: string): Promise<PlannedOrder[]> {
+  const suggestions = await pendingSuggestions(organisationId);
+  return suggestions.map((suggestion) => {
+    const detail = readSuggestionDetail(suggestion.pegging);
+    return {
+      id: suggestion.id,
+      productId: suggestion.productId,
+      quantity: Number(suggestion.quantity),
+      requiredDate: suggestion.neededBy ?? new Date(),
+      startDate: suggestion.startBy ?? suggestion.neededBy ?? new Date(),
+      finishDate: suggestion.neededBy ?? new Date(),
+      supplyType: suggestion.kind === "MAKE" ? SupplyType.MAKE : suggestion.kind === "BUY" ? SupplyType.BUY : SupplyType.TRANSFER,
+      status: PlannedOrderStatus.PROPOSED,
+      pegging: detail.demand.map((peg) => ({
+        demandId: peg.sourceId,
+        demandType: "FIRM" as never,
+        demandQuantity: peg.quantity,
+        sourceLabel: peg.label,
+      })),
+      materialStatus: detail.materials.some((row) => row.shortage > 0) ? MaterialReadiness.PARTIAL : MaterialReadiness.READY,
+      plannedCost: (suggestion.product as unknown as { basePriceAmount?: number }).basePriceAmount,
+      cost: detail.cost ?? undefined,
+      hours: detail.hours ?? undefined,
+      operations: detail.operations,
+      materials: detail.materials,
+      batchCount: detail.batchCount,
+    };
+  });
+}
+
+/** Material shortfalls across the latest run, from the saved netting rather than a
+ * second guess at the numbers. */
+export async function getMaterialShortages(organisationId: string, limit = 50): Promise<MaterialShortage[]> {
+  const suggestions = await pendingSuggestions(organisationId);
+  const shortages: MaterialShortage[] = [];
+  for (const suggestion of suggestions) {
+    const detail = readSuggestionDetail(suggestion.pegging);
+    // A short component is a shortage of the component, not only of the parent:
+    // the buyer needs to know which part is missing.
+    for (const material of detail.materials) {
+      if (material.shortage <= 0) continue;
+      shortages.push({
+        productId: material.productId,
+        productName: material.productName ?? "Component",
+        productCode: material.productCode ?? material.productId,
+        requiredQuantity: material.quantity,
+        availableQuantity: material.onHand,
+        shortageQuantity: material.shortage,
+        requiredDate: material.requiredBy ?? suggestion.neededBy ?? new Date(),
+        affectedDemand: [],
+        suggestedActions: [
+          { action: "EXPEDITE_SUPPLY", description: `Buy or expedite ${material.shortage} for ${suggestion.product?.name ?? "the plan"}`, canApply: true },
+        ],
+        priority: material.shortage / Math.max(material.quantity, 1) > 0.5 ? "CRITICAL" : material.shortage / Math.max(material.quantity, 1) > 0.2 ? "HIGH" : "NORMAL",
+      });
+    }
+    if (!detail.materials.length && suggestion.kind === "BUY") {
+      shortages.push({
+        productId: suggestion.productId,
+        productName: suggestion.product?.name ?? "Part",
+        productCode: suggestion.product?.code ?? suggestion.productId,
+        requiredQuantity: Number(suggestion.quantity),
+        availableQuantity: 0,
+        shortageQuantity: Number(suggestion.quantity),
+        requiredDate: suggestion.neededBy ?? new Date(),
+        affectedDemand: [],
+        suggestedActions: [{ action: "EXPEDITE_SUPPLY", description: `Buy ${Number(suggestion.quantity)} to cover the plan`, canApply: true }],
+        priority: "HIGH",
+      });
+    }
+  }
+  const order = { CRITICAL: 0, HIGH: 1, NORMAL: 2 } as const;
+  const merged = new Map<string, MaterialShortage>();
+  for (const row of shortages) {
+    const existing = merged.get(row.productId);
+    if (!existing) {
+      merged.set(row.productId, row);
+      continue;
+    }
+    existing.requiredQuantity += row.requiredQuantity;
+    existing.availableQuantity = Math.max(existing.availableQuantity, row.availableQuantity);
+    existing.shortageQuantity += row.shortageQuantity;
+    if (row.requiredDate < existing.requiredDate) existing.requiredDate = row.requiredDate;
+    if (order[row.priority] < order[existing.priority]) existing.priority = row.priority;
+  }
+  return [...merged.values()]
+    .sort((a, b) => order[a.priority] - order[b.priority] || a.requiredDate.getTime() - b.requiredDate.getTime())
+    .slice(0, limit);
+}
+
+/** Hours each work centre would carry if every pending proposal were firmed,
+ * against the hours it actually opens for. Configured shifts are used where they
+ * exist; otherwise the board says so instead of pretending to be exact. */
+export async function capacityFromPlan(organisationId: string, withinDays = 28) {
+  const now = new Date();
+  const windowEnd = new Date(now.getTime() + withinDays * 86_400_000);
+  const [proposals, centres, shifts] = await Promise.all([
+    plannedProposals(organisationId),
+    db.manufacturingWorkCentre.findMany({ where: { organisationId, active: true }, orderBy: { name: "asc" } }),
+    db.manufacturingShift.findMany({ where: { organisationId, active: true, resourceId: null } }),
+  ]);
+
+  const load = new Map<string, { hours: number; orders: number }>();
+  for (const proposal of proposals) {
+    for (const operation of proposal.operations ?? []) {
+      if (!operation.workCentreId) continue;
+      const current = load.get(operation.workCentreId) ?? { hours: 0, orders: 0 };
+      current.hours += operation.durationMinutes / 60;
+      current.orders += 1;
+      load.set(operation.workCentreId, current);
+    }
+  }
+
+  return centres.map((centre) => {
+    const centreShifts = shifts.filter((shift) => shift.workCentreId === centre.id).map((shift) => ({ daysOfWeek: shift.daysOfWeek, startMinute: shift.startMinute, endMinute: shift.endMinute, crewCount: shift.crewCount }));
+    const usingConfiguredShifts = centreShifts.length > 0;
+    const availableHours = usingConfiguredShifts ? manHoursInWindow(centreShifts, now, windowEnd) : 5 * 8 * (withinDays / 7);
+    const required = load.get(centre.id) ?? { hours: 0, orders: 0 };
+    return {
+      workCentreId: centre.id,
+      workCentre: centre.name,
+      code: centre.code,
+      requiredHours: Math.round(required.hours * 10) / 10,
+      availableHours: Math.round(availableHours * 10) / 10,
+      utilization: availableHours > 0 ? Math.min(999, Math.round((required.hours / availableHours) * 100)) : 0,
+      orders: required.orders,
+      usingConfiguredShifts,
+      overloaded: availableHours > 0 && required.hours > availableHours,
+    };
+  });
+}
+
+/** Demand inside the horizon, from confirmed Sales lines only, so the outlook
+ * cannot be inflated by drafts, closed orders or cancelled quantities. */
+export async function demandOutlook(organisationId: string, days: number) {
+  const now = new Date();
+  const end = new Date(now.getTime() + days * 86_400_000);
+  const lines = await db.salesOrderLine.findMany({
+    where: {
+      productId: { not: null },
+      order: { organisationId, commercialStatus: { in: ["CONFIRMED", "ON_HOLD"] }, orderType: { notIn: ["BLANKET", "INTERNAL"] } },
+      OR: [{ requestedDeliveryDate: { gte: now, lte: end } }, { requestedDeliveryDate: null, order: { requestedDeliveryDate: { gte: now, lte: end } } }],
+    },
+    select: {
+      orderedQuantity: true,
+      cancelledQuantity: true,
+      requestedDeliveryDate: true,
+      order: { select: { requestedDeliveryDate: true, promisedDeliveryDate: true } },
+    },
+    take: 5001,
+  });
+  const grouped = new Map<string, number>();
+  for (const line of lines) {
+    const on = line.requestedDeliveryDate ?? line.order.requestedDeliveryDate ?? line.order.promisedDeliveryDate;
+    if (!on) continue;
+    const key = on.toISOString().slice(0, 10);
+    grouped.set(key, (grouped.get(key) ?? 0) + Math.max(0, line.orderedQuantity - line.cancelledQuantity));
+  }
+  return [...grouped.entries()]
+    .map(([date, quantity]) => ({ date: new Date(date), quantity }))
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
+}
+
+/** Planner cockpit: every figure comes from saved planning output, the shared
+ * availability chain or the real shift calendar. Nothing is a placeholder. */
 export async function buildPlannerCockpit(organisationId: string): Promise<PlannerCockpitView> {
   const now = new Date();
-  const sevenDaysOut = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const thirtyDaysOut = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+  const thirtyDaysOut = new Date(now.getTime() + 30 * 86_400_000);
+  const [run, shortages, capacity, demand7, demand30, lateOrders, chain, proposals] = await Promise.all([
+    getLatestMrpRun(organisationId),
+    getMaterialShortages(organisationId, 1000),
+    capacityFromPlan(organisationId),
+    demandOutlook(organisationId, 7),
+    demandOutlook(organisationId, 30),
+    db.manufacturingOrder.count({
+      where: { organisationId, status: { in: OPEN_PRODUCTION_ORDER_STATUSES }, requiredDate: { lt: now } },
+    }),
+    readAvailability(),
+    plannedProposals(organisationId),
+  ]);
 
-  // Get latest run
-  const run = await getLatestMrpRun(organisationId);
-
-  // Count attention items
-  const shortages = await getMaterialShortages(organisationId, 1000);
-  const criticalShortages = shortages.filter((s) => s.priority === "CRITICAL").length;
-  const highShortages = shortages.filter((s) => s.priority === "HIGH").length;
-
-  // Get late orders
-  const lateOrders = await db.manufacturingOrder.count({
-    where: {
-      organisationId,
-      status: { in: ["PLANNED", "READY", "RELEASED", "RUNNING"] },
-      requiredDate: { lt: now },
-    },
-  });
-
-  // Get overloaded resources (TODO: implement capacity checking)
-  const overloadedResources = 0;
-
-  // Get demand 7/30 days
-  const demand7 = await db.salesOrderLine.findMany({
-    where: {
-      order: { organisationId },
-      requestedDeliveryDate: { gte: now, lte: sevenDaysOut },
-    },
-    select: { orderedQuantity: true, cancelledQuantity: true, requestedDeliveryDate: true },
-  });
-
-  const demand30 = await db.salesOrderLine.findMany({
-    where: {
-      order: { organisationId },
-      requestedDeliveryDate: { gte: now, lte: thirtyDaysOut },
-    },
-    select: { orderedQuantity: true, cancelledQuantity: true, requestedDeliveryDate: true },
-  });
-
-  // Group demand by day
-  const groupByDate = (lines: typeof demand7) => {
-    const grouped: Map<string, number> = new Map();
-    for (const line of lines) {
-      const date = line.requestedDeliveryDate
-        ? line.requestedDeliveryDate.toISOString().split("T")[0]
-        : "unknown";
-      grouped.set(date, (grouped.get(date) || 0) + (line.orderedQuantity - line.cancelledQuantity));
-    }
-
-    return Array.from(grouped.entries())
-      .map(([dateStr, qty]) => ({
-        quantity: qty,
-        date: new Date(dateStr),
-      }))
-      .sort((a, b) => a.date.getTime() - b.date.getTime());
+  // "At risk" is demand the plan cannot cover: a pending proposal whose own
+  // components are short, plus any confirmed line with no cover at all.
+  const uncovered = chain.products.filter((row) => row.openDemand > 0 && row.available + row.incoming < row.openDemand).length;
+  const atRisk = shortages.filter((row) => row.priority === "CRITICAL").length + uncovered;
+  const shortagesByPriority = {
+    CRITICAL: shortages.filter((row) => row.priority === "CRITICAL"),
+    HIGH: shortages.filter((row) => row.priority === "HIGH"),
+    NORMAL: shortages.filter((row) => row.priority === "NORMAL"),
   };
 
-  const topBottlenecks = await db.manufacturingWorkCentre.findMany({
-    where: { organisationId },
-    take: 3,
+  // The plan in plain terms: what we will make, the hours it takes and what it
+  // costs, straight from the saved proposals (the same rows Planned Orders shows).
+  const names = new Map<string, { name: string; code: string }>();
+  const products = await db.product.findMany({ where: { organisationId, id: { in: proposals.map((proposal) => proposal.productId) } }, select: { id: true, name: true, code: true } });
+  for (const product of products) names.set(product.id, { name: product.name, code: product.code });
+
+  const plan = proposals.map((proposal) => {
+    const detailCost = (proposal.cost ?? {}) as Record<string, number>;
+    const costByKind: Record<string, number> = {};
+    for (const [kind, value] of Object.entries(detailCost)) if (value) costByKind[kind] = value;
+    const totalCostMinor = Object.values(detailCost).reduce((sum, value) => sum + value, 0);
+    return {
+      productId: proposal.productId,
+      productName: names.get(proposal.productId)?.name ?? "Product",
+      productCode: names.get(proposal.productId)?.code ?? "",
+      quantity: proposal.quantity,
+      neededBy: proposal.requiredDate,
+      machineHours: Math.round(((proposal.hours?.setup ?? 0) + (proposal.hours?.run ?? 0)) * 10) / 10,
+      crewHours: Math.round((proposal.hours?.crew ?? 0) * 10) / 10,
+      totalCostMinor,
+      costByKind,
+      shortComponents: (proposal.materials ?? []).filter((row) => row.shortage > 0).length,
+    };
   });
 
   return {
     shortageCount: shortages.length,
-    overloadedResources,
+    overloadedResources: capacity.filter((row) => row.overloaded).length,
     lateOrders,
-    atRiskDemand: criticalShortages,
-    requiringAction: run?.suggestionCount || 0,
-
-    demand7: groupByDate(demand7),
-    demand30: groupByDate(demand30),
+    atRiskDemand: atRisk,
+    requiringAction: run?.suggestionCount ?? 0,
+    demand7,
+    demand30,
     planningHorizon: { start: now, end: thirtyDaysOut },
-
-    topBottlenecks: topBottlenecks.map((wc) => ({
-      workCentre: wc.name,
-      utilization: 45, // TODO: calculate from scheduled work
-      capacity: 100,
-    })),
-
-    shortagesByPriority: new Map([
-      ["CRITICAL", shortages.filter((s) => s.priority === "CRITICAL")],
-      ["HIGH", shortages.filter((s) => s.priority === "HIGH")],
-      ["NORMAL", shortages.filter((s) => s.priority === "NORMAL")],
-    ]),
+    topBottlenecks: capacity
+      .filter((row) => row.requiredHours > 0)
+      .sort((a, b) => b.utilization - a.utilization)
+      .slice(0, 3)
+      .map((row) => ({ workCentre: row.workCentre, utilization: row.utilization, capacity: row.availableHours, requiredHours: row.requiredHours, usingConfiguredShifts: row.usingConfiguredShifts })),
+    capacity,
+    plan,
+    shortagesByPriority,
+    mrpRun: run,
   };
 }
 
-/**
- * Get planned orders for a product with details.
- */
-export async function getPlannedOrdersForProduct(organisationId: string, productId: string) {
-  return await db.manufacturingSupplySuggestion.findMany({
-    where: {
-      organisationId,
-      productId,
-      status: "PENDING",
-    },
-    include: {
-      run: true,
-      product: true,
-    },
+/** Net requirements for one product, rebuilt from the saved proposals so the
+ * product view and the plan cannot disagree. */
+export async function getNetRequirementsForProduct(organisationId: string, productId: string): Promise<NetRequirement[] | null> {
+  const suggestions = await db.manufacturingSupplySuggestion.findMany({
+    where: { organisationId, productId, status: { in: ["PENDING", "FIRMED"] } },
+    include: { product: { select: { name: true, code: true } } },
     orderBy: { neededBy: "asc" },
   });
-}
-
-/**
- * Get multi-level net requirements for a product.
- */
-export async function getNetRequirementsForProduct(organisationId: string, productId: string) {
-  // Load BOM
-  const def = await db.productDefinition.findFirst({
-    where: { organisationId, productId },
-    include: {
-      lines: { include: { component: true } },
-      operations: true,
-    },
+  if (!suggestions.length) return null;
+  return suggestions.map((suggestion) => {
+    const detail = readSuggestionDetail(suggestion.pegging);
+    return {
+      productId,
+      quantity: Number(suggestion.quantity),
+      requiredDate: suggestion.neededBy ?? new Date(),
+      safetyStock: 0,
+      existingSupply: 0,
+      netQuantity: Number(suggestion.quantity),
+      pegging: detail.demand.map((peg) => ({
+        demandId: peg.sourceId,
+        demandType: "FIRM" as never,
+        demandQuantity: peg.quantity,
+        sourceLabel: peg.label,
+      })),
+    };
   });
-
-  if (!def || def.lines.length === 0) {
-    return null; // No BOM
-  }
-
-  // For each component, get planned orders
-  const requirements = await Promise.all(
-    def.lines.map(async (line) => ({
-      component: line.component,
-      quantityPerUnit: line.quantityPerUnit,
-      plannedOrders: await getPlannedOrdersForProduct(organisationId, line.componentProductId),
-    }))
-  );
-
-  return {
-    product: { id: productId },
-    bom: def,
-    componentRequirements: requirements,
-  };
 }

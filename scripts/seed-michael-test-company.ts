@@ -129,16 +129,19 @@ async function main() {
   prove(`Customers: ${customers.map((c) => c.name).join(", ")}`);
 
   // ---- Products: bought parts, a sub-assembly, finished conveyors, and a service.
+  // reorder/safety levels are set so the two conveyor orders create genuine net
+  // requirements: finished conveyors start at zero, and MOTOR-1K5 opening stock is
+  // deliberately below what the plan consumes so MRP raises a real shortage.
   const productSeeds = [
-    { code: "STL-SHEET", name: "3mm mild steel sheet", price: 4_200, uom: "sheet", kind: "PRODUCT" as const },
-    { code: "FAST-M8", name: "M8 bolt and washer set", price: 65, uom: "each", kind: "PRODUCT" as const },
-    { code: "POWDER-GRY", name: "Powder coat, graphite grey", price: 1_850, uom: "kg", kind: "PRODUCT" as const },
-    { code: "MOTOR-1K5", name: "1.5kW drive motor", price: 18_900, uom: "each", kind: "PRODUCT" as const },
-    { code: "BRACKET-01", name: "Fabricated mounting bracket", price: 2_150, uom: "each", kind: "PRODUCT" as const },
-    { code: "FRAME-02", name: "Welded conveyor frame", price: 24_500, uom: "each", kind: "PRODUCT" as const },
-    { code: "CONV-1500", name: "Conveyor 1500mm, standard", price: 96_000, uom: "each", kind: "PRODUCT" as const },
-    { code: "CONV-HEAVY", name: "Conveyor 1500mm, heavy duty", price: 134_500, uom: "each", kind: "PRODUCT" as const },
-    { code: "INSTALL-DAY", name: "Installation day (engineer)", price: 58_000, uom: "day", kind: "SERVICE" as const },
+    { code: "STL-SHEET", name: "3mm mild steel sheet", price: 4_200, uom: "sheet", kind: "PRODUCT" as const, safety: 40, lead: 5 },
+    { code: "FAST-M8", name: "M8 bolt and washer set", price: 65, uom: "each", kind: "PRODUCT" as const, safety: 200, lead: 5 },
+    { code: "POWDER-GRY", name: "Powder coat, graphite grey", price: 1_850, uom: "kg", kind: "PRODUCT" as const, safety: 20, lead: 7 },
+    { code: "MOTOR-1K5", name: "1.5kW drive motor", price: 18_900, uom: "each", kind: "PRODUCT" as const, safety: 4, lead: 14 },
+    { code: "BRACKET-01", name: "Fabricated mounting bracket", price: 2_150, uom: "each", kind: "PRODUCT" as const, safety: 20, lead: 3 },
+    { code: "FRAME-02", name: "Welded conveyor frame", price: 24_500, uom: "each", kind: "PRODUCT" as const, safety: 4, lead: 4 },
+    { code: "CONV-1500", name: "Conveyor 1500mm, standard", price: 96_000, uom: "each", kind: "PRODUCT" as const, safety: 2, lead: 5 },
+    { code: "CONV-HEAVY", name: "Conveyor 1500mm, heavy duty", price: 134_500, uom: "each", kind: "PRODUCT" as const, safety: 2, lead: 6 },
+    { code: "INSTALL-DAY", name: "Installation day (engineer)", price: 58_000, uom: "day", kind: "SERVICE" as const, safety: 0, lead: 0 },
   ];
   const products = new Map<string, string>();
   for (const seed of productSeeds) {
@@ -153,8 +156,9 @@ async function main() {
         baseCurrency: "GBP",
         taxCategory: "STANDARD",
         active: true,
-        safetyStockLevel: seed.kind === "PRODUCT" ? 10 : 0,
-        leadTimeDays: seed.code === "MOTOR-1K5" ? 14 : 5,
+        safetyStockLevel: seed.safety,
+        monthlyUsage: seed.kind === "PRODUCT" ? (seed.code === "MOTOR-1K5" ? 6 : seed.code.startsWith("CONV") ? 3 : 0) : 0,
+        leadTimeDays: seed.lead,
       },
     });
     products.set(seed.code, product.id);
@@ -170,8 +174,8 @@ async function main() {
   // left at zero, so their orders are genuine manufacturing demand.
   const openings: Array<[code: string, warehouseId: string, quantity: number]> = [
     ["STL-SHEET", mainWarehouse.id, 240], ["STL-SHEET", depotWarehouse.id, 40],
-    ["FAST-M8", mainWarehouse.id, 1_800], ["POWDER-GRY", mainWarehouse.id, 320],
-    ["MOTOR-1K5", mainWarehouse.id, 24], ["BRACKET-01", mainWarehouse.id, 60],
+    ["FAST-M8", mainWarehouse.id, 800], ["POWDER-GRY", mainWarehouse.id, 320],
+    ["MOTOR-1K5", mainWarehouse.id, 10], ["BRACKET-01", mainWarehouse.id, 60],
     ["FRAME-02", mainWarehouse.id, 12],
   ];
   for (const [code, warehouseId, quantity] of openings) {
@@ -179,14 +183,120 @@ async function main() {
   }
   prove(`Opening stock: ${openings.length} receipts into ${new Set(openings.map(([, w]) => w)).size} warehouses`);
 
+  // ---- Plant and recipes. Three work centres with machines and hourly rates, and
+  // full make recipes for the fabricated bracket, the welded frame and both
+  // conveyors. The sub-assemblies are themselves made, so the finished conveyor's
+  // BOM explodes two levels and MRP has real work to net.
+  const centres = [
+    { code: "CUT", name: "Cutting & forming", description: "Guillotine, press brake and laser profile cutting." },
+    { code: "WELD", name: "Welding & fabrication", description: "MIG welding bays for frames and brackets." },
+    { code: "PAINT", name: "Powder coating", description: "Pre-treatment, booth and curing oven." },
+    { code: "ASSY", name: "Final assembly", description: "Conveyor build, drive fitting and test run." },
+  ] as const;
+  const centreIds = new Map<string, string>();
+  for (const centre of centres) {
+    const row = await db.manufacturingWorkCentre.create({ data: { organisationId: orgId, ...centre } });
+    centreIds.set(centre.code, row.id);
+    // One shift, Monday to Friday, 08:00–16:30 (510 minutes) with a two-person crew,
+    // so the cockpit can show real capacity rather than a 40-hour placeholder.
+    await db.manufacturingShift.create({ data: { organisationId: orgId, workCentreId: row.id, label: "Day shift", daysOfWeek: [1, 2, 3, 4, 5], startMinute: 480, endMinute: 990, crewCount: 2 } });
+  }
+  const machines = [
+    { code: "CUT", name: "Laser cutter", rate: 20 },
+    { code: "CUT", name: "Press brake", rate: 30 },
+    { code: "WELD", name: "MIG bay 1", rate: 6 },
+    { code: "WELD", name: "MIG bay 2", rate: 6 },
+    { code: "PAINT", name: "Powder booth", rate: 40 },
+    { code: "ASSY", name: "Assembly bay", rate: 2 },
+  ] as const;
+  const machineIds = new Map<string, string>();
+  for (const machine of machines) {
+    const centreId = centreIds.get(machine.code)!;
+    const row = await db.manufacturingResource.create({ data: { organisationId: orgId, workCentreId: centreId, name: machine.name, type: "MACHINE", nominalUnitsPerHour: machine.rate } });
+    machineIds.set(machine.name, row.id);
+  }
+  prove(`Plant: ${centres.length} work centres, ${machines.length} machines, day shifts 08:00–16:30`);
+
+  // Rates are pence-per-hour: machine = the machine running cost, labour = the
+  // operator on the step. machineIncludesLabour stays off, so the two are added
+  // rather than double-counted.
+  const recipes: Array<{ code: string; batch: number; lines: Array<[component: string, perUnit: number, scrap: number]>; operations: Array<{ name: string; centre: string; machine: string; setup: number; run: number; crew: number; machineRate: number; labourRate: number }> }> = [
+    {
+      code: "BRACKET-01", batch: 10,
+      lines: [["STL-SHEET", 0.05, 3], ["FAST-M8", 4, 0]],
+      operations: [
+        { name: "Cut and drill", centre: "CUT", machine: "Laser cutter", setup: 15, run: 1.5, crew: 1, machineRate: 2_400, labourRate: 2_100 },
+        { name: "Bend", centre: "CUT", machine: "Press brake", setup: 10, run: 0.5, crew: 1, machineRate: 1_800, labourRate: 2_100 },
+      ],
+    },
+    {
+      code: "FRAME-02", batch: 5,
+      lines: [["STL-SHEET", 0.4, 4], ["BRACKET-01", 2, 0]],
+      operations: [
+        { name: "Cut sections", centre: "CUT", machine: "Laser cutter", setup: 20, run: 3, crew: 1, machineRate: 2_400, labourRate: 2_100 },
+        { name: "Weld frame", centre: "WELD", machine: "MIG bay 1", setup: 25, run: 12, crew: 2, machineRate: 3_600, labourRate: 2_100 },
+      ],
+    },
+    {
+      code: "CONV-1500", batch: 1,
+      lines: [["FRAME-02", 1, 0], ["STL-SHEET", 0.2, 2], ["MOTOR-1K5", 1, 0], ["FAST-M8", 24, 2], ["POWDER-GRY", 0.3, 5]],
+      operations: [
+        { name: "Coat frame", centre: "PAINT", machine: "Powder booth", setup: 20, run: 4, crew: 1, machineRate: 2_700, labourRate: 2_100 },
+        { name: "Assemble drive", centre: "ASSY", machine: "Assembly bay", setup: 30, run: 24, crew: 2, machineRate: 1_500, labourRate: 2_100 },
+        { name: "Test run", centre: "ASSY", machine: "Assembly bay", setup: 5, run: 8, crew: 1, machineRate: 0, labourRate: 2_100 },
+      ],
+    },
+    {
+      code: "CONV-HEAVY", batch: 1,
+      lines: [["FRAME-02", 1, 0], ["STL-SHEET", 0.6, 2], ["MOTOR-1K5", 1, 0], ["FAST-M8", 40, 2], ["POWDER-GRY", 0.5, 5], ["BRACKET-01", 4, 0]],
+      operations: [
+        { name: "Reinforce and fit", centre: "WELD", machine: "MIG bay 2", setup: 45, run: 30, crew: 2, machineRate: 3_600, labourRate: 2_100 },
+        { name: "Coat frame", centre: "PAINT", machine: "Powder booth", setup: 25, run: 6, crew: 1, machineRate: 2_700, labourRate: 2_100 },
+        { name: "Assemble drive", centre: "ASSY", machine: "Assembly bay", setup: 40, run: 36, crew: 2, machineRate: 1_500, labourRate: 2_100 },
+        { name: "Test run", centre: "ASSY", machine: "Assembly bay", setup: 5, run: 12, crew: 1, machineRate: 0, labourRate: 2_100 },
+      ],
+    },
+  ];
+  for (const recipe of recipes) {
+    await db.productDefinition.create({
+      data: {
+        organisationId: orgId,
+        productId: productId(recipe.code),
+        version: 1,
+        status: "ACTIVE",
+        supply: "MAKE",
+        batchQuantity: recipe.batch,
+        yieldPercent: 100,
+        createdByUserId: demoUser.id,
+        lines: { create: recipe.lines.map(([component, perUnit, scrap], position) => ({ organisationId: orgId, componentProductId: productId(component), quantityPerUnit: perUnit, scrapPercent: scrap, position })) },
+        operations: {
+          create: recipe.operations.map((operation, position) => ({
+            organisationId: orgId,
+            name: operation.name,
+            position,
+            workCentre: operation.name,
+            workCentreId: centreIds.get(operation.centre)!,
+            resourceId: machineIds.get(operation.machine)!,
+            setupMinutes: operation.setup,
+            runMinutesPerUnit: operation.run,
+            crewSize: operation.crew,
+            machineMinorPerHour: operation.machineRate,
+            labourMinorPerHour: operation.labourRate,
+            overheadMinorPerHour: Math.round(operation.machineRate * 0.15),
+          })),
+        },
+      },
+    });
+  }
+  prove(`Recipes: ${recipes.map((r) => r.code).join(", ")} (components, routing, machine/labour rates)`);
+
   // ---- Sales orders. The Sales commands call requireSession(), which only exists
   // inside a web request, so the order records are written here the same way
   // confirmation writes them (lines, totals, revision, change event, audit), then
   // Logistics is asked to consume the confirmed order through its real handoff.
   const orderSeeds: Array<{ customer: number; lines: Array<{ code: string; quantity: number }>; po: string; deliveryDays: number; deliver?: boolean }> = [
     { customer: 0, lines: [{ code: "CONV-1500", quantity: 6 }, { code: "INSTALL-DAY", quantity: 2 }], po: "PO-RID-4471", deliveryDays: 10 },
-    { customer: 1, lines: [{ code: "BRACKET-01", quantity: 40 }, { code: "FAST-M8", quantity: 500 }], po: "PO-NGE-9920", deliveryDays: 6, deliver: true },
-    { customer: 0, lines: [{ code: "CONV-HEAVY", quantity: 2 }], po: "PO-RID-4488", deliveryDays: 14 },
+    { customer: 1, lines: [{ code: "BRACKET-01", quantity: 40 }, { code: "FAST-M8", quantity: 500 }], po: "PO-NGE-9920", deliveryDays: 6, deliver: true },    { customer: 0, lines: [{ code: "CONV-HEAVY", quantity: 2 }], po: "PO-RID-4488", deliveryDays: 14 },
     { customer: 2, lines: [{ code: "FRAME-02", quantity: 8 }, { code: "MOTOR-1K5", quantity: 4 }], po: "PO-CPH-3312", deliveryDays: 9, deliver: true },
   ];
   const orders: Array<{ id: string; reference: string; customer: string; gross: number; delivered: boolean }> = [];
@@ -307,15 +417,17 @@ async function main() {
   console.log(`  ${orders.length} confirmed sales orders: ${orders.map((o) => `${o.reference} £${(o.gross / 100).toFixed(2)}`).join(", ")}`);
   console.log(`  ${shipments.length} shipments: ${shipments.map((s) => `${s.reference} (${s.status})`).join(", ")}`);
   console.log(`  ${stock.length} stock balances, ${await db.inventoryMovement.count({ where: { organisationId: orgId } })} inventory movements`);
+  console.log(`  Plant: ${centres.length} work centres, ${machines.length} machines with hourly rates`);
+  console.log(`  Recipes: ${recipes.length} make definitions (BRACKET-01, FRAME-02, CONV-1500, CONV-HEAVY)`);
   console.log("\nWaiting for you in Logistics (open → release → pick):");
   for (const requirement of openFulfilments) {
     const short = requirement.lines.some((line) => line.allocatedQuantity < line.orderedQuantity);
     console.log(`  • ${requirement.reference} · ${requirement.party.name} · ${requirement.salesOrder.reference} · ${requirement.status}${short ? " · SHORT on stock" : ""}`);
   }
-  console.log("\nManufacturing: Plant is intentionally empty.");
-  console.log("  Next: Manufacturing → Plant, add a work centre and a machine;");
-  console.log("  then give CONV-1500 / CONV-HEAVY a recipe (components, steps and rates).");
-  console.log("  The two conveyor orders above are the demand that will need making.");
+  console.log("\nManufacturing: plant and recipes are already seeded.");
+  console.log("  Open Manufacturing → Production plan and press Run plan.");
+  console.log("  The two conveyor orders plus motor stock already below safety stock");
+  console.log("  are the demand the plan will explode, net and cost.");
   console.log("=====================================================\n");
 
   // Sanity: the apps must resolve for this company's own login.

@@ -12,6 +12,7 @@ import { OPEN_PRODUCTION_ORDER_STATUSES } from "../domain/lifecycle";
 import { nextOrderNumber } from "./numbers";
 import { totalLeadTimeMinutes } from "../domain/scheduling";
 import { readAvailability } from "@/modules/stock/services/availability";
+import { readSuggestionDetail } from "./mrp-queries";
 
 /** One demand line pegged by a suggestion (§37). Stored as JSON so it survives
  * edits to the underlying sales order line or forecast row. */
@@ -160,6 +161,9 @@ export async function firmSuggestion(suggestionId: string) {
 
   const pegs = (suggestion.pegging as unknown as PegLine[]) ?? [];
   const largestPeg = pegs.slice().sort((a, b) => b.quantity - a.quantity)[0];
+  // The richer MRP engine stores a material position on the suggestion; when it
+  // does, firming records what the order is committing to against stock.
+  const short = readSuggestionDetail(suggestion.pegging).materials.filter((row) => row.shortage > 0);
   const product = await db.product.findFirst({ where: { id: suggestion.productId, organisationId: session.organisationId }, include: { definitions: { where: { status: "ACTIVE" }, take: 1, orderBy: { version: "desc" } } } });
   if (!product) throw new Error("Product no longer exists.");
 
@@ -175,7 +179,7 @@ export async function firmSuggestion(suggestionId: string) {
         requiredDate: suggestion.neededBy,
         priority: suggestion.startBy && suggestion.startBy < new Date() ? 10 : 0,
         sourceSalesOrderLineId: largestPeg?.sourceType === "SALES_ORDER" ? largestPeg.sourceId : null,
-        notes: `Firmed from MRP run ${suggestion.runId}. Should have started ${suggestion.startBy?.toLocaleDateString("en-GB") ?? "n/a"} to meet the need date. Pegged demand: ${pegs.map((p) => `${p.label} (${p.quantity})`).join("; ") || "safety stock"}.`,
+        notes: `Firmed from MRP run ${suggestion.runId}. Should have started ${suggestion.startBy?.toLocaleDateString("en-GB") ?? "n/a"} to meet the need date. Pegged demand: ${pegs.map((p) => `${p.label} (${p.quantity})`).join("; ") || "safety stock"}.${short.length ? ` Short at firming: ${short.map((row) => `${row.productName ?? "component"} short ${row.shortage}`).join("; ")}.` : ""}`,
         createdByUserId: session.userId,
       },
     });

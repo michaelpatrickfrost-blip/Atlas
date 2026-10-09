@@ -106,7 +106,21 @@ export async function orderDetail(organisationId: string, orderId: string) {
     },
   });
   if (!order) return null;
-  return order;
+  // §20 plan-vs-actual materials: what backflushing actually consumed for this
+  // order, read from the inventory ledger rather than a parallel "actual" table,
+  // so the ledger stays the single source of truth. Negative deltas are use.
+  const movements = await db.inventoryMovement.findMany({
+    where: { organisationId, manufacturingOrderId: order.id, delta: { lt: 0 } },
+    include: { product: { select: { id: true, name: true, code: true } } },
+    orderBy: { createdAt: "asc" },
+  });
+  const consumed = new Map<string, { productId: string; name: string; code: string; quantity: number }>();
+  for (const move of movements) {
+    const row = consumed.get(move.productId) ?? { productId: move.productId, name: move.product.name, code: move.product.code, quantity: 0 };
+    row.quantity += Math.abs(move.delta);
+    consumed.set(move.productId, row);
+  }
+  return { ...order, consumption: [...consumed.values()] };
 }
 
 export async function manufacturingAttention(organisationId: string): Promise<AttentionItem[]> {

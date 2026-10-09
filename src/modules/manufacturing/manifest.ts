@@ -28,9 +28,10 @@ export const manufacturingManifest: ModuleManifest = {
   searchProvider: async ({ session, query }) => (session.capabilities.has(C.orderRead) ? searchManufacturing(session, query) : []),
   navigation: [
     { label: "Today", href: "/manufacturing", capability: C.orderRead },
-    { label: "Planning Cockpit", href: "/manufacturing/planning", capability: C.planRead, group: "Planning" },
-    { label: "Planned Orders", href: "/manufacturing/planning/planned-orders", capability: C.planRead, group: "Planning" },
+    { label: "Production plan", href: "/manufacturing/planning", capability: C.planRead, group: "Planning" },
+    { label: "Planned orders", href: "/manufacturing/planning/planned-orders", capability: C.planRead, group: "Planning" },
     { label: "Shortages", href: "/manufacturing/planning/shortages", capability: C.planRead, group: "Planning" },
+    { label: "Forecast demand", href: "/manufacturing/planning/forecast", capability: C.planRead, group: "Planning" },
     { label: "Plant", href: "/manufacturing/plant", capability: C.orderRead },
     { label: "Schedule", href: "/manufacturing/schedule", capability: C.scheduleRead },
     { label: "Produce", href: "/manufacturing/produce", capability: C.orderRead },

@@ -1,120 +1,149 @@
-// MRP calculation services - wire domain logic to database
+// MRP calculation services — wire domain logic to the database.
 import { db } from "@/core/db/client";
+import type { Prisma } from "@/generated/prisma/client";
+import { ManufacturingSuggestionKind, ManufacturingSuggestionStatus } from "@/generated/prisma/enums";
 import { MrpEngine } from "../domain/mrp-engine";
-import type {
-  DemandLine,
-  InventoryState,
-  ProductionVersion,
-  MrpRunResult,
-} from "../domain/mrp-types";
+import type { DemandLine, InventoryState, MrpRunResult, Recipe, RecipeComponent, RecipeOperation } from "../domain/mrp-types";
 import { DemandType, DemandSource } from "../domain/mrp-types";
 
 /**
- * Run complete MRP for an organisation.
- * Loads demand, inventory, BOMs and runs the calculation.
+ * Run complete MRP for an organisation: load the inputs, plan them and persist
+ * the run. Everything the planner sees afterwards is read back from the saved
+ * suggestions rather than recomputed by the page.
  */
 export async function runMrp(organisationId: string, userId: string, horizonDays = 90): Promise<MrpRunResult> {
   const now = new Date();
-  const horizonStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // 7 days back for WIP
+  const horizonStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const horizonEnd = new Date(now.getTime() + horizonDays * 24 * 60 * 60 * 1000);
 
-  // Load all inputs
-  const [demand, inventory, boms, existingSupply, leadTimes, safetyStocks] = await Promise.all([
+  const [demand, inventory, recipes, prices, existingSupply, leadTimes, safetyStocks] = await Promise.all([
     loadDemand(organisationId, horizonStart, horizonEnd),
     loadInventory(organisationId),
-    loadBomDefinitions(organisationId),
+    loadRecipes(organisationId),
+    loadPrices(organisationId),
     loadExistingSupply(organisationId),
     loadLeadTimes(organisationId),
     loadSafetyStocks(organisationId),
   ]);
 
-  // Create MRP context
-  const context = {
-    organisationId,
-    planningHorizon: { start: horizonStart, end: horizonEnd },
+  const names = await loadNames(organisationId, [
+    ...demand.map((line) => line.productId),
+    ...[...recipes.values()].flatMap((recipe) => [recipe.productId, ...recipe.components.map((component) => component.componentProductId)]),
+  ]);
+
+  const engine = new MrpEngine({
     demand,
     inventory,
-    bomDefinitions: boms,
+    recipes,
+    prices,
     existingSupply,
     leadTimes,
     safetyStock: safetyStocks,
-  };
-
-  // Run calculation
-  const engine = new MrpEngine(context);
+    names,
+  });
   const result = await engine.run();
-
-  // Store planning run and suggestions
   await storeResultsPlanningRun(organisationId, userId, result);
-
   return result;
 }
 
+/** Display names for anything the engine may have to label. */
+async function loadNames(organisationId: string, productIds: string[]) {
+  const ids = [...new Set(productIds)].filter(Boolean);
+  if (!ids.length) return new Map<string, { name: string; code: string }>();
+  const products = await db.product.findMany({ where: { organisationId, id: { in: ids } }, select: { id: true, name: true, code: true } });
+  return new Map(products.map((product) => [product.id, { name: product.name, code: product.code }]));
+}
+
 /**
- * Load all demand: confirmed sales orders + forecasts.
+ * Demand: confirmed Sales product lines plus planner/S&OP forecast.
+ *
+ * S&OP publishes a whole-period total, so gross bookings (including closed orders)
+ * consume it, while only the outstanding firm balance enters MRP.
  */
 async function loadDemand(organisationId: string, start: Date, end: Date): Promise<DemandLine[]> {
   const demand: DemandLine[] = [];
+  const now = new Date();
 
-  // S&OP is a whole-period forecast. Count gross bookings (including closed
-  // orders) to consume it, while only the outstanding firm balance enters MRP.
   const periodStart = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), 1));
   const orders = await db.salesOrder.findMany({
-    where: { organisationId, commercialStatus: { in: ["CONFIRMED", "ON_HOLD", "CLOSED"] }, orderType: { notIn: ["BLANKET", "INTERNAL"] },
-      OR: [{ commercialStatus: { not: "CLOSED" } }, { requestedDeliveryDate: { gte: periodStart } }, { lines: { some: { requestedDeliveryDate: { gte: periodStart } } } }] },
+    where: {
+      organisationId,
+      commercialStatus: { in: ["CONFIRMED", "ON_HOLD", "CLOSED"] },
+      orderType: { notIn: ["BLANKET", "INTERNAL"] },
+      OR: [{ commercialStatus: { not: "CLOSED" } }, { requestedDeliveryDate: { gte: periodStart } }, { lines: { some: { requestedDeliveryDate: { gte: periodStart } } } }],
+    },
     include: { lines: { where: { type: "PRODUCT", productId: { not: null } } } },
   });
   const shippedRows = await db.fulfilmentLine.findMany({
-    where: { organisationId, salesOrderLineId: { in: orders.flatMap(order => order.lines.map(line => line.id)) } },
+    where: { organisationId, salesOrderLineId: { in: orders.flatMap((order) => order.lines.map((line) => line.id)) } },
     select: { salesOrderLineId: true, shippedQuantity: true },
   });
-  const shipped = new Map<string, number>(), bookedByMonth = new Map<string, number>();
+  const shipped = new Map<string, number>();
+  const bookedByMonth = new Map<string, number>();
   for (const row of shippedRows) shipped.set(row.salesOrderLineId, (shipped.get(row.salesOrderLineId) ?? 0) + row.shippedQuantity);
-  for (const order of orders) for (const line of order.lines) {
-    const due = line.requestedDeliveryDate ?? order.requestedDeliveryDate ?? line.promisedDeliveryDate ?? order.promisedDeliveryDate;
-    if (!line.productId || !due || due > end || order.commercialStatus === "CLOSED" && due < periodStart) continue;
-    const requiredDate = due < periodStart ? periodStart : due;
-    const key = `${line.productId}|${requiredDate.toISOString().slice(0, 7)}`;
-    const quantity = Math.max(0, line.orderedQuantity - line.cancelledQuantity);
-    bookedByMonth.set(key, (bookedByMonth.get(key) ?? 0) + quantity);
-    const open = order.commercialStatus === "CLOSED" ? 0 : Math.max(0, quantity - (shipped.get(line.id) ?? 0));
-    if (!open) continue;
-    demand.push({ id: line.id, demandType: DemandType.FIRM, source: DemandSource.SALES_ORDER, productId: line.productId, quantity: open,
-      requiredDate, sourceId: order.id, sourceLineId: line.id, notes: `SO ${order.reference}` });
+  for (const order of orders) {
+    for (const line of order.lines) {
+      const due = line.requestedDeliveryDate ?? order.requestedDeliveryDate ?? line.promisedDeliveryDate ?? order.promisedDeliveryDate;
+      if (!line.productId || !due || due > end) continue;
+      if (order.commercialStatus === "CLOSED" && due < periodStart) continue;
+      const requiredDate = due < periodStart ? periodStart : due;
+      const key = `${line.productId}|${requiredDate.toISOString().slice(0, 7)}`;
+      const quantity = Math.max(0, line.orderedQuantity - line.cancelledQuantity);
+      bookedByMonth.set(key, (bookedByMonth.get(key) ?? 0) + quantity);
+      const open = order.commercialStatus === "CLOSED" ? 0 : Math.max(0, quantity - (shipped.get(line.id) ?? 0));
+      if (!open) continue;
+      demand.push({
+        id: line.id,
+        demandType: DemandType.FIRM,
+        source: DemandSource.SALES_ORDER,
+        productId: line.productId,
+        quantity: open,
+        requiredDate,
+        sourceId: order.id,
+        sourceLineId: line.id,
+        notes: `SO ${order.reference}`,
+      });
+    }
   }
 
-  // Load forecast demand
+  // Approach 1: planner-entered / S&OP-published forecast per product per month.
   const forecasts = await db.manufacturingDemandForecast.findMany({
-    where: {
-      organisationId,
-      periodStart: { gte: periodStart, lte: end },
-    },
+    where: { organisationId, periodStart: { gte: periodStart, lte: end } },
   });
-
   for (const forecast of forecasts) {
     demand.push({
       id: forecast.id,
       demandType: DemandType.FORECAST,
       source: DemandSource.FORECAST,
       productId: forecast.productId,
-      quantity: forecast.sourceSopVersionId ? Math.max(0, Number(forecast.quantity) - (bookedByMonth.get(`${forecast.productId}|${forecast.periodStart.toISOString().slice(0, 7)}`) ?? 0)) : Number(forecast.quantity),
-      forecastIsResidual: !!forecast.sourceSopVersionId,
+      quantity: forecast.sourceSopVersionId
+        ? Math.max(0, Number(forecast.quantity) - (bookedByMonth.get(`${forecast.productId}|${forecast.periodStart.toISOString().slice(0, 7)}`) ?? 0))
+        : Number(forecast.quantity),
+      forecastIsResidual: Boolean(forecast.sourceSopVersionId),
       requiredDate: forecast.periodStart,
       sourceId: forecast.id,
       notes: forecast.notes || "Forecast",
     });
   }
 
-  // Expected usage set on the product in Inventory: forecast demand for every
-  // month in the horizon the planner has not given its own figure.
+  // Approach 2: expected monthly usage set on the product, for every month in the
+  // horizon the planner has not given its own figure.
   const standing = await db.product.findMany({ where: { organisationId, kind: "PRODUCT", active: true, monthlyUsage: { gt: 0 } }, select: { id: true, monthlyUsage: true } });
   const entered = new Set(forecasts.map((forecast) => `${forecast.productId}:${forecast.periodStart.toISOString().slice(0, 7)}`));
-  const now = new Date();
   for (const product of standing) {
-    for (let month = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1)); month <= end; month = new Date(Date.UTC(month.getUTCFullYear(), month.getUTCMonth() + 1, 1))) {
+    for (let month = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)); month <= end; month = new Date(Date.UTC(month.getUTCFullYear(), month.getUTCMonth() + 1, 1))) {
       const key = `${product.id}:${month.toISOString().slice(0, 7)}`;
       if (entered.has(key)) continue;
-      demand.push({ id: `usage:${key}`, demandType: DemandType.FORECAST, source: DemandSource.FORECAST, productId: product.id, quantity: product.monthlyUsage ?? 0, requiredDate: month < now ? now : month, sourceId: product.id, notes: "Expected usage (Inventory)" });
+      demand.push({
+        id: `usage:${key}`,
+        demandType: DemandType.FORECAST,
+        source: DemandSource.FORECAST,
+        productId: product.id,
+        quantity: product.monthlyUsage ?? 0,
+        requiredDate: month < now ? now : month,
+        sourceId: product.id,
+        notes: "Expected usage (Inventory)",
+      });
     }
   }
 
@@ -122,216 +151,175 @@ async function loadDemand(organisationId: string, start: Date, end: Date): Promi
 }
 
 /**
- * Load current inventory state by product/site.
+ * Physical state per product, across every warehouse.
+ *
+ * The key must always be the product id. Balances, reservations and holds are all
+ * product-scoped, so accumulating them under a product-site key left every lookup
+ * by product id empty — MRP then planned against zero stock it could actually see.
+ * Using the shared availability figure keeps one definition of available across
+ * Sales, Inventory, Planning and Manufacturing.
  */
 async function loadInventory(organisationId: string): Promise<Map<string, InventoryState>> {
   const inventory = new Map<string, InventoryState>();
+  const stateFor = (productId: string) => {
+    const current = inventory.get(productId);
+    if (current) return current;
+    const created: InventoryState = { productId, onHand: 0, allocated: 0, qualityHeld: 0, available: 0, safetyStock: 0 };
+    inventory.set(productId, created);
+    return created;
+  };
 
-  // Load stock balances
-  const balances = await db.inventoryBalance.findMany({
-    where: { organisationId },
-    include: { warehouse: true },
-  });
+  const balances = await db.inventoryBalance.findMany({ where: { organisationId }, select: { productId: true, quantity: true } });
+  for (const balance of balances) stateFor(balance.productId).onHand += balance.quantity;
 
-  for (const balance of balances) {
-    const siteId = balance.warehouse?.siteId || "DEFAULT";
-    const key = `${balance.productId}-${siteId}`;
+  const reservations = await db.stockReservation.findMany({ where: { organisationId, status: "ACTIVE" }, select: { productId: true, quantity: true } });
+  for (const reservation of reservations) stateFor(reservation.productId).allocated += reservation.quantity;
 
-    if (!inventory.has(key)) {
-      inventory.set(key, {
-        productId: balance.productId,
-        siteId,
-        onHand: 0,
-        allocated: 0,
-        qualityHeld: 0,
-        available: 0,
-        safetyStock: 0,
-      });
-    }
+  // Only an ACTIVE hold removes stock. Released holds are history, and counting
+  // them would keep permanent phantom shortfalls in the plan.
+  const holds = await db.qualityHold.findMany({ where: { organisationId, status: "ACTIVE" }, select: { productId: true, quantity: true } });
+  for (const hold of holds) stateFor(hold.productId).qualityHeld += Number(hold.quantity);
 
-    const state = inventory.get(key)!;
-    state.onHand += Number(balance.quantity);
-  }
-
-  // Stock already reserved for fulfilments is not available to plan against
-  const warehouses = await db.warehouse.findMany({ where: { organisationId }, select: { id: true, siteId: true } });
-  const siteOf = new Map(warehouses.map((warehouse) => [warehouse.id, warehouse.siteId || "DEFAULT"]));
-  const reservations = await db.stockReservation.findMany({
-    where: { organisationId, status: "ACTIVE" },
-    select: { productId: true, warehouseId: true, quantity: true },
-  });
-  for (const reservation of reservations) {
-    const state = inventory.get(`${reservation.productId}-${siteOf.get(reservation.warehouseId) ?? "DEFAULT"}`);
-    if (state) state.allocated += reservation.quantity;
-  }
-
-  // Load quality holds
-  const holds = await db.qualityHold.findMany({
-    where: { organisationId },
-  });
-
-  for (const hold of holds) {
-    for (const state of inventory.values()) {
-      if (state.productId === hold.productId) {
-        state.qualityHeld += Number(hold.quantity);
-      }
-    }
-  }
-
-  // Calculate available = onHand - allocated - qualityHeld
-  for (const state of inventory.values()) {
-    state.available = Math.max(0, state.onHand - state.allocated - state.qualityHeld);
-  }
-
+  for (const state of inventory.values()) state.available = Math.max(0, state.onHand - state.allocated - state.qualityHeld);
   return inventory;
 }
 
 /**
- * Load BOM definitions for all products.
+ * Every active definition that could be planned, with the plant it runs on.
+ *
+ * The catalogue is deliberately wider than "products with demand": MRP plans the
+ * components underneath demand too, so a part with no direct sales order still
+ * needs its recipe to know whether it is made or bought.
  */
-async function loadBomDefinitions(organisationId: string): Promise<Map<string, ProductionVersion>> {
-  const boms = new Map<string, ProductionVersion>();
-
+async function loadRecipes(organisationId: string): Promise<Map<string, Recipe>> {
+  const recipes = new Map<string, Recipe>();
   const definitions = await db.productDefinition.findMany({
-    where: { organisationId },
+    where: { organisationId, status: "ACTIVE" },
     include: {
-      lines: true,
-      operations: true,
+      lines: { orderBy: { position: "asc" } },
+      operations: { orderBy: { position: "asc" }, include: { centre: { select: { code: true, name: true } }, machine: { select: { name: true, type: true } } } },
     },
   });
 
-  for (const def of definitions) {
-    boms.set(def.productId, {
-      definitionId: def.id,
-      productId: def.productId,
-      bomComponents: def.lines.map((line) => ({
-        componentProductId: line.componentProductId,
-        quantityPerUnit: Number(line.quantityPerUnit),
-        scrapPercent: Number(line.scrapPercent || 0),
-        position: line.position,
-        notes: line.notes || "",
-      })),
-      operations: def.operations.map((op) => ({
-        position: op.position,
-        name: op.name,
-        setupMinutes: Number(op.setupMinutes || 0),
-        runMinutesPerUnit: Number(op.runMinutesPerUnit || 0),
-        workCentreId: op.workCentreId || undefined,
-        resourceId: op.resourceId || undefined,
-        crewSize: Number(op.crewSize || 1),
-        setupCost: op.machineMinorPerHour || 0, // TODO: more sophisticated cost model
-        runCost: op.labourMinorPerHour || 0,
-        labourCost: 0,
-        overheadCost: op.overheadMinorPerHour || 0,
-      })),
-      yield: 1.0, // TODO: load from product definition
-      scrapPercent: 0, // TODO: load from product definition
-      minBatchSize: 1,
-      maxBatchSize: 999999,
-      preferredBatchSize: 1,
+  for (const definition of definitions) {
+    const components: RecipeComponent[] = definition.lines.map((line) => ({
+      componentProductId: line.componentProductId,
+      quantityPerUnit: Number(line.quantityPerUnit),
+      scrapPercent: Number(line.scrapPercent || 0),
+      position: line.position,
+      notes: line.notes ?? "",
+    }));
+    const operations: RecipeOperation[] = definition.operations.map((operation) => ({
+      position: operation.position,
+      name: operation.name,
+      setupMinutes: Number(operation.setupMinutes || 0),
+      runMinutesPerUnit: Number(operation.runMinutesPerUnit || 0),
+      crewSize: Math.max(1, Number(operation.crewSize || 1)),
+      workCentreId: operation.workCentreId,
+      workCentreCode: operation.centre?.code ?? null,
+      workCentreName: operation.centre?.name ?? (operation.workCentre || null),
+      resourceId: operation.resourceId,
+      resourceName: operation.machine?.name ?? null,
+      resourceType: operation.machine?.type ?? null,
+      machineMinorPerHour: operation.machineMinorPerHour,
+      labourMinorPerHour: operation.labourMinorPerHour,
+      overheadMinorPerHour: operation.overheadMinorPerHour,
+      logisticsMinorPerBatch: operation.logisticsMinorPerBatch,
+      machineIncludesLabour: operation.machineIncludesLabour,
+      machineIncludesOverhead: operation.machineIncludesOverhead,
+    }));
+    recipes.set(definition.productId, {
+      productId: definition.productId,
+      definitionId: definition.id,
+      version: definition.version,
+      supply: definition.supply,
+      batchQuantity: Number(definition.batchQuantity),
+      yieldPercent: Number(definition.yieldPercent),
+      subcontractMinorPerUnit: definition.subcontractMinorPerUnit,
+      components,
+      operations,
     });
   }
-
-  return boms;
+  return recipes;
 }
 
-/**
- * Load existing supply (open manufacturing orders + purchase orders).
- */
+/** Standard price of every product, so a bought part is never costed at zero —
+ * the same figure the product page and the sales side use. */
+async function loadPrices(organisationId: string): Promise<Map<string, number>> {
+  const products = await db.product.findMany({ where: { organisationId }, select: { id: true, basePriceAmount: true } });
+  return new Map(products.map((product) => [product.id, product.basePriceAmount ?? 0]));
+}
+
+/** Open production supply only. Dated purchase supply is not loaded yet — see
+ * the known MRP limits in docs/modules/MANUFACTURING.md. */
 async function loadExistingSupply(organisationId: string): Promise<Map<string, number>> {
   const supply = new Map<string, number>();
-
-  // Manufacturing orders in progress
-  const moOrders = await db.manufacturingOrder.findMany({
-    where: {
-      organisationId,
-      status: { in: ["PLANNED", "READY", "RELEASED", "RUNNING"] },
-    },
+  const openOrders = await db.manufacturingOrder.findMany({
+    where: { organisationId, status: { in: ["PLANNED", "READY", "RELEASED", "RUNNING"] } },
+    select: { productId: true, quantity: true },
   });
-
-  for (const order of moOrders) {
-    const current = supply.get(order.productId) || 0;
-    supply.set(order.productId, current + Number(order.quantity));
-  }
-
-  // TODO: Load purchase orders from Procurement/Finance module
-
+  for (const order of openOrders) supply.set(order.productId, (supply.get(order.productId) ?? 0) + Number(order.quantity));
   return supply;
 }
 
-/**
- * Load lead times (default 5 days for manufacturing, varies for purchase).
- */
+/** Planned start is computed from the real routing, so the static lead time is
+ * only a fallback for a product with no routing at all. */
 async function loadLeadTimes(organisationId: string): Promise<Map<string, number>> {
   const leadTimes = new Map<string, number>();
-
-  // Set on the product in Inventory. 0 means not set: 5 days.
-  const products = await db.product.findMany({
-    where: { organisationId },
-    select: { id: true, leadTimeDays: true },
-  });
-
-  for (const product of products) {
-    leadTimes.set(product.id, product.leadTimeDays > 0 ? product.leadTimeDays : 5);
-  }
-
+  const products = await db.product.findMany({ where: { organisationId }, select: { id: true, leadTimeDays: true } });
+  for (const product of products) leadTimes.set(product.id, product.leadTimeDays > 0 ? product.leadTimeDays : 5);
   return leadTimes;
 }
 
-/**
- * Load safety stock levels.
- */
+/** Safety stock is set on the product in Inventory. Zero is a deliberate no-buffer
+ * policy, not "unset" — inventing a default buffer would create demand the planner
+ * never asked for. */
 async function loadSafetyStocks(organisationId: string): Promise<Map<string, number>> {
   const safetyStocks = new Map<string, number>();
-
-  // Set on the product in Inventory. 0 means not set: 100 units.
-  const products = await db.product.findMany({
-    where: { organisationId },
-    select: { id: true, safetyStockLevel: true },
-  });
-
-  for (const product of products) {
-    safetyStocks.set(product.id, product.safetyStockLevel > 0 ? product.safetyStockLevel : 100);
-  }
-
+  const products = await db.product.findMany({ where: { organisationId }, select: { id: true, safetyStockLevel: true } });
+  for (const product of products) safetyStocks.set(product.id, Math.max(0, product.safetyStockLevel));
   return safetyStocks;
 }
 
 /**
- * Store MRP run results in the database.
+ * Persist the run and its suggestions. The per-order detail — operations, hours,
+ * materials, cost buckets — goes into `pegging`, which the schema already stores as
+ * JSON and which deliberately survives later edits to recipes and source lines.
  */
-async function storeResultsPlanningRun(
-  organisationId: string,
-  userId: string,
-  result: MrpRunResult
-) {
-  // Store planning run record
+async function storeResultsPlanningRun(organisationId: string, userId: string, result: MrpRunResult) {
   const run = await db.manufacturingPlanningRun.create({
     data: {
       organisationId,
       triggeredByUserId: userId,
       startedAt: result.startedAt,
       finishedAt: result.finishedAt,
-      productCount: new Set(result.plannedOrders.map((o) => o.productId)).size,
+      productCount: new Set(result.plannedOrders.map((order) => order.productId)).size,
       suggestionCount: result.plannedOrders.length,
       warnings: result.warnings,
     },
   });
 
-  // Store planned order suggestions
-  for (const order of result.plannedOrders) {
-    await db.manufacturingSupplySuggestion.create({
-      data: {
+  if (result.plannedOrders.length) {
+    await db.manufacturingSupplySuggestion.createMany({
+      data: result.plannedOrders.map((order) => ({
         organisationId,
         runId: run.id,
-        kind: order.supplyType,
+        kind: ManufacturingSuggestionKind[order.supplyType as keyof typeof ManufacturingSuggestionKind],
         productId: order.productId,
         quantity: order.quantity,
         neededBy: order.requiredDate,
         startBy: order.startDate,
-        status: "PENDING",
-        pegging: order.pegging as unknown as object,
-      },
+        status: ManufacturingSuggestionStatus.PENDING,
+        pegging: {
+          demand: order.pegging,
+          operations: order.operations ?? [],
+          materials: order.materials ?? [],
+          cost: order.cost ?? null,
+          hours: order.hours ?? null,
+          batchCount: order.batchCount ?? 0,
+        } as unknown as Prisma.InputJsonValue,
+      })),
     });
   }
+  result.runId = run.id;
 }

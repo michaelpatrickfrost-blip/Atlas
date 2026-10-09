@@ -39,7 +39,7 @@ export async function setForecast(input: { productId: string; periodStart: Date;
     update: { quantity: input.quantity, notes: input.notes ?? null, sourceSopVersionId: null },
   });
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "manufacturing.forecast.set", entityType: "ManufacturingDemandForecast", entityId: saved.id, after: { productId: input.productId, periodStart, quantity: input.quantity } });
-  revalidatePath("/manufacturing/plan");
+  revalidatePath("/manufacturing/planning/forecast");
 }
 
 export async function deleteForecast(forecastId: string) {
@@ -47,5 +47,5 @@ export async function deleteForecast(forecastId: string) {
   assertCapability(session, C.planManage);
   const deleted = await db.manufacturingDemandForecast.deleteMany({ where: { id: forecastId, organisationId: session.organisationId } });
   if (!deleted.count) throw new Error("This forecast line no longer exists.");
-  revalidatePath("/manufacturing/plan");
+  revalidatePath("/manufacturing/planning/forecast");
 }

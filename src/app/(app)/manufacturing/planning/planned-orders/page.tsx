@@ -1,13 +1,25 @@
+import Link from "next/link";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { MANUFACTURING_CAPABILITIES } from "@/core/permissions/capabilities";
-import { getLatestMrpRun } from "@/modules/manufacturing/services/mrp-queries";
+import { plannedProposals, readSuggestionDetail, getLatestMrpRun } from "@/modules/manufacturing/services/mrp-queries";
 import { db } from "@/core/db/client";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { firmPlannedOrderForm, dismissPlannedOrderForm } from "../form-actions";
 import { StatusPill } from "@/components/ui/status-pill";
-import { BarChart3, Zap, Package } from "lucide-react";
+import { SuggestionActions } from "./suggestion-actions";
+
+const money = (minor: number) => `£${(minor / 100).toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const whole = (value: number) => value.toLocaleString("en-GB", { maximumFractionDigits: 2 });
+const hours = (minutes: number) => `${(minutes / 60).toFixed(1)} h`;
+
+const COST_LABELS: Record<string, string> = {
+  material: "Materials",
+  machine: "Machine",
+  labour: "Labour",
+  overhead: "Overhead",
+  subcontract: "Subcontract",
+  logistics: "Logistics",
+};
 
 export default async function PlannedOrdersPage() {
   const session = await requireSession();
@@ -16,181 +28,172 @@ export default async function PlannedOrdersPage() {
   const run = await getLatestMrpRun(session.organisationId);
   if (!run) {
     return (
-      <div className="p-6">
-        <div className="text-center">
-          <p className="text-muted-foreground">No planning run executed yet. Run MRP first.</p>
-        </div>
+      <div className="rounded-3xl border border-[var(--color-border)] bg-white px-6 py-16 text-center">
+        <p className="text-sm text-[var(--color-ink-muted)]">No planning run yet. Run MRP to see what needs making.</p>
       </div>
     );
   }
 
-  // Get all suggestions
-  const suggestions = await db.manufacturingSupplySuggestion.findMany({
-    where: { runId: run.runId },
-    include: { product: true },
-    orderBy: { neededBy: "asc" },
-  });
-
-  const byStatus = {
-    PENDING: suggestions.filter((s) => s.status === "PENDING"),
-    FIRMED: suggestions.filter((s) => s.status === "FIRMED"),
-    DISMISSED: suggestions.filter((s) => s.status === "DISMISSED"),
-  };
+  const [proposals, allSuggestions] = await Promise.all([
+    plannedProposals(session.organisationId),
+    db.manufacturingSupplySuggestion.findMany({ where: { organisationId: session.organisationId, runId: run.runId }, include: { product: { select: { name: true, code: true, unitOfMeasure: true } } }, orderBy: { neededBy: "asc" } }),
+  ]);
+  const canFirm = session.capabilities.has(MANUFACTURING_CAPABILITIES.planFirm);
+  const canManage = session.capabilities.has(MANUFACTURING_CAPABILITIES.planManage);
+  const decided = allSuggestions.filter((row) => row.status !== "PENDING");
 
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <h1 className="text-3xl font-bold">Planned Orders</h1>
-        <p className="text-sm text-muted-foreground">
-          MRP run from {run.startedAt.toLocaleString()} · {suggestions.length} total suggestions
+    <div className="space-y-8">
+      <header>
+        <h1 className="text-3xl font-semibold tracking-tight">Planned orders</h1>
+        <p className="mt-2 max-w-2xl text-sm text-[var(--color-ink-muted)]">
+          Each proposal shows the materials it consumes, the machines it runs on, the hours it takes and what it costs.
+          Firming one creates a real production order using the recipe as it stands now.
         </p>
-      </div>
+        <p className="mt-2 text-xs text-[var(--color-ink-faint)]">Run {run.startedAt.toLocaleString("en-GB")} · {proposals.length} awaiting a decision · {decided.length} already actioned</p>
+      </header>
 
-      {/* Summary */}
-      <div className="grid grid-cols-3 gap-4">
-        <Card className="p-4">
-          <div className="text-3xl font-bold text-amber-600">{byStatus.PENDING.length}</div>
-          <p className="text-xs text-muted-foreground">Pending</p>
-        </Card>
-        <Card className="p-4">
-          <div className="text-3xl font-bold text-green-600">{byStatus.FIRMED.length}</div>
-          <p className="text-xs text-muted-foreground">Firmed</p>
-        </Card>
-        <Card className="p-4">
-          <div className="text-3xl font-bold text-slate-600">{byStatus.DISMISSED.length}</div>
-          <p className="text-xs text-muted-foreground">Dismissed</p>
-        </Card>
-      </div>
-
-      {/* Pending suggestions */}
-      {byStatus.PENDING.length > 0 && (
-        <SuggestionSection
-          title="Pending (Requires Action)"
-          suggestions={byStatus.PENDING}
-          status="PENDING"
-          icon={Zap}
-        />
+      {proposals.length === 0 && (
+        <div className="rounded-3xl border border-[var(--color-border)] bg-white px-6 py-16 text-center">
+          <p className="text-sm text-[var(--color-ink-muted)]">Nothing is short. Confirmed demand and forecast are covered by stock or open production.</p>
+        </div>
       )}
 
-      {/* Firmed */}
-      {byStatus.FIRMED.length > 0 && (
-        <SuggestionSection
-          title="Firmed (Converted to Orders)"
-          suggestions={byStatus.FIRMED}
-          status="FIRMED"
-          icon={Package}
-        />
-      )}
+      <div className="space-y-5">
+        {proposals.map((proposal) => {
+          const suggestion = allSuggestions.find((row) => row.id === proposal.id)!;
+          const shortages = (proposal.materials ?? []).filter((row) => row.shortage > 0);
+          const cost = proposal.cost;
+          return (
+            <Card key={proposal.id} className="overflow-hidden p-0">
+              <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[var(--color-border)] px-5 py-4">
+                <div>
+                  <p className="text-lg font-semibold">
+                    Make {whole(proposal.quantity)} {suggestion.product.unitOfMeasure ?? "each"}{" "}
+                    <Link href={`/products/${proposal.productId}`} className="text-[var(--color-atlas-blue)] hover:underline">{suggestion.product.name}</Link>{" "}
+                    <span className="text-[var(--color-ink-faint)]">{suggestion.product.code}</span>
+                  </p>
+                  <p className="mt-1 text-sm text-[var(--color-ink-muted)]">
+                    Needed {proposal.requiredDate.toLocaleDateString("en-GB")}
+                    {proposal.startDate && proposal.startDate < proposal.requiredDate && <> · start by {proposal.startDate.toLocaleDateString("en-GB")}</>}
+                    {proposal.batchCount ? <> · {proposal.batchCount} batch{proposal.batchCount === 1 ? "" : "es"}</> : null}
+                  </p>
+                  <div className="mt-1 space-y-0.5 text-xs text-[var(--color-ink-faint)]">
+                    {proposal.pegging.length === 0
+                      ? <p>Safety stock requirement.</p>
+                      : proposal.pegging.map((peg, index) => <p key={index}>{peg.sourceLabel} · {whole(peg.demandQuantity)}</p>)}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <StatusPill
+                    label={shortages.length ? "Components short" : "Materials ready"}
+                    tone={shortages.length ? "warning" : "success"}
+                  />
+                  <span className="text-lg font-semibold tabular-nums">{cost ? money(Object.values(cost).reduce((sum, value) => sum + value, 0)) : "—"}</span>
+                </div>
+              </div>
 
-      {/* Dismissed */}
-      {byStatus.DISMISSED.length > 0 && (
-        <SuggestionSection
-          title="Dismissed"
-          suggestions={byStatus.DISMISSED}
-          status="DISMISSED"
-          icon={BarChart3}
-        />
+              <div className="grid gap-6 px-5 py-5 lg:grid-cols-3">
+                <section>
+                  <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Materials</h3>
+                  <div className="mt-2 space-y-2">
+                    {(proposal.materials ?? []).length === 0 && <p className="text-sm text-[var(--color-ink-muted)]">No components on this recipe.</p>}
+                    {(proposal.materials ?? []).map((material, index) => (
+                      <div key={index} className="text-sm">
+                        <div className="flex items-baseline justify-between gap-3">
+                          <Link href={`/products/${material.productId}`} className="text-[var(--color-atlas-blue)] hover:underline">{material.productName ?? "Component"}</Link>
+                          <span className="tabular-nums">{whole(material.quantity)}</span>
+                        </div>
+                        <p className="text-xs text-[var(--color-ink-muted)]">
+                          On hand {whole(material.onHand)} · cover {whole(material.covered)}
+                          {material.shortage > 0 && <span className="ml-1 font-semibold text-amber-700">short {whole(material.shortage)}</span>}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Machines and hours</h3>
+                  <div className="mt-2 space-y-2">
+                    {(proposal.operations ?? []).length === 0 && <p className="text-sm text-[var(--color-ink-muted)]">No routing on this recipe.</p>}
+                    {(proposal.operations ?? []).map((operation) => (
+                      <div key={operation.sequence} className="text-sm">
+                        <div className="flex items-baseline justify-between gap-3">
+                          <span className="font-medium">{operation.name}</span>
+                          <span className="tabular-nums">{hours(operation.durationMinutes)}</span>
+                        </div>
+                        <p className="text-xs text-[var(--color-ink-muted)]">
+                          {operation.resourceName ?? operation.workCentreName ?? "No machine assigned"}
+                          {operation.crewSize > 1 && <> · crew {operation.crewSize}</>}
+                          <> · setup {whole(operation.setupMinutes / 60)} h, run {whole(operation.runMinutes / 60)} h</>
+                        </p>
+                      </div>
+                    ))}
+                    {proposal.hours && (
+                      <p className="pt-1 text-xs text-[var(--color-ink-faint)]">
+                        Total {whole(proposal.hours.setup + proposal.hours.run)} machine h · {whole(proposal.hours.crew)} man-hours
+                      </p>
+                    )}
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Estimated cost</h3>
+                  <div className="mt-2 space-y-1 text-sm">
+                    {!cost && <p className="text-[var(--color-ink-muted)]">No costed recipe.</p>}
+                    {cost && Object.entries(cost).filter(([, value]) => value > 0).map(([kind, value]) => (
+                      <div key={kind} className="flex items-baseline justify-between gap-3">
+                        <span className="text-[var(--color-ink-muted)]">{COST_LABELS[kind] ?? kind}</span>
+                        <span className="tabular-nums">{money(value)}</span>
+                      </div>
+                    ))}
+                    {cost && (
+                      <div className="mt-2 flex items-baseline justify-between gap-3 border-t border-[var(--color-border)] pt-2 font-semibold">
+                        <span>Total</span>
+                        <span className="tabular-nums">{money(Object.values(cost).reduce((sum, value) => sum + value, 0))}</span>
+                      </div>
+                    )}
+                  </div>
+                </section>
+              </div>
+
+              {(canFirm || canManage) && (
+                <div className="flex justify-end border-t border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-5 py-3">
+                  <SuggestionActions id={proposal.id!} kind={suggestion.kind} status="PENDING" canFirm={canFirm} canManage={canManage} />
+                </div>
+              )}
+            </Card>
+          );
+        })}
+      </div>
+
+      {decided.length > 0 && (
+        <section>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-faint)]">Already actioned this run</h2>
+          <div className="mt-3 divide-y divide-[var(--color-border)] rounded-3xl border border-[var(--color-border)] bg-white">
+            {decided.map((suggestion) => {
+              const detail = readSuggestionDetail(suggestion.pegging);
+              const total = detail.cost ? Object.values(detail.cost).reduce((sum, value) => sum + value, 0) : null;
+              return (
+                <div key={suggestion.id} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 text-sm">
+                  <div>
+                    <span className="font-medium">{suggestion.product.name}</span>{" "}
+                    <span className="text-[var(--color-ink-faint)]">{suggestion.product.code}</span> · {whole(Number(suggestion.quantity))}
+                    {total != null && <span className="text-[var(--color-ink-muted)]"> · {money(total)}</span>}
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <StatusPill label={suggestion.status} tone={suggestion.status === "FIRMED" ? "success" : "neutral"} />
+                    {suggestion.resultingOrderId && (
+                      <Link href={`/manufacturing/produce/${suggestion.resultingOrderId}`} className="text-[var(--color-atlas-blue)] hover:underline">View order</Link>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
       )}
     </div>
-  );
-}
-
-function SuggestionSection({
-  title,
-  suggestions,
-  status,
-  icon: Icon,
-}: {
-  title: string;
-  suggestions: any[];
-  status: "PENDING" | "FIRMED" | "DISMISSED";
-  icon?: any;
-}) {
-  const bgClasses = {
-    PENDING: "bg-amber-50 border-amber-200",
-    FIRMED: "bg-green-50 border-green-200",
-    DISMISSED: "bg-slate-50 border-slate-200",
-  };
-
-  return (
-    <Card className={`${bgClasses[status]} border p-4`}>
-      <div className="mb-4 flex items-center gap-2">
-        {Icon && <Icon className="h-5 w-5" />}
-        <div className="text-lg font-semibold">{title}</div>
-        <div className="ml-auto rounded-full bg-white px-3 py-1 text-sm font-semibold">{suggestions.length}</div>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="border-b">
-            <tr className="text-left text-xs font-semibold text-muted-foreground">
-              <th className="pb-2 pr-4">Product</th>
-              <th className="pb-2 pr-4">Quantity</th>
-              <th className="pb-2 pr-4">Needed By</th>
-              <th className="pb-2 pr-4">Type</th>
-              <th className="pb-2 pr-4">Pegging</th>
-              {status === "PENDING" && <th className="pb-2 pr-4">Actions</th>}
-            </tr>
-          </thead>
-          <tbody className="space-y-2">
-            {suggestions.map((suggestion) => (
-              <SuggestionRow
-                key={suggestion.id}
-                suggestion={suggestion}
-                status={status}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </Card>
-  );
-}
-
-function SuggestionRow({ suggestion, status }: { suggestion: any; status: "PENDING" | "FIRMED" | "DISMISSED" }) {
-  const peggingData = typeof suggestion.pegging === "string" ? JSON.parse(suggestion.pegging) : suggestion.pegging || [];
-  const demandCount = Array.isArray(peggingData) ? peggingData.length : 0;
-
-  return (
-    <tr className="border-b text-xs last:border-b-0">
-      <td className="py-3 pr-4">
-        <div className="font-semibold">{suggestion.product.name}</div>
-        <div className="text-muted-foreground">{suggestion.product.code}</div>
-      </td>
-      <td className="py-3 pr-4 font-semibold">{Number(suggestion.quantity).toLocaleString()}</td>
-      <td className="py-3 pr-4">
-        {suggestion.neededBy ? new Date(suggestion.neededBy).toLocaleDateString() : "—"}
-      </td>
-      <td className="py-3 pr-4">
-        <StatusPill label={suggestion.kind} tone={suggestion.kind === "MAKE" ? "success" : suggestion.kind === "BUY" ? "warning" : "neutral"} />
-      </td>
-      <td className="py-3 pr-4 text-muted-foreground">
-        {demandCount} {demandCount === 1 ? "line" : "lines"}
-      </td>
-      {status === "PENDING" && (
-        <td className="py-3 pr-4 space-x-2">
-          <form action={firmPlannedOrderForm} className="inline">
-            <input type="hidden" name="suggestionId" value={suggestion.id} />
-            <Button type="submit" variant="primary">
-              Firm
-            </Button>
-          </form>
-          <form action={dismissPlannedOrderForm} className="inline">
-            <input type="hidden" name="suggestionId" value={suggestion.id} />
-            <Button type="submit" variant="ghost">
-              Dismiss
-            </Button>
-          </form>
-        </td>
-      )}
-      {status === "FIRMED" && (
-        <td className="py-3 pr-4">
-          {suggestion.resultingOrderId && (
-            <a href={`/manufacturing/orders/${suggestion.resultingOrderId}`} className="text-blue-600 hover:underline">
-              View Order
-            </a>
-          )}
-        </td>
-      )}
-    </tr>
   );
 }

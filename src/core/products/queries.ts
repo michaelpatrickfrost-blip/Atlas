@@ -8,6 +8,7 @@ export function searchProducts(organisationId: string, query: string, limit = 10
     where: {
       organisationId,
       active: true,
+      sellable: true,
       OR: [
         { code: { contains: query, mode: "insensitive" } },
         { name: { contains: query, mode: "insensitive" } },

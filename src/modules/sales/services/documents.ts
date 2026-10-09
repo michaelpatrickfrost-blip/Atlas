@@ -58,7 +58,7 @@ export async function saveDocument(_previous:{error:string},form:FormData):Promi
  const notifySnapshot=notifyAddress?{addressId:notifyAddress.id,partyId:notifyAddress.partyId,label:notifyAddress.label,line1:notifyAddress.line1,line2:notifyAddress.line2,city:notifyAddress.city,region:notifyAddress.region,postcode:notifyAddress.postcode,country:notifyAddress.country}:null;
  const hasDate=form.has('documentDate'),requestedDate=hasDate?String(form.get('documentDate')??''):'',parsedDate=requestedDate?new Date(requestedDate):null;if(parsedDate&&isNaN(parsedDate.getTime()))throw new Error('Choose a valid date.');const date=hasDate?parsedDate:mode==='order'?existingOrder?.requestedDeliveryDate??null:existingQuote?.expiryDate??null;const hasPromised=form.has('promisedDeliveryDate'),promisedRaw=hasPromised?String(form.get('promisedDeliveryDate')??''):'',promisedDeliveryDate=hasPromised?promisedRaw?new Date(promisedRaw):null:existingOrder?.promisedDeliveryDate??null;if(promisedDeliveryDate&&isNaN(promisedDeliveryDate.getTime()))throw new Error('Choose a valid promised delivery date.');
  const inputs=documentLinesSchema.parse(JSON.parse(String(form.get('lines'))));
- const products=await db.product.findMany({where:{organisationId:session.organisationId,id:{in:inputs.map(l=>l.productId)},active:true}});
+ const products=await db.product.findMany({where:{organisationId:session.organisationId,id:{in:inputs.map(l=>l.productId)},active:true,sellable:true}});
  const priceDecisions:{lineNumber:number;calculatedPrice:number;agreedPrice:number;source:string;reason:string|null}[]=[];
  const lines=await Promise.all(inputs.map(async(line,index)=>{
   if(mode==='order'&&line.optional)throw new Error('Optional products must be selected before creating an order.');

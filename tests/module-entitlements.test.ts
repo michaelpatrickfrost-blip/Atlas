@@ -9,6 +9,12 @@ import type {Session} from '@/core/auth/session';
 beforeEach(()=>vi.clearAllMocks());
 const session=(capabilities:string[]):Session=>({userId:'user',userName:'User',userEmail:'user@example.test',organisationId:'company',organisationName:'Company',membershipId:'membership',capabilities:new Set(capabilities)});
 describe('licensed module runtime',()=>{
+ it('consolidates Planning only when Manufacturing & Supply can actually open',async()=>{
+  state.findMany.mockResolvedValue([{moduleId:'planning',enabled:true,entitled:true},{moduleId:'manufacturing',enabled:true,entitled:true}]);
+  expect((await getNavigableModules(session(['planning.demand.read']))).map(m=>m.id)).toEqual(['manufacturing']);
+  state.findMany.mockResolvedValue([{moduleId:'planning',enabled:true,entitled:true},{moduleId:'manufacturing',enabled:false,entitled:true}]);
+  expect((await getNavigableModules(session(['planning.demand.read']))).map(m=>m.id)).toEqual(['planning']);
+ });
  it('does not enable an unlicensed app or infer a CRM licence from Sales',async()=>{state.findMany.mockResolvedValue([{moduleId:'sales',enabled:true,entitled:true},{moduleId:'stock',enabled:true,entitled:false}]);expect([...await getEnabledModuleIds('company')]).toEqual(['sales']);expect(state.findMany).toHaveBeenCalledWith({where:{organisationId:'company'}});});
  it('rejects enabling an unlicensed app before changing state',async()=>{state.findUnique.mockResolvedValue({entitled:false});await expect(setModuleEnabled('company','stock',true)).rejects.toThrow('not included');expect(state.upsert).not.toHaveBeenCalled();});
  it('shows disabled apps to Atlas staff and allows their routes without changing company app state',async()=>{

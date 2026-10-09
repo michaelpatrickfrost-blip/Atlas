@@ -1250,3 +1250,21 @@ another contributor's unfinished committed work. Preserve remote-tip and ancestr
 checks, backup/lock/immutable-build/smoke/rollback protections. Merge that branch
 back into main so future main releases include the live ancestor. Rationale:
 ship the reviewed Home change without shipping the unrelated pending Studio work.
+
+## 9 October 2026 — Manufacturing & Supply is one console with existing owners
+
+Michael asks for one coherent manufacturing experience, Dynamics 365 SCM research,
+modern UI, internal/sellable products, attached purchasing, Finance spend and an
+illustrated how-to library. Consolidate user navigation at `/manufacturing` while
+retaining existing Planning/Product/Stock/Finance owners, routes, licences and
+capability gates. Hide a duplicate launcher only if its target can actually open.
+Keep business-wide Plan separate. Role/shortcut URLs are presentation preferences.
+
+Product sales eligibility is independent of class, active status and make/buy policy.
+Default existing records to sellable for compatibility; deliberate internal flags
+block new Sales activity while preserving confirmed history and procurement/stock.
+Convert Buy proposals into reviewed Finance drafts with tenant/version/quantity
+checks and an atomic source claim, not automatic approval/posting. Keep spend,
+unbilled commitments, receipts and current payables distinct, by source currency.
+Supplier spend is not production WIP/COGS. Preserve all 173 requirements; advanced
+engine gaps stay explicit in the researched coverage map.

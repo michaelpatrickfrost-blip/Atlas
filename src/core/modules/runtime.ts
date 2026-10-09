@@ -48,9 +48,10 @@ export function canOpenModule(session: Session, module: ModuleManifest) {
 export async function getNavigableModules(session: Session): Promise<ModuleManifest[]> {
   const modules = getImplementedModules();
   const enabled = await enabledModulesForSession(session);
-  return modules.filter(
+  const accessible = modules.filter(
     (module) => module.launcherVisible!==false && enabled.has(module.id) && canOpenModule(session, module),
-  ).map((module) => module.id === "scheduling" && !can(session, "scheduling.manage") && !can(session, "people.rota.manage")
+  );
+  return accessible.filter((module) => !module.launcherConsolidatedInto || !accessible.some((target) => target.id === module.launcherConsolidatedInto)).map((module) => module.id === "scheduling" && !can(session, "scheduling.manage") && !can(session, "people.rota.manage")
     ? { ...module, name: "My rota", description: "Your published shifts, hours and team." }
     : module);
 }

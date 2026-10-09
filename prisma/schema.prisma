@@ -1027,6 +1027,8 @@ model Product {
   trackingMode String @default("NONE")
   barcode String?
   active          Boolean    @default(true)
+  /** Sales eligibility is independent of stock, BOM class and make/buy policy. */
+  sellable        Boolean    @default(true)
   /** Stock planning. 0 means not set. */
   safetyStockLevel Int @default(0)
   leadTimeDays Int @default(0)

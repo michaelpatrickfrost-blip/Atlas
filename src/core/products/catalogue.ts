@@ -23,8 +23,10 @@ export async function saveProductDetails(session: Session, productId: string, in
   barcode: string;
   trackingMode: string;
   active: boolean;
+  sellable?: boolean;
 }) {
   assertCapability(session, "core.products.manage");
+  if (input.sellable !== undefined && typeof input.sellable !== "boolean") throw new Error("Choose whether this item is sellable.");
   const code = input.code.trim();
   const name = input.name.trim();
   const unitOfMeasure = input.unit.trim();
@@ -66,10 +68,11 @@ export async function saveProductDetails(session: Session, productId: string, in
     barcode,
     trackingMode: input.trackingMode,
     active: input.active,
+    ...(input.sellable !== undefined ? { sellable: input.sellable } : {}),
   };
   await db.$transaction(async (tx) => {
     await tx.product.update({ where: { id: product.id }, data });
-    await tx.auditEntry.create({ data: { organisationId: session.organisationId, actorUserId: session.userId, action: "product.updated", entityType: "Product", entityId: product.id, before: { code: product.code, name: product.name, categoryCode: product.categoryCode, itemClass: product.itemClass, basePriceAmount: product.basePriceAmount }, after: data } });
+    await tx.auditEntry.create({ data: { organisationId: session.organisationId, actorUserId: session.userId, action: "product.updated", entityType: "Product", entityId: product.id, before: { code: product.code, name: product.name, categoryCode: product.categoryCode, itemClass: product.itemClass, basePriceAmount: product.basePriceAmount, sellable: product.sellable }, after: data } });
   });
 }
 

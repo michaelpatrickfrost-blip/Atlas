@@ -41,7 +41,7 @@ export function readSuggestionDetail(pegging: unknown): SuggestionDetail {
 /** Latest identified run, with its suggestions. */
 export async function getLatestMrpRun(organisationId: string) {
   const run = await db.manufacturingPlanningRun.findFirst({
-    where: { organisationId },
+    where: { organisationId, finishedAt: { not: null } },
     orderBy: { startedAt: "desc" },
     include: { suggestions: true },
   });

@@ -1,64 +1,19 @@
-# Connected manufacturing and dedicated planning
+# Connected manufacturing and planning
 
-Agreed direction: 3 October 2026, updated same day when a replacement brief
-("ATLAS MANUFACTURING — MRP, Production Planning, Scheduling and Shop-Floor
-Execution Master Build Brief", sections 1–173) superseded the prior 143-section
-brief preserved earlier that day. Target architecture, with the limited
-implemented starting slice described below.
+Current direction: 9 October 2026. Microsoft Dynamics 365 SCM is the researched
+functional benchmark; the current experience is one Manufacturing & Supply console
+at `/manufacturing`. Production Planning's existing `/planning` demand/target
+routes share its navigation. Products, Inventory, Finance, Quality and Maintenance
+keep their record ownership and access rules. Business-wide Plan at `/plan` stays
+separate. This supersedes the earlier separate-app navigation proposal.
 
-## Scope and ownership
-
-All supplied requirements remain in scope, regardless of how apps are packaged.
-The [source specification](MANUFACTURING_SOURCE_REQUIREMENTS.md) preserves the
-current replacement attachment, sections 1–173. [Section coverage](MANUFACTURING_COVERAGE.md)
-assigns each numbered section a phase and delivery status. The current
-attachment supersedes the earlier truncated and 143-section sources and their
-delivery sequences — Git history retains those for reference.
-
-## Phase 1 delivered this task (3 October 2026)
-
-Schema: `ManufacturingWorkCentre`, `ManufacturingResource`, `ManufacturingOrder`,
-`ManufacturingWorkOrder`, `ManufacturingCounter` (migration
-`20261003670000_manufacturing_phase1_foundation`, written by hand — not yet
-applied; see the inherited migration-ordering blocker in
-[coverage](MANUFACTURING_COVERAGE.md)). These sit alongside the pre-existing
-`ProductDefinition`/`ProductBomLine`/`ProductOperation` BOM/routing snapshot on
-Product, which `ManufacturingOrder.definitionId` references rather than
-duplicating.
-
-Module: `src/modules/manufacturing/` (manifest, domain lifecycle guards,
-queries, idempotent/optimistically-locked commands) registered in
-`src/core/modules/registry.ts`; routes at `/manufacturing` (Today),
-`/manufacturing/produce` (list) and `/manufacturing/produce/[orderId]`
-(detail). Capabilities `MANUFACTURING_CAPABILITIES` in
-`src/core/permissions/capabilities.ts`, plus `manufacturing_planner` and
-`shop_floor_operator` standard roles (§151–152 of the source brief).
-
-This is a narrow vertical slice through §57–60/66–68/144–154 of the current
-brief — a real Production Order/Work Order execution spine with guarded
-lifecycles, audit, activity, attention and search — not MRP, scheduling, Shop
-Floor UI, costing or traceability. See [coverage](MANUFACTURING_COVERAGE.md)
-for the full open/delivered breakdown and the next build-order steps.
-
-Inventory & Manufacturing is a domain grouping, not a second application or database.
-Planning is a dedicated app. Manufacturing owns execution. Production scheduling is
-inside Planning and distinct from HR rotas and the existing Scheduling & Hours stub.
-The table describes target ownership; Planning is registered as a limited starting slice.
-
-| App / owner | Scope | Supplied sections |
-| --- | --- | --- |
-| Products (`products`) and shared catalogue contracts | One Product identity, variants, UOM classes/conversions, site policies; engineering workspace for versions, ECOs, BOMs, recipes and routings | 4–18 |
-| Inventory (`stock`) | Immutable quantity ledger, dimensional balances, reservations, lots/serials, traceability; warehousing workspace | 23–27, 88–91 |
-| Planning (`planning`, implemented starting slice) | Unified demand and supply, forecasts/consumption, MPS, MRP, pegging, capacity and advanced finite scheduling, ATP/CTP, scenarios and exceptions | 19–22, 28–51, 92–93, 95–96, 112–115 |
-| Manufacturing (`manufacturing`, existing stub to become execution) | Production orders, release checks, snapshots, work orders, MES, time and consumption; WIP, subcontract and rework workflows | 52–66, 78, 87, 94, 118 |
-| Quality (`quality`) | Specifications, checks, nonconformance, holds/releases, batch disposition | 79–83 |
-| Maintenance (packaging to be decided) | Equipment, downtime, maintenance orders, spares and calendar exclusions | 84–86 |
-| Costing (manufacturing workspace with Finance contract) | Standard/actual costs, labour/machine/overhead, WIP valuation, co-product allocation and variances | 15, 66–77, 90, 97 |
-| Existing Sales, CRM, Purchasing, Logistics, Finance, Projects and People owners | Originate demand, purchase/receive, dispatch, post journals, expose skills/availability; share canonical references | 75–77, 99–110, 120–123 |
-
-BOM, capacity, MES, traceability and analytics are workspaces/capabilities; they need
-not each become a separate installable app. Separate ownership and permissions must
-still be explicit. Analytics reads reconciled records rather than creating a parallel ledger.
+Read [Manufacturing & Supply](MANUFACTURING.md) for current functionality, the
+researched sources, product/stock/procurement/Finance semantics and the remaining
+complete design programme. The [173-section source](MANUFACTURING_SOURCE_REQUIREMENTS.md)
+is preserved without omissions and [coverage](MANUFACTURING_COVERAGE.md) records
+actual partial delivery. Historical release evidence later in this document must
+not be read as a current completion claim. The Phase 1 migration is already on
+the central server; no local business database is required or permitted.
 
 ## One record with many connected views
 

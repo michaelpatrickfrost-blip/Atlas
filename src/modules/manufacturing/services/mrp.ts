@@ -4,7 +4,6 @@ import { db } from "@/core/db/client";
 import { assertModuleEnabled } from "@/core/modules/access";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
-import { writeAudit } from "@/core/audit/log";
 import { writeActivity } from "@/core/activity/log";
 import { MANUFACTURING_CAPABILITIES as C } from "@/core/permissions/capabilities";
 import { getModule } from "@/core/modules/registry";
@@ -154,53 +153,51 @@ async function suggestedStartDate(definitionId: string, quantity: number, needed
 export async function firmSuggestion(suggestionId: string) {
   const session = await requireSession();
   assertCapability(session, C.planFirm);
-  const suggestion = await db.manufacturingSupplySuggestion.findFirst({ where: { id: suggestionId, organisationId: session.organisationId } });
-  if (!suggestion) throw new Error("This suggestion no longer exists.");
-  if (suggestion.status !== "PENDING") throw new Error("This suggestion has already been actioned.");
-  if (suggestion.kind !== "MAKE") throw new Error("Only Make suggestions can be firmed into a Production Order here — Buy/Transfer suggestions are handed to Purchasing/Logistics.");
-
-  const pegs = (suggestion.pegging as unknown as PegLine[]) ?? [];
-  const largestPeg = pegs.slice().sort((a, b) => b.quantity - a.quantity)[0];
-  // The richer MRP engine stores a material position on the suggestion; when it
-  // does, firming records what the order is committing to against stock.
-  const short = readSuggestionDetail(suggestion.pegging).materials.filter((row) => row.shortage > 0);
-  const product = await db.product.findFirst({ where: { id: suggestion.productId, organisationId: session.organisationId }, include: { definitions: { where: { status: "ACTIVE" }, take: 1, orderBy: { version: "desc" } } } });
-  if (!product) throw new Error("Product no longer exists.");
-
-  const order = await db.$transaction(async (tx) => {
-    const orderNumber = await nextOrderNumber(tx, session.organisationId);
-    const created = await tx.manufacturingOrder.create({
-      data: {
-        organisationId: session.organisationId,
-        orderNumber,
-        productId: product.id,
-        definitionId: product.definitions[0]?.id ?? null,
-        quantity: suggestion.quantity,
-        requiredDate: suggestion.neededBy,
-        priority: suggestion.startBy && suggestion.startBy < new Date() ? 10 : 0,
-        sourceSalesOrderLineId: largestPeg?.sourceType === "SALES_ORDER" ? largestPeg.sourceId : null,
-        notes: `Firmed from MRP run ${suggestion.runId}. Should have started ${suggestion.startBy?.toLocaleDateString("en-GB") ?? "n/a"} to meet the need date. Pegged demand: ${pegs.map((p) => `${p.label} (${p.quantity})`).join("; ") || "safety stock"}.${short.length ? ` Short at firming: ${short.map((row) => `${row.productName ?? "component"} short ${row.shortage}`).join("; ")}.` : ""}`,
-        createdByUserId: session.userId,
-      },
-    });
-    await tx.manufacturingSupplySuggestion.update({ where: { id: suggestion.id }, data: { status: "FIRMED", resultingOrderId: created.id } });
-    return created;
-  });
-
-  await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "manufacturing.order.firmed", entityType: "ManufacturingOrder", entityId: order.id, after: { orderNumber: order.orderNumber, fromSuggestion: suggestion.id } });
-  await writeActivity({ organisationId: session.organisationId, type: "manufacturing.order.firmed", summary: `${order.orderNumber} firmed from the plan`, entityType: "ManufacturingOrder", entityId: order.id });
-  return order;
+  await assertModuleEnabled(session, "manufacturing");
+  return db.$transaction(async (tx) => {
+    const organisationId = session.organisationId;
+    const suggestion = await tx.manufacturingSupplySuggestion.findFirst({ where: { id: suggestionId, organisationId } });
+    if (!suggestion || suggestion.kind !== "MAKE") throw new Error("Choose an available Make proposal. Buy proposals go to Procurement.");
+    if (suggestion.status === "FIRMED" && suggestion.resultingOrderId) {
+      return tx.manufacturingOrder.findFirstOrThrow({ where: { id: suggestion.resultingOrderId, organisationId } });
+    }
+    if (suggestion.status !== "PENDING") throw new Error("This proposal has already been actioned.");
+    const latest = await tx.manufacturingPlanningRun.findFirst({ where: { organisationId, finishedAt: { not: null } }, orderBy: { startedAt: "desc" }, select: { id: true } });
+    if (latest?.id !== suggestion.runId) throw new Error("A newer material plan exists. Review its proposals before firming.");
+    const detail = readSuggestionDetail(suggestion.pegging);
+    const pegs = detail.demand;
+    const largestPeg = pegs.slice().sort((a, b) => b.quantity - a.quantity)[0];
+    const short = detail.materials.filter((row) => row.shortage > 0);
+    const product = await tx.product.findFirst({ where: { id: suggestion.productId, organisationId, active: true }, include: { definitions: { where: { status: "ACTIVE" }, take: 1, orderBy: { version: "desc" } } } });
+    if (!product?.definitions[0]) throw new Error("Review the active product recipe before creating production.");
+    const claimed = await tx.manufacturingSupplySuggestion.updateMany({ where: { id: suggestion.id, organisationId, status: "PENDING", updatedAt: suggestion.updatedAt }, data: { status: "FIRMED" } });
+    if (claimed.count !== 1) throw new Error("This proposal changed or has already been firmed.");
+    const orderNumber = await nextOrderNumber(tx, organisationId);
+    const order = await tx.manufacturingOrder.create({ data: {
+      organisationId, orderNumber, productId: product.id, definitionId: product.definitions[0].id,
+      quantity: suggestion.quantity, unitOfMeasure: product.unitOfMeasure, requiredDate: suggestion.neededBy,
+      priority: suggestion.startBy && suggestion.startBy < new Date() ? 10 : 0,
+      sourceSalesOrderLineId: largestPeg?.sourceType === "SALES_ORDER" ? largestPeg.sourceId : null,
+      notes: `Firmed from MRP run ${suggestion.runId}. ${pegs.length} source demand link(s) retained on the proposal.${short.length ? ` ${short.length} component shortage(s) need review before release.` : ""}`,
+      createdByUserId: session.userId,
+    } });
+    await tx.manufacturingSupplySuggestion.updateMany({ where: { id: suggestion.id, organisationId, status: "FIRMED" }, data: { resultingOrderId: order.id } });
+    await tx.auditEntry.create({ data: { organisationId, actorUserId: session.userId, action: "manufacturing.order.firmed", entityType: "ManufacturingOrder", entityId: order.id, after: { orderNumber, fromSuggestion: suggestion.id } } });
+    await tx.activity.create({ data: { organisationId, type: "manufacturing.order.firmed", summary: `${orderNumber} firmed from the plan`, entityType: "ManufacturingOrder", entityId: order.id } });
+    return order;
+  }, { isolationLevel: "Serializable" });
 }
 
 export async function dismissSuggestion(suggestionId: string) {
   const session = await requireSession();
   assertCapability(session, C.planManage);
+  await assertModuleEnabled(session, "manufacturing");
   const updated = await db.manufacturingSupplySuggestion.updateMany({ where: { id: suggestionId, organisationId: session.organisationId, status: "PENDING" }, data: { status: "DISMISSED" } });
   if (!updated.count) throw new Error("This suggestion is no longer pending.");
 }
 
 export async function latestPlan(organisationId: string) {
-  const run = await db.manufacturingPlanningRun.findFirst({ where: { organisationId }, orderBy: { startedAt: "desc" } });
+  const run = await db.manufacturingPlanningRun.findFirst({ where: { organisationId, finishedAt: { not: null } }, orderBy: { startedAt: "desc" } });
   if (!run) return { run: null, suggestions: [] };
   const suggestions = await db.manufacturingSupplySuggestion.findMany({
     where: { runId: run.id, status: "PENDING" },

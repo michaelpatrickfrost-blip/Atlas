@@ -1,4 +1,5 @@
 "use server";
+import {withFormFeedback} from "@/core/shared/form-feedback";
 import { db } from "@/core/db/client";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability,can } from "@/core/permissions/check";
@@ -12,6 +13,8 @@ export async function getCapacity(teamId:string,day:string) {const session=await
 
 export async function saveAllocation(form:FormData) {
   const session=await requireSession();assertCapability(session,"teams.read");
+ return withFormFeedback(async()=> {
+
   await assertModuleEnabled(session,"teams");
   const teamId=String(form.get("teamId")),access=await requireTeam(session,teamId);assertLead(access);
   const title=String(form.get("title")??"").trim(),detail=String(form.get("detail")??"").trim(),employeeId=String(form.get("assigneeEmployeeId")??""),goalId=String(form.get("goalId")??"");
@@ -31,12 +34,18 @@ export async function saveAllocation(form:FormData) {
     await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:"teams.allocation.saved",entityType:"PlannerTask",entityId,after:{title,estimatedHours,employeeId,goalId,priority}}});
   },{isolationLevel:"Serializable"});
   revalidatePath(`/teams/${teamId}`);revalidatePath(`/teams/${teamId}/capacity`);revalidatePath("/teams");
+
+ });
 }
 
 export async function updateWorkStatus(form:FormData) {
-  const session=await requireSession();assertCapability(session,"teams.read");await assertModuleEnabled(session,"teams");
+  const session=await requireSession();assertCapability(session,"teams.read");
+ return withFormFeedback(async()=> {
+await assertModuleEnabled(session,"teams");
   const teamId=String(form.get("teamId")),access=await requireTeam(session,teamId),status=String(form.get("status"));
   if(!["OPEN","DOING","DONE"].includes(status))throw new Error("Choose Open, Doing or Done.");
   await db.$transaction(async tx=>{const task=await tx.plannerTask.findFirstOrThrow({where:{id:String(form.get("taskId")),organisationId:session.organisationId,teamId}});if(!access.manage&&task.assigneeEmployeeId!==access.employee?.id)throw new Error("Only the lead or assignee can update this task.");const changed=await tx.plannerTask.updateMany({where:{id:task.id,organisationId:session.organisationId,version:Number(form.get("version"))},data:{status:status as "OPEN"|"DOING"|"DONE",version:{increment:1}}});if(changed.count!==1)throw new Error("This task changed. Refresh the board.");await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:"teams.allocation.status",entityType:"PlannerTask",entityId:task.id,after:{status}}});},{isolationLevel:"Serializable"});
   revalidatePath(`/teams/${teamId}/capacity`);revalidatePath(`/teams/${teamId}`);revalidatePath("/teams");
+
+ });
 }

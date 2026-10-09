@@ -1,4 +1,5 @@
 "use server";
+import {withFormFeedback} from "@/core/shared/form-feedback";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { redirect } from "next/navigation";
@@ -11,32 +12,52 @@ export async function getPayrollPreparation(start:string,end:string,frequency:Pa
 export async function createPayrollRun(form: FormData) {
   const session = await requireSession();
   assertCapability(session,"payroll.run.manage");
+ return withFormFeedback(async()=> {
+
   await assertModuleEnabled(session, "payroll");
   const run=await commands.createPayrollRun(session, form);
   revalidatePath("/payroll");
   redirect(`/payroll/${run.id}`);
+
+ });
 }
 
 export async function updatePayslipDeductions(payslipId: string, form: FormData) {
   const session = await requireSession();
   assertCapability(session,"payroll.run.manage");
+ return withFormFeedback(async()=> {
+
   await assertModuleEnabled(session, "payroll");
   const payslip = await commands.updatePayslipDeductions(session, payslipId, form);
   revalidatePath("/payroll");
   return payslip;
+
+ });
 }
 
 export async function finalisePayrollRun(runId: string,form:FormData) {
   const session = await requireSession();
   assertCapability(session,"payroll.run.manage");
+ return withFormFeedback(async()=> {
+
   await assertModuleEnabled(session, "payroll");
   await commands.finalisePayrollRun(session, runId,form);
   revalidatePath(`/payroll/${runId}`);
   revalidatePath("/payroll");
+
+ });
 }
 
-export async function refreshPayrollRun(runId:string,form:FormData) {const session=await requireSession();assertCapability(session,"payroll.run.manage");await assertModuleEnabled(session,"payroll");await commands.refreshPayrollRun(session,runId,form);revalidatePath("/payroll");revalidatePath(`/payroll/${runId}`);redirect(`/payroll/${runId}`);}
-export async function savePeriodAdjustment(form:FormData) {const session=await requireSession();assertCapability(session,"payroll.run.manage");await assertModuleEnabled(session,"payroll");await commands.savePeriodAdjustment(session,form);revalidatePath("/payroll/prepare");revalidatePath("/people/pay");}
+export async function refreshPayrollRun(runId:string,form:FormData) {const session=await requireSession();assertCapability(session,"payroll.run.manage");
+ return withFormFeedback(async()=> {
+await assertModuleEnabled(session,"payroll");await commands.refreshPayrollRun(session,runId,form);revalidatePath("/payroll");revalidatePath(`/payroll/${runId}`);redirect(`/payroll/${runId}`);
+ });
+}
+export async function savePeriodAdjustment(form:FormData) {const session=await requireSession();assertCapability(session,"payroll.run.manage");
+ return withFormFeedback(async()=> {
+await assertModuleEnabled(session,"payroll");await commands.savePeriodAdjustment(session,form);revalidatePath("/payroll/prepare");revalidatePath("/people/pay");
+ });
+}
 
 export async function markPayrollRunPaid(runId: string) {
   const session = await requireSession();

@@ -68,7 +68,7 @@ async function main() {
     const prepared=await preparePayroll(manager.session,"2026-10-12","2026-10-18","WEEKLY");assert.equal(prepared.issues,0);assert.equal(prepared.approvedHours,45);assert.equal(prepared.rows[0].result?.grossMinorUnits,67500);assert.equal(prepared.rows[0].result?.overtimeMinorUnits,3750);
     await visit("/payroll/prepare?start=2026-10-12&end=2026-10-18&frequency=WEEKLY","Prepare payroll");
     const draft=page.locator('form').filter({has:page.locator('input[name="inputDigest"]')});await draft.locator('[name="reviewed"]').check();await draft.getByRole("button",{name:"Generate draft payslips",exact:true}).click();await expect(page).toHaveURL(new RegExp(`${base}/payroll/[^/?]+$`));
-    const run=await db.payrollRun.findFirstOrThrow({where:{organisationId:company.id},include:{payslips:true}});assert.equal(run.status,"DRAFT");assert.equal(run.payslips[0].approvedHours,45);assert.equal((await db.employeeTaxYearToDate.findFirstOrThrow({where:{employeeId:employee.id}})).grossToDateMinorUnits,0);
+    const run=await db.payrollRun.findFirstOrThrow({where:{organisationId:company.id},include:{payslips:true}});assert.equal(run.status,"DRAFT");assert.match(JSON.stringify(run.inputSnapshot),/atlas-uk-2026-27-v2/);assert.equal(run.payslips[0].approvedHours,45);assert.equal((await db.employeeTaxYearToDate.findFirstOrThrow({where:{employeeId:employee.id}})).grossToDateMinorUnits,0);
     await assert.rejects(payroll.markPayrollRunPaid(manager.session,run.id));
     await db.timesheetEntry.update({where:{id:time.entries[0].id},data:{minutes:600}});
     await assert.rejects(payroll.finalisePayrollRun(manager.session,run.id,form({reviewed:"on"})),/changed/);

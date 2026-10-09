@@ -48,7 +48,7 @@ async function writePayslips(tx:Prisma.TransactionClient,session:Session,runId:s
     await tx.payslip.upsert({where:{payrollRunId_employeeId:{payrollRunId:runId,employeeId:row.employeeId}},create:{...values,organisationId,payrollRunId:runId,employeeId:row.employeeId},update:values});
   }
   await tx.payslip.deleteMany({where:{organisationId,payrollRunId:runId,employeeId:{notIn:data.rows.map(r=>r.employeeId)}}});
-  await tx.payrollRun.update({where:{id:runId,organisationId,status:"DRAFT"},data:{taxYear:data.taxYear,payFrequency:data.frequency,inputDigest:data.inputDigest,inputSnapshot:{employees:data.rows.map(r=>({employeeId:r.employeeId,approvedHours:r.approvedHours,sourceTimesheetIds:r.sourceTimesheetIds,missingTimesheets:r.missingTimesheets}))},version:{increment:1}}});
+  await tx.payrollRun.update({where:{id:runId,organisationId,status:"DRAFT"},data:{taxYear:data.taxYear,payFrequency:data.frequency,inputDigest:data.inputDigest,inputSnapshot:data.inputSnapshot,version:{increment:1}}});
 }
 export async function createPayrollRun(session:Session,form:FormData) {
   assertCapability(session,PAYROLL_CAPABILITIES.runManage);

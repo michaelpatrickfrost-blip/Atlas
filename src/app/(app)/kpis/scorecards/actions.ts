@@ -1,4 +1,5 @@
 "use server";
+import {withFormFeedback} from "@/core/shared/form-feedback";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { assertModuleEnabled } from "@/core/modules/access";
@@ -10,6 +11,8 @@ export async function getScorecards():Promise<ScorecardResult[]> {const session=
 export async function saveScorecard(form: FormData) {
   const session = await requireSession();
   assertCapability(session, "kpis.manage");
+ return withFormFeedback(async()=> {
+
   await assertModuleEnabled(session, "kpis");
   const title = String(form.get("title") ?? "").trim();
   const goalIds = [...new Set(form.getAll("goalId").map(String))];
@@ -26,11 +29,15 @@ export async function saveScorecard(form: FormData) {
     await tx.auditEntry.create({ data: { organisationId: session.organisationId, actorUserId: session.userId, action: "kpis.scorecard.saved", entityType: "KpiScorecard", entityId: row.id, after: { title, weights } } });
   }, { isolationLevel: "Serializable" });
   revalidatePath("/kpis"); revalidatePath("/kpis/scorecards"); revalidatePath("/analytics");
+
+ });
 }
 
 export async function removeScorecard(form: FormData) {
   const session = await requireSession();
   assertCapability(session, "kpis.manage");
+ return withFormFeedback(async()=> {
+
   await assertModuleEnabled(session, "kpis");
   await db.$transaction(async tx => {
     const row = await tx.kpiScorecard.findFirstOrThrow({ where: { id: String(form.get("id")), organisationId: session.organisationId } });
@@ -38,4 +45,6 @@ export async function removeScorecard(form: FormData) {
     await tx.auditEntry.create({ data: { organisationId: session.organisationId, actorUserId: session.userId, action: "kpis.scorecard.removed", entityType: "KpiScorecard", entityId: row.id } });
   });
   revalidatePath("/kpis/scorecards");
+
+ });
 }

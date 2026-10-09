@@ -29,7 +29,12 @@ module/design docs, DECISIONS/PROJECT_MEMORY updated. Central Test acceptance
 checker scripts/check-people-workspaces.ts and backed-up candidate/public runner
 scripts/deploy/check-people-release.sh added; not yet run. Merged 11 files/81 tests
 PASS; merged production build PASS and 4 auth regression files/23 tests PASS.
-Scoped lint and runner shell syntax PASS; strict types still running. Next: candidate
+Scoped lint and runner shell syntax PASS; strict types still running. Added full reviewed payroll calculation snapshots and explicit form feedback
+for new People mutations; expected production validation retains drafts. Initial
+merged strict check overlapped generation/build and read stale types; rerun after
+generation required. Refinement tests: 3 files/29 then 2 files/14 PASS (including a new snapshot
+privacy assertion); scoped lint PASS. Initial e38dd4d preparation queued; not activated. Next: final
+checks/new candidate
 acceptance, activation/public verification. External scope stays explicit: RTI/bank,
 special tax/director/week53; telephony/adherence/queue forecasts; mutual swaps,
 notifications, e-sign/benefits and historical goal snapshots.

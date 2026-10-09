@@ -50,6 +50,9 @@ external. This is a controlled calculation/review workflow, not certified filing
 
 ## Drafts and finalisation
 
+Calculation snapshots retain contract pay, approved time, reviewed opening history,
+period/settings and calculation version; bank and NI identity details are excluded.
+
 Create/refresh binds reviewed inputs to current employee pay, time, absence,
 adjustments, settings and finalised prior pay. Rejects blocking issues, stale review
 and overlapping employee periods. Refresh changes only a draft, preserving manual

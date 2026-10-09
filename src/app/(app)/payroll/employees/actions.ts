@@ -1,4 +1,5 @@
 "use server";
+import {withFormFeedback} from "@/core/shared/form-feedback";
 import {db} from "@/core/db/client";
 import {requireSession} from "@/core/auth/session";
 import {assertCapability} from "@/core/permissions/check";
@@ -12,7 +13,9 @@ export async function getPayEmployees(query:string) {
   const q=query.trim().slice(0,100);return db.employee.findMany({where:{organisationId:session.organisationId,status:{not:"LEFT"},...(q?{OR:[{firstName:{contains:q,mode:"insensitive"}},{lastName:{contains:q,mode:"insensitive"}},{employeeNumber:{contains:q,mode:"insensitive"}},{department:{contains:q,mode:"insensitive"}}]}:{})},select:{id:true,employeeNumber:true,firstName:true,lastName:true,department:true,annualSalaryMinorUnits:true,payBasis:true,hourlyRateMinorUnits:true,currency:true,contractedWeeklyHours:true,payFrequency:true,taxCode:true,niCategory:true,niNumber:true,studentLoanPlan:true,postgraduateLoan:true,pensionOptOut:true,bankAccountName:true,bankSortCode:true,bankAccountNumber:true,updatedAt:true,taxYearToDates:{where:{taxYear:CURRENT_TAX_YEAR},select:{openingGrossMinorUnits:true,openingTaxMinorUnits:true,openingReviewNote:true,openingReviewed:true}}},orderBy:[{lastName:"asc"},{firstName:"asc"}],take:200});
 }
 export async function savePayEmployee(form:FormData) {
-  const session=await requireSession();assertCapability(session,"payroll.employee.manage");await assertModuleEnabled(session,"payroll");
+  const session=await requireSession();assertCapability(session,"payroll.employee.manage");
+ return withFormFeedback(async()=> {
+await assertModuleEnabled(session,"payroll");
   const id=String(form.get("employeeId")),payBasis=String(form.get("payBasis")),payFrequency=String(form.get("payFrequency")),taxCode=String(form.get("taxCode")??"").trim().toUpperCase(),niCategory=String(form.get("niCategory")),loan=String(form.get("studentLoanPlan")??""),note=String(form.get("openingReviewNote")??"").trim();
   const minor=(key:string)=>{const n=Math.round(Number(form.get(key))*100);if(!Number.isSafeInteger(n)||n<0||n>100000000)throw new Error("Enter valid non-negative pay amounts.");return n;};
   const annualSalaryMinorUnits=minor("salary"),hourlyRateMinorUnits=minor("hourlyRate"),openingGrossMinorUnits=minor("openingGross"),openingTaxMinorUnits=minor("openingTax"),hours=Number(form.get("contractedWeeklyHours"));
@@ -34,4 +37,6 @@ export async function savePayEmployee(form:FormData) {
     await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:"payroll.employee.setup",entityType:"Employee",entityId:existing.id,after:{payBasis,payFrequency,openingReviewed}}});
   },{isolationLevel:"Serializable"});
   for(const path of ["/payroll/employees","/payroll/prepare","/people/pay",`/people/${id}`])revalidatePath(path);
+
+ });
 }

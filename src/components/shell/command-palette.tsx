@@ -70,7 +70,7 @@ export function CommandPalette() {
         className="flex h-10 w-full min-w-0 items-center gap-3 rounded-full border border-white/80 bg-white/70 px-4 text-sm text-[#6e6e73] shadow-sm backdrop-blur-xl transition hover:bg-white"
       >
         <Search size={15} className="shrink-0" />
-        <span className="min-w-0 flex-1 truncate text-left">Search Atlas or type a command...</span>
+        <span className="min-w-0 flex-1 truncate text-left">Search apps, people, reports...</span>
         <kbd className="hidden shrink-0 rounded border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-1.5 py-0.5 text-xs sm:inline">⌘K</kbd>
       </button>
 
@@ -79,7 +79,7 @@ export function CommandPalette() {
           role="dialog"
           aria-modal="true"
           aria-label="Search Atlas"
-          className="fixed inset-0 z-50 flex items-start justify-center bg-[#0b1020]/45 px-4 pt-[12vh] backdrop-blur-md"
+          className="fixed inset-0 z-[90] flex items-start justify-center bg-[#0b1020]/45 px-4 pt-[12vh] backdrop-blur-md"
           onClick={closePalette}
         >
           <div

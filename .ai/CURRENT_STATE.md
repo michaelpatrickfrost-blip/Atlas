@@ -1,5 +1,36 @@
 # Atlas current state
 
+## 9 October 2026 — Modern Home menu from Michael's reference
+
+- Home now has a light utility rail (Home, accessible Reports, My tasks,
+  authorised Messages/Settings), branded header/search and grouped app cards
+  with larger blue icons, app descriptions and permission-filtered counts.
+  The rail never repeats the business apps; tablet/phone use a utility bar.
+  Attention/goals and other apps' top menus remain connected.
+- Paths: Home page/layout, `globals.css`, shell `app-directory`, `topbar`,
+  `topbar-variant`, `home-navigation`, `shell-chrome`, `command-palette`,
+  `app-menu` (mobile accessible name), and `public/brand/atlas-mark.png`
+  (crop of supplied logo).
+- Isolated from live `58b3610` on `codex/home-menu-release`, because main also
+  contains unaccepted Studio work. Deployer supports explicitly pinned codex
+  branches with the same remote-tip/ancestry/lock/backup/immutable-build checks;
+  default main behavior remains. See `docs/DEPLOY.md`.
+- Reconciled `.ai/DESIGN_SYSTEM.md`, decisions, design system and delivery plan.
+- Checks: production build passed; strict TypeScript passed after installing
+  lockfile dependencies; focused ESLint passed (img-element warnings only);
+  4 focused navigation/release test files, 15 assertions passed. Shell syntax
+  and five mocked deploy guards passed (main, scoped branch, rejected unpinned,
+  wrong checkout and invalid ref). `git diff --check` passed.
+- Added read-only `scripts/check-home-menu.ts` using the existing Guardian QA
+  membership, with every non-read request blocked. First candidate passed all three responsive layouts, authorised cards,
+  loaded branding and no horizontal overflow. The mobile workspace Apps
+  accessibility check caught a missing button name; corrected with aria-label.
+  Refined cards/hero after screenshot review; final acceptance and activation
+  pending.
+- Next: prepare exact server candidate, run read-only acceptance, activate and
+  verify live; merge this release branch/evidence into main while preserving
+  the concurrent Studio implementation. No schema/business-data changes.
+
 ## 9 October 2026 — Studio candidate publication correction
 
 Foundation checkpoint 314fd06 includes concurrent branding 58b3610 without

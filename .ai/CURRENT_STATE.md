@@ -1,5 +1,14 @@
 # Atlas current state
 
+## 10 October 2026 — Studio preserves observed live Dashboard source
+
+Merged exact observed public/control 70ca23e; preserves modern Dashboard and
+existing Supply/People/Commercial/Studio source unchanged. Kept Studio and native
+Dashboard/People/Supply release modes. Integrated generation/checks now pending;
+no cohort/decoder public claim. Existing Dashboard evidence retained below;
+new combined Studio runner will verify actual Dashboard workflow too. No schema
+change or local DB. Next regenerate/test/build/types/lint and retry reviewed pin.
+
 ## 10 October 2026 — Studio deployment disk blocker safely recovered
 
 First af1338b deploy stopped during remote Git fetch: root disk 100%/zero space;
@@ -9,9 +18,9 @@ current 2ef5b4c and rollback 36d0d2d. Realpath checks preserved symlink boundari
 All release source/build outputs/assets, database/private files, backups and private
 acceptance evidence retained. Disk now 142G used/51G free (74%); public health and
 current/previous pointers unchanged. No application schema/data mutation.
-Retrying the same pinned af1338b Studio source; queued behind a separate 70ca23e
-Dashboard release under existing locks. Real Studio acceptance pending; no live
-cohort/decoder claim. Local retry log /tmp/atlas-studio-cohort-codec-retry.txt.
+af1338b retry exited 1 at ancestry before backup/build/switch after separate
+70ca23e became live. Exact observed live source is now preserved. Real Studio
+acceptance pending; no live cohort/decoder claim. Local retry log /tmp/atlas-studio-cohort-codec-retry.txt.
 
 ## 10 October 2026 — Studio cohort/decoder candidate with stable acceptance
 
@@ -11913,3 +11922,88 @@ checkout; integration must not overwrite unfinished content.
 Studio remaining Phase 2 correctness requirements recorded in STUDIO_PHASE_2_FIELDS.md: required-if, owner canonical-record coverage for new required fields and metadata-runtime schema compatibility. These remain unimplemented; Phase 2 gate not passed.
 
 10 October Studio cohort release preparation stopped safely at ancestry before backup/build when accepted People 36d0d2d became live. Its exact source is now merged unchanged; no native correction removed. Rebuild/regenerate, run Studio/cohort/People checks and prepare a compatible candidate with all native acceptance. No public cohort query claim.
+
+## 10 October 2026 — Dashboard redesign, final release acceptance
+
+Dashboards is in the utility sidebar under its existing Analytics entitlement and
+read/manage capabilities; Home no longer repeats its app card. The modern Atlas
+canvas has a searchable widget library, inspector, eleven visuals, personal boards
+and four starters. Widgets support grouping/count/distinct/sum/average/min/max,
+typed source/date/search filters, currency validation, width/height/colour/tone,
+reorder/duplicate/remove and undo/redo. Manual or timed refresh is saved with board
+period/default filters and respected by the monitor. Existing curated measures,
+central definitions and source permissions remain; ID/revision-checked rename and
+unique-name copies prevent silent replacement. No Dashboard migration or grants.
+
+Fourteen detailed record datasets include Customers, Products, Sales, Inventory,
+Logistics, Manufacturing and Finance. Queries calculate all matching rows up to
+10,000, reject truncation/mixed currencies/unsafe money precision, preserve missing
+average/extrema and weighted groups, and return aggregates rather than raw rows.
+Broader sharing, formulas, arbitrary joins and fiscal features remain open.
+Paths: modules/analytics, analytics/board routes, shell, Reports dataset selection,
+generated gateway descriptors, four dashboard suites and check-dashboards.ts.
+Analytics/design/decisions documentation reconciled; auth counter metadata excluded.
+
+Exact already-live Supply source 2690c26 and integrated Studio/Apps source e5d66e6
+are merged with private Admin and Messages source. Combined 19 files/79 assertions, strict types, production
+build, scoped lint and diff check PASS. Prepared 885baa5 passed central Dashboard,
+Home, Reports/Finance and Messages acceptance. Earlier prepared candidates/backups
+and ancestry stops remain in docs/evidence/2026-10-09-dashboards.md. Final currency
+input guard: two suites/19 assertions, strict types, scoped lint and build PASS.
+No Dashboard activation is claimed yet. Next: prepare the integrated final source,
+repeat candidate acceptance, activate and verify through public HTTPS.
+The global suite was not rerun; its unrelated baseline failures remain recorded.
+Final 73fcdb9 candidate Dashboard/Home/Reports/Messages checks PASS. Public source
+advanced to e5d66e6 during acceptance; merge its exact deployed Studio/Apps source,
+preserve source schema/lifecycle. Combined 23 files/97 assertions, strict types,
+production build, scoped lint (zero errors, two decorative brand-image warnings)
+and diff check PASS. Generated descriptors match its already-live typed field models.
+Candidate bc8fc2e Dashboard/Home/Apps/Reports PASS; Messages fixture/history PASS,
+viewport assertion FAIL after reopened timeline restoration. Runner now scrolls
+and retries the actual viewport assertion instead of accepting DOM visibility.
+Exact public font source 5ebd700 is merged unchanged; no new Dashboard app code.
+Runner/font integration: four UI files/18 assertions, strict types, production
+build, runner lint and diff check PASS. Final 054dd1c candidate Dashboard/Home/Apps/Reports/typography/Messages PASS.
+Public advanced to 56c9d88 (business shell excludes platform administration).
+Obsolete activation cancelled before lock acquisition; no switch or record change.
+Exact already-live source is merged; new boundary/Home runner retained alongside
+Dashboard utility assertions. Five UI files/24 assertions, strict types, build,
+runner lint and diff check PASS. Analytics/chat/font application source is unchanged
+from accepted 054dd1c. Next: prepare, verify changed Home/Dashboard navigation,
+activate and repeat all five workflows through public HTTPS.
+Prepared 8f0dfa9 (backup atlas-pre-deploy-20261009-223752) changed Dashboard/
+Home/business-boundary acceptance PASS. Activation safely stopped before backup/
+switch after live 94dd3e1 commercial workspaces advanced. Exact already-live source
+is merged, including its additive appointment/account-notes schema. Final combined
+client/descriptors now match it; Next route types generated. Combined 24 files/
+103 assertions, strict types, production build, scoped lint (zero errors/one
+decorative brand-image warning) and diff check PASS. Next: prepare the pinned
+combined release, repeat candidate acceptance, activate and verify publicly.
+081e9c3 prepared/smoke PASS (backup atlas-pre-deploy-20261009-225519); all five
+candidate workflows PASS. Public advanced to Studio 7941f9b; obsolete queued
+activation cancelled before lock acquisition. Its exact source is merged. Diff
+contains field helper libraries/tests/acceptance docs only; app/Dashboard/chat/
+Reports/font files remain identical to accepted 081e9c3. No runtime consumers of
+these new field helpers were found. Validate helpers/types/build, then prepare
+and activate with existing app acceptance plus all five public checks.
+Studio merge: five files/39 assertions, strict types, production build and diff
+check PASS. Public then advanced to People 36d0d2d; preserve that exact source
+before deployment. Its release acceptance hook is extended with an explicit
+Dashboards workflow: all five candidate/public checks and exact revision checks
+run under the existing two locks, retaining every backup/ancestry/compatibility/
+immutability/rollback gate. Independent Bash stage fails closed. People acceptance
+and the default none remain. New People schema/client/descriptors and connected
+goal/readiness changes are included. Combined 28 files/138 assertions, Prisma
+generation, descriptors, Next route types, strict types, production build, scoped
+lint (zero errors/one decorative brand-image warning), shell syntax and diff checks
+PASS. Next: deploy with ATLAS_RELEASE_ACCEPTANCE=dashboards, then record exact
+public evidence. Activation is still pending. Exact already-live Supply 2ef5b4c
+then merged, preserving its acceptance mode and entitlement/search boundaries.
+Supply integration: seven focused files/35 assertions, strict types, production
+build, shell syntax and diff checks PASS. Locked activation/public checks next.
+
+Messages 9303039 was publicly verified; final Me-assignment 4be24b3 is included
+and candidate-verified in this combined source. Synthetic chat fixtures are retired;
+no real colleague/customer was messaged. Its final public proof accompanies this
+release. Only already-deployed contributors' source is included in this release.
+

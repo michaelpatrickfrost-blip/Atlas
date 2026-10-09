@@ -10,6 +10,31 @@ ordinary extension guards and sealed entity v1/v2 remain unchanged. Future jobs
 pin this query contract and independently apply reviewed representation policy
 and per-value ACL/revision checks. This avoids a hidden native-table scan in Studio.
 
+## 10 October 2026 — Dashboard acceptance and activation share release locks
+
+Repeated concurrent live releases interleaved between accepted candidates and
+activation. Extend the existing reviewed People acceptance hook with a closed
+Dashboards option. Run the checked-in five feature checkers and revision checks
+inside the existing deployer's locks before and after switching. Retain backups,
+branch/ancestry checks, sealing, Studio compatibility and public-failure runtime
+rollback; never accept an arbitrary script path or bypass a moved live source.
+Synthetic fixture cleanup remains each checker's responsibility; real underlying
+records are read-only. Independent Bash stages preserve fail-closed handling.
+
+## 9 October 2026 — Personal dashboard canvas and authorised record views
+
+Michael requested a major modern, flexible dashboard redesign and sidebar placement.
+Dashboards joins the utility navigation visually while retaining its existing
+Analytics entitlement and capabilities; do not mark it as an always-enabled utility.
+Use existing personal Dashboard definitions, approved module measure contributions
+and the Reports record catalogue. Configuration manipulates the view, not the
+underlying business records. Require one currency, calculate all matching rows or
+reject above 10,000, and reject chart-unsafe exact financial text. No arbitrary
+SQL/joins/formula execution or broadened record access. Rename by owned ID with an
+optimistic revision; new/copy cannot overwrite a same-name board accidentally.
+Rationale: flexible personal views should preserve source privacy, exact financial
+meaning and existing saved work without creating another business datastore.
+
 ## 9 October 2026 — Migration data principal is distinct from metadata selection
 
 Configuration company selection cannot authorise native data. Customer migration

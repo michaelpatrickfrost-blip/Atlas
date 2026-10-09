@@ -28,7 +28,7 @@ export async function AppDirectory({ session, variant = "menu" }: { session: Ses
   const modules = await getNavigableModules(session);
   const groups = new Map<string, Entry[]>(APP_AREAS.map((area) => [area, []]));
   if (can(session, CUSTOMER_CAPABILITIES.read)) groups.get("Customers")!.push({ id: "customers", name: "Customers", href: "/customers", icon: Users, description: "Manage customer data and relationships." });
-  for (const app of modules) groups.get(areaForModule(app.id))!.push({ id: app.id, name: app.name, href: app.rootPath, icon: app.icon, description: app.id === "scheduling" && app.name === "My rota" ? app.description : APP_SUMMARIES[app.id] ?? app.description });
+  for (const app of modules.filter(app=>variant!=="launcher"||app.id!=="analytics")) groups.get(areaForModule(app.id))!.push({ id: app.id, name: app.name, href: app.rootPath, icon: app.icon, description: app.id === "scheduling" && app.name === "My rota" ? app.description : APP_SUMMARIES[app.id] ?? app.description });
   const company: Entry[] = [
     ...(variant === "menu" ? [{id:"reports",name:"Reports",href:"/reports",icon:ChartNoAxesColumnIncreasing,description:"Filter data and download Excel."}] : []),
     { id: "my-work", name: "My work", href: "/profile", icon: Briefcase, description: "Your tasks, meetings and personal details." },

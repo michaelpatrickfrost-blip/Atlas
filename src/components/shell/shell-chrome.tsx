@@ -8,7 +8,7 @@ import { Refresh } from "./refresh";
 /** Home has a utility rail; module workspaces retain their existing app menus. */
 export function ShellChrome({ topbar, homeNavigation, children }: { topbar: ReactNode; homeNavigation: ReactNode; children: ReactNode }) {
   const pathname = usePathname();
-  const home = pathname === "/home" || pathname === "/reports" || pathname === "/chat";
+  const home = pathname === "/home" || pathname === "/reports" || pathname === "/chat" || pathname === "/analytics";
   return (
     <>
       <Refresh />

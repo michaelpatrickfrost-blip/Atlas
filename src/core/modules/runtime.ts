@@ -27,12 +27,14 @@ function allImplementedModuleIds(): Set<string> {
  *  internal Atlas team workspace, which has no per-company enablement rows. */
 export async function enabledModulesForSession(session: Session): Promise<Set<string>> {
   if (isAtlasStaff(session)) return allImplementedModuleIds();
-  return getEnabledModuleIds(session.organisationId);
+  const enabled = await getEnabledModuleIds(session.organisationId);
+  for (const module of getImplementedModules()) if (module.utility) enabled.add(module.id);
+  return enabled;
 }
 
 /** Whether one app is enabled for this session's company, honouring the Atlas staff exception. */
 export async function isModuleEnabled(session: Session, moduleId: string): Promise<boolean> {
-  if (isAtlasStaff(session)) return true;
+  if (getModule(moduleId)?.utility || isAtlasStaff(session)) return true;
   return (await getEnabledModuleIds(session.organisationId)).has(moduleId);
 }
 
@@ -65,6 +67,7 @@ export function getModuleNavigation(module: ModuleManifest, session: Session): M
 
 export async function setModuleEnabled(organisationId: string, moduleId: string, enabled: boolean) {
   const requestedModule = getModule(moduleId);
+  if (requestedModule?.utility) throw new Error("Workspace utilities cannot be toggled.");
   if (!requestedModule || requestedModule.status === "coming_soon") throw new Error("This app is not available yet.");
   if (!enabled) {
     const enabledIds = await getEnabledModuleIds(organisationId);
@@ -93,7 +96,7 @@ export async function setModuleEnabled(organisationId: string, moduleId: string,
 export async function getModuleStatesForOrg(organisationId: string) {
   const states = await db.moduleState.findMany({ where: { organisationId } });
   const stateByModuleId = new Map(states.map((state) => [state.moduleId, state.enabled]));
-  return MODULE_CATALOGUE.map((module) => ({
+  return MODULE_CATALOGUE.filter(module => !module.utility).map((module) => ({
     module,
     enabled: (stateByModuleId.get(module.id) ?? false) && (states.find(s=>s.moduleId===module.id)?.entitled??false),
     entitled: states.find(s=>s.moduleId===module.id)?.entitled??false,

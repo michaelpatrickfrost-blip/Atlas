@@ -1,3 +1,4 @@
+import { reports } from './services/reports';
 import { manufacturingAnalytics } from "./services/analytics";
 import { manufacturingRecordContext, manufacturingRecordRelationships } from "./services/relationships";
 import { manufacturingBusinessPlanning, publishSopDemand } from "./services/business-planning";
@@ -10,6 +11,7 @@ import { manufacturingAttention, searchManufacturing } from "./services/queries"
 // Includes MRP engine, planned orders, material shortage workbench, capacity planning,
 // manufacturing orders, work orders and shop-floor execution.
 export const manufacturingManifest: ModuleManifest = {
+ reportProvider: reports,
  analyticsProvider: manufacturingAnalytics,
  recordContextProvider: manufacturingRecordContext, recordRelationshipProvider: manufacturingRecordRelationships,
  businessPlanningProvider: manufacturingBusinessPlanning,planningPublicationConsumer: publishSopDemand,

@@ -33,6 +33,47 @@ completed central reproduction, candidate/live workflow proof and deployment
 remain pending. No report marked FIXED yet. Next: finish verification/deploy and
 repeat exact forbidden actions, real button, newly saved proposal and product pages.
 
+## 9 October 2026 — Reports workspace in progress
+
+- Added modern `/reports` utility separate from Dashboards, shared Home utility
+  navigation, top source/dataset/search/date/field/column filters, paginated preview
+  and formatted explicit Excel downloads.
+- Source-owned providers cover Customers, Products, Sales, Inventory, Logistics,
+  Manufacturing and Finance; authorised other-app summaries keep source definitions.
+  Finance preserves document/private-project scope and separate currencies.
+- Paths: `src/core/reports`, `src/modules/reports`, module report providers/manifests,
+  Reports page/API, shell utilities; `docs/modules/REPORTS.md` and shared guides.
+- Checks so far: strict TypeScript passed on first implementation; first 3 focused
+  test files passed (18 tests); final 8 focused files passed (48 tests), including
+  API/permission/workbook/client-state and Atlas admin/provisioning regressions. A first lint pass caught effect-driven synchronous
+  state setup; replaced with server-loaded initial preview. Final production build passed. Final standalone TypeScript passed after correcting two test-only annotations.
+  Focused ESLint passed (one decorative img-element warning only), and
+  `git diff --check` passed. First candidate `41d4ac6` built and smoke-tested; desktop/tablet/phone
+  overflow/branding/utility checks passed. Visual review caught compressed mobile
+  dates: widened controls and removed a duplicate chevron. Signed-out Reports
+  redirects explicitly. Acceptance selectors exclude Next's route announcer from
+  report error checks. Revised combined candidate/export and live checks pending. No schema migration.
+- Initial release isolated from then-live `329b60a` on `codex/reports-release`.
+  Concurrent Studio release `c46bbef` became live during acceptance; the ancestry
+  gate stopped the old candidate safely. Reports now applies to `c46bbef` on
+  `codex/reports-live-release`, preserving the new live guards and Studio work.
+  Combined source revalidated after generating the existing Studio Prisma client:
+  10 focused files/58 assertions passed (Reports, permissions, provisioning and
+  Studio registry/admin regressions); standalone TypeScript and production build
+  passed. Source includes Studio's `9ebd774` accepted-release evidence. Candidate
+  `75f1a1f` built/smoke-tested with live pointer unchanged. Final review found CRM
+  Analytics lacked its documented owner restriction: corrected all six providers,
+  with exact grouped win-rate counts. Reports summaries retain the original
+  Analytics entitlement/dashboard capability; raw source exports stay independent.
+  Summary money conversion also preserves large exact minor-unit values. The `75f1a1f` candidate passed all 14 record previews/workbooks,
+  search/empty state/field filters/browser download, all 3 layouts and Home/menu
+  regressions. Final scope fixes passed 11 files/61 assertions, typecheck/build;
+  currency columns now remain alongside selected money columns and browser
+  acceptance checks selected-column files and restricted CRM owner summaries.
+  Final revalidation: 11 focused files/63 assertions passed, standalone TypeScript
+  passed, focused lint passed (one decorative image warning), production build and
+  diff whitespace passed. Revised final candidate/live acceptance remain pending.
+
 ## 9 October 2026 — Studio Phase 1 deployed and accepted
 
 Supersedes earlier Studio pending-candidate checkpoints below. Exact source

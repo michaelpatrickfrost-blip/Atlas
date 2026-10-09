@@ -21,7 +21,8 @@ STUDIO_FIELD_EVOLUTION_PLAN.md; all remaining Phase 2 dependencies retained.
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest observed live source e5d66e6cf36b0fe228ac65287fdaa8d5ceb8be7c;
+VERIFIED. Latest observed live source 5ebd700d3526b6fdaa70efa4514da0803301a285;
+2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
 The supplied source defines ten phases 0–9, not five. The original
 is preserved unchanged at `docs/studio/ATLAS_STUDIO_SOURCE.docx` (source
@@ -71,8 +72,8 @@ and custom buttons to 2E acceptance. Existing Home/analytics/dashboard and Sales
 Templates source inspected; 2E5 reuses their engines, preserves personal boards and
 checks native button permissions. Requirements/plan saved; designer NOT STARTED.
 2B3a–g checkpoints saved in STUDIO_FIELD_EVOLUTION_PLAN.md; compatibility/conversion
-pure library VERIFIED locally. Retirement, reviewed jobs/publication/batches/cutover
-and acceptance remain NOT STARTED; 2B2 combined candidate/public release now PASS. Historical/final-record owner
+pure library VERIFIED locally. Retirement IMPLEMENTED locally (35 tests/types/lint/build PASS); reviewed jobs/
+publication/batches/cutover and acceptance remain NOT STARTED; 2B2 combined candidate/public release now PASS. Historical/final-record owner
 policy must be resolved in code without bypassing existing native restrictions.
 
 2B1 delivered closed typed field contracts/required/constraint validation, exact
@@ -288,8 +289,8 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint reviewed 2B3b retirement service/tests/memory; merge latest main 98cf934
-and exact observed live 5ebd700 (rounded typography preserving e5d66e6). Rerun
+2B3b service/tests/memory checkpointed; latest main 98cf934 and exact live 5ebd700
+(rounded typography preserving e5d66e6) merged unchanged. Run
 integrated build/types, prepare pinned candidate, execute central real retirement/
 conversion and combined native acceptance, then activate exact candidate on PASS
 and repeat publicly. New helper NOT RUN; no live 2B3a/b claim yet. Following verified

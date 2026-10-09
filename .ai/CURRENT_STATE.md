@@ -56,7 +56,9 @@ Full candidate acceptance PASS on exact 8b99c1b; private evidence
 failure rollback, CAS race and eight combined native checks PASS. Public runtime
 advanced to 56c9d88 (business/platform separation); queued activation must retain
 ancestry guard. Preserve its reviewed source and reverify the combined candidate
-before activation/public proof. No new retirement public verification yet.
+before activation/public proof. Integrated seven files/44 assertions, production
+build, strict post-build TypeScript and scoped lint PASS (zero errors, two existing
+brand-image warnings). No new retirement public verification yet.
 Confirmed next-workstream access dependency: adminStudioContext is metadata-only;
 never use it for migration value/native-record queries. sessionForUser reloads real
 target membership/current grants; Admin openCompanyWorkspace is the existing

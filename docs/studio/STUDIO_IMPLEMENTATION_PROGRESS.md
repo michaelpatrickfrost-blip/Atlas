@@ -292,8 +292,10 @@ prematurely. Gates cannot PASS from file existence alone.
 Prepared exact 8b99c1b1c0e31e2640a0bd73300678f0de899f33 PASS after backup
 atlas-pre-deploy-20261009-222427. Check /tmp/atlas-studio-retirement-candidate.txt;
 new real helper/combined acceptance PASS (/tmp/atlas-studio-acceptance-oJKxve).
-Public runtime advanced to 56c9d88 with business/platform separation. Preserve
-that source and reverify combined candidate before activation/public checks. No
+Public runtime advanced to 56c9d88 with business/platform separation. Exact source
+merged unchanged; integrated 7 files/44 tests, build/types/scoped lint PASS (two
+existing brand-image warnings). Prepare and reverify combined candidate before
+activation/public checks. No
 activation/public retirement claim.
 Before 2B3c job models, resolve the explicit data/support context and refreshed
 principal dependency in STUDIO_FIELD_EVOLUTION_PLAN.md; metadata Admin context

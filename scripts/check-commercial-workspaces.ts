@@ -585,6 +585,90 @@ async function main() {
         body,
       });
     };
+    phase = "legacy activity completion boundary";
+    const postLegacy = (token: string, id: string, outcome: string) =>
+      post(
+        "completeActivity",
+        {},
+        token,
+        [id, outcome],
+        `/crm/opportunities/${seed.deal.id}`,
+      );
+    const legacy = await db.salesActivity.create({
+      data: {
+        organisationId: seed.org.id,
+        ownerUserId: seed.profiles[0].user.id,
+        partyId: seed.account.id,
+        type: "TASK",
+        subject: "Legacy completion guard",
+      },
+    });
+    const booked = await db.salesActivity.create({
+      data: {
+        organisationId: seed.org.id,
+        ownerUserId: seed.profiles[0].user.id,
+        partyId: seed.account.id,
+        type: "MEETING",
+        subject: "Booked completion guard",
+        dueAt: new Date(`${day}T15:00:00Z`),
+        endsAt: new Date(`${day}T15:30:00Z`),
+      },
+    });
+    for (const [token, id] of [
+      [seed.profiles[0].token, booked.id],
+      [seed.profiles[0].token, cancelled.id],
+      [seed.profiles[1].token, legacy.id],
+      [seed.profiles[2].token, legacy.id],
+    ]) {
+      const response = await postLegacy(token, id, "Must not complete");
+      const result = await response.text();
+      assert(
+        !result.includes("Unrecognized server action"),
+        "Known legacy completion action invoked",
+      );
+      assert(
+        response.status >= 400 || /\n[0-9a-f]+:E\{/.test(result),
+        "Legacy completion rejected",
+      );
+      const unchanged = await db.salesActivity.findUniqueOrThrow({
+        where: { id },
+      });
+      assert.equal(unchanged.completedAt, null);
+      assert.equal(
+        unchanged.version,
+        id === cancelled.id ? cancelled.version : 1,
+      );
+    }
+    const completedLegacy = await postLegacy(
+      seed.profiles[0].token,
+      legacy.id,
+      "Legacy work completed",
+    );
+    const completionResult = await completedLegacy.text();
+    assert(
+      completedLegacy.status < 400 && !/\n[0-9a-f]+:E\{/.test(completionResult),
+      "Legacy completion succeeds",
+    );
+    const retainedLegacy = await db.salesActivity.findUniqueOrThrow({
+      where: { id: legacy.id },
+    });
+    assert(retainedLegacy.completedAt);
+    assert.equal(retainedLegacy.version, 2);
+    assert.equal(retainedLegacy.outcome, "Legacy work completed");
+    const replay = await postLegacy(
+      seed.profiles[0].token,
+      legacy.id,
+      "Must not overwrite",
+    );
+    await replay.text();
+    const replayedLegacy = await db.salesActivity.findUniqueOrThrow({
+      where: { id: legacy.id },
+    });
+    assert.equal(replayedLegacy.version, 2);
+    assert.equal(replayedLegacy.outcome, retainedLegacy.outcome);
+    console.log(
+      "PASS legacy completion rejects booked/cancelled appointments and unauthorised owners; ordinary legacy work completes once with a version increment.",
+    );
     const before = await db.salesActivity.count({
       where: { organisationId: seed.org.id },
     });

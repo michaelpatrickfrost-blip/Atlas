@@ -1,5 +1,145 @@
 # Atlas current state
 
+## 10 October 2026 — Commercial workspaces and completion guard live and verified
+
+Activated immutable b57ba7209889c0096f47475d6a0659741834f11b at
+https://atlassystem.online, preserving accepted Dashboard/People/Manufacturing/
+Studio source. Previous 70ca23e is retained. Final server preparation/build/smoke,
+activation, login and exact public revision checks PASS. Preparation backup
+atlas-pre-deploy-20261009-233524; activation backup
+atlas-pre-deploy-20261009-233756. No additional migration or provider change.
+
+Complete candidate AND public HTTPS commercial acceptance PASS: selected-customer
+family, shared/restricted notes, appointment create/overlap/reschedule/outcome/
+cancellation, reader/rep/capability/tenant boundaries, visual journey experience/
+touchpoint/branch/zoom/reorder, automation publication with zero deliveries and all
+ten screens at desktop/tablet/phone. Direct actual legacy action rejects booked/
+cancelled appointments and unauthorised owners; ordinary authorised legacy work
+completes once, advances its version and cannot be overwritten by replay.
+No browser errors; 15 permitted browser form POSTs and 51 blocked background writes.
+Synthetic Test access suspended/revoked, record and audit history retained.
+Candidate evidence /tmp/atlas-commercial-acceptance-7xxeAm and staging
+/tmp/atlas-commercial-staging-OY35yM; fixture backup
+atlas-pre-commercial-test-20261009-233723. Public logs
+/tmp/atlas-commercial-public-Xc3qM0, evidence
+/tmp/atlas-commercial-acceptance-ugXTmv; fixture backup
+atlas-pre-commercial-public-test-20261009-233807.
+
+Latest integrated local Prisma generation, 7 files/47 regression tests, production
+build, strict TypeScript, scoped lint, shell syntax and diff whitespace PASS.
+Earlier commercial 30-file/145-test acceptance and full-suite limitations below
+remain accurate. This closes the final completion boundary; the broader provider
+integration limits below remain. Guard/evidence now integrates with origin/main 489f482, preserving contributor
+memory and post-release People/Dashboard evidence. Application, schema, scripts,
+tests and configuration match the exact publicly verified b57ba72 source; this
+memory/documentation merge does not require another live activation. Diff whitespace
+PASS; push to shared main remains next. Canonical Desktop's concurrent dirty
+checkout remains untouched.
+
+### Earlier guard preparations and source preservation
+
+Final 2b8759f candidate build stopped at ENOSPC after compilation; running release
+was unchanged. Backup atlas-pre-deploy-20261009-232112 and private build/smoke logs
+are retained. Read-only disk inspection subsequently confirmed 49 GB free after
+concurrent server maintenance; no records/backups/releases were removed by this
+task. Exact accepted Dashboard runtime 70ca23e and its documentation-only public
+evidence 56f4cb2 are now merged. This supersedes the earlier Dashboard-is-pending
+boundary: only its already-deployed source is included. Integrated Prisma generation, 7 files/47 regression tests, production build,
+strict TypeScript, scoped lint, shell syntax and diff whitespace PASS. Fresh immutable
+preparation and public checks subsequently passed on b57ba72 above. Failed unsealed
+2b8759f is retained with its failure evidence.
+
+Candidate 7d9fc3e real forms, direct legacy-action rejection/positive/replay proof
+and all 30 commercial route/viewport cases PASS. Evidence
+/tmp/atlas-commercial-acceptance-MAk6ys; staging /tmp/atlas-commercial-staging-bEXEKx;
+fixture backup atlas-pre-commercial-test-20261009-231509; preparation backup
+atlas-pre-deploy-20261009-230931. Test access revoked, history retained. Activation
+safely stopped after accepted Manufacturing workspace consolidation 2ef5b4c became
+live. Its exact source and contributor evidence are merged. Merged production
+build, strict TypeScript and 6-file/30-test completion/entitlement/workspace suite
+PASS. Final guard/public checks were pending at this point. Dashboard source was
+excluded at that attempt; its subsequent accepted live source is preserved above.
+
+Guard 1e4597 preparation safely stopped at ancestry after People 36d0d2d became
+live. Its exact deployed source, additive schema and contributor memory are now
+merged. Prisma generation, production build, strict TypeScript and 9-file/76-test
+appointment/Studio/People regression suite PASS. Guard-source whitespace PASS.
+Two EOF blank-line warnings in the already-deployed People migration files are
+retained to preserve their applied checksums; no migration was edited.
+
+Final review confirmed the older completeActivity action is still compiled and
+registered in the desktop API. Its update was tenant-scoped but could complete
+booked/cancelled appointments without the diary outcome/version checks and did
+not apply CRM owner restrictions. Atomic update predicates now restrict it to
+uncompleted, uncancelled legacy activities without an appointment end; CRM owner
+scope applies and successful legacy completion increments version. The diary's
+existing guarded appointment commands remain the only booked completion path.
+Source: src/modules/crm/services/activities.ts; meaningful unit and central
+acceptance regressions cover this boundary. Initial 3-file/19-test suite, strict
+TypeScript, production build, scoped lint and whitespace PASS. Preserve newly live
+Studio 7941f9b (the commercial source 94dd3e is its ancestor), now merged with
+all contributor evidence. Candidate/public guard verification
+and deployment were pending at this point; the underlying commercial source 94dd3e is already
+deployed and preserved. Merged Studio/guard 6-file/43-test suite, strict TypeScript,
+production build and whitespace PASS.
+
+Public typography follow-up on 94dd3e PASS: actual Nunito glyphs, inherited inputs,
+aligned numerals and page fit across 10 routes/3 widths, no browser/asset errors or
+external fonts; all writes blocked. Evidence /tmp/atlas-typography-check-FnJiZt.
+Initial standalone checker lacked /etc/atlas/guardian.env; rerun with that existing
+QA configuration passed. No credentials or grants were changed.
+
+## 9 October 2026 — Customers, Sales, CRM and Marketing live and accepted
+
+Deployed immutable 94dd3e105e2757b5d16ed3e2fea277d09a4b7bee from scoped
+codex/customer-sales-experience. Previous runtime 56c9d88 retained. Server
+compatibility/build/smoke and public release health/login PASS; central database/
+private-file activation backup atlas-pre-deploy-20261009-224305. Additive appointment
+migration is applied; no existing business record or external provider was replaced.
+Live source retains accepted Manufacturing/Studio, Apps, rounded typography and
+business navigation boundaries. Main's separate Dashboard work is not deployed
+by this scoped release.
+
+Actual public HTTPS acceptance PASS at the exact SHA: selected-customer family
+only; canonical CRM/Customer notes and restricted rights; appointment create/link,
+overlap rejection, reschedule, completion outcome and retained cancellation;
+reader/rep/tenant/capability isolation; visual journey experience/touchpoint/branch/
+zoom/reorder; immutable automation publication with zero outbound deliveries.
+All ten commercial screens at desktop 1448, tablet 820 and phone 390 widths PASS
+with no page overflow/browser errors. Anonymous access redirects PASS. Exactly
+15 allowed form POSTs; external/background writes blocked. Exact synthetic Test
+companies suspended, memberships revoked and auth versions advanced; audit/records
+retained. Public fixture backup atlas-pre-commercial-public-test-20261009-224515;
+logs /tmp/atlas-commercial-public-6dMlQj; screenshots/evidence
+/tmp/atlas-commercial-acceptance-AXm3WE. Candidate evidence
+/tmp/atlas-commercial-acceptance-W6QlsD and /tmp/atlas-commercial-staging-E7NNYT;
+fixture backup atlas-pre-commercial-test-20261009-223938; preparation backup
+atlas-pre-deploy-20261009-223427. Visual journey/phone diary screenshots inspected.
+
+Checks actually run: commercial/regression 30-file/145-test suite PASS, followed by
+8-file/34-test regression after navigation merge; strict TypeScript and production
+build PASS after each live-source merge; scoped lint zero errors (pre-existing
+Sales unused-variable and navigation img warnings), shell syntax and diff whitespace
+PASS. Full run on the earlier f594 integrated source: 1201 passed / 63 failed /
+22 skipped, comprising 62 older module-mock failures and one Inventory 5-second
+initial compilation timeout. Inventory alone reproduces that timeout, then all
+12 tests PASS with a 20-second allowance. Whole-suite success is not claimed.
+
+Original main integration with the then-pending Dashboard source: strict
+TypeScript, 8-file/34-test commercial/navigation regression and whitespace PASS.
+That integration did not activate Dashboard source; its later accepted deployment
+and current preservation are documented above.
+
+Shared docs/decisions/research and implementation are included together. Source:
+Customers/core/account notes and family maps; CRM Accounts/Appointments/Today/
+Pipeline; Sales Orders list/detail; Marketing campaign desk, experience mapper,
+visual automation and audited commands; central acceptance helpers. External
+calendar sync, email/SMS delivery, advertising execution and background journey
+processing still require separately configured integration work. Provider choices
+remain blank per the recorded user decision. Final source/evidence is merged back
+into main without deploying unrelated concurrent work; canonical Desktop's dirty
+checkout is preserved.
+
 ## 10 October 2026 — Dashboards and Messages deployed and publicly verified
 
 Activated immutable runtime 70ca23ea83662c94e254488de717ee26de0e2c84 at
@@ -333,55 +473,6 @@ Need candidate/public proof with deployed 56c9d88 business separation preserved.
 
 
 
-## 9 October 2026 — Customers, Sales, CRM and Marketing live and accepted
-
-Deployed immutable 94dd3e105e2757b5d16ed3e2fea277d09a4b7bee from scoped
-codex/customer-sales-experience. Previous runtime 56c9d88 retained. Server
-compatibility/build/smoke and public release health/login PASS; central database/
-private-file activation backup atlas-pre-deploy-20261009-224305. Additive appointment
-migration is applied; no existing business record or external provider was replaced.
-Live source retains accepted Manufacturing/Studio, Apps, rounded typography and
-business navigation boundaries. Main's separate Dashboard work is not deployed
-by this scoped release.
-
-Actual public HTTPS acceptance PASS at the exact SHA: selected-customer family
-only; canonical CRM/Customer notes and restricted rights; appointment create/link,
-overlap rejection, reschedule, completion outcome and retained cancellation;
-reader/rep/tenant/capability isolation; visual journey experience/touchpoint/branch/
-zoom/reorder; immutable automation publication with zero outbound deliveries.
-All ten commercial screens at desktop 1448, tablet 820 and phone 390 widths PASS
-with no page overflow/browser errors. Anonymous access redirects PASS. Exactly
-15 allowed form POSTs; external/background writes blocked. Exact synthetic Test
-companies suspended, memberships revoked and auth versions advanced; audit/records
-retained. Public fixture backup atlas-pre-commercial-public-test-20261009-224515;
-logs /tmp/atlas-commercial-public-6dMlQj; screenshots/evidence
-/tmp/atlas-commercial-acceptance-AXm3WE. Candidate evidence
-/tmp/atlas-commercial-acceptance-W6QlsD and /tmp/atlas-commercial-staging-E7NNYT;
-fixture backup atlas-pre-commercial-test-20261009-223938; preparation backup
-atlas-pre-deploy-20261009-223427. Visual journey/phone diary screenshots inspected.
-
-Checks actually run: commercial/regression 30-file/145-test suite PASS, followed by
-8-file/34-test regression after navigation merge; strict TypeScript and production
-build PASS after each live-source merge; scoped lint zero errors (pre-existing
-Sales unused-variable and navigation img warnings), shell syntax and diff whitespace
-PASS. Full run on the earlier f594 integrated source: 1201 passed / 63 failed /
-22 skipped, comprising 62 older module-mock failures and one Inventory 5-second
-initial compilation timeout. Inventory alone reproduces that timeout, then all
-12 tests PASS with a 20-second allowance. Whole-suite success is not claimed.
-
-Main integration with the existing Dashboard source: strict TypeScript and
-8-file/34-test commercial/navigation regression PASS; diff whitespace PASS.
-No deployment of that separate Dashboard source is performed by this merge.
-
-Shared docs/decisions/research and implementation are included together. Source:
-Customers/core/account notes and family maps; CRM Accounts/Appointments/Today/
-Pipeline; Sales Orders list/detail; Marketing campaign desk, experience mapper,
-visual automation and audited commands; central acceptance helpers. External
-calendar sync, email/SMS delivery, advertising execution and background journey
-processing still require separately configured integration work. Provider choices
-remain blank per the recorded user decision. Final source/evidence is merged back
-into main without deploying unrelated concurrent work; canonical Desktop's dirty
-checkout is preserved.
 
 ## 9 October 2026 — Historical commercial candidates and safe ancestry stops
 

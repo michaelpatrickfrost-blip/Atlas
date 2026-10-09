@@ -158,9 +158,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Verify corrected candidate 5f8d83 lifecycle/forms while final login-route binding
-is checked. Commit the server-path binding checkpoint, prepare the final candidate
-through deploy:vps (first candidate 314fd06 is not activated). Run
+Validate/commit the final recovery-feedback and browser-conflict test checkpoint
+on `codex/studio-phase1-release`, prepare its pinned candidate through deploy:vps.
+Candidate 2ba0382 reached business-user provisioning and expected recovery denial;
+feedback/selector correction and the rest of customer login remain to verify. Run
 `ATLAS_STUDIO_LIVE_TEST=1 ATLAS_STUDIO_TEST_URL=http://127.0.0.1:3011`
 with `scripts/studio/check-metadata.ts` against the prepared candidate, correct any
 failure before activation, then repeat against the public live URL.

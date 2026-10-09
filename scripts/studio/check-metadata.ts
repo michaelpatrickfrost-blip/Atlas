@@ -97,6 +97,18 @@ async function main() {
     await page.getByLabel("Description",{exact:true}).fill("Created through the real Admin form");
     await page.getByRole("button",{name:"Create draft",exact:true}).click();
     await expect(page.getByRole("heading",{name:"Browser accepted configuration",exact:true})).toBeVisible();
+    const secondEditor=await context.newPage();await secondEditor.goto(page.url(),{waitUntil:"networkidle"});
+    await page.getByLabel("Description",{exact:true}).fill("First editor saved this revision");
+    await page.getByRole("button",{name:"Save draft",exact:true}).click();
+    await expect(page.getByText("Draft saved. Validate the saved draft before publishing.",{exact:true})).toBeVisible();
+    await secondEditor.getByLabel("Description",{exact:true}).fill("Unsaved changes from the second editor");
+    await secondEditor.getByRole("button",{name:"Save draft",exact:true}).click();
+    await expect(secondEditor.getByText(/^CONFLICT:/)).toBeVisible();
+    await expect(secondEditor.getByText("Compare the current saved draft with your unsaved changes",{exact:true})).toBeVisible();
+    await expect(secondEditor.getByLabel("Description",{exact:true})).toHaveValue("Unsaved changes from the second editor");
+    const browserDraft=await db.studioDraft.findFirstOrThrow({where:{organisationId:a.id,definition:{key:`browser.${suffix}`}}});
+    assert.equal((browserDraft.payload as {description:string}).description,"First editor saved this revision");assert.equal(browserDraft.revision,1);
+    await secondEditor.close();console.log("PASS real draft save and stale-editor structural diff preserves unsaved input without overwriting accepted changes");
     await page.getByRole("button",{name:"Validate saved draft",exact:true}).click();
     await expect(page.locator('[aria-label="Validation results"]')).toContainText("checksum");
     await page.getByRole("button",{name:"Publish saved draft",exact:true}).click();
@@ -126,7 +138,7 @@ async function main() {
     await customerPage.getByLabel("Code",{exact:true}).fill(setupCode);
     await customerPage.getByLabel("New password",{exact:true}).fill(password);await customerPage.getByLabel("Confirm password",{exact:true}).fill(password);
     await customerPage.getByRole("button",{name:"Save password",exact:true}).click();
-    await expect(customerPage.getByRole("alert")).not.toBeEmpty();
+    await expect(customerPage.locator("form p[role=alert]")).toContainText("This code could not be used for this business");
     const storedUser=await db.user.findUniqueOrThrow({where:{email},include:{memberships:true}});
     assert.equal(storedUser.memberships.length,1);assert.equal(storedUser.memberships[0].organisationId,a.id);
     assert.equal(await db.passwordReset.count({where:{membershipId:storedUser.memberships[0].id,usedAt:null}}),1,"Wrong company recovery must not consume code");

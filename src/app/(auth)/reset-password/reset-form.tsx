@@ -9,7 +9,13 @@ export function ResetForm({companySlug,portal}:{companySlug?:string;portal?:"atl
   const router = useRouter();
   // Saving opens the person's company. An older data service only saves the password, so fall back to sign-in.
   async function save(form: FormData) {
-    await completePasswordRecovery(form);
+    try { await completePasswordRecovery(form); }
+    catch (error) {
+      if (typeof error === "object" && error && "digest" in error && String(error.digest).startsWith("NEXT_REDIRECT")) throw error;
+      throw new Error(companySlug
+        ? "This code could not be used for this business. Check the code and password, or ask your Atlas administrator for a new code."
+        : "Could not set your password. Check the code and password, or request a new code.");
+    }
     router.push(companySlug ? `/business/${companySlug}/login` : portal === "atlas" ? "/atlas/login" : "/login");
   }
   return (

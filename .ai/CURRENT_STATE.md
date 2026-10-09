@@ -1,5 +1,19 @@
 # Atlas current state
 
+## 9 October 2026 — Studio final browser acceptance checkpoint
+
+Pinned `codex/studio-phase1-release` preserves concurrent Home source. Integrated
+production build, strict TypeScript and 15 focused files/62 assertions passed.
+Candidate 2ba0382 built/smoked and dependency scan passed with backed-up central
+data; live remains prior runtime while testing. Real Admin creation, validation,
+publication, activation and Test-user provisioning reached the negative recovery
+case. Test selector matched both form feedback and Next's route announcer; narrowed
+it. Recovery now gives safe business-specific guidance rather than a production
+React error code. Added real two-editor save/conflict/structural-diff browser proof.
+Feedback checkpoint strict TypeScript, scoped lint and production build passed.
+Next: commit/prepare it, rerun complete Studio
+and read-only Home acceptance, then activate and repeat live. No later phases.
+
 ## 9 October 2026 — Modern Home menu from Michael's reference
 
 - Home now has a light utility rail (Home, accessible Reports, My tasks,

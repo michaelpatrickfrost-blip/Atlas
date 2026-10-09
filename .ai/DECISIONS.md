@@ -1,3 +1,14 @@
+## 9 October 2026 — Workspace Apps follow the supplied grouped menu reference
+
+Michael supplied a wide, rounded white Apps menu with four primary desktop groups
+and More/Company below. Apply that design to business workspace navigation, retaining
+the existing Home/Reports/Messages launcher/utility design and independent Admin
+console. The directory remains server-filtered through getNavigableModules and
+existing capability checks; presentation never grants access or removes authorised
+apps. Labels wrap, 44px targets and scrollable responsive columns preserve access
+on phone/tablet. Route-keyed menu state and Escape focus return keep keyboard and
+back-navigation behaviour predictable. No business storage/schema/permissions change.
+
 ## 9 October 2026 — Studio field validation and visual setup
 
 Michael requires easy visual page/template selection and responsive draft previews,

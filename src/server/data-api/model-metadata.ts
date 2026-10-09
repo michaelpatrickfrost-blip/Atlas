@@ -1,6 +1,12 @@
 // Generated from the application schema.
 export const MODEL_FIELDS = {
   "Organisation": {
+    "studioDefinitions": {
+      "type": "StudioDefinition",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "operationalMeetingEntry": {
       "type": "MeetingEntry",
       "list": true,
@@ -35819,6 +35825,332 @@ export const MODEL_FIELDS = {
     },
     "job": {
       "type": "FieldServiceJob",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "StudioDefinition": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "key": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "kind": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "name": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "revision": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "latestVersion": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "activeVersionId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "retiredAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "createdBy": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "draft": {
+      "type": "StudioDraft",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "versions": {
+      "type": "StudioDefinitionVersion",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "activeVersion": {
+      "type": "StudioDefinitionVersion",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    }
+  },
+  "StudioDraft": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definitionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "revision": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "baseVersionId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "editorUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "payload": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "validation": {
+      "type": "Json",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definition": {
+      "type": "StudioDefinition",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "baseVersion": {
+      "type": "StudioDefinitionVersion",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    }
+  },
+  "StudioDefinitionVersion": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definitionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "semanticVersion": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "schemaVersion": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "payload": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "compiledPlan": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "checksum": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdBy": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "publishedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definition": {
+      "type": "StudioDefinition",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "activeFor": {
+      "type": "StudioDefinition",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "draftBases": {
+      "type": "StudioDraft",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "dependencies": {
+      "type": "StudioDependency",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "StudioDependency": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definitionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "versionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "ownerModuleId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "contractId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "contractVersion": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "schemaHash": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "contractHash": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "version": {
+      "type": "StudioDefinitionVersion",
       "list": false,
       "nullable": false,
       "relation": true

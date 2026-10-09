@@ -57,79 +57,41 @@ Next: review final diff, record checks, prepare backed-up immutable release,
 exercise private entry/denials/limits and staff console, activate and repeat
 public HTTPS acceptance. No MFA/SSO or immediate crawler removal is claimed.
 
-## 9 October 2026 — Modern Messages ready for candidate acceptance
+## 9 October 2026 — Dashboard redesign implemented, verification in progress
 
-Implemented a wide logo-based pop-out and expanded `/chat` utility workspace,
-responsive conversation list/timeline, optional participants/shared-record details,
-grouped order/quotation/customer/project/product picker and horizontal composer.
-Drafts remain separate per chat in a company/user-keyed shell context; closing
-and expanding retains the conversation and current draft without local storage. Pending sends disable edits/re-entry; failures retain draft/attachments.
-References may be sent without a comment. Server history searches all message text
-with bounded stable 80-message cursor pages, same-tenant/participant cursor checks,
-and safe recipient placeholders; older/search views do not mark newer messages read.
-Closed docks only poll unread summaries. Source licences/native private Projects
-scope and existing work/meeting creation remain. Customer/contact picker excludes
-scrubbed/archived identities. Admin remains independent without business chat.
-Paths: chat actions/dock/API; shell utility/header variants/navigation; focused
-chat tests and scripts/check-messages.ts; docs/MESSAGES.md/design/roadmap/decisions.
-No schema/migration, grants or existing business-record edits. Preserved concurrent
-live Guardian MRP source `0ce9f4a` and Reports/Admin/Studio evidence while resolving
-CURRENT_STATE with both contributors' entries. Eight focused files/47 assertions,
-strict TypeScript and production build passed; scoped ESLint zero errors/three
-brand-image warnings. Candidate `4233b57` is prepared/smoke-verified with central
-backup `atlas-pre-deploy-20261009-202932`; live pointer unchanged. Browser acceptance
-waits for the shared release lock held by another verification run. Refined picker
-search loading, bounded test timeouts and removed formatter whitespace; 17 chat
-assertions, strict TypeScript and final production build passed again; focused
-refinement lint zero errors/one brand-image warning and diff check passed.
-Full suite not rerun.
-Initial `4233b57` candidate acceptance passed real chat/contact creation, message
-send/order-reference persistence, participant/shared-record details, history beyond
-80 messages/search, forged-record rejection, draft closure, utility entry, expanded
-workspace and desktop/tablet/phone viewport fit with no browser runtime errors.
-Screenshots inspected visually. Its synthetic contact/customer is retired centrally.
-Final expansion handoff uses the shared unsaved-draft context keyed by authenticated
-company/user; eight focused files/48 assertions, strict TypeScript, final production
-build and refinement lint (zero errors/one brand-image warning) passed.
-A final review guards both restored-conversation loading and history effects while
-the dock is closed, preventing unintended read markers after returning Home. Added
-a regression; eight files/49 assertions, TypeScript/build and scoped lint (no errors,
-three brand-image warnings) passed. Candidate 1f36fb9 prepared; acceptance initially
-hit an ambiguous preview selector after a second retained fixture existed. Scoped
-the checks to actual timeline articles; this is a test selector correction, not a
-passing acceptance claim. No activation until the final source passes.
-5798bc1 preparation stopped at the ancestry guard after live Studio 6775044
-advanced. Its exact already-live source is merged, preserving typed owner/field
-contracts and their evidence. The prematurely queued acceptance did not run
-(directory absent); no new fixture or passing check is claimed.
-Combined source: 11 focused files/69 assertions, strict TypeScript, production
-build and diff check passed; no schema change.
-Combined candidate `9303039` is prepared/smoke-verified; private chat creation,
-send/order persistence, details, older-history search and pagination passed. Its
-screenshot scroll still used a multiline unscoped preview selector; corrected that
-remaining runner selector. This runner-only checkpoint does not change the app.
-Run the corrected acceptance harness against the exact immutable candidate without
-editing its sealed files, then activate 9303039 and repeat publicly.
-Candidate AND public HTTPS acceptance for 9303039 passed corrected real chat,
-order links, history/details, expanded draft handoff, desktop/tablet/phone, Home
-and all detailed Reports/Finance preview/XLSX/filter regressions. Health exact SHA
-confirmed before/after. Final work-control review found the pre-existing blank
-Me selector could fall back to a direct peer; client now sends the actual current
-user ID explicitly. Added a regression. Final source must be checked and deployed
-before handoff; all permissions/central native work services remain unchanged.
-Final mapping check: 11 files/70 assertions and production build passed; strict
-TypeScript passed after correcting a test-only unsupported Testing Library option.
-Scoped final lint zero errors/one brand-image warning; diff check passed.
-4be24b3 candidate chat/create/send/order/history/details passed; screenshot
-scroll helper raced a polling render and detached its element. The runner now
-scrolls the stable dialog container synchronously after confirming its article,
-without changing application code or sealed runtime files. Rerun this corrected
-harness against exact 4be24b3, activate it and repeat publicly.
-Next:
-rerun exact chat acceptance plus Home/Reports
-regression, activate and repeat
-public verification. Synthetic QA fixtures stay central and are retired, no actual
-colleague/customer receives a test message; no local business database/cache.
+Dashboards moves into the business utility rail with its existing Analytics
+entitlement/read/manage gate; Home removes its duplicate business card. Modern
+logo-based gallery/canvas/library/inspector; personal widgets support typed source
+record grouping/count/distinct/sum/average/min/max, field/date/search filters,
+currency checks, flexible width/height/style/order, duplicate and undo/redo. Saved
+filters/period and monitor use the same source-authorised queries. Existing Dashboard
+storage and curated measures remain; rename uses owner/tenant ID and optimistic
+revision, copies cannot silently overwrite a same-name board. No new schema/grants,
+local business cache or authoritative record mutations. Source query limit is
+10,000 full matching rows; broader sharing/joins/formula/fiscal features remain open.
+Paths: modules/analytics, analytics/board routes, shell navigation, Reports dataset
+selection, generated action/model descriptors, four dashboard suites and central
+check-dashboards.ts; Analytics/design/decisions documentation reconciled.
+Exact current live Admin source 1dafe165 is merged, retaining its compatible auth
+migration and earlier Studio/MRP source/evidence. Generated data descriptors now
+match the already-live Studio models/actions plus new Dashboard read actions;
+the generator explicitly omits private authentication counters as Admin requires.
+Checks: 13 focused files/58 assertions PASS, strict TypeScript and production build
+PASS; scoped ESLint zero errors/two decorative brand-image warnings, diff check
+PASS. Full suite not rerun. Final currency/acceptance-harness refinements are being
+checked before candidate preparation. A generator regression asserts private
+authentication counters remain absent from gateway metadata. Final refinement: four dashboard suites/25 assertions, private-counter/query
+regressions (two files/13 assertions), strict types and final production build PASS.
+No Dashboard activation has occurred.
+
+Messages 9303039 was deployed and passed actual public chat/order/history/details,
+expanded draft handoff, desktop/tablet/phone, Home and Reports/Finance acceptance.
+Final Me-assignment fix 4be24b3 passed 11 files/70 assertions, types/build/lint and
+corrected sealed candidate Chat/Home/Reports acceptance. It is retained in this
+combined source; its public deployment verification will accompany Dashboards.
+Synthetic central chat fixtures are retired; no real colleague/customer was messaged.
+Next: finish focused checks, prepare compatible combined candidate, run central
+Dashboard/Messages/Home/Reports checks, activate and repeat publicly.
 
 ## 9 October 2026 — Phase 2B1 validators and visual setup requirements
 

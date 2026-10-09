@@ -1,72 +1,97 @@
-# Atlas Analytics Studio
+# Atlas Dashboards
 
-3 October 2026. Full target: [user brief](ANALYTICS_SOURCE_REQUIREMENTS.md), with [section coverage](ANALYTICS_COVERAGE.md).
+9 October 2026. The complete [Analytics source requirements](ANALYTICS_SOURCE_REQUIREMENTS.md)
+remain the long-term target; [coverage](ANALYTICS_COVERAGE.md) is not a declaration
+that all 195 sections are accepted. This document describes the implemented workspace.
 
-## Dashboards — 3 October 2026
+## Workspace and design
 
-Dashboards (`/analytics`, app name Dashboards) open on a gallery. **New dashboard** and four starters (Whole business, Commercial, Operations, People) are on that page. A board mixes any authorised measure from enabled apps: Customers, CRM, Sales, Finance, HR, Scheduling, Inventory, Logistics, Customer Service, Marketing, Projects, Products, Pricing, Planning and Goals. CRM’s Dashboards item opens this gallery when the profile can read Analytics.
+Dashboards at `/analytics` joins Home, Reports, My tasks, Messages and Settings in
+the modern business workspace sidebar. It is removed from Home's business-app cards.
+Analytics remains an entitled/enabled module with its original read/manage
+capabilities; navigation relocation grants no licence or data access. The Admin
+console remains separate. Reports at `/reports` owns filtered detailed Excel exports.
 
-On a board, dropdowns sit on the chart. One chooses the measure, one chooses how to split it when that measure has views, and one chooses the chart. Orders can be shown by status, order type, product, category, customer or time. Product and category count lines. Arrange adds width, colour, title, focus and drag order. The same choices are in the add bar above the board. They are saved with the private board.
+The logo-based pale-blue/white gallery offers personal boards, a blank canvas and
+Whole business, Commercial, Operations and People starters. Visual previews depict
+chart shapes, not invented live business figures. The editor has a searchable,
+app-filtered library and a widget inspector beside the canvas on desktop and above
+it on smaller screens. View mode hides editing controls. A public
+`/analytics-preview` uses synthetic curated measures without tenant reads or saves.
 
-Live view re-queries the server on a chosen interval (off, 15s, 30s, 60s, 2m). Figures stay in the page for display and are not written to a local database. **On a monitor** opens `/board` in its own window, without the app sidebar, with a fill-screen control and a switcher that can open another board in another window. Refresh preference is stored with the private board definition.
+Up to 24 widgets support number, bars, split, columns, line, area, donut, pie, gauge,
+funnel and grouped table views. Configure title, category focus, value thresholds,
+sort, displayed group limit, 4/6/8/12-column width, compact/standard/tall height,
+colour, white/soft-blue/midnight tone and borderless style. Reorder by desktop drag
+or accessible earlier/later buttons; duplicate, remove and undo/redo 30 changes.
+Number widgets use all matching groups, not a truncated top-eight display.
 
-Saving still uses the existing Dashboard rows, namespaced `Analytics · `, plus one settings entry for the refresh interval. Same-name save updates that user’s board. Delete removes only that user’s namespaced board.
+## Flexible data
 
-## Delivered foundation
+Curated source-owned measures remain supported, with their definitions, grain,
+period/snapshot behavior, permitted breakdowns and connected goal markers. No
+module-owned metric definition is rewritten by chart settings.
 
-Analytics (`analytics`, `/analytics`) is registered as an available app with explicit read/manage capabilities. Dashboard Studio has a gallery, templates, and dropdowns for the app, measure, breakdown and chart. Visuals are number, bars, split, columns, line, area, donut, pie, gauge, funnel and table. Up to 24 tiles. HTML drag ordering works while arranging. Preview uses sample figures; live boards save privately on the server.
+Record widgets use the existing authorised Reports catalogue: Customers, Products,
+Sales orders/quotations, Inventory balances/movements, Logistics shipments/fulfilment,
+Manufacturing orders/work centres/resources and Finance documents/accounts/ledger.
+There are 14 initial record datasets; actual visibility depends on the reader.
+Choose any exposed grouping field, day/month/year date grouping, count records,
+count distinct values or a numeric total/average/minimum/maximum. Add up to 12
+source-supported typed field filters, search and date ranges. The widget inspector
+only offers numeric fields for numeric calculations.
 
-Core owns the typed analytics contribution and catalogue (`src/core/analytics/`); modules declare `analyticsProvider` in their manifest. Analytics never imports another module's services. Only enabled source modules and authorised metrics enter the catalogue. Providers perform tenant-scoped aggregates without joins or raw SQL. Definitions expose grain and time scope. Measures cover Customer Master, CRM, Sales, Finance, HR, Scheduling, Inventory, Logistics, Customer Service, Marketing, Projects, Products, Pricing, KPIs and Planning, including trends. Orders can be regrouped by status, type, product, category, customer or time from the Show by dropdown. These are counts, not recognised revenue, margin or valuation. Pipeline value stays split by currency. HR review content, salaries, health and personal fields are excluded. A company or department goal that names a catalogue measure is drawn under that chart. The chart keeps its own period; the pace line uses the goal dates. Personal goals and performance plans are never drawn on a shared dashboard. Future modules contribute through the same contract; automatic access to every field is not implemented.
+Board record search/from/to are defaults for supporting datasets; widget values
+override them. Snapshot datasets without a date field ignore board dates, and
+sources without search fields ignore board search. This is explicit in the UI.
+Curated measures use the separately saved rolling 30/90/365-day/all-time period;
+current snapshots remain current. These are not canonical multi-source customer,
+site or fiscal-calendar filters. Category focus operates on authorised aggregate
+points, not a cross-source join or record update.
 
-Period filters use rolling 30/90/365 days or all time for dated metrics. Snapshot metrics explicitly ignore the period. Fiscal calendars and canonical multi-source dimension filters remain open. One source failure is isolated through Promise.allSettled, but initial page rendering still waits for all sources; per-widget streaming/timeout/priority loading remains open. Source workspace links are delivered; exact filtered record drill-through is not.
+Source providers retain tenant, licence, capability, ownership/private work and
+Finance document/journal scope. Query fields/operators are allowlisted. Server
+aggregation reads **all** matching records, up to 10,000, and fails with a narrowing
+instruction rather than aggregating a truncated page. Monetary calculations require
+one filterable currency and reject mixed results; no currency conversion occurs.
+Exact high-precision text that cannot safely become a chart number is rejected;
+Reports retains the exact values for Excel. Only aggregate points and metadata
+reach the browser, not underlying raw rows. Four record queries run concurrently
+at most. Source failures are isolated per widget. Query edits are briefly debounced
+and stale responses are discarded. No arbitrary SQL, formula execution or joins.
 
-Private definitions use the existing server Dashboard model, namespaced `Analytics · `, with validated JSON widget entries in its string array. No schema migration required. Same-name saving updates only the current user's own definition. No shared/published object is created or overwritten. Definitions never contain business records or query results. No localStorage, persistent local cache, local database, export download or credential change is introduced.
+## Personal persistence and monitor
 
-## Activation and verification boundaries
+Existing central Dashboard rows and `Analytics · ` namespacing are preserved.
+Validated JSON definitions contain settings and widget queries, never business
+records/results. Legacy boards/settings remain readable. Saves retain selected ID,
+rename that same owner/tenant board and check expected `updatedAt` atomically;
+a stale/foreign row cannot fall back to creating or overwriting another board.
+New boards/copies use unique-name creation. No sharing grants are introduced.
 
-An existing organisation needs Analytics entitlement/enabled ModuleState and the analytics capabilities granted through existing administration. Standard role definitions now declare grants for newly provisioned roles; existing roles are not silently updated. Source module entitlement/capabilities are also required. Data-action registry regenerated to include saving. No remote deployment, provisioning, permission grant or installed Mac package update performed. A public sample-only `/analytics-preview` uses the same Studio component without tenant reads or saving; the Analytics card offers a generic manifest-defined preview link.
+Save stores the measure period, record filters and refresh preference (manual,
+15/30/60/120 seconds). Changing period retains the unsaved canvas. Failed saves
+retain edits; editing is disabled during save. Undo covers canvas/settings; internal
+board navigation asks before discarding edits and browser unload warns. Unsaved
+work is in page memory only and does not survive reload. No automatic persistent
+local cache or local business database is created.
 
-## Next delivery phases
+`/board` resolves each widget's stored data query or curated breakdown independently,
+with the same permissions and filters. Manual refresh remains manual; timed refresh
+pauses when the document is hidden. Save before opening monitor mode. Reports links
+select the widget's dataset, while Reports applies its own filters and authorisation;
+the link does not promise an exact transaction drill-through.
 
-1. Prove end-to-end saves and live-data visual acceptance in a provisioned development tenant. Extend curated measures/dimensions for CRM, customer/product performance, HR and Inventory; include currency-safe commercial totals and exact authorised drill-through.
-2. Data Views, canonical filters and date/financial-calendar contracts, query limits/timeouts and independent widget loading. Security and fanout tests before approved relationship exploration.
-3. Separate draft/published versions, sharing and recipient permission checks, responsive saved layouts, targets and comparisons.
-4. Permission-aware Excel exports with filter metadata and server-only attachment/export storage. Respect the desktop data boundary; do not introduce automatic local business exports.
-5. Reports, alerts, scheduled subscriptions, governance, advanced calculations and remaining acceptance scenarios.
+## Verification and remaining scope
 
-The 195-section brief is the target; v0.1 is not a claim that full self-service Analytics is complete.
+Focused query, persistence, UI, catalogue/private-project, CRM, Reports, Messages
+and Admin regressions, TypeScript, lint and production build are required. The
+opt-in `scripts/check-dashboards.ts` exercises central Guardian QA personal board
+creation/rename/reload, record configuration/currency guard, duplicate/undo/redo,
+monitor and three viewports; it deletes only its synthetic personal boards afterward.
+Candidate and public deployment status is recorded in `.ai/CURRENT_STATE.md`.
 
-## Premium visual builder update — 3 October 2026
-
-The shared live/preview Studio now has a midnight header, grouped number tiles,
-a responsive canvas and a visual-type gallery. Builders choose a metric, select
-its canvas visual and edit its properties in the right panel. Supports custom
-titles, category scope, display category limits, width, borderless style, duplicate,
-remove, reorder and 30-step canvas undo/redo. Number tiles offer white, soft colour
-and midnight styles. Blue/teal/violet/amber/rose/slate palettes apply per visual or
-across the dashboard. Pie/donut charts consolidate smaller categories after five
-named categories into an explicit Other group when there are more than six;
-legend values and category detail provide text access to the data.
-
-Viewer filters: apply reporting period through a GET form, select dashboard subject
-(controls visible visuals), and filter categories inside an individual visual.
-Category clicks show a count/share and can focus that category. These category
-interactions operate on already-authorised aggregate results, not unrestricted
-record queries. This is not a canonical cross-source site/customer filter or exact
-record drill-through. Source workspaces retain their own authorisation.
-
-Preview contains ten clearly labelled synthetic subject examples. Its period
-illustrations scale fixture counts; they are not historical business queries.
-Live dated metrics use tenant-scoped date predicates. Snapshot counts do not change
-with the period. Browser checks exercised blank creation, number/pie selection,
-properties, colour, category detail/filtering, subject filtering, applying periods
-and undo. Desktop 1440px and mobile 390px rendering inspected; mobile page width
-matched the viewport. Preview access does not activate Analytics in a live tenant.
-
-Source build/ staging outputs are excluded from root TypeScript checking through
-tsconfig.json; those generated snapshots have their own builds. Existing source
-changes by other contributors were preserved. Scheduling's newly added app has no
-Analytics provider in this pass; future/unimplemented apps and unrestricted fields
-remain outside the catalogue.
-
-Project and personal-task aggregates also use the shared record visibility predicates in `src/core/permissions/work-access.ts`; read capability alone does not broaden private work visibility. Latest source checks: scoped lint passed, 143 tests passed / 11 skipped, final root production build and its TypeScript passed. Live save/tenant activation and installed desktop/data packaging remain unverified.
+The broader source brief still includes future governed relationships/calculated
+expressions, fiscal calendars, exact drill-through, company/team sharing/publication,
+version history, subscriptions/alerts, matrix pivots and external sources. Those
+are not represented as completed by this personal-dashboard redesign.

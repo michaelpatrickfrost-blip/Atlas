@@ -20,6 +20,8 @@ export type AnalyticsMetric = {
   query: (session: Session, since: Date | undefined, breakdown?: string) => Promise<AnalyticsPoint[]>;
 };
 export type AnalyticsResult = Omit<AnalyticsMetric, "query" | "goalQuery" | "capability"> & {
+  currency?: string;
+  overallValue?: number;
   points: AnalyticsPoint[];
   error?: string;
   /** Sample boards only. Live boards load a breakdown from the server. */

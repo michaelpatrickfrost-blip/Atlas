@@ -117,3 +117,13 @@ changes disable downloads until applied. Tables scroll inside their panel on
 small screens; field filters stack and retain accessible labels. Home and Reports
 share the utility rail with correct active-page indication. Dashboards remains
 separate. See `docs/modules/REPORTS.md`.
+
+## 9 October 2026 — Dashboards follows the Atlas ribbon workspace
+
+Dashboards uses the pale-blue/white Home utility shell and existing logo mark,
+with a personal-board gallery, searchable widget library, spacious canvas and
+responsive inspector. Editing tools belong in the inspector; view mode keeps
+figures clear. Width/height, title, palette/tone, borderless style and ordering are
+configurable. The utility rail groups Dashboards separately from Reports and
+business-app cards, without changing Analytics entitlement. See
+[Dashboards](modules/ANALYTICS_STUDIO.md) for actual query and persistence limits.

@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  ChartNoAxesCombined,
   FileSpreadsheet,
   Home,
   ListTodo,
@@ -10,6 +11,7 @@ import {
 } from "lucide-react";
 const icons = {
   Home,
+  Dashboards: ChartNoAxesCombined,
   Reports: FileSpreadsheet,
   "My tasks": ListTodo,
   Messages: MessageSquare,

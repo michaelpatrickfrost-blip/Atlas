@@ -22,7 +22,18 @@ The full 173-section brief remains partially delivered; see coverage and Manufac
 
 ## Live gate
 
-Pending candidate prepare and real Test acceptance. No deployment completion claimed.
+Candidate `1f93216` prepared after central backup `atlas-pre-deploy-20261009-201307`;
+server build, Studio compatibility and smoke passed. Sales eligibility migration
+applied. Responsive console, real recursive MRP and Make conversion passed. Buy
+conversion exposed the pre-existing Make-only database FK; its transaction rolled
+back with no purchase draft. Refined source adds a separate tenant-bound purchase
+link and readable draft/source feedback. Complete candidate/public acceptance is
+still pending; no deployment completion claimed.
+
+Combined source preserves observed live `0ce9f4a` MRP shortage repair. Final
+production build, explicit TypeScript, scoped ESLint and Prisma validation passed;
+seven focused files/40 tests passed, including aggregate shortage regressions and
+new draft feedback. The second additive migration awaits backed-up preparation.
 The checker uses existing Guardian staff rights, creates only an isolated central Test
 company/affiliation without permission grants, then retires that exact company/session
 and preserves history. Existing customer records and QA membership remain unchanged.

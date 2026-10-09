@@ -5081,3 +5081,8 @@ component demand and matching BUY supply are counted once, with shared stock
 netted once. Reconciled current planning guidance without restoring obsolete
 separate-app or unapplied-foundation claims. Guardian's independent public repair
 acceptance remains owned by its task; this console check does not close its reports.
+
+Combined source after preserving live 0ce9f4a: production build, explicit strict
+TypeScript, scoped ESLint, Prisma validation and seven focused files/40 tests
+passed. Migration is additive and retains the production FK. Candidate acceptance
+is still pending; the new purchase-link migration has not yet been applied.

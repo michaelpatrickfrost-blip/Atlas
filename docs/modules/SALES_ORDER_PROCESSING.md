@@ -158,5 +158,8 @@ exports, selections and document actions. Quotation rows/counts/tag metadata are
 queried only with quotation read rights; combined status boards avoid duplicated
 quotation cards. Order detail brings its value, line count and next commercial step
 forward while retaining the existing approval, delivery and financial workflows.
-The UI refinement does not change order posting/fulfilment rules. Final source and
+Order identity/value and selling actions come first; billing/reference details
+and recovery guidance are collapsible, while linked service, messages, campaigns
+and projects live in Connections. The UI refinement does not change order
+posting/fulfilment rules. Final source and
 live checks are recorded in CURRENT_STATE.md.

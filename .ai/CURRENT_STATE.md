@@ -29,8 +29,20 @@ updates, London DST and branch destinations. Corrected a stale Marketing command
 module-availability mock to current findMany API. Focused 20-file/98-assertion suite passed, followed by two production-feedback
 regressions and 16 refreshed campaign-save/access checks. Broader suite before
 the latter test refresh: 1126 passed / 78 failed / 22 skipped; failures were stale
-module mocks outside the new feature tests. Final broad counts being reconciled. Final candidate/server/public
-acceptance and activation are pending; this checkpoint is not live delivery.
+module mocks outside the new feature tests. Broad result after refreshing relevant Marketing mocks: 1144 passed / 62 failed /
+22 skipped (189 files); remaining failures are in untouched older module mocks. Candidate 51e4616 prepared after database/evidence backup atlas-pre-deploy-20261009-213646.
+Central browser forms passed family isolation, shared/private notes, appointment
+create/overlap/reschedule/completion, owner/capability/tenant denials, and journey
+experience/touchpoint/branch/reorder/zoom plus automation publication. Runner fixed
+a duplicate-text selector; responsive traversal then hit networkidle timeout on
+an otherwise rendered Sales record with ongoing background requests. Wait for
+page load instead. Visual inspection also prompted order-first layout, secondary
+Connections panels and collapsible recovery/references. Large-family selection
+now retains the focus/ancestors within its explicit display bound; Overview reads
+that same family. Added cancellation and focused-map regression coverage. Updated 23-file/119-test
+suite, strict TypeScript, scoped ESLint, shell syntax and production build PASS. Final
+updated candidate, responsive/public acceptance and activation remain pending;
+this checkpoint is not live delivery.
 
 ## 9 October 2026 — Private Admin entry prepared for live verification
 

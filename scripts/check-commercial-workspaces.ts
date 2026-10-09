@@ -66,6 +66,7 @@ async function main() {
     users: string[] = [];
   const output = mkdtempSync("/tmp/atlas-commercial-acceptance-");
   const browser = await chromium.launch({ headless: true });
+  let debugPage: Page | undefined;
   let phase = "fixtures",
     posts = 0,
     blocked = 0;
@@ -330,8 +331,12 @@ async function main() {
       rep = await context(seed.profiles[2], true);
     const page = await manager.newPage(),
       read = await reader.newPage();
+    debugPage = page;
     const visit = async (page: Page, path: string) => {
-      const response = await page.goto(path, { waitUntil: "networkidle" });
+      const response = await page.goto(path, {
+        waitUntil: "load",
+        timeout: 45000,
+      });
       assert(response?.ok(), `render ${path}`);
       assert(
         !(await page.locator("body").innerText()).includes(
@@ -453,7 +458,7 @@ async function main() {
       .getByRole("button", { name: /Commercial acceptance meeting/ })
       .click();
     await expect(
-      page.getByText("Review customer priorities", { exact: true }),
+      page.getByText("Review customer priorities", { exact: true }).first(),
     ).toBeVisible();
     await page.getByText("Reschedule or edit", { exact: true }).click();
     const edit = page
@@ -497,6 +502,52 @@ async function main() {
     ).toBeVisible();
     console.log(
       "PASS appointment create, account/deal links, overlap rejection, reschedule and retained completion outcome.",
+    );
+    phase = "retained appointment cancellation";
+    await visit(page, `/crm/appointments?party=${seed.account.id}`);
+    await page
+      .getByRole("button", { name: "New appointment", exact: true })
+      .click();
+    dialog = page.getByRole("dialog", { name: "Schedule a sales appointment" });
+    await dialog
+      .getByLabel("Appointment title")
+      .fill("Commercial cancellation check");
+    await dialog
+      .getByLabel("Appointment account")
+      .selectOption(`party:${seed.account.id}`);
+    await dialog.getByLabel("Starts · London time").fill(`${day}T12:00`);
+    await dialog.getByLabel("Ends · London time").fill(`${day}T12:30`);
+    await dialog
+      .getByRole("button", { name: "Schedule appointment", exact: true })
+      .click();
+    await expect(dialog.getByRole("status")).toContainText("scheduled");
+    await dialog.getByRole("button", { name: "Close dialog" }).click();
+    await page
+      .getByRole("button", { name: /Commercial cancellation check/ })
+      .click();
+    await page
+      .getByRole("button", { name: "Cancel appointment", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: /Commercial cancellation check/ }),
+    ).toHaveCount(0);
+    await visit(
+      page,
+      `/crm/appointments?state=cancelled&party=${seed.account.id}`,
+    );
+    await expect(
+      page.getByRole("button", { name: /Commercial cancellation check/ }),
+    ).toBeVisible();
+    const cancelled = await db.salesActivity.findFirstOrThrow({
+      where: {
+        organisationId: seed.org.id,
+        subject: "Commercial cancellation check",
+      },
+    });
+    assert(cancelled.cancelledAt);
+    assert.equal(cancelled.completedAt, null);
+    console.log(
+      "PASS cancelled appointment retains its record and does not become a completion.",
     );
     phase = "appointment privacy and direct denied actions";
     await visit(read, "/crm/appointments");
@@ -770,6 +821,11 @@ async function main() {
     );
     console.log(`Private screenshots/evidence: ${output}`);
   } catch (error) {
+    if (debugPage) {
+      await debugPage
+        .screenshot({ path: `${output}/stopped.png`, fullPage: true })
+        .catch(() => {});
+    }
     console.error(`Acceptance stopped at ${phase}; private evidence ${output}`);
     throw error;
   } finally {

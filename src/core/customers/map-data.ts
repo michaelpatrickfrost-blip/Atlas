@@ -52,7 +52,7 @@ export async function loadCustomerMap(organisationId: string, includeInvoices: b
         },
       },
       orderBy: { name: "asc" },
-      take: 500,
+      take: family ? 501 : 500,
     }),
     db.user.findMany({
       where: { memberships: { some: { organisationId, active: true } } },
@@ -73,7 +73,11 @@ export async function loadCustomerMap(organisationId: string, includeInvoices: b
     if (!invoiceByAccount.has(link.accountId)) invoiceByAccount.set(link.accountId, { id: link.tradingAccountId, name: link.tradingAccount.name });
   }
 
-  const accounts: MapAccount[] = parties.map((party) => ({
+  // Keep the selected customer visible even when a large family hits the display bound.
+  const keep = new Set<string>();
+  for (let party = parties.find(row => row.id === focusId); party && !keep.has(party.id); party = parties.find(row => row.id === party?.parentPartyId)) keep.add(party.id);
+  const shown = parties.length > 500 ? [...parties.filter(party => keep.has(party.id)), ...parties.filter(party => !keep.has(party.id))].slice(0, 500) : parties;
+  const accounts: MapAccount[] = shown.map((party) => ({
     id: party.id,
     name: party.name,
     customerCode: party.customerCode,
@@ -85,7 +89,7 @@ export async function loadCustomerMap(organisationId: string, includeInvoices: b
     invoiceAccountId: invoiceByAccount.get(party.id)?.id ?? null,
     invoiceAccountName: invoiceByAccount.get(party.id)?.name ?? null,
   }));
-  const people: MapPerson[] = parties.flatMap((party) =>
+  const people: MapPerson[] = shown.flatMap((party) =>
     party.contacts.map((contact) => ({
       id: contact.id,
       partyId: contact.partyId,
@@ -96,5 +100,5 @@ export async function loadCustomerMap(organisationId: string, includeInvoices: b
   );
   const lookupRows = focusId ? await db.party.findMany({ where: { organisationId, identityScrubbed: false, archived: false }, select: { id: true, name: true, customerCode: true, parentPartyId: true, hierarchyRole: true, customerGroup: true, status: true }, orderBy: { name: "asc" }, take: 500 }) : [];
   const choices: MapAccount[] = lookupRows.map(row => ({ ...row, accountManager: null, invoiceAccountId: null, invoiceAccountName: null }));
-  return { accounts, people, choices, truncated: family ? family.length > 500 : parties.length === 500 };
+  return { accounts, people, choices, truncated: family ? family.length > 500 || parties.length > 500 : parties.length === 500 };
 }

@@ -207,3 +207,15 @@ it("returns safe production feedback for input conflicts without exposing unexpe
     error: "Record an outcome of up to 3,000 characters.",
   });
 });
+
+it("retains a cancelled appointment and records cancellation without completing it", async () => {
+  const f = new FormData();
+  f.set("id", "appointment");
+  f.set("version", "1");
+  f.set("cancel", "yes");
+  await finishAppointment(f);
+  const update = state.tx.salesActivity.updateMany.mock.calls[0][0];
+  expect(update.data.cancelledAt).toBeInstanceOf(Date);
+  expect(update.data).not.toHaveProperty("completedAt");
+  expect(state.tx.auditEntry.create).toHaveBeenCalledOnce();
+});

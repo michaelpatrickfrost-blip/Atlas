@@ -27,7 +27,7 @@ export const manufacturingManifest: ModuleManifest = {
   capabilities: Object.values(C),
   rootPath: "/manufacturing",
   accessCapability: C.orderRead,
-  accessAnyOf: [C.orderRead, C.planRead, C.workOrderExecute, "planning.demand.read", "stock.read", "finance.purchase.read", "finance.report.read"],
+  accessAnyOf: [C.orderRead, C.planRead, C.workOrderExecute, "planning.demand.read", "core.products.read", "stock.read", "finance.purchase.read", "finance.report.read"],
   status: "available",
   attentionProvider: async ({ organisationId, session }) => (session.capabilities.has(C.orderRead) ? manufacturingAttention(organisationId) : []),
   searchProvider: async ({ session, query }) => (session.capabilities.has(C.orderRead) ? searchManufacturing(session, query) : []),

@@ -6,7 +6,15 @@ While final acceptance ran, live advanced to 2690c26 (Manufacturing/Supply and
 Studio dependency/cost guards). Its exact deployed source and all contributor
 memory are merged; only a decisions append conflicted, and both entries remain.
 Merged Prisma generation, strict TypeScript, production build and 27-file/133-test
-commercial/eligibility/Studio/cost suite PASS. Prepare the merged pinned candidate.
+commercial/eligibility/Studio/cost suite PASS. Prepared merged candidate 95d993a after backup atlas-pre-deploy-20261009-215242;
+compatibility/build/smoke PASS. Final relationship review binds appointment deal
+pickers/saves to a same-tenant, unarchived customer as well as the deal itself.
+Candidate 95d993a central forms and all ten desktop screens PASS, including
+retained cancellation; tablet caught horizontal overflow on Customers. Fixtures
+suspended/access revoked; evidence /tmp/atlas-commercial-acceptance-jOheYQ and
+backup atlas-pre-commercial-test-20261009-215709. Fix responsive overflow, preserve
+newly live e5d66e6 and repeat candidate/public acceptance. Linked-deal scope test
+suite (8 assertions) and strict types PASS; final acceptance remains pending.
 
 Scoped branch codex/customer-sales-experience starts from exact live 1dafe16.
 Customers has polished list/record context, canonical notes and a selected-family

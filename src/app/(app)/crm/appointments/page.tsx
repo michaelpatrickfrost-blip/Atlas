@@ -103,7 +103,11 @@ export default async function AppointmentsPage({
             ...where,
             status: "OPEN",
             ...(restriction ? { ownerUserId: restriction } : {}),
-            party: { identityScrubbed: false },
+            party: {
+              organisationId: session.organisationId,
+              identityScrubbed: false,
+              archived: false,
+            },
           },
           select: { id: true, name: true, partyId: true },
           orderBy: { name: "asc" },

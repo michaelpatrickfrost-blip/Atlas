@@ -180,6 +180,11 @@ describe("Appointment persistence boundaries", () => {
         where: expect.objectContaining({
           organisationId: "tenant-a",
           ownerUserId: "rep",
+          party: {
+            organisationId: "tenant-a",
+            identityScrubbed: false,
+            archived: false,
+          },
         }),
       }),
     );

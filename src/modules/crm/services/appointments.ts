@@ -71,7 +71,7 @@ export async function saveAppointment(form: FormData) {
             ...(ownerRestriction(session)
               ? { ownerUserId: session.userId }
               : {}),
-            party: { identityScrubbed: false },
+            party: { organisationId, identityScrubbed: false, archived: false },
           },
         });
         if (input.prospectId || (partyId && deal.partyId !== partyId))

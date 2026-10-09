@@ -9,7 +9,8 @@
   Attention/goals and other apps' top menus remain connected.
 - Paths: Home page/layout, `globals.css`, shell `app-directory`, `topbar`,
   `topbar-variant`, `home-navigation`, `shell-chrome`, `command-palette`,
-  and `public/brand/atlas-mark.png` (crop of supplied logo).
+  `app-menu` (mobile accessible name), and `public/brand/atlas-mark.png`
+  (crop of supplied logo).
 - Isolated from live `58b3610` on `codex/home-menu-release`, because main also
   contains unaccepted Studio work. Deployer supports explicitly pinned codex
   branches with the same remote-tip/ancestry/lock/backup/immutable-build checks;
@@ -21,8 +22,11 @@
   and five mocked deploy guards passed (main, scoped branch, rejected unpinned,
   wrong checkout and invalid ref). `git diff --check` passed.
 - Added read-only `scripts/check-home-menu.ts` using the existing Guardian QA
-  membership, with every non-read request blocked. Candidate/live responsive
-  screenshots, menu/search/navigation checks and activation pending.
+  membership, with every non-read request blocked. First candidate passed all three responsive layouts, authorised cards,
+  loaded branding and no horizontal overflow. The mobile workspace Apps
+  accessibility check caught a missing button name; corrected with aria-label.
+  Refined cards/hero after screenshot review; final acceptance and activation
+  pending.
 - Next: prepare exact server candidate, run read-only acceptance, activate and
   verify live; merge this release branch/evidence into main while preserving
   the concurrent Studio implementation. No schema/business-data changes.

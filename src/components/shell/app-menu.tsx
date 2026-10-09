@@ -24,7 +24,7 @@ export function AppMenu({ children }: { children: ReactNode }) {
   if (pathname === "/home") return null;
   return (
     <div ref={ref} className="shrink-0">
-      <button type="button" data-guardian-safe="toggle" onClick={() => setOpen((current) => !current)} aria-expanded={open} aria-haspopup="true" className={`inline-flex h-9 items-center gap-2 rounded-full px-3 text-[13px] font-medium text-[#1d1d1f] hover:bg-black/[0.05] ${open ? "bg-black/[0.05]" : ""}`}>
+      <button type="button" aria-label="Apps" data-guardian-safe="toggle" onClick={() => setOpen((current) => !current)} aria-expanded={open} aria-haspopup="true" className={`inline-flex h-9 items-center gap-2 rounded-full px-3 text-[13px] font-medium text-[#1d1d1f] hover:bg-black/[0.05] ${open ? "bg-black/[0.05]" : ""}`}>
         <LayoutGrid size={15} strokeWidth={1.75} />
         <span className="hidden sm:inline">Apps</span>
       </button>

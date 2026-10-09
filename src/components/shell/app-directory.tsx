@@ -37,11 +37,11 @@ export async function AppDirectory({ session, variant = "menu" }: { session: Ses
           <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
             {entries.map((entry) => (
               <li key={entry.id} className="min-w-0">
-                <Link href={entry.href} prefetch={false} className="group flex h-full min-h-[86px] items-center gap-3.5 rounded-2xl border border-[#e6edf7] bg-white px-3 py-3 text-left shadow-[0_4px_16px_-12px_rgba(51,90,148,0.2)] transition hover:border-blue-200 hover:bg-blue-50/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:px-3.5">
+                <Link href={entry.href} prefetch={false} className="atlas-launcher-card group flex h-full min-h-[86px] items-center gap-3.5 rounded-2xl border border-[#e6edf7] bg-white px-3 py-3 text-left shadow-[0_4px_16px_-12px_rgba(51,90,148,0.2)] transition hover:border-blue-200 hover:bg-blue-50/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:px-3.5">
                   <span className="flex size-14 shrink-0 items-center justify-center rounded-[18px] bg-[#eaf3ff] text-[#075bff] transition-colors group-hover:bg-blue-100">
                     <entry.icon aria-hidden="true" size={29} strokeWidth={1.8} />
                   </span>
-                  <span className="min-w-0 flex-1"><span className="block text-[14px] font-semibold leading-5 tracking-tight text-slate-950">{entry.name}</span><span className="mt-1 block text-[12px] leading-[17px] text-[#7b879e]">{entry.description}</span></span>
+                  <span className="min-w-0 flex-1"><span className="block text-[14px] font-semibold leading-5 tracking-tight text-slate-950">{entry.name}</span><span className="mt-1 line-clamp-2 text-[12px] leading-[17px] text-[#7b879e]">{entry.description}</span></span>
                   <ChevronRight aria-hidden="true" size={16} className="shrink-0 text-[#526587]" />
                 </Link>
               </li>

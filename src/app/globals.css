@@ -227,6 +227,12 @@ main :where(.rounded-2xl, .rounded-3xl, .rounded-\[28px\]):where(.border, .borde
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04), 0 16px 40px -24px rgba(0, 0, 0, 0.22);
   backdrop-filter: blur(18px);
 }
+.atlas-home-shell .atlas-launcher-card {
+  border-color: #e6edf7;
+  box-shadow: 0 4px 16px -12px rgba(51, 90, 148, 0.2);
+  backdrop-filter: none;
+}
+.atlas-home-shell .atlas-launcher-card:hover { border-color: #bfdbfe; background: #f7fbff; }
 main table { border-collapse: separate; border-spacing: 0; }
 main thead th {
   font-size: 0.68rem;

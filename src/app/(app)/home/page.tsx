@@ -18,7 +18,7 @@ export default async function HomePage() {
   return (
     <div className="mx-auto flex max-w-[1440px] flex-col gap-5">
       <section id="your-apps" aria-labelledby="launcher-title" className="relative isolate scroll-mt-5 overflow-hidden rounded-[26px] border border-white bg-white/55 p-3 shadow-[0_10px_50px_-30px_rgba(64,98,151,0.25)] sm:p-5 lg:p-7">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-16 -z-10 hidden w-[390px] overflow-hidden opacity-90 lg:block"><img src="/brand/atlas-mark.png" alt="" width={515} height={400} className="w-full mix-blend-multiply" /></div>
+        <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-16 -z-10 hidden h-[210px] w-[390px] overflow-hidden opacity-90 mix-blend-multiply lg:block"><img src="/brand/atlas-mark.png" alt="" width={515} height={400} className="w-full" /></div>
         <header className="flex min-h-[116px] items-center justify-between gap-5 px-2 pb-6 sm:px-2">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#526587]">Welcome to Atlas</p>

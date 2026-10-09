@@ -132,6 +132,6 @@ guards immutable identity/history and sealed dependency edges.
 Staff setup uses `/atlas/studio` with independently authorised target companies;
 customer Studio `/studio` uses its authenticated company. `/atlas/login` and
 `/business/<slug>/login` share the canonical identity service with distinct server
-membership selection. Proxy supplies a trusted path hint only for sign-in routing;
-it is never the permission boundary. See the permanent Studio ledger for verified
+membership selection. Proxy overwrites the path hint on page/API requests for sign-in routing;
+membership/capability checks remain the permission boundary. See the permanent Studio ledger for verified
 status and deferred work.

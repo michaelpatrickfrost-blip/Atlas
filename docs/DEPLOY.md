@@ -227,4 +227,6 @@ Run `ATLAS_STUDIO_LIVE_TEST=1` with the existing server environment and
 `scripts/studio/check-metadata.ts` against the prepared loopback candidate, then
 the live URL. It creates isolated central Test-company configuration, exercises
 real services and Admin forms and suspends its exact fixture companies afterward.
-No new users or staff grants are created; audited fixture history is retained.
+An isolated Test-company business user is created through the real Admin form to
+verify provisioning and company login/recovery. No staff grants or existing
+identities change; fixture companies are suspended and audit history retained.

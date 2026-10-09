@@ -1,4 +1,4 @@
-/** Explicit central Test acceptance; existing authorised QA identity, no new users. */
+/** Explicit central Test acceptance; existing authorised QA identity; isolated Test-company business user. */
 import assert from "node:assert/strict";
 import jwt from "jsonwebtoken";
 import { chromium, expect } from "@playwright/test";
@@ -110,6 +110,40 @@ async function main() {
     for (const address of ["/atlas","/home","/sales","/manufacturing","/templates"]) {
       const response=await page.goto(address,{waitUntil:"networkidle"});assert(response && response.status()<400,`Existing page ${address}`);
     }
+    assert(platform.includes("atlas.business_users.create"),"QA must already be an Atlas administrator for business-user acceptance");
+    const customerRole=await db.role.create({data:{organisationId:a.id,key:`studio-acceptance-${suffix}`,name:"Studio acceptance user",capabilities:[...Object.values(STUDIO_CAPABILITIES),descriptor.capability]}});
+    await page.goto(`/atlas/${a.id}/users`,{waitUntil:"networkidle"});
+    await page.getByRole("button",{name:"Add user",exact:true}).click();
+    const dialog=page.getByRole("dialog"),email=`studio-check-${suffix}@example.test`,password=`Studio-${crypto.randomUUID()}`;
+    await dialog.getByLabel("Full name",{exact:true}).fill("Studio acceptance business user");
+    await dialog.getByLabel("Email",{exact:true}).fill(email);
+    await dialog.getByRole("checkbox",{name:customerRole.name,exact:true}).check();
+    await dialog.getByRole("button",{name:"Create user & setup code",exact:true}).click();
+    await expect(dialog.getByRole("heading",{name:"Setup code ready",exact:true})).toBeVisible();
+    const setupCode=await dialog.locator("code").textContent();assert(setupCode && /^[a-f0-9]{64}$/.test(setupCode));
+    const business=await browser.newContext({baseURL:base});const customerPage=await business.newPage();
+    await customerPage.goto(`/business/${b.slug}/reset-password`,{waitUntil:"networkidle"});
+    await customerPage.getByLabel("Code",{exact:true}).fill(setupCode);
+    await customerPage.getByLabel("New password",{exact:true}).fill(password);await customerPage.getByLabel("Confirm password",{exact:true}).fill(password);
+    await customerPage.getByRole("button",{name:"Save password",exact:true}).click();
+    await expect(customerPage.getByRole("alert")).not.toBeEmpty();
+    const storedUser=await db.user.findUniqueOrThrow({where:{email},include:{memberships:true}});
+    assert.equal(storedUser.memberships.length,1);assert.equal(storedUser.memberships[0].organisationId,a.id);
+    assert.equal(await db.passwordReset.count({where:{membershipId:storedUser.memberships[0].id,usedAt:null}}),1,"Wrong company recovery must not consume code");
+    await customerPage.goto(`/business/${a.slug}/reset-password`,{waitUntil:"networkidle"});
+    await customerPage.getByLabel("Code",{exact:true}).fill(setupCode);
+    await customerPage.getByLabel("New password",{exact:true}).fill(password);await customerPage.getByLabel("Confirm password",{exact:true}).fill(password);
+    await customerPage.getByRole("button",{name:"Save password",exact:true}).click();await expect(customerPage).toHaveURL(`${base}/home`);
+    await customerPage.goto("/studio",{waitUntil:"networkidle"});await expect(customerPage.getByRole("heading",{name:"Configuration library",exact:true})).toBeVisible();
+    await expect(customerPage.getByText("Browser accepted configuration",{exact:true})).toBeVisible();
+    const deniedAdmin=await business.request.get("/atlas/studio",{maxRedirects:0});assert.equal(deniedAdmin.status(),307);assert.match(deniedAdmin.headers().location,/\/home$/);
+    await business.clearCookies();await customerPage.goto(`/business/${b.slug}/login`,{waitUntil:"networkidle"});
+    await customerPage.getByLabel("Email",{exact:true}).fill(email);await customerPage.getByLabel("Password",{exact:true}).fill(password);
+    await customerPage.getByRole("button",{name:"Sign in",exact:true}).click();await expect(customerPage.getByText("This account has no active access to this workspace. Contact your administrator.",{exact:true})).toBeVisible();
+    assert(!(await business.cookies()).some(cookie=>cookie.name==="atlas_session"));
+    await customerPage.goto(`/business/${a.slug}/login`,{waitUntil:"networkidle"});await customerPage.getByLabel("Email",{exact:true}).fill(email);await customerPage.getByLabel("Password",{exact:true}).fill(password);
+    await customerPage.getByRole("button",{name:"Sign in",exact:true}).click();await expect(customerPage).toHaveURL(`${base}/home`);
+    await business.close();console.log("PASS Atlas administrator provisions isolated business user; scoped setup/recovery/login rejects other company; customer Studio and Admin boundary; no existing identities changed");
     assert.equal(errors,0);assert.equal(assets,0);
     console.log("PASS real Admin create/validate/publish/activate forms, staff/customer route separation, company login addresses, existing Atlas/Sales/Manufacturing/Templates pages; zero browser/asset errors");
     console.log("LIVE STUDIO PHASE 1 ACCEPTANCE PASSED");

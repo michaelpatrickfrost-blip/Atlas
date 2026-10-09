@@ -1,6 +1,8 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import { headers } from "next/headers";
+import { signInAddress } from "./address-context";
 import { redirect } from "next/navigation";
 import { db } from "@/core/db/client";
 import { createSessionCookie, clearSessionCookie } from "@/core/auth/session";
@@ -21,8 +23,10 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
     return { error: "Incorrect email or password." };
   }
 
-  const portal = String(formData.get("portal") ?? "");
-  const companySlug = String(formData.get("companySlug") ?? "").trim();
+  let address;
+  try { address = signInAddress((await headers()).get("x-atlas-request-path") ?? "/login", { portal: String(formData.get("portal") ?? ""), companySlug: String(formData.get("companySlug") ?? "").trim() }); }
+  catch { return { error: "Use the sign-in address provided for your account." }; }
+  const { portal, companySlug } = address;
   const staff = platformCapabilities(user.platformAdmin).length > 0;
   const active = user.memberships.filter(m => m.active && m.organisation.status === "ACTIVE" && !m.organisation.archivedAt);
   let membership;

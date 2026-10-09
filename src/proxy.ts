@@ -5,4 +5,4 @@ export function proxy(request: NextRequest) {
   headers.set("x-atlas-request-path",request.nextUrl.pathname);
   return NextResponse.next({request:{headers}});
 }
-export const config={matcher:["/((?!api|_next/static|_next/image|favicon.ico|brand/).*)"]};
+export const config={matcher:["/((?!_next/static|_next/image|favicon.ico|brand/).*)"]};

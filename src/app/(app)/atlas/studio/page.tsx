@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { ATLAS_CAPABILITIES } from "@/core/admin/access";
 import { db } from "@/core/db/client";
 export default async function Page({searchParams}:{searchParams:Promise<{q?:string}>}) {
   const session=await requireSession();
+  if (!session.capabilities.has(ATLAS_CAPABILITIES.staff)) redirect("/home");
   assertCapability(session,ATLAS_CAPABILITIES.staff);
   const q=(await searchParams).q?.trim().slice(0,100)??"";
   const companies=await db.organisation.findMany({where:{kind:"CUSTOMER",status:"ACTIVE",archivedAt:null,...(q?{name:{contains:q,mode:"insensitive" as const}}:{})},select:{id:true,name:true,isTest:true},orderBy:{name:"asc"},take:100});

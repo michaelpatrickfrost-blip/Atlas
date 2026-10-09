@@ -30,8 +30,8 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 0A Registry contracts/runtime | VERIFIED | Five focused tests and full TypeScript check passed before adapter work. |
 | 0B Existing template provider adapters | VERIFIED | Seven Studio tests plus 13 existing module/template/permission assertions passed; changed-file lint passed. |
 | 0C Compatibility checks and prerequisite gate | VERIFIED | Catalogue hash snapshot, 21 tests, TypeScript, changed-file lint and production build passed. |
-| 1A Tenant metadata models/additive migration | IMPLEMENTED | Prisma validation/generation passed; four additive tables, composite tenant keys and immutable-history triggers; database application pending. |
-| 1B Draft/validate/publish/activate service | IMPLEMENTED | Strict compiler, CAS drafts, immutable transactional publication/audit, activation and rollback; focused tests pass, central database acceptance pending. |
+| 1A Tenant metadata models/additive migration | VERIFIED | Central additive migration applied; real immutable update/delete, sealed-edge and cross-tenant pointer constraints passed in candidate 5f8d83. |
+| 1B Draft/validate/publish/activate service | VERIFIED | Central real publication/activation/rollback/history, simultaneous draft CAS, disabled sources, permissions and atomic audit passed after correcting nested Prisma FK mapping. |
 | 1C Configuration capabilities/admin interface | IMPLEMENTED | Customer Studio and selected-company staff setup; conflict diff, publication/history controls; build/live checks pending. |
 | 1D Release compatibility/security/live acceptance | IN PROGRESS | Release dependency scan wired before activation; acceptance script and production verification next. |
 | Companion Admin/business sign-in and provisioning | IMPLEMENTED | Separate Admin login, company-specific login/reset URLs, OWNER/ADMIN business-user creation; authentication/platform permission regressions pass. |
@@ -107,8 +107,9 @@ Prisma generation succeeded. First registry-only run: 5 passed. Combined registr
 adapter, module, template, permission run: 20 passed (after fixing one test fixture
 syntax error). First registry TypeScript pass: exit 0. Changed-file lint: exit 0.
 Second TypeScript and production build passed. Catalogue snapshot: 1 passed.
-Most recent focused run: 13 test files, 55 assertions passed. TypeScript, changed-
-file lint and production build passed. Full tests: 85 failures/992 passes; unchanged
+Most recent focused run includes 15 test files and 62 assertions (registry,
+metadata, permissions, address binding and Proxy; all passed). TypeScript, changed-
+file lint and production build passed. Latest full tests: 85 failures/999 passes; unchanged
 HEAD baseline reproduces the same 85 failures (968 passes before additions). Full
 lint: 9 errors/21 warnings, unchanged baseline. No central migration/live verification
 yet. Failures are existing stale module-availability mocks and existing lint errors,
@@ -127,7 +128,10 @@ Source's initial five/ten-phase mismatch resolved by follow-up; no remaining sco
 blocker. Central migration applied; candidate acceptance caught nested Prisma dependency
 FK fields supplied twice. Publication rolled back atomically, fixture tenants
 suspended. Fix removes implicit nested FK fields and adds a regression assertion;
-rerun central acceptance before activation. Live acceptance remains pending. Full test/lint baseline
+Corrected candidate 5f8d83 passed central service acceptance including actual
+concurrent CAS and composite pointer isolation. Browser acceptance timed out on
+the exact Stable key accessible name including helper text; explicit input label
+added. Rerun browser forms on final candidate before activation. Full test/lint baseline
 failures are reproduced unchanged; focused checks pass. Phase 1 cannot PASS
 before database and live behaviour are verified. No later phases started.
 
@@ -154,7 +158,8 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Test/commit the nested dependency mapping fix, prepare its backed-up candidate
+Verify corrected candidate 5f8d83 lifecycle/forms while final login-route binding
+is checked. Commit the server-path binding checkpoint, prepare the final candidate
 through deploy:vps (first candidate 314fd06 is not activated). Run
 `ATLAS_STUDIO_LIVE_TEST=1 ATLAS_STUDIO_TEST_URL=http://127.0.0.1:3011`
 with `scripts/studio/check-metadata.ts` against the prepared candidate, correct any

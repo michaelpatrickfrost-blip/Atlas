@@ -8,6 +8,7 @@ import { ATLAS_CAPABILITIES } from "@/core/admin/access";
 export default async function AtlasAdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
   if (!session) redirect("/atlas/login");
+  if (!can(session, ATLAS_CAPABILITIES.companies)) redirect("/home");
   assertCapability(session, ATLAS_CAPABILITIES.companies);
   return <div className="mx-auto max-w-7xl space-y-7 pb-12">
     <header className="rounded-2xl border border-slate-200 bg-white px-5 py-5 sm:px-7">

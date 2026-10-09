@@ -30,6 +30,24 @@
 - Next: prepare exact server candidate, run read-only acceptance, activate and
   verify live; merge this release branch/evidence into main while preserving
   the concurrent Studio implementation. No schema/business-data changes.
+## 9 October 2026 — Company login address binding hardening
+
+Public login/recovery now bind the hidden selector to the Proxy's server-observed
+request path before choosing an active membership. A forged company field cannot
+select another address even when the credentials have an eligible membership.
+Added dedicated `/atlas/reset-password`; legacy `?portal=atlas` recovery redirects
+there. Prepared candidate 5f8d83 passed central service lifecycle, concurrent CAS,
+immutable/sealed-history guards, tenant pointer constraints and audit checks.
+Browser acceptance reached creation; its exact Stable key label selector timed
+out on help text in the label. Added an explicit accessible field name; rerun
+forms against the final candidate. Own-site business URLs remain `/business/<slug>/login`; no DNS/subdomains
+introduced. Focused suite now includes address/Proxy tests; latest full test run has 999
+passes/85 failures/22 skips, with the exact same 85 failures as unchanged HEAD.
+TypeScript/scoped lint and production build passed. Added
+real fixture business-user provisioning and company login/recovery to the live
+acceptance script (existing OWNER QA, isolated Test tenant; no staff changes).
+Next: verify final tests/typecheck/build and prepared lifecycle
+acceptance, then prepare the final candidate and activate only after all gates pass.
 
 ## 9 October 2026 — Studio candidate publication correction
 

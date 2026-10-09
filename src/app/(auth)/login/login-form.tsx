@@ -40,7 +40,7 @@ export function LoginForm({portal,companySlug}:{portal?:"atlas";companySlug?:str
       <Button type="submit" variant="primary" className="mt-2" disabled={pending}>
         {pending ? "Signing in…" : "Sign in"}
       </Button>
-      <Link href={companySlug ? `/business/${companySlug}/reset-password` : portal === "atlas" ? "/reset-password?portal=atlas" : "/reset-password"} className="text-center text-[13px] text-[#0071e3]">Use a setup or recovery code</Link>
+      <Link href={companySlug ? `/business/${companySlug}/reset-password` : portal === "atlas" ? "/atlas/reset-password" : "/reset-password"} className="text-center text-[13px] text-[#0071e3]">Use a setup or recovery code</Link>
     </form>
   );
 }

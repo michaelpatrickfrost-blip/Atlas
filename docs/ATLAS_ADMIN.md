@@ -100,7 +100,8 @@ app at `/studio` is separate from staff setup at `/atlas/studio`; staff choose
 an active customer there under their own audited identity. Company overview
 shows its sign-in URL `/business/<slug>/login`, with matching password recovery.
 The company URL selects an active membership in that exact business on the
-server. Generic customer login remains compatible for a single active company;
+server, with the submitted selector bound to the observed URL. Atlas recovery
+lives at `/atlas/reset-password`. Generic customer login remains compatible for a single active company;
 ambiguous multi-company login asks for the company's own address.
 
 ## User creation — 9 October 2026

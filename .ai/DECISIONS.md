@@ -1,5 +1,15 @@
 # Atlas decisions
 
+## 9 October 2026 — Login selectors are bound to the observed request path
+
+Company/Admin login and recovery derive address context from the server's request
+path, compare untrusted hidden selectors, and then require an eligible canonical
+membership. Proxy overwrites the hint on page/API requests, preventing a supplied
+header from becoming authoritative. Existing generic desktop public actions use
+empty selectors and retain single-company compatibility. Separate platform recovery
+uses `/atlas/reset-password`; old `?portal=atlas` links redirect there. Permission
+and tenant boundaries remain in authenticated services, not Proxy.
+
 ## 9 October 2026 — Studio kernel scope and administration boundaries
 
 Phase 1 implements a metadata-only `capabilitySet` compiler for approved read

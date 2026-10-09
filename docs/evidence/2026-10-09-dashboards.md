@@ -61,3 +61,14 @@ distinct KPIs warn when value thresholds would combine overlapping groups.
 Ten focused files/53 assertions and final projection suite (14 assertions), strict
 types, scoped lint and production build passed. Final source still needs candidate
 and public acceptance; earlier passing candidates do not substitute for that.
+
+## Concurrent live source preservation
+
+726b860 preparation stopped safely at ancestry before backup/build when Supply
+2690c26 became live. Exact already-deployed source is merged, including purchasing
+links, product eligibility, planning cost/privacy guards, retired-Test dependency
+checks and bundled fonts. Prisma/client and generated gateway descriptors are
+synchronised without including private authentication counters. Nineteen focused
+files/79 assertions, combined strict types, production build, scoped lint and
+diff check passed. Exact combined candidate/public acceptance follows.
+This does not activate unrelated unfinished Apps work from main.

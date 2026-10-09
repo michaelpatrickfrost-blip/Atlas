@@ -3923,6 +3923,12 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "sellable": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
     "safetyStockLevel": {
       "type": "Int",
       "list": false,
@@ -13713,6 +13719,12 @@ export const MODEL_FIELDS = {
       "nullable": true,
       "relation": false
     },
+    "resultingPurchaseDocumentId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
     "createdAt": {
       "type": "DateTime",
       "list": false,
@@ -13741,6 +13753,12 @@ export const MODEL_FIELDS = {
       "type": "Product",
       "list": false,
       "nullable": false,
+      "relation": true
+    },
+    "purchaseDocument": {
+      "type": "FinanceDocument",
+      "list": false,
+      "nullable": true,
       "relation": true
     }
   },
@@ -19601,6 +19619,12 @@ export const MODEL_FIELDS = {
     },
     "timeline": {
       "type": "FinanceTimeline",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "manufacturingSuggestions": {
+      "type": "ManufacturingSupplySuggestion",
       "list": true,
       "nullable": false,
       "relation": true

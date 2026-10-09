@@ -105,6 +105,12 @@ thresholds would combine overlapping groups; use source record filters instead.
 Numeric refinement: 10 focused files/53 assertions, then final projection
 regression (one file/14 assertions), strict types, build and scoped lint PASS.
 Final source requires candidate acceptance before activation.
+Preparation of 726b860 stopped at ancestry after exact live Supply/Manufacturing
+2690c26 advanced. Merged that deployed source, preserving purchasing migrations,
+planning cost guards, retired-Test Studio compatibility and bundled fonts. Generated
+client/descriptors now match it and continue to exclude auth counters. Nineteen
+focused files/79 assertions, strict types, production build and scoped lint PASS
+for this combined source before preparation. No Dashboard activation yet.
 Next: prepare compatible combined candidate, run central
 Dashboard/Messages/Home/Reports checks, activate and repeat publicly.
 

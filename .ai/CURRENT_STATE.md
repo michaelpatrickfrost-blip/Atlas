@@ -1,5 +1,15 @@
 # Atlas current state
 
+## 10 October 2026 — Studio preserves current appointment guard source
+
+Preserved exact observed live b57ba720: native legacy completion cannot bypass
+booked-appointment diary, owner/tenant/state checks retained. Studio candidate
+0af763d failed before switch on the Secure-cookie API test transport; browser
+correction types/lint PASS. Added native legacy completion regression to integrated
+suite. Generation/build/types/tests/lint now pending on the compatible source.
+No Studio schema change; new real cohort helper remains unrun. Next prepare/test
+new pin with corrected browser denial and all combined native acceptance.
+
 ## 10 October 2026 — Studio candidate secure-cookie harness correction
 
 Exact 0af763d candidate build completed after backup atlas-pre-deploy-20261009-
@@ -11993,4 +12003,57 @@ check-dashboards/home-menu/messages, deploy hook, generated gateway and focused
 suites. Analytics/design/decisions/deploy guides reconciled. Detailed historical
 and final evidence: docs/evidence/2026-10-09-dashboards.md and
 2026-10-09-messages.md. Next: integrate verified implementation and evidence into shared main.
+
+
+## 10 October 2026 — Appointment completion entry-point guard in verification
+
+Final 2b8759f candidate build stopped at ENOSPC after compilation; running release
+was unchanged. Backup atlas-pre-deploy-20261009-232112 and private build/smoke logs
+are retained. Read-only disk inspection subsequently confirmed 49 GB free after
+concurrent server maintenance; no records/backups/releases were removed by this
+task. Exact accepted Dashboard runtime 70ca23e and its documentation-only public
+evidence 56f4cb2 are now merged. This supersedes the earlier Dashboard-is-pending
+boundary: only its already-deployed source is included. Integrated Prisma generation, 7 files/47 regression tests, production build,
+strict TypeScript, scoped lint, shell syntax and diff whitespace PASS. Fresh immutable
+preparation, candidate acceptance and public guard checks remain required. Failed unsealed 2b8759f is preserved; use a fresh reviewed revision.
+
+Candidate 7d9fc3e real forms, direct legacy-action rejection/positive/replay proof
+and all 30 commercial route/viewport cases PASS. Evidence
+/tmp/atlas-commercial-acceptance-MAk6ys; staging /tmp/atlas-commercial-staging-bEXEKx;
+fixture backup atlas-pre-commercial-test-20261009-231509; preparation backup
+atlas-pre-deploy-20261009-230931. Test access revoked, history retained. Activation
+safely stopped after accepted Manufacturing workspace consolidation 2ef5b4c became
+live. Its exact source and contributor evidence are merged. Merged production
+build, strict TypeScript and 6-file/30-test completion/entitlement/workspace suite
+PASS. Final guard/public release checks remain required. Dashboard source was
+excluded at that attempt; its subsequent accepted live source is preserved above.
+
+Guard 1e4597 preparation safely stopped at ancestry after People 36d0d2d became
+live. Its exact deployed source, additive schema and contributor memory are now
+merged. Prisma generation, production build, strict TypeScript and 9-file/76-test
+appointment/Studio/People regression suite PASS. Guard-source whitespace PASS.
+Two EOF blank-line warnings in the already-deployed People migration files are
+retained to preserve their applied checksums; no migration was edited.
+
+Final review confirmed the older completeActivity action is still compiled and
+registered in the desktop API. Its update was tenant-scoped but could complete
+booked/cancelled appointments without the diary outcome/version checks and did
+not apply CRM owner restrictions. Atomic update predicates now restrict it to
+uncompleted, uncancelled legacy activities without an appointment end; CRM owner
+scope applies and successful legacy completion increments version. The diary's
+existing guarded appointment commands remain the only booked completion path.
+Source: src/modules/crm/services/activities.ts; meaningful unit and central
+acceptance regressions cover this boundary. Initial 3-file/19-test suite, strict
+TypeScript, production build, scoped lint and whitespace PASS. Preserve newly live
+Studio 7941f9b (the commercial source 94dd3e is its ancestor), now merged with
+all contributor evidence. Candidate/public guard verification
+and deployment remain required; the underlying commercial source 94dd3e is already
+deployed and preserved. Merged Studio/guard 6-file/43-test suite, strict TypeScript,
+production build and whitespace PASS.
+
+Public typography follow-up on 94dd3e PASS: actual Nunito glyphs, inherited inputs,
+aligned numerals and page fit across 10 routes/3 widths, no browser/asset errors or
+external fonts; all writes blocked. Evidence /tmp/atlas-typography-check-FnJiZt.
+Initial standalone checker lacked /etc/atlas/guardian.env; rerun with that existing
+QA configuration passed. No credentials or grants were changed.
 

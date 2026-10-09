@@ -9,6 +9,7 @@ import { SALES_CAPABILITIES } from "@/core/permissions/capabilities";
 import { writeActivity } from "@/core/activity/log";
 import { emit, DOMAIN_EVENTS } from "@/core/events/bus";
 import type { SalesActivityType } from "@/generated/prisma/client";
+import { ownerRestriction } from "./visibility";
 
 export type LogActivityInput = {
   type: SalesActivityType;
@@ -72,9 +73,19 @@ export async function completeActivity(activityId: string, outcome?: string) {
   assertCapability(session, SALES_CAPABILITIES.activityManage);
   await assertModuleEnabled(session, "crm");
 
+  const restriction = ownerRestriction(session);
+
   const activity = await db.salesActivity.update({
-    where: { id: activityId, organisationId: session.organisationId },
-    data: { completedAt: new Date(), outcome },
+    where: {
+      id: activityId,
+      organisationId: session.organisationId,
+      ...(restriction ? { ownerUserId: restriction } : {}),
+      // Booked appointments must use the versioned, outcome-required diary flow.
+      endsAt: null,
+      cancelledAt: null,
+      completedAt: null,
+    },
+    data: { completedAt: new Date(), outcome, version: { increment: 1 } },
   });
 
   if (activity.partyId) {

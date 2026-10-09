@@ -3,6 +3,7 @@ import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { ActiveLink } from "@/components/shell/active-link";
 import { AppHeader } from "@/components/shell/app-header";
+import { ConsoleReturn } from "@/modules/manufacturing/components/console-return";
 
 export default async function CatalogueLayout({ children }: { children: React.ReactNode }) {
   const session = await requireSession();
@@ -20,7 +21,7 @@ export default async function CatalogueLayout({ children }: { children: React.Re
           </ActiveLink>
         ))}
       </AppHeader>
-      {children}
+      <ConsoleReturn />{children}
     </div>
   );
 }

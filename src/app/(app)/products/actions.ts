@@ -12,6 +12,7 @@ export async function saveProduct(form:FormData){
 }
 export async function saveProductRecord(productId:string,input:Parameters<typeof saveProductDetails>[2]){
  const session=await requireSession();
+ assertCapability(session,'core.products.manage');
  await saveProductDetails(session,productId,input);refreshCatalogue();
 }
 export async function saveCategory(input:Parameters<typeof saveProductCategory>[1]){

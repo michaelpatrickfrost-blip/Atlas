@@ -4949,3 +4949,35 @@ concurrent work. Updated Admin acceptance finally block removes its own durable
 helper cleanup records. No existing user company/data selected or deleted. Ordinary
 companies continue to use archive/export; bulk permanent cleanup is Test-only.
 This supersedes the pending checkpoints above; no delivery blocker remains.
+
+## 9 October 2026 — Manufacturing & Supply console release checkpoint
+
+Implemented on `codex/manufacturing-supply-console` from exact live c46bbef, retaining
+its verified Studio work after live advanced. New console unifies existing demand,
+MRP, schedule/execution, Products/Inventory and Finance purchasing/spend; Planning
+launcher consolidates only when the target is accessible. Today preserved at
+`/manufacturing/today`. Role/search/bookmarkable shortcuts and nine illustrated
+working guides at `/manufacturing/help`. Additive Product.sellable defaults true;
+internal items remain active for Stock/recipes/purchasing and are blocked from new
+Sales activity. Atomic version/quantity-checked Buy-to-PO draft with source timeline
+and duplicate protection; Make firmer now accepts rich pegging, preserves unit and
+records claim/order/audit/activity together. Only completed plans are current.
+
+Finance-owned `/manufacturing/spend` separates posted AP net, unbilled PO net,
+receipt net and current open gross payables by currency, with entity/project/source
+permission gates and drill-through. It is not production WIP/COGS or historic cash.
+Research uses official Dynamics documentation; full 173-section coverage reconciled
+and retained. Dated site/warehouse supply netting, finite labour/material/tools,
+scenarios/CTP and WIP/variance remain open. Source, decisions, module map and topic
+docs updated; no local business data store or existing customer record changes.
+
+Checks actually run: initial production build, scoped TypeScript/ESLint passed;
+128 focused tests in 18 files passed, including rich firming/report access/conversion.
+Final production build, explicit TypeScript, scoped ESLint, Prisma validation/
+generation and deployment-check shell syntax passed. Full-suite exact-live baseline reproduces 85 failures in
+14 older files (primarily incomplete entitlement mocks); current has the same
+failures after correcting new Sales test fixtures. No full-suite pass claimed.
+Release prepare, migration and connected candidate/public acceptance remain pending.
+Next: finish final checks, prepare backed-up immutable release, exercise isolated
+central Test workflow, activate and verify exact public revision. Evidence tracked in
+`docs/modules/MANUFACTURING_SUPPLY_ACCEPTANCE.md`.

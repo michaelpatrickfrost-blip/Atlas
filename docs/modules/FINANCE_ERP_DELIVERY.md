@@ -77,7 +77,8 @@ placeholder screens or by renaming existing tables:
 - Full inventory valuation layers, FIFO/weighted average, costed Sales dispatch/COGS,
   landed-cost allocation, stock revaluation and Inventory-to-GL reconciliation.
 - Manufacturing material/labour/overhead WIP, variance/cost rollups and actual
-  cost settlement; complete financial S&OP/MRP scenarios and BUY handoff.
+  cost settlement; complete financial S&OP/MRP scenarios. Buy-to-draft handoff is now implemented;
+  transfer/subcontract orchestration remains open.
 - Treasury facilities, bank feeds/payment-provider execution and foreign-bank
   revaluation; bank fees/write-offs/prepayments/overpayments and settlement undo.
 - Recurring journals, calculated accrual/prepayment/revenue schedules, automatic
@@ -99,3 +100,18 @@ placeholder screens or by renaming existing tables:
 The next coherent accounting extension is costed Inventory/Manufacturing event
 posting and reconciliation using the existing module contracts. Preserve the
 Approvals/S&OP/Manufacturing foundations when extending those owners.
+
+## 9 October 2026 — Manufacturing supply purchasing and spend
+
+Buy proposals now open a reviewed PO draft with the source SKU, exact quantity and
+needed date. Finance draft creation and Manufacturing source claim/audit are atomic,
+version checked and duplicate protected. Supplier/price/VAT/allocation remain
+reviewed; approval, receipt, posting and payment controls are unchanged.
+
+The Finance-owned supply spend provider feeds `/manufacturing/spend`. Posted net
+AP spend includes credits/debits; unbilled PO commitments, accepted receipt net and
+current open gross payables remain distinct by source currency. Legal-entity,
+project and independent source permissions apply. Current-status commitments are
+not a reconstructed historical snapshot; payables are current, not cash spending.
+See [Manufacturing & Supply](MANUFACTURING.md) for basis and limitations and its
+acceptance record for exact deployment/check evidence.

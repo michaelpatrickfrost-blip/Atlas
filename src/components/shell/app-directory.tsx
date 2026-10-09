@@ -10,13 +10,25 @@ import { canOpenCompanyAdmin } from "@/app/(app)/settings/settings-menu";
 
 type Entry = { id: string; name: string; href: string; icon: LucideIcon; description?: string };
 const AREA_ICONS: Record<string, LucideIcon> = { Customers: Users, Operations: Settings, People: Users, Business: ChartNoAxesColumnIncreasing, More: LayoutGrid, Company: ShieldCheck };
+const APP_SUMMARIES: Record<string, string> = {
+  crm: "Sales pipeline and customer insights.", sales: "Quotes, orders and sales management.",
+  service: "Customer support and service management.", marketing: "Campaigns and customer engagement.",
+  stock: "Stock, materials and warehouse management.", planning: "Product demand, stock cover and shortages.",
+  logistics: "Warehouse fulfilment, dispatch and deliveries.", manufacturing: "Production planning and shop-floor execution.",
+  safety: "Workplace safety, risks and compliance.", quality: "Quality management and control.",
+  kpis: "Track performance and business goals.", people: "People, contracts and HR management.",
+  scheduling: "Workforce planning and scheduling.", teams: "Team capacity, holidays and resourcing.",
+  payroll: "Payroll calculations and statutory reporting.", projects: "Project management and delivery.",
+  plan: "Integrated business planning.", sop: "Sales and operations planning.",
+  finance: "Accounts, payments and financial reporting.", analytics: "Live dashboards across your business.",
+};
 
 /** One permission-filtered directory, with an icon launcher on Home and compact menu elsewhere. */
 export async function AppDirectory({ session, variant = "menu" }: { session: Session; variant?: "menu" | "launcher" }) {
   const modules = await getNavigableModules(session);
   const groups = new Map<string, Entry[]>(APP_AREAS.map((area) => [area, []]));
   if (can(session, CUSTOMER_CAPABILITIES.read)) groups.get("Customers")!.push({ id: "customers", name: "Customers", href: "/customers", icon: Users, description: "Manage customer data and relationships." });
-  for (const app of modules) groups.get(areaForModule(app.id))!.push({ id: app.id, name: app.name, href: app.rootPath, icon: app.icon, description: app.description });
+  for (const app of modules) groups.get(areaForModule(app.id))!.push({ id: app.id, name: app.name, href: app.rootPath, icon: app.icon, description: app.id === "scheduling" && app.name === "My rota" ? app.description : APP_SUMMARIES[app.id] ?? app.description });
   const company: Entry[] = [
     { id: "my-work", name: "My work", href: "/profile", icon: Briefcase, description: "Your tasks, meetings and personal details." },
     ...(canOpenCompanyAdmin(session) ? [{ id: "settings", name: "Company admin", href: "/settings", icon: Settings, description: "Company setup, users and permissions." }] : []),
@@ -41,7 +53,7 @@ export async function AppDirectory({ session, variant = "menu" }: { session: Ses
                   <span className="flex size-14 shrink-0 items-center justify-center rounded-[18px] bg-[#eaf3ff] text-[#075bff] transition-colors group-hover:bg-blue-100">
                     <entry.icon aria-hidden="true" size={29} strokeWidth={1.8} />
                   </span>
-                  <span className="min-w-0 flex-1"><span className="block text-[14px] font-semibold leading-5 tracking-tight text-slate-950">{entry.name}</span><span className="mt-1 line-clamp-2 text-[12px] leading-[17px] text-[#7b879e]">{entry.description}</span></span>
+                  <span className="min-w-0 flex-1"><span className="block text-[14px] font-semibold leading-5 tracking-normal text-slate-950">{entry.name}</span><span className="mt-1 line-clamp-2 text-[12px] leading-[17px] text-[#7b879e]">{entry.description}</span></span>
                   <ChevronRight aria-hidden="true" size={16} className="shrink-0 text-[#526587]" />
                 </Link>
               </li>

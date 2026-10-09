@@ -5411,3 +5411,9 @@ The observed private Admin baseline is exact 1dafe16, including retained rejecte
 sign-in inputs and verified retry. Preserved its central authentication limits and
 Company/Admin path binding. It does not change Manufacturing/Finance capabilities;
 no existing user grants, passwords or profile data were altered by this task.
+
+Exact live sign-in source integration: Prisma generation/validation, production
+build, strict TypeScript and 13 focused files/72 tests passed, including central
+authentication limits, private/customer selectors, rejected-input preservation,
+MRP/source conversion, spend permissions and release failure gates. Preparing
+compatible source; complete public feature acceptance remains pending.

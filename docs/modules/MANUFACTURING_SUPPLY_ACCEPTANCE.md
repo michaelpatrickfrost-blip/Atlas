@@ -22,6 +22,9 @@ The full 173-section brief remains partially delivered; see coverage and Manufac
 
 ## Historical candidate evidence
 
+These earlier gate entries are retained as history and superseded by the final
+live acceptance below.
+
 Candidate `1f93216` prepared after central backup `atlas-pre-deploy-20261009-201307`;
 server build, Studio compatibility and smoke passed. Sales eligibility migration
 applied. Responsive console, real recursive MRP and Make conversion passed. Buy
@@ -48,7 +51,7 @@ Always hold deployment locks and take a central database/evidence backup before
 fixture writes. Never create a local business database or bypass financial guards.
 
 
-## Current release gate
+## Historical final refinement gate
 
 Candidate `f0807fa` fully passed desktop/tablet/phone console, actual MRP Make 10 /
 Buy 15 net of stock, single source-linked PO draft with preserved rejected inputs,
@@ -66,3 +69,47 @@ production build, explicit strict TypeScript, scoped ESLint and 14 files/67 test
 passed. Full suite was not rerun after later live integrations; no whole-suite
 pass is claimed. Prepare this exact corrected source, repeat connected acceptance,
 activate and verify public HTTPS before declaring the feature deployed.
+
+
+## Final live acceptance — PASS
+
+Application source **2690c26cb0f5f3c28e21265820e8a713708ce699** activated and
+verified at https://atlassystem.online. Exact health/pointer matched before and
+after public checks. Previous immutable runtime 1dafe16 remains retained.
+Preparation/activation central backup prefixes: `atlas-pre-deploy-20261009-213355`
+and `atlas-pre-deploy-20261009-213834`; public fixture backup
+`atlas-pre-supply-public-20261009-213846`, all under `/home/administrator/backups`.
+Candidate evidence `/tmp/atlas-supply-staging-igQlin`; public evidence
+`/tmp/atlas-supply-public-nqKaat`. Database/private evidence backups are retained.
+Both additive migrations applied; original production-order FK remains.
+
+The same exact-source candidate and public checks passed:
+
+- Desktop 1448, tablet 820 and phone 390 console; no root horizontal overflow;
+  Finance role view and optimistic bookmarkable shortcut customisation.
+- Real recursive plan: 10 assemblies need 20 internal components; five stocked
+  components leave Buy 15. Make converts once with saved source lineage.
+- A zero-price purchase save rejects safely and retains supplier/quantity; reviewed
+  15 units at GBP2.50 save as one GBP37.50 Finance draft. Source claim, tenant FK,
+  audit/timeline and actioned destination link persist; repeats create no duplicate.
+- Internal material remains usable in purchasing/stock/recipes and is rejected by
+  Sales eligibility. Existing sellable products remain eligible.
+- GBP posted supplier spend 85, unbilled commitment 100, accepted receipts 120 and
+  current gross payables 82 stay separate; EUR spend 30 remains separate. Restricted
+  source amounts are unavailable. Source document drill-through works.
+- All nine guide routes and responsive illustrations load; no browser exceptions.
+- Exact synthetic Test companies are suspended, fixture memberships revoked,
+  immutable financial/audit history retained and original QA membership/auth version
+  unchanged. No existing customer data or profile grants changed.
+
+Final source production build, explicit strict TypeScript, scoped ESLint and 14
+files/67 regressions pass, including lifecycle/expiry gates and rendered-page cost
+redaction. Earlier full-suite baseline failure counts above remain; no current
+full-suite pass claimed. Candidate/public screenshots reviewed visually. Read-only
+final revision check also matched 2690c26. This acceptance covers the connected
+console and listed workflows, not all remaining 173-section engines.
+
+Canonical source integration awaits reconciliation of 598 dirty/untracked entries
+in the main Desktop checkout, including 27 overlapping task paths. The complete
+release branch and shared memory remain committed in the same Git repository;
+no contributor's unfinished changes were reset or overwritten.

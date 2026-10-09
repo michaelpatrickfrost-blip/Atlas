@@ -1,5 +1,55 @@
 # Atlas current state
 
+## 9 October 2026 — Manufacturing & Supply console live and verified
+
+Activated exact application source 2690c26cb0f5f3c28e21265820e8a713708ce699 at
+https://atlassystem.online; public health and current pointer matched before and
+after complete acceptance. Previous immutable private Admin runtime 1dafe16 is
+retained. Prepare backup atlas-pre-deploy-20261009-213355, activation backup
+atlas-pre-deploy-20261009-213834, public fixture backup
+atlas-pre-supply-public-20261009-213846. Private evidence: candidate
+/tmp/atlas-supply-staging-igQlin; public /tmp/atlas-supply-public-nqKaat.
+
+Delivered: modern six-stage console/role and bookmarkable shortcut views; canonical
+internal/sellable Products; atomic source-linked Make/Buy draft conversion with
+preserved rejected inputs; Finance supplier spend/commitment/receipt/payables
+measures by source currency; nine illustrated working guides. Existing business
+owners, tenant/licence/capability checks, central records/history and profile
+permissions are preserved. Both additive product sales-eligibility and purchase-
+link migrations applied; production-order FK retained. Bundled fonts and the
+independent fail-closed release builder are deployed. Suspended Test history no
+longer blocks compatibility; all real/active Test dependency gates remain.
+Legacy cockpit/pending/actioned cost figures now require independent cost access.
+
+Candidate and public checks PASS: desktop/tablet/phone; real recursive Make 10 /
+Buy 15 after netting five components; one 15-unit GBP37.50 purchase draft,
+retry/repeat protection, source audit/timeline/FKs; internal Sales exclusion;
+GBP85 posted net spend / GBP100 unbilled commitment / GBP120 receipts / GBP82
+current gross payables and EUR30 separately; restricted source amounts unavailable;
+document drill-through; nine guides/pictures; zero browser exceptions. Exact Test
+companies suspended/memberships revoked, immutable history retained, QA membership
+and authentication version unchanged. Ledger fixtures prove report reads, not
+independent approval/payment workflow completion. Final build, explicit strict
+TypeScript, scoped ESLint and 14 files/67 regressions PASS. Earlier integrated full
+suite has the established 85 baseline failures; full suite was not rerun after
+later Messages/private Admin preservation, and no whole-suite pass is claimed.
+
+The 173-section brief and seven-part researched programme remain in scope. Next:
+canonical dated site/warehouse/supply ledger and decimal unit execution, then MPS,
+constraint scheduling, production genealogy/rework/subcontract, cost/WIP/COGS and
+governed Studio customisation. This release is not complete Dynamics parity.
+Paths/evidence: docs/modules/MANUFACTURING{,_COVERAGE,_SUPPLY_ACCEPTANCE}.md,
+public/guides/manufacturing, src/core/supply, Manufacturing/Finance/Product/Sales
+owners, scripts/check-manufacturing-supply.ts and scripts/deploy.
+
+Canonical integration is safely blocked: /Users/michael/Desktop/RP SYSTEM remains
+ed54a6c with 598 existing dirty/untracked entries, including 27 overlapping task
+paths (schema, services and shared .ai memory). Source and memory are committed on
+codex/manufacturing-supply-console in the same repository; do not stash/reset or
+overwrite other contributors. Reconcile/merge this branch when those edits are
+ready. Final handoff includes evidence-only documentation, with no app code change
+after the exact publicly verified release.
+
 ## 9 October 2026 — Private Admin entry prepared for live verification
 
 User-requested `/19811171adminlogin` and `/recovery` replace the public staff

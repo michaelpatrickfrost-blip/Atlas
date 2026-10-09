@@ -53,6 +53,16 @@ screenshot scroll still used a multiline unscoped preview selector; corrected th
 remaining runner selector. This runner-only checkpoint does not change the app.
 Run the corrected acceptance harness against the exact immutable candidate without
 editing its sealed files, then activate 9303039 and repeat publicly.
+Candidate AND public HTTPS acceptance for 9303039 passed corrected real chat,
+order links, history/details, expanded draft handoff, desktop/tablet/phone, Home
+and all detailed Reports/Finance preview/XLSX/filter regressions. Health exact SHA
+confirmed before/after. Final work-control review found the pre-existing blank
+Me selector could fall back to a direct peer; client now sends the actual current
+user ID explicitly. Added a regression. Final source must be checked and deployed
+before handoff; all permissions/central native work services remain unchanged.
+Final mapping check: 11 files/70 assertions and production build passed; strict
+TypeScript passed after correcting a test-only unsupported Testing Library option.
+Scoped final lint zero errors/one brand-image warning; diff check passed.
 Next:
 rerun exact chat acceptance plus Home/Reports
 regression, activate and repeat

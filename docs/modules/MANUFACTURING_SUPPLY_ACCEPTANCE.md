@@ -155,3 +155,18 @@ Activation stopped before backup/switch because live advanced to `94dd3e1`
 SalesActivity migration. Integrated Prisma generation, production build, explicit
 post-build strict TypeScript, scoped lint and 14 files/67 focused regressions PASS.
 Final combined candidate/public verification remains pending.
+
+`c8b49aa` preparation/smoke and complete candidate acceptance PASS; backup
+`atlas-pre-deploy-20261009-224802`, evidence `/tmp/atlas-supply-staging-yMKGrR`.
+Public advanced to Studio `7941f9b`, then People/payroll `36d0d2d` ahead of
+activation. Both exact deployed sources, central migrations and generated gateway
+are preserved. Integrated client generation, production build, scoped lint and
+15 files/95 focused regressions and explicit strict post-build TypeScript PASS.
+Extend the deployed People acceptance hook with `ATLAS_RELEASE_ACCEPTANCE=supply`
+so normal deploy locks cover candidate, activation and public verification together.
+Both supply fixture stages have separate central database/private-file backups;
+source pointers/revisions are verified afterward. All original release gates and
+public-failure runtime rollback remain. No inherited-lock mechanism is included.
+Final exact-source hooked acceptance remains pending. Imported People migration
+EOF whitespace is retained to preserve already-applied checksums; owned diff
+against exact live `36d0d2d` passes whitespace checks.

@@ -85,6 +85,7 @@ export type CustomerOverviewProvider = (ctx: {
 export type StaffRosterProvider = (session: Session, manage: boolean) => Promise<Array<{
   id: string; firstName: string; lastName: string; jobTitle: string; department: string | null;
   userId: string | null; contractedWeeklyHours: number | null; workingDays: number[];
+  skills: string[];
 }>>;
 
 export type ModuleManifest = {
@@ -121,6 +122,7 @@ export type ModuleManifest = {
   fulfilmentProjectionProvider?: FulfilmentProjectionProvider;
   salesLogisticsConsumer?: SalesLogisticsConsumer;
   staffRosterProvider?: StaffRosterProvider;
+  payrollReadinessProvider?: (session: Session, periodStart: string, periodEnd: string) => Promise<{ employees: number; issues: number; approvedHours: number; awaitingApproval: number }>;
   analyticsProvider?: AnalyticsProvider;
   planningDemandProvider?: PlanningDemandProvider;
   planningInventoryProvider?: PlanningInventoryProvider;

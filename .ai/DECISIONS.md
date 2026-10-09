@@ -1481,6 +1481,22 @@ with recipient-specific inaccessible placeholders. A record may be shared withou
 an additional comment. Contact conversations remain stored in Atlas without email
 or external delivery. The standalone Admin console does not mount business chat.
 
+## 9 October 2026 — Connected People apps and UK payroll review
+
+Michael requested substantive Goals & KPIs, HR, People planner and Team planner
+workspaces; UK payroll first was explicitly selected. Each stays independent around
+canonical employee/goal/shift/task records. Weighted scorecards keep source rights
+and missing readings unscored. Interval cover is a conservative workload estimate
+with role/skill/break/activity filters. Team capacity labels visible work and uses
+leave, hours and published rotas rather than claiming unrestricted utilisation.
+
+Payroll uses approved time, reviewed opening history and verified statutory/holiday
+replacement inputs. No planned-hour fallback; drafts do not advance YTD. Input
+binding, serializable finalisation, overlap/sequence guards and payment transitions
+prevent stale/duplicate pay. Corrected 2026–27 rates apply to new calculations;
+finalised history is retained. RTI/bank/special tax and telephony/adherence remain
+external. Existing grants, privacy and central storage persist. Research/rationale:
+docs/plans/PEOPLE_PLATFORM_OVERHAUL.md.
 ## 9 October 2026 — Focused commercial workspaces and shared account context
 
 Customers hierarchy starts with one customer and displays its corporate family.
@@ -1529,3 +1545,22 @@ access, existing Inventory/Planning entry points remain. Product-only readers ma
 open the console but receive only their authorised source destinations, with no
 Manufacturing write/financial permission. Business-wide Finance, Plan and S&OP
 remain available to their wider teams; their manufacturing connections remain.
+
+## 9 October 2026 — People feature acceptance stays under release locks
+
+An explicit People acceptance selector runs the checked-in central Test harness
+on the sealed smoke candidate and public HTTPS under the existing deployment
+locks, backups, source/ancestry and rollback gates. Default releases keep their
+current behavior. Rationale: concurrent releases repeatedly advanced between
+preparation, queued feature checks and activation; the accepted revision must
+stay stable through the switch. No lock bypass or arbitrary shell hook.
+
+## 10 October 2026 — Supply uses the existing held-lock acceptance hook
+
+Accepted concurrent releases repeatedly advanced the server between supply
+candidate checks and activation. Extend the already deployed People acceptance
+hook with an explicit supply workflow. Keep both existing locks across candidate,
+activation and public checks, with separate backed-up central Test fixtures.
+Reuse all pinned-source, remote-tip, ancestry, compatibility, immutable build,
+smoke and runtime rollback gates. No lock inheritance mechanism or gate bypass is
+needed; default and People releases retain their existing behavior.

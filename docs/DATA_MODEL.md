@@ -150,3 +150,18 @@ or credential. It is private server infrastructure, excluded from company export
 and data-gateway reads. Additive migration `20261009220000_authentication_attempt_limits`
 changes no business records or permissions. Expired counters are disposable;
 see `docs/ATLAS_ADMIN.md` for the enforced limits and private staff address.
+
+## Connected People workspaces — 9 October 2026
+
+Canonical Employee, Kpi, RotaShift and PlannerTask remain the shared identities.
+Company-owned KpiScorecard/items weight shared goals; StaffingInterval and
+OpenRotaShift/requests add intraday demand and assignment into canonical shifts.
+EmployeeAvailability and RotaActivity use tenant-bound employee/shift foreign keys.
+Root scorecards, intervals and openings also have Organisation foreign keys.
+PayrollPeriodAdjustment stores reviewed replacement/statutory/additional inputs;
+EmployeeTaxYearToDate retains reviewed opening history separately from finalised
+YTD. PayrollRun holds the reviewed calculation snapshot/digest/version; Payslip
+records approved actual hours/source timesheets. Drafts do not advance YTD.
+New tables stay closed to generic desktop queries; named permissioned readers
+serve their workspaces. Sensitive pay setup remains outside generic HR reads.
+See docs/plans/PEOPLE_PLATFORM_OVERHAUL.md for calculation and integration limits.

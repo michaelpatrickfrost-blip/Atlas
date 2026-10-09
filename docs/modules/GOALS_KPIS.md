@@ -69,9 +69,20 @@ Matching dashboard charts and monitors use independently scored goal actuals and
 refresh those scores alongside chart refreshes; server query functions are stripped
 from client metadata. Source changes do not write copied business actuals into Goals.
 
-No arbitrary formula editor, employee attribution, weighted roll-up, recurring goal
+No arbitrary formula editor, employee attribution, recurring goal
 scheduler, historical snapshot archive, automated notification or compensation link
 is claimed. Operational metrics use current record statuses and retained dates;
 reopening/cancelling/repricing may change a historical period's reading. Financial
 posting/reversal semantics remain Finance-owned. Evidence and exact checks are in
 `.ai/CURRENT_STATE.md` and `docs/evidence/2026-10-08-connected-goals.md`.
+
+## 9 October 2026 — Strategy scorecards
+
+/kpis/scorecards groups active company goals with positive weights, normalises
+AT_LEAST/AT_MOST attainment capped at 100%, and leaves the aggregate unscored if
+any goal/source is missing or inaccessible. Private goals/PIPs are excluded.
+kpis.attainment feeds dashboards but cannot become a goal source (no recursion).
+Membership/weights and audit save atomically with same-tenant composite goal FKs.
+This supersedes the weighted-rollup gap for strategy scorecards; arbitrary formulae,
+employee attribution and historical snapshots remain open. See
+[People overhaul](../plans/PEOPLE_PLATFORM_OVERHAUL.md).

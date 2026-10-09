@@ -1,7 +1,8 @@
 "use client";
 import { useState, useTransition } from "react";
 import { Button } from "./button";
-export function ActionForm({action,children,className="",label}:{action:(data:FormData)=>Promise<void>;children:React.ReactNode;className?:string;label?:string}) {
+import type {FormFeedback} from "@/core/shared/form-feedback";
+export function ActionForm({action,children,className="",label}:{action:(data:FormData)=>Promise<void|FormFeedback>;children:React.ReactNode;className?:string;label?:string}) {
  const [pending,startTransition]=useTransition(),[message,setMessage]=useState(""),[error,setError]=useState(false);
  return <form method="post" className={label?`space-y-3 ${className}`:className} onSubmit={event=>{
   event.preventDefault();
@@ -11,7 +12,8 @@ export function ActionForm({action,children,className="",label}:{action:(data:Fo
   setMessage("");setError(false);
   startTransition(async()=>{
    try{
-    await action(data);
+    const result=await action(data);
+    if(result?.error){setError(true);setMessage(result.error);return;}
     if(form.isConnected)form.reset();
     setMessage("Saved.");
    }catch(e){

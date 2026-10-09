@@ -33,7 +33,11 @@ Server-rendered snapshots include role names/capabilities and membership/profile
 catalogue versions. Save compares them in an audited Serializable transaction;
 stale editing requires reload instead of overwriting someone else's changes.
 Self-admin removal and self-membership editing remain blocked. Membership access
-changes revoke older company sessions. Duplicate profile names are rejected.
+changes revoke older company sessions. Duplicate profile names are rejected. The legacy role-only assignment endpoint
+requires the same user/role administration and snapshot checks; it cannot bypass
+the new editor. Expected validation feedback is returned explicitly so production
+forms retain useful errors and their draft; private driver/framework errors stay
+generic. Profile, membership and own-name changes are audited transactionally.
 
 Business-user creation remains an independent Atlas administrator workflow per the
 9 October policy; company profiles do not create platform grants or provisioning

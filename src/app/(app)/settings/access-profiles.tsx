@@ -1,4 +1,5 @@
 "use client";
+import type { FormFeedback } from "@/core/shared/form-feedback";
 import { useState } from "react";
 import { Search, ShieldCheck, ChevronRight } from "lucide-react";
 import { AccessEditor } from "@/components/admin/access-editor";
@@ -16,7 +17,7 @@ export function AccessProfiles({
 }: {
   profiles: Profile[];
   groups: AccessGroup[];
-  action: (form: FormData) => Promise<void>;
+  action: (form: FormData) => Promise<void | FormFeedback>;
 }) {
   const [selected, setSelected] = useState(profiles[0]?.id ?? ""),
     [search, setSearch] = useState(""),

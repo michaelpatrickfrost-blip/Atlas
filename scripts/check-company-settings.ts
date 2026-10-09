@@ -203,7 +203,7 @@ async function main() {
     await viewer.page
       .getByRole("button", { name: "Change password", exact: true })
       .click();
-    await expect(viewer.page.getByRole("alert")).toContainText(
+    await expect(viewer.page.locator('p[role="alert"]')).toContainText(
       "Current password is incorrect",
     );
     assert.equal(
@@ -339,7 +339,9 @@ async function main() {
     await page
       .getByRole("button", { name: "Save profile", exact: true })
       .click();
-    await expect(page.getByRole("alert")).toContainText("profile changed");
+    await expect(page.locator('p[role="alert"]')).toContainText(
+      "profile changed",
+    );
     assert.equal(
       (await db.role.findUniqueOrThrow({ where: { id: profile.id } })).name,
       `Updated elsewhere ${suffix}`,
@@ -356,7 +358,7 @@ async function main() {
     await page
       .getByRole("button", { name: "Save profile", exact: true })
       .click();
-    await expect(page.getByRole("alert")).toContainText("own access");
+    await expect(page.locator('p[role="alert"]')).toContainText("own access");
     assert.deepEqual(
       (await db.role.findUniqueOrThrow({ where: { id: adminRole.id } }))
         .capabilities,
@@ -372,7 +374,7 @@ async function main() {
     await page
       .getByRole("button", { name: "Save profile", exact: true })
       .click();
-    await expect(page.getByRole("alert")).toBeVisible();
+    await expect(page.locator('p[role="alert"]')).toBeVisible();
     assert.deepEqual(
       (await db.role.findUniqueOrThrow({ where: { id: foreignRole.id } }))
         .capabilities,

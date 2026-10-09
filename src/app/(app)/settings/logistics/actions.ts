@@ -1,4 +1,5 @@
 "use server";
+import { withFormFeedback } from "@/core/shared/form-feedback";
 
 import { revalidatePath } from "next/cache";
 import { requireSession } from "@/core/auth/session";
@@ -10,23 +11,34 @@ import { policyFor } from "@/modules/logistics/services/numbers";
 export async function saveDispatchDelivery(form: FormData) {
   const session = await requireSession();
   assertCapability(session, CORE_CAPABILITIES.modulesManage);
-  const dispatchConfirmsDelivery = form.get("dispatchConfirmsDelivery") === "on";
-  await policyFor(session.organisationId);
-  await db.$transaction(async (tx) => {
-    const before = await tx.logisticsPolicy.findUnique({ where: { organisationId: session.organisationId }, select: { dispatchConfirmsDelivery: true } });
-    await tx.logisticsPolicy.update({ where: { organisationId: session.organisationId }, data: { dispatchConfirmsDelivery } });
-    await tx.auditEntry.create({
-      data: {
-        organisationId: session.organisationId,
-        actorUserId: session.userId,
-        action: "company.logistics.dispatch_delivery.updated",
-        entityType: "Organisation",
-        entityId: session.organisationId,
-        before: { dispatchConfirmsDelivery: before?.dispatchConfirmsDelivery ?? false },
-        after: { dispatchConfirmsDelivery },
-      },
+  return withFormFeedback(async () => {
+    const dispatchConfirmsDelivery =
+      form.get("dispatchConfirmsDelivery") === "on";
+    await policyFor(session.organisationId);
+    await db.$transaction(async (tx) => {
+      const before = await tx.logisticsPolicy.findUnique({
+        where: { organisationId: session.organisationId },
+        select: { dispatchConfirmsDelivery: true },
+      });
+      await tx.logisticsPolicy.update({
+        where: { organisationId: session.organisationId },
+        data: { dispatchConfirmsDelivery },
+      });
+      await tx.auditEntry.create({
+        data: {
+          organisationId: session.organisationId,
+          actorUserId: session.userId,
+          action: "company.logistics.dispatch_delivery.updated",
+          entityType: "Organisation",
+          entityId: session.organisationId,
+          before: {
+            dispatchConfirmsDelivery: before?.dispatchConfirmsDelivery ?? false,
+          },
+          after: { dispatchConfirmsDelivery },
+        },
+      });
     });
+    revalidatePath("/settings/logistics");
+    revalidatePath("/logistics", "layout");
   });
-  revalidatePath("/settings/logistics");
-  revalidatePath("/logistics", "layout");
 }

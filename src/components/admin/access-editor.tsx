@@ -1,4 +1,5 @@
 "use client";
+import type { FormFeedback } from "@/core/shared/form-feedback";
 import { useEffect, useState } from "react";
 import { ChevronDown, Search, ShieldCheck, RotateCcw } from "lucide-react";
 import { ActionForm } from "@/components/ui/action-form";
@@ -15,7 +16,7 @@ type Role = { id: string; name: string; capabilities: string[] };
 type Props = {
   groups: AccessGroup[];
   capabilities: string[];
-  action: (form: FormData) => Promise<void>;
+  action: (form: FormData) => Promise<void | FormFeedback>;
   roleId?: string;
   membershipId?: string;
   organisationId?: string;

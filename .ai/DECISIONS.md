@@ -10,6 +10,9 @@ RWA presets expand to existing native capabilities, not invented bypass roles.
 Allow mixed profiles and granular exceptions, preserve source/tenant restrictions,
 and compare snapshots under Serializable audited writes to reject stale editing.
 Platform grants and existing business-user provisioning remain independently guarded.
+Legacy role-only assignment must enforce the same administration/snapshot/session
+guards as the new editor. Return expected form feedback explicitly; production
+React redacts thrown errors, and private driver/framework detail must stay hidden.
 
 ## 10 October 2026 — Dashboard acceptance and activation share release locks
 

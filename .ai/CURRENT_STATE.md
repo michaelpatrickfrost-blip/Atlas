@@ -33,6 +33,20 @@ implemented but NOT RUN. No deployment claim; exact live CRM b57ba72 is now merg
 its appointment completion guard. Integrated 15 files/70 assertions, strict types, route generation, production build,
 scoped lint (zero errors/two existing image warnings), shell syntax and diff PASS.
 Locked candidate/public preparation is next. No schema migration/local business store.
+Candidate 1c4a1d0 build/smoke passed (backup atlas-pre-deploy-20261009-234634),
+but acceptance stopped before activation: expected password validation was redacted
+as React production error 441; test also selected Next's route-announcer alert.
+Test fixtures suspended/sessions revoked; live CRM b57ba72 unchanged. Settings/
+profile/security mutations now return structured safe feedback using the existing
+shared helper; driver/framework details remain generic. Ordinary profile writes
+are transactionally audited. Legacy role-only assignment now requires both user
+and role administration, the same snapshot and session-revocation guards, closing
+an older entry-point bypass of the new editor's safety. Focused eight files/43
+assertions PASS; final 15 files/71 assertions, strict types, production build,
+scoped lint (zero errors/two existing image warnings), shell syntax and diff PASS.
+Opt-in database integration assertions updated for structured feedback/snapshots;
+that separate destructive fixture suite was not run. Fresh candidate acceptance
+and public activation remain pending. No activation claim.
 Paths: settings/profile/email routes, shared AccessEditor, permission sections/
 snapshot helpers, shell utility navigation, checker/deployer and focused suites.
 Next: merge exact live source, final checks, sealed candidate acceptance, activation

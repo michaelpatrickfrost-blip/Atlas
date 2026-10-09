@@ -20,7 +20,7 @@ vi.mock("@/core/db/client", () => ({ db: { $transaction: m.transaction } }));
 vi.mock("@/core/modules/registry", () => ({ MODULE_CATALOGUE: [] }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/core/audit/log", () => ({ writeAudit: vi.fn() }));
-import { saveRole } from "@/app/(app)/settings/actions";
+import { saveRole, saveMemberRoles } from "@/app/(app)/settings/actions";
 import { saveUserAccess } from "@/app/(app)/settings/user-actions";
 import {
   roleAccessRevision,
@@ -105,10 +105,14 @@ describe("profile mutation safety", () => {
   it("rejects stale profiles and duplicate names before mutation", async () => {
     const f = roleForm();
     f.set("accessRevision", "stale");
-    await expect(saveRole(f)).rejects.toThrow("profile changed");
+    await expect(saveRole(f)).resolves.toEqual({
+      error: expect.stringContaining("profile changed"),
+    });
     expect(m.roleUpdate).not.toHaveBeenCalled();
     m.roleFind.mockResolvedValue({ id: "duplicate" });
-    await expect(saveRole(roleForm())).rejects.toThrow("already exists");
+    await expect(saveRole(roleForm())).resolves.toEqual({
+      error: expect.stringContaining("already exists"),
+    });
     expect(m.roleUpdate).not.toHaveBeenCalled();
   });
   it("protects the editor’s own company administration and rejects platform grants", async () => {
@@ -117,9 +121,13 @@ describe("profile mutation safety", () => {
     m.own.mockResolvedValue({});
     const f = roleForm();
     f.set("accessRevision", roleAccessRevision(admin));
-    await expect(saveRole(f)).rejects.toThrow("own access");
+    await expect(saveRole(f)).resolves.toEqual({
+      error: expect.stringContaining("own access"),
+    });
     f.append("capability", "atlas.staff.manage");
-    await expect(saveRole(f)).rejects.toThrow("Unknown");
+    await expect(saveRole(f)).resolves.toEqual({
+      error: expect.stringContaining("Unknown"),
+    });
     expect(m.roleUpdate).not.toHaveBeenCalled();
   });
   it("fails authorization before opening a transaction", async () => {
@@ -151,13 +159,34 @@ describe("profile mutation safety", () => {
   });
   it("blocks stale catalogue/membership edits, forged roles and self-editing before replacing assignments", async () => {
     m.roleList.mockResolvedValue([{ ...role, name: "Changed" }]);
-    await expect(saveUserAccess(userForm())).rejects.toThrow("profile changed");
+    await expect(saveUserAccess(userForm())).resolves.toEqual({
+      error: expect.stringContaining("profile changed"),
+    });
     m.roleList.mockResolvedValue([role]);
     const f = userForm();
     f.set("roleId", "foreign");
-    await expect(saveUserAccess(f)).rejects.toThrow("Invalid role");
+    await expect(saveUserAccess(f)).resolves.toEqual({
+      error: expect.stringContaining("Invalid role"),
+    });
     f.set("membershipId", "me");
-    await expect(saveUserAccess(f)).rejects.toThrow("Another administrator");
+    await expect(saveUserAccess(f)).resolves.toEqual({
+      error: expect.stringContaining("Another administrator"),
+    });
+    expect(m.remove).not.toHaveBeenCalled();
+  });
+  it("keeps legacy role-only writes behind the same role capability and snapshot boundary", async () => {
+    await saveMemberRoles(userForm());
+    expect(m.cap).toHaveBeenCalledWith(expect.anything(), "core.roles.manage");
+    expect(m.memberUpdate).toHaveBeenCalledWith({
+      where: { id: "other", organisationId: "company" },
+      data: { sessionVersion: { increment: 1 } },
+    });
+    m.remove.mockClear();
+    const f = userForm();
+    f.delete("accessRevision");
+    expect(await saveMemberRoles(f)).toEqual({
+      error: expect.stringContaining("profile changed"),
+    });
     expect(m.remove).not.toHaveBeenCalled();
   });
 });

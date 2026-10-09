@@ -4,17 +4,17 @@ const TABS = [
   { key: "overview", label: "Overview" },
   { key: "contacts", label: "Contacts" },
   { key: "people", label: "Addresses" },
-  { key: "relationships", label: "Relationships" },
+  { key: "relationships", label: "Hierarchy" },
   { key: "commercial", label: "Commercial" },
   { key: "finance", label: "Finance & Tax" },
-  { key: "activity", label: "Activity" },
+  { key: "activity", label: "Notes & activity" },
 ] as const;
 
 export type CustomerTabKey = (typeof TABS)[number]["key"];
 
 export function CustomerTabs({ partyId, active }: { partyId: string; active: CustomerTabKey }) {
   return (
-    <div className="flex items-center gap-1 overflow-x-auto border-b border-[var(--color-border)]">
+    <div className="flex items-center gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-1">
       {TABS.map((tab) => (
         <Link
           key={tab.key}

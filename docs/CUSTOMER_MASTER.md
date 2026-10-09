@@ -172,3 +172,21 @@ pointer after customer-read authorisation; it exposes no identity, contacts or
 business child records. Unknown/foreign-company IDs remain not found. Scrubbed
 customers stay excluded from all Master lists/maps. Sales references label deleted
 customers while retaining their historical documents.
+
+## Customer experience and CRM accounts — 9 October 2026
+
+The account list has focused search/filter controls and permitted 12-month order
+value split by currency. Credit columns require their independent read capability.
+Record Overview includes notes; Notes & activity places the same notes beside the
+cross-app timeline. CRM Accounts reads the canonical Party/Contact/Note records.
+Note creation validates non-empty text up to 10,000 characters and atomically records
+a metadata-only audit; restricted manage does not imply restricted read.
+
+Hierarchy displays only the selected corporate family and its active, unscrubbed
+contacts. `/customers/map` first asks the user to select/search for a customer.
+Unrelated tenant account metadata remains available in existing parent/trading
+pickers but never becomes unrelated chart nodes or people. Large families are
+bounded at 500 accounts with a visible truncation warning. Existing parent cycle,
+trading permissions and canonical identity rules remain. Research/checks are linked
+from [commercial workspace research](plans/COMMERCIAL_WORKSPACE_RESEARCH.md) and
+CURRENT_STATE.md.

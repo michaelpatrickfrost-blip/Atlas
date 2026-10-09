@@ -9,7 +9,7 @@ import { loadCustomerMap } from "@/core/customers/map-data";
  *  doesn't dominate every visit to the record. */
 export async function RelationshipSummary({ partyId, session }: { partyId: string; session: Session }) {
   const includeInvoices = can(session, "customers.commercial.read") || can(session, "sales.order.read") || can(session, "sales.quote.read");
-  const map = await loadCustomerMap(session.organisationId, includeInvoices);
+  const map = await loadCustomerMap(session.organisationId, includeInvoices, partyId);
   const customer = map.accounts.find((account) => account.id === partyId);
   if (!customer) return null;
 

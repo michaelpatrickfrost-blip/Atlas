@@ -117,3 +117,19 @@ build, Home runner lint and diff PASS. Analytics/chat/font application source
 remains identical to fully accepted 054dd1c; candidate checks focus on changed
 Home/business navigation and Dashboard integration, then all five checks repeat
 on public HTTPS after activation. No Dashboard schema/grant change.
+
+## Commercial live release preservation
+
+8f0dfa957a052be00aaa3c73a7b14c902f9efcf6 prepared/smoke PASS with backup
+atlas-pre-deploy-20261009-223752. Dashboard and Home/business-boundary candidate
+acceptance PASS: /tmp/atlas-dashboards-boundary-candidate.log. Activation stopped
+safely at ancestry before backup/switch after exact live 94dd3e1 commercial
+workspaces advanced. That already-deployed source and additive appointment/account
+notes schema are merged; no unfinished commercial branch is being deployed.
+Final combined checks and public acceptance follow.
+
+Commercial integration validation: Prisma/client and generated action/model
+descriptors match exact live 94dd3e1. Authentication counters remain omitted.
+Next route types generated; 24 files/103 assertions, strict types, production
+build, scoped lint (zero errors/one decorative brand-image warning) and diff PASS.
+Final combined preparation/candidate acceptance/activation/public proof follow.

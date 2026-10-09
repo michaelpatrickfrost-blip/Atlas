@@ -17,7 +17,7 @@ export async function CustomerHierarchy({ partyId, session }: { partyId: string;
   const includeInvoices = can(session, "customers.commercial.read") || can(session, "sales.order.read") || can(session, "sales.quote.read");
   const manageTrading = can(session, "customers.commercial.manage");
   const showTrading = can(session, "customers.commercial.read");
-  const map = await loadCustomerMap(session.organisationId, includeInvoices);
+  const map = await loadCustomerMap(session.organisationId, includeInvoices, partyId);
   const customer = map.accounts.find((account) => account.id === partyId);
   if (!customer) return null;
   const links = showTrading
@@ -34,8 +34,8 @@ export async function CustomerHierarchy({ partyId, session }: { partyId: string;
         <div className="flex items-center gap-3">
           <Network size={18} className="text-blue-600" />
           <div>
-            <h2 className="text-sm font-semibold">Corporate structure</h2>
-            <p className="mt-1 text-xs text-slate-500">Who owns/belongs to whom, and the trading relationships used for invoicing.</p>
+            <h2 className="text-sm font-semibold">Customer hierarchy</h2>
+            <p className="mt-1 text-xs text-slate-500">This customer’s group, branches and people, with its invoice relationships.</p>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -56,7 +56,7 @@ export async function CustomerHierarchy({ partyId, session }: { partyId: string;
       </div>
       <div className="p-4 sm:p-5">
         <AccountMap
-          accounts={map.accounts}
+          accounts={map.accounts} choices={map.choices}
           people={map.people}
           focusId={partyId}
           canEdit={can(session, "customers.edit")}
@@ -94,7 +94,7 @@ export async function CustomerHierarchy({ partyId, session }: { partyId: string;
                   <label className="block text-xs">Buys through
                     <select name="tradingAccountId" required className={input}>
                       <option value="">Choose a business</option>
-                      {map.accounts.filter((account) => account.id !== partyId).map((account) => (
+                      {[...map.accounts, ...map.choices.filter(choice => !map.accounts.some(account => account.id === choice.id))].filter((account) => account.id !== partyId).map((account) => (
                         <option key={account.id} value={account.id}>{account.name} · {account.customerCode}</option>
                       ))}
                     </select>

@@ -6151,6 +6151,36 @@ export const MODEL_FIELDS = {
       "nullable": true,
       "relation": false
     },
+    "endsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "location": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "cancelledAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "requestKey": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
     "completedAt": {
       "type": "DateTime",
       "list": false,

@@ -8,7 +8,8 @@ const desk: Array<[string, string, string]> = [
   ['Calendar', '/marketing/calendar', 'marketing.campaign.read'],
   ['Social', '/marketing/social', 'marketing.campaign.read'],
   ['Budgets', '/marketing/budgets', 'marketing.campaign.read'],
-  ['Journey', '/marketing/journey', 'marketing.campaign.read'],
+  ['Journey mapper', '/marketing/journey', 'marketing.campaign.read'],
+  ['Journey automation', '/marketing/journeys', 'marketing.journey.read'],
   ['Audiences', '/marketing/audiences', 'marketing.audience.read'],
   ['Content', '/marketing/content', 'marketing.content.read'],
   ['Messages', '/marketing/email', 'marketing.email.read'],
@@ -34,5 +35,5 @@ export const marketingManifest: ModuleManifest = {
   searchProvider: marketingSearch,
   customerOverviewProvider: marketingCustomer,
   analyticsProvider: marketingAnalytics,
-  navigation: desk.map(([label, href, capability]) => ({ label, href, capability })),
+  navigation: desk.map(([label, href, capability]) => ({ label, href, capability, group: ['/marketing/audiences','/marketing/profiles','/marketing/consent'].includes(href) ? 'People & permissions' : ['/marketing/journey','/marketing/journeys'].includes(href) ? 'Customer journeys' : ['/marketing/content','/marketing/email','/marketing/social'].includes(href) ? 'Content & channels' : 'Campaign workspace' })),
 };

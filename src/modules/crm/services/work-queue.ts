@@ -65,12 +65,12 @@ export async function getWorkQueue(organisationId: string, ownerUserId: string):
 
   const [overdueActivities, dueTodayActivities, openOpportunities, newProspects] = await Promise.all([
     db.salesActivity.findMany({
-      where: { organisationId, ownerUserId, completedAt: null, dueAt: { lt: now } },
+      where: { organisationId, ownerUserId, completedAt: null, cancelledAt: null, dueAt: { lt: now } },
       include: { party: true, prospect: true, opportunity: true },
       orderBy: { dueAt: "asc" },
     }),
     db.salesActivity.findMany({
-      where: { organisationId, ownerUserId, completedAt: null, dueAt: { gte: now, lt: new Date(now.getTime() + DAY_MS) } },
+      where: { organisationId, ownerUserId, completedAt: null, cancelledAt: null, dueAt: { gte: now, lt: new Date(now.getTime() + DAY_MS) } },
       include: { party: true, prospect: true, opportunity: true },
       orderBy: { dueAt: "asc" },
     }),
@@ -92,7 +92,7 @@ export async function getWorkQueue(organisationId: string, ownerUserId: string):
       subtitle: activity.party?.name ?? activity.prospect?.companyName ?? activity.opportunity?.name,
       reason: `Overdue — was due ${activity.dueAt!.toLocaleDateString("en-GB")}`,
       priority: "high",
-      href: activity.opportunityId ? `/crm/opportunities/${activity.opportunityId}` : activity.prospectId ? `/crm/prospect/${activity.prospectId}` : "/crm/today",
+      href: activity.opportunityId ? `/crm/opportunities/${activity.opportunityId}` : activity.prospectId ? `/crm/prospect/${activity.prospectId}` : `/crm/appointments?focus=${activity.id}`,
       dueAt: activity.dueAt ?? undefined,
       kind: "activity",
     });
@@ -105,7 +105,7 @@ export async function getWorkQueue(organisationId: string, ownerUserId: string):
       subtitle: activity.party?.name ?? activity.prospect?.companyName ?? activity.opportunity?.name,
       reason: "Due today",
       priority: "normal",
-      href: activity.opportunityId ? `/crm/opportunities/${activity.opportunityId}` : activity.prospectId ? `/crm/prospect/${activity.prospectId}` : "/crm/today",
+      href: activity.opportunityId ? `/crm/opportunities/${activity.opportunityId}` : activity.prospectId ? `/crm/prospect/${activity.prospectId}` : `/crm/appointments?focus=${activity.id}`,
       dueAt: activity.dueAt ?? undefined,
       kind: "activity",
     });

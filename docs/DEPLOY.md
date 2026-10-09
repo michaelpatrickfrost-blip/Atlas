@@ -248,7 +248,8 @@ full variable character coverage and existing font variables are retained.
 ## Private Admin entry acceptance — 9 October 2026
 
 After preparing the backed-up candidate, run `scripts/check-private-admin-login.ts`
-on the server with `ATLAS_PRIVATE_ADMIN_TEST=1` and
+on the server with the existing `.env.local` and `/etc/atlas/guardian.env`,
+`ATLAS_PRIVATE_ADMIN_TEST=1` and
 `ATLAS_PRIVATE_ADMIN_TEST_URL` set to the loopback candidate, then repeat on public
 HTTPS after activation. It uses existing Guardian staff for console GETs/sign-out,
 creates one isolated central Test-company customer for real login/denial/recovery

@@ -64,14 +64,14 @@ async function main() {
     await page.getByLabel("Email address", { exact: true }).fill(identifier);
     await page.getByLabel("Password", { exact: true }).fill(password);
     await page.getByRole("button", { name: "Sign in", exact: true }).click();
-    await expect(page.getByRole("alert")).toHaveText("This account does not have Atlas administration access.");
+    await expect(page.locator("form").getByRole("alert")).toHaveText("This account does not have Atlas administration access.");
     assert(!(await anonymous.cookies()).some(cookie => cookie.name === "atlas_session"));
     assert.equal((await db.membership.findUniqueOrThrow({ where: { id: membership.id } })).lastLoginAt, null);
     const badEmail = `missing-admin-check-${suffix}@example.test`;
     await page.getByLabel("Email address", { exact: true }).fill(badEmail);
     for (let attempt = 1; attempt <= 11; attempt++) {
       await page.getByRole("button", { name: "Sign in", exact: true }).click();
-      await expect(page.getByRole("alert")).toHaveText(attempt <= 10 ? "Incorrect email or password." : "Too many attempts. Wait 15 minutes before trying again.");
+      await expect(page.locator("form").getByRole("alert")).toHaveText(attempt <= 10 ? "Incorrect email or password." : "Too many attempts. Wait 15 minutes before trying again.");
     }
     assert(!(await anonymous.cookies()).some(cookie => cookie.name === "atlas_session"));
     console.log("PASS private URL/noindex/no-referrer, retired/anonymous 404 without disclosure, customer login has no Admin link, desktop/phone/password reveal/recovery navigation, customer Admin denial and real repeated-login blocking");
@@ -91,9 +91,16 @@ async function main() {
     await page.getByLabel("Code", { exact: true }).fill(recovery.code);
     await page.getByLabel("New password", { exact: true }).fill(password);
     await page.getByLabel("Confirm password", { exact: true }).fill(password);
-    await page.getByRole("button", { name: "Save password", exact: true }).click(); await expect(page.getByRole("alert")).toContainText("Could not set your password");
+    await page.getByRole("button", { name: "Save password", exact: true }).click(); await expect(page.locator("form").getByRole("alert")).toContainText("Could not set your password");
     assert.equal((await db.passwordReset.findUniqueOrThrow({ where: { id: reset.id } })).usedAt, null);
-    console.log("PASS real customer sign-in/signed cookie and tenant selection; customer console denial; wrong-portal recovery leaves code unused");
+    await page.goto(`/business/${company.slug}/reset-password`, { waitUntil: "networkidle" });
+    await page.getByLabel("Code", { exact: true }).fill(recovery.code);
+    await page.getByLabel("New password", { exact: true }).fill(password);
+    await page.getByLabel("Confirm password", { exact: true }).fill(password);
+    await page.getByRole("button", { name: "Save password", exact: true }).click();
+    await expect(page).toHaveURL(`${base}/home`);
+    assert((await db.passwordReset.findUniqueOrThrow({ where: { id: reset.id } })).usedAt);
+    console.log("PASS real customer sign-in/signed cookie and tenant selection; customer console denial; wrong-portal recovery leaves code unused and correct-company recovery succeeds");
 
     const staff = await browser.newContext({ baseURL: base });
     const token = jwt.sign({ userId: qa.userId, organisationId: qa.organisationId, authVersion: qa.user.authVersion, sessionVersion: qa.sessionVersion }, process.env.SESSION_SECRET, { algorithm: "HS256", expiresIn: "10m" });

@@ -20,7 +20,7 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
   let address;
   try { address = signInAddress(requestHeaders.get("x-atlas-request-path") ?? "/login", { portal: String(formData.get("portal") ?? ""), companySlug: String(formData.get("companySlug") ?? "").trim() }); }
   catch { return { error: "Use the sign-in address provided for your account." }; }
-  if (!email || email.length > 254 || !password || password.length > 128 || Buffer.byteLength(password, "utf8") > 72) return { error: "Incorrect email or password." };
+  if (!email || email.length > 254 || !password || password.length > 128) return { error: "Incorrect email or password." };
   try {
     if (!await allowAuthenticationAttempt(requestHeaders, email, "login")) return { error: AUTH_LIMIT_ERROR };
   } catch { return { error: "Sign-in is temporarily unavailable. Try again shortly." }; }

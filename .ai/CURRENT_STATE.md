@@ -34,7 +34,25 @@ Candidate 952aae0 prepared with central database/evidence backup
 atlas-pre-deploy-20261009-205119; migration and compatibility/smoke pass.
 First browser runner stopped before creating fixtures because Guardian QA config
 was not loaded; retry loads /etc/atlas/guardian.env. Concurrent Messages release
-9303039 became live; preserve its exact source/evidence before final activation.
+9303039 became live; its exact source/evidence is now merged.
+Candidate checks confirmed private entry headers/metadata, anonymous/retired 404s,
+no public private-address link, desktop/mobile layout, recovery navigation and
+customer denial. The runner then stopped on an ambiguous alert selector matching
+Next's route announcer; scoped it to the real form. Full acceptance is not yet
+claimed. Preserve legacy bcrypt input compatibility at login (new-password byte
+limits remain at password creation/recovery). Merged with live Messages 9303039: production build, strict types, scoped lint
+and 7-file/47-assertion auth/chat/field suite PASS. Desktop/phone candidate
+screenshots visually inspected. Re-prepare corrected final runner/source, execute
+full central/browser acceptance, activate and repeat publicly.
+Final candidate 7a08075 prepared with backup atlas-pre-deploy-20261009-205709.
+Its runner exposed React action auto-reset after rejected sign-in: subsequent
+required-field submissions did not run. Keep email/password in component memory
+with controlled inputs so failed login preserves entries; no storage/cache.
+Rebuild/re-prepare and repeat the real rejection/throttle sequence; this is not
+yet a fully accepted/live Admin release.
+Controlled-input regression and authentication suite: 6 files/36 assertions PASS;
+production build and scoped lint PASS. Corrected the regression's Testing Library
+role options (Playwright exact is not a DOM-query option); strict types rerun.
 Next: review final diff, record checks, prepare backed-up immutable release,
 exercise private entry/denials/limits and staff console, activate and repeat
 public HTTPS acceptance. No MFA/SSO or immediate crawler removal is claimed.
@@ -5388,3 +5406,8 @@ browser exceptions. Visual screenshots reviewed. Backup atlas-pre-deploy-2026100
 210052; private candidate evidence /tmp/atlas-supply-staging-3NQkiH. Activation
 stopped before writes because private Admin/auth release 1dafe16 had become live.
 Preserving its exact source and login-rate controls before combined preparation.
+
+The observed private Admin baseline is exact 1dafe16, including retained rejected
+sign-in inputs and verified retry. Preserved its central authentication limits and
+Company/Admin path binding. It does not change Manufacturing/Finance capabilities;
+no existing user grants, passwords or profile data were altered by this task.

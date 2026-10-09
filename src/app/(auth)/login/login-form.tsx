@@ -10,6 +10,8 @@ const initialState = { error: "" };
 
 export function LoginForm({portal,companySlug,recoveryHref="/reset-password"}:{portal?:"atlas";companySlug?:string;recoveryHref?:string} = {}) {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [state, formAction, pending] = useActionState(async (_: typeof initialState, formData: FormData) => {
     const result = await loginAction(formData);
     return result ?? initialState;
@@ -23,6 +25,7 @@ export function LoginForm({portal,companySlug,recoveryHref="/reset-password"}:{p
         <span className="font-medium text-slate-700">{portal === "atlas" ? "Email address" : "Email"}</span>
         <input
           name="email" autoComplete="username"
+          value={email} onChange={event => setEmail(event.target.value)}
           type="email"
           required
           maxLength={254}
@@ -36,6 +39,7 @@ export function LoginForm({portal,companySlug,recoveryHref="/reset-password"}:{p
         <input
           id="login-password"
           name="password" autoComplete="current-password"
+          value={password} onChange={event => setPassword(event.target.value)}
           type={showPassword ? "text" : "password"}
           required
           maxLength={128}

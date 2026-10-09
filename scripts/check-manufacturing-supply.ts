@@ -76,7 +76,7 @@ async function main(){
   console.log('PASS rich saved proposal converts to one production order with source audit.');
   phase='real Buy conversion';await page.getByRole('link',{name:/Review purchase draft/}).click();
   await expect(page.getByRole('textbox',{name:'Quantity',exact:true})).toHaveValue('15');await expect(page.getByRole('combobox',{name:'Shared product'})).toHaveValue(raw.id);
-  await page.locator('select[name="partyId"]').selectOption(supplier.id);await page.getByRole('button',{name:'Save draft',exact:true}).click();await expect(page.getByRole('alert')).toContainText('positive total');assert.equal(await db.financeDocument.count({where:{organisationId:org.id,duplicateKey:`mrp-buy:${buy.id}`}}),0);await expect(page.getByRole('textbox',{name:'Quantity',exact:true})).toHaveValue('15');
+  await page.locator('select[name="partyId"]').selectOption(supplier.id);await page.getByRole('button',{name:'Save draft',exact:true}).click();await expect(page.getByRole('alert').filter({hasText:'positive total'})).toContainText('positive total');assert.equal(await db.financeDocument.count({where:{organisationId:org.id,duplicateKey:`mrp-buy:${buy.id}`}}),0);await expect(page.getByRole('textbox',{name:'Quantity',exact:true})).toHaveValue('15');await expect(page.locator('select[name="partyId"]')).toHaveValue(supplier.id);
   await page.getByRole('textbox',{name:'Unit price',exact:true}).fill('2.50');await page.getByRole('button',{name:'Save draft',exact:true}).click();
   await page.waitForURL(/\/finance\/documents\/[^/?]+$/);const converted=await db.financeDocument.findFirstOrThrow({where:{organisationId:org.id,duplicateKey:`mrp-buy:${buy.id}`},include:{lines:true}});
   assert.equal(converted.status,'DRAFT');assert.equal(converted.net,3750n);assert.equal(converted.lines[0].productId,raw.id);assert.equal(converted.lines[0].quantity.toString(),'15');
@@ -85,7 +85,7 @@ async function main(){
   await assert.rejects(()=>supplyPurchaseProvider.read(session,buy.id),/actioned/);
   assert.equal(await db.financeDocument.count({where:{organisationId:org.id,duplicateKey:`mrp-buy:${buy.id}`}}),1);
   await page.goto('/manufacturing/planning/planned-orders',{waitUntil:'networkidle'});await expect(page.getByRole('link',{name:'View purchase draft'})).toHaveAttribute('href',`/finance/documents/${converted.id}`);
-  await page.goto(`/finance/documents/new?suggestion=${buy.id}`,{waitUntil:'networkidle'});await expect(page.getByRole('alert')).toContainText('already been actioned');assert.equal(await db.financeDocument.count({where:{organisationId:org.id,duplicateKey:`mrp-buy:${buy.id}`}}),1);
+  await page.goto(`/finance/documents/new?suggestion=${buy.id}`,{waitUntil:'networkidle'});await expect(page.getByRole('alert').filter({hasText:'already been actioned'})).toContainText('already been actioned');assert.equal(await db.financeDocument.count({where:{organisationId:org.id,duplicateKey:`mrp-buy:${buy.id}`}}),1);
   console.log('PASS real source-linked purchase draft, exact values, timeline and repeat refusal.');
   await assert.rejects(()=>assertProductsSellable(db,org.id,[raw.id]),/internal|inactive/);await assertProductsSellable(db,org.id,[finished.id]);
   await page.goto(`/products/${raw.id}`,{waitUntil:'networkidle'});await expect(page.getByText(/Internal \/ not sellable/)).toBeVisible();

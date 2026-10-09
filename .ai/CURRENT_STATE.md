@@ -5192,3 +5192,29 @@ files/73 tests passed (Studio contracts/fields, MRP, console/report/purchase and
 release gates). Concurrent type generation briefly removed .next/types/routes;
 explicit TypeScript is being rerun after the completed build. No source exclusions
 or relaxed checks. Next candidate must pass full connected acceptance before live.
+
+Candidate 96bffb7 built/smoke/Studio compatibility passed after backup
+atlas-pre-deploy-20261009-204409. Stable explicit TypeScript passed. Connected
+responsive/MRP/Make and readable zero-price rejection passed. Corrected acceptance
+selector for Next's empty route-announcer alert. Screenshot then confirmed React
+form actions reset the uncontrolled supplier after a resolved validation result,
+blocking retry at native required-field validation. DocumentEditor now prevents
+native submission and invokes the guarded server action directly, preserving all
+entries on error. Added supplier-retention assertion; new build/acceptance pending.
+
+Form correction verified: production build, strict TypeScript, scoped ESLint and
+three files/10 tests passed. New UI regression retains supplier, title, cost centre
+and line entries after validation, retries the same inputs, and retains an older-
+tab draft with readable recovery. Candidate checker now scopes business alerts and
+checks retained supplier explicitly. Full candidate/public acceptance still pending.
+
+Research now explicitly covers Microsoft workspace personalisation and saved
+views. Target custom fields/forms/dashboards/workflows use owner-approved Studio
+contracts with preview/publication/rollback; current console supplies bookmarkable
+role/shortcut views only. No later Studio compiler is claimed implemented here.
+
+Inspection also confirmed a pre-existing planning-cost visibility gap: Planned
+orders renders saved cost snapshots under plan.read without separately checking
+manufacturing.cost.read. This task's Finance report uses independent source gates;
+full manufacturing cost redaction needs a separate ownership-wide repair. Do not
+claim all historical Manufacturing profile boundaries have been verified.

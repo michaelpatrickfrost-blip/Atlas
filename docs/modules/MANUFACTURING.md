@@ -133,6 +133,7 @@ on 9 October 2026. Atlas design choices are our interpretation of that benchmark
 | Procurement/Finance control | [Invoice and receipt matching](https://learn.microsoft.com/en-us/dynamics365/finance/general-ledger/tasks/audit-invoices-key-data-ap-system) | Reviewed purchasing, accepted receipts, cumulative three-way matching, tolerance/approval, landed cost and source-linked supplier reporting |
 | Production economics | [BOM calculations](https://learn.microsoft.com/en-us/dynamics365/supply-chain/cost-management/bom-calculations), [costing versions](https://learn.microsoft.com/en-us/dynamics365/supply-chain/cost-management/costing-versions), [backflush costing](https://learn.microsoft.com/en-us/dynamics365/supply-chain/cost-management/backflush-costing) | Approved standard/planned/actual cost basis by site/version/date; labour/machine/overhead, WIP, variance and COGS reconciliation with Finance |
 | Outsourced operations | [Subcontracting](https://learn.microsoft.com/en-us/dynamics365/supply-chain/production-control/manage-subcontract-work-production) | Vendor service purchase attached to routing, component shipment/ownership, due dates, receipt and allocation |
+| Personalisation | [Personalise the experience](https://learn.microsoft.com/en-us/dynamics365/fin-ops-core/dev-itpro/get-started/personalize-user-experience), [saved workspace views](https://learn.microsoft.com/en-us/dynamics365/fin-ops-core/dev-itpro/user-interface/understanding-saved-views) | Personal and centrally shared filtered views, grids/columns, accessible shortcuts and configurable workspaces, governed independently from record permissions |
 
 The user experience should provide one task queue, a consistent explain-why panel,
 source drill-through, safe bulk review and role-specific saved views. That is an
@@ -163,6 +164,14 @@ AI stays optional; deterministic quantities, dates and postings remain reviewabl
 7. **Operational reporting and adoption:** OEE/downtime/yield/variance/adherence,
    throughput/traceability/customer risk, exception owner/age, saved shared views,
    permissions, audit/export, realistic Test scenarios and illustrated instructions.
+   Extend through owner-approved Studio contracts for typed custom fields, forms,
+   dashboards, documents and reviewed workflows. Personal defaults and company
+   templates must stay separate. Required operational facts, tenant boundaries,
+   validation, approvals and ledger rules cannot be removed by personalisation.
+   Preview, version, publish and roll back definitions with audited authority;
+   no arbitrary executable code in manufacturing settings. Current console
+   customisation is limited to role/shortcut bookmarks; these richer tools remain
+   planned and depend on Studio's phased owner contracts.
 
 Every stage needs changed-demand/cancellation, concurrency, duplicate/retry,
 tenant/capability, decimal/unit, currency, failure/rollback and real browser

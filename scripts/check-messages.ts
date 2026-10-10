@@ -1,5 +1,6 @@
 /** Opt-in central QA: existing Guardian identity, synthetic contact/chat only; no external delivery. */
 import assert from "node:assert/strict";
+import { mkdtemp, chmod } from "node:fs/promises";
 import jwt from "jsonwebtoken";
 import { chromium, expect } from "@playwright/test";
 import { db } from "../src/core/db/client";
@@ -41,6 +42,9 @@ async function main() {
     base.protocol === "https:" ||
       ["127.0.0.1", "localhost"].includes(base.hostname),
   );
+  const evidence = await mkdtemp("/tmp/atlas-messages-acceptance-");
+  await chmod(evidence, 0o700);
+  console.log(`Private Messages screenshots: ${evidence}`);
   const suffix = Date.now().toString(36),
     name = `Atlas Chat QA ${suffix}`;
   const fixture = await db.party.create({
@@ -321,7 +325,7 @@ async function main() {
           },
         )
         .toBe(true);
-      await page.screenshot({ path: `/tmp/atlas-messages-${device}.png` });
+      await page.screenshot({ path: `${evidence}/messages-${device}.png` });
       console.log(
         `PASS ${device}: modern pop-out, composer and record cards fit the viewport.`,
       );

@@ -1,5 +1,19 @@
 # Atlas current state
 
+## 10 October 2026 — Drawer candidate UI PASS, Messages evidence-path fix
+
+Exacte050647 builds successfully with unused compiler persistence off. Candidate
+I1I3xY Tasks/Messages drawers PASS all four widths, native Escape/X/backdrop/focus,
+Back flow/reduced motion, central assignment/notes/attachments/status guards/saves.
+Real Messages creation/send/order attachment/details/history/paging PASS, then its
+legacy fixed screenshot path /tmp/atlas-messages-desktop.png failed EACCES (owned
+by an earlier root-run check). Production remains1bf0e2c; no live claim. Preserve
+historic screenshots; check-messages now uses unique0700 private evidence folder
+per run. Candidate screenshots bYrmhi and backup072449/fixture072639 retained.
+Next: scoped checker types/lint, exact immutable retry, complete Messages plus
+Tasks candidate/public and screenshot inspection, then safely remove temp512MBswap.
+
+
 ## 10 October 2026 — Drawer build capacity correction (candidate)
 
 160efb1 server compiled but page collection failed ENOSPC before activation.

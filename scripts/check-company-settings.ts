@@ -388,10 +388,14 @@ async function main() {
       .getByLabel(`Updated elsewhere ${suffix}`, { exact: true })
       .check();
     const memberSales = await openSales(page);
-    const order = memberSales.getByRole("region", { name: "Sales: Order" });
+    const order = memberSales.getByRole("region", {
+      name: "Sales: Order", exact: true,
+    });
     await order.locator("summary").click();
     await order.getByLabel("Create", { exact: true }).uncheck();
-    const quote = memberSales.getByRole("region", { name: "Sales: Quote" });
+    const quote = memberSales.getByRole("region", {
+      name: "Sales: Quote", exact: true,
+    });
     await quote.locator("summary").click();
     await quote.getByLabel("Approve", { exact: true }).check();
     await page

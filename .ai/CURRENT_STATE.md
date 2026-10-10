@@ -66,6 +66,12 @@ contains its option text. Checker now targets select[name=sourceRoleId]. Backup
 atlas-pre-deploy-20261010-000954; evidence /tmp/atlas-settings-candidate-g8RcWJ.
 Fixtures retired; running 931a6009 unchanged. Copy-selector correction strict
 types, checker lint, production build and diff PASS. No public Settings claim.
+931d7e3 candidate passed all reusable-profile operations, snapshots, self-admin
+protection and foreign-profile isolation. Member check stopped because a substring
+region selector matched Order, Order Approval and Order Hold; regions now use
+exact accessible names. Backup atlas-pre-deploy-20261010-001346; evidence
+/tmp/atlas-settings-candidate-KlandW. Fixtures retired; live 931a6009 unchanged. Exact-region correction strict
+types, checker lint, production build and diff PASS.
 Only identical repeated memory checkpoint copies were deduplicated; all distinct
 contributor entries retained. Combined verification and Settings candidate/public
 acceptance remain required, followed by evidence and shared-main integration.

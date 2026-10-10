@@ -1,5 +1,36 @@
 # Atlas current state
 
+## 10 October 2026 — Corrected support lock checkpoint checked locally
+
+SELECT userId now matches PlatformAdministrator schema; support refresh/revocation
+case added. Corrected 10 files/53 assertions, production build, strict post-build
+TypeScript, changed-source lint and diff review PASS. Evidence /tmp/atlas-studio-
+preparation-corrected-{tests,build,types,lint}.txt. New actual candidate/public
+verification required; prior 4e4a0e8 failure retained, accepted live 5d101da unchanged.
+Next pin correction and repeat backed-up combined acceptance before collection.
+
+## 10 October 2026 — Preparation candidate caught wrong platform primary key
+
+4e4a0e8 build and earlier owner/archive checks passed, actual support preparation
+failed on SQL 42703: PlatformAdministrator primary key is userId, not id. Release
+stopped before activation; deploy exit 1, public remains exact accepted 5d101da.
+No temporary Audit test trigger reached. Exact Test companies retired/history
+retained. Backup atlas-pre-deploy-20261010-010940; fixture 011138; log /tmp/atlas-
+studio-preparation-deploy.txt. Corrected SELECT userId in platform grant lock and
+added support refresh/revocation regression. Rerun tests/build/types/lint then pin
+new source and repeat combined acceptance; no preparation VERIFIED claim.
+c6b2a observation plan recorded but code NOT STARTED; keep preparation active.
+
+## 10 October 2026 — Preparation release running; source observation contract next
+
+Exact 4e4a0e8 preparation/c6a source pinned; combined backed-up candidate/public
+acceptance running, backup atlas-pre-deploy-20261010-010940, log /tmp/atlas-studio-
+preparation-deploy.txt. Actual service proof pending; live remains 5d101da until
+confirmed. c6b2a independent one-row observation plan recorded before code: owner
+anchor/policies/written schema before value decode, refs/fingerprints, closed results
+without raw copies; no public endpoint/worker/DDL. Batch collection and sealing
+remain c6b2b, with source pointer and exact owner coverage before review.
+
 ## 10 October 2026 — Snapshot checkpoint live; preparation service locally checked
 
 Exact 5d101daec0618fee623e15b9c639d6afb4d581d6 complete combined candidate/public

@@ -58,6 +58,13 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 # Current Workstream Detail
 
+4e4a0e8 candidate preparation FAIL: support platform lock selected nonexistent id;
+actual model key userId. Earlier owner/archive checks PASS, deploy exit 1 before
+activation; accepted live 5d101da unchanged, exact Test access retired. No temporary
+Audit trigger reached. SQL corrected; focused support refresh/revocation regression
+added. Corrected tests/build/types/lint and a new backed-up candidate/public pin
+required. c6b2a plan only, no observation code started.
+
 5d101da complete combined candidate/public PASS and deploy exit 0; actual public
 health match, previous 8780a07 retained. Evidence m4iKXU/ubk7cv, backup 005837,
 fixtures 010035/010423. c5a/c5b VERIFIED; historical pending notes superseded.
@@ -312,6 +319,10 @@ platform grants and business-user provisioning regression cases.
 
 # Tests Run
 
+Corrected platform support lock: 10 files/53 assertions, production build, strict
+post-build TS/changed-source lint/diff review PASS. Evidence /tmp/atlas-studio-
+preparation-corrected-{tests,build,types,lint}.txt. Actual new pin proof pending.
+
 c6b1: 10 files/52 assertions, build/strict post-build TS/scoped lint PASS; evidence
 /tmp/atlas-studio-preparation-{tests,build,postbuild-types,lint}.txt. Actual service
 helper NOT RUN. c5b complete combined candidate/public PASS and deployed 5d101da.
@@ -454,6 +465,9 @@ Gate checklists below derive from the supplied sections rather than renumbering 
 rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
+
+Preparation support lock failure fixed in working source but not yet re-verified
+centrally; current phase/workstream remains IN PROGRESS, live 5d101da unchanged.
 
 The separately verified Dashboard release also cleared reproducible dependencies
 from ten inactive October 8 releases; its evidence documents those retained sources

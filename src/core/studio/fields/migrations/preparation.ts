@@ -42,7 +42,7 @@ export async function startFieldMigrationPreparation(session: Session, serverPri
     await tx.$queryRaw`SELECT r.id FROM roles r JOIN roles_on_memberships rm ON rm."roleId"=r.id
       WHERE rm."membershipId"=${principal.membershipId} AND r."organisationId"=${principal.organisationId} FOR SHARE OF r,rm`;
     if (principal.authority === "staff_support")
-      await tx.$queryRaw`SELECT id FROM platform_administrators WHERE "userId"=${principal.userId} FOR SHARE`;
+      await tx.$queryRaw`SELECT "userId" FROM platform_administrators WHERE "userId"=${principal.userId} FOR SHARE`;
     const fresh = await resolveFieldMigrationPrincipal(principal); sameActor(fresh, principal);
     const membership = await tx.membership.findFirst({ where: { id: principal.membershipId, organisationId: principal.organisationId, userId: principal.userId, active: true },
       select: { sessionVersion: true, user: { select: { authVersion: true } } } });

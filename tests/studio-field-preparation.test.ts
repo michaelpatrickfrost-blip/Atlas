@@ -61,6 +61,17 @@ it("replays only identical fresh intent without another creation or audit", asyn
   }
 });
 
+it("refreshes audited staff support authority under the independent platform grant lock", async () => {
+  const staff = { ...session, capabilities: new Set([...session.capabilities, "atlas.staff.manage", "atlas.companies.manage"]) };
+  m.resolve.mockResolvedValue(staff);
+  expect(await startFieldMigrationPreparation(staff, { ...principal, authority: "staff_support", auditId: "audit" }, request)).toMatchObject({ state: "PREPARING" });
+  expect(m.resolve).toHaveBeenCalledTimes(2);
+  expect(m.raw.mock.calls.some(([strings, actor]) => strings.join("?").includes('SELECT "userId" FROM platform_administrators') && actor === "user")).toBe(true);
+  m.resolve.mockResolvedValueOnce(staff).mockRejectedValueOnce(new Error("FORBIDDEN: staff support revoked")); m.create.mockClear();
+  await expect(startFieldMigrationPreparation(staff, { ...principal, authority: "staff_support", auditId: "audit" }, request)).rejects.toThrow("revoked");
+  expect(m.create).not.toHaveBeenCalled();
+});
+
 it("rejects client authority/payloads and mismatched or revoked server principal before persistence", async () => {
   for (const input of [{ ...request, organisationId: "other" }, { ...request, principal }, { ...request, payload: target }, { ...request, ownerQuery: {} }])
     await expect(startFieldMigrationPreparation(session, principal, input)).rejects.toThrow();

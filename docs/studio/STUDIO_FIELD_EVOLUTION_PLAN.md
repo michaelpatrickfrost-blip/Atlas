@@ -406,3 +406,33 @@ c6b1 implemented locally: 10 files/52 assertions, build/post-build TS/scoped lin
 PASS. Central actual service helper NOT RUN. No persistent DDL; rollback proof
 uses a temporary Audit trigger/function constrained to a single new Test company,
 actor and operation, with finally removal. Collection/sealing remains c6b2.
+
+
+## 2B3c6b2a — Authorised immutable source observation (IN PROGRESS)
+
+Purpose: implement one row of a future bounded collector without an execution
+worker or public data endpoint. Trusted context is the refreshed batch principal,
+server-loaded company and sealed intent; caller supplies an owner snapshot anchor.
+Recheck native owner read/manage and anchor revision, current/target policies, then
+load only source pointer/written schema metadata before decoding any stored value.
+Validate written compilation/hash/generation and current+written field policies;
+authorise referenced native records through written/current/target owner contracts.
+Return only immutable refs/revisions plus closed conversion result class/hash, no
+raw values. Bad source storage/fingerprint/conversion produces a redacted invalid
+row; permission/reference/integrity failures abort. Source ext/slot read locks and
+SQL append guard protect later persistence; final exact set/pointer checks remain
+c6b2b. Files: migrations/observation and focused tests, docs/memory. Database: none;
+read Studio storage and native owner callback only. Tests cover absent anchors/null,
+exact typed conversion, written field denial before business value fetch, stale/
+foreign owner, generation/integrity/fingerprint errors, reference denial propagation
+and no native writes/raw value copies. Pure helper tests are not collector acceptance.
+
+
+Preparation candidate 4e4a0e8 failed before activation: SQL used nonexistent
+PlatformAdministrator.id instead of its actual userId key. Corrected lock and
+support-authority regression; preparation remains IN PROGRESS pending new pin
+and repeated actual candidate/public proof. c6b2a recorded plan, code NOT STARTED.
+
+
+Corrected support lock local validation: 10 files/53 assertions, production build,
+strict post-build TypeScript/scoped lint PASS. New actual pin proof required.

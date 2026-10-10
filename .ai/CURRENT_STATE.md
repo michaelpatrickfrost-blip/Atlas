@@ -1,3 +1,29 @@
+## 10 October 2026 —2B4a/b local release checkpoint ready
+
+Ordinary current/history gateway implemented on refreshed Session authority. Native
+access precedes extension lookup; current+written read policies, exact compiled
+checksums/generation/binding and typed fingerprint, independently authorised written
+reference targets, bounded pagination and retired/obsolete history. No source/native/
+value mutations. 63 files390 assertions, production build, strict post-build TS,
+scoped lint and reviewed diff PASS. Actual central customer helper now checks active
+Decimal/current and every retained generation, non-null valid/missing/foreign refs,
+disabled authoring/source/private/revocation/tenant and unchanged snapshots; NOT RUN
+live yet. No DDL/model/backfill/reset. Exact next commit scoped checkpoint and run
+pinned full Studio candidate/public acceptance; current live remainsa527ccd.
+Files fields/runtime-read, focused suite, helper, PERMISSIONS/decisions/field plan/
+ledger/current state. Evidence /tmp/atlas-studio-b4{a,b}-*.txt. No ad-hoc dumps.
+
+## 10 October 2026 —2B4b current/history reads IN PROGRESS
+
+2B4a checkpointf3783e1 passed62files382/build/strictpostbuildTS/lint/diff; live
+proof pending. Purpose read gateway over real refreshed authority, no authoring/write
+requirements. Expected fields/runtime-read, focused suite and exactcentralhelper;
+no DDL/native/value writes. Both current+written read policies, native/private and
+reference access, immutable checksum/binding/generation/fingerprint; retired fields
+and obsolete generations history only; bounded revision history. Tests owner-first
+no-value-leak, current/written denial, empty/native/final/history/corruption/reference/
+foreign scope. Exact next implement current/history gateway and focused/real proof.
+
 ## 10 October 2026 —2B4a IMPLEMENTED locally; real acceptance pending
 
 Private server Session stamps/transaction refresh, tenant module locks and registry,

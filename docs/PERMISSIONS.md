@@ -139,8 +139,10 @@ owner operations. The read compiler preserves the published plan/checksum while
 checking field read permissions independently of authoring/write permissions.
 Callers still must authorise the native record and both current and written field
 policies, including reference targets, before returning values. Disabling Studio
-authoring does not disable published business rules. No ordinary value endpoint
-is provided by this authority/compiler foundation alone.
+authoring does not disable published business rules. Current/history internal readers additionally enforce both schema policies, native
+record and written reference target access and stored plan/fingerprint integrity.
+Retired/obsolete values are bounded history only. No client endpoint or native write
+hook is provided by this foundation.
 
 ## Section-level access profiles — 10 October 2026
 

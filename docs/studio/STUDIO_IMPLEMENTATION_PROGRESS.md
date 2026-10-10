@@ -13,7 +13,8 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 2B3f4b2b — Generation/history and cosmetic activation guards — VERIFIED livef1a9bf1.
 2B3f4c/d retained inspection, current-authority settlement and acceptance — VERIFIED livea527ccd.
-2B4a ordinary operator authority/read compiler — IMPLEMENTED locally; live proof pending.
+2B4a ordinary operator authority/read compiler — IMPLEMENTED locallyf3783e1; live proof pending.
+2B4b scoped current/history gateway — IMPLEMENTED locally; live proof pending.
 F4b2a active representation cosmetic binding remains VERIFIED.
 2B3f4b1 additive one-time settlement storage — VERIFIED live1d7f558, candidate/public
 combined acceptance PASS, original runner20133 exit0. Operational cleanup VERIFIED.
@@ -92,6 +93,21 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+2B4a/b release checkpoint:63 files390 assertions/build/strict post-build TS/scoped
+lint/diff PASS. Current/history gateway implemented; actual customer active Decimal/
+all-generation history and non-null valid/missing/foreign references plus refreshed
+module/private/member/session/auth/tenant proof coded, NOT RUN. No schema/native/
+value changes or UI endpoint. Exact next pinned full candidate/public release.
+
+
+2B4b purpose: ordinary scoped current/history reads; dependencies2B4a authority,
+sealed storage/bindings and owner-native policies. Expected fields/runtime-read,
+focused/real Test checks. No DDL/native/value mutation. Before output validate native,
+current/written read/reference access, sealed versions/checksums/binding/generation
+and decoded fingerprint. Retired/obsolete values only bounded history. Status IN
+PROGRESS; no value endpoint/UI yet. Next implement reader, focused/real proof.
+
 
 2B4a checkpoint: private genuine Session identity/version stamps and same-transaction
 current role/company/source entitlement refresh, no new token/permission/DB model.
@@ -1570,6 +1586,8 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+2B4a/b: auth/session, compiler/fields, fields/runtime-authority/runtime-read; three focused test suites, check-field-runtime-authority and principal driver; PERMISSIONS/decisions/field plan/ledger/current state.
+
 Current f4c/d: shared cutover-receipt + settlement-{receipt,inspection,coverage,service}; registry types/entities/contracts/runtime; service-work/studio owner policy/query; cutover/settlement/generation/principal acceptance helpers; fixture and five settlement suites; MODULE_SPEC, field plan, ledger, CURRENT_STATE and DECISIONS. No unrelated edits removed.
 
 F4b2b: forward0008 SQL; new check-field-generation-storage/continuation; existing
@@ -1837,6 +1855,8 @@ and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
 
+2B4a/b: genuine Session/tenant/module/version refresh, independent read compiler/reference grants; current/history gateway native-first/current+written/corruption/generation/pagination/retirement/reference cases; real customer fixture helper.
+
 Current f4c/d: settlement receipt/inspector/owner/service/current-and-written coverage suites plus typed retained-cutover fixture; real exact Test settlement service and post-cosmetic/new-migration history checks.
 
 F4b2b: exact Test nested terminal cosmetics/owner fixture and SQL schema/tenant/
@@ -1890,6 +1910,8 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+2B4a/b:63 scoped files390 assertions, production build, strict post-build TypeScript, scoped ESLint and diff review PASS. Actual central acceptance pending.
 
 Current f4c/d:60 files/372 assertions; production build; strict post-build TypeScript; scoped ESLint; git diff --check. Actual candidate/public helpers pending.
 
@@ -2030,6 +2052,8 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+2B4a/b IMPLEMENTED locally, all local checks PASS. No live verification claim; current remainsa527ccd.
 
 Current f4c/d local and complete candidate/public checks PASS; VERIFIED exacta527ccd. FullPhase2 remains IN PROGRESS.
 
@@ -2274,9 +2298,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement2B4b ordinary current/history read gateway on2B4a refreshed authority.
-Authorise native record and current plus written field/read/reference policy before
-returning any value; verify immutable plan/checksum/generation/fingerprint. Current
-source follows active pointer until cutover; retired/obsolete generations history
-only. Add focused and real exact Test proof, then combined pinned release for a/b.
-Follow2B4c–f before2C/D/visual2E. No Phase3 until wholePhase2 acceptance PASS.
+Commit scoped2B4a/b runtime authority/read gateway checkpoint and run pinned full
+Studio candidate/public acceptance under the original locks. Verify real ordinary
+customer typed/current/history/reference/revocation proof, complete native suites,
+runner exit0, exact public SHA/current/previous/health and retained rollback. Only
+then mark VERIFIED and begin2B4c atomic value saves/migration-window integration.
+Follow2B4d–f before2C/D/visual2E; no Phase3 until wholePhase2 gate PASS.

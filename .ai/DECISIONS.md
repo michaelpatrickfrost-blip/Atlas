@@ -2027,3 +2027,17 @@ label/help activation compares the active version and cannot bypass an open free
 This satisfies the specification's retained history/explicit evolution/security
 requirements without a second engine, domain privilege grant or native writes.
 Test-only fixtures prove SQL eligibility; normal owner writes remain2B4.
+## 10 October 2026 — Ordinary field reads preserve current and written policy
+
+Reusing authoring/migration data readers would require publisher/write grants and
+whole-cohort visibility, which is unsuitable for ordinary ERP record screens.
+The runtime reader uses the existing sealed metadata and typed storage under the
+refreshed genuine Session transaction. It authorises the canonical native record
+before extension/value lookup, checks both current and written read contracts,
+and validates checksums/bindings/generation/fingerprints before output. Stored
+reference identities require their written target owner's read authorisation.
+Historical references retain their original target meaning; current metadata is
+not allowed to reinterpret an old identity as a different target entity.
+Current reads follow the active generation; obsolete/retired storage is available
+only through bounded history with today's permissions. No new storage/read cache,
+permission model, native writes or history mutation is introduced.

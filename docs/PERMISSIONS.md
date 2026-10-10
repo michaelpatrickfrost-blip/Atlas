@@ -130,6 +130,18 @@ Atlas setup selects an active customer with independent staff authorisation;
 customer requests cannot supply another organisation. Published versions and
 activation revalidate dependencies; hiding controls is supplementary only.
 
+Ordinary additional-field runtime uses the existing authenticated server Session,
+not a Studio authoring grant. Auth privately stamps genuine resolved Session objects
+with membership/user identity and revocation versions; client/metadata copies do
+not inherit that authority. A short Serializable transaction refreshes membership,
+roles, account versions, active customer and enabled/entitled source modules before
+owner operations. The read compiler preserves the published plan/checksum while
+checking field read permissions independently of authoring/write permissions.
+Callers still must authorise the native record and both current and written field
+policies, including reference targets, before returning values. Disabling Studio
+authoring does not disable published business rules. No ordinary value endpoint
+is provided by this authority/compiler foundation alone.
+
 ## Section-level access profiles — 10 October 2026
 
 Company Settings is gated by existing company administration capabilities; normal

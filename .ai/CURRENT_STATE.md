@@ -1,3 +1,34 @@
+## 10 October 2026 —2B4a IMPLEMENTED locally; real acceptance pending
+
+Private server Session stamps/transaction refresh, tenant module locks and registry,
+and separate read compiler implemented. Original author plan/checksum unchanged.
+62 files382 assertions, production build, scoped lint and diff checks PASS; strict
+post-build TS PASS. Real exact Test helper implemented but NOT RUN: customer
+without authoring/write grants, disabled authoring, owner/private/fresh revocation/
+foreign denials and unchanged native snapshots. Synthetic grants/queues/module
+switches restored; only Test auth/session versions increment. No DDL/value endpoint.
+Files auth/session, compiler/fields, fields/runtime-authority, two test suites,
+central helper/principal driver, PERMISSIONS, decisions/ledger/current state.
+Next: save coherent checkpoint, then2B4b current/history gateway
+with native/current+written/reference checks before any value is returned. Live
+remainsa527ccd; this workstream is not yet VERIFIED live. No ad-hoc dumps.
+
+## 10 October 2026 —2B4a ordinary runtime authority/read compiler IN PROGRESS
+
+Depends on verifieda527ccd. Expected auth/session minimal server-only stamp/optional
+transaction reader, fields/runtime-authority, compiler/fields and focused/real Test
+checks. No DB/model/UI/value endpoint. Purpose: ordinary operators require current
+native/field read authority, not Studio authoring or field-write grants. Preserve
+existing author compilation/checksums. Stamp actual server-resolved Session identity
+and auth/session versions privately; refresh same membership/roles/user/platform
+inside the short serializable transaction, reject cloned metadata context/foreign/
+revoked scope. Retain signed cookies, capability architecture and existing consumers.
+Next16 local data-security/authentication/cookies docs read before auth changes.
+Tests: same sealed plan read vs author, separate read/write restrictions, native
+module/ref security, unstamped/forged/revoked versions/current roles/company;
+actual customer without Studio grants and disabled authoring retains permitted
+runtime compilation. No business values or native operations enabled by this step.
+
 ## 10 October 2026 — f4c/d VERIFIED live1146UTC; next2B4a
 
 Exacta527ccdf3832c16da541e6a0df650b06e90d1e8e full candidate1qikYT/publicWMNUWf

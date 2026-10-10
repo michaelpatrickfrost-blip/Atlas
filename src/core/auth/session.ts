@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { db } from "@/core/db/client";
 import { platformCapabilities } from "@/core/admin/access";
 import { STANDARD_ROLES } from "@/core/permissions/capabilities";
+import type { Prisma } from "@/generated/prisma/client";
 
 const SESSION_COOKIE = "atlas_session";
 function sessionSecret() {
@@ -31,6 +32,14 @@ export type Session = {
   membershipId: string;
   capabilities: Set<string>;
 };
+
+export type SessionAuthorityStamp = Readonly<{ userId: string; organisationId: string; membershipId: string; authVersion: number; sessionVersion: number }>;
+// Only server auth resolutions receive this private stamp. JSON/client copies or
+// metadata-only company contexts do not become authenticated data principals.
+const authorityStamps = new WeakMap<Session, SessionAuthorityStamp>();
+export function sessionAuthorityStamp(session: Session): SessionAuthorityStamp | null {
+  return authorityStamps.get(session) ?? null;
+}
 
 export async function createSessionCookie(token: SessionToken) {
   const membership = await db.membership.findUniqueOrThrow({where:{organisationId_userId:{organisationId:token.organisationId,userId:token.userId}},include:{user:true}});
@@ -73,8 +82,8 @@ export async function getSession(): Promise<Session | null> {
   return sessionFromMembership(membership);
 }
 
-async function loadMembership(organisationId: string, userId: string) {
-  return db.membership.findUnique({
+async function loadMembership(organisationId: string, userId: string, client: Pick<Prisma.TransactionClient, "membership"> = db) {
+  return client.membership.findUnique({
     where: { organisationId_userId: { organisationId, userId } },
     include: { user: {include:{platformAdmin:true}}, organisation: true, roles: { include: { role: true } } },
   });
@@ -101,7 +110,7 @@ function sessionFromMembership(membership: LoadedMembership): Session {
     for (const capability of STANDARD_ROLES.find(role => role.key === "admin")?.capabilities ?? []) effective.add(capability);
     for (const capability of staffCapabilities) effective.add(capability);
   }
-  return {
+  const session: Session = {
     userId: membership.userId,
     userName: membership.user.name,
     userEmail: membership.user.email,
@@ -110,12 +119,15 @@ function sessionFromMembership(membership: LoadedMembership): Session {
     membershipId: membership.id,
     capabilities: effective,
   };
+  authorityStamps.set(session, Object.freeze({ userId: session.userId, organisationId: session.organisationId, membershipId: session.membershipId,
+    authVersion: membership.user.authVersion ?? 0, sessionVersion: membership.sessionVersion ?? 0 }));
+  return session;
 }
 
 /** A person's session without a browser request, for work done on their behalf (Automations, scheduled jobs).
  *  Same capabilities as when they sign in; null if they have left or the company is suspended. */
-export async function sessionForUser(organisationId: string, userId: string): Promise<Session | null> {
-  const membership = await loadMembership(organisationId, userId);
+export async function sessionForUser(organisationId: string, userId: string, client: Pick<Prisma.TransactionClient, "membership"> = db): Promise<Session | null> {
+  const membership = await loadMembership(organisationId, userId, client);
   if (!membership || !membership.active || membership.organisation.status !== "ACTIVE") return null;
   if (membership.organisation.kind === "INTERNAL" && !platformCapabilities(membership.user.platformAdmin).length) return null;
   return sessionFromMembership(membership);

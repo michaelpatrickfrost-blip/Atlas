@@ -13,7 +13,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 2B3f4b2b — Generation/history and cosmetic activation guards — VERIFIED livef1a9bf1.
 2B3f4c/d retained inspection, current-authority settlement and acceptance — VERIFIED livea527ccd.
-2B4a ordinary operator authority/read compiler — NOT STARTED (exact next).
+2B4a ordinary operator authority/read compiler — IMPLEMENTED locally; live proof pending.
 F4b2a active representation cosmetic binding remains VERIFIED.
 2B3f4b1 additive one-time settlement storage — VERIFIED live1d7f558, candidate/public
 combined acceptance PASS, original runner20133 exit0. Operational cleanup VERIFIED.
@@ -35,7 +35,7 @@ candidate/public. F3a–c VERIFIED9aad1fc.
 # Overall Status
 
 F4c/d VERIFIED exacta527ccd candidate/public ALL COMBINED PASS/runner96792 exit0.
-Next2B4 runtime workstreams recorded; none implemented yet. FullPhase2 gate remains
+2B4a runtime authority/read compiler implemented locally; real proof pending. FullPhase2 gate remains
 IN PROGRESS; visual2E mandatory after2B–D.
 
 Phase2 IN PROGRESS. F4b2b VERIFIED exactf1a9bf1 full candidate/public gate; ordinary
@@ -92,6 +92,32 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+2B4a checkpoint: private genuine Session identity/version stamps and same-transaction
+current role/company/source entitlement refresh, no new token/permission/DB model.
+Author compiler unchanged sealed plans; read compiler independently checks reads.
+62 files382 assertions/build/scoped lint/diff PASS; post-build TS PASS. Actual
+Test helper coded, NOT RUN. No normal values or native writes exposed. Next2B4b
+current/history gateway must check native/current+written/reference policies and
+version/checksum/fingerprint before returning values. Live remainsa527ccd.
+
+
+## 10 October 2026 —2B4a ordinary runtime authority/read compiler IN PROGRESS
+
+Depends on verifieda527ccd. Expected auth/session minimal server-only stamp/optional
+transaction reader, fields/runtime-authority, compiler/fields and focused/real Test
+checks. No DB/model/UI/value endpoint. Purpose: ordinary operators require current
+native/field read authority, not Studio authoring or field-write grants. Preserve
+existing author compilation/checksums. Stamp actual server-resolved Session identity
+and auth/session versions privately; refresh same membership/roles/user/platform
+inside the short serializable transaction, reject cloned metadata context/foreign/
+revoked scope. Retain signed cookies, capability architecture and existing consumers.
+Next16 local data-security/authentication/cookies docs read before auth changes.
+Tests: same sealed plan read vs author, separate read/write restrictions, native
+module/ref security, unstamped/forged/revoked versions/current roles/company;
+actual customer without Studio grants and disabled authoring retains permitted
+runtime compilation. No business values or native operations enabled by this step.
+
 
 ## 10 October 2026 — f4c/d VERIFIED live1146UTC; next2B4a
 
@@ -2248,9 +2274,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement2B4a ordinary runtime authority and read compiler without requiring Studio
-publish/edit or field write grants. Refresh real company member/roles/user/platform
-and source availability; reject metadata-only/foreign/revoked scopes. Keep existing
-author compiler hashes/write checks unchanged. Add focused and actual Test proof,
-then2B4b current+written+native/reference scoped value reads. Follow recorded2B4
-workstreams before2C/D/visual2E. No Phase3 until completePhase2 acceptance PASS.
+Implement2B4b ordinary current/history read gateway on2B4a refreshed authority.
+Authorise native record and current plus written field/read/reference policy before
+returning any value; verify immutable plan/checksum/generation/fingerprint. Current
+source follows active pointer until cutover; retired/obsolete generations history
+only. Add focused and real exact Test proof, then combined pinned release for a/b.
+Follow2B4c–f before2C/D/visual2E. No Phase3 until wholePhase2 acceptance PASS.

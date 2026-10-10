@@ -1,3 +1,18 @@
+## 10 October 2026 — Ordinary field authority reuses signed Session identity
+
+Migration principals deliberately require Studio publication authority and whole
+reviewed-cohort access. That boundary is unsuitable for ordinary permitted field
+reads. Keep it unchanged. Stamp only actual auth/session server resolutions in a
+private WeakMap with exact tenant/user/membership and existing auth/session versions.
+No new browser token/session format, persisted grants or business cache is created.
+The ordinary runtime refreshes membership/roles/platform and current grants in its
+shared transaction; cloned metadata-only sessions cannot inherit the stamp. Reads
+compile/check current and written read policy without requiring write or authoring
+grants; author compilation retains its exact plan and write checks. Disabling Studio
+authoring cannot silently bypass published native runtime requirements. Source/native
+record/reference guards still apply separately; a stamped session grants no value
+access by itself. This remains the existing JWT/capability architecture.
+
 ## 10 October 2026 — Current settlement authority uses explicit owner history coverage
 
 The original preparation actor and source-active/draft query are unsuitable as

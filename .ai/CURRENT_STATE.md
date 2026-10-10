@@ -1,80 +1,50 @@
 # Atlas current state
 
-## 10 October 2026 — Company Settings and access-profile redesign in progress
+## 10 October 2026 — Company Settings and access profiles deployed and verified
 
-Settings now routes ordinary users to /profile/settings (own name, password,
-sessions, access-profile names and personal mailboxes). Company administration
-requires native core.modules/users/roles/it.manage capabilities; business record,
-audit-read and personal-email capabilities alone do not open it. Every nested
-Settings layout preserves this boundary; personal email moved to /profile/email
-with owner-only mailbox/history queries. Existing My work remains /profile.
+Activated immutable 1646316ac10cab292196d8e71397be82cb541fbf on public Atlas.
+Previous Studio 931a6009dfc24f20ceddc2403bf01b21aa4f2950 remains retained for rollback;
+its already-accepted cohort/decoder/source and combined acceptance hook are preserved.
+No new schema, stored-grant migration or local business database/cache.
 
-Company Settings adds a logo-based modern overview, searchable destinations,
-responsive section navigation, and a searchable access-profile selector. All
-implemented native permissions are offered once (including additional HR slices),
-with app and per-source-section None/Read/Write/Admin presets and individual
-checkboxes. Empty/copy profiles, same-ID rename, mixed profiles and exceptions
-reuse canonical Role/Membership storage. Mixing preserves unsaved exceptions;
-failed saves keep drafts, reset is explicit, profile changes warn if unsaved.
-Publication, activation, payroll completion and IT administration are Admin preset
-controls; existing stored grants and underlying native guards are unchanged.
+Settings sends ordinary users to /profile/settings: own name/password/sessions,
+assigned profile names and owner-only personal mailbox workspace /profile/email.
+Company administration requires native core.modules/users/roles/it.manage; each
+section retains its own capability. Business read/write/audit/personal-mail grants
+alone do not open it. My work remains /profile; platform tools/provisioning stay
+independently guarded and absent from business navigation.
 
-Company profile/access updates compare server-rendered snapshots inside audited
-Serializable transactions. Stale profile/catalogue/membership edits, unknown or
-foreign IDs, duplicate names and self-admin removal fail closed. Membership access
-saves invalidate older company sessions. Platform grants/provisioning policy remain
-independent; company users are not given Atlas user-creation powers.
+Modern company overview/search, responsive section navigation and access-profile
+selector reuse Atlas branding. Empty/copy/same-ID rename profiles, mixed member
+profiles, app/source-section None/Read/Write/Admin and individual permissions reuse
+Role/Membership storage. All implemented capabilities appear once. Presets expand
+native capabilities; unsupported Read controls disable and self-service/native
+private/source restrictions remain. Existing saved grants are unchanged.
 
-Checks: 14 focused files/63 assertions PASS; build PASS; scoped lint zero errors/two
-existing brand image warnings. Strict types found two checker/test typing issues; corrected focused four files/21
-assertions and strict types now PASS. Shell syntax/diff PASS. Linux opt-in
-central synthetic Settings checker and locked candidate/public deployment mode
-implemented but NOT RUN. No deployment claim; exact live CRM b57ba72 is now merged unchanged, preserving
-its appointment completion guard. Integrated 15 files/70 assertions, strict types, route generation, production build,
-scoped lint (zero errors/two existing image warnings), shell syntax and diff PASS.
-Locked candidate/public preparation is next. No schema migration/local business store.
-Candidate 1c4a1d0 build/smoke passed (backup atlas-pre-deploy-20261009-234634),
-but acceptance stopped before activation: expected password validation was redacted
-as React production error 441; test also selected Next's route-announcer alert.
-Test fixtures suspended/sessions revoked; live CRM b57ba72 unchanged. Settings/
-profile/security mutations now return structured safe feedback using the existing
-shared helper; driver/framework details remain generic. Ordinary profile writes
-are transactionally audited. Legacy role-only assignment now requires both user
-and role administration, the same snapshot and session-revocation guards, closing
-an older entry-point bypass of the new editor's safety. Focused eight files/43
-assertions PASS; final 15 files/71 assertions, strict types, production build,
-scoped lint (zero errors/two existing image warnings), shell syntax and diff PASS.
-Opt-in database integration assertions updated for structured feedback/snapshots;
-that separate destructive fixture suite was not run. Corrected df80b2e candidate passed build/smoke and personal-settings checks;
-profile acceptance stopped at an ambiguous selector matching the editor and a
-closed creation dialog. The checker now scopes to the editor input. Backup
-atlas-pre-deploy-20261009-235852; evidence /tmp/atlas-settings-candidate-zw6mZn.
-Fixtures suspended/sessions revoked; live b57ba72 unchanged. Selector correction
-strict types, production build, checker lint and diff PASS. Fresh candidate
-acceptance and public activation remain pending. No activation claim.
+Audited Serializable profile/member writes compare snapshots (including available
+profile catalogue), reject stale/foreign/unknown/duplicate inputs and self-admin
+removal. Member updates revoke older company sessions; legacy role assignment has
+the same dual-admin/snapshot guards. Failed saves keep drafts and safe feedback;
+reset/discard controls are explicit. Own-name changes are transactionally audited.
+
+Checks: 17 focused files/83 assertions, strict types, production build, scoped lint
+(zero errors/two existing brand-image warnings), shell syntax and whitespace PASS.
+Selector-only corrections each passed strict types/lint/build. Central candidate
+and public Settings/Home acceptance PASS at exact SHA, bracketing both runs.
+Profile creation/copy/rename/reload, stale/self/foreign rejection, mixed overrides,
+session revocation, company precedence and desktop/tablet/phone layouts PASS;
+zero browser errors. Synthetic Test access retired, audited history retained.
+Opt-in database suite updated but not run; repository-wide suite not run.
+
+Backup atlas-pre-deploy-20261010-001718; private candidate evidence
+/tmp/atlas-settings-candidate-f2TezE; public /tmp/atlas-settings-public-020SLN.
+Home evidence /tmp/atlas-home-menu-check-hykmZu and /tmp/atlas-home-menu-check-2xHAvs.
+Prior stopped candidates/selector corrections remain in
+[Settings evidence](../docs/evidence/2026-10-10-settings.md); none bypassed activation gates.
 Paths: settings/profile/email routes, shared AccessEditor, permission sections/
-snapshot helpers, shell utility navigation, checker/deployer and focused suites.
-Exact newly running Studio 931a6009 is merged, preserving its cohort/decoder and
-combined acceptance hook; Settings and Studio selectors both retained. Its candidate and public
-combined acceptance now PASS (/tmp/atlas-studio-candidate-Ww5GqF and
-/tmp/atlas-studio-public-qqYkvj), exact public health 931a6009 verified.
-Combined 17 files/83 assertions, strict types, production build, scoped lint
-(zero errors/two existing brand-image warnings), shell syntax and diff PASS.
-07abc4a candidate passed build/smoke, personal Settings and initial mixed profile
-creation/save; copy check stopped at an exact-label select locator whose label
-contains its option text. Checker now targets select[name=sourceRoleId]. Backup
-atlas-pre-deploy-20261010-000954; evidence /tmp/atlas-settings-candidate-g8RcWJ.
-Fixtures retired; running 931a6009 unchanged. Copy-selector correction strict
-types, checker lint, production build and diff PASS. No public Settings claim.
-931d7e3 candidate passed all reusable-profile operations, snapshots, self-admin
-protection and foreign-profile isolation. Member check stopped because a substring
-region selector matched Order, Order Approval and Order Hold; regions now use
-exact accessible names. Backup atlas-pre-deploy-20261010-001346; evidence
-/tmp/atlas-settings-candidate-KlandW. Fixtures retired; live 931a6009 unchanged. Exact-region correction strict
-types, checker lint, production build and diff PASS.
-Only identical repeated memory checkpoint copies were deduplicated; all distinct
-contributor entries retained. Combined verification and Settings candidate/public
-acceptance remain required, followed by evidence and shared-main integration.
+snapshots, shell utilities, Settings checker/deployer and focused suites.
+Final source/evidence shared-main integration remains next; application activation
+and public acceptance are complete.
 
 ## 10 October 2026 — People checker initial library state corrected in review
 

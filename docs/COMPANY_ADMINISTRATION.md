@@ -43,8 +43,10 @@ Business-user creation remains an independent Atlas administrator workflow per t
 9 October policy; company profiles do not create platform grants or provisioning
 rights. Company administrators retain account suspension/recovery/session/employee
 linking within existing capabilities. No new schema or business-record datastore.
-Candidate/public acceptance status lives in .ai/CURRENT_STATE.md; implementation
-alone is not live verification.
+Deployed and publicly accepted at runtime 1646316 on 10 October 2026.
+[Settings acceptance evidence](evidence/2026-10-10-settings.md) records candidate/
+public workflows, source boundaries and checks; current runtime status lives in
+.ai/CURRENT_STATE.md.
 
 ## Available workflows
 

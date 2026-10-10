@@ -1,3 +1,36 @@
+## 10 October 2026 —2B4d3b2 source metadata VERIFIED locally
+
+Internal genuine-principal Serializable provider now locks tenant root/source
+metadata and bindings/generations, inspects immutable v1/v2 payload/plan hashes,
+checks exact current/pinned meaning and direct read policies, and derives bounded
+current graph closure (100 nodes/20 depth, memoized heights). Historical pins cannot
+hide current cycles. Labels/help may change; policy/storage/generation cannot.
+Integrity inspection never evaluates a source's own rule or reads private inputs;
+actual evaluation still authorises each fact. No query/value read/publication/DDL.
+10 new security/integrity/graph tests;25 focused assertions/3 suites, TypeScript,
+scoped lint and diff PASS. Initial restricted-author fixture lacked grants; corrected
+fixture, no production policy change. Full regression/build not repeated after the
+recent71files446/build checkpoint, following Michael's testing instruction; central
+lock/runtime evidence remains the d5 gate. Source required-source/sealed-field and
+shared evaluator inspection extraction, focused suite, plan/ledger/current state/
+DECISIONS. Next d3c1 transactional existing-record fact/value reader, then d3c2
+staged/new-record paths and canonical coverage/native hooks. Live0925bb5 unchanged.
+
+## 10 October 2026 —2B4d3b2 locked source metadata IN PROGRESS
+
+33a9c18 isolated v2 compiler checkpoint saved;71files446/build/strict post-build
+TS/lint/diff PASS. Implement sealed v1/v2 integrity inspection without executing
+conditions; server-owned Serializable metadata provider locks tenant definitions,
+current/pinned versions and canonical bindings/generations, checks direct current
+and pinned read policy and bounded current dependency cycles. No business values,
+query execution, publication dispatch or DDL. Expected sealed-field/required-source
+helpers, evaluator inspection extraction and focused tests. Keep caller lock-order
+integration separate until d4; helper is internal and unwired. Michael requests
+larger coherent implementation with focused security checks and full testing at
+gates; do not repeatedly rerun the full regression for every small edit. Next build
+provider/inspection then focused corruption, tenant, pin, graph and privacy tests.
+Live0925bb5 unchanged; visual2E mandatory and Phase2 gate pending.
+
 ## 10 October 2026 —2B4d3b1 full isolated compiler VERIFIED locally
 
 Full conditional v2 field plan now seals native entity/query hashes and exact field

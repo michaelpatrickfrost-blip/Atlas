@@ -11,6 +11,8 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
+2B4d3b2 locked source metadata/current graph — VERIFIED locally;25 focused assertions/types/lint/diff PASS.
+
 2B4d3b1 full isolated v2 field compiler — VERIFIED locally;71files446/build/strict post-build TS/lint/diff PASS.
 
 2B4d3a pure condition evaluator — VERIFIED locally;70files440/build/strictpostbuildTS/lint/diff PASS.
@@ -43,6 +45,41 @@ F4a VERIFIED locally (adfc357); strict TS/build/scoped lint,18 focused and45 fil
 candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
+
+## 10 October 2026 —2B4d3b2 source metadata VERIFIED locally
+
+Internal genuine-principal Serializable provider now locks tenant root/source
+metadata and bindings/generations, inspects immutable v1/v2 payload/plan hashes,
+checks exact current/pinned meaning and direct read policies, and derives bounded
+current graph closure (100 nodes/20 depth, memoized heights). Historical pins cannot
+hide current cycles. Labels/help may change; policy/storage/generation cannot.
+Integrity inspection never evaluates a source's own rule or reads private inputs;
+actual evaluation still authorises each fact. No query/value read/publication/DDL.
+10 new security/integrity/graph tests;25 focused assertions/3 suites, TypeScript,
+scoped lint and diff PASS. Initial restricted-author fixture lacked grants; corrected
+fixture, no production policy change. Full regression/build not repeated after the
+recent71files446/build checkpoint, following Michael's testing instruction; central
+lock/runtime evidence remains the d5 gate. Source required-source/sealed-field and
+shared evaluator inspection extraction, focused suite, plan/ledger/current state/
+DECISIONS. Next d3c1 transactional existing-record fact/value reader, then d3c2
+staged/new-record paths and canonical coverage/native hooks. Live0925bb5 unchanged.
+
+
+## 10 October 2026 —2B4d3b2 locked source metadata IN PROGRESS
+
+33a9c18 isolated v2 compiler checkpoint saved;71files446/build/strict post-build
+TS/lint/diff PASS. Implement sealed v1/v2 integrity inspection without executing
+conditions; server-owned Serializable metadata provider locks tenant definitions,
+current/pinned versions and canonical bindings/generations, checks direct current
+and pinned read policy and bounded current dependency cycles. No business values,
+query execution, publication dispatch or DDL. Expected sealed-field/required-source
+helpers, evaluator inspection extraction and focused tests. Keep caller lock-order
+integration separate until d4; helper is internal and unwired. Michael requests
+larger coherent implementation with focused security checks and full testing at
+gates; do not repeatedly rerun the full regression for every small edit. Next build
+provider/inspection then focused corruption, tenant, pin, graph and privacy tests.
+Live0925bb5 unchanged; visual2E mandatory and Phase2 gate pending.
+
 
 ## 10 October 2026 —2B4d3b1 full isolated compiler VERIFIED locally
 
@@ -187,6 +224,25 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 
 # Completed Workstreams
 
+## 10 October 2026 —2B4d3b2 source metadata VERIFIED locally
+
+Internal genuine-principal Serializable provider now locks tenant root/source
+metadata and bindings/generations, inspects immutable v1/v2 payload/plan hashes,
+checks exact current/pinned meaning and direct read policies, and derives bounded
+current graph closure (100 nodes/20 depth, memoized heights). Historical pins cannot
+hide current cycles. Labels/help may change; policy/storage/generation cannot.
+Integrity inspection never evaluates a source's own rule or reads private inputs;
+actual evaluation still authorises each fact. No query/value read/publication/DDL.
+10 new security/integrity/graph tests;25 focused assertions/3 suites, TypeScript,
+scoped lint and diff PASS. Initial restricted-author fixture lacked grants; corrected
+fixture, no production policy change. Full regression/build not repeated after the
+recent71files446/build checkpoint, following Michael's testing instruction; central
+lock/runtime evidence remains the d5 gate. Source required-source/sealed-field and
+shared evaluator inspection extraction, focused suite, plan/ledger/current state/
+DECISIONS. Next d3c1 transactional existing-record fact/value reader, then d3c2
+staged/new-record paths and canonical coverage/native hooks. Live0925bb5 unchanged.
+
+
 2B4d3a pure evaluator VERIFIED locally;70files440/build/strictpostbuildTS/lint/diff
 PASS. No runtime/publish/native enforcement completion claim.
 
@@ -243,6 +299,41 @@ actual facts/create-only/native/Audit rollback proof, runner40775 exit0.
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+## 10 October 2026 —2B4d3b2 source metadata VERIFIED locally
+
+Internal genuine-principal Serializable provider now locks tenant root/source
+metadata and bindings/generations, inspects immutable v1/v2 payload/plan hashes,
+checks exact current/pinned meaning and direct read policies, and derives bounded
+current graph closure (100 nodes/20 depth, memoized heights). Historical pins cannot
+hide current cycles. Labels/help may change; policy/storage/generation cannot.
+Integrity inspection never evaluates a source's own rule or reads private inputs;
+actual evaluation still authorises each fact. No query/value read/publication/DDL.
+10 new security/integrity/graph tests;25 focused assertions/3 suites, TypeScript,
+scoped lint and diff PASS. Initial restricted-author fixture lacked grants; corrected
+fixture, no production policy change. Full regression/build not repeated after the
+recent71files446/build checkpoint, following Michael's testing instruction; central
+lock/runtime evidence remains the d5 gate. Source required-source/sealed-field and
+shared evaluator inspection extraction, focused suite, plan/ledger/current state/
+DECISIONS. Next d3c1 transactional existing-record fact/value reader, then d3c2
+staged/new-record paths and canonical coverage/native hooks. Live0925bb5 unchanged.
+
+
+## 10 October 2026 —2B4d3b2 locked source metadata IN PROGRESS
+
+33a9c18 isolated v2 compiler checkpoint saved;71files446/build/strict post-build
+TS/lint/diff PASS. Implement sealed v1/v2 integrity inspection without executing
+conditions; server-owned Serializable metadata provider locks tenant definitions,
+current/pinned versions and canonical bindings/generations, checks direct current
+and pinned read policy and bounded current dependency cycles. No business values,
+query execution, publication dispatch or DDL. Expected sealed-field/required-source
+helpers, evaluator inspection extraction and focused tests. Keep caller lock-order
+integration separate until d4; helper is internal and unwired. Michael requests
+larger coherent implementation with focused security checks and full testing at
+gates; do not repeatedly rerun the full regression for every small edit. Next build
+provider/inspection then focused corruption, tenant, pin, graph and privacy tests.
+Live0925bb5 unchanged; visual2E mandatory and Phase2 gate pending.
+
 
 ## 10 October 2026 —2B4d3b1 full isolated compiler VERIFIED locally
 
@@ -1888,6 +1979,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+Current d3b2: required-source.ts, sealed-field.ts, required-evaluator.ts; focused
+source suite; required plan, implementation ledger, CURRENT_STATE and DECISIONS.
+
 d3a: fields/required-compiler plan schema/normalizer; required-evaluator; evaluator
 suite; required plan, DECISIONS, ledger/CURRENT_STATE and d2 public evidence.
 
@@ -2063,6 +2157,8 @@ platform provisioning guards, deploy compatibility script, focused/regression te
 source copy, contract inventory, phase completion report, this ledger, CURRENT_STATE and DECISIONS.
 
 # Database / Prisma Changes
+
+d3b2: none. No migration, native mutation, reset/backfill, business cache or dumps.
 
 d3a: none. Pure evaluator; conditional definition dispatch remains disabled.
 
@@ -2241,6 +2337,10 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+d3b2:25 focused assertions/3 suites PASS; npx tsc --noEmit exit0, scoped eslint
+exit0, git diff --check PASS. Broad regression/build deferred to coherent feature
+gates per Michael; last full checkpoint71files446/build/strict types PASS.
 
 d3a:70files440 regression assertions, final production build, strict post-build
 TypeScript, scoped lint/diff PASS. Pure helper has no live runtime entry yet.
@@ -2654,13 +2754,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint d3b1 isolated full v2 compiler and memory.71files446/build/strict
-post-build TS/lint/diff PASS; no definition dispatch/native
-queries or hooks. d3b2 next: locked current+pinned source field metadata provider,
-exact tenant/binding/generation/compiled checksum, compatible current presentation,
-bounded current dependency closure/cycle checks and immutable v1/v2 source plans.
-Separate ordinary value-view integrity/read policy from executing source conditions
-or fetching their private inputs. Read saved required-rules plan locking/legacy
-coverage findings before d3c/d4. Then canonical required coverage and existing
-reviewed evolution integration; keep v2 publishing off until d4 native enforcement.
-Live0925bb5 candidate/public complete; no Phase3 before fullPhase2 gate/visual2E.
+Checkpoint d3b2 source provider and memory, then implement d3c1 shared versioned
+base-field/value reading and existing-record conditional input evaluation in the
+caller-owned Serializable transaction. Authorise current/pinned/written/reference
+policy, require exact native revision and owner-approved fact query, never treat
+unavailable as absent. Preserve v1 ordinary gateway and separate value viewing
+from condition evaluation. d3c2 staged/new-record support then canonical required
+coverage/evolution/d4 native hooks/d5 central gate. No conditional publication yet.
+Continue2B operator forms/search,2C/D and mandatory visual2E, fullPhase2 gate. Live0925bb5.

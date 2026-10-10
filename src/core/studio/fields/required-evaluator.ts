@@ -28,13 +28,8 @@ function normaliseFact(fact: RequiredFactMetadata, input: unknown): FieldValue |
 }
 function present(value: FieldValue | null): boolean { return value !== null && (value.type !== "multi_enum" || value.value.length > 0); }
 
-/** Pure evaluator, no data access/grants. The server runtime must authorise native,
- * current/written field and reference policy before returning each value. Missing
- * metadata/unavailable/denied input is an error, not an absent/false condition.
- * All sources resolve before aggregation so short circuit cannot hide denial. */
-// The returned condition result never relaxes the field's unconditional required
-// flag; the future owning runtime must combine that flag with this result by OR.
-export async function evaluateRequiredCondition(input: unknown, resolveValue: (source: RequiredFactSource, metadata: RequiredFactMetadata) => Promise<unknown>) {
+/** Integrity-only metadata inspection; never resolves or evaluates business facts. */
+export function inspectRequiredCondition(input: unknown) {
   const sealed = sealedSchema.parse(input), plan = sealed.plan;
   const rawPlan = z.object({ plan: z.unknown() }).parse(input).plan;
   if (checksum(rawPlan) !== sealed.checksum || checksum(plan) !== sealed.checksum) invalid();
@@ -49,6 +44,19 @@ export async function evaluateRequiredCondition(input: unknown, resolveValue: (s
     const fact = facts.get(key(predicate.source))!, storage = fact.kind === "native" ? fact.storage : fact.field.storage;
     if (canonicalJson(normaliseRequiredPredicate(predicate, storage)) !== canonicalJson(predicate)) invalid();
   }
+  return sealed;
+}
+
+/** Pure evaluator, no data access/grants. The server runtime must authorise native,
+ * current/written field and reference policy before returning each value. Missing
+ * metadata/unavailable/denied input is an error, not an absent/false condition.
+ * All sources resolve before aggregation so short circuit cannot hide denial. */
+// The returned condition result never relaxes the field's unconditional required
+// flag; the future owning runtime must combine that flag with this result by OR.
+export async function evaluateRequiredCondition(input: unknown, resolveValue: (source: RequiredFactSource, metadata: RequiredFactMetadata) => Promise<unknown>) {
+  const sealed = inspectRequiredCondition(input), plan = sealed.plan;
+  const facts = new Map(plan.facts.map(fact => [key(sourceOf(fact)), fact]));
+  const predicates = plan.condition.predicates;
   const values = new Map<string, FieldValue | null>();
   // Sequential deterministic reads suit a shared Postgres transaction and locks.
   for (const [id, fact] of [...facts].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0))

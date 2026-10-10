@@ -1,3 +1,16 @@
+## 10 October 2026 — Rule dependencies follow current graphs and immutable value meaning
+
+Historical field version pins alone cannot prevent a current cycle: each source's
+current rule graph must be checked too. Bound graph inspection to100 nodes/20
+levels, with per-compilation memoized heights so shared branches cannot hide a
+long path. Lock tenant definitions/bindings/generations in the caller's Serializable
+transaction, compare exact current/pinned storage/native/access identity, allow
+label/help changes only. Inspect transitive sealed metadata without evaluating its
+conditions or borrowing private fact permissions; direct inputs retain current and
+pinned read checks. Value/record/reference reads are separate. Existing mutating
+paths require common lock ordering before integrating this currently unwired
+provider; it is not permission, publication or native enforcement by itself.
+
 ## 10 October 2026 — Conditional field plans seal native query and field version dependencies
 
 Keep conditional payload/plan v2 isolated from existing immutable v1 field plans.

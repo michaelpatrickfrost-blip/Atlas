@@ -256,3 +256,11 @@ proof validates source and target lineage. New generic models/counts remain deni
 Pending 20261010050000 parsed/checksummed on central Postgres inside rollback only;
 no native records, schema or migration ledger changes persisted. Actual owner-approved
 row conversion/atomic failure/replay is still required before VERIFIED.
+
+10 October execution service checkpoint: shared exact current inspection/start,
+owner-approved row conversion and bounded CAS/outcomes/progress/Audit are implemented
+with 228 local assertions, build/types/lint passing. Publication replay after recorded
+target writes uses the shared execution inspector; old freshness remains strict.
+Pending 20261010050000 is not applied and actual trigger lifecycle remains unverified
+until the pinned combined candidate/public proof. Source remains active; cutover and
+ordinary owner value gateway are subsequent workstreams. No Flow worker/native writes.

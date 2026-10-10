@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3e6 — Actual central execution acceptance — NOT STARTED.
+2B3e6 — Actual central execution acceptance — IN PROGRESS.
 2B3d1–d4 VERIFIED ea27b2f; no row writer/designer.
 
 # Overall Status
@@ -66,6 +66,40 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+2B3e6 helper IMPLEMENTED, actual NOT RUN: exact fresh v5 reviewed Test field,
+owner historical approval/normal final-write denial, real start/mid-batch/Audit and
+deferred-progress rollback, process SIGKILL before commit/fresh-process resume,
+lost response and post-conversion publication replay through shared exact inspector;
+private/tenant/CAS/history/activation/cancel checks, exact precision/null values and
+both native tenant snapshots. Child helper is explicit Test/Linux-only, no worker or
+public endpoint. 38 Studio files/228 assertions, production build, strict post-build
+TS/scoped lint/diff PASS; /tmp/atlas-studio-execution-proof-{all-tests,types,build,
+postbuild-types,lint}.txt. Old zero-target publication predicate unchanged; only
+actual stored execution selects execution inspection. Pending 20261010050000 NOT
+APPLIED. Commit and pin full combined candidate/public release next. Accepted live
+64361cb; Phase 2 NOT PASSED, visual designer/dashboards/buttons still pending.
+
+
+e6 compatibility follow-up before release: publication lost-response replay
+must remain valid after its own recorded target writes. Derive replay inspection
+from the scoped actual execution row and reuse the shared exact execution inspector;
+never relax the original zero-target publication predicate or accept a caller stage.
+Add focused delegation/stale tests and actual post-restart publication replay.
+
+
+2B3e6 IN PROGRESS before code: extend the existing exact synthetic central Test
+principal/combined acceptance runner with a v5 reviewed target and actual owner/SQL
+execution proof. Source fixture only through normal active native extend; final and
+unanchored records approved representation-only, ordinary final extend still denied.
+Actual start Audit rollback, mid-batch SQL rollback, retained failure prefix, lost
+response, forced child termination before commit/new-process resume, private/source/
+tenant guards, exact typed values/outcome/FK/CAS/history/source compatibility,
+premature activation denial and cancellation retention. Compare both native tenant
+snapshots. Child helper has strict Linux/explicit opt-in/Test-slug/preparation scope,
+no public endpoint. Expected check-field-execution/process helper/principal driver
+and docs; pending DDL ships only with pinned combined candidate/public release.
+
 
 2B3e5 IMPLEMENTED/local checks PASS: 1–50-row canonical SQL cursor, stored CAS,
 shared current execution inspection, atomic target outcomes/progress/Audit; lost
@@ -755,6 +789,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+e6: actual execution/process acceptance helpers and principal integration; shared
+publication replay delegation/regression, DATA_MODEL and progress/state/plan.
+
 e5: execution-batch, focused batch tests, sparse failure decision/plan/ledger/state.
 
 e4b: shared observation inspector/redacted wrapper, representation writer and
@@ -1188,10 +1225,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement 2B3e6 actual central Test acceptance: source field + v5 reviewed target,
-owner approval on final/unanchored rows, actual SQL pins/FKs/deferred outcomes,
-mid-batch/Audit rollback, durable prefix, forced process termination and new-process
-resume, lost-response/private/tenant revocation, source readable and target activation
-blocked, cancellation retention. Integrate existing principal/combined runner, run
-local build/types/tests/lint, commit and pin full candidate/public release. Pending
-20261010050000 remains unapplied; accepted live 64361cb, Phase 2 NOT PASSED.
+Commit the reviewed e6 proof and pin ATLAS_RELEASE_BRANCH=codex/studio-phase2 with
+ATLAS_RELEASE_ACCEPTANCE=studio at exact HEAD. Run full combined candidate/public
+acceptance, applying additive 20261010050000 normally with backups. Inspect actual
+execution/termination/resume evidence, repair failures safely, and confirm public
+/api/health/release revision before marking e2b/e3/e4/e5/e6 VERIFIED. Then 2B3f exact
+cutover/rollback; Phase 2 designer/dashboards/buttons still open. Accepted live 64361cb.

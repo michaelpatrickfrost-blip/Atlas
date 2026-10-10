@@ -13,6 +13,7 @@ import { assertFieldBinding, fieldDefinitionKey } from "../binding";
 import { sealFieldMigrationIntent, readSealedFieldMigrationReview, FieldMigrationReviewError } from "./contracts";
 import { withFieldMigrationAuthority } from "./authority";
 import { inspectFieldMigrationReview } from "./inspection";
+import { inspectFieldMigrationExecution } from "./execution-inspection";
 import { reviewedFieldPublicationPin, assertFieldMigrationPublicationReady } from "./publication-contract";
 
 const requestSchema = z.strictObject({ preparationId: z.uuid(), revision: z.number().int().nonnegative().max(2147483647),
@@ -31,7 +32,8 @@ export async function publishReviewedFieldMigration(session: Session, input: unk
   if (!initial) changed();
   const pinned = sealFieldMigrationIntent(initial.intent), intent = pinned.intent;
   if (pinned.checksum !== initial.intentChecksum || intent.id !== initial.id || intent.organisationId !== session.organisationId) changed();
-  return withFieldMigrationAuthority(session, intent.principal, async ({ session: fresh, transaction: tx, company }) => {
+  return withFieldMigrationAuthority(session, intent.principal, async authority => {
+    const { session: fresh, transaction: tx, company } = authority;
     await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${request.preparationId}::uuid AND "organisationId"=${fresh.organisationId} FOR UPDATE`;
     const preparation = await tx.studioFieldMigrationPreparation.findFirst({ where: scope, include: { review: true } });
     if (!preparation?.review || preparation.state !== "REVIEWED" || preparation.revision !== request.revision
@@ -43,7 +45,9 @@ export async function publishReviewedFieldMigration(session: Session, input: unk
     const existing = await tx.studioFieldMigrationPublication.findFirst({ where: publicationScope });
     if (existing && existing.state !== "PUBLISHED") changed();
     const registry = studioRegistry();
-    const inspected = await inspectFieldMigrationReview({ session: fresh, transaction: tx }, registry, company, intent, existing ? "publication" : "preparation");
+    const execution = existing ? await tx.studioFieldMigrationExecution.findFirst({ where: publicationScope, select: { preparationId: true } }) : null;
+    const inspected = execution ? (await inspectFieldMigrationExecution(authority, intent)).stored
+      : await inspectFieldMigrationReview({ session: fresh, transaction: tx }, registry, company, intent, existing ? "publication" : "preparation");
     if (inspected.checksum !== stored.checksum) changed();
     assertFieldMigrationPublicationReady(inspected.review, request.acknowledgeLoss);
     if (existing) {

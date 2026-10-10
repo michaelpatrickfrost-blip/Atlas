@@ -1,5 +1,45 @@
 # Atlas current state
 
+## 10 October 2026 — Actual conversion proof ready for pinned release
+
+2B3e6 helper IMPLEMENTED, actual NOT RUN: exact fresh v5 reviewed Test field,
+owner historical approval/normal final-write denial, real start/mid-batch/Audit and
+deferred-progress rollback, process SIGKILL before commit/fresh-process resume,
+lost response and post-conversion publication replay through shared exact inspector;
+private/tenant/CAS/history/activation/cancel checks, exact precision/null values and
+both native tenant snapshots. Child helper is explicit Test/Linux-only, no worker or
+public endpoint. 38 Studio files/228 assertions, production build, strict post-build
+TS/scoped lint/diff PASS; /tmp/atlas-studio-execution-proof-{all-tests,types,build,
+postbuild-types,lint}.txt. Old zero-target publication predicate unchanged; only
+actual stored execution selects execution inspection. Pending 20261010050000 NOT
+APPLIED. Commit and pin full combined candidate/public release next. Accepted live
+64361cb; Phase 2 NOT PASSED, visual designer/dashboards/buttons still pending.
+
+
+## 10 October 2026 — Publication replay compatibility under execution
+
+e6 compatibility follow-up before release: publication lost-response replay
+must remain valid after its own recorded target writes. Derive replay inspection
+from the scoped actual execution row and reuse the shared exact execution inspector;
+never relax the original zero-target publication predicate or accept a caller stage.
+Add focused delegation/stale tests and actual post-restart publication replay.
+
+
+## 10 October 2026 — Actual conversion acceptance begun
+
+2B3e6 IN PROGRESS before code: extend the existing exact synthetic central Test
+principal/combined acceptance runner with a v5 reviewed target and actual owner/SQL
+execution proof. Source fixture only through normal active native extend; final and
+unanchored records approved representation-only, ordinary final extend still denied.
+Actual start Audit rollback, mid-batch SQL rollback, retained failure prefix, lost
+response, forced child termination before commit/new-process resume, private/source/
+tenant guards, exact typed values/outcome/FK/CAS/history/source compatibility,
+premature activation denial and cancellation retention. Compare both native tenant
+snapshots. Child helper has strict Linux/explicit opt-in/Test-slug/preparation scope,
+no public endpoint. Expected check-field-execution/process helper/principal driver
+and docs; pending DDL ships only with pinned combined candidate/public release.
+
+
 ## 10 October 2026 — Bounded execution locally checked
 
 2B3e5 IMPLEMENTED/local checks PASS: 1–50-row canonical SQL cursor, stored CAS,

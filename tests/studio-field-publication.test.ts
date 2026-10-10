@@ -3,12 +3,13 @@ import type { Session } from "@/core/auth/session";
 import type { FieldMigrationPublicationPin } from "@/core/studio/fields/migrations/publication-contract";
 const m = vi.hoisted(() => ({ initial: vi.fn(), transaction: vi.fn(), resolve: vi.fn(), enabled: vi.fn(), raw: vi.fn(), member: vi.fn(), module: vi.fn(), company: vi.fn(),
   preparation: vi.fn(), publication: vi.fn(), createPublication: vi.fn(), draft: vi.fn(), updateDraft: vi.fn(), updateDefinition: vi.fn(), countModules: vi.fn(),
-  createVersion: vi.fn(), version: vi.fn(), binding: vi.fn(), generation: vi.fn(), createGeneration: vi.fn(), audit: vi.fn(), inspect: vi.fn() }));
+  createVersion: vi.fn(), version: vi.fn(), binding: vi.fn(), generation: vi.fn(), createGeneration: vi.fn(), audit: vi.fn(), inspect: vi.fn(), execution: vi.fn(), executionInspection: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: { $transaction: m.transaction, studioFieldMigrationPreparation: { findFirst: m.initial } } }));
 vi.mock("@/core/studio/fields/principal", () => ({ resolveFieldMigrationPrincipal: m.resolve }));
 vi.mock("@/core/modules/access", () => ({ assertModuleEnabled: m.enabled }));
 vi.mock("@/core/studio/registry/runtime", () => ({ studioRegistry: () => registry }));
 vi.mock("@/core/studio/fields/migrations/inspection", () => ({ inspectFieldMigrationReview: m.inspect }));
+vi.mock("@/core/studio/fields/migrations/execution-inspection", () => ({ inspectFieldMigrationExecution: m.executionInspection }));
 import { CapabilityRegistry } from "@/core/studio/registry/registry";
 import { ticketStudioContract } from "@/core/service-work/studio";
 import { compileCustomField } from "@/core/studio/compiler/fields";
@@ -31,7 +32,7 @@ let publication: (FieldMigrationPublicationPin & { state: string; revision: numb
 let generations: string[], versions: Array<{ id: string; organisationId: string; definitionId: string; version: number; payload: unknown; compiledPlan: unknown; checksum: string }>;
 const tx = { $queryRaw: m.raw, membership: { findFirst: m.member }, moduleState: { findFirst: m.module, count: m.countModules }, organisation: { findFirst: m.company },
   studioFieldMigrationPreparation: { findFirst: m.preparation }, studioFieldMigrationPublication: { findFirst: m.publication, create: m.createPublication },
-  studioDraft: { findFirst: m.draft, updateMany: m.updateDraft }, studioDefinition: { updateMany: m.updateDefinition },
+  studioFieldMigrationExecution: { findFirst: m.execution }, studioDraft: { findFirst: m.draft, updateMany: m.updateDraft }, studioDefinition: { updateMany: m.updateDefinition },
   studioDefinitionVersion: { create: m.createVersion, findFirst: m.version }, studioFieldBinding: { findFirst: m.binding },
   studioFieldGeneration: { findFirst: m.generation, create: m.createGeneration }, auditEntry: { create: m.audit } };
 const request = () => ({ preparationId: uuid(3), revision: 5, reviewChecksum: sealed.checksum, acknowledgeWarnings: false, acknowledgeLoss: false });
@@ -50,7 +51,7 @@ beforeEach(async () => {
   publication = null; versions = []; generations = [source.storageGeneration];
   m.initial.mockImplementation(async ({ where }) => where.id === prepared.id && where.organisationId === prepared.organisationId ? structuredClone(prepared) : null);
   m.preparation.mockImplementation(async () => structuredClone(prepared)); m.publication.mockImplementation(async () => structuredClone(publication));
-  m.inspect.mockImplementation(async () => structuredClone(sealed)); m.draft.mockImplementation(async () => structuredClone(draft));
+  m.inspect.mockImplementation(async () => structuredClone(sealed)); m.execution.mockResolvedValue(null); m.executionInspection.mockImplementation(async () => ({ stored: structuredClone(sealed) })); m.draft.mockImplementation(async () => structuredClone(draft));
   m.updateDefinition.mockImplementation(async ({ where }) => {
     if (where.revision !== draft.definition.revision) return { count: 0 };
     draft.definition.revision++; draft.definition.latestVersion++; return { count: 1 };
@@ -141,4 +142,13 @@ it("cancelled publication and changed published target are not replay authority"
   await expect(publishReviewedFieldMigration(session, request())).rejects.toThrow("stale or has changed"); expect(m.inspect).not.toHaveBeenCalled();
   publication!.state = "PUBLISHED"; versions[0].checksum = "f".repeat(64); m.audit.mockClear();
   await expect(publishReviewedFieldMigration(session, request())).rejects.toThrow("stale or has changed"); expect(m.audit).not.toHaveBeenCalled();
+});
+
+it("publication replay after recorded execution delegates to the single exact execution inspector, and revocation cannot replay", async () => {
+  const first = await publishReviewedFieldMigration(session, request()); m.inspect.mockClear(); m.audit.mockClear();
+  m.execution.mockResolvedValue({ preparationId: uuid(3) });
+  expect(await publishReviewedFieldMigration(session, request())).toEqual({ ...first, replayed: true });
+  expect(m.inspect).not.toHaveBeenCalled(); expect(m.executionInspection).toHaveBeenCalledTimes(1); expect(m.audit).not.toHaveBeenCalled();
+  m.executionInspection.mockRejectedValueOnce(new Error("FORBIDDEN: current written/private execution access revoked"));
+  await expect(publishReviewedFieldMigration(session, request())).rejects.toThrow("written/private execution access revoked"); expect(m.audit).not.toHaveBeenCalled();
 });

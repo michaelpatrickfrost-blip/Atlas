@@ -281,8 +281,8 @@ version1. Do not widen these historical contracts or route v2 through their pars
 
 | ID | Purpose/dependencies | Expected files/database | Verification | Status |
 | --- | --- | --- | --- | --- |
-| d3e1 | Version-aware evolution impact using the existing pure evolution analyser; d3c/d | fields/evolution.ts + focused evolution suite; no DDL/persistence/dispatch | Rule add/change/removal needs reviewed new generation; cosmetic preservation; input pin impact; exact legacy semantics and v1 rejection of v2 receipts | VERIFIED locally with e2a;32/4, strict TS/lint/build PASS; pending pinned release |
-| d3e2 | Versioned reviewed intent/observation/owner approval and compiler support; e1 | existing migration contracts/access/observation/preparation/coverage + explicitly new owner contracts; additive SQL guard updates if necessary | Genuine current principal, all fact/dependency metadata and native/global extension drift, bounded canonical set and invalid rows, old receipt hashes | NOT STARTED |
+| d3e1 | Version-aware evolution impact using the existing pure evolution analyser; d3c/d | fields/evolution.ts + focused evolution suite; no DDL/persistence/dispatch | Rule add/change/removal needs reviewed new generation; cosmetic preservation; input pin impact; exact legacy semantics and v1 rejection of v2 receipts | VERIFIED pure scope;32/4, strict TS/lint/build; livef83e889 runtime/compatibility PASS |
+| d3e2 | Versioned reviewed intent/observation/owner approval and compiler support; e1 | existing migration contracts/access/observation/preparation/coverage + explicitly new owner contracts; additive SQL guard updates if necessary | Genuine current principal, all fact/dependency metadata and native/global extension drift, bounded canonical set and invalid rows, old receipt hashes | IN PROGRESS: e2a pure packet VERIFIED; e2b real inspection/persistence NOT STARTED |
 | d3e3 | Existing resumable representation/execution, cutover and settlement support; e2 | existing migration/execution/cutover/settlement, native owner callbacks, focused SQL probe | Source freeze, exact target requirement coverage, dependency compatibility, replay/rollback/history and current access | NOT STARTED |
 
 Conditional publication remains disabled until d4 common mutation locking and
@@ -290,7 +290,7 @@ native enforcement are verified. e1 is metadata impact analysis, not a converter
 review approval, business-value reader or permission grant. Existing conversion
 functions and migration intent v1 remain closed to v2.
 
-### d3e2a packet contract — IN PROGRESS
+### d3e2a packet contract — VERIFIED pure scope (livef83e889)
 
 First e2 block: explicit v2 migration intent/observation/review integrity packet
 inside the existing migration directory. Reuse typed conversion declarations and
@@ -314,3 +314,62 @@ tampered reviews, incorrect summaries, duplicate/order/closed digests fail. Old 
 results/converter/parser/digest semantics unchanged. No schema/persistence/dispatch.
 Next e2b: actual version-aware owner/metadata/row inspection plus additive guards,
 then e3 existing representation/execution/cutover/settlement support.
+
+### e2b/e3 integration findings — confirmed from source
+
+- Existing preparation/observation/review guards enforce intent1 and exact JSON
+  equality; execution/outcome/cutover/settlement guards construct receipt1. Add
+  explicit version branches without reinterpreting or editing those retained shapes.
+- Current Tickets snapshot3/representation1/settlement1 ranges stop at source5/
+  target5. New v2 packets need explicit new owner/query approval; requiredCoverage
+  v8 is readonly and cannot substitute for migration approval. Historical policy
+  arrays/hashes remain unchanged. Avoid publishing a latest owner before its
+  explicit legacy creation/candidate coverage compatibility is verified.
+- Required metadata and real condition evaluation need genuine company/audited
+  support identity in the same Serializable transaction. Admin target metadata
+  sessions remain insufficient. Compile source and target full v2 metadata via
+  the existing locked source provider; inspect actual current/pinned/written rights
+  and dependencies even for an empty cohort. No client plans/facts/closures.
+- Existing observations pin native and GLOBAL extension revisions; outcomes
+  legitimately advance that global revision by exactly one per converted record.
+  Existing atlas_studio_execution_source_fresh explicitly recognises the pinned
+  outcome revision. The v2 requirement evaluation checksum must seal semantic
+  rule/value evidence (version/condition/result), with native/global revision
+  envelopes checked separately against the original observation or exact own
+  outcome. Do not naively compare the full required-runtime envelope fingerprint
+  after conversion: its extensionRevision changes on this own write. Do not waive
+  arbitrary drift or replace sealed observations. Source and target facts/metadata/
+  current access must still be re-evaluated at review/execution/cutover/settlement.
+- runtime-write-window currently checks only the field being written; input-field
+  changes/native fact changes must be captured by the global revision and explicit
+  reviewed checks. d4 must close all affected retained windows atomically before
+  enabling native/ordinary writers, preserving source freezes and Audit/CAS.
+
+Exact first e2b action: add explicit payload/intent-version approval to newly
+versioned owner migration contracts (absent means old1; old hashes unchanged),
+then shared version-aware migration metadata inspection in preparation/collection/
+coverage using the genuine principal and locked source provider. Keep dispatch
+closed while adding real per-row evaluations and additive version2 SQL guards.
+
+Receipt-format review before e3: execution/outcome/cutover/settlement receipts
+contain closed hashes/references and explicit owner query pins, rather than field
+payloads. Their existing format1 may remain suitable for review2 if its shape and
+meaning are unchanged and version-aware review/observation inspection plus new
+owner approval enforce all requirements. Do not introduce new receipt versions
+merely because the preparation format changed. Preserve old parser entry points;
+record the actual choice with tests for both retained v1 and conditional reviews.
+
+Per-row e2b requirement evaluation must check actual converted-value presence:
+null and an empty multi-selection are absent; false and zero are present. The v2
+packet's required-null shape guard is necessary but cannot independently determine
+presence from a fingerprint. Never infer presence from isNull alone or treat the
+pure converter-constructor compatibility check as conditional value approval.
+
+### e1/e2a release checkpoint
+
+Original runner33757 exit0; candidateTTfVUe/publicr6k3E7 ALL COMBINED PASS. Exact
+livef83e889 health verified. Pure readonly server probe81957 exit0 confirms impact/
+v2 intent/review/digest/required failure/closed v1 boundary, no DB writes/files.
+First ESM stdin diagnostic failed module loading; correct CommonJS mode passed,
+no production defect or source change.32/4 + strict TS/scoped lint/build PASS.
+e2b real business inspection/SQL persistence and e3/d4 remain unfinished.

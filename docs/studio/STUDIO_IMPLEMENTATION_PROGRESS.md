@@ -11,8 +11,12 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B4d3e1 evolution impact + d3e2a versioned review packets — VERIFIED locally;
-new helpers await pinned release. d3d — VERIFIED live18bd031. Full e2/e3/d4 pending.
+2B4d3e2b owner protocol approval + real migration inspection — NOT STARTED;
+source exploration recorded. e1/e2a pure helpers and release compatibility VERIFIED
+livef83e889; d3d actual canonical coverage VERIFIED. FullPhase2 remains IN PROGRESS.
+
+Historical pre-release e1/e2a checkpoint: locally VERIFIED then; superseded by
+livef83e889 pure/runtime/compatibility proof above. Full e2/e3/d4 pending.
 
 2B4d3e1 version-aware evolution impact — IN PROGRESS while pinned d3d central
 release18bd031 runs. Existing migration receipts/policies remain closed.
@@ -59,6 +63,34 @@ F4a VERIFIED locally (adfc357); strict TS/build/scoped lint,18 focused and45 fil
 candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
+
+## 10 October 2026 — e1/e2a release compatibility and pure runtime VERIFIED
+
+Livef83e8894fdde55164b70427159eb0aabcd567cc6; original runner33757 exit0.
+CandidateTTfVUe/publicr6k3E7 ALL COMBINED PASS, including d3d actual canonical
+coverage/native/config/value/Audit rollback and existing business/Admin checks.
+Public health exactf83e889, login200, Atlas active; previous18bd031 retained.
+Root166GiB free/14%; redundant6b3d03f runtime retired by the original utility under
+both locks, source/static/evidence/private records/backups preserved. Mandatory
+pre-release161612/candidate161746/public162157 backups only; no ad-hoc dumps.
+
+32 focused cases/4 suites, strict TS, scoped lint, production build passed. Readonly
+pure runtime probe81957 exit0 on exact release: rule impact, v2 intent/review/digest,
+required failure representation and closed v1 boundary; synthetic metadata only,
+no DB access/files. First diagnostic used ESM stdin against this CommonJS project;
+corrected to its actual module mode and passed, no application/source fix needed.
+Scope is pure e1/e2a integrity plus release compatibility, NOT working v2 business
+migration or conditional authoring. No DDL/migrations/schema/backfill/native hooks.
+Visual draft remains unverified/unreleased stash28243b7; foundation-first order.
+
+Current Phase2 IN PROGRESS. Next workstream d3e2b — NOT STARTED (source exploration
+recorded). Exact next: add explicit intent-version approval to newly versioned owner
+migration contracts (absent means legacy1; preserve all old hashes/ranges), then
+shared genuine-principal full v1/v2 migration metadata inspection in preparation/
+collection/coverage. Add real per-row source/target rule checks and additive version2
+SQL guards, recognising only exact migration-owned revision increments. Continue
+existing execution/cutover/settlement (e3), shared native locks/writer/window safety
+(d4), feature gate(d5), remaining2B/C/D then visual2E. No Phase3 work or fullPhase2 PASS.
 
 ## 10 October 2026 — d3d live VERIFIED; d3e1/e2a locally VERIFIED
 
@@ -443,6 +475,10 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 
 # Completed Workstreams
 
+- d3d canonical candidate requirement coverage — VERIFIED actual SQL and candidate/public on18bd031, repeated PASS in livef83e889. No activation/native hooks.
+- d3e1 version-aware evolution impact — VERIFIED pure/local and exact-release runtime/compatibility in f83e889; cosmetics vs reviewed new generations and input pin impact.
+- d3e2a v2 intent/observation/review integrity — VERIFIED pure32/4 and server runtime/compatibility f83e889. Real migration data/persistence/execution remain e2b/e3.
+
 c2a/b VERIFIED live6b3d03f: actual current owner/legacy creation proof, staged
 required targets/false-clear, exact deferred guards and propagated whole-transaction
 native/typed/config/Audit rollback; candidate/public combined gates PASS.
@@ -526,6 +562,13 @@ actual facts/create-only/native/Audit rollback proof, runner40775 exit0.
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+Next e2b: preserve absent legacy intent-version approvals/hashes; explicit new owner
+contracts, shared genuine-principal v1/v2 full metadata inspection, real converted
+source/target requirement evidence, additive SQL guard version branches. Expected
+registry types/entities/contracts/registry, owner service-work contract, existing
+migration preparation/collection/observation/coverage and focused tests; additive
+migration may be needed, not yet written/applied. No dispatch before e3/d4.
 
 d3e1: extend the existing pure evolution analyser for v1/v2 metadata impact.
 Dependencies d3c/d locally verified; d3d central proof running. Files evolution.ts,
@@ -2971,6 +3014,9 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
+e1/e2a livef83e889 source compatibility + pure server runtime PASS; candidateTTfVUe/
+publicr6k3E7 ALL COMBINED PASS, runner33757 exit0. No v2 business migration claim.
+
 d3d actual candidate/public canonical coverage+SQL rollback VERIFIED live18bd031. e1/e2a pure contracts VERIFIED locally; business migration integration NOT IMPLEMENTED.
 
 10 October2026: d3d implemented locally, not yet central/live VERIFIED. No whole Phase2 gate claim.
@@ -3110,6 +3156,12 @@ not a reason to claim full-suite success.
 
 # Architecture Decisions
 
+10 October2026 e1/e2a: preserve closed v1 hashes/parsers/receipts, share existing
+structural evolution logic, and use explicit v2 intent/observation/review with
+reference/evaluation checksums only. No duplicate engine or pure-integrity grant.
+Rationale recorded in .ai/DECISIONS.md; semantic evidence vs exact own revision
+increments and receipt-format review remain e2b/e3 implementation constraints.
+
 10 October2026: d3d independent explicit latest owner requiredCoverage reuses canonical snapshots; preserve all historical migrations/hashes and never infer approval from migration ranges. See .ai/DECISIONS.md.
 
 
@@ -3194,6 +3246,12 @@ See `STUDIO_PHASE_1_COMPLETION.md` for evidence and practical limits.
 
 # Deferred Items
 
+Current: e2b real owner/metadata/row inspection and SQL guards; e3 reviewed execution/
+cutover/settlement; d4 common locks/native enforcement/initial writer/window safety;
+d5 feature gate, remaining2B/C/D and visual2E. Visual document draft saved in
+stash28243b7 (full hash above), unverified/unreleased; restore source selectively
+after foundations. Later phases remain context only.
+
 10 October2026: d3d durable reviewed evolution/impact remains d3e; native hooks/locks/window d4, final feature gate d5. Forms/search, record types, pages and visual designer follow within Phase2; no Phase3 work.
 
 
@@ -3208,6 +3266,10 @@ outbox, Flow runtime, Automations migration, Process Studio, packages and adopti
 No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
+
+e1/e2a scoped gate PASS (pure32/4 + build/types/lint + exact-release runtime and
+candidate/public compatibility). FullPhase2 FAIL/pending; e2b/e3/d4 and remaining
+forms/search/record types/pages/visual builder must pass before Phase3.
 
 d3d scoped central gate PASS live18bd031. e1/e2a local contract gate PASS. Full Phase2 gate FAIL/pending: reviewed v2 migrations, native enforcement, forms/search, record types/pages and visual designer remain.
 
@@ -3260,6 +3322,16 @@ These checks derive from Sections 5–6, 14, 19, 25–28; no whole-system gate u
 prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
+
+d3e2b: add explicit intent-version approval to newly versioned owner migration
+contracts (absent means legacy1; preserve old hashes/ranges), then shared genuine-
+principal version-aware metadata inspection in preparation/collection/coverage
+using the locked source provider. Add per-row real source/target rule evaluation
+and additive SQL version2 guards. See required-rules plan e2b/e3 findings for
+semantic evaluation checksums vs exact own revision increments and empty selections.
+No conditional dispatch before e3/d4/d5. Visual source remains stash28243b7 until2E.
+
+Historical prior next actions (superseded):
 
 Commit/pin the reviewed e1/e2a checkpoint and release through original Studio gates. Then d3e2b: version-aware preparation/observation/coverage with real source/target requirement fingerprints, explicit new owner snapshot/representation approval and additive SQL guards preserving every old v1 receipt. e3 execution/settlement and d4 native lock/writer/window safety precede authoring.
 

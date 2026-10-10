@@ -1,3 +1,31 @@
+## 10 October 2026 — e1/e2a release compatibility and pure runtime VERIFIED
+
+Livef83e8894fdde55164b70427159eb0aabcd567cc6; original runner33757 exit0.
+CandidateTTfVUe/publicr6k3E7 ALL COMBINED PASS, including d3d actual canonical
+coverage/native/config/value/Audit rollback and existing business/Admin checks.
+Public health exactf83e889, login200, Atlas active; previous18bd031 retained.
+Root166GiB free/14%; redundant6b3d03f runtime retired by the original utility under
+both locks, source/static/evidence/private records/backups preserved. Mandatory
+pre-release161612/candidate161746/public162157 backups only; no ad-hoc dumps.
+
+32 focused cases/4 suites, strict TS, scoped lint, production build passed. Readonly
+pure runtime probe81957 exit0 on exact release: rule impact, v2 intent/review/digest,
+required failure representation and closed v1 boundary; synthetic metadata only,
+no DB access/files. First diagnostic used ESM stdin against this CommonJS project;
+corrected to its actual module mode and passed, no application/source fix needed.
+Scope is pure e1/e2a integrity plus release compatibility, NOT working v2 business
+migration or conditional authoring. No DDL/migrations/schema/backfill/native hooks.
+Visual draft remains unverified/unreleased stash28243b7; foundation-first order.
+
+Current Phase2 IN PROGRESS. Next workstream d3e2b — NOT STARTED (source exploration
+recorded). Exact next: add explicit intent-version approval to newly versioned owner
+migration contracts (absent means legacy1; preserve all old hashes/ranges), then
+shared genuine-principal full v1/v2 migration metadata inspection in preparation/
+collection/coverage. Add real per-row source/target rule checks and additive version2
+SQL guards, recognising only exact migration-owned revision increments. Continue
+existing execution/cutover/settlement (e3), shared native locks/writer/window safety
+(d4), feature gate(d5), remaining2B/C/D then visual2E. No Phase3 work or fullPhase2 PASS.
+
 ## 10 October 2026 — d3d live VERIFIED; d3e1/e2a locally VERIFIED
 
 Pinned release18bd031058490e939edebf7128b5f910e16117b4 completed original runner

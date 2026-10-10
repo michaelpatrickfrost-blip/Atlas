@@ -11,24 +11,22 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-Phase 2 entry-point clarity companion — IMPLEMENTED; final local verification PASS. Actual candidate/public pending. Business setup must lead;
-existing named capability-reference forms are advanced foundation tooling, not the
-visual designer. Purpose: make current availability clear and move optional technical
-setup out of the primary path without inventing an unfinished builder. Files:
-modules/studio/library, definition-view, reference-comparison, manifest and existing
-central check-metadata; Admin/customer wrappers retained.
-No database implications. Checks: existing Studio/Admin regressions, strict types,
-scoped lint, production build, actual candidate/public UI and native acceptance.
+2B3f4a — Closed settlement identity and confirmation contracts — IN PROGRESS.
+Purpose: pin honest source rollback or finalization of the unchanged-data window,
+without granting authority or writing data. Dependencies: verified f1/f2/f3. Expected
+files: migrations/settlement-contract and existing cutover-contract tests. No DB
+implications; current original0006 remains unchanged. Tests: exact identities/CAS,
+stale/foreign/unknown/tampered/coercion and revision capacity; build/types/lint.
+Then f4b forward SQL, f4c current-authority rollback and f4d actual central proof.
 
-2B3f3a/b/c — Shared activation, refreshed cutover and actual service proof — VERIFIED
-on exact 9aad1fc complete candidate/public. F4 lifecycle/rollback NOT STARTED; its
-inspected dependencies remain in STUDIO_FIELD_EVOLUTION_PLAN.md. Full Phase 2
-acceptance has NOT PASSED. The visual designer remains required and unimplemented.
+Business-setup/readable-comparison clarity companion VERIFIED on exact74fab2d
+full candidate/public. F3a–c VERIFIED9aad1fc. FullPhase2 NOT PASSED; no visual builder
+or owner ordinary value gateway yet.
 
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source 1f2ab97f3ee954ac9829d2c3ea1d4681ce5320e5 (includes verified9aad1fc),
+VERIFIED. Latest confirmed live source 74fab2d1983b3d16d68f481fb783332335e5fc0a (includes verified9aad1fc/1f2ab97),
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -42,6 +40,7 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 | Workstream | Status | Evidence |
 | --- | --- | --- |
+| Business setup/readable version comparison companion | VERIFIED | 74fab2d full candidate/public and actual visual inspection; modern Admin/business separation, disclosure/save/conflict/check/publish/activate/compare, all native suites and 45 files/286 local assertions/build/types/lint. No DB change or visual-builder claim. |
 | 2B3f3a–c Shared current-authority cutover and replay | VERIFIED | 9aad1fc full candidate/public actual paired-Audit rollback, concurrent CAS, refreshed denial/replay, retained history/native compatibility; 45 files/286 local assertions/build/types/lint PASS. No new DDL. |
 | 2B3f2 Receipt and atomic storage | VERIFIED | 5f5fce5 complete candidate/public actual rollback-only storage guards plus all native suites; additive 0006 applied. |
 | 2B3f1 Closed cutover identity | VERIFIED | 080e4d7 complete candidate/public actual pure-pin proof; 8 focused/257 scoped assertions/build/types/lint. No activation authority. |
@@ -80,6 +79,28 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+Exact74fab2d1983b3d16d68f481fb783332335e5fc0a full candidate/public ALL COMBINED
+PASS, runner56399 exit0; current/public health exact, previous1f2ab97 retained. Candidate
+saTKTd/publicJubgPA, backup063716/fixture backups063910/064311; local
+/tmp/atlas-studio-business-setup-deploy.txt. Actual business setup/advanced/technical
+ID disclosures, unchanged save/conflict/check/publish/activate, stored validation
+checksum, readable two-version comparison, customer/Admin/tenant separation and all
+native suites PASS. Desktop/tablet/phone overflow/captures pass; desktop/phone images
+visually inspected and existing live pages read-only inspected in temporary background
+tab, then closed. Original user tab/unsaved input preserved. 45 files/286 local
+assertions/build/strict post-build TS/scoped lint/diff PASS. No DB or migration change.
+This verifies the clarity companion, NOT the visual screen/template/dashboard builder.
+FullPhase2 NOT PASSED; those remain2E after2B–D. Root4.6G/PGonline last checked.
+
+
+Candidate74fab2d metadata/business-setup/readable comparison/Admin/customer checks
+PASS; desktop/tablet/phone captures /tmp/atlas-studio-business-setup-57d1e1ba-*.png.
+Full native candidate/public repeat still running, runner56399; no VERIFIED claim yet.
+Backup063716/fixtures063910, evidence /tmp/atlas-studio-candidate-saTKTd and local
+/tmp/atlas-studio-business-setup-deploy.txt. Root4.6G/PGonline, current1f2 unchanged.
+Keep exact pinned branch tip until runner completes; preserve user's unsaved tab.
+
 
 Final companion source review/diff/checks PASS: 45 files/286 assertions, production
 build, strict post-build TypeScript and scoped ESLint after the plain-language
@@ -1673,9 +1694,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Commit reviewed UI/checker/memory companion, then pin its exact HEAD on
-codex/studio-phase2 with ATLAS_RELEASE_ACCEPTANCE=studio for full candidate/public
-acceptance. Preserve live1f2/prior9aad and monitor server7.0G. Inspect actual three-size
-screenshots and readable comparison; keep Michael's existing tab/unsaved edits intact.
-After accepted UI checkpoint resume f4 lifecycle/contracts/additive rollback guards
-from STUDIO_FIELD_EVOLUTION_PLAN.md. Full Phase2 gate remains NOT PASSED.
+Checkpoint verified74fab2d evidence/memory and bounded f4 plan. Implement2B3f4a
+settlement-contract: derive scoped rollback/finalization identity and transition from
+retained closed cutover pin plus actual server principal; add strict confirmation,
+no client tenant/grants/stage/pointer and no authority claim. Test independent same-
+company actor, foreign/stale/tampered/coerced/unknown input and reserved integer
+capacity in existing cutover-contract suite; run relevant regressions/types/lint/
+build and save memory before f4b additive persistence. FullPhase2 NOT PASSED.

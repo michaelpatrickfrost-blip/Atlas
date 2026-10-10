@@ -1324,3 +1324,50 @@ Both actual Audit failure rollbacks/concurrent CAS/current access/replay/history
 checks and all native suites PASS. No new DDL. Earlier pending entries are checkpoint
 history. Bounded Studio entry-point clarity companion addresses Michael's latest
 business-setup feedback before f4. It does not implement the dependent2E designer.
+
+### F4 bounded follow-on plan — 10 October (after verified f3)
+
+F4a — closed settlement identity/request/derived transition, integrity only. Expected
+files migrations/settlement-contract and existing cutover-contract tests; no database
+change, grants, native data or pointer writes. Dependencies: f1 closed pin/f3 actual
+receipt inspection. Bind original cutover checksum/scope, current server principal
+and exact definition/publication/receipt CAS. Independent current actor may settle;
+same organisation is required, stored initiating grants never carried forward.
+Rollback derives source pointer/revision+1; finalization keeps target/current revision
+and ends the unchanged-representation rollback window. No client tenant/stage/target/
+permission sets. Tests: stale/cross-tenant/unknown keys/hash substitutions, each
+operation and reserved revision capacity; no permission/readiness authority claim.
+Status IN PROGRESS after verified74fab2d UI checkpoint; this is the next bounded
+implementation, not a later-phase engine.
+
+F4b — additive 0007 settlement/storage/generation guards; Prisma nullable settlement
+identity/checksum/time/actor and terminal states, retained immutable original receipt.
+Only ACTIVATED/rev0→ROLLED_BACK or FINALIZED/rev1; publication CUTOVER→ROLLED_BACK
+or COMPLETED. Deferred atomic proof and paired Audit. Preserve old applied0006,
+all histories, generic gateway denials and original source-active freshness. Reuse
+0006 activation proof for initial activation, then treat settled receipts as history.
+Generation write guard must prioritise ANY open source freeze and completed source
+retention; rolled-back source may resume only under its approved active schema,
+rolled-back/cancelled targets cannot. Same-current-generation cosmetic activation;
+new generation only exact new reviewed operation. Fix active-vs-latest cosmetic
+binding without erasing cancelled/rolled-back target publication history. Actual
+rollback-only SQL tests and reviewed compatibility/backup before additive DDL.
+
+F4c — actual current-principal rollback/settlement service and failure proof. Rollback
+requires actual owner/native/private/cohort/source/target/configuration unchanged,
+current field/reference/written policies and module/compiler checks; shared activator
+and receipt/publication/Audit together. A current publisher may differ from creator;
+introduce only a closed internal rollback authority frame, never globally relax old
+intent checks or simulate source-active state. Finalization is metadata-only under
+fresh current publisher and exact retained target; it cannot grant value access or
+fetch/reveal private records. Changed native coverage honestly denies rollback but
+must not permanently trap the current target configuration. Later2B4 authorised
+writes may settle the window atomically with their real owner-guarded transaction;
+that integration is not an implicit privilege to activate or reverse conversion.
+
+F4d — actual central Test/paired Audit/concurrency/replay/changed-coverage/continued
+publication/source retention, full candidate/public/native checks. Historical replay
+reports the completed operation, not a claim about today's active pointer. Verify
+further migration source freeze cannot be bypassed via earlier completed targets.
+Full2B4 owner write/read/required-if/native form hooks remain the next workstream;
+visual2E depends on2B–D. No FINALIZED/RB code/migration exists at this planning entry.

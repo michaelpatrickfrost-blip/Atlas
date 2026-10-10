@@ -1,5 +1,35 @@
 # Atlas current state
 
+## 10 October 2026 — Business setup/readable comparison VERIFIED live
+
+Exact74fab2d1983b3d16d68f481fb783332335e5fc0a full candidate/public ALL COMBINED
+PASS, runner56399 exit0; current/public health exact, previous1f2ab97 retained. Candidate
+saTKTd/publicJubgPA, backup063716/fixture backups063910/064311; local
+/tmp/atlas-studio-business-setup-deploy.txt. Actual business setup/advanced/technical
+ID disclosures, unchanged save/conflict/check/publish/activate, stored validation
+checksum, readable two-version comparison, customer/Admin/tenant separation and all
+native suites PASS. Desktop/tablet/phone overflow/captures pass; desktop/phone images
+visually inspected and existing live pages read-only inspected in temporary background
+tab, then closed. Original user tab/unsaved input preserved. 45 files/286 local
+assertions/build/strict post-build TS/scoped lint/diff PASS. No DB or migration change.
+This verifies the clarity companion, NOT the visual screen/template/dashboard builder.
+FullPhase2 NOT PASSED; those remain2E after2B–D. Root4.6G/PGonline last checked.
+
+Next: f4a closed settlement identity/confirmation/derived-transition contracts and
+negative tests; pure integrity only, no new DB/service/grant/native writes. F4 plan
+is in STUDIO_FIELD_EVOLUTION_PLAN; retain original applied0006 and current strict
+ACT/source-active predicates. Forward storage, rollback authority and normal owner
+gateway remain later bounded workstreams within Phase2.
+
+## 10 October 2026 — Candidate business setup/readable comparison PASS
+
+Candidate74fab2d metadata/business-setup/readable comparison/Admin/customer checks
+PASS; desktop/tablet/phone captures /tmp/atlas-studio-business-setup-57d1e1ba-*.png.
+Full native candidate/public repeat still running, runner56399; no VERIFIED claim yet.
+Backup063716/fixtures063910, evidence /tmp/atlas-studio-candidate-saTKTd and local
+/tmp/atlas-studio-business-setup-deploy.txt. Root4.6G/PGonline, current1f2 unchanged.
+Keep exact pinned branch tip until runner completes; preserve user's unsaved tab.
+
 ## 10 October 2026 — Final readable business-setup companion checks PASS
 
 45 files/286 assertions, production build, strict post-build TypeScript/scoped

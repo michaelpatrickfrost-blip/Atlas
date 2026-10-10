@@ -16,10 +16,11 @@ function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"
 
 /** One server-only row. Caller refreshes/locks principal and source/draft for the
  * batch; this rechecks native anchor and both field policies before decoding.
- * Returned observations contain no business value or execution authority.
+ * Converted values are internal to the shared transaction; the archive wrapper
+ * below returns only references and fingerprints, never execution authority.
  */
-export async function observeFieldMigrationRecord(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
-  company: Parameters<typeof assertFieldMigrationPolicies>[1], serverIntent: FieldMigrationIntent, serverAnchor: RecordAnchor): Promise<FieldMigrationObservation> {
+export async function inspectFieldMigrationRecord(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
+  company: Parameters<typeof assertFieldMigrationPolicies>[1], serverIntent: FieldMigrationIntent, serverAnchor: RecordAnchor): Promise<{ observation: FieldMigrationObservation; convertedValue: FieldValue | null }> {
   const intent = sealFieldMigrationIntent(serverIntent).intent, anchor = recordAnchorSchema.parse(serverAnchor), session = context.session, tx = context.transaction;
   if (!tx || intent.organisationId !== session.organisationId || anchor.organisationId !== session.organisationId
     || intent.principal.userId !== session.userId || intent.principal.membershipId !== session.membershipId) changed();
@@ -71,20 +72,26 @@ export async function observeFieldMigrationRecord(context: RecordContext & { tra
       // A malformed reference cannot establish target authority. Abort rather
       // than classifying an inaccessible reference as a reviewable failure row.
       if (written.field.storage.type === "reference") changed();
-      return fieldMigrationObservationSchema.parse(observation);
+      return { observation: fieldMigrationObservationSchema.parse(observation), convertedValue: null };
     } // Pure decoder only, no access checks in this catch.
     await authoriseFieldMigrationReference(context, registry, written, decoded);
     await authoriseFieldMigrationReference(context, registry, current, decoded);
-    if (checksum(decoded) !== metadata.fingerprint) return fieldMigrationObservationSchema.parse(observation);
+    if (checksum(decoded) !== metadata.fingerprint) return { observation: fieldMigrationObservationSchema.parse(observation), convertedValue: null };
   } else if (slot && slot.revision !== 0) changed();
   let converted: ReturnType<typeof convert>;
   try { converted = convert(decoded?.value ?? null); }
   catch (error) {
     if (!(error instanceof FieldConversionError)) throw error;
     observation.result = { kind: "invalid", code: error.code };
-    return fieldMigrationObservationSchema.parse(observation);
+    return { observation: fieldMigrationObservationSchema.parse(observation), convertedValue: null };
   }
   await authoriseFieldMigrationReference(context, registry, target, converted.value);
   observation.result = { kind: "valid", targetFingerprint: checksum(converted.value), isNull: converted.value === null, lossy: converted.lossy };
-  return fieldMigrationObservationSchema.parse(observation);
+  return { observation: fieldMigrationObservationSchema.parse(observation), convertedValue: converted.value };
+}
+
+/** Archive callers receive only references/fingerprints, preserving the existing
+ * observation contract. Values stay inside the server-owned conversion transaction. */
+export async function observeFieldMigrationRecord(...args: Parameters<typeof inspectFieldMigrationRecord>): Promise<FieldMigrationObservation> {
+  return (await inspectFieldMigrationRecord(...args)).observation;
 }

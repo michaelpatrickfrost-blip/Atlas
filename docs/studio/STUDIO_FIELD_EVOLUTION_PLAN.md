@@ -1002,3 +1002,28 @@ Actual SQL NOT RUN, pending 20261010050000 unapplied, accepted live 64361cb.
 Phase 2 NOT PASSED. Next e4b reuses one authorised source observation/decoder to
 compare the sealed row and atomically claim/write its exact target representation;
 then e5 batches and e6 central interruption/failure/replay evidence.
+
+2B3e4b IN PROGRESS before code: reuse the existing authorised source inspector
+and converter rather than a second decode/permission path. Internal inspection may
+return the converted value only inside the owning transaction; existing observation
+API stays references/fingerprints only. Require exact running execution, server-loaded
+observation and registered owner representation approval before source columns.
+Compare full sealed observation/result, then claim immutable outcome before its
+deferred target FK writes. Existing extension CAS +1 (or new revision 1), new slot0,
+exact typed value1/DbNull, slot pointer1/unique token. Caller must atomically update
+batch progress and Audit; database deferred guards forbid committing row alone.
+Expected observation refactor/representation writer/tests; no native/domain changes,
+no new schema or public endpoint. Actual lifecycle remains pending e5/e6.
+
+2B3e4b IMPLEMENTED/local checks PASS: one shared source inspector/converter now
+supplies converted values only inside the server transaction; archive observation
+wrapper stays unchanged and redacted. Exact owner representation approval precedes
+source columns, full sealed row/fingerprint/null/loss comparison precedes immutable
+outcome claim, then existing extension CAS+1/new1, target slot0/value1/DbNull and
+pointer1/unique token. No native writes; caller must pair progress/Audit, and deferred
+SQL forbids committing targets alone. 37 Studio files/219 assertions, production
+build, strict post-build TS/scoped lint/diff PASS; /tmp/atlas-studio-representation-
+writer-{focused,all-tests,types,build,postbuild-types,lint}.txt. Source observation
+regressions preserved. Actual SQL NOT RUN, pending 20261010050000 unapplied.
+Accepted live 64361cb, Phase 2 NOT PASSED. Next e5 bounded CAS/progress/Audit batches,
+retained-prefix failure recovery and fresh lost-response replay; then e6 actual proof.

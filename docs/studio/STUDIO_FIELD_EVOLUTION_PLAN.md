@@ -525,7 +525,7 @@ fake anchors are separate and cannot pass owner coverage. Reference seal pending
 c1 VERIFIED locally: optional explicit same-entity referenceVersions on migrationSnapshot;
 validate registered native versions and reference type/entity opt-in; old absence
 and hashes unchanged. Files registry types/entities/registry + tests/docs; no DB.
-c2 NOT STARTED: new Tickets entity/query versions approve whole native reference
+c2 IMPLEMENTED locally: new Tickets entity/query versions approve whole native reference
 coverage using actual canonical targets and current full private/native access,
 without per-record value round trips or ordinary write/final guard changes.
 c3 NOT STARTED: final reference review invokes that pinned owner protocol after
@@ -537,3 +537,16 @@ engine or reference privilege is granted by metadata; old owner versions stay se
 c1 evidence: seven files/44 assertions, production build, strict post-build
 TypeScript/scoped lint/diff PASS. Exact live old entity v1/v2/v3/query v1 hashes
 pinned; metadata alone grants no reference runtime authority. No DDL.
+
+c2 plan before code: factor existing snapshot execution without descriptor/schema
+changes; add query v2 and entity v4. Query v2 keeps preflight/snapshot/coverage and
+adds reference_coverage: same-entity source/target/written reference versions 1–4,
+actual target existence in this tenant/kind, complete current private/native access
+and actual membership/Serializable transaction before metadata/target checks. No
+reference IDs/counts or native writes returned. Files service-work/studio + focused
+owner tests; no DB change. Old exact hashes and ordinary final/merged guards must
+pass. Final sealer integration remains separate c3.
+
+c2 local evidence: 21 files/132 assertions, production build, strict post-build
+TypeScript/scoped lint/diff PASS; old hashes and ordinary guards retained. Actual
+new protocol proof not run; final sealer c3/central c4 follow before VERIFIED.

@@ -75,3 +75,14 @@ TICKET rows; archive coverage rejects missing/extra IDs and changed native
 revisions, including equal-count substitutions. It does not read business field
 values or authorise conversion writes. Existing v1/v2 descriptors, legacy cohort
 query and ordinary final/merged extension restrictions remain unchanged.
+
+Studio reference review opt-in (Phase 2): Tickets entity v4 pins field_migration
+query v2, typed source versions 2–4 and same-canonical-entity reference read versions
+1–4. Query v2 adds reference_coverage: actual member/active customer/Serializable,
+source entitlement, native read/manage and complete private/work scope first, then
+scoped immutable query-v2/target-v4 preparation and actual canonical target tenant/
+kind/existence plus written reference versions. It returns only coverage truth,
+never referenced IDs/counts or mutations. Versioned descriptors preserve v1–v3
+entity/query-v1 hashes and ordinary final/merged write restrictions. Studio still
+checks current/written field policies and exact source before invocation; metadata
+alone gives no access. Final reference seal/central proof follows separately.

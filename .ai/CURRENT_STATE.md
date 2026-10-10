@@ -1,5 +1,43 @@
 # Atlas current state
 
+## 10 October 2026 — Owner reference protocol locally checked
+
+c6b2b3c2 Tickets entity v4/query v2 declares source versions 2–4 and same-entity
+reference read versions 1–4. Complete native/private/current-member/Serializable
+checks precede exact scoped query-v2/target-v4 preparation and canonical target
+existence/tenant/kind/written-version proof. No reference IDs/counts or writes.
+Extracted old snapshot logic preserves exact entity v1/v2/v3/query v1 hashes and
+ordinary final/merged extension guards. 21 files/132 assertions, production build,
+strict post-build TypeScript/scoped lint and diff review PASS. Logs /tmp/atlas-
+studio-reference-owner-{tests,build,postbuild-types,lint}.txt. New protocol actual
+central helper not yet run; ship with c3 reference final-review integration.
+No DDL; accepted live fc9b80f. Next c3 current/written/source checks then invoke
+pinned owner reference_coverage before shared digest/review/CAS/Audit; actual
+reference/private/missing/foreign/stale proof required. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Source coverage/scalar reviews verified live
+
+fc9b80f863bba6f89a351c065663072e1e2ff8be full combined candidate/public PASS,
+deploy exit 0 and actual public health match. Source coverage, exact SQL–Node v1
+parity, actual review/CAS/Audit rollback/replay/sealed append denial and non-null
+uniqueness denial VERIFIED. Current/written/native/tenant guards, final/unanchored
+coverage and native rows preserved; source-only normal-owner Test fixtures distinct
+from formatter-only fake anchors that cannot seal. No new DDL or target/native
+writes. Evidence AhVC2R/OmmiXM; backup 015932, fixture 020129/020518; previous
+96834f5 retained. Native Settings/Dashboards/People/Supply/Commercial/etc all passed.
+Reference c1 foundation local VERIFIED; c2 owner query/entity in progress, not yet
+verified, no final reference seal. Phase 2 NOT PASSED; later UI/publishing remains.
+
+## 10 October 2026 — Owner reference query implementation started
+
+c2 plan saved: Tickets query v2/entity v4 approve same-entity reference read
+versions 1–4, actual canonical target tenant/kind/existence and complete private/
+native membership access before reference coverage result. Preserve query v1 and
+entity v1–v3 exact hashes; extract old snapshot execution unchanged. New query
+returns no referenced IDs/counts or write authority. Files service-work/studio
+and tests; no DDL. Final sealer c3 remains blocked until owner checks pass.
+Current sealed scalar fc9b80f full candidate PASS; public OmmiXM pending.
+
 ## 10 October 2026 — Reference opt-in contracts locally checked
 
 c6b2b3c1 optional same-entity referenceVersions validates approved reference type/

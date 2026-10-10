@@ -11,13 +11,13 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c6b2b3b — Scalar review sealing — IMPLEMENTED locally; actual proof pending.
-c6b2b2 VERIFIED live 96834f5; source coverage local; no writer/designer.
+2B3c6b2b3c2 — Owning-domain reference coverage — IN PROGRESS.
+Scalar/source coverage VERIFIED live fc9b80f; reference c1 local; no writer/designer.
 
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source 96834f5d3b463503371391fd90b3479c64d0bc90,
+VERIFIED. Latest confirmed live source fc9b80f863bba6f89a351c065663072e1e2ff8be,
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -55,11 +55,30 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c4 Durable review archive | VERIFIED | 8780a07 candidate/public actual tenant/source/draft/slot/value guards, sealed rows/history, CAS/stale/audit rollback; no worker. |
 | 2B3c5 Owner shared snapshot/coverage | VERIFIED | 5d101da full candidate/public proof: exact native set/revisions, private/membership/isolation/final/unanchored; no native mutation. |
 | 2B3c6a Explicit data and field/reference policies | VERIFIED | Pure contract: 4 files/18 local assertions, build/types/lint; deployed e309ff8. No runtime collector/preview claim. |
+| 2B3c6b2b3a/b Source coverage/scalar review | VERIFIED | fc9b80f complete candidate/public exact coverage, v1 parity, real Audit rollback/replay and duplicate denial; no target/native writes. |
 | 2B3c6b2b2 Bounded observation collector | VERIFIED | 96834f5 full candidate/public actual resume/replay/tenant/stale/Audit rollback; no target/native mutation. |
 | 2B3c6b2a Authorised source observation | VERIFIED | 9183e53 full candidate/public owner-checked absent and integer source; refs/fingerprint only, native unchanged. |
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+c2 owner v4/query v2 IMPLEMENTED locally: 21 files/132 assertions, build, strict
+post-build TypeScript/scoped lint and diff review PASS. Old exact hashes/ordinary
+final guards retained. Actual reference protocol proof NOT RUN; ship with c3
+integration. No DDL, reference IDs/counts or writes. Next final-review reference
+checks through this pinned native protocol before existing digest/CAS/Audit.
+
+fc9b80f full combined candidate/public PASS, deploy exit 0 and health match;
+c6b2b3a/b VERIFIED. Actual source/native/written coverage, v1 digest parity, Review/
+CAS/Audit rollback/replay and unique denial; native data/final guards preserved.
+Evidence AhVC2R/OmmiXM, backup 015932, fixtures 020129/020518; previous 96834f5
+retained. Historical pending scalar/source coverage notes superseded. c2 owner
+reference implementation in progress; final sealer remains closed to references.
+
+c2 owner query v2/entity v4 planned before code: explicit same-entity reference
+versions 1–4, actual tenant/kind/target existence and full private/current member
+checks, no target IDs/counts/writes; preserve old hashes and normal final/merged
+writer. No DDL. c3 final sealer integration remains separate.
 
 c6b2b3c1 contract foundation locally VERIFIED: seven files/44 assertions, production
 build, strict post-build TS/scoped lint/diff review PASS. Old live v1/v2/v3 entity
@@ -634,11 +653,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Pin source coverage + scalar review checkpoint and run full backed-up combined
-candidate/public acceptance. Confirm actual v1 Node–SQL digest parity, Audit
-rollback, replay/sealed append denial, exact source revision staleness and duplicate
-non-null target denial, plus complete native suite/public release revision. Then
-c6b2b3c: define explicit owner reference coverage for final review, preserving
-old query/entity hashes and current tenant/private/reference guards; add tests
-before enabling reference sealing. No Phase 2 gate until all remaining field
-migration/value gateway/record type/page/visual/customer-publication work passes.
+Complete c6b2b3c2 owner query v2/entity v4 tests: native/source/member/Serializable
+checks before reference scope, exact tenant/kind/target/written versions, old hashes
+and ordinary final/merged guards. Then c3 integrates reference final seal through
+that pinned owner query after current/written/source coverage, same digest/CAS/
+Audit. Add actual Test reference/private/missing/foreign/stale/replay proof and
+combined candidate/public verification. Phase 2 migration publication/execution/
+cutover, value gateway, record types/pages/visual/customer dashboards/buttons remain.

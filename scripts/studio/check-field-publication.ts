@@ -115,17 +115,27 @@ export async function checkFieldPublication(session: Session, principal: FieldMi
   const cancellationRequest = { preparationId: preparation.id, revision: receipt.revision };
   const cancelled = await cancelFieldMigrationPublication(session, principal, cancellationRequest);
   assert.deepEqual(await cancelFieldMigrationPublication(session, principal, cancellationRequest), { ...cancelled, replayed: true });
+  const cancelledReceipt = await db.studioFieldMigrationPublication.findFirstOrThrow({ where: { preparationId: preparation.id, organisationId: session.organisationId } });
   assert.equal(await db.auditEntry.count({ where: { organisationId: session.organisationId, entityId: preparation.id, action: "studio.field.migration.cancelled" } }), 1);
   await assert.rejects(() => publishReviewedFieldMigration(session, request), /stale|changed/i);
   await assert.rejects(tryTargetSlot, /target writes require reviewed execution/);
   const changed = await writeSourceFixture(43); assert.equal(changed.value.integerValue, 43n);
   assert.equal(await db.studioFieldValue.count({ where: { slotId: storedSource.slot.id, organisationId: session.organisationId } }), 2);
   const edited = await updateDraft(session, { definitionId: definition.id, revision: current.draft.revision, payload: { ...target, field: { ...target.field, label: "Cancelled target cosmetic descendant" } } });
-  const descendant = await publishDraft(session, { definitionId: definition.id, revision: edited.revision, acknowledgeWarnings: true });
+  const cancelledBefore = await snapshot();
+  await assert.rejects(() => publishDraft(session, { definitionId: definition.id, revision: edited.revision, acknowledgeWarnings: true }), /MIGRATION_REQUIRED/);
+  assert.deepEqual(await snapshot(), cancelledBefore);
+  const sourceEdited = await updateDraft(session, { definitionId: definition.id, revision: edited.revision,
+    payload: { ...payload, field: { ...payload.field, label: "Approved source after cancellation", help: "Retained source representation" } } });
+  const cosmetic = await publishDraft(session, { definitionId: definition.id, revision: sourceEdited.revision, acknowledgeWarnings: true });
+  const cosmeticBefore = await snapshot();
+  await activateVersion(session, { definitionId: definition.id, versionId: cosmetic.versionId, revision: cosmeticBefore.revision });
   const final = await snapshot();
-  await assert.rejects(() => activateVersion(session, { definitionId: definition.id, versionId: descendant.versionId, revision: final.revision }), /completed conversion|explicit cutover/i);
-  assert.equal(final.activeVersionId, source.versionId);
+  await assert.rejects(() => activateVersion(session, { definitionId: definition.id, versionId: published.targetVersionId, revision: final.revision }), /completed conversion|explicit cutover/i);
+  assert.equal(final.activeVersionId, cosmetic.versionId);
+  assert.equal((await activeDefinition(session, definition.id))?.versionId, cosmetic.versionId);
+  assert.deepEqual(await db.studioFieldMigrationPublication.findFirstOrThrow({ where: { preparationId: preparation.id, organisationId: session.organisationId } }), cancelledReceipt);
   assert.equal(await db.studioFieldValue.count({ where: { definitionId: definition.id, organisationId: session.organisationId, generationId: target.storageGeneration } }), 0);
   assert.deepEqual(await db.serviceWorkItem.findMany({ where: { organisationId: { in: [session.organisationId, otherOrganisationId] } }, orderBy: { id: "asc" } }), nativeBefore);
-  console.log("PASS actual reviewed publication: ordinary structural denial, exact source-active version/generation/receipt, real paired Audit rollback and fresh permission-aware replay; tenant/history/CAS/freeze/draft/retirement/target-save/activation SQL guards, sparse cancellation releases source/draft but cancelled target/descendant unusable. Privileged source-only owner fixtures; native unchanged, no target values/cutover.");
+  console.log("PASS actual reviewed publication: ordinary structural denial, exact source-active version/generation/receipt, real paired Audit rollback and fresh permission-aware replay; tenant/history/CAS/freeze/draft/retirement/target-save/activation SQL guards; cancellation retains target/history, rejects target descendant publication and permits actual active-source cosmetic publication/activation. Privileged source-only owner fixtures; native unchanged, no target values/cutover.");
 }

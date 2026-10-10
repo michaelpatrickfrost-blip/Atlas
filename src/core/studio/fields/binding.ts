@@ -18,9 +18,15 @@ export async function bindPublishedField(tx: Prisma.TransactionClient, session: 
   const binding = await tx.studioFieldBinding.findFirst({ where: { definitionId, organisationId: session.organisationId } });
   if (binding) {
     await assertFieldBinding(tx, session, definitionId, payload);
-    const previous = await tx.studioDefinitionVersion.findFirst({ where: { definitionId, organisationId: session.organisationId, id: { not: versionId } }, orderBy: { version: "desc" }, select: { payload: true } });
-    if (!previous) throw new Error("Field binding has no published history.");
-    assertCosmeticFieldEvolution(customFieldPayloadSchema.parse(previous.payload), payload);
+    // The newest publication can be a cancelled or rolled-back migration target.
+    // Compare with the representation actually in use, keeping that target's
+    // immutable history. Before first activation only the bound origin is safe.
+    const definition = await tx.studioDefinition.findFirst({ where: { id: definitionId, organisationId: session.organisationId, kind: "customField" }, select: { activeVersionId: true } });
+    if (!definition) throw new Error("Field binding has no tenant-owned definition.");
+    const baselineId = definition.activeVersionId ?? binding.originVersionId;
+    const baseline = await tx.studioDefinitionVersion.findFirst({ where: { id: baselineId, definitionId, organisationId: session.organisationId }, select: { payload: true } });
+    if (!baseline || baselineId === versionId) throw new Error("Field binding has no approved published baseline.");
+    assertCosmeticFieldEvolution(customFieldPayloadSchema.parse(baseline.payload), payload);
     return;
   }
   const entity = studioRegistry().describe(payload.entity.id, payload.entity.version);
@@ -32,7 +38,8 @@ export async function bindPublishedField(tx: Prisma.TransactionClient, session: 
   await tx.studioFieldGeneration.create({ data: { id: payload.storageGeneration, definitionId, organisationId: session.organisationId, entityId: payload.entity.id, valueType: payload.field.storage.type, originVersionId: versionId } });
 }
 
-/** Until 2B3's reviewed migration path exists, only cosmetic revisions may publish. */
+/** Ordinary publication may change presentation only; structural evolution uses
+ * the separate owner-approved reviewed migration path. */
 export function assertCosmeticFieldEvolution(previous: CustomFieldPayload, next: CustomFieldPayload) {
   const structural = (payload: CustomFieldPayload) => ({ ...payload, field: { ...payload.field, label: "", help: "" } });
   if (checksum(structural(previous)) !== checksum(structural(next))) throw new Error("MIGRATION_REQUIRED: changing published field storage, constraints or access needs a reviewed evolution plan.");

@@ -1,5 +1,21 @@
 # Atlas current state
 
+## 10 October 2026 — f4b2a cosmetic binding IMPLEMENTED; live proof pending
+
+Splitf4b2 into a active-schema binder/cancellation continuation then b additive0008
+generation/open-freeze/terminal cosmetic guards. a changes fields/binding.ts to use
+tenant-owned active payload (immutable origin before first activation only), never
+latest cancelled/rolled-back target; missing scoped baseline fails closed. Three
+new binding cases;55 files343 assertions and scoped ESLint PASS. Actual Test
+publication checker requires obsolete target descendant publication denial and real
+approved-source label/help publish/activate, retaining cancelled receipt/native rows.
+No schema/migration/production settlement/value API. Production build and strict
+post-build TypeScript PASS; full pinned candidate/public/native acceptance pending
+before VERIFIED.
+DECISIONS/Phase2 plan/field plan/ledger and final diff reviewed; no unrelated changes.
+Next checkpoint and deploy exact compatible Studio candidate with Studio acceptance;
+b NOT STARTED until a gate. Logs /tmp/atlas-studio-f4b2a-{tests,lint,build,types}.txt.
+
 ## 10 October 2026 — f4b1 VERIFIED live; temporary access blocker resolved
 
 Original deploy runner20133 completed exit0. Exact1d7f558bf35c02941bca732daffbe61288cdb044

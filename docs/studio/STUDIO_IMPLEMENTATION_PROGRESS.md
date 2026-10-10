@@ -11,7 +11,8 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f4b2 — Generation priority and cosmetic continuation — IN PROGRESS (design/source inspection).
+2B3f4b2a — Active representation cosmetic binding — IMPLEMENTED; live proof pending.
+F4b2b — forward0008 generation/open-freeze/cosmetic activation guards — NOT STARTED.
 2B3f4b1 additive one-time settlement storage — VERIFIED live1d7f558, candidate/public
 combined acceptance PASS, original runner20133 exit0. Operational cleanup VERIFIED.
 Purpose: resume safe same-active-generation cosmetic publication after cancellation/
@@ -86,6 +87,17 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+F4b2 split before release into coherent checkpoints: a fixes ordinary publication
+baseline and actual cancellation continuation; b adds forward0008 generation
+priority/storage/terminal cosmetic activation. a expected files binding.ts,
+studio-field-binding tests and check-field-publication; no DB change. a IMPLEMENTED:
+active schema chosen with tenant/definition/kind scope; origin only before activation,
+missing baseline fails closed, cancelled target descendants rejected before publish.
+Exact Test checker now requires actual approved source label/help publish/activate
+after cancellation, unchanged cancelled receipt/native history and target denial.
+55 files343 assertions, scoped lint, production build, strict post-build TypeScript
+and diff PASS; exact candidate/public runtime/native gate pending. b NOT STARTED.
 
 F4b1 VERIFIED10 October: exact1d7f558 candidate7jm5KC/public both ALL COMBINED
 PASS; runner20133 exit0. Actual nested SQL closed pin/CAS/tenant/principal denials,
@@ -1233,6 +1245,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+F4b2a: src/core/studio/fields/binding.ts, tests/studio-field-binding.test.ts,
+scripts/studio/check-field-publication.ts; field plan, Phase2 plan, DECISIONS,
+CURRENT_STATE and this ledger. No schema/migration change.
+
 Software cleanup: scripts/deploy/prune-releases.{mjs,d.mts,sh}, vps-release.sh,
 tests/release-retirement.test.ts, docs/SOFTWARE_RETENTION.md, DEPLOY, AGENTS,
 CURRENT_STATE/DECISIONS and this ledger. Source/runtime business logic unchanged.
@@ -1381,6 +1397,8 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+F4b2a: NONE; ordinary binding read selection only.
+
 Software cleanup: NONE. No SQL, schema, migration, restore, reset or record purge.
 
 Current f4b1: four nullable settlement columns on cutover model; guarded ACT0→
@@ -1430,6 +1448,8 @@ business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
 
+F4b2a: NONE. Previously verified0007 retained; forward0008 belongs to f4b2b.
+
 Current0007 APPLIED and VERIFIED on1d7f558 full candidate/public gates. Software
 cleanup applied no migration. Earlier pending/blocked snapshots below are historical.
 
@@ -1470,6 +1490,10 @@ preserved. Final candidate/activation backup prefixes: `atlas-pre-deploy-2026100
 and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
+
+F4b2a: three binding cases for active source/obsolete target, pre-activation origin
+and missing scoped baseline without fallback. Exact Test publication acceptance
+now checks source cosmetics and retained cancellation history.
 
 Release retirement: six fixture tests covering live/rollback/process pins,
 source/static/external data preservation, idempotency, pointer/link rejection and
@@ -1514,6 +1538,9 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+F4b2a:55 files343 assertions, scoped ESLint, production build, strict post-build
+TypeScript and diff PASS. Logs /tmp/atlas-studio-f4b2a-{tests,lint,build,types}.txt.
 
 10 October recovered release: runner20133 exit0; candidate7jm5KC/public ALL COMBINED
 PASS including actual nested settlement SQL and all native suites. Public/current,
@@ -1633,6 +1660,9 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+F4b2a IMPLEMENTED/local checks PASS; real candidate/public proof pending. No
+VERIFIED or fullPhase2 claim.
 
 F4b1 VERIFIED live1d7f558; complete candidate/public actual Test SQL and native
 acceptance PASS. Temporary server-access blocker resolved. Phase2 NOT PASSED.
@@ -1806,6 +1836,8 @@ No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
 
+F4b2a local gate PASS, actual candidate/public/native gate pending before VERIFIED.
+
 F4b1 workstream PASS/VERIFIED: exact1d7f558 candidate/public SQL/runtime/native
 checks and exit0. FullPhase2 NOT PASSED; f4b2 may now begin. Historical blocked
 checkpoint below is superseded.
@@ -1832,6 +1864,12 @@ These checks derive from Sections 5–6, 14, 19, 25–28; no whole-system gate u
 prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
+
+F4b2a local checks PASS. Checkpoint source and memory, then normal pinned Studio
+release with complete candidate/public native
+acceptance. Verify real approved-source cosmetic publication/activation after
+cancellation and retained cancelled-target/history guards. Only then beginf4b2b.
+The broader remainingf4b2 plan follows.
 
 Implementf4b2: choose the tenant-owned active field schema as cosmetic binding
 baseline (origin schema only before first activation); add forward0008 guards that

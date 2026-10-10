@@ -1965,3 +1965,18 @@ turn it off when a build never restores .next/cache. Atlas creates a fresh relea
 for each SHA, so next.config sets turbopackFileSystemCacheForBuild:false. This
 avoids saving an unused ~500MB compiler cache per candidate and its peak flush
 space. Development caching and runtime/business behavior stay unchanged.
+
+## 10 October 2026 — Cosmetic field publication follows the active representation
+
+Ordinary field publication compares structure/access/storage against the tenant's
+active immutable field version, falling back to the binding's immutable origin only
+before first activation. The newest publication is unsuitable: after cancellation
+or rollback it can describe an obsolete target generation, rejecting safe source
+label/help edits and admitting obsolete-target cosmetic descendants. Missing scoped
+active/origin history fails closed; there is no latest-version fallback. Reviewed
+structural publication retains its separate current-owner pathway. This satisfies
+retained-history and approved-representation requirements without deleting cancelled
+versions, changing generation identities or widening domain write permission.
+F4b2a changes this binder only; continuation SQL/settlement/owner values remain
+separate workstreams. Actual cancelled-source publish/activate acceptance is required
+before VERIFIED, alongside existing migration/native gates.

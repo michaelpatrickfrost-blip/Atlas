@@ -1437,3 +1437,11 @@ and all native suites. F4b1 VERIFIED;0007 applied, original receipts/values/nati
 records preserved. Temporary access blocker resolved; no confirmed OOM cause.
 F4b2 next: active-schema cosmetic baseline and forward0008 generation/open-freeze
 priority plus exact Test continuation. No production settlement/value service yet.
+
+F4b2 split into bounded checkpoints: a active-schema ordinary binder + cancellation
+continuation; b forward0008 generation/open-freeze/settled cosmetic activation.
+a IMPLEMENTED: active tenant schema (origin only before first activation), missing
+baseline fail-closed, cancelled-target descendants denied before publication.
+8 binding cases;55 files343 local assertions/scoped lint/build/strict post-build
+TypeScript/diff PASS. Live proof pending. b NOT STARTED; no new migration/value/
+settlement authority in a.

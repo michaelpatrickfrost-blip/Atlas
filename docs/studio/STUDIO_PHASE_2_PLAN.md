@@ -27,7 +27,7 @@ Studio/Admin, Home and Reports acceptance; visible browser UI checked).
 | ID | Purpose and dependencies | Expected files | Database implications | Verification | Status |
 | --- | --- | --- | --- | --- | --- |
 | 2A | Owner-approved entity/extension contracts; inspect existing fields/page/settings before adding systems. Depends on Phase 1 registry. | core/studio/registry, owner manifests/services, contract inventory, MODULE_SPEC | None for contracts | Unique IDs, schema/hash compatibility, tenant and native access, protected native fields | VERIFIED; candidate/public owner checks PASS |
-| 2B | Versioned custom-field definitions, typed values, lifecycle/validation and indexed/unique strategies. Depends on 2A and metadata kernel. | core/studio/fields, compiler dispatch, schema/migration | Additive tenant-owned field/value models, stable identity/history, relational/index constraints; no canonical entity copy | Types/required/uniqueness, two tenants, access, retirement/history, atomic writes | IN PROGRESS; 2B1/2B2 and review/batches/receipt storage verified live; authorised cutover candidate proof running, rollback/value gateway remain |
+| 2B | Versioned custom-field definitions, typed values, lifecycle/validation and indexed/unique strategies. Depends on 2A and metadata kernel. | core/studio/fields, compiler dispatch, schema/migration | Additive tenant-owned field/value models, stable identity/history, relational/index constraints; no canonical entity copy | Types/required/uniqueness, two tenants, access, retirement/history, atomic writes | IN PROGRESS; 2B1/2B2 and review/batches/receipt storage verified live; authorised cutover and settlement storage verified live; rollback service/value gateway remain |
 | 2C | Record types and shallow deterministic configuration resolution. Depends on 2A–B. | core/studio/definitions, compiler, record-type policies | Versioned metadata; canonical record associations only where approved | Base + one overlay, deterministic precedence/conflict rejection, incompatible references | NOT STARTED |
 | 2D | Structured page schemas/compiler, variants, dependency impact and validation. Depends on 2A–C. | core/studio/pages, compiler, compatibility | Published metadata/dependency graph | Safe components/references, mobile representation, permission visibility, no arbitrary scripts/SQL | NOT STARTED |
 | 2E | Modern customer builders and generated list/detail/form runtime at approved record surfaces; staff setup stays Admin. Depends on 2B–D. | modules/studio, customer Studio routes, owning record surfaces, design primitives | No independent business datastore | Real create/edit/read, field permissions, hidden components not queried, native domain rules retained, desktop/tablet/phone | NOT STARTED |
@@ -37,8 +37,8 @@ Each workstream must be reviewed, tested and checkpointed before the next begins
 
 2B subworkstreams are detailed in STUDIO_PHASE_2_FIELDS.md. 2B1 typed validation
 library and 2B2 persistence are VERIFIED; review/publication/batches/receipt storage
-are VERIFIED live. Authorised cutover service is locally checked and awaiting
-combined candidate/public proof; rollback and ordinary value gateway remain.
+are VERIFIED live. Authorised cutover service and settlement storage are VERIFIED on full combined
+candidate/public proof; rollback service and ordinary value gateway remain.
 Michael's visual/easy-setup requirements for 2E are in
 STUDIO_VISUAL_BUILDER_REQUIREMENTS.md and form part of its acceptance gate.
 Do not mark VERIFIED from code or schema existence. Reconcile the implementation
@@ -82,3 +82,9 @@ technical references. 2E is split before implementation into these dependencies:
 Do not display unsupported choices as working. These are explicit Phase 2 owner/UI
 integration workstreams once 2B–2D pass, not permission to implement later Flow,
 Process, Packages or broad module migration early.
+
+10 October f4b2 continuation checkpoints: a fixes active-vs-latest ordinary field
+binding with real cancelled-source label/help publish/activate proof (IMPLEMENTED;
+release proof pending, no DDL); b adds forward0008 generation/open-freeze/settled
+cosmetic activation guards and exact Test storage proof (NOT STARTED). See field
+evolution plan and execution ledger. Phase2 remains IN PROGRESS.

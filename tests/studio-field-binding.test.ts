@@ -11,9 +11,9 @@ function payload() {
   const { id, version, schemaHash, contractHash } = registry.describe("tickets.ticket", 2);
   return customFieldPayloadSchema.parse({ schemaVersion: 1, entity: { id, version, schemaHash, contractHash }, storageGeneration: "0168ac73-bfb6-4e4f-91a0-d3d7dcf7286b", field: { key: "contact_email", label: "Contact email", classification: "confidential", storage: { type: "email" } } });
 }
-const mocks = { lock: vi.fn(), binding: vi.fn(), count: vi.fn(), createBinding: vi.fn(), createGeneration: vi.fn(), generation: vi.fn(), previous: vi.fn() };
-const tx = { $queryRaw: mocks.lock, studioFieldBinding: { findFirst: mocks.binding, count: mocks.count, create: mocks.createBinding }, studioFieldGeneration: { findFirst: mocks.generation, create: mocks.createGeneration }, studioDefinitionVersion: { findFirst: mocks.previous } } as unknown as Prisma.TransactionClient;
-beforeEach(() => { vi.clearAllMocks(); mocks.binding.mockResolvedValue(null); mocks.count.mockResolvedValue(0); mocks.generation.mockResolvedValue({ id: payload().storageGeneration }); mocks.previous.mockResolvedValue({ payload: payload() }); });
+const mocks = { lock: vi.fn(), binding: vi.fn(), count: vi.fn(), createBinding: vi.fn(), createGeneration: vi.fn(), generation: vi.fn(), baseline: vi.fn(), definition: vi.fn() };
+const tx = { $queryRaw: mocks.lock, studioFieldBinding: { findFirst: mocks.binding, count: mocks.count, create: mocks.createBinding }, studioFieldGeneration: { findFirst: mocks.generation, create: mocks.createGeneration }, studioDefinition: { findFirst: mocks.definition }, studioDefinitionVersion: { findFirst: mocks.baseline } } as unknown as Prisma.TransactionClient;
+beforeEach(() => { vi.clearAllMocks(); mocks.binding.mockResolvedValue(null); mocks.count.mockResolvedValue(0); mocks.generation.mockResolvedValue({ id: payload().storageGeneration }); mocks.baseline.mockResolvedValue({ payload: payload() }); mocks.definition.mockResolvedValue({ activeVersionId: "approved-source" }); });
 describe("Versioned field publication binding", () => {
   it("uses closed dispatch and preserves the Phase 1 compiler output", async () => {
     const compiled = await compileDefinition(session, "customField", payload(), registry);
@@ -48,6 +48,33 @@ describe("Versioned field publication binding", () => {
     mocks.binding.mockResolvedValue({ definitionId: "definition" });
     await bindPublishedField(tx, session, "definition", "tickets.ticket.contact_email", "version2", cosmetic);
     expect(mocks.createBinding).not.toHaveBeenCalled(); expect(mocks.createGeneration).not.toHaveBeenCalled();
-    expect(mocks.previous).toHaveBeenCalledWith(expect.objectContaining({ where: { definitionId: "definition", organisationId: "tenant-a", id: { not: "version2" } } }));
+    expect(mocks.baseline).toHaveBeenCalledWith({ where: { definitionId: "definition", organisationId: "tenant-a", id: "approved-source" }, select: { payload: true } });
+  });
+  it("uses the active source after cancellation/rollback and rejects obsolete target descendants", async () => {
+    const source = payload(), obsolete = { ...source, storageGeneration: "98ca32d5-677c-4d5a-8ef9-dbc20f2a69f2" };
+    mocks.binding.mockResolvedValue({ definitionId: "definition", originVersionId: "origin" });
+    mocks.baseline.mockImplementation(async ({ where }) => ({ payload: where.id === "approved-source" ? source : obsolete }));
+    await bindPublishedField(tx, session, "definition", "tickets.ticket.contact_email", "version3", { ...source, field: { ...source.field, label: "New source label" } });
+    await expect(bindPublishedField(tx, session, "definition", "tickets.ticket.contact_email", "version3", obsolete)).rejects.toThrow("MIGRATION_REQUIRED");
+    expect(mocks.definition).toHaveBeenCalledWith({ where: { id: "definition", organisationId: "tenant-a", kind: "customField" }, select: { activeVersionId: true } });
+    expect(mocks.baseline.mock.calls.every(([query]) => query.where.id === "approved-source")).toBe(true);
+    expect(mocks.createGeneration).not.toHaveBeenCalled();
+  });
+  it("uses immutable origin before first activation, rather than the latest publication", async () => {
+    mocks.binding.mockResolvedValue({ definitionId: "definition", originVersionId: "origin" });
+    mocks.definition.mockResolvedValue({ activeVersionId: null });
+    await bindPublishedField(tx, session, "definition", "tickets.ticket.contact_email", "version2", payload());
+    expect(mocks.baseline).toHaveBeenCalledWith({ where: { id: "origin", definitionId: "definition", organisationId: "tenant-a" }, select: { payload: true } });
+  });
+  it("fails closed if the tenant definition or its active schema is missing, without falling back", async () => {
+    mocks.binding.mockResolvedValue({ definitionId: "definition", originVersionId: "origin" });
+    mocks.definition.mockResolvedValue(null);
+    await expect(bindPublishedField(tx, session, "definition", "tickets.ticket.contact_email", "version2", payload())).rejects.toThrow("tenant-owned definition");
+    expect(mocks.baseline).not.toHaveBeenCalled();
+    mocks.definition.mockResolvedValue({ activeVersionId: "unavailable-active" });
+    mocks.baseline.mockResolvedValue(null);
+    await expect(bindPublishedField(tx, session, "definition", "tickets.ticket.contact_email", "version2", payload())).rejects.toThrow("approved published baseline");
+    expect(mocks.baseline).toHaveBeenCalledOnce();
+    expect(mocks.baseline.mock.calls[0][0].where.id).toBe("unavailable-active");
   });
 });

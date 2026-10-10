@@ -1474,3 +1474,20 @@ receipt/native history retained.0008 applied, no model/table/backfill/reset. Loc
 verified; retention only retired inactive1d7f558 runtime output. Phase2 not passed;
 nextf4c1 historical/current settlement inspection before shared service/Audit/replay
 and2B4 normal owner forms. Visual2E remains required after2B–D. See ledger.
+
+## 10 October 2026 — f4c1 IMPLEMENTED locally; c2 starts next
+
+Shared immutable cutover lineage now serves a closed ACT/terminal receipt reader
+and actual tenant-scoped locked settlement inspector. Existing strict f3 ACT/current
+pointer predicates remain unchanged. Exact open definition/draft CAS is separate
+from retained history; rollback requires both source/target freshness; finalization
+may close after unrelated extension drift. Actual nested Test helper now exercises
+open/terminal/post-cosmetic reads and closed windows; live runtime proof pending.
+57 files/356 assertions, production build, scoped lint and strict post-build TS PASS.
+No DB/schema/migration/native/UI change. Files: cutover-receipt, settlement-receipt/
+inspection, tests/fixtures+two focused suites, settlement-storage acceptance helper.
+Logs /tmp/atlas-studio-f4c1-{tests,build,lint,postbuild-types}.txt. Diff reviewed;
+no unrelated work removed. Next: current-actor settlement coverage and separate
+rollback/finalize commands, paired Audit/CAS and real Test proof before combined
+candidate/public release. Phase2 gate remains IN PROGRESS, c1 not VERIFIED live.
+

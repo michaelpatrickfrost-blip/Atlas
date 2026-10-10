@@ -12,7 +12,8 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 # Current Workstream
 
 2B3f4b2b — Generation/history and cosmetic activation guards — VERIFIED livef1a9bf1.
-Next2B3f4c1 scoped settlement inspection — NOT STARTED.
+2B3f4c1 scoped settlement inspection — IMPLEMENTED locally; live proof pending.
+2B3f4c2 current-authority settlement — IN PROGRESS.
 F4b2a active representation cosmetic binding remains VERIFIED.
 2B3f4b1 additive one-time settlement storage — VERIFIED live1d7f558, candidate/public
 combined acceptance PASS, original runner20133 exit0. Operational cleanup VERIFIED.
@@ -86,6 +87,42 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+## 10 October 2026 — f4c1 IMPLEMENTED locally; c2 starts next
+
+Shared immutable cutover lineage now serves a closed ACT/terminal receipt reader
+and actual tenant-scoped locked settlement inspector. Existing strict f3 ACT/current
+pointer predicates remain unchanged. Exact open definition/draft CAS is separate
+from retained history; rollback requires both source/target freshness; finalization
+may close after unrelated extension drift. Actual nested Test helper now exercises
+open/terminal/post-cosmetic reads and closed windows; live runtime proof pending.
+57 files/356 assertions, production build, scoped lint and strict post-build TS PASS.
+No DB/schema/migration/native/UI change. Files: cutover-receipt, settlement-receipt/
+inspection, tests/fixtures+two focused suites, settlement-storage acceptance helper.
+Logs /tmp/atlas-studio-f4c1-{tests,build,lint,postbuild-types}.txt. Diff reviewed;
+no unrelated work removed. Next: current-actor settlement coverage and separate
+rollback/finalize commands, paired Audit/CAS and real Test proof before combined
+candidate/public release. Phase2 gate remains IN PROGRESS, c1 not VERIFIED live.
+
+
+## 10 October 2026 — continuous Phase2 implementation: f4c1 IN PROGRESS
+
+Michael explicitly requires continued ordered implementation through all phases.
+Recovered clean29c9d45/livef1a9bf1. F4c workstreams before coding:
+- c1 retained receipt identity/scoped inspector: factor shared original lineage
+  validation without relaxing strict f3 window; validate ACT/terminal pairing and
+  immutable review/execution/version history independently of today's pointer.
+  Expected cutover-receipt,settlement-receipt,settlement-inspection and tests/helpers.
+- c2 refreshed authority/owner coverage + separate rollback/finalize server commands:
+  exact open CAS, unchanged rollback source/target/native; finalization does not
+  require unrelated extension freshness. Current active and written field/private/
+  reference/module policies apply to replay; paired Audit and shared activation.
+- d actual Test Audit failure/concurrent CAS/lost-response/post-cosmetic history
+  replay/revocation/tenant/changed-data proof and full candidate/public deployment.
+Dependencies: verified0006/7/8, existing authority/review/activation primitives.
+No new schema/backfill/reset planned, no normal value API or later-phase engine.
+Status c1 IN PROGRESS; c2/d NOT STARTED. Exact next: shared immutable receipt
+identity + closed terminal reader tests, then actual scoped inspector.
 
 F4b2b VERIFIED1109UTC on exactf1a9bf155ba703e73a7ce8a1b9a00db3a36dc236.
 Runner65486 exit0; candidatezDzdGq/publici1zMEw both ALL COMBINED PASS. Actual
@@ -2078,19 +2115,15 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Begin2B3f4c1 after verifiedf1a9bf1: read applied0007/8, settlement-contract.ts,
-cutover-inspection.ts, coverage.ts and actual terminal/continuation acceptance.
-Implement `src/core/studio/fields/migrations/settlement-inspection.ts` to inspect
-scoped ACT/terminal receipt, original immutable cutover/review/execution/version
-identity and closed settlement pin. Separate retained historical identity from
-today's pointer: a legitimate cosmetic version or later migration must not make
-terminal history claim it is still active. Keep existing strict f3 cutover inspector
-unchanged. For a new settlement require exact open configuration/CAS; rollback
-additionally requires unchanged source AND target; finalization may close the
-window after unrelated extension drift. Neither mode can grant ordinary values.
-Recheck current initiating session/member/module/field/native/private/reference
-coverage before exposing counts/data or mutation; no inherited creator grant and
-no client mode/tenant/permission callback. Add appropriate typed tests/actual exact
-Test proof and record checkpoint before shared rollback/finalize service f4c2,
-paired-Audit/concurrency/lost-response proof f4d. Then2B4 owner values/native forms,
-2C/D and2E visual designer. NoPhase3 until fullPhase2 acceptance PASS.
+Implement current-actor settlement coverage without relaxing original intent or
+strict cutover checks; add separate rollback/finalization commands using shared
+authority, exact open CAS, paired Audit and shared rollback activation. Then actual
+Test failure/concurrency/replay/permission/history proof and full pinned release.
+
+Implement shared immutable cutover identity in cutover-receipt.ts without relaxing
+its strict f3 ACT/current-pointer wrapper. Add closed settlement-receipt.ts for
+actual ACT/terminal receipt/publication pairing and settlement pin, then scoped
+settlement-inspection.ts with strict new-window vs retained-history validation.
+Add typed negative/history tests, actual Test read proof; record checkpoint and
+continue c2 current authority/owner coverage/service then d runtime failure/replay/
+concurrency gate. Phase2 IN PROGRESS; noPhase3 until full acceptance PASS.

@@ -6,6 +6,8 @@ import type { FieldMigrationPrincipal } from "../../src/core/studio/fields/princ
 import type { FieldMigrationCutoverPin } from "../../src/core/studio/fields/migrations/cutover-contract";
 import { createFieldMigrationSettlementPin, fieldMigrationSettlementTransition } from "../../src/core/studio/fields/migrations/settlement-contract";
 import { checksum } from "../../src/core/studio/registry/contracts";
+import { sealFieldMigrationIntent } from "../../src/core/studio/fields/migrations/contracts";
+import { inspectFieldMigrationSettlementIdentity, inspectFieldMigrationSettlementWindow } from "../../src/core/studio/fields/migrations/settlement-inspection";
 
 /** Nested rollback-only SQL acceptance on the already owner-authorised exact
  * Test cutover. Never a production settlement endpoint or permission waiver. */
@@ -15,6 +17,12 @@ export async function checkFieldSettlementStorage(tx: Prisma.TransactionClient, 
   assert.equal(principal.organisationId, pin.publication.organisationId);
   const definitionScope = { id: scope.definitionId, organisationId: scope.organisationId };
   const before = await tx.studioFieldMigrationCutover.findFirstOrThrow({ where: scope });
+  const preparation = await tx.studioFieldMigrationPreparation.findFirstOrThrow({ where: { id: scope.preparationId, organisationId: scope.organisationId } });
+  const { intent } = sealFieldMigrationIntent(preparation.intent);
+  const open = await inspectFieldMigrationSettlementIdentity(tx, intent);
+  assert.equal(open.state, "ACTIVATED"); assert.deepEqual(open.retained, retained);
+  await inspectFieldMigrationSettlementWindow(tx, open, "ROLLED_BACK");
+  await inspectFieldMigrationSettlementWindow(tx, open, "FINALIZED");
   const sourceBefore = await tx.studioFieldValue.findMany({ where: { organisationId: scope.organisationId, definitionId: scope.definitionId }, orderBy: { id: "asc" } });
   async function settle(disposition: "ROLLED_BACK" | "FINALIZED", patch: Record<string, unknown> = {}) {
     const result = createFieldMigrationSettlementPin(retained, principal, disposition), forged = { ...result.pin, ...patch };
@@ -43,6 +51,10 @@ export async function checkFieldSettlementStorage(tx: Prisma.TransactionClient, 
       data: { activeVersionId: transition.definition.versionId, revision: transition.definition.revision } })).count, 1);
     await tx.$executeRaw`SET CONSTRAINTS ALL IMMEDIATE`;
     const settled = await tx.studioFieldMigrationCutover.findFirstOrThrow({ where: scope });
+    const history = await inspectFieldMigrationSettlementIdentity(tx, intent);
+    assert.equal(history.state, disposition); assert.deepEqual(history.retained, retained);
+    assert.equal(history.settlement?.pin.principal.userId, principal.userId);
+    await assert.rejects(() => inspectFieldMigrationSettlementWindow(tx, history, disposition), /stale or has changed/i);
     assert.equal(settled.state, disposition); assert.equal(settled.revision, 1);
     assert.deepEqual(settled.pin, before.pin); assert.equal(settled.pinChecksum, before.pinChecksum); assert.equal(settled.createdBy, before.createdBy);
     assert.equal((await tx.studioDefinition.findFirstOrThrow({ where: definitionScope })).activeVersionId, transition.definition.versionId);
@@ -56,11 +68,17 @@ export async function checkFieldSettlementStorage(tx: Prisma.TransactionClient, 
     await tx.$executeRaw`ROLLBACK TO SAVEPOINT settlement_retained_denial`;
     await tx.$executeRaw`RELEASE SAVEPOINT settlement_retained_denial`;
     await checkFieldGenerationStorage(tx, session, settled, transition.definition.versionId, parentId);
+    const continuedHistory = await inspectFieldMigrationSettlementIdentity(tx, intent);
+    assert.equal(continuedHistory.state, disposition); assert.deepEqual(continuedHistory.settlement, history.settlement);
+    assert.notEqual(continuedHistory.definition.activeVersionId, transition.definition.versionId);
     await restore();
   }
   const outcome = await tx.studioFieldMigrationOutcome.findFirstOrThrow({ where: scope });
   await savepoint();
   await tx.studioExtensionRecord.updateMany({ where: { id: outcome.extensionId, organisationId: scope.organisationId }, data: { revision: { increment: 1 } } });
+  const changedWindow = await inspectFieldMigrationSettlementIdentity(tx, intent);
+  await assert.rejects(() => inspectFieldMigrationSettlementWindow(tx, changedWindow, "ROLLED_BACK"), /stale or has changed/i);
+  await inspectFieldMigrationSettlementWindow(tx, changedWindow, "FINALIZED");
   await tx.$executeRaw`SAVEPOINT settlement_changed_denial`;
   await assert.rejects(() => settle("ROLLED_BACK"), /exact unchanged/i);
   await tx.$executeRaw`ROLLBACK TO SAVEPOINT settlement_changed_denial`;
@@ -70,6 +88,5 @@ export async function checkFieldSettlementStorage(tx: Prisma.TransactionClient, 
   await tx.$executeRaw`SET CONSTRAINTS ALL IMMEDIATE`;
   await restore();
   assert.deepEqual(await tx.studioFieldMigrationCutover.findFirstOrThrow({ where: scope }), before);
-  console.log("PASS rollback-only settlement storage: closed pin/CAS/actor and retained original identity; standalone receipt denied, both atomic terminal outcomes pass; terminal mutation/delete/publication reversal denied; changed extension denies rollback but can finalize, all values and original ACT window restored. No production rollback or ordinary value authority.");
+  console.log("PASS rollback-only settlement storage and actual scoped inspector: closed pin/CAS/actor and retained original identity; standalone receipt denied, both atomic terminal outcomes and post-cosmetic historical reads pass; terminal window/mutation/delete/publication reversal denied; changed extension denies rollback but can finalize, all values and original ACT window restored. No production rollback or ordinary value authority.");
 }
-

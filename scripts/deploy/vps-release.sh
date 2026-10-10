@@ -120,6 +120,7 @@ feature_acceptance() {
       NODE_ENV=production ATLAS_PEOPLE_TEST=1 ATLAS_PEOPLE_TEST_URL="$url" ATLAS_PEOPLE_EVIDENCE="$evidence" node --env-file=.env.local --import tsx scripts/check-people-workspaces.ts
     elif [[ "$ACCEPTANCE" = tasks ]]; then
       NODE_ENV=production ATLAS_TASKS_CHECK=1 ATLAS_TASKS_URL="$url" ATLAS_TEST_REVISION="$REV" node --env-file=.env.local --import tsx scripts/check-my-tasks.ts
+      NODE_ENV=production ATLAS_MESSAGES_CHECK=1 ATLAS_MESSAGES_URL="$url" node --env-file=.env.local --import tsx scripts/check-messages.ts
     elif [[ "$ACCEPTANCE" = commercial ]]; then
       NODE_ENV=production ATLAS_COMMERCIAL_CHECK=1 ATLAS_COMMERCIAL_URL="$url" ATLAS_TEST_REVISION="$REV" node --env-file=.env.local --import tsx scripts/check-commercial-workspaces.ts
     elif [[ "$ACCEPTANCE" = studio ]]; then

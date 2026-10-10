@@ -265,3 +265,31 @@ details[open] > summary::after { transform: rotate(180deg); }
 /* Mobile: one scroll container (main); stop the page behind it rubber-banding or scrolling sideways. */
 html, body { overflow-x: hidden; overscroll-behavior: none; }
 main { -webkit-overflow-scrolling: touch; padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }
+
+/* Small workspace utilities share a quiet, right-hand slide-out. */
+.atlas-side-panel {
+  position: fixed;
+  inset: 8px 8px 8px auto;
+  margin: 0;
+  padding: 0;
+  width: min(560px, calc(100vw - 16px));
+  max-width: none;
+  height: calc(100dvh - 16px);
+  max-height: none;
+  overflow: hidden;
+  border: 1px solid #dbeafe;
+  border-radius: 24px;
+  background: white;
+  color: #1e293b;
+  box-shadow: -16px 0 70px -24px rgb(17 47 103 / 28%);
+}
+.atlas-side-panel::backdrop { background: rgb(15 23 42 / 12%); animation: atlas-drawer-shade 240ms ease-out; }
+.atlas-side-panel[data-closing]::backdrop { animation: atlas-drawer-unshade 240ms ease-in forwards; }
+@keyframes atlas-drawer-shade { from { background: transparent; } to { background: rgb(15 23 42 / 12%); } }
+@keyframes atlas-drawer-unshade { from { background: rgb(15 23 42 / 12%); } to { background: transparent; } }
+@media (min-width: 640px) {
+  .atlas-side-panel { inset: 16px 16px 16px auto; height: calc(100dvh - 32px); width: min(560px, calc(100vw - 32px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atlas-side-panel::backdrop { animation: none; }
+}

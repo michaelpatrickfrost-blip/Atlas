@@ -1,6 +1,7 @@
 "use client";
 import { useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { SidePanel } from "@/components/shell/side-panel";
 import {
   MessageDraftContext,
   type MessageDraft,
@@ -162,6 +163,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
   const [hits, setHits] = useState<LinkHit[]>([]);
   const [recordSearching, setRecordSearching] = useState(false);
   const [toasts, setToasts] = useState<Snapshot["notices"]>([]);
+  const panelRoot = useRef<HTMLDivElement>(null);
   const [menu, setMenu] = useState(false);
   const [details, setDetails] = useState(false);
   const [threadQuery, setThreadQuery] = useState("");
@@ -171,7 +173,6 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
   const requestNumber = useRef(0);
   const pendingRef = useRef(false);
   const nearBottom = useRef(true);
-  const focusPanel = useRef<HTMLDivElement>(null);
   const drafts = buffer.current.drafts;
   const seen = useRef(new Set<string>());
   const primed = useRef(false);
@@ -275,45 +276,27 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
   }, [activeId, threadQuery, historyBefore, open, duplicate]);
 
   useEffect(() => {
-    if (page || !open || duplicate) return;
+    if (!open || (!attachOpen && !newChatOpen)) return;
+    const scope = panelRoot.current?.querySelector<HTMLElement>('[role="dialog"]');
+    if (!scope) return;
     const previous = document.activeElement as HTMLElement | null;
-    focusPanel.current?.focus();
+    const nodes = () => [...scope.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], input:not(:disabled), textarea:not(:disabled), select:not(:disabled), [tabindex="0"]')].filter((node) => node.getClientRects().length);
+    nodes()[0]?.focus();
     const trap = (event: KeyboardEvent) => {
       if (event.key !== "Tab") return;
-      const scope =
-        focusPanel.current?.querySelector<HTMLElement>('[role="dialog"]') ??
-        focusPanel.current;
-      const nodes = Array.from(
-        scope?.querySelectorAll<HTMLElement>(
-          'button:not(:disabled), a[href], input:not(:disabled), textarea:not(:disabled), select:not(:disabled), [tabindex="0"]',
-        ) ?? [],
-      ).filter((node) => node.getClientRects().length);
-      const first = nodes[0],
-        last = nodes.at(-1);
-      if (!first) return;
-      if (
-        event.shiftKey &&
-        (document.activeElement === first ||
-          document.activeElement === focusPanel.current)
-      ) {
-        event.preventDefault();
-        last?.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
+      const items = nodes(), first = items[0], last = items.at(-1);
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
     };
     window.addEventListener("keydown", trap);
-    return () => {
-      window.removeEventListener("keydown", trap);
-      previous?.focus();
-    };
-  }, [open, page, duplicate]);
+    return () => { window.removeEventListener("keydown", trap); previous?.focus(); };
+  }, [open, attachOpen, newChatOpen]);
 
   useEffect(() => {
     if (!open && !page) return;
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        event.preventDefault();
         if (attachOpen) setAttachOpen(false);
         else if (newChatOpen) closeNewChat();
         else if (details) setDetails(false);
@@ -615,7 +598,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
     historyOptions.current.before === historyBefore;
   if (duplicate) return null;
   const panel = (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-[28px] border border-white bg-white shadow-[0_24px_90px_-25px_rgba(35,77,140,0.28)]">
+    <div ref={panelRoot} className={`flex h-full min-h-0 flex-col overflow-hidden bg-white ${page ? "rounded-[28px] border border-white shadow-[0_24px_90px_-25px_rgba(35,77,140,0.28)]" : ""}`}>
       <header className="flex shrink-0 items-center gap-3 border-b border-blue-100/70 bg-gradient-to-r from-[#f1f7ff] via-white to-white px-5 py-4">
         <span className="flex size-11 items-center justify-center rounded-2xl bg-[#075bff] text-white shadow-lg shadow-blue-500/15">
           <MessageCircle size={22} />
@@ -669,9 +652,9 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
           </button>
         )}
       </header>
-      <div className="relative grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[260px_minmax(0,1fr)]">
+      <div className={`relative grid min-h-0 flex-1 grid-cols-1 ${page ? "md:grid-cols-[260px_minmax(0,1fr)]" : ""}`}>
         <aside
-          className={`${active ? "hidden md:flex" : "flex"} min-h-0 flex-col border-r border-blue-100/70 bg-[#f9fbff]`}
+          className={`${active ? (page ? "hidden md:flex" : "hidden") : "flex"} min-h-0 flex-col border-r border-blue-100/70 bg-[#f9fbff]`}
         >
           <div className="flex items-center justify-between px-4 pb-2 pt-4">
             <h3 className="text-xs font-semibold uppercase tracking-[.14em] text-[#71809a]">
@@ -762,7 +745,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
           </div>
         </aside>
         <section
-          className={`${active ? "flex" : "hidden md:flex"} relative min-h-0 min-w-0 flex-col`}
+          className={`${active ? "flex" : (page ? "hidden md:flex" : "hidden")} relative min-h-0 min-w-0 flex-col`}
         >
           {!active && (
             <div className="flex flex-1 flex-col items-center justify-center bg-[radial-gradient(ellipse_at_top,#eef5ff,white_70%)] px-8 text-center">
@@ -796,7 +779,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
                   onClick={() => {
                     if (!pending) setActiveId(null);
                   }}
-                  className="rounded-xl p-2 text-[#526587] hover:bg-blue-50 md:hidden"
+                  className={`rounded-xl p-2 text-[#526587] hover:bg-blue-50 ${page ? "md:hidden" : ""}`}
                 >
                   <ArrowLeft size={18} />
                 </button>
@@ -1640,26 +1623,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
           )}
         </button>
       )}
-      {!page && open && (
-        <button
-          type="button"
-          aria-label="Dismiss messages"
-          className="fixed inset-0 z-[70] bg-slate-900/10 backdrop-blur-[2px]"
-          onClick={() => setOpen(false)}
-        />
-      )}
-      {!page && open && (
-        <div
-          ref={focusPanel}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Messages"
-          tabIndex={-1}
-          className="fixed bottom-3 right-3 top-3 z-[71] w-[calc(100%-1.5rem)] outline-none md:bottom-5 md:right-5 md:top-auto md:h-[min(760px,calc(100dvh-2.5rem))] md:w-[min(960px,calc(100%-2.5rem))]"
-        >
-          {panel}
-        </div>
-      )}
+      {!page && <SidePanel open={open} label="Messages" onClose={() => setOpen(false)}>{panel}</SidePanel>}
       {page && (
         <div className="h-[calc(100dvh-220px)] min-h-[520px] lg:h-[calc(100dvh-112px)]">
           {panel}

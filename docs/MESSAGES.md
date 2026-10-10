@@ -54,3 +54,13 @@ readable order without editing it, creates synthetic message history, exercises 
 real browser composer/picker and retires the fixture contact/customer afterwards.
 No real participant, credential or grant is added. See CURRENT_STATE for checks
 actually run, exact deployment evidence and remaining blockers.
+
+## Task/chat slide-outs — 10 October 2026
+
+Messages and Tasks share one right-hand native drawer style (maximum560px,
+viewport inset on phones,240ms opening/closing, reduced-motion support). Each
+shows a compact list first and a Back control from its selected detail/thread.
+Native focus trap, Escape, backdrop and X close keep returning to the originating
+control; nested chat pickers retain their own keyboard scope. The full /chat page
+keeps its two-pane layout and draft continuity. Dashboard/Settings stay as they are.
+The tasks release acceptance now runs both drawer and existing Messages workflows.

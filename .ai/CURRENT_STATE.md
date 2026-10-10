@@ -1,5 +1,31 @@
 # Atlas current state
 
+## 10 October 2026 — Tasks and Messages consistent slide-out drawers (candidate)
+
+User explicitly narrows this redesign to Tasks and Chat; Dashboard/Settings retain
+existing destinations. Added shared native SidePanel, right-anchored560px maximum,
+phone viewport inset,240ms entry/exit with a light unblurred shade and reduced-motion
+support. Native focus trapping/return, Escape/backdrop/X close and cancellation of
+stale animation finishes; task cleanup waits until exit completes, saving guard
+retained. Task list/detail and chat conversation/thread use a compact Back flow at
+all drawer widths. Full-page Chat and per-conversation/company/user drafts remain.
+Nested chat pickers keep their keyboard focus scope. No data/action/schema/profile
+change. Preserves exact accepted Apps1bf0e2c and Tasks845456e source/memory.
+
+Paths: shell/side-panel.tsx, my-tasks.tsx, chat/chat-dock.tsx, globals.css;
+tests/side-panel + chat-workspace; check-my-tasks extends drawer/back/focus/reduced
+motion and Messages at four widths. Existing tasks release selector now also runs
+full real check-messages under original locks and per-stage central fixture backup.
+Checks: final local production build/strict types PASS;36 focused tests PASS,
+then12 affected panel/chat tests rerun after the final interrupted-animation guard
+PASS. Scoped lint0errors (one existing chat image warning); shell syntax/whitespace
+PASS. Capacity setup reclaims only inactive74fab2/1f2 compiler caches, preserving
+source/assets/dependencies/backups; temporary1GB swap, no fstab change. Inventory
+maintenance-backups/utility-drawer-capacity-20261010.txt. Actual central candidate/
+public acceptance pending. Next: capacity setup under original locks,
+exact scoped release build/acceptance, review live screenshots and remove temp swap.
+
+
 ## 10 October 2026 — Task/chat drawer work preserves accepted Apps release
 
 Merged exact live1bf0e2c into codex/utility-slide-outs, preserving its compact Apps

@@ -9464,6 +9464,7 @@ model StudioExtensionRecord {
   organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict,onUpdate:NoAction)
   slots StudioFieldSlot[]
   migrationObservations StudioFieldMigrationObservation[]
+  migrationOutcomes StudioFieldMigrationOutcome[]
   @@unique([organisationId,entityId,recordId])
   @@unique([id,organisationId,entityId])
   @@map("studio_extension_records")
@@ -9484,6 +9485,7 @@ model StudioFieldSlot {
   values StudioFieldValue[] @relation("StudioValueHistory")
   activeValue StudioFieldValue? @relation("StudioCurrentValue",fields:[activeValueId,id,organisationId],references:[id,slotId,organisationId],onDelete:NoAction,onUpdate:NoAction)
   migrationObservations StudioFieldMigrationObservation[]
+  migrationOutcomes StudioFieldMigrationOutcome[]
   @@unique([extensionId,definitionId,generationId])
   @@unique([id,definitionId,generationId,organisationId])
   @@unique([organisationId,definitionId,generationId,uniqueToken])
@@ -9517,6 +9519,7 @@ model StudioFieldValue {
   schemaVersion StudioDefinitionVersion @relation("StudioFieldValueSchema",fields:[versionId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction)
   activeFor StudioFieldSlot[] @relation("StudioCurrentValue")
   migrationObservations StudioFieldMigrationObservation[]
+  migrationOutcomes StudioFieldMigrationOutcome[]
   @@unique([id,slotId,organisationId])
   @@unique([slotId,revision])
   @@index([organisationId,definitionId,generationId,fingerprint],map:"studio_field_fingerprint_idx")
@@ -9590,6 +9593,8 @@ model StudioFieldMigrationObservation {
   extension StudioExtensionRecord? @relation(fields:[extensionId,organisationId,entityId],references:[id,organisationId,entityId],onDelete:Restrict,onUpdate:NoAction)
   slot StudioFieldSlot? @relation(fields:[slotId,definitionId,sourceGenerationId,organisationId],references:[id,definitionId,generationId,organisationId],onDelete:Restrict,onUpdate:NoAction)
   value StudioFieldValue? @relation(fields:[valueId,slotId,organisationId],references:[id,slotId,organisationId],onDelete:Restrict,onUpdate:NoAction)
+  outcome StudioFieldMigrationOutcome?
+  @@unique([id,preparationId,definitionId,organisationId],map:"studio_observation_outcome_key")
   @@unique([preparationId,recordId])
   @@index([organisationId,definitionId,preparationId])
   @@map("studio_field_migration_observations")
@@ -9617,8 +9622,67 @@ model StudioFieldMigrationPublication {
   sourceGeneration StudioFieldGeneration @relation("StudioPublicationSourceGeneration",fields:[sourceGenerationId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_publication_source_fk")
   targetGeneration StudioFieldGeneration @relation("StudioPublicationTargetGeneration",fields:[targetGenerationId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_publication_target_fk")
   targetVersion StudioDefinitionVersion @relation("StudioPublicationTarget",fields:[targetVersionId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_publication_version_fk")
+  execution StudioFieldMigrationExecution?
   @@unique([preparationId,definitionId,organisationId],map:"studio_publication_tenant_key")
   @@unique([targetGenerationId,definitionId,organisationId],map:"studio_publication_target_key")
   @@index([organisationId,definitionId,state],map:"studio_publication_field_state_idx")
   @@map("studio_field_migration_publications")
+}
+
+
+// Bounded conversion progress, source still active. Native authority is external.
+model StudioFieldMigrationExecution {
+  preparationId String @id @db.Uuid
+  organisationId String
+  definitionId String @db.Uuid
+  entityId String
+  pin Json
+  pinChecksum String @db.Char(64)
+  state String @default("RUNNING")
+  revision Int @default(0)
+  cursor String?
+  processedCount Int @default(0)
+  failureCode String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  publication StudioFieldMigrationPublication @relation(fields:[preparationId,definitionId,organisationId],references:[preparationId,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_execution_publication_fk")
+  outcomes StudioFieldMigrationOutcome[]
+  @@unique([preparationId,definitionId,organisationId],map:"studio_execution_tenant_key")
+  @@index([organisationId,definitionId,state],map:"studio_execution_field_state_idx")
+  @@map("studio_field_migration_executions")
+}
+
+// Immutable success lineage only; the target and outcome must commit together.
+model StudioFieldMigrationOutcome {
+  observationId String @id @db.Uuid
+  preparationId String @db.Uuid
+  organisationId String
+  definitionId String @db.Uuid
+  entityId String
+  recordId String
+  nativeRevision Int
+  sourceGenerationId String @db.Uuid
+  targetGenerationId String @db.Uuid
+  targetVersionId String @db.Uuid
+  executionChecksum String @db.Char(64)
+  observationChecksum String @db.Char(64)
+  extensionId String @db.Uuid
+  extensionRevision Int
+  targetSlotId String @db.Uuid
+  targetValueId String @db.Uuid
+  targetFingerprint String @db.Char(64)
+  targetIsNull Boolean
+  outcome Json
+  createdAt DateTime @default(now())
+  execution StudioFieldMigrationExecution @relation(fields:[preparationId,definitionId,organisationId],references:[preparationId,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_outcome_execution_fk")
+  observation StudioFieldMigrationObservation @relation(fields:[observationId,preparationId,definitionId,organisationId],references:[id,preparationId,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_outcome_observation_fk")
+  extension StudioExtensionRecord @relation(fields:[extensionId,organisationId,entityId],references:[id,organisationId,entityId],onDelete:NoAction,onUpdate:NoAction,map:"studio_outcome_extension_fk")
+  targetSlot StudioFieldSlot @relation(fields:[targetSlotId,definitionId,targetGenerationId,organisationId],references:[id,definitionId,generationId,organisationId],onDelete:NoAction,onUpdate:NoAction,map:"studio_outcome_slot_fk")
+  targetValue StudioFieldValue @relation(fields:[targetValueId,targetSlotId,organisationId],references:[id,slotId,organisationId],onDelete:NoAction,onUpdate:NoAction,map:"studio_outcome_value_fk")
+  @@unique([observationId,preparationId,definitionId,organisationId],map:"studio_outcome_observation_key")
+  @@unique([preparationId,recordId],map:"studio_outcome_record_key")
+  @@unique([targetSlotId],map:"studio_outcome_slot_key")
+  @@unique([targetValueId],map:"studio_outcome_value_key")
+  @@index([organisationId,definitionId,preparationId],map:"studio_outcome_scope_idx")
+  @@map("studio_field_migration_outcomes")
 }

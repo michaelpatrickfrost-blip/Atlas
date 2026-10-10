@@ -1806,3 +1806,17 @@ new retired selections. Neither metadata nor encoding grants record/reference ac
 Execution must prove stored source observation and target lineage in the owner
 transaction. This fulfils historical representation compatibility without changing
 native business mutation rules or introducing another permissions architecture.
+
+
+## 10 October 2026 — Each conversion commits its target and retained outcome together
+
+Execution gets a separate immutable pin and CAS progress, leaving strict preparation
+and source-active publication predicates unchanged. A success outcome claims exact
+new target IDs under the current operation, and deferred constraints require target
+extension revision, slot/current immutable value and outcome to commit together.
+Only those recorded own increments may explain changed extension revisions; unrelated
+changes invalidate execution. Failed batches retain the last committed prefix and
+source remains active. Cancelling the receipt also cancels execution atomically using
+the already authorised metadata operation, without fetching business IDs/values.
+Native owner approval and current field/reference access still precede actual writes;
+there is no client bypass, native mutation or separate workflow engine.

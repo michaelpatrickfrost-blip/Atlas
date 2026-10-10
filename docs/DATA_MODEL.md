@@ -241,3 +241,18 @@ publisher and exact review inspector. Migration 20261010040000 applied successfu
 actual candidate/public receipt/freeze/Audit rollback/replay/cancellation/runtime
 constraints passed in ea27b2f. No target values/executor/cutover or public migration
 action is exposed. Native operations and permission architectures are retained.
+
+
+Execution persistence (2B3e2b IMPLEMENTED, not applied/row-verified):
+StudioFieldMigrationExecution retains exact publication/owner-policy pin and CAS
+state RUNNING/READY/FAILED/CANCELLED, cursor and count. Immutable
+StudioFieldMigrationOutcome binds the scoped source observation to exact target
+extension revision/slot/value; deferred FKs and commit guards require target and
+progress together. Only recorded own increments can explain source extension changes.
+Normal source saves and premature target activation stay denied. Cancellation of
+publication atomically cancels execution and retains outcomes, without business reads.
+The original preparation/publication freshness is unchanged; a separate execution
+proof validates source and target lineage. New generic models/counts remain denied.
+Pending 20261010050000 parsed/checksummed on central Postgres inside rollback only;
+no native records, schema or migration ledger changes persisted. Actual owner-approved
+row conversion/atomic failure/replay is still required before VERIFIED.

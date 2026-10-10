@@ -37214,6 +37214,12 @@ export const MODEL_FIELDS = {
       "list": true,
       "nullable": false,
       "relation": true
+    },
+    "migrationOutcomes": {
+      "type": "StudioFieldMigrationOutcome",
+      "list": true,
+      "nullable": false,
+      "relation": true
     }
   },
   "StudioFieldSlot": {
@@ -37297,6 +37303,12 @@ export const MODEL_FIELDS = {
     },
     "migrationObservations": {
       "type": "StudioFieldMigrationObservation",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "migrationOutcomes": {
+      "type": "StudioFieldMigrationOutcome",
       "list": true,
       "nullable": false,
       "relation": true
@@ -37455,6 +37467,12 @@ export const MODEL_FIELDS = {
     },
     "migrationObservations": {
       "type": "StudioFieldMigrationObservation",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "migrationOutcomes": {
+      "type": "StudioFieldMigrationOutcome",
       "list": true,
       "nullable": false,
       "relation": true
@@ -37740,6 +37758,12 @@ export const MODEL_FIELDS = {
       "list": false,
       "nullable": true,
       "relation": true
+    },
+    "outcome": {
+      "type": "StudioFieldMigrationOutcome",
+      "list": false,
+      "nullable": true,
+      "relation": true
     }
   },
   "StudioFieldMigrationPublication": {
@@ -37853,6 +37877,256 @@ export const MODEL_FIELDS = {
     },
     "targetVersion": {
       "type": "StudioDefinitionVersion",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "execution": {
+      "type": "StudioFieldMigrationExecution",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    }
+  },
+  "StudioFieldMigrationExecution": {
+    "preparationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definitionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "entityId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "pin": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "pinChecksum": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "state": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "revision": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "cursor": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "processedCount": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "failureCode": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "publication": {
+      "type": "StudioFieldMigrationPublication",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "outcomes": {
+      "type": "StudioFieldMigrationOutcome",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "StudioFieldMigrationOutcome": {
+    "observationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "preparationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definitionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "entityId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "recordId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "nativeRevision": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "sourceGenerationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "targetGenerationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "targetVersionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "executionChecksum": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "observationChecksum": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "extensionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "extensionRevision": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "targetSlotId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "targetValueId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "targetFingerprint": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "targetIsNull": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "outcome": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "execution": {
+      "type": "StudioFieldMigrationExecution",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "observation": {
+      "type": "StudioFieldMigrationObservation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "extension": {
+      "type": "StudioExtensionRecord",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "targetSlot": {
+      "type": "StudioFieldSlot",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "targetValue": {
+      "type": "StudioFieldValue",
       "list": false,
       "nullable": false,
       "relation": true

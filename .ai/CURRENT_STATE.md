@@ -1,5 +1,29 @@
 # Atlas current state
 
+## 10 October 2026 — Tasks and Chat slide-out drawers LIVE
+
+Accepted runtime97ceb35b069845f637a43811d8200a99b9ade306 at
+https://atlassystem.online; previous1bf0e2c retained. Supersedes pending drawer
+candidate notes below. Only Tasks and Chat use the shared compact right-hand
+native-dialog drawer; Dashboard/Settings keep their destinations. Smooth entry/
+exit, reduced motion, one-pane Back navigation, X/Escape/backdrop close and focus
+return preserve task permissions/status guards and Chat drafts/full workspace.
+
+Production build and strict types PASS; scoped lint has only the pre-existing
+Chat image warning. Seven focused files/36 tests PASS; final affected rerun12 PASS.
+Candidate and public Tasks+Messages acceptance PASS:320/390/820/1448 drawer
+layouts, assignment filtering, notes/discussion/attached records, guarded persisted
+status, reduced motion/focus/closing, real chat send/order attachment/details/
+history/pagination, full-page expansion/draft continuity and forged-link rejection.
+Private backup073307, candidate bUIqNg, public tamRbB, public screenshots
+bBT45T and Messages g1ORr7 retained. Public desktop Tasks and phone Chat visually
+inspected. Own temporary512MBswap removed and zero swap confirmed; cleanup lock
+redirection was denied by protected-file policy, so do not claim lock acquisition.
+No records/backups or current/previous release contents removed in this cleanup.
+Shared design, Messages, deployment and project memory docs updated alongside
+implementation. No remaining task blocker; this evidence-only commit follows the
+accepted runtime without rebuilding unchanged application code.
+
 ## 10 October 2026 — Drawer candidate UI PASS, Messages evidence-path fix
 
 Exacte050647 builds successfully with unused compiler persistence off. Candidate

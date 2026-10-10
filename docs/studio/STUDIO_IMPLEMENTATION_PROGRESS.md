@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f3c — Actual cutover service candidate/public proof — NOT STARTED.
+2B3f3c — Actual cutover service candidate/public proof — IN PROGRESS.
 F3b3 IMPLEMENTED / local checks PASS; no actual service verification yet.
 F3b1 IMPLEMENTED / checked locally; f3a local checks PASS, integrated live proof pending.
 2B3f2 VERIFIED on exact5f5fce5 complete candidate/public.
@@ -73,6 +73,28 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+aea5ef1 candidate S9EZeD FAILED before live switch, session9476 exit1; backup
+060208/fixtures060350, /tmp/atlas-studio-cutover-service-deploy.txt. Actual tests
+reached concurrent cutover after both paired-Audit rollback checks, but raw locked
+query SQLSTATE40001 surfaced as Prisma P2010 instead of mapped conflict. Full
+service/replay/history gate NOT PASSED. Test companies suspended/access retired,
+scoped grant/trigger finally restored. Live/current5f5fce5 confirmed exact health,
+prior080e4d7 retained, PGonline/free6.7G. No schema reset/repair/new migration.
+Fix shared migration authority narrowly maps P2010 exact40001/40P01 (direct or
+driver cause metadata) to existing REVIEW_CHANGED; guard/Audit/unrelated/missing
+codes remain unchanged. Additional mapping/negative assertion test, final45 files/
+286 assertions/build/strict post-build types/lint/diff PASS. Logs /tmp/atlas-studio-
+cutover-conflict-{regression,build,types,lint}.txt. Checkpoint then exact new full
+candidate/public rerun; do not weaken concurrency assertion or advance f4 yet.
+
+aea5ef1 full combined Studio release running (session9476, backup060208,
+/tmp/atlas-studio-cutover-service-deploy.txt). F3a/b actual service proof pending;
+no new DDL. Accepted live5f5fce5/prior080e4d7 retained, PGonline/free9.7G before
+runner. Do not advance pinned branch tip. Exact Test helper includes real receipt
+activation/paired Audit/concurrent/replay/current field/private/module/member
+denials/history/native checks; local45 files/285 assertions/build/types/lint PASS.
+Wait for actual full candidate/public before marking f3 VERIFIED or beginning f4.
 
 F3b3 current-authority cutover IMPLEMENTED / checked locally. Strict confirmations,
 locked READY reinspection/f1 pin/f2 receipt/publication CAS then shared f3a source
@@ -1553,9 +1575,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Commit coherent f3b3 service/tests/actual Test driver and documentation; deploy exact
-HEAD on codex/studio-phase2 with ATLAS_RELEASE_ACCEPTANCE=studio. Require actual
-cutover service/current authority/concurrent/paired Audit/replay/history/native checks
-in both full candidate and public suites, plus exact health and runner exit0, before
-marking f3 VERIFIED or beginning f4. Monitor free space/PG; current5f5fce5/prior080e4d7
-retained. No honest rollback/value API/visual customer dashboard/buttons complete.
+Checkpoint exact raw SQL concurrency mapping and45 files/286 assertions/build/types/
+lint PASS; deploy new pinned HEAD on codex/studio-phase2, acceptance=studio. Confirm
+actual full candidate/public service concurrent/paired Audit/current access/replay/
+history/native proof, exact health/runner exit0 before f4. Failedaea5ef1 retained
+as evidence; live5f5fce5/prior080e4d7. Monitor root free6.7G/PG before/while build;
+never exhaust space or remove records/backups/accepted rollback/runtime. No normal
+value gateway/rollback/customer visual/dashboard/buttons completion yet.

@@ -1882,3 +1882,12 @@ owning native/private and current/written/reference/unique policies under refres
 initiating authority. Hashes establish identity only. This fits the specification's
 safe explicit activation/idempotency requirement without a second engine/grant layer.
 No client stage/permission set, native mutation or rollback promise.
+
+## 10 October 2026 — Raw migration SQL concurrency is a refresh conflict
+
+Actual concurrent cutover proved Prisma7 reports locked raw-query serialization
+SQLSTATE40001 as P2010, distinct from the P2034 ORM path. Shared migration authority
+maps only exact raw40001/40P01 metadata (direct or adapter cause) to the existing
+REVIEW_CHANGED conflict, without auto-retrying writes or suppressing guard/Audit
+failures. Known P2034/P2002 mapping retained. Real concurrency acceptance unchanged;
+full candidate/public proof remains required before cutover is VERIFIED.

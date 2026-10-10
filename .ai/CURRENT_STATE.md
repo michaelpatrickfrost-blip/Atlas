@@ -1,5 +1,31 @@
 # Atlas current state
 
+## 10 October 2026 — Actual raw concurrency conflict corrected; gate rerun next
+
+aea5ef1 candidate S9EZeD FAILED before live switch, session9476 exit1; backup
+060208/fixtures060350, /tmp/atlas-studio-cutover-service-deploy.txt. Actual tests
+reached concurrent cutover after both paired-Audit rollback checks, but raw locked
+query SQLSTATE40001 surfaced as Prisma P2010 instead of mapped conflict. Full
+service/replay/history gate NOT PASSED. Test companies suspended/access retired,
+scoped grant/trigger finally restored. Live/current5f5fce5 confirmed exact health,
+prior080e4d7 retained, PGonline/free6.7G. No schema reset/repair/new migration.
+Fix shared migration authority narrowly maps P2010 exact40001/40P01 (direct or
+driver cause metadata) to existing REVIEW_CHANGED; guard/Audit/unrelated/missing
+codes remain unchanged. Additional mapping/negative assertion test, final45 files/
+286 assertions/build/strict post-build types/lint/diff PASS. Logs /tmp/atlas-studio-
+cutover-conflict-{regression,build,types,lint}.txt. Checkpoint then exact new full
+candidate/public rerun; do not weaken concurrency assertion or advance f4 yet.
+
+## 10 October 2026 — Cutover service candidate running
+
+aea5ef1 full combined Studio release running (session9476, backup060208,
+/tmp/atlas-studio-cutover-service-deploy.txt). F3a/b actual service proof pending;
+no new DDL. Accepted live5f5fce5/prior080e4d7 retained, PGonline/free9.7G before
+runner. Do not advance pinned branch tip. Exact Test helper includes real receipt
+activation/paired Audit/concurrent/replay/current field/private/module/member
+denials/history/native checks; local45 files/285 assertions/build/types/lint PASS.
+Wait for actual full candidate/public before marking f3 VERIFIED or beginning f4.
+
 ## 10 October 2026 — Cutover service checked; actual candidate proof next
 
 F3b3 current-authority cutover IMPLEMENTED / checked locally. Strict confirmations,

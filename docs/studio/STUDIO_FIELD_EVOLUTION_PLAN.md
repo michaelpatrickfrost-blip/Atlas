@@ -1260,3 +1260,8 @@ F3b3 IMPLEMENTED: 45 files/285 assertions/build/strict post-build types/scoped
 lint/diff PASS. Strict explicit confirmations, scoped READY/f1 receipt, publication
 CAS/shared activation and paired Audit; fresh actual receipt-derived replay. Exact
 central helper added, not run; f3c full candidate/public next. No new migration.
+
+F3c first candidateaea5ef1 failed safely on raw locked-query serialization code
+P2010/40001 escaping domain conflict translation. No live switch. Shared authority
+now narrowly maps40001/40P01; negative guard/Audit mapping tests retain failures.
+45 files/286 assertions/build/types/lint PASS; full candidate/public rerun required.

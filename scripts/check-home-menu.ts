@@ -188,40 +188,28 @@ async function main() {
             bounds.right <= innerWidth &&
             bounds.bottom <= innerHeight &&
             node.scrollWidth <= node.clientWidth &&
+            node.scrollHeight <= node.clientHeight &&
             document.documentElement.scrollWidth <= innerWidth
           );
         });
         assert(
           fit,
-          `${name} Apps panel fits viewport with internal vertical scrolling.`,
+          `${name} Apps panel fits viewport with every app visible and no scrolling.`,
         );
         const links = panel.getByRole("link");
         assert(
           await links.evaluateAll((nodes) =>
-            nodes.every((node) => node.getBoundingClientRect().height >= 44),
+            nodes.every((node) => node.getBoundingClientRect().height >= 28),
           ),
-          "Links retain 44px touch targets.",
+          "Compact links retain at least 28px targets.",
         );
         await panel.getByRole("heading").first().click();
         await expect(panel).toBeVisible();
-        if (name === "desktop") {
-          const customers = await panel
-            .getByRole("region", { name: "Customers", exact: true })
-            .boundingBox();
-          const more = await panel
-            .getByRole("region", { name: "More", exact: true })
-            .boundingBox();
-          const company = await panel
-            .getByRole("region", { name: "Company", exact: true })
-            .boundingBox();
-          if (customers && more && company)
-            assert(
-              more.y > customers.y &&
-                Math.abs(more.y - company.y) < 2 &&
-                company.x > more.x,
-              "More and Company form the second desktop row.",
-            );
-        }
+        const popupBounds = await panel.boundingBox();
+        const triggerBounds = await trigger.boundingBox();
+        assert(popupBounds && triggerBounds);
+        assert(popupBounds.width <= 900 && popupBounds.height <= height - triggerBounds.height, "Apps remains a compact popup.");
+        assert((width < 640 || Math.abs(popupBounds.x - triggerBounds.x) < 2) && popupBounds.y >= triggerBounds.y + triggerBounds.height, "Popup is anchored below Apps.");
         await page.screenshot({
           path: `${evidence}/apps-menu-${name}.png`,
           fullPage: false,

@@ -377,3 +377,10 @@ Settings/profile workflow through its checked-in native checker, with a separate
 private fixture backup. Field review archive checks run inside the Studio exact-
 Test principal driver; they verify storage guards, not an unimplemented migration
 preview or conversion engine. All existing closed release selectors are retained.
+
+For the assigned task pop-out, use `ATLAS_RELEASE_ACCEPTANCE=tasks`. The checked-in
+central QA harness tests notes, linked records, assigned-only filtering, guarded
+completion and persisted status at 320/390/820/1448 widths on candidate and public
+HTTPS under the same locks. Each stage backs up central data/private evidence.
+Only its synthetic tasks are written, and retained canceled at cleanup. Existing
+backup, immutable release, revision checks and rollback gates apply.

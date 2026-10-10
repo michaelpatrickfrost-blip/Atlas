@@ -1905,3 +1905,28 @@ original compatible-pointer rollback requirement while protecting newer entries.
 F4a is pure integrity only; storage/current-authority/owner proofs follow in f4b–d,
 and normal value permission enforcement remains2B4. Historical receipts describe
 completed transitions rather than permanently constraining today's active pointer.
+
+## 10 October 2026 — Compact workspace app switcher and header
+
+Michael corrected the wide Apps panel to a small popup, then explicitly required
+all apps to fit without scrolling and permitted extra width. Use up to 900px,
+four desktop/three tablet/three phone columns, compact controls and no internal
+scrolling. Phone placement clears both header rows. The header itself is reduced
+to 60px desktop/96px phone with restrained search/company/Apps controls.
+Retain authorised entries and dismissal behavior. Supersedes the 9 October wide
+workspace menu direction and the initial 560px scrolling popup implementation.
+## 10 October 2026 — Commercial acceptance spans activation under existing locks
+
+Customer menu fixes require item hit-testing and full viewport bounds, because
+visibility alone misses card overlap and centre-only testing misses clipped labels.
+Use the explicit commercial selector on the existing release hook to retain both
+locks through candidate, activation and public checks with separate central Test
+backups, exact revision checks and ordinary rollback. This avoids another release
+moving between accepted feature checks and activation; no alternate lock mechanism.
+
+## 10 October 2026 — My tasks is a shell pop-out over canonical work
+
+Header and utility rail open one company/user scoped native dialog. Project and
+People assignment sources retain native visibility, capabilities and lifecycle
+commands; assignment alone never grants read/edit access. Open task counts and
+unread chat counts are distinct notification badges. No local business cache.

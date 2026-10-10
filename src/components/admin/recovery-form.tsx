@@ -1,10 +1,159 @@
 "use client";
-import {useState,useTransition} from 'react';
-import Link from 'next/link';
-import {createManagedUser,issuePasswordRecovery} from '@/app/(app)/settings/user-actions';
-export function RecoveryForm({membershipId,roles=[]}:{membershipId?:string;roles?:{id:string;name:string}[]}){
- const [pending,startTransition]=useTransition(),[error,setError]=useState(''),[result,setResult]=useState<{code:string;expiresAt:string;membershipId?:string}|null>(null),[copied,setCopied]=useState(false);
- const input='mt-2 w-full rounded-xl border border-slate-200 bg-white p-3 text-sm';
- if(result)return <div className="space-y-4 rounded-2xl border border-blue-200 bg-blue-50 p-5"><h3 className="text-sm font-semibold text-blue-900">{membershipId?'Recovery':'Setup'} code ready</h3><p className="text-xs leading-relaxed text-blue-800">Shown only here. Share directly with this user through your approved private channel. Email delivery is not configured. They can select “Use a setup or recovery code” on the Atlas sign-in screen.</p><code className="block break-all rounded-xl bg-white p-4 text-xs text-slate-700">{result.code}</code><p className="text-xs text-blue-700">Expires {new Date(result.expiresAt).toLocaleTimeString('en-GB')} · single use · new password signs out previous sessions.</p><div className="flex flex-wrap gap-3"><button type="button" className="rounded-lg bg-blue-600 px-4 py-2 text-xs text-white" onClick={async()=>{await navigator.clipboard.writeText(result.code);setCopied(true);}}>{copied?'Copied':'Copy code'}</button>{result.membershipId&&<Link className="rounded-lg bg-white px-4 py-2 text-xs text-blue-600" href={`/settings/users/${result.membershipId}`}>Open user →</Link>}</div></div>;
- return <form className="space-y-4" action={form=>startTransition(async()=>{setError('');try{setResult(await (membershipId?issuePasswordRecovery(form):createManagedUser(form)));}catch(e){setError(e instanceof Error?e.message:'Could not complete request.');}})}><fieldset disabled={pending} className="space-y-4">{membershipId?<><input type="hidden" name="membershipId" value={membershipId}/><p className="text-xs leading-relaxed text-slate-500">Create a 30-minute recovery code. Previous codes stop working. The user sets their own password; administrators never see it.</p><label className="block text-xs">Confirm your password<input name="currentPassword" type="password" required autoComplete="current-password" className={input}/></label></>:<><div className="grid gap-4 sm:grid-cols-2"><label className="text-xs">Full name<input name="name" required maxLength={100} className={input}/></label><label className="text-xs">Email address<input name="email" type="email" required maxLength={254} className={input}/></label></div><p className="text-xs text-slate-500">The new user sets their own password with a one-time setup code. Link their employee record after creating the account.</p><div className="flex flex-wrap gap-3">{roles.map(role=><label key={role.id} className="flex items-center gap-2 rounded-xl bg-slate-50 p-3 text-xs"><input type="checkbox" name="roleId" value={role.id} className="accent-blue-600"/>{role.name}</label>)}</div></>}<button className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white">{pending?'Preparing…':membershipId?'Generate recovery code':'Create user & setup code'}</button></fieldset>{error&&<p role="alert" className="text-xs text-rose-600">{error}</p>}</form>;
+import { useState, useTransition } from "react";
+import Link from "next/link";
+import {
+  createManagedUser,
+  issuePasswordRecovery,
+} from "@/app/(app)/settings/user-actions";
+export function RecoveryForm({
+  membershipId,
+  roles = [],
+}: {
+  membershipId?: string;
+  roles?: { id: string; name: string }[];
+}) {
+  const [pending, startTransition] = useTransition(),
+    [error, setError] = useState(""),
+    [result, setResult] = useState<{
+      code: string;
+      expiresAt: string;
+      membershipId?: string;
+    } | null>(null),
+    [copied, setCopied] = useState(false);
+  const input =
+    "mt-2 w-full rounded-xl border border-slate-200 bg-white p-3 text-sm";
+  if (result)
+    return (
+      <div className="space-y-4 rounded-2xl border border-blue-200 bg-blue-50 p-5">
+        <h3 className="text-sm font-semibold text-blue-900">
+          {membershipId ? "Recovery" : "Setup"} code ready
+        </h3>
+        <p className="text-xs leading-relaxed text-blue-800">
+          Shown only here. Share directly with this user through your approved
+          private channel. Email delivery is not configured. They can select
+          “Use a setup or recovery code” on the Atlas sign-in screen.
+        </p>
+        <code className="block break-all rounded-xl bg-white p-4 text-xs text-slate-700">
+          {result.code}
+        </code>
+        <p className="text-xs text-blue-700">
+          Expires {new Date(result.expiresAt).toLocaleTimeString("en-GB")} ·
+          single use · new password signs out previous sessions.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            className="rounded-lg bg-blue-600 px-4 py-2 text-xs text-white"
+            onClick={async () => {
+              await navigator.clipboard.writeText(result.code);
+              setCopied(true);
+            }}
+          >
+            {copied ? "Copied" : "Copy code"}
+          </button>
+          {result.membershipId && (
+            <Link
+              className="rounded-lg bg-white px-4 py-2 text-xs text-blue-600"
+              href={`/settings/users/${result.membershipId}`}
+            >
+              Open user →
+            </Link>
+          )}
+        </div>
+      </div>
+    );
+  return (
+    <form
+      className="space-y-4"
+      action={(form) =>
+        startTransition(async () => {
+          setError("");
+          try {
+            const response = await (membershipId
+              ? issuePasswordRecovery(form)
+              : createManagedUser(form));
+            if ("error" in response) setError(response.error);
+            else setResult(response);
+          } catch (e) {
+            setError(
+              e instanceof Error ? e.message : "Could not complete request.",
+            );
+          }
+        })
+      }
+    >
+      <fieldset disabled={pending} className="space-y-4">
+        {membershipId ? (
+          <>
+            <input type="hidden" name="membershipId" value={membershipId} />
+            <p className="text-xs leading-relaxed text-slate-500">
+              Create a 30-minute recovery code. Previous codes stop working. The
+              user sets their own password; administrators never see it.
+            </p>
+            <label className="block text-xs">
+              Confirm your password
+              <input
+                name="currentPassword"
+                type="password"
+                required
+                autoComplete="current-password"
+                className={input}
+              />
+            </label>
+          </>
+        ) : (
+          <>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="text-xs">
+                Full name
+                <input name="name" required maxLength={100} className={input} />
+              </label>
+              <label className="text-xs">
+                Email address
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  maxLength={254}
+                  className={input}
+                />
+              </label>
+            </div>
+            <p className="text-xs text-slate-500">
+              The new user sets their own password with a one-time setup code.
+              Link their employee record after creating the account.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {roles.map((role) => (
+                <label
+                  key={role.id}
+                  className="flex items-center gap-2 rounded-xl bg-slate-50 p-3 text-xs"
+                >
+                  <input
+                    type="checkbox"
+                    name="roleId"
+                    value={role.id}
+                    className="accent-blue-600"
+                  />
+                  {role.name}
+                </label>
+              ))}
+            </div>
+          </>
+        )}
+        <button className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white">
+          {pending
+            ? "Preparing…"
+            : membershipId
+              ? "Generate recovery code"
+              : "Create user & setup code"}
+        </button>
+      </fieldset>
+      {error && (
+        <p role="alert" className="text-xs text-rose-600">
+          {error}
+        </p>
+      )}
+    </form>
+  );
 }

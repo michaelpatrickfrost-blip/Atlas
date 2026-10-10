@@ -13,6 +13,22 @@ policies, and recheck source revisions before publication/execution/cutover. Kee
 archive models closed to generic desktop reads. No schema-authorised final-record
 mutation, second workflow engine or destructive reset is introduced.
 
+## 10 October 2026 — Company administration and personal Settings are distinct
+
+Michael requires Settings to be company administration for authorised administrators,
+and an own-profile destination for ordinary users. Use native administration
+capabilities, never role-name checks or business write permissions as an admin flag.
+Keep My work and personal mailbox configuration accessible without exposing company
+mailbox metadata. Company profiles reuse canonical Role/Membership grants and
+explicit denials. Break every implemented app into its actual permission sections;
+RWA presets expand to existing native capabilities, not invented bypass roles.
+Allow mixed profiles and granular exceptions, preserve source/tenant restrictions,
+and compare snapshots under Serializable audited writes to reject stale editing.
+Platform grants and existing business-user provisioning remain independently guarded.
+Legacy role-only assignment must enforce the same administration/snapshot/session
+guards as the new editor. Return expected form feedback explicitly; production
+React redacts thrown errors, and private driver/framework detail must stay hidden.
+
 ## 9 October 2026 — Complete owner cohort access before migration counts
 
 A paginated visible list cannot prove full canonical coverage for field evolution.
@@ -96,6 +112,20 @@ selected company without an Admin badge or console link. Company administration,
 Manage apps, native imports and customer Studio remain company capabilities.
 Independent staff access, tenant guards and audited support entry are preserved;
 removing navigation is not a change to authentication or authorisation.
+
+## 9 October 2026 — Personal dashboard canvas and authorised record views
+
+Michael requested a major modern, flexible dashboard redesign and sidebar placement.
+Dashboards joins the utility navigation visually while retaining its existing
+Analytics entitlement and capabilities; do not mark it as an always-enabled utility.
+Use existing personal Dashboard definitions, approved module measure contributions
+and the Reports record catalogue. Configuration manipulates the view, not the
+underlying business records. Require one currency, calculate all matching rows or
+reject above 10,000, and reject chart-unsafe exact financial text. No arbitrary
+SQL/joins/formula execution or broadened record access. Rename by owned ID with an
+optimistic revision; new/copy cannot overwrite a same-name board accidentally.
+Rationale: flexible personal views should preserve source privacy, exact financial
+meaning and existing saved work without creating another business datastore.
 
 ## 9 October 2026 — Studio business dashboards and custom buttons
 

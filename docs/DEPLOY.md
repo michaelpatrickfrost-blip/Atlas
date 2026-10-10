@@ -319,6 +319,16 @@ immutable acceptance history and are excluded from runtime dependency checks;
 reactivating them restores the checks. Do not resolve a gate by deleting history,
 changing a real company's status or clearing another contributor's active pointers.
 
+## Company Settings release acceptance
+
+Use ATLAS_RELEASE_ACCEPTANCE=settings with the exact pinned scoped release.
+The locked deployer runs check-company-settings.ts and Home/Apps verification on
+the sealed candidate, then public HTTPS, with exact SHA checks bracketing both.
+Only synthetic central Test-company identities/profiles/settings are mutated;
+finally suspends companies/revokes sessions and retains audit history. No email
+transport is invoked. Existing backups/ancestry/compatibility/seal/rollback gates
+and other feature acceptance modes remain. Private evidence is printed per stage.
+
 ## Studio combined acceptance under release locks
 
 For a reviewed scoped Studio checkpoint, set `ATLAS_RELEASE_ACCEPTANCE=studio`
@@ -332,3 +342,10 @@ existing business records and QA identity/profile grants are preserved. No local
 business database or new permission system. Default/People/Supply selectors retain
 their behavior. Candidate/public evidence stays private in reported /tmp paths.
 A partial checkpoint acceptance is not the full Phase 2 gate or visual builder.
+
+
+The combined Studio acceptance also preserves and exercises the accepted Company
+Settings/profile workflow through its checked-in native checker, with a separate
+private fixture backup. Field review archive checks run inside the Studio exact-
+Test principal driver; they verify storage guards, not an unimplemented migration
+preview or conversion engine. All existing closed release selectors are retained.

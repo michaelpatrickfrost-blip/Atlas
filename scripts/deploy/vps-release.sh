@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="${1:?checkout required}"; REV="${2:?pinned revision required}"; MODE="${3:-activate}"
 SOURCE_BRANCH="${4:-main}"
 ACCEPTANCE="${5:-none}"
-[[ "$ACCEPTANCE" = none || "$ACCEPTANCE" = people || "$ACCEPTANCE" = dashboards || "$ACCEPTANCE" = supply || "$ACCEPTANCE" = studio ]] || { echo 'Unknown release acceptance workflow.' >&2; exit 1; }
+[[ "$ACCEPTANCE" = none || "$ACCEPTANCE" = people || "$ACCEPTANCE" = dashboards || "$ACCEPTANCE" = supply || "$ACCEPTANCE" = studio || "$ACCEPTANCE" = settings ]] || { echo 'Unknown release acceptance workflow.' >&2; exit 1; }
 [[ "$SOURCE_BRANCH" = main || "$SOURCE_BRANCH" =~ ^codex/[a-zA-Z0-9._/-]+$ ]] || { echo 'Invalid release source branch.' >&2; exit 1; }
 git check-ref-format "refs/heads/$SOURCE_BRANCH"
 [[ "$REV" =~ ^[a-f0-9]{40}$ ]] || { echo 'Full pinned revision required.' >&2; exit 1; }
@@ -143,10 +143,18 @@ dashboard_acceptance() {
   sudo bash "$CANDIDATE/scripts/deploy/check-dashboard-release.sh" "$url" "$phase" "$REV" > "$evidence/browser.log" 2>&1 || { cat "$evidence/browser.log"; return 1; }
   cat "$evidence/browser.log"
 }
+settings_acceptance() {
+  local url="$1" phase="$2" evidence
+  evidence=$(mktemp -d "/tmp/atlas-settings-$phase-XXXXXX"); chmod 700 "$evidence"
+  echo "Settings $phase acceptance; private evidence: $evidence"
+  sudo bash "$CANDIDATE/scripts/deploy/check-settings-release.sh" "$url" "$phase" "$REV" "$evidence" > "$evidence/browser.log" 2>&1 || { cat "$evidence/browser.log"; return 1; }
+  cat "$evidence/browser.log"
+}
 release_acceptance() {
   case "$ACCEPTANCE" in
     people|supply|studio) feature_acceptance "$@" ;;
     dashboards) dashboard_acceptance "$@" ;;
+    settings) settings_acceptance "$@" ;;
     none) return 0 ;;
   esac
 }

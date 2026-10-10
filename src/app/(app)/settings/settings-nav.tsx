@@ -9,9 +9,11 @@ type Group = { label: string; items: Item[] };
 
 function activeItem(href: string, pathname: string, tab: string | null) {
   const url = new URL(href, "http://atlas.local");
-  if (url.pathname === "/profile") return pathname === "/profile";
-  if (url.pathname !== "/settings") return pathname === url.pathname || pathname.startsWith(`${url.pathname}/`);
-  if (pathname.startsWith("/settings/users")) return url.searchParams.get("tab") === "users";
+  if (url.pathname.startsWith("/profile")) return pathname === "/profile";
+  if (url.pathname !== "/settings")
+    return pathname === url.pathname || pathname.startsWith(`${url.pathname}/`);
+  if (pathname.startsWith("/settings/users"))
+    return url.searchParams.get("tab") === "users";
   if (pathname !== "/settings") return false;
   return tab === url.searchParams.get("tab");
 }
@@ -19,28 +21,66 @@ function activeItem(href: string, pathname: string, tab: string | null) {
 export function SettingsNav({ groups }: { groups: Group[] }) {
   const pathname = usePathname();
   const tab = useSearchParams().get("tab");
-  return (
-    <nav aria-label="Company administration" className="flex flex-col gap-4 lg:sticky lg:top-4">
+  const items = (
+    <>
       {groups.map((group) => (
-        <div key={group.label}>
-          <p className="px-3 pb-1 text-[11px] font-medium text-[#86868b]">{group.label}</p>
-          <div className="flex flex-col gap-0.5">
+        <section key={group.label}>
+          <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            {group.label}
+          </p>
+          <div className="space-y-1">
             {group.items.map((item) => {
               const Icon = iconForNav(item.label);
               const active = activeItem(item.href, pathname, tab);
               return (
-                <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined} className={`flex items-start gap-3 rounded-2xl px-3 py-2.5 ${active ? "bg-white shadow-[0_1px_2px_rgba(0,0,0,0.06)]" : "hover:bg-white/80"}`}>
-                  <Icon size={16} strokeWidth={1.8} className={`mt-0.5 shrink-0 ${active ? "text-[#0071e3]" : "text-[#86868b]"}`} />
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`flex min-h-11 items-start gap-3 rounded-xl px-3 py-3 ${active ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-blue-50/50"}`}
+                >
+                  <Icon size={17} className="mt-0.5 shrink-0" />
                   <span className="min-w-0">
-                    <span className="block text-sm font-medium text-[#1d1d1f]">{item.label}</span>
-                    <span className="block text-[11px] leading-4 text-[#6e6e73]">{item.hint}</span>
+                    <span className="block text-xs font-bold">
+                      {item.label}
+                    </span>
+                    <span className="mt-1 block text-[10px] leading-4 text-slate-500">
+                      {item.hint}
+                    </span>
                   </span>
                 </Link>
               );
             })}
           </div>
-        </div>
+        </section>
       ))}
+    </>
+  );
+  const active = groups
+    .flatMap((g) => g.items)
+    .find((item) => activeItem(item.href, pathname, tab));
+  return (
+    <nav
+      aria-label="Company administration"
+      className="rounded-[24px] border border-white bg-white/70 p-3 shadow-sm xl:sticky xl:top-4"
+    >
+      <details className="xl:hidden">
+        <summary className="cursor-pointer px-2 py-2 text-xs font-semibold text-blue-700">
+          Browse company settings · {active?.label ?? "Choose a section"}
+        </summary>
+        <div
+          className="mt-3 max-h-[55vh] space-y-4 overflow-y-auto"
+          onClick={(e) => {
+            if ((e.target as HTMLElement).closest("a"))
+              e.currentTarget.parentElement?.removeAttribute("open");
+          }}
+        >
+          {items}
+        </div>
+      </details>
+      <div className="hidden max-h-[75vh] space-y-5 overflow-y-auto xl:block">
+        {items}
+      </div>
     </nav>
   );
 }

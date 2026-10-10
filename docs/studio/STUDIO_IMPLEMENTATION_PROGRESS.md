@@ -256,6 +256,10 @@ platform grants and business-user provisioning regression cases.
 
 # Tests Run
 
+Integrated Settings-preserving source: 37 files/197 focused assertions, build,
+strict post-build types, changed-source lint, generation, shell syntax/six dispatch
+probes PASS. Real archive constraints and candidate/public check still pending.
+
 2B3c4 local: 5 files/34 assertions, production build, strict post-build TypeScript,
 scoped lint, schema/generation PASS. Central transaction-only DDL syntax PASS and
 rolled back. New Test helper NOT RUN; no actual constraint/preview/worker claim.
@@ -420,6 +424,10 @@ These checks derive from Sections 5–6, 14, 19, 25–28; no whole-system gate u
 prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
+
+Pin the reviewed integrated source and run backed-up combined Studio candidate/
+public acceptance with the additive review migration and exact-Test archive helper.
+All six acceptance modes and current 1646316 Settings are preserved.
 
 Preserve exact publicly accepted live Settings 1646316 source and its checked-in
 acceptance mode without disturbing other work. Run integrated tests/build/types/

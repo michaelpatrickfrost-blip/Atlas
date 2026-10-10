@@ -129,3 +129,13 @@ reference resolves through its owner's permission and tenant module availability
 Atlas setup selects an active customer with independent staff authorisation;
 customer requests cannot supply another organisation. Published versions and
 activation revalidate dependencies; hiding controls is supplementary only.
+
+## Section-level access profiles — 10 October 2026
+
+Company Settings is gated by existing company administration capabilities; normal
+business permissions open personal Settings. Profiles are canonical company Roles,
+with app/section RWA presets and individual selections over every implemented
+capability. Admin shortcuts include sensitive operations; source checks remain
+authoritative. Profile/member saves compare snapshots under audited Serializable
+transactions and reject stale catalogues, foreign IDs and self-admin loss.
+Mixing profiles preserves personal exceptions. See Company administration above.

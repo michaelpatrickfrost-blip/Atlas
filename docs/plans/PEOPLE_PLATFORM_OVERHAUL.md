@@ -93,7 +93,14 @@ coverage, timed/unknown breaks and offline activities, working-day distribution,
 2026–27 NI, cumulative and explicit M1 PAYE, whole-pound loan deductions, hourly
 overtime, preparation access, approval-only actuals, opening history, input binding,
 unpaid weekends, proration and statutory review. Existing HR/goal/rota tests are
-included. Candidate and public acceptance must exercise real mutations and reloads,
-negative tenant/privacy/concurrency cases and mobile layout before final handoff.
+included. Production build and strict types PASS; 18 focused files/125 assertions
+PASS, followed by 4-file/35 Commercial and 7-file/59 Studio merge regressions.
+The final candidate and public HTTPS acceptance both PASS with real saved
+dashboard updates, payroll state/YTD transitions, open-shift decisions, team
+allocation/reloads, negative tenant/privacy/concurrency cases and seven workspaces
+at 1440/390 widths. Four public screenshots visually inspected; zero browser/asset
+errors. No whole-suite success is claimed. Synthetic central Test access revoked.
 
-Deployment evidence and actual check outcomes are recorded in `.ai/CURRENT_STATE.md`.
+Accepted live runtime: `36d0d2de7e64340a5faf130a69b3bcf21db3a2fc`.
+Deployment evidence and actual check outcomes are recorded in `.ai/CURRENT_STATE.md`
+and [People release evidence](../evidence/2026-10-10-people-platform.md).

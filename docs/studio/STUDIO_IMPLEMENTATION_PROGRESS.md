@@ -60,6 +60,25 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 # Current Workstream Detail
 
+96834f5 complete combined candidate PASS; actual collector and PostgreSQL Audit
+rollback PASS, native rows unchanged. Public running (zvyF2n, fixture 014603);
+not accepted until full public proof. c6b2b3a source coverage implemented locally:
+17 files/109 assertions, production build, strict post-build TS/scoped lint/diff
+PASS. Actual SQL helper added but NOT RUN: exact source and written schema checks,
+normal-owner synthetic extension revision change invalidates review while native
+anchors/count stay unchanged. No value/target/native mutation. Ship with final
+review service; not a sealed review by itself.
+
+Independent c6b2b3a exact source coverage validation planned before code while
+96834f5 pinned proof runs. Existing owner/native coverage plus locked current
+extension/slot/value pointers and written-schema ACL/checksums. Metadata only, no
+counts/values/approval, no DDL. Final reference/unique/digest/state/Audit sealing
+remains separate; no Phase 2 gate claim.
+
+96834f5 collector + shared authority pinned; combined candidate/public running
+under original locks, backup 20261010-014016, log /tmp/atlas-studio-collection-
+deploy.txt. Actual service/full/public pending; accepted live 9183e53.
+
 c6b2b2 implemented locally: 16 files/103 focused assertions, production build,
 strict post-build TypeScript, scoped lint and diff review PASS. Logs /tmp/atlas-
 studio-collection-{tests,build,postbuild-types,lint}.txt. Actual central helper
@@ -234,6 +253,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+Latest: migrations/coverage.ts and collection.ts, focused coverage/collection tests,
+check-field-coverage.ts/check-field-collection.ts, preparation checker integration,
+shared authority and existing docs/memory. No native module behavior removed.
+
 c6b2b1: migrations/authority and preparation extraction, plan/ledger/state/decision.
 
 c6b2a: migrations/observation, observation tests, actual check-field-observation
@@ -302,6 +325,11 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+Latest collection/source coverage uses existing archive and parameterised SQL
+locks; no new schema/migration. Test Audit failure trigger/function cleaned in
+finally. Source coverage Test changes only owner-authorised extension metadata
+revision, preserving immutable values and native anchors/history.
+
 c5/c6 no persistent schema or migration. Preparation acceptance helper temporarily
 creates an Audit failure trigger/function matching only one new Test organisation,
 actor and operation UUID; finally removes both. Actual execution pending.
@@ -341,6 +369,9 @@ and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
 
+Collector 7 and coverage 6 meaningful cases; actual central collector proof
+(candidate PASS; public pending) and source coverage helper (NOT RUN yet).
+
 Eight owner snapshot cases plus atomic registry opt-in case; central helper exact-
 set, private queue, actual membership, isolation and native preservation assertions.
 
@@ -355,6 +386,11 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+Latest source coverage: 17 files/109 assertions, build, strict post-build TypeScript,
+scoped lint and diff PASS; /tmp/atlas-studio-coverage-{tests,build,postbuild-types,
+lint}.txt. Collector actual complete candidate/native regression PASS; public
+pending. No full repository suite or phase gate success claimed.
 
 c6b2b1: 5 files/34 assertions, production build, post-build TypeScript/scoped lint
 PASS; /tmp/atlas-studio-authority-{tests,build,types,lint}.txt. Existing meaningful

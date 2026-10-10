@@ -1,5 +1,38 @@
 # Atlas current state
 
+## 10 October 2026 — Collector candidate complete; source coverage locally checked
+
+96834f5d3b463503371391fd90b3479c64d0bc90 complete combined candidate PASS,
+including actual bounded collection/resume/replay/Audit rollback and native
+regressions. Public acceptance running zvyF2n, fixture backup 014603; no final
+public acceptance claim. c6b2b3a coverage helper locally checked: 17 files/109
+assertions, build, strict post-build TypeScript, scoped lint and diff review PASS.
+Locks archive/source, delegates exact native set/revisions to owner, compares all
+current extension/slot/value refs and authorises distinct immutable written schemas.
+No values/counts/approval returned. Actual exact-Test source revision fixture
+added, NOT RUN. No new DDL or native/target/value writes. Next finish collector
+public proof; implement final review digest/summary/unique/reference/CAS/Audit
+sealing, then ship coverage and review together. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Source coverage prerequisite planned
+
+c6b2b3a validate exact current extension/slot/value references against immutable
+observations after owner native coverage, then written-schema ACL/checksums.
+Existing preparation/source locks and metadata-only reads; no DDL/value/count/
+approval. Files migrations/coverage.ts and focused tests; actual fixture follows.
+Plan saved before implementation, independent of sealed 96834f5 collector release
+whose full central/public checks remain pending. Final review reference/unique/
+digest/state/Audit is not delivered by this prerequisite.
+
+## 10 October 2026 — Collector release pinned for actual central proof
+
+96834f5 collector plus 86a4804 shared authority pinned; backed-up combined
+candidate/public acceptance running under original locks. Backup
+atlas-pre-deploy-20261010-014016; local log /tmp/atlas-studio-collection-deploy.txt.
+Actual collector helper/full suite/public still pending; accepted live 9183e53.
+No new migration/reset or protected native writes. Preserve sealed pin while
+reviewing exact source/coverage sealing dependency; no Phase 2 completion claim.
+
 ## 10 October 2026 — Bounded observation collector locally checked
 
 c6b2b2 internal collectFieldMigrationBatch uses fresh stored actor/source/draft/

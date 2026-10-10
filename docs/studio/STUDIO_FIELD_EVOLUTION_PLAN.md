@@ -478,3 +478,20 @@ source, changed draft, per-row/Audit rollback. Exact coverage sealing follows.
 Local evidence: 16 files/103 assertions, production build, strict post-build
 TypeScript/scoped lint and diff review PASS. Actual central helper added; NOT RUN.
 No review completeness/target mutation claim from cursor exhaustion.
+
+### c6b2b3a — Exact source coverage validation (IMPLEMENTED locally)
+
+Purpose: reject stale source pointers even when native counts/revisions are equal.
+Dependencies: existing owner coverage query, archive observations, principal and
+current/written policies. Expected coverage.ts, focused tests, later central
+helper integration. No DDL, target generation, execution or public API. Lock the
+stored preparation and current extension/slot rows, prove exact owner coverage,
+compare absent/current extension, slot and immutable value refs, then check all
+observed written schema policies/checksums before returning. Returns no values,
+counts or approval. This is a prerequisite, not the final reference checks,
+uniqueness/digest/summary/state/Audit seal. Test stale/foreign job, source pointers,
+private owner denial before coverage details, written ACL and metadata-only reads.
+
+Source coverage local evidence: 17 files/109 assertions, production build, strict
+post-build TypeScript/scoped lint and full diff review PASS. Actual helper added
+but NOT RUN. Collector full candidate PASS; public pending. Final seal next.

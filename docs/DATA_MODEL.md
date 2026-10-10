@@ -203,3 +203,10 @@ draft/compiler/owner identity, derive the cursor from saved observations, append
 an old revision does not advance. Cursor exhaustion is not sealed coverage or
 permission to execute; exact source/native review sealing follows separately. No
 new schema, target value or protected native write is introduced by collection.
+
+Source coverage validation delegates exact canonical membership/revisions to the
+owner, then locks and compares every current extension/slot/value pointer against
+immutable observations and checks distinct written-schema ACL/checksums without
+value columns. Equal native counts are insufficient. This internal prerequisite
+returns no data or approval; references, uniqueness and digest/state/Audit sealing
+remain required before an executable reviewed operation.

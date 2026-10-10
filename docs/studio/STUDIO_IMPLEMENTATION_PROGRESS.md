@@ -13,7 +13,8 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 2B3f4b2b — Generation/history and cosmetic activation guards — VERIFIED livef1a9bf1.
 2B3f4c1 scoped settlement inspection — IMPLEMENTED locally; live proof pending.
-2B3f4c2 current-authority settlement — IN PROGRESS.
+2B3f4c2 current-authority settlement — IMPLEMENTED locally; live proof pending.
+2B3f4d actual service acceptance — IN PROGRESS.
 F4b2a active representation cosmetic binding remains VERIFIED.
 2B3f4b1 additive one-time settlement storage — VERIFIED live1d7f558, candidate/public
 combined acceptance PASS, original runner20133 exit0. Operational cleanup VERIFIED.
@@ -87,6 +88,41 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+## 10 October 2026 — f4c2 IMPLEMENTED locally; d actual service proof next
+
+Separate rollback/finalize internal commands use current captured customer/audited
+support authority, exact open CAS, closed confirmation, current active/source/target/
+written policies and registered owner history/reference coverage. Rollback requires
+unchanged native cohort/source/target and shared source activation; finalization
+keeps target and permits unrelated revision drift. Receipt/publication/Audit commit
+together; rollback also uses existing activation Audit. Terminal replay reports
+recorded actor/receipt and rechecks current access without today's pointer claim.
+New hashed owner query policy validates ownership/versions/native capability; all
+sealed older descriptors preserved. No schema/DDL/reset/native/value/UI changes.
+59 files/368 assertions, production build, scoped lint and strict post-build TS PASS. Current live remainsf1a9bf1; no VERIFIED runtime claim.
+Files: registry types/entities/contracts/runtime, service-work/studio owner query,
+settlement-coverage/service, two focused suites, MODULE_SPEC/decisions/ledger/memory.
+Next: actual exact Test both-Audit failures, concurrent CAS/current independent
+actor, changed-extension finalization, retained post-cosmetic/new-publication replay
+and permission/tenant denials; then pinned full candidate/public release.
+
+
+## 10 October 2026 — f4c2 IN PROGRESS: refreshed commands and owner coverage
+
+Purpose/dependencies: f4c1 retained/open inspection plus existing current principal,
+shared activator and0007/8 guards. Expected registry types/entities/contracts/runtime,
+service-work/studio owner query, settlement-coverage/service and focused tests;
+real Test service helper in d. No schema/migration/backfill. Closed owner settlement
+coverage preserves all sealed earlier hashes; independent current actor, exact
+rollback/native/private/reference/source/target proof; finalization/replay permit
+unrelated native/extension drift without changing domains. Current active and written
+field restrictions remain mandatory. Tests: registration ownership/compatibility,
+revocation/module/private/tenant, strict request/CAS/replay, atomic paired Audit,
+changed-data finalization and historical replay. c2 IN PROGRESS; d NOT STARTED.
+Next: register closed owner settlement policy and implement current coverage,
+then separate rollback/finalize commands and real failure/concurrency acceptance.
+
 
 ## 10 October 2026 — f4c1 IMPLEMENTED locally; c2 starts next
 

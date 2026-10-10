@@ -3,7 +3,7 @@ import type { Session } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
 import { checksum } from "./contracts";
 import type { ContractMetadata, ContractReference, Contribution, RecordAnchor, RecordContext, StudioModuleContract } from "./types";
-import { entityDetailsSchema, recordAnchorSchema, recordRequestSchema } from "./entities";
+import { entityDetailsSchema, fieldSettlementPolicySchema, recordAnchorSchema, recordRequestSchema } from "./entities";
 
 const logicalId = /^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/;
 const identity = z.object({ id: z.string().regex(logicalId), version: z.number().int().positive(),
@@ -44,6 +44,22 @@ export class CapabilityRegistry {
       additions.set(key, { metadata, run: item.run, authoriseRecord: item.authoriseRecord });
     }
     for (const { metadata: m } of additions.values()) {
+      if (m.details.fieldSettlement !== undefined) {
+        const policy = fieldSettlementPolicySchema.parse(m.details.fieldSettlement);
+        if (m.kind !== "query" || m.details.transaction !== "required") throw new Error("Field settlement requires a transactional owner query.");
+        for (const version of [...new Set([...policy.sourceVersions, ...policy.targetVersions, ...policy.referenceVersions])]) {
+          const source = additions.get(`${policy.entityId}@${version}`) ?? this.items.get(`${policy.entityId}@${version}`);
+          const record = source?.metadata.kind === "entity" ? entityDetailsSchema.parse(source.metadata.details).record : undefined;
+          if (!source || source.metadata.ownerModuleId !== ownerModuleId || !record || record.writeCapability !== m.capability
+            || ([...policy.sourceVersions, ...policy.targetVersions].includes(version) && !record.fieldPolicy))
+            throw new Error("Field settlement must declare registered native entity versions from the same owner and write capability.");
+        }
+        for (const item of [...this.items.values(), ...additions.values()]) {
+          const other = item.metadata.details.fieldSettlement;
+          if (other !== undefined && fieldSettlementPolicySchema.parse(other).entityId === policy.entityId && item.metadata.id !== m.id)
+            throw new Error("One owning-domain field settlement policy identifier is allowed per entity.");
+        }
+      }
       if (m.kind !== "entity") continue;
       const { record } = entityDetailsSchema.parse(m.details);
       if (!record) continue;
@@ -107,6 +123,20 @@ export class CapabilityRegistry {
     await this.allowed(session, m);
     if (reference.schemaHash !== m.schemaHash || reference.contractHash !== m.contractHash) throw new Error("DEPENDENCY_BROKEN: Studio contract changed; republish or restore compatibility");
     return m;
+  }
+  /** Current registered owner policy only. Unsupported latest versions fail
+   * closed rather than falling back to an older policy. No client query choice. */
+  async resolveFieldSettlement(session: Session, source: ContractReference, target: ContractReference): Promise<ContractMetadata> {
+    const a = await this.resolve(session, source), b = await this.resolve(session, target);
+    if (a.kind !== "entity" || b.kind !== "entity" || a.id !== b.id || a.ownerModuleId !== b.ownerModuleId)
+      throw new Error("DEPENDENCY_BROKEN: canonical field settlement owner is unavailable.");
+    const candidates = [...this.items.values()].map(item => item.metadata).filter(m => m.kind === "query" && m.ownerModuleId === a.ownerModuleId
+      && m.details.fieldSettlement !== undefined && fieldSettlementPolicySchema.parse(m.details.fieldSettlement).entityId === a.id).sort((x, y) => y.version - x.version);
+    const policy = candidates[0], details = policy && fieldSettlementPolicySchema.parse(policy.details.fieldSettlement);
+    if (!policy || !details || !details.sourceVersions.includes(source.version) || !details.targetVersions.includes(target.version))
+      throw new Error("DEPENDENCY_BROKEN: field settlement needs current owning-domain coverage.");
+    await this.allowed(session, policy);
+    return policy;
   }
   async invoke(session: Session, reference: ContractReference, input: unknown, idempotencyKey?: string): Promise<unknown> {
     const m = await this.resolve(session, reference);

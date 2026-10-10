@@ -1,3 +1,21 @@
+## 10 October 2026 — Current settlement authority uses explicit owner history coverage
+
+The original preparation actor and source-active/draft query are unsuitable as
+current settlement/replay authority: a different authorised publisher may settle,
+and terminal history must survive later draft edits without pretending the old
+version is active. Keep all sealed entity/query versions and strict f3 checks.
+Add a separately versioned, transaction-required owner query declaring supported
+canonical entity/source/target/reference versions in hashed fieldSettlement metadata.
+Registry validates ownership and native write capability; Studio resolves the
+current registered policy, never a client-selected query or fabricated old state.
+The owner proves complete current native/private access, original cohort/revisions
+for rollback and retained reference targets under one serializable transaction.
+Finalization/history do not require original native revisions or extension freshness;
+no native/domain write or value payload is returned. Studio independently enforces
+current active/source/target/written field policies and module/compiler compatibility.
+This fits safe domain capability ownership without changing old descriptors or
+introducing another permission system. No schema/backfill/reset is required.
+
 ## 10 October 2026 — Retain source history without duplicating every runtime
 
 Michael explicitly requested redundant development-copy cleanup while keeping

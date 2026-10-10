@@ -4,6 +4,10 @@ const logicalId = z.string().regex(/^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/);
 const fieldId = z.string().regex(/^[a-z][a-z0-9_]*$/).max(100);
 const classification = z.enum(["public_internal", "confidential", "restricted"]);
 const queryReference = z.strictObject({ id: logicalId, version: z.number().int().positive() });
+const versions = z.array(z.number().int().positive()).min(1).max(20)
+  .refine(value => new Set(value).size === value.length, "Duplicate settlement entity version.");
+export const fieldSettlementPolicySchema = z.strictObject({ entityId: logicalId, sourceVersions: versions, targetVersions: versions,
+  referenceVersions: z.array(z.number().int().positive()).max(20).refine(value => new Set(value).size === value.length, "Duplicate settlement reference version.") });
 export const extensionFieldPolicySchema = z.strictObject({
   types: z.array(z.enum(["string", "integer", "decimal", "money", "boolean", "date", "datetime", "duration", "email", "url", "phone", "enum", "multi_enum", "reference", "address"])).min(1).max(15),
   reservedKeys: z.array(fieldId).max(200), referenceEntities: z.array(logicalId).max(30),

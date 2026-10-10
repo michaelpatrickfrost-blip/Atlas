@@ -71,6 +71,9 @@ export type QueryDescriptor<I, O> = ContractIdentity & {
   costClass: "low" | "medium" | "high";
   /** Explicit server-only opt-in for atomic owner snapshots, not command execution. */
   transaction?: "required";
+  /** Current owning-domain coverage for retained field migration settlement.
+   * Separate from sealed preparation contracts; grants no native/value writes. */
+  fieldSettlement?: { entityId: string; sourceVersions: readonly number[]; targetVersions: readonly number[]; referenceVersions: readonly number[] };
   execute(ctx: Context, input: I): Promise<O>;
 };
 export type CommandDescriptor<I, O> = ContractIdentity & {

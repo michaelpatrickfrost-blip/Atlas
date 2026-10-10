@@ -201,6 +201,49 @@ async function referenceCoverage(ctx: RecordContext, preparationId: string, poli
 
 const representationInput = z.strictObject({ preparationId: z.uuid(), observationId: z.uuid() });
 const representationOutput = z.strictObject({ ...recordAnchorSchema.shape, preparationId: z.uuid(), observationId: z.uuid(), representationOnly: z.literal(true) });
+const settlementInput = z.strictObject({ preparationId: z.uuid(), mode: z.enum(["rollback", "history"]) });
+const settlementOutput = z.strictObject({ ...migrationScope, mode: settlementInput.shape.mode,
+  nativeCoverageComplete: z.literal(true), nativeReferenceCoverageComplete: z.literal(true) });
+
+/** Current owner/private authority over retained representation history. No
+ * creator grants, draft payload assumption, native write or value disclosure. */
+async function coverTicketSettlement(ctx: RecordContext, input: z.output<typeof settlementInput>) {
+  const client = await migrationSnapshotClient(ctx), organisationId = ctx.session.organisationId;
+  const deny = () => { throw new Error("MIGRATION_SETTLEMENT_COVERAGE_REQUIRED: current ticket history coverage is required."); };
+  const preparation = await client.studioFieldMigrationPreparation.findFirst({ where: { id: input.preparationId, organisationId, entityId: "tickets.ticket", state: "REVIEWED" },
+    select: { id: true, review: { select: { review: true, checksum: true } } } });
+  const cutover = await client.studioFieldMigrationCutover.findFirst({ where: { preparationId: input.preparationId, organisationId }, select: { state: true } });
+  if (!preparation?.review || !cutover) return deny();
+  const { review } = readSealedFieldMigrationReview(preparation.review);
+  if (review.id !== input.preparationId || review.organisationId !== organisationId || review.source.payload.entity.id !== "tickets.ticket"
+    || review.target.payload.entity.id !== "tickets.ticket" || !new Set<number>(executionSourceVersions).has(review.source.payload.entity.version)
+    || review.target.payload.entity.version !== 5) return deny();
+  if (input.mode === "rollback") {
+    if (cutover.state !== "ACTIVATED") return deny();
+    await executeMigrationSnapshot(ctx, { mode: "coverage", preparationId: input.preparationId }, executionSourceVersions);
+  }
+  for (const payload of [review.source.payload, review.target.payload]) {
+    const storage = payload.field.storage;
+    if (storage.type === "reference" && (storage.entity.id !== "tickets.ticket" || !new Set<number>(executionReadVersions).has(storage.entity.version))) return deny();
+  }
+  const rows = await ctx.transaction!.$queryRaw<Array<{ changed: boolean }>>`SELECT EXISTS (
+    SELECT 1 FROM studio_field_migration_observations o
+    LEFT JOIN service_work_items w ON w.id=o."recordId" AND w."organisationId"=o."organisationId" AND w.kind='TICKET'
+    WHERE o."preparationId"=${input.preparationId}::uuid AND o."organisationId"=${organisationId} AND (o."entityId"<>'tickets.ticket' OR w.id IS NULL)
+  ) OR EXISTS (
+    SELECT 1 FROM studio_field_values v
+    JOIN studio_definition_versions written ON written.id=v."versionId" AND written."definitionId"=v."definitionId" AND written."organisationId"=v."organisationId"
+    LEFT JOIN service_work_items target ON target.id=v."referenceValue" AND target."organisationId"=v."organisationId" AND target.kind='TICKET'
+    WHERE v."organisationId"=${organisationId} AND v."valueType"='reference' AND (
+      EXISTS (SELECT 1 FROM studio_field_migration_observations o WHERE o."preparationId"=${input.preparationId}::uuid AND o."organisationId"=v."organisationId" AND o."valueId"=v.id)
+      OR EXISTS (SELECT 1 FROM studio_field_migration_outcomes outcome WHERE outcome."preparationId"=${input.preparationId}::uuid AND outcome."organisationId"=v."organisationId" AND outcome."targetValueId"=v.id)
+    ) AND ((written.payload->'field'->'storage'->'entity'->>'id') IS DISTINCT FROM 'tickets.ticket'
+      OR ((written.payload->'field'->'storage'->'entity'->>'version') IN (${Prisma.join(executionReadVersions.map(String))})) IS NOT TRUE
+      OR (v."isNull"=false AND target.id IS NULL))
+  ) AS changed`;
+  if (rows.length !== 1 || rows[0].changed !== false) return deny();
+  return { organisationId, entityId: "tickets.ticket" as const, mode: input.mode, nativeCoverageComplete: true as const, nativeReferenceCoverageComplete: true as const };
+}
 
 /** Owner approval for reviewed extension representation only. Historical/final/
  * merged native work is not reopened, changed or made normally editable. */
@@ -240,6 +283,10 @@ async function approveTicketRepresentation(ctx: RecordContext, input: z.output<t
 
 /** Canonical ServiceWorkItem/TICKET only. Existing intake answers stay native. */
 export const ticketStudioContract: StudioModuleContract = { contributions: [
+  query({ ...identity, id: "tickets.ticket.field_settlement", label: "Ticket retained migration coverage", kind: "query",
+    capability: "tickets.ticket.manage", input: settlementInput, output: settlementOutput, transaction: "required",
+    fieldSettlement: { entityId: "tickets.ticket", sourceVersions: executionSourceVersions, targetVersions: [5], referenceVersions: executionReadVersions },
+    pagination: "none", maxCardinality: 1, costClass: "high", execute: coverTicketSettlement }),
   query({ ...identity, id: "tickets.ticket.field_migration", label: "Ticket field migration snapshots", kind: "query",
     capability: "tickets.ticket.manage", input: migrationInput, output: migrationOutput, transaction: "required",
     pagination: "cursor", maxCardinality: 50, costClass: "high",

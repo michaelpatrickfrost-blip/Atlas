@@ -328,5 +328,28 @@ Registry validation is atomic. Existing snapshot contracts grant only read cover
 normal `read`/`extend` and final-record restrictions do not change. The future query
 must reload scoped persisted reviewed publication/observation proof and authorise the
 actual native row; it may approve extension representation only, never native writes.
-The optional registry contract is locally verified. Tickets v5 now declares it in
-local implementation; its actual owner/SQL execution proof remains pending.
+Tickets v5 declares this policy; real owner/SQL execution and cutover were verified
+on8d6eb9e/9aad1fc. These capabilities grant no ordinary final-record writes.
+
+
+### Current retained field settlement coverage
+
+A new transaction-required owner query can declare hashed `fieldSettlement`
+metadata: canonical entity ID and supported source/target/reference entity versions.
+Registration requires registered same-owner entity versions, typed field policies
+for source/target and the owner's native write capability. One query identifier per
+entity supports versioned evolution; `resolveFieldSettlement` selects the latest
+registered version and fails closed if unsupported, unavailable or expired. It
+never silently falls back or accepts client query selection. Older descriptors
+retain their exact hashes. Tickets adds `tickets.ticket.field_settlement@1`.
+
+Its rollback mode checks current complete native/private access and exact reviewed
+cohort/revisions; history mode permits unrelated native/extension changes but still
+checks current access, retained record existence and original source/target reference
+coverage. It uses immutable stored reviews/values instead of today's draft. No
+record ID/count/value is returned and no native or extension operation is granted.
+Studio independently refreshes the settling actor and enforces current active,
+source/target/written field policies, compiler/module compatibility and exact open
+configuration CAS. Separate internal rollback/finalization operations share existing
+authority and activation/Audit primitives. A terminal replay reports actual history,
+not today's active version. Local implementation checked; full live proof pending.

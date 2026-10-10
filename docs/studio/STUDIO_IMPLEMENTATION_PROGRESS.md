@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f4b2a — Active representation cosmetic binding — IMPLEMENTED; live proof pending.
+2B3f4b2a — Active representation cosmetic binding — VERIFIED live666efeb.
 F4b2b — forward0008 generation/open-freeze/cosmetic activation guards — NOT STARTED.
 2B3f4b1 additive one-time settlement storage — VERIFIED live1d7f558, candidate/public
 combined acceptance PASS, original runner20133 exit0. Operational cleanup VERIFIED.
@@ -32,10 +32,11 @@ candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
 
-IN PROGRESS: Phase2 foundations. f4b1 VERIFIED on exact live1d7f558bf35c02941bca732daffbe61288cdb044,
-including full candidate/public Studio/native acceptance. Current/health exact,
-previous97ceb35 retained. Temporary SSH/HTTPS outage resolved; cause unconfirmed.
-Admin-only/modern-UI companion and Phase1 remain VERIFIED. Phase2 not passed.
+IN PROGRESS: Phase2 foundations. F4b2a VERIFIED on exact666efeb42b9e34f39bf5f58b66e2c25eda949ef5,
+full candidate/public Studio/native acceptance. Current/health exact, previous1d7f558
+retained. Storage0007/f4b1 remains VERIFIED. Public Messages assertion failure
+resolved by identical bounded geometry check after entrance animation; all public
+native gates passed. Admin companion/Phase1 VERIFIED; fullPhase2 NOT PASSED.
 The supplied source defines ten phases 0–9, not five. The original
 is preserved unchanged at `docs/studio/ATLAS_STUDIO_SOURCE.docx` (source
 `/Users/michael/Downloads/atlas_studio.docx`, SHA-256
@@ -46,6 +47,7 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 | Workstream | Status | Evidence |
 | --- | --- | --- |
+| 2B3f4b2a Active field cosmetic binding | VERIFIED | 666efeb candidateJPiKeZ/publicSgP6a7 ALL COMBINED PASS/exit0, real cancelled-source publish/activate and retained-target/history/tenant checks;55 files343 local assertions/build/types/lint; no new DDL. |
 | 2B3f4b1 One-time settlement storage | VERIFIED | 1d7f558 candidate/public ALL COMBINED PASS; actual nested atomic terminal/retained-history/changed-extension proof;0007 applied;55 local files340 assertions/build/types/lint. |
 | 2B3f4a Closed settlement identity | VERIFIED locally | adfc357:18 focused/45files292 assertions/build/strict TS/lint/diff; no DB/service/live authority claim. |
 | Business setup/readable version comparison companion | VERIFIED | 74fab2d full candidate/public and actual visual inspection; modern Admin/business separation, disclosure/save/conflict/check/publish/activate/compare, all native suites and 45 files/286 local assertions/build/types/lint. No DB change or visual-builder claim. |
@@ -87,6 +89,34 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+Pinned666efeb42b9e34f39bf5f58b66e2c25eda949ef5 runner42586 completed exit0. Candidate
+JPiKeZ/publicSgP6a7 both ALL COMBINED PASS, including real cancelled-source cosmetic
+publish/activate, obsolete target descendant publication/activation denial, unchanged
+cancelled receipt/native rows, all settlement SQL and existing module/browser suites.
+Messages identical viewport limits pass desktop/tablet/phone with bounded entrance-
+animation retry; no product layout/security changes. Earlier04ff458 public failure
+and automatic runtime rollback retained as historical evidence, now RESOLVED.
+Current/public exact666efeb, previous1d7f558, login200/atlas active/PG18main online,
+root168GiBfree/14%used verified0842UTC. Retention hook retired only inactive04ff458
+and97ceb35 output, retaining source/static/history/current/immediate rollback.
+No new migration in f4b2a; prior0007 retained. Required backup083210, fixtures083340/
+083738; no ad-hoc business dumps.55 files343 assertions/build/strict TS/scoped lint
+PASS;9 overlapping drawer/chat assertions and build/types/lint rerun PASS.
+Files: fields/binding.ts, studio-field-binding tests, check-field-publication.ts,
+check-messages.ts and shared field/Phase2 plans, ledger/CURRENT_STATE/DECISIONS.
+Evidence /tmp/atlas-studio-f4b2a-retry-live-deploy.txt and private acceptance dirs.
+Phase2 IN PROGRESS, not passed; visual designer and later phases remain outstanding.
+Exact next: f4b2b forward0008 source-first generation/history and same-active-schema
+cosmetic activation guards, with exact Test terminal and subsequent real reviewed-
+publication proof; no production settlement/value endpoint orPhase3. Preserve old
+applied0006/0007 and all history; no native rewrite/backfill/reset.
+
+Pinned666efeb42b9e34f39bf5f58b66e2c25eda949ef5 retry runner42586 started083210UTC;
+required recovery backup083210. Build/compatibility PASS, candidateJPiKeZ running
+complete acceptance (fixture backup083340). Current1d7f558 preserved; no new DDL.
+Candidate/public runtime proof pending; keep remote branch pinned and do not begin
+f4b2b. Local log /tmp/atlas-studio-f4b2a-retry-live-deploy.txt.
 
 Retry checks PASS: production build, strict post-build TypeScript, scoped Messages
 ESLint,9 focused drawer/chat assertions and diff. Earlier55 files343 binding/native
@@ -1434,6 +1464,8 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+Latestf4b2a: NONE; scoped field baseline reads/test timing only.
+
 F4b2a: NONE; ordinary binding read selection only.
 
 Software cleanup: NONE. No SQL, schema, migration, restore, reset or record purge.
@@ -1484,6 +1516,8 @@ metadata tables/indexes/composite tenant foreign keys/constraints/guards. No exi
 business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
+
+Latestf4b2a: NONE; previously applied0007 VERIFIED,0008 not created/applied.
 
 F4b2a: NONE. Previously verified0007 retained; forward0008 belongs to f4b2b.
 
@@ -1575,6 +1609,11 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+Latest666efeb:55 files343 local assertions/build/strict TS/scoped lint PASS;9
+overlapping drawer/chat assertions and retry build/strict TS/checker lint PASS.
+CandidateJPiKeZ/publicSgP6a7 ALL COMBINED PASS; runner42586 exit0; exact health/
+pointers/login/service/PG/disk checked0842UTC.
 
 Retry checks PASS: production build, strict post-build TypeScript, scoped Messages
 ESLint,9 focused drawer/chat assertions and diff. Earlier55 files343 binding/native
@@ -1705,6 +1744,10 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
+Latestf4b2a VERIFIED live666efeb: actual cancellation continuation/obsolete-target
+denial/history/native and both full acceptance gates PASS. Earlier public Messages
+failure resolved; same bounds criteria pass after animation. FullPhase2 NOT PASSED.
+
 F4b2a IMPLEMENTED/local checks PASS; real candidate/public proof pending. No
 VERIFIED or fullPhase2 claim.
 
@@ -1832,7 +1875,11 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
-F4b2a public04ff458 gate FAIL at instantaneous Messages dialog bounds; deployer
+No active f4b2a release blocker. Earlier public instant-geometry failure RESOLVED
+by identical bounded viewport check; full666efeb candidate/public Messages passed.
+Current666efeb/previous1d7f558 healthy. Visual designer remains unfinished.
+
+Historical RESOLVED: public04ff458 gate failed instant Messages bounds; deployer
 restored1d7f558 (healthy). Candidate and public Studio passed, but this workstream
 is not VERIFIED. Identical bounded geometry retry implemented; new full candidate/
 public proof required. Next workstream remains NOT STARTED.
@@ -1885,6 +1932,10 @@ No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
 
+F4b2a workstream PASS/VERIFIED on666efeb complete candidate/public gates. F4b2b
+NOT STARTED; fullPhase2 still IN PROGRESS. Historical pending/failure snapshots
+below are superseded by this exact proof.
+
 F4b2a local gate PASS, actual candidate/public/native gate pending before VERIFIED.
 
 F4b1 workstream PASS/VERIFIED: exact1d7f558 candidate/public SQL/runtime/native
@@ -1914,12 +1965,22 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Verify the Messages acceptance retry with scoped lint, strict TypeScript, production
-build and diff review. Checkpoint only the reviewed binder/checker/memory changes,
-then rerun the complete pinned Studio candidate/public release. Keep all native
-assertions, original locks and runtime rollback behavior. Inspect any persistent
-failure with retained rectangle diagnostics; no f4b2b coding before f4b2a VERIFIED.
-After actual gate PASS: f4b2b additive0008 generation priority/retained histories/
-settled same-active-generation cosmetic activation; f4c/d current-authority
-settlement and actual failure/replay proof;2B4 owner values/forms,2C/D,2E visual
-designer. FullPhase2 NOT PASSED; noPhase3 implementation.
+Beginf4b2b after verified666efeb: re-read original0005/0006/0007 guards, then add
+forward20261010080000 migration (leave applied SQL unchanged). Lock scoped definition
+before generation checks; ANY open source freeze must take priority over old
+completed-target allowances. Completed sources and cancelled/rolled-back targets
+remain retained; normal related-generation writes require the approved active
+schema. Permit only same-active-generation label/help activation after settlement;
+structural/new-generation activation keeps exact reviewed cutover requirements.
+
+Extend exact Test settlement/storage proof for both terminal cosmetic continuations
+and retained histories. For actual old-completed-target plus new-open-source proof,
+reuse the existing preparation/collection/sealing/publication services on an exact
+owner-authorised Test fixture after guarded Test-only terminal setup; never disable
+constraints or introduce a production permission waiver. Prove fresh current schema,
+foreign/stale/structural denials, source/value retention and no native mutation.
+Run appropriate unit/SQL/regression/types/lint/build, review diff and update memory,
+then full pinned Studio candidate/public/native release before VERIFIED.
+
+Afterf4b2b: f4c current-authority settlement service, f4d actual paired-Audit/concurrency/
+replay proof;2B4 owner values/forms,2C/D,2E visual designer. NoPhase3 untilPhase2 PASS.

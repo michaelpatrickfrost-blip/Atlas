@@ -1445,3 +1445,11 @@ baseline fail-closed, cancelled-target descendants denied before publication.
 8 binding cases;55 files343 local assertions/scoped lint/build/strict post-build
 TypeScript/diff PASS. Live proof pending. b NOT STARTED; no new migration/value/
 settlement authority in a.
+
+F4b2a VERIFIED10 October0842UTC: exact666efeb candidateJPiKeZ/publicSgP6a7 both
+ALL COMBINED PASS, runner42586 exit0. Actual cancelled-source label/help publication/
+activation, obsolete-target descendant denial and retained receipt/native history
+PASS.55 files343 local/build/types/lint PASS. Public04ff458 rollback evidence retained;
+identical Messages bounds now retry its entrance animation and pass all three sizes
+in both gates, no product layout change. No new DDL. F4b2b forward0008 generation/
+retention/cosmetic terminal guards is next, not started; fullPhase2 not passed.

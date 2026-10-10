@@ -84,7 +84,7 @@ integration workstreams once 2B–2D pass, not permission to implement later Flo
 Process, Packages or broad module migration early.
 
 10 October f4b2 continuation checkpoints: a fixes active-vs-latest ordinary field
-binding with real cancelled-source label/help publish/activate proof (IMPLEMENTED;
-release proof pending, no DDL); b adds forward0008 generation/open-freeze/settled
+binding with real cancelled-source label/help publish/activate proof (VERIFIED
+666efeb full candidate/public PASS, no DDL); b adds forward0008 generation/open-freeze/settled
 cosmetic activation guards and exact Test storage proof (NOT STARTED). See field
 evolution plan and execution ledger. Phase2 remains IN PROGRESS.

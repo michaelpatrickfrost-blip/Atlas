@@ -1,5 +1,37 @@
 # Atlas current state
 
+## 10 October 2026 — f4b2a VERIFIED live; full retry candidate/public PASS
+
+Pinned666efeb42b9e34f39bf5f58b66e2c25eda949ef5 runner42586 completed exit0. Candidate
+JPiKeZ/publicSgP6a7 both ALL COMBINED PASS, including real cancelled-source cosmetic
+publish/activate, obsolete target descendant publication/activation denial, unchanged
+cancelled receipt/native rows, all settlement SQL and existing module/browser suites.
+Messages identical viewport limits pass desktop/tablet/phone with bounded entrance-
+animation retry; no product layout/security changes. Earlier04ff458 public failure
+and automatic runtime rollback retained as historical evidence, now RESOLVED.
+Current/public exact666efeb, previous1d7f558, login200/atlas active/PG18main online,
+root168GiBfree/14%used verified0842UTC. Retention hook retired only inactive04ff458
+and97ceb35 output, retaining source/static/history/current/immediate rollback.
+No new migration in f4b2a; prior0007 retained. Required backup083210, fixtures083340/
+083738; no ad-hoc business dumps.55 files343 assertions/build/strict TS/scoped lint
+PASS;9 overlapping drawer/chat assertions and build/types/lint rerun PASS.
+Files: fields/binding.ts, studio-field-binding tests, check-field-publication.ts,
+check-messages.ts and shared field/Phase2 plans, ledger/CURRENT_STATE/DECISIONS.
+Evidence /tmp/atlas-studio-f4b2a-retry-live-deploy.txt and private acceptance dirs.
+Phase2 IN PROGRESS, not passed; visual designer and later phases remain outstanding.
+Exact next: f4b2b forward0008 source-first generation/history and same-active-schema
+cosmetic activation guards, with exact Test terminal and subsequent real reviewed-
+publication proof; no production settlement/value endpoint orPhase3. Preserve old
+applied0006/0007 and all history; no native rewrite/backfill/reset.
+
+## 10 October 2026 — f4b2a retry candidate IN PROGRESS
+
+Pinned666efeb42b9e34f39bf5f58b66e2c25eda949ef5 retry runner42586 started083210UTC;
+required recovery backup083210. Build/compatibility PASS, candidateJPiKeZ running
+complete acceptance (fixture backup083340). Current1d7f558 preserved; no new DDL.
+Candidate/public runtime proof pending; keep remote branch pinned and do not begin
+f4b2b. Local log /tmp/atlas-studio-f4b2a-retry-live-deploy.txt.
+
 ## 10 October 2026 — f4b2a release-check retry ready
 
 Retry checks PASS: production build, strict post-build TypeScript, scoped Messages

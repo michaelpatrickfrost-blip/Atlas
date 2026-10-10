@@ -195,3 +195,11 @@ then decodes exact typed values. Referenced-owner denials abort; closed invalid
 source/target classes never copy raw values into observation metadata. It returns
 references/revisions plus a conversion fingerprint; persistence/sealing remains a
 separate workstream. No native data or target values are changed by observation.
+
+Studio field review collection uses the existing immutable archive in short
+Serializable transactions: refresh stored actor and policies, prove pinned source/
+draft/compiler/owner identity, derive the cursor from saved observations, append
+1–50 rows with preparation revision CAS and existing Audit atomically. Replaying
+an old revision does not advance. Cursor exhaustion is not sealed coverage or
+permission to execute; exact source/native review sealing follows separately. No
+new schema, target value or protected native write is introduced by collection.

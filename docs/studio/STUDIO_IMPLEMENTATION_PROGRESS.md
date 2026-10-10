@@ -11,13 +11,13 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c6b2a — Authorised source observation — IMPLEMENTED locally; central proof pending.
-c6b1 VERIFIED live e309ff8; no collector/writer/designer yet.
+2B3c6b2b2 — Bounded resumable observation collection — IMPLEMENTED locally.
+c6b2a VERIFIED live 9183e53; collector central proof pending; no writer/designer.
 
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source e309ff8a3d6b56560cceca1d5174327735a057eb,
+VERIFIED. Latest confirmed live source 9183e53aa7051b7cf3147f454a2f7f3bc22cd4c9,
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -55,9 +55,27 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c4 Durable review archive | VERIFIED | 8780a07 candidate/public actual tenant/source/draft/slot/value guards, sealed rows/history, CAS/stale/audit rollback; no worker. |
 | 2B3c5 Owner shared snapshot/coverage | VERIFIED | 5d101da full candidate/public proof: exact native set/revisions, private/membership/isolation/final/unanchored; no native mutation. |
 | 2B3c6a Explicit data and field/reference policies | VERIFIED | Pure contract: 4 files/18 local assertions, build/types/lint; deployed e309ff8. No runtime collector/preview claim. |
+| 2B3c6b2a Authorised source observation | VERIFIED | 9183e53 full candidate/public owner-checked absent and integer source; refs/fingerprint only, native unchanged. |
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+c6b2b2 implemented locally: 16 files/103 focused assertions, production build,
+strict post-build TypeScript, scoped lint and diff review PASS. Logs /tmp/atlas-
+studio-collection-{tests,build,postbuild-types,lint}.txt. Actual central helper
+added but NOT RUN: interrupt/resume, stored cursor/replay, actual Audit rollback,
+canonical anchors, tenant/input/publish/stale draft denial. No final review, target
+value/generation or native mutation. Pin this scoped checkpoint and run the full
+backed-up combined candidate/public acceptance before VERIFIED.
+
+9183e53 full combined candidate/public PASS; deploy exit 0 and public release
+health match. Evidence candidate 4iNlVJ/public YyoY5c; backup 012617, fixture
+012812/013155; previous e309ff8 retained. c6b2a VERIFIED. Historical pending
+observation notes below superseded. c6b2b2 plan: existing preparation archive and
+shared authority; fresh source/draft/compiler/module/policy checks, server-owned
+cursor, 1–50 observations, atomic append/revision CAS/Audit; stale revision replay
+does not advance. Expected collection.ts, tests, central helper, docs; no DDL or
+target writes. Sealing exact coverage is a separate next workstream.
 
 9183e53 sealed candidate real observation/preparation/archive/principal/Admin
 checks PASS; full native/public pending. Evidence 4iNlVJ; backup 012617, fixture
@@ -539,12 +557,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Confirm 9183e53 complete combined candidate/public observation proof and exact
-live revision. Then c6b2b2: implement collectFieldMigrationBatch using the shared
-withFieldMigrationAuthority, server-loaded immutable preparation/principal, source/
-draft/compiled checksums, trusted owner snapshot cursor, bounded row observations,
-atomic inserts/preparation revision CAS/Audit. No target generation or activation.
-Test interrupted/resumed batches, stale/repeated revisions, foreign IDs/permissions/
-source change and atomic Audit rollback. Sealing exact source/owner coverage plus
-canonical digest is the next separate workstream. Phase 2 NOT PASSED; visual
-builder/customer publication/custom buttons outstanding.
+Pin the locally checked collector checkpoint and run the backed-up combined
+candidate/public acceptance. Confirm actual PostgreSQL Audit rollback, bounded
+resume/replay, exact canonical observation anchors and unchanged native records,
+then full native suite, exit status and public source. c6b2b3 follows: seal exact
+source/owner coverage plus canonical digest/summary atomically with review state
+and Audit; no count-only proof, target generation or activation. Phase 2 NOT
+PASSED; visual builder/customer publication/custom buttons outstanding.

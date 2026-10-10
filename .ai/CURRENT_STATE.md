@@ -1,5 +1,33 @@
 # Atlas current state
 
+## 10 October 2026 — Bounded observation collector locally checked
+
+c6b2b2 internal collectFieldMigrationBatch uses fresh stored actor/source/draft/
+compiler/owner/module/policy locks, trusted saved cursor and 1–50 records. Atomic
+immutable observations/preparation revision CAS/Audit; stale replay writes nothing.
+Source/private/reference/Audit failure aborts whole batch; no review/target/native
+writes. Files migrations/collection.ts, tests/studio-field-collection.test.ts,
+check-field-collection.ts and preparation checker integration. No new DDL/public
+endpoint. 16 files/103 tests, production build, strict post-build TypeScript, scoped
+lint and diff review PASS. Logs /tmp/atlas-studio-collection-{tests,build,postbuild-
+types,lint}.txt. Central helper NOT RUN; do not claim VERIFIED. Next pin scoped
+checkpoint and full backed-up combined candidate/public proof, then exact review
+sealing. Accepted live 9183e53; Phase 2 NOT PASSED and designer/buttons/publication
+remain outstanding. Shared authority 86a4804 included in this next release.
+
+## 10 October 2026 — Observation verified live; bounded collection started
+
+9183e53aa7051b7cf3147f454a2f7f3bc22cd4c9 full combined candidate/public PASS,
+deploy exit 0 and actual public health match. Evidence 4iNlVJ/YyoY5c; backup
+012617, fixture 012812/013155; previous e309ff8 retained. Actual source observation
+VERIFIED, no target or native mutation. Historical pending notes superseded.
+Next c6b2b2 bounded append using shared refreshed authority and existing immutable
+archive. Plan saved before code: source/draft/compiler/policy/module freshness,
+trusted owner cursor, 1–50 rows, atomic observation/CAS/Audit, stale replay no-write.
+Files collection service/tests/central helper/docs; no schema change or public API.
+Sealing remains separate. Phase 2 NOT PASSED; visual design, buttons and customer
+publication remain required subsequent workstreams.
+
 ## 10 October 2026 — Actual observation proof passed on sealed candidate
 
 9183e53 candidate real source observation PASS: absent slot and exact integer/

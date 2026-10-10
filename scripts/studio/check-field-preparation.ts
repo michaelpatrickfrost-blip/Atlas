@@ -8,6 +8,8 @@ import { customFieldPayloadSchema } from "../../src/core/studio/fields/schema";
 import { startFieldMigrationPreparation } from "../../src/core/studio/fields/migrations/preparation";
 import { checksum } from "../../src/core/studio/registry/contracts";
 import { checkFieldObservation } from "./check-field-observation";
+import { checkFieldCollection } from "./check-field-collection";
+import { collectFieldMigrationBatch } from "../../src/core/studio/fields/migrations/collection";
 
 /** Actual service proof; writes only exact Test configuration/archive, no target values. */
 export async function checkFieldPreparation(session: Session, principal: FieldMigrationPrincipal, otherOrganisationId: string, ticketId: string) {
@@ -35,6 +37,7 @@ export async function checkFieldPreparation(session: Session, principal: FieldMi
   assert.equal(await db.auditEntry.count({ where: { organisationId: session.organisationId, actorUserId: session.userId,
     action: "studio.field.migration.prepared", entityId: result.id } }), 1);
   await checkFieldObservation(session, principal, result.id, ticketId);
+  const collectedCount = await checkFieldCollection(session, result.id, otherOrganisationId);
   await assert.rejects(() => startFieldMigrationPreparation(session, principal, { ...request, organisationId: otherOrganisationId }));
   await assert.rejects(() => startFieldMigrationPreparation(session, { ...principal, organisationId: otherOrganisationId }, request), /FORBIDDEN/);
   await assert.rejects(() => startFieldMigrationPreparation(session, principal, { ...request, draftRevision: current.draft!.revision + 1 }), /stale|changed/i);
@@ -55,8 +58,9 @@ export async function checkFieldPreparation(session: Session, principal: FieldMi
   }
   await updateDraft(session, { definitionId: definition.id, revision: current.draft.revision, payload: { ...target, field: { ...target.field, label: "Changed after preparation" } } });
   await assert.rejects(() => startFieldMigrationPreparation(session, principal, request), /stale|changed/i);
+  await assert.rejects(() => collectFieldMigrationBatch(session, { preparationId: result.id, revision: collectedCount, limit: 1 }), /stale|changed/i);
   assert.equal(await db.studioFieldMigrationPreparation.count({ where: { id: result.id } }), 1);
-  assert.equal(await db.studioFieldMigrationObservation.count({ where: { preparationId: result.id } }), 0);
+  assert.equal(await db.studioFieldMigrationObservation.count({ where: { preparationId: result.id } }), collectedCount);
   assert.equal(await db.studioFieldGeneration.count({ where: { id: target.storageGeneration } }), 0);
-  console.log("PASS actual preparation service: fresh server source/draft/owner pins, identical replay with one Audit, stale/foreign/client/publish denial, real Audit-failure atomic rollback; no observations/target values/native changes.");
+  console.log("PASS actual preparation service: fresh server source/draft/owner pins, identical replay with one Audit, stale/foreign/client/publish denial, real Audit-failure atomic rollback; bounded observations checked separately, no target values/native changes.");
 }

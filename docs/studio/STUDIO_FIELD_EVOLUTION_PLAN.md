@@ -463,3 +463,18 @@ c6b2b1 extraction local checks PASS: five files/34 assertions, production build,
 strict post-build TypeScript/scoped lint, full diff review. No new endpoint/schema.
 9183e53 actual sealed candidate source observation PASS; full/public pending.
 Keep exact collection append/CAS separate from final source/set/digest sealing.
+
+### c6b2b2 — Bounded collection append (IMPLEMENTED locally, 10 October)
+
+Dependencies: verified preparation/source observation, local shared authority.
+Server-loaded immutable job/principal, refreshed membership/policies/modules and
+source/draft/compiler identity; trusted last stored record cursor, bounded owner
+page and source refs, atomic insert/CAS/Audit. Stale revision replay writes nothing.
+Files migrations/collection.ts, tests/studio-field-collection.test.ts and isolated
+central helper. Database: existing archive only, no migration/reset/target values.
+Checks: interruption/resume, stale/repeated/foreign input, revoked/private/disabled
+source, changed draft, per-row/Audit rollback. Exact coverage sealing follows.
+
+Local evidence: 16 files/103 assertions, production build, strict post-build
+TypeScript/scoped lint and diff review PASS. Actual central helper added; NOT RUN.
+No review completeness/target mutation claim from cursor exhaustion.

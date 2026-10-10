@@ -2090,3 +2090,16 @@ readable field or Decision Studio. Tickets v6 approves status/priority only, ret
 v1–5; private intake/type catalogues/messages are excluded. Reuse existing canonical
 migration snapshot access for required coverage rather than build another cohort
 engine. d2 contracts do not establish native conditional enforcement or coverage.
+
+## 10 October 2026 — Required conditions distinguish absence from unavailable access
+
+A failed/denied fact read must never turn into a false/absent condition and let a
+required write through. The bounded evaluator resolves every declared source before
+all/any aggregation; it validates typed source values and raw+normalized sealed
+plan checksums. Zero and false are present, null/empty selections absent. Equality
+and inequality operate on present facts; explicit absent/present operators express
+absence. Ordinary typing never infers currency, timezone or number conversions.
+The condition result is combined with unconditional required by OR in the upcoming
+runtime, never used to relax that flag. Only internal fact fingerprints are returned;
+this pure evaluator grants no record access and remains unwired until d3–4 native
+and canonical validation. Later visual choices must communicate these semantics.

@@ -26,6 +26,9 @@ export const requiredFactMetadataSchema = z.discriminatedUnion("kind", [
     dependencyClosure: z.array(z.uuid()).max(100).refine(ids => new Set(ids).size === ids.length, "Duplicate field dependency.") }),
 ]);
 export type RequiredFactMetadata = z.infer<typeof requiredFactMetadataSchema>;
+export const requiredConditionPlanSchema = z.strictObject({ kind: z.literal("requiredIf"), schemaVersion: z.literal(1),
+  definitionId: z.uuid(), entity: referenceSchema, fieldKey: fieldKeySchema, condition: requiredConditionSchema,
+  facts: z.array(requiredFactMetadataSchema).min(1).max(20) });
 export type RequiredCompilerContext = {
   session: Session; registry: CapabilityRegistry; definitionId: string;
   /** Explicit owner declarations, not every readable native field automatically. */
@@ -35,7 +38,7 @@ export type RequiredCompilerContext = {
 function invalid(message: string): never { throw new Error(`FIELD_REQUIREMENT_INVALID: ${message}`); }
 function sourceKey(source: RequiredFactSource) { return canonicalJson(requiredFactSourceSchema.parse(source)); }
 
-function normalisePredicate(predicate: RequiredPredicate, storage: z.infer<typeof fieldStorageSchema> | z.infer<typeof nativeEnum>): RequiredPredicate {
+export function normaliseRequiredPredicate(predicate: RequiredPredicate, storage: z.infer<typeof fieldStorageSchema> | z.infer<typeof nativeEnum>): RequiredPredicate {
   if (predicate.operator === "present" || predicate.operator === "absent") return predicate;
   if (predicate.operator === "contains") {
     if (storage.type !== "multi_enum" || !storage.options.some(option => option.id === predicate.optionId)) invalid("Selection condition needs an approved multi-selection option.");
@@ -89,12 +92,12 @@ export async function compileRequiredCondition(context: RequiredCompilerContext,
       }
       facts.set(key, fact);
     }
-    predicates.push(normalisePredicate(predicate, fact.kind === "native" ? fact.storage : fact.field.storage));
+    predicates.push(normaliseRequiredPredicate(predicate, fact.kind === "native" ? fact.storage : fact.field.storage));
   }
   const canonical = predicates.map(predicate => ({ predicate, key: canonicalJson(predicate) })).sort((a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
   if (new Set(canonical.map(item => item.key)).size !== canonical.length) invalid("Duplicate field condition.");
   const condition = requiredConditionSchema.parse({ match: target.requiredIf.match, predicates: canonical.map(item => item.predicate) });
   const orderedFacts = [...facts].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([, fact]) => fact);
-  const plan = { kind: "requiredIf" as const, schemaVersion: 1 as const, definitionId, entity: target.entity, fieldKey: target.field.key, condition, facts: orderedFacts };
+  const plan = requiredConditionPlanSchema.parse({ kind: "requiredIf", schemaVersion: 1, definitionId, entity: target.entity, fieldKey: target.field.key, condition, facts: orderedFacts });
   return { plan, checksum: checksum(plan) };
 }

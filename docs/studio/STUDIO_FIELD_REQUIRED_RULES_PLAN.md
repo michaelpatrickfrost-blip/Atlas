@@ -7,7 +7,7 @@ implementation work ordering, not a rewrite of the supplied specification.
 | Workstream | Purpose/dependencies | Expected files/database | Verification | Status |
 | --- | --- | --- | --- | --- |
 | d1 | Closed versioned required-if payload/compiler; preserve v1 plans | fields condition/schema contracts, compiler helpers and tests; no DDL | Bounded typed predicates, unknown/cyclic/foreign/unsupported fact denial, exact old checksum regression; pure helpers only until d2–4 | VERIFIED locally; grammar/compiler and67files416 tests/build/strict post-build TS/lint/diff PASS; unwired |
-| d2 | Owner-approved transaction facts, canonical cohort and new-record initialisation contracts | registry types/entities/contracts, service-work Studio new descriptor versions/query callbacks, runtime authority shared transaction helper; no DDL expected | Exact new native creation authority, current/private/tenant/source policy, canonical final/unanchored cohort, sealed old hashes | IMPLEMENTED; shared authority, v6 facts/new-record proof and existing canonical snapshot reuse;37 focused/69files431/build/types/lint PASS, actual candidate/public proof pending |
+| d2 | Owner-approved transaction facts, canonical cohort and new-record initialisation contracts | registry types/entities/contracts, service-work Studio new descriptor versions/query callbacks, runtime authority shared transaction helper; no DDL expected | Exact new native creation authority, current/private/tenant/source policy, canonical final/unanchored cohort, sealed old hashes | VERIFIED live0925bb5; candidateytkpaL/publicsZJ2uA combined PASS + actual contracts/native/Audit rollback proof;69files431/build/types/lint |
 | d3 | Canonical publication/evolution coverage | definitions binding/publication/review/coverage services, requirement runtime and tests; additive guards only if necessary | All canonical records including absent anchors; optional-populate-review path; conditional resulting requirements, current/written/ref rights, reviewed conversion coverage, Audit/CAS | NOT STARTED |
 | d4 | Owning native create/save and ordinary-value transaction rules | service-work actions/engine and shared runtime-write primitive; no native schema copies | Native protected transitions/SLA/intake preserved; atomic new record+values, create-only permission, hidden/omitted fields/disabled authoring, native/extension CAS, atomic failure/replay | NOT STARTED |
 | d5 | Central native/security/version gate | tests, exact Test helper and release compatibility scan; no destructive reset | Real missing-anchor/conditional/native create/transition/write cases, payload runtime compatibility, two companies/private/source/field denial, build/full candidate/public | NOT STARTED |
@@ -62,7 +62,86 @@ old published definitions, values, receipts and backward native behaviour.
 
 d1 pure grammar/compiler is implemented and tested, with strict post-build TS PASS.
 d2 owner fact metadata/query and native creation proof contracts are implemented
-locally; actual central proof is pending. Canonical cohort access reuses the existing
+locally; actual central proof PASS in candidate/public. Canonical cohort access reuses the existing
 complete owner snapshot (including final/unanchored records), while required-value
 coverage, field-dependency provider, native hooks and publishable conditional
 implementation remain d3–4.
+
+## d3 ordered workstreams — coverage and runtime dependencies
+
+Candidate0925bb5 and public sZJ2uA full combined acceptance PASS; runner40775 exit0. d3a is an
+independent pure evaluator over the verified d1 compiled subplan; it grants no
+record access or publication. Do not move the pinned release branch while it runs.
+
+| ID | Purpose/dependencies | Expected files/database | Tests/gate | Status |
+| --- | --- | --- | --- | --- |
+| d3a | Evaluate bounded typed conditions and seal observed fact fingerprints; d1 contracts | required compiler plan schema + evaluator/tests; no DDL/data reads | all/any, false/zero/empty, literal precision, missing/unavailable/foreign fact shapes, no authorization short circuit, tampered plans | VERIFIED locally;70files440/build/strictpostbuildTS/lint/diff PASS, pure/unwired |
+| d3b | Sealed source metadata/current dependency closure and version-aware field compilation; d1/d2/d3a | required metadata provider/compiler/schema tests; no publication dispatch yet | Exact current+pinned tenant binding/generation/checksum/access, transitive cycles/bounds/cosmetic compatibility, sealed v1 preservation | NOT STARTED |
+| d3c | Transactional fact/value reading and resulting requirements; d3a/b and d2 owner facts/proofs | required runtime reader + tests; no new datastore | Current/written/native/reference guards before values, staged changes, create-only new record proof, absence vs unavailable, deterministic locked reads | NOT STARTED |
+| d3d | Required initial publication and activation coverage; d3b/c | definition lifecycle + existing canonical snapshot access; additive guards only if necessary | Complete canonical cohort incl final/unanchored; required coverage/unique/source/CAS/Audit; optional-populate-review path; no metadata principal impersonation | NOT STARTED |
+| d3e | Existing reviewed evolution/execution/settlement integration and impact; d3c/d | existing migration services/contracts + owner versioned policies; preserve old receipts | Native/global extension revisions capture input drift, new generations, dependent rule compatibility, target eligibility, source freeze/history/replay, rollback | NOT STARTED |
+
+A rule input that cannot be authorised/resolved is an error, never a false/absent
+fact. Evaluate/authorise all declared facts before Boolean aggregation; any/all
+must not hide a denied fact via short circuit. Zero and false are present. Null or
+an empty selection is absent. Equality and inequality require a present fact;
+matching absence uses the explicit presence/absence operators. These semantics
+must be represented in the later visual builder with plain-language choices.
+
+Legacy published fields also need explicit current owner approval for creation
+initialisation in d4, rather than silently interpreting their read/edit contract
+as a create grant. Add a versioned current native policy covering approved old
+entity versions when integration is wired. Current d2 proof only approves explicit
+v6 initialisation and never enables existing-record reads or broad editing.
+
+### d3b–e exploration constraints to preserve during implementation
+
+- Keep v1 payload/plan/intent/receipt checksums unchanged; a full v2 field plan is
+  separate from the pure required-if subplan. Authoring dispatch stays disabled.
+- Metadata provider uses server-derived tenant/root definition, locked canonical
+  bindings, exact immutable version/checksum pins and current active read policy.
+  Permit compatible label/help revisions, reject retirement/new generation/type/
+  policy drift. Compute bounded current dependency closure, not client-supplied
+  closure, so historical pins cannot hide a newly formed current cycle.
+- Include registered native fact query hashes as well as entity hashes in compiled
+  dependencies. Source metadata compilation performs no business-value queries.
+- Ordinary read validation requires read policy, not field write/Studio authoring.
+  Evaluating requirements separately authorises every actual input/reference. A
+  sealed source field's own condition does not grant access to its private inputs.
+- Existing migration observations capture native and global extension revisions;
+  the shared extension revision advances on every ordinary field save. Absent
+  anchors and added canonical rows are already covered by owner snapshots/checks.
+  Recheck condition metadata and native/extension state at review/seal/execution/
+  cutover. Do not copy business facts/values into review archives just to prove them.
+- Adapt the existing versioned reviewed migration/coverage/representation/settlement
+  services and additive SQL guards where necessary; do not build another engine.
+  Current owner policies must explicitly approve new field/entity versions while
+  retaining exact old policies and receipts. v6 old snapshot source ranges are not
+  silently widened; new opt-in versions cover the new conditional representation.
+- Full runtime compatibility must scan actual active/retained/open metadata payload
+  versions, not merely resolve contract IDs. Do not allow publication that an older
+  runtime would parse differently or execute without native required enforcement.
+- A conditional result is ORed with the field's unconditional required flag; it can
+  never turn off a mandatory field. Hidden/omitted form inputs never bypass it.
+
+### Native integration lock/compatibility findings (planned, not implemented)
+
+Ordinary c4 writers currently lock the target definition before native record
+extension authorisation. Cross-field required checks will read other definitions.
+Two writers/native saves can therefore deadlock if each holds a different target
+and waits for the other's dependency or native row. Before d4 wiring, establish
+and test a consistent lock order across metadata publication, all field writers
+and native create/save paths; cover same/different records and crossed fields.
+Do not simply add dependency SHARE locks after the existing target FOR UPDATE and
+assume the graph being acyclic prevents every lock cycle. Batch resulting-required
+validation reads other active rules even when their values are not being changed.
+Inspect metadata/cohort/native queue/parent/approval interactions when choosing a
+bounded entity/record lock scheme; record the actual chosen approach and rationale.
+
+Legacy active unconditional-required fields also need canonical coverage before
+native hooks are enabled. A release must not silently invent values, waive required
+rules on hidden/omitted fields, or break existing business activity because old
+publication allowed missing anchors. Inspect actual active company metadata and
+require an authorised optional/populate/review or retirement path for any invalid
+legacy cohort. Suspended synthetic Test fixtures do not establish live business
+coverage. Keep actual unsupported payload/open-migration checks in the release gate.

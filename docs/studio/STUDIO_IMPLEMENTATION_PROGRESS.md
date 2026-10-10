@@ -11,6 +11,9 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
+2B4d3a pure condition evaluator — VERIFIED locally;70files440/build/strictpostbuildTS/lint/diff PASS.
+2B4d2 owner/native contracts — VERIFIED live0925bb5.
+
 2B4d2 shared authority, owner facts/new-record contracts — IMPLEMENTED; local checks PASS, actual candidate/public proof pending.
 
 2B3f4b2b — Generation/history and cosmetic activation guards — VERIFIED livef1a9bf1.
@@ -38,6 +41,57 @@ F4a VERIFIED locally (adfc357); strict TS/build/scoped lint,18 focused and45 fil
 candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
+
+## 10 October 2026 —2B4d3a pure evaluator VERIFIED locally
+
+70files440 regression tests, final production build, strict post-build TypeScript,
+scoped lint and diff PASS.9 evaluator tests cover all/any/typed precision, no access
+short circuit, explicit absent vs unavailable/false/zero, retained selections/
+reference-owner denial, plan/fact tampering and raw/default-insertion integrity.
+No data access, grants, DDL, native hooks or conditional publication. Source required
+compiler plan schema/normalizer + required-evaluator, focused suite, required plan/
+ledger/current state/DECISIONS. Public d2 remains0925bb5 verified in both complete
+stages; current/previous/healthy/167GiBfree/idle locks confirmed. d3a is a pure helper,
+not complete native enforcement. Exact next checkpoint, then d3b1 add read-intent
+conditional metadata compilation and full isolated v2 field plan with native query/
+field version dependencies; d3b2 locked current/pinned source provider and bounded
+current graph closure. Keep definition dispatch off until d4 native enforcement.
+Evidence /tmp/atlas-studio-d3a-{regression,build,postbuild-types,lint}.txt.
+
+
+## 10 October 2026 —2B4d2 VERIFIED live1319UTC; d3a evaluator IMPLEMENTED
+
+Exact0925bb54b1a337a10df399592c50221904b2af9e candidateytkpaL/publicsZJ2uA
+ALL COMBINED PASS, runner40775 exit0. Actual canonical facts/private/foreign/stale,
+genuine create-only INSERT/proof/no existing access/expired/unsafe and native/Audit
+rollback PASS in both stages. All native suites PASS; zero reported browser errors.
+69files431/build/strictpostbuildTS/lint/diff PASS. No DDL/model/backfill/reset/hook.
+Mandatory backup130807/fixtures130936/131345, no ad-hoc dumps. Exact current0925bb5,
+previous62201ae retained; Atlas active, PG18main online, login200,167GiBfree/14%used,
+original locks idle. Only inactive53c05ae duplicate runtime outputs retired;
+source/static/history/records/backups preserved. Evidence d2-live-deploy log.
+Pure d3a evaluator implemented: all declared facts resolve before aggregation, typed
+codecs, explicit null/empty vs unavailable, false/zero present, canonical plan and
+fact fingerprint; no data access/grants or conditional publication.22 focused tests
+PASS; full regression/build/latest strict types/lint pending. Exact next finish d3a
+checks/review/checkpoint then d3b sealed dependencies/closure/versioned compiler.
+Visual2E and wholePhase2 gate still outstanding; no Phase3 work.
+
+
+## 10 October 2026 —2B4d2 pinned release IN PROGRESS
+
+Exact0925bb54b1a337a10df399592c50221904b2af9e release runner40775 active;
+candidateytkpaL under full Studio acceptance. Mandatory predeploy backup130807,
+fixture130936. First incorrect manual SHA was rejected by local pin gate before
+SSH/backup; corrected exact HEAD. Candidate build/schema/compatibility passed;
+ordinary read proof PASS, writer/new native-contract/full candidate/public checks
+still pending. Live remains62201ae at latest check; Atlas active,166GiB free during
+candidate build. No branch movement until runner exits. d3 exploration confirms
+existing observations capture native+global extension revisions and existing owner
+snapshot includes final/unanchored rows; no new cohort engine is needed. d3 NOT
+STARTED. Next finish new actual contract helper and full candidate/public gate,
+then record exact health/evidence and begin d3 dependency/coverage workstreams.
+
 
 ## 10 October 2026 —2B4d2 owner/native contracts IMPLEMENTED; live gate pending
 
@@ -116,6 +170,12 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 
 # Completed Workstreams
 
+2B4d3a pure evaluator VERIFIED locally;70files440/build/strictpostbuildTS/lint/diff
+PASS. No runtime/publish/native enforcement completion claim.
+
+2B4d2 VERIFIED live0925bb5: candidateytkpaL/publicsZJ2uA ALL COMBINED PASS;
+actual facts/create-only/native/Audit rollback proof, runner40775 exit0.
+
 2B4d1 pure grammar/compiler VERIFIED locally:67files416/build/strictpostbuildTS/lint/diff PASS; no runtime/publication claim.
 
 | Workstream | Status | Evidence |
@@ -166,6 +226,19 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+## 10 October 2026 — d2 candidate gate PASS; d3a pure evaluator IN PROGRESS
+
+Pinned0925bb5 complete candidateytkpaL ALL COMBINED PASS, actual new native helper
+PASS. PublicsZJ2uA (fixture131345) in progress; no completed public/live claim yet.
+Independent d3a pure evaluator over verified d1 subplans starts within Phase2;
+closed plan/checksum, typed facts, all/any without authorization short circuit,
+presence/zero/false and no silent unavailable fact. No DDL, record reads, native
+hooks or conditional publication. Saved ordered d3a–e plan. Existing migration
+native/global extension revisions can capture rule-input drift; metadata dependency
+closure and canonical required coverage remain d3b–e. Next implement/test pure
+evaluator while public gate completes; do not move pinned branch.
+
 
 ## 10 October 2026 —2B4d2 owner/native contracts IMPLEMENTED; live gate pending
 
@@ -1769,6 +1842,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+d3a: fields/required-compiler plan schema/normalizer; required-evaluator; evaluator
+suite; required plan, DECISIONS, ledger/CURRENT_STATE and d2 public evidence.
+
 d2: registry types/entities/contracts/registry; runtime-authority/required-owner;
 service-work studio/studio-create; two new suites + authority suite; exact native
 contract helper/principal driver; required plan/module/security/architecture/memory.
@@ -1942,6 +2018,8 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+d3a: none. Pure evaluator; conditional definition dispatch remains disabled.
+
 d2: no DDL/model/backfill/reset. New native INSERT probes roll back, Test only.
 
 d1: none. No new conditional payload can be published yet.
@@ -2051,6 +2129,9 @@ and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
 
+d3a:9 pure evaluator tests covering typed values/all/any/permission propagation,
+explicit absence/unknown, precision/choices/references and metadata integrity.
+
 d2:15 new tests (4 authority +6 native facts +5 creation proofs); actual exact
 Test helper coded, not yet run. No native-hook enforcement completion claim.
 
@@ -2114,6 +2195,9 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+d3a:70files440 regression assertions, final production build, strict post-build
+TypeScript, scoped lint/diff PASS. Pure helper has no live runtime entry yet.
 
 d2:37 focused/69files431 assertions, production build, strict post-build TS,
 scoped source/helper lint and diff PASS. Actual candidate/public pending.
@@ -2264,6 +2348,9 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+d3a pure gate PASS; one invalid test fixture initially supplied status code to
+priority, corrected. Metadata tampering/default insertion added; final440 PASS.
 
 d1 pure-contract gate PASS:67files416/build/types/lint/diff. First TS failed on
 narrowing/fixture typing, corrected; final strict rerun exit0. Runtime gate pending.
@@ -2521,12 +2608,13 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Review/checkpoint d2 source and memory, then pin full Studio candidate/public
-acceptance with the new exact Test native-contract helper. Local69files431/build/
-strict post-build TS/lint/diff PASS; actual proof pending. Do not move the branch
-while pinned release runs. After d2 gate, implement d3 sealed field dependency
-metadata/runtime condition evaluator and canonical required-value publication /
-evolution coverage; use existing owner snapshots including final/unanchored rows.
-Do not enable conditional publication until d4 native create/save hooks enforce
-resulting facts and values atomically. Then2B4e/f,2C/D/visual2E, fullPhase2 gate.
-No Phase3 before fullPhase2 PASS. No ad-hoc dump/development copies.
+Checkpoint d3a evaluator/memory (70files440/build/types/lint/diff PASS). Then d3b1
+add explicit read intent to compileRequiredCondition (write default/hash unchanged)
+and a full isolated v2 field plan with native query hashes/pinned field dependency
+IDs; tests equal read/write checksums, no source data queries and sealed v1 unchanged.
+d3b2 then supplies locked current/pinned tenant binding/generation/checksum metadata
+and bounded current dependency closure, with current/written read policy and cycle
+checks. Keep v2 out of definition dispatch until d3 coverage+d4 native enforcement.
+Read STUDIO_FIELD_REQUIRED_RULES_PLAN.md lock-order/legacy coverage findings before
+native hooks. d2 live0925bb5 complete; next2B4e/f,2C/D/visual2E, fullPhase2 gate.
+No Phase3 before fullPhase2 PASS; no ad-hoc dumps/copies.

@@ -25,8 +25,11 @@ none activated. Reclaimed only this task's stopped-candidate generated output
 and npm cache under both release locks; source/backups/accepted runtimes retained.
 Initial local dependency/generated-client/typecheck failures resolved; no schema,
 records, permissions or local business cache changes. No live-feature blocker.
-Source/evidence committed on codex/compact-app-popup. Shared Desktop main contains
-concurrent dirty work; integration must preserve it rather than overwrite files.
+Source/evidence committed and pushed on codex/compact-app-popup. Shared main is an
+ancestor; attempted safe fast-forward into Desktop main refused because tracked/
+untracked concurrent work overlaps. No Desktop files changed. Live delivery is
+verified; main integration remains pending until that work is reconciled. Evidence
+/tmp/atlas-compact-popup-main-integration.log; do not force/reset the shared checkout.
 
 ## 10 October 2026 — Tasks capacity retry with smaller temporary swap
 

@@ -11,14 +11,14 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c4 — Durable preparation/review observations — IMPLEMENTED; actual constraints pending. Previous combined acceptance
-VERIFIED live on 931a600. Pure 2B3c3 contracts verified locally (32 tests/build/types/lint); additive
-review/job/row persistence; no Phase 2 gate claim.
+2B3c5a — Registry transaction-required query contract — VERIFIED locally;
+6 files/30 tests, production build, scoped lint and strict TypeScript PASS. c4 archive constraints
+VERIFIED live on 8780a07. No public preview/conversion feature or Phase 2 gate claim.
 
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source 931a6009dfc24f20ceddc2403bf01b21aa4f2950,
+VERIFIED. Latest confirmed live source 8780a07b92654a9d2649b8b6518d609a9b431adb,
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -52,8 +52,23 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c2a Owner cohort-access preflight | VERIFIED | 931a600 candidate/public includes final/unanchored rows and generic private-access denial; sealed v1/v2 retained. |
 | 2B3c2b Typed stored-value decoder | VERIFIED | Local all-15-type cases and 931a600 candidate/public real exact decimal/money checks. Pure library, no value API. |
 | 2B3c2c Stable combined release acceptance | VERIFIED | Both full suites PASS, exact source activated, public health/current checked, prior b57ba720 retained. |
+| 2B3c3 Immutable review contracts | VERIFIED | Local closed/stale/digest cases and 8780a07 SQL helper roundtrip; no preview endpoint. |
+| 2B3c4 Durable review archive | VERIFIED | 8780a07 candidate/public actual tenant/source/draft/slot/value guards, sealed rows/history, CAS/stale/audit rollback; no worker. |
 
 # Current Workstream Detail
+
+8780a07 complete candidate/public PASS, deployment exit 0 and public source/current
+confirmed; prior 1646316 retained. c4 archive constraints VERIFIED; historical
+pending statements below are superseded. No conversion engine/preview API yet.
+
+8780a07 actual candidate archive/metadata/principal/Admin and Dashboard/Settings
+checks PASS. Full remaining suite in progress; public not confirmed. Migration
+20261010030000_studio_field_reviews applied centrally (Prisma finished entry).
+Candidate evidence yWPgWM; fixture backup atlas-pre-studio-candidate-20261010-003501.
+
+Exact 8780a07 reviewed release preparing; backup atlas-pre-deploy-20261010-003320,
+local log /tmp/atlas-studio-review-archive-deploy.txt. No confirmed archive runtime
+PASS yet; keep original locks and pin. Previous live verified Settings 1646316.
 
 2B3c4 purpose/dependencies/files/additive database/checks recorded in the evolution plan.
 No persistence, preview service or executor is delivered by a pure review contract.
@@ -232,6 +247,10 @@ business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
 
+20261010030000_studio_field_reviews applied in backed-up 8780a07 preparation;
+Prisma finished history confirmed. Real archive candidate constraints PASS. Full
+combined candidate/public completion pending; no reset or native backfill.
+
 `20261009220000_studio_typed_fields` applied during fcfd512 backed-up candidate
 preparation; new tables only, no native business changes. Candidate/public SQL/history/lifecycle and combined checks PASS; production e5d66e6.
 
@@ -294,6 +313,11 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+8780a07 candidate/public complete combined PASS; deploy exit 0, health/current exact.
+Evidence candidate yWPgWM/public 6U4Ohy; backups deploy-20261010-003320, candidate
+20261010-003501 and public 20261010-003850. Archive constraints plus eleven native/
+Studio checks PASS. Existing Test fixtures suspended/access revoked; history kept.
 
 931a600 full combined candidate PASS; exact runtime activated, previous b57ba720
 retained. All real Studio and native checks, including corrected People UI and
@@ -425,14 +449,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Pin the reviewed integrated source and run backed-up combined Studio candidate/
-public acceptance with the additive review migration and exact-Test archive helper.
-All six acceptance modes and current 1646316 Settings are preserved.
-
-Preserve exact publicly accepted live Settings 1646316 source and its checked-in
-acceptance mode without disturbing other work. Run integrated tests/build/types/
-lint, then pinned combined Studio candidate/public acceptance with backed-up
-additive review migration and check-field-reviews. Correct actual failures before
-marking archive constraints VERIFIED. After proof, implement owner-approved
-snapshot/coverage service and job-backed representation policy; no public preview,
-conversion executor, designer or custom buttons delivered yet. Phase 2 NOT PASSED.
+2B3c5b: implement Tickets owner bounded canonical
+anchor snapshot and exact persisted observation-set/native-revision coverage under
+one supplied transaction. Enforce full private/native/source access before IDs or
+counts; preserve v1/v2 and ordinary final-record guards. Add missing/extra/same-count
+substitution/tenant/permission tests and central evidence before snapshot service.
+Phase 2 NOT PASSED; visual builder/company publication/custom buttons outstanding.

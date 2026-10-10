@@ -53,7 +53,7 @@ export type RecordContext = { session: Session; transaction?: Prisma.Transaction
 export type RecordRequest = { recordId: string; intent: "read" | "extend"; expectedRevision?: number };
 /** A canonical record reference, not a duplicate business record or mutation API. */
 export type RecordAnchor = { recordId: string; organisationId: string; revision: number };
-export type Context = { session: Session; idempotencyKey?: string };
+export type Context = { session: Session; idempotencyKey?: string; transaction?: Prisma.TransactionClient };
 export type QueryDescriptor<I, O> = ContractIdentity & {
   kind: "query";
   input: z.ZodType<I>;
@@ -61,6 +61,8 @@ export type QueryDescriptor<I, O> = ContractIdentity & {
   pagination: "cursor" | "page" | "none";
   maxCardinality: number;
   costClass: "low" | "medium" | "high";
+  /** Explicit server-only opt-in for atomic owner snapshots, not command execution. */
+  transaction?: "required";
   execute(ctx: Context, input: I): Promise<O>;
 };
 export type CommandDescriptor<I, O> = ContractIdentity & {

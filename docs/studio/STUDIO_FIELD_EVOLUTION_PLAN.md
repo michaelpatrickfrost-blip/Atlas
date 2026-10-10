@@ -246,7 +246,7 @@ bindings, foreign identity/default insertion/script rejection, missing anchors,
 immutable value pins, changed same-count membership, ordering/duplicate rejection
 and redacted failures. This is a pure contract, not a preview/persistence feature.
 
-## 2B3c4 — Durable preparation/review observations (IMPLEMENTED; central constraints pending)
+## 2B3c4 — Durable preparation/review observations (VERIFIED archive candidate/public)
 
 Purpose: persist a frozen preparation intent, immutable review and immutable
 per-record source observations. Dependencies: 2B3c3 contracts, verified typed
@@ -279,3 +279,53 @@ regenerated; direct/aggregate reads remain denied even to configuration staff.
 Exact-Test support-principal helper exercises missing anchors and real immutable
 slot/value references, sealed append guards, stale draft and audit rollback; NOT RUN
 until compatible backed-up candidate. No public preview/migration runner claimed.
+
+
+## 2B3c5 — Owner transactional snapshot/coverage contracts (IN PROGRESS)
+
+Purpose: collect bounded canonical record anchors and verify the exact canonical
+set against persisted observations, without Core scanning an owner's native tables.
+Dependencies: c4 archive constraint/public proof, existing whole-owner access policy.
+Expected files: registry types/factory/runtime, service-work/studio owner callbacks,
+focused transaction/owner coverage tests and module docs. Database: no new schema;
+read existing canonical records and new tenant-owned observation references only.
+
+New queries explicitly require a server-supplied shared transaction; ordinary
+invocation must reject. Preserve existing query/entity v1/v2 hashes and runtime.
+Owner checks enabled/entitled source, native read/manage, private membership and
+whole canonical access before returning any IDs/counts. Snapshot includes final,
+merged and unanchored rows with stable paging. Coverage rejects missing/extra IDs
+and changed native revisions generically; equal counts are insufficient. No native
+mutation, final-record write authority or public preview endpoint in this checkpoint.
+
+Tests: required transaction, wrong query/tenant/job/source, disabled source/missing
+native permissions/private member, bounded snapshot and canonical-set substitution,
+missing anchors/final records, no native writes and old sealed contract hashes.
+Core collection service subsequently refreshes principal and validates current plus
+written field and reference access, explicit live-test permission and source-value
+CAS. Job-backed representation authority follows reviewed publication; do not add
+migration intent to the existing ordinary record authorisation method.
+
+
+2B3c5a scope: first add explicit transaction-required query descriptors and a
+server-context registry invocation method. Ordinary invocation rejects those
+queries; transactional invocation rejects commands and older queries that have
+not opted in. Typed context contains the existing Prisma transaction, never a
+client-supplied identity/connection. Existing descriptor details/hashes remain
+unchanged when the option is absent. Files: types/contracts/registry and focused
+registry tests. Database: none; no new owner query or executable migration yet.
+
+
+Final c4 evidence: exact 8780a07 full candidate/public combined acceptance PASS,
+deploy exit 0, current health/pointer match and previous 1646316 retained. Additive
+migration applied after backup; actual private logs yWPgWM/6U4Ohy include source/draft/
+tenant/slot/value links, absent anchors, history/sealed append, stale/CAS/audit
+rollback. This supersedes earlier unrun constraint notes; collection, live preview,
+reviewed publication and executable batches are still unimplemented.
+
+
+c5a local evidence: six focused files/30 assertions, production build, strict
+post-build TypeScript and changed-file lint PASS. Tests cover server transaction
+identity, native/source/input/output guards, old hashes, source-descriptor mutation
+and command-idempotency boundaries. No owner snapshot query yet. This foundation
+will ship with the next owner checkpoint; current live archive remains 8780a07.

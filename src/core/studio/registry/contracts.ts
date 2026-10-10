@@ -20,12 +20,17 @@ function identity(d: ContractIdentity): ContractIdentity {
     ...(d.supportedUntil ? { supportedUntil: d.supportedUntil } : {}), classification: d.classification };
 }
 export function query<I, O>(d: QueryDescriptor<I, O>): Contribution {
+  const requiresTransaction = d.transaction === "required";
   const inputSchema = z.toJSONSchema(d.input, { io: "input" });
   const outputSchema = z.toJSONSchema(d.output, { io: "output" });
   return { metadata: { ...identity(d), kind: d.kind, inputSchema, outputSchema,
     schemaHash: checksum({ inputSchema, outputSchema }),
-    details: { pagination: d.pagination, maxCardinality: d.maxCardinality, costClass: d.costClass } },
-    run: async (ctx, value) => d.output.parseAsync(await d.execute(ctx, await d.input.parseAsync(value))) };
+    details: { pagination: d.pagination, maxCardinality: d.maxCardinality, costClass: d.costClass,
+      ...(d.transaction ? { transaction: d.transaction } : {}) } },
+    run: async (ctx, value) => {
+      if (requiresTransaction && !ctx.transaction) throw new Error("This owner query requires a shared server transaction.");
+      return d.output.parseAsync(await d.execute(ctx, await d.input.parseAsync(value)));
+    } };
 }
 export function command<I, O>(d: CommandDescriptor<I, O>): Contribution {
   const inputSchema = z.toJSONSchema(d.input, { io: "input" });

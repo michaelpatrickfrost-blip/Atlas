@@ -1,5 +1,54 @@
 # Atlas current state
 
+## 10 October 2026 — Review archive VERIFIED on candidate/public and live
+
+Exact 8780a07b92654a9d2649b8b6518d609a9b431adb complete combined candidate/public
+PASS and deploy exit 0; final public health/current matches, previous immutable
+1646316 retained. Evidence /tmp/atlas-studio-candidate-yWPgWM and /tmp/atlas-studio-
+public-6U4Ohy; backup atlas-pre-deploy-20261010-003320, fixture backups
+atlas-pre-studio-candidate-20261010-003501/public-20261010-003850. Actual archive
+FKs/absence/stored references/immutability/stale draft/CAS/audit rollback PASS,
+plus all metadata/Admin/business/owner and native Dashboard/Settings/Home/Reports/
+MRP/Messages/private Admin/Supply/Commercial/People. Exact Test access retired,
+history retained; QA identity/grants unchanged. Additive migration finished centrally.
+2B3c3 pure review contracts and c4 archive constraints VERIFIED; not a public
+preview/conversion feature. Phase 2 NOT PASSED. c5a registry transaction-required
+query implementation has 6 files/30 local assertions, build and scoped lint PASS;
+strict TypeScript PASS. Next checkpoint c5a, then implement
+owner bounded canonical snapshots and exact stored-set/revision coverage.
+
+## 10 October 2026 — Archive full candidate passed; public and registry checkpoint
+
+8780a07 full combined candidate PASS, including new archive and native Settings/
+Dashboard/Home/Reports/MRP/Messages/Admin/Supply/Commercial/People. Exact runtime
+switched for public checks under original locks; previous accepted 1646316 retained.
+Public fixture backup atlas-pre-studio-public-20261010-003850; private evidence
+/tmp/atlas-studio-public-6U4Ohy. Public result pending; no Phase 2 gate claim.
+2B3c5a IN PROGRESS: explicit transaction-required query descriptor and typed registry
+entry point, preserving old hashes and command boundaries. No new schema/owner
+mutation/executor. Next finish public proof and test the isolated registry change.
+
+## 10 October 2026 — Studio archive candidate database checks PASS
+
+8780a07 candidate actual archive checks PASS, including tenant/source/draft FKs,
+missing anchors and stored values, immutable pins, sealed append denial, CAS/state
+and stale-draft/audit rollback. Metadata/Admin/business/principals, Dashboard and
+Settings checks PASS so far; remaining full suite still running. Additive migration
+20261010030000_studio_field_reviews confirmed finished centrally in Prisma history.
+Backup atlas-pre-deploy-20261010-003320; fixture backup atlas-pre-studio-candidate-
+20261010-003501; private evidence /tmp/atlas-studio-candidate-yWPgWM. No public archive
+proof or whole Phase 2 gate claim. Next wait for complete candidate/public results;
+c5 transaction/owner snapshot coverage plan recorded NOT STARTED.
+
+## 10 October 2026 — Studio review archive release preparation in progress
+
+Exact 8780a07b92654a9d2649b8b6518d609a9b431adb pinned on codex/studio-phase2;
+backed-up combined deployment running. Backup atlas-pre-deploy-20261010-003320;
+local log /tmp/atlas-studio-review-archive-deploy.txt. Candidate/public SQL archive
+checks not confirmed yet; production previously verified 1646316 Settings. No
+Phase 2 completion or public preview/designer claim. Next inspect exact candidate
+result, fix any real failure on a new pin, then confirm public revision and proof.
+
 ## 10 October 2026 — Integrated Studio archive candidate source checked
 
 Preserved exact accepted Settings 1646316 with all six release modes; combined

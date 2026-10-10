@@ -1,3 +1,14 @@
+## 10 October 2026 — Shared transactions are explicit query opt-ins
+
+Owner migration snapshots require a query that shares the server's short Prisma
+transaction with metadata observations. Add an explicit required-transaction
+query descriptor and registry method; ordinary calls reject it, while transactional
+calls reject commands and old queries without the opt-in. Keep old descriptor
+JSON/hashes unchanged. This supplies the active Phase 2 atomic-read dependency
+without a second command/execution engine or an idempotency bypass. The owner
+rechecks native/source/tenant scope inside that transaction; server collection
+still refreshes principal and field policies. No client transaction input is added.
+
 ## 10 October 2026 — Field review archive precedes executable migration
 
 Use a frozen preparation intent and same-operation immutable review plus immutable

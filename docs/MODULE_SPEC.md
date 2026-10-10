@@ -287,3 +287,13 @@ nested/cyclic consolidation. Retain source routes, record identity, capabilities
 audit, providers and exports. Shared workspace layouts must enforce their original
 source guards. Manufacturing & Supply includes Planning, Inventory and Products;
 companies without console access retain their existing licensed entry points.
+
+
+A Studio query may explicitly declare `transaction: "required"` when its owner
+must share the caller's server-owned Prisma transaction for an atomic snapshot.
+Core invokes these only through `invokeQueryInTransaction`; ordinary invocation
+rejects. Existing queries do not opt in implicitly, and this entry point cannot
+execute commands or bypass command idempotency. The owner still checks native
+permissions, tenant scope and module availability inside the supplied transaction.
+The option is a pinned contract change; publish a new descriptor/version instead
+of changing a sealed old contract. It adds no field conversion authority.

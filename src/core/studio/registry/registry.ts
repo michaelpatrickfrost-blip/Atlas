@@ -82,8 +82,18 @@ export class CapabilityRegistry {
     const m = await this.resolve(session, reference);
     const run = this.items.get(`${m.id}@${m.version}`)!.run;
     if (!run) throw new Error("This Studio contract is descriptive, not executable.");
+    if (m.kind === "query" && m.details.transaction === "required") throw new Error("This owner query requires a shared server transaction.");
     if (m.kind === "command" && m.details.idempotency === "required" && !idempotencyKey?.trim()) throw new Error("This command requires an idempotency key.");
     return run({ session, idempotencyKey }, input);
+  }
+  /** Server-owned transaction only; old queries and commands do not implicitly opt in. */
+  async invokeQueryInTransaction(context: RecordContext, reference: ContractReference, input: unknown): Promise<unknown> {
+    const m = await this.resolve(context.session, reference);
+    if (!context.transaction || m.kind !== "query" || m.details.transaction !== "required")
+      throw new Error("Only an opted-in owner query may use a shared server transaction.");
+    const run = this.items.get(`${m.id}@${m.version}`)!.run;
+    if (!run) throw new Error("This Studio query is unavailable.");
+    return run({ session: context.session, transaction: context.transaction }, input);
   }
   /** Owner access only. This does not update native fields or execute a domain command. */
   async authoriseRecord(context: RecordContext, reference: ContractReference, input: unknown): Promise<RecordAnchor> {

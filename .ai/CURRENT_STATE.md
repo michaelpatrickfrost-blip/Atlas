@@ -1,26 +1,32 @@
 # Atlas current state
 
-## 10 October 2026 — Compact Apps popup and polished header
+## 10 October 2026 — Compact Apps popup and polished header live
 
-Latest user steering requires every app visible without scrolling and a slimmer
-header. AppMenu now up to 900px wide; AppDirectory uses four desktop/three tablet/
-three phone columns, compact labels/icons/28–36px links, no internal scrolling.
-Phone popup clears the full header. Workspace header 60px desktop/96px phone,
-36px Apps/company/back controls and 40px search. Home directory unchanged.
-Design docs/decision supersede earlier wide-menu and initial scrolling directions.
+Activated 1bf0e2c1c69803906ac087ce6ba634fe6033c365 at atlassystem.online;
+previous 845456e retained. Preserves accepted Studio and Tasks releases.
+All authorised destinations fit together without scrolling: up to 900px popup,
+four desktop/three tablet/three phone columns; phone links text-only. Workspace
+header 60px desktop/96px phone, restrained Apps/company/back/search controls.
+Server-side app/tenant/capability filtering and existing dismissal retained.
 Paths: shell app-menu/app-directory/topbar/command-palette/workspace-back,
-globals.css, Home acceptance checker, design docs/shared decisions.
-Checks: corrected production build, scoped ESLint (zero errors/two existing image
-warnings), diff PASS. Existing checker asserts no panel overflow, all authorised
-links, responsive fit, anchoring, dismissal and navigation. Public checks pending.
-Preserved concurrent live Studio 74fab2d. Prior candidate passed popup dimensions/
-Escape/all links then caught phone search overlap; corrected. Later preparation
-failed with VPS disk full; live unchanged. Reclaimed only this task's inactive candidate .next/node_modules and npm download
-cache under both original locks; source/backups/live/previous retained. Desktop/
-tablet no-scroll candidate PASS; phone two-column overflow reproduced. Three-column
-phone correction read-only diagnostic: all 33 authorised links, 390px/320px fit
-without scrolling (461/479px popup heights); 320px screenshot visually inspected.
-Corrected production build/scoped lint/diff PASS; final pinned acceptance pending.
+globals.css, Home checker, design docs and shared decisions.
+Checks: integrated production build, strict npx tsc --noEmit, scoped lint (0 errors,
+2 existing image warnings), diff PASS. Candidate AND public locked Home/Apps and
+Settings acceptance PASS at exact SHA: every authorised link, no panel scrolling,
+viewport bounds at 1448/820/390/320px, Escape focus, outside click/search and link
+navigation. Final desktop/320px candidate screenshots visually inspected.
+Backup atlas-pre-deploy-20261010-070522; final candidate Settings evidence
+/tmp/atlas-settings-candidate-UVN2e9,
+public /tmp/atlas-settings-public-yQRuV9. Final Home evidence
+/tmp/atlas-home-menu-check-XMN56E (candidate), /tmp/atlas-home-menu-check-45G5D5
+(public); local log /tmp/atlas-compact-popup-deploy-6.log.
+Earlier candidates caught phone search overlap/two-column overflow or ENOSPC;
+none activated. Reclaimed only this task's stopped-candidate generated output
+and npm cache under both release locks; source/backups/accepted runtimes retained.
+Initial local dependency/generated-client/typecheck failures resolved; no schema,
+records, permissions or local business cache changes. No live-feature blocker.
+Source/evidence committed on codex/compact-app-popup. Shared Desktop main contains
+concurrent dirty work; integration must preserve it rather than overwrite files.
 
 ## 10 October 2026 — Tasks capacity retry with smaller temporary swap
 

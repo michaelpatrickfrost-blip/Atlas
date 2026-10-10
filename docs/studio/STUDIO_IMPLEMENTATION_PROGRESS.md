@@ -62,6 +62,20 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 # Current Workstream Detail
 
+2B3d1 IMPLEMENTED/local VERIFIED pure contract: exact sealed review and immutable
+target tenant/definition/payload/plan/checksum/generation plus initiating publisher
+pin, no privileges/activation. Invalid rows require source resolution/new review;
+reviewed conversion loss needs explicit recorded acknowledgement. Four files/23
+assertions, production build, strict post-build TypeScript/scoped lint PASS. Logs
+/tmp/atlas-studio-publication-contract-{tests,build,postbuild-types,lint}.txt.
+No DDL or publication runtime. Reviewed target receipt/DB guards d2 next.
+32ee77e full candidate combined PASS; public wXodWM running, fixture 024724;
+accepted prior fc9b80f retained, no complete public claim yet. Phase 2 NOT PASSED.
+
+2B3d1 plan saved before code: pure closed publication integrity pin then separate
+additive receipt/shared publisher service/actual proof. Reference candidate feature
+PASS (izKehB); full native/public pending, no global VERIFIED claim.
+
 c4 helper IMPLEMENTED, actual NOT RUN: good approved closed native target read
 plus active-parent extend, real collector and existing shared SQL–Node seal/Audit
 rollback/replay helper, private queue revocation/recovery. Missing/foreign stored
@@ -343,6 +357,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+d1: migrations/publication-contract.ts and focused publication-contract tests,
+plan/ledger/state/decisions. Pure pin only.
+
 c4: check-field-reference-sealing.ts, principal driver/shared sealing checker;
 plan/ledger/CURRENT_STATE. No permanent schema changes.
 
@@ -490,6 +507,8 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+d1 four files/23 assertions, build/strict post-build TS/scoped lint/diff PASS.
 
 c4 build, strict post-build TypeScript/scoped lint/diff PASS; actual not run.
 
@@ -707,10 +726,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Pin the reviewed c1–c4 commit on codex/studio-phase2; run ATLAS_RELEASE_ACCEPTANCE=
-studio through full candidate and public suites under original locks/backups.
-Require real reference collector/seal/Audit rollback/replay/private/missing/foreign
-proof plus native compatibility, exit 0 and exact /api/health/release SHA before
-VERIFIED. If failure, retain production and repair only observed cause. After
-acceptance begin 2B3d reviewed target publication design/typed contract against
-existing metadata/binding/SQL guards; no cutover or later-phase work yet.
+Finish monitoring 32ee77e complete public suite and exit/health before reference
+c1–c4 VERIFIED. Next 2B3d2 additive publication receipt, tenant/review/target FKs,
+immutable identity/CAS cancellation, open-operation field freeze and pending target
+generation activation/draft guards. No target values/row executor/cutover. Validate
+Prisma/generate/types/build and real central constraints in a pinned candidate
+with d3 shared publisher service before applying/claiming runtime verification.

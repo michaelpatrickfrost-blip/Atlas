@@ -1759,3 +1759,15 @@ and their pinned owning-domain reference_coverage query under the same Serializa
 transaction before aggregate/CAS/Audit, including replay. The query returns only
 scoped coverage truth and cannot grant permission from metadata or classify hidden
 targets as authorised failures. No publication/cutover authority comes from review.
+
+
+## 10 October 2026 — Publication does not activate a converted generation
+
+Reviewed field publication uses exact sealed target identity and existing metadata
+publication, with a durable scoped receipt next; source stays active until explicit
+validated cutover. Unresolved invalid preview rows must be corrected/reviewed again
+before target publication, while conversion loss requires explicit acknowledgement.
+This satisfies safe preview/publish/migrate without exposing a new generation as
+ready data or treating a checksum as authority. Publication/freeze SQL guards are
+additive; native business operations remain under their owning domains. No second
+publisher, workflow engine or permission system.

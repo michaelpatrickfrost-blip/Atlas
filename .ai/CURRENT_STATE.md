@@ -1,5 +1,25 @@
 # Atlas current state
 
+## 10 October 2026 — Reviewed publication integrity contract locally checked
+
+2B3d1 IMPLEMENTED/local VERIFIED pure contract: exact sealed review and immutable
+target tenant/definition/payload/plan/checksum/generation plus initiating publisher
+pin, no privileges/activation. Invalid rows require source resolution/new review;
+reviewed conversion loss needs explicit recorded acknowledgement. Four files/23
+assertions, production build, strict post-build TypeScript/scoped lint PASS. Logs
+/tmp/atlas-studio-publication-contract-{tests,build,postbuild-types,lint}.txt.
+No DDL or publication runtime. Reviewed target receipt/DB guards d2 next.
+32ee77e full candidate combined PASS; public wXodWM running, fixture 024724;
+accepted prior fc9b80f retained, no complete public claim yet. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Reference candidate feature proof passed; publication plan
+
+32ee77e candidate actual reference/source/seal/Audit/replay/private/missing/foreign
+proof PASS in izKehB (backup 024145, fixture 024333); full combined native/public
+pending, accepted live fc9b80f. Saved 2B3d workstreams before code: pure integrity
+pin, additive receipt/pending-generation guards, reuse publisher, real acceptance.
+No source activation/row execution/cutover yet; Phase 2 NOT PASSED.
+
 ## 10 October 2026 — Actual reference proof ready for pinned release
 
 c4 helper IMPLEMENTED, actual NOT RUN: good approved closed native target read

@@ -592,3 +592,42 @@ Checks: c3 scoped 21 files/136 assertions retained; c4 production build, strict
 post-build TypeScript, scoped lint/diff PASS, /tmp/atlas-studio-reference-proof-
 {build,postbuild-types,lint}.txt. Pin c1–c4 through full candidate/public combined
 suite next; fc9b80f accepted current. Phase 2 NOT PASSED.
+
+
+## 2B3d — Reviewed target publication workstreams
+
+Purpose: publish the exact reviewed target as a new immutable version/generation,
+using the existing metadata publisher; leave the source active and readable.
+Dependencies: c3 sealed exact review and c4 actual reference/source/permission proof
+(candidate reference PASS on 32ee77e; full native/public acceptance still running).
+No row execution, cutover, value API or later-phase feature in publication work.
+
+| Workstream | Purpose / files | Database implications | Required verification | Status |
+| --- | --- | --- | --- | --- |
+| 2B3d1 | Closed reviewed publication pin; migrations/publication-contract and tests | None; pure integrity guard, never authority | Exact reviewed payload/plan/tenant/field/generation, initiating actor, explicit loss consent, invalid rows fail publication, no extra/client authority | VERIFIED locally, pure pin only |
+| 2B3d2 | Additive publication receipt and pending-generation guards; Prisma/SQL | Tenant/source/review/target FKs, immutable identity/CAS state, retained history; no backfill or reset | Real FK/immutable/freeze/activation denial, old runtime/schema compatibility | NOT STARTED |
+| 2B3d3 | Extract existing publisher transaction helper; guarded reviewed service, binding and tests | Atomic target/version/generation/receipt/Audit; old schemas/source active | Fresh source/draft/cohort/ref/actor, idempotent retry, lost CAS/Audit rollback, ordinary structural publish remains denied | NOT STARTED |
+| 2B3d4 | Actual central lifecycle helper and complete pinned release | Only exact Test fixtures; central additive migration | Source remains active, no target values or premature activation, exact reviewed target, audit/history/tenant/source/private/stale regressions | NOT STARTED |
+
+Publication must not silently weaken atlas_studio_migration_fresh after metadata
+revision/base changes. A durable reviewed publication receipt will bind that exact
+transition; later execution validates immutable source/target and its own state.
+Normal activateVersion must reject any pending target generation, including a
+cosmetic descendant. Ordinary saves into source/target of an open migration must
+be frozen on the server; normal native business operations retain owner control.
+Use one publisher/Audit engine and additive receipts, not a second metadata system.
+Invalid review rows must be resolved and collected again before target publication;
+lossy conversions require explicit acknowledgement recorded in the publication.
+No receipt/hash can replace refreshed actor/module/field/native/reference policy.
+
+
+
+2B3d1 IMPLEMENTED/local VERIFIED pure contract: exact sealed review and immutable
+target tenant/definition/payload/plan/checksum/generation plus initiating publisher
+pin, no privileges/activation. Invalid rows require source resolution/new review;
+reviewed conversion loss needs explicit recorded acknowledgement. Four files/23
+assertions, production build, strict post-build TypeScript/scoped lint PASS. Logs
+/tmp/atlas-studio-publication-contract-{tests,build,postbuild-types,lint}.txt.
+No DDL or publication runtime. Reviewed target receipt/DB guards d2 next.
+32ee77e full candidate combined PASS; public wXodWM running, fixture 024724;
+accepted prior fc9b80f retained, no complete public claim yet. Phase 2 NOT PASSED.

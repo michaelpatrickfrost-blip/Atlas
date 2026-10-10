@@ -1,3 +1,66 @@
+## 11 October 2026 — Shared metadata/input inspection VERIFIED live
+
+Live a99b75b70c358a4878c265b2decc999f0c156639; original runner32194 exit0.
+Candidate reVg0w/public oiTds0 ALL COMBINED PASS. Actual canonical field/native/
+required-result/creation/runtime/history/tenant/Audit rollback plus separate Admin,
+existing Sales/Templates/Manufacturing/Dashboards/Home/Settings/Reports/MRP/Messages/
+Commercial/People checks passed. Exact candidate readonly metadata1938 PASS:
+unchanged v1 compilation, actual copied-session conditional denial before queries;
+no DB/files/business values. Public health exacta99b75b, login200, Atlas active.
+Previous41e9432 retained. Original retention under both locks retired duplicate
+f83e889 runtime only; source/static/evidence/private records/business backups kept.
+Root166GiB free/15%. Required UTC10Oct pre-release234721/candidate234857/public235312
+fixture backups only; no ad-hoc dumps or extra source copies.
+
+Internal owner protocol e2b1 VERIFIED live41e9432. Shared metadata e2b2 and authorised
+input extraction e2b3a VERIFIED for their internal/runtime/compatibility scope:53/6
+migration/source +38/3 runtime/result/creation unique focused cases, final strict
+TS32804/scoped lint46206/build39766/diff PASS. No DDL/Prisma/schema/migrations/
+backfills/native hooks or v2 authoring/persistence. No full baseline suite/lint repeat.
+Legacy engine/parser/hash/receipt and ordinary revision-envelope meaning preserved.
+Source/target actual conditional migration review/execution remains unfinished.
+Visual draft28243b7 preserved untested/unreleased; foundation-first order unchanged.
+
+Current Phase2 IN PROGRESS. Current workstream e2b3b real per-row requirement
+inspection — NOT STARTED; concrete b–e plan/files/DB/tests recorded in required-rules
+plan. Exact next: implement `inspectRequiredFieldMigrationRecord` in the existing
+migration observation layer using the shared full metadata compiler and authorised
+input/value readers. Enforce genuine current principal/tenant/native/current/pinned/
+written/reference rights, evaluate actual source and compiled-target requirements,
+classify decoded/converted null and empty multi-selection as absent (false/zero are
+present), archive semantic checksums/references only and retain separate native/global
+revision envelopes. Keep v1 entry closed; focused denial/drift/presence tests. Then
+stored-intent2 selection/additive SQL guards and owner callbacks implementing both
+formats1/2/retained legacy coverage. No conditional authoring before e3/d4/d5 gates.
+Files delivered: registry owner-protocol types/schema/registration; migration metadata
+and legacy policy/call-site checks; required-inputs/runtime; focused owner/metadata/
+required-runtime suites; architecture/module/decision/plan/current/ledger memory.
+Whole Phase2 gate NOT PASSED; no Phase3 work. No external blocker introduced.
+
+## 11 October 2026 — New-current-owner legacy compatibility prerequisite
+
+Source-confirmed: v2 intents require a conditional payload, so a future native9
+format2-only migration policy would strand v1-only evolution; latest settlement2
+format2-only would strand retained legacy history because no fallback is intentional.
+Record e2b3d requirement for actual callbacks supporting both trusted formats1/2,
+old native5 settlement coverage plus new targets and explicit legacy creation/
+candidate coverage. No new callbacks/owner/ranges implemented or activated.
+Shared a99b75b release32194 remains pinned; candidate Studio checks PASS, combined/
+public pending. Exact next remains final release proof then real per-row e2b3b.
+
+## 11 October 2026 — Shared inspection release pinned; next row blocks recorded
+
+Pinned a99b75b70c358a4878c265b2decc999f0c156639 original runner32194 running.
+Candidate reVg0w started; readonly exact candidate metadata1938 PASS (unchanged
+v1 compilation and actual copied-session conditional denial before tx queries),
+no DB/files/values. Shared local checks53/6 +38/3, final TS/lint/build/diff PASS.
+Concrete e2b3b–e row/evidence/persistence/owner/central-proof blocks recorded in
+STUDIO_FIELD_REQUIRED_RULES_PLAN.md with dependencies/files/DB/tests/status.
+No new row/SQL/owner/authoring implementation started. Exact next: finish original
+candidate/public release without moving HEAD, save actual proof, then e2b3b real
+source/compiled-target per-row required/presence/semantic inspection using shared
+reader and genuine authority. Preserve exact original/own-outcome revision lineage.
+
 ## 11 October 2026 — Owner live VERIFIED; shared inspection VERIFIED locally
 
 Original pinned41e94326a7dda0c04cb94a99e0bed41bc647eb3c runner79926 exit0.

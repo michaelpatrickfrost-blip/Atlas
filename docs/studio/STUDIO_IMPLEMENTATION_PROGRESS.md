@@ -11,6 +11,47 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
+e2b3b real per-row requirement inspection — NOT STARTED. e2b1 VERIFIED live41e9432; shared metadata e2b2/input e2b3a VERIFIED livea99b75b for internal/runtime scope.
+Live a99b75b70c358a4878c265b2decc999f0c156639; original runner32194 exit0.
+Candidate reVg0w/public oiTds0 ALL COMBINED PASS. Actual canonical field/native/
+required-result/creation/runtime/history/tenant/Audit rollback plus separate Admin,
+existing Sales/Templates/Manufacturing/Dashboards/Home/Settings/Reports/MRP/Messages/
+Commercial/People checks passed. Exact candidate readonly metadata1938 PASS:
+unchanged v1 compilation, actual copied-session conditional denial before queries;
+no DB/files/business values. Public health exacta99b75b, login200, Atlas active.
+Previous41e9432 retained. Original retention under both locks retired duplicate
+f83e889 runtime only; source/static/evidence/private records/business backups kept.
+Root166GiB free/15%. Required UTC10Oct pre-release234721/candidate234857/public235312
+fixture backups only; no ad-hoc dumps or extra source copies.
+
+Internal owner protocol e2b1 VERIFIED live41e9432. Shared metadata e2b2 and authorised
+input extraction e2b3a VERIFIED for their internal/runtime/compatibility scope:53/6
+migration/source +38/3 runtime/result/creation unique focused cases, final strict
+TS32804/scoped lint46206/build39766/diff PASS. No DDL/Prisma/schema/migrations/
+backfills/native hooks or v2 authoring/persistence. No full baseline suite/lint repeat.
+Legacy engine/parser/hash/receipt and ordinary revision-envelope meaning preserved.
+Source/target actual conditional migration review/execution remains unfinished.
+Visual draft28243b7 preserved untested/unreleased; foundation-first order unchanged.
+
+Current Phase2 IN PROGRESS. Current workstream e2b3b real per-row requirement
+inspection — NOT STARTED; concrete b–e plan/files/DB/tests recorded in required-rules
+plan. Exact next: implement `inspectRequiredFieldMigrationRecord` in the existing
+migration observation layer using the shared full metadata compiler and authorised
+input/value readers. Enforce genuine current principal/tenant/native/current/pinned/
+written/reference rights, evaluate actual source and compiled-target requirements,
+classify decoded/converted null and empty multi-selection as absent (false/zero are
+present), archive semantic checksums/references only and retain separate native/global
+revision envelopes. Keep v1 entry closed; focused denial/drift/presence tests. Then
+stored-intent2 selection/additive SQL guards and owner callbacks implementing both
+formats1/2/retained legacy coverage. No conditional authoring before e3/d4/d5 gates.
+Files delivered: registry owner-protocol types/schema/registration; migration metadata
+and legacy policy/call-site checks; required-inputs/runtime; focused owner/metadata/
+required-runtime suites; architecture/module/decision/plan/current/ledger memory.
+Whole Phase2 gate NOT PASSED; no Phase3 work. No external blocker introduced.
+
+
+Live verification of e2b2/3a pinned a99b75b original32194 — IN PROGRESS; local checks VERIFIED, candidate readonly metadata1938 PASS. Concrete next e2b3b–e blocks recorded in required-rules plan; no later phase or conditional authoring started.
+
 d3e2b2 metadata + d3e2b3a shared authorised input inspection — VERIFIED locally. Owner e2b1 VERIFIED live41e9432. Next pinned shared-inspection release; no Phase2 gate PASS.
 Original pinned41e94326a7dda0c04cb94a99e0bed41bc647eb3c runner79926 exit0.
 CandidatehbS16y/publicShi5mu ALL COMBINED PASS, including actual ordinary/native/
@@ -196,6 +237,8 @@ F4a VERIFIED locally (adfc357); strict TS/build/scoped lint,18 focused and45 fil
 candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
+
+11Oct latest: Phase2 IN PROGRESS. Owner protocol + shared metadata/input components verified livea99b75b; actual conditional migration persistence/execution/writer safety/native hooks/forms/record types/pages/visual designer remain. No Phase3 work or wholePhase2 PASS.
 
 ## 10 October 2026 — e1/e2a release compatibility and pure runtime VERIFIED
 
@@ -607,6 +650,8 @@ Authoritative ten-phase source preserved unchanged at docs/studio/ATLAS_STUDIO_S
 body/table paragraphs/footer read. Michael authorised source sequence on9 October.
 
 # Completed Workstreams
+
+11Oct e2b1/2/3a VERIFIED scoped foundations; livea99b75b original32194/candidate reVg0w/public oiTds0 ALL COMBINED PASS, readonly metadata1938 PASS. Not a complete conditional business migration.
 
 e2b1 VERIFIED live41e9432 original79926/candidate+public combined and readonly protocol PASS. e2b2 + e2b3a VERIFIED locally, pending next live release.
 
@@ -2776,6 +2821,8 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+11Oct completed owner/metadata/input blocks: NONE. No schema/DDL/backfill/native mutation.
+
 11Oct e2b2: NONE. No database migration applied or data/activation changed.
 
 11Oct e2b1: NONE. No migration applied, backfill, reset or business record change.
@@ -2851,6 +2898,8 @@ metadata tables/indexes/composite tenant foreign keys/constraints/guards. No exi
 business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
+
+11Oct blocks: NONE. Original pre-release/fixture recovery backups only; no ad-hoc dumps.
 
 11Oct owner/shared inspection: NONE; no Prisma/DDL/backfill/reset.
 
@@ -2990,6 +3039,8 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+Latest a99b75b original32194 exit0; candidate/public ALL COMBINED PASS; exact metadata runtime1938 PASS. Local53/6 +38/3, final TS32804/scoped lint46206/build39766/diff PASS.
 
 Owner79926 candidatehbS16y/publicShi5mu ALL COMBINED PASS; protocol85450 PASS. Shared inspection53/6 +38/3 focused PASS; final TS32804/scoped lint46206/build39766/diff PASS.
 
@@ -3179,6 +3230,8 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
+Owner approval, shared full metadata compiler and authorised input reader VERIFIED for documented internal/runtime/compatibility scope. Actual v2 review persistence/conversion/execution and full Phase2 not delivered.
+
 Owner e2b1 VERIFIED live41e9432; metadata/input scope VERIFIED locally. Actual conditional migration persistence/execution and whole Phase2 remain unfinished.
 
 11Oct e2b1 VERIFIED locally only. Server release/compatibility and real v2 migration inspection/persistence remain pending.
@@ -3354,6 +3407,8 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
+Current Phase2 remains open: actual conditional migration row review/persistence and execution/lock/runtime/visual gates are not delivered. Future native9/current settlement callback must support both formats1/2 (v2 intent cannot accept all-v1 pairs; newest policy does not fall back). No new current owner/callback activated; live legacy operations remain covered by existing policies.
+
 No active d3d release blocker. v2 persistence/owner approval/execution/cutover/settlement/native hooks remain gated; pure packet integrity grants no coverage/permission. Visual draft saved and unverified.
 
 10 October2026: d3d authoring integration remains gated on d3e/d4 native enforcement/common locks/initial writer/window. Central probe pending; no visual designer implemented.
@@ -3436,6 +3491,8 @@ No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
 
+Phase0/1 PASS retained; Phase2 IN PROGRESS, gate NOT PASSED. e2b1/2/3a scoped gates checked live; e2b3b–e/e3/d4/d5 and remaining2B/C/D/E/F still required.
+
 Phase2 IN PROGRESS; e2b1 local contract block checked, no wholePhase2 PASS or conditional migration/visual completion.
 
 e1/e2a scoped gate PASS (pure32/4 + build/types/lint + exact-release runtime and
@@ -3493,6 +3550,12 @@ These checks derive from Sections 5–6, 14, 19, 25–28; no whole-system gate u
 prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
+
+CURRENT: implement inspectRequiredFieldMigrationRecord in the existing migration observation layer using shared metadata/input/value readers, genuine principal and owner protocol. Evaluate actual source/compiled-target requirements and decoded/converted presence, seal semantic evidence separately from exact native/global envelopes, keep closed v1 unchanged and test denial/drift/null/empty-multi/false/zero. Then trusted stored-intent2 selection/additive SQL guards and new callbacks covering both formats1/2/legacy history. No authoring dispatch before e3/d4/d5.
+
+CURRENT: finish pinned a99b75b original runner32194 candidate/public combined acceptance without moving HEAD; record health/revision/retention and save release proof. Then implement e2b3b actual source/compiled-target row requirement/presence/semantic-evidence inspection using shared metadata/input readers and genuine authority. New owner/settlement callbacks must preserve both formats1/2 and retained legacy coverage; no v2 authoring before e3/d4/d5.
+
+Historical next-action snapshots below are superseded by this current instruction.
 
 Commit/pin/release locally verified e2b2/3a shared metadata/input checkpoint with original Studio gates. Then e2b3b actual per-row source/compiled-target requirement/presence/semantic-evidence inspection using shared reader; e2b3c stored-intent2 selector and additive SQL guards/cohort/digest proof. Preserve revision envelopes and v1 receipts; no v2 authoring before e3/d4/d5.
 

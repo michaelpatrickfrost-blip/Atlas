@@ -529,3 +529,80 @@ Next: commit/pin/release this coherent shared inspection checkpoint under origin
 Studio gates. Then e2b3b actual source/compiled-target per-row required/presence/
 semantic-evidence inspection, followed by stored-intent2 selection and additive
 SQL guard/cohort/digest proof. e3/d4/d5 mandatory before v2 authoring; Phase2 open.
+
+### e2b3 remaining row/persistence blocks — 11 October recovery plan
+
+Shared metadata (e2b2) and input reader (e2b3a) are locally checked and pinned in
+a99b75b release32194. Exact candidate readonly metadata probe1938 PASS: unchanged
+legacy compilation, conditional copied-session denial before transaction queries;
+no DB/files/native facts/values. Do not move HEAD while this release runs.
+
+| Block | Purpose/dependencies | Expected files and database | Focused evidence | Status |
+| --- | --- | --- | --- | --- |
+| e2b3b | Real source and compiled-target per-row requirement evidence, using shared compiler/authorised reader and genuine migration authority | migrations/observation.ts plus shared version-aware source decoding/conversion helper; required-contracts.ts only if exact evidence semantics need clarification; no archive writes or DDL in this readonly block | Current/pinned/written/independent reference access before values; source/target rule meaning; actual null/empty-multi absent and false/zero present; native/global envelope mismatch; semantic evidence changes for actual input drift | NOT STARTED |
+| e2b3c | Server-loaded intent format selection and guarded persistence in the existing preparation/collection/coverage/archive engine; b first | preparation/collection/coverage/archive-digest/sealing + explicit stored-intent selector; additive SQL preparation/observation guard migration, preserve every old v1 branch/frame; existing JSON models, no reset/backfill | Closed version2 requirement shape/checksums/target-required failures, exact source refs, unknown versions/extra fields denied, full canonical count and deterministic version2 digest; retained v1 receipts unchanged | NOT STARTED |
+| e2b3d | Actual newly versioned owner callbacks and current field coverage, only after their implementation supports the new stored protocol | core/service-work/studio.ts; approved query4/representation2/settlement2 and native9 only with explicit tested legacy creation/candidate coverage; no native business mutations | Genuine Serializable/private preflight before IDs/counts; stored actual intent2 pins; correct source/target/reference ranges; old1–8/query ranges/hashes untouched; newest unsupported fails without fallback | NOT STARTED |
+| e2b3e | Complete real central Test review proof before e3 | existing Studio rollback-only fixture/harness, original required backup and release gates | Final/merged/unanchored/typed/empty canonical rows, denied/required/valid conversions, source/target metadata/value drift, tenant/private/session/permission denial, Audit rollback and exact unchanged native/typed/history snapshots | NOT STARTED |
+
+Conversion compatibility is not conditional validity. Do not infer presence from
+`isNull` alone; empty multi-selection is absent. Do not reconstruct business values
+from fingerprints, invent values or downgrade a required rule. Creation proof and
+normal Manage/Read remain separate. Equal semantic condition evidence does not
+waive native/global drift: only the original envelope or the exact retained own
+outcome increment can qualify at the existing engine's later execution/settlement
+checks. Conditional publication remains closed until e3/d4/d5 gates pass.
+
+### New current owner must retain legacy operations — source-confirmed prerequisite
+
+`sealRequiredFieldMigrationIntent` deliberately requires at least one conditional
+payload. Therefore a future latest native9 migration policy declaring only format2
+would strand ordinary v1-only field evolution on that native owner: the old service
+correctly rejects a format2-only policy, and an all-v1 pair cannot become a v2 intent.
+Likewise, newest settlement2 with only format2 would strand retained legacy1 history/
+rollback/finalization because current-owner selection intentionally never falls back.
+The real new callbacks must explicitly implement BOTH formats1/2 where needed,
+select solely from the trusted stored intent, retain old native5 settlement coverage
+alongside new targets and delegate retained v1 behavior unchanged. New current owner
+must cover actual legacy creation/candidate versions explicitly as already planned.
+Do not globally widen old arrays, reinterpret an old callback or switch current owner
+until these compatibility paths have positive tests. This is a recorded prerequisite
+for e2b3d, not a newly registered owner or implemented callback.
+
+## 11 October 2026 — Shared metadata/input inspection VERIFIED live
+
+Live a99b75b70c358a4878c265b2decc999f0c156639; original runner32194 exit0.
+Candidate reVg0w/public oiTds0 ALL COMBINED PASS. Actual canonical field/native/
+required-result/creation/runtime/history/tenant/Audit rollback plus separate Admin,
+existing Sales/Templates/Manufacturing/Dashboards/Home/Settings/Reports/MRP/Messages/
+Commercial/People checks passed. Exact candidate readonly metadata1938 PASS:
+unchanged v1 compilation, actual copied-session conditional denial before queries;
+no DB/files/business values. Public health exacta99b75b, login200, Atlas active.
+Previous41e9432 retained. Original retention under both locks retired duplicate
+f83e889 runtime only; source/static/evidence/private records/business backups kept.
+Root166GiB free/15%. Required UTC10Oct pre-release234721/candidate234857/public235312
+fixture backups only; no ad-hoc dumps or extra source copies.
+
+Internal owner protocol e2b1 VERIFIED live41e9432. Shared metadata e2b2 and authorised
+input extraction e2b3a VERIFIED for their internal/runtime/compatibility scope:53/6
+migration/source +38/3 runtime/result/creation unique focused cases, final strict
+TS32804/scoped lint46206/build39766/diff PASS. No DDL/Prisma/schema/migrations/
+backfills/native hooks or v2 authoring/persistence. No full baseline suite/lint repeat.
+Legacy engine/parser/hash/receipt and ordinary revision-envelope meaning preserved.
+Source/target actual conditional migration review/execution remains unfinished.
+Visual draft28243b7 preserved untested/unreleased; foundation-first order unchanged.
+
+Current Phase2 IN PROGRESS. Current workstream e2b3b real per-row requirement
+inspection — NOT STARTED; concrete b–e plan/files/DB/tests recorded in required-rules
+plan. Exact next: implement `inspectRequiredFieldMigrationRecord` in the existing
+migration observation layer using the shared full metadata compiler and authorised
+input/value readers. Enforce genuine current principal/tenant/native/current/pinned/
+written/reference rights, evaluate actual source and compiled-target requirements,
+classify decoded/converted null and empty multi-selection as absent (false/zero are
+present), archive semantic checksums/references only and retain separate native/global
+revision envelopes. Keep v1 entry closed; focused denial/drift/presence tests. Then
+stored-intent2 selection/additive SQL guards and owner callbacks implementing both
+formats1/2/retained legacy coverage. No conditional authoring before e3/d4/d5 gates.
+Files delivered: registry owner-protocol types/schema/registration; migration metadata
+and legacy policy/call-site checks; required-inputs/runtime; focused owner/metadata/
+required-runtime suites; architecture/module/decision/plan/current/ledger memory.
+Whole Phase2 gate NOT PASSED; no Phase3 work. No external blocker introduced.

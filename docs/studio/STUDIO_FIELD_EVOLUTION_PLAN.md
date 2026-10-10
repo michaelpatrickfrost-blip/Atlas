@@ -1161,7 +1161,8 @@ Phase 2 NOT PASSED; cutover and visual editor/dashboard/button work remains pend
 2B3e6 VERIFIED: 8d6eb9e full candidate/public combined PASS; final recovery release
 finished exit0. 2B3f1 VERIFIED on 080e4d7 complete candidate/public, eight focused/257 regression
 assertions/build/types/lint PASS. F2 VERIFIED on 5f5fce5 complete candidate/public, actual storage/deferred/isolation/
-history/source/native proof. F3a IN PROGRESS; f3b/f3c/f4/f5 NOT STARTED.
+history/source/native proof. F3a IMPLEMENTED, five helper tests/262 scoped assertions/build/types/lint PASS;
+real refactor proof pending next release. f3b/f3c/f4/f5 NOT STARTED.
 Source Sections 6.3–6.4 and 24: activation is separate, all conversions resolved,
 reads remain source-compatible until cutover, history is retained and rollback limits
 must be explicit. Actual existing activation is in definitions/service.ts; it owns

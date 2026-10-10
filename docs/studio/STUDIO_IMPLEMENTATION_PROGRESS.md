@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f3a — Shared activation transaction primitive — IN PROGRESS.
+2B3f3a — Shared activation transaction primitive — IMPLEMENTED; local checks PASS, live proof pending.
 2B3f2 VERIFIED on exact5f5fce5 complete candidate/public.
 2B3f1 VERIFIED on exact 080e4d7 complete candidate/public.
 2B3e6 VERIFIED on exact 8d6eb9e candidate/public.
@@ -72,8 +72,25 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 # Current Workstream Detail
 
+F3a IMPLEMENTED / VERIFIED locally: definitions/activation.ts extracts the existing
+compiler/checksum/generation-binding/source-module/CAS/activation-Audit transaction.
+Public activateVersion delegates with unchanged request/result, Serializable
+boundary and existing guards; scoped version identity and optional server source
+pointer CAS added. No receipt service, client hook or bypass. Five new helper tests,
+12 focused existing/new assertions,42 files/262 scoped assertions, production build,
+strict post-build types/scoped lint/diff PASS; /tmp/atlas-studio-activation-shared-
+{tests,regression,build,types,postbuild-types,lint}.txt. Actual refactor proof pending
+next full combined release. No schema or permission changes. Accepted 5f5fce5 retained.
+Also under both release locks reclaimed only f5bb914/8d6eb9e/64361cb superseded
+incremental compiler caches after ready/path/no-process checks. Current 5f5fce5 and
+rollback 080e4d7 excluded; all source/dependencies/server/static/readiness/records/
+backups/evidence retained. Inventory /opt/atlas-maintenance-backups/studio-superseded-
+compiler-cache-reclaim-20261010.txt; /tmp/atlas-studio-reclaim-superseded-cache.{sh,txt},
+exit 0. PostgreSQL online, 11G free. Next checkpoint then f3b current-authority cutover
+and receipt-derived fresh replay; honest rollback remains f4/2B4. Phase 2 NOT PASSED.
+
 5f5fce5535765066068eb0e21ecbad10fe745a50 complete candidate/public PASS;
-deploy81942 exit0, exact public health confirmed. Candidate J150ZK/public AZyW6v,
+deploy81942 exit 0, exact public health confirmed. Candidate J150ZK/public AZyW6v,
 backup052619/fixtures052817/053216; /tmp/atlas-studio-cutover-storage-deploy.txt.
 20261010060000 APPLIED and actual storage guard lifecycle VERIFIED: exact atomic
 triple tested then deliberately rolled back, standalone/tampered/foreign/stale/
@@ -122,7 +139,7 @@ old-source activation/draft/source saves denied. Not executed yet. Accepted 080e
 Checkpoint then full pinned candidate/public Studio proof; no f3 or Phase 2 gate yet.
 
 080e4d741e0e05d6c763a540900cc81b10b1147d complete candidate/public PASS;
-deploy session 67437 exit0, exact public health confirmed. Candidate AAnFme/public
+deploy session 67437 exit 0, exact public health confirmed. Candidate AAnFme/public
 SmVNla, backup 050933, fixtures 051132/051535; /tmp/atlas-studio-cutover-contract-
 deploy.txt. Exact pure cutover identity derives from actual owner-authorised READY
 rows while source stays active and normal target activation remains denied. All
@@ -159,7 +176,7 @@ Accepted live 8d6eb9e; checkpoint and deploy f1, then f2 additive receipt/atomic
 proof. Phase 2 NOT PASSED; visual/customer dashboard/button work still incomplete.
 
 8d6eb9e626ca91ee37a97e211e374e9c456fe8be full combined candidate/public PASS;
-deploy39964 exit0, exact public health confirmed. Candidate0GPKVw/publicCy0qcR,
+deploy39964 exit 0, exact public health confirmed. Candidate0GPKVw/publicCy0qcR,
 backup045515, fixtures045720/050126; /tmp/atlas-studio-postgres-recovery-deploy.txt.
 Actual RUNNING batch+failure-marker Audit rollback proved; all native suites passed.
 PostgreSQL recovery backup retained; no reset/restore/SQL repair. Prior f5bb914 kept.
@@ -1015,6 +1032,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+F3a: new definitions/activation.ts, existing definitions/service.ts delegates; new
+studio-activation.test.ts; field evolution plan/DECISIONS/CURRENT_STATE/ledger updated.
+No schema/client/generic action changes in this checkpoint.
+
 F2: schema, new 20261010060000 forward SQL, generated model metadata, private archive
 access test, new check-field-cutover-storage.ts and existing execution checker;
 field evolution plan/DATA_MODEL/DECISIONS/CURRENT_STATE/ledger updated.
@@ -1212,6 +1233,9 @@ and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
 
+F3a five helper cases: scoped CAS/Audit, missing/foreign/corrupt identity, mandatory
+field generation, disabled/stale source/pointer, propagated Audit failure.
+
 F2 extends generic metadata read/count denial; adds exact central rollback-only
 receipt/publication/pointer/storage/history guard checks (not yet executed).
 
@@ -1241,6 +1265,9 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+F3a:12 focused assertions,42 files/262 regression assertions, build/strict post-build
+TypeScript/scoped lint/diff PASS. Real public refactor proof pending next release.
 
 F2: schema/client/catalogue generation,41 files/257 assertions, build/strict post-build
 types/scoped lint/diff and central backed-up DDL rollback PASS; actual proof pending.
@@ -1481,12 +1508,12 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Extract existing activateVersion transaction into definitions/activation.ts with
-scoped immutable-version identity, compiler/checksum, binding, source-module count,
-definition CAS and existing activation Audit. Keep public service behaviour and
-error/results compatible; no bypass hook or native mutation. Add meaningful helper
-security/field-binding/CAS/Audit tests, run existing Studio/native regressions/build/
-types/lint, review/checkpoint docs. Then f3b current-authority receipt/cutover and
-fresh replay, f3c actual central proof. Accepted 5f5fce5; Phase 2 visual/customer dashboards/
-buttons remain incomplete. Before more server builds keep safe disposable cache
-capacity, preserving current 5f5fce5 and rollback 080e4d7 runtimes/source/records/backups.
+Checkpoint F3a shared activation helper/local 262 assertions/build/types/lint and
+superseded compiler-cache recovery. Implement f3b cutover service: refresh stored
+initiating authority, exact READY/review/publication/definition confirmation, create
+receipt, CAS PUBLISHED→CUTOVER, call shared activator with expected source pointer,
+paired activation/migration Audit, all atomic. Fresh replay derives its stage only
+from actual scoped retained receipt, reuses native/private/current/written/reference
+coverage and does not globally relax old source-active SQL. Add service/replay/Audit/
+revocation tests and actual central helper; full candidate/public proof before f4.
+Accepted 5f5fce5; no rollback/value API or visual/customer dashboard/buttons yet.

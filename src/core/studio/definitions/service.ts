@@ -11,6 +11,7 @@ import { compileDefinition, parseDefinitionPayload } from "../compiler";
 import { customFieldPayloadSchema } from "../fields/schema";
 import { assertFieldBinding, fieldDefinitionKey } from "../fields/binding";
 import { publishCompiledDefinitionInTransaction } from "./publication";
+import { activateCompiledVersionInTransaction } from "./activation";
 import { studioRegistry } from "../registry/runtime";
 import { checksum } from "../registry/contracts";
 const uuid = z.uuid();
@@ -102,16 +103,7 @@ export async function activateVersion(session: Session, input: unknown) {
   const version = await db.studioDefinitionVersion.findFirst({ where: { id: value.versionId, definitionId: value.definitionId, organisationId: session.organisationId }, include: { definition: { select: { kind: true } } } });
   if (!version) throw new Error("This Studio version is unavailable.");
   const compiled = await compileDefinition(session, version.definition.kind, version.payload, studioRegistry());
-  if (version.checksum !== checksum(version.compiledPlan) || version.checksum !== compiled.checksum) throw new Error("DEPENDENCY_BROKEN: published Studio plan changed or is incompatible");
-  return db.$transaction(async tx => {
-    if (compiled.plan.kind === "customField") await assertFieldBinding(tx, session, value.definitionId, compiled.plan.payload);
-    const modules = [...new Set(compiled.plan.dependencies.map(d => d.ownerModuleId))];
-    if (await tx.moduleState.count({ where: { organisationId: session.organisationId, moduleId: { in: modules }, enabled: true, entitled: true } }) !== modules.length) throw new Error("DEPENDENCY_BROKEN: source module unavailable");
-    const changed = await tx.studioDefinition.updateMany({ where: { id: value.definitionId, organisationId: session.organisationId, revision: value.revision, retiredAt: null }, data: { activeVersionId: version.id, revision: { increment: 1 } } });
-    if (changed.count !== 1) conflict();
-    await audit(session, "studio.definition.activated", value.definitionId, { versionId: version.id, version: version.version }, tx);
-    return { revision: value.revision + 1 };
-  }, { isolationLevel: "Serializable" });
+  return db.$transaction(tx => activateCompiledVersionInTransaction(tx, session, value.definitionId, value.revision, version, compiled), { isolationLevel: "Serializable" });
 }
 /** Read an active metadata plan; recheck owner availability and contracts every time. */
 export async function activeDefinition(session: Session, definitionId: string) {

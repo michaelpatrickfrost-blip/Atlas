@@ -1861,3 +1861,12 @@ current-authority activation, honest rollback and normal owner writes follow thr
 f3/f4/2B4. Existing publisher/activation primitives remain the platform engine.
 Receipt history is immutable at f2; guarded rollback requires a subsequent forward
 transition, never deletion or rewriting this applied migration.
+
+## 10 October 2026 — Existing activation is one shared Core transaction primitive
+
+Extract the existing immutable-plan checksum, tenant generation binding, source
+module availability, definition CAS and activation Audit into definitions/activation.
+Ordinary activateVersion delegates under its original Serializable boundary. The
+reviewed cutover service will use that same primitive with expected source-pointer
+CAS, never a callback or bypass of f2 storage/domain/current-authority guards. This
+preserves one metadata kernel and avoids a second activation/publishing engine.

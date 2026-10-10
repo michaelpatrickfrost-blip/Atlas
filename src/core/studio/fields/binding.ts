@@ -5,7 +5,7 @@ import { studioRegistry } from "../registry/runtime";
 import { entityDetailsSchema } from "../registry/entities";
 import { customFieldPayloadSchema, type CustomFieldPayload } from "./schema";
 
-export function fieldDefinitionKey(payload: CustomFieldPayload) {
+export function fieldDefinitionKey(payload: Pick<CustomFieldPayload, "entity" | "field">) {
   return `${payload.entity.id}.${payload.field.key}`;
 }
 

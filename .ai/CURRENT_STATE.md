@@ -1,3 +1,35 @@
+## 10 October 2026 —2B4d3c1 existing-record reader VERIFIED locally
+
+Transactional requirement reader now resolves every current/pinned source policy
+before business input reads, invokes only the approved owner fact query at exact
+native revision, and checks current/written field/native/reference policies and
+immutable slot/fingerprint integrity. Missing authorised value differs from
+unavailable/denied input. Unconditional required OR condition; no permission short
+circuit. Returns internal outcome/fingerprint, no raw facts. Shared versioned base/
+value primitives inspect v2 values without executing their private source rules;
+ordinary v1 gateways/checksums remain unchanged.8 new tests and34 focused assertions
+including old read/write suites PASS; production build, strict post-build TS,
+scoped lint/diff PASS. Initial TS exposed overly narrow key-helper input; generalized
+only its entity/field shape, no identity behavior changed. Broad regression not
+repeated per Michael; real central evidence/creation/staged coverage still d5/c2.
+Files required-runtime/runtime-read/binding, focused suite and plan/ledger/current/
+DECISIONS. No DDL/native hooks/publication. Live0925bb5 unchanged. Next c2: explicit
+current owner creation/fact policy for legacy fields, then validate real uncommitted
+resulting values under that opaque proof. Preserve create-only rights and all
+owning domain validation; no arbitrary supplied native facts or broad grants.
+
+## 10 October 2026 —2B4d3c1 transactional inputs IN PROGRESS
+
+765028e metadata checkpoint saved. Build existing-record requirement evaluation
+using shared versioned base-field/value integrity (ordinary v1 gateways unchanged),
+locked current/pinned/written source read/native/reference policies, exact native
+revision and approved owning fact query. Return internal outcome/fingerprint only;
+no raw facts, mutations, publishing or DDL. c2 staged and create-only native proof
+support remains separate; never borrow ordinary read/manage for a new record.
+Expected runtime-read shared primitives, required-runtime helper and focused tests.
+Do not repeat broad suites per small edit; focused data/security checks and full
+feature/phase gate remain mandatory. Live0925bb5 unchanged; visual2E still pending.
+
 ## 10 October 2026 —2B4d3b2 source metadata VERIFIED locally
 
 Internal genuine-principal Serializable provider now locks tenant root/source

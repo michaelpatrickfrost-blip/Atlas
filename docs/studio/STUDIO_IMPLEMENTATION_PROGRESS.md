@@ -11,6 +11,8 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
+2B4d3c1 transactional existing-record inputs — VERIFIED locally;34 focused/build/strict post-build TS/lint/diff PASS.
+
 2B4d3b2 locked source metadata/current graph — VERIFIED locally;25 focused assertions/types/lint/diff PASS.
 
 2B4d3b1 full isolated v2 field compiler — VERIFIED locally;71files446/build/strict post-build TS/lint/diff PASS.
@@ -45,6 +47,27 @@ F4a VERIFIED locally (adfc357); strict TS/build/scoped lint,18 focused and45 fil
 candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
+
+## 10 October 2026 —2B4d3c1 existing-record reader VERIFIED locally
+
+Transactional requirement reader now resolves every current/pinned source policy
+before business input reads, invokes only the approved owner fact query at exact
+native revision, and checks current/written field/native/reference policies and
+immutable slot/fingerprint integrity. Missing authorised value differs from
+unavailable/denied input. Unconditional required OR condition; no permission short
+circuit. Returns internal outcome/fingerprint, no raw facts. Shared versioned base/
+value primitives inspect v2 values without executing their private source rules;
+ordinary v1 gateways/checksums remain unchanged.8 new tests and34 focused assertions
+including old read/write suites PASS; production build, strict post-build TS,
+scoped lint/diff PASS. Initial TS exposed overly narrow key-helper input; generalized
+only its entity/field shape, no identity behavior changed. Broad regression not
+repeated per Michael; real central evidence/creation/staged coverage still d5/c2.
+Files required-runtime/runtime-read/binding, focused suite and plan/ledger/current/
+DECISIONS. No DDL/native hooks/publication. Live0925bb5 unchanged. Next c2: explicit
+current owner creation/fact policy for legacy fields, then validate real uncommitted
+resulting values under that opaque proof. Preserve create-only rights and all
+owning domain validation; no arbitrary supplied native facts or broad grants.
+
 
 ## 10 October 2026 —2B4d3b2 source metadata VERIFIED locally
 
@@ -224,6 +247,10 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 
 # Completed Workstreams
 
+d3c1 existing-record reader and shared versioned base/value primitives VERIFIED
+locally;34 focused/build/strict post-build TS/lint/diff PASS. Public v1 unchanged;
+no conditional publishing/native enforcement or actual central c1 proof yet.
+
 ## 10 October 2026 —2B4d3b2 source metadata VERIFIED locally
 
 Internal genuine-principal Serializable provider now locks tenant root/source
@@ -299,6 +326,40 @@ actual facts/create-only/native/Audit rollback proof, runner40775 exit0.
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+## 10 October 2026 —2B4d3c1 existing-record reader VERIFIED locally
+
+Transactional requirement reader now resolves every current/pinned source policy
+before business input reads, invokes only the approved owner fact query at exact
+native revision, and checks current/written field/native/reference policies and
+immutable slot/fingerprint integrity. Missing authorised value differs from
+unavailable/denied input. Unconditional required OR condition; no permission short
+circuit. Returns internal outcome/fingerprint, no raw facts. Shared versioned base/
+value primitives inspect v2 values without executing their private source rules;
+ordinary v1 gateways/checksums remain unchanged.8 new tests and34 focused assertions
+including old read/write suites PASS; production build, strict post-build TS,
+scoped lint/diff PASS. Initial TS exposed overly narrow key-helper input; generalized
+only its entity/field shape, no identity behavior changed. Broad regression not
+repeated per Michael; real central evidence/creation/staged coverage still d5/c2.
+Files required-runtime/runtime-read/binding, focused suite and plan/ledger/current/
+DECISIONS. No DDL/native hooks/publication. Live0925bb5 unchanged. Next c2: explicit
+current owner creation/fact policy for legacy fields, then validate real uncommitted
+resulting values under that opaque proof. Preserve create-only rights and all
+owning domain validation; no arbitrary supplied native facts or broad grants.
+
+
+## 10 October 2026 —2B4d3c1 transactional inputs IN PROGRESS
+
+765028e metadata checkpoint saved. Build existing-record requirement evaluation
+using shared versioned base-field/value integrity (ordinary v1 gateways unchanged),
+locked current/pinned/written source read/native/reference policies, exact native
+revision and approved owning fact query. Return internal outcome/fingerprint only;
+no raw facts, mutations, publishing or DDL. c2 staged and create-only native proof
+support remains separate; never borrow ordinary read/manage for a new record.
+Expected runtime-read shared primitives, required-runtime helper and focused tests.
+Do not repeat broad suites per small edit; focused data/security checks and full
+feature/phase gate remain mandatory. Live0925bb5 unchanged; visual2E still pending.
+
 
 ## 10 October 2026 —2B4d3b2 source metadata VERIFIED locally
 
@@ -1979,6 +2040,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+d3c1: runtime-read.ts, required-runtime.ts, binding.ts entity/field key signature;
+required-runtime focused suite, required plan/ledger/CURRENT_STATE/DECISIONS.
+
 Current d3b2: required-source.ts, sealed-field.ts, required-evaluator.ts; focused
 source suite; required plan, implementation ledger, CURRENT_STATE and DECISIONS.
 
@@ -2337,6 +2401,10 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+d3c1:34 focused assertions/4 suites (new required inputs + existing ordinary read/
+write + metadata provider), production build, strict post-build TS, scoped lint,
+diff PASS. No broad full regression/central proof yet; consolidated d5 gate.
 
 d3b2:25 focused assertions/3 suites PASS; npx tsc --noEmit exit0, scoped eslint
 exit0, git diff --check PASS. Broad regression/build deferred to coherent feature
@@ -2754,11 +2822,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint d3b2 source provider and memory, then implement d3c1 shared versioned
-base-field/value reading and existing-record conditional input evaluation in the
-caller-owned Serializable transaction. Authorise current/pinned/written/reference
-policy, require exact native revision and owner-approved fact query, never treat
-unavailable as absent. Preserve v1 ordinary gateway and separate value viewing
-from condition evaluation. d3c2 staged/new-record support then canonical required
-coverage/evolution/d4 native hooks/d5 central gate. No conditional publication yet.
-Continue2B operator forms/search,2C/D and mandatory visual2E, fullPhase2 gate. Live0925bb5.
+Checkpoint d3c1, then c2 current owner creation/fact policy covering approved old
+field entity versions, using the actual same-transaction INSERT proof without
+ordinary native read/manage grants. Validate actual uncommitted resulting values
+and all active requirements after staged domain/field writes rather than trusting
+supplied native facts. Keep initialisation separate from existing-record reads and
+independently authorise references. Canonical publication/evolution/native hook
+and central gates follow before conditional dispatch. Then2B forms/search,2C/D and
+mandatory visual2E; no Phase3 before fullPhase2 gate. Live0925bb5 unchanged.

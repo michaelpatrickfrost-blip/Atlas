@@ -77,7 +77,7 @@ record access or publication. Do not move the pinned release branch while it run
 | --- | --- | --- | --- | --- |
 | d3a | Evaluate bounded typed conditions and seal observed fact fingerprints; d1 contracts | required compiler plan schema + evaluator/tests; no DDL/data reads | all/any, false/zero/empty, literal precision, missing/unavailable/foreign fact shapes, no authorization short circuit, tampered plans | VERIFIED locally;70files440/build/strictpostbuildTS/lint/diff PASS, pure/unwired |
 | d3b | Sealed source metadata/current dependency closure and version-aware field compilation; d1/d2/d3a | required metadata provider/compiler/schema tests; no publication dispatch yet | Exact current+pinned tenant binding/generation/checksum/access, transitive cycles/bounds/cosmetic compatibility, sealed v1 preservation | VERIFIED locally; b1 full isolated compiler, b2 locked source provider/inspection;25 focused/types/lint/diff PASS, central gate pending |
-| d3c | Transactional fact/value reading and resulting requirements; d3a/b and d2 owner facts/proofs | required runtime reader + tests; no new datastore | Current/written/native/reference guards before values, staged changes, create-only new record proof, absence vs unavailable, deterministic locked reads | NOT STARTED |
+| d3c | Transactional fact/value reading and resulting requirements; d3a/b and d2 owner facts/proofs | required runtime reader + tests; no new datastore | Current/written/native/reference guards before values, staged changes, create-only new record proof, absence vs unavailable, deterministic locked reads | IN PROGRESS; c1 existing-record reader VERIFIED locally; c2 staged/create-only pending |
 | d3d | Required initial publication and activation coverage; d3b/c | definition lifecycle + existing canonical snapshot access; additive guards only if necessary | Complete canonical cohort incl final/unanchored; required coverage/unique/source/CAS/Audit; optional-populate-review path; no metadata principal impersonation | NOT STARTED |
 | d3e | Existing reviewed evolution/execution/settlement integration and impact; d3c/d | existing migration services/contracts + owner versioned policies; preserve old receipts | Native/global extension revisions capture input drift, new generations, dependent rule compatibility, target eligibility, source freeze/history/replay, rollback | NOT STARTED |
 
@@ -168,3 +168,20 @@ resulting values and genuine creation proof, with explicit current owner creatio
 fact policy/legacy version coverage where required. Actual native creation-only
 facts must not borrow ordinary read/manage grants. Neither reader activates rules;
 canonical publication/evolution coverage and d4 native hooks remain mandatory.
+
+### c1 verified; c2 actual resulting-state approach
+
+c1 new tests cover actual typed value decoding, read-only grants, authorised
+absence/false, no unconditional relaxation, stale/private native denial, malformed/
+foreign/missing native facts, written restrictions/fingerprints, source v2 private
+rule inputs not executed, independent references and client-data injection.34
+focused/build/strict post-build TS/lint/diff PASS; ordinary v1 readers/writer pass.
+
+For c2, prefer reading actual uncommitted domain and typed-value writes in the same
+owning Serializable transaction. Do not trust a caller's claimed native/staged fact
+map or create a second in-memory persistence engine. Conditional failure rolls back
+all staged rows/native/Audit/outbox changes. Actual creation needs a versioned
+current owner approval of legacy field versions and a distinct proof-bound native
+fact query with creation capability; never add ordinary read/manage grants. Newly
+published conditional fields must seal that initialization query as well as normal
+fact dependencies. Keep old v1–6 owner hashes and old migration ranges unchanged.

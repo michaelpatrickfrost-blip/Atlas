@@ -1,3 +1,16 @@
+## 10 October 2026 — Resulting requirements read actual transaction state
+
+Rule evaluation reads only owner-approved native facts and typed additional values
+in the owning Serializable transaction. Validate actual uncommitted changes rather
+than a client/caller supplied native fact map. No second persistence/staging engine.
+All current/pinned metadata policies resolve first; current/written record/field/
+reference access and exact revisions remain independent. Unconditional required
+cannot be relaxed by a false condition. Internal v2 value viewing inspects only
+its base policy/integrity, never executes its private condition inputs. Ordinary
+v1 gateways retain their closed version gate until complete native enforcement.
+Creation-only actors need an explicit current owner proof/fact path, not borrowed
+ordinary read/manage grants; c2 and native activation remain outstanding.
+
 ## 10 October 2026 — Rule dependencies follow current graphs and immutable value meaning
 
 Historical field version pins alone cannot prevent a current cycle: each source's

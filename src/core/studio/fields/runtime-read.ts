@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { Session } from "@/core/auth/session";
 import type { StudioDefinitionVersion, StudioFieldValue } from "@/generated/prisma/client";
-import { compileCustomFieldForRead } from "../compiler/fields";
+import { compileCustomFieldForRead, compileCustomFieldForInitialisation } from "../compiler/fields";
 import { checksum } from "../registry/contracts";
 import { assertFieldBinding, fieldDefinitionKey } from "./binding";
 import { decodeStoredFieldValue } from "./codec";
@@ -37,32 +37,44 @@ export async function readVersionedFieldPlanInTransaction(authority: FieldRuntim
   await assertFieldBinding(authority.transaction, authority.session, definitionId, base.payload);
   return payload;
 }
+export async function readInitialFieldPlanInTransaction(authority: FieldRuntimeAuthority, version: StudioDefinitionVersion, definitionId: string): Promise<FieldPayload> {
+  const plan = inspectSealedFieldVersion(authority.registry, version, authority.session.organisationId, definitionId), payload = plan.payload;
+  const base = await compileCustomFieldForInitialisation(authority.session, { schemaVersion: 1, entity: payload.entity, storageGeneration: payload.storageGeneration, field: payload.field }, authority.registry, "read");
+  await assertFieldBinding(authority.transaction, authority.session, definitionId, base.payload);
+  return payload;
+}
 
 /** Server-only resolver. Native access is checked before any extension/value
  * lookup; schema resolution never grants business-record or reference access. */
-async function readContext<P extends FieldPayload>(authority: FieldRuntimeAuthority, request: z.infer<typeof currentRequest> & { expectedRevision?: number }, history: boolean, reader: PlanReader<P>) {
+async function readContext<P extends FieldPayload>(authority: FieldRuntimeAuthority, request: z.infer<typeof currentRequest> & { expectedRevision?: number }, history: boolean, reader: PlanReader<P>, proof?: object) {
   const { session, transaction: tx, registry } = authority;
   await tx.$queryRaw`SELECT id FROM studio_definitions WHERE id=${request.definitionId}::uuid AND "organisationId"=${session.organisationId} FOR SHARE`;
   const definition = await tx.studioDefinition.findFirst({ where: { id: request.definitionId, organisationId: session.organisationId, kind: "customField", ...(history ? {} : { retiredAt: null }) }, include: { activeVersion: true } });
   if (!definition?.activeVersion) unavailable();
   const payload = await reader(authority, definition.activeVersion, definition.id);
   if (definition.key !== fieldDefinitionKey(payload)) corrupt();
-  const anchor = await registry.authoriseRecord({ session, transaction: tx }, payload.entity, { recordId: request.recordId, intent: "read" });
+  const anchor = proof ? await registry.authoriseCurrentFieldInitialisation({ session, transaction: tx }, payload.entity, proof)
+    : await registry.authoriseRecord({ session, transaction: tx }, payload.entity, { recordId: request.recordId, intent: "read" });
+  if (anchor.recordId !== request.recordId || anchor.organisationId !== session.organisationId) corrupt();
   if (request.expectedRevision !== undefined && anchor.revision !== request.expectedRevision) throw new Error("CONFLICT: this native record changed. Refresh before saving.");
   const extension = await tx.studioExtensionRecord.findFirst({ where: { organisationId: session.organisationId, entityId: payload.entity.id, recordId: request.recordId } });
   return { definition, payload, anchor, extension };
 }
 export const readFieldContextInTransaction = (authority: FieldRuntimeAuthority, request: z.infer<typeof currentRequest>, history: boolean) => readContext(authority, request, history, readFieldPlanInTransaction);
 export const readVersionedFieldContextInTransaction = (authority: FieldRuntimeAuthority, request: z.infer<typeof currentRequest> & { expectedRevision?: number }) => readContext(authority, request, false, readVersionedFieldPlanInTransaction);
+export const readInitialFieldContextInTransaction = (authority: FieldRuntimeAuthority, request: z.infer<typeof currentRequest> & { expectedRevision?: number }, proof: object) => readContext(authority, request, false, readInitialFieldPlanInTransaction, proof);
 
-async function readValue(authority: FieldRuntimeAuthority, current: FieldPayload, definitionId: string, generationId: string, slotId: string, recordId: string, row: WrittenValue, reader: PlanReader<FieldPayload>): Promise<FieldValue | null> {
+async function readValue(authority: FieldRuntimeAuthority, current: FieldPayload, definitionId: string, generationId: string, slotId: string, recordId: string, row: WrittenValue, reader: PlanReader<FieldPayload>, proof?: object): Promise<FieldValue | null> {
   if (row.organisationId !== authority.session.organisationId || row.definitionId !== definitionId || row.generationId !== generationId || row.slotId !== slotId
     || row.versionId !== row.schemaVersion.id || !Number.isSafeInteger(row.revision) || row.revision < 1) corrupt();
   const written = await reader(authority, row.schemaVersion, definitionId);
   if (written.entity.id !== current.entity.id || written.field.key !== current.field.key || written.storageGeneration !== generationId || written.field.storage.type !== row.valueType) corrupt();
   const context = { session: authority.session, transaction: authority.transaction };
   // An older written owner contract may impose independent current native access.
-  await authority.registry.authoriseRecord(context, written.entity, { recordId, intent: "read" });
+  if (proof) {
+    const anchor = await authority.registry.authoriseCurrentFieldInitialisation(context, written.entity, proof);
+    if (anchor.recordId !== recordId || anchor.organisationId !== authority.session.organisationId) corrupt();
+  } else await authority.registry.authoriseRecord(context, written.entity, { recordId, intent: "read" });
   const value = decodeStoredFieldValue(written.field, row);
   if (checksum(value) !== row.fingerprint) corrupt();
   if (value?.type === "reference") {
@@ -75,6 +87,7 @@ async function readValue(authority: FieldRuntimeAuthority, current: FieldPayload
 }
 export const readFieldValueInTransaction = (authority: FieldRuntimeAuthority, current: CustomFieldPayload, definitionId: string, generationId: string, slotId: string, recordId: string, row: WrittenValue) => readValue(authority, current, definitionId, generationId, slotId, recordId, row, readFieldPlanInTransaction);
 export const readVersionedFieldValueInTransaction = (authority: FieldRuntimeAuthority, current: FieldPayload, definitionId: string, generationId: string, slotId: string, recordId: string, row: WrittenValue) => readValue(authority, current, definitionId, generationId, slotId, recordId, row, readVersionedFieldPlanInTransaction);
+export const readInitialFieldValueInTransaction = (authority: FieldRuntimeAuthority, current: FieldPayload, definitionId: string, generationId: string, slotId: string, recordId: string, row: WrittenValue, proof: object) => readValue(authority, current, definitionId, generationId, slotId, recordId, row, readInitialFieldPlanInTransaction, proof);
 
 /** No client organisation, draft, schema or permission input; ordinary current
  * value follows the active generation. Retired/obsolete storage is never current. */

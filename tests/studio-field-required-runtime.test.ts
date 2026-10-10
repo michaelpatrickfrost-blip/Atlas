@@ -4,9 +4,9 @@ import { retainedCutoverFixture, cutoverUuid as uuid } from "./fixtures/studio-f
 import { compileCustomField } from "@/core/studio/compiler/fields";
 import { compileConditionalCustomField } from "@/core/studio/fields/conditional-compiler";
 import { registeredRequiredFactMetadata } from "@/core/studio/fields/required-owner";
-import { evaluateExistingFieldRequirement } from "@/core/studio/fields/required-runtime";
+import { evaluateExistingFieldRequirement, validateResultingFieldRequirements } from "@/core/studio/fields/required-runtime";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
-const m = vi.hoisted(() => ({ refresh: vi.fn(), raw: vi.fn(), definition: vi.fn(), version: vi.fn(), generation: vi.fn(), extension: vi.fn(), slot: vi.fn() }));
+const m = vi.hoisted(() => ({ refresh: vi.fn(), raw: vi.fn(), definition: vi.fn(), definitions: vi.fn(), version: vi.fn(), generation: vi.fn(), extension: vi.fn(), slot: vi.fn() }));
 vi.mock("@/core/studio/fields/runtime-authority", () => ({ fieldRuntimeAuthorityInTransaction: m.refresh }));
 let f: Awaited<ReturnType<typeof retainedCutoverFixture>>;
 let entity: typeof f.source.payload.entity;
@@ -15,7 +15,7 @@ let source: { version: StudioDefinitionVersion; payload: typeof f.source.payload
 const definitions = new Map<string, StudioDefinition & { activeVersion: StudioDefinitionVersion }>();
 const versions = new Map<string, StudioDefinitionVersion>();
 const rootId = uuid(90), sourceId = uuid(2), extensionId = uuid(20), slotId = uuid(30);
-const tx = { $queryRaw: m.raw, studioDefinition: { findFirst: m.definition }, studioDefinitionVersion: { findFirst: m.version },
+const tx = { $queryRaw: m.raw, studioDefinition: { findFirst: m.definition, findMany: m.definitions }, studioDefinitionVersion: { findFirst: m.version },
   studioFieldGeneration: { findFirst: m.generation }, studioExtensionRecord: { findFirst: m.extension }, studioFieldSlot: { findFirst: m.slot } } as unknown as Prisma.TransactionClient;
 const request = () => ({ definitionId: rootId, recordId: "native", expectedRevision: 7 });
 function stored(id: string, definitionId: string, compiled: Awaited<ReturnType<typeof compileCustomField>> | Awaited<ReturnType<typeof compileConditionalCustomField>>): StudioDefinitionVersion {
@@ -46,6 +46,7 @@ beforeEach(async () => {
     ...encodeFieldValue(compiled.payload.field, true), createdBy: "actor", createdAt: new Date(), schemaVersion: version };
   m.refresh.mockImplementation(async session => ({ session, registry: f.registry, transaction: tx })); m.raw.mockResolvedValue([]);
   m.definition.mockImplementation(async args => definitions.get(args.where.id) ?? null);
+  m.definitions.mockImplementation(async () => [...definitions.values()].sort((a, b) => a.id.localeCompare(b.id)));
   m.version.mockImplementation(async args => versions.get(args.where.id) ?? null);
   m.generation.mockImplementation(async args => ({ id: args.where.id }));
   m.extension.mockResolvedValue({ id: extensionId, revision: 4 });
@@ -56,6 +57,33 @@ beforeEach(async () => {
   });
   vi.spyOn(f.registry, "invokeQueryInTransaction").mockResolvedValue({ recordId: "native", organisationId: "company", revision: 7, fields: { status: "RESOLVED", priority: "NORMAL" } });
   await root();
+});
+it("validates all resulting requirements after staged native/typed changes, accepting zero as a present required value", async () => {
+  let target: typeof row | null = null;
+  m.slot.mockImplementation(async args => {
+    const value = args.where.definitionId === sourceId ? row : target;
+    return value ? { id: value.slotId, revision: value.revision, activeValueId: value.id, activeValue: value } : null;
+  });
+  const input = { entity, recordId: "native", expectedRevision: 7 };
+  await expect(validateResultingFieldRequirements(f.session, tx, input)).rejects.toThrow("Extra is required");
+  const version = definitions.get(rootId)!.activeVersion;
+  target = { ...row, id: uuid(41), definitionId: rootId, generationId: f.source.payload.storageGeneration, slotId: uuid(31),
+    versionId: version.id, ...encodeFieldValue(f.source.payload.field, 0), schemaVersion: version };
+  const filled = await validateResultingFieldRequirements(f.session, tx, input);
+  expect(filled).toMatchObject({ fieldsChecked: 2, recordRevision: 7, extensionRevision: 4 });
+  target = null; row = { ...row, ...encodeFieldValue(source.payload.field, false) }; m.extension.mockResolvedValue({ id: extensionId, revision: 5 });
+  const cleared = await validateResultingFieldRequirements(f.session, tx, input);
+  expect(cleared.fingerprint).not.toBe(filled.fingerprint);
+  expect(cleared).toMatchObject({ extensionRevision: 5 });
+});
+it("does not relax unconditional requirements and rejects changing global extension state during validation", async () => {
+  m.slot.mockImplementation(async args => args.where.definitionId === sourceId ? { id: slotId, revision: 1, activeValueId: row.id, activeValue: row } : null);
+  row = { ...row, ...encodeFieldValue(source.payload.field, false) }; await root(true);
+  const input = { entity, recordId: "native", expectedRevision: 7 };
+  await expect(validateResultingFieldRequirements(f.session, tx, input)).rejects.toThrow("Extra is required");
+  await root(false);
+  m.extension.mockResolvedValueOnce({ id: extensionId, revision: 4 }).mockResolvedValue({ id: extensionId, revision: 5 });
+  await expect(validateResultingFieldRequirements(f.session, tx, input)).rejects.toThrow("FIELD_REQUIREMENT_INVALID");
 });
 it("evaluates current owner facts and typed field values without field write or Studio authoring grants", async () => {
   const reader = { ...f.session, capabilities: new Set(["tickets.ticket.read"]) };

@@ -1,3 +1,38 @@
+## 10 October 2026 —2B4d3c2b resulting-state validator IMPLEMENTED locally
+
+Proof-aware metadata/base/value readers now use explicit newest-owner creation
+coverage without ordinary Read/Manage grants; current/pinned/written field policies
+and independent reference access remain. The internal validator reads actual native
+and typed rows in the owning Serializable transaction, checks every active required
+rule/target, preserves unconditional requirements and accepts false/zero as present.
+Optional unconditional private fields impose no unrelated value reads. Returns only
+internal revisions/fingerprint, no raw facts; no writer, native hook or publication.
+8 new focused cases;54 assertions/7 suites, production build, strict post-build TS,
+scoped lint/diff PASS. A changed-reference fixture initially left an obsolete pin;
+corrected its sealed rule, final checks PASS without production policy relaxation.
+Added exact guarded Test server probe: genuine read compilation before create-only
+rights, rollback-only v1/v2 metadata/typed rows, current v7/legacy creation coverage,
+missing/fill/false/clear states and actual deferred FK/current-pointer checks. A
+propagated required failure must roll back native/typed/configuration/Audit rows;
+all are compared with the original snapshot. Central probe NOT RUN yet; unit mocks
+do not prove SQL rollback. No DDL/extra data dump/local database. Live0925bb5 unchanged.
+Next review/checkpoint and pin consolidated c2 release, run candidate/public central
+proof, then d3d canonical publication/activation coverage. Shared native lock order,
+initial typed writes/rollback-window closure and d4 hooks remain mandatory. Visual2E
+NOT STARTED; complete remaining2B,2C/D then visual preview/publish before Phase2 gate.
+
+## 10 October 2026 —2B4d3c2b actual resulting-state validation IN PROGRESS
+
+4d9528e c2a checkpoint saved. Extend shared metadata/base/value readers with explicit
+current creation proof path, then validate all active requirements and required
+values from actual uncommitted native/typed rows. No caller-native facts, borrowed
+read/manage grants, nested transaction or new staging datastore. Independent field
+and reference permissions persist. Ordinary v1 gateways remain unchanged. Expected
+required-owner/source/runtime and shared read helpers, focused proof/result tests;
+no DDL/native hooks. Initial typed writer/window closure/common locks remain d4
+integration prerequisites. Exact next finish proof-aware evaluator/result validation
+and focused checks, then consolidated production build/central proof checkpoint.
+
 ## 10 October 2026 —2B4d3c2a creation contracts IMPLEMENTED
 
 Tickets v7 explicitly covers legacy field entity versions2–7 and adds a distinct

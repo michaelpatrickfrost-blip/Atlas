@@ -4,12 +4,12 @@ import type { Session } from "@/core/auth/session";
 import type { ContractReference } from "../registry/types";
 import { referenceSchema } from "../compiler/kernel";
 import { checksum } from "../registry/contracts";
-import { compileCustomFieldForRead } from "../compiler/fields";
+import { compileCustomFieldForRead, compileCustomFieldForInitialisation } from "../compiler/fields";
 import { fieldRuntimeAuthorityInTransaction } from "./runtime-authority";
 import { inspectSealedFieldVersion } from "./sealed-field";
 import { requiredFactSourceSchema, type RequiredFactSource } from "./required-contract";
 import { requiredFactMetadataSchema } from "./required-compiler";
-import { registeredRequiredFactMetadata } from "./required-owner";
+import { registeredRequiredFactMetadata, registeredInitialFactMetadata } from "./required-owner";
 
 function unavailable(): never { throw new Error("FIELD_REQUIREMENT_INVALID: current approved field dependency is unavailable."); }
 type SealedPlan = ReturnType<typeof inspectSealedFieldVersion>;
@@ -21,10 +21,11 @@ const meaning = (plan: SealedPlan) => ({ entity: plan.payload.entity, generation
  * Serializable transaction; no client tenant, supplied closure, values or native
  * operations. Do not reuse after changing metadata in that transaction. Integration
  * into mutating paths requires their common lock order, not late graph locks. */
-export async function createRequiredMetadataProvider(authenticated: Session, transaction: Prisma.TransactionClient, definitionId: string, entityInput: ContractReference) {
+async function providerInTransaction(authenticated: Session, transaction: Prisma.TransactionClient, definitionId: string, entityInput: ContractReference, proof?: object) {
   const root = z.uuid().parse(definitionId), entity = referenceSchema.parse(entityInput);
   const authority = await fieldRuntimeAuthorityInTransaction(authenticated, transaction), { session, registry } = authority;
-  await registry.resolve(session, entity);
+  if (proof) await registry.authoriseCurrentFieldInitialisation({ session, transaction }, entity, proof);
+  else await registry.resolve(session, entity);
   await transaction.$queryRaw`SELECT id FROM studio_definitions WHERE id=${root}::uuid AND "organisationId"=${session.organisationId} FOR SHARE`;
   const rootDefinition = await transaction.studioDefinition.findFirst({ where: { id: root, organisationId: session.organisationId, kind: "customField", retiredAt: null } });
   if (!rootDefinition || rootDefinition.id !== root || rootDefinition.organisationId !== session.organisationId || rootDefinition.kind !== "customField"
@@ -86,12 +87,17 @@ export async function createRequiredMetadataProvider(authenticated: Session, tra
     authority,
     async resolveMetadata(input: RequiredFactSource) {
       const source = requiredFactSourceSchema.parse(input);
-      if (source.kind === "native") return registeredRequiredFactMetadata(session, registry, entity, source.fieldId);
+      if (source.kind === "native") return proof ? registeredInitialFactMetadata(session, registry, entity, source.fieldId) : registeredRequiredFactMetadata(session, registry, entity, source.fieldId);
       const { current, plan } = await pinned(source), reached = new Set<string>();
       // Reading a field's own rule inputs would require independent data access.
       // Only its current/written base field policies are needed for this fact.
-      for (const candidate of [current.plan, plan]) await compileCustomFieldForRead(session, { schemaVersion: 1, entity: candidate.payload.entity,
-        storageGeneration: candidate.payload.storageGeneration, field: candidate.payload.field }, registry);
+      for (const candidate of [current.plan, plan]) {
+        const base = { schemaVersion: 1, entity: candidate.payload.entity, storageGeneration: candidate.payload.storageGeneration, field: candidate.payload.field };
+        if (proof) {
+          await registry.authoriseCurrentFieldInitialisation({ session, transaction }, candidate.payload.entity, proof);
+          await compileCustomFieldForInitialisation(session, base, registry, "read");
+        } else await compileCustomFieldForRead(session, base, registry);
+      }
       await closure(source.definitionId, new Set(), 1, reached, new Map());
       return requiredFactMetadataSchema.parse({ kind: "field", organisationId: session.organisationId, entity: plan.payload.entity,
         definitionId: source.definitionId, versionId: source.versionId, checksum: source.checksum, generationId: plan.payload.storageGeneration,
@@ -99,3 +105,5 @@ export async function createRequiredMetadataProvider(authenticated: Session, tra
     },
   };
 }
+export const createRequiredMetadataProvider = (authenticated: Session, transaction: Prisma.TransactionClient, definitionId: string, entity: ContractReference) => providerInTransaction(authenticated, transaction, definitionId, entity);
+export const createInitialRequiredMetadataProvider = (authenticated: Session, transaction: Prisma.TransactionClient, definitionId: string, entity: ContractReference, proof: object) => providerInTransaction(authenticated, transaction, definitionId, entity, proof);

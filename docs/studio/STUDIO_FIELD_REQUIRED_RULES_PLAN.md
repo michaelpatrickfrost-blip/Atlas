@@ -207,3 +207,14 @@ close a retained rollback window: creation-only actors need an explicitly approv
 proof-based close with atomic target value/receipt/Audit, not borrowed manager/cohort
 authority. Preserve existing settlement guarantees and reviewed receipts; assess and
 record the exact alternative before integration. No new workflow/template engine.
+
+### c2b implemented; consolidated central gate next
+
+Proof-aware readers and all-active resulting validation are implemented;54 focused
+assertions/build/strict post-build TS/lint/diff PASS.8 new cases establish staged
+native/typed inputs, required target absence, false/zero, no unconditional relaxation,
+genuine create-only proof scope, immutable written rights/refs, unavailable/corrupt
+inputs and changing extension denial. Exact guarded rollback-only server probe is
+added but not run yet. It compares native/typed/config/Audit snapshots after a
+propagated required failure and checks actual deferred relational/pointer constraints.
+No writer/native hooks/publication/DDL; shared lock order/window closure still d4.

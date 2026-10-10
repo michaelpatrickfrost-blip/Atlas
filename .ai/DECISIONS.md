@@ -1,3 +1,28 @@
+## 10 October 2026 — Validate the whole resulting record without unrelated private reads
+
+Native operations must validate every active required rule against actual staged
+native/typed state in their owning Serializable transaction, including a required
+target omitted from the form. Unconditional required is never relaxed; false/zero
+are present. Optional unconditional fields do not require reading unrelated private
+values. Conditional inputs retain current/pinned/written and independent reference
+rights even if a different predicate is false. Creation uses current approved legacy
+coverage and sealed initialization-query meaning; an INSERT proof cannot read a
+different record. Validation grants no writes and creates no staging database.
+Common native/config lock order and reviewed window closure must precede hooking
+this reader into mutating paths. Central rollback evidence is separate from mocks.
+
+## 10 October 2026 — Legacy field creation uses explicit current owner coverage
+
+Legacy field schemas describe read/edit authority and cannot be treated as creation
+grants. A new current owner version declares exactly which field entity versions
+it approves for actual new records, with an opaque same-transaction INSERT proof
+and separate creation-capability fact query. Unsupported newest coverage fails
+without fallback. Ordinary read/manage remain independent; field grants and
+reference access still apply. Seal normal and creation fact-query hashes in new
+conditional plans; authors need metadata/read authority, not native Create. Keep
+v1–6 and normal query hashes/migration ranges unchanged. This extends the existing
+registry/domain ownership rather than introducing a separate permission engine.
+
 ## 10 October 2026 — Resulting requirements read actual transaction state
 
 Rule evaluation reads only owner-approved native facts and typed additional values
@@ -8,8 +33,9 @@ reference access and exact revisions remain independent. Unconditional required
 cannot be relaxed by a false condition. Internal v2 value viewing inspects only
 its base policy/integrity, never executes its private condition inputs. Ordinary
 v1 gateways retain their closed version gate until complete native enforcement.
-Creation-only actors need an explicit current owner proof/fact path, not borrowed
-ordinary read/manage grants; c2 and native activation remain outstanding.
+Creation-only actors use explicit current owner proof/fact coverage, never borrowed
+ordinary Read/Manage grants. c2a/b implement this internal path; actual central
+proof, canonical coverage and native activation remain outstanding.
 
 ## 10 October 2026 — Rule dependencies follow current graphs and immutable value meaning
 

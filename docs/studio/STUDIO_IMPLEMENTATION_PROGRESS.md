@@ -11,6 +11,8 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
+2B4d3c2b resulting-state validation — IMPLEMENTED locally;54 focused/build/strict post-build TS/lint/diff PASS; candidate/public central proof pending.
+
 2B4d3c2a current creation/fact policy — IMPLEMENTED;46 focused/types/lint/diff PASS; consolidated build/central gate pending.
 
 2B4d3c1 transactional existing-record inputs — VERIFIED locally;34 focused/build/strict post-build TS/lint/diff PASS.
@@ -49,6 +51,30 @@ F4a VERIFIED locally (adfc357); strict TS/build/scoped lint,18 focused and45 fil
 candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
+
+## 10 October 2026 —2B4d3c2b resulting-state validator IMPLEMENTED locally
+
+Proof-aware metadata/base/value readers now use explicit newest-owner creation
+coverage without ordinary Read/Manage grants; current/pinned/written field policies
+and independent reference access remain. The internal validator reads actual native
+and typed rows in the owning Serializable transaction, checks every active required
+rule/target, preserves unconditional requirements and accepts false/zero as present.
+Optional unconditional private fields impose no unrelated value reads. Returns only
+internal revisions/fingerprint, no raw facts; no writer, native hook or publication.
+8 new focused cases;54 assertions/7 suites, production build, strict post-build TS,
+scoped lint/diff PASS. A changed-reference fixture initially left an obsolete pin;
+corrected its sealed rule, final checks PASS without production policy relaxation.
+Added exact guarded Test server probe: genuine read compilation before create-only
+rights, rollback-only v1/v2 metadata/typed rows, current v7/legacy creation coverage,
+missing/fill/false/clear states and actual deferred FK/current-pointer checks. A
+propagated required failure must roll back native/typed/configuration/Audit rows;
+all are compared with the original snapshot. Central probe NOT RUN yet; unit mocks
+do not prove SQL rollback. No DDL/extra data dump/local database. Live0925bb5 unchanged.
+Next review/checkpoint and pin consolidated c2 release, run candidate/public central
+proof, then d3d canonical publication/activation coverage. Shared native lock order,
+initial typed writes/rollback-window closure and d4 hooks remain mandatory. Visual2E
+NOT STARTED; complete remaining2B,2C/D then visual preview/publish before Phase2 gate.
+
 
 ## 10 October 2026 —2B4d3c2a creation contracts IMPLEMENTED
 
@@ -350,6 +376,43 @@ actual facts/create-only/native/Audit rollback proof, runner40775 exit0.
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+## 10 October 2026 —2B4d3c2b resulting-state validator IMPLEMENTED locally
+
+Proof-aware metadata/base/value readers now use explicit newest-owner creation
+coverage without ordinary Read/Manage grants; current/pinned/written field policies
+and independent reference access remain. The internal validator reads actual native
+and typed rows in the owning Serializable transaction, checks every active required
+rule/target, preserves unconditional requirements and accepts false/zero as present.
+Optional unconditional private fields impose no unrelated value reads. Returns only
+internal revisions/fingerprint, no raw facts; no writer, native hook or publication.
+8 new focused cases;54 assertions/7 suites, production build, strict post-build TS,
+scoped lint/diff PASS. A changed-reference fixture initially left an obsolete pin;
+corrected its sealed rule, final checks PASS without production policy relaxation.
+Added exact guarded Test server probe: genuine read compilation before create-only
+rights, rollback-only v1/v2 metadata/typed rows, current v7/legacy creation coverage,
+missing/fill/false/clear states and actual deferred FK/current-pointer checks. A
+propagated required failure must roll back native/typed/configuration/Audit rows;
+all are compared with the original snapshot. Central probe NOT RUN yet; unit mocks
+do not prove SQL rollback. No DDL/extra data dump/local database. Live0925bb5 unchanged.
+Next review/checkpoint and pin consolidated c2 release, run candidate/public central
+proof, then d3d canonical publication/activation coverage. Shared native lock order,
+initial typed writes/rollback-window closure and d4 hooks remain mandatory. Visual2E
+NOT STARTED; complete remaining2B,2C/D then visual preview/publish before Phase2 gate.
+
+
+## 10 October 2026 —2B4d3c2b actual resulting-state validation IN PROGRESS
+
+4d9528e c2a checkpoint saved. Extend shared metadata/base/value readers with explicit
+current creation proof path, then validate all active requirements and required
+values from actual uncommitted native/typed rows. No caller-native facts, borrowed
+read/manage grants, nested transaction or new staging datastore. Independent field
+and reference permissions persist. Ordinary v1 gateways remain unchanged. Expected
+required-owner/source/runtime and shared read helpers, focused proof/result tests;
+no DDL/native hooks. Initial typed writer/window closure/common locks remain d4
+integration prerequisites. Exact next finish proof-aware evaluator/result validation
+and focused checks, then consolidated production build/central proof checkpoint.
+
 
 ## 10 October 2026 —2B4d3c2a creation contracts IMPLEMENTED
 
@@ -2101,6 +2164,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+c2b: required-owner/source/runtime and runtime-read; required-runtime/result suites;
+exact Test native-contract/required-result helpers; plan/security/architecture/module
+docs, ledger, CURRENT_STATE/DECISIONS. No unrelated source/functionality removed.
+
 c2a: registry types/entities/contracts/registry; Tickets Studio v7/proof-bound fact
 query; fields compiler/conditional-compiler/sealed-field; creation proof/native
 facts/conditional compiler suites; module/security/architecture/plan/ledger/memory.
@@ -2400,6 +2467,9 @@ and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
 
+c2b:6 genuine-session creation/result cases +2 existing staged-result cases; exact
+server rollback-only typed/required/current-owner probe (not executed yet).
+
 d3a:9 pure evaluator tests covering typed values/all/any/permission propagation,
 explicit absence/unknown, precision/choices/references and metadata integrity.
 
@@ -2466,6 +2536,10 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+c2b consolidated c2a/b:54 assertions/7 suites, npm run build, strict post-build
+tsc --noEmit --incremental false, scoped eslint and diff PASS. Central Test probe
+and candidate/public acceptance NOT RUN yet. No broad suite repeated per small edit.
 
 c2a:46 focused assertions/6 suites, tsc, scoped eslint and diff PASS. No new
 production build/central query proof yet; consolidated c2 feature gate pending.
@@ -2630,6 +2704,10 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+c2b local checks PASS; initial reference fixture had stale sealed pin, corrected.
+Actual central SQL/runtime verification remains pending. No conditional enforcement
+or Phase2/visual completion claimed.
 
 d3a pure gate PASS; one invalid test fixture initially supplied status code to
 priority, corrected. Metadata tampering/default insertion added; final440 PASS.
@@ -2848,6 +2926,10 @@ No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
 
+c2a/b consolidated local implementation checks PASS. Central native/typed/config/
+Audit rollback and candidate/public acceptance pending. Phase2 IN PROGRESS,
+visual2E NOT STARTED, Phase3 NOT STARTED.
+
 d2 local contract checks PASS; central owner/new-record proof NOT RUN. Whole
 Phase2 gate IN PROGRESS; d3–4 requirements/native integration and visual2E remain.
 
@@ -2890,11 +2972,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint c2a implemented creation contracts, then build c2b proof-aware source/
-base-value reading and all-active required validation using actual uncommitted
-native/typed rows. Preserve create-only rights, exact created record/version and
-current/pinned/written/reference policies; no supplied native facts/staging engine.
-Run focused proof/atomic/integrity checks and consolidated build. Common lock order,
-initial writes/window closure/native hook and central gate follow before dispatch.
-Canonical coverage/evolution and operator forms/search,2C/D/visual2E still pending.
-Live0925bb5; no Phase3 before fullPhase2 gate.
+Review and checkpoint c2a/b resulting-state validator and guarded central Test
+probe; deploy pinned codex/studio-phase2 through original candidate/public gates
+and confirm actual required failure leaves native/typed/config/Audit snapshots
+unchanged. Then d3d canonical publication/activation coverage, d3e reviewed evolution,
+d4 common locks/native create-save/initial values/rollback windows, d5 gate. Continue
+2B forms/search,2C record types,2D pages, then mandatory2E visual template/screen
+preview/custom buttons/publish. Do not claim designer started or Phase2 PASS.

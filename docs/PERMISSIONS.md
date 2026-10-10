@@ -202,3 +202,18 @@ sealing does not require an author's native Create grant. Explicit field grants 
 independent reference reads remain mandatory. Tickets v7 is additive; v1–6 and
 ordinary fact-query hashes/migration ranges unchanged. Native hooks/conditional
 publication and consolidated central creation proof remain outstanding.
+
+## Resulting-field validation — internal Phase2 runtime, 10 October 2026
+
+`validateResultingFieldRequirements` reads actual staged native/typed rows in the
+caller's owning Serializable transaction. It validates all active requirements,
+including omitted targets, after current/pinned/written policies and exact native/
+extension revisions. Unconditional required remains mandatory; false/zero count
+as present. Optional unconditional private fields impose no unrelated value reads.
+Creation-only paths require the genuine same-INSERT current owner proof, approved
+legacy versions and sealed initialization-query meaning. They never borrow native
+Read/Manage or use the proof for an existing reference target/other record. Returned
+fingerprints/revisions remain internal; any validation failure must propagate through
+the owning transaction and roll back native/typed/Audit changes. No native hooks,
+initial writer or conditional publication dispatch is enabled yet: common lock order,
+canonical coverage and reviewed rollback-window closure remain integration gates.

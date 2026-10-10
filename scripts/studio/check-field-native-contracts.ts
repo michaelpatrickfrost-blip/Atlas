@@ -5,6 +5,7 @@ import type { Prisma } from "../../src/generated/prisma/client";
 import { createTicketWithFieldInitialisation, authoriseNewTicketFields } from "../../src/core/service-work/studio-create";
 import { withFieldRuntimeAuthority } from "../../src/core/studio/fields/runtime-authority";
 import { registeredRequiredFactMetadata } from "../../src/core/studio/fields/required-owner";
+import { prepareFieldResultProbe } from "./check-field-required-result";
 
 /** Exact synthetic Test identities only. Native INSERT/Audit probes run in an
  * intentionally rolled-back transaction; no live customer record is changed. */
@@ -18,7 +19,14 @@ export async function checkFieldNativeContracts(customerUserId: string, organisa
   const nativeWhere = { organisationId: { in: [organisationId, otherOrganisationId] } };
   const snapshot = async () => ({ records: await db.serviceWorkItem.findMany({ where: nativeWhere, orderBy: { id: "asc" } }),
     audits: await db.auditEntry.findMany({ where: nativeWhere, orderBy: { id: "asc" } }),
-    extensions: await db.studioExtensionRecord.findMany({ where: nativeWhere, orderBy: { id: "asc" } }) });
+    extensions: await db.studioExtensionRecord.findMany({ where: nativeWhere, orderBy: { id: "asc" } }),
+    definitions: await db.studioDefinition.findMany({ where: nativeWhere, orderBy: { id: "asc" } }),
+    versions: await db.studioDefinitionVersion.findMany({ where: nativeWhere, orderBy: { id: "asc" } }),
+    bindings: await db.studioFieldBinding.findMany({ where: nativeWhere, orderBy: { definitionId: "asc" } }),
+    generations: await db.studioFieldGeneration.findMany({ where: nativeWhere, orderBy: { id: "asc" } }),
+    dependencies: await db.studioDependency.findMany({ where: nativeWhere, orderBy: { id: "asc" } }),
+    slots: await db.studioFieldSlot.findMany({ where: nativeWhere, orderBy: { id: "asc" } }),
+    values: await db.studioFieldValue.findMany({ where: nativeWhere, orderBy: { id: "asc" } }) });
   const before = await snapshot(), blocked = ["studio.definition.read", "studio.definition.edit", "studio.definition.publish", "studio.definition.live_test", "tickets.ticket.manage"];
   let addedQueueMemberId: string | undefined;
   try {
@@ -40,6 +48,7 @@ export async function checkFieldNativeContracts(customerUserId: string, organisa
       await assert.rejects(() => registry.invokeQueryInTransaction({ session, transaction }, query, { recordId: foreign.id, expectedRevision: foreign.version }), /unavailable/);
       await assert.rejects(() => registry.invokeQueryInTransaction({ session, transaction }, query, { recordId: parent.id, expectedRevision: parent.version + 1 }), /changed/);
     });
+    const resultProbe = await prepareFieldResultProbe(reader);
     await db.membership.update({ where: { id: member.id, organisationId }, data: { grantedCapabilities: ["tickets.ticket.create"], deniedCapabilities: [...new Set([...member.deniedCapabilities.filter(cap => cap !== "tickets.ticket.create"), ...blocked, "tickets.ticket.read"])] } });
     const creator = await sessionForUser(organisationId, customerUserId); assert(creator);
     const data = { organisationId, kind: "TICKET", requesterUserId: customerUserId, queueId: parent.queueId, number: `CHECK-${crypto.randomUUID()}`, subject: "Studio creation contract rollback probe" };
@@ -54,9 +63,17 @@ export async function checkFieldNativeContracts(customerUserId: string, organisa
         assert.deepEqual(await authority.registry.authoriseRecordInitialisation({ session: authority.session, transaction }, entity, proof), { recordId: work.id, organisationId, revision: 1 });
         await assert.rejects(() => authority.registry.authoriseRecordInitialisation({ session: authority.session, transaction }, entity, {}), /FORBIDDEN/);
         await transaction.auditEntry.create({ data: { organisationId, actorUserId: customerUserId, action: "studio.field.creation_contract_probe", entityType: "ServiceWorkItem", entityId: work.id, after: { probe: true } } });
+        await resultProbe(authority, work.id, proof);
         throw rollback;
       });
-    }, { isolationLevel: "Serializable" }), error => error === rollback);
+    }, { isolationLevel: "Serializable", timeout: 30_000 }), error => error === rollback);
+    assert.deepEqual(await snapshot(), before);
+    await assert.rejects(() => db.$transaction(async transaction => {
+      await createTicketWithFieldInitialisation({ session: creator, transaction }, data, async (authority, work, proof) => {
+        await transaction.auditEntry.create({ data: { organisationId, actorUserId: customerUserId, action: "studio.field.creation_contract_probe", entityType: "ServiceWorkItem", entityId: work.id, after: { probe: true } } });
+        return resultProbe(authority, work.id, proof, true);
+      });
+    }, { isolationLevel: "Serializable", timeout: 30_000 }), /Exact Test result notes is required/);
     assert(retained); const expired = retained;
     await assert.rejects(() => authoriseNewTicketFields({ session: expired.session, transaction: expired.transaction }, expired.proof), /FORBIDDEN/);
     await db.$transaction(async transaction => {
@@ -67,5 +84,5 @@ export async function checkFieldNativeContracts(customerUserId: string, organisa
     await db.membership.update({ where: { id: member.id, organisationId }, data: { grantedCapabilities: member.grantedCapabilities, deniedCapabilities: member.deniedCapabilities } });
     if (addedQueueMemberId) await db.serviceQueueMember.deleteMany({ where: { id: addedQueueMemberId, organisationId, queueId: parent.queueId, userId: customerUserId } });
   }
-  console.log("STUDIO NATIVE FIELD CONTRACTS PASS: actual canonical facts/foreign/stale denial; genuine create-only proof, no existing access, expired/unsafe denial and native/Audit rollback");
+  console.log("STUDIO NATIVE FIELD CONTRACTS PASS: actual canonical facts/foreign/stale denial; genuine create-only current v7/legacy field proof, staged conditional/target values, false/clear state, exact FK/pointer checks; propagated required failure rolls back native/typed/metadata/Audit rows; no existing access, expired/unsafe denial");
 }

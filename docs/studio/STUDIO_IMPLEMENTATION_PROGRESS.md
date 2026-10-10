@@ -59,6 +59,12 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 # Current Workstream Detail
 
+9183e53 sealed candidate real observation/preparation/archive/principal/Admin
+checks PASS; full native/public pending. Evidence 4iNlVJ; backup 012617, fixture
+012812. Observation not globally VERIFIED yet. c6b2b1 shared authority extraction
+local 5 files/34 assertions, build/post-build TS/lint/diff review PASS; ship with
+bounded collector, no new schema/endpoint. Latest accepted live e309ff8.
+
 e309ff8 corrected preparation full combined candidate/public PASS, deploy exit 0
 and public health match; previous 5d101da retained. Evidence 1U6TU8/lnCkpF, backup
 011430, fixture 011622/012007. c6b1 VERIFIED; failed 4e4a0e8 superseded.
@@ -210,6 +216,8 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+c6b2b1: migrations/authority and preparation extraction, plan/ledger/state/decision.
+
 c6b2a: migrations/observation, observation tests, actual check-field-observation
 helper/preparation/principal integration and docs/memory. No persistent DDL.
 
@@ -329,6 +337,10 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+c6b2b1: 5 files/34 assertions, production build, post-build TypeScript/scoped lint
+PASS; /tmp/atlas-studio-authority-{tests,build,types,lint}.txt. Existing meaningful
+permission/idempotency/source/Audit regressions reused for this internal extraction.
 
 c6b2a: 9 files/64 assertions, production build, strict post-build TS/scoped lint
 PASS; /tmp/atlas-studio-observation-{tests,build,postbuild-types,lint}.txt. Actual
@@ -527,10 +539,12 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Pin c6b2a observation helper and run combined backed-up candidate/public acceptance.
-Require actual absent-slot and exact typed source observation proof; no collector
-claim. Then c6b2b: implement bounded collectFieldMigrationBatch using fresh stored
-principal/source/draft authority, trusted owner cursor, immutable observation inserts
-and preparation revision CAS; seal only current exact owner/source-pointer coverage
-and canonical digest, with atomic Audit and restart/stale/tenant/access tests.
-Phase 2 NOT PASSED; visual builder/customer publication/custom buttons outstanding.
+Confirm 9183e53 complete combined candidate/public observation proof and exact
+live revision. Then c6b2b2: implement collectFieldMigrationBatch using the shared
+withFieldMigrationAuthority, server-loaded immutable preparation/principal, source/
+draft/compiled checksums, trusted owner snapshot cursor, bounded row observations,
+atomic inserts/preparation revision CAS/Audit. No target generation or activation.
+Test interrupted/resumed batches, stale/repeated revisions, foreign IDs/permissions/
+source change and atomic Audit rollback. Sealing exact source/owner coverage plus
+canonical digest is the next separate workstream. Phase 2 NOT PASSED; visual
+builder/customer publication/custom buttons outstanding.

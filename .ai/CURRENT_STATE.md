@@ -1,5 +1,31 @@
 # Atlas current state
 
+## 10 October 2026 — Actual observation proof passed on sealed candidate
+
+9183e53 candidate real source observation PASS: absent slot and exact integer/
+decimal decode through owner-checked synthetic source fixture, immutable schema/
+slot/value refs plus fingerprint only, zero collector/target/native mutation.
+Preparation/archive/principal/Admin/business checks PASS; full native/public suite
+still pending. Evidence /tmp/atlas-studio-candidate-4iNlVJ, deployment backup
+20261010-012617 and fixture 012812. No Phase 2 gate claim.
+c6b2b1 shared withFieldMigrationAuthority extraction locally verified: 5 files/34
+assertions, production build, strict post-build TS/scoped lint and diff review PASS.
+Preparation uses same identity/profile/platform/Studio locks and error semantics;
+no DDL or new public endpoint. Logs /tmp/atlas-studio-authority-{tests,build,types,
+lint}.txt. Ship extraction with bounded collector; current accepted live e309ff8.
+Next confirm full observation release proof, then implement bounded observation
+append/revision CAS with fresh frozen source/draft before sealing workstream.
+
+## 10 October 2026 — Observation source pinned; shared authority extraction planned
+
+Exact 9183e53 one-row observation checkpoint pinned; backed-up combined candidate/
+public acceptance running, log /tmp/atlas-studio-observation-deploy.txt. Actual
+observation helper pending, accepted live e309ff8. c6b2b1 independent extraction
+planned before coding: reuse verified preparation transaction/principal locks in
+one typed internal authority wrapper, preserving current behavior and tests. No
+DDL, public endpoint, target values or collector yet. Next actual observation proof,
+then bounded resumable batches under the same authority. Phase 2 NOT PASSED.
+
 ## 10 October 2026 — Preparation verified live; source observation locally implemented
 
 Exact e309ff8a3d6b56560cceca1d5174327735a057eb full combined candidate/public

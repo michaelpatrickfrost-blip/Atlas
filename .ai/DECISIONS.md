@@ -1,5 +1,14 @@
 ## 10 October 2026 — Shared transactions are explicit query opt-ins
 
+## 10 October 2026 — One refreshed migration transaction authority for preparation and batches
+
+Extract the verified preparation identity/company/member/user/profile/platform/
+Studio locks into withFieldMigrationAuthority. Reuse it for bounded collection
+instead of a second permission path. The trusted callback still enforces native/
+field/reference policies and fresh source/draft identity. Same SERIALIZABLE
+transaction, stored principal refresh and revocation semantics; no client callback
+or new public endpoint. This is internal reuse, not a new execution engine.
+
 ## 10 October 2026 — Live field data previews require an explicit separate grant
 
 Use studio.test.live_data from a separate Studio data capability collection, with

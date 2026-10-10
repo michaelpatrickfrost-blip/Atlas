@@ -443,3 +443,23 @@ PASS and deploy exit 0; actual replay/one Audit, stale/client/tenant/permissions
 Audit-failure rollback, exact Test trigger cleanup and native preservation. Prior
 5d101da retained. c6b2a local 9 files/64 assertions, production build/post-build TS/
 scoped lint PASS; no collector. Actual absent-slot/typed-source helper NOT RUN.
+
+
+## 2B3c6b2b1 — Shared refreshed batch authority (IN PROGRESS)
+
+Purpose: reuse the preparation service's verified identity/company/member/user/
+role/platform/Studio locks for bounded collection, instead of copying a second
+permission path. Extract one typed internal transaction wrapper; preparation
+continues to compile/pin/preflight/write Audit exactly as before. Dependencies:
+c6b1 VERIFIED live; c6b2a new row observation source proof pending. Files: migrations/
+authority and preparation, existing preparation/principal/data-policy tests plus
+docs/memory. Database: none; existing SERIALIZABLE locks only. Tests: same actor/
+principal refresh/revocation/support key, callback failure/Audit propagation,
+company/source guards, identical idempotency and no native writes. No collector
+endpoint, worker, target schema or state-machine change delivered by extraction.
+
+
+c6b2b1 extraction local checks PASS: five files/34 assertions, production build,
+strict post-build TypeScript/scoped lint, full diff review. No new endpoint/schema.
+9183e53 actual sealed candidate source observation PASS; full/public pending.
+Keep exact collection append/CAS separate from final source/set/digest sealing.

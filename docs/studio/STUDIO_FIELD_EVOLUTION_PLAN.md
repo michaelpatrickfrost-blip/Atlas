@@ -218,3 +218,54 @@ job references; never expose hidden IDs/counts or use visible-list pagination as
 proof. Add owner evidence for absent anchors, final/merged work, foreign/missing
 records, incomplete queue access and concurrent set changes. These are remaining
 requirements, not implemented checks or authority to write final records.
+
+
+## 2B3c3 — Immutable review contracts (VERIFIED locally)
+
+Purpose: define the exact closed server-stored review and canonical per-record
+observation format before creating durable tables. Dependencies: verified current
+principal, whole-owner access preflight, validators/converter and SQL decoder.
+Expected files: fields/migrations/contracts.ts, pure principal contract extraction,
+focused review-contract tests, ledger/state. Database: none in this checkpoint;
+subsequent additive review/job/row persistence must implement tenant/source FKs.
+Tests: exact source/draft/target/principal binding, no capability snapshots/scripts,
+source/target generation separation, deterministic streaming canonical-set digest,
+absent anchors/slots, mismatched fingerprints/revisions, redacted corrupt/stale
+review rejection. Sealed source metadata/hash contracts remain unchanged.
+
+The review checksum is an integrity check, never client authority. Only a server
+service can collect owner-authorised observations, compile both schemas, persist
+review plus audited identity and recheck live state. No preview endpoint, migration
+executor or final-record representation hook is introduced by this contract. Do
+not mark persistence or the wider reviewed migration operation complete from it.
+
+
+2B3c3 evidence: 4 focused files/32 assertions, production build, strict post-build
+TypeScript and changed-file lint PASS. Eight review cases include integrity/stale
+bindings, foreign identity/default insertion/script rejection, missing anchors,
+immutable value pins, changed same-count membership, ordering/duplicate rejection
+and redacted failures. This is a pure contract, not a preview/persistence feature.
+
+## 2B3c4 — Durable preparation/review observations (IN PROGRESS)
+
+Purpose: persist a frozen preparation intent, immutable review and immutable
+per-record source observations. Dependencies: 2B3c3 contracts, verified typed
+storage and current principals/owner preflight. Files: Prisma models, additive
+20261010030000_studio_field_reviews SQL, contracts/helpers as needed, exact-Test
+storage acceptance helper and memory/docs. Database: three new tenant-owned tables;
+composite source-generation/version/draft/extension/slot/value FKs, retained history,
+indexes and CAS guards. No business tables/records changed. Add one composite
+unique draft index for tenant-bound identity; no destructive reset/backfill.
+
+Only PREPARING/REVIEWED/CANCELLED states in this checkpoint. Immutable rows contain
+references/revisions/fingerprints, never copied business values. Collection is a
+separate future service; server checksums are integrity rather than authority.
+Review seals exactly the stored intent and row counts/results; app validates the
+ordered digest. Whole canonical set, live owner/field access and source/draft
+freshness remain required before executable publication/cutover. No target values,
+final-record writer, preview endpoint or conversion worker yet.
+
+Checks: schema validation/generation, real central DDL/tenant FKs/immutable intent,
+CAS/state guards, stale source/draft rejection, row linkage and sealed append denial,
+full rollback on audit failure, build/types/lint and candidate/public integration.
+A table existing is only IMPLEMENTED until actual database constraints pass.

@@ -11,9 +11,9 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c2c — Stable combined release acceptance — VERIFIED. Exact 931a600 passed
-complete candidate/public acceptance and is live. Next: 2B3c3 immutable review
-contract, then durable review/job/row persistence; no Phase 2 gate claim.
+2B3c4 — Durable preparation/review observations — IN PROGRESS. Previous combined acceptance
+VERIFIED live on 931a600. Pure 2B3c3 contracts verified locally (32 tests/build/types/lint); additive
+review/job/row persistence; no Phase 2 gate claim.
 
 # Overall Status
 
@@ -54,6 +54,9 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c2c Stable combined release acceptance | VERIFIED | Both full suites PASS, exact source activated, public health/current checked, prior b57ba720 retained. |
 
 # Current Workstream Detail
+
+2B3c4 purpose/dependencies/files/additive database/checks recorded in the evolution plan.
+No persistence, preview service or executor is delivered by a pure review contract.
 
 Latest: 931a600 complete candidate/public combined acceptance PASS and live.
 Historical attempt details below are superseded by this proof; retained failures

@@ -1,5 +1,24 @@
 # Atlas current state
 
+## 10 October 2026 — Field review contracts locally verified; persistence started
+
+2B3c3 pure contracts: four files/32 assertions, production build, strict TypeScript
+and changed-file lint PASS. Current principal behavior unchanged by pure contract
+extraction. No review endpoint/executor/schema change in that checkpoint.
+2B3c4 IN PROGRESS: three additive preparation/review/observation tables, tenant/source
+FKs and immutable/CAS guards; plan records files/database/tests. No business-data
+conversion. Next implement additive schema/SQL and central constraint tests.
+Phase 2 NOT PASSED; visual builder/publication/buttons remain active 2E requirements.
+
+## 10 October 2026 — Immutable field review contract workstream started
+
+2B3c3 IN PROGRESS: closed server-stored source/target/draft/principal/observation
+identity before additive persistence. Plan records purpose, dependencies, expected
+files, no database implications in this checkpoint and required security/digest
+tests. Previous 931a600 complete candidate/public acceptance remains VERIFIED live.
+No checksum or client count grants data access; no preview endpoint/worker/final-
+record conversion yet. Phase 2 NOT PASSED. Next implement and test contracts.
+
 ## 10 October 2026 — Studio cohort/decoder combined acceptance VERIFIED live
 
 Exact 931a6009dfc24f20ceddc2403bf01b21aa4f2950 passed both complete combined

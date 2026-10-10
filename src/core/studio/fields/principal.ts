@@ -5,17 +5,8 @@ import { assertCapability } from "@/core/permissions/check";
 import { assertModuleEnabled } from "@/core/modules/access";
 import { ATLAS_CAPABILITIES } from "@/core/admin/access";
 import { STUDIO_CAPABILITIES } from "../permissions";
-
-const identity = {
-  organisationId: z.string().min(1).max(100), userId: z.string().min(1).max(100),
-  membershipId: z.string().min(1).max(100),
-  authVersion: z.number().int().nonnegative(), sessionVersion: z.number().int().nonnegative(),
-};
-const principalSchema = z.discriminatedUnion("authority", [
-  z.strictObject({ ...identity, authority: z.literal("customer") }),
-  z.strictObject({ ...identity, authority: z.literal("staff_support"), auditId: z.string().min(1).max(100) }),
-]);
-export type FieldMigrationPrincipal = z.infer<typeof principalSchema>;
+import { fieldMigrationIdentity as identity, fieldMigrationPrincipalSchema as principalSchema, type FieldMigrationPrincipal } from "./principal-contract";
+export type { FieldMigrationPrincipal } from "./principal-contract";
 const SUPPORT_ACTION = "studio.field.migration.support_opened";
 function denied(): never { throw new Error("FORBIDDEN: current company access is required for field migration data."); }
 function assertStaff(session: Session) {

@@ -1,5 +1,43 @@
 # Atlas current state
 
+## 10 October 2026 — Scalar review seal locally checked, central proof pending
+
+c6b2b3b internal scalar sealing performs fresh source/native/written checks before
+SQL v1 digest/closed summary, target uniqueness denial, immutable review/state CAS
+and existing Audit. Fresh replay is read-only; references fail closed until required
+owner reference checkpoint. No target publication/activation/native writes/DDL.
+19 files/117 assertions, production build, strict post-build TypeScript/scoped lint
+and diff review PASS. Logs /tmp/atlas-studio-sealing-{tests,build,postbuild-types,
+lint}.txt. Actual helper NOT RUN: Node/SQL parity (empty/invalid/lossy/duplicates
+and nested source refs), actual Audit rollback/replay/sealed append denial, source
+revision invalidation and actual whole-cohort unique denial. Formatter-only invented
+anchors cannot seal. Two active Test tickets created before native baseline; source
+fixtures use normal owner extend and preserve native/final/history. Next pin
+coverage + scalar seal for full backed-up combined candidate/public acceptance.
+Accepted live 96834f5; Phase 2 NOT PASSED, references/UI/publication/buttons remain.
+
+## 10 October 2026 — Bounded collector verified live
+
+96834f5d3b463503371391fd90b3479c64d0bc90 complete combined candidate/public
+PASS, deploy exit 0 and actual public health match. Existing full native suite
+passed, previous 9183e53 retained. Actual collector interrupt/resume/replay and
+PostgreSQL Audit rollback, exact canonical final/unanchored anchors, tenant/input/
+publish/stale draft denial VERIFIED. No native/target/value mutation, no DDL.
+Evidence candidate 2sYQ63/public zvyF2n; backup 014016, fixtures 014215/014603.
+Source coverage d553052 local only; scalar SQL digest/review seal in progress.
+Next tests/Node–SQL parity/Audit/CAS/replay actual proof; references remain an
+explicit required Phase 2 owner checkpoint. Designer/buttons/publication not built.
+
+## 10 October 2026 — Scalar review seal plan before implementation
+
+c6b2b3b atomically seal authorised scalar cohort with existing v1 canonical digest,
+closed summary, unique conflict check, review/preparation CAS and Audit. Native
+PostgreSQL sha256 verified with empty digest; actual Node/SQL parity required.
+No DDL or values/target/native writes. References fail closed until next owner
+reference coverage checkpoint, required for Phase 2 gate. Files archive digest,
+sealing service/tests/actual helper. Source coverage d553052 local only; collector
+96834f5 public suite still pending. No phase completion or final seal claim yet.
+
 ## 10 October 2026 — Collector candidate complete; source coverage locally checked
 
 96834f5d3b463503371391fd90b3479c64d0bc90 complete combined candidate PASS,

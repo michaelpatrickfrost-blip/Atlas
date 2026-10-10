@@ -1,3 +1,15 @@
+## 10 October 2026 — Scalar review aggregation preserves the v1 archive digest
+
+The final scalar review needs one atomic fresh source/native snapshot. Streaming
+all business observations through application round trips would prolong that
+transaction. Compute the same v1 canonical SHA-256 digest from immutable mirrored
+archive metadata using PostgreSQL, alongside closed counts and non-null duplicate
+target fingerprints. Compare to the existing Node stream in actual central tests;
+no new checksum format, business-value reads or authority is introduced. Source/
+written/owner guards precede aggregate detail. Existing short transaction deadline
+remains fail-closed. Reference review requires a separate owning-domain coverage
+path and stays blocked in this scalar checkpoint; Phase 2 cannot pass without it.
+
 ## 10 October 2026 — Shared transactions are explicit query opt-ins
 
 ## 10 October 2026 — One refreshed migration transaction authority for preparation and batches

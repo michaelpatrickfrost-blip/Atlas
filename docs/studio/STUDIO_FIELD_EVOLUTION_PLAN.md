@@ -495,3 +495,27 @@ private owner denial before coverage details, written ACL and metadata-only read
 Source coverage local evidence: 17 files/109 assertions, production build, strict
 post-build TypeScript/scoped lint and full diff review PASS. Actual helper added
 but NOT RUN. Collector full candidate PASS; public pending. Final seal next.
+
+### c6b2b3b — Atomic scalar review sealing (IMPLEMENTED locally)
+
+Purpose: seal an actual authorised complete scalar preview, not execute it.
+Dependencies: collection, source coverage, shared authority and immutable archive.
+Files archive-digest.ts/sealing.ts, focused service tests and central helper; no
+schema change. Preserve the existing v1 canonical ordered digest exactly using
+PostgreSQL sha256 over mirrored immutable metadata (verified server primitive),
+so final scalar sealing does not iterate/decode every business value in one long
+application transaction. Check native/source/written policies first; aggregate
+closed result counts and duplicate non-null target fingerprints, then create the
+same-operation review, revision CAS and Audit atomically. No publication/activation.
+Reject unique collisions, stale/foreign/client summaries and repeated stale
+PREPARING requests. Fresh sealed replay returns the same review without writes.
+Reference fields fail closed until c6b2b3c owner reference coverage exists; that
+is outstanding Phase 2 work, not an accepted exception or later-phase deferral.
+Actual proof must compare SQL digest to existing Node canonical stream, enforce
+real Audit rollback, replay/append-sealed denial and retained source/native data.
+
+Local evidence: 19 files/117 assertions, production build, strict post-build
+TypeScript/scoped lint and full diff review PASS. Actual helpers added but NOT RUN.
+Unique scalar fixture uses two active exact-Test tickets seeded before baseline,
+normal-owner source-only writes, actual full-cohort review denial; formatter-only
+fake anchors are separate and cannot pass owner coverage. Reference seal pending.

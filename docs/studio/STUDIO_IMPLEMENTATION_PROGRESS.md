@@ -11,13 +11,13 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c6b2b2 — Bounded resumable observation collection — IMPLEMENTED locally.
-c6b2a VERIFIED live 9183e53; collector central proof pending; no writer/designer.
+2B3c6b2b3b — Scalar review sealing — IMPLEMENTED locally; actual proof pending.
+c6b2b2 VERIFIED live 96834f5; source coverage local; no writer/designer.
 
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source 9183e53aa7051b7cf3147f454a2f7f3bc22cd4c9,
+VERIFIED. Latest confirmed live source 96834f5d3b463503371391fd90b3479c64d0bc90,
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -55,10 +55,30 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c4 Durable review archive | VERIFIED | 8780a07 candidate/public actual tenant/source/draft/slot/value guards, sealed rows/history, CAS/stale/audit rollback; no worker. |
 | 2B3c5 Owner shared snapshot/coverage | VERIFIED | 5d101da full candidate/public proof: exact native set/revisions, private/membership/isolation/final/unanchored; no native mutation. |
 | 2B3c6a Explicit data and field/reference policies | VERIFIED | Pure contract: 4 files/18 local assertions, build/types/lint; deployed e309ff8. No runtime collector/preview claim. |
+| 2B3c6b2b2 Bounded observation collector | VERIFIED | 96834f5 full candidate/public actual resume/replay/tenant/stale/Audit rollback; no target/native mutation. |
 | 2B3c6b2a Authorised source observation | VERIFIED | 9183e53 full candidate/public owner-checked absent and integer source; refs/fingerprint only, native unchanged. |
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+Scalar seal implemented locally: 19 files/117 assertions, production build, strict
+post-build TypeScript/scoped lint/diff review PASS. Actual coverage/seal/unique
+helpers added but NOT RUN: v1 Node–SQL parity, real Audit rollback, replay/sealed
+append denial, source revision staleness and whole-cohort duplicate target denial.
+Invented formatter anchors cannot seal; two active exact Test tickets are seeded
+before native baseline and source-only values use normal owner extend. No new
+DDL, target/native write, reference review or executable migration. Pin next.
+
+96834f5 full combined candidate/public PASS; deploy exit 0 and public health
+match. Evidence 2sYQ63/zvyF2n, backup 014016, fixtures 014215/014603. c6b2b2
+VERIFIED; previous 9183e53 retained. Historical pending collector notes superseded.
+Source coverage local only; scalar seal in progress, no target/native value writes.
+
+c6b2b3b scalar review seal plan saved: source/owner/written checks before exact v1
+SQL digest/summary and uniqueness, immutable same-operation review/CAS/Audit. No
+new schema/target/native/value write. Reference fields fail closed until owner
+reference coverage next; no accepted gate exception. Actual Node/SQL parity and
+Audit rollback required. Source coverage still local only; collector public pending.
 
 96834f5 complete combined candidate PASS; actual collector and PostgreSQL Audit
 rollback PASS, native rows unchanged. Public running (zvyF2n, fixture 014603);
@@ -253,6 +273,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+Scalar seal: migrations/archive-digest.ts, sealing.ts; focused archive-digest/sealing
+tests; check-field-sealing.ts/check-field-unique-sealing.ts plus principal/preparation/
+coverage checker integration and docs/memory. No public action or UI claim.
+
 Latest: migrations/coverage.ts and collection.ts, focused coverage/collection tests,
 check-field-coverage.ts/check-field-collection.ts, preparation checker integration,
 shared authority and existing docs/memory. No native module behavior removed.
@@ -386,6 +410,10 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+Scalar seal final local: 19 files/117 assertions, production build, strict post-build
+TypeScript, scoped lint and diff PASS. Actual central helper NOT RUN; do not mark
+coverage/seal VERIFIED. No new DDL or migration to apply.
 
 Latest source coverage: 17 files/109 assertions, build, strict post-build TypeScript,
 scoped lint and diff PASS; /tmp/atlas-studio-coverage-{tests,build,postbuild-types,
@@ -593,10 +621,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Pin the locally checked collector checkpoint and run the backed-up combined
-candidate/public acceptance. Confirm actual PostgreSQL Audit rollback, bounded
-resume/replay, exact canonical observation anchors and unchanged native records,
-then full native suite, exit status and public source. c6b2b3 follows: seal exact
-source/owner coverage plus canonical digest/summary atomically with review state
-and Audit; no count-only proof, target generation or activation. Phase 2 NOT
-PASSED; visual builder/customer publication/custom buttons outstanding.
+Pin source coverage + scalar review checkpoint and run full backed-up combined
+candidate/public acceptance. Confirm actual v1 Node–SQL digest parity, Audit
+rollback, replay/sealed append denial, exact source revision staleness and duplicate
+non-null target denial, plus complete native suite/public release revision. Then
+c6b2b3c: define explicit owner reference coverage for final review, preserving
+old query/entity hashes and current tenant/private/reference guards; add tests
+before enabling reference sealing. No Phase 2 gate until all remaining field
+migration/value gateway/record type/page/visual/customer-publication work passes.

@@ -210,3 +210,13 @@ immutable observations and checks distinct written-schema ACL/checksums without
 value columns. Equal native counts are insufficient. This internal prerequisite
 returns no data or approval; references, uniqueness and digest/state/Audit sealing
 remain required before an executable reviewed operation.
+
+Scalar review sealing derives the existing v1 canonical ordered digest and closed
+counts from immutable archive metadata inside the fresh source/native/written
+policy transaction. It rejects duplicate non-null converted fingerprints when
+target uniqueness is required, then inserts the same-operation immutable review,
+preparation REVIEWED/revision CAS and Audit atomically. Fresh sealed replay writes
+nothing; changed source invalidates it. Failed/lossy rows remain visible as review
+summary, never execution authority. No target publication or activation occurs.
+Reference fields remain fail-closed pending explicit owner reference coverage in
+Phase 2. The service is internal and not a public/desktop generic-data endpoint.

@@ -13,6 +13,7 @@ export async function checkFieldCoverage(session: Session, preparationId: string
   const saved = await db.studioFieldMigrationPreparation.findFirstOrThrow({ where: { id: preparationId, organisationId: session.organisationId } });
   const sealed = sealFieldMigrationIntent(saved.intent); assert.equal(sealed.checksum, saved.intentChecksum);
   const intent = sealed.intent, registry = studioRegistry();
+  const reviewsBefore = await db.studioFieldMigrationReview.count({ where: { id: preparationId } });
   const check = () => withFieldMigrationAuthority(session, intent.principal, async ({ session: fresh, transaction, company }) => {
     await validateFieldMigrationSourceCoverage({ session: fresh, transaction }, registry, company, intent);
   });
@@ -30,7 +31,7 @@ export async function checkFieldCoverage(session: Session, preparationId: string
   });
   await assert.rejects(check, /stale|changed/i);
   assert.deepEqual(await db.serviceWorkItem.findMany({ where: { organisationId: session.organisationId, kind: "TICKET" }, orderBy: { id: "asc" }, select: { id: true, version: true } }), nativeBefore);
-  assert.equal(await db.studioFieldMigrationReview.count({ where: { id: preparationId } }), 0);
+  assert.equal(await db.studioFieldMigrationReview.count({ where: { id: preparationId } }), reviewsBefore);
   assert.equal(await db.studioFieldGeneration.count({ where: { id: intent.target.payload.storageGeneration } }), 0);
-  console.log("PASS actual source coverage: exact owner/native cohort plus current extension/slot/value refs and written schema policy; changed extension revision rejected with unchanged native anchors/count; metadata-only Test fixture, no review/target/native/value mutation.");
+  console.log("PASS actual source coverage: exact owner/native cohort plus current extension/slot/value refs and written schema policy; changed extension revision rejected with unchanged native anchors/count and retained review; metadata-only Test fixture, no review/target/native/value mutation.");
 }

@@ -11,6 +11,7 @@ import { checkFieldObservation } from "./check-field-observation";
 import { checkFieldCollection } from "./check-field-collection";
 import { collectFieldMigrationBatch } from "../../src/core/studio/fields/migrations/collection";
 import { checkFieldCoverage } from "./check-field-coverage";
+import { checkFieldSealing } from "./check-field-sealing";
 
 /** Actual service proof; writes only exact Test configuration/archive, no target values. */
 export async function checkFieldPreparation(session: Session, principal: FieldMigrationPrincipal, otherOrganisationId: string, ticketId: string) {
@@ -39,6 +40,7 @@ export async function checkFieldPreparation(session: Session, principal: FieldMi
     action: "studio.field.migration.prepared", entityId: result.id } }), 1);
   await checkFieldObservation(session, principal, result.id, ticketId);
   const collectedCount = await checkFieldCollection(session, result.id, otherOrganisationId);
+  await checkFieldSealing(session, result.id, otherOrganisationId);
   await checkFieldCoverage(session, result.id, ticketId);
   await assert.rejects(() => startFieldMigrationPreparation(session, principal, { ...request, organisationId: otherOrganisationId }));
   await assert.rejects(() => startFieldMigrationPreparation(session, { ...principal, organisationId: otherOrganisationId }, request), /FORBIDDEN/);

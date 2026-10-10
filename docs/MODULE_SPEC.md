@@ -317,3 +317,15 @@ native versions; omitting it preserves old metadata/hashes. This opt-in never
 grants data access: final reference review needs the new owner query's real target/
 tenant/private checks after Studio current/written policy and source coverage.
 Use new entity/query versions rather than changing already sealed descriptors.
+
+
+### Explicit representation approval (Phase 2 foundation)
+
+A new entity contract version may add `record.migrationRepresentation` with a
+registered same-owner query, mandatory shared transaction, native write capability
+and explicit source versions that are a subset of its approved migration snapshot.
+Registry validation is atomic. Existing snapshot contracts grant only read coverage;
+normal `read`/`extend` and final-record restrictions do not change. The future query
+must reload scoped persisted reviewed publication/observation proof and authorise the
+actual native row; it may approve extension representation only, never native writes.
+The optional registry contract is locally verified; no owner currently enables it.

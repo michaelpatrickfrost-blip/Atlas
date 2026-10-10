@@ -1793,3 +1793,16 @@ revoked creator's frozen operation without inheriting that creator's grants. It
 returns state/revision only and performs no native/value/count reads or target
 activation. CAS/Audit are atomic and replays refresh authority. Live-data permission
 still applies to review/publication/row work; it is not needed to stop metadata work.
+
+
+## 10 October 2026 — Representation approval and ordinary selection remain distinct
+
+A new optional versioned owner policy references a registered transactional query
+with native write capability and explicitly snapshot-supported typed source versions.
+Old read-only snapshots do not imply conversion authority, and normal read/extend
+intents stay unchanged. The pure representation encoder revalidates the canonical
+converter result and may preserve known retired enum IDs; normal saves still reject
+new retired selections. Neither metadata nor encoding grants record/reference access.
+Execution must prove stored source observation and target lineage in the owner
+transaction. This fulfils historical representation compatibility without changing
+native business mutation rules or introducing another permissions architecture.

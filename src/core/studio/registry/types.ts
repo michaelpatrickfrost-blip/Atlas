@@ -51,6 +51,9 @@ export type EntityDescriptor = ContractIdentity & {
       /** Explicit same-canonical-entity reference read versions covered by this
        * owner's pinned query. This metadata never grants reference permission. */
       referenceVersions?: readonly number[] };
+    /** Representation-only approval of a persisted reviewed publication row.
+     * This is distinct from normal extension editing and never grants native writes. */
+    migrationRepresentation?: { query: { id: string; version: number }; sourceVersions: readonly number[] };
     authorise(ctx: RecordContext, request: RecordRequest): Promise<RecordAnchor>;
   };
 };

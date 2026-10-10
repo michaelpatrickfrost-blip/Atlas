@@ -22,6 +22,35 @@ function setup(d = descriptor(goodOwner), available = true) {
 }
 const transaction = {} as Prisma.TransactionClient;
 describe("Studio owner record contracts", () => {
+
+  it("requires explicit representation approval and atomically validates owner transaction and source subset without widening normal intents", async () => {
+    const source = descriptor(goodOwner); source.record!.fieldPolicy = { types: ["string"], reservedKeys: ["id"], referenceEntities: [], maxFields: 10 };
+    const old = setup(source).reference;
+    const upgraded: EntityDescriptor = { ...source, version: 2, record: { ...source.record!,
+      migrationSnapshot: { query: { id: "tickets.ticket.snapshot", version: 1 }, sourceVersions: [1, 2] },
+      migrationRepresentation: { query: { id: "tickets.ticket.representation", version: 1 }, sourceVersions: [1] } } };
+    const makeQuery = (id: string, capability = "tickets.ticket.manage", required = true) => query({ id, version: 1, label: "Owner", capability,
+      lifecycle: "active", classification: "confidential", kind: "query", input: z.strictObject({}), output: z.null(),
+      pagination: "none", maxCardinality: 1, costClass: "low", ...(required ? { transaction: "required" as const } : {}), execute: async () => null });
+    const base = [entity(source), makeQuery("tickets.ticket.list", "tickets.ticket.read"), makeQuery("tickets.ticket.get", "tickets.ticket.read"), makeQuery("tickets.ticket.snapshot")];
+    for (const bad of [undefined, makeQuery("tickets.ticket.representation", "tickets.ticket.read"), makeQuery("tickets.ticket.representation", undefined, false)]) {
+      const registry = new CapabilityRegistry(async () => true);
+      expect(() => registry.register("tickets", { contributions: [...base, entity(upgraded), ...(bad ? [bad] : [])] })).toThrow("transactional owner query");
+      expect(() => registry.describe(source.id, 1)).toThrow("missing Studio contract");
+    }
+    for (const versions of [[99], [1, 1]]) expect(() => entity({ ...upgraded, record: { ...upgraded.record!,
+      migrationRepresentation: { ...upgraded.record!.migrationRepresentation!, sourceVersions: versions } } })).toThrow();
+    expect(() => entity({ ...upgraded, record: { ...upgraded.record!, migrationSnapshot: undefined } })).toThrow("snapshot-supported");
+    const registry = new CapabilityRegistry(async () => true);
+    registry.register("tickets", { contributions: [...base, entity(upgraded), makeQuery("tickets.ticket.representation")] });
+    expect(registry.describe(source.id, 1)).toEqual(old);
+    expect(entityDetailsSchema.parse(old.details).record?.migrationRepresentation).toBeUndefined();
+    expect(registry.describe(source.id, 2).schemaHash).not.toBe(old.schemaHash);
+    const reference = registry.describe(source.id, 2);
+    await expect(registry.authoriseRecord({ session, transaction }, reference, { recordId: "ticket", intent: "representation", expectedRevision: 4 })).rejects.toThrow();
+    await expect(registry.invoke(session, registry.describe("tickets.ticket.representation", 1), {})).rejects.toThrow("shared server transaction");
+  });
+
   it("validates reference read versions atomically without changing old absent metadata/hash or granting invocation", () => {
     const source = descriptor(goodOwner); source.record!.fieldPolicy = { types: ["string"], reservedKeys: ["id"], referenceEntities: [], maxFields: 10 };
     const old = setup(source).reference;

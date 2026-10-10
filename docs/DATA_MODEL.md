@@ -225,7 +225,7 @@ and complete current-member/private access; legacy/missing opt-in denies review.
 Reference coverage VERIFIED on 32ee77e full candidate/public acceptance. The service is internal and not a public/desktop generic-data endpoint.
 
 
-Reviewed publication (2B3d2 local, not applied): StudioFieldMigrationPublication
+Reviewed publication (2B3d1–d4 VERIFIED candidate/public ea27b2f): StudioFieldMigrationPublication
 binds the immutable review to a distinct target generation/version/checksum and
 publisher/loss acknowledgement. An additive partial unique index permits only one
 PUBLISHED operation per field/tenant; retained identity is immutable and cancellation
@@ -233,12 +233,11 @@ requires state/revision CAS. Exact post-publication metadata freshness does not
 relax earlier preparation freshness. Pending generation activation and normal
 target writes are denied; open source/draft/metadata changes freeze until cancellation
 or later reviewed execution/cutover. Native domain operations remain unchanged.
-The schema is not a migration executor and its SQL awaits central acceptance.
+The schema is not a migration executor; actual SQL constraints passed central candidate/public acceptance.
 
 
-The reviewed publisher and sparse cancellation service are now locally implemented
-and checked, with a shared metadata publisher and exact review inspector. Actual
-receipt/freeze/Audit/runtime constraints remain unverified until the pending
-20261010040000 candidate/public Test helper runs. No target values/executor/cutover
-or public field-migration action is exposed. The current accepted reference release
-is 32ee77e; source-native operations and permission architectures are retained.
+The reviewed publisher and sparse cancellation service use the shared metadata
+publisher and exact review inspector. Migration 20261010040000 applied successfully;
+actual candidate/public receipt/freeze/Audit rollback/replay/cancellation/runtime
+constraints passed in ea27b2f. No target values/executor/cutover or public migration
+action is exposed. Native operations and permission architectures are retained.

@@ -33,6 +33,10 @@ export const entityDetailsSchema = z.strictObject({
       referenceVersions: z.array(z.number().int().positive()).min(1).max(20)
         .refine(versions => new Set(versions).size === versions.length, "Duplicate migration reference version.").optional(),
     }).optional(),
+    migrationRepresentation: z.strictObject({ query: queryReference,
+      sourceVersions: z.array(z.number().int().positive()).min(1).max(20)
+        .refine(versions => new Set(versions).size === versions.length, "Duplicate representation source version."),
+    }).optional(),
     nativeFields: z.literal("read_only"), revision: z.literal("owner_positive_integer"),
   }).optional(),
 }).superRefine((value, ctx) => {
@@ -42,6 +46,9 @@ export const entityDetailsSchema = z.strictObject({
   if (value.record?.migrationSnapshot && !value.record.fieldPolicy) ctx.addIssue({ code: "custom", message: "Migration snapshots require an owner field policy." });
   if (value.record?.migrationSnapshot?.referenceVersions && !value.record.fieldPolicy?.types.includes("reference"))
     ctx.addIssue({ code: "custom", message: "Reference coverage requires the owner's reference field policy." });
+  if (value.record?.migrationRepresentation && (!value.record.migrationSnapshot
+    || value.record.migrationRepresentation.sourceVersions.some(version => !value.record!.migrationSnapshot!.sourceVersions.includes(version))))
+    ctx.addIssue({ code: "custom", message: "Representation approval requires explicitly snapshot-supported source versions." });
 });
 
 export const recordRequestSchema = z.strictObject({

@@ -11,13 +11,13 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3d4 — Actual reviewed publication acceptance — IN PROGRESS.
-Scalar/source coverage VERIFIED live fc9b80f; reference c1 local; no writer/designer.
+2B3e1 — Representation policy and typed encoder — IN PROGRESS.
+2B3d1–d4 VERIFIED ea27b2f; no row writer/designer.
 
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source 32ee77e7b1c684ab9c6b5f898eb641cebf0ae3f9,
+VERIFIED. Latest confirmed live source ea27b2ffa32ec484f90a27ad28faaa1d78dd4aff,
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -32,6 +32,8 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | Workstream | Status | Evidence |
 | --- | --- | --- |
 | 2B3c6b2b3c Reference review | VERIFIED | 32ee77e complete candidate/public, actual permission/target/Audit/replay plus native acceptance; no target/native writes. |
+| 2B3e1 Representation policy/typed encoder | VERIFIED locally | 33 files/191 assertions, production build, strict TS/scoped lint/diff; no owner hook or writes enabled. |
+| 2B3d1–d4 Reviewed publication/freeze/cancellation | VERIFIED | ea27b2f candidate/public complete suites, actual SQL/paired Audit rollback/private/replay/cancel/source recovery; no target values. |
 | Specification intake and repository recovery | VERIFIED | Full document read; clean detached starting HEAD af030b0; source/provider/schema inspection. |
 | Source sequence reconciliation | VERIFIED | Michael's 9 October follow-up authorises ordered plan and continuation. |
 | 0A Registry contracts/runtime | VERIFIED | Five focused tests and full TypeScript check passed before adapter work. |
@@ -62,6 +64,56 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+2B3e1 VERIFIED locally, pure contract/encoder only: optional representation
+metadata validates explicit snapshot-supported sources and a registered same-owner
+transactional query/native write capability atomically. Existing absent contracts
+and all owner hash regression tests pass; normal read/extend remains unchanged.
+Normal encoder uses current selections; representation revalidates canonical typed
+converter output and retains known retired IDs only, with exact 15-family roundtrip,
+null/zero/false/required, decimal/money, UTC and rejection/fingerprint evidence.
+33 Studio files/191 assertions PASS; production build, strict post-build TypeScript,
+scoped lint and diff PASS. Logs /tmp/atlas-studio-representation-contract-{all-tests,
+build,postbuild-types,lint}.txt. An initial quoted Vitest glob selected no tests;
+corrected to the supported filename filter and all 33 files ran successfully.
+No DDL or owner execution enabled. Accepted live ea27b2f, Phase 2 NOT PASSED.
+Next 2B3e2a closed execution/outcome protocol and tests before additive persistence.
+
+
+ea27b2ffa32ec484f90a27ad28faaa1d78dd4aff complete combined candidate/public
+acceptance PASS, deploy session 42364 exit 0 and public /api/health/release exact
+SHA confirmed. 2B3d1–d4 VERIFIED: real scoped receipt/immutability/CAS/source-draft
+freeze, premature target/descendant activation denial, paired Audit rollback/fresh
+replay, private revocation, sparse cancellation and source/draft editing recovery.
+No target values/native mutation/cutover. Native Atlas acceptance all PASS; exact
+synthetic Test companies suspended/access revoked, QA originals/history retained.
+Evidence xkustF/tSM6C9, backup 031634, fixtures 031832/032224; migrate log confirms
+20261010040000 applied successfully. Previous 32ee77e retained. Deployment log
+/tmp/atlas-studio-publication-deploy.txt. Phase 2 NOT PASSED; designer, dashboard
+publication/custom buttons and row conversion remain pending. Current 2B3e1 local
+policy/encoder checks in progress, then additive execution/outcome schema 2B3e2.
+
+
+2B3e1 IN PROGRESS before code: optional owner representation policy points to
+registered same-owner transactional query/native write capability and explicit
+snapshot-supported typed source versions. Old absent metadata/hashes and ordinary
+read/extend intents stay unchanged; no owner execution is enabled yet. Pure normal
+and representation encoder reuse strict validation, exact typed columns/fingerprints;
+representation retains only converter-approved retired choice IDs. Files registry
+contracts/types/entities/registration, fields/codec and focused tests; no DDL/native
+writes/runner/UI. d4 candidate and public Studio helper PASS, full public native
+runner pending. Run focused tests/types/lint/build, review diff and update memory.
+
+
+ea27b2ffa32ec484f90a27ad28faaa1d78dd4aff candidate combined acceptance PASS;
+actual reviewed publication/freeze/cancellation/paired Audit rollback and native
+unchanged checks passed. Candidate xkustF, backup 031634, fixtures 031832.
+Additive migration 20261010040000 applied during preparation (candidate runtime
+exercised new table/guards); public tSM6C9/032224 still running, not yet accepted.
+Last accepted live remains 32ee77e until full public runner exits successfully.
+2B3e bounded workstream plan saved before code, execution NOT STARTED; no designer
+or customer-dashboard publishing claim. Phase 2 gate NOT PASSED.
+
 
 d4 helper IMPLEMENTED, actual NOT RUN: fresh exact Test source/review uses shared
 publisher, real paired Audit failure/rollback/replay, source active/history and
@@ -500,6 +552,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+e1: registry types/entities/contracts/registration, fields/codec, entity tests and
+new field-encoding tests; module docs, evolution plan/ledger/CURRENT_STATE/decision.
+No DDL, native/source/target records or UI.
+
 d4: check-field-publication.ts, principal integration, plan/ledger/CURRENT_STATE.
 Pending d2–d3 schema/SQL/publisher/shared inspection/cancellation must ship together.
 
@@ -626,7 +682,7 @@ business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
 
-20261010040000_studio_field_publications NOT APPLIED. Latest actual migration
+20261010040000_studio_field_publications APPLIED during ea27b2f candidate preparation; actual complete candidate/public checks PASS. Previous actual migration
 remains 20261010030000_studio_field_reviews. Ship d2 with complete reviewed service.
 
 20261010030000_studio_field_reviews applied in backed-up 8780a07 preparation;
@@ -900,11 +956,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Pin coherent d1–d4 commit on codex/studio-phase2 and run ATLAS_RELEASE_ACCEPTANCE=
-studio through original backed-up candidate and public combined suites. New additive
-20261010040000 applies at candidate preparation; require actual publication/freeze/
-Audit rollback/replay/cancellation/descendant activation guards plus normal metadata
-and native workflows, exact public health SHA and deploy exit 0 before VERIFIED.
-On failure preserve live 32ee77e, inspect exact error/SQL and follow DEPLOY migration
-repair discipline; never reset/rollback business data. Then 2B3e native-approved
-representation-only execution and durable bounded outcomes plan, no later phases.
+Implement 2B3e2a closed execution/outcome protocol and tests: pin actual publication,
+review checksum and observation target fingerprint, account for exact own extension
+revision increments, bounded revision/cursor state and retained failure/replay.
+Then 2B3e2b additive tenant-bound execution/outcome SQL with atomic target lineage
+and deferred guards. No native writes/activation; owner hook and actual batches
+remain e3–e6. Accepted live ea27b2f; Phase 2 visual/dashboard/button gate open.

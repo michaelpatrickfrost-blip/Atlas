@@ -74,6 +74,13 @@ export class CapabilityRegistry {
           }
         }
       }
+      if (record.migrationRepresentation) {
+        const ref = record.migrationRepresentation.query;
+        const target = additions.get(`${ref.id}@${ref.version}`) ?? this.items.get(`${ref.id}@${ref.version}`);
+        if (!target || target.metadata.kind !== "query" || target.metadata.ownerModuleId !== ownerModuleId
+          || target.metadata.capability !== record.writeCapability || target.metadata.details.transaction !== "required")
+          throw new Error("Representation approval requires a registered transactional owner query with native write capability.");
+      }
     }
     for (const [key, item] of additions) this.items.set(key, item);
   }

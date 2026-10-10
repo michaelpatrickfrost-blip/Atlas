@@ -3,7 +3,7 @@
 Source: unchanged Studio specification Sections 6.4, 24–24.1 and 25–28.
 Dependencies: 2B2 permanent field identity, immutable generations/typed history and
 metadata publication. 2B3a pure library VERIFIED on candidate/public 7941f9b (tests/types/lint/build); combined 2B2 candidate/public e5d66e6 release acceptance PASS.
-2B3b retirement VERIFIED on candidate/public 7941f9b (35 local tests/types/lint/build and real central checks PASS); reviewed jobs/publication/batches/cutover remain NOT STARTED; principal foundation below is IMPLEMENTED locally. This plan breaks the specified operation into
+2B3b retirement VERIFIED on candidate/public 7941f9b (35 local tests/types/lint/build and real central checks PASS); Reviewed publication is VERIFIED on ea27b2f complete candidate/public suites. Batches/cutover remain NOT STARTED; principal and review foundations are VERIFIED live. This plan breaks the specified operation into
 reviewable checkpoints; it does not substitute for the supplied specification.
 
 | ID | Purpose and dependencies | Expected files / database | Required evidence | Status |
@@ -11,7 +11,7 @@ reviewable checkpoints; it does not substitute for the supplied specification.
 | 2B3a | Typed compatibility analysis and deterministic conversion rules; depends on existing validators | fields/evolution and conversion tests; no DB | Stable field/entity identity; exact integer→decimal bounds; explicit string→enum mappings/unmapped policy; explicit date/UTC semantics; no inferred money currency or changed reference targets | VERIFIED candidate/public; pure library only |
 | 2B3b | Retirement with CAS and audit, retaining published schema, binding and history | definitions/field lifecycle + tests; additive metadata only if required | Tenant/publish access, stale revisions, no further editing/activation, authorised history retained, keys not recycled | VERIFIED backend candidate/public 7941f9b; no history API/UI |
 | 2B3c | First-class reviewed plan, preview and durable job/row state | fields/migrations, Prisma additive migration | Source/target version/checksum, affected count, bounded authorised examples/failures, index impact and rollback limits; forged/stale plans rejected | IN PROGRESS; c1 principals verified candidate/public 7941f9b; preview/persistence not started |
-| 2B3d | Reviewed target publication into a new generation | compiler/binding/lifecycle, job FK constraints | Immutable old schemas/values, exact target plan required, unsupported structural changes fail closed, target publication does not activate it | NOT STARTED |
+| 2B3d | Reviewed target publication into a new generation | compiler/binding/lifecycle, job FK constraints | Immutable old schemas/values, exact target plan required, unsupported structural changes fail closed, target publication does not activate it | VERIFIED ea27b2f candidate/public |
 | 2B3e | Bounded resumable/idempotent conversion batches | migration runner/codec, durable row outcomes and tests | Owner and field access rechecked, source value revision checked, atomic target value plus outcome, failure/restart/replay evidence, no native mutation | NOT STARTED |
 | 2B3f | Explicit cutover and rolling read compatibility | activation/resolver and subsequent 2B4 gateway | Source remains readable until cutover; all failures/conflicts resolved; uniqueness/required/access rechecked; CAS activation and auditable rollback limits | NOT STARTED |
 | 2B3g | Central migration acceptance and checkpoint | existing isolated Test driver, docs/memory | Real preview, failed batch, resume, duplicate invocation, tenant/permissions, retained history, cutover/rollback, production build and live verification | NOT STARTED |
@@ -785,3 +785,84 @@ postbuild-types,lint}.txt. Initial helper guessed retirement path; corrected to
 existing fields/retirement before final checks. No broken checkpoint/deployment.
 Pending migration 20261010040000 not applied; pin full candidate/public release next.
 Accepted live 32ee77e, Phase 2 NOT PASSED; no row executor/cutover/visual builder yet.
+
+
+## 2B3e — Representation execution workstreams (plan before code)
+
+Dependencies: exact reviewed publication and its real candidate/public proof.
+Section 24 requires resumable, idempotent conversion with unambiguous durable row
+state. This is the custom-field operation within Phase 2, not a Flow engine.
+
+| ID | Purpose / expected files | Database implications | Verification / completion |
+| --- | --- | --- | --- |
+| 2B3e1 | Explicit optional owner representation policy in registry types/entities/contracts/registration; pure typed encoder in fields/codec | None; existing absent metadata and hashes retained | Atomic owner/transaction/source-version contract validation; all 15 types, exact decimal/money, null/zero/false, UTC, retired-choice policy and write rejection tests; NOT STARTED |
+| 2B3e2 | Durable execution/outcome contracts and additive schema/SQL | Tenant-bound publication/observation/target slot/value lineage; immutable outcomes, bounded CAS state and atomic target/outcome guards; no native tables/backfill/reset | Actual SQL/FK/history/source and target guards plus failure rollback; NOT STARTED |
+| 2B3e3 | Tickets explicitly approves representation-only historical/final conversion through a new versioned query/entity | No native writes; server-stored receipt and observation only, same Serializable transaction | Actual private/member/module/native revision and publication identity checks; existing v1–v4 and query v1/v2 hashes unchanged; ordinary final/merged extend still denied; NOT STARTED |
+| 2B3e4 | Shared exact execution inspection and one-row target writer | Source remains active; target value, slot pointer, extension revision, durable outcome and Audit commit together | Written/current/target field and reference authority before decoding; source digest/result replay match; no native mutation; NOT STARTED |
+| 2B3e5 | Bounded resumable server batch service | Stored cursor/revision, success/failure state and idempotent outcomes; transactions end between batches | Limit 1–50, fresh initiating authority each resume, concurrent/stale/replay/cancel/failure/retry tests; NOT STARTED |
+| 2B3e6 | Actual central acceptance through combined candidate/public runner | Only exact synthetic Test records; retain history and compare native snapshots | Interrupted/resumed batches, closed/unanchored/null values, paired Audit rollback, denied target normal edits/activation and source still readable; NOT STARTED |
+
+Representation approval is separate from normal `read`/`extend`. Optional registry
+metadata points to an explicitly registered same-owner transactional query with
+native write capability and declared typed source versions. It grants no native
+write or permission by itself. The owner receives only server-stored publication
+and observation identifiers, reloads scoped proof and locks/authorises the actual
+native row, including private queues. Old read-only snapshot opt-ins do not imply
+approval. Native business columns are never written by this operation.
+
+Execution must account for extension revision increments caused by its own target
+writes through durable outcomes. An observation's global extension revision cannot
+be silently ignored: unrelated changes or new/deleted native records invalidate
+coverage. The original preparation and publication predicates stay strict; use a
+separate explicit execution proof. Target rows remain unusable until 2B3f cutover,
+and cancellation/failure never activates them. Persisted success identifies exact
+source observation and target slot/value; replay rechecks current authority and
+that lineage. Do not infer authority from a checksum or client-supplied stage.
+
+The pure encoder validates normal input through the existing field validator.
+A separate server-only representation path may retain retired enum IDs already
+approved by the converter; it cannot make those IDs selectable in ordinary saves.
+Null uses empty typed columns (Prisma JSON database null), integers use safe BigInt,
+decimal/money use exact Decimal strings, dates UTC midnight, instants UTC with
+millisecond precision. It does not persist or authorise any record.
+
+Do not move to 2B3f until execution has real failure/recovery evidence. The later
+2B4 value gateway and 2C–2E resolver/runtime/visual designer are still required;
+this foundation does not satisfy the customer's visual publishing acceptance.
+
+2B3e1 IN PROGRESS before code: optional owner representation policy points to
+registered same-owner transactional query/native write capability and explicit
+snapshot-supported typed source versions. Old absent metadata/hashes and ordinary
+read/extend intents stay unchanged; no owner execution is enabled yet. Pure normal
+and representation encoder reuse strict validation, exact typed columns/fingerprints;
+representation retains only converter-approved retired choice IDs. Files registry
+contracts/types/entities/registration, fields/codec and focused tests; no DDL/native
+writes/runner/UI. d4 candidate and public Studio helper PASS, full public native
+runner pending. Run focused tests/types/lint/build, review diff and update memory.
+
+ea27b2ffa32ec484f90a27ad28faaa1d78dd4aff complete combined candidate/public
+acceptance PASS, deploy session 42364 exit 0 and public /api/health/release exact
+SHA confirmed. 2B3d1–d4 VERIFIED: real scoped receipt/immutability/CAS/source-draft
+freeze, premature target/descendant activation denial, paired Audit rollback/fresh
+replay, private revocation, sparse cancellation and source/draft editing recovery.
+No target values/native mutation/cutover. Native Atlas acceptance all PASS; exact
+synthetic Test companies suspended/access revoked, QA originals/history retained.
+Evidence xkustF/tSM6C9, backup 031634, fixtures 031832/032224; migrate log confirms
+20261010040000 applied successfully. Previous 32ee77e retained. Deployment log
+/tmp/atlas-studio-publication-deploy.txt. Phase 2 NOT PASSED; designer, dashboard
+publication/custom buttons and row conversion remain pending. Current 2B3e1 local
+policy/encoder checks in progress, then additive execution/outcome schema 2B3e2.
+
+2B3e1 VERIFIED locally, pure contract/encoder only: optional representation
+metadata validates explicit snapshot-supported sources and a registered same-owner
+transactional query/native write capability atomically. Existing absent contracts
+and all owner hash regression tests pass; normal read/extend remains unchanged.
+Normal encoder uses current selections; representation revalidates canonical typed
+converter output and retains known retired IDs only, with exact 15-family roundtrip,
+null/zero/false/required, decimal/money, UTC and rejection/fingerprint evidence.
+33 Studio files/191 assertions PASS; production build, strict post-build TypeScript,
+scoped lint and diff PASS. Logs /tmp/atlas-studio-representation-contract-{all-tests,
+build,postbuild-types,lint}.txt. An initial quoted Vitest glob selected no tests;
+corrected to the supported filename filter and all 33 files ran successfully.
+No DDL or owner execution enabled. Accepted live ea27b2f, Phase 2 NOT PASSED.
+Next 2B3e2a closed execution/outcome protocol and tests before additive persistence.

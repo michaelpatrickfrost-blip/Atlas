@@ -1,5 +1,59 @@
 # Atlas current state
 
+## 10 October 2026 — Representation contract and encoder locally verified
+
+2B3e1 VERIFIED locally, pure contract/encoder only: optional representation
+metadata validates explicit snapshot-supported sources and a registered same-owner
+transactional query/native write capability atomically. Existing absent contracts
+and all owner hash regression tests pass; normal read/extend remains unchanged.
+Normal encoder uses current selections; representation revalidates canonical typed
+converter output and retains known retired IDs only, with exact 15-family roundtrip,
+null/zero/false/required, decimal/money, UTC and rejection/fingerprint evidence.
+33 Studio files/191 assertions PASS; production build, strict post-build TypeScript,
+scoped lint and diff PASS. Logs /tmp/atlas-studio-representation-contract-{all-tests,
+build,postbuild-types,lint}.txt. An initial quoted Vitest glob selected no tests;
+corrected to the supported filename filter and all 33 files ran successfully.
+No DDL or owner execution enabled. Accepted live ea27b2f, Phase 2 NOT PASSED.
+Next 2B3e2a closed execution/outcome protocol and tests before additive persistence.
+
+## 10 October 2026 — Reviewed publication deployed and verified
+
+ea27b2ffa32ec484f90a27ad28faaa1d78dd4aff complete combined candidate/public
+acceptance PASS, deploy session 42364 exit 0 and public /api/health/release exact
+SHA confirmed. 2B3d1–d4 VERIFIED: real scoped receipt/immutability/CAS/source-draft
+freeze, premature target/descendant activation denial, paired Audit rollback/fresh
+replay, private revocation, sparse cancellation and source/draft editing recovery.
+No target values/native mutation/cutover. Native Atlas acceptance all PASS; exact
+synthetic Test companies suspended/access revoked, QA originals/history retained.
+Evidence xkustF/tSM6C9, backup 031634, fixtures 031832/032224; migrate log confirms
+20261010040000 applied successfully. Previous 32ee77e retained. Deployment log
+/tmp/atlas-studio-publication-deploy.txt. Phase 2 NOT PASSED; designer, dashboard
+publication/custom buttons and row conversion remain pending. Current 2B3e1 local
+policy/encoder checks in progress, then additive execution/outcome schema 2B3e2.
+
+## 10 October 2026 — Representation policy and encoder started
+
+2B3e1 IN PROGRESS before code: optional owner representation policy points to
+registered same-owner transactional query/native write capability and explicit
+snapshot-supported typed source versions. Old absent metadata/hashes and ordinary
+read/extend intents stay unchanged; no owner execution is enabled yet. Pure normal
+and representation encoder reuse strict validation, exact typed columns/fingerprints;
+representation retains only converter-approved retired choice IDs. Files registry
+contracts/types/entities/registration, fields/codec and focused tests; no DDL/native
+writes/runner/UI. d4 candidate and public Studio helper PASS, full public native
+runner pending. Run focused tests/types/lint/build, review diff and update memory.
+
+## 10 October 2026 — Reviewed publication candidate accepted; execution plan saved
+
+ea27b2ffa32ec484f90a27ad28faaa1d78dd4aff candidate combined acceptance PASS;
+actual reviewed publication/freeze/cancellation/paired Audit rollback and native
+unchanged checks passed. Candidate xkustF, backup 031634, fixtures 031832.
+Additive migration 20261010040000 applied during preparation (candidate runtime
+exercised new table/guards); public tSM6C9/032224 still running, not yet accepted.
+Last accepted live remains 32ee77e until full public runner exits successfully.
+2B3e bounded workstream plan saved before code, execution NOT STARTED; no designer
+or customer-dashboard publishing claim. Phase 2 gate NOT PASSED.
+
 ## 10 October 2026 — Actual reviewed publication proof ready for release
 
 d4 helper IMPLEMENTED, actual NOT RUN: fresh exact Test source/review uses shared

@@ -88,7 +88,7 @@ export async function checkFieldExecution(session: Session, principal: FieldMigr
   const finalObservation = observations.find(o => o.recordId === finalId); assert(finalObservation);
   await withFieldMigrationAuthority(session, principal, async authority => {
     const context = { session: authority.session, transaction: authority.transaction };
-    await assert.rejects(() => registry.authoriseRecord(context, target.entity, { recordId: finalId, intent: "extend", expectedRevision: finalObservation.nativeRevision }), /final|closed|immutable|unavailable/i);
+    await assert.rejects(() => registry.authoriseRecord(context, target.entity, { recordId: finalId, intent: "extend", expectedRevision: finalObservation.nativeRevision }), /Reopen active ticket work before changing extension values/);
     const approval = registry.describe("tickets.ticket.field_representation", 1);
     assert.deepEqual(await registry.invokeQueryInTransaction(context, approval, { preparationId: prepared.id, observationId: finalObservation.id }), {
       organisationId: session.organisationId, recordId: finalId, revision: finalObservation.nativeRevision, preparationId: prepared.id, observationId: finalObservation.id, representationOnly: true });

@@ -1094,3 +1094,12 @@ deploy session 73316 exit 1. Exact synthetic companies suspended/history retaine
 Public health confirmed unchanged accepted 64361cb. Applied 20261010050000 remains
 additive; do not edit its checksum or reset data. Rerun local checks and pinned full
 candidate/public acceptance after corrected checkpoint.
+
+36c211b candidate IatJ7l stopped before activation exactly at the anticipated
+message assertion: actual native final-row guard rejected with "Reopen active ticket
+work before changing extension values." The local test now matches that confirmed
+domain rule. Strict TypeScript/scoped lint/diff PASS; /tmp/atlas-studio-execution-final-
+policy-{types,lint}.txt. App/DDL unchanged; 228 assertions/build retained. Backup 042738,
+fixtures 042930, deploy session 39039 exit 1. No row lifecycle/process proof reached.
+Synthetic Test access suspended/history retained; public accepted 64361cb unchanged.
+Commit corrected assertion and rerun the full pinned combined release now.

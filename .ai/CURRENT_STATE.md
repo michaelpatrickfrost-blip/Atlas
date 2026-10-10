@@ -1,5 +1,28 @@
 # Atlas current state
 
+## 10 October 2026 — Confirmed native final guard and corrected assertion
+
+36c211b candidate IatJ7l stopped before activation exactly at the anticipated
+message assertion: actual native final-row guard rejected with "Reopen active ticket
+work before changing extension values." The local test now matches that confirmed
+domain rule. Strict TypeScript/scoped lint/diff PASS; /tmp/atlas-studio-execution-final-
+policy-{types,lint}.txt. App/DDL unchanged; 228 assertions/build retained. Backup 042738,
+fixtures 042930, deploy session 39039 exit 1. No row lifecycle/process proof reached.
+Synthetic Test access suspended/history retained; public accepted 64361cb unchanged.
+Commit corrected assertion and rerun the full pinned combined release now.
+
+
+## 10 October 2026 — Match actual final-record policy evidence
+
+Pinned correction 36c211b940fa3a2fa9fc5142185c79b397839a39 running under
+backup 20261010-042738, deploy session 39039, /tmp/atlas-studio-execution-revision-
+deploy.txt. Before its acceptance, source inspection confirmed the ordinary final
+Ticket guard says "Reopen active ticket work before changing extension values."
+Prepare a local assertion for that exact domain rule (not the earlier generic
+final/closed text); do not modify immutable candidate or advance branch during
+runner. Migration remains applied, public accepted 64361cb, execution NOT VERIFIED.
+
+
 ## 10 October 2026 — Candidate proof corrected before activation
 
 Corrected one-line acceptance check: strict TypeScript/scoped lint/diff PASS; /tmp/atlas-studio-execution-proof-revision-{types,lint}.txt. App code unchanged; previous 228 assertions/local build retained, next pinned server build and actual proof required.

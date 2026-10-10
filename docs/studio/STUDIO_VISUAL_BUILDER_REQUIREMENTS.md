@@ -61,3 +61,17 @@ tenant, source availability, native capability and owning domain rules on every
 invocation. Configuration cannot grant privileges or supply arbitrary executable
 scripts. Verify permitted invocation, denied users, disabled sources, tenant
 isolation and native business outcomes. Later Flow actions remain later-phase work.
+
+10 October: Michael rejects naming configurations in a library as the primary
+journey. Studio starts from the selected business and the software area to tailor,
+then useful layout presets, visual editing/preview and reviewed business publication.
+Capability-reference records are optional advanced foundation tooling. Current UI
+must state the designer is unfinished instead of presenting technical setup as its
+replacement. Preserve existing definitions and separate Admin/business authority.
+
+Michael explicitly says he is not a coder: version comparison and setup must be
+visual, modular and very easy to use. Screen/template comparisons will show actual
+layouts and clear additions/removals/changes. Foundation reference-set comparison
+must explain descriptions and selected references in plain language, not JSON,
+checksums or hashes. Draft check results also need readable readiness/review states.
+Technical integrity still runs on the server and never substitutes for design preview.

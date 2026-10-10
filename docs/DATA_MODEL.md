@@ -267,8 +267,7 @@ and earlier failed candidate evidence are preserved in the Studio ledger.
 It binds current READY execution/review/publication and source-active definition CAS,
 with explicit unchanged-representation rollback limits. Eight focused and 257 scoped
 regression assertions, build/types/lint PASS; actual authorised-row identity proof
-passed in 080e4d7 complete candidate/public acceptance. Receipt storage is now VERIFIED5f5fce5; atomic activation is locally implemented
-and awaiting actual f3c proof. Rollback/value gateway/visual builder remain pending.
+passed in 080e4d7 complete candidate/public acceptance. Receipt storage is now VERIFIED5f5fce5; atomic activation is VERIFIED9aad1fc complete candidate/public. Rollback/value gateway/visual builder remain pending.
 
 2B3f2 storage checkpoint (VERIFIED on 5f5fce5 complete candidate/public;0006 APPLIED):
 StudioFieldMigrationCutover has scoped execution and source/target immutable-version
@@ -280,11 +279,12 @@ activation/rollback API. Central backed-up DDL rollback and 257 scoped assertion
 build/types/lint PASS; actual central rollback-only storage guards passed candidate/public. Generic
 receipt reads/counts denied; unchanged 905 actions. See Studio ledger.
 
-2B3f3 activation service checkpoint (IMPLEMENTED, actual proof pending): no schema
+2B3f3 activation service checkpoint (VERIFIED9aad1fc complete candidate/public): no schema
 change. Strict current READY review/publication/definition confirmation creates the
 retained receipt, CASes publication and reuses the platform activator/source-pointer
 CAS with paired Audit in one refreshed-authority Serializable transaction. Replay
 checks actual receipt/target-active metadata and retained source/target coverage,
 then owning native/private/current/written/reference/unique policies. Old freshness
-unchanged; normal values/rollback remain closed. 285 local assertions/build/types/
-lint PASS; candidate/public service proof not yet run. See Studio ledger.
+unchanged; normal values/rollback remain closed. 286 local assertions/build/types/
+lint PASS; actual candidate/public service proof PASS, including both paired-Audit
+failures, concurrent CAS/raw conflict, fresh replay and current access revocation. See Studio ledger.

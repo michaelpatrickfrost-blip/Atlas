@@ -1265,3 +1265,62 @@ F3c first candidateaea5ef1 failed safely on raw locked-query serialization code
 P2010/40001 escaping domain conflict translation. No live switch. Shared authority
 now narrowly maps40001/40P01; negative guard/Audit mapping tests retain failures.
 45 files/286 assertions/build/types/lint PASS; full candidate/public rerun required.
+
+### F4 dependency inspection while f3c runs — context, not implementation
+
+Do not code f4 until f3c full candidate/public passes. Existing0006 is intentionally
+ACTIVATED/revision0 only, freezes CUTOVER drafts/configuration and all target/source
+saves, and deferred pointer proof assumes exact initial target/revision. F4 needs
+a forward migration, not modification of applied0006. Retain lineage and denial
+for cancelled/rolled-back target generations and descendants.
+
+Resolve receipt lifecycle before SQL: rollback can only restore retained source
+when current native set/revisions/private access, source/target slots/values and
+configuration are unchanged. Current publisher authority must be explicit; never
+inherit the initiating actor's historical grants. Existing owner coverage query3
+permits current authorised coverage, while row representation approval binds the
+initiator/PUBLISHED state and must not be reused as a new rollback grant.
+
+Normal target writes (2B4), cosmetic configuration changes and subsequent reviewed
+migrations must not leave a permanently frozen field or multiple receipts each
+pretending to control the active pointer. Define the end of the safe rollback
+window and how a completed receipt becomes retained history before opening writes.
+The0006 deferred definition guard currently pins revision/target, so merely
+allowing slot INSERT/UPDATE is insufficient. Rolled-back source remains active
+while latest/draft intentionally retain target publication: ordinary cosmetic
+publish must compare the current approved representation or fail explicitly; do
+not erase latest/history or permit cancelled target-generation reuse. Replay must
+distinguish historical completed rollback from claims about today's active version.
+
+These are confirmed implementation dependencies, not final design choices or
+extra user approval requirements. F4 plan/contracts, additive transition guards,
+shared current-authority rollback, real service/Audit/replay/changed-state proof and
+value-window integration need separate coherent checkpoints. No code/DDL yet.
+
+F4 lifecycle option to assess after f3c: retain ACTIVATED while the exact reviewed
+representation is rollback eligible; guarded settlement can ROLLED_BACK (source
+pointer restored) or FINALIZED (keep target, explicitly end rollback window).
+Publication correspondingly ROLLED_BACK/COMPLETED. Retain original pin and add
+settlement actor/time/revision1, paired Audit, deferred atomic receipt/publication/
+pointer proof. Finalization enables ordinary target writes through2B4 and further
+configuration; old source remains retained history. This is a proposal, not an
+implemented state or a silently selected requirement. Decide disclosure and current
+principal/native permission boundaries before coding.
+
+Confirmed chain hazards: publication value guard currently SELECTs a single
+matching source/target publication. Once completed operations coexist with a later
+migration, prioritise ANY open PUBLISHED source freeze and ANY historical source
+retention; an old completed target cannot bypass a new source freeze. Ordinary
+activation cannot switch storage generations just because an older completed target
+exists; require same currently active generation/cosmetic compatibility or an exact
+new reviewed transition. Original deferred guards must keep initial activation
+proof while letting explicitly settled receipts remain history. Normal metadata
+publication currently compares the latest version; after cancelled/rolled-back
+target publication this may differ from current approved representation. Inspect
+and test active-vs-latest cosmetic publication rather than erase target/history.
+
+F3a–c VERIFIED10 October on exact9aad1fc complete candidate/public, runner54052 exit0.
+Both actual Audit failure rollbacks/concurrent CAS/current access/replay/history/native
+checks and all native suites PASS. No new DDL. Earlier pending entries are checkpoint
+history. Bounded Studio entry-point clarity companion addresses Michael's latest
+business-setup feedback before f4. It does not implement the dependent2E designer.

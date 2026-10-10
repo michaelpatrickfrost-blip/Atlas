@@ -1,3 +1,5 @@
+import { STUDIO_DATA_CAPABILITIES } from "@/core/studio/permissions";
+
 export type AccessLevel = "none" | "read" | "write" | "admin";
 export type AccessGroup = { id: string; name: string; capabilities: string[] };
 /** Presets expand into the same granular capabilities enforced by business services. */
@@ -50,7 +52,7 @@ export function capabilityLevel(cap: string): Exclude<AccessLevel, "none"> {
 export function presetCapabilities(group: AccessGroup, level: AccessLevel) {
   const rank = { none: 0, read: 1, write: 2, admin: 3 };
   return group.capabilities.filter(
-    (cap) => rank[capabilityLevel(cap)] <= rank[level],
+    (cap) => cap !== STUDIO_DATA_CAPABILITIES.liveTest && rank[capabilityLevel(cap)] <= rank[level],
   );
 }
 export function effectiveRoleCapabilities(
@@ -71,6 +73,7 @@ export function capabilityOverrides(base: Set<string>, selected: Set<string>) {
 }
 
 export function permissionLabel(value: string) {
+  if (value === STUDIO_DATA_CAPABILITIES.liveTest) return "Use live business data in Studio previews";
   return value
     .split(/[._]/)
     .filter(Boolean)

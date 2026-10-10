@@ -1,5 +1,31 @@
 # Atlas current state
 
+## 10 October 2026 — Actual snapshot owner proof passed on sealed candidate
+
+5d101da candidate owner checks PASS: real bounded canonical/final/unanchored
+snapshots, actual membership and SERIALIZABLE required, private denial before IDs/
+counts, exact complete/missing/equal-count substituted/stale native revision/
+foreign/missing/cancelled archive coverage. Canonical native rows unchanged.
+Metadata/archive/principal/Admin/business checks PASS; full native suite/public
+proof still pending. Private evidence /tmp/atlas-studio-candidate-m4iKXU; fixture
+backup atlas-pre-studio-candidate-20261010-010035. No whole Phase 2 gate claim.
+Independent c6a contract: 4 files/18 assertions, build/types/scoped lint PASS, no
+DDL or existing grants. Registered live-data cap excluded from roles/staff/presets;
+current/written field and reference policies tested locally. No collector yet.
+Next finish complete candidate/public suite and implement bounded preparation
+service with fresh principal/pinned source/draft/atomic audit.
+
+## 10 October 2026 — Snapshot release pinned; independent data policy contract started
+
+Exact 5d101da c5a/c5b backed-up combined deployment running; new central owner
+proof pending. Backup atlas-pre-deploy-20261010-005837, log /tmp/atlas-studio-
+snapshot-deploy.txt. Live still 8780a07 until confirmed. c6a scoped plan recorded:
+separate explicitly granted live-data test capability, current/written field policy
+and owner-authorised reference checks. No automatic roles/staff/preset grant, DDL
+or preview endpoint. This independent prerequisite does not use unverified owner
+snapshot service. Next finish c5b actual proof and test c6a contracts. Phase 2 NOT
+PASSED; customer visual builder/publication/buttons remain outstanding.
+
 ## 10 October 2026 — Tickets shared snapshot implemented, central proof pending
 
 c5b IMPLEMENTED locally: transaction-only owner preflight/bounded snapshots/exact

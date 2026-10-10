@@ -139,3 +139,17 @@ capability. Admin shortcuts include sensitive operations; source checks remain
 authoritative. Profile/member saves compare snapshots under audited Serializable
 transactions and reject stale catalogues, foreign IDs and self-admin loss.
 Mixing profiles preserves personal exceptions. See Company administration above.
+
+## Studio field migration data previews
+
+`studio.test.live_data` is a separate explicit grant for live business data in
+Studio previews. It is registered for granular access management, excluded from
+standard roles, staff uplift, role auto-sync and all app access presets. No existing
+profile or membership is backfilled. A server-loaded active Customer company must
+match the actor; Test samples still require publish plus current/written field
+read/write policies and native owner access. Production field previews require the
+live-data capability even for fields without an extra sensitivity restriction.
+References require the exact written entity contract and target owner read
+authorisation inside the shared server transaction. Configuration access alone
+grants no data authority. This policy helper is a prerequisite; see the Studio
+ledger for collection/preview implementation and runtime evidence.

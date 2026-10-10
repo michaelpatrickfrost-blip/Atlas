@@ -1,5 +1,17 @@
 ## 10 October 2026 — Shared transactions are explicit query opt-ins
 
+## 10 October 2026 — Live field data previews require an explicit separate grant
+
+Use studio.test.live_data from a separate Studio data capability collection, with
+no standard-role, staff uplift, auto-sync or app-preset grant. Granular permission
+selection stays in the existing capability architecture; no DDL/role backfill.
+Require it for all production field previews, extending the specification's
+restricted-field minimum so omitted sensitivity tags cannot reveal live data.
+Server-loaded active matching Test companies may use synthetic samples but still
+require current/written field read/write and native/reference owner guards. This
+privileged migration policy is separate from ordinary operator read/write policy.
+No preview endpoint or collection feature is delivered by the helper alone.
+
 ## 10 October 2026 — Owner read-only migration snapshots use explicit version opt-in
 
 Keep old entity/query hashes immutable. Tickets v3 names one transaction-required

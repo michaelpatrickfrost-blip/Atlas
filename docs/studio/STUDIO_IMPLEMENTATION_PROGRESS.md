@@ -57,6 +57,13 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 # Current Workstream Detail
 
+5d101da sealed candidate actual owner snapshot/coverage proof PASS, canonical
+native rows unchanged; metadata/archive/principal/Admin/business PASS. Full native
+suite and public pending. Evidence m4iKXU; fixture backup 20261010-010035.
+Independent c6a pure policy contract: 4 files/18 assertions, build/types/lint PASS;
+no DDL/automatic grants/collector. Test-with-live-data cap is separate from standard
+roles/staff/presets; current/written/reference policy helper locally verified.
+
 c5b read-only owner protocol/registry v3 opt-in implemented. Nine files/51 focused
 assertions, build, TypeScript and scoped lint PASS; diff reviewed. New central
 helper proof NOT RUN yet; do not mark VERIFIED. No DDL/value API/executor. Next
@@ -180,6 +187,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+c6a: Studio permissions/manifest, existing access-level presets/labels,
+fields/migrations/access, field-data-access tests, PERMISSIONS and plan/memory.
+
 c5a/c5b: registry types/contracts/entities/registry, core/service-work/studio,
 transaction-query/entity/snapshot tests, exact-Test principal/review helpers,
 MODULE_SPEC/SERVICE_WORK_DESK and plan/ledger/shared state/decisions. No DDL.
@@ -286,6 +296,10 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+c6a pure contract: 4 files/18 assertions, production build/TypeScript/scoped lint
+PASS. Logs /tmp/atlas-studio-data-policy-{tests,build,types,lint}.txt. No runtime
+collector/preview proof; candidate c5b owner checks PASS, full/public pending.
 
 c5b: 9 files/51 assertions PASS; production build, TypeScript, scoped lint and
 whitespace/diff review PASS. Evidence /tmp/atlas-studio-snapshot-{tests,build,types,
@@ -465,9 +479,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Pin c5a/c5b checkpoint, then run combined backed-up candidate/public acceptance.
-Require actual bounded snapshots and exact complete/missing/extra/equal-count/stale
-native-revision/tenant/private/membership/isolation proof before VERIFIED. Then
-2B3c6: implement authenticated review collection using pinned owner query, fresh
-principal/current+written field/reference access and immutable source snapshots.
+Confirm complete 5d101da candidate/public combined acceptance and exact live
+revision before marking c5b VERIFIED. c6a policy contract is verified locally only.
+Next c6b1: implement startFieldMigrationPreparation with refreshed stored principal,
+server-loaded source/draft CAS, target owner snapshot opt-in, field policies, source
+binding and atomic audit; add idempotency/permission/tenant/stale/rollback tests.
+Then c6b2 collects bounded immutable observations and seals exact reviewed coverage.
 Phase 2 NOT PASSED; visual builder/company publication/custom buttons outstanding.

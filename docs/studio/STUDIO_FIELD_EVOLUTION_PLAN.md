@@ -352,3 +352,27 @@ c5b implemented local evidence: 9 focused files/51 assertions, production build,
 TypeScript and scoped lint PASS. Central owner SQL/helper assertions added but
 NOT RUN. No new DDL. Pin shared-query foundation plus owner protocol together,
 then actual combined candidate/public acceptance before VERIFIED.
+
+
+## 2B3c6a — Explicit data-preview authority and field/reference policies (IN PROGRESS)
+
+Independent prerequisite for collection, while c5b central proof runs. Purpose:
+register a separate live-data test capability without auto-granting it through
+standard roles, staff uplift or app presets; apply current and written field read/
+write policy before data decoding, and authorise reference records through their
+registered owning entity. Dependencies: verified principal/compiler/native record
+contracts. Files: Studio permissions/manifest, existing access presets, one typed
+field access helper and focused permission/reference tests. Database: none, no
+role backfill or existing membership grant. Exact-Test fixtures may use approved
+sample data after the same tenant/native/field guards; production rows require
+explicit live-data capability. This helper is not a preview endpoint or collector.
+Tests: automatic grants/presets absent, server-owned company identity/Test flag,
+missing current/written rights denied, referenced owner/tenant/source failures
+propagate without revealing payload, shared transaction and historical read only.
+Completion: local tests/types/lint/build plus central collection integration in
+c6b; only independent pure contracts can be VERIFIED locally. c5b remains pending.
+
+
+c6a pure contract verified locally: 4 files/18 assertions, production build, strict
+post-build TypeScript/scoped lint PASS. No runtime preview/collector. c5b actual
+sealed candidate owner checks PASS; full/public acceptance pending. No DDL.

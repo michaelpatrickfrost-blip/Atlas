@@ -126,7 +126,7 @@ converting a different value. A changed mapping/target is a new immutable review
 retry cannot replace a reviewed plan. These are design dependencies, not delivered
 job models, preflight or runtime behaviour.
 
-### 2B3c2a — Owner cohort-access preflight (IMPLEMENTED locally)
+### 2B3c2a — Owner cohort-access preflight (VERIFIED)
 
 Implement a closed Tickets registry query for whole canonical TICKET access
 coverage/count, using a short serializable owner transaction, source module lock,
@@ -144,10 +144,10 @@ persistence are separate NOT STARTED dependencies.
 build, strict post-build TypeScript and scoped lint PASS. New central helper tests
 a real final record and unanchored native ticket, removes/restores only its exact
 new Test queue membership to prove denial before counts, and checks unchanged
-canonical records. Helper NOT RUN on a cohort-enabled candidate. No final/merged
+canonical records. Actual helper PASS on 931a600 candidate/public. No final/merged
 representation write hook or durable job implemented.
 
-### 2B3c2b — Typed stored-value decoder for previews (IMPLEMENTED)
+### 2B3c2b — Typed stored-value decoder for previews (VERIFIED)
 
 Purpose: convert typed SQL columns into validated logical values using the written
 field schema before conversion preview. Dependencies: 2B1 validators, 2B2 typed
@@ -164,9 +164,9 @@ Local evidence: three files/24 assertions, production build, strict post-build
 TypeScript and changed-file lint PASS. Seven codec tests cover all 15 field types.
 First fixture run failed four assertions; corrected duration/timezone/phone policy
 and normalised address fixtures, preserving validation. Real SQL decimal/money
-helper assertions added but NOT RUN on a codec-enabled candidate/public runtime.
+helper assertions PASS on 931a600 candidate/public runtime.
 
-### 2B3c2c — Stable combined release acceptance (IMPLEMENTED)
+### 2B3c2c — Stable combined release acceptance (VERIFIED)
 
 Purpose: complete cohort/decoder proof without another verified release advancing
 between candidate and activation. Dependencies: deployed People/Supply acceptance
@@ -181,13 +181,13 @@ mechanism or arbitrary shell hook. Other acceptance selectors remain unchanged.
 2B3c2c local evidence: shell syntax and three unrecognised selector/foreign URL/
 wrong phase-URL rejection checks PASS before database/service actions. Integrated
 23 files/135 assertions, generation/build/strict types/scoped lint PASS. Combined
-runtime candidate/public proof pending. No Phase 2 gate or designer completion.
+runtime candidate/public PASS on 931a600. No Phase 2 gate or designer completion.
 
 Dashboard live integration: preserved exact publicly verified 70ca23e modern UI
 and all native acceptance modes. Review caught dispatcher omission of Studio after
 merge; fixed before deployment. Five mode dispatch probes and shell syntax PASS.
 Regenerated client/descriptors, 28 files/164 tests, production build, strict post-
-build TypeScript and scoped lint PASS. Combined Studio runtime proof pending.
+build TypeScript and scoped lint PASS. Combined Studio runtime PASS on 931a600.
 
 ## Next persistence/owner checkpoint dependency (DESIGN; NOT STARTED)
 

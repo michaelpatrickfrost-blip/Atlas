@@ -1,5 +1,24 @@
 # Atlas current state
 
+## 10 October 2026 — Studio cohort/decoder combined acceptance VERIFIED live
+
+Exact 931a6009dfc24f20ceddc2403bf01b21aa4f2950 passed both complete combined
+candidate and public HTTPS acceptance, then deployment completed. Both PASS stamps
+and final `Deployed.` confirmed in /tmp/atlas-studio-people-initial-deploy.txt;
+public release health/current pointer match, previous immutable b57ba720 retained.
+Evidence: candidate /tmp/atlas-studio-candidate-Ww5GqF; public
+/tmp/atlas-studio-public-qqYkvj. Backups: atlas-pre-deploy-20261010-000049,
+atlas-pre-studio-candidate-20261010-000232, atlas-pre-studio-public-20261010-000600.
+Actual checks covered private/final/unanchored native cohort, refreshed principals,
+retirement, SQL decoder, metadata/Admin/business provisioning/307, native Dashboard,
+Home, Reports, MRP, Messages, private Admin, Supply, Commercial and People (90→95%
+scorecard plus payroll/rota/team guards). Synthetic Test companies suspended and
+sessions revoked; immutable workflow evidence retained. No new Studio migration.
+2B3c2a–c foundations VERIFIED; Phase 2 NOT PASSED. Visual designer, company dashboard
+publication, custom buttons and owner value API remain unimplemented. Next create
+the immutable review contract checkpoint before review/job/row persistence; no
+final-record conversion or later-phase engines are authorised by this proof.
+
 ## 10 October 2026 — People checker initial library state corrected in review
 
 Review after 015698f preparation began caught a checker setup mistake: new=1 already

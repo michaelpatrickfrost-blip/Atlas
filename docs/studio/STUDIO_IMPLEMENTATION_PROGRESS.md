@@ -11,14 +11,13 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c5b — Tickets transactional canonical snapshot/coverage — IMPLEMENTED locally; central proof pending.
-c5a registry contract VERIFIED locally; c4 archive VERIFIED live 8780a07.
-Single pinned owner read protocol; no representation writer/value API/designer yet.
+2B3c6b1 — Authenticated pinned preparation — IMPLEMENTED locally; central proof pending.
+c5a/c5b VERIFIED live 5d101da; c6a policy locally verified. No collector/writer/designer yet.
 
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source 8780a07b92654a9d2649b8b6518d609a9b431adb,
+VERIFIED. Latest confirmed live source 5d101daec0618fee623e15b9c639d6afb4d581d6,
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -54,8 +53,17 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c2c Stable combined release acceptance | VERIFIED | Both full suites PASS, exact source activated, public health/current checked, prior b57ba720 retained. |
 | 2B3c3 Immutable review contracts | VERIFIED | Local closed/stale/digest cases and 8780a07 SQL helper roundtrip; no preview endpoint. |
 | 2B3c4 Durable review archive | VERIFIED | 8780a07 candidate/public actual tenant/source/draft/slot/value guards, sealed rows/history, CAS/stale/audit rollback; no worker. |
+| 2B3c5 Owner shared snapshot/coverage | VERIFIED | 5d101da full candidate/public proof: exact native set/revisions, private/membership/isolation/final/unanchored; no native mutation. |
+| 2B3c6a Explicit data and field/reference policies | VERIFIED | Pure contract: 4 files/18 local assertions, build/types/lint. No runtime collector/preview claim. |
 
 # Current Workstream Detail
+
+5d101da complete combined candidate/public PASS and deploy exit 0; actual public
+health match, previous 8780a07 retained. Evidence m4iKXU/ubk7cv, backup 005837,
+fixtures 010035/010423. c5a/c5b VERIFIED; historical pending notes superseded.
+c6b1 local 10 files/52 assertions, build/post-build TS/scoped lint PASS. Actual
+service central helper NOT RUN; isolated Test/actor/operation Audit failure trigger
+created temporarily and removed in finally. No persistent DDL or domain writes.
 
 5d101da sealed candidate actual owner snapshot/coverage proof PASS, canonical
 native rows unchanged; metadata/archive/principal/Admin/business PASS. Full native
@@ -187,6 +195,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+c6b1: migrations/preparation, actual check-field-preparation/principal driver,
+preparation tests, reuse existing validation in migrations/access, docs/memory.
+
 c6a: Studio permissions/manifest, existing access-level presets/labels,
 fields/migrations/access, field-data-access tests, PERMISSIONS and plan/memory.
 
@@ -247,6 +258,10 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+c5/c6 no persistent schema or migration. Preparation acceptance helper temporarily
+creates an Audit failure trigger/function matching only one new Test organisation,
+actor and operation UUID; finally removes both. Actual execution pending.
+
 2B3c4 additive three preparation/review/observation models and tenant/source FKs,
 immutable source references and CAS guards. Schema/generation and central BEGIN/
 ROLLBACK DDL PASS; 20261010030000_studio_field_reviews NOT APPLIED yet. No native
@@ -296,6 +311,10 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+c6b1: 10 files/52 assertions, build/strict post-build TS/scoped lint PASS; evidence
+/tmp/atlas-studio-preparation-{tests,build,postbuild-types,lint}.txt. Actual service
+helper NOT RUN. c5b complete combined candidate/public PASS and deployed 5d101da.
 
 c6a pure contract: 4 files/18 assertions, production build/TypeScript/scoped lint
 PASS. Logs /tmp/atlas-studio-data-policy-{tests,build,types,lint}.txt. No runtime
@@ -479,10 +498,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Confirm complete 5d101da candidate/public combined acceptance and exact live
-revision before marking c5b VERIFIED. c6a policy contract is verified locally only.
-Next c6b1: implement startFieldMigrationPreparation with refreshed stored principal,
-server-loaded source/draft CAS, target owner snapshot opt-in, field policies, source
-binding and atomic audit; add idempotency/permission/tenant/stale/rollback tests.
-Then c6b2 collects bounded immutable observations and seals exact reviewed coverage.
-Phase 2 NOT PASSED; visual builder/company publication/custom buttons outstanding.
+Pin c6a/c6b1 and run combined backed-up candidate/public acceptance. Require real
+service idempotency/fresh identity/source/draft/owner checks and Audit-failure
+rollback before preparation VERIFIED. Then c6b2: collect bounded immutable source
+observations under refreshed principal, owner snapshots and current/written field/
+reference guards; seal only exact current coverage, with source pointer/revision
+freshness and ordered digest. Phase 2 NOT PASSED; visual builder/customer
+publication/custom buttons still outstanding.

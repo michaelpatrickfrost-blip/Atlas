@@ -5,6 +5,7 @@ import type { CapabilityRegistry } from "../../registry/registry";
 import type { RecordContext } from "../../registry/types";
 import { STUDIO_CAPABILITIES, STUDIO_DATA_CAPABILITIES } from "../../permissions";
 import { customFieldPayloadSchema, type CustomFieldPayload, type FieldValue } from "../schema";
+import { assertFieldAccess } from "../validation";
 
 type Company = Pick<Organisation, "id" | "kind" | "status" | "archivedAt" | "isTest">;
 function denied(): never { throw new Error("FORBIDDEN: current field data access is required."); }
@@ -19,10 +20,7 @@ export function assertFieldMigrationPolicies(session: Session, company: Company,
   if (!company.isTest) assertCapability(session, STUDIO_DATA_CAPABILITIES.liveTest);
   const current = customFieldPayloadSchema.parse(currentInput), written = writtenInput === undefined ? current : customFieldPayloadSchema.parse(writtenInput);
   if (current.entity.id !== written.entity.id || current.field.key !== written.field.key) denied();
-  for (const payload of [current, written]) {
-    if (payload.field.readCapability) assertCapability(session, payload.field.readCapability);
-    if (payload.field.writeCapability) assertCapability(session, payload.field.writeCapability);
-  }
+  for (const payload of [current, written]) assertFieldAccess(session, payload.field, "write");
   return { current, written };
 }
 

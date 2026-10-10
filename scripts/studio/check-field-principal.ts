@@ -6,6 +6,7 @@ import { studioRegistry } from "../../src/core/studio/registry/runtime";
 import { checkFieldReviews } from "./check-field-reviews";
 import { z } from "zod";
 import { recordAnchorSchema } from "../../src/core/studio/registry/entities";
+import { checkFieldPreparation } from "./check-field-preparation";
 
 /** Only the driver's freshly provisioned business user and explicit Test support affiliation. */
 export async function checkFieldPrincipal(customerUserId: string, staff: Session, organisationId: string, otherOrganisationId: string) {
@@ -77,6 +78,7 @@ export async function checkFieldPrincipal(customerUserId: string, staff: Session
   assert.deepEqual(await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } }), nativeBefore);
   console.log("PASS real owner cohort and shared snapshot: bounded exact canonical/final/unanchored anchors, Serializable and actual target membership required, private nonmember denied before IDs/counts; native rows and v1/v2 retained.");
   await checkFieldReviews(opened.session, opened.principal, unanchored.id, otherOrganisationId);
+  await checkFieldPreparation(opened.session, opened.principal, otherOrganisationId);
   assert.deepEqual(await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } }), nativeBefore);
   assert.equal(await db.auditEntry.count({ where: { id: opened.principal.authority === "staff_support" ? opened.principal.auditId : "impossible",
     organisationId, actorUserId: staff.userId, action: "studio.field.migration.support_opened", entityId: targetMember.id } }), 1);

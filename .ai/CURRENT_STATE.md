@@ -1,5 +1,33 @@
 # Atlas current state
 
+## 10 October 2026 — Snapshot checkpoint live; preparation service locally checked
+
+Exact 5d101daec0618fee623e15b9c639d6afb4d581d6 complete combined candidate/public
+PASS, deployment exit 0 and public health match. Previous 8780a07 retained. c5a/c5b
+VERIFIED: exact real owner snapshots/coverage, membership/private/isolation and
+canonical native preservation plus metadata/archive/Admin/business and native
+Dashboard/Settings/Home/Reports/MRP/Messages/private Admin/Supply/Commercial/People.
+Evidence candidate m4iKXU/public ubk7cv; deployment backup 20261010-005837 and
+fixture backups candidate 010035/public 010423. No new migration.
+c6b1 IMPLEMENTED locally: startFieldMigrationPreparation pins actual source/draft/
+owner query, refreshes principal under company/member/user/profile/platform locks,
+requires current field policy/native preflight, identical operation replay and
+atomic Audit. Existing field-access validator reused. Ten files/52 assertions,
+build, strict post-build TypeScript and scoped lint PASS; diff reviewed. Central
+service helper added, NOT RUN: includes exact Test/operation/actor temporary Audit
+failure trigger with finally cleanup to prove rollback. No persistent schema/grant
+change, decoded values, target publication or public preview. Next pin and run
+combined service acceptance; then bounded observation collector. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Preparation service workstream recorded before code
+
+c6a pure contract checkpoint cbaf908 local only; c6b1 IN PROGRESS. Plan records
+idempotent server-loaded source/draft preparation, fresh stored principal/matching
+actor under locks, current field policies, target owner opt-in/native preflight,
+source generation and atomic Audit. No DDL, decoded values, target publication or
+public endpoint. Full c5b combined candidate/public still running under original
+locks. Next implement/test bounded preparation service, then actual central proof.
+
 ## 10 October 2026 — Actual snapshot owner proof passed on sealed candidate
 
 5d101da candidate owner checks PASS: real bounded canonical/final/unanchored

@@ -179,3 +179,11 @@ a new operation. No business values are copied into review metadata, and generic
 desktop reads remain denied. These additive archive models do not provide a
 preview API, migration executor or cutover; see the Studio ledger for actual
 migration/constraint verification status.
+
+
+Studio field preparation service pins the server-loaded active source and target
+draft into the existing immutable archive under SERIALIZABLE and identity/profile/
+source locks. Matching operation UUID replay returns the same preparation without
+another Audit; stale/changed/cancelled intent requires a new review. Starting writes
+no field values, target generation or activation. See the Studio ledger for actual
+candidate/public proof versus locally implemented services. No new schema here.

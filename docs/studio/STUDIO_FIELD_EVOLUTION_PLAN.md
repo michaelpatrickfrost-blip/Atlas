@@ -376,3 +376,33 @@ c6b; only independent pure contracts can be VERIFIED locally. c5b remains pendin
 c6a pure contract verified locally: 4 files/18 assertions, production build, strict
 post-build TypeScript/scoped lint PASS. No runtime preview/collector. c5b actual
 sealed candidate owner checks PASS; full/public acceptance pending. No DDL.
+
+
+## 2B3c6b1 — Start an authenticated pinned preparation (IN PROGRESS)
+
+Purpose: create an idempotent audited preparation from actual server source/draft
+state without client-supplied payloads, checksums, principals or organisation IDs.
+Dependencies: c6a policies and existing c4 archive; owner protocol must pass public
+proof before service release. Input: operation UUID, definition UUID and expected
+definition/draft revisions plus closed conversion rule. Principal is a separate
+server-only parameter from existing capture/support service, refreshed on entry
+and under membership/user/role locks. Require matching acting identity, server
+active company, Studio/source availability, both field policies and owner target
+snapshot opt-in; pin source version/checksum and compile target server-side. Source
+generation binding and full owner preflight precede persistence. One SERIALIZABLE
+transaction writes immutable intent and existing Audit; replay must match checksum,
+principal and fresh source/draft exactly. No values, observations, target generation
+or activation are written. Files: migrations/preparation service and focused tests,
+central exact-Test helper next, docs/memory. Database: no DDL; existing archives.
+Tests: fresh permissions/tenant, forged identities/payload, missing owner policy,
+stale revisions/source integrity, changed-idempotency payload, audit rollback and
+no native/target mutation. Completion requires central actual service proof; local
+mocks alone are not feature VERIFIED. Collection/sealing is next c6b2.
+
+
+c5a/c5b VERIFIED: exact 5d101da full combined candidate/public and deploy exit 0,
+public health match; native canonical rows unchanged, prior 8780a07 retained.
+c6b1 implemented locally: 10 files/52 assertions, build/post-build TS/scoped lint
+PASS. Central actual service helper NOT RUN. No persistent DDL; rollback proof
+uses a temporary Audit trigger/function constrained to a single new Test company,
+actor and operation, with finally removal. Collection/sealing remains c6b2.

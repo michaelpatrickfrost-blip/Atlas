@@ -11,10 +11,12 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
+2B4d3b1 full isolated v2 field compiler — VERIFIED locally;71files446/build/strict post-build TS/lint/diff PASS.
+
 2B4d3a pure condition evaluator — VERIFIED locally;70files440/build/strictpostbuildTS/lint/diff PASS.
 2B4d2 owner/native contracts — VERIFIED live0925bb5.
 
-2B4d2 shared authority, owner facts/new-record contracts — IMPLEMENTED; local checks PASS, actual candidate/public proof pending.
+2B4d2 shared authority, owner facts/new-record contracts — VERIFIED live0925bb5; complete candidate/public proof PASS.
 
 2B3f4b2b — Generation/history and cosmetic activation guards — VERIFIED livef1a9bf1.
 2B3f4c/d retained inspection, current-authority settlement and acceptance — VERIFIED livea527ccd.
@@ -41,6 +43,21 @@ F4a VERIFIED locally (adfc357); strict TS/build/scoped lint,18 focused and45 fil
 candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
+
+## 10 October 2026 —2B4d3b1 full isolated compiler VERIFIED locally
+
+Full conditional v2 field plan now seals native entity/query hashes and exact field
+UUID/version/checksum dependencies, canonical rule metadata and typed base field.
+Default target write intent preserved; explicit read intent omits target write
+while retaining every source read/owner/classification check. Native metadata must
+exactly match registered approved facts, not just a supplied code set. No native
+query/command invocation, field data read, definition dispatch or conditional
+publication.6 new compiler tests +29 focused PASS;71files446 regression/build/
+scoped lint/diff and strict post-build TS PASS (exit0).
+One dependency-order test caught delimiter sorting; changed to existing id/version
+ordering and focused/full reruns PASS. Source conditional-compiler/required-compiler,
+focused suite, plan/ledger/current state. No DDL/native hooks. Next checkpoint, then d3b2 locked current/pinned source metadata/graph provider. Live0925bb5.
+
 
 ## 10 October 2026 —2B4d3a pure evaluator VERIFIED locally
 
@@ -226,6 +243,35 @@ actual facts/create-only/native/Audit rollback proof, runner40775 exit0.
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+## 10 October 2026 —2B4d3b1 full isolated compiler VERIFIED locally
+
+Full conditional v2 field plan now seals native entity/query hashes and exact field
+UUID/version/checksum dependencies, canonical rule metadata and typed base field.
+Default target write intent preserved; explicit read intent omits target write
+while retaining every source read/owner/classification check. Native metadata must
+exactly match registered approved facts, not just a supplied code set. No native
+query/command invocation, field data read, definition dispatch or conditional
+publication.6 new compiler tests +29 focused PASS;71files446 regression/build/
+scoped lint/diff and strict post-build TS PASS (exit0).
+One dependency-order test caught delimiter sorting; changed to existing id/version
+ordering and focused/full reruns PASS. Source conditional-compiler/required-compiler,
+focused suite, plan/ledger/current state. No DDL/native hooks. Next checkpoint, then d3b2 locked current/pinned source metadata/graph provider. Live0925bb5.
+
+
+## 10 October 2026 —2B4d3b1 isolated v2 field compiler IN PROGRESS
+
+72dd1cc evaluator checkpoint saved, pushed successfully. Purpose: full v2 field
+plan with native query hashes and exact field-version dependencies, explicit target
+read/write metadata intent, unchanged v1 and no definition dispatch. Source metadata
+resolver remains trusted server-only, implemented separately in d3b2. Expected
+required compiler, conditional field compiler/schema tests; no DDL/native reads.
+Current root/compiler access and source fact grants are checked. An ordinary value
+view must validate its sealed field plan/current+written read policy without
+executing a condition or fetching unrelated private inputs; actual rule evaluation
+checks all inputs independently in d3c. Next implement full plan and tests, then
+locked current/pinned provider and bounded current graph closure. Live0925bb5.
+
 
 ## 10 October 2026 — d2 candidate gate PASS; d3a pure evaluator IN PROGRESS
 
@@ -2608,13 +2654,13 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint d3a evaluator/memory (70files440/build/types/lint/diff PASS). Then d3b1
-add explicit read intent to compileRequiredCondition (write default/hash unchanged)
-and a full isolated v2 field plan with native query hashes/pinned field dependency
-IDs; tests equal read/write checksums, no source data queries and sealed v1 unchanged.
-d3b2 then supplies locked current/pinned tenant binding/generation/checksum metadata
-and bounded current dependency closure, with current/written read policy and cycle
-checks. Keep v2 out of definition dispatch until d3 coverage+d4 native enforcement.
-Read STUDIO_FIELD_REQUIRED_RULES_PLAN.md lock-order/legacy coverage findings before
-native hooks. d2 live0925bb5 complete; next2B4e/f,2C/D/visual2E, fullPhase2 gate.
-No Phase3 before fullPhase2 PASS; no ad-hoc dumps/copies.
+Checkpoint d3b1 isolated full v2 compiler and memory.71files446/build/strict
+post-build TS/lint/diff PASS; no definition dispatch/native
+queries or hooks. d3b2 next: locked current+pinned source field metadata provider,
+exact tenant/binding/generation/compiled checksum, compatible current presentation,
+bounded current dependency closure/cycle checks and immutable v1/v2 source plans.
+Separate ordinary value-view integrity/read policy from executing source conditions
+or fetching their private inputs. Read saved required-rules plan locking/legacy
+coverage findings before d3c/d4. Then canonical required coverage and existing
+reviewed evolution integration; keep v2 publishing off until d4 native enforcement.
+Live0925bb5 candidate/public complete; no Phase3 before fullPhase2 gate/visual2E.

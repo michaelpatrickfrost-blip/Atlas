@@ -1,3 +1,30 @@
+## 10 October 2026 —2B4d3b1 full isolated compiler VERIFIED locally
+
+Full conditional v2 field plan now seals native entity/query hashes and exact field
+UUID/version/checksum dependencies, canonical rule metadata and typed base field.
+Default target write intent preserved; explicit read intent omits target write
+while retaining every source read/owner/classification check. Native metadata must
+exactly match registered approved facts, not just a supplied code set. No native
+query/command invocation, field data read, definition dispatch or conditional
+publication.6 new compiler tests +29 focused PASS;71files446 regression/build/
+scoped lint/diff and strict post-build TS PASS (exit0).
+One dependency-order test caught delimiter sorting; changed to existing id/version
+ordering and focused/full reruns PASS. Source conditional-compiler/required-compiler,
+focused suite, plan/ledger/current state. No DDL/native hooks. Next checkpoint, then d3b2 locked current/pinned source metadata/graph provider. Live0925bb5.
+
+## 10 October 2026 —2B4d3b1 isolated v2 field compiler IN PROGRESS
+
+72dd1cc evaluator checkpoint saved, pushed successfully. Purpose: full v2 field
+plan with native query hashes and exact field-version dependencies, explicit target
+read/write metadata intent, unchanged v1 and no definition dispatch. Source metadata
+resolver remains trusted server-only, implemented separately in d3b2. Expected
+required compiler, conditional field compiler/schema tests; no DDL/native reads.
+Current root/compiler access and source fact grants are checked. An ordinary value
+view must validate its sealed field plan/current+written read policy without
+executing a condition or fetching unrelated private inputs; actual rule evaluation
+checks all inputs independently in d3c. Next implement full plan and tests, then
+locked current/pinned provider and bounded current graph closure. Live0925bb5.
+
 ## 10 October 2026 —2B4d3a pure evaluator VERIFIED locally
 
 70files440 regression tests, final production build, strict post-build TypeScript,

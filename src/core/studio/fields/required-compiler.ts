@@ -31,6 +31,8 @@ export const requiredConditionPlanSchema = z.strictObject({ kind: z.literal("req
   facts: z.array(requiredFactMetadataSchema).min(1).max(20) });
 export type RequiredCompilerContext = {
   session: Session; registry: CapabilityRegistry; definitionId: string;
+  /** Rule metadata validation; read intent never requires target field write. */
+  intent?: "read" | "write";
   /** Explicit owner declarations, not every readable native field automatically. */
   approvedNativeFacts: ReadonlySet<string>;
   resolveMetadata(source: RequiredFactSource): Promise<unknown>;
@@ -63,7 +65,8 @@ export async function compileRequiredCondition(context: RequiredCompilerContext,
   const target = conditionalFieldPayloadSchema.parse(input), definitionId = z.uuid().parse(context.definitionId);
   // Reuse existing owner/constraint/access validation without altering a v1
   // artefact or treating this subplan as a publishable field configuration.
-  await compileCustomField(context.session, { schemaVersion: 1, entity: target.entity,
+  const compileTarget = context.intent === "read" ? compileCustomFieldForRead : compileCustomField;
+  await compileTarget(context.session, { schemaVersion: 1, entity: target.entity,
     storageGeneration: target.storageGeneration, field: target.field }, context.registry);
   const owner = await context.registry.resolve(context.session, target.entity), details = entityDetailsSchema.parse(owner.details);
   if (owner.kind !== "entity" || !details.record?.fieldPolicy) invalid("An approved native field owner is required.");

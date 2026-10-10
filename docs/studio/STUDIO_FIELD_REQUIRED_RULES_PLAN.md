@@ -145,3 +145,15 @@ publication allowed missing anchors. Inspect actual active company metadata and
 require an authorised optional/populate/review or retirement path for any invalid
 legacy cohort. Suspended synthetic Test fixtures do not establish live business
 coverage. Keep actual unsupported payload/open-migration checks in the release gate.
+
+Ordinary value viewing is distinct from requirement evaluation: validate sealed
+field metadata and current/written/native/reference read policy without fetching
+or evaluating unrelated private condition inputs. The conditional compiler's read
+intent validates rule metadata without target write grants; actual rule input reads
+remain separately authorised. Preserve this distinction in d3b2/read gateways.
+
+D3b1 full isolated v2 compiler IMPLEMENTED:29 focused/71files446/build/lint/diff
+PASS, final strict post-build TS pending. Native metadata is compared with exact
+registered declarations; query and field-version dependencies are sealed. Existing
+v1 and authoring dispatch unchanged. D3b2 actual stored-source provider remains
+NOT STARTED; injected pure test metadata is not binding/history/cycle proof.

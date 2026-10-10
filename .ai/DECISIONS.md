@@ -1,3 +1,14 @@
+## 10 October 2026 — Conditional field plans seal native query and field version dependencies
+
+Keep conditional payload/plan v2 isolated from existing immutable v1 field plans.
+A full v2 plan seals both the native entity and the approved fact query contract,
+and exact source definition/version/checksum pins. Metadata intent distinguishes
+read from write while retaining source read permissions and classification. This
+is unsuitable for ordinary value viewing if it executes the source field's own
+rule; value-view integrity and actual condition input evaluation remain separate.
+No conditional authoring/publication dispatch until canonical coverage and owning
+native write enforcement are verified. No second field store/permission engine.
+
 ## 10 October 2026 — Ordinary field authority reuses signed Session identity
 
 Migration principals deliberately require Studio publication authority and whole

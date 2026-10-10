@@ -29,7 +29,8 @@ candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
 
-IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
+BLOCKED at active f4b1 live verification by safe VPS capacity; Phase 2 not passed.
+Admin-only/modern-UI companion VERIFIED. Phase 1 remains
 VERIFIED. Latest confirmed live source 74fab2d1983b3d16d68f481fb783332335e5fc0a (includes verified9aad1fc/1f2ab97),
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
@@ -44,6 +45,7 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 | Workstream | Status | Evidence |
 | --- | --- | --- |
+| 2B3f4a Closed settlement identity | VERIFIED locally | adfc357:18 focused/45files292 assertions/build/strict TS/lint/diff; no DB/service/live authority claim. |
 | Business setup/readable version comparison companion | VERIFIED | 74fab2d full candidate/public and actual visual inspection; modern Admin/business separation, disclosure/save/conflict/check/publish/activate/compare, all native suites and 45 files/286 local assertions/build/types/lint. No DB change or visual-builder claim. |
 | 2B3f3a–c Shared current-authority cutover and replay | VERIFIED | 9aad1fc full candidate/public actual paired-Audit rollback, concurrent CAS, refreshed denial/replay, retained history/native compatibility; 45 files/286 local assertions/build/types/lint PASS. No new DDL. |
 | 2B3f2 Receipt and atomic storage | VERIFIED | 5f5fce5 complete candidate/public actual rollback-only storage guards plus all native suites; additive 0006 applied. |
@@ -84,16 +86,22 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 # Current Workstream Detail
 
-F4a pure contract IMPLEMENTED. New migrations/settlement-contract; six meaningful
-negative/transition cases appended to existing cutover-contract suite. Exact retained
-identity/independent same-company principal, strict CAS/unknown/mode/tenant/grants/
-substituted target denial and integer transition capacity. 18 focused and45 files/
-292 regression assertions, production build/scoped lint/diff PASS; final post-build
-TS pending, session89249. Logs /tmp/atlas-studio-settlement-contract-{tests,
-regression,build,lint,types}.txt. No DB/schema/service/pointer/value/native mutation.
-F4b–d NOT STARTED; original0006/actualf3 receipt coverage unchanged. Live74fab2d
-remains verified. Update strict result, review new source + diff and checkpoint,
-then additive settlement SQL/Prisma/storage evidence plan. Phase2 NOT PASSED.
+Current f4b1: forward0007/schema/nested exact Test storage proof IMPLEMENTED at
+checkpoint dc5d508. Original0006 is unedited. Nullable settlement metadata and guarded
+one-time terminal states preserve original receipt and paired publication/pointer.
+Central backed-up DDL rollback071007 PASS; five oldACT receipts compatible and no
+new columns after rollback. Actual nested Test/runtime/candidate/public proof remains
+NOT RUN because shared root3.2Gfree/99% on fully allocated200G disk is unsafe for
+another isolated build. See Exact Next Action. Original source/target/native values
+remain untouched; ordinary value guards stay closed untilf4b2/2B4.
+
+F4a closed contracts VERIFIED locally adfc357:18 focused/45files292 assertions,
+build/strict post-build TS/scoped lint/diff PASS. Current combined source f7ed95f
+preserves observed live1bf0e2c ancestry;48files300/build/strict types/scoped lint PASS.
+No new Studio deployment or applied0007. Phase2/visual designer not complete.
+
+Historical checkpoint entries below are retained evidence; later confirmed results
+supersede earlier pending/running statuses and previous runtime/capacity snapshots.
 
 
 Exact74fab2d1983b3d16d68f481fb783332335e5fc0a full candidate/public ALL COMBINED
@@ -1229,6 +1237,13 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+Current settlement checkpoint: src/core/studio/fields/migrations/settlement-contract.ts,
+tests/studio-field-cutover-contract.test.ts, prisma/schema.prisma, forward0007
+migration.sql, scripts/studio/check-field-settlement-storage.ts and existing
+check-field-cutover-storage.ts; DATA_MODEL/DEPLOY/field evolution plan/ledger and
+.ai/CURRENT_STATE/.ai/DECISIONS. Live1bf0e2c source/memory preserved by merge.
+
+
 Latest f3: shared definitions/activation+service; migrations/cutover{,-receipt,-inspection}
 and coverage; cutover contract/inspection/coverage/execution-start/activation tests;
 scripts/studio/check-field-cutover-service and existing principal driver;
@@ -1366,6 +1381,13 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+Current f4b1: four nullable settlement columns on cutover model; guarded ACT0→
+ROLLED_BACK/FINALIZED1, paired publication state/exact pointer and one-open receipt
+index. Additive0007 only; original0006/history/source/target untouched. No backfill,
+reset, native/value conversion or production settlement authority. Validate/generate
+PASS; fullcentral DDL transaction rolled back PASS.
+
+
 F2: one tenant receipt model, composite execution/source/target FKs and scope index;
 closed pin/history/atomic pointer triggers, added CUTOVER publication state, retained
 source-write freeze. Additive forward SQL; no native tables/backfill/reset.
@@ -1406,6 +1428,10 @@ business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
 
+Current settlement0007 NOT APPLIED. Latest existing0006 stays applied/verified.
+Backed-up DDL rollback071007 left zero settlementPin columns.
+
+
 20261010060000_studio_field_cutovers APPLIED under backup052619 and VERIFIED in
 5f5fce5 complete candidate/public. Earlier backed-up DDL transaction rolled back PASS;
 no native/backfill/reset changes. See current workstream evidence.
@@ -1434,6 +1460,13 @@ preserved. Final candidate/activation backup prefixes: `atlas-pre-deploy-2026100
 and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
+
+Current f4a six meaningful contract cases (each contains several transition/negative
+assertions); f4b1 nested exact Test SQL helper checks closed hash/scope/CAS/actor,
+standalone denial, both atomic terminal outcomes, retained identity/values/history,
+changed extension denies rollback but permits finalization. Helper NOT RUN yet;
+preparing a helper is not runtime verification.
+
 
 F3a five helper cases: scoped CAS/Audit, missing/foreign/corrupt identity, mandatory
 field generation, disabled/stale source/pointer, propagated Audit failure.
@@ -1467,6 +1500,13 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+Current combined settlement48files300 assertions PASS, production build/strict
+post-build TS/scoped lint/diff PASS. Schema validate/generate PASS. Central fullDDL
+backup071007/rollback PASS after correcting initial syntax issue. Actual nested
+Test and candidate/public/native release checks NOT RUN. Logs /tmp/atlas-studio-
+settlement-{ddl,capacity,merged-*,final-lint}.txt.
+
 
 F3a:12 focused assertions,42 files/262 regression assertions, build/strict post-build
 TypeScript/scoped lint/diff PASS. Real public refactor proof pending next release.
@@ -1563,6 +1603,12 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
+Current local checks/central DDL rollback PASS; actual f4b1 Test/runtime gate pending
+and BLOCKED by safe capacity. No applied migration/new Studio live release/Phase2
+PASS or visual designer completion. Existing full-suite baseline evidence below
+is historical; no full-suite success claim for this checkpoint.
+
+
 32ee77e7b1c684ab9c6b5f898eb641cebf0ae3f9 full combined candidate/public PASS,
 deploy exit 0 and actual public health exact match. Reference c1–c4 VERIFIED:
 existing hashes/native guards preserved, real approved final target read, actual
@@ -1656,6 +1702,12 @@ module-availability mocks and existing lint errors,
 not a reason to claim full-suite success.
 
 # Architecture Decisions
+
+F4 settlement rationale recorded in DECISIONS: unchanged-source rollback vs keeping
+approved target and closing rollback window; immutable original receipt/history,
+independent current server principal and exactCAS. Pure integrity/SQL identity do
+not grant native/private/field access. Production service/value authority follows.
+
 
 Use supplied document sequence under Michael's follow-up. Existing template and
 automation engines/providers stay authoritative. Registry adapters precede metadata.

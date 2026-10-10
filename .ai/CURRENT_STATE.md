@@ -1,5 +1,20 @@
 # Atlas current state
 
+## 10 October 2026 — Drawer build capacity correction (candidate)
+
+160efb1 server compiled but page collection failed ENOSPC before activation.
+Runtime remains accepted1bf0e2c; backup071840/full source/logs retained. Own inactive
+unready dependencies/partial Next output reclaimed under both original locks.
+Installed Next16.3 guide explicitly recommends turbopackFileSystemCacheForBuild:
+false when cache is not carried into builds. Atlas immutable candidates always
+build cold, so next.config disables only unused build compiler persistence; dev
+cache/runtime/data are unaffected. Local production build with this flag PASS.
+Temporary swap reduced1GB to512MB to release disk space while preserving build
+headroom; no fstab change, remove after acceptance. Inventory utility-drawer-
+capacity-20261010.txt. Next: post-build types, exact reviewed retry, full candidate/
+public Tasks plus Messages acceptance and screenshot review. No live claim yet.
+
+
 ## 10 October 2026 — Tasks and Messages consistent slide-out drawers (candidate)
 
 User explicitly narrows this redesign to Tasks and Chat; Dashboard/Settings retain

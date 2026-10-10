@@ -384,3 +384,10 @@ completion and persisted status at 320/390/820/1448 widths on candidate and publ
 HTTPS under the same locks. Each stage backs up central data/private evidence.
 Only its synthetic tasks are written, and retained canceled at cleanup. Existing
 backup, immutable release, revision checks and rollback gates apply.
+
+Next16.3 filesystem build caching is disabled in next.config because immutable
+release candidates always build cold and never restore .next/cache. This follows
+the installed Next guide and avoids retaining an unused compiler cache per SHA.
+Development caching is unchanged. The `tasks` acceptance selector now runs both
+Tasks drawer checks and the existing Messages composer/draft/attachment workflow
+on candidate/public; each stage stays inside the original locks and fixture backup.

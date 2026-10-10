@@ -1925,3 +1925,11 @@ and exit with reduced-motion support. Native dialog supplies top-layer/focus
 behavior; exit finishes before task cleanup. Full Chat remains available and
 unsent per-conversation drafts survive closure. This replaces the large Tasks
 modal and broad Messages overlay without changing source work permissions.
+
+## 10 October 2026 — Cold immutable builds do not persist compiler cache
+
+Installed Next16.3 enables filesystem build cache by default, but its guide says to
+turn it off when a build never restores .next/cache. Atlas creates a fresh release
+for each SHA, so next.config sets turbopackFileSystemCacheForBuild:false. This
+avoids saving an unused ~500MB compiler cache per candidate and its peak flush
+space. Development caching and runtime/business behavior stay unchanged.

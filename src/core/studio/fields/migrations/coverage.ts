@@ -9,9 +9,10 @@ import { entityDetailsSchema } from "../../registry/entities";
 import { customFieldPayloadSchema } from "../schema";
 import { assertFieldMigrationPolicies } from "./access";
 import { sealFieldMigrationIntent, FieldMigrationReviewError, type FieldMigrationIntent } from "./contracts";
+import { inspectFieldMigrationCutoverIdentity } from "./cutover-inspection";
 
 function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"); }
-export type FieldMigrationCoverageStage = "preparation" | "publication" | "execution";
+export type FieldMigrationCoverageStage = "preparation" | "publication" | "execution" | "cutover";
 
 /** Internal coverage prerequisite. Caller supplies a refreshed/locked authority
  * transaction. No value decoding, counts, reference approval or sealed review.
@@ -32,8 +33,11 @@ export async function validateFieldMigrationSourceCoverage(context: RecordContex
   const query = await registry.resolve(session, intent.ownerQuery);
   if (!policy || !policy.sourceVersions.includes(intent.source.payload.entity.version) || policy.query.id !== intent.ownerQuery.id || policy.query.version !== intent.ownerQuery.version
     || query.kind !== "query" || query.details.transaction !== "required" || query.ownerModuleId !== owner.ownerModuleId) changed();
-  if (stage === "execution" && !record?.migrationRepresentation?.sourceVersions.includes(intent.source.payload.entity.version)) changed();
+  if ((stage === "execution" || stage === "cutover") && !record?.migrationRepresentation?.sourceVersions.includes(intent.source.payload.entity.version)) changed();
   await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${intent.id}::uuid AND "organisationId"=${session.organisationId} FOR UPDATE`;
+  // Derive post-cutover coverage solely from actual scoped retained rows; the
+  // original preparation/publication/execution predicates remain source-active.
+  const cutover = stage === "cutover" ? await inspectFieldMigrationCutoverIdentity(tx, intent) : null;
   const fresh: Array<{ fresh: boolean; ownerApproval?: unknown }> = stage === "preparation" ? await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_migration_fresh(p) AS fresh
     FROM studio_field_migration_preparations p WHERE p.id=${intent.id}::uuid AND p."organisationId"=${session.organisationId}
       AND p."intentChecksum"=${sealed.checksum} AND p.state IN ('PREPARING','REVIEWED')`
@@ -45,9 +49,10 @@ export async function validateFieldMigrationSourceCoverage(context: RecordContex
       : stage === "execution" ? await tx.$queryRaw<Array<{ fresh: boolean; ownerApproval: unknown }>>`SELECT atlas_studio_execution_fresh(x) AS fresh, x.pin->'ownerApproval' AS "ownerApproval"
         FROM studio_field_migration_executions x JOIN studio_field_migration_preparations p ON p.id=x."preparationId" AND p."organisationId"=x."organisationId" AND p."definitionId"=x."definitionId"
         WHERE p.id=${intent.id}::uuid AND p."organisationId"=${session.organisationId} AND p."intentChecksum"=${sealed.checksum}
-          AND p.state='REVIEWED' AND x.state IN ('RUNNING','READY','FAILED')` : changed();
+          AND p.state='REVIEWED' AND x.state IN ('RUNNING','READY','FAILED')`
+        : cutover ? [{ fresh: true, ownerApproval: cutover.executionPin.ownerApproval }] : changed();
   if (fresh.length !== 1 || fresh[0].fresh !== true) changed();
-  if (stage === "execution") {
+  if (stage === "execution" || stage === "cutover") {
     const reference = referenceSchema.parse(fresh[0].ownerApproval), approval = await registry.resolve(session, reference);
     const declared = record!.migrationRepresentation!.query;
     if (reference.id !== declared.id || reference.version !== declared.version || approval.kind !== "query"
@@ -60,7 +65,11 @@ export async function validateFieldMigrationSourceCoverage(context: RecordContex
   await tx.$queryRaw`SELECT count(*)::text FROM (SELECT s.id FROM studio_field_slots s WHERE s."organisationId"=${session.organisationId} AND s."definitionId"=${intent.definitionId}::uuid
     AND s."generationId"=${intent.source.payload.storageGeneration}::uuid
     AND EXISTS (SELECT 1 FROM studio_field_migration_observations o WHERE o."preparationId"=${intent.id}::uuid AND o."organisationId"=s."organisationId" AND o."extensionId"=s."extensionId") FOR SHARE OF s) locked`;
-  const source = stage === "execution" ? await tx.$queryRaw<Array<{ changed: boolean }>>`SELECT NOT atlas_studio_execution_source_fresh(pub) AS changed
+  const source = stage === "cutover" ? await tx.$queryRaw<Array<{ changed: boolean }>>`SELECT NOT atlas_studio_execution_source_fresh(pub) AS changed
+    FROM studio_field_migration_publications pub JOIN studio_field_migration_cutovers c ON c."preparationId"=pub."preparationId" AND c."organisationId"=pub."organisationId" AND c."definitionId"=pub."definitionId"
+    WHERE pub."preparationId"=${intent.id}::uuid AND pub."organisationId"=${session.organisationId} AND pub."definitionId"=${intent.definitionId}::uuid
+      AND pub.state='CUTOVER' AND c.state='ACTIVATED'`
+    : stage === "execution" ? await tx.$queryRaw<Array<{ changed: boolean }>>`SELECT NOT atlas_studio_execution_source_fresh(pub) AS changed
     FROM studio_field_migration_publications pub JOIN studio_field_migration_executions x ON x."preparationId"=pub."preparationId" AND x."organisationId"=pub."organisationId" AND x."definitionId"=pub."definitionId"
     WHERE pub."preparationId"=${intent.id}::uuid AND pub."organisationId"=${session.organisationId} AND pub."definitionId"=${intent.definitionId}::uuid
       AND pub.state='PUBLISHED' AND x.state IN ('RUNNING','READY','FAILED')`

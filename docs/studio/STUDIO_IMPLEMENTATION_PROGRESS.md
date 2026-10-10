@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f3b2 — Receipt-derived current review coverage — NOT STARTED.
+2B3f3b3 — Explicit cutover service and fresh replay — NOT STARTED.
 F3b1 IMPLEMENTED / checked locally; f3a local checks PASS, integrated live proof pending.
 2B3f2 VERIFIED on exact5f5fce5 complete candidate/public.
 2B3f1 VERIFIED on exact 080e4d7 complete candidate/public.
@@ -72,6 +72,18 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+F3b2 actual receipt-derived review coverage IMPLEMENTED / checked locally: 3 files/
+31 assertions, strict types, scoped lint and diff PASS; logs /tmp/atlas-studio-
+cutover-coverage-{tests,types,lint}.txt. Identity reader reloads locked tenant review,
+publication/execution/receipt/target-active definition, immutable source/target and
+exact draft; existing SQL source/target representation checks remain required.
+New internal cutover review stage reuses owning current native/private coverage,
+source/target and written field policies plus exact current owner approval. Old
+source-active preparation/publication/execution predicates unchanged, no client
+stage/fake pointer/grants. No DB change/public hook or value/native mutation.
+Integrated build/live proof pending f3b3/f3c; accepted live5f5fce5 retained.
+Next f3b3 explicit READY cutover/paired Audit and fresh receipt-derived replay.
 
 F3b1 closed actual ACTIVATED receipt reader IMPLEMENTED, checked locally: 12
 cutover identity assertions (four new replay identity tests), strict TypeScript,
@@ -1518,9 +1530,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement f3b2 receipt-derived review inspection from actual scoped ACTIVATED
-receipt/CUTOVER publication/READY execution/target-active definition, reusing current
-owning native/private/current/written/reference coverage. Preserve old source-active
-predicates. Add denial tests, then f3b3 explicit shared activation/paired Audit and
-fresh replay service; f3c actual central proof/full combined release before f4.
-Accepted 5f5fce5; no rollback/value API or customer visual/buttons completion.
+Implement f3b3 explicit cutover service using refreshed initiating authority,
+locked READY execution and exact f1 confirmation; create f2 receipt, CAS publication
+and invoke shared f3a activator with expected source pointer. Save paired Audit
+atomically. Replay only through actual receipt identity and current f3b2 review.
+Add service denial/atomicity tests; production build/regressions and f3c actual
+central proof/full combined candidate/public release before f4. Accepted5f5fce5;
+no rollback/value API or customer visual/button completion.

@@ -1,5 +1,19 @@
 # Atlas current state
 
+## 10 October 2026 — Receipt-derived current coverage checkpoint
+
+F3b2 actual receipt-derived review coverage IMPLEMENTED / checked locally: 3 files/
+31 assertions, strict types, scoped lint and diff PASS; logs /tmp/atlas-studio-
+cutover-coverage-{tests,types,lint}.txt. Identity reader reloads locked tenant review,
+publication/execution/receipt/target-active definition, immutable source/target and
+exact draft; existing SQL source/target representation checks remain required.
+New internal cutover review stage reuses owning current native/private coverage,
+source/target and written field policies plus exact current owner approval. Old
+source-active preparation/publication/execution predicates unchanged, no client
+stage/fake pointer/grants. No DB change/public hook or value/native mutation.
+Integrated build/live proof pending f3b3/f3c; accepted live5f5fce5 retained.
+Next f3b3 explicit READY cutover/paired Audit and fresh receipt-derived replay.
+
 ## 10 October 2026 — Actual cutover receipt identity checkpoint
 
 F3b1 closed actual ACTIVATED receipt reader IMPLEMENTED, checked locally: 12

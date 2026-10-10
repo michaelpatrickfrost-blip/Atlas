@@ -1249,3 +1249,8 @@ F3c: actual central Test service proof and full combined candidate/public accept
 backup/build/types/lint; live 5f5fce5 retained until passed. Do not begin f4 early.
 Statuses: f3b1 IMPLEMENTED,12 focused assertions/types/lint/diff PASS; build/live
 proof integrated with f3c. f3b2/3 and f3c NOT STARTED.
+
+F3b2 IMPLEMENTED: 31 focused assertions/types/lint/diff PASS. Actual scoped receipt
+metadata and unchanged representation predicates checked before reused native/field
+coverage. No old predicate relaxation/DDL/value writes. Build/live pending f3c.
+F3b3 next; statuses supersede the earlier NOT STARTED plan rows.

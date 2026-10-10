@@ -1870,3 +1870,15 @@ Ordinary activateVersion delegates under its original Serializable boundary. The
 reviewed cutover service will use that same primitive with expected source-pointer
 CAS, never a callback or bypass of f2 storage/domain/current-authority guards. This
 preserves one metadata kernel and avoids a second activation/publishing engine.
+
+## 10 October 2026 — Actual receipt-derived cutover replay coverage
+
+Reviewed cutover retries must inspect actual retained ACTIVATED receipt, CUTOVER
+publication and target-active definition, never simulate old source-active state
+or weaken original preparation/publication/execution freshness. Internal identity
+inspection validates scoped immutable source/target, exact draft/review/execution
+and retained source/target representations, then the shared review path rechecks
+owning native/private and current/written/reference/unique policies under refreshed
+initiating authority. Hashes establish identity only. This fits the specification's
+safe explicit activation/idempotency requirement without a second engine/grant layer.
+No client stage/permission set, native mutation or rollback promise.

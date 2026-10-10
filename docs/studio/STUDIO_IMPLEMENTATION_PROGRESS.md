@@ -11,19 +11,19 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f4b1 — Additive one-time settlement storage — BLOCKED on server access/health; code IMPLEMENTED and0007 APPLIED.
-Operational software-retention cleanup — VERIFIED; capacity blocker resolved.
-Michael requested this cleanup before resuming Studio feature work.
-Purpose: retain original activation history while proving rollback/finalization
-receipt, publication and pointer commit together. Dependencies: verified0006/f3,
-f4a closed contract. Expected files: schema, additive0007, exact Test nested storage
-helper and cutover checker. No native/value conversion, backfill/reset or production
-settlement API. Existing ordinary value guards remain closed until f4b2/2B4.
-Tests: central rollback-only DDL, exact Test SQL closed pins/CAS/tenant/actor,
-standalone transitions, both terminal outcomes, retained history and changed-source
-rollback denial; schema generation, regression/types/lint/build and full release.
-F4b2 generation/cosmetic continuation, f4c current-authority service and f4d actual
-service proof follow. FullPhase2 NOT PASSED; visual designer remains required.
+2B3f4b2 — Generation priority and cosmetic continuation — IN PROGRESS (design/source inspection).
+2B3f4b1 additive one-time settlement storage — VERIFIED live1d7f558, candidate/public
+combined acceptance PASS, original runner20133 exit0. Operational cleanup VERIFIED.
+Purpose: resume safe same-active-generation cosmetic publication after cancellation/
+rollback/finalization while retaining obsolete generations and prioritising any new
+open source freeze. Dependencies: verified0006/f3 and0007/f4b1. Expected files:
+fields/binding.ts, binding tests, forward0008 SQL, nested exact Test storage helper,
+field plan/data-model/ledger/current state. No Prisma model change/backfill/reset,
+owner value endpoint, production settlement service or later-phase engine.
+Tests: scoped active-vs-latest binding; real rollback-only SQL continued cosmetics,
+retained cancelled/rolled-back targets/completed sources, future open-source freeze,
+schema/tenant/CAS; regression/types/lint/build and complete candidate/public release.
+FullPhase2 NOT PASSED; visual designer remains required after2B–D.
 
 F4a VERIFIED locally (adfc357); strict TS/build/scoped lint,18 focused and45 files/
 292 assertions passed. Business setup/readable comparison VERIFIED74fab2d full
@@ -31,15 +31,10 @@ candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
 
-BLOCKED: f4b1 central verification pending after server HTTPS/SSH became
-unresponsive during candidate build. Capacity blocker resolved by10 October
-software-retention cleanup. Phase2 not passed.
-Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source97ceb35b069845f637a43811d8200a99b9ade306
-(includes verified Studio74fab2d/9aad1fc/1f2ab97 plus preserved Tasks/Messages),
-preserving verified 7941f9b;
-2B2 exact acceptance e5d66e6 is preserved;
-combined candidate and complete public HTTPS acceptance PASS.
+IN PROGRESS: Phase2 foundations. f4b1 VERIFIED on exact live1d7f558bf35c02941bca732daffbe61288cdb044,
+including full candidate/public Studio/native acceptance. Current/health exact,
+previous97ceb35 retained. Temporary SSH/HTTPS outage resolved; cause unconfirmed.
+Admin-only/modern-UI companion and Phase1 remain VERIFIED. Phase2 not passed.
 The supplied source defines ten phases 0–9, not five. The original
 is preserved unchanged at `docs/studio/ATLAS_STUDIO_SOURCE.docx` (source
 `/Users/michael/Downloads/atlas_studio.docx`, SHA-256
@@ -50,6 +45,7 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 | Workstream | Status | Evidence |
 | --- | --- | --- |
+| 2B3f4b1 One-time settlement storage | VERIFIED | 1d7f558 candidate/public ALL COMBINED PASS; actual nested atomic terminal/retained-history/changed-extension proof;0007 applied;55 local files340 assertions/build/types/lint. |
 | 2B3f4a Closed settlement identity | VERIFIED locally | adfc357:18 focused/45files292 assertions/build/strict TS/lint/diff; no DB/service/live authority claim. |
 | Business setup/readable version comparison companion | VERIFIED | 74fab2d full candidate/public and actual visual inspection; modern Admin/business separation, disclosure/save/conflict/check/publish/activate/compare, all native suites and 45 files/286 local assertions/build/types/lint. No DB change or visual-builder claim. |
 | 2B3f3a–c Shared current-authority cutover and replay | VERIFIED | 9aad1fc full candidate/public actual paired-Audit rollback, concurrent CAS, refreshed denial/replay, retained history/native compatibility; 45 files/286 local assertions/build/types/lint PASS. No new DDL. |
@@ -91,20 +87,14 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 # Current Workstream Detail
 
-Current f4b1: forward0007/schema/nested exact Test storage proof IMPLEMENTED at
-checkpoint dc5d508. Original0006 is unedited. Nullable settlement metadata and guarded
-one-time terminal states preserve original receipt and paired publication/pointer.
-Central backed-up DDL rollback071007 PASS; five oldACT receipts compatible and no
-new columns after rollback. Actual nested Test/runtime/candidate/public proof remains
-NOT RUN at the previous checkpoint because root had only3.2Gfree/99%used.
-That capacity blocker is now RESOLVED: measured168Gfree/14%used after retirement
-of duplicated inactive runtime outputs. See Exact Next Action. Original source/target/native values
-remain untouched; ordinary value guards stay closed untilf4b2/2B4.
-
-F4a closed contracts VERIFIED locally adfc357:18 focused/45files292 assertions,
-build/strict post-build TS/scoped lint/diff PASS. Current combined source f7ed95f
-preserves observed live1bf0e2c ancestry;48files300/build/strict types/scoped lint PASS.
-No new Studio deployment or applied0007. Phase2/visual designer not complete.
+F4b1 VERIFIED10 October: exact1d7f558 candidate7jm5KC/public both ALL COMBINED
+PASS; runner20133 exit0. Actual nested SQL closed pin/CAS/tenant/principal denials,
+standalone settlement denial, both paired terminal outcomes, immutable history and
+changed-extension rollback denial/finalization PASS. Original native/values preserved;
+required recovery backup074339 and Test-fixture backups retained.0007 applied.
+Current/public1d7f558 and previous97ceb35, atlas active/PGonline/login200/root168Gfree
+confirmed0810UTC. Retirement hook ran, retired only inactive1bf runtime output.
+No production settlement/value authority yet. F4b2 is the next bounded workstream.
 
 Historical checkpoint entries below are retained evidence; later confirmed results
 supersede earlier pending/running statuses and previous runtime/capacity snapshots.
@@ -1440,7 +1430,10 @@ business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
 
-Software cleanup: NONE. Forward0007 remains pending.
+Current0007 APPLIED and VERIFIED on1d7f558 full candidate/public gates. Software
+cleanup applied no migration. Earlier pending/blocked snapshots below are historical.
+
+Historical pre-release snapshot: software cleanup NONE;0007 was pending.
 
 Current settlement0007 APPLIED successfully by pinned1d7f558 release preparation
 10 October0744UTC, required backup atlas-pre-deploy-20261010-074339. No backfill/
@@ -1521,6 +1514,11 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+10 October recovered release: runner20133 exit0; candidate7jm5KC/public ALL COMBINED
+PASS including actual nested settlement SQL and all native suites. Public/current,
+previous pointer, login/service/PG/disk checks PASS. Kernel journal showed no OOM
+or hung-task matches; outage cause remains unknown.
 
 Recovered combined source:47 files294 assertions +8 compatibility files46 (55/340)
 PASS; production build/strict post-build TypeScript/scoped helper+retirement ESLint/
@@ -1635,6 +1633,9 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+F4b1 VERIFIED live1d7f558; complete candidate/public actual Test SQL and native
+acceptance PASS. Temporary server-access blocker resolved. Phase2 NOT PASSED.
 
 Software-retention cleanup VERIFIED. Live source/static/customer records/backups
 retained; root168Gfree snapshot and Mac master5.6G. Complete evidence and practical
@@ -1757,6 +1758,11 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
+Temporary0747UTC SSH/HTTPS access blocker RESOLVED: original runner completed
+all gates/activation safely. Current1d7f558/previous97ceb35 verified; no confirmed
+OOM cause. Historical investigation below is superseded; provider console unnecessary.
+Phase2 visual design/publishing work remains incomplete.
+
 ACTIVE investigation: pinned1d7f558 build followed by public TLS/health timeouts
 and SSH banner timeouts from0747UTC (TCP22 accepts). Existing monitor commands
 stalled; actual resource cause not yet confirmed. Last current97ceb35/previous
@@ -1800,6 +1806,10 @@ No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
 
+F4b1 workstream PASS/VERIFIED: exact1d7f558 candidate/public SQL/runtime/native
+checks and exit0. FullPhase2 NOT PASSED; f4b2 may now begin. Historical blocked
+checkpoint below is superseded.
+
 Current f4b1 actual storage/runtime verification BLOCKED: additive0007 applied,
 server build/acceptance completion unknown after SSH/HTTPS timeouts. No candidate/
 public nested Test PASS or new live Studio release claimed. Phase2 NOT PASSED;
@@ -1823,49 +1833,12 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Obtain Atlas VPS hosting-provider/control-panel URL (asked Michael asynchronously),
-then use its independent console to inspect server/kernel/resource state and exact
-candidate compiler1d7f558bf35c02941bca732daffbe61288cdb044. Recover SSH and current
-app/PG health before further implementation. If build is still running, stop only
-that non-current compiler after checking current/previous pointers and original
-lock holder. Do not restart broad services, restore data or bypass locks blindly.
-Inspect original deploy runner20133/private074339 logs and real migration state;
-0007 was applied successfully, not rolled back. Address proven build resource
-cause before retrying full pinned candidate/public native acceptance. Preserve
-local blocked-checkpoint commit; remote branch remains pinned1d7f558.
-
-Recover SSH/public health, inspect exact pinned candidate build and original locks;
-compiler cancellation is scoped to non-current1d7f558 only and queued via SSH.
-Do not start another build or f4b2 while live health is unverified. Preserve applied
-0007 and074339 recovery backup. Then inspect runner20133 and candidate/private logs,
-fix actual failure/resource limits and complete exact native acceptance normally.
-
-Wait for pinned1d7f558 release runner20133 to complete (local log
-/tmp/atlas-studio-f4b1-live-deploy.txt). Forward0007 applied successfully; candidate
-server build in progress, current97ceb35 unchanged as of preparation. Keep Git
-branch tip pinned; no f4b2 coding until actual nested Test and all candidate/public
-native checks pass. Inspect any failure, preserve applied additive DDL/backups and
-fix without reset/restore or guard bypass.
-
-Run exact pinned codex/studio-phase2 release now with ATLAS_RELEASE_ACCEPTANCE=studio
-using the reviewed clean candidate. Keep branch pinned until complete; record real
-0007 application, nested settlement SQL and every candidate/public/native result.
-Fix any failure without bypassing guards; do not mark f4b1 VERIFIED from local checks.
-
-Capacity blocker resolved; current live97ceb35 ancestry merged and retirement
-checkpoint95a64b2 retained. Recheck combined source before release.
-Do not expand storage based on the superseded cache-
-only audit. Finish the software-retention checkpoint and verify public health.
-Then re-read recovery memory/ledger/git status and public health, wait for existing
-release locks, merge any newer accepted live ancestry, then run normal exact pinned Studio
-release on codex/studio-phase2 with ATLAS_RELEASE_ACCEPTANCE=studio. Forward0007
-must pass actual nested Test storage proof and full candidate/public/native suites
-before f4b1 VERIFIED. Combined48files300/build/strict TS/scoped lint/diff PASS;
-central backed-up fullDDL rollback071007 PASS (five originalACT rows compatible,
-closed actor checks, columns after rollback0). Source checkpoints adfc357/dc5d508/
-f7ed95f retained. Local logs /tmp/atlas-studio-settlement-{ddl,capacity,merged-*}.txt.
-
-Then f4b2 ANY-open-source priority/history and same-active-generation cosmetic
-publication/activation; f4c current-authority rollback/finalization; f4d actual
-permission/Audit/concurrency/replay proof;2B4 owner values/required-if/native hooks,
-2C/2D and2E visual designer. Do not startPhase3 or claimPhase2/designer complete.
+Implementf4b2: choose the tenant-owned active field schema as cosmetic binding
+baseline (origin schema only before first activation); add forward0008 guards that
+prioritise any open source freeze, retain completed sources/cancelled or rolled-back
+targets, and allow only compatible same-active-generation cosmetic activation.
+Add binding tests and exact rollback-only Test continuation proof. Run appropriate
+regressions/types/lint/build, review diff and update memory, then normal pinned Studio
+candidate/public release; do not mark VERIFIED without actual SQL/native evidence.
+Afterf4b2: f4c current-authority settlement service, f4d actual Audit/concurrency/replay
+proof;2B4 owner value/form hooks,2C/D and2E visual designer. NoPhase3 untilPhase2 PASS.

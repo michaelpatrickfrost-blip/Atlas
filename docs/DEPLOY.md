@@ -416,8 +416,9 @@ ssh administrator@85.190.118.218 'sudo bash /opt/atlas-maintenance-tools/prune-r
 The checked-in deployer invokes the same utility only after complete public
 acceptance and rollback-pointer updates. It closes its lock descriptors, then
 reacquires both through the wrapper; maintenance failure/busy defers cleanup without
-rolling back an accepted runtime. This hook takes effect when a compatible release
-containing it is deployed; the live operator tool has already been installed/tested.
+rolling back an accepted runtime. This hook is active in accepted1d7f558 (10 October): after full candidate/public
+acceptance it retired only inactive1bf0e2c output, retaining current1d7f558 and
+previous97ceb35. The live operator tool is installed/tested.
 Retired readiness markers are renamed, so an older source cannot be mistaken for a
 prepared runtime. Older source needs an isolated rebuild and normal acceptance
 before activation. Immediate rollback remains available. Do not retire a runtime

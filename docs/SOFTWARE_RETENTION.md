@@ -47,8 +47,8 @@ closed. Busy locks mean defer; never recreate or bypass the release locks.
 The root-owned live operator utility is installed at
 `/opt/atlas-maintenance-tools/prune-releases.{sh,mjs}`. Use documented audit/prune
 commands in DEPLOY. The checked-in deployer calls it only after public acceptance
-and previous-pointer update. That hook becomes effective on the next compatible
-release including it; operator cleanup has already run live. Retired old source
+and previous-pointer update. The hook ran successfully in accepted1d7f558 on10 October, retiring only inactive
+1bf0e2c output after all public acceptance and pointer updates. Retired old source
 requires an isolated rebuild and full acceptance before activation. Keep deployment
 history; do not interpret retired readiness as a runnable rollback.
 
@@ -78,7 +78,9 @@ The repository records the results so temporary logs are not required for recove
 
 ## Studio handoff
 
-Capacity is resolved. Phase2 f4b1 remains IMPLEMENTED pending real nested Test SQL
-and full candidate/public native checks; forward0007 unapplied. Recheck live ancestry,
-locks/status and capacity before the exact pinned Studio release; do not claim the
-Phase2 gate or visual designer is complete. See the Studio implementation ledger.
+Capacity is resolved. Phase2 f4b1 VERIFIED on1d7f558 after real nested Test SQL
+and full candidate/public native acceptance;0007 applied under required backup.
+Current1d7f558/previous97ceb35, login200/service/PGonline and168GiBfree confirmed
+0810UTC (13%used). Temporary SSH/HTTPS access delay recovered; cause unconfirmed.
+F4b2 generation/cosmetic continuation is next; Phase2/designer not complete.
+See the Studio implementation ledger.

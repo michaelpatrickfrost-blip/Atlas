@@ -1,6 +1,27 @@
 # Atlas current state
 
-## 10 October 2026 — Studio f4b1 BLOCKED; provider console required
+## 10 October 2026 — f4b1 VERIFIED live; temporary access blocker resolved
+
+Original deploy runner20133 completed exit0. Exact1d7f558bf35c02941bca732daffbe61288cdb044
+candidate7jm5KC and public acceptance both ALL COMBINED PASS. Actual nested Test
+SQL proves closed settlement/CAS/principal/tenant, standalone transition denial,
+paired rollback/finalization, immutable receipt/publication history and changed
+extension rollback denial with metadata-only finalization. Native/module suites
+passed; synthetic Test companies suspended and sessions revoked, history retained.
+Additive0007 applied under required backup074339; no reset/backfill/native purge.
+Public revision/current exact1d7f558, previous97ceb35, login200, atlas active and
+PG18main online. Root168GiBfree/13%used, load0.08 at0810UTC. Retirement hook actually
+ran after acceptance and safely retired only inactive1bf0e2c runtime outputs.
+The temporary0747UTC SSH/HTTPS blocker is RESOLVED; provider console no longer
+needed. Kernel journal0740–0812UTC contains no OOM/hung-task matches; cause unknown,
+not a confirmed memory failure. Compiler cancellation never executed.
+55 local files340 assertions/build/strict TS/scoped lint remain PASS. Evidence:
+/tmp/atlas-studio-f4b1-live-deploy.txt, candidate7jm5KC and retained recovery backup.
+Phase2 NOT PASSED; visual designer still required. Next f4b2: active-vs-latest cosmetic
+binding and additive0008 generation priority/history guards, unit and exact rollback-
+only Test continuation proof; f4c/d current-authority settlement follows. NoPhase3.
+
+## 10 October 2026 — Historical f4b1 access blocker (RESOLVED above)
 
 Cleanup VERIFIED: root168GiBfree after final retirement, Mac master5.6GiB/build2.6GiB;
 no unnecessary business dumps created. User's no-unneeded-dumps preference saved

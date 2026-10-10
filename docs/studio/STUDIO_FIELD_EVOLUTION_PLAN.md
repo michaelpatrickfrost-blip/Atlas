@@ -1430,3 +1430,10 @@ HTTPS/SSH banner timeouts from0747UTC, TCP22 accepts, exact compiler cancellatio
 could not connect. Actual nested Test/candidate/public acceptance remains BLOCKED,
 no gate/live activation claim. Recover via provider console/SSH and inspect kernel/
 resource/locks/current state before retry; original DDL/history/backups retained.
+
+10 October0810UTC recovery: original runner20133 completed exit0, exact1d7f558
+candidate7jm5KC/public ALL COMBINED PASS, including actual nested settlement SQL
+and all native suites. F4b1 VERIFIED;0007 applied, original receipts/values/native
+records preserved. Temporary access blocker resolved; no confirmed OOM cause.
+F4b2 next: active-schema cosmetic baseline and forward0008 generation/open-freeze
+priority plus exact Test continuation. No production settlement/value service yet.

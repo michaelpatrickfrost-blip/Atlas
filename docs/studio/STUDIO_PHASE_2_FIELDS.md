@@ -8,13 +8,13 @@ This is an execution design; the source specification remains unchanged.
 | --- | --- | --- | --- | --- |
 | 2B1 | Closed field/storage/value contracts and server validators | core/studio/fields/{schema,validation}, focused tests; no DB | Required/type/bounds/exact decimal/currency/calendar/enum/contact/reference-shape/address/extra-capability cases | VERIFIED locally |
 | 2B2 | Versioned field compiler, stable identity binding and typed current/history storage | Compiler dispatch/definition lifecycle + additive central models/migration | Immutable identity/version bindings, tenant FKs, typed-family constraints, indexes, immutable value history | VERIFIED on candidate/public e5d66e6; schema/lifecycle, not owner value API |
-| 2B3 | Safe definition evolution, retirement and explicit conversion planning | fields evolution/migration services and durable migration metadata | Compatibility/conversion preview/failures, no in-place conversion, resumable/idempotent batches/cutover/history | IN PROGRESS; pure conversion/retirement/principals verified on candidate/public 7941f9b, review/publication/execution candidate/public verified on 8d6eb9e; cutover receipt verified5f5fce5, authorised service locally implemented/f3c proof pending |
+| 2B3 | Safe definition evolution, retirement and explicit conversion planning | fields evolution/migration services and durable migration metadata | Compatibility/conversion preview/failures, no in-place conversion, resumable/idempotent batches/cutover/history | IN PROGRESS; pure conversion/retirement/principals verified on candidate/public 7941f9b, review/publication/execution candidate/public verified on 8d6eb9e; cutover receipt verified5f5fce5, authorised service VERIFIED9aad1fc; f4 rollback remains |
 | 2B4 | Atomic owner-authorised read/write and reference validation | fields services + schema from 2B2 | Owner access/locks, field caps, CAS, required rules, uniqueness and audit; references independently owner-checked | NOT STARTED |
 | 2B5 | Central acceptance/checkpoint | tests, central driver, memory/docs | Real typed storage/history/constraints/retirement/tenant/security/compatibility; build and runtime proof | NOT STARTED |
 
 2B3 is subdivided in STUDIO_FIELD_EVOLUTION_PLAN.md. Its reviewed job/publication/batch backend is VERIFIED on 8d6eb9e; cutover identity
 passed080e4d7 and receipt storage passed5f5fce5. Authorised shared cutover/replay
-is locally implemented; actual f3c proof and f4 rollback remain. User preview/editor/value gateway remain incomplete. Combined 2B2
+is VERIFIED9aad1fc complete candidate/public; f4 rollback remains. User preview/editor/value gateway remain incomplete. Combined 2B2
 candidate/public e5d66e6 release acceptance PASS.
 
 2B1 is a pure validation library, not a stored-field feature. The UI does not expose
@@ -49,8 +49,7 @@ uniqueness checks. Same-key identity is retained; old schema/value history remai
 Retirement removes new editing eligibility while preserving authorised history.
 Do not claim 2B VERIFIED or start 2C from the 2B1 library alone.
 
-Current next: f3c actual cutover service/full combined candidate/public proof, then
-f4 honest rollback/value compatibility. Receipt guards0006 are already applied. The compiler/binding/typed storage
+Current next: f4 honest rollback/value compatibility after a bounded Studio entry-point clarity companion. Receipt guards0006 are already applied. The compiler/binding/typed storage
 are already VERIFIED; do not restart 2B2. No reset/local business datastore.
 
 Working-tree design now uses five models: permanent FieldBinding, immutable storage

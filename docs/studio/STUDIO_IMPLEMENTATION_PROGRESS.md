@@ -11,18 +11,23 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f3c — Actual cutover service candidate/public proof — IN PROGRESS.
-F3b3 IMPLEMENTED / local checks PASS; no actual service verification yet.
-F3b1 IMPLEMENTED / checked locally; f3a local checks PASS, integrated live proof pending.
-2B3f2 VERIFIED on exact5f5fce5 complete candidate/public.
-2B3f1 VERIFIED on exact 080e4d7 complete candidate/public.
-2B3e6 VERIFIED on exact 8d6eb9e candidate/public.
-2B3d1–d4 VERIFIED ea27b2f; no row writer/designer.
+Phase 2 entry-point clarity companion — IN PROGRESS. Business setup must lead;
+existing named capability-reference forms are advanced foundation tooling, not the
+visual designer. Purpose: make current availability clear and move optional technical
+setup out of the primary path without inventing an unfinished builder. Files:
+modules/studio/library and definition-view; existing Admin/customer wrappers retained.
+No database implications. Checks: existing Studio/Admin regressions, strict types,
+scoped lint, production build, actual candidate/public UI and native acceptance.
+
+2B3f3a/b/c — Shared activation, refreshed cutover and actual service proof — VERIFIED
+on exact 9aad1fc complete candidate/public. F4 lifecycle/rollback NOT STARTED; its
+inspected dependencies remain in STUDIO_FIELD_EVOLUTION_PLAN.md. Full Phase 2
+acceptance has NOT PASSED. The visual designer remains required and unimplemented.
 
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source 5f5fce5535765066068eb0e21ecbad10fe745a50,
+VERIFIED. Latest confirmed live source 9aad1fc30a33179b73a994ad2db683101b7658d2,
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -36,6 +41,7 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 | Workstream | Status | Evidence |
 | --- | --- | --- |
+| 2B3f3a–c Shared current-authority cutover and replay | VERIFIED | 9aad1fc full candidate/public actual paired-Audit rollback, concurrent CAS, refreshed denial/replay, retained history/native compatibility; 45 files/286 local assertions/build/types/lint PASS. No new DDL. |
 | 2B3f2 Receipt and atomic storage | VERIFIED | 5f5fce5 complete candidate/public actual rollback-only storage guards plus all native suites; additive 0006 applied. |
 | 2B3f1 Closed cutover identity | VERIFIED | 080e4d7 complete candidate/public actual pure-pin proof; 8 focused/257 scoped assertions/build/types/lint. No activation authority. |
 | 2B3e1–e6 Representation policy, exact execution and recovery | VERIFIED | 8d6eb9e complete candidate/public, actual owner/SQL/atomic batch/Audit/process restart/replay/private/tenant/history/native proof; 38 files/229 local assertions/build/types/lint. |
@@ -73,6 +79,58 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+10 October final f3c evidence supersedes the earlier running/pending entries below:
+runner54052 completed exit0. CandidatehHdOrk and publicibWIZD ALL COMBINED PASS;
+backup060827, fixture backups061011/061415, /tmp/atlas-studio-cutover-conflict-deploy.txt.
+Exact public health/current9aad1fc confirmed, previous5f5fce5 retained. Real current
+owner/private/member/field/module checks, both paired-Audit failures, concurrent CAS/
+raw SQL conflict, single activation and fresh receipt replay PASS; source/target/
+outcomes/history retained and both native snapshots unchanged. All native suites,
+Admin/company-login and metadata compatibility PASS. No new migration. Phase2 NOT
+PASSED; f4/2B4/2C–E remain. Current entry-point companion planned above; no UI edits
+or claim of visual template/screen/dashboard/button publishing yet.
+
+Server root last checked2.2G free/PGonline. Another operator intermittently holds
+both deployment locks. Failedaea disposable reclaim remains NOT EXECUTED: guarded
+attempts exit1 at lock acquisition (guard line5). Do not bypass locks or start another
+build with insufficient capacity. All failed source/accepted assets/backups retained.
+
+
+PublicibWIZD actual explicit cutover service PASS plus Studio metadata/principals/
+Admin/company-login, fixture061415. It proves both paired-Audit failure rollback,
+concurrent CAS/raw conflict and one activation, fresh receipt-derived replay, current
+member/field/module/private revocation, source/target/history retained and both
+native snapshots unchanged. Remaining native public suites/runner exit0 still
+pending, session54052. Exact public health9aad1fc confirmed. No f4 code yet;
+Phase2 NOT PASSED and visual/dashboard/button work remains. Root2.3G/PGonline.
+
+9aad1fc full combined candidate PASS and exact runtime switched; previous5f5fce5
+retained. Public ibWIZD acceptance starting, fixture061415; backup060827 and
+candidatehHdOrk/fixture061011. /tmp/atlas-studio-cutover-conflict-deploy.txt,
+session54052 running. Actual candidate cutover/concurrency/current authority/paired
+Audit/replay/history/native proof PASS plus all native suites. Complete public
+repeat/exact health/runner exit0 still required before f3 VERIFIED/f4. No new DDL.
+Failedaea5ef1 source/dependency reclaim script prepared and syntax checked only,
+NOT executed; wait both locks after runner, preserve current9aad/prior5f and all
+accepted assets/backups. Free2.3G/PGonline last checked. Phase2 NOT PASSED.
+
+9aad1fc candidatehHdOrk actual explicit cutover service PASS: current READY/owner/
+private/field/module/member checks, stale/client/tenant denial, both actual paired-
+Audit failures roll back, concurrent CAS one activation/raw conflict mapped, fresh
+receipt-derived replay, retained source/target/history and both native snapshots
+unchanged. Studio metadata/principals/Admin/business login PASS; fixture061011.
+Remaining native candidate/public full acceptance pending, session54052 active.
+Backup060827, free2.3G/PGonline; no new DDL. Do not advance pinned branch. Full f3
+VERIFIED still pending public and runner exit0. F4 dependency inspection only saved
+in field evolution plan; no rollback/value-window code or final design yet.
+
+9aad1fc corrected full combined Studio release running (session54052, backup060827,
+/tmp/atlas-studio-cutover-conflict-deploy.txt). Actual raw40001 concurrency mapping
+and full fresh service replay proof pending. No new migration. Before runner free
+6.7G, during candidate install/build3.3G; PGonline/live5f5fce5 remains. Monitor space
+and preserve accepted current/prior/backups; do not advance pinned branch tip.
+285 original local plus conflict test:45 files/286 assertions/build/types/lint PASS.
 
 aea5ef1 candidate S9EZeD FAILED before live switch, session9476 exit1; backup
 060208/fixtures060350, /tmp/atlas-studio-cutover-service-deploy.txt. Actual tests
@@ -1575,10 +1633,12 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint exact raw SQL concurrency mapping and45 files/286 assertions/build/types/
-lint PASS; deploy new pinned HEAD on codex/studio-phase2, acceptance=studio. Confirm
-actual full candidate/public service concurrent/paired Audit/current access/replay/
-history/native proof, exact health/runner exit0 before f4. Failedaea5ef1 retained
-as evidence; live5f5fce5/prior080e4d7. Monitor root free6.7G/PG before/while build;
-never exhaust space or remove records/backups/accepted rollback/runtime. No normal
-value gateway/rollback/customer visual/dashboard/buttons completion yet.
+Implement the bounded business-setup entry-point clarity companion described above;
+review existing Studio/Admin checks, run build/types/lint/regressions. Keep technical
+reference forms available under explicit advanced setup, and do not claim a visual
+builder or change activation semantics. Before deployment reclaim only exact failed
+aea disposable dependencies/build under BOTH free locks with current9aad/prior5f
+and all guards verified; preserve source/readiness/history/accepted assets/backups.
+If unsafe capacity persists, checkpoint this exact blocker. Then complete pinned
+candidate/public acceptance. Resume f4 lifecycle/contracts/forward rollback guards
+from STUDIO_FIELD_EVOLUTION_PLAN.md; do not start 2E before 2B–D dependencies pass.

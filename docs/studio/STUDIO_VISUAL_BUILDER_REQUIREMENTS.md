@@ -61,3 +61,10 @@ tenant, source availability, native capability and owning domain rules on every
 invocation. Configuration cannot grant privileges or supply arbitrary executable
 scripts. Verify permitted invocation, denied users, disabled sources, tenant
 isolation and native business outcomes. Later Flow actions remain later-phase work.
+
+10 October: Michael rejects naming configurations in a library as the primary
+journey. Studio starts from the selected business and the software area to tailor,
+then useful layout presets, visual editing/preview and reviewed business publication.
+Capability-reference records are optional advanced foundation tooling. Current UI
+must state the designer is unfinished instead of presenting technical setup as its
+replacement. Preserve existing definitions and separate Admin/business authority.

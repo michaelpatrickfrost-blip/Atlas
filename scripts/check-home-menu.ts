@@ -188,6 +188,7 @@ async function main() {
             bounds.right <= innerWidth &&
             bounds.bottom <= innerHeight &&
             node.scrollWidth <= node.clientWidth &&
+            node.scrollHeight <= node.clientHeight &&
             document.documentElement.scrollWidth <= innerWidth
           );
         });
@@ -198,17 +199,17 @@ async function main() {
         const links = panel.getByRole("link");
         assert(
           await links.evaluateAll((nodes) =>
-            nodes.every((node) => node.getBoundingClientRect().height >= 44),
+            nodes.every((node) => node.getBoundingClientRect().height >= 32),
           ),
-          "Links retain 44px touch targets.",
+          "Compact links retain at least 32px targets.",
         );
         await panel.getByRole("heading").first().click();
         await expect(panel).toBeVisible();
         const popupBounds = await panel.boundingBox();
         const triggerBounds = await trigger.boundingBox();
         assert(popupBounds && triggerBounds);
-        assert(popupBounds.width <= 560 && popupBounds.height <= 560, "Apps remains a compact popup.");
-        assert(Math.abs(popupBounds.x - triggerBounds.x) < 2 && popupBounds.y >= triggerBounds.y + triggerBounds.height, "Popup is anchored below Apps.");
+        assert(popupBounds.width <= 900 && popupBounds.height <= height - triggerBounds.height, "Apps remains a compact popup.");
+        assert((width < 640 || Math.abs(popupBounds.x - triggerBounds.x) < 2) && popupBounds.y >= triggerBounds.y + triggerBounds.height, "Popup is anchored below Apps.");
         await page.screenshot({
           path: `${evidence}/apps-menu-${name}.png`,
           fullPage: false,

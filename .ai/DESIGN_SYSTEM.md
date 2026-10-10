@@ -6,10 +6,10 @@ with blue icons and short descriptions. A slim separate utility rail contains
 Home, Reports, My tasks, authorised Messages and Settings; it does
 not repeat the business apps. On tablet/phone it becomes a compact utility bar.
 This supersedes the older no-sidebar rule for Home and Reports. Other workspaces retain
-their top menus and a compact Apps popup per Michael's 10 October correction: anchored below Apps,
-at most 560px wide/high, two grouped columns, small grey icons and 14px labels.
-Narrow phones use one column with internal scrolling and 44px touch targets.
-Workspace Apps/search controls are larger, with phone search on a separate row.
+their top menus and a compact wider Apps popup per Michael's 10 October corrections: every authorised
+app visible without scrolling, up to 900px wide, four desktop/three tablet/two
+phone grouped columns, small grey icons and compact labels. Workspace header is
+60px desktop/96px phone, with smaller Apps/company/search controls.
 Business navigation contains no Atlas Console/Admin, Connections or platform
 return links, including staff support workspaces. The header shows company identity.
 Company admin and Manage apps remain permission-filtered business tools.

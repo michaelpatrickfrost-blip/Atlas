@@ -64,15 +64,15 @@ export async function AppDirectory({ session, variant = "menu" }: { session: Ses
     </nav>
   );
   return (
-    <nav aria-label="Apps" className="grid grid-cols-1 gap-x-4 gap-y-4 min-[480px]:grid-cols-2">
+    <nav aria-label="Apps" className="grid grid-cols-2 gap-x-2 gap-y-2 sm:grid-cols-3 sm:gap-x-4 sm:gap-y-4 lg:grid-cols-4">
       {columns.map(([area, entries]) => (
         <section key={area} aria-label={area} className="min-w-0">
           <h2 className="px-2 text-xs font-semibold text-[#86868b]">{area}</h2>
-          <ul className="mt-1 space-y-0.5">
+          <ul className="mt-1">
             {entries.map((entry) => (
               <li key={entry.id}>
-                <Link href={entry.href} prefetch={false} className="flex min-h-11 items-center gap-2.5 rounded-lg px-2 py-2 text-sm leading-5 text-[#1d1d1f] transition-colors hover:bg-black/[0.045] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
-                  <entry.icon size={22} strokeWidth={1.75} aria-hidden="true" className="size-[18px] shrink-0 text-[#77777d]" />
+                <Link href={entry.href} prefetch={false} className="flex min-h-8 items-center gap-1.5 rounded-lg px-1 py-1 text-xs leading-4 sm:min-h-9 sm:gap-2 sm:px-2 sm:text-sm sm:leading-5 text-[#1d1d1f] transition-colors hover:bg-black/[0.045] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                  <entry.icon size={22} strokeWidth={1.75} aria-hidden="true" className="size-4 shrink-0 sm:size-[18px] text-[#77777d]" />
                   <span className="min-w-0 break-words">{entry.name}</span>
                 </Link>
               </li>

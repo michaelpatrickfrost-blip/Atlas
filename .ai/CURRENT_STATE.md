@@ -1,23 +1,23 @@
 # Atlas current state
 
-## 10 October 2026 — Compact Apps popup
+## 10 October 2026 — Compact Apps popup and polished header
 
-User requested a small popup in place of the window-wide Apps panel.
-AppMenu anchors below its trigger, caps width/height at 560px and scrolls internally.
-AppDirectory menu uses two compact grouped columns (one on narrow phones), 14px
-labels and 18px icons; 44px targets and existing server filtering remain.
-Home launcher unchanged. Design docs supersede the earlier wide-panel direction.
-Home checker now asserts bounded popup dimensions and trigger anchoring, retaining
-permission, responsive fit, link navigation, outside-click and Escape checks.
-Paths: src/components/shell/{app-menu,app-directory}.tsx, scripts/check-home-menu.ts,
-docs/DESIGN_SYSTEM.md, .ai/DESIGN_SYSTEM.md and .ai/DECISIONS.md.
-Checks: Prisma generation, production build, scoped ESLint and git diff --check PASS.
-Initial worktree dependency symlink/generated-client failures resolved locally.
-Merged concurrent accepted Studio 74fab2d; integrated build PASS. First candidate
-passed responsive size/fit/links/Escape checks, then caught phone search overlap.
-Corrected phone placement below full header; desktop stays trigger-anchored.
-Corrected production build/scoped lint/diff PASS; deployment/acceptance retry pending.
-Initial live baseline 1f2ab97; stopped candidates never activated.
+Latest user steering requires every app visible without scrolling and a slimmer
+header. AppMenu now up to 900px wide; AppDirectory uses four desktop/three tablet/
+two phone columns, compact labels/icons/32–36px links, no internal scrolling.
+Phone popup clears the full header. Workspace header 60px desktop/96px phone,
+36px Apps/company/back controls and 40px search. Home directory unchanged.
+Design docs/decision supersede earlier wide-menu and initial scrolling directions.
+Paths: shell app-menu/app-directory/topbar/command-palette/workspace-back,
+globals.css, Home acceptance checker, design docs/shared decisions.
+Checks: corrected production build, scoped ESLint (zero errors/two existing image
+warnings), diff PASS. Existing checker asserts no panel overflow, all authorised
+links, responsive fit, anchoring, dismissal and navigation. Public checks pending.
+Preserved concurrent live Studio 74fab2d. Prior candidate passed popup dimensions/
+Escape/all links then caught phone search overlap; corrected. Later preparation
+failed with VPS disk full; live unchanged. Only this task's stopped candidate
+build/dependency output reclaim attempted under locks; lock busy so no cleanup yet.
+Source/backups/live/previous retained. Deployment pending after capacity recovery.
 
 ## 10 October 2026 — Final readable business-setup companion checks PASS
 

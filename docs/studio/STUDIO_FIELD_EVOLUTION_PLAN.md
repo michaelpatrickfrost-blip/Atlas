@@ -1408,3 +1408,11 @@ Central backup071007/full0007 DDL rolled back PASS: five oldACT rows compatible,
 principal shape checks and no new columns after rollback. Initial syntax issue
 corrected and rerun. No applied migration/production service or actual nested
 Test proof yet; full compatible candidate/public acceptance remains required.
+
+F4b1 release proof BLOCKED10 October: combined48files300/build/strict TS/scoped
+lint PASS; central backed-upDDL rollback PASS, no migration applied. Observed
+current1bf0e2c ancestry merged f7ed95f. Safe inactive task compiler/npm cleanup
+left3.2Gfree/99% on fully allocated200G disk; current/previous/history/dependencies/
+backups retained. Increase safe capacity before normal pinned complete Studio
+release and actual nested storage proof. Do not mark storage VERIFIED from DDL
+validation alone or open normal values/production settlement prematurely.

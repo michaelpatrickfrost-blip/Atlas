@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f4b1 — Additive one-time settlement storage — IMPLEMENTED; actual Test proof pending.
+2B3f4b1 — Additive one-time settlement storage — BLOCKED on safe central release proof; code IMPLEMENTED.
 Purpose: retain original activation history while proving rollback/finalization
 receipt, publication and pointer commit together. Dependencies: verified0006/f3,
 f4a closed contract. Expected files: schema, additive0007, exact Test nested storage
@@ -1664,6 +1664,14 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
+ACTIVE BLOCKER10 October: shared VPS root remains3.2Gfree/99% after safe cache
+cleanup;200G disk fully allocated. Current release requires~2.2G plus package/
+build temporary space, and same-volume ENOSPC already reproduced by concurrent
+Tasks/Apps releases. No remaining eligible inactive compiler caches. Preserve
+accepted runtimes/dependencies/history/backups; increase capacity before another
+isolated build. F4b1 actual Test/candidate/public gate pending; new0007 unapplied.
+
+
 Preparation support lock failure RESOLVED: corrected e309ff8 full candidate/public
 actual service proof PASS and deployed; 4e4a0e8 failure retained for recovery.
 
@@ -1710,14 +1718,23 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint reviewed f4b1, then merge exact live1bf0e2c source ancestry (previous845456e)
-preserving concurrent UI/task code/memory. Central additive0007 backed-up DDL rollback
-PASS071007 (five originalACT rows compatible, identity shape checks, columns after
-rollback0); no migration applied. Build/types/scoped lint/diff,41 Studio files268 and
-7 compatibility files48 PASS. Exact Test nested runtime proof still pending.
-Root2.0G/PG18main online: inspect/reclaim only eligible disposable task-owned inactive
-compiler/npm caches under both original locks, preserve current/previous/all accepted
-runtime/history/backups. Do not risk ENOSPC. If capacity allows, pinned compatible
-full Studio candidate/public/native acceptance. Then f4b2 generation/cosmetic
-continuation before f4c current-authority settlement and f4d actual service proof,
-2B4 values and visual2E. No rollback/value/designer completion claim yet.
+Increase VPS disk capacity/safe available build space to at least8GB. This is an
+external capacity blocker:200G disk fully allocated, root3.2Gfree/99%used after both-
+lock cleanup of only inactive1f2ab97/74fab2d compiler caches/npm downloads. All
+accepted source/dependencies/server/static/history/backups/current1bf0e2c/previous
+845456e retained; remaining compiler caches current/previous only. PG18main online;
+no swap/SQL reset/migration applied/Studio deployment attempted.
+
+Once capacity is available: re-read recovery memory/ledger/git status and public
+health, merge any newer accepted live ancestry, then run normal exact pinned Studio
+release on codex/studio-phase2 with ATLAS_RELEASE_ACCEPTANCE=studio. Forward0007
+must pass actual nested Test storage proof and full candidate/public/native suites
+before f4b1 VERIFIED. Combined48files300/build/strict TS/scoped lint/diff PASS;
+central backed-up fullDDL rollback071007 PASS (five originalACT rows compatible,
+closed actor checks, columns after rollback0). Source checkpoints adfc357/dc5d508/
+f7ed95f retained. Local logs /tmp/atlas-studio-settlement-{ddl,capacity,merged-*}.txt.
+
+Then f4b2 ANY-open-source priority/history and same-active-generation cosmetic
+publication/activation; f4c current-authority rollback/finalization; f4d actual
+permission/Audit/concurrency/replay proof;2B4 owner values/required-if/native hooks,
+2C/2D and2E visual designer. Do not startPhase3 or claimPhase2/designer complete.

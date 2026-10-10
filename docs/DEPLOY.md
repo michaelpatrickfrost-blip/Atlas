@@ -384,3 +384,13 @@ completion and persisted status at 320/390/820/1448 widths on candidate and publ
 HTTPS under the same locks. Each stage backs up central data/private evidence.
 Only its synthetic tasks are written, and retained canceled at cleanup. Existing
 backup, immutable release, revision checks and rollback gates apply.
+
+10 October Studio settlement checkpoint is blocked before isolated release build:
+root3.2Gfree/99% after reclaiming only inactive1f2ab97/74fab2d compiler caches and
+npm downloads under both original locks. Disk200G/root partition198.9G fully
+allocated; current1bf0e2c/previous845456e and all accepted source/dependencies/
+server/static/history/backups preserved. Inventory studio-settlement-capacity-
+20261010.txt in maintenance backups. PostgreSQL18main remains online. Increase
+capacity/safe available build space before retry; do not remove accepted runtimes
+or backups to force another build. Forward0007 DDL was backed up/rolled back
+only, not applied; actual Test/candidate/public gate remains pending in ledger.

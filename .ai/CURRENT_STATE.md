@@ -1,5 +1,38 @@
 # Atlas current state
 
+## 10 October 2026 — Studio Phase2 f4b1 release gate BLOCKED by shared VPS capacity
+
+Preserved source checkpoints adfc357 (pure settlement contracts), dc5d508 (forward
+0007/storage/nested exact Test helper) and f7ed95f (observed live1bf0e2c ancestry).
+Combined48 files300 assertions, production build, strict post-build TS and scoped
+settlement/helper lint/diff PASS. Central backed-up0007 DDL rollback PASS071007:
+five oldACT receipts compatible; principal shape checks pass; zero new columns
+after rollback. Actual nested Test guard proof and complete candidate/public/native
+release checks NOT RUN: no new migration applied or Studio release activated.
+First SQL syntax issue was corrected before checkpoint and full DDL rerun passed.
+
+Safe capacity cleanup under both original locks reclaimed ONLY inactive task-owned
+1f2ab97/74fab2d Turbopack caches and npm download cache. Accepted source/dependencies/
+compiled server/static/readiness/history/backups, current1bf0e2c and previous845456e
+retained. Inventory maintenance-backups/studio-settlement-capacity-20261010.txt;
+local log /tmp/atlas-studio-settlement-capacity.txt. Root remains3.2Gfree/99%used;
+200G disk/vda1 198.9G fully allocated, PG18main online, no swap. Remaining compiler
+caches belong to current/previous only. Read-only exact public health1bf0e2c verified.
+Recent separate Tasks/Apps builds repeatedly failed ENOSPC on this same volume.
+Current release dependencies+Next alone occupy~2.2G before npm cache/temporary build
+outputs; proceeding would leave insufficient headroom for shared production data.
+No reset, restore, destructive cleanup, lock bypass or server build attempted.
+
+Exact unblock: increase VPS disk capacity/free safe build space (at least8GB free
+for the immediate candidate and further sequential checkpoints), then re-read
+ledger/status/current health and merge any newer accepted live ancestry. Run the
+normal pinned Studio release with ATLAS_RELEASE_ACCEPTANCE=studio; it applies
+reviewed additive0007 and executes actual nested SQL proof plus all candidate/public
+native checks under original locks/backups. Fix any failure before markingf4b1
+VERIFIED. Then f4b2 generation/cosmetic continuation, f4c current-authority settlement,
+f4d actual service/Audit/replay proof;2B4 values,2C/2D,2E visual business designer.
+Phase2 NOT PASSED; no visual designer/publish-to-dashboard completion claim.
+
 ## 10 October 2026 — Preserve observed live Apps/Tasks ancestry for Studio
 
 Merged exact public/current1bf0e2c1c69803906ac087ce6ba634fe6033c365 (previous845456e)

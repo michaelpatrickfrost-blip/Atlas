@@ -27,7 +27,7 @@ acceptance has NOT PASSED. The visual designer remains required and unimplemente
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source 9aad1fc30a33179b73a994ad2db683101b7658d2,
+VERIFIED. Latest confirmed live source 1f2ab97f3ee954ac9829d2c3ea1d4681ce5320e5 (includes verified9aad1fc),
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -1637,7 +1637,7 @@ Implement the bounded business-setup entry-point clarity companion described abo
 review existing Studio/Admin checks, run build/types/lint/regressions. Keep technical
 reference forms available under explicit advanced setup, and do not claim a visual
 builder or change activation semantics. Before deployment reclaim only exact failed
-aea disposable dependencies/build under BOTH free locks with current9aad/prior5f
+aea disposable dependencies/build under BOTH free locks with current1f2/prior9aad
 and all guards verified; preserve source/readiness/history/accepted assets/backups.
 If unsafe capacity persists, checkpoint this exact blocker. Then complete pinned
 candidate/public acceptance. Resume f4 lifecycle/contracts/forward rollback guards

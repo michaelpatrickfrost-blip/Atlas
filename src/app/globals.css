@@ -230,7 +230,9 @@ main :where(.rounded-2xl, .rounded-3xl, .rounded-\[28px\]):where(.border, .borde
   border-color: rgba(255, 255, 255, 0.9);
   background: #fff;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04), 0 16px 40px -24px rgba(0, 0, 0, 0.22);
-  backdrop-filter: blur(18px);
+  /* Solid cards need no blur: a filter creates a stacking context that traps
+     descendant menus underneath later cards, even with a menu z-index. */
+  backdrop-filter: none;
 }
 .atlas-home-shell .atlas-launcher-card {
   border-color: #e6edf7;

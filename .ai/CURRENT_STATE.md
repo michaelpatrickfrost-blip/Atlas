@@ -1,5 +1,14 @@
 # Atlas current state
 
+## 10 October 2026 — Preserve completed concurrent commercial release
+
+Current exact public1f2ab97f3ee954ac9829d2c3ea1d4681ce5320e5 includes Studio9aad1fc
+and the other contributor's customer phone-menu fix/commercial acceptance selector.
+Merged that existing live source into codex/studio-phase2; preserved both memory
+entries, native styling and original release locks/gates. Current previous9aad1fc;
+phase2 remains IN PROGRESS. Read-only root4.2G/PGonline. Clarity companion next;
+no UI edits yet. Earlier9aad current/prior claims are historical snapshots.
+
 ## 10 October 2026 — Cutover service VERIFIED live; Studio must lead with business setup
 
 Exact9aad1fc30a33179b73a994ad2db683101b7658d2 complete candidatehHdOrk/publicibWIZD
@@ -67,6 +76,62 @@ and full fresh service replay proof pending. No new migration. Before runner fre
 and preserve accepted current/prior/backups; do not advance pinned branch tip.
 285 original local plus conflict test:45 files/286 assertions/build/types/lint PASS.
 
+## 10 October 2026 — Customer phone menu alignment corrected before activation
+
+f58d5a5 candidate commercial acceptance PASS: both customer menus above content at
+1448/820/390px plus full commercial workflows; /tmp/atlas-commercial-staging-pHDQuM,
+screenshots /tmp/atlas-commercial-acceptance-AMJR29, backup061823. Visual screenshot
+inspection then found phone menu extending left offscreen, missed by centre-only
+hit-testing. Both customer menus now anchor left on phones/right from sm upward;
+checker also requires entire menu within viewport. Local production build, strict TypeScript and scoped
+lint PASS. bea1861 deployment intentionally stopped before
+activation, private backup/logs061900 and source retained; disposable outputs/cache
+reclaimed under both locks. Studio9aad1fc complete candidate/public PASS and current
+exact; its source is merged. npx execution cache and two inactive compiler caches
+reclaimed with source/static/runtime/readiness/central data/backups retained.
+Next: exact pinned commercial candidate/public gate and final visual review.
+Temporary swap stays until release/builds complete safely; no persistent swap edit.
+
+## 10 October 2026 — Menu release retry and continuous commercial acceptance
+
+Reclaimed only failed 05d0098 dependencies/.next and npm package cache under both
+release locks, retaining source/logs/backups and active/rollback releases. Fresh
+f58d5a5 build/smoke/compatibility PASS; backup 20261010-060628. A temporary 2GB swap
+at /opt/atlas-maintenance-backups/menu-build-20261010.swap is active (no fstab edit)
+to protect further server builds; remove when deployment/builds finish safely.
+Candidate commercial check queued behind concurrent Studio 9aad1fc release.
+Added explicit commercial acceptance selector to existing deploy hook, with both
+locks retained across candidate/activation/public checks, fixture-stage backups,
+exact revisions and normal rollback. Shell syntax/whitespace PASS. No lock bypass.
+Merged Studio 9aad1fc source after combined candidate PASS and live activation;
+its public repeat is running. Reconciled build, strict types, scoped checker lint
+and shell syntax PASS. Preserve both contributors' memory entries. Next: wait for
+public Studio proof, run pinned commercial release and capture public menu checks.
+Menu correction still not publicly activated.
+
+## 10 October 2026 — Shared card/menu layering correction
+
+Customer Actions appeared underneath tabs and overview cards because the global
+solid-white card rule applied backdrop-filter, creating nested stacking contexts.
+Removed that unnecessary filter in src/app/globals.css across all matching cards;
+intentional translucent navigation styles remain. Commercial acceptance now checks
+every Actions/Manage Record item with browser hit-testing and captures both open
+menus at desktop/tablet/phone sizes. No business records or permissions change.
+Production build, strict TypeScript, scoped checker lint and whitespace PASS.
+Local Chromium stacking reproduction: old blur hides menu items, corrected rule
+passes all-item hit-testing at 1448/820/390px. This is a minimal layering fixture,
+not authenticated live feature acceptance. Scoped release starts at live 5f5fce5
+to preserve concurrent accepted work. Candidate 05d0098 preparation FAILED: kernel
+OOM killed next-build during page-data collection after compilation. Production
+pointer stayed 5f5fce5. Backup/logs retained at server
+/home/administrator/backups/atlas-pre-deploy-20261010-060017-*; incomplete candidate
+retained, no ready marker. Server has no swap and only 7.6GB disk free; concurrent
+Studio aea5ef1 preparation then held the normal deployment lock. No server cleanup,
+lock bypass or resource reconfiguration attempted. Customer menu fix NOT DEPLOYED.
+Next: resolve build resource pressure, reconcile latest accepted live ancestor,
+prepare a fresh pinned candidate, run updated commercial acceptance, activate and
+repeat public acceptance. Shared Desktop main is dirty; scoped branch is preserved
+for integration without overwriting concurrent work.
 ## 10 October 2026 — Actual raw concurrency conflict corrected; gate rerun next
 
 aea5ef1 candidate S9EZeD FAILED before live switch, session9476 exit1; backup

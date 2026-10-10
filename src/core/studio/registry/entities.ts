@@ -30,6 +30,8 @@ export const entityDetailsSchema = z.strictObject({
     migrationSnapshot: z.strictObject({ query: queryReference,
       sourceVersions: z.array(z.number().int().positive()).min(1).max(20)
         .refine(versions => new Set(versions).size === versions.length, "Duplicate migration source version."),
+      referenceVersions: z.array(z.number().int().positive()).min(1).max(20)
+        .refine(versions => new Set(versions).size === versions.length, "Duplicate migration reference version.").optional(),
     }).optional(),
     nativeFields: z.literal("read_only"), revision: z.literal("owner_positive_integer"),
   }).optional(),
@@ -38,6 +40,8 @@ export const entityDetailsSchema = z.strictObject({
   if (Object.values(value.extensionPolicy).some(Boolean) && !value.record) ctx.addIssue({ code: "custom", message: "Extensible entities need an owner record policy." });
   if (value.record && !value.fields.some(f => f.id === value.record!.labelField)) ctx.addIssue({ code: "custom", message: "Record label must reference an approved native field." });
   if (value.record?.migrationSnapshot && !value.record.fieldPolicy) ctx.addIssue({ code: "custom", message: "Migration snapshots require an owner field policy." });
+  if (value.record?.migrationSnapshot?.referenceVersions && !value.record.fieldPolicy?.types.includes("reference"))
+    ctx.addIssue({ code: "custom", message: "Reference coverage requires the owner's reference field policy." });
 });
 
 export const recordRequestSchema = z.strictObject({

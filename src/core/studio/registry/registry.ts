@@ -52,7 +52,7 @@ export class CapabilityRegistry {
         if (!target || target.metadata.kind !== "query" || target.metadata.ownerModuleId !== ownerModuleId || target.metadata.capability !== m.capability) throw new Error("Entity projections must reference registered owner queries with the same read capability.");
       }
       if (record.migrationSnapshot) {
-        const { query: ref, sourceVersions } = record.migrationSnapshot;
+        const { query: ref, sourceVersions, referenceVersions } = record.migrationSnapshot;
         const target = additions.get(`${ref.id}@${ref.version}`) ?? this.items.get(`${ref.id}@${ref.version}`);
         if (!target || target.metadata.kind !== "query" || target.metadata.ownerModuleId !== ownerModuleId
           || target.metadata.capability !== record.writeCapability || target.metadata.details.transaction !== "required")
@@ -62,6 +62,16 @@ export class CapabilityRegistry {
           if (!source || source.metadata.kind !== "entity" || source.metadata.ownerModuleId !== ownerModuleId
             || !entityDetailsSchema.parse(source.metadata.details).record?.fieldPolicy)
             throw new Error("Migration snapshots must declare approved typed-field source entity versions.");
+        }
+        if (referenceVersions) {
+          if (!record.fieldPolicy?.referenceEntities.includes(m.id))
+            throw new Error("Reference coverage must opt into this canonical entity's reference field policy.");
+          for (const version of referenceVersions) {
+            const reference = additions.get(`${m.id}@${version}`) ?? this.items.get(`${m.id}@${version}`);
+            if (!reference || reference.metadata.kind !== "entity" || reference.metadata.ownerModuleId !== ownerModuleId
+              || !entityDetailsSchema.parse(reference.metadata.details).record)
+              throw new Error("Reference coverage must declare registered native read versions of the same owner entity.");
+          }
         }
       }
     }

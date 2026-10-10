@@ -1,5 +1,33 @@
 # Atlas current state
 
+## 10 October 2026 — Reference opt-in contracts locally checked
+
+c6b2b3c1 optional same-entity referenceVersions validates approved reference type/
+entity and registered native read versions atomically. Old absence/hashes retained;
+no runtime reference authority/query yet. Seven files/44 assertions, production
+build, strict post-build TypeScript, scoped lint and diff review PASS. Initial two
+unknown metadata accesses in tests corrected with existing entity schema parser;
+final strict check PASS. Live fc9b80f pure registry hashes for entity v1/v2/v3 and
+query v1 captured and pinned as regression assertions; no business reads. CLI
+inspection must bootstrap db then registry/runtime (direct owner import hit a
+cycle; normal supported entry works). Logs /tmp/atlas-studio-reference-contract-
+{tests,build,postbuild-types,lint}.txt. Next c2 new owner v4/query v2, then c3
+reference sealing; current reference seal remains blocked. fc9b80f full candidate
+PASS, public OmmiXM running, fixture 020518; no final live acceptance claim yet.
+
+## 10 October 2026 — Scalar actual candidate proof passed; reference contract planned
+
+fc9b80f candidate actual source coverage/scalar seal/uniqueness PASS: exact Node–SQL
+v1 parity including formatter invalid/lossy/empty/duplicates, real Audit rollback,
+fresh replay/sealed append denial and unchanged canonical native rows. Full native/
+public still pending; evidence AhVC2R, backup 015932, fixture 020129. Not globally
+VERIFIED yet. c6b2b3c1 plan before code: optional same-entity referenceVersions on
+owner migration snapshot, registered-native-reference/version/field-policy validation
+and immutable old hashes. Files registry types/entities/validation/tests/docs; no
+DDL or new native privileges. c2 new owner query/entity versions, then c3 final
+reference seal integration and actual proof. Existing scalar path remains fail
+closed for references until those pass. No Phase 2 gate claim.
+
 ## 10 October 2026 — Scalar review seal locally checked, central proof pending
 
 c6b2b3b internal scalar sealing performs fresh source/native/written checks before

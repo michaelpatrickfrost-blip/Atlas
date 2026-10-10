@@ -309,3 +309,11 @@ execute commands or bypass command idempotency. The owner still checks native
 permissions, tenant scope and module availability inside the supplied transaction.
 The option is a pinned contract change; publish a new descriptor/version instead
 of changing a sealed old contract. It adds no field conversion authority.
+
+An owner migration snapshot may additionally declare referenceVersions: explicit
+native read versions of the same canonical entity covered by its pinned query.
+Registry registration requires reference type/entity approval and actual registered
+native versions; omitting it preserves old metadata/hashes. This opt-in never
+grants data access: final reference review needs the new owner query's real target/
+tenant/private checks after Studio current/written policy and source coverage.
+Use new entity/query versions rather than changing already sealed descriptors.

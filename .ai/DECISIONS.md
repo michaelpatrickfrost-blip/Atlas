@@ -1,3 +1,13 @@
+## 10 October 2026 — Owner reference coverage is an explicit versioned opt-in
+
+Studio must not infer canonical reference access from a matching entity ID or a
+configuration flag. Add optional same-entity native referenceVersions to the
+pinned owner snapshot, validate approved reference policy and actual registered
+native versions, and require a new owner query/entity version to implement real
+coverage. Old absence/hashes remain immutable. This supplies scalable final-review
+permission evidence within the existing owner/capability boundary, not a second
+permission system; metadata alone authorises no data or native mutation.
+
 ## 10 October 2026 — Scalar review aggregation preserves the v1 archive digest
 
 The final scalar review needs one atomic fresh source/native snapshot. Streaming

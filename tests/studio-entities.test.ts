@@ -4,6 +4,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import type { Session } from "@/core/auth/session";
 import { entity, query } from "@/core/studio/registry/contracts";
 import { CapabilityRegistry } from "@/core/studio/registry/registry";
+import { entityDetailsSchema } from "@/core/studio/registry/entities";
 import type { EntityDescriptor, RecordContext } from "@/core/studio/registry/types";
 const session: Session = { userId: "actor", userName: "Actor", userEmail: "a@example.test", organisationId: "tenant-a", organisationName: "A", membershipId: "m", capabilities: new Set(["tickets.ticket.read", "tickets.ticket.manage"]) };
 const descriptor = (authorise: NonNullable<EntityDescriptor["record"]>["authorise"]): EntityDescriptor => ({
@@ -21,6 +22,26 @@ function setup(d = descriptor(goodOwner), available = true) {
 }
 const transaction = {} as Prisma.TransactionClient;
 describe("Studio owner record contracts", () => {
+  it("validates reference read versions atomically without changing old absent metadata/hash or granting invocation", () => {
+    const source = descriptor(goodOwner); source.record!.fieldPolicy = { types: ["string"], reservedKeys: ["id"], referenceEntities: [], maxFields: 10 };
+    const old = setup(source).reference;
+    const upgraded: EntityDescriptor = { ...source, version: 2, record: { ...source.record!, fieldPolicy: { ...source.record!.fieldPolicy!, types: ["string", "reference"], referenceEntities: [source.id] },
+      migrationSnapshot: { query: { id: "tickets.ticket.snapshot", version: 1 }, sourceVersions: [2], referenceVersions: [1, 2] } } };
+    const reads = ["list", "get"].map(operation => query({ id: `tickets.ticket.${operation}`, version: 1, label: operation, capability: "tickets.ticket.read", lifecycle: "active", classification: "confidential", kind: "query", input: z.strictObject({}), output: z.null(), pagination: "none", maxCardinality: 1, costClass: "low", execute: async () => null }));
+    const snapshot = query({ id: "tickets.ticket.snapshot", version: 1, label: "Snapshot", capability: "tickets.ticket.manage", lifecycle: "active", classification: "confidential", kind: "query", input: z.strictObject({}), output: z.null(), pagination: "none", maxCardinality: 1, costClass: "low", transaction: "required", execute: async () => null });
+    const register = (candidate: EntityDescriptor) => { const registry = new CapabilityRegistry(async () => true); registry.register("tickets", { contributions: [entity(source), entity(candidate), ...reads, snapshot] }); return registry; };
+    const badVersion = { ...upgraded, record: { ...upgraded.record!, migrationSnapshot: { ...upgraded.record!.migrationSnapshot!, referenceVersions: [99] } } };
+    expect(() => register(badVersion)).toThrow("registered native read versions");
+    const badType = { ...upgraded, record: { ...upgraded.record!, fieldPolicy: { ...upgraded.record!.fieldPolicy!, types: ["string"] as const } } };
+    expect(() => register(badType)).toThrow("reference field policy");
+    const badEntity = { ...upgraded, record: { ...upgraded.record!, fieldPolicy: { ...upgraded.record!.fieldPolicy!, referenceEntities: [] } } };
+    expect(() => register(badEntity)).toThrow("canonical entity");
+    const duplicate = { ...upgraded, record: { ...upgraded.record!, migrationSnapshot: { ...upgraded.record!.migrationSnapshot!, referenceVersions: [1, 1] } } };
+    expect(() => register(duplicate)).toThrow("Duplicate migration reference");
+    const registry = register(upgraded);
+    expect(registry.describe(source.id, 1)).toEqual(old); expect(entityDetailsSchema.parse(old.details).record?.migrationSnapshot).toBeUndefined();
+    expect(entityDetailsSchema.parse(registry.describe(source.id, 2).details).record?.migrationSnapshot?.referenceVersions).toEqual([1, 2]);
+  });
   it("validates migration opt-ins atomically against owner capability, shared transaction and supported field versions", () => {
     const source = descriptor(goodOwner);
     source.record!.fieldPolicy = { types: ["string"], reservedKeys: ["id"], referenceEntities: [], maxFields: 10 };

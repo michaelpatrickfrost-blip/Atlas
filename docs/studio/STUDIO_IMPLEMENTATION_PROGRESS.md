@@ -61,6 +61,19 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 # Current Workstream Detail
 
+c6b2b3c1 contract foundation locally VERIFIED: seven files/44 assertions, production
+build, strict post-build TS/scoped lint/diff review PASS. Old live v1/v2/v3 entity
+and query v1 hashes captured/pinned; no data reads or new runtime authority. Initial
+test unknown metadata type errors corrected using entity schema parser. c2 owner
+query/entity and c3 reference seal remain NOT STARTED. fc9b80f complete candidate
+PASS; full public OmmiXM pending (fixture 020518).
+
+fc9b80f scalar/source coverage/uniqueness actual candidate proof PASS; full native/
+public pending. Evidence AhVC2R, backup 015932, fixture 020129. New c6b2b3c1
+contract plan before code: optional same-entity referenceVersions on pinned owner
+snapshot, validate actual native versions/reference policy and preserve old hashes.
+No DDL, reference permission or invocation until c2 owner/c3 final seal checks.
+
 Scalar seal implemented locally: 19 files/117 assertions, production build, strict
 post-build TypeScript/scoped lint/diff review PASS. Actual coverage/seal/unique
 helpers added but NOT RUN: v1 Node–SQL parity, real Audit rollback, replay/sealed

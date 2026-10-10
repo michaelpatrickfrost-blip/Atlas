@@ -27,6 +27,18 @@ beforeEach(() => {
   });
 });
 
+it("preserves exact sealed entity v1/v2/v3 and snapshot v1 hashes captured from the verified server source", () => {
+  const { registry } = setup();
+  expect([["tickets.ticket", 1], ["tickets.ticket", 2], ["tickets.ticket", 3], ["tickets.ticket.field_migration", 1]].map(([id, version]) => {
+    const metadata = registry.describe(String(id), Number(version)); return [metadata.schemaHash, metadata.contractHash];
+  })).toEqual([
+    ["e563b6536de3ffc03d3e3fc63fc7f9211dc158ce7ee517c944e9efc0ccce2ca6", "7c36b9ab5005060a1310d28cf8e9745b9529aa6c6968e373e27575e4cdc8df27"],
+    ["bad9b6f043e62e636d730d5968aeb2799293225e9adcb0d1e6e867ba0a79eb7c", "f9df7435d09d8b076b63571a413ac7bdaaee3c171abeb50391e06185aeb44437"],
+    ["19e54bbff7f11ec3731aac432dcbaec97f46a2bb230d3ee5306f903b8ed7e166", "8d7adf708c77c46038e649433680c7f22ab00cee2d5efc140667ece00e70a2af"],
+    ["69ec7a8a5e57cdc3278c0dfe9011626022d187d552ac4693e6e5010bc661cfbf", "e2096642c566ef527f3b38b8da6c2795f4dddf461d87cd92af678da6548f2d5c"],
+  ]);
+});
+
 it("rejects missing/shared but nonserializable transactions before native access", async () => {
   const { registry, reference, run } = setup();
   await expect(registry.invoke(actor, reference, { mode: "preflight" })).rejects.toThrow("shared server transaction");

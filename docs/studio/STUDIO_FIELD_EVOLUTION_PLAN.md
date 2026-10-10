@@ -519,3 +519,21 @@ TypeScript/scoped lint and full diff review PASS. Actual helpers added but NOT R
 Unique scalar fixture uses two active exact-Test tickets seeded before baseline,
 normal-owner source-only writes, actual full-cohort review denial; formatter-only
 fake anchors are separate and cannot pass owner coverage. Reference seal pending.
+
+### c6b2b3c — Reference review workstreams
+
+c1 VERIFIED locally: optional explicit same-entity referenceVersions on migrationSnapshot;
+validate registered native versions and reference type/entity opt-in; old absence
+and hashes unchanged. Files registry types/entities/registry + tests/docs; no DB.
+c2 NOT STARTED: new Tickets entity/query versions approve whole native reference
+coverage using actual canonical targets and current full private/native access,
+without per-record value round trips or ordinary write/final guard changes.
+c3 NOT STARTED: final reference review invokes that pinned owner protocol after
+current/written field/source/native checks; same archive digest/review/CAS/Audit.
+c4 NOT STARTED: actual Test reference/private/missing/foreign/stale/written-policy
+and replay proof, plus full production/regression acceptance. No second permission
+engine or reference privilege is granted by metadata; old owner versions stay sealed.
+
+c1 evidence: seven files/44 assertions, production build, strict post-build
+TypeScript/scoped lint/diff PASS. Exact live old entity v1/v2/v3/query v1 hashes
+pinned; metadata alone grants no reference runtime authority. No DDL.

@@ -47,7 +47,10 @@ export type EntityDescriptor = ContractIdentity & {
     getQuery: { id: string; version: number };
     fieldPolicy?: ExtensionFieldPolicy;
     /** Read-only migration capture/coverage; ordinary record write guards still apply. */
-    migrationSnapshot?: { query: { id: string; version: number }; sourceVersions: readonly number[] };
+    migrationSnapshot?: { query: { id: string; version: number }; sourceVersions: readonly number[];
+      /** Explicit same-canonical-entity reference read versions covered by this
+       * owner's pinned query. This metadata never grants reference permission. */
+      referenceVersions?: readonly number[] };
     authorise(ctx: RecordContext, request: RecordRequest): Promise<RecordAnchor>;
   };
 };

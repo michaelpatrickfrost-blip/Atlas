@@ -53,6 +53,11 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 # Current Workstream Detail
 
+Native People helper review caught new dashboard already opens Widget library:
+removed extra toggle and assert visible initial region. 015698f preparation already
+started; do not alter sealed candidate. Current correction strict types/helper lint PASS. 015698f preceding checks PASS,
+then expected hidden-library selector failure; no activation, Test access retired.
+
 Preserved exact publicly verified native Dashboard source 70ca23e, including its
 modern UI, protected data datasets and final Messages assignment. 28 files/164
 focused tests, generation/descriptors/build/scoped lint and strict types PASS.
@@ -384,11 +389,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Check strict TypeScript and helper lint after adapting People checker to the current
-Dashboard widget library/inspector. Retain exact kpis.attainment and 90→95% assertions.
-Review/checkpoint memory, then deploy new pin preserving b57ba720 with Studio
-held-lock acceptance. 8133299 passed real Studio cohort/decoder and all other native
-checks but final obsolete People selector prevented activation. Full candidate PASS
-must precede switch and exact public repeat. Phase 2 NOT PASSED; designer/value API
-not delivered. Next after proof: review/job/row persistence, then owner job-backed
-representation-only policy; sealed entity v1/v2 and normal final guards retained.
+Deploy new reviewed pin with the People initial-library-state correction (strict
+TypeScript/helper lint PASS). Real Studio/native checks passed on 8133299/015698f,
+but obsolete People selectors blocked activation; preserve both failed evidence
+sets. Full combined candidate must PASS before switch and repeat exact public
+checks under original locks. Native runtime remains b57ba720. After proof: add
+review/job/row persistence and job-backed owner representation policy with exact
+canonical-set coverage; sealed v1/v2/native final guards retained. Phase 2 NOT PASSED.

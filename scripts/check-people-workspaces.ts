@@ -58,8 +58,8 @@ async function main() {
     await db.kpi.update({where:{id:goal.id},data:{current:90}});
     const metric=kpisAnalytics.find(item=>item.id==="kpis.attainment");assert(metric);assert.equal((await metric.query(manager.session,new Date("2026-10-01")))[0].value,90);
     assert.equal((await loadScorecards(outsider.session)).length,0);
-    await visit("/analytics?new=1");await page.getByLabel("Dashboard name",{exact:true}).fill("People performance");await page.getByRole("button",{name:"Add widget",exact:true}).click();
-    const widgetLibrary=page.getByRole("region",{name:"Widget library",exact:true});
+    await visit("/analytics?new=1");await page.getByLabel("Dashboard name",{exact:true}).fill("People performance");const widgetLibrary=page.getByRole("region",{name:"Widget library",exact:true});
+    await expect(widgetLibrary).toBeVisible();
     await widgetLibrary.getByRole("button",{name:"Business measures",exact:true}).click();
     await widgetLibrary.getByLabel("Search widget data",{exact:true}).fill("Scorecard attainment");
     await widgetLibrary.getByRole("button",{name:/Scorecard attainment/}).click();

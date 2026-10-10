@@ -1,5 +1,14 @@
 # Atlas current state
 
+## 10 October 2026 — People checker initial library state corrected in review
+
+Review after 015698f preparation began caught a checker setup mistake: new=1 already
+opens Widget library. Removed unnecessary Add widget toggle which would hide it,
+and assert the initial region is visible before selecting the real measure/Table.
+No app/security/schema change; persisted widget/90→95% checks unchanged. Strict TypeScript and changed-helper lint PASS. 015698f candidate passed all preceding checks, then failed the
+obsolete toggle as predicted; do not modify its sealed source. Evidence /tmp/atlas-studio-people-library-deploy.txt; exact Test access retired.
+Retain proof/cleanup and build/test a fresh exact pin with this correction. Phase 2 NOT PASSED.
+
 ## 10 October 2026 — Studio combined candidate native People selector update
 
 8133299 candidate passed corrected authenticated 307, real owner cohort/private/

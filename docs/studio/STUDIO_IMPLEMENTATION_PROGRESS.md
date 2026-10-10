@@ -11,13 +11,13 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c6b1 — Authenticated pinned preparation — IMPLEMENTED locally; central proof pending.
-c5a/c5b VERIFIED live 5d101da; c6a policy locally verified. No collector/writer/designer yet.
+2B3c6b2a — Authorised source observation — IMPLEMENTED locally; central proof pending.
+c6b1 VERIFIED live e309ff8; no collector/writer/designer yet.
 
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source 5d101daec0618fee623e15b9c639d6afb4d581d6,
+VERIFIED. Latest confirmed live source e309ff8a3d6b56560cceca1d5174327735a057eb,
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -54,9 +54,17 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c3 Immutable review contracts | VERIFIED | Local closed/stale/digest cases and 8780a07 SQL helper roundtrip; no preview endpoint. |
 | 2B3c4 Durable review archive | VERIFIED | 8780a07 candidate/public actual tenant/source/draft/slot/value guards, sealed rows/history, CAS/stale/audit rollback; no worker. |
 | 2B3c5 Owner shared snapshot/coverage | VERIFIED | 5d101da full candidate/public proof: exact native set/revisions, private/membership/isolation/final/unanchored; no native mutation. |
-| 2B3c6a Explicit data and field/reference policies | VERIFIED | Pure contract: 4 files/18 local assertions, build/types/lint. No runtime collector/preview claim. |
+| 2B3c6a Explicit data and field/reference policies | VERIFIED | Pure contract: 4 files/18 local assertions, build/types/lint; deployed e309ff8. No runtime collector/preview claim. |
+| 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+e309ff8 corrected preparation full combined candidate/public PASS, deploy exit 0
+and public health match; previous 5d101da retained. Evidence 1U6TU8/lnCkpF, backup
+011430, fixture 011622/012007. c6b1 VERIFIED; failed 4e4a0e8 superseded.
+c6b2a one-row observation implemented locally: 9 files/64 assertions, build/strict
+post-build TS/lint PASS, diff reviewed. New actual helper NOT RUN. No collector or
+target values; privileged source-only fixture follows normal native extend guard.
 
 4e4a0e8 candidate preparation FAIL: support platform lock selected nonexistent id;
 actual model key userId. Earlier owner/archive checks PASS, deploy exit 1 before
@@ -202,6 +210,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+c6b2a: migrations/observation, observation tests, actual check-field-observation
+helper/preparation/principal integration and docs/memory. No persistent DDL.
+
 c6b1: migrations/preparation, actual check-field-preparation/principal driver,
 preparation tests, reuse existing validation in migrations/access, docs/memory.
 
@@ -318,6 +329,10 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+c6b2a: 9 files/64 assertions, production build, strict post-build TS/scoped lint
+PASS; /tmp/atlas-studio-observation-{tests,build,postbuild-types,lint}.txt. Actual
+observation helper NOT RUN. Preparation e309ff8 candidate/public full suite PASS.
 
 Corrected platform support lock: 10 files/53 assertions, production build, strict
 post-build TS/changed-source lint/diff review PASS. Evidence /tmp/atlas-studio-
@@ -466,8 +481,8 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
-Preparation support lock failure fixed in working source but not yet re-verified
-centrally; current phase/workstream remains IN PROGRESS, live 5d101da unchanged.
+Preparation support lock failure RESOLVED: corrected e309ff8 full candidate/public
+actual service proof PASS and deployed; 4e4a0e8 failure retained for recovery.
 
 The separately verified Dashboard release also cleared reproducible dependencies
 from ten inactive October 8 releases; its evidence documents those retained sources
@@ -512,10 +527,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Pin c6a/c6b1 and run combined backed-up candidate/public acceptance. Require real
-service idempotency/fresh identity/source/draft/owner checks and Audit-failure
-rollback before preparation VERIFIED. Then c6b2: collect bounded immutable source
-observations under refreshed principal, owner snapshots and current/written field/
-reference guards; seal only exact current coverage, with source pointer/revision
-freshness and ordered digest. Phase 2 NOT PASSED; visual builder/customer
-publication/custom buttons still outstanding.
+Pin c6b2a observation helper and run combined backed-up candidate/public acceptance.
+Require actual absent-slot and exact typed source observation proof; no collector
+claim. Then c6b2b: implement bounded collectFieldMigrationBatch using fresh stored
+principal/source/draft authority, trusted owner cursor, immutable observation inserts
+and preparation revision CAS; seal only current exact owner/source-pointer coverage
+and canonical digest, with atomic Audit and restart/stale/tenant/access tests.
+Phase 2 NOT PASSED; visual builder/customer publication/custom buttons outstanding.

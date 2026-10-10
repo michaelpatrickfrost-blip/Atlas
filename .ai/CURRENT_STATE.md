@@ -1,5 +1,24 @@
 # Atlas current state
 
+## 10 October 2026 — Preparation verified live; source observation locally implemented
+
+Exact e309ff8a3d6b56560cceca1d5174327735a057eb full combined candidate/public
+PASS, deploy exit 0, actual public health match; prior 5d101da retained. c6b1
+VERIFIED: real refreshed support/source/draft/owner pins, identical replay with one
+Audit, client/tenant/publish/stale denial and actual Audit-failure rollback. Exact
+Test trigger/function removed in finally; native rows unchanged, access retired.
+Evidence candidate 1U6TU8/public lnCkpF; deployment backup 20261010-011430, fixture
+backups candidate 011622/public 012007. No persistent migration or automatic grant.
+c6b2a IMPLEMENTED locally: one authorised source observation, written schema metadata
+policy before business columns, owner anchor/version/protocol, stored schema/gen/
+fingerprint validation, referenced-owner denial propagates; only immutable refs and
+closed result hash/class returned. No row writes/collector/target activation. Nine
+files/64 assertions, production build, strict post-build TS/scoped lint PASS; diff
+reviewed. Central helper added but NOT RUN: absent slot and owner-checked privileged
+synthetic integer source fixture, exact decimal observation; native unchanged.
+Next pin observation checkpoint and actual combined proof, then bounded collector
+and sealed exact review. Phase 2 NOT PASSED; visual builder/publication/buttons remain.
+
 ## 10 October 2026 — Corrected support lock checkpoint checked locally
 
 SELECT userId now matches PlatformAdministrator schema; support refresh/revocation

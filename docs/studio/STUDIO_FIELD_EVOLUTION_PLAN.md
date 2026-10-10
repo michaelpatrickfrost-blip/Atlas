@@ -436,3 +436,10 @@ and repeated actual candidate/public proof. c6b2a recorded plan, code NOT STARTE
 
 Corrected support lock local validation: 10 files/53 assertions, production build,
 strict post-build TypeScript/scoped lint PASS. New actual pin proof required.
+
+
+Corrected preparation c6b1 VERIFIED: e309ff8 complete candidate/public combined
+PASS and deploy exit 0; actual replay/one Audit, stale/client/tenant/permissions and
+Audit-failure rollback, exact Test trigger cleanup and native preservation. Prior
+5d101da retained. c6b2a local 9 files/64 assertions, production build/post-build TS/
+scoped lint PASS; no collector. Actual absent-slot/typed-source helper NOT RUN.

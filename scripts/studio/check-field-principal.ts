@@ -78,7 +78,7 @@ export async function checkFieldPrincipal(customerUserId: string, staff: Session
   assert.deepEqual(await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } }), nativeBefore);
   console.log("PASS real owner cohort and shared snapshot: bounded exact canonical/final/unanchored anchors, Serializable and actual target membership required, private nonmember denied before IDs/counts; native rows and v1/v2 retained.");
   await checkFieldReviews(opened.session, opened.principal, unanchored.id, otherOrganisationId);
-  await checkFieldPreparation(opened.session, opened.principal, otherOrganisationId);
+  await checkFieldPreparation(opened.session, opened.principal, otherOrganisationId, unanchored.id);
   assert.deepEqual(await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } }), nativeBefore);
   assert.equal(await db.auditEntry.count({ where: { id: opened.principal.authority === "staff_support" ? opened.principal.auditId : "impossible",
     organisationId, actorUserId: staff.userId, action: "studio.field.migration.support_opened", entityId: targetMember.id } }), 1);

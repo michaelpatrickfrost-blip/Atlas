@@ -7,9 +7,10 @@ import { studioRegistry } from "../../src/core/studio/registry/runtime";
 import { customFieldPayloadSchema } from "../../src/core/studio/fields/schema";
 import { startFieldMigrationPreparation } from "../../src/core/studio/fields/migrations/preparation";
 import { checksum } from "../../src/core/studio/registry/contracts";
+import { checkFieldObservation } from "./check-field-observation";
 
 /** Actual service proof; writes only exact Test configuration/archive, no target values. */
-export async function checkFieldPreparation(session: Session, principal: FieldMigrationPrincipal, otherOrganisationId: string) {
+export async function checkFieldPreparation(session: Session, principal: FieldMigrationPrincipal, otherOrganisationId: string, ticketId: string) {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1");
   for (const id of [session.organisationId, otherOrganisationId])
     assert(await db.organisation.findFirst({ where: { id, isTest: true, slug: { startsWith: "studio-check-" }, status: "ACTIVE" } }));
@@ -33,6 +34,7 @@ export async function checkFieldPreparation(session: Session, principal: FieldMi
   assert.deepEqual(await startFieldMigrationPreparation(session, principal, request), result);
   assert.equal(await db.auditEntry.count({ where: { organisationId: session.organisationId, actorUserId: session.userId,
     action: "studio.field.migration.prepared", entityId: result.id } }), 1);
+  await checkFieldObservation(session, principal, result.id, ticketId);
   await assert.rejects(() => startFieldMigrationPreparation(session, principal, { ...request, organisationId: otherOrganisationId }));
   await assert.rejects(() => startFieldMigrationPreparation(session, { ...principal, organisationId: otherOrganisationId }, request), /FORBIDDEN/);
   await assert.rejects(() => startFieldMigrationPreparation(session, principal, { ...request, draftRevision: current.draft!.revision + 1 }), /stale|changed/i);

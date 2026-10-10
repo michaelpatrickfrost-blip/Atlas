@@ -187,3 +187,11 @@ source locks. Matching operation UUID replay returns the same preparation withou
 another Audit; stale/changed/cancelled intent requires a new review. Starting writes
 no field values, target generation or activation. See the Studio ledger for actual
 candidate/public proof versus locally implemented services. No new schema here.
+
+
+The migration observation helper fetches source pointer and immutable written-schema
+metadata before business columns, checks current/written policy and schema hashes,
+then decodes exact typed values. Referenced-owner denials abort; closed invalid
+source/target classes never copy raw values into observation metadata. It returns
+references/revisions plus a conversion fingerprint; persistence/sealing remains a
+separate workstream. No native data or target values are changed by observation.

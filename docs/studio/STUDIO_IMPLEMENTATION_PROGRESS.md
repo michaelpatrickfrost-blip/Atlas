@@ -54,6 +54,27 @@ candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
 
+## 10 October 2026 — foundation-first order restored; visual draft preserved
+
+Michael's latest instruction: “the foundations are important so if they need to
+happen first do them stick to the plan”. Keep Phase 2 in its dependency order;
+focused integrity checks per coherent block, consolidated release gates. This
+supersedes the brief visual-first reprioritisation. The unfinished visual Templates
+adapter/editor is safely saved in Git stash
+`28243b7fbe1bccd0458d770177aee24ce9607aec` (tracked and untracked source).
+It is IN PROGRESS, untested and unreleased. Restore visual source selectively for
+2E after foundations; do not restore its superseded planning/memory entries.
+No additional worktree, business cache or database dump was created.
+
+Foundation checkpoint `efdc889` is IMPLEMENTED locally: 95 focused checks/10
+suites, final 27/2 review checks, production build, strict post-build TypeScript,
+scoped ESLint and diff checks passed. Existing live remains `6b3d03f` until the
+original pinned deployment and candidate/public guarded central SQL proof pass.
+No schema/migration changes; no conditional authoring/native dispatch enabled.
+Exact next: pin the clean checkpoint plus this memory update, run the original
+Studio release gates, record central proof, then implement d3e reviewed rule
+evolution before d4 shared locks/native writer/window integration. No Phase 3.
+
 ## 10 October 2026 — d3d complete canonical candidate coverage IMPLEMENTED locally
 
 Explicit owner policy/query and readonly same-transaction coverage helper delivered.
@@ -3177,6 +3198,15 @@ These checks derive from Sections 5–6, 14, 19, 25–28; no whole-system gate u
 prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
+
+Pin/release the clean d3d checkpoint plus foundation-first memory update through
+the original Studio candidate/public gates. After central SQL proof passes, inspect
+and implement d3e reviewed evolution; d4 native locks/writer/window precede visual
+2E. Unfinished visual source is preserved in stash
+`28243b7fbe1bccd0458d770177aee24ce9607aec`; selectively restore source at 2E,
+never the superseded visual-first planning entries.
+
+Historical pre-checkpoint next action (superseded):
 
 All local checks passed. Commit reviewed scoped d3d checkpoint,
 pin and deploy through the original Studio release gates. Verify actual candidate/

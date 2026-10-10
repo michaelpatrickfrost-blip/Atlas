@@ -136,3 +136,13 @@ pages/search and visual business/Sales/document/dashboard builder still outstand
 Exact next:2B4a ordinary operator authority and read compiler, then2B4b scoped
 current/history gateway. Preserve write/source/module/native/current+written checks;
 operators must not require authoring/write grants to read permitted fields.
+
+## 10 October — latest execution order
+
+Michael restored foundation-first dependency order. Finish d3d central proof, then
+d3e reviewed evolution, d4 shared native/field lock order and atomic writer/window
+integration, d5 gate, remaining 2B/2C/2D, then visual 2E. Unfinished document designer
+source is preserved in Git stash `28243b7fbe1bccd0458d770177aee24ce9607aec`
+(IN PROGRESS, unverified, not live). Do not restore its superseded planning entries.
+Keep focused checks proportionate and consolidate builds/releases per coherent
+block; security/integrity and phase gates remain mandatory.

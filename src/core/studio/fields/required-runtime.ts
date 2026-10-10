@@ -7,24 +7,20 @@ import { referenceSchema } from "../compiler/kernel";
 import { inspectSealedFieldVersion } from "./sealed-field";
 import { fieldRuntimeAuthorityInTransaction } from "./runtime-authority";
 import { createRequiredMetadataProvider, createInitialRequiredMetadataProvider } from "./required-source";
-import { readVersionedFieldContextInTransaction, readVersionedFieldPlanInTransaction, readVersionedFieldValueInTransaction,
-  readInitialFieldContextInTransaction, readInitialFieldPlanInTransaction, readInitialFieldValueInTransaction, readCandidateFieldContextInTransaction } from "./runtime-read";
+import { readVersionedFieldContextInTransaction, readInitialFieldContextInTransaction, readCandidateFieldContextInTransaction } from "./runtime-read";
 import type { FieldRuntimeAuthority } from "./runtime-authority";
-import { evaluateRequiredCondition } from "./required-evaluator";
+import { evaluateConditionalInputsInTransaction, nativeRequiredResultSchema as nativeResult, readResultingFieldValue as resultingValue } from "./required-inputs";
 import type { RequiredFactMetadata } from "./required-compiler";
 import type { RequiredFactSource } from "./required-contract";
-import { fieldKeySchema } from "./schema";
 
 const recordId = z.string().min(1).max(100).regex(/^[a-zA-Z0-9_-]+$/);
 const requestSchema = z.strictObject({ definitionId: z.uuid(), recordId, expectedRevision: z.number().int().positive().max(Number.MAX_SAFE_INTEGER) });
 const candidateRequestSchema = requestSchema.extend({ versionId: z.uuid() });
-const nativeResult = z.strictObject({ recordId, organisationId: z.string().min(1), revision: z.number().int().positive(), fields: z.record(fieldKeySchema, z.unknown()) });
 const recordRequest = requestSchema.omit({ definitionId: true }).extend({ entity: referenceSchema });
 const sourceOf = (fact: RequiredFactMetadata): RequiredFactSource => fact.kind === "native" ? { kind: "native", fieldId: fact.fieldId }
   : { kind: "field", definitionId: fact.definitionId, versionId: fact.versionId, checksum: fact.checksum };
 const meaning = (fact: RequiredFactMetadata) => fact.kind === "native" ? fact : { ...fact, dependencyClosure: [] };
 function invalid(): never { throw new Error("FIELD_REQUIREMENT_INVALID: approved record facts changed or are unavailable."); }
-type FieldContext = Awaited<ReturnType<typeof readVersionedFieldContextInTransaction>>;
 
 /** Metadata preflight also applies to an empty canonical record set. Inspect
  * every declared dependency/closure without reading business values. */
@@ -42,17 +38,6 @@ export async function validateRequiredFieldMetadataInTransaction(authority: Fiel
   return plan;
 }
 
-async function resultingValue(authority: FieldRuntimeAuthority, field: FieldContext, recordId: string, proof?: object) {
-  const { session, transaction } = authority;
-  const slot = field.extension && await transaction.studioFieldSlot.findFirst({ where: { organisationId: session.organisationId, extensionId: field.extension.id,
-    definitionId: field.definition.id, generationId: field.payload.storageGeneration }, include: { activeValue: { include: { schemaVersion: true } } } });
-  if (slot && ((slot.activeValueId === null) !== (slot.activeValue === null))) invalid();
-  if (slot?.activeValue && (slot.activeValueId !== slot.activeValue.id || slot.revision !== slot.activeValue.revision)) invalid();
-  if (!slot?.activeValue) return null;
-  return proof ? readInitialFieldValueInTransaction(authority, field.payload, field.definition.id, field.payload.storageGeneration, slot.id, recordId, slot.activeValue, proof)
-    : readVersionedFieldValueInTransaction(authority, field.payload, field.definition.id, field.payload.storageGeneration, slot.id, recordId, slot.activeValue);
-}
-
 /** Read actual transaction state through ordinary record access or the explicit
  * current owning creation proof. All input policies resolve before rule values
  * are read. No mutations, supplied facts, extra grants or publication. Returned
@@ -62,43 +47,15 @@ async function evaluateRequirement(authenticated: Session, transaction: Prisma.T
   const current = candidateVersionId ? await readCandidateFieldContextInTransaction(authority, request, candidateVersionId)
     : proof ? await readInitialFieldContextInTransaction(authority, request, proof) : await readVersionedFieldContextInTransaction(authority, request), { session, registry } = authority;
   const plan = inspectSealedFieldVersion(registry, current.version, session.organisationId, request.definitionId);
-  let native: z.infer<typeof nativeResult> | undefined;
-  if (proof) {
-    native = nativeResult.parse(await registry.invokeInitialRecordFacts({ session, transaction }, current.payload.entity, proof));
+  if (proof && plan.schemaVersion === 1) {
+    const native = nativeResult.parse(await registry.invokeInitialRecordFacts({ session, transaction }, current.payload.entity, proof));
     if (native.organisationId !== session.organisationId || native.recordId !== request.recordId || native.revision !== request.expectedRevision) invalid();
   }
   let conditional = false, conditionFingerprint: string | null = null;
   if (plan.schemaVersion === 2) {
     await validateRequiredFieldMetadataInTransaction(authority, request.definitionId, current.version, proof);
-    const evaluated = await evaluateRequiredCondition(plan.requiredIf, async (source, metadata) => {
-      if (source.kind === "native") {
-        if (metadata.kind !== "native") invalid();
-        if (!native) {
-          const owner = registry.describe(current.payload.entity.id, current.payload.entity.version), policy = entityDetailsSchema.parse(owner.details).record?.requiredFacts;
-          if (!policy) invalid();
-          const query = registry.describe(policy.query.id, policy.query.version), reference = { id: query.id, version: query.version, schemaHash: query.schemaHash, contractHash: query.contractHash };
-          native = nativeResult.parse(await registry.invokeQueryInTransaction({ session, transaction }, reference, { recordId: request.recordId, expectedRevision: request.expectedRevision }));
-          if (native.organisationId !== session.organisationId || native.recordId !== request.recordId || native.revision !== request.expectedRevision) invalid();
-        }
-        if (!Object.hasOwn(native.fields, source.fieldId) || native.fields[source.fieldId] === undefined) invalid();
-        const value = native.fields[source.fieldId];
-        return value === null ? null : { type: metadata.storage.type, value };
-      }
-      if (metadata.kind !== "field") invalid();
-      const sourceRequest = { definitionId: source.definitionId, recordId: request.recordId, expectedRevision: request.expectedRevision };
-      const field = proof ? await readInitialFieldContextInTransaction(authority, sourceRequest, proof) : await readVersionedFieldContextInTransaction(authority, sourceRequest);
-      if (field.payload.entity.id !== current.payload.entity.id || field.payload.storageGeneration !== metadata.generationId
-        || (field.extension?.id ?? null) !== (current.extension?.id ?? null) || (field.extension?.revision ?? null) !== (current.extension?.revision ?? null)) invalid();
-      const version = await transaction.studioDefinitionVersion.findFirst({ where: { id: source.versionId, definitionId: source.definitionId, organisationId: session.organisationId } });
-      if (!version || version.checksum !== source.checksum) invalid();
-      const pinned = proof ? await readInitialFieldPlanInTransaction(authority, version, source.definitionId) : await readVersionedFieldPlanInTransaction(authority, version, source.definitionId);
-      const anchor = proof ? await registry.authoriseCurrentFieldInitialisation({ session, transaction }, pinned.entity, proof)
-        : await registry.authoriseRecord({ session, transaction }, pinned.entity, { recordId: request.recordId, intent: "read" });
-      if (anchor.recordId !== request.recordId || anchor.revision !== request.expectedRevision) invalid();
-      const value = await resultingValue(authority, field, request.recordId, proof);
-      if (value?.type === "reference" && pinned.field.storage.type === "reference") await registry.authoriseRecord({ session, transaction }, pinned.field.storage.entity, { recordId: value.value, intent: "read" });
-      return value;
-    });
+    const evaluated = await evaluateConditionalInputsInTransaction(authority,
+      { entity: current.payload.entity, extension: current.extension }, plan, request, proof);
     conditional = evaluated.required; conditionFingerprint = evaluated.fingerprint;
   }
   return { authority, current, result: { definitionId: request.definitionId, versionId: current.version.id, recordRevision: current.anchor.revision,

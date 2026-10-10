@@ -5,6 +5,9 @@ import { compileCustomField } from "@/core/studio/compiler/fields";
 import { compileConditionalCustomField } from "@/core/studio/fields/conditional-compiler";
 import { registeredRequiredFactMetadata } from "@/core/studio/fields/required-owner";
 import { evaluateExistingFieldRequirement, validateResultingFieldRequirements, validateCandidateFieldRequirement } from "@/core/studio/fields/required-runtime";
+import { evaluateConditionalInputsInTransaction } from "@/core/studio/fields/required-inputs";
+import { conditionalFieldPlanSchema } from "@/core/studio/fields/conditional-compiler";
+import type { FieldRuntimeAuthority } from "@/core/studio/fields/runtime-authority";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
 import { validateCandidateFieldCoverage } from "@/core/studio/fields/required-coverage";
 const m = vi.hoisted(() => ({ refresh: vi.fn(), raw: vi.fn(), definition: vi.fn(), definitions: vi.fn(), version: vi.fn(), generation: vi.fn(), extension: vi.fn(), slot: vi.fn(), enabled: vi.fn() }));
@@ -312,4 +315,30 @@ it("rejects changing final canonical count and same-transaction activation point
     return args.where.id === rootId && ++rootReads >= 3 ? { ...definition!, activeVersionId: uuid(999) } : definition;
   });
   await expect(validateCandidateFieldCoverage(f.session, tx, coverageRequest())).rejects.toThrow("FIELD_COVERAGE_CHANGED");
+});
+
+it("keeps semantic condition evidence separate from the global revision envelope without waiving actual input drift", async () => {
+  const plan = conditionalFieldPlanSchema.parse(definitions.get(rootId)!.activeVersion.compiledPlan);
+  const authority = { session: f.session, transaction: tx, registry: f.registry } as FieldRuntimeAuthority;
+  const before = await evaluateExistingFieldRequirement(f.session, tx, request());
+  const semantic = await evaluateConditionalInputsInTransaction(authority, { entity, extension: { id: extensionId, revision: 4 } }, plan, request());
+  m.extension.mockResolvedValue({ id: extensionId, revision: 5 });
+  const advanced = await evaluateConditionalInputsInTransaction(authority, { entity, extension: { id: extensionId, revision: 5 } }, plan, request());
+  expect(advanced).toEqual(semantic);
+  const after = await evaluateExistingFieldRequirement(f.session, tx, request());
+  expect(after.extensionRevision).toBe(5); expect(after.fingerprint).not.toBe(before.fingerprint);
+  row = { ...row, ...encodeFieldValue(source.payload.field, false) };
+  const changed = await evaluateConditionalInputsInTransaction(authority, { entity, extension: { id: extensionId, revision: 5 } }, plan, request());
+  expect(changed.required).toBe(false); expect(changed.fingerprint).not.toBe(semantic.fingerprint);
+  await expect(evaluateConditionalInputsInTransaction(authority, { entity, extension: { id: extensionId, revision: 4 } }, plan, request())).rejects.toThrow("FIELD_REQUIREMENT_INVALID");
+});
+it("rejects a different rule root or canonical owner before reading native or typed inputs", async () => {
+  const plan = conditionalFieldPlanSchema.parse(definitions.get(rootId)!.activeVersion.compiledPlan);
+  const authority = { session: f.session, transaction: tx, registry: f.registry } as FieldRuntimeAuthority;
+  m.slot.mockClear(); vi.mocked(f.registry.invokeQueryInTransaction).mockClear();
+  await expect(evaluateConditionalInputsInTransaction(authority, { entity, extension: { id: extensionId, revision: 4 } }, plan,
+    { ...request(), definitionId: uuid(99) })).rejects.toThrow("FIELD_REQUIREMENT_INVALID");
+  await expect(evaluateConditionalInputsInTransaction(authority, { entity: { ...entity, version: 5 }, extension: { id: extensionId, revision: 4 } }, plan,
+    request())).rejects.toThrow("FIELD_REQUIREMENT_INVALID");
+  expect(m.slot).not.toHaveBeenCalled(); expect(f.registry.invokeQueryInTransaction).not.toHaveBeenCalled();
 });

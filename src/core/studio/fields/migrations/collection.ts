@@ -7,7 +7,7 @@ import { writeAudit } from "@/core/audit/log";
 import { STUDIO_CAPABILITIES } from "../../permissions";
 import { studioRegistry } from "../../registry/runtime";
 import { entityDetailsSchema, recordAnchorSchema, supportsFieldMigrationIntent } from "../../registry/entities";
-import { compileCustomField } from "../../compiler/fields";
+import { compileFieldMigrationMetadata } from "./metadata";
 import { assertFieldBinding } from "../binding";
 import { sealFieldMigrationIntent, FieldMigrationReviewError } from "./contracts";
 import { assertFieldMigrationPolicies } from "./access";
@@ -44,8 +44,8 @@ export async function collectFieldMigrationBatch(session: Session, input: unknow
     if (freshness.length !== 1 || freshness[0].fresh !== true) changed();
     assertFieldMigrationPolicies(fresh, company, intent.source.payload);
     assertFieldMigrationPolicies(fresh, company, intent.target.payload);
-    const registry = studioRegistry(), compiledSource = await compileCustomField(fresh, intent.source.payload, registry),
-      compiledTarget = await compileCustomField(fresh, intent.target.payload, registry);
+    const registry = studioRegistry(), compiledSource = await compileFieldMigrationMetadata({ session: fresh, transaction: tx }, registry, company, intent.definitionId, intent.source.payload),
+      compiledTarget = await compileFieldMigrationMetadata({ session: fresh, transaction: tx }, registry, company, intent.definitionId, intent.target.payload);
     if (compiledSource.checksum !== intent.source.versionChecksum || compiledTarget.checksum !== intent.target.compiledChecksum) changed();
     await assertFieldBinding(tx, fresh, intent.definitionId, intent.source.payload);
     const owner = await registry.resolve(fresh, intent.target.payload.entity), record = entityDetailsSchema.parse(owner.details).record,

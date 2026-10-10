@@ -4,7 +4,7 @@ import type { RecordAnchor, RecordContext } from "../../registry/types";
 import type { CapabilityRegistry } from "../../registry/registry";
 import { checksum } from "../../registry/contracts";
 import { entityDetailsSchema, recordAnchorSchema, supportsFieldMigrationIntent } from "../../registry/entities";
-import { compileCustomField } from "../../compiler/fields";
+import { compileFieldMigrationMetadata } from "./metadata";
 import { customFieldPayloadSchema, type FieldValue } from "../schema";
 import { decodeStoredFieldValue } from "../codec";
 import { createFieldConverter, FieldConversionError } from "../evolution";
@@ -61,7 +61,7 @@ export async function inspectFieldMigrationRecord(context: RecordContext & { tra
     const written = customFieldPayloadSchema.parse(metadata.schemaVersion.payload);
     if (written.storageGeneration !== current.storageGeneration) changed();
     assertFieldMigrationPolicies(session, company, current, written);
-    const compiled = await compileCustomField(session, written, registry);
+    const compiled = await compileFieldMigrationMetadata(context, registry, company, intent.definitionId, written);
     if (metadata.schemaVersion.checksum !== checksum(metadata.schemaVersion.compiledPlan) || compiled.checksum !== metadata.schemaVersion.checksum) changed();
     observation.extension!.slot!.value = { id: metadata.id, revision: metadata.revision, versionId: metadata.versionId, fingerprint: metadata.fingerprint };
     const value = await tx.studioFieldValue.findFirst({ where: { ...where, versionId: metadata.versionId, fingerprint: metadata.fingerprint } });

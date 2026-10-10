@@ -7,7 +7,7 @@ import { STUDIO_CAPABILITIES } from "../../permissions";
 import { studioRegistry } from "../../registry/runtime";
 import { checksum } from "../../registry/contracts";
 import { entityDetailsSchema, supportsFieldMigrationIntent } from "../../registry/entities";
-import { compileCustomField } from "../../compiler/fields";
+import { compileFieldMigrationMetadata } from "./metadata";
 import { customFieldPayloadSchema } from "../schema";
 import { assertFieldBinding } from "../binding";
 import { fieldConversionSchema } from "../evolution";
@@ -33,7 +33,7 @@ export async function startFieldMigrationPreparation(session: Session, serverPri
     const source = definition.activeVersion, draft = definition.draft;
     const current = customFieldPayloadSchema.parse(source.payload), target = customFieldPayloadSchema.parse(draft.payload);
     assertFieldMigrationPolicies(fresh, company, current);
-    const registry = studioRegistry(), compiledSource = await compileCustomField(fresh, current, registry), compiledTarget = await compileCustomField(fresh, target, registry);
+    const registry = studioRegistry(), compiledSource = await compileFieldMigrationMetadata({ session: fresh, transaction: tx }, registry, company, definition.id, current), compiledTarget = await compileFieldMigrationMetadata({ session: fresh, transaction: tx }, registry, company, definition.id, target);
     if (source.checksum !== checksum(source.compiledPlan) || source.checksum !== compiledSource.checksum) changed();
     await assertFieldBinding(tx, fresh, definition.id, current);
     const owner = await registry.resolve(fresh, target.entity), policy = entityDetailsSchema.parse(owner.details).record?.migrationSnapshot;

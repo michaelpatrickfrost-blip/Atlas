@@ -3,7 +3,7 @@ import { assertCapability } from "@/core/permissions/check";
 import type { RecordContext } from "../../registry/types";
 import type { CapabilityRegistry } from "../../registry/registry";
 import { checksum } from "../../registry/contracts";
-import { compileCustomField } from "../../compiler/fields";
+import { compileFieldMigrationMetadata } from "./metadata";
 import { referenceSchema } from "../../compiler/kernel";
 import { entityDetailsSchema, supportsFieldMigrationIntent } from "../../registry/entities";
 import { customFieldPayloadSchema } from "../schema";
@@ -22,7 +22,7 @@ export async function validateFieldMigrationSourceCoverage(context: RecordContex
   const sealed = sealFieldMigrationIntent(serverIntent), intent = sealed.intent, session = context.session, tx = context.transaction;
   if (!tx || intent.organisationId !== session.organisationId || intent.principal.userId !== session.userId || intent.principal.membershipId !== session.membershipId) changed();
   assertFieldMigrationPolicies(session, company, intent.source.payload); assertFieldMigrationPolicies(session, company, intent.target.payload);
-  const current = await compileCustomField(session, intent.source.payload, registry), target = await compileCustomField(session, intent.target.payload, registry);
+  const current = await compileFieldMigrationMetadata(context, registry, company, intent.definitionId, intent.source.payload), target = await compileFieldMigrationMetadata(context, registry, company, intent.definitionId, intent.target.payload);
   if (current.checksum !== intent.source.versionChecksum || target.checksum !== intent.target.compiledChecksum) changed();
   const owner = await registry.resolve(session, intent.target.payload.entity), record = entityDetailsSchema.parse(owner.details).record, policy = record?.migrationSnapshot;
   const sourceOwner = await registry.resolve(session, intent.source.payload.entity), sourceRecord = entityDetailsSchema.parse(sourceOwner.details).record;
@@ -100,7 +100,7 @@ export async function validateFieldMigrationSourceCoverage(context: RecordContex
     const written = customFieldPayloadSchema.parse(row.payload);
     if (written.storageGeneration !== intent.source.payload.storageGeneration) changed();
     assertFieldMigrationPolicies(session, company, intent.source.payload, written);
-    const compiled = await compileCustomField(session, written, registry);
+    const compiled = await compileFieldMigrationMetadata(context, registry, company, intent.definitionId, written);
     if (compiled.checksum !== row.checksum || checksum(row.compiledPlan) !== row.checksum) changed();
   }
 }

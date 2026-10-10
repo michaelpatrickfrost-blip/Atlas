@@ -11,6 +11,122 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
+d3e2b2 metadata + d3e2b3a shared authorised input inspection — VERIFIED locally. Owner e2b1 VERIFIED live41e9432. Next pinned shared-inspection release; no Phase2 gate PASS.
+Original pinned41e94326a7dda0c04cb94a99e0bed41bc647eb3c runner79926 exit0.
+CandidatehbS16y/publicShi5mu ALL COMBINED PASS, including actual ordinary/native/
+canonical field/tenant/history and separate Admin/business/browser compatibility.
+Readonly exact owner protocol runtime85450 exit0, no DB/files/values. Public health
+exact41e9432, login200/Atlas active. Previousf83e889 retained; original retention
+under both locks retired duplicate18bd031 runtime only, source/static/evidence/
+private records/business backups retained. Root166GiB free/15%. Required UTC10Oct
+pre-release233637/candidate233814/public234231 fixture backups only, no ad-hoc dumps.
+
+Shared metadata/input block e2b2/3a VERIFIED locally:53 unique/6 migration/source
+cases plus38/3 runtime/result/creation cases PASS; final strict TS32804 exit0, final
+scoped lint46206 exit0, production build39766 exit0 and final diff review/check PASS.
+No Prisma/DDL/migration/backfill/activation/native hook/conditional dispatch. Old
+v1 packet parser/hash/compiler and ordinary envelope retained. New helper uses full
+locked v2 metadata, fresh authoring policy and shared authorised actual-input reads;
+creation facts come from actual opaque owner proof, never a supplied fact payload.
+Semantic evidence does not waive native/global revision drift. Actual v2 preparation/
+row review/persistence/execution remains unfinished. Visual stash28243b7 untouched.
+
+Files migrations/access.ts,metadata.ts,preparation.ts,collection.ts,coverage.ts,
+observation.ts; fields/required-inputs.ts,required-runtime.ts; new metadata and
+extended runtime tests; architecture/module/decision/plan/ledger/current memory.
+Next: commit/pin/release this coherent shared inspection checkpoint under original
+Studio gates. Then e2b3b actual source/compiled-target per-row required/presence/
+semantic-evidence inspection, followed by stored-intent2 selection and additive
+SQL guard/cohort/digest proof. e3/d4/d5 mandatory before v2 authoring; Phase2 open.
+
+
+d3e2b3a shared rule-input reader IMPLEMENTED; final TS32804 pending; e2b2 VERIFIED locally. Owner41e9432 candidate combined PASS/public pending.
+Existing authorised resulting-value and condition-input reads extracted into
+required-inputs.ts and reused by required-runtime. Native/private/current/pinned/
+written/reference checks retained; actual opaque creation gateway supplies native
+facts, no fact payload argument accepted. Full inspected/compiled metadata and
+fresh authority remain prerequisites. Ordinary fingerprints/revision envelopes keep
+their original shape/meaning. New identity checks deny wrong root/owner before data.
+Semantic condition evidence stays equal for unchanged inputs at a later global
+revision; ordinary envelope fingerprint changes, actual input drift changes semantic
+evidence and wrong extension envelope still fails. No drift exception or v2 engine
+persistence granted by the component.
+
+38 cases/3 runtime/result/creation suites PASS (76448:24;62181:14), production build
+39766 exit0, source-only lint17422 exit0, final expanded lint46206 exit0 and diff
+review/check PASS. Final strict TS32804 pending; earlier source TS65501 passed before
+final test edits. e2b2 local53/6 checks/build/strict TS passed, no DDL/Prisma/backfill/
+owner callbacks/authoring/native hooks. Owner41e9432 candidate combined PASS; public
+combined still running, readonly exact-release protocol probe85450 exit0. No dumps
+or copies created for that readonly probe. No moved HEAD while release79926 is active.
+
+Next: finish final strict TS and owner public release; record proof, commit e2b2/3a
+shared inspection checkpoint and deploy it with original Studio gates. Then e2b3b
+real source/compiled-target per-row requirement evaluation and presence classification;
+e2b3c stored intent2 selector/additive preparation/observation SQL; full reviewed
+coverage/digest proof before e3 and d4 writer/lock safety. Conditional authoring closed.
+
+
+d3e2b3a shared authorised rule-input reader — IN PROGRESS. e2b2 VERIFIED locally;41e9432 release pinned.
+While owner41e9432 remains pinned, take the first real-row integration prerequisite:
+extract the existing required-runtime input reader/resulting-value reader unchanged
+into one internal component, then call it from ordinary validation. Future migration
+source and compiled-target evaluation will reuse this reader rather than implementing
+another private/native/reference data path. Preserve exact ordinary fingerprint,
+revision envelope, creation proof and all current/pinned/written rights. Expected
+fields/required-inputs.ts, required-runtime.ts and existing transactional runtime/
+creation suites. No database, persistence, v2 dispatcher, conversion or native hook.
+Full compiled/inspected metadata is a caller prerequisite; component is internal,
+not a client fact/plan API. Consolidate this and e2b2 into one next live release after
+original owner runner ends; no moved pinned HEAD or duplicate recovery dumps.
+
+
+2B4d3e2b2 — VERIFIED locally; commit/release waits for pinned41e9432 runner79926. One internal version-aware compiler reuses exact v1 compilation/policy and full v2
+conditional compilation through the genuine-principal Serializable locked source
+provider and its registry. Preparation/collection/coverage/written-row inspection
+use it while retaining closed v1 intent/payload parsers. v2 compilation inspects
+all current/pinned metadata/graph/read rights even with no rows; it invokes no
+business fact/value queries. Refreshed Publish/field/live-test policy remains checked.
+No v2 preparation/observation persistence, new owner callback/version, SQL/Prisma/
+backfill/native hook/authoring dispatch. No second engine or native mutation.
+
+53 unique cases/6 focused suites PASS: initial75741 had52 pass plus a mistaken
+literal capability assertion; corrected to the existing capability constant, final
+metadata suite20673 six PASS. Initial TS95347 found a test union narrowing issue;
+closed conditional-plan parsing fixed it; strict TS57272 exit0. Scoped lint60934
+and final edited test74899 exit0; production build46981 exit0; diff review/check PASS.
+Existing parser/hash/native/private/tenant checks retained. Full baseline suite/lint
+not repeated. Expected files migrations/access.ts,metadata.ts, preparation.ts,
+collection.ts,coverage.ts,observation.ts; metadata test and architecture/module/plan/
+ledger/current memory. No database change/migration applied.
+
+Owner block41e9432 original release79926 is still pinned/running. Candidate Studio
+actual native/typed/history/tenant/ordinary/runtime/Admin/browser acceptance passed;
+remaining combined/public gates pending. Do not move branch HEAD until runner ends.
+Next: record owner live proof, commit/pin shared metadata block and deploy original
+Studio gates. Then e2b3: extract the existing authorised rule-input reader for source
+and compiled-target migration evaluation, seal semantic checksums independently of
+native/global revision envelopes (recognise only exact own outcome increments),
+add actual stored-intent2 selection and additive preparation/observation SQL guards.
+No v2 dispatch until e3 execution/cutover/settlement and d4 writer/lock safety pass.
+
+
+2B4d3e2b2 shared metadata inspection — IN PROGRESS; e2b1 pinned41e9432 release79926 running.
+Owner protocol block41e9432 is pinned in original release79926; do not move HEAD
+until it finishes. Next coherent block reuses the full conditional compiler and
+existing genuine-principal locked metadata provider in one internal version-aware
+compiler. Existing preparation/collection/coverage/row inspection still parse only
+v1 packets, but share this compiler for exact metadata checks. Version2 support is
+internal preparation for the later stored-intent selector; it grants no persistence
+or dispatch. Preserve original closed policy parser; separately typed version-aware
+policy check for the compiler. Dependencies e2b1, d3b/c/d. Expected migrations/access
+and metadata helper, existing call sites, focused metadata/source regressions.
+No DB/Prisma/migration, owner version, public route, fact/value reads or native write.
+Check full condition/input seals, genuine authority refusal, per-field/native rights,
+empty-cohort dependency inspection, exact legacy compilation and no value queries.
+Next: actual stored-intent/row evaluation + version2 SQL guards (e2b3), then e3/d4.
+
+
 2B4d3e2b1 — VERIFIED locally; production release pending.
 
 2B4d3e2b1 owner protocol approval — IN PROGRESS. Continue foundation-first Phase2. First coherent block adds closed intent-version
@@ -491,6 +607,10 @@ Authoritative ten-phase source preserved unchanged at docs/studio/ATLAS_STUDIO_S
 body/table paragraphs/footer read. Michael authorised source sequence on9 October.
 
 # Completed Workstreams
+
+e2b1 VERIFIED live41e9432 original79926/candidate+public combined and readonly protocol PASS. e2b2 + e2b3a VERIFIED locally, pending next live release.
+
+11Oct e2b2 metadata compiler and legacy call-site integration VERIFIED locally;53 unique focused cases/6 suites, strict TS/final lint/build/diff PASS. Conditional persistence/execution remains unfinished.
 
 d3e2b1 owner protocol approval VERIFIED locally;72/10, strict TS/scoped lint/build/diff PASS. Live proof pending.
 
@@ -2452,6 +2572,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+e2b3a fields/required-inputs.ts, required-runtime.ts, tests/studio-field-required-runtime.test.ts, decision/architecture/module/plan/current/ledger. Resulting-value/input bodies reused; no unrelated removals.
+
+11Oct e2b2 migrations/access.ts,metadata.ts,preparation.ts,collection.ts,coverage.ts,observation.ts; studio-field-migration-metadata.test.ts; architecture/module/required-rules plan/ledger/current memory.
+
 11Oct e2b1: registry/types.ts, entities.ts, contracts.ts, registry.ts; migrations/preparation.ts, collection.ts, observation.ts, coverage.ts, execution-contract.ts, execution-inspection.ts, settlement-coverage.ts; tests/studio-migration-protocol-owner.test.ts; architecture/module/decision/required-rules plan/ledger/current memory.
 
 Current e1/e2a: fields/evolution.ts, required-contract.ts, migrations/required-contracts.ts; tests/studio-field-required-{evolution,review}.test.ts; required-rules plan, architecture/module docs, decisions/current state/ledger.
@@ -2652,6 +2776,8 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+11Oct e2b2: NONE. No database migration applied or data/activation changed.
+
 11Oct e2b1: NONE. No migration applied, backfill, reset or business record change.
 
 Current e1/e2a: NONE. v2 packets are intentionally not persisted; existing SQL guards remain v1 until additive e2b changes.
@@ -2726,6 +2852,8 @@ business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
 
+11Oct owner/shared inspection: NONE; no Prisma/DDL/backfill/reset.
+
 Current e1/e2a: NONE. d3d18bd031 release applies no new DDL.
 
 10 October2026: d3d: NONE. Existing release schema/backup gates remain mandatory.
@@ -2778,6 +2906,10 @@ preserved. Final candidate/activation backup prefixes: `atlas-pre-deploy-2026100
 and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
+
+e2b3a two runtime cases: semantic input evidence versus retained global-revision envelope/actual-value drift; wrong root/canonical owner rejects before fact/value reads.
+
+studio-field-migration-metadata.test.ts:6 cases for exact v1/no dispatch, full v2 locked registry, actual genuine-session denial before queries, fresh Publish/field policy, every source pin/read/cycle and live preview/tenant identity.
 
 11Oct: studio-migration-protocol-owner.test.ts —6 cases for closed formats, atomic query-owner matching, retained hashes, explicit settlement coverage/no fallback.
 
@@ -2858,6 +2990,12 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+Owner79926 candidatehbS16y/publicShi5mu ALL COMBINED PASS; protocol85450 PASS. Shared inspection53/6 +38/3 focused PASS; final TS32804/scoped lint46206/build39766/diff PASS.
+
+e2b3a38/3 PASS (76448:24;62181:14), build39766 PASS, lint17422/final46206 PASS; strict final32804 pending. e2b2 strict57272 PASS. Exact owner runtime readonly protocol85450 PASS.
+
+e2b2:53 unique/6 focused suites pass after fixing test capability literal; final metadata20673 6 PASS; strict TS57272 PASS after test union narrowing fix; lint60934/final74899 PASS; build46981 PASS; diff check PASS.
 
 11Oct e2b1:72/10 focused cases PASS (72989/19558), strict TS62504 PASS, scoped lint33784 PASS, production build48191 PASS, diff check PASS.
 
@@ -3040,6 +3178,8 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+Owner e2b1 VERIFIED live41e9432; metadata/input scope VERIFIED locally. Actual conditional migration persistence/execution and whole Phase2 remain unfinished.
 
 11Oct e2b1 VERIFIED locally only. Server release/compatibility and real v2 migration inspection/persistence remain pending.
 
@@ -3353,6 +3493,12 @@ These checks derive from Sections 5–6, 14, 19, 25–28; no whole-system gate u
 prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
+
+Commit/pin/release locally verified e2b2/3a shared metadata/input checkpoint with original Studio gates. Then e2b3b actual per-row source/compiled-target requirement/presence/semantic-evidence inspection using shared reader; e2b3c stored-intent2 selector and additive SQL guards/cohort/digest proof. Preserve revision envelopes and v1 receipts; no v2 authoring before e3/d4/d5.
+
+Finish final TS32804 and pinned owner release79926 without moving HEAD. Record actual live proof, commit e2b2/3a shared metadata/input checkpoint, then original Studio release. Next e2b3b real source/compiled-target per-row required/presence/evidence inspection, e2b3c stored-intent2 selection/additive SQL guards, complete cohort/digest proof before e3/d4/d5.
+
+Wait for original pinned owner release41e9432 runner79926 completion without moving HEAD; record actual proof, commit/release e2b2 shared metadata block. Then extract existing authorised rule-input reader for real source/compiled-target evaluation with semantic checksums and independent native/global revision envelopes; implement stored-intent2 selection and additive preparation/observation SQL guards. Keep v2 dispatch closed before e3/d4/d5.
 
 Commit/pin e2b1 owner protocol block; run original Studio server acceptance release. During release implement shared full v1/v2 metadata inspection using genuine principal/locked provider (e2b2); do not move pinned HEAD or enable conditional persistence/authoring/native dispatch.
 

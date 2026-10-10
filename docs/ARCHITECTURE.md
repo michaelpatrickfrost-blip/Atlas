@@ -239,3 +239,24 @@ unsupported newest format without fallback. Existing Tickets1–8 and owner-quer
 ranges remain unchanged. These contracts do not enable v2 authoring, persistence,
 execution or native mutation; actual owner implementation and remaining Phase2
 migration/lock/runtime gates are still required.
+
+### Studio migration metadata inspection — 11 October 2026
+
+The existing preparation, collection, coverage and written-value inspection paths
+share `fields/migrations/metadata.ts`. Their retained v1 intent/payload parsers
+remain closed and compilation/hash meaning is unchanged. The internal v2 compiler
+branch requires the existing genuine-principal Serializable source provider and
+uses its locked registry/current/pinned dependency graph to compile the full rule,
+including empty cohorts. It does not read business values, invoke native facts,
+persist a v2 preparation or permit authoring/execution. Actual stored-intent
+selection, per-row evaluation and additive SQL guards are the next integration gate.
+
+### Shared Studio rule-input reads — 11 October 2026
+
+Ordinary validation uses the internal `fields/required-inputs.ts` reader after full
+metadata inspection. It retains every native/private/current/pinned/written/reference
+check and uses the actual opaque creation gateway, accepting no supplied fact data.
+Condition value evidence excludes revision envelopes; ordinary fingerprints still
+include native/global extension revisions. This allows upcoming migration evaluation
+to reuse the same reader while independently checking the exact original/own-outcome
+revision lineage. Equal condition evidence grants no drift waiver or execution right.

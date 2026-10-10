@@ -1,3 +1,18 @@
+## 11 October 2026 — One authorised rule-input reader; semantic evidence is not revision approval
+
+Extract the existing ordinary required-runtime reader into fields/required-inputs.ts
+so reviewed source/target evaluations reuse native/current/pinned/written/reference
+access rather than creating a second data path. Creation facts are obtained through
+the actual owning opaque-proof registry gateway; no fact payload argument is accepted.
+Full metadata compilation/inspection and genuine caller transaction remain mandatory.
+The existing pure condition fingerprint describes input values/rule meaning. The
+ordinary envelope continues sealing native/global extension revisions separately.
+Equal semantic evidence after a global revision increment never approves that drift;
+the migration engine must still match the exact original envelope or its own retained
+outcome increment. Changed actual inputs always change semantic evidence, and a
+mismatched extension envelope still fails. No v2 persistence/dispatch or migration
+revision exception is enabled by this extraction.
+
 ## 11 October 2026 — Migration intent approval belongs to both owner and callback
 
 Intent format is independent of native entity and receipt versions. Optional

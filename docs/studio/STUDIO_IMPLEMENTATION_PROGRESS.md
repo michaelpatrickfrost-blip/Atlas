@@ -11,6 +11,8 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
+2B4d2 shared authority, owner facts/new-record contracts — IMPLEMENTED; local checks PASS, actual candidate/public proof pending.
+
 2B3f4b2b — Generation/history and cosmetic activation guards — VERIFIED livef1a9bf1.
 2B3f4c/d retained inspection, current-authority settlement and acceptance — VERIFIED livea527ccd.
 2B4a ordinary operator authority/read compiler — VERIFIED live53c05ae.
@@ -36,6 +38,30 @@ F4a VERIFIED locally (adfc357); strict TS/build/scoped lint,18 focused and45 fil
 candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
+
+## 10 October 2026 —2B4d2 owner/native contracts IMPLEMENTED; live gate pending
+
+31c2fad pure rule compiler checkpoint saved/pushed. d2 extracts genuine identity,
+versions, tenant/module locks into a caller-owned Serializable refresh, preserving
+existing ordinary wrapper and native policy. Tickets v6 adds explicit hashed
+status/priority facts through a transaction-required owner read query and opt-in
+new-record initialisation; v1–5/query hashes preserved by regression. The creation
+bridge owns the actual native INSERT and issues a private opaque transaction/
+principal proof valid only during its callback; no native read/manage grant, no
+existing-record or client/JSON proof. Normal createWork is not hooked yet (d4).
+Canonical cohort access reuses existing complete owner snapshot; required-value
+coverage and field dependency provider remain d3.37 focused assertions/69files431
+regression tests/build/strict post-build TS/scoped lint/diff PASS. No DDL/schema/
+reset/backfill. Exact Test helper adds actual read/private/foreign/stale facts and
+rolled-back create-only native INSERT/Audit/expired/unsafe proof; NOT RUN live.
+Synthetic grants/temporary queue membership restored. Existing central backups and
+pinned candidate/public release gates retained; no ad-hoc dumps. Next review/checkpoint
+and pinned full Studio acceptance, then d3 canonical requirements/runtime provider.
+Files runtime-authority; registry types/entities/contracts/registry; service-work
+studio/studio-create; required-owner; two new suites/authority suite; exact helper/
+principal driver; module/security/architecture and shared memory. Live still62201ae.
+Evidence /tmp/atlas-studio-d2-{contract-tests,regression,build,postbuild-types,contract-lint,helper-lint}.txt.
+
 
 ## 10 October 2026 —2B4c VERIFIED live1235UTC; d1 pure grammar started
 
@@ -140,6 +166,41 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+## 10 October 2026 —2B4d2 owner/native contracts IMPLEMENTED; live gate pending
+
+31c2fad pure rule compiler checkpoint saved/pushed. d2 extracts genuine identity,
+versions, tenant/module locks into a caller-owned Serializable refresh, preserving
+existing ordinary wrapper and native policy. Tickets v6 adds explicit hashed
+status/priority facts through a transaction-required owner read query and opt-in
+new-record initialisation; v1–5/query hashes preserved by regression. The creation
+bridge owns the actual native INSERT and issues a private opaque transaction/
+principal proof valid only during its callback; no native read/manage grant, no
+existing-record or client/JSON proof. Normal createWork is not hooked yet (d4).
+Canonical cohort access reuses existing complete owner snapshot; required-value
+coverage and field dependency provider remain d3.37 focused assertions/69files431
+regression tests/build/strict post-build TS/scoped lint/diff PASS. No DDL/schema/
+reset/backfill. Exact Test helper adds actual read/private/foreign/stale facts and
+rolled-back create-only native INSERT/Audit/expired/unsafe proof; NOT RUN live.
+Synthetic grants/temporary queue membership restored. Existing central backups and
+pinned candidate/public release gates retained; no ad-hoc dumps. Next review/checkpoint
+and pinned full Studio acceptance, then d3 canonical requirements/runtime provider.
+Files runtime-authority; registry types/entities/contracts/registry; service-work
+studio/studio-create; required-owner; two new suites/authority suite; exact helper/
+principal driver; module/security/architecture and shared memory. Live still62201ae.
+Evidence /tmp/atlas-studio-d2-{contract-tests,regression,build,postbuild-types,contract-lint,helper-lint}.txt.
+
+
+## 10 October 2026 —2B4d2 shared native transaction authority IN PROGRESS
+
+Depends on locally verified31c2fad pure compiler and live622 ordinary runtime.
+Extract existing genuine identity/version/tenant/module refresh into an internal
+transaction primitive; caller-owned transactions must prove Serializable before
+refresh. Keep the existing wrapper and native/field policy unchanged. Expected
+runtime-authority and focused tests; no DDL, hook or new conditional publication.
+Next implement extraction and no-nested-transaction/non-Serializable/revocation tests,
+then owner fact/cohort/new-record contracts. No broad native create/read/manage grants.
+
 
 ## 10 October 2026 —2B4d1 pure compiler IMPLEMENTED
 
@@ -1708,6 +1769,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+d2: registry types/entities/contracts/registry; runtime-authority/required-owner;
+service-work studio/studio-create; two new suites + authority suite; exact native
+contract helper/principal driver; required plan/module/security/architecture/memory.
+
 d1: fields/required-contract.ts, required-compiler.ts; two focused test suites;
 STUDIO_FIELD_REQUIRED_RULES_PLAN.md, phase plans, ledger/CURRENT_STATE/DECISIONS.
 
@@ -1877,6 +1942,8 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+d2: no DDL/model/backfill/reset. New native INSERT probes roll back, Test only.
+
 d1: none. No new conditional payload can be published yet.
 
 Current f4c/d: NONE. Uses already-applied0007/0008; no models, DDL, data backfill, resets or native mutations.
@@ -1984,6 +2051,9 @@ and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
 
+d2:15 new tests (4 authority +6 native facts +5 creation proofs); actual exact
+Test helper coded, not yet run. No native-hook enforcement completion claim.
+
 d1:14 pure contract/compiler tests; typed native/field pins, permission/sensitivity,
 cycles, unsupported/duplicate conditions, normalization and sealed v1 preservation.
 
@@ -2044,6 +2114,9 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+d2:37 focused/69files431 assertions, production build, strict post-build TS,
+scoped source/helper lint and diff PASS. Actual candidate/public pending.
 
 d1:67 files/416 tests, npm run build, strict post-build TypeScript, scoped lint,
 git diff --check PASS; no d1 live feature test because helpers remain unwired.
@@ -2406,6 +2479,9 @@ No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
 
+d2 local contract checks PASS; central owner/new-record proof NOT RUN. Whole
+Phase2 gate IN PROGRESS; d3–4 requirements/native integration and visual2E remain.
+
 Current f4c/d VERIFIED livea527ccd full candidate/public acceptance PASS. Phase2 gate IN PROGRESS; Phase3 NOT STARTED.
 
 F4b2b workstream PASS: exactf1a9bf1 full candidate/public acceptance/exit0,
@@ -2445,9 +2521,12 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint2B4d1 pure compiler and memory (67files416/build/types/lint/diff PASS).
-Then implement d2 shared transaction authority refresh and owner-approved facts /
-new-record proof contracts, preserving native create-only permission and sealed
-old owner versions. Keep v2 out of authoring/publication until canonical/native
- d2–4 enforcement works. Follow STUDIO_FIELD_REQUIRED_RULES_PLAN.md, then2B4e/f,
-2C/D/visual2E. No Phase3 until wholePhase2 gate PASS. Live622 proof complete.
+Review/checkpoint d2 source and memory, then pin full Studio candidate/public
+acceptance with the new exact Test native-contract helper. Local69files431/build/
+strict post-build TS/lint/diff PASS; actual proof pending. Do not move the branch
+while pinned release runs. After d2 gate, implement d3 sealed field dependency
+metadata/runtime condition evaluator and canonical required-value publication /
+evolution coverage; use existing owner snapshots including final/unanchored rows.
+Do not enable conditional publication until d4 native create/save hooks enforce
+resulting facts and values atomically. Then2B4e/f,2C/D/visual2E, fullPhase2 gate.
+No Phase3 before fullPhase2 PASS. No ad-hoc dump/development copies.

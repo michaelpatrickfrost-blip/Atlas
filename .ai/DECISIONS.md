@@ -2072,3 +2072,21 @@ until canonical coverage and native transaction hooks enforce the rule, so a par
 configuration cannot become an active rule that ordinary native actions bypass.
 This preserves Section6.5 server validation and backward compatibility; d1 tests are
 pure-contract evidence, not proof of end-to-end native required enforcement.
+
+## 10 October 2026 — Owner-issued new-record initialisation without broad permissions
+
+Ordinary extension editing requires native read/manage access and current native
+revision/final-state checks. Requiring those grants merely to fill a newly created
+record is unsuitable for create-only ERP users. Preserve existing edit policy and
+add an explicit hashed owner opt-in. The native bridge performs the actual INSERT
+inside the owning Serializable transaction and issues a private weakly held proof,
+bound to exact transaction, genuine refreshed identity/versions and that one new
+record. It expires on callback return/failure. Copies/client JSON/existing records
+cannot supply proof. This permits future same-transaction field initialisation
+without granting read/manage or bypassing native intake/queue/SLA/status rules;
+normal createWork remains unchanged until d4 integrates the validated bridge.
+Native required facts are a separate explicit owner declaration/query, not every
+readable field or Decision Studio. Tickets v6 approves status/priority only, retaining
+v1–5; private intake/type catalogues/messages are excluded. Reuse existing canonical
+migration snapshot access for required coverage rather than build another cohort
+engine. d2 contracts do not establish native conditional enforcement or coverage.

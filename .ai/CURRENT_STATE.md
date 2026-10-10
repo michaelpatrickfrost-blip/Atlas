@@ -1,3 +1,36 @@
+## 10 October 2026 —2B4d2 owner/native contracts IMPLEMENTED; live gate pending
+
+31c2fad pure rule compiler checkpoint saved/pushed. d2 extracts genuine identity,
+versions, tenant/module locks into a caller-owned Serializable refresh, preserving
+existing ordinary wrapper and native policy. Tickets v6 adds explicit hashed
+status/priority facts through a transaction-required owner read query and opt-in
+new-record initialisation; v1–5/query hashes preserved by regression. The creation
+bridge owns the actual native INSERT and issues a private opaque transaction/
+principal proof valid only during its callback; no native read/manage grant, no
+existing-record or client/JSON proof. Normal createWork is not hooked yet (d4).
+Canonical cohort access reuses existing complete owner snapshot; required-value
+coverage and field dependency provider remain d3.37 focused assertions/69files431
+regression tests/build/strict post-build TS/scoped lint/diff PASS. No DDL/schema/
+reset/backfill. Exact Test helper adds actual read/private/foreign/stale facts and
+rolled-back create-only native INSERT/Audit/expired/unsafe proof; NOT RUN live.
+Synthetic grants/temporary queue membership restored. Existing central backups and
+pinned candidate/public release gates retained; no ad-hoc dumps. Next review/checkpoint
+and pinned full Studio acceptance, then d3 canonical requirements/runtime provider.
+Files runtime-authority; registry types/entities/contracts/registry; service-work
+studio/studio-create; required-owner; two new suites/authority suite; exact helper/
+principal driver; module/security/architecture and shared memory. Live still62201ae.
+Evidence /tmp/atlas-studio-d2-{contract-tests,regression,build,postbuild-types,contract-lint,helper-lint}.txt.
+
+## 10 October 2026 —2B4d2 shared native transaction authority IN PROGRESS
+
+Depends on locally verified31c2fad pure compiler and live622 ordinary runtime.
+Extract existing genuine identity/version/tenant/module refresh into an internal
+transaction primitive; caller-owned transactions must prove Serializable before
+refresh. Keep the existing wrapper and native/field policy unchanged. Expected
+runtime-authority and focused tests; no DDL, hook or new conditional publication.
+Next implement extraction and no-nested-transaction/non-Serializable/revocation tests,
+then owner fact/cohort/new-record contracts. No broad native create/read/manage grants.
+
 ## 10 October 2026 —2B4d1 pure rule compiler VERIFIED locally; d2 next
 
 Closed bounded conditional v2 contract/compiler preserves sealed v1 definitions.

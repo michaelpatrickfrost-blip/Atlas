@@ -144,3 +144,11 @@ components are not mounted by the console. Public URLs and mutation guards remai
 unchanged. Platform staff can explicitly open an audited business support workspace;
 customer sessions still cannot enter Admin. Installed desktop operation keys for
 `(app)/atlas` remain aliases of `(admin)/atlas` guarded actions.
+
+Studio field validation now has explicit owner contracts for native condition facts
+and new-record initialisation. Tickets v6 is additive; its v1–5 contracts stay sealed.
+Ordinary runtime and native operations share refreshed transaction authority. Native
+creation proof is ephemeral server memory scoped to one actual INSERT/transaction,
+not a database/cache/permission system. No new business datastore or native rule
+engine is introduced. Conditional publication/native action hooks remain gated on
+canonical coverage and atomic implementation in Phase2B4d3–4.

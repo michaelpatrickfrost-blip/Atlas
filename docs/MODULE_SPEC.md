@@ -354,3 +354,21 @@ configuration CAS. Separate internal rollback/finalization operations share exis
 authority and activation/Audit primitives. A terminal replay reports actual history,
 not today's active version. Verifieda527ccd full candidate/public: real current actor/private/field/module/tenant
 checks, atomic Audit/CAS/failure/replay and continued-history proof.
+
+## Native required facts and creation initialisation contracts
+
+An entity may explicitly opt into `record.requiredFacts`: registered same-owner,
+same-native-read-capability transaction-required query and bounded native fact
+IDs/types/sensitivity/enum codes. The registry validates declarations and hashes
+them; normal readable fields are not automatic condition inputs. The metadata
+adapter checks current module/owner/field grants; the owning query independently
+checks tenant/private/current native revision before projecting only approved facts.
+Tickets v6 approves status/priority; sealed v1–5 are retained.
+
+`record.initialisation` names the owner's create capability and opaque proof callback.
+`resolveForRecordInitialisation` resolves metadata only; it grants neither queries
+nor existing-record editing. The proof must come from the actual owning native
+INSERT in the same Serializable transaction and genuine principal; JSON/copies/
+sibling transactions/stale identities fail. Tickets' bridge owns that INSERT and
+expires its private proof when the callback finishes. Existing native creation
+validation remains with createWork; its field integration/coverage is still d3–4.

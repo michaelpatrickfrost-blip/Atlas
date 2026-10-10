@@ -19,13 +19,13 @@ function freezeJson<T>(value: T): T {
 }
 export type ModuleAvailability = (session: Session, ownerModuleId: string) => Promise<boolean>;
 export class CapabilityRegistry {
-  private readonly items = new Map<string, { metadata: ContractMetadata; run?: Contribution["run"]; authoriseRecord?: Contribution["authoriseRecord"] }>();
+  private readonly items = new Map<string, { metadata: ContractMetadata; run?: Contribution["run"]; authoriseRecord?: Contribution["authoriseRecord"]; authoriseInitialRecord?: Contribution["authoriseInitialRecord"] }>();
   constructor(private readonly available: ModuleAvailability) {}
 
   register(ownerModuleId: string, bundle: StudioModuleContract): void {
     if (!/^[a-z][a-z0-9_]*$/.test(ownerModuleId)) throw new Error("Invalid Studio contract owner.");
     // Validate an entire bundle before adding anything; duplicate failures are atomic.
-    const additions = new Map<string, { metadata: ContractMetadata; run?: Contribution["run"]; authoriseRecord?: Contribution["authoriseRecord"] }>();
+    const additions = new Map<string, { metadata: ContractMetadata; run?: Contribution["run"]; authoriseRecord?: Contribution["authoriseRecord"]; authoriseInitialRecord?: Contribution["authoriseInitialRecord"] }>();
     for (const item of bundle.contributions) {
       const m = identity.parse(item.metadata);
       if (!m.id.startsWith(`${ownerModuleId}.`)) throw new Error("Studio identifier must belong to its owner.");
@@ -35,13 +35,14 @@ export class CapabilityRegistry {
         const details = entityDetailsSchema.parse(item.metadata.details);
         if (checksum(details) !== m.schemaHash) throw new Error("Invalid Studio entity schema hash.");
         if (Boolean(details.record) !== Boolean(item.authoriseRecord)) throw new Error("Missing Studio owner record authorisation.");
-      } else if (item.authoriseRecord) throw new Error("Only entities can authorise records.");
+        if (Boolean(details.record?.initialisation) !== Boolean(item.authoriseInitialRecord)) throw new Error("Missing owner new-record initialisation proof policy.");
+      } else if (item.authoriseRecord || item.authoriseInitialRecord) throw new Error("Only entities can authorise records.");
       const key = `${m.id}@${m.version}`;
       if (this.items.has(key) || additions.has(key)) throw new Error(`Duplicate Studio contract: ${key}`);
       const snapshot = JSON.parse(JSON.stringify({ ...item.metadata, ownerModuleId })) as Omit<ContractMetadata, "contractHash">;
       const contract = Object.fromEntries(Object.entries(snapshot).filter(([key]) => key !== "label"));
       const metadata = freezeJson({ ...snapshot, contractHash: checksum(contract) });
-      additions.set(key, { metadata, run: item.run, authoriseRecord: item.authoriseRecord });
+      additions.set(key, { metadata, run: item.run, authoriseRecord: item.authoriseRecord, authoriseInitialRecord: item.authoriseInitialRecord });
     }
     for (const { metadata: m } of additions.values()) {
       if (m.details.fieldSettlement !== undefined) {
@@ -66,6 +67,13 @@ export class CapabilityRegistry {
       for (const ref of [record.listQuery, record.getQuery]) {
         const target = additions.get(`${ref.id}@${ref.version}`) ?? this.items.get(`${ref.id}@${ref.version}`);
         if (!target || target.metadata.kind !== "query" || target.metadata.ownerModuleId !== ownerModuleId || target.metadata.capability !== m.capability) throw new Error("Entity projections must reference registered owner queries with the same read capability.");
+      }
+      if (record.requiredFacts) {
+        const ref = record.requiredFacts.query;
+        const target = additions.get(`${ref.id}@${ref.version}`) ?? this.items.get(`${ref.id}@${ref.version}`);
+        if (!target || target.metadata.kind !== "query" || target.metadata.ownerModuleId !== ownerModuleId
+          || target.metadata.capability !== m.capability || target.metadata.details.transaction !== "required")
+          throw new Error("Required facts need a registered transactional owner query with the same native read capability.");
       }
       if (record.migrationSnapshot) {
         const { query: ref, sourceVersions, referenceVersions } = record.migrationSnapshot;
@@ -105,8 +113,8 @@ export class CapabilityRegistry {
     if (!item) throw new Error(`DEPENDENCY_BROKEN: missing Studio contract ${id}@${version}`);
     return item.metadata;
   }
-  private async allowed(session: Session, m: ContractMetadata): Promise<void> {
-    assertCapability(session, m.capability);
+  private async allowed(session: Session, m: ContractMetadata, capability = m.capability): Promise<void> {
+    assertCapability(session, capability);
     if (!await this.available(session, m.ownerModuleId)) throw new Error(`DEPENDENCY_BROKEN: module ${m.ownerModuleId} unavailable`);
     if (m.lifecycle === "deprecated" && Date.parse(m.supportedUntil!) <= Date.now()) throw new Error("DEPENDENCY_BROKEN: contract support window expired");
   }
@@ -123,6 +131,26 @@ export class CapabilityRegistry {
     await this.allowed(session, m);
     if (reference.schemaHash !== m.schemaHash || reference.contractHash !== m.contractHash) throw new Error("DEPENDENCY_BROKEN: Studio contract changed; republish or restore compatibility");
     return m;
+  }
+  /** Metadata only for an explicit native creation path. It grants no record read,
+   * existing extension editing, query or command invocation. */
+  async resolveForRecordInitialisation(session: Session, reference: ContractReference): Promise<ContractMetadata> {
+    const m = this.describe(reference.id, reference.version);
+    const record = m.kind === "entity" ? entityDetailsSchema.parse(m.details).record : undefined;
+    if (!record?.initialisation) throw new Error("This owner has no new-record initialisation policy.");
+    await this.allowed(session, m, record.initialisation.capability);
+    if (reference.schemaHash !== m.schemaHash || reference.contractHash !== m.contractHash) throw new Error("DEPENDENCY_BROKEN: owner initialisation contract changed.");
+    return m;
+  }
+  /** Internal same-transaction opaque owner proof, never client FormData/JSON. */
+  async authoriseRecordInitialisation(context: RecordContext, reference: ContractReference, proof: object): Promise<RecordAnchor> {
+    if (!context.transaction) throw new Error("Initialisation requires the owning transaction.");
+    const m = await this.resolveForRecordInitialisation(context.session, reference);
+    const authorise = this.items.get(`${m.id}@${m.version}`)!.authoriseInitialRecord;
+    if (!authorise) throw new Error("Owner initialisation proof is unavailable.");
+    const anchor = recordAnchorSchema.parse(await authorise(context, proof));
+    if (anchor.organisationId !== context.session.organisationId) throw new Error("Owner returned invalid new-record scope.");
+    return anchor;
   }
   /** Current registered owner policy only. Unsupported latest versions fail
    * closed rather than falling back to an older policy. No client query choice. */

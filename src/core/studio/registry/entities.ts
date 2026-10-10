@@ -4,6 +4,13 @@ const logicalId = z.string().regex(/^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/);
 const fieldId = z.string().regex(/^[a-z][a-z0-9_]*$/).max(100);
 const classification = z.enum(["public_internal", "confidential", "restricted"]);
 const queryReference = z.strictObject({ id: logicalId, version: z.number().int().positive() });
+export const nativeRequiredFactSchema = z.strictObject({ fieldId,
+  type: z.enum(["string", "integer", "boolean", "date", "datetime", "enum"]), classification,
+  capability: logicalId.optional(), codes: z.array(z.string().min(1).max(100).regex(/^[a-zA-Z0-9_-]+$/)).min(1).max(200).optional(),
+}).superRefine((fact, ctx) => {
+  if ((fact.type === "enum") !== Boolean(fact.codes)) ctx.addIssue({ code: "custom", message: "Only enum facts require approved codes." });
+  if (fact.codes && new Set(fact.codes).size !== fact.codes.length) ctx.addIssue({ code: "custom", message: "Duplicate native fact code." });
+});
 const versions = z.array(z.number().int().positive()).min(1).max(20)
   .refine(value => new Set(value).size === value.length, "Duplicate settlement entity version.");
 export const fieldSettlementPolicySchema = z.strictObject({ entityId: logicalId, sourceVersions: versions, targetVersions: versions,
@@ -31,6 +38,8 @@ export const entityDetailsSchema = z.strictObject({
     detailRoute: z.string().regex(/^\/[a-z0-9/_-]+\/\{recordId\}$/),
     labelField: fieldId, listQuery: queryReference, getQuery: queryReference,
     fieldPolicy: extensionFieldPolicySchema.optional(),
+    requiredFacts: z.strictObject({ query: queryReference, facts: z.array(nativeRequiredFactSchema).min(1).max(30) }).optional(),
+    initialisation: z.strictObject({ capability: logicalId }).optional(),
     migrationSnapshot: z.strictObject({ query: queryReference,
       sourceVersions: z.array(z.number().int().positive()).min(1).max(20)
         .refine(versions => new Set(versions).size === versions.length, "Duplicate migration source version."),
@@ -47,6 +56,18 @@ export const entityDetailsSchema = z.strictObject({
   if (new Set(value.fields.map(f => f.id)).size !== value.fields.length) ctx.addIssue({ code: "custom", message: "Duplicate native field ID." });
   if (Object.values(value.extensionPolicy).some(Boolean) && !value.record) ctx.addIssue({ code: "custom", message: "Extensible entities need an owner record policy." });
   if (value.record && !value.fields.some(f => f.id === value.record!.labelField)) ctx.addIssue({ code: "custom", message: "Record label must reference an approved native field." });
+  const requirement = value.record?.requiredFacts;
+  if (value.record?.initialisation && !value.record.fieldPolicy) ctx.addIssue({ code: "custom", message: "Initialisation needs typed owner field policy." });
+  if (requirement) {
+    const rank = { public_internal: 0, confidential: 1, restricted: 2 };
+    if (!value.record!.fieldPolicy) ctx.addIssue({ code: "custom", message: "Required facts need typed owner field policy." });
+    if (new Set(requirement.facts.map(f => f.fieldId)).size !== requirement.facts.length) ctx.addIssue({ code: "custom", message: "Duplicate required fact." });
+    for (const fact of requirement.facts) {
+      const field = value.fields.find(f => f.id === fact.fieldId);
+      if (!field || field.type !== fact.type || rank[fact.classification] < rank[field.classification])
+        ctx.addIssue({ code: "custom", message: "Required facts must match approved native fields and sensitivity." });
+    }
+  }
   if (value.record?.migrationSnapshot && !value.record.fieldPolicy) ctx.addIssue({ code: "custom", message: "Migration snapshots require an owner field policy." });
   if (value.record?.migrationSnapshot?.referenceVersions && !value.record.fieldPolicy?.types.includes("reference"))
     ctx.addIssue({ code: "custom", message: "Reference coverage requires the owner's reference field policy." });

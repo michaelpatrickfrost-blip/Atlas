@@ -46,11 +46,14 @@ export function entity(d: EntityDescriptor): Contribution {
     ...(d.record ? { record: { writeCapability: d.record.writeCapability, detailRoute: d.record.detailRoute,
       labelField: d.record.labelField, listQuery: d.record.listQuery, getQuery: d.record.getQuery,
       ...(d.record.fieldPolicy ? { fieldPolicy: d.record.fieldPolicy } : {}),
+      ...(d.record.requiredFacts ? { requiredFacts: d.record.requiredFacts } : {}),
+      ...(d.record.initialisation ? { initialisation: { capability: d.record.initialisation.capability } } : {}),
       ...(d.record.migrationSnapshot ? { migrationSnapshot: d.record.migrationSnapshot } : {}),
       ...(d.record.migrationRepresentation ? { migrationRepresentation: d.record.migrationRepresentation } : {}),
       nativeFields: "read_only", revision: "owner_positive_integer" } } : {}) });
   return { metadata: { ...identity(d), kind: d.kind, details, schemaHash: checksum(details) },
-    ...(d.record ? { authoriseRecord: async (ctx, value) => recordAnchorSchema.parseAsync(await d.record!.authorise(ctx, recordRequestSchema.parse(value))) } : {}) };
+    ...(d.record ? { authoriseRecord: async (ctx, value) => recordAnchorSchema.parseAsync(await d.record!.authorise(ctx, recordRequestSchema.parse(value))) } : {}),
+    ...(d.record?.initialisation ? { authoriseInitialRecord: async (ctx, proof) => recordAnchorSchema.parseAsync(await d.record!.initialisation!.authorise(ctx, proof)) } : {}) };
 }
 export function declarative(d: DeclarativeDescriptor): Contribution {
   const outputSchema = z.toJSONSchema(d.schema);

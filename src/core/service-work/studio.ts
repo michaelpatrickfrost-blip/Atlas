@@ -7,6 +7,7 @@ import type { EntityDescriptor, RecordContext, RecordRequest, StudioModuleContra
 import { workScope } from "./access";
 import { FINAL_WORK, WORK_STATUSES } from "./config";
 import { recordAnchorSchema } from "@/core/studio/registry/entities";
+import { authoriseNewTicketFields } from "./studio-create";
 import { customFieldPayloadSchema } from "@/core/studio/fields/schema";
 import { readSealedFieldMigrationReview } from "@/core/studio/fields/migrations/contracts";
 
@@ -283,6 +284,22 @@ async function approveTicketRepresentation(ctx: RecordContext, input: z.output<t
 
 /** Canonical ServiceWorkItem/TICKET only. Existing intake answers stay native. */
 export const ticketStudioContract: StudioModuleContract = { contributions: [
+  query({ ...identity, id: "tickets.ticket.required_facts", label: "Ticket required-field conditions", kind: "query",
+    input: z.strictObject({ recordId, expectedRevision: z.number().int().positive().max(Number.MAX_SAFE_INTEGER) }),
+    output: z.strictObject({ recordId, organisationId: z.string().min(1), revision: z.number().int().positive(),
+      fields: z.strictObject({ status: z.enum(WORK_STATUSES), priority: z.enum(["LOW", "NORMAL", "HIGH", "URGENT"]) }) }),
+    transaction: "required", pagination: "none", maxCardinality: 1, costClass: "low",
+    async execute(ctx, input) {
+      const isolation = await ctx.transaction!.$queryRaw<Array<{ transaction_isolation: string }>>`SHOW transaction_isolation`;
+      if (isolation.length !== 1 || isolation[0].transaction_isolation !== "serializable") throw new Error("Required facts need the owning serializable transaction.");
+      const anchor = await authoriseTicketRecord(ctx, { recordId: input.recordId, intent: "read" });
+      if (anchor.revision !== input.expectedRevision) throw new Error("This record changed. Refresh before saving.");
+      await ctx.transaction!.$queryRaw`SELECT id FROM service_work_items WHERE id=${anchor.recordId} AND "organisationId"=${ctx.session.organisationId} AND kind='TICKET' FOR SHARE`;
+      const row = await ctx.transaction!.serviceWorkItem.findFirst({ where: { id: anchor.recordId, organisationId: ctx.session.organisationId, kind: "TICKET", version: anchor.revision },
+        select: { id: true, organisationId: true, version: true, status: true, priority: true } });
+      if (!row || row.id !== anchor.recordId || row.organisationId !== ctx.session.organisationId || row.version !== anchor.revision) throw new Error("Ticket unavailable or changed.");
+      return { recordId: row.id, organisationId: row.organisationId, revision: row.version, fields: { status: row.status, priority: row.priority } };
+    } }),
   query({ ...identity, id: "tickets.ticket.field_settlement", label: "Ticket retained migration coverage", kind: "query",
     capability: "tickets.ticket.manage", input: settlementInput, output: settlementOutput, transaction: "required",
     fieldSettlement: { entityId: "tickets.ticket", sourceVersions: executionSourceVersions, targetVersions: [5], referenceVersions: executionReadVersions },
@@ -362,4 +379,15 @@ export const ticketStudioContract: StudioModuleContract = { contributions: [
   entity({ ...ticketFieldEntity, version: 5, record: { ...ticketFieldEntity.record!, migrationSnapshot: {
     query: { id: "tickets.ticket.field_migration", version: 3 }, sourceVersions: executionSourceVersions, referenceVersions: executionReadVersions,
   }, migrationRepresentation: { query: { id: "tickets.ticket.field_representation", version: 1 }, sourceVersions: executionSourceVersions } } }),
+  // Existing sealed v1–5 remain unchanged. v6 explicitly approves these facts;
+  // tenant catalogue types/intake answers/private messages are not rule inputs.
+  entity({ ...ticketFieldEntity, version: 6, record: { ...ticketFieldEntity.record!, migrationSnapshot: {
+    query: { id: "tickets.ticket.field_migration", version: 3 }, sourceVersions: executionSourceVersions, referenceVersions: executionReadVersions,
+  }, migrationRepresentation: { query: { id: "tickets.ticket.field_representation", version: 1 }, sourceVersions: executionSourceVersions },
+    requiredFacts: { query: { id: "tickets.ticket.required_facts", version: 1 }, facts: [
+      { fieldId: "status", type: "enum", classification: "confidential", codes: WORK_STATUSES },
+      { fieldId: "priority", type: "enum", classification: "confidential", codes: ["LOW", "NORMAL", "HIGH", "URGENT"] },
+    ] },
+    initialisation: { capability: "tickets.ticket.create", authorise: authoriseNewTicketFields },
+  } }),
 ] };

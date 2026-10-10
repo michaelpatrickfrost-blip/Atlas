@@ -33,6 +33,11 @@ export type ExtensionFieldPolicy = {
   referenceEntities: readonly string[];
   maxFields: number;
 };
+/** Explicit native facts for field validation, distinct from Decision Studio. */
+export type NativeRequiredFact = {
+  fieldId: string; type: "string" | "integer" | "boolean" | "date" | "datetime" | "enum";
+  classification: Classification; capability?: string; codes?: readonly string[];
+};
 export type EntityDescriptor = ContractIdentity & {
   kind: "entity";
   key: "uuid" | "string";
@@ -46,6 +51,10 @@ export type EntityDescriptor = ContractIdentity & {
     listQuery: { id: string; version: number };
     getQuery: { id: string; version: number };
     fieldPolicy?: ExtensionFieldPolicy;
+    requiredFacts?: { query: { id: string; version: number }; facts: readonly NativeRequiredFact[] };
+    /** Owner-issued opaque proof for a record actually created in this transaction.
+     * No ordinary read/manage grant is inferred from creation capability. */
+    initialisation?: { capability: string; authorise(ctx: RecordContext, proof: object): Promise<RecordAnchor> };
     /** Read-only migration capture/coverage; ordinary record write guards still apply. */
     migrationSnapshot?: { query: { id: string; version: number }; sourceVersions: readonly number[];
       /** Explicit same-canonical-entity reference read versions covered by this
@@ -105,6 +114,7 @@ export type Contribution = {
   metadata: Omit<ContractMetadata, "ownerModuleId" | "contractHash">;
   run?: (ctx: Context, input: unknown) => Promise<unknown>;
   authoriseRecord?: (ctx: RecordContext, request: unknown) => Promise<RecordAnchor>;
+  authoriseInitialRecord?: (ctx: RecordContext, proof: object) => Promise<RecordAnchor>;
 };
 export type StudioModuleContract = { contributions: readonly Contribution[] };
 export type ContractReference = { id: string; version: number; schemaHash: string; contractHash: string };

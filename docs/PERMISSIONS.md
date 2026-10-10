@@ -178,3 +178,11 @@ References require the exact written entity contract and target owner read
 authorisation inside the shared server transaction. Configuration access alone
 grants no data authority. This policy helper is a prerequisite; see the Studio
 ledger for collection/preview implementation and runtime evidence.
+
+Studio native-operation bridges can refresh the genuine Session inside an existing
+Serializable transaction; no nested transaction, configuration-authoring grant or
+native record authority is implied. Owner-required facts remain native read/private/
+revision scoped. A distinct owner creation proof supports only the record actually
+inserted in that transaction; create capability never becomes existing-record read
+or manage access. Additional field/reference grants and atomic required coverage
+remain mandatory before enabling conditional/native field workflows (d3–4).

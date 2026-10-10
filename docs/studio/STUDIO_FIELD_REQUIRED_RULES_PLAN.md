@@ -7,7 +7,7 @@ implementation work ordering, not a rewrite of the supplied specification.
 | Workstream | Purpose/dependencies | Expected files/database | Verification | Status |
 | --- | --- | --- | --- | --- |
 | d1 | Closed versioned required-if payload/compiler; preserve v1 plans | fields condition/schema contracts, compiler helpers and tests; no DDL | Bounded typed predicates, unknown/cyclic/foreign/unsupported fact denial, exact old checksum regression; pure helpers only until d2–4 | VERIFIED locally; grammar/compiler and67files416 tests/build/strict post-build TS/lint/diff PASS; unwired |
-| d2 | Owner-approved transaction facts, canonical cohort and new-record initialisation contracts | registry types/entities/contracts, service-work Studio new descriptor versions/query callbacks, runtime authority shared transaction helper; no DDL expected | Exact new native creation authority, current/private/tenant/source policy, canonical final/unanchored cohort, sealed old hashes | NOT STARTED |
+| d2 | Owner-approved transaction facts, canonical cohort and new-record initialisation contracts | registry types/entities/contracts, service-work Studio new descriptor versions/query callbacks, runtime authority shared transaction helper; no DDL expected | Exact new native creation authority, current/private/tenant/source policy, canonical final/unanchored cohort, sealed old hashes | IMPLEMENTED; shared authority, v6 facts/new-record proof and existing canonical snapshot reuse;37 focused/69files431/build/types/lint PASS, actual candidate/public proof pending |
 | d3 | Canonical publication/evolution coverage | definitions binding/publication/review/coverage services, requirement runtime and tests; additive guards only if necessary | All canonical records including absent anchors; optional-populate-review path; conditional resulting requirements, current/written/ref rights, reviewed conversion coverage, Audit/CAS | NOT STARTED |
 | d4 | Owning native create/save and ordinary-value transaction rules | service-work actions/engine and shared runtime-write primitive; no native schema copies | Native protected transitions/SLA/intake preserved; atomic new record+values, create-only permission, hidden/omitted fields/disabled authoring, native/extension CAS, atomic failure/replay | NOT STARTED |
 | d5 | Central native/security/version gate | tests, exact Test helper and release compatibility scan; no destructive reset | Real missing-anchor/conditional/native create/transition/write cases, payload runtime compatibility, two companies/private/source/field denial, build/full candidate/public | NOT STARTED |
@@ -61,5 +61,8 @@ release checks; registry hashes alone cannot prove payload compatibility. Preser
 old published definitions, values, receipts and backward native behaviour.
 
 d1 pure grammar/compiler is implemented and tested, with strict post-build TS PASS.
-No owner initialisation/facts provider, native hook, coverage or publishable conditional
-implementation is claimed by this document.
+d2 owner fact metadata/query and native creation proof contracts are implemented
+locally; actual central proof is pending. Canonical cohort access reuses the existing
+complete owner snapshot (including final/unanchored records), while required-value
+coverage, field-dependency provider, native hooks and publishable conditional
+implementation remain d3–4.

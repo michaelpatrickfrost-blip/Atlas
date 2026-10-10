@@ -1891,3 +1891,10 @@ maps only exact raw40001/40P01 metadata (direct or adapter cause) to the existin
 REVIEW_CHANGED conflict, without auto-retrying writes or suppressing guard/Audit
 failures. Known P2034/P2002 mapping retained. Real concurrency acceptance unchanged;
 full candidate/public proof remains required before cutover is VERIFIED.
+
+## 10 October 2026 — Compact workspace app switcher
+
+Michael explicitly corrected the wide Apps panel to a small popup. Anchor it to
+Apps and cap dimensions at 560px, using compact grouped columns and internal
+scrolling. Retain authorised entries and 44px targets so reduced size preserves
+navigation access. Supersedes the 9 October wide workspace menu direction only.

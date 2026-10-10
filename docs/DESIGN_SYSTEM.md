@@ -69,12 +69,11 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
   `AppDirectory` still uses `getNavigableModules` for both the launcher and workspace
   Apps menu; counts reflect authorised entries. App labels/descriptions wrap and
   keyboard focus remains visible. Attention/goals stay below the app directory.
-- **Workspace Apps menu** — follows Michael's second 9 October reference: a wide,
-  rounded white panel with Customers, Operations, People and Business across the
-  first desktop row, then More and Company. Larger grey outline icons and readable
-  text replace the narrow six-column dropdown. Tablet uses two columns; phone uses
-  two where space allows and one below 360px, with internal vertical scrolling,
-  wrapped labels and 44px targets. Escape returns focus to Apps; outside clicks,
+- **Workspace Apps menu** — Michael's 10 October correction replaces the wide
+  panel with a compact popup anchored below Apps, at most 560px wide/high.
+  Two grouped columns use small grey outline icons and 14px labels; narrow
+  phones use one column. Internal vertical scrolling, wrapped labels and 44px
+  targets keep every authorised destination reachable. Escape returns focus to Apps; outside clicks,
   chosen links and route changes close it. All entries retain server permission
   and app-availability filtering. Atlas Admin/Console and Connections are absent
   from both business directories, including staff support workspaces.

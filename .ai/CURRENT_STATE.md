@@ -1,5 +1,22 @@
 # Atlas current state
 
+## 10 October 2026 — Compact Apps popup
+
+User requested a small popup in place of the window-wide Apps panel.
+AppMenu anchors below its trigger, caps width/height at 560px and scrolls internally.
+AppDirectory menu uses two compact grouped columns (one on narrow phones), 14px
+labels and 18px icons; 44px targets and existing server filtering remain.
+Home launcher unchanged. Design docs supersede the earlier wide-panel direction.
+Home checker now asserts bounded popup dimensions and trigger anchoring, retaining
+permission, responsive fit, link navigation, outside-click and Escape checks.
+Paths: src/components/shell/{app-menu,app-directory}.tsx, scripts/check-home-menu.ts,
+docs/DESIGN_SYSTEM.md, .ai/DESIGN_SYSTEM.md and .ai/DECISIONS.md.
+Checks: Prisma generation, production build, scoped ESLint and git diff --check PASS.
+Initial worktree dependency symlink/generated-client failures resolved locally.
+Candidate/public responsive acceptance and deployment pending; scoped release
+starts from live 1f2ab97.
+
+
 ## 10 October 2026 — Customer phone menu alignment corrected before activation
 
 f58d5a5 candidate commercial acceptance PASS: both customer menus above content at

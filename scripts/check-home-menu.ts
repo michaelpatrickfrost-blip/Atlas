@@ -204,24 +204,11 @@ async function main() {
         );
         await panel.getByRole("heading").first().click();
         await expect(panel).toBeVisible();
-        if (name === "desktop") {
-          const customers = await panel
-            .getByRole("region", { name: "Customers", exact: true })
-            .boundingBox();
-          const more = await panel
-            .getByRole("region", { name: "More", exact: true })
-            .boundingBox();
-          const company = await panel
-            .getByRole("region", { name: "Company", exact: true })
-            .boundingBox();
-          if (customers && more && company)
-            assert(
-              more.y > customers.y &&
-                Math.abs(more.y - company.y) < 2 &&
-                company.x > more.x,
-              "More and Company form the second desktop row.",
-            );
-        }
+        const popupBounds = await panel.boundingBox();
+        const triggerBounds = await trigger.boundingBox();
+        assert(popupBounds && triggerBounds);
+        assert(popupBounds.width <= 560 && popupBounds.height <= 560, "Apps remains a compact popup.");
+        assert(Math.abs(popupBounds.x - triggerBounds.x) < 2 && popupBounds.y >= triggerBounds.y + triggerBounds.height, "Popup is anchored below Apps.");
         await page.screenshot({
           path: `${evidence}/apps-menu-${name}.png`,
           fullPage: false,

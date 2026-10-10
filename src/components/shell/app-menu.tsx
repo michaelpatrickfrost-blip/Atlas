@@ -32,13 +32,13 @@ function WorkspaceAppMenu({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
   return (
-    <div ref={ref} className="shrink-0">
+    <div ref={ref} className="relative shrink-0">
       <button ref={triggerRef} type="button" aria-label="Apps" data-guardian-safe="toggle" onClick={() => setOpen((current) => !current)} aria-expanded={open} aria-controls={open ? panelId : undefined} className={`inline-flex h-11 items-center gap-2.5 rounded-full px-3.5 text-base font-medium text-[#1d1d1f] transition-colors hover:bg-black/[0.075] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:h-12 sm:px-5 sm:text-lg ${open ? "bg-[#ebebed]" : "bg-[#f3f3f4]"}`}>
         <LayoutGrid size={21} strokeWidth={1.75} aria-hidden="true" />
         <span className="hidden sm:inline">Apps</span>
       </button>
       {open && (
-        <div id={panelId} role="region" aria-label="Apps menu" onClick={(event) => { if ((event.target as HTMLElement).closest("a")) close(); }} className="fixed inset-x-2 top-[calc(var(--atlas-topbar)+8px)] z-[70] max-h-[calc(100dvh-var(--atlas-topbar)-20px)] overflow-y-auto overscroll-contain rounded-[24px] border border-black/[0.06] bg-white p-4 shadow-[0_24px_70px_-20px_rgba(0,0,0,0.2)] sm:inset-x-4 sm:rounded-[28px] sm:p-7 lg:p-8 xl:p-10">
+        <div id={panelId} role="region" aria-label="Apps menu" onClick={(event) => { if ((event.target as HTMLElement).closest("a")) close(); }} className="absolute left-0 top-[calc(100%+10px)] z-[70] w-[560px] max-w-[calc(100vw-96px)] max-h-[min(560px,calc(100dvh-var(--atlas-topbar)-24px))] overflow-y-auto overscroll-contain rounded-2xl border border-black/[0.08] bg-white p-4 shadow-[0_16px_48px_-12px_rgba(0,0,0,0.22)]">
           {children}
         </div>
       )}

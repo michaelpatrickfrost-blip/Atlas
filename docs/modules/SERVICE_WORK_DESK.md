@@ -57,3 +57,11 @@ Migration `20261007190000_service_work_desk` adds service work/history/files/rec
 The complete 123-section brief is not certified by this release. Remaining extensions include automatic SLA escalation delivery and next-update milestones; arbitrary inbound email-to-ticket routing; cross-app originating queries beyond cases/tickets; canonical asset selection; batch-wide complaint clustering and product/Quality feedback panels; full change scheduling/CAB and incident/problem relationships; portal/self-service and telephony providers; refund/goodwill/free-freight/free-item workflows; automatic currency-aware combined complaint costs and all advanced report dimensions. Routing currently matches saved case fields to the first configured queue; there is no skills/capacity/round-robin assignment. Native-client support for the new generic data-read metadata/allowlist and evidence transport remains outstanding; the deployed server/browser workflows are verified. Catalogue queues/services and approval policies require deliberate company configuration. Existing module activation and user permissions are preserved.
 
 Delivery evidence, actual commands/results and live checks are maintained in `.ai/CURRENT_STATE.md`.
+
+Studio's `tickets.ticket.migration_cohort@1` performs read-only canonical TICKET
+access preflight/count under native read/manage and private-queue membership.
+Source availability is locked/rechecked and coverage/count use one serializable
+snapshot. Incomplete coverage fails without private IDs/counts; final/merged and
+unanchored records remain part of coverage. It grants no conversion write and
+retains sealed v1/v2 and normal final/merged extension restrictions. See the Studio
+ledger for local versus central/public verification status.

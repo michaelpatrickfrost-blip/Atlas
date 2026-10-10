@@ -8,7 +8,7 @@ This is an execution design; the source specification remains unchanged.
 | --- | --- | --- | --- | --- |
 | 2B1 | Closed field/storage/value contracts and server validators | core/studio/fields/{schema,validation}, focused tests; no DB | Required/type/bounds/exact decimal/currency/calendar/enum/contact/reference-shape/address/extra-capability cases | VERIFIED locally |
 | 2B2 | Versioned field compiler, stable identity binding and typed current/history storage | Compiler dispatch/definition lifecycle + additive central models/migration | Immutable identity/version bindings, tenant FKs, typed-family constraints, indexes, immutable value history | VERIFIED on candidate/public e5d66e6; schema/lifecycle, not owner value API |
-| 2B3 | Safe definition evolution, retirement and explicit conversion planning | fields evolution/migration services and durable migration metadata | Compatibility/conversion preview/failures, no in-place conversion, resumable/idempotent batches/cutover/history | IN PROGRESS; pure conversion verified locally, retirement implemented; jobs not started |
+| 2B3 | Safe definition evolution, retirement and explicit conversion planning | fields evolution/migration services and durable migration metadata | Compatibility/conversion preview/failures, no in-place conversion, resumable/idempotent batches/cutover/history | IN PROGRESS; pure conversion/retirement/principals verified on candidate/public 7941f9b, cohort query local; jobs not started |
 | 2B4 | Atomic owner-authorised read/write and reference validation | fields services + schema from 2B2 | Owner access/locks, field caps, CAS, required rules, uniqueness and audit; references independently owner-checked | NOT STARTED |
 | 2B5 | Central acceptance/checkpoint | tests, central driver, memory/docs | Real typed storage/history/constraints/retirement/tenant/security/compatibility; build and runtime proof | NOT STARTED |
 
@@ -95,3 +95,12 @@ Phase 2 gate: an older runtime must not accept a new payload merely because its
 entity descriptor still resolves. Preserve existing version/checksum contracts;
 introduce version-aware validation rather than adding defaults to sealed payloads.
 These are remaining requirements, not implemented features or passed checks.
+
+Runtime consumers and builder permissions remain a 2B4/2C design dependency.
+Business operators must be able to use approved native forms/pages without being
+given configuration-edit privileges. Resolve only the schema needed by that owner
+runtime, enforce native and additional field permissions on the server, and never
+turn schema access into data access. Disabling the Studio authoring UI must not
+silently bypass published required/unique policies. Define and test disable/retire/
+rollback behavior before opening native writes; this is not implemented by the
+Phase 1 metadata `activeDefinition` helper.

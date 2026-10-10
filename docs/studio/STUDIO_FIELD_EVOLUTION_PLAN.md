@@ -2,15 +2,15 @@
 
 Source: unchanged Studio specification Sections 6.4, 24–24.1 and 25–28.
 Dependencies: 2B2 permanent field identity, immutable generations/typed history and
-metadata publication. 2B3a pure library VERIFIED locally (tests/types/lint/build); combined 2B2 candidate/public e5d66e6 release acceptance PASS.
-2B3b retirement IMPLEMENTED locally (35 tests/types/lint/build PASS; central candidate helper PASS; public proof pending); reviewed jobs/publication/batches/cutover remain NOT STARTED; principal foundation below is IMPLEMENTED locally. This plan breaks the specified operation into
+metadata publication. 2B3a pure library VERIFIED on candidate/public 7941f9b (tests/types/lint/build); combined 2B2 candidate/public e5d66e6 release acceptance PASS.
+2B3b retirement VERIFIED on candidate/public 7941f9b (35 local tests/types/lint/build and real central checks PASS); reviewed jobs/publication/batches/cutover remain NOT STARTED; principal foundation below is IMPLEMENTED locally. This plan breaks the specified operation into
 reviewable checkpoints; it does not substitute for the supplied specification.
 
 | ID | Purpose and dependencies | Expected files / database | Required evidence | Status |
 | --- | --- | --- | --- | --- |
-| 2B3a | Typed compatibility analysis and deterministic conversion rules; depends on existing validators | fields/evolution and conversion tests; no DB | Stable field/entity identity; exact integer→decimal bounds; explicit string→enum mappings/unmapped policy; explicit date/UTC semantics; no inferred money currency or changed reference targets | VERIFIED locally; pure library only |
-| 2B3b | Retirement with CAS and audit, retaining published schema, binding and history | definitions/field lifecycle + tests; additive metadata only if required | Tenant/publish access, stale revisions, no further editing/activation, authorised history retained, keys not recycled | IMPLEMENTED; candidate real helper PASS, public proof pending |
-| 2B3c | First-class reviewed plan, preview and durable job/row state | fields/migrations, Prisma additive migration | Source/target version/checksum, affected count, bounded authorised examples/failures, index impact and rollback limits; forged/stale plans rejected | IN PROGRESS; c1 principal foundation local, preview/persistence not started |
+| 2B3a | Typed compatibility analysis and deterministic conversion rules; depends on existing validators | fields/evolution and conversion tests; no DB | Stable field/entity identity; exact integer→decimal bounds; explicit string→enum mappings/unmapped policy; explicit date/UTC semantics; no inferred money currency or changed reference targets | VERIFIED candidate/public; pure library only |
+| 2B3b | Retirement with CAS and audit, retaining published schema, binding and history | definitions/field lifecycle + tests; additive metadata only if required | Tenant/publish access, stale revisions, no further editing/activation, authorised history retained, keys not recycled | VERIFIED backend candidate/public 7941f9b; no history API/UI |
+| 2B3c | First-class reviewed plan, preview and durable job/row state | fields/migrations, Prisma additive migration | Source/target version/checksum, affected count, bounded authorised examples/failures, index impact and rollback limits; forged/stale plans rejected | IN PROGRESS; c1 principals verified candidate/public 7941f9b; preview/persistence not started |
 | 2B3d | Reviewed target publication into a new generation | compiler/binding/lifecycle, job FK constraints | Immutable old schemas/values, exact target plan required, unsupported structural changes fail closed, target publication does not activate it | NOT STARTED |
 | 2B3e | Bounded resumable/idempotent conversion batches | migration runner/codec, durable row outcomes and tests | Owner and field access rechecked, source value revision checked, atomic target value plus outcome, failure/restart/replay evidence, no native mutation | NOT STARTED |
 | 2B3f | Explicit cutover and rolling read compatibility | activation/resolver and subsequent 2B4 gateway | Source remains readable until cutover; all failures/conflicts resolved; uniqueness/required/access rechecked; CAS activation and auditable rollback limits | NOT STARTED |
@@ -72,7 +72,7 @@ Atlas staff permissions, real active company membership and Studio publish/modul
 checks. Expected files: fields/principal.ts and focused principal tests. Database:
 no new model/migration; one explicit support audit in the existing Audit engine.
 
-IMPLEMENTED locally: captureCustomerFieldMigrationPrincipal rejects metadata-only
+VERIFIED backend on candidate/public 7941f9b: captureCustomerFieldMigrationPrincipal rejects metadata-only
 membership and staff masquerading as customers. openFieldMigrationSupportContext
 requires refreshed platform access plus an existing active target affiliation,
 then saves a purpose-bound audit; it creates no affiliation/roles/grants and does
@@ -82,8 +82,7 @@ resolveFieldMigrationPrincipal reloads current grants and checks revocation and 
 exact audit stamp. It accepts server-stored identity only, not a client endpoint.
 Native owner/private-record and both current/written field checks remain mandatory.
 
-Checks: 3 files/16 assertions PASS; strict post-build TypeScript, scoped lint and production build PASS. New service not yet
-centrally checked or wired to an endpoint/job. 2B3c2 reviewed preview/job persistence
+Checks: 3 files/16 assertions PASS; strict post-build TypeScript, scoped lint and production build PASS. Real central checks on candidate/public 7941f9b PASS. No endpoint/job wiring. 2B3c2 reviewed preview/job persistence
 remains NOT STARTED. Retirement candidate release is separately awaiting combined
 acceptance/public proof with current live business separation preserved.
 
@@ -91,3 +90,131 @@ Before exposing restricted live conversion examples, enforce the specification's
 explicit live-data test permission as well as owner/current/written field access.
 Absent that authority use approved samples/redaction; counts and job details must
 not reveal inaccessible records. No live-preview permission or UI added here.
+
+## 2B3c2 — Preview and job persistence design checkpoint (NOT STARTED)
+
+Purpose: make a reviewed conversion a durable, tenant-owned operation with stable
+source/target identity and explicit per-record outcomes. Prerequisites: 2B3c1 real
+principal acceptance and native owner cohort/representation authority. Expected
+files: fields/migrations, additive Prisma job/row models and SQL guards, focused
+service/schema tests and central helper. No domain tables or local datastore.
+
+Before coding persistence, resolve owner cohort coverage: registry list projections
+are intentionally scoped to visible records and cannot prove whole-tenant coverage.
+Add an owner-approved, versioned preflight that can reject incomplete private-queue
+access generically, without revealing inaccessible IDs/counts. It must include
+canonical records with absent Studio anchors for required-policy coverage. Keep
+sealed Tickets v1/v2 hashes unchanged and ordinary final/merged write restrictions.
+Representation-only migration requires an explicit owner hook and a reviewed
+source value; it must never become another normal-write intent.
+
+Durable review binds exact definition/draft revisions, active source version and
+checksum, target payload/checksum, closed conversion rule, refreshed initiating
+principal and deterministic observed owner/value revisions. Store redacted preview
+examples/failure classes, index/unique impact and rollback limits. Job rows record
+source identity/revision and outcome atomically with any target value; duplicate
+invocation and restart must resolve the same outcome. Do not hold a business
+transaction across batches. Current/written field ACL and owner policy govern
+preview, job detail and every batch. No preview count or source value from a client
+can authorise publication, conversion or cutover.
+
+A reviewed source must stay readable until explicit cutover; preserve all source
+generations/history. Coordinate native record/value writes and configuration
+retirement/publication/activation with a server-enforced migration gate before
+opening 2B4. Stale source revisions require explicit re-review rather than silently
+converting a different value. A changed mapping/target is a new immutable review;
+retry cannot replace a reviewed plan. These are design dependencies, not delivered
+job models, preflight or runtime behaviour.
+
+### 2B3c2a — Owner cohort-access preflight (IMPLEMENTED locally)
+
+Implement a closed Tickets registry query for whole canonical TICKET access
+coverage/count, using a short serializable owner transaction, source module lock,
+native read/manage capabilities and private-queue membership. Reject incomplete
+coverage generically before returning any count. Include final/merged records and
+records without Studio anchors in the count; this grants no final/merged write or
+representation-conversion authority. Preserve sealed entity v1/v2 and normal owner
+writer. Expected files: service-work/studio, new focused owner tests and real
+principal helper. Database: none. Tests: missing native access, disabled source,
+private nonmember denial without identity/count, scoped count including no anchors,
+empty tenant and unchanged sealed contracts. Remaining representation hook and job
+persistence are separate NOT STARTED dependencies.
+
+2B3c2a local evidence: 4 files/22 tests including sealed v1/v2 hashes, production
+build, strict post-build TypeScript and scoped lint PASS. New central helper tests
+a real final record and unanchored native ticket, removes/restores only its exact
+new Test queue membership to prove denial before counts, and checks unchanged
+canonical records. Helper NOT RUN on a cohort-enabled candidate. No final/merged
+representation write hook or durable job implemented.
+
+### 2B3c2b — Typed stored-value decoder for previews (IMPLEMENTED)
+
+Purpose: convert typed SQL columns into validated logical values using the written
+field schema before conversion preview. Dependencies: 2B1 validators, 2B2 typed
+storage, 2B3a converter; no new data authority. Expected files: fields/codec and
+focused codec tests; existing privileged exact-Test storage helper. Database: none.
+Checks: exact 28-digit decimals/money, safe integer/duration bounds, zero/false/null
+distinction, UTC calendar/instant semantics, closed family/type matching, historical
+retired enum IDs, malformed address/reference/extra columns and redacted failures.
+This pure library is not an authorised value API. Native owner plus current/written
+field ACL and reference-target checks remain mandatory in preview/2B4 services.
+No encoder/value writer, migration job or later engine in this checkpoint.
+
+Local evidence: three files/24 assertions, production build, strict post-build
+TypeScript and changed-file lint PASS. Seven codec tests cover all 15 field types.
+First fixture run failed four assertions; corrected duration/timezone/phone policy
+and normalised address fixtures, preserving validation. Real SQL decimal/money
+helper assertions added but NOT RUN on a codec-enabled candidate/public runtime.
+
+### 2B3c2c — Stable combined release acceptance (IMPLEMENTED)
+
+Purpose: complete cohort/decoder proof without another verified release advancing
+between candidate and activation. Dependencies: deployed People/Supply acceptance
+hook and existing proven combined Test runners. Files: deploy/check-studio-release.sh,
+vps-release.sh and deployment/memory/ledger docs. Database: no schema change;
+back up central Test writes before each candidate/public run. Tests: shell syntax,
+closed selector rejection, exact revision/pointer, real Studio/storage/cohort and
+existing Home/Reports/MRP/Messages/Admin/supply/commercial/People acceptance.
+Reuse original locks, build/compatibility/backup/switch/rollback; no second locking
+mechanism or arbitrary shell hook. Other acceptance selectors remain unchanged.
+
+2B3c2c local evidence: shell syntax and three unrecognised selector/foreign URL/
+wrong phase-URL rejection checks PASS before database/service actions. Integrated
+23 files/135 assertions, generation/build/strict types/scoped lint PASS. Combined
+runtime candidate/public proof pending. No Phase 2 gate or designer completion.
+
+Dashboard live integration: preserved exact publicly verified 70ca23e modern UI
+and all native acceptance modes. Review caught dispatcher omission of Studio after
+merge; fixed before deployment. Five mode dispatch probes and shell syntax PASS.
+Regenerated client/descriptors, 28 files/164 tests, production build, strict post-
+build TypeScript and scoped lint PASS. Combined Studio runtime proof pending.
+
+## Next persistence/owner checkpoint dependency (DESIGN; NOT STARTED)
+
+After current cohort candidate/public proof, introduce immutable review identity,
+separate resumable job state and tenant-owned per-record observations/outcomes.
+A review pins definition/draft/source versions and checksums, closed target/rule,
+refreshed principal, actual owner cohort and observed value revisions. Rows include
+canonical records without slots; reference immutable source values rather than
+copying their business payload into job metadata. Live examples require explicit
+live-data-test authority plus native/current/written field and reference access;
+redacted classes/counts cannot reveal inaccessible identities. No new live-test
+permission, preview service or model is implemented yet.
+
+Refine the local order: review/job/row persistence precedes the executable final/
+merged representation hook. A hook accepting a caller's `reviewed: true` cannot
+establish a real reviewed source. The owner hook instead takes a server-stored job
+row identity, rechecks its tenant/source/job state and current native scope under
+one transaction, and preserves all native fields. Core verifies the exact reviewed
+conversion, source pointer/revision and both field policies before target storage.
+Use a new entity contract version; sealed v1/v2 and ordinary `extend` stay unchanged.
+This refines the implementation plan, not the specification's phase order or safety
+requirement. No conversion executes before both persistence and owner policy pass.
+
+Cutover coverage must prove the exact current canonical set against reviewed rows,
+not just equal counts (a deleted record plus new record can preserve a count).
+Prefer an owner-approved transactional missing/extra-row check using tenant/entity
+job references; never expose hidden IDs/counts or use visible-list pagination as
+proof. Add owner evidence for absent anchors, final/merged work, foreign/missing
+records, incomplete queue access and concurrent set changes. These are remaining
+requirements, not implemented checks or authority to write final records.

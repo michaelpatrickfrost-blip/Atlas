@@ -14,6 +14,18 @@ Legacy role-only assignment must enforce the same administration/snapshot/sessio
 guards as the new editor. Return expected form feedback explicitly; production
 React redacts thrown errors, and private driver/framework detail must stay hidden.
 
+## 9 October 2026 — Complete owner cohort access before migration counts
+
+A paginated visible list cannot prove full canonical coverage for field evolution.
+Tickets publishes a separate read-only migration_cohort query requiring native
+read/manage plus complete private-queue membership. Check and count share a
+serializable source-locked transaction; incomplete coverage fails generically
+before counts. Count includes final/merged records and records without Studio
+anchors, but grants no write/conversion permission for those records. Existing
+ordinary extension guards and sealed entity v1/v2 remain unchanged. Future jobs
+pin this query contract and independently apply reviewed representation policy
+and per-value ACL/revision checks. This avoids a hidden native-table scan in Studio.
+
 ## 10 October 2026 — Dashboard acceptance and activation share release locks
 
 Repeated concurrent live releases interleaved between accepted candidates and
@@ -1610,6 +1622,17 @@ current behavior. Rationale: concurrent releases repeatedly advanced between
 preparation, queued feature checks and activation; the accepted revision must
 stay stable through the switch. No lock bypass or arbitrary shell hook.
 
+## 10 October 2026 — Studio written-value decoding is pure and lossless
+
+Decode typed storage with its written field policy before conversion preview.
+Retain exact decimals and known historical retired choices; ordinary new-write
+validation is unchanged. Reject mismatched/extra families, unsafe integers and
+non-null blanks; errors contain no persisted contents. Decoder grants no access:
+preview/value services must enforce native owner, current/written field ACL and
+reference-target permissions. No encoder, database mutation or metadata API is
+introduced by this prerequisite. Rationale: previews must not round or silently
+reinterpret stored values, or turn historical decoding into selection permission.
+
 ## 10 October 2026 — Supply uses the existing held-lock acceptance hook
 
 Accepted concurrent releases repeatedly advanced the server between supply
@@ -1619,3 +1642,26 @@ activation and public checks, with separate backed-up central Test fixtures.
 Reuse all pinned-source, remote-tip, ancestry, compatibility, immutable build,
 smoke and runtime rollback gates. No lock inheritance mechanism or gate bypass is
 needed; default and People releases retain their existing behavior.
+
+## 10 October 2026 — Studio acceptance reuses continuous release locks
+
+Extend deployed People/Supply acceptance selection with a closed Studio selector.
+Run the existing combined fixture checks on candidate, then switch and repeat on
+public under the original locks, backups, source pin, compatibility and rollback.
+Reason: accepted independent releases repeatedly advanced between standalone
+candidate/activation checks. No lock inheritance or second mechanism is needed.
+Fixture writes remain isolated central Tests; no permission grants or local DB.
+Partial field checkpoints still cannot pass the complete Phase 2 gate.
+
+## 10 October 2026 — Stored review proof precedes final-record migration authority
+
+A future owner representation hook must take a persisted, tenant-bound reviewed
+job row, not a caller's boolean claiming review. Build reviewed identity/job/row
+persistence before that executable hook; previews remain read-only and conversion
+cannot start until both pass. Core enforces immutable source/target/rule/revision
+and field policies; owner preserves native fields and rechecks source scope under
+the same transaction. New entity version preserves sealed v1/v2 and ordinary
+final/merged write guards. This refines local workstream dependencies while meeting
+the specification's reviewed-source and domain-ownership requirements.
+Cutover must validate exact canonical set membership; equal counts alone can hide
+a deleted row replaced by a new row. No such hook/model/cutover is implemented yet.

@@ -76,6 +76,30 @@ const ticketEntity: EntityDescriptor = { ...identity, id: "tickets.ticket", labe
     listQuery: { id: "tickets.ticket.list", version: 1 }, getQuery: { id: "tickets.ticket.get", version: 1 }, authorise: authoriseTicketRecord } };
 /** Canonical ServiceWorkItem/TICKET only. Existing intake answers stay native. */
 export const ticketStudioContract: StudioModuleContract = { contributions: [
+  query({ ...identity, id: "tickets.ticket.migration_cohort", label: "Ticket migration access coverage", kind: "query",
+    capability: "tickets.ticket.manage", input: z.strictObject({}),
+    output: z.strictObject({ organisationId: z.string().min(1), entityId: z.literal("tickets.ticket"),
+      count: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER), accessComplete: z.literal(true) }),
+    pagination: "none", maxCardinality: 1, costClass: "high",
+    async execute(ctx) {
+      // Visible-list pagination cannot establish complete coverage. Only the
+      // owner examines inaccessible rows, and never returns their identity/count.
+      // A single read snapshot prevents a new private row leaking via the count.
+      return db.$transaction(async transaction => {
+        assertCapability(ctx.session, "tickets.ticket.manage");
+        const client = await requireSource({ session: ctx.session, transaction });
+        const scope = { organisationId: ctx.session.organisationId, kind: "TICKET" as const };
+        const unavailable = await client.serviceWorkItem.findFirst({ where: { ...scope, OR: [
+          { NOT: workScope(ctx.session) },
+          { queue: { restricted: true, members: { none: { organisationId: ctx.session.organisationId, userId: ctx.session.userId } } } },
+        ] }, select: { id: true } });
+        if (unavailable) throw new Error("MIGRATION_ACCESS_REQUIRED: complete ticket access must be reviewed by an authorised queue member.");
+        const count = await client.serviceWorkItem.count({ where: scope });
+        // Count all canonical rows, including absent extension anchors and final
+        // or merged work. This approves access only, not changing those records.
+        return { organisationId: ctx.session.organisationId, entityId: "tickets.ticket" as const, count, accessComplete: true as const };
+      }, { isolationLevel: "Serializable" });
+    } }),
   query({ ...identity, id: "tickets.ticket.list", label: "Tickets", kind: "query", input: listInput,
     output: z.strictObject({ records: z.array(projection).max(50), next: listInput.shape.cursor.nullable() }),
     pagination: "cursor", maxCardinality: 50, costClass: "medium",

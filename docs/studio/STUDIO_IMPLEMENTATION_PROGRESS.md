@@ -1,6 +1,6 @@
 # Atlas Studio implementation progress
 
-Updated: 9 October 2026.
+Updated: 10 October 2026.
 
 # Current Phase
 
@@ -11,17 +11,16 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c1 — Refreshed migration principal and explicit audited support context —
-IMPLEMENTED locally. Seven principal tests plus integrated 23 files/118 tests,
-Prisma generation/types/lint/build PASS. Central helper ready but NOT RUN. No
-preview endpoint, durable job or new Studio migration. 2B3b retirement verified
-on two candidates; public activation/proof pending while newer live source is
-preserved. 2B2 remains VERIFIED on candidate/public e5d66e6.
+2B3c2c — Stable combined release acceptance — IMPLEMENTED; shell syntax/three
+invalid argument checks PASS. Integrated cohort/decoder/Manufacturing/People
+23 files/135 tests, generation/build/types/scoped lint PASS. Real cohort/decoder
+candidate/public checks pending. Retirement/principals VERIFIED on 7941f9b.
 
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest observed live source 94dd3e105e2757b5d16ed3e2fea277d09a4b7bee;
+VERIFIED. Latest confirmed live source b57ba7209889c0096f47475d6a0659741834f11b,
+preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
 The supplied source defines ten phases 0–9, not five. The original
@@ -47,10 +46,33 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | Companion Admin/business sign-in and provisioning | VERIFIED | Real Admin creates Test-company user; correct company setup/login passes; wrong company recovery/login and customer Admin access rejected. |
 | 2A Owner-approved entity/extension contracts | VERIFIED | 8 focused files/54 assertions, TypeScript, scoped lint/build; central candidate/public owner checks PASS on 6775044. No native write changes. |
 | 2B1 Typed field/value validation | VERIFIED | 7 focused assertions, TypeScript/scoped lint; integrated 17 files/110 assertions and production build. Pure library, no storage/UI claim. |
-| 2B3a Pure compatibility/conversion analysis | VERIFIED | 3 files/22 tests, strict TypeScript/scoped lint/build PASS; no DB or executable migration. Local checkpoint only. |
+| 2B3a Pure compatibility/conversion analysis | VERIFIED | 3 files/22 tests, strict TypeScript/scoped lint/build PASS; no DB or executable migration. Candidate/public 7941f9b pure converter evidence; no jobs. |
+| 2B3b Field retirement backend | VERIFIED | Exact 7941f9b candidate/public real CAS/atomic audit/failure rollback/history/tenant checks PASS; no purge/history API/UI. |
+| 2B3c1 Refreshed customer/support principals | VERIFIED | Exact candidate/public 7941f9b real revocation/permission/audit/metadata-context checks PASS; no preview/job endpoint. |
 | 2B2 Compiler/identity/generations/typed storage | VERIFIED | e5d66e6 candidate/public schema/lifecycle plus complete combined native acceptance PASS; 29 files/143 local tests, TypeScript/lint/build. Owner value API remains 2B4. |
 
 # Current Workstream Detail
+
+Native People helper review caught new dashboard already opens Widget library:
+removed extra toggle and assert visible initial region. 015698f preparation already
+started; do not alter sealed candidate. Current correction strict types/helper lint PASS. 015698f preceding checks PASS,
+then expected hidden-library selector failure; no activation, Test access retired.
+
+Preserved exact publicly verified native Dashboard source 70ca23e, including its
+modern UI, protected data datasets and final Messages assignment. 28 files/164
+focused tests, generation/descriptors/build/scoped lint and strict types PASS.
+Added Dashboard workflow to Studio combined acceptance. Fixed merged dispatcher
+omission before deploying; all five mode-dispatch probes and shell syntax PASS.
+Prior af1338b retry stopped at ancestry before backup/build after 70ca23e advanced.
+No cohort/decoder candidate/public claim. Native release evidence retained.
+
+2B3c2b: pure stored-value decoder implements exact decimals/currency, safe integers,
+UTC dates/instants, strict storage families, historical enum selections and redacted
+failures. Three files/24 assertions, production build, strict post-build TypeScript
+and scoped lint PASS. Initial four fixture errors corrected, rerun PASS. Real SQL
+decimal/money assertions added; not run yet on candidate/public codec source.
+No encoder, data API, permission change or migration. Preserve current live 2ef5b4c
+before candidate proof. 6795f08 preparation has no confirmed success evidence.
 
 2B2 candidate schema/lifecycle VERIFIED and exact tested e5d66e6 ACTIVATED.
 Complete combined candidate PASS; logs /tmp/atlas-studio-acceptance-fDWxDN.
@@ -129,6 +151,19 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+Combined native integration: check-people-workspaces.ts selectors updated for
+already-live Dashboard library/inspector; exact saved metric/90→95% assertions retained.
+
+2B3c2c: scripts/deploy/check-studio-release.sh, vps-release.sh, DEPLOY, evolution
+plan and shared ledger/memory/decision docs. Existing acceptance modes retained.
+
+2B3c2b: fields/codec.ts, tests/studio-field-codec.test.ts, exact-Test SQL helper,
+evolution plan, ledger/CURRENT_STATE/DECISIONS.
+
+2B3c2a: core/service-work/studio.ts, tests/studio-ticket-cohort.test.ts, central
+check-field-principal helper, MODULE_SPEC/SERVICE_WORK_DESK, plan/ledger and
+CURRENT_STATE/DECISIONS. Read-only owner query; no schema migration.
+
 2B3c1: fields/principal.ts, tests/studio-field-principal.test.ts, central
 check-field-principal helper and metadata driver; evolution
 plan/ledger/CURRENT_STATE/DECISIONS. Existing audit only; no DB/schema migration.
@@ -191,10 +226,35 @@ and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
 
+Seven codec cases cover all 15 field types, exact decimals and invalid/redacted
+storage; real decimal/money assertions added to privileged Test helper (NOT RUN).
+
+2B3c2a owner cohort suite: complete/private/capability/source/tenant/empty coverage
+cases. 2B3c1 principal suite: real membership/current permission/revocation/audit
+stamps, metadata-context denial and audit-failure cases.
+
 Registry/adapters/catalogue/compiler/service/admin-context suites; company login,
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+Latest b57ba720-preserving source: generation, 29 files/171 focused assertions,
+production build, strict post-build TypeScript and scoped lint PASS. Browser Admin
+redirect helper correction retains 307; runtime proof pending.
+
+Latest integrated source preserving live 2ef5b4c: 23 files/135 tests, generation,
+production build, strict post-build TypeScript, scoped lint PASS. Acceptance shell
+syntax and three invalid argument rejection cases PASS; runtime pending.
+
+Codec: three files/24 tests, production build, strict post-build TypeScript and
+changed-file lint PASS. No current cohort/codec candidate/public claim.
+
+Latest integrated People/cohort source: 21 files/128 tests, Prisma generation,
+production build, strict post-build TypeScript and scoped lint PASS. Real cohort
+helper still pending; full suite not rerun.
+
+2B3c2a: 4 files/22 tests, build, strict post-build TypeScript and scoped lint PASS.
+New central cohort helper not run; no live cohort-query claim.
 
 2B3b: 5 files/35 assertions, scoped lint, production build and strict TypeScript
 PASS. Central helper and combined candidate checks PASS on 8b99c1b; no public retirement claim.
@@ -206,6 +266,26 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+8133299 candidate Studio/owner cohort/private/final/unanchored/principals/decoder/
+retirement/metadata and Dashboard/Home/Reports/MRP/Messages/private Admin/Supply/
+Commercial PASS. Final People script hit obsolete Dashboard App selector; no switch.
+Evidence /tmp/atlas-studio-candidate-5wV4P4. Updated to current real controls with
+all persistence/exact metric/90→95%/privacy/tenant assertions retained. Public proof
+pending. No schema/application/security change; strict types/helper lint PASS; full runtime rerun pending.
+
+0af763d candidate build/storage/decoder/retirement/metadata/draft/Dashboard checks
+PASS, then authenticated Admin-denial transport assertion failed 404!=307; no
+activation. Evidence /tmp/atlas-studio-candidate-Fjw1UR. Separate HTTP API context
+omitted Secure browser cookie; helper corrected to real browser navigation while
+retaining exact 307/home and adding no-Admin-shell checks. Real cohort helper not
+reached; no public cohort/decoder verification. Application cookies unchanged.
+
+Exact 7941f9b complete candidate/public checks PASS, including real principals,
+retirement and commercial/native regressions. Private evidence
+/tmp/atlas-studio-acceptance-9ztRSn and /tmp/atlas-studio-public-23i93X. Activation
+backup atlas-pre-deploy-20261009-225700; previous immutable 94dd3e retained.
+No new Studio migration, value API, designer or whole Phase 2 gate claim.
 
 Latest 6085d70 combined candidate PASS; /tmp/atlas-studio-acceptance-wM3A1X.
 Exact native source subsequently advanced to 94dd3e, merged unchanged. New
@@ -266,6 +346,16 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
+The separately verified Dashboard release also cleared reproducible dependencies
+from ten inactive October 8 releases; its evidence documents those retained sources
+requiring dependency restoration to run. This was distinct from Studio disposable
+cache cleanup. Current/previous runtimes remain available.
+
+First af1338b deployment stopped at remote fetch with root disk full. RESOLVED:
+cleared only disposable caches in 86 older releases under original locks, keeping
+current/rollback caches and all source/assets/backups/evidence. 51G free/74% used;
+public health unchanged. Same source retry and runtime acceptance pending.
+
 Full test/lint baseline failures are reproduced unchanged; focused checks pass.
 Earlier candidate publication/accessible-label/test-selector failures were fixed
 and rerun successfully. Home screenshot ownership interrupted the first combined
@@ -299,11 +389,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Prepare the source preserving live 94dd3e commercial workspaces and 56c9d88
-business/platform separation. Execute the updated combined candidate runner,
-including real check-field-principal and commercial forms/regressions. On PASS
-activate only the exact compatible pinned source and repeat publicly. Preserve
-newly advanced live source if the ancestry guard stops; never force replacement.
-After principal/retirement release proof, implement 2B3c2 reviewed preview and
-durable migration job/row persistence with source/target checksum/revision binding,
-authorised cohort and restricted live-preview policy. No 2C/2E or Phase 3+ yet.
+Deploy new reviewed pin with the People initial-library-state correction (strict
+TypeScript/helper lint PASS). Real Studio/native checks passed on 8133299/015698f,
+but obsolete People selectors blocked activation; preserve both failed evidence
+sets. Full combined candidate must PASS before switch and repeat exact public
+checks under original locks. Native runtime remains b57ba720. After proof: add
+review/job/row persistence and job-backed owner representation policy with exact
+canonical-set coverage; sealed v1/v2/native final guards retained. Phase 2 NOT PASSED.

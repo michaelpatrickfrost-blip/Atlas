@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { db } from "../../src/core/db/client";
 import { sessionForUser, type Session } from "../../src/core/auth/session";
 import { captureCustomerFieldMigrationPrincipal, openFieldMigrationSupportContext, resolveFieldMigrationPrincipal } from "../../src/core/studio/fields/principal";
+import { studioRegistry } from "../../src/core/studio/registry/runtime";
 
 /** Only the driver's freshly provisioned business user and explicit Test support affiliation. */
 export async function checkFieldPrincipal(customerUserId: string, staff: Session, organisationId: string, otherOrganisationId: string) {
@@ -36,6 +37,25 @@ export async function checkFieldPrincipal(customerUserId: string, staff: Session
   const opened = await openFieldMigrationSupportContext(staff, organisationId);
   assert.equal(opened.session.membershipId, targetMember.id);
   assert.equal((await resolveFieldMigrationPrincipal(opened.principal)).membershipId, targetMember.id);
+  const registry = studioRegistry(), cohort = registry.describe("tickets.ticket.migration_cohort", 1);
+  const privateQueue = await db.serviceQueue.findFirstOrThrow({ where: { organisationId, restricted: true } });
+  const unanchored = await db.serviceWorkItem.create({ data: { organisationId, kind: "TICKET", queueId: privateQueue.id,
+    requesterUserId: staff.userId, number: `TKT-STUDIO-COHORT-${crypto.randomUUID()}`, subject: "Exact Test cohort without Studio anchor" } });
+  assert.equal(await db.studioExtensionRecord.count({ where: { organisationId, entityId: "tickets.ticket", recordId: unanchored.id } }), 0);
+  const nativeBefore = await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } });
+  assert(nativeBefore.some(row => row.status === "CLOSED"), "Final records must remain part of coverage");
+  assert.deepEqual(await registry.invoke(opened.session, cohort, {}), { organisationId, entityId: "tickets.ticket", count: nativeBefore.length, accessComplete: true });
+  const queueMembership = await db.serviceQueueMember.findFirstOrThrow({ where: { organisationId, queueId: privateQueue.id, userId: staff.userId } });
+  // Alter only this run's exact new queue-membership fixture. No count/identity
+  // may be returned when owner coverage becomes incomplete, even to staff.
+  await db.serviceQueueMember.delete({ where: { id: queueMembership.id, organisationId } });
+  try {
+    await assert.rejects(() => registry.invoke(opened.session, cohort, {}), /MIGRATION_ACCESS_REQUIRED/);
+  } finally {
+    await db.serviceQueueMember.create({ data: queueMembership });
+  }
+  assert.deepEqual(await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } }), nativeBefore);
+  console.log("PASS real owner cohort access: canonical/final tickets counted without native edits, private nonmember denied before any count; source and v1/v2 contracts retained.");
   assert.equal(await db.auditEntry.count({ where: { id: opened.principal.authority === "staff_support" ? opened.principal.auditId : "impossible",
     organisationId, actorUserId: staff.userId, action: "studio.field.migration.support_opened", entityId: targetMember.id } }), 1);
   await assert.rejects(() => resolveFieldMigrationPrincipal({ ...opened.principal, auditId: "unrelated-audit" }), /FORBIDDEN/);

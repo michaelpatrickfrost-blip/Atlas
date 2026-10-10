@@ -328,3 +328,17 @@ Only synthetic central Test-company identities/profiles/settings are mutated;
 finally suspends companies/revokes sessions and retains audit history. No email
 transport is invoked. Existing backups/ancestry/compatibility/seal/rollback gates
 and other feature acceptance modes remain. Private evidence is printed per stage.
+
+## Studio combined acceptance under release locks
+
+For a reviewed scoped Studio checkpoint, set `ATLAS_RELEASE_ACCEPTANCE=studio`
+on the pinned deploy. The existing deployer runs `check-studio-release.sh` on its
+sealed candidate before switching and on exact public HTTPS before completion,
+while retaining the original release locks and normal rollback behavior. It uses
+the existing metadata/fields/owner/principal checker plus Home, Reports, real MRP,
+Messages, private Admin, Manufacturing/Supply, commercial and People checks.
+Fixture writes are isolated central Test companies with backups before each phase;
+existing business records and QA identity/profile grants are preserved. No local
+business database or new permission system. Default/People/Supply selectors retain
+their behavior. Candidate/public evidence stays private in reported /tmp paths.
+A partial checkpoint acceptance is not the full Phase 2 gate or visual builder.

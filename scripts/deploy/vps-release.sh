@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="${1:?checkout required}"; REV="${2:?pinned revision required}"; MODE="${3:-activate}"
 SOURCE_BRANCH="${4:-main}"
 ACCEPTANCE="${5:-none}"
-[[ "$ACCEPTANCE" = none || "$ACCEPTANCE" = people || "$ACCEPTANCE" = dashboards || "$ACCEPTANCE" = supply || "$ACCEPTANCE" = settings ]] || { echo 'Unknown release acceptance workflow.' >&2; exit 1; }
+[[ "$ACCEPTANCE" = none || "$ACCEPTANCE" = people || "$ACCEPTANCE" = dashboards || "$ACCEPTANCE" = supply || "$ACCEPTANCE" = studio || "$ACCEPTANCE" = settings ]] || { echo 'Unknown release acceptance workflow.' >&2; exit 1; }
 [[ "$SOURCE_BRANCH" = main || "$SOURCE_BRANCH" =~ ^codex/[a-zA-Z0-9._/-]+$ ]] || { echo 'Invalid release source branch.' >&2; exit 1; }
 git check-ref-format "refs/heads/$SOURCE_BRANCH"
 [[ "$REV" =~ ^[a-f0-9]{40}$ ]] || { echo 'Full pinned revision required.' >&2; exit 1; }
@@ -108,22 +108,24 @@ feature_acceptance() {
   local url="$1" phase="$2" evidence
   evidence=$(mktemp -d "/tmp/atlas-$ACCEPTANCE-$phase-XXXXXX"); chmod 700 "$evidence"
   echo "$ACCEPTANCE $phase acceptance; private evidence: $evidence"
-  if [[ "$ACCEPTANCE" = supply ]]; then
-    local fixture_backup="$HOME/backups/atlas-pre-supply-$phase-$(date +%Y%m%d-%H%M%S)"
+  if [[ "$ACCEPTANCE" = supply || "$ACCEPTANCE" = studio ]]; then
+    local fixture_backup="$HOME/backups/atlas-pre-$ACCEPTANCE-$phase-$(date +%Y%m%d-%H%M%S)"
     pg_dump "${DATABASE_URL%%\?*}" -Fc -f "$fixture_backup.dump"
     if [[ -n "${ATLAS_SERVICE_FILE_ROOT:-}" && -d "$ATLAS_SERVICE_FILE_ROOT" ]]; then tar -C "$ATLAS_SERVICE_FILE_ROOT" -czf "$fixture_backup-service-files.tar.gz" .; fi
-    echo "Supply $phase fixture backup: $fixture_backup"
+    echo "$ACCEPTANCE $phase fixture backup: $fixture_backup"
   fi
   (
     cd "$CANDIDATE"; set -a; . /etc/atlas/guardian.env; set +a
     if [[ "$ACCEPTANCE" = people ]]; then
       NODE_ENV=production ATLAS_PEOPLE_TEST=1 ATLAS_PEOPLE_TEST_URL="$url" ATLAS_PEOPLE_EVIDENCE="$evidence" node --env-file=.env.local --import tsx scripts/check-people-workspaces.ts
+    elif [[ "$ACCEPTANCE" = studio ]]; then
+      sudo bash scripts/deploy/check-studio-release.sh "$url" "$phase" "$REV" "$evidence"
     else
       NODE_ENV=production ATLAS_SUPPLY_CHECK=1 ATLAS_SUPPLY_URL="$url" ATLAS_SUPPLY_OUTPUT="$evidence" node --env-file=.env.local --import tsx scripts/check-manufacturing-supply.ts
     fi
   ) > "$evidence/browser.log" 2>&1 || { cat "$evidence/browser.log"; return 1; }
   cat "$evidence/browser.log"
-  if [[ "$ACCEPTANCE" = supply ]]; then
+  if [[ "$ACCEPTANCE" = supply || "$ACCEPTANCE" = studio ]]; then
     if [[ "$phase" = candidate ]]; then
       [[ "$(readlink -f "$CURRENT")" = "$PREVIOUS" ]] || return 1
     else
@@ -150,7 +152,7 @@ settings_acceptance() {
 }
 release_acceptance() {
   case "$ACCEPTANCE" in
-    people|supply) feature_acceptance "$@" ;;
+    people|supply|studio) feature_acceptance "$@" ;;
     dashboards) dashboard_acceptance "$@" ;;
     settings) settings_acceptance "$@" ;;
     none) return 0 ;;

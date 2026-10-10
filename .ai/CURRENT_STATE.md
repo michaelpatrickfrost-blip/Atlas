@@ -1,5 +1,34 @@
 # Atlas current state
 
+## 10 October 2026 — Execution start locally checked
+
+2B3e4a2 IMPLEMENTED/local checks PASS: shared exact locked execution inspector
+reloads reviewed preparation/publication/immutable target, current compiler and
+owner-query hashes, current module/native/private/written/reference coverage.
+Start saves RUNNING/zero progress and existing Audit atomically; no target/native
+write. Lost-response replay reinspects current authority, verifies exact saved pin
+and closed progress, and duplicates neither operation nor Audit. 36 Studio files/
+213 assertions, production build, strict post-build TypeScript, scoped lint/diff
+PASS; /tmp/atlas-studio-execution-start-{all-tests,build,postbuild-types,lint}.txt.
+Actual SQL NOT RUN, pending 20261010050000 unapplied, accepted live 64361cb.
+Phase 2 NOT PASSED. Next e4b reuses one authorised source observation/decoder to
+compare the sealed row and atomically claim/write its exact target representation;
+then e5 batches and e6 central interruption/failure/replay evidence.
+
+
+## 10 October 2026 — Exact execution start begun
+
+2B3e4a2 IN PROGRESS before code: one shared locked inspection for execution
+start/replay and later batches. Derive stage from the actual scoped execution row;
+recheck immutable reviewed publication/target/compiler and native/private/written/
+reference authority, then derive exact owner approval pin. Strict start input contains
+only preparation ID, publication revision and review checksum; no client tenant,
+pin or stage. Save initial RUNNING/zero progress and Audit atomically; retries return
+only gated progress with no second row/Audit. No target/native writes or public UI.
+Expected migrations/execution-inspection and execution-start plus focused tests;
+reuse pending execution schema unchanged. Actual SQL proof remains e6.
+
+
 ## 10 October 2026 — Execution inspection locally checked
 
 2B3e4a1 IMPLEMENTED/local checks PASS: the shared inspector has an internal

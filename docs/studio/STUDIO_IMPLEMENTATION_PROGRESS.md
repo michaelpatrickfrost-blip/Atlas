@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3e4a2 — Shared execution inspection/start — NOT STARTED.
+2B3e4b — Exact one-row representation writer — NOT STARTED.
 2B3d1–d4 VERIFIED ea27b2f; no row writer/designer.
 
 # Overall Status
@@ -66,6 +66,31 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+2B3e4a2 IMPLEMENTED/local checks PASS: shared exact locked execution inspector
+reloads reviewed preparation/publication/immutable target, current compiler and
+owner-query hashes, current module/native/private/written/reference coverage.
+Start saves RUNNING/zero progress and existing Audit atomically; no target/native
+write. Lost-response replay reinspects current authority, verifies exact saved pin
+and closed progress, and duplicates neither operation nor Audit. 36 Studio files/
+213 assertions, production build, strict post-build TypeScript, scoped lint/diff
+PASS; /tmp/atlas-studio-execution-start-{all-tests,build,postbuild-types,lint}.txt.
+Actual SQL NOT RUN, pending 20261010050000 unapplied, accepted live 64361cb.
+Phase 2 NOT PASSED. Next e4b reuses one authorised source observation/decoder to
+compare the sealed row and atomically claim/write its exact target representation;
+then e5 batches and e6 central interruption/failure/replay evidence.
+
+
+2B3e4a2 IN PROGRESS before code: one shared locked inspection for execution
+start/replay and later batches. Derive stage from the actual scoped execution row;
+recheck immutable reviewed publication/target/compiler and native/private/written/
+reference authority, then derive exact owner approval pin. Strict start input contains
+only preparation ID, publication revision and review checksum; no client tenant,
+pin or stage. Save initial RUNNING/zero progress and Audit atomically; retries return
+only gated progress with no second row/Audit. No target/native writes or public UI.
+Expected migrations/execution-inspection and execution-start plus focused tests;
+reuse pending execution schema unchanged. Actual SQL proof remains e6.
+
 
 2B3e4a1 IMPLEMENTED/local checks PASS: the shared inspector has an internal
 execution stage with persisted owner-query hash/opt-in and exact publication,
@@ -675,6 +700,8 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+e4a2: execution-inspection/execution-start, execution-start tests, plan/ledger/state.
+
 e4a1: coverage/inspection, coverage regression tests, pending SQL denial-message
 compatibility, evolution plan/ledger/CURRENT_STATE. No new schema or native writes.
 
@@ -1101,11 +1128,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement 2B3e4a2 shared execution inspection and start service: derive stage only
-from scoped actual execution row; preserve old freshness, account solely for recorded
-own extension increments and verify exact native/source/written/reference coverage,
-immutable target/approved query and current initiating authority before saving an
-execution pin/CAS/Audit or returning replay state. Then e4b exact one-row target writer,
-e5 bounded batches and e6 actual central owner/atomic failure/replay before applying
-pending 20261010050000 in a pinned full release. Last accepted live 64361cb; Phase 2
-visual designer/live dashboard/custom button acceptance remains open.
+Implement 2B3e4b exact one-row writer: require the shared scoped execution inspection
+and registered owner representation approval before values; reuse the source inspector
+and compare exact sealed observation/conversion, then claim immutable outcome, write
+its typed target value/slot pointer and own extension revision under one transaction.
+Source remains active and unchanged. Follow with e5 bounded progress/CAS/Audit batches
+and e6 actual central failure/resume/replay before pending 20261010050000 deployment.
+Last accepted live 64361cb; Phase 2 visual designer/dashboards/buttons remains open.

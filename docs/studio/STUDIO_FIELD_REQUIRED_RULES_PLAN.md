@@ -152,11 +152,11 @@ or evaluating unrelated private condition inputs. The conditional compiler's rea
 intent validates rule metadata without target write grants; actual rule input reads
 remain separately authorised. Preserve this distinction in d3b2/read gateways.
 
-D3b1 full isolated v2 compiler IMPLEMENTED:29 focused/71files446/build/lint/diff
-PASS, final strict post-build TS pending. Native metadata is compared with exact
+D3b1 full isolated v2 compiler VERIFIED locally:29 focused/71files446/build/
+strict post-build TS/lint/diff PASS. Native metadata is compared with exact
 registered declarations; query and field-version dependencies are sealed. Existing
-v1 and authoring dispatch unchanged. D3b2 actual stored-source provider remains
-NOT STARTED; injected pure test metadata is not binding/history/cycle proof.
+v1 and authoring dispatch unchanged. D3b2 source provider VERIFIED locally:25 focused/types/lint/diff PASS; actual
+central locking/runtime proof remains d5, not inferred from mocked source metadata.
 
 ### d3c work ordering — resulting required inputs
 
@@ -185,3 +185,25 @@ current owner approval of legacy field versions and a distinct proof-bound nativ
 fact query with creation capability; never add ordinary read/manage grants. Newly
 published conditional fields must seal that initialization query as well as normal
 fact dependencies. Keep old v1–6 owner hashes and old migration ranges unchanged.
+
+### c2a implemented; c2b integration constraints
+
+Tickets v7 accepts legacy typed field entity versions2–7 for actual new records,
+with separate proof-bound status/priority query using creation capability. Both
+normal and initialization query hashes seal into new native conditional plans.
+Existing v1–6/query1 hashes and migration ranges preserved.46 focused/types/lint/
+diff PASS; production build and actual central c2 proof pending.
+
+c2b validates actual staged database state and required target values. Ordinary
+paths keep read/current/written/ref policies; new-record paths use genuine current
+owner proof, explicit field grants and independent existing reference access. Never
+use creation proof to read a different record. Conditional native creation facts
+must match the source's sealed initialization query and current owner approval.
+Optional unconditional fields need no unrelated value reads during native validation.
+
+Before d4, account for legacy required fields with absent canonical anchors, all
+native mutation paths and shared lock ordering. Fresh target-generation writes may
+close a retained rollback window: creation-only actors need an explicitly approved
+proof-based close with atomic target value/receipt/Audit, not borrowed manager/cohort
+authority. Preserve existing settlement guarantees and reviewed receipts; assess and
+record the exact alternative before integration. No new workflow/template engine.

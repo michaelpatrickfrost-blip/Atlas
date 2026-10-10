@@ -284,6 +284,25 @@ async function approveTicketRepresentation(ctx: RecordContext, input: z.output<t
 
 /** Canonical ServiceWorkItem/TICKET only. Existing intake answers stay native. */
 export const ticketStudioContract: StudioModuleContract = { contributions: [
+  query({ ...identity, id: "tickets.ticket.initial_required_facts", label: "New ticket required-field conditions", kind: "query", capability: "tickets.ticket.create",
+    input: z.strictObject({ recordId, expectedRevision: z.number().int().positive().max(Number.MAX_SAFE_INTEGER) }),
+    output: z.strictObject({ recordId, organisationId: z.string().min(1), revision: z.number().int().positive(),
+      fields: z.strictObject({ status: z.enum(WORK_STATUSES), priority: z.enum(["LOW", "NORMAL", "HIGH", "URGENT"]) }) }),
+    transaction: "required", pagination: "none", maxCardinality: 1, costClass: "low",
+    async execute(ctx, input) {
+      if (!ctx.initialisationProof) throw new Error("FORBIDDEN: owning creation proof is required.");
+      const isolation = await ctx.transaction!.$queryRaw<Array<{ transaction_isolation: string }>>`SHOW transaction_isolation`;
+      if (isolation.length !== 1 || isolation[0].transaction_isolation !== "serializable") throw new Error("Creation facts need the owning serializable transaction.");
+      const anchor = await authoriseNewTicketFields(ctx, ctx.initialisationProof);
+      if (anchor.recordId !== input.recordId || anchor.revision !== input.expectedRevision) throw new Error("Invalid created ticket fact scope.");
+      if (!await ctx.transaction!.moduleState.findFirst({ where: { organisationId: ctx.session.organisationId, moduleId: "tickets", enabled: true, entitled: true }, select: { id: true } }))
+        throw new Error("DEPENDENCY_BROKEN: Tickets is unavailable.");
+      const row = await ctx.transaction!.serviceWorkItem.findFirst({ where: { id: anchor.recordId, organisationId: ctx.session.organisationId, kind: "TICKET", version: anchor.revision },
+        select: { id: true, organisationId: true, kind: true, requesterUserId: true, version: true, status: true, priority: true, mergedIntoId: true } });
+      if (!row || row.id !== anchor.recordId || row.organisationId !== anchor.organisationId || row.kind !== "TICKET" || row.requesterUserId !== ctx.session.userId
+        || row.version !== 1 || row.status !== "NEW" || row.mergedIntoId) throw new Error("Created ticket unavailable or changed.");
+      return { recordId: row.id, organisationId: row.organisationId, revision: row.version, fields: { status: row.status, priority: row.priority } };
+    } }),
   query({ ...identity, id: "tickets.ticket.required_facts", label: "Ticket required-field conditions", kind: "query",
     input: z.strictObject({ recordId, expectedRevision: z.number().int().positive().max(Number.MAX_SAFE_INTEGER) }),
     output: z.strictObject({ recordId, organisationId: z.string().min(1), revision: z.number().int().positive(),
@@ -389,5 +408,16 @@ export const ticketStudioContract: StudioModuleContract = { contributions: [
       { fieldId: "priority", type: "enum", classification: "confidential", codes: ["LOW", "NORMAL", "HIGH", "URGENT"] },
     ] },
     initialisation: { capability: "tickets.ticket.create", authorise: authoriseNewTicketFields },
+  } }),
+  // Explicit current creation coverage; old descriptors and their migration
+  // ranges stay sealed. This approves new records only, never legacy editing.
+  entity({ ...ticketFieldEntity, version: 7, record: { ...ticketFieldEntity.record!, migrationSnapshot: {
+    query: { id: "tickets.ticket.field_migration", version: 3 }, sourceVersions: executionSourceVersions, referenceVersions: executionReadVersions,
+  }, migrationRepresentation: { query: { id: "tickets.ticket.field_representation", version: 1 }, sourceVersions: executionSourceVersions },
+    requiredFacts: { query: { id: "tickets.ticket.required_facts", version: 1 }, initialQuery: { id: "tickets.ticket.initial_required_facts", version: 1 }, facts: [
+      { fieldId: "status", type: "enum", classification: "confidential", codes: WORK_STATUSES },
+      { fieldId: "priority", type: "enum", classification: "confidential", codes: ["LOW", "NORMAL", "HIGH", "URGENT"] },
+    ] },
+    initialisation: { capability: "tickets.ticket.create", acceptedFieldVersions: [2, 3, 4, 5, 6, 7], authorise: authoriseNewTicketFields },
   } }),
 ] };

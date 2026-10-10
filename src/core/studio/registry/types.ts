@@ -51,10 +51,10 @@ export type EntityDescriptor = ContractIdentity & {
     listQuery: { id: string; version: number };
     getQuery: { id: string; version: number };
     fieldPolicy?: ExtensionFieldPolicy;
-    requiredFacts?: { query: { id: string; version: number }; facts: readonly NativeRequiredFact[] };
+    requiredFacts?: { query: { id: string; version: number }; initialQuery?: { id: string; version: number }; facts: readonly NativeRequiredFact[] };
     /** Owner-issued opaque proof for a record actually created in this transaction.
      * No ordinary read/manage grant is inferred from creation capability. */
-    initialisation?: { capability: string; authorise(ctx: RecordContext, proof: object): Promise<RecordAnchor> };
+    initialisation?: { capability: string; acceptedFieldVersions?: readonly number[]; authorise(ctx: RecordContext, proof: object): Promise<RecordAnchor> };
     /** Read-only migration capture/coverage; ordinary record write guards still apply. */
     migrationSnapshot?: { query: { id: string; version: number }; sourceVersions: readonly number[];
       /** Explicit same-canonical-entity reference read versions covered by this
@@ -70,7 +70,9 @@ export type RecordContext = { session: Session; transaction?: Prisma.Transaction
 export type RecordRequest = { recordId: string; intent: "read" | "extend"; expectedRevision?: number };
 /** A canonical record reference, not a duplicate business record or mutation API. */
 export type RecordAnchor = { recordId: string; organisationId: string; revision: number };
-export type Context = { session: Session; idempotencyKey?: string; transaction?: Prisma.TransactionClient };
+export type Context = { session: Session; idempotencyKey?: string; transaction?: Prisma.TransactionClient;
+  /** Only the explicit proof-bound registry invocation supplies this opaque token. */
+  initialisationProof?: object };
 export type QueryDescriptor<I, O> = ContractIdentity & {
   kind: "query";
   input: z.ZodType<I>;

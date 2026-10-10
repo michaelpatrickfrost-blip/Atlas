@@ -47,7 +47,8 @@ export function entity(d: EntityDescriptor): Contribution {
       labelField: d.record.labelField, listQuery: d.record.listQuery, getQuery: d.record.getQuery,
       ...(d.record.fieldPolicy ? { fieldPolicy: d.record.fieldPolicy } : {}),
       ...(d.record.requiredFacts ? { requiredFacts: d.record.requiredFacts } : {}),
-      ...(d.record.initialisation ? { initialisation: { capability: d.record.initialisation.capability } } : {}),
+      ...(d.record.initialisation ? { initialisation: { capability: d.record.initialisation.capability,
+        ...(d.record.initialisation.acceptedFieldVersions ? { acceptedFieldVersions: d.record.initialisation.acceptedFieldVersions } : {}) } } : {}),
       ...(d.record.migrationSnapshot ? { migrationSnapshot: d.record.migrationSnapshot } : {}),
       ...(d.record.migrationRepresentation ? { migrationRepresentation: d.record.migrationRepresentation } : {}),
       nativeFields: "read_only", revision: "owner_positive_integer" } } : {}) });

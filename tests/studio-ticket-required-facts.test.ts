@@ -25,6 +25,19 @@ it("declares only approved hashed v6 facts and leaves v1–5 owner metadata inta
   expect(entityDetailsSchema.parse(registry.describe("tickets.ticket", 6).details).record?.requiredFacts).toMatchObject({ query: { id: "tickets.ticket.required_facts", version: 1 },
     facts: [{ fieldId: "status", type: "enum" }, { fieldId: "priority", type: "enum" }] });
 });
+it("preserves exact v1–6 and ordinary fact-query hashes while adding distinct v7 creation coverage", () => {
+  const registry = setup(), hashes = [
+    "7c36b9ab5005060a1310d28cf8e9745b9529aa6c6968e373e27575e4cdc8df27", "f9df7435d09d8b076b63571a413ac7bdaaee3c171abeb50391e06185aeb44437",
+    "8d7adf708c77c46038e649433680c7f22ab00cee2d5efc140667ece00e70a2af", "d970a00c35286642a1dc5049065bfcbfa9787338c24c2593927ab7575ae912ed",
+    "c68a8e2d5f8f081e75e664749e77a3326e767393614eb907b72153016ddd0000", "a39bd400fd4d222017e9b8dc1fdb77d2cdc7f0b65cd434e8fe8be1ed0b0ccc1a",
+  ];
+  expect(hashes.map((_, index) => registry.describe("tickets.ticket", index + 1).contractHash)).toEqual(hashes);
+  expect(registry.describe("tickets.ticket.required_facts", 1).contractHash).toBe("e94258850bd3a653b97b0149cab16aba210a09902b3d3a4e7dfc481104895fd5");
+  const current = entityDetailsSchema.parse(registry.describe("tickets.ticket", 7).details).record!;
+  expect(current.initialisation?.acceptedFieldVersions).toEqual([2, 3, 4, 5, 6, 7]);
+  expect(current.requiredFacts?.initialQuery).toEqual({ id: "tickets.ticket.initial_required_facts", version: 1 });
+  expect(current.migrationSnapshot).toEqual(entityDetailsSchema.parse(registry.describe("tickets.ticket", 6).details).record!.migrationSnapshot);
+});
 it("reads exact resulting canonical facts through read/private policy, including final records, without native mutation", async () => {
   expect(await run()).toEqual({ recordId: "ticket", organisationId: "company", revision: 3, fields: { status: "RESOLVED", priority: "HIGH" } });
   expect(m.row.mock.calls[0][0].where.AND[0]).toMatchObject({ organisationId: "company" });

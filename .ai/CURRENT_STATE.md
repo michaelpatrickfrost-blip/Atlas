@@ -1,3 +1,38 @@
+## 10 October 2026 —2B4d3c2a creation contracts IMPLEMENTED
+
+Tickets v7 explicitly covers legacy field entity versions2–7 and adds a distinct
+same-transaction proof-bound NEW/version1/requester scoped fact query. Generic query
+invocation never forwards a proof; normal read/manage remain denied for creators.
+Current registry creation coverage uses the latest policy, exact source hashes and
+no fallback. Initialisation base compiler retains explicit field/reference rights.
+Conditional v7 plans seal creation-query hashes without demanding author Create.
+Exact captured v1–6 and ordinary fact-query contract hashes remain unchanged;
+old migration ranges untouched.5 new assertions;46 focused tests/6 suites, types,
+scoped lint/diff PASS. Initial expected cap set omitted existing core.profile.self;
+fixed test to compare actual starting grants, no production grants changed. New
+production build/central proof not run yet; consolidate c2b feature gate. No DDL/
+native action hook/publication. Standalone direct module CLI hit existing catalogue
+import cycle; canonical registry bootstrap succeeded for hash capture. Use canonical
+registry entry for scripts; no unrelated module rewrite. Files registry types/
+schemas/contracts/runtime, Tickets v7/query, field compilers/sealed inspection,
+three focused suites, module/security/architecture and shared memory. Live0925bb5.
+Next c2b proof-aware metadata/value reading and all-active resulting requirements
+against real uncommitted native/typed rows; common native lock order still d4.
+
+## 10 October 2026 —2B4d3c2a current creation policy IN PROGRESS
+
+4f44a49 c1 checkpoint saved. Add versioned owner policy declaring approved legacy
+field entity versions and separate proof-bound native creation fact query. Preserve
+v1–6 hashes/query1/migration ranges. Registry current initialization resolves exact
+source metadata plus newest explicit owner coverage; no fallback/read/manage grant.
+New conditional plans seal the initialization query too, using metadata-only sealing
+without demanding native create permission from authors. Expected registry types/
+schemas/contracts/registry, Tickets v7/query, focused proof/compiler tests and docs;
+no DDL/native action hook. c2b resulting-state enforcement follows. Shared lock order
+and central proof mandatory before enabling publication/native changes. Next build
+owner contracts and initialization field compiler, then focused checks as one block.
+Live0925bb5 unchanged; no extra dumps or development copies.
+
 ## 10 October 2026 —2B4d3c1 existing-record reader VERIFIED locally
 
 Transactional requirement reader now resolves every current/pinned source policy

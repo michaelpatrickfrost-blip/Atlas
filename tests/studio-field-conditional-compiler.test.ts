@@ -6,6 +6,8 @@ import { compileDefinition } from "@/core/studio/compiler";
 import { customFieldPayloadSchema } from "@/core/studio/fields/schema";
 import { checksum } from "@/core/studio/registry/contracts";
 import { evaluateRequiredCondition } from "@/core/studio/fields/required-evaluator";
+import { inspectSealedFieldVersion } from "@/core/studio/fields/sealed-field";
+import type { Prisma, StudioDefinitionVersion } from "@/generated/prisma/client";
 import { retainedCutoverFixture, cutoverUuid as uuid } from "./fixtures/studio-field-cutover";
 async function fixture() {
   const f = await retainedCutoverFixture(), m = f.registry.describe("tickets.ticket", 6);
@@ -61,4 +63,14 @@ it("preserves exact old v1 compilation and leaves v2 outside definition authorin
   expect(() => customFieldPayloadSchema.parse(f.payload)).toThrow();
   await expect(compileDefinition(f.session, "customField", f.payload, f.registry)).rejects.toThrow();
   expect(await compileCustomField(f.session, f.source.payload, f.registry)).toEqual(before);
+});
+it("seals exact v7 creation query hashes without requiring an author's native create permission", async () => {
+  const f = await fixture(), owner = f.registry.describe("tickets.ticket", 7);
+  const entity = { id: owner.id, version: owner.version, schemaHash: owner.schemaHash, contractHash: owner.contractHash };
+  const session = { ...f.session, capabilities: new Set(["tickets.ticket.read"]) };
+  const compiled = await compileConditionalCustomField({ ...f.context, session, resolveMetadata: async source => registeredRequiredFactMetadata(session, f.registry, entity, source.kind === "native" ? source.fieldId : "invalid") }, { ...f.payload, entity });
+  expect(compiled.plan.dependencies.map(d => d.id)).toEqual(["tickets.ticket", "tickets.ticket.initial_required_facts", "tickets.ticket.required_facts"]);
+  const version = { id: uuid(99), definitionId: f.context.definitionId, organisationId: "company", schemaVersion: 2, payload: compiled.payload as unknown as Prisma.JsonValue,
+    compiledPlan: compiled.plan as unknown as Prisma.JsonValue, checksum: compiled.checksum } as StudioDefinitionVersion;
+  expect(inspectSealedFieldVersion(f.registry, version, "company", f.context.definitionId)).toEqual(compiled.plan);
 });

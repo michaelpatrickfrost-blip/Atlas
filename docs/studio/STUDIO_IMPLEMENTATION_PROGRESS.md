@@ -11,6 +11,8 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
+2B4d3c2a current creation/fact policy — IMPLEMENTED;46 focused/types/lint/diff PASS; consolidated build/central gate pending.
+
 2B4d3c1 transactional existing-record inputs — VERIFIED locally;34 focused/build/strict post-build TS/lint/diff PASS.
 
 2B4d3b2 locked source metadata/current graph — VERIFIED locally;25 focused assertions/types/lint/diff PASS.
@@ -47,6 +49,28 @@ F4a VERIFIED locally (adfc357); strict TS/build/scoped lint,18 focused and45 fil
 candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
+
+## 10 October 2026 —2B4d3c2a creation contracts IMPLEMENTED
+
+Tickets v7 explicitly covers legacy field entity versions2–7 and adds a distinct
+same-transaction proof-bound NEW/version1/requester scoped fact query. Generic query
+invocation never forwards a proof; normal read/manage remain denied for creators.
+Current registry creation coverage uses the latest policy, exact source hashes and
+no fallback. Initialisation base compiler retains explicit field/reference rights.
+Conditional v7 plans seal creation-query hashes without demanding author Create.
+Exact captured v1–6 and ordinary fact-query contract hashes remain unchanged;
+old migration ranges untouched.5 new assertions;46 focused tests/6 suites, types,
+scoped lint/diff PASS. Initial expected cap set omitted existing core.profile.self;
+fixed test to compare actual starting grants, no production grants changed. New
+production build/central proof not run yet; consolidate c2b feature gate. No DDL/
+native action hook/publication. Standalone direct module CLI hit existing catalogue
+import cycle; canonical registry bootstrap succeeded for hash capture. Use canonical
+registry entry for scripts; no unrelated module rewrite. Files registry types/
+schemas/contracts/runtime, Tickets v7/query, field compilers/sealed inspection,
+three focused suites, module/security/architecture and shared memory. Live0925bb5.
+Next c2b proof-aware metadata/value reading and all-active resulting requirements
+against real uncommitted native/typed rows; common native lock order still d4.
+
 
 ## 10 October 2026 —2B4d3c1 existing-record reader VERIFIED locally
 
@@ -326,6 +350,43 @@ actual facts/create-only/native/Audit rollback proof, runner40775 exit0.
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+## 10 October 2026 —2B4d3c2a creation contracts IMPLEMENTED
+
+Tickets v7 explicitly covers legacy field entity versions2–7 and adds a distinct
+same-transaction proof-bound NEW/version1/requester scoped fact query. Generic query
+invocation never forwards a proof; normal read/manage remain denied for creators.
+Current registry creation coverage uses the latest policy, exact source hashes and
+no fallback. Initialisation base compiler retains explicit field/reference rights.
+Conditional v7 plans seal creation-query hashes without demanding author Create.
+Exact captured v1–6 and ordinary fact-query contract hashes remain unchanged;
+old migration ranges untouched.5 new assertions;46 focused tests/6 suites, types,
+scoped lint/diff PASS. Initial expected cap set omitted existing core.profile.self;
+fixed test to compare actual starting grants, no production grants changed. New
+production build/central proof not run yet; consolidate c2b feature gate. No DDL/
+native action hook/publication. Standalone direct module CLI hit existing catalogue
+import cycle; canonical registry bootstrap succeeded for hash capture. Use canonical
+registry entry for scripts; no unrelated module rewrite. Files registry types/
+schemas/contracts/runtime, Tickets v7/query, field compilers/sealed inspection,
+three focused suites, module/security/architecture and shared memory. Live0925bb5.
+Next c2b proof-aware metadata/value reading and all-active resulting requirements
+against real uncommitted native/typed rows; common native lock order still d4.
+
+
+## 10 October 2026 —2B4d3c2a current creation policy IN PROGRESS
+
+4f44a49 c1 checkpoint saved. Add versioned owner policy declaring approved legacy
+field entity versions and separate proof-bound native creation fact query. Preserve
+v1–6 hashes/query1/migration ranges. Registry current initialization resolves exact
+source metadata plus newest explicit owner coverage; no fallback/read/manage grant.
+New conditional plans seal the initialization query too, using metadata-only sealing
+without demanding native create permission from authors. Expected registry types/
+schemas/contracts/registry, Tickets v7/query, focused proof/compiler tests and docs;
+no DDL/native action hook. c2b resulting-state enforcement follows. Shared lock order
+and central proof mandatory before enabling publication/native changes. Next build
+owner contracts and initialization field compiler, then focused checks as one block.
+Live0925bb5 unchanged; no extra dumps or development copies.
+
 
 ## 10 October 2026 —2B4d3c1 existing-record reader VERIFIED locally
 
@@ -2040,6 +2101,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+c2a: registry types/entities/contracts/registry; Tickets Studio v7/proof-bound fact
+query; fields compiler/conditional-compiler/sealed-field; creation proof/native
+facts/conditional compiler suites; module/security/architecture/plan/ledger/memory.
+
 d3c1: runtime-read.ts, required-runtime.ts, binding.ts entity/field key signature;
 required-runtime focused suite, required plan/ledger/CURRENT_STATE/DECISIONS.
 
@@ -2401,6 +2466,9 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+c2a:46 focused assertions/6 suites, tsc, scoped eslint and diff PASS. No new
+production build/central query proof yet; consolidated c2 feature gate pending.
 
 d3c1:34 focused assertions/4 suites (new required inputs + existing ordinary read/
 write + metadata provider), production build, strict post-build TS, scoped lint,
@@ -2822,11 +2890,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint d3c1, then c2 current owner creation/fact policy covering approved old
-field entity versions, using the actual same-transaction INSERT proof without
-ordinary native read/manage grants. Validate actual uncommitted resulting values
-and all active requirements after staged domain/field writes rather than trusting
-supplied native facts. Keep initialisation separate from existing-record reads and
-independently authorise references. Canonical publication/evolution/native hook
-and central gates follow before conditional dispatch. Then2B forms/search,2C/D and
-mandatory visual2E; no Phase3 before fullPhase2 gate. Live0925bb5 unchanged.
+Checkpoint c2a implemented creation contracts, then build c2b proof-aware source/
+base-value reading and all-active required validation using actual uncommitted
+native/typed rows. Preserve create-only rights, exact created record/version and
+current/pinned/written/reference policies; no supplied native facts/staging engine.
+Run focused proof/atomic/integrity checks and consolidated build. Common lock order,
+initial writes/window closure/native hook and central gate follow before dispatch.
+Canonical coverage/evolution and operator forms/search,2C/D/visual2E still pending.
+Live0925bb5; no Phase3 before fullPhase2 gate.

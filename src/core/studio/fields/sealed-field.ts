@@ -64,6 +64,12 @@ export function inspectSealedFieldVersion(registry: CapabilityRegistry, version:
         if (checksum(fact.storage) !== checksum(storage)) invalid();
         const m = registry.describe(declaration.query.id, declaration.query.version), query = add({ id: m.id, version: m.version, schemaHash: m.schemaHash, contractHash: m.contractHash }, "query");
         if (query.ownerModuleId !== source.ownerModuleId || query.capability !== source.capability || query.details.transaction !== "required" || ranks[payload.field.classification] < ranks[query.classification]) invalid();
+        if (declaration.initialQuery) {
+          const metadata = registry.describe(declaration.initialQuery.id, declaration.initialQuery.version), initial = add({ id: metadata.id, version: metadata.version, schemaHash: metadata.schemaHash, contractHash: metadata.contractHash }, "query");
+          const policy = entityDetailsSchema.parse(source.details).record?.initialisation;
+          if (!policy || initial.ownerModuleId !== source.ownerModuleId || initial.capability !== policy.capability || initial.details.transaction !== "required"
+            || ranks[payload.field.classification] < ranks[initial.classification]) invalid();
+        }
       }
     }
     const pins = [...fields].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([, pin]) => pin);

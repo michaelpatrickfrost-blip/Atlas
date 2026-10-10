@@ -53,6 +53,16 @@ export async function compileConditionalCustomField(context: ConditionalCompiler
         throw new Error("FIELD_REQUIREMENT_INVALID: approved native fact query changed.");
       const sensitivity = { public_internal: 0, confidential: 1, restricted: 2 };
       if (sensitivity[parsed.field.classification] < sensitivity[query.classification]) throw new Error("A condition cannot downgrade native query sensitivity.");
+      if (policy.initialQuery) {
+        // Sealing metadata does not invoke the creation query or require an
+        // author's native create grant; the runtime proof path enforces that.
+        const initial = context.registry.describe(policy.initialQuery.id, policy.initialQuery.version);
+        const create = entityDetailsSchema.parse(factOwner.details).record?.initialisation;
+        if (!create || initial.kind !== "query" || initial.details.transaction !== "required" || initial.ownerModuleId !== factOwner.ownerModuleId
+          || initial.capability !== create.capability || sensitivity[parsed.field.classification] < sensitivity[initial.classification]
+          || (initial.lifecycle === "deprecated" && Date.parse(initial.supportedUntil!) <= Date.now())) throw new Error("FIELD_REQUIREMENT_INVALID: approved creation fact query changed.");
+        add(initial);
+      }
     } else {
       fields.set(`${fact.definitionId}@${fact.versionId}`, { definitionId: fact.definitionId, versionId: fact.versionId, checksum: fact.checksum });
       if (fact.field.storage.type === "reference") await resolve(fact.field.storage.entity);

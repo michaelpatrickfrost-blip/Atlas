@@ -64,6 +64,14 @@ export class CapabilityRegistry {
       if (m.kind !== "entity") continue;
       const { record } = entityDetailsSchema.parse(m.details);
       if (!record) continue;
+      if (record.initialisation?.acceptedFieldVersions) {
+        for (const version of record.initialisation.acceptedFieldVersions) {
+          const source = additions.get(`${m.id}@${version}`) ?? this.items.get(`${m.id}@${version}`);
+          if (!source || source.metadata.kind !== "entity" || source.metadata.ownerModuleId !== ownerModuleId
+            || !entityDetailsSchema.parse(source.metadata.details).record?.fieldPolicy)
+            throw new Error("Current initialisation must cover registered typed-field owner versions.");
+        }
+      }
       for (const ref of [record.listQuery, record.getQuery]) {
         const target = additions.get(`${ref.id}@${ref.version}`) ?? this.items.get(`${ref.id}@${ref.version}`);
         if (!target || target.metadata.kind !== "query" || target.metadata.ownerModuleId !== ownerModuleId || target.metadata.capability !== m.capability) throw new Error("Entity projections must reference registered owner queries with the same read capability.");
@@ -74,6 +82,13 @@ export class CapabilityRegistry {
         if (!target || target.metadata.kind !== "query" || target.metadata.ownerModuleId !== ownerModuleId
           || target.metadata.capability !== m.capability || target.metadata.details.transaction !== "required")
           throw new Error("Required facts need a registered transactional owner query with the same native read capability.");
+        if (record.requiredFacts.initialQuery) {
+          const ref = record.requiredFacts.initialQuery;
+          const initial = additions.get(`${ref.id}@${ref.version}`) ?? this.items.get(`${ref.id}@${ref.version}`);
+          if (!record.initialisation || !initial || initial.metadata.kind !== "query" || initial.metadata.ownerModuleId !== ownerModuleId
+            || initial.metadata.capability !== record.initialisation.capability || initial.metadata.details.transaction !== "required")
+            throw new Error("Creation facts need a registered transactional owner query with creation capability.");
+        }
       }
       if (record.migrationSnapshot) {
         const { query: ref, sourceVersions, referenceVersions } = record.migrationSnapshot;
@@ -151,6 +166,39 @@ export class CapabilityRegistry {
     const anchor = recordAnchorSchema.parse(await authorise(context, proof));
     if (anchor.organisationId !== context.session.organisationId) throw new Error("Owner returned invalid new-record scope.");
     return anchor;
+  }
+  /** Latest explicit owner policy for a legacy field schema, never an implicit
+   * read/manage grant or fallback to an older unsupported coverage policy. */
+  async resolveCurrentFieldInitialisation(session: Session, reference: ContractReference) {
+    const source = this.describe(reference.id, reference.version);
+    if (source.kind !== "entity" || source.schemaHash !== reference.schemaHash || source.contractHash !== reference.contractHash
+      || !entityDetailsSchema.parse(source.details).record?.fieldPolicy) throw new Error("DEPENDENCY_BROKEN: field initialisation source changed.");
+    const owner = [...this.items.values()].map(item => item.metadata).filter(m => m.kind === "entity" && m.id === source.id && m.ownerModuleId === source.ownerModuleId)
+      .sort((a, b) => b.version - a.version)[0];
+    const policy = owner && entityDetailsSchema.parse(owner.details).record?.initialisation;
+    if (!policy?.acceptedFieldVersions?.includes(source.version)) throw new Error("DEPENDENCY_BROKEN: current owner does not approve this field's creation version.");
+    await this.allowed(session, owner, policy.capability);
+    await this.allowed(session, source, policy.capability);
+    return { source, owner };
+  }
+  async authoriseCurrentFieldInitialisation(context: RecordContext, reference: ContractReference, proof: object) {
+    if (!context.transaction) throw new Error("Initialisation requires the owning transaction.");
+    const { owner } = await this.resolveCurrentFieldInitialisation(context.session, reference);
+    return this.authoriseRecordInitialisation(context, owner, proof);
+  }
+  /** Proof is carried only in the internal execution context, never JSON input.
+   * Generic query invocation cannot supply it. The owner rechecks exact created
+   * record/revision scope inside its callback before projecting native facts. */
+  async invokeInitialRecordFacts(context: RecordContext, reference: ContractReference, proof: object) {
+    const { owner } = await this.resolveCurrentFieldInitialisation(context.session, reference);
+    const anchor = await this.authoriseRecordInitialisation(context, owner, proof);
+    const policy = entityDetailsSchema.parse(owner.details).record?.requiredFacts?.initialQuery;
+    if (!policy) throw new Error("DEPENDENCY_BROKEN: current owner has no creation fact query.");
+    const query = this.describe(policy.id, policy.version);
+    await this.resolve(context.session, query);
+    const run = this.items.get(`${query.id}@${query.version}`)!.run;
+    if (!context.transaction || !run || query.kind !== "query" || query.details.transaction !== "required") throw new Error("Creation facts need the owning transaction.");
+    return run({ session: context.session, transaction: context.transaction, initialisationProof: proof }, { recordId: anchor.recordId, expectedRevision: anchor.revision });
   }
   /** Current registered owner policy only. Unsupported latest versions fail
    * closed rather than falling back to an older policy. No client query choice. */

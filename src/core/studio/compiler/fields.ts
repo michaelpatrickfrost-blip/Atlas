@@ -7,10 +7,10 @@ import { assertFieldAccess, validateFieldConstraints } from "../fields/validatio
 
 const sensitivity = { public_internal: 0, confidential: 1, restricted: 2 } as const;
 /** Closed field compiler; native fields are aliases, never additional-value storage. */
-async function compileField(session: Session, input: unknown, registry: CapabilityRegistry, intent: "read" | "write") {
+async function compileField(session: Session, input: unknown, registry: CapabilityRegistry, intent: "read" | "write", initialisation = false) {
   const payload = customFieldPayloadSchema.parse(input);
   payload.field = validateFieldConstraints(payload.field);
-  const entity = await registry.resolve(session, payload.entity);
+  const entity = initialisation ? (await registry.resolveCurrentFieldInitialisation(session, payload.entity)).source : await registry.resolve(session, payload.entity);
   if (entity.kind !== "entity") throw new Error("Custom fields require an entity contract.");
   const details = entityDetailsSchema.parse(entity.details), policy = details.record?.fieldPolicy;
   if (!details.extensionPolicy.customFields || !policy) throw new Error("This owner has not approved typed additional fields.");
@@ -42,3 +42,8 @@ export const compileCustomField = (session: Session, input: unknown, registry: C
  * configuration authoring or field write grants. Native/written/reference value
  * access is the caller's separate mandatory runtime responsibility. */
 export const compileCustomFieldForRead = (session: Session, input: unknown, registry: CapabilityRegistry) => compileField(session, input, registry, "read");
+
+/** Base policy only for the actual owning creation path. The caller must prove
+ * the fresh record in the same transaction separately. Explicit field grants and
+ * reference read access remain mandatory; existing-record access is not inferred. */
+export const compileCustomFieldForInitialisation = (session: Session, input: unknown, registry: CapabilityRegistry, intent: "read" | "write") => compileField(session, input, registry, intent, true);

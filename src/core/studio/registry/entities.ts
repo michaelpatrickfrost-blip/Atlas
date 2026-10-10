@@ -38,8 +38,8 @@ export const entityDetailsSchema = z.strictObject({
     detailRoute: z.string().regex(/^\/[a-z0-9/_-]+\/\{recordId\}$/),
     labelField: fieldId, listQuery: queryReference, getQuery: queryReference,
     fieldPolicy: extensionFieldPolicySchema.optional(),
-    requiredFacts: z.strictObject({ query: queryReference, facts: z.array(nativeRequiredFactSchema).min(1).max(30) }).optional(),
-    initialisation: z.strictObject({ capability: logicalId }).optional(),
+    requiredFacts: z.strictObject({ query: queryReference, initialQuery: queryReference.optional(), facts: z.array(nativeRequiredFactSchema).min(1).max(30) }).optional(),
+    initialisation: z.strictObject({ capability: logicalId, acceptedFieldVersions: versions.optional() }).optional(),
     migrationSnapshot: z.strictObject({ query: queryReference,
       sourceVersions: z.array(z.number().int().positive()).min(1).max(20)
         .refine(versions => new Set(versions).size === versions.length, "Duplicate migration source version."),
@@ -58,6 +58,8 @@ export const entityDetailsSchema = z.strictObject({
   if (value.record && !value.fields.some(f => f.id === value.record!.labelField)) ctx.addIssue({ code: "custom", message: "Record label must reference an approved native field." });
   const requirement = value.record?.requiredFacts;
   if (value.record?.initialisation && !value.record.fieldPolicy) ctx.addIssue({ code: "custom", message: "Initialisation needs typed owner field policy." });
+  if (requirement?.initialQuery && !value.record?.initialisation?.acceptedFieldVersions)
+    ctx.addIssue({ code: "custom", message: "Creation facts need explicit current owner field-version coverage." });
   if (requirement) {
     const rank = { public_internal: 0, confidential: 1, restricted: 2 };
     if (!value.record!.fieldPolicy) ctx.addIssue({ code: "custom", message: "Required facts need typed owner field policy." });

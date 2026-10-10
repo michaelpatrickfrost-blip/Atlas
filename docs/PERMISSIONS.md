@@ -186,3 +186,19 @@ revision scoped. A distinct owner creation proof supports only the record actual
 inserted in that transaction; create capability never becomes existing-record read
 or manage access. Additional field/reference grants and atomic required coverage
 remain mandatory before enabling conditional/native field workflows (d3–4).
+
+## Current owner creation coverage — Phase2 contracts, 10 October 2026
+
+Optional hashed `record.initialisation.acceptedFieldVersions` declares the exact
+registered legacy typed-field entity versions the current owner approves for new
+records. Current resolution uses the newest owner policy and fails unsupported
+coverage without fallback. It grants no ordinary native read/manage access.
+Optional `requiredFacts.initialQuery` references a distinct same-owner creation-
+capability transactional query. Only explicit proof-bound invocation supplies the
+opaque INSERT token in server context; generic/JSON invocation cannot. Owner query
+rechecks NEW/version1/requester/tenant/source before projecting approved facts.
+New conditional plans seal both read and initialization query hashes; metadata
+sealing does not require an author's native Create grant. Explicit field grants and
+independent reference reads remain mandatory. Tickets v7 is additive; v1–6 and
+ordinary fact-query hashes/migration ranges unchanged. Native hooks/conditional
+publication and consolidated central creation proof remain outstanding.

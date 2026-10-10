@@ -11,7 +11,9 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f4b1 — Additive one-time settlement storage — BLOCKED on safe central release proof; code IMPLEMENTED.
+2B3f4b1 — Additive one-time settlement storage — IMPLEMENTED; central release proof pending.
+Operational software-retention cleanup — VERIFIED; capacity blocker resolved.
+Michael requested this cleanup before resuming Studio feature work.
 Purpose: retain original activation history while proving rollback/finalization
 receipt, publication and pointer commit together. Dependencies: verified0006/f3,
 f4a closed contract. Expected files: schema, additive0007, exact Test nested storage
@@ -29,7 +31,8 @@ candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
 
-BLOCKED at active f4b1 live verification by safe VPS capacity; Phase 2 not passed.
+IN PROGRESS: f4b1 central verification pending; capacity blocker resolved by
+10 October software-retention cleanup. Phase 2 not passed.
 Admin-only/modern-UI companion VERIFIED. Phase 1 remains
 VERIFIED. Latest confirmed live source 74fab2d1983b3d16d68f481fb783332335e5fc0a (includes verified9aad1fc/1f2ab97),
 preserving verified 7941f9b;
@@ -91,8 +94,9 @@ checkpoint dc5d508. Original0006 is unedited. Nullable settlement metadata and g
 one-time terminal states preserve original receipt and paired publication/pointer.
 Central backed-up DDL rollback071007 PASS; five oldACT receipts compatible and no
 new columns after rollback. Actual nested Test/runtime/candidate/public proof remains
-NOT RUN because shared root3.2Gfree/99% on fully allocated200G disk is unsafe for
-another isolated build. See Exact Next Action. Original source/target/native values
+NOT RUN at the previous checkpoint because root had only3.2Gfree/99%used.
+That capacity blocker is now RESOLVED: measured168Gfree/14%used after retirement
+of duplicated inactive runtime outputs. See Exact Next Action. Original source/target/native values
 remain untouched; ordinary value guards stay closed untilf4b2/2B4.
 
 F4a closed contracts VERIFIED locally adfc357:18 focused/45files292 assertions,
@@ -1237,6 +1241,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+Software cleanup: scripts/deploy/prune-releases.{mjs,d.mts,sh}, vps-release.sh,
+tests/release-retirement.test.ts, docs/SOFTWARE_RETENTION.md, DEPLOY, AGENTS,
+CURRENT_STATE/DECISIONS and this ledger. Source/runtime business logic unchanged.
+
 Current settlement checkpoint: src/core/studio/fields/migrations/settlement-contract.ts,
 tests/studio-field-cutover-contract.test.ts, prisma/schema.prisma, forward0007
 migration.sql, scripts/studio/check-field-settlement-storage.ts and existing
@@ -1381,6 +1389,8 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+Software cleanup: NONE. No SQL, schema, migration, restore, reset or record purge.
+
 Current f4b1: four nullable settlement columns on cutover model; guarded ACT0→
 ROLLED_BACK/FINALIZED1, paired publication state/exact pointer and one-open receipt
 index. Additive0007 only; original0006/history/source/target untouched. No backfill,
@@ -1428,6 +1438,8 @@ business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
 
+Software cleanup: NONE. Forward0007 remains pending.
+
 Current settlement0007 NOT APPLIED. Latest existing0006 stays applied/verified.
 Backed-up DDL rollback071007 left zero settlementPin columns.
 
@@ -1460,6 +1472,10 @@ preserved. Final candidate/activation backup prefixes: `atlas-pre-deploy-2026100
 and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
+
+Release retirement: six fixture tests covering live/rollback/process pins,
+source/static/external data preservation, idempotency, pointer/link rejection and
+changed build-parent denial before modifying readiness.
 
 Current f4a six meaningful contract cases (each contains several transition/negative
 assertions); f4b1 nested exact Test SQL helper checks closed hash/scope/CAS/actor,
@@ -1500,6 +1516,11 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+Software retirement unit tests6/6 PASS; Node/bash syntax and scoped lint PASS.
+Actual Linux prune under both locks PASS118 candidates; Mac generated-output
+cleanup PASS59 paths. Public release health/login and PG/service online checks PASS.
+Build/strict TS result recorded in CURRENT_STATE and SOFTWARE_RETENTION.
 
 Current combined settlement48files300 assertions PASS, production build/strict
 post-build TS/scoped lint/diff PASS. Schema validate/generate PASS. Central fullDDL
@@ -1603,8 +1624,12 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
-Current local checks/central DDL rollback PASS; actual f4b1 Test/runtime gate pending
-and BLOCKED by safe capacity. No applied migration/new Studio live release/Phase2
+Software-retention cleanup VERIFIED. Live source/static/customer records/backups
+retained; root168Gfree snapshot and Mac master5.6G. Complete evidence and practical
+limits in docs/SOFTWARE_RETENTION.md. No Phase2 completion implied.
+
+Current local checks/central DDL rollback PASS; actual f4b1 Test/runtime gate pending.
+Safe capacity blocker RESOLVED by software cleanup; this is not a Studio runtime gate PASS. No applied migration/new Studio live release/Phase2
 PASS or visual designer completion. Existing full-suite baseline evidence below
 is historical; no full-suite success claim for this checkpoint.
 
@@ -1703,6 +1728,10 @@ not a reason to claim full-suite success.
 
 # Architecture Decisions
 
+10 October user-authorised software retention supersedes keeping every accepted
+runtime runnable: keep current+immediate rollback+process pins; older source/static/
+markers/evidence retained, duplicated dependencies/build output retired. See DECISIONS.
+
 F4 settlement rationale recorded in DECISIONS: unchanged-source rollback vs keeping
 approved target and closing rollback window; immutable original receipt/history,
 independent current server principal and exactCAS. Pure integrity/SQL identity do
@@ -1716,12 +1745,12 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
-ACTIVE BLOCKER10 October: shared VPS root remains3.2Gfree/99% after safe cache
-cleanup;200G disk fully allocated. Current release requires~2.2G plus package/
-build temporary space, and same-volume ENOSPC already reproduced by concurrent
-Tasks/Apps releases. No remaining eligible inactive compiler caches. Preserve
-accepted runtimes/dependencies/history/backups; increase capacity before another
-isolated build. F4b1 actual Test/candidate/public gate pending; new0007 unapplied.
+RESOLVED10 October: unbounded duplicated release dependencies/builds filled the
+VPS. User-authorised retirement of118 inactive runtime output sets retained live,
+immediate rollback and process-pinned runtimes plus source/static/evidence/backups.
+Root reached168Gfree; no disk expansion needed for the immediate Studio gate.
+New releases may consume space; remeasure and respect both locks before deploying.
+F4b1 actual Test/candidate/public gate still pending; new0007 unapplied.
 
 
 Preparation support lock failure RESOLVED: corrected e309ff8 full candidate/public
@@ -1770,15 +1799,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Increase VPS disk capacity/safe available build space to at least8GB. This is an
-external capacity blocker:200G disk fully allocated, root3.2Gfree/99%used after both-
-lock cleanup of only inactive1f2ab97/74fab2d compiler caches/npm downloads. All
-accepted source/dependencies/server/static/history/backups/current1bf0e2c/previous
-845456e retained; remaining compiler caches current/previous only. PG18main online;
-no swap/SQL reset/migration applied/Studio deployment attempted.
-
-Once capacity is available: re-read recovery memory/ledger/git status and public
-health, merge any newer accepted live ancestry, then run normal exact pinned Studio
+Capacity blocker resolved; do not expand storage based on the superseded cache-
+only audit. Finish the software-retention checkpoint and verify public health.
+Then re-read recovery memory/ledger/git status and public health, wait for existing
+release locks, merge any newer accepted live ancestry, then run normal exact pinned Studio
 release on codex/studio-phase2 with ATLAS_RELEASE_ACCEPTANCE=studio. Forward0007
 must pass actual nested Test storage proof and full candidate/public/native suites
 before f4b1 VERIFIED. Combined48files300/build/strict TS/scoped lint/diff PASS;

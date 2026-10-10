@@ -1,6 +1,41 @@
 # Atlas current state
 
-## 10 October 2026 — Studio Phase2 f4b1 release gate BLOCKED by shared VPS capacity
+## 10 October 2026 — Software retention VERIFIED; Studio capacity blocker resolved
+
+User authorised cleanup of redundant development/release copies and explicitly
+requested avoiding unnecessary dump files; both rules saved in AGENTS/DEPLOY and
+DECISIONS. Initial audit:130 release folders181GiB, VPS root full, Mac master32GiB
+(build29GiB) plus four obsolete installed1.4GiB packages. Current launcher3.3MiB;
+PostgreSQL cluster140MiB. Under BOTH original locks, retired118 inactive dependency/
+non-static build output sets, retained current/rollback/process pins/source/static/
+config/readiness-history/private files/backups. Mac59 generated/package paths
+removed; source/concurrent worktrees untouched. Master5.6GiB/build2.6GiB; root reached
+168GiBfree/14%used after final retirement of newly superseded845456e and legacy
+maintenance dependency/non-static output copies. Final eligible output sets0.
+See docs/SOFTWARE_RETENTION.md for evidence/commands/limits.
+
+New checked retirement utility installed root-owned on server; busy-lock refusal
+confirmed during another release. Current/public97ceb35b069845f637a43811d8200a99b9ade306,
+previous1bf0e2c1c69803906ac087ce6ba634fe6033c365, login200, atlas active, PG18main online.
+No cleanup SQL/schema/migrations/restores/resets/app restart/business record purge.
+Six retirement tests PASS; Node/bash syntax, scoped ESLint, production build and
+strict post-build TypeScript PASS. Deployer retention hook added after all public
+acceptance/pointer updates; activates on next compatible release including it.
+No claim that pending Studio source is deployed. Necessary recovery backups stay;
+read-only audits/retirement generate no business dump.
+
+Files: scripts/deploy/prune-releases.{mjs,d.mts,sh}, vps-release.sh,
+tests/release-retirement.test.ts, docs/SOFTWARE_RETENTION.md, DEPLOY, AGENTS,
+CURRENT_STATE/DECISIONS and Studio ledger. The earlier expansion recommendation is
+superseded: duplicated software retention was the capacity cause.
+
+Exact next: checkpoint retirement, then recover Studio f4b1/Phase2; inspect and merge
+new accepted live97ceb35 ancestry, recheck locks/status/capacity and run the exact
+pinned Studio release with ATLAS_RELEASE_ACCEPTANCE=studio. Forward0007 must pass
+actual nested Test SQL plus complete candidate/public native suites before VERIFIED.
+Phase2 NOT PASSED; visual designer still required; no Phase3 work yet.
+
+## 10 October 2026 — Historical Studio capacity blocker (RESOLVED by software retention below)
 
 Preserved source checkpoints adfc357 (pure settlement contracts), dc5d508 (forward
 0007/storage/nested exact Test helper) and f7ed95f (observed live1bf0e2c ancestry).
@@ -23,7 +58,8 @@ Current release dependencies+Next alone occupy~2.2G before npm cache/temporary b
 outputs; proceeding would leave insufficient headroom for shared production data.
 No reset, restore, destructive cleanup, lock bypass or server build attempted.
 
-Exact unblock: increase VPS disk capacity/free safe build space (at least8GB free
+Historical unblock recommendation (superseded by the software-retention audit):
+increase VPS disk capacity/free safe build space (at least8GB free
 for the immediate candidate and further sequential checkpoints), then re-read
 ledger/status/current health and merge any newer accepted live ancestry. Run the
 normal pinned Studio release with ATLAS_RELEASE_ACCEPTANCE=studio; it applies

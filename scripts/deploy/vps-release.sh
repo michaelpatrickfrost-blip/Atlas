@@ -251,3 +251,12 @@ done
 sudo /usr/bin/node "$CANDIDATE/scripts/deploy/release-files.mjs" link "$PREVIOUS" "${ROOT}-previous"
 SWITCHED=0
 echo "Activated immutable runtime $REV; previous release retained at $PREVIOUS"
+
+# All candidate/public acceptance and rollback-pointer updates have completed.
+# Retire duplicated inactive runtimes using the same locks. Release our descriptors
+# first; the utility reacquires them nonblocking and defers if another release won.
+# A maintenance failure must not roll back an already accepted business runtime.
+exec 8<&- 9<&-
+if ! sudo bash "$CANDIDATE/scripts/deploy/prune-releases.sh" prune; then
+  echo 'Release accepted; inactive runtime retirement deferred. Run the checked retention utility when locks are free.' >&2
+fi

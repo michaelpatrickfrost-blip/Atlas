@@ -1,3 +1,21 @@
+## 10 October 2026 — Retain source history without duplicating every runtime
+
+Michael explicitly requested redundant development-copy cleanup while keeping
+Atlas working. Audit found130 release folders/181GiB, with each runnable copy
+repeating dependencies/builds (~2.2GiB current). Keeping all accepted releases
+runnable indefinitely was unsuitable: root filled and blocked safe deployment.
+Keep current, immediate rollback and process-pinned runtimes intact. Under both
+original locks, older duplicate node_modules and non-static .next outputs may
+retire; rename readiness rather than claiming a runnable old release. Preserve
+source/config/static/deployment evidence/customer records/private files/backups.
+Older source requires isolated rebuild/acceptance; immediate rollback stays ready.
+This supersedes the previous cache-only restriction for inactive accepted runtimes.
+Michael also explicitly requested avoiding unnecessary dump files. Check existing
+valid recovery evidence first; no ad-hoc dumps for read-only audits/retirement.
+Mandatory reviewed migration/release/fixture backups remain required.
+The deployer retires only after public acceptance and pointer updates; busy cleanup
+defers without undoing an accepted release. No second storage/database system.
+
 ## 10 October 2026 — Reserve cancellation capacity in bounded field operations
 
 Execution progress, two-transition FAILED resume and failure recording must leave a

@@ -173,8 +173,10 @@ private files, backups and deployment evidence. Under both existing release lock
 only disposable package/incremental compiler caches and positively identified failed
 candidate build/dependency outputs may be reclaimed. Retain failed candidate source
 and readiness history in maintenance backups; never follow environment/storage
-symlinks. Keep inactive ready releases' source, dependencies, compiled server/static
-assets and markers intact when reclaiming only their Turbopack compiler cache.
+symlinks. The 10 October user-authorised software-retention policy below supersedes
+the former requirement to keep every inactive accepted runtime runnable. Preserve
+current/previous/process pins; retain older source/static/history while retiring
+duplicated dependencies and compiled server/cache output through the checked utility.
 Open an existing lock without recreating/truncating it when Linux protected regular
 files reject a root write-open; use exclusive flock on the same inode. Do not weaken
 locks or filesystem protections. Retry the normal pinned build and full acceptance.
@@ -385,7 +387,8 @@ HTTPS under the same locks. Each stage backs up central data/private evidence.
 Only its synthetic tasks are written, and retained canceled at cleanup. Existing
 backup, immutable release, revision checks and rollback gates apply.
 
-10 October Studio settlement checkpoint is blocked before isolated release build:
+Historical 10 October cache-only audit, superseded by software-retention cleanup:
+Studio settlement checkpoint was blocked before isolated release build:
 root3.2Gfree/99% after reclaiming only inactive1f2ab97/74fab2d compiler caches and
 npm downloads under both original locks. Disk200G/root partition198.9G fully
 allocated; current1bf0e2c/previous845456e and all accepted source/dependencies/
@@ -394,3 +397,38 @@ server/static/history/backups preserved. Inventory studio-settlement-capacity-
 capacity/safe available build space before retry; do not remove accepted runtimes
 or backups to force another build. Forward0007 DDL was backed up/rolled back
 only, not applied; actual Test/candidate/public gate remains pending in ledger.
+
+## Software retention — 10 October 2026
+
+Michael explicitly authorised removal of redundant development/release copies.
+Keep the current runtime, immediate previous runtime and every process-pinned
+candidate intact. Retire only duplicated `node_modules` and `.next` output other
+than static assets from older SHA release folders. Keep source, configuration,
+readiness history, central records, private files and all business backups.
+The installed root-owned operator tool is `/opt/atlas-maintenance-tools/prune-releases.sh`.
+It takes both original exclusive locks nonblocking; busy means defer, never bypass.
+
+```bash
+ssh administrator@85.190.118.218 'sudo bash /opt/atlas-maintenance-tools/prune-releases.sh audit'
+ssh administrator@85.190.118.218 'sudo bash /opt/atlas-maintenance-tools/prune-releases.sh prune'
+```
+
+The checked-in deployer invokes the same utility only after complete public
+acceptance and rollback-pointer updates. It closes its lock descriptors, then
+reacquires both through the wrapper; maintenance failure/busy defers cleanup without
+rolling back an accepted runtime. This hook takes effect when a compatible release
+containing it is deployed; the live operator tool has already been installed/tested.
+Retired readiness markers are renamed, so an older source cannot be mistaken for a
+prepared runtime. Older source needs an isolated rebuild and normal acceptance
+before activation. Immediate rollback remains available. Do not retire a runtime
+being investigated/running: pin it or defer maintenance.
+
+The cleanup recovered approximately160GiB including emergency relief; root reached168GiB
+free. This resolves the capacity blocker; new releases still require a fresh space
+and lock check. See [software-retention evidence](SOFTWARE_RETENTION.md).
+
+Michael also requested avoiding unnecessary dump files. Read-only space audits and
+software retirement do not need database dumps. Use existing recovery evidence
+where valid; do not generate ad-hoc duplicate exports/backups. Required reviewed
+pre-migration/release/fixture backups remain intact and mandatory. Any future backup
+rotation must verify recovery coverage and active-job pins before deleting a dump.

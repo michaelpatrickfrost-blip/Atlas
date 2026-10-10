@@ -104,6 +104,14 @@ staff rights, retires synthetic access and leaves the production pointer unchang
 For the Customers/CRM/Sales/Marketing refinement, exercise the actual commercial
 forms and responsive layouts on a sealed candidate before activation:
 
+Set `ATLAS_RELEASE_ACCEPTANCE=commercial` to run the checked-in commercial checker
+on the candidate and public HTTPS in one deployment, holding both existing locks
+through activation. Each run takes its own central fixture backup and verifies
+the exact revision, including Customer Actions/Manage Record layering at three
+viewport sizes. Existing rollback, source, compatibility and immutability gates
+remain. This prevents concurrent releases moving between feature checks and activation.
+The separate candidate-only command below remains available.
+
 ```bash
 ssh administrator@85.190.118.218 'ATLAS_COMMERCIAL_CHECK=1 bash /opt/atlas-releases/<candidate SHA>/scripts/deploy/check-commercial-workspaces.sh /opt/atlas <candidate SHA>'
 ```

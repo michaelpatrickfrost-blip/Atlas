@@ -1,5 +1,19 @@
 # Atlas current state
 
+## 10 October 2026 — Menu release retry and continuous commercial acceptance
+
+Reclaimed only failed 05d0098 dependencies/.next and npm package cache under both
+release locks, retaining source/logs/backups and active/rollback releases. Fresh
+f58d5a5 build/smoke/compatibility PASS; backup 20261010-060628. A temporary 2GB swap
+at /opt/atlas-maintenance-backups/menu-build-20261010.swap is active (no fstab edit)
+to protect further server builds; remove when deployment/builds finish safely.
+Candidate commercial check queued behind concurrent Studio 9aad1fc release.
+Added explicit commercial acceptance selector to existing deploy hook, with both
+locks retained across candidate/activation/public checks, fixture-stage backups,
+exact revisions and normal rollback. Shell syntax/whitespace PASS. No lock bypass.
+Next: reconcile accepted live Studio revision, finish pinned commercial release and
+capture public menu hit-testing. Menu correction still not publicly activated.
+
 ## 10 October 2026 — Shared card/menu layering correction
 
 Customer Actions appeared underneath tabs and overview cards because the global

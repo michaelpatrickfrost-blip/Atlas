@@ -21,6 +21,7 @@ import { executeFieldMigrationBatch, FieldMigrationExecutionError } from "../../
 import { inspectFieldMigrationExecution } from "../../src/core/studio/fields/migrations/execution-inspection";
 import { writeFieldMigrationRepresentation } from "../../src/core/studio/fields/migrations/representation";
 import { fieldMigrationOutcomePinSchema } from "../../src/core/studio/fields/migrations/execution-contract";
+import { createFieldMigrationCutoverPin } from "../../src/core/studio/fields/migrations/cutover-contract";
 const child = promisify(execFile);
 
 /** Actual conversion on only the acceptance driver's isolated Test companies.
@@ -155,6 +156,18 @@ export async function checkFieldExecution(session: Session, principal: FieldMigr
   await assert.rejects(() => db.studioFieldMigrationOutcome.delete({ where: { observationId: success[0].observationId } }), /immutable|history|retained/i);
   await assert.rejects(() => db.studioFieldMigrationExecution.update({ where: { preparationId: prepared.id }, data: { state: "RUNNING", revision: state.revision + 1 } }), /immutable|CAS/);
   const finalDefinition = await db.studioDefinition.findFirstOrThrow({ where: { id: definition.id, organisationId: session.organisationId } });
+  await withFieldMigrationAuthority(session, principal, async authority => {
+    const inspected = await inspectFieldMigrationExecution(authority, intent), x = inspected.existing; assert(x);
+    const current = await authority.transaction.studioDefinition.findFirstOrThrow({ where: { id: definition.id, organisationId: session.organisationId },
+      select: { id: true, organisationId: true, kind: true, activeVersionId: true, revision: true, latestVersion: true, retiredAt: true } });
+    const result = createFieldMigrationCutoverPin(inspected.stored, { preparationId: x.preparationId, organisationId: x.organisationId,
+      definitionId: x.definitionId, entityId: x.entityId, pin: x.pin, pinChecksum: x.pinChecksum, state: x.state, revision: x.revision,
+      cursor: x.cursor, processedCount: x.processedCount, failureCode: x.failureCode },
+    { ...inspected.pin.publication, state: inspected.publication.state, revision: inspected.publication.revision }, current);
+    assert.equal(result.checksum, checksum(result.pin)); assert.equal(result.pin.execution.checksum, x.pinChecksum);
+    assert.equal(result.pin.source.versionId, source.versionId); assert.equal(result.pin.publication.targetVersionId, published.targetVersionId);
+    assert.equal(result.pin.definitionRevision, current.revision); assert.equal(result.pin.rollbackPolicy, "unchanged_reviewed_representation");
+  });
   assert.equal(finalDefinition.activeVersionId, source.versionId); assert.equal((await activeDefinition(session, definition.id))?.versionId, source.versionId);
   await assert.rejects(() => activateVersion(session, { definitionId: definition.id, versionId: published.targetVersionId, revision: finalDefinition.revision }), /completed conversion|explicit cutover/i);
   assert.deepEqual(await db.studioFieldValue.findMany({ where: { ...fieldScope, generationId: payload.storageGeneration }, orderBy: { id: "asc" } }), sourceValues);
@@ -163,5 +176,5 @@ export async function checkFieldExecution(session: Session, principal: FieldMigr
   assert.equal((await execution()).state, "CANCELLED"); assert.deepEqual(await outcomes(), success); assert.deepEqual(await targets(), values);
   await assert.rejects(() => executeFieldMigrationBatch(session, { preparationId: prepared.id, revision: (state.revision + 1), limit: 1 }), e => e instanceof FieldMigrationExecutionError && !e.failureRecorded);
   assert.deepEqual(await db.serviceWorkItem.findMany({ where: nativeWhere, orderBy: { id: "asc" } }), nativeBefore);
-  console.log("PASS actual reviewed execution: owner-approved final/empty/typed rows, exact precision and immutable lineage; real start/mid-batch/Audit/deferred-progress rollback, forced process death then fresh-process resume and lost-response replay; private/tenant/CAS/history denial, source retained/readable, target activation blocked and cancellation retains outcomes. Both native tenant snapshots unchanged.");
+  console.log("PASS actual reviewed execution: owner-approved final/empty/typed rows, exact precision and immutable lineage; real start/mid-batch/Audit/deferred-progress rollback, forced process death then fresh-process resume and lost-response replay; private/tenant/CAS/history denial, exact pure cutover identity with no activation, source retained/readable, target activation blocked and cancellation retains outcomes. Both native tenant snapshots unchanged.");
 }

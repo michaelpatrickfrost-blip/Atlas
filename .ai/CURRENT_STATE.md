@@ -1,5 +1,30 @@
 # Atlas current state
 
+## 10 October 2026 — Closed cutover identity checked; actual proof pending
+
+2B3f1 IMPLEMENTED / VERIFIED locally: closed cutover pin binds freshly inspected
+READY execution, retained review/publication identity, source-active definition CAS
+and rollback policy unchanged_reviewed_representation. No client tenant/pin/grants,
+coercion, reverse-conversion promise, DDL, pointer mutation or public endpoint.
+Eight new focused tests PASS; Studio/Admin/sign-in regression41files/257assertions,
+production build, strict post-build TypeScript and changed-file lint/diff PASS.
+Logs /tmp/atlas-studio-cutover-contract-{tests,regression,build,postbuild-types,lint}.txt.
+Existing central execution helper now derives this pure pin from real authorised
+rows without activation; runtime proof pending next pinned candidate/public release.
+Accepted live8d6eb9e; checkpoint and deploy f1, then f2 additive receipt/atomic pointer
+proof. Phase2NOTPASSED; visual/customer dashboard/button work still incomplete.
+
+## 10 October 2026 — Execution recovery accepted live; cutover identity starts
+
+8d6eb9e626ca91ee37a97e211e374e9c456fe8be full combined candidate/public PASS;
+deploy39964 exit0, exact public health confirmed. Candidate0GPKVw/publicCy0qcR,
+backup045515, fixtures045720/050126; /tmp/atlas-studio-postgres-recovery-deploy.txt.
+Actual RUNNING batch+failure-marker Audit rollback proved; all native suites passed.
+PostgreSQL recovery backup retained; no reset/restore/SQL repair. Prior f5bb914 kept.
+2B3e6 VERIFIED. Begin 2B3f1 closed cutover contract/tests only (no DDL/runtime grant),
+then f2 receipt/atomic pointer guards under existing activation. Phase2NOTPASSED;
+visual designer/customer publication/buttons remain required and unimplemented.
+
 ## 10 October 2026 — Central PostgreSQL recovered; release retry pending
 
 352835c final recovery release stopped before backup/acceptance (session 25961,

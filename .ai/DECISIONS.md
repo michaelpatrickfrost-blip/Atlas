@@ -1839,3 +1839,13 @@ source remains active. Cancelling the receipt also cancels execution atomically 
 the already authorised metadata operation, without fetching business IDs/values.
 Native owner approval and current field/reference access still precede actual writes;
 there is no client bypass, native mutation or separate workflow engine.
+
+## 10 October 2026 — Cutover rollback is a guarded unchanged-data window
+
+The cutover identity binds exact READY execution/review/publication and current
+source-active definition revision. Retain source generations and outcomes. Guarded
+rollback requires current native/source/target/configuration coverage unchanged;
+no automatic reverse conversion or lossless promise after target-only writes. This
+fulfils specification Section24 explicit rollback limits without discarding new
+customer work. Pin validation is pure integrity, never data/activation authority;
+receipt, current access, shared activation and paired Audit follow in 2B3f2–f4.

@@ -3,7 +3,7 @@
 Source: unchanged Studio specification Sections 6.4, 24–24.1 and 25–28.
 Dependencies: 2B2 permanent field identity, immutable generations/typed history and
 metadata publication. 2B3a pure library VERIFIED on candidate/public 7941f9b (tests/types/lint/build); combined 2B2 candidate/public e5d66e6 release acceptance PASS.
-2B3b retirement VERIFIED on candidate/public 7941f9b (35 local tests/types/lint/build and real central checks PASS); Reviewed publication is VERIFIED on ea27b2f complete candidate/public suites. Batches/cutover remain NOT STARTED; principal and review foundations are VERIFIED live. This plan breaks the specified operation into
+2B3b retirement VERIFIED on candidate/public 7941f9b (35 local tests/types/lint/build and real central checks PASS); Reviewed publication is VERIFIED on ea27b2f complete candidate/public suites. Batches VERIFIED on 8d6eb9e; cutover remains NOT STARTED; principal and review foundations are VERIFIED live. This plan breaks the specified operation into
 reviewable checkpoints; it does not substitute for the supplied specification.
 
 | ID | Purpose and dependencies | Expected files / database | Required evidence | Status |
@@ -12,7 +12,7 @@ reviewable checkpoints; it does not substitute for the supplied specification.
 | 2B3b | Retirement with CAS and audit, retaining published schema, binding and history | definitions/field lifecycle + tests; additive metadata only if required | Tenant/publish access, stale revisions, no further editing/activation, authorised history retained, keys not recycled | VERIFIED backend candidate/public 7941f9b; no history API/UI |
 | 2B3c | First-class reviewed plan, preview and durable job/row state | fields/migrations, Prisma additive migration | Source/target version/checksum, affected count, bounded authorised examples/failures, index impact and rollback limits; forged/stale plans rejected | IN PROGRESS; c1 principals verified candidate/public 7941f9b; preview/persistence not started |
 | 2B3d | Reviewed target publication into a new generation | compiler/binding/lifecycle, job FK constraints | Immutable old schemas/values, exact target plan required, unsupported structural changes fail closed, target publication does not activate it | VERIFIED ea27b2f candidate/public |
-| 2B3e | Bounded resumable/idempotent conversion batches | migration runner/codec, durable row outcomes and tests | Owner and field access rechecked, source value revision checked, atomic target value plus outcome, failure/restart/replay evidence, no native mutation | IN PROGRESS; execution contracts/inspection locally checked, actual rows pending |
+| 2B3e | Bounded resumable/idempotent conversion batches | migration runner/codec, durable row outcomes and tests | Owner and field access rechecked, source value revision checked, atomic target value plus outcome, failure/restart/replay evidence, no native mutation | VERIFIED 8d6eb9e candidate/public; actual owner/batches/Audit/process-loss/replay/isolation checks |
 | 2B3f | Explicit cutover and rolling read compatibility | activation/resolver and subsequent 2B4 gateway | Source remains readable until cutover; all failures/conflicts resolved; uniqueness/required/access rechecked; CAS activation and auditable rollback limits | NOT STARTED |
 | 2B3g | Central migration acceptance and checkpoint | existing isolated Test driver, docs/memory | Real preview, failed batch, resume, duplicate invocation, tenant/permissions, retained history, cutover/rollback, production build and live verification | NOT STARTED |
 
@@ -1158,7 +1158,9 @@ Phase 2 NOT PASSED; cutover and visual editor/dashboard/button work remains pend
 
 ## 2B3f — Cutover/rollback workstreams (inspection and plan only)
 
-NOT STARTED implementation. Finish the pinned final e6 recovery release first.
+2B3e6 VERIFIED: 8d6eb9e full candidate/public combined PASS; final recovery release
+finished exit0. 2B3f1 IMPLEMENTED, eight focused/257 regression assertions/build/types/lint PASS;
+real authorised-row pin proof pending combined release. f2–f5 NOT STARTED.
 Source Sections 6.3–6.4 and 24: activation is separate, all conversions resolved,
 reads remain source-compatible until cutover, history is retained and rollback limits
 must be explicit. Actual existing activation is in definitions/service.ts; it owns
@@ -1170,7 +1172,7 @@ PUBLISHED state. Preserve these boundaries; an activation flag is insufficient.
 
 | ID | Purpose / dependencies | Expected files and database | Evidence / status |
 | --- | --- | --- | --- |
-| 2B3f1 | Closed server-derived cutover identity and rollback window; depends on VERIFIED e6 | migrations/cutover-contract and tests; no DDL | Exact READY execution, stored publication/review/immutable target, current definition CAS, no client org/pin; explicit rollback limitations. NOT STARTED |
+| 2B3f1 | Closed server-derived cutover identity and rollback window; depends on VERIFIED e6 | migrations/cutover-contract and tests; no DDL | Exact READY execution, stored publication/review/immutable target, current definition CAS, no client org/pin; explicit rollback limitations. VERIFIED locally; central pure-pin proof pending |
 | 2B3f2 | Tenant cutover receipt and atomic pointer/transition proof | schema/additive forward SQL/catalogue/privacy; no native tables/backfill/reset | Claim requires complete unchanged execution/source/target; deferred commit requires exact activated target; history/CAS/FKs; cancelled/unfinished/cosmetic bypass denied. Existing applied SQL retained. NOT STARTED |
 | 2B3f3 | Shared current-authority cutover and existing activation primitive | migrations/cutover plus a narrow transaction extraction from definitions/service; tests | Same compiler/binding/module/CAS/Audit logic; native/private/current/written/reference/required/unique checks before pointer change; paired Audit rollback and fresh idempotent replay. NOT STARTED |
 | 2B3f4 | Honest rollback and post-cutover normal-value compatibility | shared inspection/receipt guards/rollback and tests; additive guards as needed | Source history retained; normal target editing uses owning-domain rules in subsequent 2B4; source generation stays historical. Rollback only in explicitly validated unchanged window; target-only writes/native or metadata drift cannot silently discard data. NOT STARTED |

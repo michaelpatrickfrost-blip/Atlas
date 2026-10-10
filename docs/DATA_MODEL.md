@@ -258,18 +258,14 @@ candidate/public f5bb914 proof covers owner-approved final/unanchored/scalar row
 atomic/deferred progress and mid-batch/start/batch Audit rollback, process death,
 new-process resume, private/tenant/history/cancel/source compatibility. Both native
 tenant snapshots unchanged. No cutover/ordinary value gateway or visual builder yet;
-final RUNNING recovery-Audit proof and cancellation revision reserve follow separately.
+final RUNNING batch+failure-marker Audit proof and cancellation revision reserve also
+passed in 8d6eb9e complete candidate/public acceptance after PostgreSQL disk-event
+recovery. Migration remains applied; no reset, restore or SQL repair. Recovery backup
+and earlier failed candidate evidence are preserved in the Studio ledger.
 
-10 October execution service checkpoint: shared exact current inspection/start,
-owner-approved row conversion and bounded CAS/outcomes/progress/Audit are implemented
-with 228 local assertions, build/types/lint passing. Publication replay after recorded
-target writes uses the shared execution inspector; old freshness remains strict.
-Pending 20261010050000 is not applied and actual trigger lifecycle remains unverified
-until the pinned combined candidate/public proof. Source remains active; cutover and
-ordinary owner value gateway are subsequent workstreams. No Flow worker/native writes.
-
-20261010050000_studio_field_executions was applied successfully in central preparation
-for 6d2f5a9 (backup 20261010-042335). Candidate stopped at a new negative test missing
-expected native revision before row lifecycle proof; public runtime remains 64361cb.
-Persistence is applied, but execution is not VERIFIED. Preserve the migration and
-retained Test history; rerun corrected complete acceptance, without reset.
+2B3f1 defines a pure closed cutover identity (no new model/migration or activation).
+It binds current READY execution/review/publication and source-active definition CAS,
+with explicit unchanged-representation rollback limits. Eight focused and 257 scoped
+regression assertions, build/types/lint PASS; actual authorised-row identity proof is
+added to the existing checker but still pending release. Cutover receipt, atomic
+activation/rollback, ordinary owner value gateway and visual builder remain pending.

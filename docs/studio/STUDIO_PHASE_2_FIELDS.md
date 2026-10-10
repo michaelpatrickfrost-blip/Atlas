@@ -126,3 +126,55 @@ receipt/native history retained.0008 applied, no model/table/backfill/reset. Loc
 verified; retention only retired inactive1d7f558 runtime output. Phase2 not passed;
 nextf4c1 historical/current settlement inspection before shared service/Audit/replay
 and2B4 normal owner forms. Visual2E remains required after2B–D. See ledger.
+
+## 2B4 ordered runtime workstreams (planned10 October)
+
+These start after f4c/d acceptance; they do not replace source requirements or
+claim completion from schema helpers. No new database is introduced.
+
+| ID | Purpose/dependencies | Expected files / DB implications | Evidence / status |
+| --- | --- | --- | --- |
+| 2B4a | Current ordinary operator authority and read compiler; f4c/d then existing owner/typed storage | fields/runtime-authority, compiler/fields and tests; no schema | Real membership/role/platform/source locks and tenant denial, field reads without publish/edit or write grant, same sealed checksums; NOT STARTED |
+| 2B4b | Current and retained field read gateway | fields/runtime-read, typed schemas/codec/registry and Test helper; no schema | Owner native/private checks, current+written policies, reference target access, storage fingerprint/history, source/target active pointer, no foreign/value leakage; NOT STARTED |
+| 2B4c | Atomic ordinary value writes and migration-window integration | fields/runtime-write, existing storage/Audit/CAS/owner services; additive DDL only if evidence requires | Expected native/extension/slot/config revisions, native final/merged rules, uniqueness/required, current+written policies, reference authority, one value+pointer+Audit, explicit compatible settlement and failure/concurrency tests; NOT STARTED |
+| 2B4d | Required-if contract and canonical coverage / native save hooks | schema-version-aware metadata/compiler, owning ServiceWork create/save, focused tests; compatibility-only additive evolution | Closed typed native/field conditions, hidden/disabled controls cannot bypass rules; missing anchors included; metadata authoring disablement cannot bypass published requirements; NOT STARTED |
+| 2B4e | Operator forms and declared field search | approved Tickets runtime components/actions/query plus existing search/indexes | Business users need native data grants, not Studio authoring; real create/edit/reload/form validation/private/reference/search/history and responsive modern UI; NOT STARTED |
+| 2B4f | Central runtime gate | Test fixtures, native compatibility, release scan/docs | Real all type families, storage/Audit/CAS/revocation/tenant/retirement/disable/migration/required-if checks, schema compatibility scan/build/full candidate+public; NOT STARTED |
+
+Default design: published field rules are platform runtime policy even when Studio
+authoring is disabled. Native source availability is still mandatory. Ordinary
+read checks read grants in both current/written schemas, not a configuration edit
+or value-write grant. Writes remain owning-domain extension operations; Studio
+never rewrites native fields. Source representation remains current until explicit
+cutover; historical/obsolete generation must not become an ordinary write target.
+Required publication must prove canonical coverage including absent anchors or
+fail with a guided population/review step. Resolve exact native save/create hooks
+before opening ordinary writes; do not silently permit incomplete required rows.
+These are planning constraints, not implemented behaviour. Visual2E follows2B–D.
+
+## 10 October 2026 — f4c/d VERIFIED live1146UTC; next2B4a
+
+Exacta527ccdf3832c16da541e6a0df650b06e90d1e8e full candidate1qikYT/publicWMNUWf
+ALL COMBINED PASS; runner96792 exit0. Actual retained/open/terminal/post-cosmetic
+inspector, independent-current-customer rollback/finalize, both rollback Audit
+failures and finalization Audit failure, concurrent exactly-once CAS/Audit, fresh
+revocation/private/module/tenant/session checks, changed-extension rollback denial
+but finalization, continued cosmetics/writes/new-publication history replay and
+source-first freeze PASS in both stages. Native snapshots unchanged. Dashboards/
+Home/Settings/Reports/MRP/Messages/private Admin/Supply/Commercial/People allPASS;
+no reported browser errors.60files372/build/strict post-build TS/scoped lint/diff
+PASS. No schema/model/migration/backfill/reset/native/UI changes in this checkpoint.
+Required backup113558, fixtures113732/114133; no ad-hoc dumps. Retention retired
+only inactive666efeb runtime output; source/static/history/data/backups retained.
+Current/public exacta527ccd, previousf1a9bf1, atlas active, PG18main online/login200,
+root168GiBfree/14%used. Original locks idle verified using read-only file descriptors
+after plain flock open was denied; neither original file removed/replaced.
+Files: shared cutover identity; settlement receipt/inspector/coverage/services;
+registry owner policy and Tickets query; Test helpers/fixtures/five focused suites;
+MODULE_SPEC/decisions/field plan/ledger/current state. Source checkpoints35d471a,
+fa100f7,a527ccd. Evidence /tmp/atlas-studio-f4cd-live-deploy.txt and private stage dirs.
+Phase2 remains IN PROGRESS: ordinary values, required-if/native hooks, record types/
+pages/search and visual business/Sales/document/dashboard builder still outstanding.
+Exact next:2B4a ordinary operator authority and read compiler, then2B4b scoped
+current/history gateway. Preserve write/source/module/native/current+written checks;
+operators must not require authoring/write grants to read permitted fields.

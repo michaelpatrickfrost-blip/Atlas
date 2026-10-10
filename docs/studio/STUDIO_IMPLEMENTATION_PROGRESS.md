@@ -12,9 +12,8 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 # Current Workstream
 
 2B3f4b2b — Generation/history and cosmetic activation guards — VERIFIED livef1a9bf1.
-2B3f4c1 scoped settlement inspection — IMPLEMENTED locally; live proof pending.
-2B3f4c2 current-authority settlement — IMPLEMENTED locally; live proof pending.
-2B3f4d actual service acceptance — IN PROGRESS.
+2B3f4c/d retained inspection, current-authority settlement and acceptance — VERIFIED livea527ccd.
+2B4a ordinary operator authority/read compiler — NOT STARTED (exact next).
 F4b2a active representation cosmetic binding remains VERIFIED.
 2B3f4b1 additive one-time settlement storage — VERIFIED live1d7f558, candidate/public
 combined acceptance PASS, original runner20133 exit0. Operational cleanup VERIFIED.
@@ -35,6 +34,10 @@ candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
 
+F4c/d VERIFIED exacta527ccd candidate/public ALL COMBINED PASS/runner96792 exit0.
+Next2B4 runtime workstreams recorded; none implemented yet. FullPhase2 gate remains
+IN PROGRESS; visual2E mandatory after2B–D.
+
 Phase2 IN PROGRESS. F4b2b VERIFIED exactf1a9bf1 full candidate/public gate; ordinary
 settlement/value APIs and visual designer remain outstanding. Phase0/1 gates PASS.
 Authoritative ten-phase source preserved unchanged at docs/studio/ATLAS_STUDIO_SOURCE.docx
@@ -45,6 +48,7 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 
 | Workstream | Status | Evidence |
 | --- | --- | --- |
+| 2B3f4c/d Retained/current settlement and service acceptance | VERIFIED | a527ccd candidate1qikYT/publicWMNUWf ALL COMBINED PASS, runner96792 exit0; real independent actor, paired Audit/CAS/revocation/drift/history/source freeze/native proof;60files372/build/types/lint; no new DDL. |
 | 2B3f4b2b Generation/history/cosmetic continuation | VERIFIED | f1a9bf1 candidatezDzdGq/publici1zMEw ALL COMBINED PASS, runner65486 exit0; actual both-terminal continuation/owner fixture and later real publication source-first freeze;0008 applied;55files343/build/types/lint. |
 | 2B3f4b2a Active field cosmetic binding | VERIFIED | 666efeb candidateJPiKeZ/publicSgP6a7 ALL COMBINED PASS/exit0, real cancelled-source publish/activate and retained-target/history/tenant checks;55 files343 local assertions/build/types/lint; no new DDL. |
 | 2B3f4b1 One-time settlement storage | VERIFIED | 1d7f558 candidate/public ALL COMBINED PASS; actual nested atomic terminal/retained-history/changed-extension proof;0007 applied;55 local files340 assertions/build/types/lint. |
@@ -88,6 +92,49 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+## 10 October 2026 — f4c/d VERIFIED live1146UTC; next2B4a
+
+Exacta527ccdf3832c16da541e6a0df650b06e90d1e8e full candidate1qikYT/publicWMNUWf
+ALL COMBINED PASS; runner96792 exit0. Actual retained/open/terminal/post-cosmetic
+inspector, independent-current-customer rollback/finalize, both rollback Audit
+failures and finalization Audit failure, concurrent exactly-once CAS/Audit, fresh
+revocation/private/module/tenant/session checks, changed-extension rollback denial
+but finalization, continued cosmetics/writes/new-publication history replay and
+source-first freeze PASS in both stages. Native snapshots unchanged. Dashboards/
+Home/Settings/Reports/MRP/Messages/private Admin/Supply/Commercial/People allPASS;
+no reported browser errors.60files372/build/strict post-build TS/scoped lint/diff
+PASS. No schema/model/migration/backfill/reset/native/UI changes in this checkpoint.
+Required backup113558, fixtures113732/114133; no ad-hoc dumps. Retention retired
+only inactive666efeb runtime output; source/static/history/data/backups retained.
+Current/public exacta527ccd, previousf1a9bf1, atlas active, PG18main online/login200,
+root168GiBfree/14%used. Original locks idle verified using read-only file descriptors
+after plain flock open was denied; neither original file removed/replaced.
+Files: shared cutover identity; settlement receipt/inspector/coverage/services;
+registry owner policy and Tickets query; Test helpers/fixtures/five focused suites;
+MODULE_SPEC/decisions/field plan/ledger/current state. Source checkpoints35d471a,
+fa100f7,a527ccd. Evidence /tmp/atlas-studio-f4cd-live-deploy.txt and private stage dirs.
+Phase2 remains IN PROGRESS: ordinary values, required-if/native hooks, record types/
+pages/search and visual business/Sales/document/dashboard builder still outstanding.
+Exact next:2B4a ordinary operator authority and read compiler, then2B4b scoped
+current/history gateway. Preserve write/source/module/native/current+written checks;
+operators must not require authoring/write grants to read permitted fields.
+
+
+## 10 October 2026 — f4c/d actual candidate feature proof PASS; full release pending
+
+Pinned a527ccdf3832c16da541e6a0df650b06e90d1e8e runner96792 active. Candidate
+1qikYT actual nested ACT/terminal/post-cosmetic inspector and independent-current-
+customer rollback/finalization service PASS: both rollback Audit failures, finalize
+Audit failure, concurrent CAS/single Audit, revoked/stale/private/module/tenant,
+changed-extension rollback denial/finalization and post-cosmetic/new-publication
+history replay; all native snapshots retained. Current server remainsf1a9bf1 until
+all candidate native/browser gates PASS; full public acceptance also mandatory.
+Required backup113558/fixture113732. No ad-hoc dumps or schema changes. Local
+60 files372/build/strict post-build TS/lint PASS. Not VERIFIED until complete
+runner exit0 and exact public revision/pointers/health. Next: remaining native
+candidate checks then public; prepare2B4 scoped ordinary value access design.
+
 
 ## 10 October 2026 — f4c/d local release checkpoint ready
 
@@ -1958,7 +2005,7 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
-Current f4c/d local checks PASS. Runtime NOT RUN yet; neither fullPhase2 nor settlement live gate is VERIFIED.
+Current f4c/d local and complete candidate/public checks PASS; VERIFIED exacta527ccd. FullPhase2 remains IN PROGRESS.
 
 F4b2b PASS:343 local assertions/build/strict types/lint; candidatezDzdGq/publici1zMEw
 ALL COMBINED PASS, runner65486 exit0; new terminal/owner fixture and subsequent
@@ -2095,10 +2142,10 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
-Current f4c/d: no local blocker. Actual server helper acceptance remains unverified; fullPhase2 owner value API/required-if/native forms/record types/pages/visual designer still outstanding.
+Current f4c/d VERIFIED with no active blocker. FullPhase2 owner value API/required-if/native forms/record types/pages/visual designer still outstanding.
 
-No active f4b2b blocker. Production settlement/owner value APIs and visual2E
-remain explicit unfinished Phase2 work; no completion claim for these.
+Historical f4b2b checkpoint: settlement was unfinished then; superseded by current
+verifiedf4c/d. Ordinary owner values and visual2E remain unfinished Phase2 work.
 
 No active f4b2a release blocker. Earlier public instant-geometry failure RESOLVED
 by identical bounded viewport check; full666efeb candidate/public Messages passed.
@@ -2151,13 +2198,18 @@ See `STUDIO_PHASE_1_COMPLETION.md` for evidence and practical limits.
 
 # Deferred Items
 
+Ordered2B4 runtime workstreams now recorded in STUDIO_PHASE_2_FIELDS.md: ordinary
+authority/read compiler; current/history reads; atomic writes; required-if/canonical
+coverage/native hooks; operator forms/search; real runtime/release compatibility gate.
+NOT STARTED until current f4c/d acceptance. Visual2E remains mandatory afterward.
+
 Remaining Phase 2 work is active, not deferred. Phases 3–9 per Section 27: Decisions/Approvals, durable
 outbox, Flow runtime, Automations migration, Process Studio, packages and adoption.
 No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
 
-Current f4c/d locally IMPLEMENTED, full candidate/public acceptance pending. Phase2 gate IN PROGRESS; Phase3 NOT STARTED.
+Current f4c/d VERIFIED livea527ccd full candidate/public acceptance PASS. Phase2 gate IN PROGRESS; Phase3 NOT STARTED.
 
 F4b2b workstream PASS: exactf1a9bf1 full candidate/public acceptance/exit0,
 local regression/build/types/lint, actual SQL/owner/history/source-first proof.
@@ -2196,10 +2248,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Commit reviewed f4d helper/evidence, then deploy pinned HEAD on codex/studio-phase2
-with ATLAS_RELEASE_ACCEPTANCE=studio. Observe actual independent-current-actor
-rollback/finalization, all forced Audit/CAS/replay/permission/history tests and full
-candidate/public native compatibility. Fix any failure without weakening guards.
-Mark f4c/d VERIFIED only after runner exit0 and exact live pointers/health. Then
-implement2B4 owner-authorised normal values and required-field/native-form policies;
-2C/D/visual2E follow in order. No Phase3 until fullPhase2 gate PASS.
+Implement2B4a ordinary runtime authority and read compiler without requiring Studio
+publish/edit or field write grants. Refresh real company member/roles/user/platform
+and source availability; reject metadata-only/foreign/revoked scopes. Keep existing
+author compiler hashes/write checks unchanged. Add focused and actual Test proof,
+then2B4b current+written+native/reference scoped value reads. Follow recorded2B4
+workstreams before2C/D/visual2E. No Phase3 until completePhase2 acceptance PASS.

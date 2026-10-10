@@ -352,4 +352,5 @@ Studio independently refreshes the settling actor and enforces current active,
 source/target/written field policies, compiler/module compatibility and exact open
 configuration CAS. Separate internal rollback/finalization operations share existing
 authority and activation/Audit primitives. A terminal replay reports actual history,
-not today's active version. Local implementation checked; full live proof pending.
+not today's active version. Verifieda527ccd full candidate/public: real current actor/private/field/module/tenant
+checks, atomic Audit/CAS/failure/replay and continued-history proof.

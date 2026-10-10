@@ -1552,3 +1552,30 @@ helper implemented but NOT RUN live yet. Current server remains exactf1a9bf1,
 previous666efeb, active/login healthy and168GiBfree. Next: commit reviewed helper
 and evidence, pinned full Studio candidate/public release under original locks.
 Logs /tmp/atlas-studio-f4d-{tests,build,postbuild-types,lint}.txt.
+
+## 10 October 2026 — f4c/d VERIFIED live1146UTC; next2B4a
+
+Exacta527ccdf3832c16da541e6a0df650b06e90d1e8e full candidate1qikYT/publicWMNUWf
+ALL COMBINED PASS; runner96792 exit0. Actual retained/open/terminal/post-cosmetic
+inspector, independent-current-customer rollback/finalize, both rollback Audit
+failures and finalization Audit failure, concurrent exactly-once CAS/Audit, fresh
+revocation/private/module/tenant/session checks, changed-extension rollback denial
+but finalization, continued cosmetics/writes/new-publication history replay and
+source-first freeze PASS in both stages. Native snapshots unchanged. Dashboards/
+Home/Settings/Reports/MRP/Messages/private Admin/Supply/Commercial/People allPASS;
+no reported browser errors.60files372/build/strict post-build TS/scoped lint/diff
+PASS. No schema/model/migration/backfill/reset/native/UI changes in this checkpoint.
+Required backup113558, fixtures113732/114133; no ad-hoc dumps. Retention retired
+only inactive666efeb runtime output; source/static/history/data/backups retained.
+Current/public exacta527ccd, previousf1a9bf1, atlas active, PG18main online/login200,
+root168GiBfree/14%used. Original locks idle verified using read-only file descriptors
+after plain flock open was denied; neither original file removed/replaced.
+Files: shared cutover identity; settlement receipt/inspector/coverage/services;
+registry owner policy and Tickets query; Test helpers/fixtures/five focused suites;
+MODULE_SPEC/decisions/field plan/ledger/current state. Source checkpoints35d471a,
+fa100f7,a527ccd. Evidence /tmp/atlas-studio-f4cd-live-deploy.txt and private stage dirs.
+Phase2 remains IN PROGRESS: ordinary values, required-if/native hooks, record types/
+pages/search and visual business/Sales/document/dashboard builder still outstanding.
+Exact next:2B4a ordinary operator authority and read compiler, then2B4b scoped
+current/history gateway. Preserve write/source/module/native/current+written checks;
+operators must not require authoring/write grants to read permitted fields.

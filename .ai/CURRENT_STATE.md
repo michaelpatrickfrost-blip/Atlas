@@ -1,3 +1,56 @@
+## 10 October 2026 — f4c/d VERIFIED live1146UTC; next2B4a
+
+Exacta527ccdf3832c16da541e6a0df650b06e90d1e8e full candidate1qikYT/publicWMNUWf
+ALL COMBINED PASS; runner96792 exit0. Actual retained/open/terminal/post-cosmetic
+inspector, independent-current-customer rollback/finalize, both rollback Audit
+failures and finalization Audit failure, concurrent exactly-once CAS/Audit, fresh
+revocation/private/module/tenant/session checks, changed-extension rollback denial
+but finalization, continued cosmetics/writes/new-publication history replay and
+source-first freeze PASS in both stages. Native snapshots unchanged. Dashboards/
+Home/Settings/Reports/MRP/Messages/private Admin/Supply/Commercial/People allPASS;
+no reported browser errors.60files372/build/strict post-build TS/scoped lint/diff
+PASS. No schema/model/migration/backfill/reset/native/UI changes in this checkpoint.
+Required backup113558, fixtures113732/114133; no ad-hoc dumps. Retention retired
+only inactive666efeb runtime output; source/static/history/data/backups retained.
+Current/public exacta527ccd, previousf1a9bf1, atlas active, PG18main online/login200,
+root168GiBfree/14%used. Original locks idle verified using read-only file descriptors
+after plain flock open was denied; neither original file removed/replaced.
+Files: shared cutover identity; settlement receipt/inspector/coverage/services;
+registry owner policy and Tickets query; Test helpers/fixtures/five focused suites;
+MODULE_SPEC/decisions/field plan/ledger/current state. Source checkpoints35d471a,
+fa100f7,a527ccd. Evidence /tmp/atlas-studio-f4cd-live-deploy.txt and private stage dirs.
+Phase2 remains IN PROGRESS: ordinary values, required-if/native hooks, record types/
+pages/search and visual business/Sales/document/dashboard builder still outstanding.
+Exact next:2B4a ordinary operator authority and read compiler, then2B4b scoped
+current/history gateway. Preserve write/source/module/native/current+written checks;
+operators must not require authoring/write grants to read permitted fields.
+
+## 10 October 2026 — next2B4 workstreams saved; no source implementation yet
+
+Recorded ordered normal runtime authority/read/write/required-if/canonical coverage/
+native-hook/operator-form/search/central-gate workstreams in STUDIO_PHASE_2_FIELDS
+and ledger. Expected files, dependencies, database implications and tests recorded.
+Existing ordinary read compiler requires field write grants; new runtime read must
+check current+written read grants independently of authoring/write privileges.
+Published required/unique policy must survive disabling Studio authoring. Native
+create/save hooks and missing-anchor coverage require proof before ordinary writes
+open. These remain planned, no source/runtime completion claim. f4c/d pinned full
+release still running; finish current acceptance first.
+
+## 10 October 2026 — f4c/d actual candidate feature proof PASS; full release pending
+
+Pinned a527ccdf3832c16da541e6a0df650b06e90d1e8e runner96792 active. Candidate
+1qikYT actual nested ACT/terminal/post-cosmetic inspector and independent-current-
+customer rollback/finalization service PASS: both rollback Audit failures, finalize
+Audit failure, concurrent CAS/single Audit, revoked/stale/private/module/tenant,
+changed-extension rollback denial/finalization and post-cosmetic/new-publication
+history replay; all native snapshots retained. Current server remainsf1a9bf1 until
+all candidate native/browser gates PASS; full public acceptance also mandatory.
+Required backup113558/fixture113732. No ad-hoc dumps or schema changes. Local
+60 files372/build/strict post-build TS/lint PASS. Not VERIFIED until complete
+runner exit0 and exact public revision/pointers/health. Next: remaining native
+candidate checks then public; prepare2B4 scoped ordinary value access design.
+
 ## 10 October 2026 — f4c/d local release checkpoint ready
 
 60 files/372 assertions, production build, strict post-build TypeScript, scoped

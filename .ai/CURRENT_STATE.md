@@ -1,5 +1,66 @@
 # Atlas current state
 
+## 10 October 2026 — f4b2b VERIFIED live; full candidate/public PASS
+
+F4b2b VERIFIED1109UTC on exactf1a9bf155ba703e73a7ce8a1b9a00db3a36dc236.
+Runner65486 exit0; candidatezDzdGq/publici1zMEw both ALL COMBINED PASS. Actual
+both-terminal label/help publish+activate and owner-authorised active-value fixture,
+retained source/target/version/generation/receipt history, schema/tenant denials;
+real later reviewed publication freezes an earlier COMPLETED target, cancellation
+resumes approved active generation and obsolete target remains closed. Native
+snapshots unchanged. Existing Dashboards/Home/Settings/Reports/MRP/Messages/private
+Admin/Supply/Commercial/People gates PASS in both stages; zero reported browser errors.
+Current/public exactf1a9bf1, previous666efeb, atlas active/PG18main online, login200;
+root168GiBfree/14%used. Retention retired only inactive1d7f558 runtime output, keeping
+source/static/config/history/data/backups/current/rollback. Required backup105904,
+fixtures110037/110434; no ad-hoc business dumps. Additive0008 APPLIED, no model/table/
+backfill/reset/native rewrite.55files343 assertions/build/strict post-build types/
+scoped lint/diff PASS (async helper TS1308 fixed before checkpoint).
+Files:0008 SQL, generation-storage/continuation helpers, cutover-service/storage,
+settlement-storage/execution integration and data-model/field plans/ledger/memory.
+Evidence /tmp/atlas-studio-f4b2b-live-deploy.txt and private candidate/public dirs.
+No production settlement/value API or visual-designer completion claim. Phase2
+remains IN PROGRESS; f4c/d,2B4,2C/D and visual2E are outstanding. No blocker for
+next workstream. Exact next: f4c1 scoped settlement inspection (see ledger).
+
+## 10 October 2026 — f4b2b candidate PASS; public IN PROGRESS
+
+1105UTC: candidatezDzdGq ALL COMBINED PASS on exactf1a9bf1, including new
+terminal/generation SQL helpers and all native browser suites. Pipeline activated
+f1a9bf155ba703e73a7ce8a1b9a00db3a36dc236 and publici1zMEw full acceptance is
+running (mandatory fixture backup110434). Do not mark VERIFIED yet; automatic
+rollback to666efeb retained on public failure. Exact next: public continuation
+and every native gate, runner65486 exit status and current/previous/health checks.
+
+## 10 October 2026 — f4b2b new candidate continuation PASS
+
+CandidatezDzdGq actual new helper runtime PASS: both nested ROLLED_BACK/FINALIZED
+label/help publish+activate and owner-authorised active-value fixture, retained old
+values/generations/receipts and schema/tenant denials; actual finalization fixture
+followed by new real reviewed publication proves source freeze wins over earlier
+COMPLETED target, cancellation resumes approved active values and obsolete target
+stays closed. Native snapshots unchanged. Full remaining candidate/public native
+gates pending; not VERIFIED. Mandatory fixture backup110037. Exact next: finish
+all native candidate gates, activate only on fullPASS, repeat public and check exit.
+
+## 10 October 2026 — f4b2b0008 applied, build IN PROGRESS
+
+1100UTC: deployer APPLIED additive20261010080000 successfully after mandatory
+105904 backup. Production current/health still666efeb; isolated candidate build
+running. SQL/helper candidate/public runtime proof pending, not VERIFIED. No
+Prisma model/backfill/reset or native record rewrite. Exact next: await candidate
+build and actual RB/FINAL/source-first continuation, then full public gate.
+
+## 10 October 2026 — f4b2b release IN PROGRESS
+
+Pinned f1a9bf155ba703e73a7ce8a1b9a00db3a36dc236 release runner65486 started
+105904UTC; mandatory recovery backup105904. Original lock pair and full Studio
+candidate/public gate retained. Source branch pinned; do not move tip while running.
+New migration/helper runtime acceptance pending, not VERIFIED. Existing666efeb
+current/1d7f558 rollback retained until candidate PASS. Local evidence
+/tmp/atlas-studio-f4b2b-live-deploy.txt. Exact next: inspect candidate migration/build
+and new SQL/owner continuation assertions, then all public native gates/exit status.
+
 ## 10 October 2026 — f4b2b IMPLEMENTED locally, runtime gate pending
 
 Forward0008 integrity functions only: source-first freeze/definition locking,

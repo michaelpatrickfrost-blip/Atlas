@@ -11,8 +11,9 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f4b2a — Active representation cosmetic binding — VERIFIED live666efeb.
-F4b2b — forward0008 generation/open-freeze/cosmetic activation guards — IMPLEMENTED locally; full release/runtime proof pending.
+2B3f4b2b — Generation/history and cosmetic activation guards — VERIFIED livef1a9bf1.
+Next2B3f4c1 scoped settlement inspection — NOT STARTED.
+F4b2a active representation cosmetic binding remains VERIFIED.
 2B3f4b1 additive one-time settlement storage — VERIFIED live1d7f558, candidate/public
 combined acceptance PASS, original runner20133 exit0. Operational cleanup VERIFIED.
 Purpose: resume safe same-active-generation cosmetic publication after cancellation/
@@ -32,21 +33,17 @@ candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
 
-IN PROGRESS: Phase2 foundations. F4b2a VERIFIED on exact666efeb42b9e34f39bf5f58b66e2c25eda949ef5,
-full candidate/public Studio/native acceptance. Current/health exact, previous1d7f558
-retained. Storage0007/f4b1 remains VERIFIED. Public Messages assertion failure
-resolved by identical bounded geometry check after entrance animation; all public
-native gates passed. Admin companion/Phase1 VERIFIED; fullPhase2 NOT PASSED.
-The supplied source defines ten phases 0–9, not five. The original
-is preserved unchanged at `docs/studio/ATLAS_STUDIO_SOURCE.docx` (source
-`/Users/michael/Downloads/atlas_studio.docx`, SHA-256
-`4afb01d98ead51cd70ec4958620eb9d27a19a0298cd0fa1cb8bd0aee69d9198d`).
-All 903 body/table paragraphs and additional footer read. No specification rewrite.
+Phase2 IN PROGRESS. F4b2b VERIFIED exactf1a9bf1 full candidate/public gate; ordinary
+settlement/value APIs and visual designer remain outstanding. Phase0/1 gates PASS.
+Authoritative ten-phase source preserved unchanged at docs/studio/ATLAS_STUDIO_SOURCE.docx
+(SHA4afb01d98ead51cd70ec4958620eb9d27a19a0298cd0fa1cb8bd0aee69d9198d); all903
+body/table paragraphs/footer read. Michael authorised source sequence on9 October.
 
 # Completed Workstreams
 
 | Workstream | Status | Evidence |
 | --- | --- | --- |
+| 2B3f4b2b Generation/history/cosmetic continuation | VERIFIED | f1a9bf1 candidatezDzdGq/publici1zMEw ALL COMBINED PASS, runner65486 exit0; actual both-terminal continuation/owner fixture and later real publication source-first freeze;0008 applied;55files343/build/types/lint. |
 | 2B3f4b2a Active field cosmetic binding | VERIFIED | 666efeb candidateJPiKeZ/publicSgP6a7 ALL COMBINED PASS/exit0, real cancelled-source publish/activate and retained-target/history/tenant checks;55 files343 local assertions/build/types/lint; no new DDL. |
 | 2B3f4b1 One-time settlement storage | VERIFIED | 1d7f558 candidate/public ALL COMBINED PASS; actual nested atomic terminal/retained-history/changed-extension proof;0007 applied;55 local files340 assertions/build/types/lint. |
 | 2B3f4a Closed settlement identity | VERIFIED locally | adfc357:18 focused/45files292 assertions/build/strict TS/lint/diff; no DB/service/live authority claim. |
@@ -89,6 +86,63 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+F4b2b VERIFIED1109UTC on exactf1a9bf155ba703e73a7ce8a1b9a00db3a36dc236.
+Runner65486 exit0; candidatezDzdGq/publici1zMEw both ALL COMBINED PASS. Actual
+both-terminal label/help publish+activate and owner-authorised active-value fixture,
+retained source/target/version/generation/receipt history, schema/tenant denials;
+real later reviewed publication freezes an earlier COMPLETED target, cancellation
+resumes approved active generation and obsolete target remains closed. Native
+snapshots unchanged. Existing Dashboards/Home/Settings/Reports/MRP/Messages/private
+Admin/Supply/Commercial/People gates PASS in both stages; zero reported browser errors.
+Current/public exactf1a9bf1, previous666efeb, atlas active/PG18main online, login200;
+root168GiBfree/14%used. Retention retired only inactive1d7f558 runtime output, keeping
+source/static/config/history/data/backups/current/rollback. Required backup105904,
+fixtures110037/110434; no ad-hoc business dumps. Additive0008 APPLIED, no model/table/
+backfill/reset/native rewrite.55files343 assertions/build/strict post-build types/
+scoped lint/diff PASS (async helper TS1308 fixed before checkpoint).
+Files:0008 SQL, generation-storage/continuation helpers, cutover-service/storage,
+settlement-storage/execution integration and data-model/field plans/ledger/memory.
+Evidence /tmp/atlas-studio-f4b2b-live-deploy.txt and private candidate/public dirs.
+No production settlement/value API or visual-designer completion claim. Phase2
+remains IN PROGRESS; f4c/d,2B4,2C/D and visual2E are outstanding. No blocker for
+next workstream. Exact next: f4c1 scoped settlement inspection (see ledger).
+
+Publici1zMEw new terminal/generation continuation helpers PASS, including actual
+new-open-source freeze over earlier COMPLETED target. Reports/MRP/Messages/private
+Admin/Supply compatibility passed so far; Commercial/People and final runner/health
+still pending. No VERIFIED claim until full combined gates. All new scoped owner
+fixtures preserve native records and retained history; no production value API.
+
+1105UTC: candidatezDzdGq ALL COMBINED PASS on exactf1a9bf1, including new
+terminal/generation SQL helpers and all native browser suites. Pipeline activated
+f1a9bf155ba703e73a7ce8a1b9a00db3a36dc236 and publici1zMEw full acceptance is
+running (mandatory fixture backup110434). Do not mark VERIFIED yet; automatic
+rollback to666efeb retained on public failure. Exact next: public continuation
+and every native gate, runner65486 exit status and current/previous/health checks.
+
+CandidatezDzdGq actual new helper runtime PASS: both nested ROLLED_BACK/FINALIZED
+label/help publish+activate and owner-authorised active-value fixture, retained old
+values/generations/receipts and schema/tenant denials; actual finalization fixture
+followed by new real reviewed publication proves source freeze wins over earlier
+COMPLETED target, cancellation resumes approved active values and obsolete target
+stays closed. Native snapshots unchanged. Full remaining candidate/public native
+gates pending; not VERIFIED. Mandatory fixture backup110037. Exact next: finish
+all native candidate gates, activate only on fullPASS, repeat public and check exit.
+
+1100UTC: deployer APPLIED additive20261010080000 successfully after mandatory
+105904 backup. Production current/health still666efeb; isolated candidate build
+running. SQL/helper candidate/public runtime proof pending, not VERIFIED. No
+Prisma model/backfill/reset or native record rewrite. Exact next: await candidate
+build and actual RB/FINAL/source-first continuation, then full public gate.
+
+Pinned f1a9bf155ba703e73a7ce8a1b9a00db3a36dc236 release runner65486 started
+105904UTC; mandatory recovery backup105904. Original lock pair and full Studio
+candidate/public gate retained. Source branch pinned; do not move tip while running.
+New migration/helper runtime acceptance pending, not VERIFIED. Existing666efeb
+current/1d7f558 rollback retained until candidate PASS. Local evidence
+/tmp/atlas-studio-f4b2b-live-deploy.txt. Exact next: inspect candidate migration/build
+and new SQL/owner continuation assertions, then all public native gates/exit status.
 
 F4b2b IMPLEMENTED locally10 October:0008 forward replaces six integrity functions
 (no schema model/backfill/reset), shared definition locks, all-open-source priority,
@@ -1554,8 +1608,8 @@ business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
 
-0008 NOT APPLIED: fullDDL syntax/compatibility checked in rolled-back central
-transaction. Mandatory release backup/apply/runtime acceptance pending.
+0008 APPLIED1100UTC by pinned f1a9bf1 deployer after mandatory105904 backup.
+Prior fullDDL syntax/compatibility rolled back PASS. Actual runtime gate pending.
 
 Latestf4b2a: NONE; previously applied0007 VERIFIED,0008 not created/applied.
 
@@ -1604,7 +1658,7 @@ and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 F4b2b: exact Test nested terminal cosmetics/owner fixture and SQL schema/tenant/
 retained-history cases; actual completed-target/new-open-source publication proof.
-Helpers integrated into full release acceptance, runtime pending.
+Helpers integrated into full release acceptance; actual candidate/public PASS.
 
 F4b2a: three binding cases for active source/obsolete target, pre-activation origin
 and missing scoped baseline without fallback. Exact Test publication acceptance
@@ -1656,7 +1710,7 @@ platform grants and business-user provisioning regression cases.
 
 F4b2b:55files343 assertions, production build, strict post-build TS, changed-helper
 ESLint,diff, central0008 DDL BEGIN/ROLLBACK all PASS. Async helper TS1308 corrected
-and strict rerun PASS. No actual new-helper runtime claim until release gates.
+and strict rerun PASS. Actual new-helper candidate/public runtime gates subsequently PASS.
 
 Latest666efeb:55 files343 local assertions/build/strict TS/scoped lint PASS;9
 overlapping drawer/chat assertions and retry build/strict TS/checker lint PASS.
@@ -1792,6 +1846,10 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
+F4b2b PASS:343 local assertions/build/strict types/lint; candidatezDzdGq/publici1zMEw
+ALL COMBINED PASS, runner65486 exit0; new terminal/owner fixture and subsequent
+reviewed-publication proof. Full details in Current Workstream Detail.
+
 Latestf4b2a VERIFIED live666efeb: actual cancellation continuation/obsolete-target
 denial/history/native and both full acceptance gates PASS. Earlier public Messages
 failure resolved; same bounds criteria pass after animation. FullPhase2 NOT PASSED.
@@ -1923,6 +1981,9 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
+No active f4b2b blocker. Production settlement/owner value APIs and visual2E
+remain explicit unfinished Phase2 work; no completion claim for these.
+
 No active f4b2a release blocker. Earlier public instant-geometry failure RESOLVED
 by identical bounded viewport check; full666efeb candidate/public Messages passed.
 Current666efeb/previous1d7f558 healthy. Visual designer remains unfinished.
@@ -1980,6 +2041,10 @@ No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
 
+F4b2b workstream PASS: exactf1a9bf1 full candidate/public acceptance/exit0,
+local regression/build/types/lint, actual SQL/owner/history/source-first proof.
+FullPhase2 NOT PASSED; later designer/layout/owner integration still required.
+
 F4b2a workstream PASS/VERIFIED on666efeb complete candidate/public gates. F4b2b
 NOT STARTED; fullPhase2 still IN PROGRESS. Historical pending/failure snapshots
 below are superseded by this exact proof.
@@ -2013,12 +2078,19 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Commit reviewed f4b2b SQL/helpers/docs checkpoint after local343 assertions/build/
-strict post-build types/lint/diff and central rolled-back DDL PASS. Run full pinned
-Studio candidate/public/native release under original locks. Do not mark VERIFIED
-until actual nested RB/FINAL cosmetic/value continuation and subsequent real
-reviewed publication source-first freeze PASS; investigate failures, retain guards
-and update checkpoint. Mandatory deployer backup; no ad-hoc dump/reset. Live666efeb
-and previous1d7f558 retained until full candidate acceptance. No production settlement/
-value API. After VERIFIED: f4c current-authority settlement service, f4d paired-Audit/
-concurrency/replay;2B4 owner values/forms,2C/D,2E visual designer. NoPhase3 until2 PASS.
+Begin2B3f4c1 after verifiedf1a9bf1: read applied0007/8, settlement-contract.ts,
+cutover-inspection.ts, coverage.ts and actual terminal/continuation acceptance.
+Implement `src/core/studio/fields/migrations/settlement-inspection.ts` to inspect
+scoped ACT/terminal receipt, original immutable cutover/review/execution/version
+identity and closed settlement pin. Separate retained historical identity from
+today's pointer: a legitimate cosmetic version or later migration must not make
+terminal history claim it is still active. Keep existing strict f3 cutover inspector
+unchanged. For a new settlement require exact open configuration/CAS; rollback
+additionally requires unchanged source AND target; finalization may close the
+window after unrelated extension drift. Neither mode can grant ordinary values.
+Recheck current initiating session/member/module/field/native/private/reference
+coverage before exposing counts/data or mutation; no inherited creator grant and
+no client mode/tenant/permission callback. Add appropriate typed tests/actual exact
+Test proof and record checkpoint before shared rollback/finalize service f4c2,
+paired-Audit/concurrency/lost-response proof f4d. Then2B4 owner values/native forms,
+2C/D and2E visual designer. NoPhase3 until fullPhase2 acceptance PASS.

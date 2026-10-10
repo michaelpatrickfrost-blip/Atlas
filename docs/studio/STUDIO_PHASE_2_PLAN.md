@@ -100,3 +100,12 @@ strict post-build TS PASS. Actual new helper runtime proof/candidate/public gate
 pending; not VERIFIED, no production settlement/value API or visual-designer claim.
 Exact next: reviewed clean checkpoint, pinned full Studio release, investigate any
 actual helper failure without weakening guards; then f4c/d and2B4 before2C/D/2E.
+
+F4b2b VERIFIED10 October1109UTC: exactf1a9bf1 candidatezDzdGq/publici1zMEw
+ALL COMBINED PASS, runner65486 exit0. Both nested terminal cosmetics/owner fixture
+and actual subsequent reviewed publication source-first freeze PASS; source/target/
+receipt/native history retained.0008 applied, no model/table/backfill/reset. Local
+55files343/build/types/lint PASS. Current/public exact, previous666efeb and168GiBfree
+verified; retention only retired inactive1d7f558 runtime output. Phase2 not passed;
+nextf4c1 historical/current settlement inspection before shared service/Audit/replay
+and2B4 normal owner forms. Visual2E remains required after2B–D. See ledger.

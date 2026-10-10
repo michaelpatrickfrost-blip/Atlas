@@ -301,7 +301,7 @@ window even if other extension data changed. SQL identity shape does not prove
 current native/private access; production current-authority services follow.
 Production settlement services and ordinary owner value APIs remain pendingf4c–d/2B4.
 
-F4b2b continuation (IN PROGRESS): forward20261010080000 replaces integrity functions
+F4b2b continuation (VERIFIEDf1a9bf1 candidate/public actual terminal/subsequent-publication proof): forward20261010080000 replaces integrity functions
 only; no table/model/backfill changes. Definition locking serializes publication and
 storage eligibility. ANY open source freeze precedes historical completed-target
 eligibility. Completed sources and obsolete targets stay closed; resumed related

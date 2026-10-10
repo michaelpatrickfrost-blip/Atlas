@@ -266,6 +266,6 @@ and earlier failed candidate evidence are preserved in the Studio ledger.
 2B3f1 defines a pure closed cutover identity (no new model/migration or activation).
 It binds current READY execution/review/publication and source-active definition CAS,
 with explicit unchanged-representation rollback limits. Eight focused and 257 scoped
-regression assertions, build/types/lint PASS; actual authorised-row identity proof is
-added to the existing checker but still pending release. Cutover receipt, atomic
+regression assertions, build/types/lint PASS; actual authorised-row identity proof
+passed in 080e4d7 complete candidate/public acceptance. Cutover receipt, atomic
 activation/rollback, ordinary owner value gateway and visual builder remain pending.

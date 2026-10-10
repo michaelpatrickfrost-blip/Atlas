@@ -1,18 +1,54 @@
 # Atlas current state
 
+## 10 October 2026 — Cutover identity accepted live; receipt storage starts
+
+080e4d741e0e05d6c763a540900cc81b10b1147d complete candidate/public PASS;
+deploy session 67437 exit0, exact public health confirmed. Candidate AAnFme/public
+SmVNla, backup 050933, fixtures 051132/051535; /tmp/atlas-studio-cutover-contract-
+deploy.txt. Exact pure cutover identity derives from actual owner-authorised READY
+rows while source stays active and normal target activation remains denied. All
+native/Admin/customer login suites PASS. Prior 8d6eb9e runtime retained. 2B3f1 VERIFIED.
+Begin 2B3f2 additive tenant receipt/publication/atomic-pointer proof; no f2 code yet.
+Keep source/target/config saves frozen until f4/2B4 reviewed paths. Phase 2 NOT PASSED;
+visual designer/customer dashboard publication/buttons still mandatory and incomplete.
+
+## 10 October 2026 — Cutover contract candidate complete; public repeat running
+
+080e4d7 full combined candidate PASS, exact runtime switched; previous8d6eb9e
+retained. Public SmVNla repeat running, fixture051535; session 67437 active. Actual
+candidate pure identity and complete native suites PASS. Do not advance pinned tip.
+Source-active metadata SQL remains unchanged; no f2 code/schema/activation path yet.
+
+## 10 October 2026 — Actual cutover identity passed candidate; release pending
+
+080e4d7 candidate AAnFme actual execution/pure cutover identity PASS: derived pin
+from freshly inspected READY tenant rows, exact source/target/CAS and explicit
+rollback policy; source stays active, ordinary target activation denied and native
+snapshots unchanged. Remaining candidate native suites/public repeat pending;
+fixture 051132/backup 050933, session 67437. Do not advance pinned tip. No f2 DDL yet.
+
+## 10 October 2026 — Cutover contract release running; storage guards inspected
+
+Pinned 080e4d7 contract release running, session 67437, backup 050933,
+/tmp/atlas-studio-cutover-contract-deploy.txt. Do not advance branch during runner.
+Saved f2 inspection detail: exact receipt/publication/pointer deferred proof; source
+saves cannot open merely from closing publication (typed SQL checks written schema,
+not active pointer). Source/target/config stays frozen until reviewed f4/2B4 paths.
+No f2 schema/SQL/service code yet; accepted 8d6eb9e retained. Phase 2 NOT PASSED.
+
 ## 10 October 2026 — Closed cutover identity checked; actual proof pending
 
 2B3f1 IMPLEMENTED / VERIFIED locally: closed cutover pin binds freshly inspected
 READY execution, retained review/publication identity, source-active definition CAS
 and rollback policy unchanged_reviewed_representation. No client tenant/pin/grants,
 coercion, reverse-conversion promise, DDL, pointer mutation or public endpoint.
-Eight new focused tests PASS; Studio/Admin/sign-in regression41files/257assertions,
+Eight new focused tests PASS; Studio/Admin/sign-in regression 41 files/257 assertions,
 production build, strict post-build TypeScript and changed-file lint/diff PASS.
 Logs /tmp/atlas-studio-cutover-contract-{tests,regression,build,postbuild-types,lint}.txt.
 Existing central execution helper now derives this pure pin from real authorised
 rows without activation; runtime proof pending next pinned candidate/public release.
-Accepted live8d6eb9e; checkpoint and deploy f1, then f2 additive receipt/atomic pointer
-proof. Phase2NOTPASSED; visual/customer dashboard/button work still incomplete.
+Accepted live 8d6eb9e; checkpoint and deploy f1, then f2 additive receipt/atomic pointer
+proof. Phase 2 NOT PASSED; visual/customer dashboard/button work still incomplete.
 
 ## 10 October 2026 — Execution recovery accepted live; cutover identity starts
 
@@ -22,7 +58,7 @@ backup045515, fixtures045720/050126; /tmp/atlas-studio-postgres-recovery-deploy.
 Actual RUNNING batch+failure-marker Audit rollback proved; all native suites passed.
 PostgreSQL recovery backup retained; no reset/restore/SQL repair. Prior f5bb914 kept.
 2B3e6 VERIFIED. Begin 2B3f1 closed cutover contract/tests only (no DDL/runtime grant),
-then f2 receipt/atomic pointer guards under existing activation. Phase2NOTPASSED;
+then f2 receipt/atomic pointer guards under existing activation. Phase 2 NOT PASSED;
 visual designer/customer publication/buttons remain required and unimplemented.
 
 ## 10 October 2026 — Central PostgreSQL recovered; release retry pending

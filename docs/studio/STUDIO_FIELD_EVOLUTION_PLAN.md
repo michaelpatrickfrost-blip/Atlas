@@ -1159,8 +1159,8 @@ Phase 2 NOT PASSED; cutover and visual editor/dashboard/button work remains pend
 ## 2B3f — Cutover/rollback workstreams (inspection and plan only)
 
 2B3e6 VERIFIED: 8d6eb9e full candidate/public combined PASS; final recovery release
-finished exit0. 2B3f1 IMPLEMENTED, eight focused/257 regression assertions/build/types/lint PASS;
-real authorised-row pin proof pending combined release. f2–f5 NOT STARTED.
+finished exit0. 2B3f1 VERIFIED on 080e4d7 complete candidate/public, eight focused/257 regression
+assertions/build/types/lint PASS. F2 IN PROGRESS; f3–f5 NOT STARTED.
 Source Sections 6.3–6.4 and 24: activation is separate, all conversions resolved,
 reads remain source-compatible until cutover, history is retained and rollback limits
 must be explicit. Actual existing activation is in definitions/service.ts; it owns
@@ -1172,7 +1172,7 @@ PUBLISHED state. Preserve these boundaries; an activation flag is insufficient.
 
 | ID | Purpose / dependencies | Expected files and database | Evidence / status |
 | --- | --- | --- | --- |
-| 2B3f1 | Closed server-derived cutover identity and rollback window; depends on VERIFIED e6 | migrations/cutover-contract and tests; no DDL | Exact READY execution, stored publication/review/immutable target, current definition CAS, no client org/pin; explicit rollback limitations. VERIFIED locally; central pure-pin proof pending |
+| 2B3f1 | Closed server-derived cutover identity and rollback window; depends on VERIFIED e6 | migrations/cutover-contract and tests; no DDL | Exact READY execution, stored publication/review/immutable target, current definition CAS, no client org/pin; explicit rollback limitations. VERIFIED on 080e4d7 complete candidate/public |
 | 2B3f2 | Tenant cutover receipt and atomic pointer/transition proof | schema/additive forward SQL/catalogue/privacy; no native tables/backfill/reset | Claim requires complete unchanged execution/source/target; deferred commit requires exact activated target; history/CAS/FKs; cancelled/unfinished/cosmetic bypass denied. Existing applied SQL retained. NOT STARTED |
 | 2B3f3 | Shared current-authority cutover and existing activation primitive | migrations/cutover plus a narrow transaction extraction from definitions/service; tests | Same compiler/binding/module/CAS/Audit logic; native/private/current/written/reference/required/unique checks before pointer change; paired Audit rollback and fresh idempotent replay. NOT STARTED |
 | 2B3f4 | Honest rollback and post-cutover normal-value compatibility | shared inspection/receipt guards/rollback and tests; additive guards as needed | Source history retained; normal target editing uses owning-domain rules in subsequent 2B4; source generation stays historical. Rollback only in explicitly validated unchanged window; target-only writes/native or metadata drift cannot silently discard data. NOT STARTED |
@@ -1190,3 +1190,27 @@ and retained outcomes remain available. No public editor endpoint, Flow or later
 engine belongs in this checkpoint. 2B4 supplies the ordinary value gateway before
 customer visual publication is accepted; 2E remains mandatory for previews, bespoke
 Sales/Templates designs, live customer dashboards and custom approved buttons.
+
+### 2B3f2 inspection detail — additive storage proof, not a new activator
+
+Existing applied metadata SQL blocks every reviewed target and freezes PUBLISHED
+source/target. Existing typed-value SQL validates written schema, not active-version
+identity: closing a publication must not silently open old source saves. Planned f2
+forward migration: tenant receipt scoped to exact execution and source/target versions,
+closed f1 pin/checksum/publisher, immutable history. PUBLISHED→CUTOVER CAS requires
+that receipt and exact READY source/target proof. Deferred checks require receipt,
+CUTOVER publication and definition source→exact target/revision+1 pointer together.
+Ordinary activation remains denied except this exact stored transition; cosmetic
+descendants cannot bypass it. Retain original source-active freshness unchanged.
+Keep CUTOVER draft/configuration and source/target saves frozen in f2; normal target
+saves and honest rollback open only through f4/2B4 reviewed guards, never generic SQL.
+No native domain tables, resets/backfills, client bypass flags or new permission layer.
+
+F2 actual central checks use refreshed owner/private/field authority on the existing
+exact Test READY fixture, then rollback-only transactions: receipt without pointer,
+pointer without receipt, foreign/tampered/unfinished pins, standalone publication
+transition and wrong/descendant activation denied; exact complete receipt+publication+
+pointer passes deferred checks then deliberate Test rollback restores all source
+state. No permanent activation is claimed until f3/f4 services and acceptance pass.
+All failures leave native/source/value/history unchanged. Regenerate existing Prisma/
+data metadata and prove new generic model reads/counts denied; action allowlist stable.

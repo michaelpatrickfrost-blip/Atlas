@@ -11,14 +11,15 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f1 — Closed cutover contract and rollback limits — IMPLEMENTED; local checks PASS, central proof pending.
+2B3f2 — Additive cutover receipt and atomic-pointer storage guards — IN PROGRESS.
+2B3f1 VERIFIED on exact 080e4d7 complete candidate/public.
 2B3e6 VERIFIED on exact 8d6eb9e candidate/public.
 2B3d1–d4 VERIFIED ea27b2f; no row writer/designer.
 
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source 8d6eb9e626ca91ee37a97e211e374e9c456fe8be,
+VERIFIED. Latest confirmed live source 080e4d741e0e05d6c763a540900cc81b10b1147d,
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -32,6 +33,7 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 | Workstream | Status | Evidence |
 | --- | --- | --- |
+| 2B3f1 Closed cutover identity | VERIFIED | 080e4d7 complete candidate/public actual pure-pin proof; 8 focused/257 scoped assertions/build/types/lint. No activation authority. |
 | 2B3e1–e6 Representation policy, exact execution and recovery | VERIFIED | 8d6eb9e complete candidate/public, actual owner/SQL/atomic batch/Audit/process restart/replay/private/tenant/history/native proof; 38 files/229 local assertions/build/types/lint. |
 | 2B3c6b2b3c Reference review | VERIFIED | 32ee77e complete candidate/public, actual permission/target/Audit/replay plus native acceptance; no target/native writes. |
 | 2B3e2a Closed execution/outcome protocol | VERIFIED locally | 34 files/197 assertions, production build/strict TS/lint/diff; no DB or write authority. |
@@ -68,17 +70,42 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 # Current Workstream Detail
 
+080e4d741e0e05d6c763a540900cc81b10b1147d complete candidate/public PASS;
+deploy session 67437 exit0, exact public health confirmed. Candidate AAnFme/public
+SmVNla, backup 050933, fixtures 051132/051535; /tmp/atlas-studio-cutover-contract-
+deploy.txt. Exact pure cutover identity derives from actual owner-authorised READY
+rows while source stays active and normal target activation remains denied. All
+native/Admin/customer login suites PASS. Prior 8d6eb9e runtime retained. 2B3f1 VERIFIED.
+Begin 2B3f2 additive tenant receipt/publication/atomic-pointer proof; no f2 code yet.
+Keep source/target/config saves frozen until f4/2B4 reviewed paths. Phase 2 NOT PASSED;
+visual designer/customer dashboard publication/buttons still mandatory and incomplete.
+
+080e4d7 full combined candidate PASS, exact runtime switched; previous8d6eb9e
+retained. Public SmVNla repeat running, fixture051535; session 67437 active. Actual
+candidate pure identity and complete native suites PASS. Do not advance pinned tip.
+Source-active metadata SQL remains unchanged; no f2 code/schema/activation path yet.
+
+080e4d7 candidate AAnFme actual execution/pure cutover identity PASS: derived pin
+from freshly inspected READY tenant rows, exact source/target/CAS and explicit
+rollback policy; source stays active, ordinary target activation denied and native
+snapshots unchanged. Remaining candidate native suites/public repeat pending;
+fixture 051132/backup 050933, session 67437. Do not advance pinned tip. No f2 DDL yet.
+
+Pinned 080e4d7 f1 release running, session 67437, backup 050933; no branch advance.
+F2 inspection saved: source values require explicit freeze after CUTOVER; receipt/
+publication/pointer must commit together. No f2 schema/SQL/service code yet.
+
 2B3f1 IMPLEMENTED / VERIFIED locally: closed cutover pin binds freshly inspected
 READY execution, retained review/publication identity, source-active definition CAS
 and rollback policy unchanged_reviewed_representation. No client tenant/pin/grants,
 coercion, reverse-conversion promise, DDL, pointer mutation or public endpoint.
-Eight new focused tests PASS; Studio/Admin/sign-in regression41files/257assertions,
+Eight new focused tests PASS; Studio/Admin/sign-in regression 41 files/257 assertions,
 production build, strict post-build TypeScript and changed-file lint/diff PASS.
 Logs /tmp/atlas-studio-cutover-contract-{tests,regression,build,postbuild-types,lint}.txt.
 Existing central execution helper now derives this pure pin from real authorised
 rows without activation; runtime proof pending next pinned candidate/public release.
-Accepted live8d6eb9e; checkpoint and deploy f1, then f2 additive receipt/atomic pointer
-proof. Phase2NOTPASSED; visual/customer dashboard/button work still incomplete.
+Accepted live 8d6eb9e; checkpoint and deploy f1, then f2 additive receipt/atomic pointer
+proof. Phase 2 NOT PASSED; visual/customer dashboard/button work still incomplete.
 
 8d6eb9e626ca91ee37a97e211e374e9c456fe8be full combined candidate/public PASS;
 deploy39964 exit0, exact public health confirmed. Candidate0GPKVw/publicCy0qcR,
@@ -86,7 +113,7 @@ backup045515, fixtures045720/050126; /tmp/atlas-studio-postgres-recovery-deploy.
 Actual RUNNING batch+failure-marker Audit rollback proved; all native suites passed.
 PostgreSQL recovery backup retained; no reset/restore/SQL repair. Prior f5bb914 kept.
 2B3e6 VERIFIED. Begin 2B3f1 closed cutover contract/tests only (no DDL/runtime grant),
-then f2 receipt/atomic pointer guards under existing activation. Phase2NOTPASSED;
+then f2 receipt/atomic pointer guards under existing activation. Phase 2 NOT PASSED;
 visual designer/customer publication/buttons remain required and unimplemented.
 
 352835c final recovery release stopped before backup/acceptance (session 25961,
@@ -1149,7 +1176,7 @@ platform grants and business-user provisioning regression cases.
 
 # Tests Run
 
-2B3f1 focused8, regression41files/257assertions, production build, strict post-build
+2B3f1 focused8, regression 41 files/257 assertions, production build, strict post-build
 TypeScript and changed-file lint/diff PASS. Actual pure-pin helper pending release.
 
 d4 final: 26 files/160 assertions, build/strict post-build TS/scoped lint/diff PASS;
@@ -1385,9 +1412,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint f1 pure cutover identity (41 files/257 assertions/build/types/lint PASS),
-then pin full Studio candidate/public release. Existing central helper must prove
-pure pin derivation from exact READY authorised rows while source stays active and
-ordinary target activation stays blocked. After PASS implement f2 additive tenant
-cutover receipt and deferred atomic pointer/transition proof; preserve applied SQL
-and existing activation primitive. No phase2designer/customer dashboard/buttons yet.
+Implement 2B3f2 additive StudioFieldMigrationCutover receipt and forward migration:
+exact READY/closed pin/source-target tenant FKs and retained history; receipt,
+PUBLISHED→CUTOVER CAS and source→exact target definition revision+1 must commit
+atomically. Preserve old source-active freshness and freeze CUTOVER source/target/
+configuration until f4/2B4. Regenerate client/model catalogue, prove generic reads/
+counts denied, add rollback-only exact central Test guard checks, run build/types/
+lint/regressions and backed-up SQL verification; checkpoint before actual service.
+Accepted 080e4d7; designer/customer dashboard/custom buttons remain incomplete.

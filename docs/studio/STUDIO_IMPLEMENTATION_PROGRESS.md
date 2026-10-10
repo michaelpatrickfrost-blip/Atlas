@@ -13,8 +13,9 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 2B3f4b2b — Generation/history and cosmetic activation guards — VERIFIED livef1a9bf1.
 2B3f4c/d retained inspection, current-authority settlement and acceptance — VERIFIED livea527ccd.
-2B4a ordinary operator authority/read compiler — IMPLEMENTED locallyf3783e1; live proof pending.
-2B4b scoped current/history gateway — IMPLEMENTED locally; live proof pending.
+2B4a ordinary operator authority/read compiler — VERIFIED live53c05ae.
+2B4b scoped current/history gateway — VERIFIED live53c05ae.
+2B4c atomic ordinary saves — IMPLEMENTED locally; real proof pending; no endpoint/native hooks.
 F4b2a active representation cosmetic binding remains VERIFIED.
 2B3f4b1 additive one-time settlement storage — VERIFIED live1d7f558, candidate/public
 combined acceptance PASS, original runner20133 exit0. Operational cleanup VERIFIED.
@@ -35,6 +36,27 @@ candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
 
+## 10 October 2026 —2B4a/b VERIFIED live;2B4c IMPLEMENTED locally
+
+Exact53c05ae9adaa80887ec72f1d633c6a346380bbf0 candidate1rQ6MH/publiccmZ7bt
+ALL COMBINED ACCEPTANCE PASS; runner68174 exit0. Actual customer without Studio/
+write grants reads typed active values and every retained generation; real valid/
+missing/foreign references, disabled authoring/source, private/current membership/
+capability/session/auth/tenant denials; native/value snapshots unchanged. All native
+Dashboard/Home/Settings/Reports/MRP/Messages/private Admin/Supply/Commercial/People
+checks PASS, zero reported browser errors.63files390/build/strictpostbuildTS/lint.
+No DDL. Backup120654, fixtures120830/121232. Current/public exact53c05ae; previous
+a527ccd retained, Atlas active, PG18main online, login200, root167GiBfree/14%used,
+both originallocks idle. Retention retired only inactivef1a9bf1 runtime output;
+source/static/history/records/backups preserved. No ad-hoc dumps.
+2B4c internal ordinary save/one-time window closure/request/CAS/idempotency/Audit
+and real Test helper implemented;65files402/TS/scopedlint/diff PASS, build pending.
+No endpoint/native hook until2B4d coverage. Actual writer Test NOT RUN yet. Next
+finish build/strictpostbuildTS/diff, checkpoint and pinned full writer acceptance.
+Evidence /tmp/atlas-studio-b4ab-live-deploy.txt; c4 local logs /tmp/atlas-studio-b4c-*.
+WholePhase2 still IN PROGRESS; required-if/hooks/record types/pages/visual2E remain.
+
+
 F4c/d VERIFIED exacta527ccd candidate/public ALL COMBINED PASS/runner96792 exit0.
 2B4a runtime authority/read compiler implemented locally; real proof pending. FullPhase2 gate remains
 IN PROGRESS; visual2E mandatory after2B–D.
@@ -49,6 +71,7 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 
 | Workstream | Status | Evidence |
 | --- | --- | --- |
+| 2B4a/b Ordinary authority/current/history reads | VERIFIED | Exact53c05ae candidate1rQ6MH/publiccmZ7bt ALL COMBINED PASS, runner68174 exit0; actual ordinary customer typed/all-generation/reference/current access proof;63files390/build/types/lint; no DDL. |
 | 2B3f4c/d Retained/current settlement and service acceptance | VERIFIED | a527ccd candidate1qikYT/publicWMNUWf ALL COMBINED PASS, runner96792 exit0; real independent actor, paired Audit/CAS/revocation/drift/history/source freeze/native proof;60files372/build/types/lint; no new DDL. |
 | 2B3f4b2b Generation/history/cosmetic continuation | VERIFIED | f1a9bf1 candidatezDzdGq/publici1zMEw ALL COMBINED PASS, runner65486 exit0; actual both-terminal continuation/owner fixture and later real publication source-first freeze;0008 applied;55files343/build/types/lint. |
 | 2B3f4b2a Active field cosmetic binding | VERIFIED | 666efeb candidateJPiKeZ/publicSgP6a7 ALL COMBINED PASS/exit0, real cancelled-source publish/activate and retained-target/history/tenant checks;55 files343 local assertions/build/types/lint; no new DDL. |
@@ -93,6 +116,38 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+## 10 October 2026 —2B4c local release checkpoint ready
+
+Internal ordinary save service: current native extend/current+written field and
+reference authority; closed revision/generation CAS, immutable operation ID and
+normalised request fingerprint replay, server uniqueness/required validation,
+atomic value/pointer/extension/Audit. First valid post-cutover target save atomically
+finalizes the exact window with customer or purpose-audited affiliated staff; both
+Audits share the value transaction. No publish/source/cohort grant or native writes.
+No client/native endpoint before2B4d required coverage.65files402/build/scopedlint/
+strict post-build TS/diff PASS. TS caught nullable captured helper sessions; helper
+now explicitly returns non-null current Session, strict rerun PASS. Actual Test
+helper coded but NOT RUN: permitted/foreign/missing reference writes, uniqueness,
+stale/revoked/native/config/extension/slot/tenant, source freeze, real migration
+both-Audit failures/concurrency, old-operation policy/history replay, staff support
+Audit failure with authoring disabled, retirement and native preservation.
+No DDL/model/backfill/reset. Live remains53c05ae. Exact next checkpoint/pinned full
+Studio candidate/public writer acceptance, then2B4d closed required-if/native coverage.
+Files runtime-write/contract/window/shared read helpers, two suites, exactcentral
+helper/principal driver, PERMISSIONS/decisions/field plan/ledger/current state.
+Logs /tmp/atlas-studio-b4c-{tests,build,postbuild-types,lint,helper-lint}.txt.
+
+
+2B4c purpose: atomic owner-authorised extension saves, current/written/ref policies,
+closed expected native/config/generation/extension/slot revisions, durable operation
+ID replay, unique/required and Audit. Dependencies locally passed2B4a/b plus sealed
+storage/f4 guards. Files runtime-write/request/window/shared read helpers and tests;
+no schema. First valid post-cutover save closes only rollback eligibility atomically
+with actual actor/owner authority; no activation/reverse/whole-cohort grant. No
+client/native endpoint until2B4d required-hook coverage. IN PROGRESS; actual proof
+pending. Keep53c05ae branch pinned during running full candidate/public release.
+
 
 2B4a/b release checkpoint:63 files390 assertions/build/strict post-build TS/scoped
 lint/diff PASS. Current/history gateway implemented; actual customer active Decimal/
@@ -1586,6 +1641,8 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+2B4c: runtime-write, runtime-write-contract, runtime-write-window and internal runtime-read exports; two focused suites, real check-field-runtime-write/principal driver; PERMISSIONS/decisions/field plan/ledger/current state.
+
 2B4a/b: auth/session, compiler/fields, fields/runtime-authority/runtime-read; three focused test suites, check-field-runtime-authority and principal driver; PERMISSIONS/decisions/field plan/ledger/current state.
 
 Current f4c/d: shared cutover-receipt + settlement-{receipt,inspection,coverage,service}; registry types/entities/contracts/runtime; service-work/studio owner policy/query; cutover/settlement/generation/principal acceptance helpers; fixture and five settlement suites; MODULE_SPEC, field plan, ledger, CURRENT_STATE and DECISIONS. No unrelated edits removed.
@@ -1855,6 +1912,8 @@ and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
 
+2B4c: closed revision/input capacity and canonical idempotency, owner/current/written/ref/required/unique before-mutation denials, paired CAS/Audit failures, historical replay, customer/support window frames; real central source freeze/migrations/failure/concurrency/history/native proof helper.
+
 2B4a/b: genuine Session/tenant/module/version refresh, independent read compiler/reference grants; current/history gateway native-first/current+written/corruption/generation/pagination/retirement/reference cases; real customer fixture helper.
 
 Current f4c/d: settlement receipt/inspector/owner/service/current-and-written coverage suites plus typed retained-cutover fixture; real exact Test settlement service and post-cosmetic/new-migration history checks.
@@ -1910,6 +1969,8 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+2B4c:65 scoped files402 assertions/build/strict post-build TS/scoped lint/diff PASS. Actual writer acceptance NOT RUN yet;53c05ae read checkpoint complete candidate/public PASS.
 
 2B4a/b:63 scoped files390 assertions, production build, strict post-build TypeScript, scoped ESLint and diff review PASS. Actual central acceptance pending.
 
@@ -2052,6 +2113,8 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+2B4c IMPLEMENTED locally; local checks PASS, no actual writer verification claim. TypeScript helper narrowing corrected and rerun PASS. No DDL/native/UI changes.
 
 2B4a/b IMPLEMENTED locally, all local checks PASS. No live verification claim; current remainsa527ccd.
 
@@ -2298,9 +2361,15 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Commit scoped2B4a/b runtime authority/read gateway checkpoint and run pinned full
-Studio candidate/public acceptance under the original locks. Verify real ordinary
-customer typed/current/history/reference/revocation proof, complete native suites,
-runner exit0, exact public SHA/current/previous/health and retained rollback. Only
-then mark VERIFIED and begin2B4c atomic value saves/migration-window integration.
-Follow2B4d–f before2C/D/visual2E; no Phase3 until wholePhase2 gate PASS.
+Commit scoped2B4c internal atomic value save/window checkpoint and run pinned full
+Studio candidate/public acceptance under the original locks. Verify actual ordinary
+customer reference/value/CAS/unique/current+written/source-freeze proof, both paired
+Audit failures, concurrent exactly once/history replay, genuine staff support failure
+with disabled authoring, retirement/native preservation and complete native suites.
+Require runner exit0, exact current/previous/public SHA and health before VERIFIED.
+Then2B4d: closed versioned required-if schema/compiler, canonical missing-anchor
+coverage at publication/evolution and owning native create/save hooks. New native
+creators must use their existing create authority, not receive broad manage grants;
+new-record field initialisation needs explicit owner approval in the shared transaction.
+Existing sealed contracts stay unchanged. Only after2B4d–f proceed2C/D/visual2E;
+no Phase3 until wholePhase2 gate PASS.

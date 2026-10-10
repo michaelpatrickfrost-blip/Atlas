@@ -13,6 +13,7 @@ import { checkFieldPublication } from "./check-field-publication";
 import { checkFieldExecution } from "./check-field-execution";
 import { checkFieldCutoverService } from "./check-field-cutover-service";
 import { checkFieldRuntimeAuthority } from "./check-field-runtime-authority";
+import { checkFieldRuntimeWrite } from "./check-field-runtime-write";
 
 /** Only the driver's freshly provisioned business user and explicit Test support affiliation. */
 export async function checkFieldPrincipal(customerUserId: string, staff: Session, organisationId: string, otherOrganisationId: string) {
@@ -96,6 +97,7 @@ export async function checkFieldPrincipal(customerUserId: string, staff: Session
   await checkFieldExecution(opened.session, opened.principal, unanchored.id, nativeBefore.find(row => row.status === "CLOSED")!.id, otherOrganisationId);
   await checkFieldCutoverService(opened.session, opened.principal, unanchored.id, otherOrganisationId, customerUserId);
   await checkFieldRuntimeAuthority(customerUserId, organisationId, otherOrganisationId, unanchored.id);
+  await checkFieldRuntimeWrite(opened.session, opened.principal, customerUserId, unanchored.id, uniquePeer.id, otherOrganisationId);
   assert.deepEqual(await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } }), nativeBefore);
   assert.equal(await db.auditEntry.count({ where: { id: opened.principal.authority === "staff_support" ? opened.principal.auditId : "impossible",
     organisationId, actorUserId: staff.userId, action: "studio.field.migration.support_opened", entityId: targetMember.id } }), 1);

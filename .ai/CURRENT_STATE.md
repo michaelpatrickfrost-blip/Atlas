@@ -1,3 +1,60 @@
+## 10 October 2026 —2B4c local release checkpoint ready
+
+Internal ordinary save service: current native extend/current+written field and
+reference authority; closed revision/generation CAS, immutable operation ID and
+normalised request fingerprint replay, server uniqueness/required validation,
+atomic value/pointer/extension/Audit. First valid post-cutover target save atomically
+finalizes the exact window with customer or purpose-audited affiliated staff; both
+Audits share the value transaction. No publish/source/cohort grant or native writes.
+No client/native endpoint before2B4d required coverage.65files402/build/scopedlint/
+strict post-build TS/diff PASS. TS caught nullable captured helper sessions; helper
+now explicitly returns non-null current Session, strict rerun PASS. Actual Test
+helper coded but NOT RUN: permitted/foreign/missing reference writes, uniqueness,
+stale/revoked/native/config/extension/slot/tenant, source freeze, real migration
+both-Audit failures/concurrency, old-operation policy/history replay, staff support
+Audit failure with authoring disabled, retirement and native preservation.
+No DDL/model/backfill/reset. Live remains53c05ae. Exact next checkpoint/pinned full
+Studio candidate/public writer acceptance, then2B4d closed required-if/native coverage.
+Files runtime-write/contract/window/shared read helpers, two suites, exactcentral
+helper/principal driver, PERMISSIONS/decisions/field plan/ledger/current state.
+Logs /tmp/atlas-studio-b4c-{tests,build,postbuild-types,lint,helper-lint}.txt.
+
+## 10 October 2026 —2B4a/b VERIFIED live;2B4c IMPLEMENTED locally
+
+Exact53c05ae9adaa80887ec72f1d633c6a346380bbf0 candidate1rQ6MH/publiccmZ7bt
+ALL COMBINED ACCEPTANCE PASS; runner68174 exit0. Actual customer without Studio/
+write grants reads typed active values and every retained generation; real valid/
+missing/foreign references, disabled authoring/source, private/current membership/
+capability/session/auth/tenant denials; native/value snapshots unchanged. All native
+Dashboard/Home/Settings/Reports/MRP/Messages/private Admin/Supply/Commercial/People
+checks PASS, zero reported browser errors.63files390/build/strictpostbuildTS/lint.
+No DDL. Backup120654, fixtures120830/121232. Current/public exact53c05ae; previous
+a527ccd retained, Atlas active, PG18main online, login200, root167GiBfree/14%used,
+both originallocks idle. Retention retired only inactivef1a9bf1 runtime output;
+source/static/history/records/backups preserved. No ad-hoc dumps.
+2B4c internal ordinary save/one-time window closure/request/CAS/idempotency/Audit
+and real Test helper implemented;65files402/TS/scopedlint/diff PASS, build pending.
+No endpoint/native hook until2B4d coverage. Actual writer Test NOT RUN yet. Next
+finish build/strictpostbuildTS/diff, checkpoint and pinned full writer acceptance.
+Evidence /tmp/atlas-studio-b4ab-live-deploy.txt; c4 local logs /tmp/atlas-studio-b4c-*.
+WholePhase2 still IN PROGRESS; required-if/hooks/record types/pages/visual2E remain.
+
+## 10 October 2026 —2B4c ordinary atomic saves design IN PROGRESS
+
+2B4a/b immutable53c05ae candidate/public release is running; do not move pinned
+branch until it finishes. Current livea527ccd. Independent next runtime substream
+uses existing native owner extend authorisation and shared typed storage/Audit/CAS.
+Expected runtime-write/closed request/internal read helpers/window helper, focused
+and exact Test proof; no DDL. No UI/native endpoint until required native-hook
+coverage is verified in2B4d. Normal customers need native/field write, not Studio
+publish. First valid post-cutover save may atomically close rollback eligibility
+with actual actor evidence; it cannot activate/reverse data or borrow publisher/
+whole-cohort grants. Exact unchanged window and ordinary owner policies remain.
+Tests stale native/config/extension/slot, current+written restrictions/reference/
+unique/required, operation replay, paired Audit rollback and concurrent saves.
+Next implement bounded request/shared reads, metadata-only window closure and
+atomic extension/value/pointer/Audit transaction. Real acceptance still pending.
+
 ## 10 October 2026 —2B4a/b local release checkpoint ready
 
 Ordinary current/history gateway implemented on refreshed Session authority. Native

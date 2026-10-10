@@ -144,6 +144,17 @@ record and written reference target access and stored plan/fingerprint integrity
 Retired/obsolete values are bounded history only. No client endpoint or native write
 hook is provided by this foundation.
 
+The internal ordinary value save service independently requires current native
+extend and current/written field write authority, with reference-owner access and
+native/configuration/extension/slot revision checks. It stores one immutable value,
+CAS pointers and Audit atomically. Repeating an operation ID confirms its original
+audited request and current access; it reports historical completion rather than
+claiming that the recorded value is still current. A first valid target save may
+close the exact rollback window in that transaction without granting publication
+or source-data access. Staff retain a purpose-bound support Audit under their real
+membership. Source freezes, final native states and private queues remain enforced.
+Native create/save integration is gated on required-field coverage in Phase2B4d.
+
 ## Section-level access profiles — 10 October 2026
 
 Company Settings is gated by existing company administration capabilities; normal

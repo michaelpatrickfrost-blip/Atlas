@@ -2041,3 +2041,21 @@ not allowed to reinterpret an old identity as a different target entity.
 Current reads follow the active generation; obsolete/retired storage is available
 only through bounded history with today's permissions. No new storage/read cache,
 permission model, native writes or history mutation is introduced.
+## 10 October 2026 — First ordinary target save atomically ends rollback eligibility
+
+The administrator settlement service checks publisher authority and retained
+whole-cohort history. Calling it from an ordinary native-record save would require
+configuration privileges and visibility over other people's private records,
+which is unsuitable for normal ERP operators. Keep that service unchanged for
+explicit administrative rollback/finalization. A separate internal write-window
+helper runs only after current native extend, current/written field, reference,
+constraint and expected revision checks. It validates the original retained
+lineage and exact still-open target/configuration, then closes rollback eligibility
+with the actual refreshed actor in the same transaction as the value and both
+Audits. No source values/cohort IDs are read or disclosed; no activation, reverse
+conversion or publisher capability is granted. Staff remain purpose-audited
+support under their genuine existing affiliation, never a customer impersonation.
+Failed value/uniqueness/CAS/Audit commits close nothing. Published source freezes
+remain authoritative, including later migrations after completed older targets.
+This implements the specification's rollback limits and atomic native-owner
+operations using existing additive0007/8 guards, without a second migration engine.

@@ -8,7 +8,7 @@ import { validateFieldMigrationSourceCoverage, type FieldMigrationCoverageStage 
 import { digestFieldMigrationArchive } from "./archive-digest";
 import type { assertFieldMigrationPolicies } from "./access";
 
-/** One exact internal review inspection for sealing, reviewed publication/replay.
+/** One exact internal review inspection for sealing, publication and execution/replay.
  * Caller owns the fresh authority/transaction. Stage is derived from a locked
  * server operation, never client input. No state/value writes or grant from a hash.
  */

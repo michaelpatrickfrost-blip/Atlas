@@ -1,5 +1,33 @@
 # Atlas current state
 
+## 10 October 2026 — Execution inspection locally checked
+
+2B3e4a1 IMPLEMENTED/local checks PASS: the shared inspector has an internal
+execution stage with persisted owner-query hash/opt-in and exact publication,
+outcome-owned source revisions, native/private/written/reference authority. Old
+preparation/publication freshness is unchanged. Current source and target native
+write grants are both required before archive access. 35 Studio files/207 assertions,
+production build, strict post-build TypeScript, scoped lint and diff PASS; logs
+/tmp/atlas-studio-execution-inspection-{all-tests,build,postbuild-types,lint}.txt.
+Pending SQL retains the existing generic target-write denial text for compatibility;
+its exact outcome requirement is unchanged. No target writes/start or DDL application;
+actual execution remains NOT VERIFIED. Accepted live 64361cb, Phase 2 NOT PASSED.
+Next e4a2 shared exact execution inspection/start service and atomic Audit, then
+e4b one-row writer, e5 bounded batches and e6 actual central lifecycle proof.
+
+
+## 10 October 2026 — Exact execution inspection started
+
+2B3e4a1 IN PROGRESS before code: extend the single source/review inspector with
+an internal execution stage derived from a scoped actual execution. Require target
+owner explicit representation opt-in and persisted approval query hash resolution,
+exact intent/publication/execution freshness and the same native/private/written/
+reference policies. Account only outcome-recorded own extension increments through
+separate execution-source proof; original preparation/publication queries remain
+unchanged. No stage in client input, no target writes/start/activation. Files coverage/
+inspection plus focused execution-stage regressions. Then shared start service e4a2.
+Pending DDL remains unapplied; last accepted live 64361cb, Phase 2 NOT PASSED.
+
 ## 10 October 2026 — Tickets representation approval locally checked
 
 2B3e3 IMPLEMENTED/local checks PASS, actual owner SQL NOT RUN: Tickets entity v5

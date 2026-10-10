@@ -219,7 +219,7 @@ BEGIN
  WHERE o."preparationId"=pub."preparationId" AND o."organisationId"=pub."organisationId" AND o."definitionId"=pub."definitionId" AND o."targetGenerationId"=pub."targetGenerationId"
   AND x.state='RUNNING' AND o."executionChecksum"=x."pinChecksum"
   AND CASE WHEN TG_TABLE_NAME='studio_field_slots' THEN o."targetSlotId"=NEW.id ELSE o."targetValueId"=NEW.id END;
- IF NOT FOUND THEN RAISE EXCEPTION 'Target writes require exact reviewed execution outcome'; END IF;
+ IF NOT FOUND THEN RAISE EXCEPTION 'An open field migration freezes normal source saves; target writes require reviewed execution'; END IF;
  IF TG_TABLE_NAME='studio_field_slots' THEN
   IF NEW."extensionId"<>done."extensionId" OR (
    (TG_OP='INSERT' AND NEW.revision=0 AND NEW."activeValueId" IS NULL AND NEW."uniqueToken" IS NULL)

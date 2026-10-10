@@ -23,9 +23,11 @@ const tx = { $queryRaw: raw, studioDefinitionVersion: { findMany: schemas }, stu
   serviceWorkItem: { findFirst: unavailable, count: vi.fn(async () => 3) } } as unknown as Prisma.TransactionClient;
 const context = { session, transaction: tx };
 let intent: FieldMigrationIntent, written: { id: string; payload: unknown; compiledPlan: unknown; checksum: string };
-let fresh: boolean, publicationFresh: boolean, nativeChanged: boolean, sourceChanged: boolean;
+let fresh: boolean, publicationFresh: boolean, nativeChanged: boolean, sourceChanged: boolean, executionFresh: boolean, executionSourceChanged: boolean;
+let approvalReference: unknown;
 beforeEach(async () => {
-  vi.clearAllMocks(); fresh = true; publicationFresh = true; nativeChanged = false; sourceChanged = false;
+  vi.clearAllMocks(); fresh = true; publicationFresh = true; nativeChanged = false; sourceChanged = false; executionFresh = true; executionSourceChanged = false;
+  approvalReference = ref("tickets.ticket.field_representation", 1);
   const compiled = await compileCustomField(session, source, registry), next = await compileCustomField(session, target, registry);
   intent = sealFieldMigrationIntent({ schemaVersion: 1, id: uuid(3), organisationId: "company", definitionId: uuid(4), definitionRevision: 7,
     principal: { organisationId: "company", userId: "user", membershipId: "member", sessionVersion: 2, authVersion: 3, authority: "customer" },
@@ -38,6 +40,8 @@ beforeEach(async () => {
     if (sql.includes("SHOW transaction_isolation")) return [{ transaction_isolation: "serializable" }];
     if (sql.includes("atlas_studio_migration_fresh")) return [{ fresh }];
     if (sql.includes("atlas_studio_publication_fresh")) return [{ fresh: publicationFresh }];
+    if (sql.includes("atlas_studio_execution_fresh")) return [{ fresh: executionFresh, ownerApproval: approvalReference }];
+    if (sql.includes("atlas_studio_execution_source_fresh")) return [{ changed: executionSourceChanged }];
     if (sql.includes("SELECT DISTINCT")) return [{ versionId: uuid(6) }];
     if (sql.includes("SELECT EXISTS")) return [{ changed: sql.includes("FROM service_work_items") ? nativeChanged : sourceChanged }];
     return [];
@@ -110,4 +114,49 @@ it("a publication receipt cannot replace current source/written/native or privat
   unavailable.mockResolvedValue(null); sourceChanged = true;
   await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "publication")).rejects.toThrow("stale or has changed");
   expect(schemas).not.toHaveBeenCalled();
+});
+
+
+async function useExecutableTarget() {
+  const payload = customFieldPayloadSchema.parse({ ...target, entity: ref("tickets.ticket", 5) });
+  const compiled = await compileCustomField(session, payload, registry);
+  intent = sealFieldMigrationIntent({ ...intent, target: { ...intent.target, payload, compiledChecksum: compiled.checksum },
+    ownerQuery: ref("tickets.ticket.field_migration", 3) }).intent;
+}
+it("execution uses only exact actual operation/source lineage; old freshness cannot silently fall back to completed outcomes", async () => {
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "execution")).rejects.toThrow("stale or has changed");
+  expect(raw).not.toHaveBeenCalled();
+  await useExecutableTarget(); fresh = false; publicationFresh = false; sourceChanged = true;
+  await validateFieldMigrationSourceCoverage(context, registry, company, intent, "execution");
+  const sql = raw.mock.calls.map(([strings]) => strings.join("?"));
+  expect(sql.some(text => text.includes("atlas_studio_execution_fresh"))).toBe(true);
+  expect(sql.some(text => text.includes("atlas_studio_execution_source_fresh"))).toBe(true);
+  expect(sql.some(text => text.includes("atlas_studio_publication_fresh") || text.includes("atlas_studio_migration_fresh"))).toBe(false);
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent)).rejects.toThrow("stale or has changed");
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "publication")).rejects.toThrow("stale or has changed");
+});
+it("execution receipt/approval hashes cannot replace native private/source/written rights or approve unrelated revisions", async () => {
+  await useExecutableTarget(); executionFresh = false;
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "execution")).rejects.toThrow("stale or has changed");
+  executionFresh = true; approvalReference = ref("tickets.ticket.field_migration", 3);
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "execution")).rejects.toThrow("stale or has changed");
+  approvalReference = { ...ref("tickets.ticket.field_representation", 1), schemaHash: "0".repeat(64) };
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "execution")).rejects.toThrow("Studio contract changed");
+  expect(schemas).not.toHaveBeenCalled(); approvalReference = ref("tickets.ticket.field_representation", 1);
+  unavailable.mockResolvedValue({ id: "hidden" });
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "execution")).rejects.toThrow("MIGRATION_ACCESS_REQUIRED");
+  unavailable.mockResolvedValue(null); nativeChanged = true;
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "execution")).rejects.toThrow("MIGRATION_COHORT_CHANGED");
+  nativeChanged = false; executionSourceChanged = true;
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "execution")).rejects.toThrow("stale or has changed");
+  expect(schemas).not.toHaveBeenCalled(); executionSourceChanged = false;
+  written.payload = customFieldPayloadSchema.parse({ ...source, field: { ...source.field, writeCapability: "tickets.field.secret" } });
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "execution")).rejects.toThrow("tickets.field.secret");
+});
+
+it("execution also requires current source/native write and production data permissions before archive access", async () => {
+  await useExecutableTarget();
+  await expect(validateFieldMigrationSourceCoverage({ ...context, session: { ...session, capabilities: new Set(["studio.definition.publish", "tickets.ticket.read"]) } }, registry, company, intent, "execution")).rejects.toThrow("tickets.ticket.manage");
+  await expect(validateFieldMigrationSourceCoverage(context, registry, { ...company, isTest: false }, intent, "execution")).rejects.toThrow("studio.test.live_data");
+  expect(raw).not.toHaveBeenCalled(); expect(schemas).not.toHaveBeenCalled();
 });

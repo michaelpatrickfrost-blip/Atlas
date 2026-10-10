@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3e3 — Explicit Tickets representation approval — IN PROGRESS.
+2B3e4a2 — Shared execution inspection/start — NOT STARTED.
 2B3d1–d4 VERIFIED ea27b2f; no row writer/designer.
 
 # Overall Status
@@ -30,6 +30,7 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 # Completed Workstreams
 
 | Workstream | Status | Evidence |
+| 2B3e4a1 Execution inspection | IMPLEMENTED | 35 files/207 local assertions, build/types/lint/diff PASS; actual SQL pending. |
 | --- | --- | --- |
 | 2B3c6b2b3c Reference review | VERIFIED | 32ee77e complete candidate/public, actual permission/target/Audit/replay plus native acceptance; no target/native writes. |
 | 2B3e2a Closed execution/outcome protocol | VERIFIED locally | 34 files/197 assertions, production build/strict TS/lint/diff; no DB or write authority. |
@@ -65,6 +66,31 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+2B3e4a1 IMPLEMENTED/local checks PASS: the shared inspector has an internal
+execution stage with persisted owner-query hash/opt-in and exact publication,
+outcome-owned source revisions, native/private/written/reference authority. Old
+preparation/publication freshness is unchanged. Current source and target native
+write grants are both required before archive access. 35 Studio files/207 assertions,
+production build, strict post-build TypeScript, scoped lint and diff PASS; logs
+/tmp/atlas-studio-execution-inspection-{all-tests,build,postbuild-types,lint}.txt.
+Pending SQL retains the existing generic target-write denial text for compatibility;
+its exact outcome requirement is unchanged. No target writes/start or DDL application;
+actual execution remains NOT VERIFIED. Accepted live 64361cb, Phase 2 NOT PASSED.
+Next e4a2 shared exact execution inspection/start service and atomic Audit, then
+e4b one-row writer, e5 bounded batches and e6 actual central lifecycle proof.
+
+
+2B3e4a1 IN PROGRESS before code: extend the single source/review inspector with
+an internal execution stage derived from a scoped actual execution. Require target
+owner explicit representation opt-in and persisted approval query hash resolution,
+exact intent/publication/execution freshness and the same native/private/written/
+reference policies. Account only outcome-recorded own extension increments through
+separate execution-source proof; original preparation/publication queries remain
+unchanged. No stage in client input, no target writes/start/activation. Files coverage/
+inspection plus focused execution-stage regressions. Then shared start service e4a2.
+Pending DDL remains unapplied; last accepted live 64361cb, Phase 2 NOT PASSED.
+
 
 2B3e3 IMPLEMENTED/local checks PASS, actual owner SQL NOT RUN: Tickets entity v5
 explicitly opts into source versions 2–5, snapshot/reference query v3/read 1–5 and
@@ -649,6 +675,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+e4a1: coverage/inspection, coverage regression tests, pending SQL denial-message
+compatibility, evolution plan/ledger/CURRENT_STATE. No new schema or native writes.
+
 e3: service-work/studio v5/query v3/approval query, new representation tests plus
 reference coverage regression, SERVICE_WORK_DESK/module docs and progress memory.
 
@@ -1072,7 +1101,7 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement 2B3e4a shared execution inspection and start service: derive stage only
+Implement 2B3e4a2 shared execution inspection and start service: derive stage only
 from scoped actual execution row; preserve old freshness, account solely for recorded
 own extension increments and verify exact native/source/written/reference coverage,
 immutable target/approved query and current initiating authority before saving an

@@ -1,15 +1,17 @@
 import type { Prisma } from "@/generated/prisma/client";
+import { assertCapability } from "@/core/permissions/check";
 import type { RecordContext } from "../../registry/types";
 import type { CapabilityRegistry } from "../../registry/registry";
 import { checksum } from "../../registry/contracts";
 import { compileCustomField } from "../../compiler/fields";
+import { referenceSchema } from "../../compiler/kernel";
 import { entityDetailsSchema } from "../../registry/entities";
 import { customFieldPayloadSchema } from "../schema";
 import { assertFieldMigrationPolicies } from "./access";
 import { sealFieldMigrationIntent, FieldMigrationReviewError, type FieldMigrationIntent } from "./contracts";
 
 function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"); }
-export type FieldMigrationCoverageStage = "preparation" | "publication";
+export type FieldMigrationCoverageStage = "preparation" | "publication" | "execution";
 
 /** Internal coverage prerequisite. Caller supplies a refreshed/locked authority
  * transaction. No value decoding, counts, reference approval or sealed review.
@@ -21,20 +23,36 @@ export async function validateFieldMigrationSourceCoverage(context: RecordContex
   assertFieldMigrationPolicies(session, company, intent.source.payload); assertFieldMigrationPolicies(session, company, intent.target.payload);
   const current = await compileCustomField(session, intent.source.payload, registry), target = await compileCustomField(session, intent.target.payload, registry);
   if (current.checksum !== intent.source.versionChecksum || target.checksum !== intent.target.compiledChecksum) changed();
-  const owner = await registry.resolve(session, intent.target.payload.entity), policy = entityDetailsSchema.parse(owner.details).record?.migrationSnapshot;
+  const owner = await registry.resolve(session, intent.target.payload.entity), record = entityDetailsSchema.parse(owner.details).record, policy = record?.migrationSnapshot;
+  const sourceOwner = await registry.resolve(session, intent.source.payload.entity), sourceRecord = entityDetailsSchema.parse(sourceOwner.details).record;
+  if (!record || !sourceRecord?.fieldPolicy) changed();
+  // Replays retain the same native write prerequisites as source observation;
+  // a newer owner contract cannot substitute for a revoked source-version grant.
+  assertCapability(session, sourceRecord.writeCapability); assertCapability(session, record.writeCapability);
   const query = await registry.resolve(session, intent.ownerQuery);
   if (!policy || !policy.sourceVersions.includes(intent.source.payload.entity.version) || policy.query.id !== intent.ownerQuery.id || policy.query.version !== intent.ownerQuery.version
     || query.kind !== "query" || query.details.transaction !== "required" || query.ownerModuleId !== owner.ownerModuleId) changed();
+  if (stage === "execution" && !record?.migrationRepresentation?.sourceVersions.includes(intent.source.payload.entity.version)) changed();
   await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${intent.id}::uuid AND "organisationId"=${session.organisationId} FOR UPDATE`;
-  const fresh = stage === "preparation" ? await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_migration_fresh(p) AS fresh
+  const fresh: Array<{ fresh: boolean; ownerApproval?: unknown }> = stage === "preparation" ? await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_migration_fresh(p) AS fresh
     FROM studio_field_migration_preparations p WHERE p.id=${intent.id}::uuid AND p."organisationId"=${session.organisationId}
       AND p."intentChecksum"=${sealed.checksum} AND p.state IN ('PREPARING','REVIEWED')`
     : stage === "publication" ? await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_publication_fresh(pub) AS fresh
       FROM studio_field_migration_publications pub JOIN studio_field_migration_preparations p ON p.id=pub."preparationId"
         AND p."organisationId"=pub."organisationId" AND p."definitionId"=pub."definitionId"
       WHERE p.id=${intent.id}::uuid AND p."organisationId"=${session.organisationId} AND p."intentChecksum"=${sealed.checksum}
-        AND p.state='REVIEWED' AND pub.state='PUBLISHED'` : changed();
+        AND p.state='REVIEWED' AND pub.state='PUBLISHED'`
+      : stage === "execution" ? await tx.$queryRaw<Array<{ fresh: boolean; ownerApproval: unknown }>>`SELECT atlas_studio_execution_fresh(x) AS fresh, x.pin->'ownerApproval' AS "ownerApproval"
+        FROM studio_field_migration_executions x JOIN studio_field_migration_preparations p ON p.id=x."preparationId" AND p."organisationId"=x."organisationId" AND p."definitionId"=x."definitionId"
+        WHERE p.id=${intent.id}::uuid AND p."organisationId"=${session.organisationId} AND p."intentChecksum"=${sealed.checksum}
+          AND p.state='REVIEWED' AND x.state IN ('RUNNING','READY','FAILED')` : changed();
   if (fresh.length !== 1 || fresh[0].fresh !== true) changed();
+  if (stage === "execution") {
+    const reference = referenceSchema.parse(fresh[0].ownerApproval), approval = await registry.resolve(session, reference);
+    const declared = record!.migrationRepresentation!.query;
+    if (reference.id !== declared.id || reference.version !== declared.version || approval.kind !== "query"
+      || approval.ownerModuleId !== owner.ownerModuleId || approval.capability !== record!.writeCapability || approval.details.transaction !== "required") changed();
+  }
   // Owner rejects incomplete native/private access before any archive count/IDs.
   await registry.invokeQueryInTransaction(context, intent.ownerQuery, { mode: "coverage", preparationId: intent.id });
   await tx.$queryRaw`SELECT count(*)::text FROM (SELECT e.id FROM studio_extension_records e WHERE e."organisationId"=${session.organisationId} AND e."entityId"=${intent.source.payload.entity.id}
@@ -42,7 +60,11 @@ export async function validateFieldMigrationSourceCoverage(context: RecordContex
   await tx.$queryRaw`SELECT count(*)::text FROM (SELECT s.id FROM studio_field_slots s WHERE s."organisationId"=${session.organisationId} AND s."definitionId"=${intent.definitionId}::uuid
     AND s."generationId"=${intent.source.payload.storageGeneration}::uuid
     AND EXISTS (SELECT 1 FROM studio_field_migration_observations o WHERE o."preparationId"=${intent.id}::uuid AND o."organisationId"=s."organisationId" AND o."extensionId"=s."extensionId") FOR SHARE OF s) locked`;
-  const source = await tx.$queryRaw<Array<{ changed: boolean }>>`SELECT EXISTS (
+  const source = stage === "execution" ? await tx.$queryRaw<Array<{ changed: boolean }>>`SELECT NOT atlas_studio_execution_source_fresh(pub) AS changed
+    FROM studio_field_migration_publications pub JOIN studio_field_migration_executions x ON x."preparationId"=pub."preparationId" AND x."organisationId"=pub."organisationId" AND x."definitionId"=pub."definitionId"
+    WHERE pub."preparationId"=${intent.id}::uuid AND pub."organisationId"=${session.organisationId} AND pub."definitionId"=${intent.definitionId}::uuid
+      AND pub.state='PUBLISHED' AND x.state IN ('RUNNING','READY','FAILED')`
+    : await tx.$queryRaw<Array<{ changed: boolean }>>`SELECT EXISTS (
     SELECT 1 FROM studio_field_migration_observations o
     LEFT JOIN studio_extension_records e ON e."organisationId"=o."organisationId" AND e."entityId"=o."entityId" AND e."recordId"=o."recordId"
     LEFT JOIN studio_field_slots s ON s."organisationId"=o."organisationId" AND s."extensionId"=e.id AND s."definitionId"=o."definitionId" AND s."generationId"=o."sourceGenerationId"

@@ -12,7 +12,7 @@ reviewable checkpoints; it does not substitute for the supplied specification.
 | 2B3b | Retirement with CAS and audit, retaining published schema, binding and history | definitions/field lifecycle + tests; additive metadata only if required | Tenant/publish access, stale revisions, no further editing/activation, authorised history retained, keys not recycled | VERIFIED backend candidate/public 7941f9b; no history API/UI |
 | 2B3c | First-class reviewed plan, preview and durable job/row state | fields/migrations, Prisma additive migration | Source/target version/checksum, affected count, bounded authorised examples/failures, index impact and rollback limits; forged/stale plans rejected | IN PROGRESS; c1 principals verified candidate/public 7941f9b; preview/persistence not started |
 | 2B3d | Reviewed target publication into a new generation | compiler/binding/lifecycle, job FK constraints | Immutable old schemas/values, exact target plan required, unsupported structural changes fail closed, target publication does not activate it | VERIFIED ea27b2f candidate/public |
-| 2B3e | Bounded resumable/idempotent conversion batches | migration runner/codec, durable row outcomes and tests | Owner and field access rechecked, source value revision checked, atomic target value plus outcome, failure/restart/replay evidence, no native mutation | NOT STARTED |
+| 2B3e | Bounded resumable/idempotent conversion batches | migration runner/codec, durable row outcomes and tests | Owner and field access rechecked, source value revision checked, atomic target value plus outcome, failure/restart/replay evidence, no native mutation | IN PROGRESS; execution contracts/inspection locally checked, actual rows pending |
 | 2B3f | Explicit cutover and rolling read compatibility | activation/resolver and subsequent 2B4 gateway | Source remains readable until cutover; all failures/conflicts resolved; uniqueness/required/access rechecked; CAS activation and auditable rollback limits | NOT STARTED |
 | 2B3g | Central migration acceptance and checkpoint | existing isolated Test driver, docs/memory | Real preview, failed batch, resume, duplicate invocation, tenant/permissions, retained history, cutover/rollback, production build and live verification | NOT STARTED |
 
@@ -956,3 +956,26 @@ model uses membership active/authVersion) and local never-function narrowing; fi
 before final checks. Pending 20261010050000 NOT APPLIED; no row writer yet. Accepted
 live 64361cb; Phase 2 NOT PASSED. Next e4a shared execution inspection/start service,
 then exact one-row writer, bounded batches and actual owner/SQL recovery proof.
+
+2B3e4a1 IN PROGRESS before code: extend the single source/review inspector with
+an internal execution stage derived from a scoped actual execution. Require target
+owner explicit representation opt-in and persisted approval query hash resolution,
+exact intent/publication/execution freshness and the same native/private/written/
+reference policies. Account only outcome-recorded own extension increments through
+separate execution-source proof; original preparation/publication queries remain
+unchanged. No stage in client input, no target writes/start/activation. Files coverage/
+inspection plus focused execution-stage regressions. Then shared start service e4a2.
+Pending DDL remains unapplied; last accepted live 64361cb, Phase 2 NOT PASSED.
+
+2B3e4a1 IMPLEMENTED/local checks PASS: the shared inspector has an internal
+execution stage with persisted owner-query hash/opt-in and exact publication,
+outcome-owned source revisions, native/private/written/reference authority. Old
+preparation/publication freshness is unchanged. Current source and target native
+write grants are both required before archive access. 35 Studio files/207 assertions,
+production build, strict post-build TypeScript, scoped lint and diff PASS; logs
+/tmp/atlas-studio-execution-inspection-{all-tests,build,postbuild-types,lint}.txt.
+Pending SQL retains the existing generic target-write denial text for compatibility;
+its exact outcome requirement is unchanged. No target writes/start or DDL application;
+actual execution remains NOT VERIFIED. Accepted live 64361cb, Phase 2 NOT PASSED.
+Next e4a2 shared exact execution inspection/start service and atomic Audit, then
+e4b one-row writer, e5 bounded batches and e6 actual central lifecycle proof.

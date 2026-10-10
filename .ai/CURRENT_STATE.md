@@ -1,5 +1,18 @@
 # Atlas current state
 
+## 10 October 2026 — Task release retry after capacity failure
+
+Final local build/types/scoped lint (0 errors)/19 focused tests PASS. Candidate
+8bf4417 server compile passed, then page collection failed ENOSPC; production
+remains accepted Studio74fab2. Backup065424 and full failed source/logs retained.
+Reclaimed only that inactive/unready candidate's partial dependencies/Next output,
+following 7e9cc2 acceptance-failed disposable cleanup; all accepted runtimes,
+central records/backups and historical source retained. Capacity inventory:
+maintenance-backups/tasks-capacity-20261010.txt. Temporary2GB swap remains enabled
+for build only, no fstab edit; remove safely after deployment. Next: exact reviewed
+new retry commit, complete candidate/public Tasks acceptance and visual review.
+
+
 ## 10 October 2026 — Assigned Tasks pop-out and task/chat notification controls (candidate)
 
 My tasks opens a native modal from the utility rail and header, preserving the

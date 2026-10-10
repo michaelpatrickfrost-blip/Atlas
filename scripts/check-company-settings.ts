@@ -295,7 +295,7 @@ async function main() {
       .getByLabel("Profile name", { exact: true })
       .fill(`Commercial copy ${suffix}`);
     await dialog
-      .getByLabel("Start from", { exact: true })
+      .locator('select[name="sourceRoleId"]')
       .selectOption(profile.id);
     await dialog
       .getByRole("button", { name: "Create profile", exact: true })

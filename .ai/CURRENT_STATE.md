@@ -60,6 +60,12 @@ combined acceptance now PASS (/tmp/atlas-studio-candidate-Ww5GqF and
 /tmp/atlas-studio-public-qqYkvj), exact public health 931a6009 verified.
 Combined 17 files/83 assertions, strict types, production build, scoped lint
 (zero errors/two existing brand-image warnings), shell syntax and diff PASS.
+07abc4a candidate passed build/smoke, personal Settings and initial mixed profile
+creation/save; copy check stopped at an exact-label select locator whose label
+contains its option text. Checker now targets select[name=sourceRoleId]. Backup
+atlas-pre-deploy-20261010-000954; evidence /tmp/atlas-settings-candidate-g8RcWJ.
+Fixtures retired; running 931a6009 unchanged. Copy-selector correction strict
+types, checker lint, production build and diff PASS. No public Settings claim.
 Only identical repeated memory checkpoint copies were deduplicated; all distinct
 contributor entries retained. Combined verification and Settings candidate/public
 acceptance remain required, followed by evidence and shared-main integration.

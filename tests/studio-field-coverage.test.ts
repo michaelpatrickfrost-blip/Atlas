@@ -7,6 +7,8 @@ import { compileCustomField } from "@/core/studio/compiler/fields";
 import { customFieldPayloadSchema } from "@/core/studio/fields/schema";
 import { sealFieldMigrationIntent, type FieldMigrationIntent } from "@/core/studio/fields/migrations/contracts";
 import { validateFieldMigrationSourceCoverage } from "@/core/studio/fields/migrations/coverage";
+const cutoverIdentity = vi.hoisted(() => vi.fn());
+vi.mock("@/core/studio/fields/migrations/cutover-inspection", () => ({ inspectFieldMigrationCutoverIdentity: cutoverIdentity }));
 
 const uuid = (value: number) => `00000000-0000-4000-8000-${value.toString().padStart(12, "0")}`;
 const registry = new CapabilityRegistry(async () => true); registry.register("tickets", ticketStudioContract);
@@ -28,6 +30,7 @@ let approvalReference: unknown;
 beforeEach(async () => {
   vi.clearAllMocks(); fresh = true; publicationFresh = true; nativeChanged = false; sourceChanged = false; executionFresh = true; executionSourceChanged = false;
   approvalReference = ref("tickets.ticket.field_representation", 1);
+  cutoverIdentity.mockImplementation(async () => ({ executionPin: { ownerApproval: approvalReference } }));
   const compiled = await compileCustomField(session, source, registry), next = await compileCustomField(session, target, registry);
   intent = sealFieldMigrationIntent({ schemaVersion: 1, id: uuid(3), organisationId: "company", definitionId: uuid(4), definitionRevision: 7,
     principal: { organisationId: "company", userId: "user", membershipId: "member", sessionVersion: 2, authVersion: 3, authority: "customer" },
@@ -159,4 +162,36 @@ it("execution also requires current source/native write and production data perm
   await expect(validateFieldMigrationSourceCoverage({ ...context, session: { ...session, capabilities: new Set(["studio.definition.publish", "tickets.ticket.read"]) } }, registry, company, intent, "execution")).rejects.toThrow("tickets.ticket.manage");
   await expect(validateFieldMigrationSourceCoverage(context, registry, { ...company, isTest: false }, intent, "execution")).rejects.toThrow("studio.test.live_data");
   expect(raw).not.toHaveBeenCalled(); expect(schemas).not.toHaveBeenCalled();
+});
+
+it("post-cutover coverage uses only inspected actual receipt identity, preserving old source-active predicates", async () => {
+  await useExecutableTarget(); fresh = false; publicationFresh = false; executionFresh = false; sourceChanged = true;
+  await validateFieldMigrationSourceCoverage(context, registry, company, intent, "cutover");
+  expect(cutoverIdentity).toHaveBeenCalledWith(tx, intent);
+  const sql = raw.mock.calls.map(([strings]) => strings.join("?"));
+  expect(sql.some(text => text.includes("pub.state='CUTOVER' AND c.state='ACTIVATED'"))).toBe(true);
+  expect(sql.some(text => /atlas_studio_(migration|publication|execution)_fresh/.test(text))).toBe(false);
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "execution")).rejects.toThrow("stale or has changed");
+  cutoverIdentity.mockRejectedValue(new Error("actual receipt changed")); raw.mockClear(); schemas.mockClear(); unavailable.mockClear();
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "cutover")).rejects.toThrow("actual receipt changed");
+  expect(unavailable).not.toHaveBeenCalled(); expect(schemas).not.toHaveBeenCalled();
+});
+it("post-cutover identity cannot replace current native/private/written-field rights or permit changed source coverage", async () => {
+  await useExecutableTarget(); unavailable.mockResolvedValue({ id: "hidden" });
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "cutover")).rejects.toThrow("MIGRATION_ACCESS_REQUIRED");
+  expect(schemas).not.toHaveBeenCalled(); unavailable.mockResolvedValue(null); nativeChanged = true;
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "cutover")).rejects.toThrow("MIGRATION_COHORT_CHANGED");
+  nativeChanged = false; executionSourceChanged = true;
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "cutover")).rejects.toThrow("stale or has changed");
+  executionSourceChanged = false; written.payload = customFieldPayloadSchema.parse({ ...source, field: { ...source.field, writeCapability: "tickets.field.secret" } });
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "cutover")).rejects.toThrow("tickets.field.secret");
+});
+it("post-cutover replay still requires native write, live-data access and exact current registered representation approval", async () => {
+  await useExecutableTarget();
+  await expect(validateFieldMigrationSourceCoverage({ ...context, session: { ...session, capabilities: new Set(["studio.definition.publish", "tickets.ticket.read"]) } }, registry, company, intent, "cutover")).rejects.toThrow("tickets.ticket.manage");
+  await expect(validateFieldMigrationSourceCoverage(context, registry, { ...company, isTest: false }, intent, "cutover")).rejects.toThrow("studio.test.live_data");
+  expect(cutoverIdentity).not.toHaveBeenCalled(); expect(raw).not.toHaveBeenCalled();
+  approvalReference = ref("tickets.ticket.field_migration", 3);
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "cutover")).rejects.toThrow("stale or has changed");
+  expect(schemas).not.toHaveBeenCalled();
 });

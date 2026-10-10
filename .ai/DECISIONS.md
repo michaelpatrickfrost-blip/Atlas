@@ -1861,3 +1861,33 @@ current-authority activation, honest rollback and normal owner writes follow thr
 f3/f4/2B4. Existing publisher/activation primitives remain the platform engine.
 Receipt history is immutable at f2; guarded rollback requires a subsequent forward
 transition, never deletion or rewriting this applied migration.
+
+## 10 October 2026 — Existing activation is one shared Core transaction primitive
+
+Extract the existing immutable-plan checksum, tenant generation binding, source
+module availability, definition CAS and activation Audit into definitions/activation.
+Ordinary activateVersion delegates under its original Serializable boundary. The
+reviewed cutover service will use that same primitive with expected source-pointer
+CAS, never a callback or bypass of f2 storage/domain/current-authority guards. This
+preserves one metadata kernel and avoids a second activation/publishing engine.
+
+## 10 October 2026 — Actual receipt-derived cutover replay coverage
+
+Reviewed cutover retries must inspect actual retained ACTIVATED receipt, CUTOVER
+publication and target-active definition, never simulate old source-active state
+or weaken original preparation/publication/execution freshness. Internal identity
+inspection validates scoped immutable source/target, exact draft/review/execution
+and retained source/target representations, then the shared review path rechecks
+owning native/private and current/written/reference/unique policies under refreshed
+initiating authority. Hashes establish identity only. This fits the specification's
+safe explicit activation/idempotency requirement without a second engine/grant layer.
+No client stage/permission set, native mutation or rollback promise.
+
+## 10 October 2026 — Raw migration SQL concurrency is a refresh conflict
+
+Actual concurrent cutover proved Prisma7 reports locked raw-query serialization
+SQLSTATE40001 as P2010, distinct from the P2034 ORM path. Shared migration authority
+maps only exact raw40001/40P01 metadata (direct or adapter cause) to the existing
+REVIEW_CHANGED conflict, without auto-retrying writes or suppressing guard/Audit
+failures. Known P2034/P2002 mapping retained. Real concurrency acceptance unchanged;
+full candidate/public proof remains required before cutover is VERIFIED.

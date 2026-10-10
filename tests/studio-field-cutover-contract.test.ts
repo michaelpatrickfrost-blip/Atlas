@@ -4,6 +4,7 @@ import { customFieldPayloadSchema } from "@/core/studio/fields/schema";
 import { sealFieldMigrationReview } from "@/core/studio/fields/migrations/contracts";
 import { fieldMigrationExecutionPinSchema } from "@/core/studio/fields/migrations/execution-contract";
 import { createFieldMigrationCutoverPin, fieldMigrationCutoverPinSchema, fieldMigrationCutoverRequestSchema } from "@/core/studio/fields/migrations/cutover-contract";
+import { readFieldMigrationCutoverReceipt } from "@/core/studio/fields/migrations/cutover-receipt";
 
 const uuid = (n: number) => `00000000-0000-4000-8000-${n.toString().padStart(12, "0")}`;
 const ref = { id: "tickets.ticket", version: 5, schemaHash: "a".repeat(64), contractHash: "b".repeat(64) };
@@ -91,4 +92,51 @@ it("accepts only explicit revision/checksum confirmations without client tenant,
   const pin = create(f).pin;
   expect(() => fieldMigrationCutoverPinSchema.parse({ ...pin, rollbackPolicy: "always_lossless" })).toThrow();
   expect(() => fieldMigrationCutoverPinSchema.parse({ ...pin, authority: { capabilities: ["all"] } })).toThrow();
+});
+
+function activated() {
+  const f = ready(), pinned = create(f);
+  return { ...f, publication: { ...f.publication, state: "CUTOVER", revision: 1 },
+    definition: { ...f.definition, activeVersionId: f.publication.targetVersionId, revision: 9 },
+    receipt: { preparationId: f.publication.preparationId, organisationId: f.publication.organisationId, definitionId: f.publication.definitionId,
+      sourceVersionId: f.execution.pin.sourceVersionId, targetVersionId: f.publication.targetVersionId,
+      pin: pinned.pin, pinChecksum: pinned.checksum, state: "ACTIVATED", revision: 0, createdBy: "actor" } };
+}
+const read = (f: ReturnType<typeof activated>) => readFieldMigrationCutoverReceipt(f.sealed, f.execution, f.publication, f.definition, f.receipt);
+it("reads actual post-cutover identity without pretending the source is still active or granting rollback", () => {
+  const f = activated(), before = structuredClone(f);
+  expect(read(f)).toEqual({ pin: f.receipt.pin, checksum: f.receipt.pinChecksum }); expect(f).toEqual(before);
+  expect(() => createFieldMigrationCutoverPin(f.sealed, f.execution, f.publication, f.definition)).toThrow();
+  expect(read(f)).not.toHaveProperty("canRollback");
+});
+it("post-cutover identity rejects forged/foreign/history-mutated receipts even with recomputed hashes", () => {
+  const f = activated();
+  for (const patch of [{ organisationId: "other" }, { definitionId: uuid(99) }, { preparationId: uuid(99) }, { createdBy: "other" },
+    { sourceVersionId: uuid(99) }, { targetVersionId: uuid(99) }, { pinChecksum: "f".repeat(64) }, { state: "ROLLED_BACK" }, { revision: 1 }, { capabilities: ["all"] }])
+    expect(() => readFieldMigrationCutoverReceipt(f.sealed, f.execution, f.publication, f.definition, { ...f.receipt, ...patch })).toThrow();
+  for (const patch of [{ definitionRevision: 9 }, { source: { ...f.receipt.pin.source, checksum: "f".repeat(64) } },
+    { execution: { ...f.receipt.pin.execution, revision: 4 } }, { publication: { ...f.receipt.pin.publication, revision: 1 } }]) {
+    const pin = { ...f.receipt.pin, ...patch };
+    expect(() => readFieldMigrationCutoverReceipt(f.sealed, f.execution, f.publication, f.definition, { ...f.receipt, pin, pinChecksum: checksum(pin) })).toThrow();
+  }
+});
+it("post-cutover receipt requires actual exact target/CAS and READY identity, not source-active or cancelled state", () => {
+  const f = activated();
+  for (const patch of [{ activeVersionId: f.receipt.sourceVersionId }, { revision: 10 }, { latestVersion: 3 }, { retiredAt: new Date() }, { organisationId: "other" }])
+    expect(() => readFieldMigrationCutoverReceipt(f.sealed, f.execution, f.publication, { ...f.definition, ...patch }, f.receipt)).toThrow();
+  for (const patch of [{ state: "PUBLISHED" }, { state: "CANCELLED" }, { revision: 0 }, { targetChecksum: "f".repeat(64) }, { acknowledgedLoss: true }])
+    expect(() => readFieldMigrationCutoverReceipt(f.sealed, f.execution, { ...f.publication, ...patch }, f.definition, f.receipt)).toThrow();
+  for (const patch of [{ state: "RUNNING" }, { state: "FAILED" }, { revision: 4 }, { processedCount: 1 }, { pinChecksum: "f".repeat(64) }])
+    expect(() => readFieldMigrationCutoverReceipt(f.sealed, { ...f.execution, ...patch }, f.publication, f.definition, f.receipt)).toThrow();
+});
+it("post-cutover identity still binds sealed reviewed source/target/cohort and current explicit loss acknowledgement", () => {
+  const f = activated();
+  expect(() => read({ ...f, sealed: { ...f.sealed, checksum: "f".repeat(64) } })).toThrow();
+  for (const patch of [{ sourceVersionId: uuid(99) }, { sourceChecksum: "f".repeat(64) }, { entity: { ...ref, version: 6 } },
+    { cohort: { ...f.execution.pin.cohort, observationDigest: "f".repeat(64) } }]) {
+    const pin = { ...f.execution.pin, ...patch }, pinChecksum = checksum(pin);
+    const receiptPin = { ...f.receipt.pin, execution: { ...f.receipt.pin.execution, checksum: pinChecksum } };
+    expect(() => readFieldMigrationCutoverReceipt(f.sealed, { ...f.execution, pin, pinChecksum }, f.publication, f.definition,
+      { ...f.receipt, pin: receiptPin, pinChecksum: checksum(receiptPin) })).toThrow();
+  }
 });

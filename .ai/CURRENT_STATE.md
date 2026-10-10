@@ -11,8 +11,11 @@ Candidate commercial check queued behind concurrent Studio 9aad1fc release.
 Added explicit commercial acceptance selector to existing deploy hook, with both
 locks retained across candidate/activation/public checks, fixture-stage backups,
 exact revisions and normal rollback. Shell syntax/whitespace PASS. No lock bypass.
-Next: reconcile accepted live Studio revision, finish pinned commercial release and
-capture public menu hit-testing. Menu correction still not publicly activated.
+Merged Studio 9aad1fc source after combined candidate PASS and live activation;
+its public repeat is running. Reconciled build, strict types, scoped checker lint
+and shell syntax PASS. Preserve both contributors' memory entries. Next: wait for
+public Studio proof, run pinned commercial release and capture public menu checks.
+Menu correction still not publicly activated.
 
 ## 10 October 2026 — Shared card/menu layering correction
 
@@ -37,6 +40,134 @@ Next: resolve build resource pressure, reconcile latest accepted live ancestor,
 prepare a fresh pinned candidate, run updated commercial acceptance, activate and
 repeat public acceptance. Shared Desktop main is dirty; scoped branch is preserved
 for integration without overwriting concurrent work.
+## 10 October 2026 — Actual raw concurrency conflict corrected; gate rerun next
+
+aea5ef1 candidate S9EZeD FAILED before live switch, session9476 exit1; backup
+060208/fixtures060350, /tmp/atlas-studio-cutover-service-deploy.txt. Actual tests
+reached concurrent cutover after both paired-Audit rollback checks, but raw locked
+query SQLSTATE40001 surfaced as Prisma P2010 instead of mapped conflict. Full
+service/replay/history gate NOT PASSED. Test companies suspended/access retired,
+scoped grant/trigger finally restored. Live/current5f5fce5 confirmed exact health,
+prior080e4d7 retained, PGonline/free6.7G. No schema reset/repair/new migration.
+Fix shared migration authority narrowly maps P2010 exact40001/40P01 (direct or
+driver cause metadata) to existing REVIEW_CHANGED; guard/Audit/unrelated/missing
+codes remain unchanged. Additional mapping/negative assertion test, final45 files/
+286 assertions/build/strict post-build types/lint/diff PASS. Logs /tmp/atlas-studio-
+cutover-conflict-{regression,build,types,lint}.txt. Checkpoint then exact new full
+candidate/public rerun; do not weaken concurrency assertion or advance f4 yet.
+
+## 10 October 2026 — Cutover service candidate running
+
+aea5ef1 full combined Studio release running (session9476, backup060208,
+/tmp/atlas-studio-cutover-service-deploy.txt). F3a/b actual service proof pending;
+no new DDL. Accepted live5f5fce5/prior080e4d7 retained, PGonline/free9.7G before
+runner. Do not advance pinned branch tip. Exact Test helper includes real receipt
+activation/paired Audit/concurrent/replay/current field/private/module/member
+denials/history/native checks; local45 files/285 assertions/build/types/lint PASS.
+Wait for actual full candidate/public before marking f3 VERIFIED or beginning f4.
+
+## 10 October 2026 — Cutover service checked; actual candidate proof next
+
+F3b3 current-authority cutover IMPLEMENTED / checked locally. Strict confirmations,
+locked READY reinspection/f1 pin/f2 receipt/publication CAS then shared f3a source
+pointer activation and paired Audit in one Serializable authority transaction.
+Lost-response replay uses actual scoped receipt/target-active metadata and fresh
+owning native/private/current/written/reference/unique coverage; no duplicate
+writes/Audit. Seven new service tests plus receipt/coverage tests: final 45 files/
+285 assertions PASS (Studio/Admin/module/permission/template compatibility); production
+build, strict post-build TypeScript, scoped lint/diff PASS. Logs /tmp/atlas-studio-
+cutover-service-{tests,regression,build,types,postbuild-types,lint}.txt. No new schema/
+migration/public endpoint, normal values, rollback or native mutation. New f3c exact
+Test helper prepared: separate field lifecycle, real paired-Audit failures/concurrent
+CAS/fresh replay/member/field/private/module revocation/history/native snapshots.
+It is NOT RUN yet. Test-only affiliation grant/failure triggers restored in finally;
+old execution cancellation acceptance retained. Accepted live5f5fce5 unchanged;
+PostgreSQL online/free9.7G. Checkpoint then pinned full candidate/public acceptance.
+Phase 2 NOT PASSED; required visual designer/customer dashboard/buttons incomplete.
+
+## 10 October 2026 — Receipt-derived current coverage checkpoint
+
+F3b2 actual receipt-derived review coverage IMPLEMENTED / checked locally: 3 files/
+31 assertions, strict types, scoped lint and diff PASS; logs /tmp/atlas-studio-
+cutover-coverage-{tests,types,lint}.txt. Identity reader reloads locked tenant review,
+publication/execution/receipt/target-active definition, immutable source/target and
+exact draft; existing SQL source/target representation checks remain required.
+New internal cutover review stage reuses owning current native/private coverage,
+source/target and written field policies plus exact current owner approval. Old
+source-active preparation/publication/execution predicates unchanged, no client
+stage/fake pointer/grants. No DB change/public hook or value/native mutation.
+Integrated build/live proof pending f3b3/f3c; accepted live5f5fce5 retained.
+Next f3b3 explicit READY cutover/paired Audit and fresh receipt-derived replay.
+
+## 10 October 2026 — Actual cutover receipt identity checkpoint
+
+F3b1 closed actual ACTIVATED receipt reader IMPLEMENTED, checked locally: 12
+cutover identity assertions (four new replay identity tests), strict TypeScript,
+scoped lint and diff PASS. Receipt binds actual CUTOVER publication/target active
+CAS and unchanged READY execution/review; no simulated source pointer or grant.
+No DB/migration, public hook or writes. Logs /tmp/atlas-studio-cutover-receipt-
+{tests,types,lint}.txt. Build/live proof pending integrated f3b2/3 and f3c release.
+Accepted live 5f5fce5 retained, Phase 2 NOT PASSED. Next f3b2 actual receipt-derived
+review inspection with current native/private/current/written/reference policies.
+
+## 10 October 2026 — Shared activation checked; authorised cutover next
+
+F3a IMPLEMENTED / VERIFIED locally: definitions/activation.ts extracts the existing
+compiler/checksum/generation-binding/source-module/CAS/activation-Audit transaction.
+Public activateVersion delegates with unchanged request/result, Serializable
+boundary and existing guards; scoped version identity and optional server source
+pointer CAS added. No receipt service, client hook or bypass. Five new helper tests,
+12 focused existing/new assertions,42 files/262 scoped assertions, production build,
+strict post-build types/scoped lint/diff PASS; /tmp/atlas-studio-activation-shared-
+{tests,regression,build,types,postbuild-types,lint}.txt. Actual refactor proof pending
+next full combined release. No schema or permission changes. Accepted 5f5fce5 retained.
+Also under both release locks reclaimed only f5bb914/8d6eb9e/64361cb superseded
+incremental compiler caches after ready/path/no-process checks. Current 5f5fce5 and
+rollback 080e4d7 excluded; all source/dependencies/server/static/readiness/records/
+backups/evidence retained. Inventory /opt/atlas-maintenance-backups/studio-superseded-
+compiler-cache-reclaim-20261010.txt; /tmp/atlas-studio-reclaim-superseded-cache.{sh,txt},
+exit 0. PostgreSQL online, 11G free. Next checkpoint then f3b current-authority cutover
+and receipt-derived fresh replay; honest rollback remains f4/2B4. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Receipt storage accepted live; shared activator starts
+
+5f5fce5535765066068eb0e21ecbad10fe745a50 complete candidate/public PASS;
+deploy81942 exit 0, exact public health confirmed. Candidate J150ZK/public AZyW6v,
+backup052619/fixtures052817/053216; /tmp/atlas-studio-cutover-storage-deploy.txt.
+20261010060000 APPLIED and actual storage guard lifecycle VERIFIED: exact atomic
+triple tested then deliberately rolled back, standalone/tampered/foreign/stale/
+history/cancel/source/draft bypasses rejected, both native snapshots unchanged.
+All native/Admin/business-login suites PASS; prior080e4d7 retained. No SQL repair.
+Begin f3a shared activation transaction extraction and tests, preserving existing
+compiler/checksum/binding/module/CAS/Audit rules. Then f3b authorised cutover/replay,
+f3c actual service proof; f4 honest rollback/value window follows. Phase 2 NOT PASSED;
+visual editor/customer dashboard publication/buttons remain required and incomplete.
+
+## 10 October 2026 — Public receipt proof passed; final native repeat running
+
+5f5fce5 full combined candidate PASS and exact runtime switched; previous080e4d7
+retained. Public AZyW6v actual cutover storage/identity/execution/principals/Admin/
+customer login PASS, fixture053216. Remaining native public suites pending; session
+81942 still active, no pinned branch advance. No f3 activator/f4 rollback/value API.
+
+## 10 October 2026 — Actual receipt guards passed candidate; combined proof pending
+
+5f5fce5 candidate J150ZK actual cutover storage PASS: exact triple passes deferred
+proof then deliberate rollback; standalone receipt/publication, foreign/tampered/
+stale identity, history mutation, cancellation/old-source activation/draft/source
+save bypasses denied. Source and both native snapshots unchanged; no permanent
+activation/service. Studio execution/principals/Admin/customer-login PASS. Remaining
+native suites/public repeat pending; session81942 running, fixtures052817/backup052619.
+0006 APPLIED, guard candidate evidence confirmed; full public acceptance still needed.
+Space9.3G, PostgreSQL online. Do not advance pinned tip; no f3 code yet.
+
+## 10 October 2026 — Cutover storage migration applied; actual proof pending
+
+5f5fce5 receipt storage release running (session81942, backup052619,
+/tmp/atlas-studio-cutover-storage-deploy.txt). Normal deploy successfully applied
+20261010060000_studio_field_cutovers; production candidate compiled, build/acceptance
+still running. Migration APPLIED, actual guard lifecycle NOT VERIFIED. Prior live
+080e4d7 retained; no branch advance during runner. No f3 activator or f4 rollback.
 
 ## 10 October 2026 — Cutover receipt storage checked locally; actual proof pending
 
@@ -60,7 +191,7 @@ Checkpoint then full pinned candidate/public Studio proof; no f3 or Phase 2 gate
 ## 10 October 2026 — Cutover identity accepted live; receipt storage starts
 
 080e4d741e0e05d6c763a540900cc81b10b1147d complete candidate/public PASS;
-deploy session 67437 exit0, exact public health confirmed. Candidate AAnFme/public
+deploy session 67437 exit 0, exact public health confirmed. Candidate AAnFme/public
 SmVNla, backup 050933, fixtures 051132/051535; /tmp/atlas-studio-cutover-contract-
 deploy.txt. Exact pure cutover identity derives from actual owner-authorised READY
 rows while source stays active and normal target activation remains denied. All
@@ -110,7 +241,7 @@ proof. Phase 2 NOT PASSED; visual/customer dashboard/button work still incomplet
 ## 10 October 2026 — Execution recovery accepted live; cutover identity starts
 
 8d6eb9e626ca91ee37a97e211e374e9c456fe8be full combined candidate/public PASS;
-deploy39964 exit0, exact public health confirmed. Candidate0GPKVw/publicCy0qcR,
+deploy39964 exit 0, exact public health confirmed. Candidate0GPKVw/publicCy0qcR,
 backup045515, fixtures045720/050126; /tmp/atlas-studio-postgres-recovery-deploy.txt.
 Actual RUNNING batch+failure-marker Audit rollback proved; all native suites passed.
 PostgreSQL recovery backup retained; no reset/restore/SQL repair. Prior f5bb914 kept.

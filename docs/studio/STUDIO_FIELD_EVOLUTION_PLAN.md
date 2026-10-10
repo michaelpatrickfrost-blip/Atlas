@@ -3,7 +3,7 @@
 Source: unchanged Studio specification Sections 6.4, 24–24.1 and 25–28.
 Dependencies: 2B2 permanent field identity, immutable generations/typed history and
 metadata publication. 2B3a pure library VERIFIED on candidate/public 7941f9b (tests/types/lint/build); combined 2B2 candidate/public e5d66e6 release acceptance PASS.
-2B3b retirement VERIFIED on candidate/public 7941f9b (35 local tests/types/lint/build and real central checks PASS); Reviewed publication is VERIFIED on ea27b2f complete candidate/public suites. Batches VERIFIED on 8d6eb9e; cutover remains NOT STARTED; principal and review foundations are VERIFIED live. This plan breaks the specified operation into
+2B3b retirement VERIFIED on candidate/public 7941f9b (35 local tests/types/lint/build and real central checks PASS); Reviewed publication is VERIFIED on ea27b2f complete candidate/public suites. Batches VERIFIED on 8d6eb9e; cutover service locally IMPLEMENTED, actual f3c acceptance pending; principal and review foundations are VERIFIED live. This plan breaks the specified operation into
 reviewable checkpoints; it does not substitute for the supplied specification.
 
 | ID | Purpose and dependencies | Expected files / database | Required evidence | Status |
@@ -1160,8 +1160,10 @@ Phase 2 NOT PASSED; cutover and visual editor/dashboard/button work remains pend
 
 2B3e6 VERIFIED: 8d6eb9e full candidate/public combined PASS; final recovery release
 finished exit0. 2B3f1 VERIFIED on 080e4d7 complete candidate/public, eight focused/257 regression
-assertions/build/types/lint PASS. F2 IMPLEMENTED, 257 local assertions/build/types/lint/central DDL rollback PASS;
-actual lifecycle pending release. f3–f5 NOT STARTED.
+assertions/build/types/lint PASS. F2 VERIFIED on 5f5fce5 complete candidate/public, actual storage/deferred/isolation/
+history/source/native proof. F3a IMPLEMENTED, five helper tests/262 scoped assertions/build/types/lint PASS;
+real refactor proof pending next release. f3b1–3 IMPLEMENTED/locally checked;
+f3c actual proof/f4/f5 NOT STARTED.
 Source Sections 6.3–6.4 and 24: activation is separate, all conversions resolved,
 reads remain source-compatible until cutover, history is retained and rollback limits
 must be explicit. Actual existing activation is in definitions/service.ts; it owns
@@ -1174,7 +1176,7 @@ PUBLISHED state. Preserve these boundaries; an activation flag is insufficient.
 | ID | Purpose / dependencies | Expected files and database | Evidence / status |
 | --- | --- | --- | --- |
 | 2B3f1 | Closed server-derived cutover identity and rollback window; depends on VERIFIED e6 | migrations/cutover-contract and tests; no DDL | Exact READY execution, stored publication/review/immutable target, current definition CAS, no client org/pin; explicit rollback limitations. VERIFIED on 080e4d7 complete candidate/public |
-| 2B3f2 | Tenant cutover receipt and atomic pointer/transition proof | schema/additive forward SQL/catalogue/privacy; no native tables/backfill/reset | Claim requires complete unchanged execution/source/target; deferred commit requires exact activated target; history/CAS/FKs; cancelled/unfinished/cosmetic bypass denied. Existing applied SQL retained. IMPLEMENTED; actual guard proof pending |
+| 2B3f2 | Tenant cutover receipt and atomic pointer/transition proof | schema/additive forward SQL/catalogue/privacy; no native tables/backfill/reset | Claim requires complete unchanged execution/source/target; deferred commit requires exact activated target; history/CAS/FKs; cancelled/unfinished/cosmetic bypass denied. Existing applied SQL retained. VERIFIED on 5f5fce5 complete candidate/public |
 | 2B3f3 | Shared current-authority cutover and existing activation primitive | migrations/cutover plus a narrow transaction extraction from definitions/service; tests | Same compiler/binding/module/CAS/Audit logic; native/private/current/written/reference/required/unique checks before pointer change; paired Audit rollback and fresh idempotent replay. NOT STARTED |
 | 2B3f4 | Honest rollback and post-cutover normal-value compatibility | shared inspection/receipt guards/rollback and tests; additive guards as needed | Source history retained; normal target editing uses owning-domain rules in subsequent 2B4; source generation stays historical. Rollback only in explicitly validated unchanged window; target-only writes/native or metadata drift cannot silently discard data. NOT STARTED |
 | 2B3f5 | Actual central acceptance and checkpoint | existing execution/principal/combined Test driver and docs | Exact cutover/rollback/failed-Audit/replay, tenant/private/native/module/field revocation, unfinished and stale target denial, retained source/history/native snapshots, production build and complete candidate/public suites. NOT STARTED |
@@ -1215,3 +1217,51 @@ pointer passes deferred checks then deliberate Test rollback restores all source
 state. No permanent activation is claimed until f3/f4 services and acceptance pass.
 All failures leave native/source/value/history unchanged. Regenerate existing Prisma/
 data metadata and prove new generic model reads/counts denied; action allowlist stable.
+
+### 2B3f3 workstream split (plan only; f2 full acceptance first)
+
+F3a extracts the existing definitions/service activation transaction into the shared
+Core primitive, preserving exact compiler/checksum/binding/module/CAS/Audit rules;
+run existing activation regressions plus scoped identity/Audit failure tests. No
+receipt service or bypass hook in that checkpoint. F3b then adds current-authority
+cutover using locked READY inspection, f1 confirmation and f2 receipt/transition,
+paired activation/migration Audit and fresh idempotent replay. Post-cutover inspection
+stage must come only from the actual scoped receipt and re-use owner/private/current/
+written/reference coverage. Do not change old source-active freshness or trust a
+client stage, permission set, simulated pointer or checksum as authority. F3c actual
+central API proof includes concurrent/stale/denied/replay/paired-Audit rollback and
+complete candidate/public/native acceptance. Honest rollback and normal target-write
+window remain f4/2B4; no customer visual completion claim from this backend.
+
+### 2B3f3b bounded implementation plan — 10 October
+
+F3a checkpoint 499ef00 is locally checked; accepted live 5f5fce5 retained.
+F3b1: closed actual ACTIVATED receipt reader and identity tests; dependencies f1/f2;
+files migrations/cutover-receipt and contract tests; no database change.
+F3b2: receipt-derived current-authority review coverage; dependencies f3b1; files
+coverage/receipt inspection and tests. No simulated source pointer or old predicate
+relaxation. SQL scopes actual receipt/publication/execution/definition/draft/source/
+target; owning native/private and current/written/reference/unique checks reused.
+No database change unless evidence requires a forward guard.
+F3b3: explicit cutover using shared f3a activator, exact CAS/receipt/paired Audit and
+fresh replay; dependencies f3b1/2. Service and meaningful denial/atomicity tests.
+No public UI/endpoint or rollback/value saves.
+F3c: actual central Test service proof and full combined candidate/public acceptance,
+backup/build/types/lint; live 5f5fce5 retained until passed. Do not begin f4 early.
+Statuses: f3b1 IMPLEMENTED,12 focused assertions/types/lint/diff PASS; build/live
+proof integrated with f3c. f3b2/3 and f3c NOT STARTED.
+
+F3b2 IMPLEMENTED: 31 focused assertions/types/lint/diff PASS. Actual scoped receipt
+metadata and unchanged representation predicates checked before reused native/field
+coverage. No old predicate relaxation/DDL/value writes. Build/live pending f3c.
+F3b3 next; statuses supersede the earlier NOT STARTED plan rows.
+
+F3b3 IMPLEMENTED: 45 files/285 assertions/build/strict post-build types/scoped
+lint/diff PASS. Strict explicit confirmations, scoped READY/f1 receipt, publication
+CAS/shared activation and paired Audit; fresh actual receipt-derived replay. Exact
+central helper added, not run; f3c full candidate/public next. No new migration.
+
+F3c first candidateaea5ef1 failed safely on raw locked-query serialization code
+P2010/40001 escaping domain conflict translation. No live switch. Shared authority
+now narrowly maps40001/40P01; negative guard/Audit mapping tests retain failures.
+45 files/286 assertions/build/types/lint PASS; full candidate/public rerun required.

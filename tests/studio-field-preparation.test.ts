@@ -108,3 +108,14 @@ it("propagates audit failure and translates serialization/foreign operation ID c
     await expect(startFieldMigrationPreparation(session, principal, request)).rejects.toThrow("stale or has changed");
   }
 });
+
+it("raw locked-query serialization/deadlock uses exact SQLSTATE conflict mapping without swallowing guards or Audit failures", async () => {
+  for (const sqlState of ["40001", "40P01"]) for (const meta of [{ code: sqlState }, { driverAdapterError: { cause: { originalCode: sqlState } } }]) {
+    m.transaction.mockRejectedValue(new Prisma.PrismaClientKnownRequestError("Private database details", { code: "P2010", clientVersion: "7.10.0", meta }));
+    await expect(startFieldMigrationPreparation(session, principal, request)).rejects.toThrow("stale or has changed");
+  }
+  for (const meta of [{ code: "23514" }, { code: "P0001" }, { code: "40001: unrelated text" }, undefined]) {
+    const failure = new Prisma.PrismaClientKnownRequestError("Guard/Audit failed", { code: "P2010", clientVersion: "7.10.0", meta });
+    m.transaction.mockRejectedValue(failure); await expect(startFieldMigrationPreparation(session, principal, request)).rejects.toBe(failure);
+  }
+});

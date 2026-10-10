@@ -173,7 +173,7 @@ export async function checkFieldExecution(session: Session, principal: FieldMigr
   await assert.rejects(() => activateVersion(session, { definitionId: definition.id, versionId: published.targetVersionId, revision: finalDefinition.revision }), /completed conversion|explicit cutover/i);
   assert.deepEqual(await db.studioFieldValue.findMany({ where: { ...fieldScope, generationId: payload.storageGeneration }, orderBy: { id: "asc" } }), sourceValues);
   assert.deepEqual(await db.studioFieldSlot.findMany({ where: { ...fieldScope, generationId: payload.storageGeneration }, orderBy: { id: "asc" } }), sourceSlots);
-  await checkFieldCutoverStorage(session, principal, intent, otherOrganisationId);
+  await checkFieldCutoverStorage(session, principal, intent, otherOrganisationId, parentId);
   await cancelFieldMigrationPublication(session, principal, { preparationId: prepared.id, revision: published.publicationRevision });
   assert.equal((await execution()).state, "CANCELLED"); assert.deepEqual(await outcomes(), success); assert.deepEqual(await targets(), values);
   await assert.rejects(() => executeFieldMigrationBatch(session, { preparationId: prepared.id, revision: (state.revision + 1), limit: 1 }), e => e instanceof FieldMigrationExecutionError && !e.failureRecorded);

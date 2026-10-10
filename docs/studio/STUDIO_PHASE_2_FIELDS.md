@@ -105,3 +105,15 @@ turn schema access into data access. Disabling the Studio authoring UI must not
 silently bypass published required/unique policies. Define and test disable/retire/
 rollback behavior before opening native writes; this is not implemented by the
 Phase 1 metadata `activeDefinition` helper.
+
+10 October f4b2b IMPLEMENTED locally: forward0008 integrity-function changes only,
+no Prisma/table/backfill/reset. Source-first freeze and definition locking, retained
+completed sources/obsolete targets, approved active schema and same-generation
+label/help activation. Nested exact Test RB/FINAL continuation and real subsequent
+reviewed-publication helpers added to the existing acceptance pipeline. Central
+fullDDL BEGIN/ROLLBACK compatibility and cosmetic/generation/structure/malformed
+checks PASS with no persistent changes;55files343 regression/build/scoped lint/
+strict post-build TS PASS. Actual new helper runtime proof/candidate/public gate
+pending; not VERIFIED, no production settlement/value API or visual-designer claim.
+Exact next: reviewed clean checkpoint, pinned full Studio release, investigate any
+actual helper failure without weakening guards; then f4c/d and2B4 before2C/D/2E.

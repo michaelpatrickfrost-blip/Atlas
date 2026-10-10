@@ -11,7 +11,7 @@ import { checksum } from "../../src/core/studio/registry/contracts";
 
 /** Exact Test, rollback-only storage proof. Not a production activation service,
  * endpoint or permission bypass. Current owner/private/field authority first. */
-export async function checkFieldCutoverStorage(session: Session, principal: FieldMigrationPrincipal, intent: FieldMigrationIntent, otherOrganisationId: string) {
+export async function checkFieldCutoverStorage(session: Session, principal: FieldMigrationPrincipal, intent: FieldMigrationIntent, otherOrganisationId: string, parentId: string) {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1");
   for (const id of [session.organisationId, otherOrganisationId]) assert(await db.organisation.findFirst({ where: { id, isTest: true, kind: "CUSTOMER",
     slug: { startsWith: "studio-check-" }, status: "ACTIVE", archivedAt: null } }));
@@ -85,7 +85,7 @@ export async function checkFieldCutoverStorage(session: Session, principal: Fiel
     const sourceSlot = await tx.studioFieldSlot.findFirstOrThrow({ where: { organisationId: session.organisationId, definitionId: intent.definitionId, generationId: pin.publication.sourceGenerationId } });
     await assert.rejects(() => tx.studioFieldSlot.update({ where: { id: sourceSlot.id }, data: { revision: sourceSlot.revision + 1 } }), /retained history/i);
     await tx.$executeRaw`ROLLBACK TO SAVEPOINT cutover_test_denial`;
-    await checkFieldSettlementStorage(tx, { pin, checksum: checksum(pin) }, principal);
+    await checkFieldSettlementStorage(tx, { pin, checksum: checksum(pin) }, principal, authority.session, parentId);
     completeChecked = true;
     throw rolledBack;
   }), error => error === rolledBack);

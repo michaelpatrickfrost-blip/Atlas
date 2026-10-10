@@ -12,7 +12,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 # Current Workstream
 
 2B3f4b2a — Active representation cosmetic binding — VERIFIED live666efeb.
-F4b2b — forward0008 generation/open-freeze/cosmetic activation guards — NOT STARTED.
+F4b2b — forward0008 generation/open-freeze/cosmetic activation guards — IMPLEMENTED locally; full release/runtime proof pending.
 2B3f4b1 additive one-time settlement storage — VERIFIED live1d7f558, candidate/public
 combined acceptance PASS, original runner20133 exit0. Operational cleanup VERIFIED.
 Purpose: resume safe same-active-generation cosmetic publication after cancellation/
@@ -89,6 +89,37 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+F4b2b IMPLEMENTED locally10 October:0008 forward replaces six integrity functions
+(no schema model/backfill/reset), shared definition locks, all-open-source priority,
+completed source/obsolete target retention, active-compatible resumed storage and
+label/help-only activation without open-freeze bypass. Exact cutover/terminal CAS
+and committed proofs remain unchanged. New generation-storage nested RB/FINAL proof
+and actual generation-continuation helper reuse real review/publication services;
+privileged fixture writes require exact Test and refreshed native/private/field
+rights, never production APIs.55files343/build/scoped lint/post-build strict TS/diff
+PASS after correcting an async acceptance callback TS1308 (first post-build run
+failed; corrected strict rerun PASS). Central fullDDL BEGIN/ROLLBACK plus cosmetic/structural/generation/malformed
+cases PASS, rollback_complete true; existing083210 backup preserved, no new dump.
+Files:0008 SQL, check-field-generation-{storage,continuation}, cutover storage/service,
+settlement storage/execution helper and shared docs/memory. Actual new SQL/helpers
+not yet runtime verified; pinned full candidate/public gate is exact next action.
+
+
+10 October next-action recovery: clean3cf7671, live exact666efeb/current and
+previous1d7f558, atlas active, root168GiBfree. Re-read0005/6/7 and actual
+authority/publisher/activation/storage checks. Bounded f4b2b workstreams:
+- b1 SQL: forward0008 only, lock scoped definition, prioritise ANY open source
+  freeze, retain completed sources/obsolete targets, require active compatible
+  schema for resumed related-generation storage; exact cutover/RB proof unchanged.
+- b2 acceptance: nested rollback-only terminal cosmetics/history/schema SQL proof
+  plus actual subsequent reviewed publication using existing migration services.
+- b3 verification/release: regression/lint/types/build, additive DDL compatibility,
+  pinned full candidate/public release. No production settlement/value API.
+Expected files:0008 SQL, settlement/cutover acceptance helpers, new generation
+continuation helper, data-model/field-plan/ledger/CURRENT_STATE/DECISIONS. No
+Prisma model/backfill/reset. Status IN PROGRESS; implementation/checks pending.
+
 
 Pinned666efeb42b9e34f39bf5f58b66e2c25eda949ef5 runner42586 completed exit0. Candidate
 JPiKeZ/publicSgP6a7 both ALL COMBINED PASS, including real cancelled-source cosmetic
@@ -1308,6 +1339,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+F4b2b: forward0008 SQL; new check-field-generation-storage/continuation; existing
+cutover-service/cutover-storage/settlement-storage/execution Test helpers; field
+plans,DATA_MODEL,ledger,CURRENT_STATE,DECISIONS. No unrelated code removed.
+
 Release verification companion: scripts/check-messages.ts retries the same
 viewport bounds during entrance animation, retains failure for persistent overflow
 and reports actual rectangle on failure. No product Messages change.
@@ -1464,6 +1499,8 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+F4b2b: integrity functions only, no Prisma/table/data/backfill/reset change.
+
 Latestf4b2a: NONE; scoped field baseline reads/test timing only.
 
 F4b2a: NONE; ordinary binding read selection only.
@@ -1517,6 +1554,9 @@ business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
 
+0008 NOT APPLIED: fullDDL syntax/compatibility checked in rolled-back central
+transaction. Mandatory release backup/apply/runtime acceptance pending.
+
 Latestf4b2a: NONE; previously applied0007 VERIFIED,0008 not created/applied.
 
 F4b2a: NONE. Previously verified0007 retained; forward0008 belongs to f4b2b.
@@ -1561,6 +1601,10 @@ preserved. Final candidate/activation backup prefixes: `atlas-pre-deploy-2026100
 and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
+
+F4b2b: exact Test nested terminal cosmetics/owner fixture and SQL schema/tenant/
+retained-history cases; actual completed-target/new-open-source publication proof.
+Helpers integrated into full release acceptance, runtime pending.
 
 F4b2a: three binding cases for active source/obsolete target, pre-activation origin
 and missing scoped baseline without fallback. Exact Test publication acceptance
@@ -1609,6 +1653,10 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+F4b2b:55files343 assertions, production build, strict post-build TS, changed-helper
+ESLint,diff, central0008 DDL BEGIN/ROLLBACK all PASS. Async helper TS1308 corrected
+and strict rerun PASS. No actual new-helper runtime claim until release gates.
 
 Latest666efeb:55 files343 local assertions/build/strict TS/scoped lint PASS;9
 overlapping drawer/chat assertions and retry build/strict TS/checker lint PASS.
@@ -1965,22 +2013,12 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Beginf4b2b after verified666efeb: re-read original0005/0006/0007 guards, then add
-forward20261010080000 migration (leave applied SQL unchanged). Lock scoped definition
-before generation checks; ANY open source freeze must take priority over old
-completed-target allowances. Completed sources and cancelled/rolled-back targets
-remain retained; normal related-generation writes require the approved active
-schema. Permit only same-active-generation label/help activation after settlement;
-structural/new-generation activation keeps exact reviewed cutover requirements.
-
-Extend exact Test settlement/storage proof for both terminal cosmetic continuations
-and retained histories. For actual old-completed-target plus new-open-source proof,
-reuse the existing preparation/collection/sealing/publication services on an exact
-owner-authorised Test fixture after guarded Test-only terminal setup; never disable
-constraints or introduce a production permission waiver. Prove fresh current schema,
-foreign/stale/structural denials, source/value retention and no native mutation.
-Run appropriate unit/SQL/regression/types/lint/build, review diff and update memory,
-then full pinned Studio candidate/public/native release before VERIFIED.
-
-Afterf4b2b: f4c current-authority settlement service, f4d actual paired-Audit/concurrency/
-replay proof;2B4 owner values/forms,2C/D,2E visual designer. NoPhase3 untilPhase2 PASS.
+Commit reviewed f4b2b SQL/helpers/docs checkpoint after local343 assertions/build/
+strict post-build types/lint/diff and central rolled-back DDL PASS. Run full pinned
+Studio candidate/public/native release under original locks. Do not mark VERIFIED
+until actual nested RB/FINAL cosmetic/value continuation and subsequent real
+reviewed publication source-first freeze PASS; investigate failures, retain guards
+and update checkpoint. Mandatory deployer backup; no ad-hoc dump/reset. Live666efeb
+and previous1d7f558 retained until full candidate acceptance. No production settlement/
+value API. After VERIFIED: f4c current-authority settlement service, f4d paired-Audit/
+concurrency/replay;2B4 owner values/forms,2C/D,2E visual designer. NoPhase3 until2 PASS.

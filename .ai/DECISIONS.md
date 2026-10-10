@@ -1980,3 +1980,17 @@ versions, changing generation identities or widening domain write permission.
 F4b2a changes this binder only; continuation SQL/settlement/owner values remain
 separate workstreams. Actual cancelled-source publish/activate acceptance is required
 before VERIFIED, alongside existing migration/native gates.
+
+## 10 October 2026 — Field source freezes precede historical target eligibility
+
+A generation can be the target of a completed migration and the source of a newer
+reviewed publication. The0005 unordered single-row selection is unsuitable for
+this overlap: an earlier completed target must never mask the current source
+freeze. Forward0008 locks the scoped definition, checks every open source before
+target eligibility, and retains completed sources/obsolete targets. Publication
+insertion/state changes share that lock, preserving exact existing READY/receipt
+and terminal proofs. Resumed related storage requires the approved active schema;
+label/help activation compares the active version and cannot bypass an open freeze.
+This satisfies the specification's retained history/explicit evolution/security
+requirements without a second engine, domain privilege grant or native writes.
+Test-only fixtures prove SQL eligibility; normal owner writes remain2B4.

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { checkFieldGenerationContinuation } from "./check-field-generation-continuation";
 import { db } from "../../src/core/db/client";
 import type { Session } from "../../src/core/auth/session";
 import type { FieldMigrationPrincipal } from "../../src/core/studio/fields/principal-contract";
@@ -126,6 +127,7 @@ export async function checkFieldCutoverService(actor: Session, principal: FieldM
     assert.deepEqual(await db.studioFieldValue.findMany({ where: { definitionId: definition.id, organisationId: session.organisationId }, orderBy: { id: "asc" } }), values);
     assert.deepEqual(await db.studioFieldSlot.findMany({ where: { definitionId: definition.id, organisationId: session.organisationId }, orderBy: { id: "asc" } }), slots);
     assert.deepEqual(await db.serviceWorkItem.findMany({ where: nativeWhere, orderBy: { id: "asc" } }), nativeBefore);
+    await checkFieldGenerationContinuation(session, principal, prepared.id, parentId, otherOrganisationId);
     console.log("PASS actual explicit cutover service: READY/current owner/private/field/module authority, tenant/stale/client denial, both real paired-Audit failures roll back, concurrent CAS/single activation and fresh lost-response replay; exact active target, source/target/row history retained and both native snapshots unchanged. Rollback and normal value saves remain closed pending f4/2B4.");
   } finally {
     await db.membership.update({ where: { id: member.id, organisationId: actor.organisationId }, data: { active: member.active, grantedCapabilities: member.grantedCapabilities } });

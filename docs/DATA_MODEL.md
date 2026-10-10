@@ -289,7 +289,7 @@ unchanged; normal values/rollback remain closed. 286 local assertions/build/type
 lint PASS; actual candidate/public service proof PASS, including both paired-Audit
 failures, concurrent CAS/raw conflict, fresh replay and current access revocation. See Studio ledger.
 
-F4b1 settlement storage (IMPLEMENTED locally, central backed-up DDL rollback passed, actual Test proof pending): additive
+F4b1 settlement storage (VERIFIED1d7f558 candidate/public actual Test proof): additive
 20261010070000 adds nullable settlement pin/checksum/actor/time; original0006
 ACTIVATED receipts and immutable source/target/conversion history remain compatible.
 Only ACTIVATED/revision0→ROLLED_BACK or FINALIZED/revision1, with matching
@@ -299,4 +299,13 @@ open receipt per tenant/field. Rollback storage additionally requires unchanged
 source/target representation; metadata-only finalization closes the rollback
 window even if other extension data changed. SQL identity shape does not prove
 current native/private access; production current-authority services follow.
-Ordinary value/generation continuation remains closed pendingf4b2/2B4.
+Production settlement services and ordinary owner value APIs remain pendingf4c–d/2B4.
+
+F4b2b continuation (IN PROGRESS): forward20261010080000 replaces integrity functions
+only; no table/model/backfill changes. Definition locking serializes publication and
+storage eligibility. ANY open source freeze precedes historical completed-target
+eligibility. Completed sources and obsolete targets stay closed; resumed related
+writes require nonretired tenant-owned active compatible schema. Only field label/help
+cosmetics can activate within that active generation, without bypassing open freezes
+or exact reviewed cutover/rollback. Immutable histories retained. Privileged exact
+Test fixture acceptance is not a production domain-write permission grant. See ledger.

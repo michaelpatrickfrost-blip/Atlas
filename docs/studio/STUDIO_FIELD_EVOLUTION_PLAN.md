@@ -1453,3 +1453,15 @@ PASS.55 files343 local/build/types/lint PASS. Public04ff458 rollback evidence re
 identical Messages bounds now retry its entrance animation and pass all three sizes
 in both gates, no product layout change. No new DDL. F4b2b forward0008 generation/
 retention/cosmetic terminal guards is next, not started; fullPhase2 not passed.
+
+10 October f4b2b IMPLEMENTED locally: forward0008 integrity-function changes only,
+no Prisma/table/backfill/reset. Source-first freeze and definition locking, retained
+completed sources/obsolete targets, approved active schema and same-generation
+label/help activation. Nested exact Test RB/FINAL continuation and real subsequent
+reviewed-publication helpers added to the existing acceptance pipeline. Central
+fullDDL BEGIN/ROLLBACK compatibility and cosmetic/generation/structure/malformed
+checks PASS with no persistent changes;55files343 regression/build/scoped lint/
+strict post-build TS PASS. Actual new helper runtime proof/candidate/public gate
+pending; not VERIFIED, no production settlement/value API or visual-designer claim.
+Exact next: reviewed clean checkpoint, pinned full Studio release, investigate any
+actual helper failure without weakening guards; then f4c/d and2B4 before2C/D/2E.

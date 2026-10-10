@@ -86,5 +86,17 @@ Process, Packages or broad module migration early.
 10 October f4b2 continuation checkpoints: a fixes active-vs-latest ordinary field
 binding with real cancelled-source label/help publish/activate proof (VERIFIED
 666efeb full candidate/public PASS, no DDL); b adds forward0008 generation/open-freeze/settled
-cosmetic activation guards and exact Test storage proof (NOT STARTED). See field
+cosmetic activation guards and exact Test storage proof (IMPLEMENTED locally; runtime gate pending). See field
 evolution plan and execution ledger. Phase2 remains IN PROGRESS.
+
+10 October f4b2b IMPLEMENTED locally: forward0008 integrity-function changes only,
+no Prisma/table/backfill/reset. Source-first freeze and definition locking, retained
+completed sources/obsolete targets, approved active schema and same-generation
+label/help activation. Nested exact Test RB/FINAL continuation and real subsequent
+reviewed-publication helpers added to the existing acceptance pipeline. Central
+fullDDL BEGIN/ROLLBACK compatibility and cosmetic/generation/structure/malformed
+checks PASS with no persistent changes;55files343 regression/build/scoped lint/
+strict post-build TS PASS. Actual new helper runtime proof/candidate/public gate
+pending; not VERIFIED, no production settlement/value API or visual-designer claim.
+Exact next: reviewed clean checkpoint, pinned full Studio release, investigate any
+actual helper failure without weakening guards; then f4c/d and2B4 before2C/D/2E.

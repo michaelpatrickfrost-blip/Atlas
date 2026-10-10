@@ -1,5 +1,28 @@
 # Atlas current state
 
+## 10 October 2026 — f4b2b IMPLEMENTED locally, runtime gate pending
+
+Forward0008 integrity functions only: source-first freeze/definition locking,
+completed-source/obsolete-target retention, approved active schema and same-generation
+label/help activation; original cutover/terminal proofs unchanged. Added actual nested
+RB/FINAL continuation and subsequent real reviewed-publication Test helpers; no
+production settlement/value endpoint.55files343/build/scoped lint/strict post-build
+types/diff PASS; central fullDDL BEGIN/ROLLBACK compatibility and cosmetic/structure/
+generation/malformed checks PASS, rollback complete. Existing083210 backup preserved,
+no new dump/reset. See ledger/field-plan/data-model and DECISIONS. Next reviewed clean
+checkpoint and full pinned candidate/public/native release; not VERIFIED yet.
+
+## 10 October 2026 — next-action f4b2b IN PROGRESS
+
+Recovered clean3cf7671; live exact666efeb/current and previous1d7f558, atlas active,
+root168GiBfree. Read0005/6/7, authority and publication/activation/storage source.
+Implement forward0008 source-first history/approved-schema and cosmetic guards,
+then exact Test terminal/subsequent-publication acceptance, local checks and full
+pinned candidate/public release. No schema model change/backfill/reset or production
+settlement/value API. Phase2 remains IN PROGRESS. Workstreams/dependencies/files/
+tests saved in Studio ledger before coding. Exact next: implement0008 SQL, keeping
+original cutover and one-time terminal CAS/commit proofs intact.
+
 ## 10 October 2026 — f4b2a VERIFIED live; full retry candidate/public PASS
 
 Pinned666efeb42b9e34f39bf5f58b66e2c25eda949ef5 runner42586 completed exit0. Candidate

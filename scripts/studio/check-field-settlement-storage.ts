@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import type { Session } from "../../src/core/auth/session";
+import { checkFieldGenerationStorage } from "./check-field-generation-storage";
 import type { Prisma } from "../../src/generated/prisma/client";
 import type { FieldMigrationPrincipal } from "../../src/core/studio/fields/principal-contract";
 import type { FieldMigrationCutoverPin } from "../../src/core/studio/fields/migrations/cutover-contract";
@@ -7,7 +9,7 @@ import { checksum } from "../../src/core/studio/registry/contracts";
 
 /** Nested rollback-only SQL acceptance on the already owner-authorised exact
  * Test cutover. Never a production settlement endpoint or permission waiver. */
-export async function checkFieldSettlementStorage(tx: Prisma.TransactionClient, retained: { pin: FieldMigrationCutoverPin; checksum: string }, principal: FieldMigrationPrincipal) {
+export async function checkFieldSettlementStorage(tx: Prisma.TransactionClient, retained: { pin: FieldMigrationCutoverPin; checksum: string }, principal: FieldMigrationPrincipal, session: Session, parentId: string) {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1");
   const { pin } = retained, scope = { preparationId: pin.publication.preparationId, organisationId: principal.organisationId, definitionId: pin.publication.definitionId };
   assert.equal(principal.organisationId, pin.publication.organisationId);
@@ -53,6 +55,7 @@ export async function checkFieldSettlementStorage(tx: Prisma.TransactionClient, 
     await assert.rejects(() => tx.studioFieldMigrationPublication.updateMany({ where: scope, data: { state: "CUTOVER", revision: { increment: 1 } } }), /immutable|transition|CAS/i);
     await tx.$executeRaw`ROLLBACK TO SAVEPOINT settlement_retained_denial`;
     await tx.$executeRaw`RELEASE SAVEPOINT settlement_retained_denial`;
+    await checkFieldGenerationStorage(tx, session, settled, transition.definition.versionId, parentId);
     await restore();
   }
   const outcome = await tx.studioFieldMigrationOutcome.findFirstOrThrow({ where: scope });

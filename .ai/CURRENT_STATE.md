@@ -1,5 +1,36 @@
 # Atlas current state
 
+## 10 October 2026 — Tasks pop-out and notification controls LIVE, verified
+
+Activated exact845456e366cc59e373bd7de3d6d9ee120fd00e9b at public Atlas, retaining
+accepted Studio74fab2 as source/rollback. My tasks header/rail opens the polished
+native pop-out; canonical assigned Project/People tasks, search/filter/paging,
+notes/discussion, authorized record links and native guarded status lifecycle.
+Tasks open-count badge and Messages unread-count badges in header/utility rail.
+Both controls fit the320px workspace header; native Escape/focus restore verified.
+
+Complete candidate65Takc/publicemn61U acceptance PASS under both original locks:
+assigned-only search, notes, discussion, linked Sales record, blocked premature
+completion, actual persisted IN_PROGRESS/DONE, four widths320/390/820/1448,
+header controls, Escape/focus and exact revision. Screenshots HVSoox/WbQjBO under
+/tmp/atlas-tasks-browser-*; public phone/desktop visually reviewed. Synthetic task
+fixtures retained canceled; existing records/profiles and other modules preserved.
+Local production build/strict post-build types/scoped lint0errors (3 existing
+image warnings), shell syntax/whitespace PASS; 22 focused panel/access/source-phase/
+atomic completion/project-domain tests PASS. Extra test lint PASS. No schema,
+profile grants, local business cache or external deliveries.
+
+Backup070139; fixture backups070330/070349. Failed earlier candidates/source/logs
+and every backup retained; only positively identified disposable outputs/package
+caches reclaimed under original locks. Temporary2GB reduced to1GB then safely
+disabled/removed after acceptance, no fstab edit. Capacity inventory at
+/opt/atlas-maintenance-backups/tasks-capacity-20261010.txt; root4.5GBfree, no swap,
+central/runtime unchanged after cleanup. No deployment blocker. Prior pending and
+capacity entries below are historical/superseded. Evidence/tests-only commit may
+be newer than runtime; source on codex/my-tasks-popout. Shared Desktop checkout is
+concurrently dirty; integration must preserve its unrelated edits.
+
+
 ## 10 October 2026 — Tasks capacity retry with smaller temporary swap
 
 69dbc60 server compile again passed but page collection failed ENOSPC; accepted

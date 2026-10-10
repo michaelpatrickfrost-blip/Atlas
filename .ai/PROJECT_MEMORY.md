@@ -195,3 +195,14 @@ make/buy; internal materials remain stockable/purchasable. Dynamics 365 SCM is t
 researched capability benchmark; current delivery is partial. The full 173-section
 source and coverage remain binding. Read [Manufacturing & Supply](../docs/modules/MANUFACTURING.md)
 and its illustrated working-instruction library at `/manufacturing/help`.
+
+## 10 October 2026 — Assigned work and chat controls
+
+My tasks is a shell native modal opened from the business header and utility rail,
+with open assignment badges. Canonical ProjectTask/EmployeeTask sources retain
+native tenant/module/capability/privacy and source lifecycle checks; notes, linked
+records and authorized status updates appear inside the pop-out. Messages retains
+its dock and unread badge, also surfaced on the rail. No local business cache.
+Profile remains the wider personal work page. Deployment acceptance selector
+`tasks` runs backed-up synthetic central candidate/public workflow checks inside
+the original release locks; screenshots/evidence live in CURRENT_STATE.md.

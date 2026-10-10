@@ -1,5 +1,30 @@
 # Atlas current state
 
+## 10 October 2026 — Reference final seal locally checked
+
+c3 IMPLEMENTED: single generic sealFieldMigrationPreparation replaces internal
+scalar name, exact source/written/native checks then explicit owner reference
+versions/protocol before digest/review/CAS/Audit, including fresh replay. Missing
+opt-in/legacy protocol, unsupported versions and private/target changes deny before
+summary. 21 files/136 assertions, production build, strict post-build TypeScript,
+scoped lint/diff PASS. Initial unsupported-version test invalidated only one side
+of immutable intent; corrected both sides, final PASS. Logs /tmp/atlas-studio-
+reference-sealing-{full-tests,build,postbuild-types,lint}.txt. No DDL/target/native
+writes/public endpoint. Updated DATA_MODEL/plan/ledger; accepted live fc9b80f.
+Next c4 exact Test reference/Audit rollback/replay/private/missing/foreign proof,
+then pinned full candidate/public release. Phase 2 NOT PASSED; visual designer and
+customer dashboard/button publishing remain authorised planned Phase 2 work.
+
+## 10 October 2026 — Final reference review integration planned
+
+c3 plan before code: one generic seal function replaces internal scalar name,
+current/written/source/native validation then explicit owner referenceVersions and
+pinned reference_coverage truth before existing digest/unique/review/CAS/Audit.
+Missing opt-in, legacy protocol or denied references remain fail closed. No new
+engine, DDL or target/native writes. Files sealing + callers/tests; c4 actual
+reference proof follows. c2 locally checked 132 assertions/build/types/lint; live
+fc9b80f remains accepted scalar/source checkpoint, Phase 2 NOT PASSED.
+
 ## 10 October 2026 — Owner reference protocol locally checked
 
 c6b2b3c2 Tickets entity v4/query v2 declares source versions 2–4 and same-entity

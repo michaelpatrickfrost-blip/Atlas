@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c6b2b3c2 — Owning-domain reference coverage — IN PROGRESS.
+2B3c6b2b3c4 — Actual reference review acceptance — NOT STARTED.
 Scalar/source coverage VERIFIED live fc9b80f; reference c1 local; no writer/designer.
 
 # Overall Status
@@ -61,6 +61,19 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+c3 IMPLEMENTED/local checks PASS: one generic seal service requires approved same-
+entity reference versions and pinned owner reference_coverage after source/written
+checks and before aggregate/review/CAS/Audit, including fresh replay. Old metadata
+hashes/ordinary writer retained. 21 files/136 assertions, build, strict post-build
+TypeScript, scoped lint/diff PASS. Initial unsupported-version fixture changed only
+one side and correctly failed intent validation; corrected both sides, final PASS.
+Actual reference/private/missing/foreign/written proof c4 still NOT RUN; no DDL.
+
+c3 final reference seal planned before code: replace scalar internal name with
+single generic service, explicit approved same-entity ref versions and pinned
+owner reference coverage after source/written/native checks, before aggregate/
+review/CAS/Audit. No second engine, DDL or target/native writes. Actual c4 follows.
 
 c2 owner v4/query v2 IMPLEMENTED locally: 21 files/132 assertions, build, strict
 post-build TypeScript/scoped lint and diff review PASS. Old exact hashes/ordinary
@@ -305,6 +318,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+c3: migrations/sealing.ts, existing scalar helper callers and sealing tests;
+DATA_MODEL, plan/ledger/state/decisions. Internal name only; no public endpoint.
+
 Scalar seal: migrations/archive-digest.ts, sealing.ts; focused archive-digest/sealing
 tests; check-field-sealing.ts/check-field-unique-sealing.ts plus principal/preparation/
 coverage checker integration and docs/memory. No public action or UI claim.
@@ -425,6 +441,10 @@ and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
 
+c3: approved reference versions 1–4, protocol invocation ordering, fresh replay,
+private revocation, changed target/written proof, missing opt-in/legacy protocol
+and unsupported version denial before summary/review writes.
+
 Collector 7 and coverage 6 meaningful cases; actual central collector proof
 (candidate PASS; public pending) and source coverage helper (NOT RUN yet).
 
@@ -442,6 +462,10 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+c3 final: 21 files/136 assertions, production build, strict post-build TypeScript,
+scoped lint and diff PASS. /tmp/atlas-studio-reference-sealing-{full-tests,build,
+postbuild-types,lint}.txt. Full repository suite not rerun; c4 actual not run.
 
 Scalar seal final local: 19 files/117 assertions, production build, strict post-build
 TypeScript, scoped lint and diff PASS. Actual central helper NOT RUN; do not mark
@@ -653,10 +677,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Complete c6b2b3c2 owner query v2/entity v4 tests: native/source/member/Serializable
-checks before reference scope, exact tenant/kind/target/written versions, old hashes
-and ordinary final/merged guards. Then c3 integrates reference final seal through
-that pinned owner query after current/written/source coverage, same digest/CAS/
-Audit. Add actual Test reference/private/missing/foreign/stale/replay proof and
-combined candidate/public verification. Phase 2 migration publication/execution/
-cutover, value gateway, record types/pages/visual/customer dashboards/buttons remain.
+Implement c6b2b3c4 exact Test reference review helper after existing unique check:
+normal owner extend only on active synthetic parent, native read of approved final
+reference target, actual preparation/collection/seal/replay/Audit rollback. Private
+membership revocation must deny fresh replay; missing and foreign target source
+fixtures must abort collection, and separate privileged negative archive fixtures
+must fail the owner reference protocol without approved summary. Check unchanged
+native rows and source hashes; then build/types/lint and pin complete c1–c4 release
+through full candidate/public acceptance. Phase 2 NOT PASSED; no target/native writes.

@@ -9,7 +9,7 @@ import { createDraft, publishDraft, activateVersion, updateDraft } from "../../s
 import { withFieldMigrationAuthority } from "../../src/core/studio/fields/migrations/authority";
 import { startFieldMigrationPreparation } from "../../src/core/studio/fields/migrations/preparation";
 import { collectFieldMigrationBatch } from "../../src/core/studio/fields/migrations/collection";
-import { sealScalarFieldMigrationPreparation } from "../../src/core/studio/fields/migrations/sealing";
+import { sealFieldMigrationPreparation } from "../../src/core/studio/fields/migrations/sealing";
 
 /** Actual uniqueness denial; privileged synthetic source-only values follow the
  * normal owner extend guard. No native changes or final/merged write bypass.
@@ -44,7 +44,7 @@ export async function checkFieldUniqueSealing(session: Session, principal: Field
     definitionRevision: current.revision, draftRevision: current.draft.revision, conversion: { kind: "integer_to_decimal" } });
   let batch = await collectFieldMigrationBatch(session, { preparationId: preparation.id, revision: preparation.revision, limit: 25 });
   for (let n = 0; !batch.cursorExhausted; n++) { assert(n < 10); batch = await collectFieldMigrationBatch(session, { preparationId: preparation.id, revision: batch.revision, limit: 25 }); }
-  await assert.rejects(() => sealScalarFieldMigrationPreparation(session, { preparationId: preparation.id, revision: batch.revision }), /MIGRATION_UNIQUENESS_CONFLICT/);
+  await assert.rejects(() => sealFieldMigrationPreparation(session, { preparationId: preparation.id, revision: batch.revision }), /MIGRATION_UNIQUENESS_CONFLICT/);
   assert.equal(await db.studioFieldMigrationReview.count({ where: { id: preparation.id } }), 0);
   assert.equal(await db.studioFieldGeneration.count({ where: { id: target.storageGeneration } }), 0);
   assert.equal((await db.studioFieldMigrationPreparation.findFirstOrThrow({ where: { id: preparation.id, organisationId: session.organisationId } })).state, "PREPARING");

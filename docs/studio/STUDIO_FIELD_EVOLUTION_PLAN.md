@@ -528,7 +528,7 @@ and hashes unchanged. Files registry types/entities/registry + tests/docs; no DB
 c2 IMPLEMENTED locally: new Tickets entity/query versions approve whole native reference
 coverage using actual canonical targets and current full private/native access,
 without per-record value round trips or ordinary write/final guard changes.
-c3 NOT STARTED: final reference review invokes that pinned owner protocol after
+c3 IMPLEMENTED locally: final reference review invokes that pinned owner protocol after
 current/written field/source/native checks; same archive digest/review/CAS/Audit.
 c4 NOT STARTED: actual Test reference/private/missing/foreign/stale/written-policy
 and replay proof, plus full production/regression acceptance. No second permission
@@ -550,3 +550,18 @@ pass. Final sealer integration remains separate c3.
 c2 local evidence: 21 files/132 assertions, production build, strict post-build
 TypeScript/scoped lint/diff PASS; old hashes and ordinary guards retained. Actual
 new protocol proof not run; final sealer c3/central c4 follow before VERIFIED.
+
+c3 plan before code: rename the internal scalar seal to the single generic field
+seal (no second path). After refreshed current/written/source/native validation,
+require explicit target-owner referenceVersions for same-entity current/target refs,
+invoke pinned reference_coverage in the same transaction, validate its scoped
+coverage truth, then use existing digest/unique/review/CAS/Audit. Missing opt-in,
+legacy query, unsupported/missing/foreign/private references deny before aggregate.
+Files sealing.ts, existing caller/test renames, focused final reference tests; no DB.
+c4 actual reference helper follows; no target publication or operation authority.
+
+
+c3 local evidence: 21 files/136 assertions, production build, strict post-build
+TypeScript/scoped lint and diff PASS. One generic internal review service; explicit
+owner protocol rechecked on replay before digest/CAS/Audit. No DDL/public endpoint.
+Actual c4 proof remains NOT STARTED; fc9b80f accepted scalar live remains current.

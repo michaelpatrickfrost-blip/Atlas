@@ -211,12 +211,15 @@ value columns. Equal native counts are insufficient. This internal prerequisite
 returns no data or approval; references, uniqueness and digest/state/Audit sealing
 remain required before an executable reviewed operation.
 
-Scalar review sealing derives the existing v1 canonical ordered digest and closed
+Field review sealing derives the existing v1 canonical ordered digest and closed
 counts from immutable archive metadata inside the fresh source/native/written
 policy transaction. It rejects duplicate non-null converted fingerprints when
 target uniqueness is required, then inserts the same-operation immutable review,
 preparation REVIEWED/revision CAS and Audit atomically. Fresh sealed replay writes
 nothing; changed source invalidates it. Failed/lossy rows remain visible as review
 summary, never execution authority. No target publication or activation occurs.
-Reference fields remain fail-closed pending explicit owner reference coverage in
-Phase 2. The service is internal and not a public/desktop generic-data endpoint.
+Reference fields additionally require explicit same-entity approved versions and
+pinned owning-domain reference coverage before aggregate/review, including replay.
+Tickets entity v4/query v2 implements actual canonical target existence/tenant/kind
+and complete current-member/private access; legacy/missing opt-in denies review.
+Implementation is locally checked; actual central reference acceptance is pending. The service is internal and not a public/desktop generic-data endpoint.

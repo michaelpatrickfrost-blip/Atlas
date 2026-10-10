@@ -1748,3 +1748,14 @@ final/merged write guards. This refines local workstream dependencies while meet
 the specification's reviewed-source and domain-ownership requirements.
 Cutover must validate exact canonical set membership; equal counts alone can hide
 a deleted row replaced by a new row. No such hook/model/cutover is implemented yet.
+
+
+## 10 October 2026 — One field review service for scalar and references
+
+The original scalar-only internal seal now has the generic field name; no second
+review/execution engine or public endpoint. Exact source/written/native guards run
+first. Reference fields require explicitly declared same-owner native read versions
+and their pinned owning-domain reference_coverage query under the same Serializable
+transaction before aggregate/CAS/Audit, including replay. The query returns only
+scoped coverage truth and cannot grant permission from metadata or classify hidden
+targets as authorised failures. No publication/cutover authority comes from review.

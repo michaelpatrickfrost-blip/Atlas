@@ -45,8 +45,13 @@ an older entry-point bypass of the new editor's safety. Focused eight files/43
 assertions PASS; final 15 files/71 assertions, strict types, production build,
 scoped lint (zero errors/two existing image warnings), shell syntax and diff PASS.
 Opt-in database integration assertions updated for structured feedback/snapshots;
-that separate destructive fixture suite was not run. Fresh candidate acceptance
-and public activation remain pending. No activation claim.
+that separate destructive fixture suite was not run. Corrected df80b2e candidate passed build/smoke and personal-settings checks;
+profile acceptance stopped at an ambiguous selector matching the editor and a
+closed creation dialog. The checker now scopes to the editor input. Backup
+atlas-pre-deploy-20261009-235852; evidence /tmp/atlas-settings-candidate-zw6mZn.
+Fixtures suspended/sessions revoked; live b57ba72 unchanged. Selector correction
+strict types, production build, checker lint and diff PASS. Fresh candidate
+acceptance and public activation remain pending. No activation claim.
 Paths: settings/profile/email routes, shared AccessEditor, permission sections/
 snapshot helpers, shell utility navigation, checker/deployer and focused suites.
 Next: merge exact live source, final checks, sealed candidate acceptance, activation

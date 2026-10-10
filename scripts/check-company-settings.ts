@@ -264,7 +264,7 @@ async function main() {
       .getByRole("button", { name: "Read", exact: true })
       .click();
     await page
-      .getByLabel("Profile name", { exact: true })
+      .locator('input[name="profileName"]')
       .fill(`Commercial mix ${suffix}`);
     await page
       .getByRole("button", { name: "Save profile", exact: true })
@@ -326,7 +326,7 @@ async function main() {
     await page
       .getByRole("button", { name: new RegExp(`^Commercial mix ${suffix}`) })
       .click();
-    await expect(page.getByLabel("Profile name", { exact: true })).toHaveValue(
+    await expect(page.locator('input[name="profileName"]')).toHaveValue(
       saved.name,
     );
     await db.role.update({
@@ -334,7 +334,7 @@ async function main() {
       data: { name: `Updated elsewhere ${suffix}` },
     });
     await page
-      .getByLabel("Profile name", { exact: true })
+      .locator('input[name="profileName"]')
       .fill(`Stale edit ${suffix}`);
     await page
       .getByRole("button", { name: "Save profile", exact: true })

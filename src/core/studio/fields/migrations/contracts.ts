@@ -43,6 +43,7 @@ const intentShape = {
 };
 export const fieldMigrationIntentSchema = z.strictObject(intentShape);
 export type FieldMigrationIntent = z.infer<typeof fieldMigrationIntentSchema>;
+export type SealedFieldMigrationIntent = { intent: FieldMigrationIntent; checksum: string };
 const reviewSchema = z.strictObject({
   ...intentShape,
   cohort: z.strictObject({ recordCount: revision, observationDigest: digest }),
@@ -65,16 +66,36 @@ export class FieldMigrationReviewError extends Error {
   }
 }
 
+function checkedIntent(input: unknown): FieldMigrationIntent {
+  try {
+    const intent = fieldMigrationIntentSchema.parse(input);
+    // Persist only complete normalised metadata; default insertion must not make
+    // a different historic payload appear to have the same integrity checksum.
+    if (canonicalJson(input) !== canonicalJson(intent) || intent.organisationId !== intent.principal.organisationId)
+      throw new Error("Noncanonical or foreign intent");
+    const analysis = analyseFieldEvolution(intent.source.payload, intent.target.payload);
+    if (analysis.kind !== "migration" || intent.source.payload.storageGeneration === intent.target.payload.storageGeneration)
+      throw new Error("Use ordinary publication for presentation changes");
+    createFieldConverter(intent.source.payload, intent.target.payload, intent.conversion);
+    return intent;
+  } catch { throw new FieldMigrationReviewError("REVIEW_INVALID"); }
+}
+
+/** Pure identity validation; no owner access, persistence or execution authority. */
+export function sealFieldMigrationIntent(input: unknown): SealedFieldMigrationIntent {
+  const intent = checkedIntent(input);
+  return { intent, checksum: checksum(intent) };
+}
+
+export function fieldMigrationIntentFromReview(review: FieldMigrationReview): FieldMigrationIntent {
+  return checkedIntent(Object.fromEntries(Object.keys(intentShape).map(key => [key, review[key as keyof FieldMigrationReview]])));
+}
+
 function checkedReview(input: unknown): FieldMigrationReview {
   try {
     const review = reviewSchema.parse(input);
-    // Persist only complete normalised metadata; default insertion must not make
-    // a different historic payload appear to have the same integrity checksum.
     if (canonicalJson(input) !== canonicalJson(review)) throw new Error("Noncanonical review");
-    const analysis = analyseFieldEvolution(review.source.payload, review.target.payload);
-    if (analysis.kind !== "migration" || review.source.payload.storageGeneration === review.target.payload.storageGeneration)
-      throw new Error("Use ordinary publication for presentation changes");
-    createFieldConverter(review.source.payload, review.target.payload, review.conversion);
+    fieldMigrationIntentFromReview(review);
     return review;
   } catch { throw new FieldMigrationReviewError("REVIEW_INVALID"); }
 }

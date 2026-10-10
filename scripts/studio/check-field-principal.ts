@@ -3,6 +3,7 @@ import { db } from "../../src/core/db/client";
 import { sessionForUser, type Session } from "../../src/core/auth/session";
 import { captureCustomerFieldMigrationPrincipal, openFieldMigrationSupportContext, resolveFieldMigrationPrincipal } from "../../src/core/studio/fields/principal";
 import { studioRegistry } from "../../src/core/studio/registry/runtime";
+import { checkFieldReviews } from "./check-field-reviews";
 
 /** Only the driver's freshly provisioned business user and explicit Test support affiliation. */
 export async function checkFieldPrincipal(customerUserId: string, staff: Session, organisationId: string, otherOrganisationId: string) {
@@ -56,6 +57,8 @@ export async function checkFieldPrincipal(customerUserId: string, staff: Session
   }
   assert.deepEqual(await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } }), nativeBefore);
   console.log("PASS real owner cohort access: canonical/final tickets counted without native edits, private nonmember denied before any count; source and v1/v2 contracts retained.");
+  await checkFieldReviews(opened.session, opened.principal, unanchored.id, otherOrganisationId);
+  assert.deepEqual(await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } }), nativeBefore);
   assert.equal(await db.auditEntry.count({ where: { id: opened.principal.authority === "staff_support" ? opened.principal.auditId : "impossible",
     organisationId, actorUserId: staff.userId, action: "studio.field.migration.support_opened", entityId: targetMember.id } }), 1);
   await assert.rejects(() => resolveFieldMigrationPrincipal({ ...opened.principal, auditId: "unrelated-audit" }), /FORBIDDEN/);

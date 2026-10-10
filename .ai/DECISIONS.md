@@ -1,3 +1,18 @@
+## 10 October 2026 — Field review archive precedes executable migration
+
+Use a frozen preparation intent and same-operation immutable review plus immutable
+per-record source observations. Preparation persists only PREPARING/REVIEWED/
+CANCELLED at this checkpoint; execution outcomes follow the reviewed owner policy.
+This fits the specification's first-class operation without implying a worker
+exists. Composite tenant/source/draft/value FKs prevent substituting another
+company or representation; observations retain references and fingerprints, never
+copied business values. A new target/mapping is a new operation, not an edited
+review. Integrity checksums and stored counts grant no data authority. Server
+collection must still prove whole native coverage, refresh principal and both field
+policies, and recheck source revisions before publication/execution/cutover. Keep
+archive models closed to generic desktop reads. No schema-authorised final-record
+mutation, second workflow engine or destructive reset is introduced.
+
 ## 9 October 2026 — Complete owner cohort access before migration counts
 
 A paginated visible list cannot prove full canonical coverage for field evolution.

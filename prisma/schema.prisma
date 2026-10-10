@@ -9362,6 +9362,8 @@ model StudioDraft {
   updatedAt DateTime @updatedAt
   definition StudioDefinition @relation(fields:[definitionId,organisationId], references:[id,organisationId], onDelete:Restrict)
   baseVersion StudioDefinitionVersion? @relation("StudioDraftBase", fields:[baseVersionId,definitionId,organisationId], references:[id,definitionId,organisationId], onDelete:NoAction, onUpdate:NoAction)
+  fieldMigrationPreparations StudioFieldMigrationPreparation[]
+  @@unique([id,definitionId,organisationId])
   @@unique([definitionId,organisationId])
   @@index([organisationId,updatedAt])
   @@map("studio_drafts")
@@ -9386,6 +9388,7 @@ model StudioDefinitionVersion {
   fieldOrigins StudioFieldBinding[] @relation("StudioFieldOrigin")
   generationOrigins StudioFieldGeneration[] @relation("StudioGenerationOrigin")
   fieldValues StudioFieldValue[] @relation("StudioFieldValueSchema")
+  fieldMigrationSources StudioFieldMigrationPreparation[] @relation("StudioMigrationSource")
   @@unique([id,definitionId,organisationId])
   @@unique([definitionId,organisationId,version])
   @@unique([definitionId,organisationId,semanticVersion])
@@ -9441,6 +9444,7 @@ model StudioFieldGeneration {
   initialFor StudioFieldBinding[] @relation("StudioInitialGeneration")
   slots StudioFieldSlot[]
   values StudioFieldValue[]
+  migrationPreparations StudioFieldMigrationPreparation[]
   @@unique([id,definitionId,organisationId])
   @@unique([id,definitionId,organisationId,entityId])
   @@unique([id,definitionId,organisationId,valueType])
@@ -9456,6 +9460,7 @@ model StudioExtensionRecord {
   updatedAt DateTime @updatedAt
   organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict,onUpdate:NoAction)
   slots StudioFieldSlot[]
+  migrationObservations StudioFieldMigrationObservation[]
   @@unique([organisationId,entityId,recordId])
   @@unique([id,organisationId,entityId])
   @@map("studio_extension_records")
@@ -9475,6 +9480,7 @@ model StudioFieldSlot {
   generation StudioFieldGeneration @relation(fields:[generationId,definitionId,organisationId,entityId],references:[id,definitionId,organisationId,entityId],onDelete:Restrict,onUpdate:NoAction)
   values StudioFieldValue[] @relation("StudioValueHistory")
   activeValue StudioFieldValue? @relation("StudioCurrentValue",fields:[activeValueId,id,organisationId],references:[id,slotId,organisationId],onDelete:NoAction,onUpdate:NoAction)
+  migrationObservations StudioFieldMigrationObservation[]
   @@unique([extensionId,definitionId,generationId])
   @@unique([id,definitionId,generationId,organisationId])
   @@unique([organisationId,definitionId,generationId,uniqueToken])
@@ -9507,6 +9513,7 @@ model StudioFieldValue {
   generation StudioFieldGeneration @relation(fields:[generationId,definitionId,organisationId,valueType],references:[id,definitionId,organisationId,valueType],onDelete:Restrict,onUpdate:NoAction)
   schemaVersion StudioDefinitionVersion @relation("StudioFieldValueSchema",fields:[versionId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction)
   activeFor StudioFieldSlot[] @relation("StudioCurrentValue")
+  migrationObservations StudioFieldMigrationObservation[]
   @@unique([id,slotId,organisationId])
   @@unique([slotId,revision])
   @@index([organisationId,definitionId,generationId,fingerprint],map:"studio_field_fingerprint_idx")
@@ -9515,4 +9522,71 @@ model StudioFieldValue {
   @@index([organisationId,definitionId,generationId,dateValue],map:"studio_field_date_idx")
   @@index([organisationId,definitionId,generationId,instantValue],map:"studio_field_instant_idx")
   @@map("studio_field_values")
+}
+
+// Frozen preparation identity precedes reviewed publication/execution. No worker yet.
+model StudioFieldMigrationPreparation {
+  id String @id @db.Uuid
+  organisationId String
+  definitionId String @db.Uuid
+  entityId String
+  sourceVersionId String @db.Uuid
+  sourceGenerationId String @db.Uuid
+  draftId String @db.Uuid
+  targetGenerationId String @db.Uuid
+  intent Json
+  intentChecksum String @db.Char(64)
+  state String @default("PREPARING")
+  revision Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sourceVersion StudioDefinitionVersion @relation("StudioMigrationSource",fields:[sourceVersionId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction)
+  sourceGeneration StudioFieldGeneration @relation(fields:[sourceGenerationId,definitionId,organisationId,entityId],references:[id,definitionId,organisationId,entityId],onDelete:Restrict,onUpdate:NoAction)
+  draft StudioDraft @relation(fields:[draftId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction)
+  review StudioFieldMigrationReview?
+  observations StudioFieldMigrationObservation[]
+  @@unique([id,definitionId,organisationId],map:"studio_migration_preparation_tenant_key")
+  @@unique([id,definitionId,organisationId,entityId,sourceGenerationId],map:"studio_migration_preparation_source_key")
+  @@index([organisationId,definitionId,state])
+  @@map("studio_field_migration_preparations")
+}
+
+// One immutable review per preparation; a different intent starts a new operation.
+model StudioFieldMigrationReview {
+  id String @id @db.Uuid
+  organisationId String
+  definitionId String @db.Uuid
+  review Json
+  checksum String @db.Char(64)
+  createdAt DateTime @default(now())
+  preparation StudioFieldMigrationPreparation @relation(fields:[id,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction)
+  @@unique([id,definitionId,organisationId],map:"studio_migration_review_tenant_key")
+  @@index([organisationId,definitionId])
+  @@map("studio_field_migration_reviews")
+}
+
+// Immutable observation references only. Later execution outcomes remain separate.
+model StudioFieldMigrationObservation {
+  id String @id @default(uuid()) @db.Uuid
+  preparationId String @db.Uuid
+  organisationId String
+  definitionId String @db.Uuid
+  entityId String
+  sourceGenerationId String @db.Uuid
+  recordId String
+  nativeRevision Int
+  extensionId String? @db.Uuid
+  extensionRevision Int?
+  slotId String? @db.Uuid
+  slotRevision Int?
+  valueId String? @db.Uuid
+  observation Json
+  createdAt DateTime @default(now())
+  preparation StudioFieldMigrationPreparation @relation(fields:[preparationId,definitionId,organisationId,entityId,sourceGenerationId],references:[id,definitionId,organisationId,entityId,sourceGenerationId],onDelete:Restrict,onUpdate:NoAction)
+  extension StudioExtensionRecord? @relation(fields:[extensionId,organisationId,entityId],references:[id,organisationId,entityId],onDelete:Restrict,onUpdate:NoAction)
+  slot StudioFieldSlot? @relation(fields:[slotId,definitionId,sourceGenerationId,organisationId],references:[id,definitionId,generationId,organisationId],onDelete:Restrict,onUpdate:NoAction)
+  value StudioFieldValue? @relation(fields:[valueId,slotId,organisationId],references:[id,slotId,organisationId],onDelete:Restrict,onUpdate:NoAction)
+  @@unique([preparationId,recordId])
+  @@index([organisationId,definitionId,preparationId])
+  @@map("studio_field_migration_observations")
 }

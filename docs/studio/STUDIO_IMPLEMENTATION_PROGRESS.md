@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c4 — Durable preparation/review observations — IN PROGRESS. Previous combined acceptance
+2B3c4 — Durable preparation/review observations — IMPLEMENTED; actual constraints pending. Previous combined acceptance
 VERIFIED live on 931a600. Pure 2B3c3 contracts verified locally (32 tests/build/types/lint); additive
 review/job/row persistence; no Phase 2 gate claim.
 
@@ -160,6 +160,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+2B3c3/4: fields/principal-contract and migrations/contracts, Prisma schema/additive
+review migration, generated gateway metadata, check-field-reviews/principal driver,
+review/access tests and DATA_MODEL/plan/ledger/state/decisions.
+
 Combined native integration: check-people-workspaces.ts selectors updated for
 already-live Dashboard library/inspector; exact saved metric/90→95% assertions retained.
 
@@ -209,6 +213,11 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+2B3c4 additive three preparation/review/observation models and tenant/source FKs,
+immutable source references and CAS guards. Schema/generation and central BEGIN/
+ROLLBACK DDL PASS; 20261010030000_studio_field_reviews NOT APPLIED yet. No native
+business changes/backfill/reset. Actual archive constraint helper pending.
+
 Applied 2B2: five typed field/storage models and additive migration
 20261009220000_studio_typed_fields. Prisma schema validation PASS; SQL/constraints
 central DDL syntax tested; migration applied on prepared fcfd512, full runtime
@@ -246,6 +255,10 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+2B3c4 local: 5 files/34 assertions, production build, strict post-build TypeScript,
+scoped lint, schema/generation PASS. Central transaction-only DDL syntax PASS and
+rolled back. New Test helper NOT RUN; no actual constraint/preview/worker claim.
 
 Historical local check snapshots below precede final combined 931a600 proof.
 
@@ -408,9 +421,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Start 2B3c3: implement a closed immutable reviewed-conversion identity contract
-binding tenant, field, exact source/draft/checksums, target/rule, principal and
-per-record owner/value observations. Test forged/stale/mismatched inputs and
-redacted failures before additive review/job/row persistence. No execution until
-job-backed owner representation authority and current/written field access exist.
-Phase 2 remains IN PROGRESS; no visual designer/value API/custom-button claim.
+Preserve exact publicly accepted live Settings 1646316 source and its checked-in
+acceptance mode without disturbing other work. Run integrated tests/build/types/
+lint, then pinned combined Studio candidate/public acceptance with backed-up
+additive review migration and check-field-reviews. Correct actual failures before
+marking archive constraints VERIFIED. After proof, implement owner-approved
+snapshot/coverage service and job-backed representation policy; no public preview,
+conversion executor, designer or custom buttons delivered yet. Phase 2 NOT PASSED.

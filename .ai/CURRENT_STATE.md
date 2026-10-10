@@ -1,5 +1,22 @@
 # Atlas current state
 
+## 10 October 2026 — Field preparation/review persistence implemented, central proof pending
+
+2B3c4 IMPLEMENTED: three additive preparation/review/observation models and SQL
+guards. Frozen intent, same-operation immutable review, source/draft freshness,
+tenant/generation/slot/value FKs, observation reference checks, sealed append denial
+and revision/state transitions. Only PREPARING/REVIEWED/CANCELLED; no conversion
+executor, target publication or public data API. Generic desktop access denied.
+Schema validation/client+gateway generation PASS. Central DDL executed inside BEGIN/
+ROLLBACK successfully; migration NOT applied. Five files/34 focused assertions,
+production build, strict post-build TypeScript and scoped lint PASS. Exact-Test
+helper added after actual support principal capture; real constraints not run yet.
+Migration: 20261010030000_studio_field_reviews; no native tables/backfill/reset.
+Observed current live 1646316 Settings has preserved 931a600; public Settings/Home
+evidence PASS. Next preserve its exact accepted source, validate integrated build,
+then candidate/public combined acceptance including the new SQL archive checks.
+Phase 2 NOT PASSED; visual design/publication/custom buttons remain outstanding.
+
 ## 10 October 2026 — Field review contracts locally verified; persistence started
 
 2B3c3 pure contracts: four files/32 assertions, production build, strict TypeScript

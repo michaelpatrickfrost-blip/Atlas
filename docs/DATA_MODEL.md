@@ -165,3 +165,17 @@ records approved actual hours/source timesheets. Drafts do not advance YTD.
 New tables stay closed to generic desktop queries; named permissioned readers
 serve their workspaces. Sensitive pay setup remains outside generic HR reads.
 See docs/plans/PEOPLE_PLATFORM_OVERHAUL.md for calculation and integration limits.
+
+
+## Studio field review archive — Phase 2 checkpoint
+
+StudioFieldMigrationPreparation pins the exact tenant-owned source version and
+storage generation, draft identity and frozen conversion intent. State/revision
+changes are separate from that immutable identity. StudioFieldMigrationReview seals
+one review per operation; StudioFieldMigrationObservation retains native IDs and
+source extension/slot/value revisions with immutable value fingerprints. Composite
+foreign keys preserve tenant/field/generation links. A new target/mapping requires
+a new operation. No business values are copied into review metadata, and generic
+desktop reads remain denied. These additive archive models do not provide a
+preview API, migration executor or cutover; see the Studio ledger for actual
+migration/constraint verification status.

@@ -246,7 +246,7 @@ bindings, foreign identity/default insertion/script rejection, missing anchors,
 immutable value pins, changed same-count membership, ordering/duplicate rejection
 and redacted failures. This is a pure contract, not a preview/persistence feature.
 
-## 2B3c4 — Durable preparation/review observations (IN PROGRESS)
+## 2B3c4 — Durable preparation/review observations (IMPLEMENTED; central constraints pending)
 
 Purpose: persist a frozen preparation intent, immutable review and immutable
 per-record source observations. Dependencies: 2B3c3 contracts, verified typed
@@ -269,3 +269,13 @@ Checks: schema validation/generation, real central DDL/tenant FKs/immutable inte
 CAS/state guards, stale source/draft rejection, row linkage and sealed append denial,
 full rollback on audit failure, build/types/lint and candidate/public integration.
 A table existing is only IMPLEMENTED until actual database constraints pass.
+
+
+2B3c4 local evidence: schema/generation PASS, initial long index name/one-to-one
+unique errors corrected before SQL generation. All additive DDL executed centrally
+inside BEGIN/ROLLBACK successfully; NOT applied. Five files/34 assertions,
+production build, strict TypeScript and scoped lint PASS. Gateway descriptors
+regenerated; direct/aggregate reads remain denied even to configuration staff.
+Exact-Test support-principal helper exercises missing anchors and real immutable
+slot/value references, sealed append guards, stale draft and audit rollback; NOT RUN
+until compatible backed-up candidate. No public preview/migration runner claimed.

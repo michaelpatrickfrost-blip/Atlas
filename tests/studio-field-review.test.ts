@@ -1,7 +1,8 @@
 import { expect, it } from "vitest";
 import { customFieldPayloadSchema } from "@/core/studio/fields/schema";
 import { assertFieldMigrationReviewUnchanged, fieldMigrationObservationDigest, readSealedFieldMigrationReview,
-  sealFieldMigrationReview, type FieldMigrationObservation, type FieldMigrationReview } from "@/core/studio/fields/migrations/contracts";
+  sealFieldMigrationReview, sealFieldMigrationIntent, fieldMigrationIntentFromReview,
+  type FieldMigrationObservation, type FieldMigrationReview } from "@/core/studio/fields/migrations/contracts";
 
 const uuid = (n: number) => `00000000-0000-4000-8000-${n.toString().padStart(12, "0")}`;
 const hash = (letter: string) => letter.repeat(64);
@@ -28,6 +29,15 @@ function review(): FieldMigrationReview {
     cohort: { recordCount: cohort.recordCount, observationDigest: cohort.observationDigest },
     summary: cohort.summary };
 }
+
+it("preparation intent pins the same source/target/principal without accepting client summaries", () => {
+  const input = review(), intent = fieldMigrationIntentFromReview(input);
+  expect(sealFieldMigrationIntent(intent).intent).toEqual(intent);
+  expect(intent).not.toHaveProperty("cohort"); expect(intent).not.toHaveProperty("summary");
+  expect(() => sealFieldMigrationIntent(input)).toThrow("review is invalid");
+  expect(() => sealFieldMigrationIntent({ ...intent, principal: { ...intent.principal, organisationId: "other" } })).toThrow("review is invalid");
+  expect(() => sealFieldMigrationIntent({ ...intent, conversion: { kind: "same_type" } })).toThrow("review is invalid");
+});
 
 it("round trips complete server metadata without sharing mutable caller objects or storing business values", () => {
   const input = review(), saved = sealFieldMigrationReview(input), before = structuredClone(saved);

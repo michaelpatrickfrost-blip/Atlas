@@ -1,5 +1,28 @@
 # Atlas current state
 
+## 10 October 2026 — Single publisher transaction locally checked
+
+2B3d3a IMPLEMENTED/local checks PASS: extracted existing publishDraft transaction
+into Core definitions/publication.ts. Normal module count, definition CAS/version/
+dependencies, ordinary binder, draft CAS and Audit/result retained; typed internal
+binder callback only. Tenant/kind/draft checks before writes; normal foreign/stale
+input denied. Four files/22 assertions, production build, strict post-build TS/
+scoped lint/diff PASS; /tmp/atlas-studio-publisher-extraction-{tests,build,postbuild-
+types,lint}.txt. No reviewed service yet; additive d2 migration still NOT APPLIED.
+Accepted live 32ee77e; Phase 2 NOT PASSED. Next d3b shared review inspector and
+publication/replay/cancellation through existing publisher, then d4 actual proof.
+
+## 10 October 2026 — Shared publisher extraction started
+
+2B3d3a IN PROGRESS before code: extract publishDraft's existing transaction into
+Core definitions/publication.ts, preserving module availability, definition CAS,
+immutable version/dependency creation, normal field binding, draft CAS and Audit.
+Keep normal public result and structural denial. Internal typed binding callback
+only, no use-server/client handler. Add tenant/kind checks before mutations; tests
+must use actual scoped draft shape rather than incomplete mocks. Files service,
+publication helper and definitions tests. No DDL application or reviewed publisher
+runtime yet; type/lint/build + native publication regressions required.
+
 ## 10 October 2026 — Reference verified live; publication receipt locally checked
 
 32ee77e7b1c684ab9c6b5f898eb641cebf0ae3f9 full combined candidate/public PASS,

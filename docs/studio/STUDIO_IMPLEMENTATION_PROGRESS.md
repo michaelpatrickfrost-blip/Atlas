@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3d3a — Shared metadata publisher transaction — NOT STARTED.
+2B3d3b — Reviewed publication service — NOT STARTED.
 Scalar/source coverage VERIFIED live fc9b80f; reference c1 local; no writer/designer.
 
 # Overall Status
@@ -62,6 +62,25 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+2B3d3a IMPLEMENTED/local checks PASS: extracted existing publishDraft transaction
+into Core definitions/publication.ts. Normal module count, definition CAS/version/
+dependencies, ordinary binder, draft CAS and Audit/result retained; typed internal
+binder callback only. Tenant/kind/draft checks before writes; normal foreign/stale
+input denied. Four files/22 assertions, production build, strict post-build TS/
+scoped lint/diff PASS; /tmp/atlas-studio-publisher-extraction-{tests,build,postbuild-
+types,lint}.txt. No reviewed service yet; additive d2 migration still NOT APPLIED.
+Accepted live 32ee77e; Phase 2 NOT PASSED. Next d3b shared review inspector and
+publication/replay/cancellation through existing publisher, then d4 actual proof.
+
+2B3d3a IN PROGRESS before code: extract publishDraft's existing transaction into
+Core definitions/publication.ts, preserving module availability, definition CAS,
+immutable version/dependency creation, normal field binding, draft CAS and Audit.
+Keep normal public result and structural denial. Internal typed binding callback
+only, no use-server/client handler. Add tenant/kind checks before mutations; tests
+must use actual scoped draft shape rather than incomplete mocks. Files service,
+publication helper and definitions tests. No DDL application or reviewed publisher
+runtime yet; type/lint/build + native publication regressions required.
 
 32ee77e7b1c684ab9c6b5f898eb641cebf0ae3f9 full combined candidate/public PASS,
 deploy exit 0 and actual public health exact match. Reference c1–c4 VERIFIED:
@@ -788,11 +807,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement 2B3d3a shared metadata publisher transaction helper by extracting the
-existing publishDraft transaction unchanged (CAS/version/dependencies/binding/draft/
-Audit). Preserve normal public result, structural denial and metadata-only authority.
-Add guarded internal callback for the reviewed binder only; no client hook.
-Then d3b reuse shared exact source/ref/digest review inspection and post-publication
-receipt freshness for reviewed publication/replay/cancellation. d4 real central
-SQL/source-active/no-target/premature-activation/rollback proof before applying
+Implement d3b shared exact review inspector from sealer; post-publication source
+coverage uses the scoped receipt freshness without relaxing old preparation gates.
+Reviewed service must pin current actor/review, use shared publisher/new-generation
+binder, atomically receipt/Audit, source active, no target writes. Fresh replay no
+writes; cancellation uses current explicit company principal/publish authority,
+scoped CAS and Audit without native data disclosure. Then d4 actual central SQL/
+source-active/no-target/premature activation/rollback proof before applying pending
 20261010040000 in pinned candidate/public release. Phase 2 NOT PASSED.

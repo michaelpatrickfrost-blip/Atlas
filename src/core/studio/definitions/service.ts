@@ -9,7 +9,8 @@ import { STUDIO_CAPABILITIES as CAP } from "../permissions";
 import { kernelPayloadSchema } from "../compiler/kernel";
 import { compileDefinition, parseDefinitionPayload } from "../compiler";
 import { customFieldPayloadSchema } from "../fields/schema";
-import { assertFieldBinding, bindPublishedField, fieldDefinitionKey } from "../fields/binding";
+import { assertFieldBinding, fieldDefinitionKey } from "../fields/binding";
+import { publishCompiledDefinitionInTransaction } from "./publication";
 import { studioRegistry } from "../registry/runtime";
 import { checksum } from "../registry/contracts";
 const uuid = z.uuid();
@@ -91,22 +92,8 @@ export async function publishDraft(session: Session, input: unknown) {
   const compiled = await compileDefinition(session, draft.definition.kind, draft.payload, studioRegistry());
   if (compiled.warnings.length && !value.acknowledgeWarnings) throw new Error("Acknowledge publication warnings first.");
   if (draft.definition.latestVersion !== (draft.baseVersion?.version ?? 0)) conflict();
-  return db.$transaction(async tx => {
-    const modules = [...new Set(compiled.plan.dependencies.map(d => d.ownerModuleId))];
-    const available = await tx.moduleState.count({ where: { organisationId: session.organisationId, moduleId: { in: modules }, enabled: true, entitled: true } });
-    if (available !== modules.length) throw new Error("DEPENDENCY_BROKEN: source module unavailable");
-    const changed = await tx.studioDefinition.updateMany({ where: { id: value.definitionId, organisationId: session.organisationId, revision: draft.definition.revision, latestVersion: draft.definition.latestVersion, retiredAt: null }, data: { latestVersion: { increment: 1 }, revision: { increment: 1 } } });
-    if (changed.count !== 1) conflict();
-    const number = draft.definition.latestVersion + 1;
-    const version = await tx.studioDefinitionVersion.create({ data: { organisationId: session.organisationId, definitionId: value.definitionId, version: number, semanticVersion: `1.0.${number - 1}`, schemaVersion: 1,
-      payload: compiled.payload, compiledPlan: compiled.plan, checksum: compiled.checksum, createdBy: session.userId,
-      dependencies: { create: compiled.plan.dependencies.map(ref => ({ ownerModuleId: ref.ownerModuleId, contractId: ref.id, contractVersion: ref.version, schemaHash: ref.schemaHash, contractHash: ref.contractHash } satisfies Prisma.StudioDependencyCreateWithoutVersionInput)) } } });
-    if (compiled.plan.kind === "customField") await bindPublishedField(tx, session, value.definitionId, draft.definition.key, version.id, compiled.plan.payload);
-    const updated = await tx.studioDraft.updateMany({ where: { id: draft.id, organisationId: session.organisationId, revision: value.revision }, data: { revision: { increment: 1 }, baseVersionId: version.id, validation: { checksum: compiled.checksum, warnings: compiled.warnings, validatedRevision: value.revision } } });
-    if (updated.count !== 1) conflict();
-    await audit(session, "studio.definition.published", value.definitionId, { versionId: version.id, version: number, checksum: compiled.checksum, warnings: compiled.warnings }, tx);
-    return { versionId: version.id, version: number, revision: value.revision + 1 };
-  }, { isolationLevel: "Serializable" });
+  const published = await db.$transaction(tx => publishCompiledDefinitionInTransaction(tx, session, draft, value.revision, compiled), { isolationLevel: "Serializable" });
+  return { versionId: published.version.id, version: published.versionNumber, revision: published.draftRevision };
 }
 export async function activateVersion(session: Session, input: unknown) {
   assertCapability(session, CAP.publish);

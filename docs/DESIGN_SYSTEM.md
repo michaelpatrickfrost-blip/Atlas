@@ -114,7 +114,9 @@ the Sales quotes/orders pages for the pattern.
 
 Opaque white cards must not apply backdrop filters: these create stacking contexts
 that can trap descendant dropdowns underneath later cards. Reserve backdrop blur
-for intentionally translucent surfaces with explicit overlay layering.
+for intentionally translucent surfaces with explicit overlay layering. Customer
+record menus align left on phones and right on wider screens; verify their entire
+bounds within the viewport as well as item hit-testing above page content.
 
 `globals.css` honours `prefers-reduced-motion`. All interactive primitives
 have visible focus rings (`focus-visible:outline-2 outline-[var(--color-atlas-blue)]`).

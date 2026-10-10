@@ -1,5 +1,21 @@
 # Atlas current state
 
+## 10 October 2026 — Customer phone menu alignment corrected before activation
+
+f58d5a5 candidate commercial acceptance PASS: both customer menus above content at
+1448/820/390px plus full commercial workflows; /tmp/atlas-commercial-staging-pHDQuM,
+screenshots /tmp/atlas-commercial-acceptance-AMJR29, backup061823. Visual screenshot
+inspection then found phone menu extending left offscreen, missed by centre-only
+hit-testing. Both customer menus now anchor left on phones/right from sm upward;
+checker also requires entire menu within viewport. Local production build, strict TypeScript and scoped
+lint PASS. bea1861 deployment intentionally stopped before
+activation, private backup/logs061900 and source retained; disposable outputs/cache
+reclaimed under both locks. Studio9aad1fc complete candidate/public PASS and current
+exact; its source is merged. npx execution cache and two inactive compiler caches
+reclaimed with source/static/runtime/readiness/central data/backups retained.
+Next: exact pinned commercial candidate/public gate and final visual review.
+Temporary swap stays until release/builds complete safely; no persistent swap edit.
+
 ## 10 October 2026 — Menu release retry and continuous commercial acceptance
 
 Reclaimed only failed 05d0098 dependencies/.next and npm package cache under both

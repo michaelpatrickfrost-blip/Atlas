@@ -354,6 +354,10 @@ async function main() {
         await trigger.click();
         const menu = page.getByRole("menu");
         await expect(menu).toBeVisible();
+        assert(await menu.evaluate((node) => {
+          const rect = node.getBoundingClientRect();
+          return rect.left >= 0 && rect.right <= innerWidth;
+        }), `${name}: ${label} menu fits viewport`);
         for (const item of await menu.getByRole("menuitem").all()) {
           await item.scrollIntoViewIfNeeded();
           assert(await item.evaluate((node) => {

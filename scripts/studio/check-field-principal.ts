@@ -8,6 +8,7 @@ import { z } from "zod";
 import { recordAnchorSchema } from "../../src/core/studio/registry/entities";
 import { checkFieldPreparation } from "./check-field-preparation";
 import { checkFieldUniqueSealing } from "./check-field-unique-sealing";
+import { checkFieldReferenceSealing } from "./check-field-reference-sealing";
 
 /** Only the driver's freshly provisioned business user and explicit Test support affiliation. */
 export async function checkFieldPrincipal(customerUserId: string, staff: Session, organisationId: string, otherOrganisationId: string) {
@@ -48,6 +49,9 @@ export async function checkFieldPrincipal(customerUserId: string, staff: Session
     requesterUserId: staff.userId, number: `TKT-STUDIO-COHORT-${crypto.randomUUID()}`, subject: "Exact Test cohort without Studio anchor" } });
   const uniquePeer = await db.serviceWorkItem.create({ data: { organisationId, kind: "TICKET", queueId: privateQueue.id,
     requesterUserId: staff.userId, number: `TKT-STUDIO-UNIQUE-${crypto.randomUUID()}`, subject: "Exact Test second active uniqueness record" } });
+  const foreignQueue = await db.serviceQueue.create({ data: { organisationId: otherOrganisationId, name: "Exact Test reference isolation", prefix: "STUREF", department: "Acceptance" } });
+  const foreignTicket = await db.serviceWorkItem.create({ data: { organisationId: otherOrganisationId, kind: "TICKET", queueId: foreignQueue.id,
+    requesterUserId: staff.userId, number: `TKT-STUDIO-FOREIGN-${crypto.randomUUID()}`, subject: "Exact Test foreign reference target" } });
   assert.equal(await db.studioExtensionRecord.count({ where: { organisationId, entityId: "tickets.ticket", recordId: unanchored.id } }), 0);
   const nativeBefore = await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } });
   assert(nativeBefore.some(row => row.status === "CLOSED"), "Final records must remain part of coverage");
@@ -83,6 +87,7 @@ export async function checkFieldPrincipal(customerUserId: string, staff: Session
   await checkFieldReviews(opened.session, opened.principal, unanchored.id, otherOrganisationId);
   await checkFieldPreparation(opened.session, opened.principal, otherOrganisationId, unanchored.id);
   await checkFieldUniqueSealing(opened.session, opened.principal, [unanchored.id, uniquePeer.id]);
+  await checkFieldReferenceSealing(opened.session, opened.principal, unanchored.id, nativeBefore.find(row => row.status === "CLOSED")!.id, foreignTicket.id, otherOrganisationId);
   assert.deepEqual(await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } }), nativeBefore);
   assert.equal(await db.auditEntry.count({ where: { id: opened.principal.authority === "staff_support" ? opened.principal.auditId : "impossible",
     organisationId, actorUserId: staff.userId, action: "studio.field.migration.support_opened", entityId: targetMember.id } }), 1);

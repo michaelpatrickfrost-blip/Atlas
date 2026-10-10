@@ -1,5 +1,34 @@
 # Atlas current state
 
+## 10 October 2026 — Actual reference proof ready for pinned release
+
+c4 helper IMPLEMENTED, actual NOT RUN: good approved closed native target read
+plus active-parent extend, real collector and existing shared SQL–Node seal/Audit
+rollback/replay helper, private queue revocation/recovery. Missing/foreign stored
+source fixtures explicitly privileged negatives; collector must abort with zero
+observations, separate invalid archive frame must fail actual owner protocol and
+canonical seal, no approved failure summaries. Foreign exact Test native fixture
+created before baseline; both tenants' native snapshots preserved. No new DDL,
+target/native mutations by review, permission grants or parallel engine.
+Checks: c3 scoped 21 files/136 assertions retained; c4 production build, strict
+post-build TypeScript, scoped lint/diff PASS, /tmp/atlas-studio-reference-proof-
+{build,postbuild-types,lint}.txt. Pin c1–c4 through full candidate/public combined
+suite next; fc9b80f accepted current. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Actual reference proof planned
+
+c4 IN PROGRESS before code: exact Test reference helper after uniqueness proof.
+Good source reference uses approved native read and normal active-parent extend;
+actual shared preparation/collector/seal/Audit rollback/replay then private queue
+revocation denial. Missing/foreign source fixtures are explicitly privileged
+negative storage cases, cannot collect or seal; a separate single invalid archive
+frame must be denied by owner query v2 before counts. Synthetic foreign ticket is
+created before baseline; compare native snapshots unchanged after checks. Reuse
+existing sealer actual helper, no duplicate engine/DDL, no target/native writes.
+Expected files check-field-reference-sealing.ts, principal driver/sealing checker,
+plan/ledger/state. Build/types/lint and full pinned combined candidate/public proof
+required; accepted live fc9b80f, Phase 2 NOT PASSED.
+
 ## 10 October 2026 — Reference final seal locally checked
 
 c3 IMPLEMENTED: single generic sealFieldMigrationPreparation replaces internal

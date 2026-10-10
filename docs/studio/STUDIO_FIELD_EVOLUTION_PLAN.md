@@ -530,7 +530,7 @@ coverage using actual canonical targets and current full private/native access,
 without per-record value round trips or ordinary write/final guard changes.
 c3 IMPLEMENTED locally: final reference review invokes that pinned owner protocol after
 current/written field/source/native checks; same archive digest/review/CAS/Audit.
-c4 NOT STARTED: actual Test reference/private/missing/foreign/stale/written-policy
+c4 IMPLEMENTED, actual NOT RUN: actual Test reference/private/missing/foreign/stale/written-policy
 and replay proof, plus full production/regression acceptance. No second permission
 engine or reference privilege is granted by metadata; old owner versions stay sealed.
 
@@ -565,3 +565,30 @@ c3 local evidence: 21 files/136 assertions, production build, strict post-build
 TypeScript/scoped lint and diff PASS. One generic internal review service; explicit
 owner protocol rechecked on replay before digest/CAS/Audit. No DDL/public endpoint.
 Actual c4 proof remains NOT STARTED; fc9b80f accepted scalar live remains current.
+
+
+c4 IN PROGRESS before code: exact Test reference helper after uniqueness proof.
+Good source reference uses approved native read and normal active-parent extend;
+actual shared preparation/collector/seal/Audit rollback/replay then private queue
+revocation denial. Missing/foreign source fixtures are explicitly privileged
+negative storage cases, cannot collect or seal; a separate single invalid archive
+frame must be denied by owner query v2 before counts. Synthetic foreign ticket is
+created before baseline; compare native snapshots unchanged after checks. Reuse
+existing sealer actual helper, no duplicate engine/DDL, no target/native writes.
+Expected files check-field-reference-sealing.ts, principal driver/sealing checker,
+plan/ledger/state. Build/types/lint and full pinned combined candidate/public proof
+required; accepted live fc9b80f, Phase 2 NOT PASSED.
+
+
+c4 helper IMPLEMENTED, actual NOT RUN: good approved closed native target read
+plus active-parent extend, real collector and existing shared SQL–Node seal/Audit
+rollback/replay helper, private queue revocation/recovery. Missing/foreign stored
+source fixtures explicitly privileged negatives; collector must abort with zero
+observations, separate invalid archive frame must fail actual owner protocol and
+canonical seal, no approved failure summaries. Foreign exact Test native fixture
+created before baseline; both tenants' native snapshots preserved. No new DDL,
+target/native mutations by review, permission grants or parallel engine.
+Checks: c3 scoped 21 files/136 assertions retained; c4 production build, strict
+post-build TypeScript, scoped lint/diff PASS, /tmp/atlas-studio-reference-proof-
+{build,postbuild-types,lint}.txt. Pin c1–c4 through full candidate/public combined
+suite next; fc9b80f accepted current. Phase 2 NOT PASSED.

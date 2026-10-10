@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c6b2b3c4 — Actual reference review acceptance — NOT STARTED.
+2B3c6b2b3c4 — Actual reference review acceptance — IN PROGRESS.
 Scalar/source coverage VERIFIED live fc9b80f; reference c1 local; no writer/designer.
 
 # Overall Status
@@ -61,6 +61,31 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+c4 helper IMPLEMENTED, actual NOT RUN: good approved closed native target read
+plus active-parent extend, real collector and existing shared SQL–Node seal/Audit
+rollback/replay helper, private queue revocation/recovery. Missing/foreign stored
+source fixtures explicitly privileged negatives; collector must abort with zero
+observations, separate invalid archive frame must fail actual owner protocol and
+canonical seal, no approved failure summaries. Foreign exact Test native fixture
+created before baseline; both tenants' native snapshots preserved. No new DDL,
+target/native mutations by review, permission grants or parallel engine.
+Checks: c3 scoped 21 files/136 assertions retained; c4 production build, strict
+post-build TypeScript, scoped lint/diff PASS, /tmp/atlas-studio-reference-proof-
+{build,postbuild-types,lint}.txt. Pin c1–c4 through full candidate/public combined
+suite next; fc9b80f accepted current. Phase 2 NOT PASSED.
+
+c4 IN PROGRESS before code: exact Test reference helper after uniqueness proof.
+Good source reference uses approved native read and normal active-parent extend;
+actual shared preparation/collector/seal/Audit rollback/replay then private queue
+revocation denial. Missing/foreign source fixtures are explicitly privileged
+negative storage cases, cannot collect or seal; a separate single invalid archive
+frame must be denied by owner query v2 before counts. Synthetic foreign ticket is
+created before baseline; compare native snapshots unchanged after checks. Reuse
+existing sealer actual helper, no duplicate engine/DDL, no target/native writes.
+Expected files check-field-reference-sealing.ts, principal driver/sealing checker,
+plan/ledger/state. Build/types/lint and full pinned combined candidate/public proof
+required; accepted live fc9b80f, Phase 2 NOT PASSED.
 
 c3 IMPLEMENTED/local checks PASS: one generic seal service requires approved same-
 entity reference versions and pinned owner reference_coverage after source/written
@@ -318,6 +343,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+c4: check-field-reference-sealing.ts, principal driver/shared sealing checker;
+plan/ledger/CURRENT_STATE. No permanent schema changes.
+
 c3: migrations/sealing.ts, existing scalar helper callers and sealing tests;
 DATA_MODEL, plan/ledger/state/decisions. Internal name only; no public endpoint.
 
@@ -462,6 +490,8 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+c4 build, strict post-build TypeScript/scoped lint/diff PASS; actual not run.
 
 c3 final: 21 files/136 assertions, production build, strict post-build TypeScript,
 scoped lint and diff PASS. /tmp/atlas-studio-reference-sealing-{full-tests,build,
@@ -677,11 +707,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement c6b2b3c4 exact Test reference review helper after existing unique check:
-normal owner extend only on active synthetic parent, native read of approved final
-reference target, actual preparation/collection/seal/replay/Audit rollback. Private
-membership revocation must deny fresh replay; missing and foreign target source
-fixtures must abort collection, and separate privileged negative archive fixtures
-must fail the owner reference protocol without approved summary. Check unchanged
-native rows and source hashes; then build/types/lint and pin complete c1–c4 release
-through full candidate/public acceptance. Phase 2 NOT PASSED; no target/native writes.
+Pin the reviewed c1–c4 commit on codex/studio-phase2; run ATLAS_RELEASE_ACCEPTANCE=
+studio through full candidate and public suites under original locks/backups.
+Require real reference collector/seal/Audit rollback/replay/private/missing/foreign
+proof plus native compatibility, exit 0 and exact /api/health/release SHA before
+VERIFIED. If failure, retain production and repair only observed cause. After
+acceptance begin 2B3d reviewed target publication design/typed contract against
+existing metadata/binding/SQL guards; no cutover or later-phase work yet.

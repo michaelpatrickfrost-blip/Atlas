@@ -9,7 +9,7 @@ import { sealFieldMigrationPreparation } from "../../src/core/studio/fields/migr
 import { collectFieldMigrationBatch } from "../../src/core/studio/fields/migrations/collection";
 import { startFieldMigrationPreparation } from "../../src/core/studio/fields/migrations/preparation";
 
-/** Actual scalar seal plus separately labelled privileged formatter fixtures;
+/** Actual shared field seal plus separately labelled privileged formatter fixtures;
  * no target/native/value mutations or executable operation are exercised here.
  */
 export async function checkFieldSealing(session: Session, preparationId: string, otherOrganisationId: string) {
@@ -67,6 +67,6 @@ export async function checkFieldSealing(session: Session, preparationId: string,
   const fixtureNode = fieldMigrationObservationDigest(); frames.sort((a, b) => a.recordId.localeCompare(b.recordId)).forEach(row => fixtureNode.append(row));
   assert.deepEqual(await withFieldMigrationAuthority(session, intent.principal, ({ transaction }) => digestFieldMigrationArchive(transaction, fixtureIntent)), { ...fixtureNode.finish(), duplicateTarget: true });
   await assert.rejects(() => sealFieldMigrationPreparation(session, { preparationId: fixture.id, revision: 0 }), /MIGRATION_COHORT_CHANGED/);
-  console.log("PASS actual scalar seal: exact source/written/owner coverage, SQL–Node v1 digest parity, immutable review/summary/CAS, actual Audit rollback, fresh replay and sealed append denial; no target/native/value mutation. Separate privileged formatter fixtures cover empty/invalid/lossy/duplicates and cannot seal.");
+  console.log("PASS actual shared field seal: exact source/written/owner coverage, SQL–Node v1 digest parity, immutable review/summary/CAS, actual Audit rollback, fresh replay and sealed append denial; no target/native/value mutation. Separate privileged formatter fixtures cover empty/invalid/lossy/duplicates and cannot seal.");
   return result;
 }

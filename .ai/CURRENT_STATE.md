@@ -1,5 +1,18 @@
 # Atlas current state
 
+## 10 October 2026 — Shared card/menu layering correction
+
+Customer Actions appeared underneath tabs and overview cards because the global
+solid-white card rule applied backdrop-filter, creating nested stacking contexts.
+Removed that unnecessary filter in src/app/globals.css across all matching cards;
+intentional translucent navigation styles remain. Commercial acceptance now checks
+every Actions/Manage Record item with browser hit-testing and captures both open
+menus at desktop/tablet/phone sizes. No business records or permissions change.
+Production build, strict TypeScript, scoped checker lint and whitespace PASS;
+candidate/public feature acceptance pending. Scoped release starts at live 5f5fce5 to preserve
+concurrent accepted work. Next: finish checks, prepare, verify, activate and repeat
+public menu acceptance; do not claim deployment until exact revision is confirmed.
+
 ## 10 October 2026 — Cutover receipt storage checked locally; actual proof pending
 
 2B3f2 IMPLEMENTED, not runtime VERIFIED. Additive StudioFieldMigrationCutover

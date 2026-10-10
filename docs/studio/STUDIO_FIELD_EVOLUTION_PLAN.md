@@ -1423,3 +1423,10 @@ software output retirement). Source/history/current/rollback/process pins/data/
 backups retained. Current live97ceb35 ancestry merged before next exact Studio
 release; additive0007 actual nested Test plus full candidate/public native gate
 still pending. Do not reopen normal values or mark f4b1 VERIFIED from cleanup.
+
+10 October0744UTC pinned1d7f558 preparation successfully APPLIED additive0007,
+required recovery backup074339. Server candidate build then became unmonitorable:
+HTTPS/SSH banner timeouts from0747UTC, TCP22 accepts, exact compiler cancellation
+could not connect. Actual nested Test/candidate/public acceptance remains BLOCKED,
+no gate/live activation claim. Recover via provider console/SSH and inspect kernel/
+resource/locks/current state before retry; original DDL/history/backups retained.

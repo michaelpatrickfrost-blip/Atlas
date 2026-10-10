@@ -1,5 +1,63 @@
 # Atlas current state
 
+## 10 October 2026 — Studio f4b1 BLOCKED; provider console required
+
+Cleanup VERIFIED: root168GiBfree after final retirement, Mac master5.6GiB/build2.6GiB;
+no unnecessary business dumps created. User's no-unneeded-dumps preference saved
+in project instructions and requested personal memory note. Resumed phases and
+preserved accepted live97ceb35 ancestry.55 local files340 assertions/build/strict
+TS/scoped lint PASS; exact1d7f558 candidate started074339 with required recovery
+backup. Additive0007 successfully APPLIED; no customer data purge/reset/restore.
+
+From0747UTC, HTTPS TLS/health and SSH banner exchange repeatedly time out; TCP22
+accepts. Existing SSH monitors stall; stopped only stale local read-only monitors,
+not the deployment. Exact compiler-only cancellation attempt failed before SSH
+execution. Resource pressure is suspected, unconfirmed; last7.8GiB RAM/no swap,
+root167GiBfree during build. Last confirmed current97ceb35/previous1bf0e2c; no
+activation or candidate/public acceptance logged. Cannot presently confirm live
+health, running build status or PG state. Do not claim new Studio LIVE or VERIFIED.
+No accessible provider-management connector/console was found. Asked Michael for
+hosting provider/control-panel URL; no password requested. This is a genuine
+external access/health blocker, separate from resolved disk capacity.
+
+Exact next: open independent Atlas VPS provider console, inspect kernel/memory/
+process state and candidate compiler1d7f558, verify current/previous pointers and
+original lock owner before scoped stop/recovery. Restore SSH/app/PG health; inspect
+runner20133/074339 logs and migration state; address proven build-resource cause
+then complete full candidate/public Studio+native gates normally. Do not beginf4b2/
+Phase3, reset DB, restore backups or blindly kill services. Applied0007 and recovery
+backup retained. Local evidence /tmp/atlas-studio-f4b1-live-deploy.txt, server-load-
+recheck{,-2,-3}.txt and scoped-build-cancel.txt. Local memory checkpoint does not
+advance remote pinned codex/studio-phase2 tip1d7f558.
+
+## 10 October 2026 — f4b1 build health investigation IN PROGRESS
+
+Pinned1d7f558 runner20133 remains in server build after successful additive0007.
+From0747UTC public HTTPS TLS/health times out; port22 TCP accepts but new SSH banner
+exchange times out. Existing monitoring SSH commands also stalled; no candidate/
+public acceptance or activation logged. Last confirmed current97ceb35, previous
+1bf0e2c; current health cannot presently be verified. Disk capacity resolved (last
+167GiBfree); resource pressure during compilation is suspected, not confirmed.
+Last server telemetry7.8GiB RAM/no swap. Do not claim site healthy/new Studio live.
+Attempted exact candidate compiler-only SIGTERM recovery via SSH, guarded against
+current/previous pointers; SSH banner timed out, so cancellation did NOT execute. Local evidence
+/tmp/atlas-studio-server-load-recheck{,-2}.txt and scoped-build-cancel.txt, deploy log.
+Next recover SSH/live health; inspect exact build/process/locks before safe stop or
+retry. Preserve applied0007/required074339 backup; no reset/restore/global kill or
+Phase3 work. Branch tip remains pinned; memory updates pending checkpoint after
+runner completes or confirmed external blocker.
+
+## 10 October 2026 — Pinned f4b1 release IN PROGRESS; additive0007 applied
+
+Exact1d7f558 codex/studio-phase2 deploy runner20133 started074339UTC; log
+/tmp/atlas-studio-f4b1-live-deploy.txt. Required private pre-deploy backup074339;
+Prisma generation and additive20261010070000_studio_field_settlements applied
+successfully. Candidate production build in progress; current97ceb35 unchanged at
+preparation. Actual nested Test SQL and all candidate/public native gates pending,
+not VERIFIED. Preserve original0006/source/history/backups; no backfill/record purge.
+Do not advance Git branch tip while runner operates. Next inspect completion/failure
+and update real evidence; no f4b2 until this coherent gate passes. Phase2 NOT PASSED.
+
 ## 10 October 2026 — Recovered f4b1 candidate checks PASS; exact release next
 
 Combined47 files294 assertions plus8 compatibility files46 assertions PASS

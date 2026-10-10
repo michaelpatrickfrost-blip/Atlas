@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f4b1 — Additive one-time settlement storage — IMPLEMENTED; central release proof pending.
+2B3f4b1 — Additive one-time settlement storage — BLOCKED on server access/health; code IMPLEMENTED and0007 APPLIED.
 Operational software-retention cleanup — VERIFIED; capacity blocker resolved.
 Michael requested this cleanup before resuming Studio feature work.
 Purpose: retain original activation history while proving rollback/finalization
@@ -31,8 +31,9 @@ candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
 
-IN PROGRESS: f4b1 central verification pending; capacity blocker resolved by
-10 October software-retention cleanup. Phase 2 not passed.
+BLOCKED: f4b1 central verification pending after server HTTPS/SSH became
+unresponsive during candidate build. Capacity blocker resolved by10 October
+software-retention cleanup. Phase2 not passed.
 Admin-only/modern-UI companion VERIFIED. Phase 1 remains
 VERIFIED. Latest confirmed live source97ceb35b069845f637a43811d8200a99b9ade306
 (includes verified Studio74fab2d/9aad1fc/1f2ab97 plus preserved Tasks/Messages),
@@ -1441,8 +1442,11 @@ business records changed, no local business databases, no destructive reset.
 
 Software cleanup: NONE. Forward0007 remains pending.
 
-Current settlement0007 NOT APPLIED. Latest existing0006 stays applied/verified.
-Backed-up DDL rollback071007 left zero settlementPin columns.
+Current settlement0007 APPLIED successfully by pinned1d7f558 release preparation
+10 October0744UTC, required backup atlas-pre-deploy-20261010-074339. No backfill/
+record deletion; original0006 retained. Candidate build and actual nested Test/
+public native checks IN PROGRESS, not yet VERIFIED. Earlier rollback-only DDL
+071007 left zero settlement columns at that historical checkpoint.
 
 
 20261010060000_studio_field_cutovers APPLIED under backup052619 and VERIFIED in
@@ -1753,6 +1757,13 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
+ACTIVE investigation: pinned1d7f558 build followed by public TLS/health timeouts
+and SSH banner timeouts from0747UTC (TCP22 accepts). Existing monitor commands
+stalled; actual resource cause not yet confirmed. Last current97ceb35/previous
+1bf0e2c, no activation/acceptance logged. Root space resolved; do not describe this
+as the earlier disk blocker. Attempted exact non-current compiler-only cancellation
+via SSH failed at banner exchange; no cancellation executed; preserve migration0007/backups/history/locks.
+
 RESOLVED10 October: unbounded duplicated release dependencies/builds filled the
 VPS. User-authorised retirement of118 inactive runtime output sets retained live,
 immediate rollback and process-pinned runtimes plus source/static/evidence/backups.
@@ -1789,6 +1800,11 @@ No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
 
+Current f4b1 actual storage/runtime verification BLOCKED: additive0007 applied,
+server build/acceptance completion unknown after SSH/HTTPS timeouts. No candidate/
+public nested Test PASS or new live Studio release claimed. Phase2 NOT PASSED;
+next workstream/Phase3 must not begin until safe gate evidence is available.
+
 Phase 2 NOT PASSED: 2B–2F remain; owner contract local evidence alone is not the phase
 gate. Central owner checks must run on candidate/public release alongside full phase
 runtime, tenant, permissions and native module regressions.
@@ -1806,6 +1822,30 @@ These checks derive from Sections 5–6, 14, 19, 25–28; no whole-system gate u
 prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
+
+Obtain Atlas VPS hosting-provider/control-panel URL (asked Michael asynchronously),
+then use its independent console to inspect server/kernel/resource state and exact
+candidate compiler1d7f558bf35c02941bca732daffbe61288cdb044. Recover SSH and current
+app/PG health before further implementation. If build is still running, stop only
+that non-current compiler after checking current/previous pointers and original
+lock holder. Do not restart broad services, restore data or bypass locks blindly.
+Inspect original deploy runner20133/private074339 logs and real migration state;
+0007 was applied successfully, not rolled back. Address proven build resource
+cause before retrying full pinned candidate/public native acceptance. Preserve
+local blocked-checkpoint commit; remote branch remains pinned1d7f558.
+
+Recover SSH/public health, inspect exact pinned candidate build and original locks;
+compiler cancellation is scoped to non-current1d7f558 only and queued via SSH.
+Do not start another build or f4b2 while live health is unverified. Preserve applied
+0007 and074339 recovery backup. Then inspect runner20133 and candidate/private logs,
+fix actual failure/resource limits and complete exact native acceptance normally.
+
+Wait for pinned1d7f558 release runner20133 to complete (local log
+/tmp/atlas-studio-f4b1-live-deploy.txt). Forward0007 applied successfully; candidate
+server build in progress, current97ceb35 unchanged as of preparation. Keep Git
+branch tip pinned; no f4b2 coding until actual nested Test and all candidate/public
+native checks pass. Inspect any failure, preserve applied additive DDL/backups and
+fix without reset/restore or guard bypass.
 
 Run exact pinned codex/studio-phase2 release now with ATLAS_RELEASE_ACCEPTANCE=studio
 using the reviewed clean candidate. Keep branch pinned until complete; record real

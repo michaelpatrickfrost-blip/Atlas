@@ -439,3 +439,16 @@ the installed Next guide and avoids retaining an unused compiler cache per SHA.
 Development caching is unchanged. The `tasks` acceptance selector now runs both
 Tasks drawer checks and the existing Messages composer/draft/attachment workflow
 on candidate/public; each stage stays inside the original locks and fixture backup.
+
+## Pinned build access incident — 10 October 2026
+
+Studio1d7f558 preparation applied reviewed additive0007 after backup074339, then
+HTTPS TLS/health and SSH banner exchange timed out during server compilation.
+TCP22 accepted; last disk167GiBfree,7.8GiB RAM/no swap. Resource pressure is
+suspected, not proven. Exact candidate compiler cancellation could not connect.
+Do not start another candidate or claim activation/acceptance. Recover through
+independent hosting console, inspect actual kernel/resource/current/locks and
+original private build/deploy logs, then stop only confirmed non-current compiler
+if needed. Preserve applied migration/history/backups; no destructive DB recovery
+or broad service kill. Resolve proven resource cause before next pinned build.
+Current incident/handoff remains in CURRENT_STATE and Studio ledger.

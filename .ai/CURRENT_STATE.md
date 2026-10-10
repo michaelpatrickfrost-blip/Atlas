@@ -55,8 +55,9 @@ acceptance and public activation remain pending. No activation claim.
 Paths: settings/profile/email routes, shared AccessEditor, permission sections/
 snapshot helpers, shell utility navigation, checker/deployer and focused suites.
 Exact newly running Studio 931a6009 is merged, preserving its cohort/decoder and
-combined acceptance hook; Settings and Studio selectors both retained. Its public
-acceptance is pending and Settings deployment will not proceed before that proof.
+combined acceptance hook; Settings and Studio selectors both retained. Its candidate and public
+combined acceptance now PASS (/tmp/atlas-studio-candidate-Ww5GqF and
+/tmp/atlas-studio-public-qqYkvj), exact public health 931a6009 verified.
 Combined 17 files/83 assertions, strict types, production build, scoped lint
 (zero errors/two existing brand-image warnings), shell syntax and diff PASS.
 Only identical repeated memory checkpoint copies were deduplicated; all distinct

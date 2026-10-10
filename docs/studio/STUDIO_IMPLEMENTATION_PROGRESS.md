@@ -11,7 +11,8 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f2 — Additive cutover receipt and atomic-pointer storage guards — IMPLEMENTED; actual acceptance pending.
+2B3f3a — Shared activation transaction primitive — IN PROGRESS.
+2B3f2 VERIFIED on exact5f5fce5 complete candidate/public.
 2B3f1 VERIFIED on exact 080e4d7 complete candidate/public.
 2B3e6 VERIFIED on exact 8d6eb9e candidate/public.
 2B3d1–d4 VERIFIED ea27b2f; no row writer/designer.
@@ -19,7 +20,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source 080e4d741e0e05d6c763a540900cc81b10b1147d,
+VERIFIED. Latest confirmed live source 5f5fce5535765066068eb0e21ecbad10fe745a50,
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -33,6 +34,7 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 | Workstream | Status | Evidence |
 | --- | --- | --- |
+| 2B3f2 Receipt and atomic storage | VERIFIED | 5f5fce5 complete candidate/public actual rollback-only storage guards plus all native suites; additive 0006 applied. |
 | 2B3f1 Closed cutover identity | VERIFIED | 080e4d7 complete candidate/public actual pure-pin proof; 8 focused/257 scoped assertions/build/types/lint. No activation authority. |
 | 2B3e1–e6 Representation policy, exact execution and recovery | VERIFIED | 8d6eb9e complete candidate/public, actual owner/SQL/atomic batch/Audit/process restart/replay/private/tenant/history/native proof; 38 files/229 local assertions/build/types/lint. |
 | 2B3c6b2b3c Reference review | VERIFIED | 32ee77e complete candidate/public, actual permission/target/Audit/replay plus native acceptance; no target/native writes. |
@@ -69,6 +71,38 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+5f5fce5535765066068eb0e21ecbad10fe745a50 complete candidate/public PASS;
+deploy81942 exit0, exact public health confirmed. Candidate J150ZK/public AZyW6v,
+backup052619/fixtures052817/053216; /tmp/atlas-studio-cutover-storage-deploy.txt.
+20261010060000 APPLIED and actual storage guard lifecycle VERIFIED: exact atomic
+triple tested then deliberately rolled back, standalone/tampered/foreign/stale/
+history/cancel/source/draft bypasses rejected, both native snapshots unchanged.
+All native/Admin/business-login suites PASS; prior080e4d7 retained. No SQL repair.
+Begin f3a shared activation transaction extraction and tests, preserving existing
+compiler/checksum/binding/module/CAS/Audit rules. Then f3b authorised cutover/replay,
+f3c actual service proof; f4 honest rollback/value window follows. Phase 2 NOT PASSED;
+visual editor/customer dashboard publication/buttons remain required and incomplete.
+
+5f5fce5 full combined candidate PASS and exact runtime switched; previous080e4d7
+retained. Public AZyW6v actual cutover storage/identity/execution/principals/Admin/
+customer login PASS, fixture053216. Remaining native public suites pending; session
+81942 still active, no pinned branch advance. No f3 activator/f4 rollback/value API.
+
+5f5fce5 candidate J150ZK actual cutover storage PASS: exact triple passes deferred
+proof then deliberate rollback; standalone receipt/publication, foreign/tampered/
+stale identity, history mutation, cancellation/old-source activation/draft/source
+save bypasses denied. Source and both native snapshots unchanged; no permanent
+activation/service. Studio execution/principals/Admin/customer-login PASS. Remaining
+native suites/public repeat pending; session81942 running, fixtures052817/backup052619.
+0006 APPLIED, guard candidate evidence confirmed; full public acceptance still needed.
+Space9.3G, PostgreSQL online. Do not advance pinned tip; no f3 code yet.
+
+5f5fce5 receipt storage release running (session81942, backup052619,
+/tmp/atlas-studio-cutover-storage-deploy.txt). Normal deploy successfully applied
+20261010060000_studio_field_cutovers; production candidate compiled, build/acceptance
+still running. Migration APPLIED, actual guard lifecycle NOT VERIFIED. Prior live
+080e4d7 retained; no branch advance during runner. No f3 activator or f4 rollback.
 
 2B3f2 IMPLEMENTED, not runtime VERIFIED. Additive StudioFieldMigrationCutover
 scoped execution/source/target FKs, immutable closed pin/history and deferred receipt+
@@ -1149,8 +1183,9 @@ business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
 
-20261010060000_studio_field_cutovers NOT APPLIED. Backed-up central DDL transaction
-rolled back PASS; actual runtime lifecycle awaits pinned candidate/public release.
+20261010060000_studio_field_cutovers APPLIED under backup052619 and VERIFIED in
+5f5fce5 complete candidate/public. Earlier backed-up DDL transaction rolled back PASS;
+no native/backfill/reset changes. See current workstream evidence.
 
 20261010050000_studio_field_executions applied successfully in central preparation
 for pinned 6d2f5a9, migrate log under backup 20261010-042335. Lifecycle not yet verified.
@@ -1446,12 +1481,12 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint f2 additive receipt/atomic-pointer storage (257 local assertions/build/
-types/lint and central DDL rollback PASS), then pin full combined Studio release.
-Apply 20261010060000 only through normal backed-up deploy; actual Test helper must
-prove receipt/publication/pointer all-or-nothing and retained/frozen source/native
-compatibility, then public repeat. If FAIL preserve applied additive migration and
-history, repair exact cause without reset/guard weakening. After PASS begin f3:
-extract shared activation transaction primitive from definitions/service.ts, implement
-current-authority cutover and fresh replay with paired Audit. f4 rollback/value
-window follows; Phase 2 designer/customer dashboards/buttons remain incomplete.
+Extract existing activateVersion transaction into definitions/activation.ts with
+scoped immutable-version identity, compiler/checksum, binding, source-module count,
+definition CAS and existing activation Audit. Keep public service behaviour and
+error/results compatible; no bypass hook or native mutation. Add meaningful helper
+security/field-binding/CAS/Audit tests, run existing Studio/native regressions/build/
+types/lint, review/checkpoint docs. Then f3b current-authority receipt/cutover and
+fresh replay, f3c actual central proof. Accepted 5f5fce5; Phase 2 visual/customer dashboards/
+buttons remain incomplete. Before more server builds keep safe disposable cache
+capacity, preserving current 5f5fce5 and rollback 080e4d7 runtimes/source/records/backups.

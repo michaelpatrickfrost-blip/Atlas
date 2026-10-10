@@ -1,5 +1,45 @@
 # Atlas current state
 
+## 10 October 2026 — Receipt storage accepted live; shared activator starts
+
+5f5fce5535765066068eb0e21ecbad10fe745a50 complete candidate/public PASS;
+deploy81942 exit0, exact public health confirmed. Candidate J150ZK/public AZyW6v,
+backup052619/fixtures052817/053216; /tmp/atlas-studio-cutover-storage-deploy.txt.
+20261010060000 APPLIED and actual storage guard lifecycle VERIFIED: exact atomic
+triple tested then deliberately rolled back, standalone/tampered/foreign/stale/
+history/cancel/source/draft bypasses rejected, both native snapshots unchanged.
+All native/Admin/business-login suites PASS; prior080e4d7 retained. No SQL repair.
+Begin f3a shared activation transaction extraction and tests, preserving existing
+compiler/checksum/binding/module/CAS/Audit rules. Then f3b authorised cutover/replay,
+f3c actual service proof; f4 honest rollback/value window follows. Phase 2 NOT PASSED;
+visual editor/customer dashboard publication/buttons remain required and incomplete.
+
+## 10 October 2026 — Public receipt proof passed; final native repeat running
+
+5f5fce5 full combined candidate PASS and exact runtime switched; previous080e4d7
+retained. Public AZyW6v actual cutover storage/identity/execution/principals/Admin/
+customer login PASS, fixture053216. Remaining native public suites pending; session
+81942 still active, no pinned branch advance. No f3 activator/f4 rollback/value API.
+
+## 10 October 2026 — Actual receipt guards passed candidate; combined proof pending
+
+5f5fce5 candidate J150ZK actual cutover storage PASS: exact triple passes deferred
+proof then deliberate rollback; standalone receipt/publication, foreign/tampered/
+stale identity, history mutation, cancellation/old-source activation/draft/source
+save bypasses denied. Source and both native snapshots unchanged; no permanent
+activation/service. Studio execution/principals/Admin/customer-login PASS. Remaining
+native suites/public repeat pending; session81942 running, fixtures052817/backup052619.
+0006 APPLIED, guard candidate evidence confirmed; full public acceptance still needed.
+Space9.3G, PostgreSQL online. Do not advance pinned tip; no f3 code yet.
+
+## 10 October 2026 — Cutover storage migration applied; actual proof pending
+
+5f5fce5 receipt storage release running (session81942, backup052619,
+/tmp/atlas-studio-cutover-storage-deploy.txt). Normal deploy successfully applied
+20261010060000_studio_field_cutovers; production candidate compiled, build/acceptance
+still running. Migration APPLIED, actual guard lifecycle NOT VERIFIED. Prior live
+080e4d7 retained; no branch advance during runner. No f3 activator or f4 rollback.
+
 ## 10 October 2026 — Cutover receipt storage checked locally; actual proof pending
 
 2B3f2 IMPLEMENTED, not runtime VERIFIED. Additive StudioFieldMigrationCutover

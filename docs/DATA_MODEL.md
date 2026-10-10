@@ -270,12 +270,12 @@ regression assertions, build/types/lint PASS; actual authorised-row identity pro
 passed in 080e4d7 complete candidate/public acceptance. Cutover receipt, atomic
 activation/rollback, ordinary owner value gateway and visual builder remain pending.
 
-2B3f2 storage checkpoint (IMPLEMENTED; migration NOT APPLIED):
+2B3f2 storage checkpoint (VERIFIED on 5f5fce5 complete candidate/public;0006 APPLIED):
 StudioFieldMigrationCutover has scoped execution and source/target immutable-version
 FKs, closed f1 pin/checksum and retained publisher/history. Additive 20261010060000
 requires receipt, PUBLISHED→CUTOVER CAS and exact source→target/revision+1 pointer
 together with deferred proof. Old freshness stays source-active; source/target and
 configuration remain frozen at this checkpoint. No normal-write or production
 activation/rollback API. Central backed-up DDL rollback and 257 scoped assertions/
-build/types/lint PASS; actual central guards pending candidate/public. Generic
+build/types/lint PASS; actual central rollback-only storage guards passed candidate/public. Generic
 receipt reads/counts denied; unchanged 905 actions. See Studio ledger.

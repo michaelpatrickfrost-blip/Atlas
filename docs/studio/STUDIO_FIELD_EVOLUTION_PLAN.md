@@ -1160,8 +1160,8 @@ Phase 2 NOT PASSED; cutover and visual editor/dashboard/button work remains pend
 
 2B3e6 VERIFIED: 8d6eb9e full candidate/public combined PASS; final recovery release
 finished exit0. 2B3f1 VERIFIED on 080e4d7 complete candidate/public, eight focused/257 regression
-assertions/build/types/lint PASS. F2 IMPLEMENTED, 257 local assertions/build/types/lint/central DDL rollback PASS;
-actual lifecycle pending release. f3–f5 NOT STARTED.
+assertions/build/types/lint PASS. F2 VERIFIED on 5f5fce5 complete candidate/public, actual storage/deferred/isolation/
+history/source/native proof. F3a IN PROGRESS; f3b/f3c/f4/f5 NOT STARTED.
 Source Sections 6.3–6.4 and 24: activation is separate, all conversions resolved,
 reads remain source-compatible until cutover, history is retained and rollback limits
 must be explicit. Actual existing activation is in definitions/service.ts; it owns
@@ -1174,7 +1174,7 @@ PUBLISHED state. Preserve these boundaries; an activation flag is insufficient.
 | ID | Purpose / dependencies | Expected files and database | Evidence / status |
 | --- | --- | --- | --- |
 | 2B3f1 | Closed server-derived cutover identity and rollback window; depends on VERIFIED e6 | migrations/cutover-contract and tests; no DDL | Exact READY execution, stored publication/review/immutable target, current definition CAS, no client org/pin; explicit rollback limitations. VERIFIED on 080e4d7 complete candidate/public |
-| 2B3f2 | Tenant cutover receipt and atomic pointer/transition proof | schema/additive forward SQL/catalogue/privacy; no native tables/backfill/reset | Claim requires complete unchanged execution/source/target; deferred commit requires exact activated target; history/CAS/FKs; cancelled/unfinished/cosmetic bypass denied. Existing applied SQL retained. IMPLEMENTED; actual guard proof pending |
+| 2B3f2 | Tenant cutover receipt and atomic pointer/transition proof | schema/additive forward SQL/catalogue/privacy; no native tables/backfill/reset | Claim requires complete unchanged execution/source/target; deferred commit requires exact activated target; history/CAS/FKs; cancelled/unfinished/cosmetic bypass denied. Existing applied SQL retained. VERIFIED on 5f5fce5 complete candidate/public |
 | 2B3f3 | Shared current-authority cutover and existing activation primitive | migrations/cutover plus a narrow transaction extraction from definitions/service; tests | Same compiler/binding/module/CAS/Audit logic; native/private/current/written/reference/required/unique checks before pointer change; paired Audit rollback and fresh idempotent replay. NOT STARTED |
 | 2B3f4 | Honest rollback and post-cutover normal-value compatibility | shared inspection/receipt guards/rollback and tests; additive guards as needed | Source history retained; normal target editing uses owning-domain rules in subsequent 2B4; source generation stays historical. Rollback only in explicitly validated unchanged window; target-only writes/native or metadata drift cannot silently discard data. NOT STARTED |
 | 2B3f5 | Actual central acceptance and checkpoint | existing execution/principal/combined Test driver and docs | Exact cutover/rollback/failed-Audit/replay, tenant/private/native/module/field revocation, unfinished and stale target denial, retained source/history/native snapshots, production build and complete candidate/public suites. NOT STARTED |
@@ -1215,3 +1215,18 @@ pointer passes deferred checks then deliberate Test rollback restores all source
 state. No permanent activation is claimed until f3/f4 services and acceptance pass.
 All failures leave native/source/value/history unchanged. Regenerate existing Prisma/
 data metadata and prove new generic model reads/counts denied; action allowlist stable.
+
+### 2B3f3 workstream split (plan only; f2 full acceptance first)
+
+F3a extracts the existing definitions/service activation transaction into the shared
+Core primitive, preserving exact compiler/checksum/binding/module/CAS/Audit rules;
+run existing activation regressions plus scoped identity/Audit failure tests. No
+receipt service or bypass hook in that checkpoint. F3b then adds current-authority
+cutover using locked READY inspection, f1 confirmation and f2 receipt/transition,
+paired activation/migration Audit and fresh idempotent replay. Post-cutover inspection
+stage must come only from the actual scoped receipt and re-use owner/private/current/
+written/reference coverage. Do not change old source-active freshness or trust a
+client stage, permission set, simulated pointer or checksum as authority. F3c actual
+central API proof includes concurrent/stale/denied/replay/paired-Audit rollback and
+complete candidate/public/native acceptance. Honest rollback and normal target-write
+window remain f4/2B4; no customer visual completion claim from this backend.

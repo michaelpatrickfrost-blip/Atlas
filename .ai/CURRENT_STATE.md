@@ -1,5 +1,18 @@
 # Atlas current state
 
+## 10 October 2026 — Tasks capacity retry with smaller temporary swap
+
+69dbc60 server compile again passed but page collection failed ENOSPC; accepted
+runtime remains Studio74fab2. A concurrent Apps candidate2ad27f also built and
+failed its separate acceptance, consuming the shared volume. Retained all source,
+logs and backups065845; reclaimed only own unready69dbc60 dependencies/partial
+Next output and disposable npm/APT package caches under both original locks.
+Temporary swap is being reduced to1GB (no fstab change), preserving RAM headroom
+while releasing build disk space. Next exact docs-only retry has identical tested
+application code to8bf4417; candidate/public acceptance still required, then remove
+all task-build swap files safely and record exact evidence.
+
+
 ## 10 October 2026 — Task release retry after capacity failure
 
 Final local build/types/scoped lint (0 errors)/19 focused tests PASS. Candidate

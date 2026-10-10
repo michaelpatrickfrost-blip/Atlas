@@ -20,7 +20,7 @@ Checks: production build PASS; strict types PASS; scoped lint 0 errors (3 existi
 image warnings); 19 focused panel/access/project-domain tests PASS. Added central
 scripts/check-my-tasks.ts and `tasks` acceptance in existing deployment gates.
 Server candidate/public acceptance and visual inspection pending; do not call
-this task live yet. Next: merge exact accepted live Studio74fab2 parent, deploy
+this task live yet. Merged exact accepted live Studio74fab2 parent, preserving its source and memory. Next: deploy
 reviewed scope, run candidate/public acceptance under original locks.
 
 
@@ -47,6 +47,127 @@ and all backups retained; only identified disposable outputs/caches reclaimed.
 No live deployment blocker remains. Evidence/source held on codex/menu-layering-fix;
 shared Desktop main remains concurrently dirty, so integration must preserve that
 work. All earlier menu pending/blocker entries below are historical and superseded.
+## 10 October 2026 — Final readable business-setup companion checks PASS
+
+45 files/286 assertions, production build, strict post-build TypeScript/scoped
+ESLint/diff PASS after final readable comparison/check changes. Logs /tmp/atlas-
+studio-business-setup-{tests,build,types,lint}.txt. No DB/migration/native action or
+compiler change. Original user browser was read-only inspected, not reloaded or
+mutated; preserve unsaved edits. UI companion IMPLEMENTED, real candidate/public
+and three-size screenshot review pending before VERIFIED. Root7.0G/PGonline,
+current1f2/prior9aad confirmed; next exact reviewed commit and pinned complete
+Studio acceptance, then f4 rollback contracts. FullPhase2 NOT PASSED; bespoke
+screen/document/dashboard designer and custom button delivery remain required.
+
+## 10 October 2026 — Plain-language comparison/check results implemented
+
+Michael states he is not a coder and needs visual modular setup. Companion now
+replaces raw reference-version JSON/hashes with readable before/after descriptions,
+named selections and additions/removals/changed-reference summary. Draft checks
+show readiness/review and human reference labels; persisted validation is parsed.
+New modules/studio/reference-comparison plus definition-view; existing tenant-scoped
+comparison/service unchanged. Actual central checker now verifies real two-version
+comparison, no raw pre, phone overflow and preserved stored checksum. ATLAS_ADMIN
+and visual requirements/ledger updated. Final build/types/lint rerun pending after
+these last changes; prior45 files/286 assertions PASS. Real layout previews/comparison
+remain unimplemented2E. Next: final checks/coherent checkpoint then pinned full
+candidate/public and screenshot inspection, f4 afterwards. FullPhase2 NOT PASSED.
+
+## 10 October 2026 — Business setup entry clarity implemented; safe capacity recovered
+
+Studio now leads with selected-business setup and explicit designer-in-development
+status; named capability-reference forms/history are under closed Advanced setup,
+technical IDs separately disclosed. Existing saved definitions and publish/activate/
+conflict semantics preserved; no template/screen/dashboard builder claim. Files:
+modules/studio/{library,definition-view,manifest}; real check-metadata adds existing
+Admin/customer disclosure/responsive assertions/screenshots while retaining prior
+security/history/Audit checks. Local45 files/286 assertions/build/scoped lint PASS;
+strict post-build types result pending; actual pinned candidate/public next. No DB
+change. FullPhase2 NOT PASSED; dependent visual integration remains required.
+
+Failedaea disposable outputs reclaimed exit0 under BOTH original locks/pinned
+current1f2/prior9aad. Full failed source/readiness/envlink retained; only inactive5f/
+080 Turbopack caches also reclaimed, accepted assets/dependencies/backups/central
+records unchanged. Inventory maintenance-backups/studio-failed-cutover-reclaim-
+20261010.txt; /tmp/atlas-studio-reclaim-failed-cutover.{sh,txt}. Root7.0G/PGonline
+confirmed. Supersedes blocked attempts. Next: exact local types/lint/diff checkpoint
+and pinned full candidate/public Studio acceptance, then f4 lifecycle contract.
+
+## 10 October 2026 — Preserve completed concurrent commercial release
+
+Current exact public1f2ab97f3ee954ac9829d2c3ea1d4681ce5320e5 includes Studio9aad1fc
+and the other contributor's customer phone-menu fix/commercial acceptance selector.
+Merged that existing live source into codex/studio-phase2; preserved both memory
+entries, native styling and original release locks/gates. Current previous9aad1fc;
+phase2 remains IN PROGRESS. Read-only root4.2G/PGonline. Clarity companion next;
+no UI edits yet. Earlier9aad current/prior claims are historical snapshots.
+
+## 10 October 2026 — Cutover service VERIFIED live; Studio must lead with business setup
+
+Exact9aad1fc30a33179b73a994ad2db683101b7658d2 complete candidatehHdOrk/publicibWIZD
+ALL COMBINED PASS, runner54052 exit0; public health/current exact, previous5f5fce5
+retained. Actual current-authority READY/native/private/field/module/member/stale/
+tenant checks, both paired-Audit failure rollbacks, concurrent CAS/raw conflict,
+one activation, fresh receipt replay and source/target/history/native compatibility
+PASS. All native suites/Admin/company login/metadata PASS. 45 files/286 local
+assertions/build/strict post-build types/scoped lint/diff PASS. No new DDL;0006 remains
+applied. Backup060827/fixtures061011/061415; /tmp/atlas-studio-cutover-conflict-deploy.txt.
+Supersedes earlier pending entries; f3a–c VERIFIED. Full Phase2 NOT PASSED.
+
+Michael confirms the business's bespoke software setup must be the primary Studio
+experience; naming a capability set is not acceptable as the main journey. Existing
+Templates has a section/sample preview editor, but Admin metadata target context is
+not owner business-record authority. Do not link it into the wrong tenant or claim
+it is the complete Studio. Bounded entry-point clarity companion planned in ledger;
+full designer/Sales/document/dashboard/button integration remains2E after2B–D.
+Root2.2G/PGonline last checked; another operator intermittently holds both deployment
+locks. Failedaea reclaim guarded attempts exit1 at lock acquisition; no deletion
+confirmed. Preserve current/prior/history/backups; do not bypass locks or start an
+unsafe build. Next: implement/check clarity companion, recover safe disposable
+capacity under original locks, exact candidate/public acceptance; then f4 contracts.
+
+## 10 October 2026 — Actual public cutover service passes; native repeat pending
+
+PublicibWIZD actual explicit cutover service PASS plus Studio metadata/principals/
+Admin/company-login, fixture061415. It proves both paired-Audit failure rollback,
+concurrent CAS/raw conflict and one activation, fresh receipt-derived replay, current
+member/field/module/private revocation, source/target/history retained and both
+native snapshots unchanged. Remaining native public suites/runner exit0 still
+pending, session54052. Exact public health9aad1fc confirmed. No f4 code yet;
+Phase2 NOT PASSED and visual/dashboard/button work remains. Root2.3G/PGonline.
+
+## 10 October 2026 — Combined candidate passes; public proof starts
+
+9aad1fc full combined candidate PASS and exact runtime switched; previous5f5fce5
+retained. Public ibWIZD acceptance starting, fixture061415; backup060827 and
+candidatehHdOrk/fixture061011. /tmp/atlas-studio-cutover-conflict-deploy.txt,
+session54052 running. Actual candidate cutover/concurrency/current authority/paired
+Audit/replay/history/native proof PASS plus all native suites. Complete public
+repeat/exact health/runner exit0 still required before f3 VERIFIED/f4. No new DDL.
+Failedaea5ef1 source/dependency reclaim script prepared and syntax checked only,
+NOT executed; wait both locks after runner, preserve current9aad/prior5f and all
+accepted assets/backups. Free2.3G/PGonline last checked. Phase2 NOT PASSED.
+
+## 10 October 2026 — Actual corrected candidate cutover service passes
+
+9aad1fc candidatehHdOrk actual explicit cutover service PASS: current READY/owner/
+private/field/module/member checks, stale/client/tenant denial, both actual paired-
+Audit failures roll back, concurrent CAS one activation/raw conflict mapped, fresh
+receipt-derived replay, retained source/target/history and both native snapshots
+unchanged. Studio metadata/principals/Admin/business login PASS; fixture061011.
+Remaining native candidate/public full acceptance pending, session54052 active.
+Backup060827, free2.3G/PGonline; no new DDL. Do not advance pinned branch. Full f3
+VERIFIED still pending public and runner exit0. F4 dependency inspection only saved
+in field evolution plan; no rollback/value-window code or final design yet.
+
+## 10 October 2026 — Corrected concurrency candidate running
+
+9aad1fc corrected full combined Studio release running (session54052, backup060827,
+/tmp/atlas-studio-cutover-conflict-deploy.txt). Actual raw40001 concurrency mapping
+and full fresh service replay proof pending. No new migration. Before runner free
+6.7G, during candidate install/build3.3G; PGonline/live5f5fce5 remains. Monitor space
+and preserve accepted current/prior/backups; do not advance pinned branch tip.
+285 original local plus conflict test:45 files/286 assertions/build/types/lint PASS.
 
 ## 10 October 2026 — Customer phone menu alignment corrected before activation
 

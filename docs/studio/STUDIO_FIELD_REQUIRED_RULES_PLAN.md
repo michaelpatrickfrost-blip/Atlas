@@ -251,3 +251,24 @@ cases,36 focused/build/strict post-build types/lint/diff PASS.
 No live publication/activation change or complete-cohort claim. Next explicit
 versioned owner required-coverage approval/query reusing canonical snapshot logic;
 preserve all old migration ranges/hashes, then full canonical coverage helper.
+
+
+## 10 October 2026 — d3d complete canonical candidate coverage IMPLEMENTED locally
+
+Explicit owner policy/query and readonly same-transaction coverage helper delivered.
+Tickets v8 approves field versions2–8; old v1–7 hashes/ranges preserved. Full private
+preflight,50-row pages, exact count/cursor/native revisions, final/merged/unanchored
+records, server candidate/real activation pointer, current source graph and actual
+required target values. Empty sets still validate dependencies and target rights.
+No DDL, new datastore, grants, durable approval or publication/native dispatch.
+13 new meaningful owner/cohort cases;95 focused checks/10 suites, production build,
+initial strict TS, scoped ESLint/diff PASS. One new test initially expected the final
+root read on call4 instead of3; corrected fixture timing, production policy unchanged.
+Strict post-build TS PASS (runner65022 exit0). Guarded Test rollback-only server probe added using
+existing fixture/backup gates: actual final/merged/unanchored coverage, missing/fill/
+false-clear target states, no activation, stale CAS and native/config/typed/Audit
+snapshot equality. Central probe NOT RUN; live6b3d03f unchanged until release.
+Expected next review/commit pinned consolidated d3d release and verify candidate/
+public central probe. Then d3e reviewed required-rule evolution followed by d4
+shared mutation lock order/native hooks/initial writer/rollback-window closure.
+Full Phase2 gate NOT PASSED; visual2E NOT STARTED.

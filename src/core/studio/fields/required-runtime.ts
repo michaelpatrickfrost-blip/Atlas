@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { Session } from "@/core/auth/session";
-import type { Prisma } from "@/generated/prisma/client";
+import type { Prisma, StudioDefinitionVersion } from "@/generated/prisma/client";
 import { checksum } from "../registry/contracts";
 import { entityDetailsSchema } from "../registry/entities";
 import { referenceSchema } from "../compiler/kernel";
@@ -25,6 +25,22 @@ const sourceOf = (fact: RequiredFactMetadata): RequiredFactSource => fact.kind =
 const meaning = (fact: RequiredFactMetadata) => fact.kind === "native" ? fact : { ...fact, dependencyClosure: [] };
 function invalid(): never { throw new Error("FIELD_REQUIREMENT_INVALID: approved record facts changed or are unavailable."); }
 type FieldContext = Awaited<ReturnType<typeof readVersionedFieldContextInTransaction>>;
+
+/** Metadata preflight also applies to an empty canonical record set. Inspect
+ * every declared dependency/closure without reading business values. */
+export async function validateRequiredFieldMetadataInTransaction(authority: FieldRuntimeAuthority, definitionId: string, version: StudioDefinitionVersion, proof?: object) {
+  const { session, transaction, registry } = authority;
+  const plan = inspectSealedFieldVersion(registry, version, session.organisationId, definitionId);
+  if (plan.schemaVersion === 2) {
+    const provider = proof ? await createInitialRequiredMetadataProvider(session, transaction, definitionId, plan.payload.entity, proof)
+      : await createRequiredMetadataProvider(session, transaction, definitionId, plan.payload.entity);
+    for (const fact of plan.requiredIf.plan.facts) {
+      const metadata = await provider.resolveMetadata(sourceOf(fact));
+      if (checksum(meaning(metadata)) !== checksum(meaning(fact))) invalid();
+    }
+  }
+  return plan;
+}
 
 async function resultingValue(authority: FieldRuntimeAuthority, field: FieldContext, recordId: string, proof?: object) {
   const { session, transaction } = authority;
@@ -53,12 +69,7 @@ async function evaluateRequirement(authenticated: Session, transaction: Prisma.T
   }
   let conditional = false, conditionFingerprint: string | null = null;
   if (plan.schemaVersion === 2) {
-    const provider = proof ? await createInitialRequiredMetadataProvider(session, transaction, request.definitionId, current.payload.entity, proof)
-      : await createRequiredMetadataProvider(session, transaction, request.definitionId, current.payload.entity);
-    for (const fact of plan.requiredIf.plan.facts) {
-      const metadata = await provider.resolveMetadata(sourceOf(fact));
-      if (checksum(meaning(metadata)) !== checksum(meaning(fact))) invalid();
-    }
+    await validateRequiredFieldMetadataInTransaction(authority, request.definitionId, current.version, proof);
     const evaluated = await evaluateRequiredCondition(plan.requiredIf, async (source, metadata) => {
       if (source.kind === "native") {
         if (metadata.kind !== "native") invalid();

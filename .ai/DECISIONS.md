@@ -1,3 +1,22 @@
+## 10 October 2026 — Required coverage is independent of migration approval
+
+Reviewed migration contracts explicitly cover only old field/entity versions and
+persisted conversion receipts; they cannot safely stand in for complete validation
+of a new conditional/current-generation field. Add optional hashed owner
+`record.requiredCoverage` with explicit field-version coverage and a transactional
+query. Tickets v8 reuses the existing canonical preflight/snapshot implementation;
+v1–7 hashes and old migration/representation/settlement ranges remain unchanged.
+Newest unsupported or unavailable policy fails without fallback. No new cohort or
+permission engine. The candidate checker seals the actual current owner/query
+hashes in its internal result fingerprint, independently of historical field plans.
+It requires genuine company/audited support identity, Publish and native Read/Manage,
+explicit field rights, full private-access preflight and bounded canonical pages.
+Final/merged/unanchored rows count; an empty set still validates the source graph.
+Use only in the same owning Serializable CAS/Audit transaction, never as a durable
+approval or a temporary activation. Common mutation locks and native resulting-state
+hooks must be verified before authoring dispatch is enabled. Missing required values
+need optional/populate/review; values are never invented to pass coverage.
+
 ## 10 October 2026 — Candidate review preserves the actual activation pointer
 
 Inspect a server-loaded immutable tenant field version against actual native and

@@ -33,6 +33,7 @@ it("preserves exact v1–6 and ordinary fact-query hashes while adding distinct 
   ];
   expect(hashes.map((_, index) => registry.describe("tickets.ticket", index + 1).contractHash)).toEqual(hashes);
   expect(registry.describe("tickets.ticket.required_facts", 1).contractHash).toBe("e94258850bd3a653b97b0149cab16aba210a09902b3d3a4e7dfc481104895fd5");
+  expect(registry.describe("tickets.ticket", 7).contractHash).toBe("5f69287becebbd7658245afc78b1a1eabf30b297e0613d5a07db7b9ecf9655d8");
   const current = entityDetailsSchema.parse(registry.describe("tickets.ticket", 7).details).record!;
   expect(current.initialisation?.acceptedFieldVersions).toEqual([2, 3, 4, 5, 6, 7]);
   expect(current.requiredFacts?.initialQuery).toEqual({ id: "tickets.ticket.initial_required_facts", version: 1 });

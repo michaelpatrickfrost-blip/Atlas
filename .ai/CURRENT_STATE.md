@@ -1,3 +1,48 @@
+## 10 October 2026 — d3d local checkpoint ready for pinned release
+
+95 focused assertions/10 suites PASS; reviewed owner/cursor cases27/2 PASS after
+final test improvements. Production build, strict post-build TS (65022 exit0),
+scoped ESLint and git diff --check PASS. Source diff reviewed; old v1–7 hashes/
+migration ranges preserved. Central rollback-only probe reuses existing extension
+anchors without overwriting values and restores the Test principal grants in finally.
+No DDL/dumps/native/publication hooks. Read-only server health confirmed current6b3d03f,
+previous0925bb5, active and167GiB free. Next commit/pin consolidated d3d release,
+verify original candidate/public combined gates; do not mark central proof VERIFIED
+until executed. Large-cohort durable reviewed evolution remains d3e; common mutation
+locks/native writer/window safety remains d4 before dispatch. Visual2E NOT STARTED.
+
+## 10 October 2026 — d3d complete canonical candidate coverage IMPLEMENTED locally
+
+Explicit owner policy/query and readonly same-transaction coverage helper delivered.
+Tickets v8 approves field versions2–8; old v1–7 hashes/ranges preserved. Full private
+preflight,50-row pages, exact count/cursor/native revisions, final/merged/unanchored
+records, server candidate/real activation pointer, current source graph and actual
+required target values. Empty sets still validate dependencies and target rights.
+No DDL, new datastore, grants, durable approval or publication/native dispatch.
+13 new meaningful owner/cohort cases;95 focused checks/10 suites, production build,
+initial strict TS, scoped ESLint/diff PASS. One new test initially expected the final
+root read on call4 instead of3; corrected fixture timing, production policy unchanged.
+Strict post-build TS PASS (runner65022 exit0). Guarded Test rollback-only server probe added using
+existing fixture/backup gates: actual final/merged/unanchored coverage, missing/fill/
+false-clear target states, no activation, stale CAS and native/config/typed/Audit
+snapshot equality. Central probe NOT RUN; live6b3d03f unchanged until release.
+Expected next review/commit pinned consolidated d3d release and verify candidate/
+public central probe. Then d3e reviewed required-rule evolution followed by d4
+shared mutation lock order/native hooks/initial writer/rollback-window closure.
+Full Phase2 gate NOT PASSED; visual2E NOT STARTED.
+
+## 10 October 2026 — d3d full canonical candidate coverage IN PROGRESS
+
+Recovered clean5767f22 checkpoint. Implement explicit newest-owner required-
+coverage opt-in and query reusing canonical snapshots, then same-Serializable-
+transaction complete candidate validation (all final/merged/unanchored records,
+private-access preflight, exact count/cursor/revisions, source graph and values).
+No DDL/publication dispatch/native hooks. Old v1–7 contracts stay sealed. Expected
+registry/Tickets owner, required-coverage helper, focused tests and topic/ledger.
+Next finish owner policy + complete coverage; then d3e reviewed evolution and d4
+common-lock/native/initial-writer/window prerequisites before conditional authoring.
+Live6b3d03f remains verified; visual2E NOT STARTED.
+
 ## 10 October 2026 — d3d candidate-version checks IMPLEMENTED locally
 
 Server-loaded candidate context/required target validation preserves the real

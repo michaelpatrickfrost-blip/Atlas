@@ -54,6 +54,41 @@ candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
 
+## 10 October 2026 — d3d complete canonical candidate coverage IMPLEMENTED locally
+
+Explicit owner policy/query and readonly same-transaction coverage helper delivered.
+Tickets v8 approves field versions2–8; old v1–7 hashes/ranges preserved. Full private
+preflight,50-row pages, exact count/cursor/native revisions, final/merged/unanchored
+records, server candidate/real activation pointer, current source graph and actual
+required target values. Empty sets still validate dependencies and target rights.
+No DDL, new datastore, grants, durable approval or publication/native dispatch.
+13 new meaningful owner/cohort cases;95 focused checks/10 suites, production build,
+initial strict TS, scoped ESLint/diff PASS. One new test initially expected the final
+root read on call4 instead of3; corrected fixture timing, production policy unchanged.
+Strict post-build TS PASS (runner65022 exit0). Guarded Test rollback-only server probe added using
+existing fixture/backup gates: actual final/merged/unanchored coverage, missing/fill/
+false-clear target states, no activation, stale CAS and native/config/typed/Audit
+snapshot equality. Central probe NOT RUN; live6b3d03f unchanged until release.
+Expected next review/commit pinned consolidated d3d release and verify candidate/
+public central probe. Then d3e reviewed required-rule evolution followed by d4
+shared mutation lock order/native hooks/initial writer/rollback-window closure.
+Full Phase2 gate NOT PASSED; visual2E NOT STARTED.
+
+
+
+## 10 October 2026 — d3d complete canonical coverage IN PROGRESS
+
+Next coherent block: owner-versioned required-coverage policy/query and same-
+transaction complete candidate coverage. Reuse canonical snapshot/private-access
+preflight, genuine company/audited support identity and existing typed readers;
+no temporary activation or public dispatch. Expected registry types/entities/
+contracts/registry, Tickets owner descriptor/query, required-coverage helper,
+focused owner/cohort tests and contract/memory documentation. No DDL/migrations.
+Capture old v7 hash before new v8:5f69287becebbd7658245afc78b1a1eabf30b297e0613d5a07db7b9ecf9655d8.
+Native/common-lock/writer/window integration remains d4; full Phase2 gate FAIL/
+pending. Focused integrity checks now; consolidate build/native release later.
+
+
 ## 10 October 2026 — d3d candidate-version checks IMPLEMENTED locally
 
 Server-loaded candidate context/required target validation preserves the real
@@ -430,6 +465,28 @@ actual facts/create-only/native/Audit rollback proof, runner40775 exit0.
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+## 10 October 2026 — d3d complete canonical candidate coverage IMPLEMENTED locally
+
+Explicit owner policy/query and readonly same-transaction coverage helper delivered.
+Tickets v8 approves field versions2–8; old v1–7 hashes/ranges preserved. Full private
+preflight,50-row pages, exact count/cursor/native revisions, final/merged/unanchored
+records, server candidate/real activation pointer, current source graph and actual
+required target values. Empty sets still validate dependencies and target rights.
+No DDL, new datastore, grants, durable approval or publication/native dispatch.
+13 new meaningful owner/cohort cases;95 focused checks/10 suites, production build,
+initial strict TS, scoped ESLint/diff PASS. One new test initially expected the final
+root read on call4 instead of3; corrected fixture timing, production policy unchanged.
+Strict post-build TS PASS (runner65022 exit0). Guarded Test rollback-only server probe added using
+existing fixture/backup gates: actual final/merged/unanchored coverage, missing/fill/
+false-clear target states, no activation, stale CAS and native/config/typed/Audit
+snapshot equality. Central probe NOT RUN; live6b3d03f unchanged until release.
+Expected next review/commit pinned consolidated d3d release and verify candidate/
+public central probe. Then d3e reviewed required-rule evolution followed by d4
+shared mutation lock order/native hooks/initial writer/rollback-window closure.
+Full Phase2 gate NOT PASSED; visual2E NOT STARTED.
+
+
 
 ## 10 October 2026 — d3d candidate-version checks IMPLEMENTED locally
 
@@ -2266,6 +2323,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+10 October2026: d3d: registry types/entities/contracts/registry; service-work/studio; fields/required-runtime and new required-coverage; owner and required-runtime tests plus old-hash/creation regressions; existing central result/native-contract probes; architecture/module/permissions, required-rules plan, ledger/current/decisions.
+
+
 d3d first block: runtime-read/required-runtime, required-runtime focused suite;
 architecture/module/permissions/decisions, plan/ledger/CURRENT_STATE.
 
@@ -2459,6 +2519,9 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+10 October2026: d3d: NONE. No schema/migration/backfill/reset; Test-only native/config/typed/Audit probes roll back.
+
+
 c2a/b and candidate helper: no DDL/model/backfill/reset or local business database.
 
 d3b2: none. No migration, native mutation, reset/backfill, business cache or dumps.
@@ -2526,6 +2589,9 @@ business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
 
+10 October2026: d3d: NONE. Existing release schema/backup gates remain mandatory.
+
+
 0008 APPLIED1100UTC by pinned f1a9bf1 deployer after mandatory105904 backup.
 Prior fullDDL syntax/compatibility rolled back PASS. Actual runtime gate pending.
 
@@ -2573,6 +2639,9 @@ preserved. Final candidate/activation backup prefixes: `atlas-pre-deploy-2026100
 and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
+
+10 October2026: d3d:5 owner-policy/query cases and8 full canonical coverage cases; exact old v7 hash regression. Central rollback-only final/merged/unanchored probe added, NOT RUN yet.
+
 
 d3d:4 candidate cases (first/no active pointer, differing current optional schema,
 actual target/fingerprint, foreign/stale/client plan/facts denial).
@@ -2646,6 +2715,9 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+10 October2026: d3d:95 assertions/10 focused suites PASS; production build PASS; initial strict TypeScript/scoped ESLint/diff PASS. Strict post-build TS PASS; central candidate/public pending.
+
 
 d3d candidate helper:36 assertions/4 suites, production build, strict post-build TS,
 scoped lint/diff PASS; central candidate gate pending.
@@ -2822,6 +2894,9 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
+10 October2026: d3d implemented locally, not yet central/live VERIFIED. No whole Phase2 gate claim.
+
+
 c2b local checks PASS; initial reference fixture had stale sealed pin, corrected.
 Actual central SQL/runtime verification remains pending. No conditional enforcement
 or Phase2/visual completion claimed.
@@ -2956,6 +3031,9 @@ not a reason to claim full-suite success.
 
 # Architecture Decisions
 
+10 October2026: d3d independent explicit latest owner requiredCoverage reuses canonical snapshots; preserve all historical migrations/hashes and never infer approval from migration ranges. See .ai/DECISIONS.md.
+
+
 d1 decision: isolated v2 required-if preserves sealed v1 checksums; do not enable
 publishing until native/coverage enforcement. Recorded in DECISIONS.md.
 
@@ -2975,6 +3053,9 @@ Gate checklists below derive from the supplied sections rather than renumbering 
 rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
+
+10 October2026: d3d authoring integration remains gated on d3e/d4 native enforcement/common locks/initial writer/window. Central probe pending; no visual designer implemented.
+
 
 Current f4c/d VERIFIED with no active blocker. FullPhase2 owner value API/required-if/native forms/record types/pages/visual designer still outstanding.
 
@@ -3031,6 +3112,9 @@ No unresolved Phase 1 runtime gate failure. Later engines remain unimplemented.
 See `STUDIO_PHASE_1_COMPLETION.md` for evidence and practical limits.
 
 # Deferred Items
+
+10 October2026: d3d durable reviewed evolution/impact remains d3e; native hooks/locks/window d4, final feature gate d5. Forms/search, record types, pages and visual designer follow within Phase2; no Phase3 work.
+
 
 Ordered2B4 runtime workstreams now recorded in STUDIO_PHASE_2_FIELDS.md: ordinary
 authority/read compiler; current/history reads; atomic writes; required-if/canonical
@@ -3094,12 +3178,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Candidate helper local checkpoint is ready:36 focused/build/strict post-build TS/
-lint/diff PASS. Next add explicit owner-versioned
-required-coverage policy and canonical snapshot query reusing existing implementation,
-without widening old migration ranges or reinterpreting legacy initialization grants.
-Implement complete candidate coverage in the owning Serializable transaction using
-genuine company/audited support identity, bounded pages and exact count reconciliation,
-final/unanchored/private/current data and required target checks. Conditional authoring
-remains gated until d4 common locks/native create-save/initial values/rollback windows.
-Continue d3e reviewed evolution, d5 gate,2B forms/search,2C/D/2E visual designer.
+All local checks passed. Commit reviewed scoped d3d checkpoint,
+pin and deploy through the original Studio release gates. Verify actual candidate/
+public canonical coverage probe and native/config/typed/Audit rollback snapshots.
+Then d3e: inspect existing migration representation/evolution policies and define
+required-rule-only reviewed changes without widening old receipts. Next d4 common
+mutation locks, native create/save resulting checks, initial typed writes/window
+closure; only then enable conditional authoring and run d5 gate. Continue2B forms/
+search,2C record types,2D pages,2E visual designer. Full Phase2 remains IN PROGRESS.

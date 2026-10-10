@@ -80,9 +80,26 @@ export async function checkFieldNativeContracts(customerUserId: string, organisa
       await assert.rejects(() => createTicketWithFieldInitialisation({ session: creator, transaction }, data, async () => assert.fail("Unsafe transaction callback ran")), /serializable/);
     }, { isolationLevel: "ReadCommitted" });
     assert.deepEqual(await snapshot(), before);
+    // Same exact Test principal, explicit ordinary publication grants. Include
+    // final/merged native rows with no extension anchors in rollback-only data.
+    await db.membership.update({ where: { id: member.id, organisationId }, data: {
+      grantedCapabilities: ["tickets.ticket.read", "tickets.ticket.manage", "studio.definition.publish"],
+      deniedCapabilities: member.deniedCapabilities.filter(cap => !["tickets.ticket.read", "tickets.ticket.manage", "studio.definition.publish"].includes(cap)),
+    } });
+    const publisher = await sessionForUser(organisationId, customerUserId); assert(publisher);
+    const coverageProbe = await prepareFieldResultProbe(publisher, "coverage");
+    await assert.rejects(() => withFieldRuntimeAuthority(publisher, async authority => {
+      const transaction = authority.transaction;
+      await transaction.serviceWorkItem.update({ where: { id: parentId, organisationId }, data: { status: "RESOLVED", version: { increment: 1 } } });
+      await transaction.serviceWorkItem.create({ data: { ...data, number: `CHECK-${crypto.randomUUID()}`, status: "RESOLVED", mergedIntoId: parentId } });
+      await transaction.auditEntry.create({ data: { organisationId, actorUserId: customerUserId, action: "studio.field.coverage_contract_probe", entityType: "ServiceWorkItem", entityId: parentId, after: { probe: true } } });
+      await coverageProbe(authority, parentId);
+      throw rollback;
+    }), error => error === rollback);
+    assert.deepEqual(await snapshot(), before);
   } finally {
     await db.membership.update({ where: { id: member.id, organisationId }, data: { grantedCapabilities: member.grantedCapabilities, deniedCapabilities: member.deniedCapabilities } });
     if (addedQueueMemberId) await db.serviceQueueMember.deleteMany({ where: { id: addedQueueMemberId, organisationId, queueId: parent.queueId, userId: customerUserId } });
   }
-  console.log("STUDIO NATIVE FIELD CONTRACTS PASS: actual canonical facts/foreign/stale denial; genuine create-only current v7/legacy field proof, staged conditional/target values, false/clear state, exact FK/pointer checks; propagated required failure rolls back native/typed/metadata/Audit rows; no existing access, expired/unsafe denial");
+  console.log("STUDIO NATIVE FIELD CONTRACTS PASS: actual canonical facts/foreign/stale denial; genuine create-only current v8/legacy field proof; complete candidate coverage including final/merged/unanchored rows with unchanged activation; staged conditional/target values, false/clear state, exact FK/pointer checks; propagated required failure and coverage probes roll back native/typed/metadata/Audit rows; no existing access, expired/unsafe denial");
 }

@@ -64,6 +64,19 @@ export class CapabilityRegistry {
       if (m.kind !== "entity") continue;
       const { record } = entityDetailsSchema.parse(m.details);
       if (!record) continue;
+      if (record.requiredCoverage) {
+        const { query: ref, fieldVersions } = record.requiredCoverage;
+        const query = additions.get(`${ref.id}@${ref.version}`) ?? this.items.get(`${ref.id}@${ref.version}`);
+        if (!query || query.metadata.kind !== "query" || query.metadata.ownerModuleId !== ownerModuleId
+          || query.metadata.capability !== record.writeCapability || query.metadata.details.transaction !== "required")
+          throw new Error("Required coverage needs a registered transactional owner query with native write capability.");
+        for (const version of fieldVersions) {
+          const source = additions.get(`${m.id}@${version}`) ?? this.items.get(`${m.id}@${version}`);
+          const sourceRecord = source?.metadata.kind === "entity" ? entityDetailsSchema.parse(source.metadata.details).record : undefined;
+          if (!source || source.metadata.ownerModuleId !== ownerModuleId || !sourceRecord?.fieldPolicy || sourceRecord.writeCapability !== record.writeCapability)
+            throw new Error("Required coverage must declare registered typed-field owner versions with the same write capability.");
+        }
+      }
       if (record.initialisation?.acceptedFieldVersions) {
         for (const version of record.initialisation.acceptedFieldVersions) {
           const source = additions.get(`${m.id}@${version}`) ?? this.items.get(`${m.id}@${version}`);
@@ -185,6 +198,23 @@ export class CapabilityRegistry {
     if (!context.transaction) throw new Error("Initialisation requires the owning transaction.");
     const { owner } = await this.resolveCurrentFieldInitialisation(context.session, reference);
     return this.authoriseRecordInitialisation(context, owner, proof);
+  }
+  /** Latest explicit complete-cohort approval, with no fallback to an old owner
+   * policy or inference from migration ranges. No client-selected query. */
+  async resolveCurrentRequiredCoverage(session: Session, reference: ContractReference) {
+    const source = await this.resolve(session, reference);
+    const sourceRecord = source.kind === "entity" ? entityDetailsSchema.parse(source.details).record : undefined;
+    if (!sourceRecord?.fieldPolicy) throw new Error("DEPENDENCY_BROKEN: required coverage source is unavailable.");
+    const owner = [...this.items.values()].map(item => item.metadata).filter(m => m.kind === "entity" && m.id === source.id && m.ownerModuleId === source.ownerModuleId)
+      .sort((a, b) => b.version - a.version)[0];
+    const record = owner && entityDetailsSchema.parse(owner.details).record, policy = record?.requiredCoverage;
+    if (!record || !policy?.fieldVersions.includes(source.version)) throw new Error("DEPENDENCY_BROKEN: current owner does not approve this field's required coverage version.");
+    await this.allowed(session, source, sourceRecord.writeCapability);
+    await this.allowed(session, owner); await this.allowed(session, owner, record.writeCapability);
+    const query = await this.resolve(session, this.describe(policy.query.id, policy.query.version));
+    if (query.kind !== "query" || query.ownerModuleId !== owner.ownerModuleId || query.capability !== record.writeCapability || query.details.transaction !== "required")
+      throw new Error("DEPENDENCY_BROKEN: required coverage query changed.");
+    return { source, owner, query };
   }
   /** Proof is carried only in the internal execution context, never JSON input.
    * Generic query invocation cannot supply it. The owner rechecks exact created

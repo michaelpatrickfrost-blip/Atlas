@@ -190,3 +190,28 @@ before activation while preserving the real active pointer. They use actual nati
 typed values and current/pinned/written/reference rights. This internal d3d helper
 does not grant publication or establish complete canonical coverage on its own;
 ordinary v1 gateways remain closed and unchanged. Not enabled in live authoring.
+
+## Complete candidate required-field coverage — 10 October 2026
+
+Optional hashed `record.requiredCoverage` identifies a same-owner, native-write-
+capability, transaction-required query and the exact typed field entity versions
+it covers. Registry registration validates the entire bundle atomically. Runtime
+selects the newest owner policy; missing coverage, changed hashes, expired contracts,
+disabled modules or insufficient current capabilities fail without fallback.
+Tickets v8 approves versions2–8 and reuses existing canonical preflight/snapshot
+logic through `tickets.ticket.required_coverage@1` (preflight/snapshot only).
+Existing v1–7 hashes and migration/representation/settlement ranges stay sealed;
+creation v8 explicitly extends existing proof-bound field-version approval.
+
+Internal `fields/required-coverage.ts` checks a server-loaded immutable candidate
+without changing activation. Genuine company identity or the existing explicitly
+audited support principal, Publish, Studio enablement, native Read/Manage and
+independent target/source/written/reference field policies apply. Full private
+access is checked before IDs/counts. Pages include final/merged/unanchored native
+records; exact cursor/count/revision reconciliation and current source-graph/value
+checks run inside the owning Serializable transaction. Empty cohorts still validate
+all declared metadata. Returned count/fingerprint is internal transaction evidence,
+not durable approval or a grant. No new DDL or publication endpoint. IMPLEMENTED
+locally with95 focused checks/build/types/lint; actual central probe and deployment
+pending. Native/common-lock/initial-writer/window prerequisites remain d4 before
+conditional authoring dispatch. Full Phase2 and visual designer remain unfinished.

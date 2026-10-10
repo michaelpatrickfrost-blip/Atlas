@@ -6,7 +6,8 @@ import { compileConditionalCustomField } from "@/core/studio/fields/conditional-
 import { registeredRequiredFactMetadata } from "@/core/studio/fields/required-owner";
 import { evaluateExistingFieldRequirement, validateResultingFieldRequirements, validateCandidateFieldRequirement } from "@/core/studio/fields/required-runtime";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
-const m = vi.hoisted(() => ({ refresh: vi.fn(), raw: vi.fn(), definition: vi.fn(), definitions: vi.fn(), version: vi.fn(), generation: vi.fn(), extension: vi.fn(), slot: vi.fn() }));
+import { validateCandidateFieldCoverage } from "@/core/studio/fields/required-coverage";
+const m = vi.hoisted(() => ({ refresh: vi.fn(), raw: vi.fn(), definition: vi.fn(), definitions: vi.fn(), version: vi.fn(), generation: vi.fn(), extension: vi.fn(), slot: vi.fn(), enabled: vi.fn() }));
 vi.mock("@/core/studio/fields/runtime-authority", () => ({ fieldRuntimeAuthorityInTransaction: m.refresh }));
 let f: Awaited<ReturnType<typeof retainedCutoverFixture>>;
 let entity: typeof f.source.payload.entity;
@@ -16,7 +17,7 @@ const definitions = new Map<string, StudioDefinition & { activeVersion: StudioDe
 const versions = new Map<string, StudioDefinitionVersion>();
 const rootId = uuid(90), sourceId = uuid(2), extensionId = uuid(20), slotId = uuid(30);
 const tx = { $queryRaw: m.raw, studioDefinition: { findFirst: m.definition, findMany: m.definitions }, studioDefinitionVersion: { findFirst: m.version },
-  studioFieldGeneration: { findFirst: m.generation }, studioExtensionRecord: { findFirst: m.extension }, studioFieldSlot: { findFirst: m.slot } } as unknown as Prisma.TransactionClient;
+  studioFieldGeneration: { findFirst: m.generation }, studioExtensionRecord: { findFirst: m.extension }, studioFieldSlot: { findFirst: m.slot }, moduleState: { findFirst: m.enabled } } as unknown as Prisma.TransactionClient;
 const request = () => ({ definitionId: rootId, recordId: "native", expectedRevision: 7 });
 function stored(id: string, definitionId: string, compiled: Awaited<ReturnType<typeof compileCustomField>> | Awaited<ReturnType<typeof compileConditionalCustomField>>): StudioDefinitionVersion {
   const version = { id, definitionId, organisationId: "company", version: 1, semanticVersion: "1.0.0", schemaVersion: compiled.plan.schemaVersion,
@@ -49,6 +50,7 @@ beforeEach(async () => {
   m.definitions.mockImplementation(async () => [...definitions.values()].sort((a, b) => a.id.localeCompare(b.id)));
   m.version.mockImplementation(async args => versions.get(args.where.id) ?? null);
   m.generation.mockImplementation(async args => ({ id: args.where.id }));
+  m.enabled.mockResolvedValue({ id: "studio" });
   m.extension.mockResolvedValue({ id: extensionId, revision: 4 });
   m.slot.mockImplementation(async () => ({ id: slotId, revision: 1, activeValueId: row.id, activeValue: row }));
   vi.spyOn(f.registry, "authoriseRecord").mockImplementation(async (context, reference, input) => {
@@ -202,4 +204,112 @@ it("independently authorises reference targets before using a source value as a 
     return { recordId, organisationId: "company", revision: 7 };
   });
   await expect(evaluateExistingFieldRequirement(f.session, tx, request())).rejects.toThrow("Reference unavailable");
+});
+
+const coverageRequest = () => ({ definitionId: rootId, versionId: uuid(190), definitionRevision: 1 });
+function canonicalCoverage(records: { recordId: string; organisationId: string; revision: number }[], resolved?: string) {
+  let preflights = 0;
+  const pages: string[] = [];
+  vi.mocked(f.registry.invokeQueryInTransaction).mockImplementation(async (_context, reference, input) => {
+    if (reference.id === "tickets.ticket.required_facts") {
+      const request = input as { recordId: string; expectedRevision: number };
+      return { recordId: request.recordId, organisationId: "company", revision: request.expectedRevision,
+        fields: { status: request.recordId === resolved ? "RESOLVED" : "NEW", priority: "NORMAL" } };
+    }
+    expect(reference.id).toBe("tickets.ticket.required_coverage");
+    const request = input as { mode: string; cursor?: string; limit?: number };
+    if (request.mode === "preflight") { preflights++; return { mode: "preflight", organisationId: "company", entityId: entity.id, count: records.length, nativeAccessComplete: true }; }
+    pages.push(request.cursor ?? "");
+    const rest = records.filter(record => !request.cursor || record.recordId > request.cursor), current = rest.slice(0, request.limit);
+    return { mode: "snapshot", organisationId: "company", entityId: entity.id, records: current, next: rest.length > current.length ? current.at(-1)!.recordId : null };
+  });
+  // No target exists; the source remains actually decoded for each record.
+  m.slot.mockImplementation(async args => args.where.definitionId === sourceId ? { id: slotId, revision: 1, activeValueId: row.id, activeValue: row } : null);
+  return { pages, preflights: () => preflights };
+}
+it("checks every canonical record across bounded pages, reconciles counts, and preserves the real activation pointer", async () => {
+  const records = Array.from({ length: 51 }, (_, index) => ({ recordId: `r${String(index).padStart(3, "0")}`, organisationId: "company", revision: 7 }));
+  const state = canonicalCoverage(records);
+  const pointer = definitions.get(rootId)!.activeVersionId;
+  const result = await validateCandidateFieldCoverage(f.session, tx, coverageRequest());
+  expect(result).toMatchObject({ definitionId: rootId, definitionRevision: 1, versionId: uuid(190), recordCount: 51 });
+  expect(result.fingerprint).toMatch(/^[a-f0-9]{64}$/); expect(state.pages).toEqual(["", "r049"]); expect(state.preflights()).toBe(2);
+  expect(definitions.get(rootId)!.activeVersionId).toBe(pointer);
+  expect(vi.mocked(f.registry.invokeQueryInTransaction).mock.calls.filter(([, reference]) => reference.id === "tickets.ticket.required_facts")).toHaveLength(51);
+  expect(Object.keys(result).sort()).toEqual(["definitionId", "definitionRevision", "fingerprint", "recordCount", "versionChecksum", "versionId"]);
+});
+it("blocks a missing required target on the final page rather than accepting the visible first page", async () => {
+  const records = Array.from({ length: 51 }, (_, index) => ({ recordId: `r${String(index).padStart(3, "0")}`, organisationId: "company", revision: 7 }));
+  const state = canonicalCoverage(records, "r050");
+  await expect(validateCandidateFieldCoverage(f.session, tx, coverageRequest())).rejects.toThrow("Extra is required");
+  expect(state.pages).toEqual(["", "r049"]); expect(state.preflights()).toBe(1);
+  expect(definitions.get(rootId)!.activeVersionId).toBe(uuid(190));
+});
+it("validates dependency metadata even on an empty business and treats absent extension anchors as missing values", async () => {
+  const state = canonicalCoverage([]);
+  expect(await validateCandidateFieldCoverage(f.session, tx, coverageRequest())).toMatchObject({ recordCount: 0 });
+  expect(state.preflights()).toBe(2);
+  definitions.delete(sourceId);
+  const before = state.pages.length;
+  await expect(validateCandidateFieldCoverage(f.session, tx, coverageRequest())).rejects.toThrow("FIELD_REQUIREMENT_INVALID");
+  expect(state.pages).toHaveLength(before);
+});
+it("does not mistake a nonempty native set with no extension anchors for an empty company", async () => {
+  await root(true); canonicalCoverage([{ recordId: "closed_or_merged", organisationId: "company", revision: 7 }]);
+  m.extension.mockResolvedValue(null);
+  await expect(validateCandidateFieldCoverage(f.session, tx, coverageRequest())).rejects.toThrow("Extra is required");
+  expect(m.slot).not.toHaveBeenCalled();
+});
+it("denies incomplete private preflight before record IDs or values and does not swallow owner errors", async () => {
+  const run = vi.mocked(f.registry.invokeQueryInTransaction).mockRejectedValue(new Error("MIGRATION_ACCESS_REQUIRED: complete access is required"));
+  await expect(validateCandidateFieldCoverage(f.session, tx, coverageRequest())).rejects.toThrow("MIGRATION_ACCESS_REQUIRED");
+  expect(run).toHaveBeenCalledTimes(1); expect(m.slot).not.toHaveBeenCalled(); expect(m.extension).not.toHaveBeenCalled();
+});
+it("rejects wrong scope, missing rows, repeated cursors and malformed continuation despite plausible counts", async () => {
+  const scope = { organisationId: "company", entityId: entity.id }, anchor = { recordId: "native", organisationId: "company", revision: 7 };
+  for (const page of [
+    { ...scope, records: [], next: null },
+    { ...scope, organisationId: "foreign", records: [anchor], next: null },
+    { ...scope, records: [{ ...anchor, organisationId: "foreign" }], next: null },
+    { ...scope, records: [anchor], next: "native" },
+    { ...scope, records: [anchor, anchor], next: null },
+  ]) {
+    vi.mocked(f.registry.invokeQueryInTransaction).mockImplementation(async (_, reference, input) => {
+      if (reference.id === "tickets.ticket.required_facts") return { recordId: "native", organisationId: "company", revision: 7, fields: { status: "NEW", priority: "NORMAL" } };
+      return (input as { mode: string }).mode === "preflight"
+        ? { ...scope, mode: "preflight", count: page.records.length === 2 ? 2 : 1, nativeAccessComplete: true } : { ...page, mode: "snapshot" };
+    });
+    await expect(validateCandidateFieldCoverage(f.session, tx, coverageRequest())).rejects.toThrow("FIELD_COVERAGE_CHANGED");
+  }
+});
+it("requires fresh genuine publication/Studio authority and exact server version/revision rather than supplied cohorts or plans", async () => {
+  canonicalCoverage([]);
+  await expect(validateCandidateFieldCoverage({ ...f.session, capabilities: new Set(["tickets.ticket.read", "tickets.ticket.manage"]) }, tx, coverageRequest())).rejects.toThrow("FORBIDDEN");
+  m.enabled.mockResolvedValue(null);
+  await expect(validateCandidateFieldCoverage(f.session, tx, coverageRequest())).rejects.toThrow("Studio is unavailable");
+  m.enabled.mockResolvedValue({ id: "studio" });
+  for (const input of [{ ...coverageRequest(), organisationId: "foreign" }, { ...coverageRequest(), records: [] }, { ...coverageRequest(), compiledPlan: {} },
+    { ...coverageRequest(), versionId: source.version.id }, { ...coverageRequest(), definitionRevision: 2 }])
+    await expect(validateCandidateFieldCoverage(f.session, tx, input)).rejects.toThrow();
+  expect(f.registry.invokeQueryInTransaction).not.toHaveBeenCalled(); expect(m.slot).not.toHaveBeenCalled();
+  m.refresh.mockRejectedValue(new Error("FORBIDDEN: genuine company authority required"));
+  await expect(validateCandidateFieldCoverage(f.session, tx, coverageRequest())).rejects.toThrow("FORBIDDEN");
+});
+it("rejects changing final canonical count and same-transaction activation pointer changes", async () => {
+  canonicalCoverage([]);
+  const original = vi.mocked(f.registry.invokeQueryInTransaction).getMockImplementation()!;
+  let preflights = 0;
+  vi.mocked(f.registry.invokeQueryInTransaction).mockImplementation(async (...args) => {
+    const result = await original(...args);
+    if ((args[2] as { mode: string }).mode === "preflight" && ++preflights === 2) return { ...(result as object), count: 1 };
+    return result;
+  });
+  await expect(validateCandidateFieldCoverage(f.session, tx, coverageRequest())).rejects.toThrow("FIELD_COVERAGE_CHANGED");
+  canonicalCoverage([]);
+  let rootReads = 0;
+  m.definition.mockImplementation(async args => {
+    const definition = definitions.get(args.where.id) ?? null;
+    return args.where.id === rootId && ++rootReads >= 3 ? { ...definition!, activeVersionId: uuid(999) } : definition;
+  });
+  await expect(validateCandidateFieldCoverage(f.session, tx, coverageRequest())).rejects.toThrow("FIELD_COVERAGE_CHANGED");
 });

@@ -74,6 +74,10 @@ const migrationOutput = z.discriminatedUnion("mode", [
   z.strictObject({ ...migrationScope, mode: z.literal("snapshot"), records: z.array(recordAnchorSchema).max(50), next: recordId.nullable() }),
   z.strictObject({ ...migrationScope, mode: z.literal("coverage"), count: z.number().int().nonnegative(), nativeCoverageComplete: z.literal(true) }),
 ]);
+// Same canonical snapshot protocol, with no migration preparation, reference
+// approval or settlement modes. Existing migration hashes/ranges stay sealed.
+const requiredCoverageInput = z.discriminatedUnion("mode", [migrationInput.options[0], migrationInput.options[1]]);
+const requiredCoverageOutput = z.discriminatedUnion("mode", [migrationOutput.options[0], migrationOutput.options[1]]);
 
 /** No native mutation: this locks and authorises the owning record for added data. */
 export async function authoriseTicketRecord(ctx: RecordContext, request: RecordRequest) {
@@ -327,6 +331,10 @@ export const ticketStudioContract: StudioModuleContract = { contributions: [
     capability: "tickets.ticket.manage", input: migrationInput, output: migrationOutput, transaction: "required",
     pagination: "cursor", maxCardinality: 50, costClass: "high",
     execute: (ctx, input) => executeMigrationSnapshot(ctx, input, migrationSourceVersions) }),
+  query({ ...identity, id: "tickets.ticket.required_coverage", label: "Ticket required-field record coverage", kind: "query",
+    capability: "tickets.ticket.manage", input: requiredCoverageInput, output: requiredCoverageOutput, transaction: "required",
+    pagination: "cursor", maxCardinality: 50, costClass: "high",
+    execute: async (ctx, input) => requiredCoverageOutput.parse(await executeMigrationSnapshot(ctx, input, [])) }),
   query({ ...identity, version: 2, id: "tickets.ticket.field_migration", label: "Ticket field and reference review", kind: "query",
     capability: "tickets.ticket.manage", input: referenceMigrationInput, output: referenceMigrationOutput, transaction: "required",
     pagination: "cursor", maxCardinality: 50, costClass: "high",
@@ -419,5 +427,17 @@ export const ticketStudioContract: StudioModuleContract = { contributions: [
       { fieldId: "priority", type: "enum", classification: "confidential", codes: ["LOW", "NORMAL", "HIGH", "URGENT"] },
     ] },
     initialisation: { capability: "tickets.ticket.create", acceptedFieldVersions: [2, 3, 4, 5, 6, 7], authorise: authoriseNewTicketFields },
+  } }),
+  // Independent full canonical candidate validation. This does not widen the
+  // older reviewed migration/representation ranges or unlock their operations.
+  entity({ ...ticketFieldEntity, version: 8, record: { ...ticketFieldEntity.record!, migrationSnapshot: {
+    query: { id: "tickets.ticket.field_migration", version: 3 }, sourceVersions: executionSourceVersions, referenceVersions: executionReadVersions,
+  }, migrationRepresentation: { query: { id: "tickets.ticket.field_representation", version: 1 }, sourceVersions: executionSourceVersions },
+    requiredFacts: { query: { id: "tickets.ticket.required_facts", version: 1 }, initialQuery: { id: "tickets.ticket.initial_required_facts", version: 1 }, facts: [
+      { fieldId: "status", type: "enum", classification: "confidential", codes: WORK_STATUSES },
+      { fieldId: "priority", type: "enum", classification: "confidential", codes: ["LOW", "NORMAL", "HIGH", "URGENT"] },
+    ] },
+    initialisation: { capability: "tickets.ticket.create", acceptedFieldVersions: [2, 3, 4, 5, 6, 7, 8], authorise: authoriseNewTicketFields },
+    requiredCoverage: { query: { id: "tickets.ticket.required_coverage", version: 1 }, fieldVersions: [2, 3, 4, 5, 6, 7, 8] },
   } }),
 ] };

@@ -55,6 +55,9 @@ export type EntityDescriptor = ContractIdentity & {
     /** Owner-issued opaque proof for a record actually created in this transaction.
      * No ordinary read/manage grant is inferred from creation capability. */
     initialisation?: { capability: string; acceptedFieldVersions?: readonly number[]; authorise(ctx: RecordContext, proof: object): Promise<RecordAnchor> };
+    /** Complete canonical read-only candidate validation, independent of reviewed
+     * migration/settlement approval. Never grants native or extension writes. */
+    requiredCoverage?: { query: { id: string; version: number }; fieldVersions: readonly number[] };
     /** Read-only migration capture/coverage; ordinary record write guards still apply. */
     migrationSnapshot?: { query: { id: string; version: number }; sourceVersions: readonly number[];
       /** Explicit same-canonical-entity reference read versions covered by this

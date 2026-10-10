@@ -288,14 +288,14 @@ async function main() {
           () => document.documentElement.scrollWidth <= innerWidth,
         ),
       );
-      const bounds = await dialog.boundingBox();
-      assert(
-        bounds &&
-          bounds.x >= 0 &&
-          bounds.y >= 0 &&
-          bounds.x + bounds.width <= width + 1 &&
-          bounds.y + bounds.height <= height + 1,
-      );
+      // Visible includes SidePanel's 240ms entrance animation. Keep the same
+      // geometry gate, but wait for the opened panel rather than sampling its
+      // off-screen animation frame. Persistent overflow must still fail.
+      await expect.poll(async () => {
+        const bounds = await dialog.boundingBox();
+        return { bounds, withinViewport: !!bounds && bounds.x >= 0 && bounds.y >= 0
+          && bounds.x + bounds.width <= width + 1 && bounds.y + bounds.height <= height + 1 };
+      }, { timeout: 5000, message: `${device}: opened Messages panel must fit the viewport` }).toMatchObject({ withinViewport: true });
       assert(
         await dialog.evaluate((node) => node.scrollWidth <= node.clientWidth),
       );

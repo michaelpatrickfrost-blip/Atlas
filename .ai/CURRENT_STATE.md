@@ -1,5 +1,46 @@
 # Atlas current state
 
+## 10 October 2026 — f4b2a release-check retry ready
+
+Retry checks PASS: production build, strict post-build TypeScript, scoped Messages
+ESLint,9 focused drawer/chat assertions and diff. Earlier55 files343 binding/native
+assertions retained (overlapping focused rerun is not343+9 unique tests). No product
+Messages or DB change; identical geometry criteria and5s bounded retry only.
+Next checkpoint and full pinned Studio candidate/public release. Logs
+/tmp/atlas-studio-f4b2a-{retry-build,retry-types,retry-ui-tests,messages-lint}.txt.
+
+## 10 October 2026 — f4b2a public gate FAIL; safe runtime rollback verified
+
+04ff458 runner89594 exit1: full candidatejxZA04 PASS and public Studio/source
+cosmetics/tenant/native foundations PASS; public Messages failed immediate dialog
+bounding-box assertion (check-messages.ts:292), after real chat/send/search checks.
+Normal deployer restored current1d7f558 automatically; previous97ceb35, atlas active,
+PGonline confirmed; no database rollback. No new migrations. Evidence public7NFIpk/
+messages.log, private messages1HI8CE and localf4b2a-live-deploy.txt. F4b2a remains
+IMPLEMENTED, not VERIFIED; f4b2b NOT STARTED. Current panel has a240ms entrance
+animation; old assertion samples visibility before geometry settles. Adjusted only
+the test to retry the identical bounds criteria for up to5s, preserving persistent
+overflow failure and returning rectangle diagnostics. No product layout or security
+change. Confirm through repeated actual candidate/public checks; do not assert the
+cause proven from one failure. Next lint/types/build and reviewed checkpoint, full
+pinned release; do not bypass public Messages or any other native gate.
+
+## 10 October 2026 — f4b2a candidate PASS; public acceptance IN PROGRESS
+
+F4b2a candidatejxZA04 ALL COMBINED PASS; pinned04ff458 now running public
+acceptance7NFIpk (fixture backup082646). Actual candidate cancelled-source cosmetics
+publish/activate and obsolete-target rejection passed. Health reports04ff458 after
+switch; full public gate/runner completion still pending, not VERIFIED. Keep pin.
+
+## 10 October 2026 — f4b2a pinned release IN PROGRESS
+
+Pinned04ff458 f4b2a release started082108UTC, runner89594; local log
+/tmp/atlas-studio-f4b2a-live-deploy.txt. Required pre-deploy recovery backup082108.
+No new migrations expected. Current1d7f558/previous97ceb35 unchanged at preflight;
+root168GiBfree, eligible retirement candidates0. Candidate/public exact continuation
+and native gates running; no VERIFIED claim. Do not advance pinned remote branch
+while runner operates. Inspect actual failure before retry; b remains NOT STARTED.
+
 ## 10 October 2026 — f4b2a cosmetic binding IMPLEMENTED; live proof pending
 
 Splitf4b2 into a active-schema binder/cancellation continuation then b additive0008

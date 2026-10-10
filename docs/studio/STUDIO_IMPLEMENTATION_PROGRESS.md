@@ -88,6 +88,39 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 # Current Workstream Detail
 
+Retry checks PASS: production build, strict post-build TypeScript, scoped Messages
+ESLint,9 focused drawer/chat assertions and diff. Earlier55 files343 binding/native
+assertions retained (overlapping focused rerun is not343+9 unique tests). No product
+Messages or DB change; identical geometry criteria and5s bounded retry only.
+Next checkpoint and full pinned Studio candidate/public release. Logs
+/tmp/atlas-studio-f4b2a-{retry-build,retry-types,retry-ui-tests,messages-lint}.txt.
+
+04ff458 runner89594 exit1: full candidatejxZA04 PASS and public Studio/source
+cosmetics/tenant/native foundations PASS; public Messages failed immediate dialog
+bounding-box assertion (check-messages.ts:292), after real chat/send/search checks.
+Normal deployer restored current1d7f558 automatically; previous97ceb35, atlas active,
+PGonline confirmed; no database rollback. No new migrations. Evidence public7NFIpk/
+messages.log, private messages1HI8CE and localf4b2a-live-deploy.txt. F4b2a remains
+IMPLEMENTED, not VERIFIED; f4b2b NOT STARTED. Current panel has a240ms entrance
+animation; old assertion samples visibility before geometry settles. Adjusted only
+the test to retry the identical bounds criteria for up to5s, preserving persistent
+overflow failure and returning rectangle diagnostics. No product layout or security
+change. Confirm through repeated actual candidate/public checks; do not assert the
+cause proven from one failure. Next lint/types/build and reviewed checkpoint, full
+pinned release; do not bypass public Messages or any other native gate.
+
+F4b2a candidatejxZA04 ALL COMBINED PASS; pinned04ff458 now running public
+acceptance7NFIpk (fixture backup082646). Actual candidate cancelled-source cosmetics
+publish/activate and obsolete-target rejection passed. Health reports04ff458 after
+switch; full public gate/runner completion still pending, not VERIFIED. Keep pin.
+
+Pinned04ff458 f4b2a release started082108UTC, runner89594; local log
+/tmp/atlas-studio-f4b2a-live-deploy.txt. Required pre-deploy recovery backup082108.
+No new migrations expected. Current1d7f558/previous97ceb35 unchanged at preflight;
+root168GiBfree, eligible retirement candidates0. Candidate/public exact continuation
+and native gates running; no VERIFIED claim. Do not advance pinned remote branch
+while runner operates. Inspect actual failure before retry; b remains NOT STARTED.
+
 F4b2 split before release into coherent checkpoints: a fixes ordinary publication
 baseline and actual cancellation continuation; b adds forward0008 generation
 priority/storage/terminal cosmetic activation. a expected files binding.ts,
@@ -1245,6 +1278,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+Release verification companion: scripts/check-messages.ts retries the same
+viewport bounds during entrance animation, retains failure for persistent overflow
+and reports actual rectangle on failure. No product Messages change.
+
 F4b2a: src/core/studio/fields/binding.ts, tests/studio-field-binding.test.ts,
 scripts/studio/check-field-publication.ts; field plan, Phase2 plan, DECISIONS,
 CURRENT_STATE and this ledger. No schema/migration change.
@@ -1539,6 +1576,13 @@ platform grants and business-user provisioning regression cases.
 
 # Tests Run
 
+Retry checks PASS: production build, strict post-build TypeScript, scoped Messages
+ESLint,9 focused drawer/chat assertions and diff. Earlier55 files343 binding/native
+assertions retained (overlapping focused rerun is not343+9 unique tests). No product
+Messages or DB change; identical geometry criteria and5s bounded retry only.
+Next checkpoint and full pinned Studio candidate/public release. Logs
+/tmp/atlas-studio-f4b2a-{retry-build,retry-types,retry-ui-tests,messages-lint}.txt.
+
 F4b2a:55 files343 assertions, scoped ESLint, production build, strict post-build
 TypeScript and diff PASS. Logs /tmp/atlas-studio-f4b2a-{tests,lint,build,types}.txt.
 
@@ -1788,12 +1832,17 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
+F4b2a public04ff458 gate FAIL at instantaneous Messages dialog bounds; deployer
+restored1d7f558 (healthy). Candidate and public Studio passed, but this workstream
+is not VERIFIED. Identical bounded geometry retry implemented; new full candidate/
+public proof required. Next workstream remains NOT STARTED.
+
 Temporary0747UTC SSH/HTTPS access blocker RESOLVED: original runner completed
 all gates/activation safely. Current1d7f558/previous97ceb35 verified; no confirmed
 OOM cause. Historical investigation below is superseded; provider console unnecessary.
 Phase2 visual design/publishing work remains incomplete.
 
-ACTIVE investigation: pinned1d7f558 build followed by public TLS/health timeouts
+Historical resolved investigation: pinned1d7f558 build followed by public TLS/health timeouts
 and SSH banner timeouts from0747UTC (TCP22 accepts). Existing monitor commands
 stalled; actual resource cause not yet confirmed. Last current97ceb35/previous
 1bf0e2c, no activation/acceptance logged. Root space resolved; do not describe this
@@ -1842,7 +1891,7 @@ F4b1 workstream PASS/VERIFIED: exact1d7f558 candidate/public SQL/runtime/native
 checks and exit0. FullPhase2 NOT PASSED; f4b2 may now begin. Historical blocked
 checkpoint below is superseded.
 
-Current f4b1 actual storage/runtime verification BLOCKED: additive0007 applied,
+Historical (superseded by verified1d7f558): f4b1 storage/runtime was BLOCKED after0007,
 server build/acceptance completion unknown after SSH/HTTPS timeouts. No candidate/
 public nested Test PASS or new live Studio release claimed. Phase2 NOT PASSED;
 next workstream/Phase3 must not begin until safe gate evidence is available.
@@ -1865,18 +1914,12 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-F4b2a local checks PASS. Checkpoint source and memory, then normal pinned Studio
-release with complete candidate/public native
-acceptance. Verify real approved-source cosmetic publication/activation after
-cancellation and retained cancelled-target/history guards. Only then beginf4b2b.
-The broader remainingf4b2 plan follows.
-
-Implementf4b2: choose the tenant-owned active field schema as cosmetic binding
-baseline (origin schema only before first activation); add forward0008 guards that
-prioritise any open source freeze, retain completed sources/cancelled or rolled-back
-targets, and allow only compatible same-active-generation cosmetic activation.
-Add binding tests and exact rollback-only Test continuation proof. Run appropriate
-regressions/types/lint/build, review diff and update memory, then normal pinned Studio
-candidate/public release; do not mark VERIFIED without actual SQL/native evidence.
-Afterf4b2: f4c current-authority settlement service, f4d actual Audit/concurrency/replay
-proof;2B4 owner value/form hooks,2C/D and2E visual designer. NoPhase3 untilPhase2 PASS.
+Verify the Messages acceptance retry with scoped lint, strict TypeScript, production
+build and diff review. Checkpoint only the reviewed binder/checker/memory changes,
+then rerun the complete pinned Studio candidate/public release. Keep all native
+assertions, original locks and runtime rollback behavior. Inspect any persistent
+failure with retained rectangle diagnostics; no f4b2b coding before f4b2a VERIFIED.
+After actual gate PASS: f4b2b additive0008 generation priority/retained histories/
+settled same-active-generation cosmetic activation; f4c/d current-authority
+settlement and actual failure/replay proof;2B4 owner values/forms,2C/D,2E visual
+designer. FullPhase2 NOT PASSED; noPhase3 implementation.

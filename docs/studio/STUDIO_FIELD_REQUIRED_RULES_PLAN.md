@@ -78,7 +78,7 @@ record access or publication. Do not move the pinned release branch while it run
 | d3a | Evaluate bounded typed conditions and seal observed fact fingerprints; d1 contracts | required compiler plan schema + evaluator/tests; no DDL/data reads | all/any, false/zero/empty, literal precision, missing/unavailable/foreign fact shapes, no authorization short circuit, tampered plans | VERIFIED locally;70files440/build/strictpostbuildTS/lint/diff PASS, pure/unwired |
 | d3b | Sealed source metadata/current dependency closure and version-aware field compilation; d1/d2/d3a | required metadata provider/compiler/schema tests; no publication dispatch yet | Exact current+pinned tenant binding/generation/checksum/access, transitive cycles/bounds/cosmetic compatibility, sealed v1 preservation | VERIFIED locally; b1 full isolated compiler, b2 locked source provider/inspection;25 focused/types/lint/diff PASS, central gate pending |
 | d3c | Transactional fact/value reading and resulting requirements; d3a/b and d2 owner facts/proofs | required runtime reader + tests; no new datastore | Current/written/native/reference guards before values, staged changes, create-only new record proof, absence vs unavailable, deterministic locked reads | VERIFIED scoped live6b3d03f; c1 local + c2a/b actual staged/current-owner creation/SQL rollback and full candidate/public PASS; broader existing conditional gate d5 |
-| d3d | Required initial publication and activation coverage; d3b/c | definition lifecycle + existing canonical snapshot access; additive guards only if necessary | Complete canonical cohort incl final/unanchored; required coverage/unique/source/CAS/Audit; optional-populate-review path; no metadata principal impersonation | NOT STARTED |
+| d3d | Required initial publication and activation coverage; d3b/c | candidate-version checker + explicit owner canonical snapshot policy; no DDL | Complete canonical cohort incl final/unanchored; empty metadata/private/CAS; native integration remains d4 | VERIFIED scoped live18bd031; actual candidate/public SQL proof PASS |
 | d3e | Existing reviewed evolution/execution/settlement integration and impact; d3c/d | existing migration services/contracts + owner versioned policies; preserve old receipts | Native/global extension revisions capture input drift, new generations, dependent rule compatibility, target eligibility, source freeze/history/replay, rollback | NOT STARTED |
 
 A rule input that cannot be authorised/resolved is an error, never a false/absent
@@ -272,3 +272,45 @@ Expected next review/commit pinned consolidated d3d release and verify candidate
 public central probe. Then d3e reviewed required-rule evolution followed by d4
 shared mutation lock order/native hooks/initial writer/rollback-window closure.
 Full Phase2 gate NOT PASSED; visual2E NOT STARTED.
+
+## d3e coherent implementation blocks — 10 October
+
+Existing migration intents/observations/owner queries, representation approval,
+cutover and settlement parse v1 payloads; SQL preparation guards also pin intent
+version1. Do not widen these historical contracts or route v2 through their parser.
+
+| ID | Purpose/dependencies | Expected files/database | Verification | Status |
+| --- | --- | --- | --- | --- |
+| d3e1 | Version-aware evolution impact using the existing pure evolution analyser; d3c/d | fields/evolution.ts + focused evolution suite; no DDL/persistence/dispatch | Rule add/change/removal needs reviewed new generation; cosmetic preservation; input pin impact; exact legacy semantics and v1 rejection of v2 receipts | VERIFIED locally with e2a;32/4, strict TS/lint/build PASS; pending pinned release |
+| d3e2 | Versioned reviewed intent/observation/owner approval and compiler support; e1 | existing migration contracts/access/observation/preparation/coverage + explicitly new owner contracts; additive SQL guard updates if necessary | Genuine current principal, all fact/dependency metadata and native/global extension drift, bounded canonical set and invalid rows, old receipt hashes | NOT STARTED |
+| d3e3 | Existing resumable representation/execution, cutover and settlement support; e2 | existing migration/execution/cutover/settlement, native owner callbacks, focused SQL probe | Source freeze, exact target requirement coverage, dependency compatibility, replay/rollback/history and current access | NOT STARTED |
+
+Conditional publication remains disabled until d4 common mutation locking and
+native enforcement are verified. e1 is metadata impact analysis, not a converter,
+review approval, business-value reader or permission grant. Existing conversion
+functions and migration intent v1 remain closed to v2.
+
+### d3e2a packet contract — IN PROGRESS
+
+First e2 block: explicit v2 migration intent/observation/review integrity packet
+inside the existing migration directory. Reuse typed conversion declarations and
+evolution identity rules; archive only references and requirement fingerprints.
+Old v1 packet parser/digest/owner ranges stay unchanged. Pure integrity grants no
+record/publication access; no DB persistence or route dispatch until e2b server
+inspection and additive SQL guards support these packets. Expected new versioned
+contract, focused packet tests, shared payload union and memory/decision updates.
+No DDL in e2a. Test canonical metadata, typed conversion compatibility, exact
+required-null validity, complete deterministic cohort digest, tamper/replay/foreign
+identity and old v1 rejection of v2 packets.
+
+### e1/e2a local checkpoint — VERIFIED locally
+
+32 checks/4 focused suites, strict TypeScript, scoped ESLint, production build and
+diff checks PASS. Explicit v2 intent/review integrity and ordered observation digest
+are references/checksums only. Required-null valid outcomes are rejected; true/false
+values remain conversion concerns in the real server transaction. Unknown versions,
+foreign principal, changed identity, conflicting pins, executable/defaulted input,
+tampered reviews, incorrect summaries, duplicate/order/closed digests fail. Old v1
+results/converter/parser/digest semantics unchanged. No schema/persistence/dispatch.
+Next e2b: actual version-aware owner/metadata/row inspection plus additive guards,
+then e3 existing representation/execution/cutover/settlement support.

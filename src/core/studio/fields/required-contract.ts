@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { fieldKeySchema, customFieldSchema } from "./schema";
+import { fieldKeySchema, customFieldSchema, customFieldPayloadSchema } from "./schema";
 import { referenceSchema } from "../compiler/kernel";
 
 const digest = z.string().regex(/^[a-f0-9]{64}$/);
@@ -49,3 +49,7 @@ export type RequiredCondition = z.infer<typeof requiredConditionSchema>;
 export const conditionalFieldPayloadSchema = z.strictObject({ schemaVersion: z.literal(2), entity: referenceSchema,
   storageGeneration: z.uuid(), field: customFieldSchema, requiredIf: requiredConditionSchema });
 export type ConditionalFieldPayload = z.infer<typeof conditionalFieldPayloadSchema>;
+
+/** Explicit upcoming protocol boundary; legacy dispatch/receipts still use v1. */
+export const versionedFieldPayloadSchema = z.discriminatedUnion("schemaVersion", [customFieldPayloadSchema, conditionalFieldPayloadSchema]);
+export type VersionedFieldPayload = z.infer<typeof versionedFieldPayloadSchema>;

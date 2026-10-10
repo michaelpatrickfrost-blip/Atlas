@@ -11,6 +11,12 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
+2B4d3e1 evolution impact + d3e2a versioned review packets — VERIFIED locally;
+new helpers await pinned release. d3d — VERIFIED live18bd031. Full e2/e3/d4 pending.
+
+2B4d3e1 version-aware evolution impact — IN PROGRESS while pinned d3d central
+release18bd031 runs. Existing migration receipts/policies remain closed.
+
 2B4d3d candidate-version and complete canonical coverage — IN PROGRESS.
 
 2B4d3c2a/b resulting-state/creation validation — VERIFIED live6b3d03f; candidate/public combined and actual SQL proof PASS;54 local/build/strict TS/lint PASS.
@@ -53,6 +59,40 @@ F4a VERIFIED locally (adfc357); strict TS/build/scoped lint,18 focused and45 fil
 candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
+
+## 10 October 2026 — d3d live VERIFIED; d3e1/e2a locally VERIFIED
+
+Pinned release18bd031058490e939edebf7128b5f910e16117b4 completed original runner
+22055 exit0. CandidateSY7gok/public1Fu5KU ALL COMBINED PASS, including actual full
+canonical final/merged/unanchored coverage, missing/fill/false-clear requirements,
+unchanged activation and exact native/typed/config/Audit rollback snapshots. Public
+health exact18bd031, Atlas active/login200; previous6b3d03f retained. Root167GiB
+free/14%; duplicate0925bb5 runtime retired through original retention locks. Existing
+source/static/history/private records/backups retained. Required pre-release160328
+and candidate160510/public160925 fixture backups used; no ad-hoc dumps.
+
+Next pure foundation checkpoint: shared v1/v2 evolution impact and explicit v2
+migration intent/observation/review packets. Rule additions/changes/removals need
+reviewed new generations; labels/enum labels remain cosmetic. Reports input changes/
+immutable repins, canonical review, uniqueness and rollback impact. v2 observation
+archives only references and source/target requirement evaluation checksums, exact
+native/global extension revisions, target-required validity and ordered v2 digest.
+Old v1 parser/converter/digest/receipts and owner approval ranges remain closed.
+No v2 persistence, native/authoring dispatch, SQL guard widening or privilege grant.
+No DDL/backfills/schema/data changes. e2a is integrity only, not a complete migration.
+
+32 focused checks/4 suites PASS (67952 exit0), strict TypeScript29481 exit0, scoped
+ESLint9999 exit0, production build79552 exit0 and diff check PASS. Source reviewed;
+legacy structural logic reused unchanged. Full npm test/lint not repeated (known
+baseline unrelated failures). New helpers are local until next pinned release.
+Files fields/evolution.ts, required-contract.ts, migrations/required-contracts.ts,
+two focused suites, required-rules plan, architecture/module docs and repository
+memory. Visual draft remains unverified saved stash28243b7; foundation order intact.
+Exact next: commit/pin this coherent e1/e2a checkpoint and release original Studio
+compatibility gates. Then e2b: add explicit owner-versioned conditional migration
+approval, real source/target requirement inspection and version-aware preparation/
+observation/coverage to the existing engine, with additive SQL guards preserving
+v1 packet equality. Do not enable dispatch before e3/d4 native/lock/window safety.
 
 ## 10 October 2026 — foundation-first order restored; visual draft preserved
 
@@ -486,6 +526,12 @@ actual facts/create-only/native/Audit rollback proof, runner40775 exit0.
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+d3e1: extend the existing pure evolution analyser for v1/v2 metadata impact.
+Dependencies d3c/d locally verified; d3d central proof running. Files evolution.ts,
+focused legacy/new suite, required-rules plan and memory. No DDL/value reads/
+conversion/dispatch. Verify rule changes need reviewed generations, unchanged
+cosmetics, input pin impact and old closed v1 semantics.
 
 ## 10 October 2026 — d3d complete canonical candidate coverage IMPLEMENTED locally
 
@@ -2344,6 +2390,8 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+Current e1/e2a: fields/evolution.ts, required-contract.ts, migrations/required-contracts.ts; tests/studio-field-required-{evolution,review}.test.ts; required-rules plan, architecture/module docs, decisions/current state/ledger.
+
 10 October2026: d3d: registry types/entities/contracts/registry; service-work/studio; fields/required-runtime and new required-coverage; owner and required-runtime tests plus old-hash/creation regressions; existing central result/native-contract probes; architecture/module/permissions, required-rules plan, ledger/current/decisions.
 
 
@@ -2540,6 +2588,8 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+Current e1/e2a: NONE. v2 packets are intentionally not persisted; existing SQL guards remain v1 until additive e2b changes.
+
 10 October2026: d3d: NONE. No schema/migration/backfill/reset; Test-only native/config/typed/Audit probes roll back.
 
 
@@ -2610,6 +2660,8 @@ business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
 
+Current e1/e2a: NONE. d3d18bd031 release applies no new DDL.
+
 10 October2026: d3d: NONE. Existing release schema/backup gates remain mandatory.
 
 
@@ -2660,6 +2712,8 @@ preserved. Final candidate/activation backup prefixes: `atlas-pre-deploy-2026100
 and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
+
+13 meaningful pure evolution/versioned packet cases (6+7), plus existing legacy evolution/review regressions.
 
 10 October2026: d3d:5 owner-policy/query cases and8 full canonical coverage cases; exact old v7 hash regression. Central rollback-only final/merged/unanchored probe added, NOT RUN yet.
 
@@ -2736,6 +2790,8 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+e1/e2a focused32/4 PASS; strict TS29481 exit0, ESLint9999 exit0, build79552 exit0, diff PASS. d3d original candidate/public combined release22055 exit0.
 
 10 October2026: d3d:95 assertions/10 focused suites PASS; production build PASS; initial strict TypeScript/scoped ESLint/diff PASS. Strict post-build TS PASS; central candidate/public pending.
 
@@ -2915,6 +2971,8 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
+d3d actual candidate/public canonical coverage+SQL rollback VERIFIED live18bd031. e1/e2a pure contracts VERIFIED locally; business migration integration NOT IMPLEMENTED.
+
 10 October2026: d3d implemented locally, not yet central/live VERIFIED. No whole Phase2 gate claim.
 
 
@@ -3075,6 +3133,8 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
+No active d3d release blocker. v2 persistence/owner approval/execution/cutover/settlement/native hooks remain gated; pure packet integrity grants no coverage/permission. Visual draft saved and unverified.
+
 10 October2026: d3d authoring integration remains gated on d3e/d4 native enforcement/common locks/initial writer/window. Central probe pending; no visual designer implemented.
 
 
@@ -3149,6 +3209,8 @@ No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
 
+d3d scoped central gate PASS live18bd031. e1/e2a local contract gate PASS. Full Phase2 gate FAIL/pending: reviewed v2 migrations, native enforcement, forms/search, record types/pages and visual designer remain.
+
 c2a/b workstream PASS/VERIFIED live6b3d03f, actual candidate/public SQL/runtime
 and combined gates PASS. d3d IN PROGRESS. Phase2 gate IN PROGRESS; no native
 conditional hooks/publication dispatch or visual designer started.
@@ -3198,6 +3260,8 @@ These checks derive from Sections 5–6, 14, 19, 25–28; no whole-system gate u
 prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
+
+Commit/pin the reviewed e1/e2a checkpoint and release through original Studio gates. Then d3e2b: version-aware preparation/observation/coverage with real source/target requirement fingerprints, explicit new owner snapshot/representation approval and additive SQL guards preserving every old v1 receipt. e3 execution/settlement and d4 native lock/writer/window safety precede authoring.
 
 Pin/release the clean d3d checkpoint plus foundation-first memory update through
 the original Studio candidate/public gates. After central SQL proof passes, inspect

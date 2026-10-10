@@ -1,3 +1,20 @@
+## 10 October 2026 — Explicit reviewed conditional evolution protocol
+
+The existing v1 migration intent, observation digest and SQL equality guards cannot
+safely accept required-if metadata or evaluation evidence by adding defaults or
+broadening old owner ranges: that would reinterpret retained reviews and receipts.
+Keep those contracts closed. Reuse the existing structural evolution analyser for
+a separately typed v1/v2 impact entry, and add an explicit v2 packet in the same
+migration directory. Rule addition/change/removal requires a reviewed new generation;
+label/help/enum label cosmetics keep the representation. A v2 observation archives
+references and source/target requirement evaluation fingerprints, never business
+facts/values; its distinct digest frame leaves all v1 hashes unchanged. Pure type/
+mapping compatibility can reuse the legacy converter constructor without executing
+it; real conditional requirements must be evaluated in the owning transaction.
+This is versioned protocol support for the existing engine, not another migration
+engine or permission grant. v2 SQL persistence/owner callbacks/execution and native
+locks/hooks/window safety remain mandatory before conditional authoring dispatch.
+
 ## 10 October 2026 — Required coverage is independent of migration approval
 
 Reviewed migration contracts explicitly cover only old field/entity versions and

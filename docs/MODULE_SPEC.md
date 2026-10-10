@@ -435,3 +435,14 @@ not durable approval or a grant. No new DDL or publication endpoint. IMPLEMENTED
 locally with95 focused checks/build/types/lint; actual central probe and deployment
 pending. Native/common-lock/initial-writer/window prerequisites remain d4 before
 conditional authoring dispatch. Full Phase2 and visual designer remain unfinished.
+
+### Reviewed conditional field evolution — 10 October checkpoint
+
+The existing field evolution analyser now exposes a pure v1/v2 impact entry: rule
+addition/change/removal requires reviewed generation replacement; cosmetic labels
+preserve storage. Explicit migration packet v2 seals normalised intent/review and
+ordered observations containing references/requirement evaluation checksums only.
+Legacy v1 parsers/converters/digests/owner ranges remain closed and unchanged.
+These helpers grant no business access, persistence or execution. Real conditional
+inspection, additive SQL guards, existing execution/cutover/settlement adaptation
+and shared native locks/enforcement must precede authoring dispatch. No new engine.

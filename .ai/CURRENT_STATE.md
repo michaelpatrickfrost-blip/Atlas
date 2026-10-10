@@ -1,3 +1,55 @@
+## 10 October 2026 — d3d live VERIFIED; d3e1/e2a locally VERIFIED
+
+Pinned release18bd031058490e939edebf7128b5f910e16117b4 completed original runner
+22055 exit0. CandidateSY7gok/public1Fu5KU ALL COMBINED PASS, including actual full
+canonical final/merged/unanchored coverage, missing/fill/false-clear requirements,
+unchanged activation and exact native/typed/config/Audit rollback snapshots. Public
+health exact18bd031, Atlas active/login200; previous6b3d03f retained. Root167GiB
+free/14%; duplicate0925bb5 runtime retired through original retention locks. Existing
+source/static/history/private records/backups retained. Required pre-release160328
+and candidate160510/public160925 fixture backups used; no ad-hoc dumps.
+
+Next pure foundation checkpoint: shared v1/v2 evolution impact and explicit v2
+migration intent/observation/review packets. Rule additions/changes/removals need
+reviewed new generations; labels/enum labels remain cosmetic. Reports input changes/
+immutable repins, canonical review, uniqueness and rollback impact. v2 observation
+archives only references and source/target requirement evaluation checksums, exact
+native/global extension revisions, target-required validity and ordered v2 digest.
+Old v1 parser/converter/digest/receipts and owner approval ranges remain closed.
+No v2 persistence, native/authoring dispatch, SQL guard widening or privilege grant.
+No DDL/backfills/schema/data changes. e2a is integrity only, not a complete migration.
+
+32 focused checks/4 suites PASS (67952 exit0), strict TypeScript29481 exit0, scoped
+ESLint9999 exit0, production build79552 exit0 and diff check PASS. Source reviewed;
+legacy structural logic reused unchanged. Full npm test/lint not repeated (known
+baseline unrelated failures). New helpers are local until next pinned release.
+Files fields/evolution.ts, required-contract.ts, migrations/required-contracts.ts,
+two focused suites, required-rules plan, architecture/module docs and repository
+memory. Visual draft remains unverified saved stash28243b7; foundation order intact.
+Exact next: commit/pin this coherent e1/e2a checkpoint and release original Studio
+compatibility gates. Then e2b: add explicit owner-versioned conditional migration
+approval, real source/target requirement inspection and version-aware preparation/
+observation/coverage to the existing engine, with additive SQL guards preserving
+v1 packet equality. Do not enable dispatch before e3/d4 native/lock/window safety.
+
+## 10 October 2026 — d3e1 locally checked; d3e2a integrity packet IN PROGRESS
+
+Evolution impact and legacy regression25/3 PASS; strict TS32680 exit0, scoped ESLint
+34058 exit0, diff check PASS. Build not repeated yet; consolidate with e2a packet.
+Add explicit v2 reviewed intent/observation/review integrity to existing migration
+directory, fingerprints/references only, closed legacy v1 unchanged. No DDL or
+execution/dispatch grant. Original d3d release18bd031 remains pinned/running.
+
+## 10 October 2026 — d3e1 evolution impact IN PROGRESS
+
+Pinned d3d release18bd031 is running; do not move the branch during that runner.
+Meanwhile inspect/build the next pure foundation block: reuse existing evolution
+analysis for v1/v2 impact, requiring a new reviewed generation for rule addition,
+change/removal. Existing v1 conversion/receipts remain closed. Expected evolution
+helper and focused suite; no DDL/dispatch/business-value reads. d3e2/3 and d4 remain
+pending; visual draft remains saved in stash28243b7. Run focused legacy/new impact
+checks and types/lint, then consolidate build/release after a coherent block.
+
 ## 10 October 2026 — foundation-first order restored; visual draft preserved
 
 Michael's latest instruction: “the foundations are important so if they need to

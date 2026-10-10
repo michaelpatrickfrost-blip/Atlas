@@ -328,4 +328,5 @@ Registry validation is atomic. Existing snapshot contracts grant only read cover
 normal `read`/`extend` and final-record restrictions do not change. The future query
 must reload scoped persisted reviewed publication/observation proof and authorise the
 actual native row; it may approve extension representation only, never native writes.
-The optional registry contract is locally verified; no owner currently enables it.
+The optional registry contract is locally verified. Tickets v5 now declares it in
+local implementation; its actual owner/SQL execution proof remains pending.

@@ -70,3 +70,15 @@ it("new query retains bounded preflight/snapshot/native coverage protocol withou
   expect(await registry.invokeQueryInTransaction({ session: actor, transaction: tx }, query, { mode: "preflight" })).toMatchObject({ count: 3, nativeAccessComplete: true });
   expect(await registry.invokeQueryInTransaction({ session: actor, transaction: tx }, query, { mode: "snapshot", limit: 1 })).toMatchObject({ records: [], next: null });
 });
+
+it("v3 explicitly supports v5 reference representation without silently extending v2 coverage", async () => {
+  const newQuery = registry.describe("tickets.ticket.field_migration", 3);
+  const next = customFieldPayloadSchema.parse({ ...target, entity: ref(5), field: { ...target.field, storage: { type: "reference", entity: ref(5) } } });
+  saved.intent = { ownerQuery: { id: newQuery.id, version: 3 } };
+  saved.sourceVersion.payload = customFieldPayloadSchema.parse({ ...source, field: { ...source.field, storage: { type: "reference", entity: ref(5) } } });
+  saved.draft.payload = next;
+  expect(await registry.invokeQueryInTransaction({ session: actor, transaction: tx }, newQuery, { mode: "reference_coverage", preparationId })).toEqual({ organisationId: "company", entityId: "tickets.ticket", mode: "reference_coverage", nativeReferenceCoverageComplete: true });
+  saved.intent = { ownerQuery: { id: query.id, version: 2 } };
+  await expect(run()).rejects.toThrow("MIGRATION_REFERENCE_COVERAGE_CHANGED");
+  expect(m.count).not.toHaveBeenCalled(); expect(m.rows).not.toHaveBeenCalled();
+});

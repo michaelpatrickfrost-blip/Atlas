@@ -930,3 +930,29 @@ confirmed. /tmp/atlas-studio-execution-schema-rollback.{sql,txt}. This verifies 
 not actual trigger lifecycle/authority/outcomes. Migration 20261010050000 NOT APPLIED;
 source/target data and schema remain at accepted 64361cb. Need e3 owner approval and
 actual e4–e6 failure/replay/commit evidence before execution is VERIFIED or deployed.
+
+2B3e3 IN PROGRESS before code: new Tickets entity v5, snapshot query v3 and
+representation approval query v1. Preserve sealed v1–v4/query v1–v2 descriptors and
+normal read/extend final/merged guards. Full current member/private/module/native
+access precedes scoped reviewed publication/observation metadata; exact initiating
+principal/current auth+session versions and native row revision under Serializable
+FOR UPDATE. Output only scoped representation anchor, no values/counts/native writes.
+New snapshot/reference coverage explicitly approves versions 2–5/read 1–5; old
+reference query defaults remain unchanged. Expected service-work/studio, focused
+owner tests and module docs. Pending e2b SQL remains NOT APPLIED; actual owner/
+writer/SQL proof follows e4–e6 before release. Last accepted live 64361cb.
+
+2B3e3 IMPLEMENTED/local checks PASS, actual owner SQL NOT RUN: Tickets entity v5
+explicitly opts into source versions 2–5, snapshot/reference query v3/read 1–5 and
+representation approval query v1. Existing descriptors and v2 defaults unchanged;
+normal final/merged extend still denied. Complete current native/private/member/module
+access precedes scoped stored review/publication/observation, initiating actor and
+current membership/auth-version checks, exact metadata freshness and FOR UPDATE native
+revision. Output only scoped representation anchor, no values/counts/native mutation.
+35 Studio files/204 assertions, production build, strict post-build TypeScript,
+scoped lint/diff PASS; /tmp/atlas-studio-ticket-representation-{all-tests,build,
+postbuild-types,lint}.txt. Initial TS caught an assumed User.active column (actual
+model uses membership active/authVersion) and local never-function narrowing; fixed
+before final checks. Pending 20261010050000 NOT APPLIED; no row writer yet. Accepted
+live 64361cb; Phase 2 NOT PASSED. Next e4a shared execution inspection/start service,
+then exact one-row writer, bounded batches and actual owner/SQL recovery proof.

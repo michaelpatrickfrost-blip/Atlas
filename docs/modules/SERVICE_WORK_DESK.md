@@ -85,4 +85,17 @@ kind/existence plus written reference versions. It returns only coverage truth,
 never referenced IDs/counts or mutations. Versioned descriptors preserve v1–v3
 entity/query-v1 hashes and ordinary final/merged write restrictions. Studio still
 checks current/written field policies and exact source before invocation; metadata
-alone gives no access. Final reference seal/central proof follows separately.
+alone gives no access. Reference seal/central proof VERIFIED on 32ee77e and preserved
+in complete candidate/public 64361cb acceptance.
+
+
+Tickets representation approval (2B3e3 IMPLEMENTED, actual not run): new entity v5
+pins snapshot/reference query v3 with typed sources 2–5/read versions 1–5, and a
+separate `tickets.ticket.field_representation@1` owner query. It reloads scoped stored
+publication/review/observation, checks current initiating membership/auth versions,
+complete native/private access, source entitlement and actual native revision under
+Serializable FOR UPDATE. Only a representation anchor returns; final/merged native work
+is untouched and normal extension editing still requires reopening. Existing entity
+v1–v4/query v1–v2 metadata and reference-v2 defaults remain. Studio still checks field/
+written/reference rights and exact source/target before conversion. Local 35 files/
+204 assertions/types/lint/build PASS; pending execution DDL and actual row proof remain.

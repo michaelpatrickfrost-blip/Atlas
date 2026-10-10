@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3e2b — Additive execution/outcome persistence — IN PROGRESS.
+2B3e3 — Explicit Tickets representation approval — IN PROGRESS.
 2B3d1–d4 VERIFIED ea27b2f; no row writer/designer.
 
 # Overall Status
@@ -65,6 +65,34 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+2B3e3 IMPLEMENTED/local checks PASS, actual owner SQL NOT RUN: Tickets entity v5
+explicitly opts into source versions 2–5, snapshot/reference query v3/read 1–5 and
+representation approval query v1. Existing descriptors and v2 defaults unchanged;
+normal final/merged extend still denied. Complete current native/private/member/module
+access precedes scoped stored review/publication/observation, initiating actor and
+current membership/auth-version checks, exact metadata freshness and FOR UPDATE native
+revision. Output only scoped representation anchor, no values/counts/native mutation.
+35 Studio files/204 assertions, production build, strict post-build TypeScript,
+scoped lint/diff PASS; /tmp/atlas-studio-ticket-representation-{all-tests,build,
+postbuild-types,lint}.txt. Initial TS caught an assumed User.active column (actual
+model uses membership active/authVersion) and local never-function narrowing; fixed
+before final checks. Pending 20261010050000 NOT APPLIED; no row writer yet. Accepted
+live 64361cb; Phase 2 NOT PASSED. Next e4a shared execution inspection/start service,
+then exact one-row writer, bounded batches and actual owner/SQL recovery proof.
+
+
+2B3e3 IN PROGRESS before code: new Tickets entity v5, snapshot query v3 and
+representation approval query v1. Preserve sealed v1–v4/query v1–v2 descriptors and
+normal read/extend final/merged guards. Full current member/private/module/native
+access precedes scoped reviewed publication/observation metadata; exact initiating
+principal/current auth+session versions and native row revision under Serializable
+FOR UPDATE. Output only scoped representation anchor, no values/counts/native writes.
+New snapshot/reference coverage explicitly approves versions 2–5/read 1–5; old
+reference query defaults remain unchanged. Expected service-work/studio, focused
+owner tests and module docs. Pending e2b SQL remains NOT APPLIED; actual owner/
+writer/SQL proof follows e4–e6 before release. Last accepted live 64361cb.
+
 
 64361cbb60f0a1e3b9e131856867976531373bf1 complete combined candidate/public
 acceptance PASS, deploy session 31720 exit 0 and actual public release health exact
@@ -621,6 +649,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+e3: service-work/studio v5/query v3/approval query, new representation tests plus
+reference coverage regression, SERVICE_WORK_DESK/module docs and progress memory.
+
 e2b: Prisma schema, pending 20261010050000 SQL, regenerated model catalogue,
 archive-access tests, DATA_MODEL and progress/decision docs.
 
@@ -782,6 +813,9 @@ preserved. Final candidate/activation backup prefixes: `atlas-pre-deploy-2026100
 and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
+
+e3: six owner approval tests (closed/merged vs normal extend, scope/revocation/
+CAS/private/foreign/stale/pins) plus explicit v3/v5 reference regression.
 
 c3: approved reference versions 1–4, protocol invocation ordering, fresh replay,
 private revocation, changed target/written proof, missing opt-in/legacy protocol
@@ -1038,10 +1072,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement 2B3e3 new Tickets entity v5/query v3 snapshot and representation approval
-query v1, preserving sealed v1–v4/query v1–v2 hashes and normal final/merged extend
-restrictions. Approval must reload scoped publication/review/observation, match
-initiating principal and actual native revision/private access under Serializable
-row lock, return only representation anchor; no native writes. Then implement e4–e6
-writer/batches and central failure/replay/atomic constraints before applying pending
-20261010050000 in a pinned full release. Last accepted live 64361cb; Phase 2 open.
+Implement 2B3e4a shared execution inspection and start service: derive stage only
+from scoped actual execution row; preserve old freshness, account solely for recorded
+own extension increments and verify exact native/source/written/reference coverage,
+immutable target/approved query and current initiating authority before saving an
+execution pin/CAS/Audit or returning replay state. Then e4b exact one-row target writer,
+e5 bounded batches and e6 actual central owner/atomic failure/replay before applying
+pending 20261010050000 in a pinned full release. Last accepted live 64361cb; Phase 2
+visual designer/live dashboard/custom button acceptance remains open.

@@ -93,7 +93,7 @@ export async function checkFieldPrincipal(customerUserId: string, staff: Session
   await checkFieldReferenceSealing(opened.session, opened.principal, unanchored.id, nativeBefore.find(row => row.status === "CLOSED")!.id, foreignTicket.id, otherOrganisationId);
   await checkFieldPublication(opened.session, opened.principal, unanchored.id, otherOrganisationId);
   await checkFieldExecution(opened.session, opened.principal, unanchored.id, nativeBefore.find(row => row.status === "CLOSED")!.id, otherOrganisationId);
-  await checkFieldCutoverService(opened.session, opened.principal, unanchored.id, otherOrganisationId);
+  await checkFieldCutoverService(opened.session, opened.principal, unanchored.id, otherOrganisationId, customerUserId);
   assert.deepEqual(await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } }), nativeBefore);
   assert.equal(await db.auditEntry.count({ where: { id: opened.principal.authority === "staff_support" ? opened.principal.auditId : "impossible",
     organisationId, actorUserId: staff.userId, action: "studio.field.migration.support_opened", entityId: targetMember.id } }), 1);

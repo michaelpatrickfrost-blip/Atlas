@@ -89,6 +89,37 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 
 # Current Workstream Detail
 
+## 10 October 2026 — f4c/d local release checkpoint ready
+
+60 files/372 assertions, production build, strict post-build TypeScript, scoped
+lint and reviewed diff PASS. Reserved module lint issue corrected before checks.
+New settlement/coverage/helper tests and all existing Studio/native regressions
+passed. No schema/model/migration/backfill/reset/native-domain/UI change. Actual
+Test both-Audit failure/concurrency/independent-current-actor/history/finalization
+helper implemented but NOT RUN live yet. Current server remains exactf1a9bf1,
+previous666efeb, active/login healthy and168GiBfree. Next: commit reviewed helper
+and evidence, pinned full Studio candidate/public release under original locks.
+Logs /tmp/atlas-studio-f4d-{tests,build,postbuild-types,lint}.txt.
+
+
+## 10 October 2026 — f4d acceptance IMPLEMENTED locally; release pending
+
+Actual exact Test helper now settles staff-prepared migration using a different
+current customer principal, scoped temporary grants/queue affiliations restored in
+finally. Exercises both rollback Audit failures and finalization Audit failure,
+concurrent CAS/single receipt+Audit, lost-response replay, post-cosmetic/new-review
+history, stale/client/tenant/module/private/field/member/session denials, changed
+extension rollback denial and finalization. Continued-generation helper now uses
+real finalization service instead of a Test-only SQL settlement; retained history,
+new source freeze and native snapshots remain checked. No schema/DDL/native/UI
+change or ordinary value API. Extra real current/written policy regression suite
+added. Runtime acceptance NOT RUN yet; Phase2 gate remains IN PROGRESS.
+Local reserved module variable lint issue corrected to sourceModule before checkpoint.
+Next: finish full local regression/build/strict post-build types/lint/diff, save
+coherent checkpoint, pinned full Studio candidate/public release; investigate actual
+failure without relaxing guards. Required release/fixture backups only.
+
+
 ## 10 October 2026 — f4c2 IMPLEMENTED locally; d actual service proof next
 
 Separate rollback/finalize internal commands use current captured customer/audited
@@ -1466,6 +1497,8 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+Current f4c/d: shared cutover-receipt + settlement-{receipt,inspection,coverage,service}; registry types/entities/contracts/runtime; service-work/studio owner policy/query; cutover/settlement/generation/principal acceptance helpers; fixture and five settlement suites; MODULE_SPEC, field plan, ledger, CURRENT_STATE and DECISIONS. No unrelated edits removed.
+
 F4b2b: forward0008 SQL; new check-field-generation-storage/continuation; existing
 cutover-service/cutover-storage/settlement-storage/execution Test helpers; field
 plans,DATA_MODEL,ledger,CURRENT_STATE,DECISIONS. No unrelated code removed.
@@ -1626,6 +1659,8 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+Current f4c/d: NONE. Uses already-applied0007/0008; no models, DDL, data backfill, resets or native mutations.
+
 F4b2b: integrity functions only, no Prisma/table/data/backfill/reset change.
 
 Latestf4b2a: NONE; scoped field baseline reads/test timing only.
@@ -1729,6 +1764,8 @@ and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
 
+Current f4c/d: settlement receipt/inspector/owner/service/current-and-written coverage suites plus typed retained-cutover fixture; real exact Test settlement service and post-cosmetic/new-migration history checks.
+
 F4b2b: exact Test nested terminal cosmetics/owner fixture and SQL schema/tenant/
 retained-history cases; actual completed-target/new-open-source publication proof.
 Helpers integrated into full release acceptance; actual candidate/public PASS.
@@ -1780,6 +1817,8 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+Current f4c/d:60 files/372 assertions; production build; strict post-build TypeScript; scoped ESLint; git diff --check. Actual candidate/public helpers pending.
 
 F4b2b:55files343 assertions, production build, strict post-build TS, changed-helper
 ESLint,diff, central0008 DDL BEGIN/ROLLBACK all PASS. Async helper TS1308 corrected
@@ -1919,6 +1958,8 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
+Current f4c/d local checks PASS. Runtime NOT RUN yet; neither fullPhase2 nor settlement live gate is VERIFIED.
+
 F4b2b PASS:343 local assertions/build/strict types/lint; candidatezDzdGq/publici1zMEw
 ALL COMBINED PASS, runner65486 exit0; new terminal/owner fixture and subsequent
 reviewed-publication proof. Full details in Current Workstream Detail.
@@ -2054,6 +2095,8 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
+Current f4c/d: no local blocker. Actual server helper acceptance remains unverified; fullPhase2 owner value API/required-if/native forms/record types/pages/visual designer still outstanding.
+
 No active f4b2b blocker. Production settlement/owner value APIs and visual2E
 remain explicit unfinished Phase2 work; no completion claim for these.
 
@@ -2114,6 +2157,8 @@ No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
 
+Current f4c/d locally IMPLEMENTED, full candidate/public acceptance pending. Phase2 gate IN PROGRESS; Phase3 NOT STARTED.
+
 F4b2b workstream PASS: exactf1a9bf1 full candidate/public acceptance/exit0,
 local regression/build/types/lint, actual SQL/owner/history/source-first proof.
 FullPhase2 NOT PASSED; later designer/layout/owner integration still required.
@@ -2151,15 +2196,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement current-actor settlement coverage without relaxing original intent or
-strict cutover checks; add separate rollback/finalization commands using shared
-authority, exact open CAS, paired Audit and shared rollback activation. Then actual
-Test failure/concurrency/replay/permission/history proof and full pinned release.
-
-Implement shared immutable cutover identity in cutover-receipt.ts without relaxing
-its strict f3 ACT/current-pointer wrapper. Add closed settlement-receipt.ts for
-actual ACT/terminal receipt/publication pairing and settlement pin, then scoped
-settlement-inspection.ts with strict new-window vs retained-history validation.
-Add typed negative/history tests, actual Test read proof; record checkpoint and
-continue c2 current authority/owner coverage/service then d runtime failure/replay/
-concurrency gate. Phase2 IN PROGRESS; noPhase3 until full acceptance PASS.
+Commit reviewed f4d helper/evidence, then deploy pinned HEAD on codex/studio-phase2
+with ATLAS_RELEASE_ACCEPTANCE=studio. Observe actual independent-current-actor
+rollback/finalization, all forced Audit/CAS/replay/permission/history tests and full
+candidate/public native compatibility. Fix any failure without weakening guards.
+Mark f4c/d VERIFIED only after runner exit0 and exact live pointers/health. Then
+implement2B4 owner-authorised normal values and required-field/native-form policies;
+2C/D/visual2E follow in order. No Phase3 until fullPhase2 gate PASS.

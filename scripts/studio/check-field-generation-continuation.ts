@@ -7,12 +7,10 @@ import { customFieldPayloadSchema, type CustomFieldPayload } from "../../src/cor
 import { assertFieldAccess } from "../../src/core/studio/fields/validation";
 import { encodeFieldValue } from "../../src/core/studio/fields/codec";
 import { studioRegistry } from "../../src/core/studio/registry/runtime";
-import { writeAudit } from "../../src/core/audit/log";
 import { withFieldMigrationAuthority } from "../../src/core/studio/fields/migrations/authority";
-import { inspectFieldMigrationCutoverIdentity } from "../../src/core/studio/fields/migrations/cutover-inspection";
-import { inspectFieldMigrationReview } from "../../src/core/studio/fields/migrations/inspection";
 import { sealFieldMigrationIntent } from "../../src/core/studio/fields/migrations/contracts";
-import { createFieldMigrationSettlementPin, fieldMigrationSettlementTransition } from "../../src/core/studio/fields/migrations/settlement-contract";
+import { finalizeReviewedFieldMigration } from "../../src/core/studio/fields/migrations/settlement";
+import { fieldMigrationCutoverPinSchema } from "../../src/core/studio/fields/migrations/cutover-contract";
 import { publishDraft, activateVersion, updateDraft } from "../../src/core/studio/definitions/service";
 import { startFieldMigrationPreparation } from "../../src/core/studio/fields/migrations/preparation";
 import { collectFieldMigrationBatch } from "../../src/core/studio/fields/migrations/collection";
@@ -43,8 +41,8 @@ export async function writeGenerationFixture(tx: Prisma.TransactionClient, sessi
   return value;
 }
 
-/** Reuses the real reviewed-publication pipeline after an explicitly guarded Test
- * finalization. It does not implement the later production settlement workstream. */
+/** Reuses the real settlement and reviewed-publication services on an exact Test
+ * company; later source freeze cannot be bypassed by an earlier completed target. */
 export async function checkFieldGenerationContinuation(session: Session, principal: FieldMigrationPrincipal, preparationId: string, parentId: string, otherOrganisationId: string) {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1");
   for (const id of [session.organisationId, otherOrganisationId]) assert(await db.organisation.findFirst({ where: { id, isTest: true, kind: "CUSTOMER",
@@ -57,18 +55,12 @@ export async function checkFieldGenerationContinuation(session: Session, princip
   const nativeBefore = await db.serviceWorkItem.findMany({ where: nativeWhere, orderBy: { id: "asc" } });
   const oldValues = await db.studioFieldValue.findMany({ where: scope, orderBy: { id: "asc" } });
   const generations = await db.studioFieldGeneration.findMany({ where: scope, orderBy: { id: "asc" } });
-  await withFieldMigrationAuthority(session, principal, async authority => {
-    const { transaction: tx, session: fresh, company } = authority;
-    const inspected = await inspectFieldMigrationCutoverIdentity(tx, intent);
-    assert.equal((await inspectFieldMigrationReview({ session: fresh, transaction: tx }, studioRegistry(), company, intent, "cutover")).checksum, inspected.stored.checksum);
-    const settlement = createFieldMigrationSettlementPin({ pin: inspected.pin, checksum: inspected.checksum }, authority.principal, "FINALIZED");
-    const transition = fieldMigrationSettlementTransition(settlement.pin);
-    assert.equal((await tx.studioFieldMigrationCutover.updateMany({ where: { ...publicationScope, state: "ACTIVATED", revision: 0 },
-      data: { state: "FINALIZED", revision: 1, settlementPin: settlement.pin, settlementChecksum: settlement.checksum, settledBy: fresh.userId, settledAt: new Date() } })).count, 1);
-    assert.equal((await tx.studioFieldMigrationPublication.updateMany({ where: { ...publicationScope, state: "CUTOVER", revision: inspected.publication.revision }, data: transition.publication })).count, 1);
-    await writeAudit({ organisationId: fresh.organisationId, actorUserId: fresh.userId, action: "studio.test.field.finalized",
-      entityType: "StudioFieldMigrationCutover", entityId: preparationId, after: { settlementChecksum: settlement.checksum, testFixture: true } }, tx);
-  });
+  const beforeReceipt = await db.studioFieldMigrationCutover.findFirstOrThrow({ where: publicationScope });
+  const original = fieldMigrationCutoverPinSchema.parse(beforeReceipt.pin);
+  const confirmation = { preparationId, cutoverChecksum: beforeReceipt.pinChecksum, cutoverRevision: 0,
+    definitionRevision: original.definitionRevision + 1, publicationRevision: original.publication.revision + 1 };
+  const finalized = await finalizeReviewedFieldMigration(session, principal, confirmation);
+  assert.equal(finalized.state, "FINALIZED");
   const receipt = await db.studioFieldMigrationCutover.findFirstOrThrow({ where: publicationScope });
   const completed = await db.studioFieldMigrationPublication.findFirstOrThrow({ where: publicationScope }); assert.equal(completed.state, "COMPLETED");
   const snapshot = () => db.studioDefinition.findFirstOrThrow({ where: { id: definitionId, organisationId: session.organisationId }, include: { draft: true } });
@@ -81,6 +73,7 @@ export async function checkFieldGenerationContinuation(session: Session, princip
   const write = (number: string) => withFieldMigrationAuthority(session, principal, ({ session: fresh, transaction: tx }) =>
     writeGenerationFixture(tx, fresh, definitionId, cosmetic, published.versionId, parentId, number));
   const continued = await write("26"); assert.equal(continued.decimalValue?.toFixed(), "26");
+  assert((await finalizeReviewedFieldMigration(session, principal, confirmation)).replayed);
   await assert.rejects(() => withFieldMigrationAuthority(session, principal, ({ session: fresh, transaction: tx }) =>
     writeGenerationFixture(tx, fresh, definitionId, intent.source.payload, intent.source.versionId, parentId, 27)), /retained history/i);
   await assert.rejects(async () => activateVersion(session, { definitionId, versionId: intent.source.versionId, revision: (await snapshot()).revision }), /retained history|explicit cutover/i);
@@ -99,6 +92,7 @@ export async function checkFieldGenerationContinuation(session: Session, princip
   // This generation is simultaneously an earlier COMPLETED target and the new
   // PUBLISHED source. Every new source freeze must win, regardless of row order.
   const beforeDenial = await db.studioFieldValue.findMany({ where: scope, orderBy: { id: "asc" } });
+  assert((await finalizeReviewedFieldMigration(session, principal, confirmation)).replayed);
   await assert.rejects(() => write("27"), /freezes normal source saves/i);
   assert.deepEqual(await db.studioFieldValue.findMany({ where: scope, orderBy: { id: "asc" } }), beforeDenial);
   await cancelFieldMigrationPublication(session, principal, { preparationId: next.id, revision: nextPublication.publicationRevision });
@@ -121,5 +115,5 @@ export async function checkFieldGenerationContinuation(session: Session, princip
   assert.deepEqual(await db.studioFieldGeneration.findMany({ where: { ...scope, id: { in: generations.map(g => g.id) } }, orderBy: { id: "asc" } }), generations);
   assert.deepEqual(await db.studioFieldValue.findMany({ where: { ...scope, id: { in: oldValues.map(v => v.id) } }, orderBy: { id: "asc" } }), oldValues);
   assert.deepEqual(await db.serviceWorkItem.findMany({ where: nativeWhere, orderBy: { id: "asc" } }), nativeBefore);
-  console.log("PASS actual generation continuation: guarded exact Test finalization, approved target cosmetics and owner-authorised fixture save; completed source remains closed, real later reviewed publication freezes its earlier COMPLETED target, cancellation resumes only approved active generation, new target activation denied; receipts/values/generations/native retained. No production settlement/value API.");
+  console.log("PASS actual generation continuation: real finalization/current-authority replay after target cosmetics/writes/later reviewed publication, owner-authorised fixture save; completed source remains closed, new source freeze wins over earlier COMPLETED target, cancellation resumes only approved active generation, new target activation denied; receipts/values/generations/native retained. Normal value API remains pending2B4.");
 }

@@ -1,3 +1,32 @@
+## 10 October 2026 — f4c/d local release checkpoint ready
+
+60 files/372 assertions, production build, strict post-build TypeScript, scoped
+lint and reviewed diff PASS. Reserved module lint issue corrected before checks.
+New settlement/coverage/helper tests and all existing Studio/native regressions
+passed. No schema/model/migration/backfill/reset/native-domain/UI change. Actual
+Test both-Audit failure/concurrency/independent-current-actor/history/finalization
+helper implemented but NOT RUN live yet. Current server remains exactf1a9bf1,
+previous666efeb, active/login healthy and168GiBfree. Next: commit reviewed helper
+and evidence, pinned full Studio candidate/public release under original locks.
+Logs /tmp/atlas-studio-f4d-{tests,build,postbuild-types,lint}.txt.
+
+## 10 October 2026 — f4d acceptance IMPLEMENTED locally; release pending
+
+Actual exact Test helper now settles staff-prepared migration using a different
+current customer principal, scoped temporary grants/queue affiliations restored in
+finally. Exercises both rollback Audit failures and finalization Audit failure,
+concurrent CAS/single receipt+Audit, lost-response replay, post-cosmetic/new-review
+history, stale/client/tenant/module/private/field/member/session denials, changed
+extension rollback denial and finalization. Continued-generation helper now uses
+real finalization service instead of a Test-only SQL settlement; retained history,
+new source freeze and native snapshots remain checked. No schema/DDL/native/UI
+change or ordinary value API. Extra real current/written policy regression suite
+added. Runtime acceptance NOT RUN yet; Phase2 gate remains IN PROGRESS.
+Local reserved module variable lint issue corrected to sourceModule before checkpoint.
+Next: finish full local regression/build/strict post-build types/lint/diff, save
+coherent checkpoint, pinned full Studio candidate/public release; investigate actual
+failure without relaxing guards. Required release/fixture backups only.
+
 ## 10 October 2026 — f4c2 IMPLEMENTED locally; d actual service proof next
 
 Separate rollback/finalize internal commands use current captured customer/audited

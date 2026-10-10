@@ -1,5 +1,31 @@
 # Atlas current state
 
+## 10 October 2026 — Reviewed publisher locally checked
+
+d3b2 IMPLEMENTED/local checks PASS: publishReviewedFieldMigration refreshes exact
+initiating principal and REVIEWED revision/checksum, shared native/source/written/
+reference/digest inspection before invalid/loss consent checks. Existing publisher
+and checked permanent binding create only new target generation/version plus exact
+receipt and paired Audit atomically; source stays active, no target values. Fresh
+lost-response replay uses real target/receipt stage and no writes. 25 files/156
+assertions, production build, strict post-build TS/scoped lint/diff PASS; logs
+/tmp/atlas-studio-reviewed-publication-{full-tests,build,postbuild-types,lint}.txt.
+Real SQL/Audit/freeze/lifecycle proof not run; pending migration NOT APPLIED. Next
+sparse current-principal cancellation, then d4 exact Test candidate/public proof.
+Accepted live 32ee77e; Phase 2 NOT PASSED, visual/customer publishing still planned.
+
+## 10 October 2026 — Reviewed target publication started
+
+d3b2 IN PROGRESS before code: strict prep/review revision/checksum + warning/loss
+acknowledgements only; reload actual REVIEWED source and initiating principal.
+Lock preparation, shared inspector (stage derived from scoped publication row),
+exact review checksum. New target uses existing publisher with checked permanent
+binding/source generation and new target generation; exact receipt + paired Audit
+atomic, source active/no target values. Fresh replay validates actual immutable
+target/receipt under same policies and writes nothing. Invalid/loss consent checks
+before publication. Files migrations/publication and publication-contract helper,
+service tests; pending DDL not applied. Cancellation and actual central proof follow.
+
 ## 10 October 2026 — Shared review inspection locally checked
 
 d3b1 IMPLEMENTED/local checks PASS: one exact review inspector reused by sealer;

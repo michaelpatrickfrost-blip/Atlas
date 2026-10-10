@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3d3b2 — Reviewed publication service — NOT STARTED.
+2B3d3b3 — Metadata-only publication cancellation — NOT STARTED.
 Scalar/source coverage VERIFIED live fc9b80f; reference c1 local; no writer/designer.
 
 # Overall Status
@@ -62,6 +62,28 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+d3b2 IMPLEMENTED/local checks PASS: publishReviewedFieldMigration refreshes exact
+initiating principal and REVIEWED revision/checksum, shared native/source/written/
+reference/digest inspection before invalid/loss consent checks. Existing publisher
+and checked permanent binding create only new target generation/version plus exact
+receipt and paired Audit atomically; source stays active, no target values. Fresh
+lost-response replay uses real target/receipt stage and no writes. 25 files/156
+assertions, production build, strict post-build TS/scoped lint/diff PASS; logs
+/tmp/atlas-studio-reviewed-publication-{full-tests,build,postbuild-types,lint}.txt.
+Real SQL/Audit/freeze/lifecycle proof not run; pending migration NOT APPLIED. Next
+sparse current-principal cancellation, then d4 exact Test candidate/public proof.
+Accepted live 32ee77e; Phase 2 NOT PASSED, visual/customer publishing still planned.
+
+d3b2 IN PROGRESS before code: strict prep/review revision/checksum + warning/loss
+acknowledgements only; reload actual REVIEWED source and initiating principal.
+Lock preparation, shared inspector (stage derived from scoped publication row),
+exact review checksum. New target uses existing publisher with checked permanent
+binding/source generation and new target generation; exact receipt + paired Audit
+atomic, source active/no target values. Fresh replay validates actual immutable
+target/receipt under same policies and writes nothing. Invalid/loss consent checks
+before publication. Files migrations/publication and publication-contract helper,
+service tests; pending DDL not applied. Cancellation and actual central proof follow.
 
 d3b1 IMPLEMENTED/local checks PASS: one exact review inspector reused by sealer;
 source/written/native/reference/access guards precede v1 digest/uniqueness. Closed
@@ -435,6 +457,9 @@ metadata lifecycle with two tenant scopes and missing publication permission.
 Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
+
+d3b2: migrations/publication.ts + publication-contract readiness guard, focused
+publication service tests, plan/ledger/CURRENT_STATE. No public action/UI.
 
 d2: Prisma schema + new additive 20261010040000 SQL; generated data API model-
 metadata (existing generator), archive denial test, DATA_MODEL/plan/ledger/memory.
@@ -827,12 +852,13 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement d3b2 publishReviewedFieldMigration: reload scoped REVIEWED preparation and
-immutable review, fresh original initiating principal, lock preparation, use shared
-review inspector with stage from actual publication presence, compare stored digest.
-New publication uses shared publisher with reviewed new-generation binder, exact
-pin/receipt and Audit atomically; source stays active, no target values/activation.
-Existing publication replay uses actual target + separate receipt freshness and
-writes/audits nothing. Add invalid/loss/stale/private/CAS/Audit/tenant tests. Then
-d3b3 current-principal sparse cancellation and d4 actual central proof/release.
-Pending 20261010040000 not applied; Phase 2 NOT PASSED.
+Implement cancelFieldMigrationPublication using a freshly captured/explicit current
+company principal, Studio publish, scoped locked publication CAS and atomic Audit.
+It must work for a stopped/revoked creator without reusing that creator's grants;
+return sparse state/revision only, no native reads/counts/values. Replays refresh
+current authority and write no second Audit; cancelled target remains unusable.
+Then d4 actual Test publication proof integrated after reference fixtures: source
+active, exact receipt/digest replay, real Audit rollback, SQL FKs/history/freeze/
+activation denial, cancellation releases source/draft only, native unchanged.
+Build/types/lint and pin candidate/public before applying 20261010040000/VERIFIED.
+Phase 2 NOT PASSED.

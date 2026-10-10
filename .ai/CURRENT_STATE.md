@@ -1,5 +1,23 @@
 # Atlas current state
 
+## 10 October 2026 — Central PostgreSQL recovered; release retry pending
+
+352835c final recovery release stopped before backup/acceptance (session 25961,
+exit 1): pg_dump could not connect. PostgreSQL 18/main had stopped during ENOSPC
+at 04:42:41 UTC and remained down after cache recovery. Started the existing central
+cluster with pg_ctlcluster 18 main start; automatic WAL recovery/checkpoint completed
+and connections resumed at 04:51:38 UTC. No reset, restore or replacement database.
+Confirmed online/accepting, pg_is_in_recovery=false, execution migration still applied,
+and complete pg_dump with readable pg_restore archive index at backups/atlas-post-
+disk-recovery-20261010-0452.dump (.list retained). Startup alone is not a full integrity
+claim; combined native/runtime acceptance must run. Evidence /tmp/atlas-studio-postgres-
+recovery.txt and /tmp/atlas-studio-execution-final-deploy.txt. Free space remains 16G.
+Last accepted source f5bb914; no candidate activation. 229 local assertions/build/
+strict types/lint remain PASS. Saved inspected 2B3f1–f5 plan; implementation NOT STARTED.
+Checkpoint this recovery, then retry full pinned candidate/public Studio release.
+Phase 2 NOT PASSED; visual designer/customer publication/buttons remain required.
+
+
 ## 10 October 2026 — Disposable cache recovery preserves Atlas and backups
 
 bef1a4010c40e93bc017f5e0bbc554544e0ecc31 preparation stopped in npm ci with

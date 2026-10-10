@@ -1155,3 +1155,36 @@ Both cleanup runs exit 0. Free space 16G; actual public health still exact f5bb9
 No business DDL/reset/data operation. Save recovery/docs, then rerun full pinned
 candidate/public final recovery proof (229 local assertions/build/types/lint PASS).
 Phase 2 NOT PASSED; cutover and visual editor/dashboard/button work remains pending.
+
+## 2B3f — Cutover/rollback workstreams (inspection and plan only)
+
+NOT STARTED implementation. Finish the pinned final e6 recovery release first.
+Source Sections 6.3–6.4 and 24: activation is separate, all conversions resolved,
+reads remain source-compatible until cutover, history is retained and rollback limits
+must be explicit. Actual existing activation is in definitions/service.ts; it owns
+compiler/checksum, binding/module checks, definition CAS and activation Audit. Existing
+20261010040000 metadata trigger deliberately blocks any reviewed target generation,
+including cancelled cosmetic descendants. Existing publication/value guards freeze
+source/target editing, and execution freshness deliberately assumes source-active
+PUBLISHED state. Preserve these boundaries; an activation flag is insufficient.
+
+| ID | Purpose / dependencies | Expected files and database | Evidence / status |
+| --- | --- | --- | --- |
+| 2B3f1 | Closed server-derived cutover identity and rollback window; depends on VERIFIED e6 | migrations/cutover-contract and tests; no DDL | Exact READY execution, stored publication/review/immutable target, current definition CAS, no client org/pin; explicit rollback limitations. NOT STARTED |
+| 2B3f2 | Tenant cutover receipt and atomic pointer/transition proof | schema/additive forward SQL/catalogue/privacy; no native tables/backfill/reset | Claim requires complete unchanged execution/source/target; deferred commit requires exact activated target; history/CAS/FKs; cancelled/unfinished/cosmetic bypass denied. Existing applied SQL retained. NOT STARTED |
+| 2B3f3 | Shared current-authority cutover and existing activation primitive | migrations/cutover plus a narrow transaction extraction from definitions/service; tests | Same compiler/binding/module/CAS/Audit logic; native/private/current/written/reference/required/unique checks before pointer change; paired Audit rollback and fresh idempotent replay. NOT STARTED |
+| 2B3f4 | Honest rollback and post-cutover normal-value compatibility | shared inspection/receipt guards/rollback and tests; additive guards as needed | Source history retained; normal target editing uses owning-domain rules in subsequent 2B4; source generation stays historical. Rollback only in explicitly validated unchanged window; target-only writes/native or metadata drift cannot silently discard data. NOT STARTED |
+| 2B3f5 | Actual central acceptance and checkpoint | existing execution/principal/combined Test driver and docs | Exact cutover/rollback/failed-Audit/replay, tenant/private/native/module/field revocation, unfinished and stale target denial, retained source/history/native snapshots, production build and complete candidate/public suites. NOT STARTED |
+
+Plan choices to resolve before f2/f3 code: receipt/transition must prove an atomic
+source-active→exact target pointer change, never relax the old predicate globally.
+Reuse the platform activation primitive, not a second activation engine. Derive any
+post-cutover inspection stage only from stored tenant receipt; re-use native/field/
+reference inspection instead of inferring permission from SQL/hash. Ordinary activation
+must not bypass rollback protections by selecting an old source or target descendant.
+Rollback must disclose and enforce its safe window; no automatic reverse conversion
+or promise of lossless rollback after target-only writes. Sparse pre-cutover cancellation
+and retained outcomes remain available. No public editor endpoint, Flow or later-phase
+engine belongs in this checkpoint. 2B4 supplies the ordinary value gateway before
+customer visual publication is accepted; 2E remains mandatory for previews, bespoke
+Sales/Templates designs, live customer dashboards and custom approved buttons.

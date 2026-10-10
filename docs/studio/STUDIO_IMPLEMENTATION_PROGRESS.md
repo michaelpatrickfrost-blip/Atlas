@@ -67,6 +67,22 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 # Current Workstream Detail
 
+352835c final recovery release stopped before backup/acceptance (session 25961,
+exit 1): pg_dump could not connect. PostgreSQL 18/main had stopped during ENOSPC
+at 04:42:41 UTC and remained down after cache recovery. Started the existing central
+cluster with pg_ctlcluster 18 main start; automatic WAL recovery/checkpoint completed
+and connections resumed at 04:51:38 UTC. No reset, restore or replacement database.
+Confirmed online/accepting, pg_is_in_recovery=false, execution migration still applied,
+and complete pg_dump with readable pg_restore archive index at backups/atlas-post-
+disk-recovery-20261010-0452.dump (.list retained). Startup alone is not a full integrity
+claim; combined native/runtime acceptance must run. Evidence /tmp/atlas-studio-postgres-
+recovery.txt and /tmp/atlas-studio-execution-final-deploy.txt. Free space remains 16G.
+Last accepted source f5bb914; no candidate activation. 229 local assertions/build/
+strict types/lint remain PASS. Saved inspected 2B3f1–f5 plan; implementation NOT STARTED.
+Checkpoint this recovery, then retry full pinned candidate/public Studio release.
+Phase 2 NOT PASSED; visual designer/customer publication/buttons remain required.
+
+
 bef1a4010c40e93bc017f5e0bbc554544e0ecc31 preparation stopped in npm ci with
 ENOSPC before generate/migrate/build/acceptance; session 82519 exit 1, backup 044203.
 Running/accepted f5bb914 unchanged. Root was 193G/193G. Under both release locks,
@@ -1338,10 +1354,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint ENOSPC recovery evidence/docs (only failed generated outputs and inactive
-incremental compiler caches reclaimed; 16G free; active/rollback/records/backups intact).
-Pin full combined Studio release at exact new HEAD, verify additional RUNNING batch+
-recovery Audit proof, native compatibility and public revision. Accepted live f5bb914;
-229 local assertions/build/types/lint PASS, 20261010050000 applied/lifecycle-proven.
-Then inspect and plan 2B3f exact cutover/rollback before coding. Phase 2 visual designer,
-customer dashboard publication/buttons remains required and incomplete.
+Checkpoint PostgreSQL recovery and inspected cutover plan with CURRENT_STATE. Pin
+full combined Studio release at new exact HEAD, verify additional RUNNING batch+
+recovery Audit proof, central native compatibility and exact public revision.
+Recovery dump/index readable; PostgreSQL online/non-recovery, migration retained;
+16G free. Accepted live f5bb914, 229 local assertions/build/types/lint PASS.
+Only after final e6 candidate/public PASS begin 2B3f1 closed cutover identity/tests,
+then f2–f5 according to STUDIO_FIELD_EVOLUTION_PLAN. Phase 2 designer/customer
+live dashboards/custom buttons remain mandatory and unimplemented.

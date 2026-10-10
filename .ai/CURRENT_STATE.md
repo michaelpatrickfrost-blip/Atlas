@@ -8,10 +8,21 @@ Removed that unnecessary filter in src/app/globals.css across all matching cards
 intentional translucent navigation styles remain. Commercial acceptance now checks
 every Actions/Manage Record item with browser hit-testing and captures both open
 menus at desktop/tablet/phone sizes. No business records or permissions change.
-Production build, strict TypeScript, scoped checker lint and whitespace PASS;
-candidate/public feature acceptance pending. Scoped release starts at live 5f5fce5 to preserve
-concurrent accepted work. Next: finish checks, prepare, verify, activate and repeat
-public menu acceptance; do not claim deployment until exact revision is confirmed.
+Production build, strict TypeScript, scoped checker lint and whitespace PASS.
+Local Chromium stacking reproduction: old blur hides menu items, corrected rule
+passes all-item hit-testing at 1448/820/390px. This is a minimal layering fixture,
+not authenticated live feature acceptance. Scoped release starts at live 5f5fce5
+to preserve concurrent accepted work. Candidate 05d0098 preparation FAILED: kernel
+OOM killed next-build during page-data collection after compilation. Production
+pointer stayed 5f5fce5. Backup/logs retained at server
+/home/administrator/backups/atlas-pre-deploy-20261010-060017-*; incomplete candidate
+retained, no ready marker. Server has no swap and only 7.6GB disk free; concurrent
+Studio aea5ef1 preparation then held the normal deployment lock. No server cleanup,
+lock bypass or resource reconfiguration attempted. Customer menu fix NOT DEPLOYED.
+Next: resolve build resource pressure, reconcile latest accepted live ancestor,
+prepare a fresh pinned candidate, run updated commercial acceptance, activate and
+repeat public acceptance. Shared Desktop main is dirty; scoped branch is preserved
+for integration without overwriting concurrent work.
 
 ## 10 October 2026 — Cutover receipt storage checked locally; actual proof pending
 

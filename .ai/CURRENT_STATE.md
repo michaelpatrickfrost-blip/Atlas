@@ -13,8 +13,11 @@ Paths: src/components/shell/{app-menu,app-directory}.tsx, scripts/check-home-men
 docs/DESIGN_SYSTEM.md, .ai/DESIGN_SYSTEM.md and .ai/DECISIONS.md.
 Checks: Prisma generation, production build, scoped ESLint and git diff --check PASS.
 Initial worktree dependency symlink/generated-client failures resolved locally.
-Candidate/public responsive acceptance and deployment pending; scoped release
-starts from live 1f2ab97.
+Merged concurrent accepted Studio 74fab2d; integrated build PASS. First candidate
+passed responsive size/fit/links/Escape checks, then caught phone search overlap.
+Corrected phone placement below full header; desktop stays trigger-anchored.
+Corrected production build/scoped lint/diff PASS; deployment/acceptance retry pending.
+Initial live baseline 1f2ab97; stopped candidates never activated.
 
 ## 10 October 2026 — Final readable business-setup companion checks PASS
 

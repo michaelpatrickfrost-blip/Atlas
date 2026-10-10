@@ -38,7 +38,7 @@ function WorkspaceAppMenu({ children }: { children: ReactNode }) {
         <span className="hidden sm:inline">Apps</span>
       </button>
       {open && (
-        <div id={panelId} role="region" aria-label="Apps menu" onClick={(event) => { if ((event.target as HTMLElement).closest("a")) close(); }} className="absolute left-0 top-[calc(100%+10px)] z-[70] w-[560px] max-w-[calc(100vw-96px)] max-h-[min(560px,calc(100dvh-var(--atlas-topbar)-24px))] overflow-y-auto overscroll-contain rounded-2xl border border-black/[0.08] bg-white p-4 shadow-[0_16px_48px_-12px_rgba(0,0,0,0.22)]">
+        <div id={panelId} role="region" aria-label="Apps menu" onClick={(event) => { if ((event.target as HTMLElement).closest("a")) close(); }} className="fixed left-[52px] top-[calc(var(--atlas-topbar)+8px)] z-[70] min-[360px]:left-[60px] sm:absolute sm:left-0 sm:top-[calc(100%+10px)] w-[560px] max-w-[calc(100vw-96px)] max-h-[min(560px,calc(100dvh-var(--atlas-topbar)-24px))] overflow-y-auto overscroll-contain rounded-2xl border border-black/[0.08] bg-white p-4 shadow-[0_16px_48px_-12px_rgba(0,0,0,0.22)]">
           {children}
         </div>
       )}

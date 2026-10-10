@@ -1,5 +1,29 @@
 # Atlas current state
 
+## 10 October 2026 — Customer menu correction live and verified
+
+Activated 1f2ab97f3ee954ac9829d2c3ea1d4681ce5320e5 at public Atlas, preserving
+accepted Studio9aad1fc as source/rollback. Shared opaque cards no longer create
+backdrop-filter stacking contexts; Actions/Manage Record stay above page content.
+Both customer menus anchor left on phones/right on wider screens. Exact candidate
+AND public commercial acceptance PASS under both original release locks: every
+menu item hit-test and entire-menu viewport bounds at desktop/tablet/phone, full
+commercial workflows, access/tenant checks and zero browser errors. Synthetic Test
+access retired; records/audit retained. Public desktop/phone screenshots visually
+reviewed. Local build/strict types/scoped lint/shell syntax/whitespace PASS. No new
+schema, business data conversion, grants or external deliveries.
+
+Deploy backup20261010-062119;
+fixture backups062311/062352. Candidate /tmp/atlas-commercial-candidate-Jr4lLj,
+public /tmp/atlas-commercial-public-Rqc3v3; screenshots tQrf18/pK3QrB under
+/tmp/atlas-commercial-acceptance-*. Exact final public health confirms 1f2ab97.
+Temporary 2GB swap disabled/removed safely after checks under both locks, no fstab
+edit; central PostgreSQL/runtime preserved. Failed/stopped candidate sources/logs
+and all backups retained; only identified disposable outputs/caches reclaimed.
+No live deployment blocker remains. Evidence/source held on codex/menu-layering-fix;
+shared Desktop main remains concurrently dirty, so integration must preserve that
+work. All earlier menu pending/blocker entries below are historical and superseded.
+
 ## 10 October 2026 — Customer phone menu alignment corrected before activation
 
 f58d5a5 candidate commercial acceptance PASS: both customer menus above content at

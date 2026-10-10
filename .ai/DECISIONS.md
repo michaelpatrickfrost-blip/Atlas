@@ -1891,3 +1891,12 @@ maps only exact raw40001/40P01 metadata (direct or adapter cause) to the existin
 REVIEW_CHANGED conflict, without auto-retrying writes or suppressing guard/Audit
 failures. Known P2034/P2002 mapping retained. Real concurrency acceptance unchanged;
 full candidate/public proof remains required before cutover is VERIFIED.
+
+## 10 October 2026 — Commercial acceptance spans activation under existing locks
+
+Customer menu fixes require item hit-testing and full viewport bounds, because
+visibility alone misses card overlap and centre-only testing misses clipped labels.
+Use the explicit commercial selector on the existing release hook to retain both
+locks through candidate, activation and public checks with separate central Test
+backups, exact revision checks and ordinary rollback. This avoids another release
+moving between accepted feature checks and activation; no alternate lock mechanism.

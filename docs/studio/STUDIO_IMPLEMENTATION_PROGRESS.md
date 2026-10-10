@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3d4 — Actual reviewed publication acceptance — NOT STARTED.
+2B3d4 — Actual reviewed publication acceptance — IN PROGRESS.
 Scalar/source coverage VERIFIED live fc9b80f; reference c1 local; no writer/designer.
 
 # Overall Status
@@ -62,6 +62,30 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+d4 helper IMPLEMENTED, actual NOT RUN: fresh exact Test source/review uses shared
+publisher, real paired Audit failure/rollback/replay, source active/history and
+receipt identities. Tenant/immutable/CAS/freeze/draft/retirement/source-target save/
+premature activation SQL guards, private queue denial/recovery, sparse cancellation
+and source/draft editing recovery; cancelled target/cosmetic descendant still blocked.
+Source-only privileged owner-guarded 42→43 fixture, no target/native writes, both
+native tenant snapshots compared. 26 files/160 assertions, production build, strict
+post-build TS/scoped lint/diff PASS; /tmp/atlas-studio-publication-proof-{tests,build,
+postbuild-types,lint}.txt. Initial helper guessed retirement path; corrected to
+existing fields/retirement before final checks. No broken checkpoint/deployment.
+Pending migration 20261010040000 not applied; pin full candidate/public release next.
+Accepted live 32ee77e, Phase 2 NOT PASSED; no row executor/cutover/visual builder yet.
+
+d4 IN PROGRESS before code: fresh exact Test integer source/decimal v3 review after
+reference helper, normal structural publish denial, paired Audit SQL failure/rollback,
+reviewed exact source-active publication/receipt/replay, real FKs/history/CAS/freeze/
+retirement/draft/premature activation and target-write denial. Private queue revocation
+must reject replay, then restore only exact Test member. Cancellation/replay releases
+normal source/draft editing; a cancelled target and its cosmetic descendant still
+cannot activate. Owner-guarded privileged source 42→43 fixture only; no target values/
+native changes, both tenants' native snapshots preserved. Files check-field-publication
+plus principal integration/docs. Pending migration applied only in pinned candidate,
+full normal/native/public suites required before VERIFIED.
 
 d3b3 IMPLEMENTED/local checks PASS: current captured/explicit company principal,
 Studio publish, scoped locked publication CAS and existing Audit cancel/replay.
@@ -476,6 +500,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+d4: check-field-publication.ts, principal integration, plan/ledger/CURRENT_STATE.
+Pending d2–d3 schema/SQL/publisher/shared inspection/cancellation must ship together.
+
 d3b2: migrations/publication.ts + publication-contract readiness guard, focused
 publication service tests, plan/ledger/CURRENT_STATE. No public action/UI.
 
@@ -639,6 +666,9 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+d4 final: 26 files/160 assertions, build/strict post-build TS/scoped lint/diff PASS;
+actual central helper not run. Pending additive migration not applied.
 
 d2 final 24 files/146 assertions, schema validate/generate, production build,
 strict post-build TypeScript/scoped lint/diff PASS; actual SQL constraints not run.
@@ -870,13 +900,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement scripts/studio/check-field-publication.ts after existing reference helper.
-Create fresh exact Test integer source, parent owner-guarded source 42, decimal/v3
-review. Verify normal structural publisher denied, real paired Audit-failure rollback,
-source-active exact reviewed publication/replay, SQL immutable/FK/freeze/draft/
-retirement/premature activation and no-target-value guards. Private revocation
-rejects replay; sparse cancellation/replay restores source/draft editing while
-cancelled target remains unusable. Compare both native tenant snapshots unchanged.
-Run schema/generate/26 scoped suites, build/types/lint/diff; pin full candidate/public
-release before applying pending 20261010040000 or marking d2–d4 VERIFIED.
-Phase 2 NOT PASSED; then 2B3e bounded native-approved representation execution.
+Pin coherent d1–d4 commit on codex/studio-phase2 and run ATLAS_RELEASE_ACCEPTANCE=
+studio through original backed-up candidate and public combined suites. New additive
+20261010040000 applies at candidate preparation; require actual publication/freeze/
+Audit rollback/replay/cancellation/descendant activation guards plus normal metadata
+and native workflows, exact public health SHA and deploy exit 0 before VERIFIED.
+On failure preserve live 32ee77e, inspect exact error/SQL and follow DEPLOY migration
+repair discipline; never reset/rollback business data. Then 2B3e native-approved
+representation-only execution and durable bounded outcomes plan, no later phases.

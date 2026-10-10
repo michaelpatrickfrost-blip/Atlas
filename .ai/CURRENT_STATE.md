@@ -1,5 +1,33 @@
 # Atlas current state
 
+## 10 October 2026 — Actual reviewed publication proof ready for release
+
+d4 helper IMPLEMENTED, actual NOT RUN: fresh exact Test source/review uses shared
+publisher, real paired Audit failure/rollback/replay, source active/history and
+receipt identities. Tenant/immutable/CAS/freeze/draft/retirement/source-target save/
+premature activation SQL guards, private queue denial/recovery, sparse cancellation
+and source/draft editing recovery; cancelled target/cosmetic descendant still blocked.
+Source-only privileged owner-guarded 42→43 fixture, no target/native writes, both
+native tenant snapshots compared. 26 files/160 assertions, production build, strict
+post-build TS/scoped lint/diff PASS; /tmp/atlas-studio-publication-proof-{tests,build,
+postbuild-types,lint}.txt. Initial helper guessed retirement path; corrected to
+existing fields/retirement before final checks. No broken checkpoint/deployment.
+Pending migration 20261010040000 not applied; pin full candidate/public release next.
+Accepted live 32ee77e, Phase 2 NOT PASSED; no row executor/cutover/visual builder yet.
+
+## 10 October 2026 — Actual publication acceptance started
+
+d4 IN PROGRESS before code: fresh exact Test integer source/decimal v3 review after
+reference helper, normal structural publish denial, paired Audit SQL failure/rollback,
+reviewed exact source-active publication/receipt/replay, real FKs/history/CAS/freeze/
+retirement/draft/premature activation and target-write denial. Private queue revocation
+must reject replay, then restore only exact Test member. Cancellation/replay releases
+normal source/draft editing; a cancelled target and its cosmetic descendant still
+cannot activate. Owner-guarded privileged source 42→43 fixture only; no target values/
+native changes, both tenants' native snapshots preserved. Files check-field-publication
+plus principal integration/docs. Pending migration applied only in pinned candidate,
+full normal/native/public suites required before VERIFIED.
+
 ## 10 October 2026 — Publication cancellation locally checked
 
 d3b3 IMPLEMENTED/local checks PASS: current captured/explicit company principal,

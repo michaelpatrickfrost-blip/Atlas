@@ -234,3 +234,11 @@ relax earlier preparation freshness. Pending generation activation and normal
 target writes are denied; open source/draft/metadata changes freeze until cancellation
 or later reviewed execution/cutover. Native domain operations remain unchanged.
 The schema is not a migration executor and its SQL awaits central acceptance.
+
+
+The reviewed publisher and sparse cancellation service are now locally implemented
+and checked, with a shared metadata publisher and exact review inspector. Actual
+receipt/freeze/Audit/runtime constraints remain unverified until the pending
+20261010040000 candidate/public Test helper runs. No target values/executor/cutover
+or public field-migration action is exposed. The current accepted reference release
+is 32ee77e; source-native operations and permission architectures are retained.

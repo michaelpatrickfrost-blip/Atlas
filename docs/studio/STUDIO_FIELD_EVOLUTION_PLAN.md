@@ -530,7 +530,7 @@ coverage using actual canonical targets and current full private/native access,
 without per-record value round trips or ordinary write/final guard changes.
 c3 IMPLEMENTED locally: final reference review invokes that pinned owner protocol after
 current/written field/source/native checks; same archive digest/review/CAS/Audit.
-c4 IMPLEMENTED, actual NOT RUN: actual Test reference/private/missing/foreign/stale/written-policy
+c4 VERIFIED candidate/public 32ee77e: actual Test reference/private/missing/foreign/stale/written-policy
 and replay proof, plus full production/regression acceptance. No second permission
 engine or reference privilege is granted by metadata; old owner versions stay sealed.
 
@@ -631,3 +631,44 @@ assertions, production build, strict post-build TypeScript/scoped lint PASS. Log
 No DDL or publication runtime. Reviewed target receipt/DB guards d2 next.
 32ee77e full candidate combined PASS; public wXodWM running, fixture 024724;
 accepted prior fc9b80f retained, no complete public claim yet. Phase 2 NOT PASSED.
+
+
+2B3d2 IN PROGRESS before code: additive StudioFieldMigrationPublication, keyed by
+sealed review/preparation, exact source/target generations and immutable target
+version/checksum/number, publisher/loss acknowledgement; tenant FKs and one open
+publication per field. Identity/history immutable; initial PUBLISHED and only CAS
+PUBLISHED→CANCELLED permitted here. Cancellation service and execution transitions
+remain d3/e, not silently enabled. No existing rows/backfills/resets.
+
+SQL guards reject pending target activation (including cosmetic descendants),
+changes to open field publication/activation/retirement/draft, normal source writes
+while PUBLISHED and any normal target-generation writes. Native domain tables and
+operations unchanged. Receipt insert validates the exact reviewed publication
+transition (source remains active; definition/draft revisions +1, target latest/
+base/payload/checksum and zero target slots). This does not relax old preparation
+freshness. Files Prisma schema/additive SQL, archive API denial test, docs/memory.
+Local schema/generate/types/lint/build and actual DB guards required before VERIFIED;
+new migration not applied until d3 shared publisher/acceptance candidate is ready.
+
+
+32ee77e7b1c684ab9c6b5f898eb641cebf0ae3f9 full combined candidate/public PASS,
+deploy exit 0 and actual public health exact match. Reference c1–c4 VERIFIED:
+existing hashes/native guards preserved, real approved final target read, actual
+collection/shared seal/SQL–Node parity/Audit rollback/replay, private revocation,
+missing/foreign target denial without approved failure summary. All native Atlas
+checks passed. Evidence izKehB/wXodWM, backup 024145, fixtures 024333/024724; prior
+fc9b80f retained. /tmp/atlas-studio-reference-deploy.txt. Phase 2 NOT PASSED; visual
+builder/live customer dashboards/custom buttons remain authorised Phase 2 work.
+
+2B3d2 IMPLEMENTED/local checks PASS, actual SQL NOT RUN: additive publication
+receipt with tenant review/generation/version FKs, immutable identity/CAS cancellation,
+one PUBLISHED operation per field, exact post-publication freshness distinct from
+unchanged preparation freshness. Source stays active; metadata/draft and normal
+source saves frozen while open; pending/cancelled target activation/value writes
+denied. No native table modifications. Migration 20261010040000_studio_field_
+publications is NOT APPLIED. Schema validate/generate, 24 files/146 assertions,
+production build, strict post-build TypeScript/scoped lint/diff PASS. Initial TS
+caught stale generated data-service catalogue; regenerated with existing script,
+action allowlist unchanged, archive reads/counts remain denied. Logs /tmp/atlas-
+studio-publication-schema-{validate,generate,data-api,tests,build,postbuild-types,
+lint}.txt. Ship with d3 shared publisher and d4 actual acceptance before VERIFIED.

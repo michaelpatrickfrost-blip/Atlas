@@ -1771,3 +1771,15 @@ This satisfies safe preview/publish/migrate without exposing a new generation as
 ready data or treating a checksum as authority. Publication/freeze SQL guards are
 additive; native business operations remain under their owning domains. No second
 publisher, workflow engine or permission system.
+
+
+## 10 October 2026 — Durable publication receipt and a server freeze
+
+Structural publication changes definition/draft revisions, so the old preparation
+freshness predicate must stay strict. A new reviewed publication receipt proves
+only that exact source-active metadata transition, with immutable target/version/
+generation identities. It does not grant record authority or activation. Pending
+target generation is blocked even through cosmetic descendant versions; normal
+source saves and metadata changes freeze while PUBLISHED. Cancellation releases
+source editing but never makes a cancelled target usable. Source/target execution
+and cutover proofs come in 2B3e/f; no native table mutation or second publisher.

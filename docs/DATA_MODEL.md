@@ -222,4 +222,15 @@ Reference fields additionally require explicit same-entity approved versions and
 pinned owning-domain reference coverage before aggregate/review, including replay.
 Tickets entity v4/query v2 implements actual canonical target existence/tenant/kind
 and complete current-member/private access; legacy/missing opt-in denies review.
-Implementation is locally checked; actual central reference acceptance is pending. The service is internal and not a public/desktop generic-data endpoint.
+Reference coverage VERIFIED on 32ee77e full candidate/public acceptance. The service is internal and not a public/desktop generic-data endpoint.
+
+
+Reviewed publication (2B3d2 local, not applied): StudioFieldMigrationPublication
+binds the immutable review to a distinct target generation/version/checksum and
+publisher/loss acknowledgement. An additive partial unique index permits only one
+PUBLISHED operation per field/tenant; retained identity is immutable and cancellation
+requires state/revision CAS. Exact post-publication metadata freshness does not
+relax earlier preparation freshness. Pending generation activation and normal
+target writes are denied; open source/draft/metadata changes freeze until cancellation
+or later reviewed execution/cutover. Native domain operations remain unchanged.
+The schema is not a migration executor and its SQL awaits central acceptance.

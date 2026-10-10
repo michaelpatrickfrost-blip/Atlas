@@ -11,13 +11,13 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c6b2b3c4 — Actual reference review acceptance — IN PROGRESS.
+2B3d3a — Shared metadata publisher transaction — NOT STARTED.
 Scalar/source coverage VERIFIED live fc9b80f; reference c1 local; no writer/designer.
 
 # Overall Status
 
 IN PROGRESS for Phase 2. Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source fc9b80f863bba6f89a351c065663072e1e2ff8be,
+VERIFIED. Latest confirmed live source 32ee77e7b1c684ab9c6b5f898eb641cebf0ae3f9,
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -31,6 +31,7 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 | Workstream | Status | Evidence |
 | --- | --- | --- |
+| 2B3c6b2b3c Reference review | VERIFIED | 32ee77e complete candidate/public, actual permission/target/Audit/replay plus native acceptance; no target/native writes. |
 | Specification intake and repository recovery | VERIFIED | Full document read; clean detached starting HEAD af030b0; source/provider/schema inspection. |
 | Source sequence reconciliation | VERIFIED | Michael's 9 October follow-up authorises ordered plan and continuation. |
 | 0A Registry contracts/runtime | VERIFIED | Five focused tests and full TypeScript check passed before adapter work. |
@@ -61,6 +62,45 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+32ee77e7b1c684ab9c6b5f898eb641cebf0ae3f9 full combined candidate/public PASS,
+deploy exit 0 and actual public health exact match. Reference c1–c4 VERIFIED:
+existing hashes/native guards preserved, real approved final target read, actual
+collection/shared seal/SQL–Node parity/Audit rollback/replay, private revocation,
+missing/foreign target denial without approved failure summary. All native Atlas
+checks passed. Evidence izKehB/wXodWM, backup 024145, fixtures 024333/024724; prior
+fc9b80f retained. /tmp/atlas-studio-reference-deploy.txt. Phase 2 NOT PASSED; visual
+builder/live customer dashboards/custom buttons remain authorised Phase 2 work.
+
+2B3d2 IMPLEMENTED/local checks PASS, actual SQL NOT RUN: additive publication
+receipt with tenant review/generation/version FKs, immutable identity/CAS cancellation,
+one PUBLISHED operation per field, exact post-publication freshness distinct from
+unchanged preparation freshness. Source stays active; metadata/draft and normal
+source saves frozen while open; pending/cancelled target activation/value writes
+denied. No native table modifications. Migration 20261010040000_studio_field_
+publications is NOT APPLIED. Schema validate/generate, 24 files/146 assertions,
+production build, strict post-build TypeScript/scoped lint/diff PASS. Initial TS
+caught stale generated data-service catalogue; regenerated with existing script,
+action allowlist unchanged, archive reads/counts remain denied. Logs /tmp/atlas-
+studio-publication-schema-{validate,generate,data-api,tests,build,postbuild-types,
+lint}.txt. Ship with d3 shared publisher and d4 actual acceptance before VERIFIED.
+
+2B3d2 IN PROGRESS before code: additive StudioFieldMigrationPublication, keyed by
+sealed review/preparation, exact source/target generations and immutable target
+version/checksum/number, publisher/loss acknowledgement; tenant FKs and one open
+publication per field. Identity/history immutable; initial PUBLISHED and only CAS
+PUBLISHED→CANCELLED permitted here. Cancellation service and execution transitions
+remain d3/e, not silently enabled. No existing rows/backfills/resets.
+
+SQL guards reject pending target activation (including cosmetic descendants),
+changes to open field publication/activation/retirement/draft, normal source writes
+while PUBLISHED and any normal target-generation writes. Native domain tables and
+operations unchanged. Receipt insert validates the exact reviewed publication
+transition (source remains active; definition/draft revisions +1, target latest/
+base/payload/checksum and zero target slots). This does not relax old preparation
+freshness. Files Prisma schema/additive SQL, archive API denial test, docs/memory.
+Local schema/generate/types/lint/build and actual DB guards required before VERIFIED;
+new migration not applied until d3 shared publisher/acceptance candidate is ready.
 
 2B3d1 IMPLEMENTED/local VERIFIED pure contract: exact sealed review and immutable
 target tenant/definition/payload/plan/checksum/generation plus initiating publisher
@@ -357,6 +397,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+d2: Prisma schema + new additive 20261010040000 SQL; generated data API model-
+metadata (existing generator), archive denial test, DATA_MODEL/plan/ledger/memory.
+
 d1: migrations/publication-contract.ts and focused publication-contract tests,
 plan/ledger/state/decisions. Pure pin only.
 
@@ -442,6 +485,10 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+Publication receipt + initial PUBLISHED/CANCELLED CAS, exact post-publication
+freshness and pending metadata/value guards implemented; not centrally applied.
+No existing rows/native tables/backfill/reset. Prisma validate/generate PASS.
+
 Latest collection/source coverage uses existing archive and parameterised SQL
 locks; no new schema/migration. Test Audit failure trigger/function cleaned in
 finally. Source coverage Test changes only owner-authorised extension metadata
@@ -469,6 +516,9 @@ metadata tables/indexes/composite tenant foreign keys/constraints/guards. No exi
 business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
+
+20261010040000_studio_field_publications NOT APPLIED. Latest actual migration
+remains 20261010030000_studio_field_reviews. Ship d2 with complete reviewed service.
 
 20261010030000_studio_field_reviews applied in backed-up 8780a07 preparation;
 Prisma finished history confirmed. Real archive candidate constraints PASS. Full
@@ -507,6 +557,9 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+d2 final 24 files/146 assertions, schema validate/generate, production build,
+strict post-build TypeScript/scoped lint/diff PASS; actual SQL constraints not run.
 
 d1 four files/23 assertions, build/strict post-build TS/scoped lint/diff PASS.
 
@@ -587,6 +640,15 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+32ee77e7b1c684ab9c6b5f898eb641cebf0ae3f9 full combined candidate/public PASS,
+deploy exit 0 and actual public health exact match. Reference c1–c4 VERIFIED:
+existing hashes/native guards preserved, real approved final target read, actual
+collection/shared seal/SQL–Node parity/Audit rollback/replay, private revocation,
+missing/foreign target denial without approved failure summary. All native Atlas
+checks passed. Evidence izKehB/wXodWM, backup 024145, fixtures 024333/024724; prior
+fc9b80f retained. /tmp/atlas-studio-reference-deploy.txt. Phase 2 NOT PASSED; visual
+builder/live customer dashboards/custom buttons remain authorised Phase 2 work.
 
 8780a07 candidate/public complete combined PASS; deploy exit 0, health/current exact.
 Evidence candidate yWPgWM/public 6U4Ohy; backups deploy-20261010-003320, candidate
@@ -726,9 +788,11 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Finish monitoring 32ee77e complete public suite and exit/health before reference
-c1–c4 VERIFIED. Next 2B3d2 additive publication receipt, tenant/review/target FKs,
-immutable identity/CAS cancellation, open-operation field freeze and pending target
-generation activation/draft guards. No target values/row executor/cutover. Validate
-Prisma/generate/types/build and real central constraints in a pinned candidate
-with d3 shared publisher service before applying/claiming runtime verification.
+Implement 2B3d3a shared metadata publisher transaction helper by extracting the
+existing publishDraft transaction unchanged (CAS/version/dependencies/binding/draft/
+Audit). Preserve normal public result, structural denial and metadata-only authority.
+Add guarded internal callback for the reviewed binder only; no client hook.
+Then d3b reuse shared exact source/ref/digest review inspection and post-publication
+receipt freshness for reviewed publication/replay/cancellation. d4 real central
+SQL/source-active/no-target/premature-activation/rollback proof before applying
+20261010040000 in pinned candidate/public release. Phase 2 NOT PASSED.

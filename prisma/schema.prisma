@@ -9389,6 +9389,7 @@ model StudioDefinitionVersion {
   generationOrigins StudioFieldGeneration[] @relation("StudioGenerationOrigin")
   fieldValues StudioFieldValue[] @relation("StudioFieldValueSchema")
   fieldMigrationSources StudioFieldMigrationPreparation[] @relation("StudioMigrationSource")
+  fieldMigrationTargets StudioFieldMigrationPublication[] @relation("StudioPublicationTarget")
   @@unique([id,definitionId,organisationId])
   @@unique([definitionId,organisationId,version])
   @@unique([definitionId,organisationId,semanticVersion])
@@ -9445,6 +9446,8 @@ model StudioFieldGeneration {
   slots StudioFieldSlot[]
   values StudioFieldValue[]
   migrationPreparations StudioFieldMigrationPreparation[]
+  sourcePublications StudioFieldMigrationPublication[] @relation("StudioPublicationSourceGeneration")
+  targetPublications StudioFieldMigrationPublication[] @relation("StudioPublicationTargetGeneration")
   @@unique([id,definitionId,organisationId])
   @@unique([id,definitionId,organisationId,entityId])
   @@unique([id,definitionId,organisationId,valueType])
@@ -9560,6 +9563,7 @@ model StudioFieldMigrationReview {
   checksum String @db.Char(64)
   createdAt DateTime @default(now())
   preparation StudioFieldMigrationPreparation @relation(fields:[id,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction)
+  publication StudioFieldMigrationPublication?
   @@unique([id,definitionId,organisationId],map:"studio_migration_review_tenant_key")
   @@index([organisationId,definitionId])
   @@map("studio_field_migration_reviews")
@@ -9589,4 +9593,32 @@ model StudioFieldMigrationObservation {
   @@unique([preparationId,recordId])
   @@index([organisationId,definitionId,preparationId])
   @@map("studio_field_migration_observations")
+}
+
+// Exact reviewed publication, source still active. No executor/cutover yet.
+// SQL additionally limits each tenant/field to one PUBLISHED operation.
+model StudioFieldMigrationPublication {
+  preparationId String @id @db.Uuid
+  organisationId String
+  definitionId String @db.Uuid
+  reviewChecksum String @db.Char(64)
+  sourceGenerationId String @db.Uuid
+  targetGenerationId String @db.Uuid
+  targetVersionId String @db.Uuid
+  targetVersionNumber Int
+  targetChecksum String @db.Char(64)
+  publisherUserId String
+  acknowledgedLoss Boolean
+  state String @default("PUBLISHED")
+  revision Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  review StudioFieldMigrationReview @relation(fields:[preparationId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_publication_review_fk")
+  sourceGeneration StudioFieldGeneration @relation("StudioPublicationSourceGeneration",fields:[sourceGenerationId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_publication_source_fk")
+  targetGeneration StudioFieldGeneration @relation("StudioPublicationTargetGeneration",fields:[targetGenerationId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_publication_target_fk")
+  targetVersion StudioDefinitionVersion @relation("StudioPublicationTarget",fields:[targetVersionId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_publication_version_fk")
+  @@unique([preparationId,definitionId,organisationId],map:"studio_publication_tenant_key")
+  @@unique([targetGenerationId,definitionId,organisationId],map:"studio_publication_target_key")
+  @@index([organisationId,definitionId,state],map:"studio_publication_field_state_idx")
+  @@map("studio_field_migration_publications")
 }

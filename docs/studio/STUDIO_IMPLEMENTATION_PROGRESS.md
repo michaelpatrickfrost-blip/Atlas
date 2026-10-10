@@ -67,6 +67,25 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 # Current Workstream Detail
 
+bef1a4010c40e93bc017f5e0bbc554544e0ecc31 preparation stopped in npm ci with
+ENOSPC before generate/migrate/build/acceptance; session 82519 exit 1, backup 044203.
+Running/accepted f5bb914 unchanged. Root was 193G/193G. Under both release locks,
+removed only npm _cacache and this task's failed 6d2f5a9/36c211b/bef1a40 generated
+node_modules/.next; retained their complete source/readiness history/environment
+symlinks in /opt/atlas-maintenance-backups/failed-studio-source-<SHA>-20261010.
+Then reclaimed only Turbopack incremental compiler caches from 22 inactive ready
+releases, excluding current f5bb914/rollback 64361cb. All source/dependencies/compiled
+server/static assets/readiness markers, central records/files/backups and evidence
+are retained. Cache inventory /opt/atlas-maintenance-backups/studio-inactive-compiler-
+cache-reclaim-20261010.txt; local /tmp/atlas-studio-reclaim-{disposable,compiler-cache}.
+{sh,txt}. First root lock open stopped before mutation (Linux protected regular file);
+read-only opening of the same lock inode permits exclusive flock without recreating it.
+Both cleanup runs exit 0. Free space 16G; actual public health still exact f5bb914.
+No business DDL/reset/data operation. Save recovery/docs, then rerun full pinned
+candidate/public final recovery proof (229 local assertions/build/types/lint PASS).
+Phase 2 NOT PASSED; cutover and visual editor/dashboard/button work remains pending.
+
+
 f5bb914641b6f32d55898330c7c56760c76ba18f complete combined candidate/public
 acceptance PASS, deploy session 21591 exit 0; actual public health exact source
 confirmed. Execution persistence/owner/writer/batches are live with real deferred,
@@ -1319,9 +1338,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint final RUNNING batch+recovery Audit proof and cancellation-revision reserve
-(229 assertions/build/types/lint PASS) with f5bb914 full candidate/public evidence.
-Pin ATLAS_RELEASE_BRANCH=codex/studio-phase2, ATLAS_RELEASE_ACCEPTANCE=studio at new
-exact HEAD, run both complete suites, inspect RUNNING failure/recovery proof and public
-revision. No new DDL; 20261010050000 is applied and lifecycle-proven. Then 2B3f exact
-cutover/rollback. Phase 2 designer/dashboards/buttons remains open; accepted live f5bb914.
+Checkpoint ENOSPC recovery evidence/docs (only failed generated outputs and inactive
+incremental compiler caches reclaimed; 16G free; active/rollback/records/backups intact).
+Pin full combined Studio release at exact new HEAD, verify additional RUNNING batch+
+recovery Audit proof, native compatibility and public revision. Accepted live f5bb914;
+229 local assertions/build/types/lint PASS, 20261010050000 applied/lifecycle-proven.
+Then inspect and plan 2B3f exact cutover/rollback before coding. Phase 2 visual designer,
+customer dashboard publication/buttons remains required and incomplete.

@@ -157,6 +157,26 @@ Overrides: `ATLAS_VPS_HOST`, `ATLAS_VPS_DIR`, `ATLAS_VPS_URL`.
 
 The Mac-app procedure below is unchanged and still applies to the installed app.
 
+## When candidate installation stops with ENOSPC
+
+Check free space and the private stage log before retrying; a stopped installation
+is not a deployed release. Preserve the active/rollback runtime, central records,
+private files, backups and deployment evidence. Under both existing release locks,
+only disposable package/incremental compiler caches and positively identified failed
+candidate build/dependency outputs may be reclaimed. Retain failed candidate source
+and readiness history in maintenance backups; never follow environment/storage
+symlinks. Keep inactive ready releases' source, dependencies, compiled server/static
+assets and markers intact when reclaiming only their Turbopack compiler cache.
+Open an existing lock without recreating/truncating it when Linux protected regular
+files reject a root write-open; use exclusive flock on the same inode. Do not weaken
+locks or filesystem protections. Retry the normal pinned build and full acceptance.
+
+10 October Studio recovery retained failed source for 6d2f5a9/36c211b/bef1a40 and
+reclaimed 22 inactive incremental compiler caches, preserving current f5bb914 and
+rollback 64361cb. Free space reached 16G and public health stayed exact. Inventory is
+`/opt/atlas-maintenance-backups/studio-inactive-compiler-cache-reclaim-20261010.txt`;
+full evidence is in the Studio implementation ledger. No business data/backups removed.
+
 ## Additional Mac package (when needed)
 
 ```bash

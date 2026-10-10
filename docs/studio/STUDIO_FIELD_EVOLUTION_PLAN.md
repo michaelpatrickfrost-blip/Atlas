@@ -1137,3 +1137,21 @@ adds actual RUNNING batch+failure Audit rollback and reserves cancellation revis
 Commit it with this evidence, then pin full candidate/public repeat before moving
 to 2B3f. Phase 2 NOT PASSED; cutover/value gateway/designer/live dashboards/buttons
 remain pending. All exact synthetic companies suspended/access revoked, history kept.
+
+bef1a4010c40e93bc017f5e0bbc554544e0ecc31 preparation stopped in npm ci with
+ENOSPC before generate/migrate/build/acceptance; session 82519 exit 1, backup 044203.
+Running/accepted f5bb914 unchanged. Root was 193G/193G. Under both release locks,
+removed only npm _cacache and this task's failed 6d2f5a9/36c211b/bef1a40 generated
+node_modules/.next; retained their complete source/readiness history/environment
+symlinks in /opt/atlas-maintenance-backups/failed-studio-source-<SHA>-20261010.
+Then reclaimed only Turbopack incremental compiler caches from 22 inactive ready
+releases, excluding current f5bb914/rollback 64361cb. All source/dependencies/compiled
+server/static assets/readiness markers, central records/files/backups and evidence
+are retained. Cache inventory /opt/atlas-maintenance-backups/studio-inactive-compiler-
+cache-reclaim-20261010.txt; local /tmp/atlas-studio-reclaim-{disposable,compiler-cache}.
+{sh,txt}. First root lock open stopped before mutation (Linux protected regular file);
+read-only opening of the same lock inode permits exclusive flock without recreating it.
+Both cleanup runs exit 0. Free space 16G; actual public health still exact f5bb914.
+No business DDL/reset/data operation. Save recovery/docs, then rerun full pinned
+candidate/public final recovery proof (229 local assertions/build/types/lint PASS).
+Phase 2 NOT PASSED; cutover and visual editor/dashboard/button work remains pending.

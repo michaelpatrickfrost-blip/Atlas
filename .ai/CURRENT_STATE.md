@@ -1,5 +1,24 @@
 # Atlas current state
 
+## 10 October 2026 — Cutover service checked; actual candidate proof next
+
+F3b3 current-authority cutover IMPLEMENTED / checked locally. Strict confirmations,
+locked READY reinspection/f1 pin/f2 receipt/publication CAS then shared f3a source
+pointer activation and paired Audit in one Serializable authority transaction.
+Lost-response replay uses actual scoped receipt/target-active metadata and fresh
+owning native/private/current/written/reference/unique coverage; no duplicate
+writes/Audit. Seven new service tests plus receipt/coverage tests: final 45 files/
+285 assertions PASS (Studio/Admin/module/permission/template compatibility); production
+build, strict post-build TypeScript, scoped lint/diff PASS. Logs /tmp/atlas-studio-
+cutover-service-{tests,regression,build,types,postbuild-types,lint}.txt. No new schema/
+migration/public endpoint, normal values, rollback or native mutation. New f3c exact
+Test helper prepared: separate field lifecycle, real paired-Audit failures/concurrent
+CAS/fresh replay/member/field/private/module revocation/history/native snapshots.
+It is NOT RUN yet. Test-only affiliation grant/failure triggers restored in finally;
+old execution cancellation acceptance retained. Accepted live5f5fce5 unchanged;
+PostgreSQL online/free9.7G. Checkpoint then pinned full candidate/public acceptance.
+Phase 2 NOT PASSED; required visual designer/customer dashboard/buttons incomplete.
+
 ## 10 October 2026 — Receipt-derived current coverage checkpoint
 
 F3b2 actual receipt-derived review coverage IMPLEMENTED / checked locally: 3 files/

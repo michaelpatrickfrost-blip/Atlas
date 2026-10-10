@@ -1,7 +1,9 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import type { Session } from "@/core/auth/session";
+import { assertCapability } from "@/core/permissions/check";
 const m = vi.hoisted(() => ({ initial: vi.fn(), transaction: vi.fn(), resolve: vi.fn(), enabled: vi.fn(), raw: vi.fn(), member: vi.fn(), module: vi.fn(), company: vi.fn(),
-  preparation: vi.fn(), publication: vi.fn(), execution: vi.fn(), create: vi.fn(), target: vi.fn(), audit: vi.fn(), inspect: vi.fn() }));
+  preparation: vi.fn(), publication: vi.fn(), execution: vi.fn(), create: vi.fn(), target: vi.fn(), audit: vi.fn(), inspect: vi.fn(),
+  receipt: vi.fn(), receiptCreate: vi.fn(), publicationUpdate: vi.fn(), definition: vi.fn(), definitionUpdate: vi.fn(), generation: vi.fn(), modules: vi.fn(), draft: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: { $transaction: m.transaction, studioFieldMigrationPreparation: { findFirst: m.initial } } }));
 vi.mock("@/core/studio/fields/principal", () => ({ resolveFieldMigrationPrincipal: m.resolve }));
 vi.mock("@/core/modules/access", () => ({ assertModuleEnabled: m.enabled }));
@@ -14,6 +16,7 @@ import { customFieldPayloadSchema } from "@/core/studio/fields/schema";
 import { sealFieldMigrationIntent, sealFieldMigrationReview } from "@/core/studio/fields/migrations/contracts";
 import { checksum } from "@/core/studio/registry/contracts";
 import { reviewedFieldPublicationPin } from "@/core/studio/fields/migrations/publication-contract";
+import { cutoverReviewedFieldMigration } from "@/core/studio/fields/migrations/cutover";
 import { startFieldMigrationExecution } from "@/core/studio/fields/migrations/execution-start";
 const uuid = (n: number) => `00000000-0000-4000-8000-${n.toString().padStart(12, "0")}`;
 let available = true;
@@ -32,12 +35,16 @@ let target: { id: string; organisationId: string; definitionId: string; version:
 type Row = { preparationId: string; organisationId: string; definitionId: string; entityId: string; pin: unknown; pinChecksum: string;
   state: string; revision: number; cursor: string | null; processedCount: number; failureCode: string | null };
 let execution: Row | null;
-const tx = { $queryRaw: m.raw, membership: { findFirst: m.member }, moduleState: { findFirst: m.module }, organisation: { findFirst: m.company },
-  studioFieldMigrationPreparation: { findFirst: m.preparation }, studioFieldMigrationPublication: { findFirst: m.publication },
-  studioFieldMigrationExecution: { findFirst: m.execution, create: m.create }, studioDefinitionVersion: { findFirst: m.target }, auditEntry: { create: m.audit } };
+let sourceVersion: typeof target;
+let definition: { id: string; organisationId: string; kind: string; activeVersionId: string; revision: number; latestVersion: number; retiredAt: null };
+let receipt: { preparationId: string; organisationId: string; definitionId: string; sourceVersionId: string; targetVersionId: string; pin: unknown; pinChecksum: string; state: string; revision: number; createdBy: string } | null;
+const tx = { $queryRaw: m.raw, membership: { findFirst: m.member }, moduleState: { findFirst: m.module, count: m.modules }, organisation: { findFirst: m.company },
+  studioFieldMigrationPreparation: { findFirst: m.preparation }, studioFieldMigrationPublication: { findFirst: m.publication, updateMany: m.publicationUpdate },
+  studioFieldMigrationExecution: { findFirst: m.execution, create: m.create }, studioDefinitionVersion: { findFirst: m.target }, auditEntry: { create: m.audit }, studioFieldMigrationCutover: { findFirst: m.receipt, create: m.receiptCreate },
+  studioDefinition: { findFirst: m.definition, updateMany: m.definitionUpdate }, studioFieldGeneration: { findFirst: m.generation }, studioDraft: { findFirst: m.draft } };
 const request = () => ({ preparationId: uuid(3), publicationRevision: 0, reviewChecksum: sealed.checksum });
 beforeEach(async () => {
-  vi.clearAllMocks(); available = true; execution = null; m.resolve.mockResolvedValue(session); m.enabled.mockResolvedValue(undefined); m.raw.mockResolvedValue([]);
+  vi.clearAllMocks(); available = true; execution = null; receipt = null; m.resolve.mockResolvedValue(session); m.enabled.mockResolvedValue(undefined); m.raw.mockImplementation(async (strings: TemplateStringsArray) => strings.join("?").includes("AS fresh") ? [{ fresh: true }] : []);
   m.member.mockResolvedValue({ sessionVersion: 2, user: { authVersion: 3 } }); m.module.mockResolvedValue({ id: "enabled" });
   m.company.mockResolvedValue({ id: "company", kind: "CUSTOMER", status: "ACTIVE", archivedAt: null, isTest: true });
   const a = await compileCustomField(session, source, registry), b = await compileCustomField(session, targetPayload, registry);
@@ -47,13 +54,27 @@ beforeEach(async () => {
   sealed = sealFieldMigrationReview({ ...pinned.intent, cohort: { recordCount: 3, observationDigest: "a".repeat(64) }, summary: { validCount: 3, invalidCount: 0, lossyCount: 0 } });
   prepared = { id: uuid(3), organisationId: "company", definitionId: uuid(4), state: "REVIEWED", intent: pinned.intent, intentChecksum: pinned.checksum, review: { review: sealed.review, checksum: sealed.checksum } };
   target = { id: uuid(8), organisationId: "company", definitionId: uuid(4), version: 2, payload: targetPayload, compiledPlan: b.plan, checksum: b.checksum };
+  sourceVersion = { id: uuid(6), organisationId: "company", definitionId: uuid(4), version: 1, payload: source, compiledPlan: a.plan, checksum: a.checksum };
+  definition = { id: uuid(4), organisationId: "company", kind: "customField", activeVersionId: uuid(6), revision: 8, latestVersion: 2, retiredAt: null };
   publication = { ...reviewedFieldPublicationPin(sealed, target, "user", false), state: "PUBLISHED", revision: 0 };
   m.initial.mockImplementation(async ({ where }) => where.id === prepared.id && where.organisationId === prepared.organisationId ? structuredClone(prepared) : null);
   m.preparation.mockImplementation(async () => structuredClone(prepared)); m.publication.mockImplementation(async () => structuredClone(publication));
-  m.execution.mockImplementation(async () => structuredClone(execution)); m.target.mockImplementation(async () => structuredClone(target)); m.inspect.mockImplementation(async () => structuredClone(sealed));
+  m.execution.mockImplementation(async () => structuredClone(execution)); m.target.mockImplementation(async ({ where }) => structuredClone(where.id === sourceVersion.id ? sourceVersion : target)); m.inspect.mockImplementation(async () => structuredClone(sealed));
   m.create.mockImplementation(async ({ data }) => { execution = { ...data, state: "RUNNING", revision: 0, cursor: null, processedCount: 0, failureCode: null }; return structuredClone(execution); });
+  m.receipt.mockImplementation(async () => structuredClone(receipt)); m.definition.mockImplementation(async () => structuredClone(definition));
+  m.generation.mockResolvedValue({ id: targetPayload.storageGeneration }); m.modules.mockResolvedValue(1);
+  m.draft.mockImplementation(async () => ({ revision: 10, baseVersionId: target.id, payload: targetPayload }));
+  m.receiptCreate.mockImplementation(async ({ data }) => { receipt = { ...data, state: "ACTIVATED", revision: 0 }; return structuredClone(receipt); });
+  m.publicationUpdate.mockImplementation(async ({ where, data }) => {
+    if (where.organisationId !== publication.organisationId || where.preparationId !== publication.preparationId || where.state !== publication.state || where.revision !== publication.revision) return { count: 0 };
+    publication = { ...publication, state: data.state, revision: publication.revision + 1 }; return { count: 1 };
+  });
+  m.definitionUpdate.mockImplementation(async ({ where, data }) => {
+    if (where.organisationId !== definition.organisationId || where.id !== definition.id || where.activeVersionId !== definition.activeVersionId || where.revision !== definition.revision) return { count: 0 };
+    definition = { ...definition, activeVersionId: data.activeVersionId, revision: definition.revision + 1 }; return { count: 1 };
+  });
   m.audit.mockResolvedValue({ id: "audit" }); m.transaction.mockImplementation(async (run: (client: typeof tx) => Promise<unknown>) => {
-    const before = structuredClone(execution); try { return await run(tx); } catch (error) { execution = before; throw error; }
+    const before = structuredClone({ execution, receipt, publication, definition }); try { return await run(tx); } catch (error) { ({ execution, receipt, publication, definition } = before); throw error; }
   });
 });
 it("pins the exact explicit owner approval and starts with zero progress plus atomic Audit, without target or native writes", async () => {
@@ -100,4 +121,76 @@ it("changed archive, cross-scoped immutable target or invalid persisted pin/prog
 it("a failed start Audit rolls back the execution and an identical request can retry", async () => {
   m.audit.mockRejectedValueOnce(new Error("Audit unavailable")); await expect(startFieldMigrationExecution(session, request())).rejects.toThrow("Audit unavailable"); expect(execution).toBeNull();
   expect(await startFieldMigrationExecution(session, request())).toMatchObject({ revision: 0, replayed: false });
+});
+
+async function readyCutover() {
+  await startFieldMigrationExecution(session, request());
+  execution!.state = "READY"; execution!.revision = 2; execution!.processedCount = 3; execution!.cursor = "ticket_z";
+  m.audit.mockClear(); m.create.mockClear();
+  return { ...request(), definitionRevision: 8, executionRevision: 2 };
+}
+it("explicit cutover reuses exact generation/module/source-pointer CAS and saves paired Audit atomically", async () => {
+  const input = await readyCutover(), before = structuredClone(execution);
+  expect(await cutoverReviewedFieldMigration(session, input)).toEqual({ id: uuid(3), state: "ACTIVATED", definitionRevision: 9, publicationRevision: 1,
+    executionRevision: 2, sourceVersionId: uuid(6), targetVersionId: target.id, reviewChecksum: sealed.checksum, replayed: false });
+  expect(receipt?.pinChecksum).toBe(checksum(receipt?.pin)); expect(definition.activeVersionId).toBe(target.id); expect(publication.state).toBe("CUTOVER");
+  expect(m.definitionUpdate.mock.calls[0][0].where).toMatchObject({ organisationId: "company", revision: 8, activeVersionId: uuid(6), retiredAt: null });
+  expect(m.generation).toHaveBeenCalled(); expect(m.audit.mock.calls.map(([arg]) => arg.data.action)).toEqual(["studio.definition.activated", "studio.field.migration.cutover"]);
+  expect(execution).toEqual(before); expect(m.create).not.toHaveBeenCalled();
+});
+it("cutover replay inspects actual receipt/target-active metadata and current review without duplicate writes/Audit", async () => {
+  const input = await readyCutover(); await cutoverReviewedFieldMigration(session, input);
+  m.receiptCreate.mockClear(); m.publicationUpdate.mockClear(); m.definitionUpdate.mockClear(); m.audit.mockClear();
+  expect(await cutoverReviewedFieldMigration(session, input)).toMatchObject({ definitionRevision: 9, publicationRevision: 1, replayed: true });
+  expect(m.inspect.mock.calls.at(-1)?.at(-1)).toBe("cutover");
+  for (const call of [m.receiptCreate, m.publicationUpdate, m.definitionUpdate, m.audit]) expect(call).not.toHaveBeenCalled();
+  await expect(startFieldMigrationExecution(session, request())).rejects.toThrow("stale or has changed");
+});
+it("cutover denies unfinished progress, stale confirmations and injected client scope/stage before activation", async () => {
+  const input = await readyCutover(); execution!.state = "RUNNING"; execution!.processedCount = 1;
+  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("stale or has changed"); execution!.state = "READY"; execution!.processedCount = 3;
+  for (const patch of [{ definitionRevision: 9 }, { publicationRevision: 1 }, { executionRevision: 1 }, { reviewChecksum: "f".repeat(64) },
+    { organisationId: "other" }, { stage: "cutover" }, { canRollback: true }]) await expect(cutoverReviewedFieldMigration(session, { ...input, ...patch })).rejects.toThrow();
+  expect(m.receiptCreate).not.toHaveBeenCalled(); expect(m.definitionUpdate).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+});
+it("both activation and migration Audit failures roll back receipt/publication/pointer and allow exact retry", async () => {
+  const input = await readyCutover();
+  const before = structuredClone({ execution, receipt, publication, definition });
+  m.audit.mockRejectedValueOnce(new Error("activation Audit unavailable"));
+  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("activation Audit unavailable");
+  expect({ execution, receipt, publication, definition }).toEqual(before);
+  m.audit.mockResolvedValueOnce({ id: "activation" }).mockRejectedValueOnce(new Error("cutover Audit unavailable"));
+  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("cutover Audit unavailable");
+  expect({ execution, receipt, publication, definition }).toEqual(before);
+  expect(await cutoverReviewedFieldMigration(session, input)).toMatchObject({ replayed: false });
+});
+it("publication or definition CAS and generation dependency failures cannot leave a receipt committed", async () => {
+  const input = await readyCutover(); m.publicationUpdate.mockResolvedValueOnce({ count: 0 });
+  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("stale or has changed"); expect(receipt).toBeNull();
+  m.definitionUpdate.mockResolvedValueOnce({ count: 0 });
+  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("CONFLICT"); expect(receipt).toBeNull(); expect(publication.state).toBe("PUBLISHED");
+  m.generation.mockResolvedValueOnce(null);
+  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("storage generation"); expect(receipt).toBeNull(); expect(m.audit).not.toHaveBeenCalled();
+});
+it("cutover and replay require refreshed initiating authority, native/private/written coverage and source availability", async () => {
+  const input = await readyCutover(); m.resolve.mockRejectedValueOnce(new Error("revoked initiating actor"));
+  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("revoked initiating actor");
+  m.inspect.mockRejectedValueOnce(new Error("private/written access removed"));
+  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("private/written access removed"); expect(receipt).toBeNull();
+  await cutoverReviewedFieldMigration(session, input); m.audit.mockClear(); m.definitionUpdate.mockClear();
+  m.resolve.mockRejectedValueOnce(new Error("revoked initiating actor")); await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("revoked initiating actor");
+  m.resolve.mockResolvedValue({ ...session, capabilities: new Set(["studio.definition.publish", "tickets.ticket.read"]) });
+  m.inspect.mockImplementationOnce(async (context: { session: Session }) => { assertCapability(context.session, "tickets.ticket.manage"); return structuredClone(sealed); });
+  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("tickets.ticket.manage"); m.resolve.mockResolvedValue(session);
+  available = false; await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("unavailable"); available = true;
+  m.inspect.mockRejectedValueOnce(new Error("private/written access removed"));
+  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("private/written access removed");
+  expect(m.audit).not.toHaveBeenCalled(); expect(m.definitionUpdate).not.toHaveBeenCalled();
+});
+it("replay refuses changed representation/draft/receipt/CAS and stale requests even when the active target is intact", async () => {
+  const input = await readyCutover(); await cutoverReviewedFieldMigration(session, input); m.audit.mockClear();
+  await expect(cutoverReviewedFieldMigration(session, { ...input, definitionRevision: 9 })).rejects.toThrow("stale or has changed");
+  m.raw.mockImplementationOnce(async () => []).mockImplementation(async (strings: TemplateStringsArray) => strings.join("?").includes("AS fresh") ? [{ fresh: false }] : []);
+  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("stale or has changed");
+  expect(m.audit).not.toHaveBeenCalled();
 });

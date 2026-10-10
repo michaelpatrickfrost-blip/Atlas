@@ -3,7 +3,7 @@
 Source: unchanged Studio specification Sections 6.4, 24–24.1 and 25–28.
 Dependencies: 2B2 permanent field identity, immutable generations/typed history and
 metadata publication. 2B3a pure library VERIFIED on candidate/public 7941f9b (tests/types/lint/build); combined 2B2 candidate/public e5d66e6 release acceptance PASS.
-2B3b retirement VERIFIED on candidate/public 7941f9b (35 local tests/types/lint/build and real central checks PASS); Reviewed publication is VERIFIED on ea27b2f complete candidate/public suites. Batches VERIFIED on 8d6eb9e; cutover remains NOT STARTED; principal and review foundations are VERIFIED live. This plan breaks the specified operation into
+2B3b retirement VERIFIED on candidate/public 7941f9b (35 local tests/types/lint/build and real central checks PASS); Reviewed publication is VERIFIED on ea27b2f complete candidate/public suites. Batches VERIFIED on 8d6eb9e; cutover service locally IMPLEMENTED, actual f3c acceptance pending; principal and review foundations are VERIFIED live. This plan breaks the specified operation into
 reviewable checkpoints; it does not substitute for the supplied specification.
 
 | ID | Purpose and dependencies | Expected files / database | Required evidence | Status |
@@ -1162,7 +1162,8 @@ Phase 2 NOT PASSED; cutover and visual editor/dashboard/button work remains pend
 finished exit0. 2B3f1 VERIFIED on 080e4d7 complete candidate/public, eight focused/257 regression
 assertions/build/types/lint PASS. F2 VERIFIED on 5f5fce5 complete candidate/public, actual storage/deferred/isolation/
 history/source/native proof. F3a IMPLEMENTED, five helper tests/262 scoped assertions/build/types/lint PASS;
-real refactor proof pending next release. f3b/f3c/f4/f5 NOT STARTED.
+real refactor proof pending next release. f3b1–3 IMPLEMENTED/locally checked;
+f3c actual proof/f4/f5 NOT STARTED.
 Source Sections 6.3–6.4 and 24: activation is separate, all conversions resolved,
 reads remain source-compatible until cutover, history is retained and rollback limits
 must be explicit. Actual existing activation is in definitions/service.ts; it owns
@@ -1254,3 +1255,8 @@ F3b2 IMPLEMENTED: 31 focused assertions/types/lint/diff PASS. Actual scoped rece
 metadata and unchanged representation predicates checked before reused native/field
 coverage. No old predicate relaxation/DDL/value writes. Build/live pending f3c.
 F3b3 next; statuses supersede the earlier NOT STARTED plan rows.
+
+F3b3 IMPLEMENTED: 45 files/285 assertions/build/strict post-build types/scoped
+lint/diff PASS. Strict explicit confirmations, scoped READY/f1 receipt, publication
+CAS/shared activation and paired Audit; fresh actual receipt-derived replay. Exact
+central helper added, not run; f3c full candidate/public next. No new migration.

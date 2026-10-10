@@ -11,7 +11,8 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f3b3 — Explicit cutover service and fresh replay — NOT STARTED.
+2B3f3c — Actual cutover service candidate/public proof — NOT STARTED.
+F3b3 IMPLEMENTED / local checks PASS; no actual service verification yet.
 F3b1 IMPLEMENTED / checked locally; f3a local checks PASS, integrated live proof pending.
 2B3f2 VERIFIED on exact5f5fce5 complete candidate/public.
 2B3f1 VERIFIED on exact 080e4d7 complete candidate/public.
@@ -72,6 +73,23 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+F3b3 current-authority cutover IMPLEMENTED / checked locally. Strict confirmations,
+locked READY reinspection/f1 pin/f2 receipt/publication CAS then shared f3a source
+pointer activation and paired Audit in one Serializable authority transaction.
+Lost-response replay uses actual scoped receipt/target-active metadata and fresh
+owning native/private/current/written/reference/unique coverage; no duplicate
+writes/Audit. Seven new service tests plus receipt/coverage tests: final 45 files/
+285 assertions PASS (Studio/Admin/module/permission/template compatibility); production
+build, strict post-build TypeScript, scoped lint/diff PASS. Logs /tmp/atlas-studio-
+cutover-service-{tests,regression,build,types,postbuild-types,lint}.txt. No new schema/
+migration/public endpoint, normal values, rollback or native mutation. New f3c exact
+Test helper prepared: separate field lifecycle, real paired-Audit failures/concurrent
+CAS/fresh replay/member/field/private/module revocation/history/native snapshots.
+It is NOT RUN yet. Test-only affiliation grant/failure triggers restored in finally;
+old execution cancellation acceptance retained. Accepted live5f5fce5 unchanged;
+PostgreSQL online/free9.7G. Checkpoint then pinned full candidate/public acceptance.
+Phase 2 NOT PASSED; required visual designer/customer dashboard/buttons incomplete.
 
 F3b2 actual receipt-derived review coverage IMPLEMENTED / checked locally: 3 files/
 31 assertions, strict types, scoped lint and diff PASS; logs /tmp/atlas-studio-
@@ -1054,6 +1072,11 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+Latest f3: shared definitions/activation+service; migrations/cutover{,-receipt,-inspection}
+and coverage; cutover contract/inspection/coverage/execution-start/activation tests;
+scripts/studio/check-field-cutover-service and existing principal driver;
+Studio field plan/phase fields/Data model plus progress/CURRENT_STATE/DECISIONS.
+
 F3a: new definitions/activation.ts, existing definitions/service.ts delegates; new
 studio-activation.test.ts; field evolution plan/DECISIONS/CURRENT_STATE/ledger updated.
 No schema/client/generic action changes in this checkpoint.
@@ -1530,10 +1553,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement f3b3 explicit cutover service using refreshed initiating authority,
-locked READY execution and exact f1 confirmation; create f2 receipt, CAS publication
-and invoke shared f3a activator with expected source pointer. Save paired Audit
-atomically. Replay only through actual receipt identity and current f3b2 review.
-Add service denial/atomicity tests; production build/regressions and f3c actual
-central proof/full combined candidate/public release before f4. Accepted5f5fce5;
-no rollback/value API or customer visual/button completion.
+Commit coherent f3b3 service/tests/actual Test driver and documentation; deploy exact
+HEAD on codex/studio-phase2 with ATLAS_RELEASE_ACCEPTANCE=studio. Require actual
+cutover service/current authority/concurrent/paired Audit/replay/history/native checks
+in both full candidate and public suites, plus exact health and runner exit0, before
+marking f3 VERIFIED or beginning f4. Monitor free space/PG; current5f5fce5/prior080e4d7
+retained. No honest rollback/value API/visual customer dashboard/buttons complete.

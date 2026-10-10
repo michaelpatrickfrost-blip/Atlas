@@ -1,5 +1,28 @@
 # Atlas current state
 
+## 10 October 2026 — Whole-app candidate saved; server connectivity blocks live gate
+
+Candidatea2a05a7 saved/pushed on codex/app-ui-completeness. Exact reviewed production
+build PASS; final strict types/scoped lint/shell syntax/whitespace PASS. Full final
+regression1589 PASS,22 skipped (249passed/3skipped files); menu/navigation10 PASS.
+Live baseline97ceb35 logged263 rendered browser passes, CRM/Sales Reports208px
+phone overflow and one expected staff Studio redirect misclassified by the initial
+probe (corrected in committed checker). The baseline ended without a final stable-
+revision/coverage result when the host became unreachable; never claim whole sweep
+PASS. Private server evidence V8LJ61 and local atlas-all-app-ui-live.log retained.
+Own stalled local SSH probe terminated; business submissions were blocked.
+
+Exact ui deployment attempted and safely stopped at SSH connection preflight.
+Repeated SSH banner and HTTPS timeouts from this session, including resolved
+85.190.118.218, while GitHub HTTPS responded. Script's generic SSH-key suggestion
+is not evidence of a key change; no credentials or SSH policy changed. No build,
+fixture run or runtime switch from this candidate occurred on the server. Last
+confirmed live97ceb35. All-app synthetic write gates and post-change screenshots
+remain UNRUN. No completion/all-buttons guarantee. Next: restore host reachability,
+verify current accepted SHA, merge any new accepted release if necessary, then
+run pinned ATLAS_RELEASE_ACCEPTANCE=ui candidate/public and fix every actual
+finding before claiming complete. Preserve central records/backups and other work.
+
 ## 10 October 2026 — Whole-app UI and controls audit (in progress)
 
 User requests every app screen use the new UI and all buttons work. Scope is the

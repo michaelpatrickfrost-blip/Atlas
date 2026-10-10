@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3e5 — Bounded execution batches/recovery — NOT STARTED.
+2B3e6 — Actual central execution acceptance — NOT STARTED.
 2B3d1–d4 VERIFIED ea27b2f; no row writer/designer.
 
 # Overall Status
@@ -66,6 +66,34 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+2B3e5 IMPLEMENTED/local checks PASS: 1–50-row canonical SQL cursor, stored CAS,
+shared current execution inspection, atomic target outcomes/progress/Audit; lost
+responses/READY replay write nothing. FAILED resume explicitly transitions through
+RUNNING. Rollback recovery can record only exact unchanged RUNNING prefix with
+closed generic failure and Audit; revocation/Audit outage reports failureRecorded=false
+without invented state. Audit excludes native IDs/cursor/value/counts. 38 Studio
+files/227 assertions, production build, strict post-build TS/scoped lint/diff PASS;
+/tmp/atlas-studio-execution-batch-{focused,all-tests,types,build,postbuild-types,lint}.txt.
+Initial mock writer returned id rather than actual observationId, corrected; all
+final checks passed. No actual SQL/row proof yet; pending 20261010050000 unapplied,
+accepted live 64361cb. Phase 2 NOT PASSED. Next e6 actual Test execution/failure/
+process termination/restart/replay/SQL/permissions/cancel/native compatibility proof
+through combined candidate/public release before marking execution VERIFIED.
+
+
+2B3e5 IN PROGRESS before code: closed 1–50-row request, stored canonical cursor
+and execution CAS; shared exact inspection before progress or values, all row outcomes/
+targets/progress/Audit in one short Serializable transaction. Lower revision is gated
+no-write replay; READY replay writes nothing. FAILED current revision explicitly
+resumes through RUNNING then commits bounded progress; no automatic worker/Flow.
+After a rolled-back attempt, a separate sparse current-publisher transaction may
+record only generic failure/CAS with the same committed prefix and Audit. It returns
+no business progress; if membership/Studio authority or Audit is unavailable, it
+cannot claim to record failure, and the original prefix remains intact. Stale/foreign
+requests cannot alter a newer cursor. Expected execution-batch/tests and docs; no
+new schema beyond pending 20261010050000. Actual failure/restart/SQL proof follows e6.
+
 
 2B3e4b IMPLEMENTED/local checks PASS: one shared source inspector/converter now
 supplies converted values only inside the server transaction; archive observation
@@ -727,6 +755,8 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+e5: execution-batch, focused batch tests, sparse failure decision/plan/ledger/state.
+
 e4b: shared observation inspector/redacted wrapper, representation writer and
 representation tests; plan/ledger/state. No schema change or native mutation.
 
@@ -1158,9 +1188,10 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement 2B3e5 bounded execution batch service using shared exact inspector and
-one-row writer: stored CAS/canonical cursor, 1–50 rows, atomic progress/outcomes/Audit,
-fresh no-write replay, explicit FAILED resume and sparse generic failure state that
-retains committed prefix. Test interruption/lost response/rollback/access removal.
-Then e6 actual central owner/SQL/atomic lifecycle through combined pinned release.
-Pending 20261010050000 remains unapplied; accepted live 64361cb, Phase 2 NOT PASSED.
+Implement 2B3e6 actual central Test acceptance: source field + v5 reviewed target,
+owner approval on final/unanchored rows, actual SQL pins/FKs/deferred outcomes,
+mid-batch/Audit rollback, durable prefix, forced process termination and new-process
+resume, lost-response/private/tenant revocation, source readable and target activation
+blocked, cancellation retention. Integrate existing principal/combined runner, run
+local build/types/tests/lint, commit and pin full candidate/public release. Pending
+20261010050000 remains unapplied; accepted live 64361cb, Phase 2 NOT PASSED.

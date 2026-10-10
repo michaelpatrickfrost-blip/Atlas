@@ -1,5 +1,37 @@
 # Atlas current state
 
+## 10 October 2026 — Bounded execution locally checked
+
+2B3e5 IMPLEMENTED/local checks PASS: 1–50-row canonical SQL cursor, stored CAS,
+shared current execution inspection, atomic target outcomes/progress/Audit; lost
+responses/READY replay write nothing. FAILED resume explicitly transitions through
+RUNNING. Rollback recovery can record only exact unchanged RUNNING prefix with
+closed generic failure and Audit; revocation/Audit outage reports failureRecorded=false
+without invented state. Audit excludes native IDs/cursor/value/counts. 38 Studio
+files/227 assertions, production build, strict post-build TS/scoped lint/diff PASS;
+/tmp/atlas-studio-execution-batch-{focused,all-tests,types,build,postbuild-types,lint}.txt.
+Initial mock writer returned id rather than actual observationId, corrected; all
+final checks passed. No actual SQL/row proof yet; pending 20261010050000 unapplied,
+accepted live 64361cb. Phase 2 NOT PASSED. Next e6 actual Test execution/failure/
+process termination/restart/replay/SQL/permissions/cancel/native compatibility proof
+through combined candidate/public release before marking execution VERIFIED.
+
+
+## 10 October 2026 — Bounded execution begun
+
+2B3e5 IN PROGRESS before code: closed 1–50-row request, stored canonical cursor
+and execution CAS; shared exact inspection before progress or values, all row outcomes/
+targets/progress/Audit in one short Serializable transaction. Lower revision is gated
+no-write replay; READY replay writes nothing. FAILED current revision explicitly
+resumes through RUNNING then commits bounded progress; no automatic worker/Flow.
+After a rolled-back attempt, a separate sparse current-publisher transaction may
+record only generic failure/CAS with the same committed prefix and Audit. It returns
+no business progress; if membership/Studio authority or Audit is unavailable, it
+cannot claim to record failure, and the original prefix remains intact. Stale/foreign
+requests cannot alter a newer cursor. Expected execution-batch/tests and docs; no
+new schema beyond pending 20261010050000. Actual failure/restart/SQL proof follows e6.
+
+
 ## 10 October 2026 — Exact target writer locally checked
 
 2B3e4b IMPLEMENTED/local checks PASS: one shared source inspector/converter now

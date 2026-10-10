@@ -1,3 +1,14 @@
+## 10 October 2026 — Conversion failure recording preserves the committed prefix
+
+A bounded conversion transaction commits targets, outcomes, cursor and Audit together.
+After rollback, use a separate sparse refreshed current-publisher transaction to mark
+its exact unchanged RUNNING revision FAILED with a generic code and Audit. No native
+access/count/value is inferred from that recovery write. Revoked membership/Studio
+permission or unavailable Audit can prevent failure recording; report that fact and
+retain the original committed prefix, never invent progress or bypass permissions.
+Resume is an explicit current revision through the same native/field inspector.
+This is field representation recovery, not a second workflow engine.
+
 ## 10 October 2026 — Owner reference coverage is an explicit versioned opt-in
 
 Studio must not infer canonical reference access from a matching entity ID or a

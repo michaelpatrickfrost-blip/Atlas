@@ -9,12 +9,13 @@ import { assertFieldMigrationPolicies } from "./access";
 import { sealFieldMigrationIntent, FieldMigrationReviewError, type FieldMigrationIntent } from "./contracts";
 
 function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"); }
+export type FieldMigrationCoverageStage = "preparation" | "publication";
 
 /** Internal coverage prerequisite. Caller supplies a refreshed/locked authority
  * transaction. No value decoding, counts, reference approval or sealed review.
  */
 export async function validateFieldMigrationSourceCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
-  company: Parameters<typeof assertFieldMigrationPolicies>[1], serverIntent: FieldMigrationIntent): Promise<void> {
+  company: Parameters<typeof assertFieldMigrationPolicies>[1], serverIntent: FieldMigrationIntent, stage: FieldMigrationCoverageStage = "preparation"): Promise<void> {
   const sealed = sealFieldMigrationIntent(serverIntent), intent = sealed.intent, session = context.session, tx = context.transaction;
   if (!tx || intent.organisationId !== session.organisationId || intent.principal.userId !== session.userId || intent.principal.membershipId !== session.membershipId) changed();
   assertFieldMigrationPolicies(session, company, intent.source.payload); assertFieldMigrationPolicies(session, company, intent.target.payload);
@@ -25,9 +26,14 @@ export async function validateFieldMigrationSourceCoverage(context: RecordContex
   if (!policy || !policy.sourceVersions.includes(intent.source.payload.entity.version) || policy.query.id !== intent.ownerQuery.id || policy.query.version !== intent.ownerQuery.version
     || query.kind !== "query" || query.details.transaction !== "required" || query.ownerModuleId !== owner.ownerModuleId) changed();
   await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${intent.id}::uuid AND "organisationId"=${session.organisationId} FOR UPDATE`;
-  const fresh = await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_migration_fresh(p) AS fresh
+  const fresh = stage === "preparation" ? await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_migration_fresh(p) AS fresh
     FROM studio_field_migration_preparations p WHERE p.id=${intent.id}::uuid AND p."organisationId"=${session.organisationId}
-      AND p."intentChecksum"=${sealed.checksum} AND p.state IN ('PREPARING','REVIEWED')`;
+      AND p."intentChecksum"=${sealed.checksum} AND p.state IN ('PREPARING','REVIEWED')`
+    : stage === "publication" ? await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_publication_fresh(pub) AS fresh
+      FROM studio_field_migration_publications pub JOIN studio_field_migration_preparations p ON p.id=pub."preparationId"
+        AND p."organisationId"=pub."organisationId" AND p."definitionId"=pub."definitionId"
+      WHERE p.id=${intent.id}::uuid AND p."organisationId"=${session.organisationId} AND p."intentChecksum"=${sealed.checksum}
+        AND p.state='REVIEWED' AND pub.state='PUBLISHED'` : changed();
   if (fresh.length !== 1 || fresh[0].fresh !== true) changed();
   // Owner rejects incomplete native/private access before any archive count/IDs.
   await registry.invokeQueryInTransaction(context, intent.ownerQuery, { mode: "coverage", preparationId: intent.id });

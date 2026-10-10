@@ -693,3 +693,25 @@ scoped lint/diff PASS; /tmp/atlas-studio-publisher-extraction-{tests,build,postb
 types,lint}.txt. No reviewed service yet; additive d2 migration still NOT APPLIED.
 Accepted live 32ee77e; Phase 2 NOT PASSED. Next d3b shared review inspector and
 publication/replay/cancellation through existing publisher, then d4 actual proof.
+
+
+2B3d3b1 IN PROGRESS before code: extract exact source/written/native/reference/
+digest/uniqueness inspection from sealer into one internal review inspector.
+Coverage stage is closed server-only preparation/publication: default old SQL
+freshness unchanged; publication requires scoped receipt + exact intent checksum
+and atlas_studio_publication_fresh before the same native/source/written checks.
+No client stage, copied values, target writes or permission widening. Files shared
+inspection, sealing/coverage and focused coverage tests; no new DDL beyond pending
+d2. d3b2 reviewed publication and d3b3 cancellation follow after checkpoint.
+
+
+d3b1 IMPLEMENTED/local checks PASS: one exact review inspector reused by sealer;
+source/written/native/reference/access guards precede v1 digest/uniqueness. Closed
+server-only coverage stage; preparation predicate unchanged, publication requires
+scoped exact receipt/intent checksum and its separate post-publication freshness.
+Fresh receipt cannot substitute for current private/native/source/written access.
+Eight files/60 assertions, production build, strict post-build TypeScript/scoped
+lint/diff PASS, /tmp/atlas-studio-review-inspection-{tests,build,postbuild-types,
+lint}.txt. Receipt SQL still NOT APPLIED/actual not run, no publisher/target writes.
+Next d3b2 reviewed service/atomic receipt/Audit/replay and d3b3 cancellation, then
+d4 actual constraints/lifecycle release. Accepted live 32ee77e; Phase 2 NOT PASSED.

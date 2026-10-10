@@ -7,12 +7,10 @@ import { writeAudit } from "@/core/audit/log";
 import { STUDIO_CAPABILITIES } from "../../permissions";
 import { studioRegistry } from "../../registry/runtime";
 import { checksum } from "../../registry/contracts";
-import { entityDetailsSchema } from "../../registry/entities";
 import { analyseFieldEvolution } from "../evolution";
-import { sealFieldMigrationIntent, sealFieldMigrationReview, readSealedFieldMigrationReview, FieldMigrationReviewError } from "./contracts";
+import { sealFieldMigrationIntent, readSealedFieldMigrationReview, FieldMigrationReviewError } from "./contracts";
 import { withFieldMigrationAuthority } from "./authority";
-import { validateFieldMigrationSourceCoverage } from "./coverage";
-import { digestFieldMigrationArchive } from "./archive-digest";
+import { inspectFieldMigrationReview } from "./inspection";
 
 const requestSchema = z.strictObject({ preparationId: z.uuid(), revision: z.number().int().nonnegative().max(2147483646) });
 function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"); }
@@ -35,21 +33,7 @@ export async function sealFieldMigrationPreparation(session: Session, input: unk
       || checksum(preparation.intent) !== pinned.checksum || request.revision > preparation.revision) changed();
     if (preparation.state === "PREPARING" && (preparation.review || preparation.revision !== request.revision)) changed();
     const intent = pinned.intent, registry = studioRegistry();
-    await validateFieldMigrationSourceCoverage({ session: fresh, transaction: tx }, registry, company, intent);
-    if (intent.source.payload.field.storage.type === "reference" || intent.target.payload.field.storage.type === "reference") {
-      const owner = await registry.resolve(fresh, intent.target.payload.entity), policy = entityDetailsSchema.parse(owner.details).record?.migrationSnapshot;
-      const refs = [intent.source.payload.field.storage, intent.target.payload.field.storage];
-      if (!policy?.referenceVersions || refs.some(storage => storage.type !== "reference" || storage.entity.id !== owner.id
-        || !policy.referenceVersions!.includes(storage.entity.version)))
-        throw new Error("MIGRATION_REFERENCE_REVIEW_REQUIRED: reference review requires approved owner coverage.");
-      const result = z.strictObject({ organisationId: z.string(), entityId: z.string(), mode: z.literal("reference_coverage"), nativeReferenceCoverageComplete: z.literal(true) })
-        .parse(await registry.invokeQueryInTransaction({ session: fresh, transaction: tx }, intent.ownerQuery, { mode: "reference_coverage", preparationId: intent.id }));
-      if (result.organisationId !== fresh.organisationId || result.entityId !== owner.id) changed();
-    }
-    const aggregate = await digestFieldMigrationArchive(tx, intent);
-    if (intent.target.payload.field.unique && aggregate.duplicateTarget)
-      throw new Error("MIGRATION_UNIQUENESS_CONFLICT: target values need a new review after duplicates are resolved.");
-    const sealed = sealFieldMigrationReview({ ...intent, cohort: { recordCount: aggregate.recordCount, observationDigest: aggregate.observationDigest }, summary: aggregate.summary });
+    const sealed = await inspectFieldMigrationReview({ session: fresh, transaction: tx }, registry, company, intent);
     const impact = analyseFieldEvolution(intent.source.payload, intent.target.payload);
     if (preparation.state === "REVIEWED") {
       if (!preparation.review || readSealedFieldMigrationReview({ review: preparation.review.review, checksum: preparation.review.checksum }).checksum !== sealed.checksum) changed();

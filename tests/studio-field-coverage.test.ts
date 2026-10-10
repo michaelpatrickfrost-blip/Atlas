@@ -23,9 +23,9 @@ const tx = { $queryRaw: raw, studioDefinitionVersion: { findMany: schemas }, stu
   serviceWorkItem: { findFirst: unavailable, count: vi.fn(async () => 3) } } as unknown as Prisma.TransactionClient;
 const context = { session, transaction: tx };
 let intent: FieldMigrationIntent, written: { id: string; payload: unknown; compiledPlan: unknown; checksum: string };
-let fresh: boolean, nativeChanged: boolean, sourceChanged: boolean;
+let fresh: boolean, publicationFresh: boolean, nativeChanged: boolean, sourceChanged: boolean;
 beforeEach(async () => {
-  vi.clearAllMocks(); fresh = true; nativeChanged = false; sourceChanged = false;
+  vi.clearAllMocks(); fresh = true; publicationFresh = true; nativeChanged = false; sourceChanged = false;
   const compiled = await compileCustomField(session, source, registry), next = await compileCustomField(session, target, registry);
   intent = sealFieldMigrationIntent({ schemaVersion: 1, id: uuid(3), organisationId: "company", definitionId: uuid(4), definitionRevision: 7,
     principal: { organisationId: "company", userId: "user", membershipId: "member", sessionVersion: 2, authVersion: 3, authority: "customer" },
@@ -37,6 +37,7 @@ beforeEach(async () => {
     const sql = strings.join("?");
     if (sql.includes("SHOW transaction_isolation")) return [{ transaction_isolation: "serializable" }];
     if (sql.includes("atlas_studio_migration_fresh")) return [{ fresh }];
+    if (sql.includes("atlas_studio_publication_fresh")) return [{ fresh: publicationFresh }];
     if (sql.includes("SELECT DISTINCT")) return [{ versionId: uuid(6) }];
     if (sql.includes("SELECT EXISTS")) return [{ changed: sql.includes("FROM service_work_items") ? nativeChanged : sourceChanged }];
     return [];
@@ -86,4 +87,27 @@ it("checks historical field policy and schema integrity without value decoding",
   written.payload = { ...source, storageGeneration: uuid(9) };
   await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent)).rejects.toThrow("stale or has changed");
   schemas.mockResolvedValue([]); await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent)).rejects.toThrow("stale or has changed");
+});
+
+it("publication replay requires a scoped exact receipt; default preparation cannot fall back to it", async () => {
+  fresh = false;
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent)).rejects.toThrow("stale or has changed");
+  expect(raw.mock.calls.some(([strings]) => strings.join("?").includes("atlas_studio_publication_fresh"))).toBe(false);
+  raw.mockClear();
+  await validateFieldMigrationSourceCoverage(context, registry, company, intent, "publication");
+  const receipt = raw.mock.calls.find(([strings]) => strings.join("?").includes("atlas_studio_publication_fresh"));
+  expect(receipt?.slice(1)).toEqual([intent.id, session.organisationId, sealFieldMigrationIntent(intent).checksum]);
+  expect(receipt?.[0].join("?")).toContain("p.state='REVIEWED' AND pub.state='PUBLISHED'");
+  expect(raw.mock.calls.some(([strings]) => strings.join("?").includes("atlas_studio_migration_fresh"))).toBe(false);
+});
+
+it("a publication receipt cannot replace current source/written/native or private access, and cancelled/stale receipts fail", async () => {
+  publicationFresh = false;
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "publication")).rejects.toThrow("stale or has changed");
+  expect(unavailable).not.toHaveBeenCalled(); expect(schemas).not.toHaveBeenCalled();
+  publicationFresh = true; unavailable.mockResolvedValue({ id: "private" });
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "publication")).rejects.toThrow("MIGRATION_ACCESS_REQUIRED");
+  unavailable.mockResolvedValue(null); sourceChanged = true;
+  await expect(validateFieldMigrationSourceCoverage(context, registry, company, intent, "publication")).rejects.toThrow("stale or has changed");
+  expect(schemas).not.toHaveBeenCalled();
 });

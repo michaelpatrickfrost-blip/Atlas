@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3d3b — Reviewed publication service — NOT STARTED.
+2B3d3b2 — Reviewed publication service — NOT STARTED.
 Scalar/source coverage VERIFIED live fc9b80f; reference c1 local; no writer/designer.
 
 # Overall Status
@@ -62,6 +62,26 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+d3b1 IMPLEMENTED/local checks PASS: one exact review inspector reused by sealer;
+source/written/native/reference/access guards precede v1 digest/uniqueness. Closed
+server-only coverage stage; preparation predicate unchanged, publication requires
+scoped exact receipt/intent checksum and its separate post-publication freshness.
+Fresh receipt cannot substitute for current private/native/source/written access.
+Eight files/60 assertions, production build, strict post-build TypeScript/scoped
+lint/diff PASS, /tmp/atlas-studio-review-inspection-{tests,build,postbuild-types,
+lint}.txt. Receipt SQL still NOT APPLIED/actual not run, no publisher/target writes.
+Next d3b2 reviewed service/atomic receipt/Audit/replay and d3b3 cancellation, then
+d4 actual constraints/lifecycle release. Accepted live 32ee77e; Phase 2 NOT PASSED.
+
+2B3d3b1 IN PROGRESS before code: extract exact source/written/native/reference/
+digest/uniqueness inspection from sealer into one internal review inspector.
+Coverage stage is closed server-only preparation/publication: default old SQL
+freshness unchanged; publication requires scoped receipt + exact intent checksum
+and atlas_studio_publication_fresh before the same native/source/written checks.
+No client stage, copied values, target writes or permission widening. Files shared
+inspection, sealing/coverage and focused coverage tests; no new DDL beyond pending
+d2. d3b2 reviewed publication and d3b3 cancellation follow after checkpoint.
 
 2B3d3a IMPLEMENTED/local checks PASS: extracted existing publishDraft transaction
 into Core definitions/publication.ts. Normal module count, definition CAS/version/
@@ -807,11 +827,12 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement d3b shared exact review inspector from sealer; post-publication source
-coverage uses the scoped receipt freshness without relaxing old preparation gates.
-Reviewed service must pin current actor/review, use shared publisher/new-generation
-binder, atomically receipt/Audit, source active, no target writes. Fresh replay no
-writes; cancellation uses current explicit company principal/publish authority,
-scoped CAS and Audit without native data disclosure. Then d4 actual central SQL/
-source-active/no-target/premature activation/rollback proof before applying pending
-20261010040000 in pinned candidate/public release. Phase 2 NOT PASSED.
+Implement d3b2 publishReviewedFieldMigration: reload scoped REVIEWED preparation and
+immutable review, fresh original initiating principal, lock preparation, use shared
+review inspector with stage from actual publication presence, compare stored digest.
+New publication uses shared publisher with reviewed new-generation binder, exact
+pin/receipt and Audit atomically; source stays active, no target values/activation.
+Existing publication replay uses actual target + separate receipt freshness and
+writes/audits nothing. Add invalid/loss/stale/private/CAS/Audit/tenant tests. Then
+d3b3 current-principal sparse cancellation and d4 actual central proof/release.
+Pending 20261010040000 not applied; Phase 2 NOT PASSED.

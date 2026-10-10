@@ -1103,3 +1103,37 @@ policy-{types,lint}.txt. App/DDL unchanged; 228 assertions/build retained. Backu
 fixtures 042930, deploy session 39039 exit 1. No row lifecycle/process proof reached.
 Synthetic Test access suspended/history retained; public accepted 64361cb unchanged.
 Commit corrected assertion and rerun the full pinned combined release now.
+
+While f5bb914 remains pinned, e6 review adds actual RUNNING batch+recovery
+Audit failure proof (the existing FAILED-resume case cannot exercise a new failure
+marker). Also reserve the final SQL revision for cancellation: stop progress/resume
+before exhausting it and do not let failure recording consume it. Add regression
+for RUNNING/FAILED limit boundaries; no DDL change. Changes remain local until the
+pinned runner finishes; next release must include and actually run these checks.
+
+f5bb914641b6f32d55898330c7c56760c76ba18f candidate Studio helper PASS:
+actual owner final/unanchored/scalar representation, exact SQL lineage/deferred
+progress/mid-batch/start/batch Audit rollback, SIGKILL before commit/new-process
+resume/replay, private/tenant/CAS/history/cancel/source readability and unchanged
+native snapshots. Candidate 8v9Xza, backup 043032, fixtures 043235; complete native
+suite/public repeat still pending, deploy session 21591. Public accepted source
+remains 64361cb until combined runner finishes. No applied SQL repair was needed.
+Local next correction (RUNNING recovery-Audit proof + cancellation revision reserve)
+passed 38 files/229 assertions, build/strict post-build TS/scoped lint/diff; logs
+/tmp/atlas-studio-execution-recovery-proof-{all-tests,types,build,postbuild-types,lint}.txt.
+Do not advance pinned branch during current runner. Phase 2 NOT PASSED; next full
+release must actually exercise the additional RUNNING recovery-Audit case.
+
+f5bb914641b6f32d55898330c7c56760c76ba18f complete combined candidate/public
+acceptance PASS, deploy session 21591 exit 0; actual public health exact source
+confirmed. Execution persistence/owner/writer/batches are live with real deferred,
+mid-batch/Audit rollback, forced process death/new-process resume, private/tenant/
+history/cancel/source/native compatibility proof. Candidate 8v9Xza/public R2N3mY,
+backup 043032, fixtures 043235/043638; /tmp/atlas-studio-execution-policy-deploy.txt,
+ALL COMBINED lines 135/265. Additive 20261010050000 already applied under backup
+042335; no SQL repair/reset. Prior 64361cb retained. Local final recovery checkpoint
+adds actual RUNNING batch+failure Audit rollback and reserves cancellation revision;
+38 files/229 assertions, production build, strict post-build TS/scoped lint/diff PASS.
+Commit it with this evidence, then pin full candidate/public repeat before moving
+to 2B3f. Phase 2 NOT PASSED; cutover/value gateway/designer/live dashboards/buttons
+remain pending. All exact synthetic companies suspended/access revoked, history kept.

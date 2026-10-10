@@ -243,7 +243,7 @@ constraints passed in ea27b2f. No target values/executor/cutover or public migra
 action is exposed. Native operations and permission architectures are retained.
 
 
-Execution persistence (2B3e2b IMPLEMENTED, not applied/row-verified):
+Execution persistence (2B3e2b VERIFIED candidate/public f5bb914):
 StudioFieldMigrationExecution retains exact publication/owner-policy pin and CAS
 state RUNNING/READY/FAILED/CANCELLED, cursor and count. Immutable
 StudioFieldMigrationOutcome binds the scoped source observation to exact target
@@ -253,9 +253,12 @@ Normal source saves and premature target activation stay denied. Cancellation of
 publication atomically cancels execution and retains outcomes, without business reads.
 The original preparation/publication freshness is unchanged; a separate execution
 proof validates source and target lineage. New generic models/counts remain denied.
-Pending 20261010050000 parsed/checksummed on central Postgres inside rollback only;
-no native records, schema or migration ledger changes persisted. Actual owner-approved
-row conversion/atomic failure/replay is still required before VERIFIED.
+20261010050000 applied in central preparation (backup 20261010-042335). Exact
+candidate/public f5bb914 proof covers owner-approved final/unanchored/scalar rows,
+atomic/deferred progress and mid-batch/start/batch Audit rollback, process death,
+new-process resume, private/tenant/history/cancel/source compatibility. Both native
+tenant snapshots unchanged. No cutover/ordinary value gateway or visual builder yet;
+final RUNNING recovery-Audit proof and cancellation revision reserve follow separately.
 
 10 October execution service checkpoint: shared exact current inspection/start,
 owner-approved row conversion and bounded CAS/outcomes/progress/Audit are implemented

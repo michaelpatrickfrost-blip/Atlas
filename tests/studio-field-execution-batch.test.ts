@@ -120,3 +120,12 @@ it("an incomplete empty page fails without partial progress, and failure during 
   await expect(executeFieldMigrationBatch(session, request(1))).rejects.toMatchObject({ code: "WRITE_FAILED", failureRecorded: false });
   expect(row).toMatchObject({ state: "FAILED", processedCount: 0, revision: 1, cursor: null }); expect(outcomes).toEqual([]);
 });
+
+it("reserves a SQL revision for cancellation instead of allowing progress/failure overflow to trap an operation", async () => {
+  row.revision = 2147483646;
+  await expect(executeFieldMigrationBatch(session, request(2147483646))).rejects.toMatchObject({ code: "REVIEW_CHANGED", failureRecorded: false });
+  expect(row.revision).toBe(2147483646); expect(m.writer).not.toHaveBeenCalled(); expect(m.update).not.toHaveBeenCalled();
+  row.revision = 2147483645; row.state = "FAILED"; row.failureCode = "WRITE_FAILED";
+  await expect(executeFieldMigrationBatch(session, request(2147483645))).rejects.toMatchObject({ code: "REVIEW_CHANGED", failureRecorded: false });
+  expect(row.revision).toBe(2147483645); expect(m.writer).not.toHaveBeenCalled(); expect(m.update).not.toHaveBeenCalled();
+});

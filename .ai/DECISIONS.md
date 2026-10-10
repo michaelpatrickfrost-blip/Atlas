@@ -1,3 +1,11 @@
+## 10 October 2026 — Reserve cancellation capacity in bounded field operations
+
+Execution progress, two-transition FAILED resume and failure recording must leave a
+SQL integer revision for sparse cancellation. Reject attempts before consuming the
+last revision; never overflow into an operation that cannot be cancelled. This is a
+server mutation guard, with boundary regressions, not a metadata privilege or new
+execution engine. Applied SQL/history are retained; no destructive repair is needed.
+
 ## 10 October 2026 — Conversion failure recording preserves the committed prefix
 
 A bounded conversion transaction commits targets, outcomes, cursor and Audit together.

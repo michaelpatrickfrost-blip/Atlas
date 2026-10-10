@@ -30,6 +30,8 @@ export class FieldMigrationExecutionError extends Error {
 /** Sparse recovery only. Metadata permission never grants native data access;
  * no counts, cursor, native identifiers or values are returned or audited here. */
 async function recordFailure(session: Session, intent: FieldMigrationIntent, revision: number, code: Failure): Promise<boolean> {
+  // Reserve the last SQL integer revision for sparse cancellation.
+  if (revision > 2147483645) return false;
   try { return await withFieldMigrationAuthority(session, intent.principal, async ({ session: fresh, transaction: tx }) => {
     const scope = { preparationId: intent.id, organisationId: fresh.organisationId, definitionId: intent.definitionId };
     await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${intent.id}::uuid AND "organisationId"=${fresh.organisationId} FOR UPDATE`;
@@ -67,13 +69,13 @@ export async function executeFieldMigrationBatch(session: Session, input: unknow
     const prior = inspected.progress;
     if (request.revision > prior.revision) changed();
     if (request.revision < prior.revision || prior.state === "READY") return { id: intent.id, ...prior, replayed: true, appended: 0 };
-    if (prior.revision > 2147483646 || !["RUNNING", "FAILED"].includes(prior.state)) changed();
+    if (prior.revision > 2147483645 || !["RUNNING", "FAILED"].includes(prior.state)) changed();
     const scope = { preparationId: intent.id, organisationId: fresh.organisationId, definitionId: intent.definitionId };
     const resumed = prior.state === "FAILED";
     let runningRevision = prior.revision;
     if (resumed) {
       // SQL requires an explicit FAILED→RUNNING transition, before any row claim.
-      if (prior.revision > 2147483645 || (await tx.studioFieldMigrationExecution.updateMany({ where: { ...scope, revision: prior.revision,
+      if (prior.revision > 2147483644 || (await tx.studioFieldMigrationExecution.updateMany({ where: { ...scope, revision: prior.revision,
         state: "FAILED", pinChecksum: inspected.pinChecksum }, data: { state: "RUNNING", revision: prior.revision + 1, failureCode: null } })).count !== 1) changed();
       runningRevision++;
       inspected.progress = { ...prior, state: "RUNNING", revision: runningRevision, failureCode: null };

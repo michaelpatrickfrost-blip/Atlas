@@ -112,6 +112,12 @@ export async function checkFieldExecution(session: Session, principal: FieldMigr
   const first = await executeFieldMigrationBatch(session, { preparationId: prepared.id, revision: state.revision, limit: 1 });
   assert.equal(first.processedCount, 1); assert.equal(first.state, "RUNNING");
   const firstSnapshot = await outcomes(); const committed = await execution(); const firstTargets = await targets();
+  // RUNNING failure is essential: both the batch Audit and the separate FAILED
+  // recovery Audit must actually reject, retaining the original committed prefix.
+  await withTrigger("audit_entries", `IF NEW."organisationId"='${session.organisationId}' AND NEW."entityId"='${prepared.id}' AND NEW.action IN ('studio.field.migration.execution_batched','studio.field.migration.execution_failed') THEN RAISE EXCEPTION 'Exact Test running batch and recovery Audit failure'; END IF;`, async () => {
+    await assert.rejects(() => executeFieldMigrationBatch(session, { preparationId: prepared.id, revision: first.revision, limit: 1 }), e => e instanceof FieldMigrationExecutionError && !e.failureRecorded);
+    assert.deepEqual(await execution(), committed); assert.deepEqual(await outcomes(), firstSnapshot); assert.deepEqual(await targets(), firstTargets);
+  });
   const childPath = resolve("scripts/studio/field-execution-process-check.ts");
   await assert.rejects(() => child(process.execPath, ["--import", "tsx", childPath, "abort-before-commit", session.organisationId, prepared.id, String(first.revision)], { env: process.env, timeout: 30000 }),
     e => typeof e === "object" && e !== null && "signal" in e && e.signal === "SIGKILL");

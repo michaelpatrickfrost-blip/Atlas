@@ -19,7 +19,13 @@ projects/people services/assigned-tasks.ts, core/shared/my-tasks.ts.
 Checks: production build PASS; strict types PASS; scoped lint 0 errors (3 existing
 image warnings); 19 focused panel/access/project-domain tests PASS. Added central
 scripts/check-my-tasks.ts and `tasks` acceptance in existing deployment gates.
-Server candidate/public acceptance and visual inspection pending; do not call
+First sealed 7e9cc2 candidate built successfully; real notes/attachments, assigned
+filter and blocked/valid status persistence passed at four widths. Final Escape
+assertion raced the protected save; harness now waits until saving finishes.
+Phone/desktop task screenshots visually inspected, layout is polished. Narrow
+320px workspace header now hides the Back control to fit both notification buttons.
+Candidate yNEZV7/browser DQfH8S; backup065030/fixture065230 retained.
+Server candidate/public acceptance still pending; do not call
 this task live yet. Merged exact accepted live Studio74fab2 parent, preserving its source and memory. Next: deploy
 reviewed scope, run candidate/public acceptance under original locks.
 

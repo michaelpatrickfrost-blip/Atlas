@@ -49,8 +49,19 @@ async function main() {
         await panel.getByRole("combobox", { name: "Task status" }).selectOption("DONE"); await expect(panel.getByText("Status saved.", { exact: true })).toBeVisible();
         await expect.poll(async () => (await db.projectTask.findUniqueOrThrow({ where: { id: task.id } })).status).toBe("DONE");
       }
+      if (width === 1448) await expect(panel.getByRole("combobox", { name: "Task status" })).toBeEnabled();
       await page.keyboard.press("Escape"); await expect(panel).not.toBeVisible();
     }
+    await page.setViewportSize({ width: 320, height: 980 });
+    await page.goto("/customers", { waitUntil: "networkidle" });
+    for (const label of ["Open my tasks", "Open messages"]) {
+      const control = page.getByRole("button", { name: label, exact: true }); await expect(control).toBeVisible();
+      assert(await control.evaluate((node) => { const r = node.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.bottom <= 112; }), `${label} fits narrow workspace header`);
+    }
+    await page.getByRole("button", { name: "Open my tasks", exact: true }).click();
+    await expect(page.getByRole("dialog", { name: "My tasks" })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("button", { name: "Open my tasks", exact: true })).toBeFocused();
     const release = await context.request.get("/api/health/release"); assert.equal((await release.json()).revision, process.env.ATLAS_TEST_REVISION);
     console.log("PASS Tasks buttons, assigned-only search, notes, discussion, attached records, guarded completion, persisted status, Escape and 320/390/820/1448 layouts.");
   } finally {

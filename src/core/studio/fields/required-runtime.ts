@@ -8,7 +8,7 @@ import { inspectSealedFieldVersion } from "./sealed-field";
 import { fieldRuntimeAuthorityInTransaction } from "./runtime-authority";
 import { createRequiredMetadataProvider, createInitialRequiredMetadataProvider } from "./required-source";
 import { readVersionedFieldContextInTransaction, readVersionedFieldPlanInTransaction, readVersionedFieldValueInTransaction,
-  readInitialFieldContextInTransaction, readInitialFieldPlanInTransaction, readInitialFieldValueInTransaction } from "./runtime-read";
+  readInitialFieldContextInTransaction, readInitialFieldPlanInTransaction, readInitialFieldValueInTransaction, readCandidateFieldContextInTransaction } from "./runtime-read";
 import type { FieldRuntimeAuthority } from "./runtime-authority";
 import { evaluateRequiredCondition } from "./required-evaluator";
 import type { RequiredFactMetadata } from "./required-compiler";
@@ -17,6 +17,7 @@ import { fieldKeySchema } from "./schema";
 
 const recordId = z.string().min(1).max(100).regex(/^[a-zA-Z0-9_-]+$/);
 const requestSchema = z.strictObject({ definitionId: z.uuid(), recordId, expectedRevision: z.number().int().positive().max(Number.MAX_SAFE_INTEGER) });
+const candidateRequestSchema = requestSchema.extend({ versionId: z.uuid() });
 const nativeResult = z.strictObject({ recordId, organisationId: z.string().min(1), revision: z.number().int().positive(), fields: z.record(fieldKeySchema, z.unknown()) });
 const recordRequest = requestSchema.omit({ definitionId: true }).extend({ entity: referenceSchema });
 const sourceOf = (fact: RequiredFactMetadata): RequiredFactSource => fact.kind === "native" ? { kind: "native", fieldId: fact.fieldId }
@@ -40,10 +41,11 @@ async function resultingValue(authority: FieldRuntimeAuthority, field: FieldCont
  * current owning creation proof. All input policies resolve before rule values
  * are read. No mutations, supplied facts, extra grants or publication. Returned
  * fingerprints remain internal. */
-async function evaluateRequirement(authenticated: Session, transaction: Prisma.TransactionClient, input: unknown, proof?: object) {
+async function evaluateRequirement(authenticated: Session, transaction: Prisma.TransactionClient, input: unknown, proof?: object, candidateVersionId?: string) {
   const request = requestSchema.parse(input), authority = await fieldRuntimeAuthorityInTransaction(authenticated, transaction);
-  const current = proof ? await readInitialFieldContextInTransaction(authority, request, proof) : await readVersionedFieldContextInTransaction(authority, request), { session, registry } = authority;
-  const plan = inspectSealedFieldVersion(registry, current.definition.activeVersion!, session.organisationId, request.definitionId);
+  const current = candidateVersionId ? await readCandidateFieldContextInTransaction(authority, request, candidateVersionId)
+    : proof ? await readInitialFieldContextInTransaction(authority, request, proof) : await readVersionedFieldContextInTransaction(authority, request), { session, registry } = authority;
+  const plan = inspectSealedFieldVersion(registry, current.version, session.organisationId, request.definitionId);
   let native: z.infer<typeof nativeResult> | undefined;
   if (proof) {
     native = nativeResult.parse(await registry.invokeInitialRecordFacts({ session, transaction }, current.payload.entity, proof));
@@ -88,13 +90,26 @@ async function evaluateRequirement(authenticated: Session, transaction: Prisma.T
     });
     conditional = evaluated.required; conditionFingerprint = evaluated.fingerprint;
   }
-  return { authority, current, result: { definitionId: request.definitionId, versionId: current.definition.activeVersion!.id, recordRevision: current.anchor.revision,
+  return { authority, current, result: { definitionId: request.definitionId, versionId: current.version.id, recordRevision: current.anchor.revision,
     extensionRevision: current.extension?.revision ?? null, required: current.payload.field.required || conditional,
-    fingerprint: checksum({ versionChecksum: current.definition.activeVersion!.checksum, recordId: request.recordId, recordRevision: current.anchor.revision,
+    fingerprint: checksum({ versionChecksum: current.version.checksum, recordId: request.recordId, recordRevision: current.anchor.revision,
       extensionRevision: current.extension?.revision ?? null, conditionFingerprint }) } };
 }
 export const evaluateExistingFieldRequirement = async (authenticated: Session, transaction: Prisma.TransactionClient, input: unknown) => (await evaluateRequirement(authenticated, transaction, input)).result;
 export const evaluateInitialFieldRequirement = async (authenticated: Session, transaction: Prisma.TransactionClient, input: unknown, proof: object) => (await evaluateRequirement(authenticated, transaction, input, proof)).result;
+
+/** Candidate coverage only: server-load an immutable tenant version and inspect
+ * actual values under genuine ordinary record authority. No activation pointer
+ * change, client plan, creation proof, publication grant or temporary schema. */
+export async function validateCandidateFieldRequirement(authenticated: Session, transaction: Prisma.TransactionClient, input: unknown) {
+  const { versionId, ...request } = candidateRequestSchema.parse(input);
+  const evaluated = await evaluateRequirement(authenticated, transaction, request, undefined, versionId);
+  if (evaluated.result.required) {
+    const value = await resultingValue(evaluated.authority, evaluated.current, request.recordId);
+    if (value === null || (value.type === "multi_enum" && value.value.length === 0)) throw new Error(`${evaluated.current.payload.field.label} is required.`);
+  }
+  return evaluated.result;
+}
 
 /** Validate actual uncommitted native/typed state after the owning operation's
  * writes. Any error must roll back that whole transaction, including Audit/outbox.

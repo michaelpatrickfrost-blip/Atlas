@@ -46,23 +46,30 @@ export async function readInitialFieldPlanInTransaction(authority: FieldRuntimeA
 
 /** Server-only resolver. Native access is checked before any extension/value
  * lookup; schema resolution never grants business-record or reference access. */
-async function readContext<P extends FieldPayload>(authority: FieldRuntimeAuthority, request: z.infer<typeof currentRequest> & { expectedRevision?: number }, history: boolean, reader: PlanReader<P>, proof?: object) {
+async function readContext<P extends FieldPayload>(authority: FieldRuntimeAuthority, request: z.infer<typeof currentRequest> & { expectedRevision?: number }, history: boolean, reader: PlanReader<P>, proof?: object, candidateVersionId?: string) {
   const { session, transaction: tx, registry } = authority;
   await tx.$queryRaw`SELECT id FROM studio_definitions WHERE id=${request.definitionId}::uuid AND "organisationId"=${session.organisationId} FOR SHARE`;
   const definition = await tx.studioDefinition.findFirst({ where: { id: request.definitionId, organisationId: session.organisationId, kind: "customField", ...(history ? {} : { retiredAt: null }) }, include: { activeVersion: true } });
-  if (!definition?.activeVersion) unavailable();
-  const payload = await reader(authority, definition.activeVersion, definition.id);
+  if (!definition) unavailable();
+  const version = candidateVersionId ? await tx.studioDefinitionVersion.findFirst({ where: { id: candidateVersionId, definitionId: definition.id, organisationId: session.organisationId } }) : definition.activeVersion;
+  if (!version) unavailable();
+  const payload = await reader(authority, version, definition.id);
   if (definition.key !== fieldDefinitionKey(payload)) corrupt();
   const anchor = proof ? await registry.authoriseCurrentFieldInitialisation({ session, transaction: tx }, payload.entity, proof)
     : await registry.authoriseRecord({ session, transaction: tx }, payload.entity, { recordId: request.recordId, intent: "read" });
   if (anchor.recordId !== request.recordId || anchor.organisationId !== session.organisationId) corrupt();
   if (request.expectedRevision !== undefined && anchor.revision !== request.expectedRevision) throw new Error("CONFLICT: this native record changed. Refresh before saving.");
   const extension = await tx.studioExtensionRecord.findFirst({ where: { organisationId: session.organisationId, entityId: payload.entity.id, recordId: request.recordId } });
-  return { definition, payload, anchor, extension };
+  return { definition, version, payload, anchor, extension };
 }
 export const readFieldContextInTransaction = (authority: FieldRuntimeAuthority, request: z.infer<typeof currentRequest>, history: boolean) => readContext(authority, request, history, readFieldPlanInTransaction);
 export const readVersionedFieldContextInTransaction = (authority: FieldRuntimeAuthority, request: z.infer<typeof currentRequest> & { expectedRevision?: number }) => readContext(authority, request, false, readVersionedFieldPlanInTransaction);
 export const readInitialFieldContextInTransaction = (authority: FieldRuntimeAuthority, request: z.infer<typeof currentRequest> & { expectedRevision?: number }, proof: object) => readContext(authority, request, false, readInitialFieldPlanInTransaction, proof);
+/** Internal publication/activation coverage reads an immutable candidate, not
+ * the current active schema. Keep the real activation pointer intact; caller
+ * must establish complete canonical coverage and its publication authority. */
+export const readCandidateFieldContextInTransaction = (authority: FieldRuntimeAuthority, request: z.infer<typeof currentRequest> & { expectedRevision: number }, versionId: string) =>
+  readContext(authority, request, false, readVersionedFieldPlanInTransaction, undefined, z.uuid().parse(versionId));
 
 async function readValue(authority: FieldRuntimeAuthority, current: FieldPayload, definitionId: string, generationId: string, slotId: string, recordId: string, row: WrittenValue, reader: PlanReader<FieldPayload>, proof?: object): Promise<FieldValue | null> {
   if (row.organisationId !== authority.session.organisationId || row.definitionId !== definitionId || row.generationId !== generationId || row.slotId !== slotId

@@ -1,3 +1,13 @@
+## 10 October 2026 — Candidate review preserves the actual activation pointer
+
+Inspect a server-loaded immutable tenant field version against actual native and
+typed values before activation; do not temporarily flip the current pointer merely
+to reuse runtime checks. Shared base/value authority and seal inspection remain the
+same; candidate-specific IDs/checksums determine the result. This readonly internal
+primitive grants no publication/creation authority and does not substitute for
+complete canonical coverage, audited support identity, native hooks or reviewed
+structural evolution. Ordinary v1 gateways keep their closed schema policy.
+
 ## 10 October 2026 — Validate the whole resulting record without unrelated private reads
 
 Native operations must validate every active required rule against actual staged
@@ -35,7 +45,8 @@ its base policy/integrity, never executes its private condition inputs. Ordinary
 v1 gateways retain their closed version gate until complete native enforcement.
 Creation-only actors use explicit current owner proof/fact coverage, never borrowed
 ordinary Read/Manage grants. c2a/b implement this internal path; actual central
-proof, canonical coverage and native activation remain outstanding.
+proof is VERIFIED live6b3d03f; canonical coverage and native activation remain
+outstanding.
 
 ## 10 October 2026 — Rule dependencies follow current graphs and immutable value meaning
 

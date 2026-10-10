@@ -8,7 +8,7 @@ implementation work ordering, not a rewrite of the supplied specification.
 | --- | --- | --- | --- | --- |
 | d1 | Closed versioned required-if payload/compiler; preserve v1 plans | fields condition/schema contracts, compiler helpers and tests; no DDL | Bounded typed predicates, unknown/cyclic/foreign/unsupported fact denial, exact old checksum regression; pure helpers only until d2–4 | VERIFIED locally; grammar/compiler and67files416 tests/build/strict post-build TS/lint/diff PASS; unwired |
 | d2 | Owner-approved transaction facts, canonical cohort and new-record initialisation contracts | registry types/entities/contracts, service-work Studio new descriptor versions/query callbacks, runtime authority shared transaction helper; no DDL expected | Exact new native creation authority, current/private/tenant/source policy, canonical final/unanchored cohort, sealed old hashes | VERIFIED live0925bb5; candidateytkpaL/publicsZJ2uA combined PASS + actual contracts/native/Audit rollback proof;69files431/build/types/lint |
-| d3 | Canonical publication/evolution coverage | definitions binding/publication/review/coverage services, requirement runtime and tests; additive guards only if necessary | All canonical records including absent anchors; optional-populate-review path; conditional resulting requirements, current/written/ref rights, reviewed conversion coverage, Audit/CAS | NOT STARTED |
+| d3 | Canonical publication/evolution coverage | definitions binding/publication/review/coverage services, requirement runtime and tests; additive guards only if necessary | All canonical records including absent anchors; optional-populate-review path; conditional resulting requirements, current/written/ref rights, reviewed conversion coverage, Audit/CAS | IN PROGRESS; a/b/c implemented; d/e pending |
 | d4 | Owning native create/save and ordinary-value transaction rules | service-work actions/engine and shared runtime-write primitive; no native schema copies | Native protected transitions/SLA/intake preserved; atomic new record+values, create-only permission, hidden/omitted fields/disabled authoring, native/extension CAS, atomic failure/replay | NOT STARTED |
 | d5 | Central native/security/version gate | tests, exact Test helper and release compatibility scan; no destructive reset | Real missing-anchor/conditional/native create/transition/write cases, payload runtime compatibility, two companies/private/source/field denial, build/full candidate/public | NOT STARTED |
 
@@ -77,7 +77,7 @@ record access or publication. Do not move the pinned release branch while it run
 | --- | --- | --- | --- | --- |
 | d3a | Evaluate bounded typed conditions and seal observed fact fingerprints; d1 contracts | required compiler plan schema + evaluator/tests; no DDL/data reads | all/any, false/zero/empty, literal precision, missing/unavailable/foreign fact shapes, no authorization short circuit, tampered plans | VERIFIED locally;70files440/build/strictpostbuildTS/lint/diff PASS, pure/unwired |
 | d3b | Sealed source metadata/current dependency closure and version-aware field compilation; d1/d2/d3a | required metadata provider/compiler/schema tests; no publication dispatch yet | Exact current+pinned tenant binding/generation/checksum/access, transitive cycles/bounds/cosmetic compatibility, sealed v1 preservation | VERIFIED locally; b1 full isolated compiler, b2 locked source provider/inspection;25 focused/types/lint/diff PASS, central gate pending |
-| d3c | Transactional fact/value reading and resulting requirements; d3a/b and d2 owner facts/proofs | required runtime reader + tests; no new datastore | Current/written/native/reference guards before values, staged changes, create-only new record proof, absence vs unavailable, deterministic locked reads | IN PROGRESS; c1 existing-record reader VERIFIED locally; c2 staged/create-only pending |
+| d3c | Transactional fact/value reading and resulting requirements; d3a/b and d2 owner facts/proofs | required runtime reader + tests; no new datastore | Current/written/native/reference guards before values, staged changes, create-only new record proof, absence vs unavailable, deterministic locked reads | VERIFIED scoped live6b3d03f; c1 local + c2a/b actual staged/current-owner creation/SQL rollback and full candidate/public PASS; broader existing conditional gate d5 |
 | d3d | Required initial publication and activation coverage; d3b/c | definition lifecycle + existing canonical snapshot access; additive guards only if necessary | Complete canonical cohort incl final/unanchored; required coverage/unique/source/CAS/Audit; optional-populate-review path; no metadata principal impersonation | NOT STARTED |
 | d3e | Existing reviewed evolution/execution/settlement integration and impact; d3c/d | existing migration services/contracts + owner versioned policies; preserve old receipts | Native/global extension revisions capture input drift, new generations, dependent rule compatibility, target eligibility, source freeze/history/replay, rollback | NOT STARTED |
 
@@ -91,8 +91,8 @@ must be represented in the later visual builder with plain-language choices.
 Legacy published fields also need explicit current owner approval for creation
 initialisation in d4, rather than silently interpreting their read/edit contract
 as a create grant. Add a versioned current native policy covering approved old
-entity versions when integration is wired. Current d2 proof only approves explicit
-v6 initialisation and never enables existing-record reads or broad editing.
+entity versions when integration is wired. Current c2a/b proof explicitly approves v7 current creation/legacy field versions
+2–7 and never enables existing-record reads or broad editing.
 
 ### d3b–e exploration constraints to preserve during implementation
 
@@ -208,13 +208,46 @@ proof-based close with atomic target value/receipt/Audit, not borrowed manager/c
 authority. Preserve existing settlement guarantees and reviewed receipts; assess and
 record the exact alternative before integration. No new workflow/template engine.
 
-### c2b implemented; consolidated central gate next
+### c2b VERIFIED live6b3d03f
 
 Proof-aware readers and all-active resulting validation are implemented;54 focused
 assertions/build/strict post-build TS/lint/diff PASS.8 new cases establish staged
 native/typed inputs, required target absence, false/zero, no unconditional relaxation,
 genuine create-only proof scope, immutable written rights/refs, unavailable/corrupt
-inputs and changing extension denial. Exact guarded rollback-only server probe is
-added but not run yet. It compares native/typed/config/Audit snapshots after a
+inputs and changing extension denial. Exact guarded rollback-only server probe PASS in candidate0ozZHm/publicQhQzoM;
+runner85809 exit0. It compares native/typed/config/Audit snapshots after a
 propagated required failure and checks actual deferred relational/pointer constraints.
 No writer/native hooks/publication/DDL; shared lock order/window closure still d4.
+
+### d3d exploration and exact first action — IN PROGRESS
+
+Read current definition publication/activation/binding, existing snapshot/coverage
+and principal services before wiring. The metadata-only Admin target context is
+not a data principal; retain genuine company identity or explicitly audited support.
+Reuse the existing transaction-required canonical snapshot protocol (complete
+private-access preflight, final/merged/unanchored records and bounded pages). The
+older standalone cohort query opens its own transaction and cannot prove coverage
+inside publication's owning transaction. No second cohort/review engine.
+
+First implement a server-loaded candidate-version field context/evaluator using
+sealed version ID/checksum, tenant binding and current/pinned/written native/field/
+reference policy. It must evaluate a published candidate before activation without
+temporarily changing the active pointer or using a client-supplied plan/fact map.
+Then use it in a complete canonical coverage helper: count equals visited records,
+exact native/global extension revisions and required targets, private input denial,
+empty vs absent anchors, stale/cycle/field dependency denial. Initial mandatory
+fields on nonempty canonical cohorts require optional/populate/review; no invented
+values. Existing changes still use the reviewed migration engine in d3e.
+
+Expected shared runtime-read/required-runtime, required-coverage helper and focused
+candidate/cohort tests; latest owner opt-in contract only if existing sealed policy
+cannot express coverage. No DDL expected initially. Do not dispatch conditional
+publication/activation before d4 native and ordinary writer enforcement, common
+lock order and rollback-window closure are verified. Recheck current source and
+reviewed migration policy before settling any implementation names/contract shape.
+
+Candidate-version context/required target primitive IMPLEMENTED locally:4 new
+cases,36 focused/build/strict post-build types/lint/diff PASS.
+No live publication/activation change or complete-cohort claim. Next explicit
+versioned owner required-coverage approval/query reusing canonical snapshot logic;
+preserve all old migration ranges/hashes, then full canonical coverage helper.

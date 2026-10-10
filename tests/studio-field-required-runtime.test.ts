@@ -4,7 +4,7 @@ import { retainedCutoverFixture, cutoverUuid as uuid } from "./fixtures/studio-f
 import { compileCustomField } from "@/core/studio/compiler/fields";
 import { compileConditionalCustomField } from "@/core/studio/fields/conditional-compiler";
 import { registeredRequiredFactMetadata } from "@/core/studio/fields/required-owner";
-import { evaluateExistingFieldRequirement, validateResultingFieldRequirements } from "@/core/studio/fields/required-runtime";
+import { evaluateExistingFieldRequirement, validateResultingFieldRequirements, validateCandidateFieldRequirement } from "@/core/studio/fields/required-runtime";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
 const m = vi.hoisted(() => ({ refresh: vi.fn(), raw: vi.fn(), definition: vi.fn(), definitions: vi.fn(), version: vi.fn(), generation: vi.fn(), extension: vi.fn(), slot: vi.fn() }));
 vi.mock("@/core/studio/fields/runtime-authority", () => ({ fieldRuntimeAuthorityInTransaction: m.refresh }));
@@ -84,6 +84,40 @@ it("does not relax unconditional requirements and rejects changing global extens
   await root(false);
   m.extension.mockResolvedValueOnce({ id: extensionId, revision: 4 }).mockResolvedValue({ id: extensionId, revision: 5 });
   await expect(validateResultingFieldRequirements(f.session, tx, input)).rejects.toThrow("FIELD_REQUIREMENT_INVALID");
+});
+it("checks an initial published candidate without activating it or inventing missing values", async () => {
+  const persisted = { ...definitions.get(rootId)!, activeVersionId: null, activeVersion: null };
+  m.definition.mockImplementation(async args => args.where.id === rootId ? persisted : definitions.get(args.where.id) ?? null);
+  m.slot.mockImplementation(async args => args.where.definitionId === sourceId ? { id: slotId, revision: 1, activeValueId: row.id, activeValue: row } : null);
+  const input = { ...request(), versionId: uuid(190) };
+  await expect(validateCandidateFieldRequirement(f.session, tx, input)).rejects.toThrow("Extra is required");
+  row = { ...row, ...encodeFieldValue(source.payload.field, false) };
+  expect(await validateCandidateFieldRequirement(f.session, tx, input)).toMatchObject({ versionId: uuid(190), required: false, recordRevision: 7 });
+  expect(persisted.activeVersionId).toBeNull(); expect(persisted.activeVersion).toBeNull();
+});
+it("uses the candidate's sealed rules rather than today's active optional schema", async () => {
+  const optional = await compileCustomField(f.session, { ...f.source.payload, entity, field: { ...f.source.payload.field, key: "rule" } }, f.registry);
+  stored(uuid(191), rootId, optional);
+  m.slot.mockImplementation(async args => args.where.definitionId === sourceId ? { id: slotId, revision: 1, activeValueId: row.id, activeValue: row } : null);
+  expect((await evaluateExistingFieldRequirement(f.session, tx, request())).required).toBe(false);
+  await expect(validateCandidateFieldRequirement(f.session, tx, { ...request(), versionId: uuid(190) })).rejects.toThrow("Extra is required");
+  expect(definitions.get(rootId)!.activeVersionId).toBe(uuid(191));
+});
+it("validates a candidate's actual target value and immutable written fingerprint", async () => {
+  const version = versions.get(uuid(190))!;
+  let target = { ...row, id: uuid(41), definitionId: rootId, generationId: f.source.payload.storageGeneration, slotId: uuid(31),
+    versionId: version.id, ...encodeFieldValue(f.source.payload.field, 0), schemaVersion: version };
+  m.slot.mockImplementation(async args => { const value = args.where.definitionId === sourceId ? row : target; return { id: value.slotId, revision: value.revision, activeValueId: value.id, activeValue: value }; });
+  const input = { ...request(), versionId: version.id };
+  expect(await validateCandidateFieldRequirement(f.session, tx, input)).toMatchObject({ required: true, versionId: version.id });
+  target = { ...target, fingerprint: "f".repeat(64) };
+  await expect(validateCandidateFieldRequirement(f.session, tx, input)).rejects.toThrow("FIELD_STORAGE_INVALID");
+});
+it("rejects foreign candidate versions, stale native state and supplied plans before target reads", async () => {
+  for (const input of [{ ...request(), versionId: uuid(102) }, { ...request(), versionId: uuid(190), expectedRevision: 8 },
+    { ...request(), versionId: uuid(190), organisationId: "foreign" }, { ...request(), versionId: uuid(190), compiledPlan: {} }]) {
+    m.slot.mockClear(); await expect(validateCandidateFieldRequirement(f.session, tx, input)).rejects.toThrow(); expect(m.slot).not.toHaveBeenCalled();
+  }
 });
 it("evaluates current owner facts and typed field values without field write or Studio authoring grants", async () => {
   const reader = { ...f.session, capabilities: new Set(["tickets.ticket.read"]) };

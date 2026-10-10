@@ -200,8 +200,9 @@ rechecks NEW/version1/requester/tenant/source before projecting approved facts.
 New conditional plans seal both read and initialization query hashes; metadata
 sealing does not require an author's native Create grant. Explicit field grants and
 independent reference reads remain mandatory. Tickets v7 is additive; v1–6 and
-ordinary fact-query hashes/migration ranges unchanged. Native hooks/conditional
-publication and consolidated central creation proof remain outstanding.
+ordinary fact-query hashes/migration ranges unchanged. Consolidated central creation/
+staged-value/SQL rollback proof is VERIFIED live6b3d03f (candidate/public). Native
+hooks and conditional publication remain outstanding.
 
 ## Resulting-field validation — internal Phase2 runtime, 10 October 2026
 
@@ -217,3 +218,9 @@ fingerprints/revisions remain internal; any validation failure must propagate th
 the owning transaction and roll back native/typed/Audit changes. No native hooks,
 initial writer or conditional publication dispatch is enabled yet: common lock order,
 canonical coverage and reviewed rollback-window closure remain integration gates.
+
+Candidate requirement checks may inspect a server-loaded immutable tenant version
+before activation while preserving the real active pointer. They use actual native/
+typed values and current/pinned/written/reference rights. This internal d3d helper
+does not grant publication or establish complete canonical coverage on its own;
+ordinary v1 gateways remain closed and unchanged. Not enabled in live authoring.

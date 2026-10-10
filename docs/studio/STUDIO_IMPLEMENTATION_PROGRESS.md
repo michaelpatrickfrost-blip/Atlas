@@ -11,9 +11,11 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B4d3c2b resulting-state validation — IMPLEMENTED locally;54 focused/build/strict post-build TS/lint/diff PASS; candidate/public central proof pending.
+2B4d3d candidate-version and complete canonical coverage — IN PROGRESS.
 
-2B4d3c2a current creation/fact policy — IMPLEMENTED;46 focused/types/lint/diff PASS; consolidated build/central gate pending.
+2B4d3c2a/b resulting-state/creation validation — VERIFIED live6b3d03f; candidate/public combined and actual SQL proof PASS;54 local/build/strict TS/lint PASS.
+
+Historical c2a local checkpoint superseded by consolidated live6b3d03f verification.
 
 2B4d3c1 transactional existing-record inputs — VERIFIED locally;34 focused/build/strict post-build TS/lint/diff PASS.
 
@@ -51,6 +53,54 @@ F4a VERIFIED locally (adfc357); strict TS/build/scoped lint,18 focused and45 fil
 candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
+
+## 10 October 2026 — d3d candidate-version checks IMPLEMENTED locally
+
+Server-loaded candidate context/required target validation preserves the real
+active pointer, including first publication with no active version and reviewing
+an old candidate against a newer optional active schema. Uses the same sealed
+metadata and current/pinned/written/native/ref value checks, exact revisions and
+strict input; no temporary activation, copied schema, client plan/facts or grants.
+4 new cases;36 focused candidate/current/creation/ordinary read-write assertions,
+production build, strict post-build types, scoped lint/diff PASS (runner74048
+exit0). Central candidate coverage and publication hooks NOT RUN/NOT ENABLED.
+Files runtime-read/required-runtime, required-runtime suite, architecture/module/
+permissions and plan/ledger/current/decisions. No DDL; candidate helper not live.
+Live remains VERIFIED6b3d03f; current/previous exact health confirmed, Atlas active,
+167GiB free/14% root use. Phase2 IN PROGRESS; visual designer NOT STARTED.
+
+Exact next: add explicit owner-versioned required-coverage policy/query reusing the
+existing canonical snapshot implementation (do not widen old migration ranges),
+then implement complete candidate coverage in the owning Serializable transaction
+with genuine company/audited support identity, bounded pages/count reconciliation,
+final/unanchored/private/access/current value/required target checks. Keep authoring
+dispatch gated until d4 native/common-lock/initial-writer/window integration.
+
+
+## 10 October 2026 — c2 live VERIFIED; d3d candidate coverage IN PROGRESS
+
+Exact6b3d03fce4096b965385ce1d5ae45a4f50146410 candidate0ozZHm/publicQhQzoM
+ALL COMBINED PASS, original runner85809 exit0. Actual current v7/legacy create-only
+proof + staged field/required target checks pass; propagated required failure leaves
+native/typed/config/Audit snapshots unchanged; real deferred FK/pointer guards pass.
+Both existing native business regressions and Studio/Admin separation pass; synthetic
+Test companies suspended/grants restored/QA unchanged. Required backups144033,
+144221/144632 reused through original release gates; no ad-hoc dumps. Current6b3d03f,
+previous0925bb5 retained; inactive62201ae duplicate runtime retired under both locks,
+source/static/evidence/private records/backups retained.54 local/build/strict TS/lint
+checks previously PASS. Full Phase2 IN PROGRESS; no conditional publication/native
+hooks or visual designer completion implied; existing conditional full gate still d5.
+
+Current d3d first block: server-loaded candidate version context/required target
+validation without changing the active pointer or accepting client facts/plans.
+Reuse sealed base/value and genuine native/current/pinned/written/ref policies;
+closed ordinary v1 gateways intact. Expected runtime-read/required-runtime, focused
+candidate suite and plan/ledger/current state; no DDL or publication dispatch.
+Next run focused candidate/current/creation/read regressions + types/lint, then
+complete canonical snapshot coverage using genuine company/audited support principal
+(including final/unanchored/private records), and integrate only after d4 prerequisites.
+Visual2E remains NOT STARTED; remaining2B/2C/D precede designer previews/publishing.
+
 
 ## 10 October 2026 —2B4d3c2b resulting-state validator IMPLEMENTED locally
 
@@ -297,6 +347,10 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 
 # Completed Workstreams
 
+c2a/b VERIFIED live6b3d03f: actual current owner/legacy creation proof, staged
+required targets/false-clear, exact deferred guards and propagated whole-transaction
+native/typed/config/Audit rollback; candidate/public combined gates PASS.
+
 d3c1 existing-record reader and shared versioned base/value primitives VERIFIED
 locally;34 focused/build/strict post-build TS/lint/diff PASS. Public v1 unchanged;
 no conditional publishing/native enforcement or actual central c1 proof yet.
@@ -376,6 +430,54 @@ actual facts/create-only/native/Audit rollback proof, runner40775 exit0.
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+## 10 October 2026 — d3d candidate-version checks IMPLEMENTED locally
+
+Server-loaded candidate context/required target validation preserves the real
+active pointer, including first publication with no active version and reviewing
+an old candidate against a newer optional active schema. Uses the same sealed
+metadata and current/pinned/written/native/ref value checks, exact revisions and
+strict input; no temporary activation, copied schema, client plan/facts or grants.
+4 new cases;36 focused candidate/current/creation/ordinary read-write assertions,
+production build, strict post-build types, scoped lint/diff PASS (runner74048
+exit0). Central candidate coverage and publication hooks NOT RUN/NOT ENABLED.
+Files runtime-read/required-runtime, required-runtime suite, architecture/module/
+permissions and plan/ledger/current/decisions. No DDL; candidate helper not live.
+Live remains VERIFIED6b3d03f; current/previous exact health confirmed, Atlas active,
+167GiB free/14% root use. Phase2 IN PROGRESS; visual designer NOT STARTED.
+
+Exact next: add explicit owner-versioned required-coverage policy/query reusing the
+existing canonical snapshot implementation (do not widen old migration ranges),
+then implement complete candidate coverage in the owning Serializable transaction
+with genuine company/audited support identity, bounded pages/count reconciliation,
+final/unanchored/private/access/current value/required target checks. Keep authoring
+dispatch gated until d4 native/common-lock/initial-writer/window integration.
+
+
+## 10 October 2026 — c2 live VERIFIED; d3d candidate coverage IN PROGRESS
+
+Exact6b3d03fce4096b965385ce1d5ae45a4f50146410 candidate0ozZHm/publicQhQzoM
+ALL COMBINED PASS, original runner85809 exit0. Actual current v7/legacy create-only
+proof + staged field/required target checks pass; propagated required failure leaves
+native/typed/config/Audit snapshots unchanged; real deferred FK/pointer guards pass.
+Both existing native business regressions and Studio/Admin separation pass; synthetic
+Test companies suspended/grants restored/QA unchanged. Required backups144033,
+144221/144632 reused through original release gates; no ad-hoc dumps. Current6b3d03f,
+previous0925bb5 retained; inactive62201ae duplicate runtime retired under both locks,
+source/static/evidence/private records/backups retained.54 local/build/strict TS/lint
+checks previously PASS. Full Phase2 IN PROGRESS; no conditional publication/native
+hooks or visual designer completion implied; existing conditional full gate still d5.
+
+Current d3d first block: server-loaded candidate version context/required target
+validation without changing the active pointer or accepting client facts/plans.
+Reuse sealed base/value and genuine native/current/pinned/written/ref policies;
+closed ordinary v1 gateways intact. Expected runtime-read/required-runtime, focused
+candidate suite and plan/ledger/current state; no DDL or publication dispatch.
+Next run focused candidate/current/creation/read regressions + types/lint, then
+complete canonical snapshot coverage using genuine company/audited support principal
+(including final/unanchored/private records), and integrate only after d4 prerequisites.
+Visual2E remains NOT STARTED; remaining2B/2C/D precede designer previews/publishing.
+
 
 ## 10 October 2026 —2B4d3c2b resulting-state validator IMPLEMENTED locally
 
@@ -2164,6 +2266,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+d3d first block: runtime-read/required-runtime, required-runtime focused suite;
+architecture/module/permissions/decisions, plan/ledger/CURRENT_STATE.
+
 c2b: required-owner/source/runtime and runtime-read; required-runtime/result suites;
 exact Test native-contract/required-result helpers; plan/security/architecture/module
 docs, ledger, CURRENT_STATE/DECISIONS. No unrelated source/functionality removed.
@@ -2354,6 +2459,8 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+c2a/b and candidate helper: no DDL/model/backfill/reset or local business database.
+
 d3b2: none. No migration, native mutation, reset/backfill, business cache or dumps.
 
 d3a: none. Pure evaluator; conditional definition dispatch remains disabled.
@@ -2467,6 +2574,9 @@ and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
 
+d3d:4 candidate cases (first/no active pointer, differing current optional schema,
+actual target/fingerprint, foreign/stale/client plan/facts denial).
+
 c2b:6 genuine-session creation/result cases +2 existing staged-result cases; exact
 server rollback-only typed/required/current-owner probe (not executed yet).
 
@@ -2536,6 +2646,13 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+d3d candidate helper:36 assertions/4 suites, production build, strict post-build TS,
+scoped lint/diff PASS; central candidate gate pending.
+
+c2a/b: candidate0ozZHm/publicQhQzoM ALL COMBINED PASS exact6b3d03f; actual SQL
+proof PASS; runner85809 exit0. Dashboard/Home/Settings/Reports/MRP/Messages/private
+Admin/Supply/Commercial/People regressions included. No new d3d check run yet.
 
 c2b consolidated c2a/b:54 assertions/7 suites, npm run build, strict post-build
 tsc --noEmit --incremental false, scoped eslint and diff PASS. Central Test probe
@@ -2918,13 +3035,18 @@ See `STUDIO_PHASE_1_COMPLETION.md` for evidence and practical limits.
 Ordered2B4 runtime workstreams now recorded in STUDIO_PHASE_2_FIELDS.md: ordinary
 authority/read compiler; current/history reads; atomic writes; required-if/canonical
 coverage/native hooks; operator forms/search; real runtime/release compatibility gate.
-NOT STARTED until current f4c/d acceptance. Visual2E remains mandatory afterward.
+Earlier f4c/d prerequisite is VERIFIED. Remaining d3d/e,d4/d5 and ordinary forms/
+search are active Phase2 work. Visual2E remains mandatory after2B–D.
 
 Remaining Phase 2 work is active, not deferred. Phases 3–9 per Section 27: Decisions/Approvals, durable
 outbox, Flow runtime, Automations migration, Process Studio, packages and adoption.
 No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
+
+c2a/b workstream PASS/VERIFIED live6b3d03f, actual candidate/public SQL/runtime
+and combined gates PASS. d3d IN PROGRESS. Phase2 gate IN PROGRESS; no native
+conditional hooks/publication dispatch or visual designer started.
 
 c2a/b consolidated local implementation checks PASS. Central native/typed/config/
 Audit rollback and candidate/public acceptance pending. Phase2 IN PROGRESS,
@@ -2972,10 +3094,12 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Review and checkpoint c2a/b resulting-state validator and guarded central Test
-probe; deploy pinned codex/studio-phase2 through original candidate/public gates
-and confirm actual required failure leaves native/typed/config/Audit snapshots
-unchanged. Then d3d canonical publication/activation coverage, d3e reviewed evolution,
-d4 common locks/native create-save/initial values/rollback windows, d5 gate. Continue
-2B forms/search,2C record types,2D pages, then mandatory2E visual template/screen
-preview/custom buttons/publish. Do not claim designer started or Phase2 PASS.
+Candidate helper local checkpoint is ready:36 focused/build/strict post-build TS/
+lint/diff PASS. Next add explicit owner-versioned
+required-coverage policy and canonical snapshot query reusing existing implementation,
+without widening old migration ranges or reinterpreting legacy initialization grants.
+Implement complete candidate coverage in the owning Serializable transaction using
+genuine company/audited support identity, bounded pages and exact count reconciliation,
+final/unanchored/private/current data and required target checks. Conditional authoring
+remains gated until d4 common locks/native create-save/initial values/rollback windows.
+Continue d3e reviewed evolution, d5 gate,2B forms/search,2C/D/2E visual designer.

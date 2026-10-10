@@ -264,3 +264,9 @@ target writes uses the shared execution inspector; old freshness remains strict.
 Pending 20261010050000 is not applied and actual trigger lifecycle remains unverified
 until the pinned combined candidate/public proof. Source remains active; cutover and
 ordinary owner value gateway are subsequent workstreams. No Flow worker/native writes.
+
+20261010050000_studio_field_executions was applied successfully in central preparation
+for 6d2f5a9 (backup 20261010-042335). Candidate stopped at a new negative test missing
+expected native revision before row lifecycle proof; public runtime remains 64361cb.
+Persistence is applied, but execution is not VERIFIED. Preserve the migration and
+retained Test history; rerun corrected complete acceptance, without reset.

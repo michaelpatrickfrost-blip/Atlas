@@ -67,6 +67,33 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 
 # Current Workstream Detail
 
+Corrected one-line acceptance check: strict TypeScript/scoped lint/diff PASS; /tmp/atlas-studio-execution-proof-revision-{types,lint}.txt. App code unchanged; previous 228 assertions/local build retained, next pinned server build and actual proof required.
+
+Pinned 6d2f5a9 candidate failed before activation at the new final-record
+negative check: test omitted mandatory expectedRevision and hit request validation,
+not native final-write policy. Correct the test with actual observed native revision;
+no permission weakening or DDL change. Actual start/paired Audit/pin proof had passed;
+row/deferred/process proof not reached. Candidate 35nN6y, backup 042335, fixture 042536,
+deploy session 73316 exit 1. Exact synthetic companies suspended/history retained.
+Public health confirmed unchanged accepted 64361cb. Applied 20261010050000 remains
+additive; do not edit its checksum or reset data. Rerun local checks and pinned full
+candidate/public acceptance after corrected checkpoint.
+
+
+Central preparation migrate log confirms 20261010050000_studio_field_executions
+applied successfully under backup 20261010-042335. Candidate build in progress;
+public still prior accepted 64361cb. Actual trigger/owner/process lifecycle is not
+verified yet. Do not edit applied migration SQL; any defect needs a safe additive
+forward repair and full rerun after the current pinned runner finishes.
+
+
+Pinned 6d2f5a9aba1064c76ea48cf8638cad2ff2ee9c74 combined release started,
+deploy session 73316, /tmp/atlas-studio-execution-deploy.txt. Backup 20261010-042335.
+Public health still 64361cb during preparation. Candidate/public actual acceptance
+pending; do not advance branch tip while the pinned runner owns release locks.
+Do not claim migration applied or execution VERIFIED until actual logs prove it.
+
+
 2B3e6 helper IMPLEMENTED, actual NOT RUN: exact fresh v5 reviewed Test field,
 owner historical approval/normal final-write denial, real start/mid-batch/Audit and
 deferred-progress rollback, process SIGKILL before commit/fresh-process resume,
@@ -944,6 +971,9 @@ metadata tables/indexes/composite tenant foreign keys/constraints/guards. No exi
 business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
+
+20261010050000_studio_field_executions applied successfully in central preparation
+for pinned 6d2f5a9, migrate log under backup 20261010-042335. Lifecycle not yet verified.
 
 20261010050000_studio_field_executions NOT APPLIED. Central syntax-only temporary
 DDL validation fully rolled back, new tables/functions absent afterward.

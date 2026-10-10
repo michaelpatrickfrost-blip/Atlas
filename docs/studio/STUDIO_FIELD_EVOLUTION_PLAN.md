@@ -1084,3 +1084,13 @@ postbuild-types,lint}.txt. Old zero-target publication predicate unchanged; only
 actual stored execution selects execution inspection. Pending 20261010050000 NOT
 APPLIED. Commit and pin full combined candidate/public release next. Accepted live
 64361cb; Phase 2 NOT PASSED, visual designer/dashboards/buttons still pending.
+
+Pinned 6d2f5a9 candidate failed before activation at the new final-record
+negative check: test omitted mandatory expectedRevision and hit request validation,
+not native final-write policy. Correct the test with actual observed native revision;
+no permission weakening or DDL change. Actual start/paired Audit/pin proof had passed;
+row/deferred/process proof not reached. Candidate 35nN6y, backup 042335, fixture 042536,
+deploy session 73316 exit 1. Exact synthetic companies suspended/history retained.
+Public health confirmed unchanged accepted 64361cb. Applied 20261010050000 remains
+additive; do not edit its checksum or reset data. Rerun local checks and pinned full
+candidate/public acceptance after corrected checkpoint.

@@ -76,7 +76,7 @@ export async function checkFieldCutoverStorage(session: Session, principal: Fiel
     await tx.$executeRaw`SAVEPOINT cutover_test_denial`;
     await assert.rejects(() => tx.studioFieldMigrationCutover.update({ where: { preparationId: intent.id }, data: { pinChecksum: "f".repeat(64) } }), /immutable|history|retained/i);
     await tx.$executeRaw`ROLLBACK TO SAVEPOINT cutover_test_denial`;
-    await assert.rejects(() => tx.studioFieldMigrationPublication.updateMany({ where: { ...scope, state: "CUTOVER", revision: pin.publication.revision + 1 }, data: { state: "CANCELLED", revision: pin.publication.revision + 2 } }), /immutable|transition|CAS/i);
+    await assert.rejects(() => tx.studioFieldMigrationPublication.updateMany({ where: { ...scope, state: "CUTOVER", revision: pin.publication.revision + 1 }, data: { state: "CANCELLED", revision: pin.publication.revision + 2 } }), /immutable|transition|CAS|Settled publication requires its exact one-time retained settlement/i);
     await tx.$executeRaw`ROLLBACK TO SAVEPOINT cutover_test_denial`;
     await assert.rejects(() => tx.studioDefinition.updateMany({ where: { ...definitionScope, revision: switched.revision }, data: { activeVersionId: pin.source.versionId, revision: switched.revision + 1 } }), /freezes|explicit cutover/i);
     await tx.$executeRaw`ROLLBACK TO SAVEPOINT cutover_test_denial`;

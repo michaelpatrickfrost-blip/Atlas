@@ -1518,6 +1518,13 @@ platform grants and business-user provisioning regression cases.
 
 # Tests Run
 
+Recovered combined source:47 files294 assertions +8 compatibility files46 (55/340)
+PASS; production build/strict post-build TypeScript/scoped helper+retirement ESLint/
+diff PASS. Preflight current/control/public97ceb35, previous1bf0e2c, root168GiBfree,
+original locks free. Actual additive0007 nested Test proof pending exact release.
+Cutover cancellation assertion recognises the exact settlement-denial guard; no
+native permission or persistence guard changed.
+
 Software retirement unit tests6/6 PASS; Node/bash syntax and scoped lint PASS.
 Actual Linux prune under both locks PASS118 candidates; Mac generated-output
 cleanup PASS59 paths. Public release health/login and PG/service online checks PASS.
@@ -1799,6 +1806,11 @@ These checks derive from Sections 5–6, 14, 19, 25–28; no whole-system gate u
 prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
+
+Run exact pinned codex/studio-phase2 release now with ATLAS_RELEASE_ACCEPTANCE=studio
+using the reviewed clean candidate. Keep branch pinned until complete; record real
+0007 application, nested settlement SQL and every candidate/public/native result.
+Fix any failure without bypassing guards; do not mark f4b1 VERIFIED from local checks.
 
 Capacity blocker resolved; current live97ceb35 ancestry merged and retirement
 checkpoint95a64b2 retained. Recheck combined source before release.

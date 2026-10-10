@@ -1,5 +1,18 @@
 # Atlas current state
 
+## 10 October 2026 — Recovered f4b1 candidate checks PASS; exact release next
+
+Combined47 files294 assertions plus8 compatibility files46 assertions PASS
+(55 files340 total). Production build with inherited unused-cache setting, strict
+post-build TS, scoped helper/retirement ESLint and diff PASS. Updated cutover
+cancellation denial assertion to recognise the exact new one-time-settlement guard;
+no permission/SQL guard was weakened. Capacity168GiBfree, original locks free,
+server control/current/public97ceb35 and previous1bf0e2c at preflight. Reviewed0007
+remains unapplied; earlier central rollback-only DDL proof retained. Next run normal
+exact pinned codex/studio-phase2 release with Studio acceptance; required pre-deploy/
+fixture backups only. Do not move branch tip while runner operates. Live f4b1 actual
+nested Test SQL/native gate still pending; Phase2 NOT PASSED.
+
 ## 10 October 2026 — Studio recovery preserves current drawer runtime ancestry
 
 Merged exact live97ceb35b069845f637a43811d8200a99b9ade306 after retirement95a64b2,

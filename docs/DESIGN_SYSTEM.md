@@ -169,8 +169,11 @@ screens). Company access profiles have a searchable selector and one mounted
 editor; each app expands into source sections with RWA and fine-grained controls.
 Personal Settings is a separate own-account page without company controls.
 
-My tasks is a native modal pop-out, opened directly from the header Tasks icon or
+Tasks and Messages use a shared native right-hand drawer, opened directly from their header icons or
 utility rail. Header/rail badges show open assignments; Messages badges show
 unread chats. Task detail uses progressive disclosure for notes, linked records,
 checklist and status. Native dialog top-layer positioning prevents card overlap;
-small screens use a task-list/detail back flow, with Escape and focus restoration.
+all drawer widths use a list/detail Back flow, with Escape and focus restoration.
+Drawers are at most560px wide, animate entry/exit over240ms and honor reduced
+motion. The shade is light and unblurred so the current workspace remains visible.
+Dashboard and Settings keep their existing page/menu destinations.

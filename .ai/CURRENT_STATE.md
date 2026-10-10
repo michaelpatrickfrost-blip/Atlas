@@ -1,5 +1,15 @@
 # Atlas current state
 
+## 10 October 2026 — Studio recovery preserves current drawer runtime ancestry
+
+Merged exact live97ceb35b069845f637a43811d8200a99b9ade306 after retirement95a64b2,
+preserving shared SidePanel/Tasks/Messages, unused build-cache correction and all
+concurrent memory. Conflicts were documentation-only; both entries retained. Current
+97ceb35/previous1bf0e2c verified via public health/pointers; this does not assert
+another task's complete gate. Root168GiBfree after checked final prune; eligible0.
+Phase2 f4b1 actual SQL/native acceptance remains pending;0007 not yet applied.
+Next: combined affected tests/build/types/lint, pinned Studio candidate/public release.
+
 ## 10 October 2026 — Software retention VERIFIED; Studio capacity blocker resolved
 
 User authorised cleanup of redundant development/release copies and explicitly
@@ -144,6 +154,99 @@ Backup063716/fixtures063910, evidence /tmp/atlas-studio-candidate-saTKTd and loc
 /tmp/atlas-studio-business-setup-deploy.txt. Root4.6G/PGonline, current1f2 unchanged.
 Keep exact pinned branch tip until runner completes; preserve user's unsaved tab.
 
+
+
+## 10 October 2026 — Drawer candidate UI PASS, Messages evidence-path fix
+
+Exacte050647 builds successfully with unused compiler persistence off. Candidate
+I1I3xY Tasks/Messages drawers PASS all four widths, native Escape/X/backdrop/focus,
+Back flow/reduced motion, central assignment/notes/attachments/status guards/saves.
+Real Messages creation/send/order attachment/details/history/paging PASS, then its
+legacy fixed screenshot path /tmp/atlas-messages-desktop.png failed EACCES (owned
+by an earlier root-run check). Production remains1bf0e2c; no live claim. Preserve
+historic screenshots; check-messages now uses unique0700 private evidence folder
+per run. Candidate screenshots bYrmhi and backup072449/fixture072639 retained.
+Next: scoped checker types/lint, exact immutable retry, complete Messages plus
+Tasks candidate/public and screenshot inspection, then safely remove temp512MBswap.
+
+
+## 10 October 2026 — Drawer build capacity correction (candidate)
+
+160efb1 server compiled but page collection failed ENOSPC before activation.
+Runtime remains accepted1bf0e2c; backup071840/full source/logs retained. Own inactive
+unready dependencies/partial Next output reclaimed under both original locks.
+Installed Next16.3 guide explicitly recommends turbopackFileSystemCacheForBuild:
+false when cache is not carried into builds. Atlas immutable candidates always
+build cold, so next.config disables only unused build compiler persistence; dev
+cache/runtime/data are unaffected. Local production build with this flag PASS.
+Temporary swap reduced1GB to512MB to release disk space while preserving build
+headroom; no fstab change, remove after acceptance. Inventory utility-drawer-
+capacity-20261010.txt. Next: post-build types, exact reviewed retry, full candidate/
+public Tasks plus Messages acceptance and screenshot review. No live claim yet.
+
+
+## 10 October 2026 — Tasks and Messages consistent slide-out drawers (candidate)
+
+User explicitly narrows this redesign to Tasks and Chat; Dashboard/Settings retain
+existing destinations. Added shared native SidePanel, right-anchored560px maximum,
+phone viewport inset,240ms entry/exit with a light unblurred shade and reduced-motion
+support. Native focus trapping/return, Escape/backdrop/X close and cancellation of
+stale animation finishes; task cleanup waits until exit completes, saving guard
+retained. Task list/detail and chat conversation/thread use a compact Back flow at
+all drawer widths. Full-page Chat and per-conversation/company/user drafts remain.
+Nested chat pickers keep their keyboard focus scope. No data/action/schema/profile
+change. Preserves exact accepted Apps1bf0e2c and Tasks845456e source/memory.
+
+Paths: shell/side-panel.tsx, my-tasks.tsx, chat/chat-dock.tsx, globals.css;
+tests/side-panel + chat-workspace; check-my-tasks extends drawer/back/focus/reduced
+motion and Messages at four widths. Existing tasks release selector now also runs
+full real check-messages under original locks and per-stage central fixture backup.
+Checks: final local production build/strict types PASS;36 focused tests PASS,
+then12 affected panel/chat tests rerun after the final interrupted-animation guard
+PASS. Scoped lint0errors (one existing chat image warning); shell syntax/whitespace
+PASS. Capacity setup reclaims only inactive74fab2/1f2 compiler caches, preserving
+source/assets/dependencies/backups; temporary1GB swap, no fstab change. Inventory
+maintenance-backups/utility-drawer-capacity-20261010.txt. Actual central candidate/
+public acceptance pending. Next: capacity setup under original locks,
+exact scoped release build/acceptance, review live screenshots and remove temp swap.
+
+
+## 10 October 2026 — Task/chat drawer work preserves accepted Apps release
+
+Merged exact live1bf0e2c into codex/utility-slide-outs, preserving its compact Apps
+menu, topbar and all concurrent memory. User narrows redesign to Tasks/Messages;
+Dashboards and Settings retain their existing destinations. Implementation and
+checks pending; no new release claimed.
+
+## 10 October 2026 — Tasks pop-out and notification controls LIVE, verified
+
+Activated exact845456e366cc59e373bd7de3d6d9ee120fd00e9b at public Atlas, retaining
+accepted Studio74fab2 as source/rollback. My tasks header/rail opens the polished
+native pop-out; canonical assigned Project/People tasks, search/filter/paging,
+notes/discussion, authorized record links and native guarded status lifecycle.
+Tasks open-count badge and Messages unread-count badges in header/utility rail.
+Both controls fit the320px workspace header; native Escape/focus restore verified.
+
+Complete candidate65Takc/publicemn61U acceptance PASS under both original locks:
+assigned-only search, notes, discussion, linked Sales record, blocked premature
+completion, actual persisted IN_PROGRESS/DONE, four widths320/390/820/1448,
+header controls, Escape/focus and exact revision. Screenshots HVSoox/WbQjBO under
+/tmp/atlas-tasks-browser-*; public phone/desktop visually reviewed. Synthetic task
+fixtures retained canceled; existing records/profiles and other modules preserved.
+Local production build/strict post-build types/scoped lint0errors (3 existing
+image warnings), shell syntax/whitespace PASS; 22 focused panel/access/source-phase/
+atomic completion/project-domain tests PASS. Extra test lint PASS. No schema,
+profile grants, local business cache or external deliveries.
+
+Backup070139; fixture backups070330/070349. Failed earlier candidates/source/logs
+and every backup retained; only positively identified disposable outputs/package
+caches reclaimed under original locks. Temporary2GB reduced to1GB then safely
+disabled/removed after acceptance, no fstab edit. Capacity inventory at
+/opt/atlas-maintenance-backups/tasks-capacity-20261010.txt; root4.5GBfree, no swap,
+central/runtime unchanged after cleanup. No deployment blocker. Prior pending and
+capacity entries below are historical/superseded. Evidence/tests-only commit may
+be newer than runtime; source on codex/my-tasks-popout. Shared Desktop checkout is
+concurrently dirty; integration must preserve its unrelated edits.
 
 ## 10 October 2026 — Compact Apps popup and polished header
 

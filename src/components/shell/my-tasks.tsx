@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { createPortal } from "react-dom";
+import { SidePanel } from "./side-panel";
 import { ArrowLeft, ArrowUpRight, CalendarDays, Check, CheckCheck, ChevronRight, Circle, ListTodo, LoaderCircle, Paperclip, RefreshCw, Search, X } from "lucide-react";
 import { loadMyTask, loadMyTasks, updateMyTaskStatus } from "@/app/(app)/profile/task-actions";
 import { taskClosed, taskStatusLabel, type MyTask, type MyTaskDetail, type MyTaskPage, type TaskFilter } from "@/core/shared/my-tasks";
@@ -27,30 +27,26 @@ function failure(error: unknown, fallback: string) {
 /** One modal in the company/user keyed business shell; no local task cache. */
 export function MyTasksPanel() {
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false), [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [data, setData] = useState<MyTaskPage>(empty), [filter, setFilter] = useState<TaskFilter>("open"), [query, setQuery] = useState("");
   const [selected, setSelected] = useState<MyTask | null>(null), [detail, setDetail] = useState<MyTaskDetail | null>(null);
   const [loading, setLoading] = useState(false), [detailLoading, setDetailLoading] = useState(false), [saving, setSaving] = useState(false);
   const [error, setError] = useState(""), [detailError, setDetailError] = useState(""), [message, setMessage] = useState("");
-  const dialog = useRef<HTMLDialogElement>(null), returnFocus = useRef<HTMLElement | null>(null);
   const listRequest = useRef(0), detailRequest = useRef(0), page = useRef(0), savePending = useRef(false);
   const close = useCallback(() => {
     if (savePending.current) return;
     listRequest.current++; detailRequest.current++;
-    setOpen(false); setSelected(null); setDetail(null); setData(empty); setQuery(""); setFilter("open"); setError(""); setDetailError(""); setMessage("");
+    setOpen(false);
+  }, []);
+  const reset = useCallback(() => {
+    setLoading(false); setDetailLoading(false); setSelected(null); setDetail(null); setData(empty); setQuery(""); setFilter("open"); setError(""); setDetailError(""); setMessage("");
   }, []);
   useEffect(() => {
-    const mountTimer = setTimeout(() => setMounted(true), 0);
-    const show = () => { returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; setOpen(true); };
+    const show = () => setOpen(true);
     window.addEventListener("atlas:open-tasks", show);
-    return () => { clearTimeout(mountTimer); window.removeEventListener("atlas:open-tasks", show); };
+    return () => window.removeEventListener("atlas:open-tasks", show);
   }, []);
   useEffect(() => { const timer = setTimeout(close, 0); return () => clearTimeout(timer); }, [pathname, close]);
-  useEffect(() => {
-    if (!mounted || !dialog.current) return;
-    if (open && !dialog.current.open) dialog.current.showModal();
-    if (!open && dialog.current.open) { dialog.current.close(); returnFocus.current?.focus(); }
-  }, [open, mounted]);
   const fetchPage = useCallback(async (nextPage = 0) => {
     const request = ++listRequest.current;
     setLoading(true); setError("");
@@ -100,20 +96,16 @@ export function MyTasksPanel() {
     if (selected) await selectTask(selected);
   }
   const visibleList = !selected;
-  if (!mounted) return null;
-  return createPortal(
-    <dialog ref={dialog} aria-labelledby="my-tasks-title" onCancel={(event) => { event.preventDefault(); close(); }}
-      onClose={close} onClick={(event) => { if (event.target === event.currentTarget) close(); }}
-      className="fixed inset-x-4 top-4 m-0 h-[calc(100dvh-2rem)] max-h-[820px] w-auto max-w-[980px] overflow-hidden rounded-[28px] border border-blue-100 bg-white p-0 text-slate-800 shadow-[0_30px_100px_-24px_rgba(17,47,103,0.35)] backdrop:bg-slate-950/25 backdrop:backdrop-blur-[3px] sm:top-20 sm:h-[calc(100dvh-6rem)] lg:left-[180px]">
-      {open && <div className="flex h-full min-h-0 flex-col">
+  return <SidePanel open={open} label="My tasks" onClose={close} onAfterClose={reset}>
+      <div className="flex h-full min-h-0 flex-col">
         <header className="flex shrink-0 items-center justify-between gap-3 border-b border-blue-100 bg-gradient-to-r from-blue-50 to-white p-4 sm:px-6 sm:py-5">
           <div className="flex min-w-0 items-center gap-3"><span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-white"><ListTodo size={23} /></span>
             <div><h2 id="my-tasks-title" className="text-xl font-semibold tracking-tight text-slate-900">My tasks</h2><p className="mt-0.5 text-xs text-slate-500">Your assigned work, all in one place.</p></div></div>
           <div className="flex shrink-0 gap-1"><button type="button" aria-label="Refresh tasks" disabled={loading || saving} onClick={() => void refresh()} className="flex size-10 items-center justify-center rounded-full text-slate-500 hover:bg-blue-100 disabled:opacity-40"><RefreshCw size={18} className={loading ? "animate-spin" : ""} /></button>
             <button type="button" aria-label="Close my tasks" disabled={saving} onClick={close} className="flex size-10 items-center justify-center rounded-full text-slate-500 hover:bg-blue-100 disabled:opacity-40"><X size={20} /></button></div>
         </header>
-        <div className="grid min-h-0 flex-1 sm:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-          <section aria-label="Assigned task list" className={`${visibleList ? "flex" : "hidden sm:flex"} min-h-0 flex-col border-r border-slate-100 bg-[#f8faff]`}>
+        <div className="flex min-h-0 flex-1 flex-col">
+          <section aria-label="Assigned task list" className={`${visibleList ? "flex" : "hidden"} min-h-0 flex-1 flex-col border-r border-slate-100 bg-[#f8faff]`}>
             <div className="space-y-4 border-b border-slate-100 p-4">
               <div className="flex gap-3 text-xs"><span className="rounded-xl border border-blue-100 bg-white px-3 py-2 text-blue-700"><strong className="mr-1 text-lg font-semibold">{data.openCount}</strong> open</span><span className="rounded-xl border border-slate-100 bg-white px-3 py-2 text-slate-500"><strong className="mr-1 text-lg font-semibold">{data.completedCount}</strong> completed</span></div>
               <label className="relative block"><Search size={17} className="pointer-events-none absolute left-3 top-3 text-slate-400" /><input autoFocus aria-label="Find my tasks" value={query} maxLength={120} onChange={(event) => setQuery(event.target.value)} placeholder="Find a task or note…" className={`${inputClass} !pl-9`} /></label>
@@ -132,8 +124,8 @@ export function MyTasksPanel() {
               {data.hasMore && <button type="button" disabled={loading} onClick={() => void fetchPage(page.current + 1)} className="mt-2 w-full rounded-xl border border-blue-100 bg-white py-3 text-sm text-blue-700 disabled:opacity-40">{loading ? "Loading…" : "Load more tasks"}</button>}
             </div>
           </section>
-          <section aria-label="Task details" className={`${selected ? "flex" : "hidden sm:flex"} min-h-0 min-w-0 flex-col bg-white`}>
-            {selected && <button type="button" disabled={saving} onClick={() => { detailRequest.current++; setSelected(null); setDetail(null); }} className="flex min-h-11 shrink-0 items-center gap-2 border-b border-slate-100 px-5 text-xs text-blue-700 sm:hidden"><ArrowLeft size={15} />Back to tasks</button>}
+          <section aria-label="Task details" className={`${selected ? "flex" : "hidden"} min-h-0 min-w-0 flex-1 flex-col bg-white`}>
+            {selected && <button type="button" disabled={saving} onClick={() => { detailRequest.current++; setSelected(null); setDetail(null); }} className="flex min-h-11 shrink-0 items-center gap-2 border-b border-slate-100 px-5 text-xs text-blue-700"><ArrowLeft size={15} />Back to tasks</button>}
             <div className="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6">
               {detailLoading && <p role="status" className="flex items-center gap-2 text-sm text-slate-500"><LoaderCircle size={17} className="animate-spin" />Opening task…</p>}
               {detailError && <p role="alert" className="mb-4 rounded-xl bg-rose-50 p-3 text-sm text-rose-700">{detailError}</p>}
@@ -154,7 +146,6 @@ export function MyTasksPanel() {
             </div>
           </section>
         </div>
-      </div>}
-    </dialog>, document.body,
-  );
+      </div>
+    </SidePanel>;
 }

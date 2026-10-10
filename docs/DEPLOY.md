@@ -432,3 +432,10 @@ software retirement do not need database dumps. Use existing recovery evidence
 where valid; do not generate ad-hoc duplicate exports/backups. Required reviewed
 pre-migration/release/fixture backups remain intact and mandatory. Any future backup
 rotation must verify recovery coverage and active-job pins before deleting a dump.
+
+Next16.3 filesystem build caching is disabled in next.config because immutable
+release candidates always build cold and never restore .next/cache. This follows
+the installed Next guide and avoids retaining an unused compiler cache per SHA.
+Development caching is unchanged. The `tasks` acceptance selector now runs both
+Tasks drawer checks and the existing Messages composer/draft/attachment workflow
+on candidate/public; each stage stays inside the original locks and fixture backup.

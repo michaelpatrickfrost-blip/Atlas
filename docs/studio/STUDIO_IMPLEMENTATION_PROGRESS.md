@@ -34,7 +34,8 @@ candidate/public. F3a–c VERIFIED9aad1fc.
 IN PROGRESS: f4b1 central verification pending; capacity blocker resolved by
 10 October software-retention cleanup. Phase 2 not passed.
 Admin-only/modern-UI companion VERIFIED. Phase 1 remains
-VERIFIED. Latest confirmed live source 74fab2d1983b3d16d68f481fb783332335e5fc0a (includes verified9aad1fc/1f2ab97),
+VERIFIED. Latest confirmed live source97ceb35b069845f637a43811d8200a99b9ade306
+(includes verified Studio74fab2d/9aad1fc/1f2ab97 plus preserved Tasks/Messages),
 preserving verified 7941f9b;
 2B2 exact acceptance e5d66e6 is preserved;
 combined candidate and complete public HTTPS acceptance PASS.
@@ -1799,7 +1800,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Capacity blocker resolved; do not expand storage based on the superseded cache-
+Capacity blocker resolved; current live97ceb35 ancestry merged and retirement
+checkpoint95a64b2 retained. Recheck combined source before release.
+Do not expand storage based on the superseded cache-
 only audit. Finish the software-retention checkpoint and verify public health.
 Then re-read recovery memory/ledger/git status and public health, wait for existing
 release locks, merge any newer accepted live ancestry, then run normal exact pinned Studio

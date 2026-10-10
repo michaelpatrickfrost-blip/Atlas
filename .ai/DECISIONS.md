@@ -1783,3 +1783,13 @@ target generation is blocked even through cosmetic descendant versions; normal
 source saves and metadata changes freeze while PUBLISHED. Cancellation releases
 source editing but never makes a cancelled target usable. Source/target execution
 and cutover proofs come in 2B3e/f; no native table mutation or second publisher.
+
+
+## 10 October 2026 — Cancellation uses the current publisher's authority
+
+Metadata-only cancellation uses an independently refreshed current company principal
+and existing Studio publish capability. This lets an authorised publisher stop a
+revoked creator's frozen operation without inheriting that creator's grants. It
+returns state/revision only and performs no native/value/count reads or target
+activation. CAS/Audit are atomic and replays refresh authority. Live-data permission
+still applies to review/publication/row work; it is not needed to stop metadata work.

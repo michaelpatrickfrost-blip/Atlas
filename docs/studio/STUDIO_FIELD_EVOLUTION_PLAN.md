@@ -739,3 +739,23 @@ assertions, production build, strict post-build TS/scoped lint/diff PASS; logs
 Real SQL/Audit/freeze/lifecycle proof not run; pending migration NOT APPLIED. Next
 sparse current-principal cancellation, then d4 exact Test candidate/public proof.
 Accepted live 32ee77e; Phase 2 NOT PASSED, visual/customer publishing still planned.
+
+
+d3b3 IN PROGRESS before code: sparse metadata-only cancel service with fresh
+current company principal and Studio publish, locked publication CAS and Audit.
+Current authorised publisher can cancel a stopped creator's operation; never
+replay revoked creator grants or read native IDs/counts/values. Cancelled target
+stays unusable, source/draft editing unfreezes by existing SQL. Replays verify
+current authority and audit nothing twice. Files migrations/cancellation + focused
+tests, docs/memory/decision. No new migration/engine; actual central proof d4 next.
+
+
+d3b3 IMPLEMENTED/local checks PASS: current captured/explicit company principal,
+Studio publish, scoped locked publication CAS and existing Audit cancel/replay.
+Sparse state/revision output, no native count/value/record reads or old creator
+grants; no live-data privilege needed for metadata cancellation. Four files/21
+assertions, production build, strict post-build TS/scoped lint/diff PASS, /tmp/atlas-
+studio-publication-cancellation-{tests,build,postbuild-types,lint}.txt. Target remains
+blocked; SQL source/draft freeze release awaits actual central d4. No new engine/
+public endpoint; pending migration NOT APPLIED. Accepted live 32ee77e, Phase 2 NOT
+PASSED. Next exact Test publication/freeze/rollback/cancel proof plus pinned release.

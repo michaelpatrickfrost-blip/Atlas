@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3d3b3 — Metadata-only publication cancellation — NOT STARTED.
+2B3d4 — Actual reviewed publication acceptance — NOT STARTED.
 Scalar/source coverage VERIFIED live fc9b80f; reference c1 local; no writer/designer.
 
 # Overall Status
@@ -62,6 +62,24 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+d3b3 IMPLEMENTED/local checks PASS: current captured/explicit company principal,
+Studio publish, scoped locked publication CAS and existing Audit cancel/replay.
+Sparse state/revision output, no native count/value/record reads or old creator
+grants; no live-data privilege needed for metadata cancellation. Four files/21
+assertions, production build, strict post-build TS/scoped lint/diff PASS, /tmp/atlas-
+studio-publication-cancellation-{tests,build,postbuild-types,lint}.txt. Target remains
+blocked; SQL source/draft freeze release awaits actual central d4. No new engine/
+public endpoint; pending migration NOT APPLIED. Accepted live 32ee77e, Phase 2 NOT
+PASSED. Next exact Test publication/freeze/rollback/cancel proof plus pinned release.
+
+d3b3 IN PROGRESS before code: sparse metadata-only cancel service with fresh
+current company principal and Studio publish, locked publication CAS and Audit.
+Current authorised publisher can cancel a stopped creator's operation; never
+replay revoked creator grants or read native IDs/counts/values. Cancelled target
+stays unusable, source/draft editing unfreezes by existing SQL. Replays verify
+current authority and audit nothing twice. Files migrations/cancellation + focused
+tests, docs/memory/decision. No new migration/engine; actual central proof d4 next.
 
 d3b2 IMPLEMENTED/local checks PASS: publishReviewedFieldMigration refreshes exact
 initiating principal and REVIEWED revision/checksum, shared native/source/written/
@@ -852,13 +870,13 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement cancelFieldMigrationPublication using a freshly captured/explicit current
-company principal, Studio publish, scoped locked publication CAS and atomic Audit.
-It must work for a stopped/revoked creator without reusing that creator's grants;
-return sparse state/revision only, no native reads/counts/values. Replays refresh
-current authority and write no second Audit; cancelled target remains unusable.
-Then d4 actual Test publication proof integrated after reference fixtures: source
-active, exact receipt/digest replay, real Audit rollback, SQL FKs/history/freeze/
-activation denial, cancellation releases source/draft only, native unchanged.
-Build/types/lint and pin candidate/public before applying 20261010040000/VERIFIED.
-Phase 2 NOT PASSED.
+Implement scripts/studio/check-field-publication.ts after existing reference helper.
+Create fresh exact Test integer source, parent owner-guarded source 42, decimal/v3
+review. Verify normal structural publisher denied, real paired Audit-failure rollback,
+source-active exact reviewed publication/replay, SQL immutable/FK/freeze/draft/
+retirement/premature activation and no-target-value guards. Private revocation
+rejects replay; sparse cancellation/replay restores source/draft editing while
+cancelled target remains unusable. Compare both native tenant snapshots unchanged.
+Run schema/generate/26 scoped suites, build/types/lint/diff; pin full candidate/public
+release before applying pending 20261010040000 or marking d2–d4 VERIFIED.
+Phase 2 NOT PASSED; then 2B3e bounded native-approved representation execution.

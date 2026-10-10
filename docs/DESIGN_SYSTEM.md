@@ -71,7 +71,7 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
   keyboard focus remains visible. Attention/goals stay below the app directory.
 - **Workspace Apps menu** — Michael's 10 October correction uses a compact,
   wider popup with every authorised app visible without internal scrolling.
-  Up to 900px wide, it uses four desktop columns, three tablet columns and two
+  Up to 900px wide, it uses four desktop columns, three tablet columns and three
   phone columns with compact labels/icons. Phones place it below the full header.
   The workspace header is 60px on desktop, with restrained 36–40px controls;
   phone search stays on a second row within a 96px header. Escape returns focus to Apps; outside clicks,

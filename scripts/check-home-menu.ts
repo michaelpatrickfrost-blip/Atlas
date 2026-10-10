@@ -194,14 +194,14 @@ async function main() {
         });
         assert(
           fit,
-          `${name} Apps panel fits viewport with internal vertical scrolling.`,
+          `${name} Apps panel fits viewport with every app visible and no scrolling.`,
         );
         const links = panel.getByRole("link");
         assert(
           await links.evaluateAll((nodes) =>
-            nodes.every((node) => node.getBoundingClientRect().height >= 32),
+            nodes.every((node) => node.getBoundingClientRect().height >= 28),
           ),
-          "Compact links retain at least 32px targets.",
+          "Compact links retain at least 28px targets.",
         );
         await panel.getByRole("heading").first().click();
         await expect(panel).toBeVisible();

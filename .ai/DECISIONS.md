@@ -1896,7 +1896,7 @@ full candidate/public proof remains required before cutover is VERIFIED.
 
 Michael corrected the wide Apps panel to a small popup, then explicitly required
 all apps to fit without scrolling and permitted extra width. Use up to 900px,
-four desktop/three tablet/two phone columns, compact controls and no internal
+four desktop/three tablet/three phone columns, compact controls and no internal
 scrolling. Phone placement clears both header rows. The header itself is reduced
 to 60px desktop/96px phone with restrained search/company/Apps controls.
 Retain authorised entries and dismissal behavior. Supersedes the 9 October wide

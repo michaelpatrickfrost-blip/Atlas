@@ -4,7 +4,7 @@
 
 Latest user steering requires every app visible without scrolling and a slimmer
 header. AppMenu now up to 900px wide; AppDirectory uses four desktop/three tablet/
-two phone columns, compact labels/icons/32–36px links, no internal scrolling.
+three phone columns, compact labels/icons/28–36px links, no internal scrolling.
 Phone popup clears the full header. Workspace header 60px desktop/96px phone,
 36px Apps/company/back controls and 40px search. Home directory unchanged.
 Design docs/decision supersede earlier wide-menu and initial scrolling directions.
@@ -15,9 +15,12 @@ warnings), diff PASS. Existing checker asserts no panel overflow, all authorised
 links, responsive fit, anchoring, dismissal and navigation. Public checks pending.
 Preserved concurrent live Studio 74fab2d. Prior candidate passed popup dimensions/
 Escape/all links then caught phone search overlap; corrected. Later preparation
-failed with VPS disk full; live unchanged. Only this task's stopped candidate
-build/dependency output reclaim attempted under locks; lock busy so no cleanup yet.
-Source/backups/live/previous retained. Deployment pending after capacity recovery.
+failed with VPS disk full; live unchanged. Reclaimed only this task's inactive candidate .next/node_modules and npm download
+cache under both original locks; source/backups/live/previous retained. Desktop/
+tablet no-scroll candidate PASS; phone two-column overflow reproduced. Three-column
+phone correction read-only diagnostic: all 33 authorised links, 390px/320px fit
+without scrolling (461/479px popup heights); 320px screenshot visually inspected.
+Corrected production build/scoped lint/diff PASS; final pinned acceptance pending.
 
 ## 10 October 2026 — Final readable business-setup companion checks PASS
 

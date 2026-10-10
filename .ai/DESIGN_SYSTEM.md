@@ -7,7 +7,7 @@ Home, Reports, My tasks, authorised Messages and Settings; it does
 not repeat the business apps. On tablet/phone it becomes a compact utility bar.
 This supersedes the older no-sidebar rule for Home and Reports. Other workspaces retain
 their top menus and a compact wider Apps popup per Michael's 10 October corrections: every authorised
-app visible without scrolling, up to 900px wide, four desktop/three tablet/two
+app visible without scrolling, up to 900px wide, four desktop/three tablet/three
 phone grouped columns, small grey icons and compact labels. Workspace header is
 60px desktop/96px phone, with smaller Apps/company/search controls.
 Business navigation contains no Atlas Console/Admin, Connections or platform

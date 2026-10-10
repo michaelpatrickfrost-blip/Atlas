@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f4a — Closed settlement identity and confirmation contracts — IN PROGRESS.
+2B3f4a — Closed settlement identity and confirmation contracts — VERIFIED locally; strict post-build TypeScript PASS.
 Purpose: pin honest source rollback or finalization of the unchanged-data window,
 without granting authority or writing data. Dependencies: verified f1/f2/f3. Expected
 files: migrations/settlement-contract and existing cutover-contract tests. No DB
@@ -79,6 +79,18 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+F4a pure contract IMPLEMENTED. New migrations/settlement-contract; six meaningful
+negative/transition cases appended to existing cutover-contract suite. Exact retained
+identity/independent same-company principal, strict CAS/unknown/mode/tenant/grants/
+substituted target denial and integer transition capacity. 18 focused and45 files/
+292 regression assertions, production build/scoped lint/diff PASS; final post-build
+TS pending, session89249. Logs /tmp/atlas-studio-settlement-contract-{tests,
+regression,build,lint,types}.txt. No DB/schema/service/pointer/value/native mutation.
+F4b–d NOT STARTED; original0006/actualf3 receipt coverage unchanged. Live74fab2d
+remains verified. Update strict result, review new source + diff and checkpoint,
+then additive settlement SQL/Prisma/storage evidence plan. Phase2 NOT PASSED.
+
 
 Exact74fab2d1983b3d16d68f481fb783332335e5fc0a full candidate/public ALL COMBINED
 PASS, runner56399 exit0; current/public health exact, previous1f2ab97 retained. Candidate
@@ -1694,10 +1706,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint verified74fab2d evidence/memory and bounded f4 plan. Implement2B3f4a
-settlement-contract: derive scoped rollback/finalization identity and transition from
-retained closed cutover pin plus actual server principal; add strict confirmation,
-no client tenant/grants/stage/pointer and no authority claim. Test independent same-
-company actor, foreign/stale/tampered/coerced/unknown input and reserved integer
-capacity in existing cutover-contract suite; run relevant regressions/types/lint/
-build and save memory before f4b additive persistence. FullPhase2 NOT PASSED.
+F4a strict post-build TypeScript session89249 passed; focused/regression/build/lint
+and final diff reviewed. Next f4b additive0007 nullable settlement identity/checksum/actor/time and guarded terminal
+states/deferred receipt-publication-pointer proof; never edit applied0006. Preserve
+initial ACT proof, later terminal history, closed historical source/target generations
+and ANY open source freeze priority. Read bounded plan/DECISIONS before SQL. No
+rollback service/value gateway/designer or fullPhase2 completion claim yet.

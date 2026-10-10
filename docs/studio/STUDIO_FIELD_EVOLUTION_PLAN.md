@@ -1371,3 +1371,24 @@ reports the completed operation, not a claim about today's active pointer. Verif
 further migration source freeze cannot be bypassed via earlier completed targets.
 Full2B4 owner write/read/required-if/native form hooks remain the next workstream;
 visual2E depends on2B–D. No FINALIZED/RB code/migration exists at this planning entry.
+
+F4a IMPLEMENTED (pure only): settlement-contract binds original cutover checksum/
+scoped source/target/current server principal and exact CAS; strict request excludes
+mode/tenant/grants/pointer. Derived rollback moves source/revision+1; finalization
+retains target and ends window. Historical identity does not assert today's pointer.
+18 focused and45 files/292 regressions/build/scoped lint/strict post-build types
+PASS. No DB, service or permission/value write authority yet. Record lifecycle
+rationale in DECISIONS; review/commit after strict TS.
+
+Storage inspection notes for f4b: original BEFORE receipt insertion and PUBLISHED→
+CUTOVER publication guards already prove exact source-active READY conversion before
+activation. Preserve them. Receipt update needs a new deferred settlement proof;
+initial receipt insertion trigger must also still support an immediate settlement
+without letting it bypass those original guards. At settlement commit require exact
+source+rev+1 (rollback) or retained target/same rev (finalization). Subsequent metadata
+changes may occur in later transactions; ordinary owner values may only open under
+2B4's actual checks. Later definition events select only current ACTIVATED window;
+terminal receipts remain immutable history and do not pin every future definition.
+Rolled-back source saves are not permanently historical; completed source and every
+cancelled/rolled-back target remain retained/closed. ANY new open source freeze must
+precede old completed-target allowances.

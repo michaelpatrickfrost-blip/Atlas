@@ -5,6 +5,8 @@ import { sealFieldMigrationReview } from "@/core/studio/fields/migrations/contra
 import { fieldMigrationExecutionPinSchema } from "@/core/studio/fields/migrations/execution-contract";
 import { createFieldMigrationCutoverPin, fieldMigrationCutoverPinSchema, fieldMigrationCutoverRequestSchema } from "@/core/studio/fields/migrations/cutover-contract";
 import { readFieldMigrationCutoverReceipt } from "@/core/studio/fields/migrations/cutover-receipt";
+import { assertFieldMigrationSettlementConfirmation, createFieldMigrationSettlementPin, fieldMigrationSettlementPinSchema,
+  fieldMigrationSettlementRequestSchema, fieldMigrationSettlementTransition, readFieldMigrationSettlementPin } from "@/core/studio/fields/migrations/settlement-contract";
 
 const uuid = (n: number) => `00000000-0000-4000-8000-${n.toString().padStart(12, "0")}`;
 const ref = { id: "tickets.ticket", version: 5, schemaHash: "a".repeat(64), contractHash: "b".repeat(64) };
@@ -139,4 +141,69 @@ it("post-cutover identity still binds sealed reviewed source/target/cohort and c
     expect(() => readFieldMigrationCutoverReceipt(f.sealed, { ...f.execution, pin, pinChecksum }, f.publication, f.definition,
       { ...f.receipt, pin: receiptPin, pinChecksum: checksum(receiptPin) })).toThrow();
   }
+});
+
+const settlementActor = { organisationId: "company", userId: "current-publisher", membershipId: "current-member", sessionVersion: 4, authVersion: 5, authority: "customer" as const };
+const settlementRequest = (pin: ReturnType<typeof createFieldMigrationSettlementPin>["pin"]) => ({ preparationId: pin.preparationId, cutoverChecksum: pin.cutoverChecksum,
+  cutoverRevision: 0, definitionRevision: pin.definitionRevision, publicationRevision: pin.publicationRevision });
+it("derives honest rollback or finalization from retained cutover identity without mutating history or granting access", () => {
+  const retained = create(ready()), before = structuredClone(retained);
+  for (const disposition of ["ROLLED_BACK", "FINALIZED"] as const) {
+    const result = createFieldMigrationSettlementPin(retained, settlementActor, disposition);
+    expect(readFieldMigrationSettlementPin(retained, result)).toEqual(result);
+    expect(result.checksum).toBe(checksum(result.pin));
+    expect(() => assertFieldMigrationSettlementConfirmation(settlementRequest(result.pin), result)).not.toThrow();
+    expect(fieldMigrationSettlementTransition(result.pin)).toEqual({ cutover: { state: disposition, revision: 1 },
+      publication: { state: disposition === "ROLLED_BACK" ? "ROLLED_BACK" : "COMPLETED", revision: 2 },
+      definition: { versionId: disposition === "ROLLED_BACK" ? uuid(5) : uuid(8), revision: disposition === "ROLLED_BACK" ? 10 : 9 } });
+    for (const forbidden of ["capabilities", "values", "canRollback", "active", "reverseConversion", "ready", "nativePatch"]) expect(result.pin).not.toHaveProperty(forbidden);
+  }
+  expect(retained).toEqual(before);
+});
+it("permits independent same-company identity while rejecting foreign scope, carried grants and fake support identity", () => {
+  const retained = create(ready());
+  expect(createFieldMigrationSettlementPin(retained, settlementActor, "ROLLED_BACK").pin.principal.userId).not.toBe(retained.pin.publication.publisherUserId);
+  const support = { ...settlementActor, authority: "staff_support", auditId: "server-support-audit" };
+  expect(createFieldMigrationSettlementPin(retained, support, "FINALIZED").pin.principal).toEqual(support);
+  for (const principal of [{ ...settlementActor, organisationId: "foreign" }, { ...settlementActor, capabilities: ["*"] },
+    { ...settlementActor, authority: "staff_support" }, { ...support, bypass: true }])
+    expect(() => createFieldMigrationSettlementPin(retained, principal, "ROLLED_BACK")).toThrow();
+});
+it("rejects stale confirmation, foreign identity and client mode/tenant/target/grants instead of choosing a settlement", () => {
+  const result = createFieldMigrationSettlementPin(create(ready()), settlementActor, "ROLLED_BACK"), request = settlementRequest(result.pin);
+  for (const patch of [{ preparationId: uuid(99) }, { cutoverChecksum: "f".repeat(64) }, { definitionRevision: 8 }, { publicationRevision: 0 },
+    { cutoverRevision: 1 }, { disposition: "FINALIZED" }, { organisationId: "company" }, { targetVersionId: uuid(8) }, { capabilities: [] },
+    { stage: "rollback" }, { definitionRevision: "9" }]) expect(() => assertFieldMigrationSettlementConfirmation({ ...request, ...patch }, result)).toThrow();
+  expect(fieldMigrationSettlementRequestSchema.safeParse({ ...request, nativePatch: {} }).success).toBe(false);
+});
+it("binds historical settlement to original source, target, scope and CAS even when substituted settlement data is rechecksummed", () => {
+  const retained = create(ready()), result = createFieldMigrationSettlementPin(retained, settlementActor, "ROLLED_BACK");
+  for (const patch of [{ sourceVersionId: uuid(99) }, { targetVersionId: uuid(99) }, { organisationId: "foreign" }, { definitionId: uuid(99) },
+    { preparationId: uuid(99) }, { cutoverChecksum: "f".repeat(64) }, { definitionRevision: 10 }, { publicationRevision: 2 }]) {
+    const pin = { ...result.pin, ...patch };
+    expect(() => readFieldMigrationSettlementPin(retained, { pin, checksum: checksum(pin) })).toThrow();
+  }
+  expect(() => readFieldMigrationSettlementPin(retained, { ...result, checksum: "f".repeat(64) })).toThrow();
+  expect(() => createFieldMigrationSettlementPin({ ...retained, checksum: "f".repeat(64) }, settlementActor, "FINALIZED")).toThrow();
+});
+it("retains a closed protocol with no defaults/coercions or internally impossible same-generation reversal", () => {
+  const retained = create(ready()), result = createFieldMigrationSettlementPin(retained, settlementActor, "FINALIZED");
+  for (const input of [{ ...retained, ignored: true }, { pin: { ...retained.pin, capabilities: [] }, checksum: retained.checksum }])
+    expect(() => createFieldMigrationSettlementPin(input, settlementActor, "FINALIZED")).toThrow();
+  for (const pin of [{ ...retained.pin, source: { ...retained.pin.source, versionId: retained.pin.publication.targetVersionId } },
+    { ...retained.pin, publication: { ...retained.pin.publication, sourceGenerationId: retained.pin.publication.targetGenerationId } }])
+    expect(() => createFieldMigrationSettlementPin({ pin, checksum: checksum(pin) }, settlementActor, "ROLLED_BACK")).toThrow();
+  for (const patch of [{ disposition: "REVERSE_CONVERSION" }, { schemaVersion: "1" }, { canRollback: true }, { nativePatch: {} }])
+    expect(fieldMigrationSettlementPinSchema.safeParse({ ...result.pin, ...patch }).success).toBe(false);
+  expect(() => readFieldMigrationSettlementPin(retained, { ...result, verified: true })).toThrow();
+});
+it("uses the reserved final revision for rollback and refuses overflow, fractions and coerced counters", () => {
+  const f = ready(), sealed = sealFieldMigrationReview({ ...f.sealed.review, definitionRevision: 2147483644 });
+  const publication = { ...f.publication, revision: 2147483645, reviewChecksum: sealed.checksum };
+  const pin = { ...f.execution.pin, publication: { ...f.execution.pin.publication, reviewChecksum: sealed.checksum } };
+  const retained = createFieldMigrationCutoverPin(sealed, { ...f.execution, pin, pinChecksum: checksum(pin) }, publication, { ...f.definition, revision: 2147483645 });
+  const result = createFieldMigrationSettlementPin(retained, settlementActor, "ROLLED_BACK");
+  expect(fieldMigrationSettlementTransition(result.pin)).toMatchObject({ definition: { revision: 2147483647 }, publication: { revision: 2147483647 } });
+  for (const revision of [2147483647, Number.MAX_SAFE_INTEGER, -1, 1.5, "9"])
+    expect(() => fieldMigrationSettlementTransition({ ...result.pin, definitionRevision: revision })).toThrow();
 });

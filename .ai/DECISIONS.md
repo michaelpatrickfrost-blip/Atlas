@@ -1891,3 +1891,17 @@ maps only exact raw40001/40P01 metadata (direct or adapter cause) to the existin
 REVIEW_CHANGED conflict, without auto-retrying writes or suppressing guard/Audit
 failures. Known P2034/P2002 mapping retained. Real concurrency acceptance unchanged;
 full candidate/public proof remains required before cutover is VERIFIED.
+
+## 10 October 2026 — Retained cutover settlement closes the safe rollback window
+
+Section24 requires explicit rollback limits and preserved source/target history.
+The f2 ACTIVATED-only receipt freezes both values and configuration indefinitely;
+keeping that state alone cannot support later ordinary owner editing. Add a guarded
+one-time ROLLED_BACK or FINALIZED settlement with immutable original cutover identity,
+current server principal and exact CAS. Rollback restores only the unchanged reviewed
+source; finalization keeps the approved target and ends rollback eligibility. No
+reverse conversion, data deletion or inherited creator grants. This satisfies the
+original compatible-pointer rollback requirement while protecting newer entries.
+F4a is pure integrity only; storage/current-authority/owner proofs follow in f4b–d,
+and normal value permission enforcement remains2B4. Historical receipts describe
+completed transitions rather than permanently constraining today's active pointer.

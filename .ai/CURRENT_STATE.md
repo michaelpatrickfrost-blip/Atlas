@@ -1,5 +1,19 @@
 # Atlas current state
 
+## 10 October 2026 — F4a closed settlement contract implemented, no mutation authority
+
+New fields/migrations/settlement-contract and six cases in existing cutover-contract
+suite pin retained original cutover, independent same-company current principal,
+closed confirmations/CAS and source rollback vs retained-target window finalization.
+No tenant/mode/target/grants from client, checksum/pin not permission/readiness,
+historical transition not today's pointer. 18 focused/45 files292 regressions/build/
+scoped lint/diff PASS; strict post-build TS PASS (session89249 exit0). Logs /tmp/atlas-
+studio-settlement-contract-{tests,regression,build,types,lint}.txt. DECISIONS rationale/
+field plan/ledger updated. No DB/service/native/value/pointer mutation; live74fab2d
+verified and unchanged. F4b–d and2B4/2C–E remain. Exact next: obtain strict TS result,
+review/checkpoint f4a, then additive0007 lifecycle/deferred/history/generation guards
+with original0006 preserved. FullPhase2 NOT PASSED; visual builder still required.
+
 ## 10 October 2026 — Business setup/readable comparison VERIFIED live
 
 Exact74fab2d1983b3d16d68f481fb783332335e5fc0a full candidate/public ALL COMBINED

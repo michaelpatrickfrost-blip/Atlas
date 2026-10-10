@@ -1,5 +1,31 @@
 # Atlas current state
 
+## 10 October 2026 — Closed execution protocol locally verified
+
+2B3e2a VERIFIED locally, pure integrity only: execution pin reuses exact sealed
+review and publication target, approved target owner metadata/transactional query,
+explicit source opt-in and canonical checksums. Success lineage pins actual stored
+observation, native revision, distinct target slot/value and own extension increment
+(observed+1/new=1); overflow/substitution/invalid rows rejected. Closed bounded
+request/progress and generic failure codes; READY requires exact cohort count.
+34 Studio files/197 assertions, production build, strict post-build TypeScript,
+scoped lint/diff PASS; /tmp/atlas-studio-execution-contract-{all-tests,build,
+postbuild-types,lint}.txt. No DB/owner query/runner/target write authority. e1/e2a
+checkpoint not deployed yet; last accepted live ea27b2f. Phase 2 NOT PASSED.
+Next additive execution/outcome persistence with immutable lineage and atomic
+commit guards, then explicit Tickets approval and the actual bounded writer.
+
+## 10 October 2026 — Closed execution protocol started
+
+2B3e2a IN PROGRESS before code: closed pure execution pin derived from the actual
+sealed review/publication/immutable target and explicitly approved target owner
+metadata/query. Closed success outcome binds actual stored observation checksum,
+record/native revision and exact target extension/slot/value identity; own revision
+is observed+1 (or new=1), never a generic revision exemption. Progress validates
+bounded CAS/cursor/count and READY completeness, failure codes contain no values.
+No persistence/authority/runner/DDL; source remains active. Files migrations/execution-
+contract and focused tests. Additive deferred target/outcome guards follow e2b.
+
 ## 10 October 2026 — Representation contract and encoder locally verified
 
 2B3e1 VERIFIED locally, pure contract/encoder only: optional representation

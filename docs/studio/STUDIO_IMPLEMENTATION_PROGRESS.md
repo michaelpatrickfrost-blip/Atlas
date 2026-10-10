@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3e1 — Representation policy and typed encoder — IN PROGRESS.
+2B3e2a — Closed execution/outcome protocol — IN PROGRESS.
 2B3d1–d4 VERIFIED ea27b2f; no row writer/designer.
 
 # Overall Status
@@ -32,6 +32,7 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | Workstream | Status | Evidence |
 | --- | --- | --- |
 | 2B3c6b2b3c Reference review | VERIFIED | 32ee77e complete candidate/public, actual permission/target/Audit/replay plus native acceptance; no target/native writes. |
+| 2B3e2a Closed execution/outcome protocol | VERIFIED locally | 34 files/197 assertions, production build/strict TS/lint/diff; no DB or write authority. |
 | 2B3e1 Representation policy/typed encoder | VERIFIED locally | 33 files/191 assertions, production build, strict TS/scoped lint/diff; no owner hook or writes enabled. |
 | 2B3d1–d4 Reviewed publication/freeze/cancellation | VERIFIED | ea27b2f candidate/public complete suites, actual SQL/paired Audit rollback/private/replay/cancel/source recovery; no target values. |
 | Specification intake and repository recovery | VERIFIED | Full document read; clean detached starting HEAD af030b0; source/provider/schema inspection. |
@@ -64,6 +65,30 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+2B3e2a VERIFIED locally, pure integrity only: execution pin reuses exact sealed
+review and publication target, approved target owner metadata/transactional query,
+explicit source opt-in and canonical checksums. Success lineage pins actual stored
+observation, native revision, distinct target slot/value and own extension increment
+(observed+1/new=1); overflow/substitution/invalid rows rejected. Closed bounded
+request/progress and generic failure codes; READY requires exact cohort count.
+34 Studio files/197 assertions, production build, strict post-build TypeScript,
+scoped lint/diff PASS; /tmp/atlas-studio-execution-contract-{all-tests,build,
+postbuild-types,lint}.txt. No DB/owner query/runner/target write authority. e1/e2a
+checkpoint not deployed yet; last accepted live ea27b2f. Phase 2 NOT PASSED.
+Next additive execution/outcome persistence with immutable lineage and atomic
+commit guards, then explicit Tickets approval and the actual bounded writer.
+
+
+2B3e2a IN PROGRESS before code: closed pure execution pin derived from the actual
+sealed review/publication/immutable target and explicitly approved target owner
+metadata/query. Closed success outcome binds actual stored observation checksum,
+record/native revision and exact target extension/slot/value identity; own revision
+is observed+1 (or new=1), never a generic revision exemption. Progress validates
+bounded CAS/cursor/count and READY completeness, failure codes contain no values.
+No persistence/authority/runner/DDL; source remains active. Files migrations/execution-
+contract and focused tests. Additive deferred target/outcome guards follow e2b.
+
 
 2B3e1 VERIFIED locally, pure contract/encoder only: optional representation
 metadata validates explicit snapshot-supported sources and a registered same-owner
@@ -552,6 +577,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+e2a: migrations/execution-contract, focused execution-contract tests, plan/ledger/
+CURRENT_STATE; pure only.
+
 e1: registry types/entities/contracts/registration, fields/codec, entity tests and
 new field-encoding tests; module docs, evolution plan/ledger/CURRENT_STATE/decision.
 No DDL, native/source/target records or UI.
@@ -956,9 +984,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement 2B3e2a closed execution/outcome protocol and tests: pin actual publication,
-review checksum and observation target fingerprint, account for exact own extension
-revision increments, bounded revision/cursor state and retained failure/replay.
-Then 2B3e2b additive tenant-bound execution/outcome SQL with atomic target lineage
-and deferred guards. No native writes/activation; owner hook and actual batches
-remain e3–e6. Accepted live ea27b2f; Phase 2 visual/dashboard/button gate open.
+Implement 2B3e2b additive execution/outcome schema and SQL: tenant publication and
+observation FKs, immutable canonical pins, CAS states/cursor, exact source revision
+and deferred target slot/value lineage guards. Preserve old freshness predicates,
+normal source freeze and target activation denial. Then e3 owner-approved Tickets
+query and e4–e6 actual writer/batches/acceptance. e1/e2a local checks PASS, deployment
+pending; last accepted live ea27b2f. Phase 2 designer/dashboard/button gate open.

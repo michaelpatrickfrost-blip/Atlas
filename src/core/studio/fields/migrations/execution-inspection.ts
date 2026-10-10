@@ -3,7 +3,7 @@ import type { FieldMigrationIntent } from "./contracts";
 import { FieldMigrationReviewError, sealFieldMigrationIntent, fieldMigrationIntentFromReview, readSealedFieldMigrationReview } from "./contracts";
 import { checksum, canonicalJson } from "../../registry/contracts";
 import { studioRegistry } from "../../registry/runtime";
-import { entityDetailsSchema } from "../../registry/entities";
+import { entityDetailsSchema, supportsFieldMigrationIntent } from "../../registry/entities";
 import { compileCustomField } from "../../compiler/fields";
 import { inspectFieldMigrationReview } from "./inspection";
 import { createFieldMigrationExecutionPin, readFieldMigrationExecutionProgress } from "./execution-contract";
@@ -40,7 +40,7 @@ export async function inspectFieldMigrationExecution(authority: FieldMigrationAu
   const target = await tx.studioDefinitionVersion.findFirst({ where: { id: publication.targetVersionId, organisationId: session.organisationId, definitionId: intent.definitionId }, select: targetSelect });
   if (!target || target.checksum !== compiled.checksum || checksum(target.compiledPlan) !== compiled.checksum) changed();
   const owner = await registry.resolve(session, intent.target.payload.entity), policy = entityDetailsSchema.parse(owner.details).record?.migrationRepresentation;
-  if (!policy || !policy.sourceVersions.includes(intent.source.payload.entity.version)) changed();
+  if (!policy || !supportsFieldMigrationIntent(policy, intent.schemaVersion) || !policy.sourceVersions.includes(intent.source.payload.entity.version)) changed();
   const described = registry.describe(policy.query.id, policy.query.version);
   const approval = await registry.resolve(session, { id: described.id, version: described.version, schemaHash: described.schemaHash, contractHash: described.contractHash });
   const publicationPin = { preparationId: publication.preparationId, organisationId: publication.organisationId, definitionId: publication.definitionId,

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { ContractMetadata, FieldMigrationIntentPolicy, FieldMigrationIntentVersion } from "./types";
 
 const logicalId = z.string().regex(/^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/);
 const fieldId = z.string().regex(/^[a-z][a-z0-9_]*$/).max(100);
@@ -13,7 +14,24 @@ export const nativeRequiredFactSchema = z.strictObject({ fieldId,
 });
 const versions = z.array(z.number().int().positive()).min(1).max(20)
   .refine(value => new Set(value).size === value.length, "Duplicate settlement entity version.");
+export const migrationIntentVersionsSchema = z.array(z.union([z.literal(1), z.literal(2)])).min(1).max(2)
+  .refine(value => value.every((version, index) => index === 0 || version > value[index - 1]), "Migration intent versions must be unique and ordered.");
+/** No defaults in schemas: retained descriptors and compatibility hashes stay exact. */
+export function supportsFieldMigrationIntent(policy: FieldMigrationIntentPolicy | undefined, version: FieldMigrationIntentVersion): boolean {
+  return Boolean(policy && (version === 1 || version === 2) && (policy.intentVersions ?? [1]).includes(version));
+}
+export const fieldMigrationQueryPolicySchema = z.strictObject({ entityId: logicalId,
+  purpose: z.enum(["snapshot", "representation"]), intentVersions: migrationIntentVersionsSchema });
+export function supportsFieldMigrationQueryIntent(query: ContractMetadata, entityId: string,
+  purpose: "snapshot" | "representation", version: FieldMigrationIntentVersion): boolean {
+  if (query.kind !== "query" || query.details.transaction !== "required") return false;
+  if (query.details.fieldMigration === undefined) return version === 1;
+  const parsed = fieldMigrationQueryPolicySchema.safeParse(query.details.fieldMigration);
+  return parsed.success && parsed.data.entityId === entityId && parsed.data.purpose === purpose
+    && supportsFieldMigrationIntent(parsed.data, version);
+}
 export const fieldSettlementPolicySchema = z.strictObject({ entityId: logicalId, sourceVersions: versions, targetVersions: versions,
+  intentVersions: migrationIntentVersionsSchema.optional(),
   referenceVersions: z.array(z.number().int().positive()).max(20).refine(value => new Set(value).size === value.length, "Duplicate settlement reference version.") });
 export const extensionFieldPolicySchema = z.strictObject({
   types: z.array(z.enum(["string", "integer", "decimal", "money", "boolean", "date", "datetime", "duration", "email", "url", "phone", "enum", "multi_enum", "reference", "address"])).min(1).max(15),
@@ -42,12 +60,14 @@ export const entityDetailsSchema = z.strictObject({
     initialisation: z.strictObject({ capability: logicalId, acceptedFieldVersions: versions.optional() }).optional(),
     requiredCoverage: z.strictObject({ query: queryReference, fieldVersions: versions }).optional(),
     migrationSnapshot: z.strictObject({ query: queryReference,
+      intentVersions: migrationIntentVersionsSchema.optional(),
       sourceVersions: z.array(z.number().int().positive()).min(1).max(20)
         .refine(versions => new Set(versions).size === versions.length, "Duplicate migration source version."),
       referenceVersions: z.array(z.number().int().positive()).min(1).max(20)
         .refine(versions => new Set(versions).size === versions.length, "Duplicate migration reference version.").optional(),
     }).optional(),
     migrationRepresentation: z.strictObject({ query: queryReference,
+      intentVersions: migrationIntentVersionsSchema.optional(),
       sourceVersions: z.array(z.number().int().positive()).min(1).max(20)
         .refine(versions => new Set(versions).size === versions.length, "Duplicate representation source version."),
     }).optional(),
@@ -78,6 +98,9 @@ export const entityDetailsSchema = z.strictObject({
   if (value.record?.migrationRepresentation && (!value.record.migrationSnapshot
     || value.record.migrationRepresentation.sourceVersions.some(version => !value.record!.migrationSnapshot!.sourceVersions.includes(version))))
     ctx.addIssue({ code: "custom", message: "Representation approval requires explicitly snapshot-supported source versions." });
+  if (value.record?.migrationRepresentation && (value.record.migrationRepresentation.intentVersions ?? [1])
+    .some(version => !supportsFieldMigrationIntent(value.record!.migrationSnapshot, version)))
+    ctx.addIssue({ code: "custom", message: "Representation approval requires snapshot-supported intent versions." });
 });
 
 export const recordRequestSchema = z.strictObject({

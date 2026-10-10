@@ -1,3 +1,18 @@
+## 11 October 2026 — Migration intent approval belongs to both owner and callback
+
+Intent format is independent of native entity and receipt versions. Optional
+`intentVersions` on snapshot/representation/current settlement means legacy1 when
+absent, without inserting a default into retained JSON/hashes. An entity alone
+cannot approve conditional review2: its pinned transactional query must explicitly
+seal `fieldMigration {entityId, purpose, intentVersions}` for that canonical owner,
+write capability and snapshot/representation purpose. Representation formats must
+be a subset of snapshot formats. Registration is atomic; newest settlement policy
+fails closed for an unsupported intent rather than selecting an older query.
+Retained legacy operations also check format1 eligibility before invoking an
+explicitly format2-only owner. No Tickets/query version or old approval range is
+changed. This prevents an entity metadata change from reinterpreting an old callback;
+actual conditional callbacks/metadata/row checks/SQL guards remain prerequisites.
+
 ## 10 October 2026 — Explicit reviewed conditional evolution protocol
 
 The existing v1 migration intent, observation digest and SQL equality guards cannot

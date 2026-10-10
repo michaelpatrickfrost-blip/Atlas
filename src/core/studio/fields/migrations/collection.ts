@@ -6,7 +6,7 @@ import { assertModuleEnabled } from "@/core/modules/access";
 import { writeAudit } from "@/core/audit/log";
 import { STUDIO_CAPABILITIES } from "../../permissions";
 import { studioRegistry } from "../../registry/runtime";
-import { entityDetailsSchema, recordAnchorSchema } from "../../registry/entities";
+import { entityDetailsSchema, recordAnchorSchema, supportsFieldMigrationIntent } from "../../registry/entities";
 import { compileCustomField } from "../../compiler/fields";
 import { assertFieldBinding } from "../binding";
 import { sealFieldMigrationIntent, FieldMigrationReviewError } from "./contracts";
@@ -50,7 +50,7 @@ export async function collectFieldMigrationBatch(session: Session, input: unknow
     await assertFieldBinding(tx, fresh, intent.definitionId, intent.source.payload);
     const owner = await registry.resolve(fresh, intent.target.payload.entity), record = entityDetailsSchema.parse(owner.details).record,
       policy = record?.migrationSnapshot;
-    if (!record || !policy || !policy.sourceVersions.includes(intent.source.payload.entity.version)
+    if (!record || !policy || !supportsFieldMigrationIntent(policy, intent.schemaVersion) || !policy.sourceVersions.includes(intent.source.payload.entity.version)
       || policy.query.id !== intent.ownerQuery.id || policy.query.version !== intent.ownerQuery.version) changed();
     assertCapability(fresh, record.writeCapability);
     const query = await registry.resolve(fresh, intent.ownerQuery);

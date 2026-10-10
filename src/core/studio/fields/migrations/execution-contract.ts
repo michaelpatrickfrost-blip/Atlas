@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { referenceSchema } from "../../compiler/kernel";
 import { canonicalJson, checksum } from "../../registry/contracts";
-import { entityDetailsSchema } from "../../registry/entities";
+import { entityDetailsSchema, supportsFieldMigrationIntent, supportsFieldMigrationQueryIntent } from "../../registry/entities";
 import type { ContractMetadata } from "../../registry/types";
 import { FieldMigrationReviewError, fieldMigrationObservationSchema, readSealedFieldMigrationReview } from "./contracts";
 import { reviewedFieldPublicationPin } from "./publication-contract";
@@ -32,10 +32,11 @@ export function createFieldMigrationExecutionPin(storedReview: unknown, serverTa
   if (serverOwner.kind !== "entity" || serverOwner.id !== target.id || serverOwner.version !== target.version
     || serverOwner.schemaHash !== target.schemaHash || serverOwner.contractHash !== target.contractHash
     || checksum(details) !== serverOwner.schemaHash || !representation
-    || !representation.sourceVersions.includes(review.source.payload.entity.version)
+    || !supportsFieldMigrationIntent(representation, review.schemaVersion) || !representation.sourceVersions.includes(review.source.payload.entity.version)
     || serverApproval.ownerModuleId !== serverOwner.ownerModuleId || serverApproval.kind !== "query"
     || serverApproval.id !== representation.query.id || serverApproval.version !== representation.query.version
-    || serverApproval.capability !== details.record!.writeCapability || serverApproval.details.transaction !== "required") changed();
+    || serverApproval.capability !== details.record!.writeCapability
+    || !supportsFieldMigrationQueryIntent(serverApproval, serverOwner.id, "representation", review.schemaVersion)) changed();
   const pin = fieldMigrationExecutionPinSchema.parse({ schemaVersion: 1, publication, sourceVersionId: review.source.versionId,
     sourceChecksum: review.source.versionChecksum, entity: target,
     ownerApproval: { id: serverApproval.id, version: serverApproval.version, schemaHash: serverApproval.schemaHash, contractHash: serverApproval.contractHash },

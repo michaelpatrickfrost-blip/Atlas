@@ -43,7 +43,7 @@ export async function validateFieldMigrationSettlementCoverage(authority: FieldM
     assertCapability(session, record.writeCapability);
     for (const dependency of compiled.plan.dependencies) modules.add(dependency.ownerModuleId);
   }
-  const policy = await registry.resolveFieldSettlement(session, intent.source.payload.entity, intent.target.payload.entity);
+  const policy = await registry.resolveFieldSettlement(session, intent.source.payload.entity, intent.target.payload.entity, intent.schemaVersion);
   const details = fieldSettlementPolicySchema.parse(policy.details.fieldSettlement);
   for (const version of [active, inspected.source, inspected.target, ...written]) {
     const storage = customFieldPayloadSchema.parse(version.payload).field.storage;

@@ -1,6 +1,6 @@
 # Atlas Studio implementation progress
 
-Updated: 10 October 2026.
+Updated: 11 October 2026.
 
 # Current Phase
 
@@ -10,6 +10,23 @@ once done contiune”. Use the supplied Section 27 sequence; complete prerequisi
 and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
+
+2B4d3e2b1 — VERIFIED locally; production release pending.
+
+2B4d3e2b1 owner protocol approval — IN PROGRESS. Continue foundation-first Phase2. First coherent block adds closed intent-version
+approval to migration snapshot/representation and current settlement contracts.
+Absent means legacy1 without writing a default into retained metadata/hashes.
+An explicit v2 entity opt-in must also match a newly declared transactional owner
+query protocol; old callbacks cannot acquire v2 authority by changing an entity
+array. Preserve all Tickets1–8/query ranges, v1 hashes and closed packet parsers.
+Dependencies e1/e2a and d3d VERIFIED. Expected registry types/entities/contracts/
+registration, existing legacy migration policy checks and focused owner tests.
+No Prisma/DDL/backfill/routes/new owner version/conditional dispatch in this block.
+Verify malformed/duplicate/unknown approvals, same owner/capability/transaction,
+atomic failure, old hashes, latest-policy fail-closed and existing migration regressions.
+Next after this block: shared genuine-principal v1/v2 metadata inspection using
+locked provider, then actual row evaluation and additive SQL guards (e2b2/3).
+
 
 2B4d3e2b owner protocol approval + real migration inspection — NOT STARTED;
 source exploration recorded. e1/e2a pure helpers and release compatibility VERIFIED
@@ -474,6 +491,8 @@ Authoritative ten-phase source preserved unchanged at docs/studio/ATLAS_STUDIO_S
 body/table paragraphs/footer read. Michael authorised source sequence on9 October.
 
 # Completed Workstreams
+
+d3e2b1 owner protocol approval VERIFIED locally;72/10, strict TS/scoped lint/build/diff PASS. Live proof pending.
 
 - d3d canonical candidate requirement coverage — VERIFIED actual SQL and candidate/public on18bd031, repeated PASS in livef83e889. No activation/native hooks.
 - d3e1 version-aware evolution impact — VERIFIED pure/local and exact-release runtime/compatibility in f83e889; cosmetics vs reviewed new generations and input pin impact.
@@ -2433,6 +2452,8 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+11Oct e2b1: registry/types.ts, entities.ts, contracts.ts, registry.ts; migrations/preparation.ts, collection.ts, observation.ts, coverage.ts, execution-contract.ts, execution-inspection.ts, settlement-coverage.ts; tests/studio-migration-protocol-owner.test.ts; architecture/module/decision/required-rules plan/ledger/current memory.
+
 Current e1/e2a: fields/evolution.ts, required-contract.ts, migrations/required-contracts.ts; tests/studio-field-required-{evolution,review}.test.ts; required-rules plan, architecture/module docs, decisions/current state/ledger.
 
 10 October2026: d3d: registry types/entities/contracts/registry; service-work/studio; fields/required-runtime and new required-coverage; owner and required-runtime tests plus old-hash/creation regressions; existing central result/native-contract probes; architecture/module/permissions, required-rules plan, ledger/current/decisions.
@@ -2631,6 +2652,8 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+11Oct e2b1: NONE. No migration applied, backfill, reset or business record change.
+
 Current e1/e2a: NONE. v2 packets are intentionally not persisted; existing SQL guards remain v1 until additive e2b changes.
 
 10 October2026: d3d: NONE. No schema/migration/backfill/reset; Test-only native/config/typed/Audit probes roll back.
@@ -2756,6 +2779,8 @@ and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
 
+11Oct: studio-migration-protocol-owner.test.ts —6 cases for closed formats, atomic query-owner matching, retained hashes, explicit settlement coverage/no fallback.
+
 13 meaningful pure evolution/versioned packet cases (6+7), plus existing legacy evolution/review regressions.
 
 10 October2026: d3d:5 owner-policy/query cases and8 full canonical coverage cases; exact old v7 hash regression. Central rollback-only final/merged/unanchored probe added, NOT RUN yet.
@@ -2833,6 +2858,8 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+11Oct e2b1:72/10 focused cases PASS (72989/19558), strict TS62504 PASS, scoped lint33784 PASS, production build48191 PASS, diff check PASS.
 
 e1/e2a focused32/4 PASS; strict TS29481 exit0, ESLint9999 exit0, build79552 exit0, diff PASS. d3d original candidate/public combined release22055 exit0.
 
@@ -3013,6 +3040,8 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+11Oct e2b1 VERIFIED locally only. Server release/compatibility and real v2 migration inspection/persistence remain pending.
 
 e1/e2a livef83e889 source compatibility + pure server runtime PASS; candidateTTfVUe/
 publicr6k3E7 ALL COMBINED PASS, runner33757 exit0. No v2 business migration claim.
@@ -3267,6 +3296,8 @@ No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
 
+Phase2 IN PROGRESS; e2b1 local contract block checked, no wholePhase2 PASS or conditional migration/visual completion.
+
 e1/e2a scoped gate PASS (pure32/4 + build/types/lint + exact-release runtime and
 candidate/public compatibility). FullPhase2 FAIL/pending; e2b/e3/d4 and remaining
 forms/search/record types/pages/visual builder must pass before Phase3.
@@ -3322,6 +3353,8 @@ These checks derive from Sections 5–6, 14, 19, 25–28; no whole-system gate u
 prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
+
+Commit/pin e2b1 owner protocol block; run original Studio server acceptance release. During release implement shared full v1/v2 metadata inspection using genuine principal/locked provider (e2b2); do not move pinned HEAD or enable conditional persistence/authoring/native dispatch.
 
 d3e2b: add explicit intent-version approval to newly versioned owner migration
 contracts (absent means legacy1; preserve old hashes/ranges), then shared genuine-

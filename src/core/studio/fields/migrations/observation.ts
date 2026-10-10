@@ -3,7 +3,7 @@ import { assertCapability } from "@/core/permissions/check";
 import type { RecordAnchor, RecordContext } from "../../registry/types";
 import type { CapabilityRegistry } from "../../registry/registry";
 import { checksum } from "../../registry/contracts";
-import { entityDetailsSchema, recordAnchorSchema } from "../../registry/entities";
+import { entityDetailsSchema, recordAnchorSchema, supportsFieldMigrationIntent } from "../../registry/entities";
 import { compileCustomField } from "../../compiler/fields";
 import { customFieldPayloadSchema, type FieldValue } from "../schema";
 import { decodeStoredFieldValue } from "../codec";
@@ -30,7 +30,7 @@ export async function inspectFieldMigrationRecord(context: RecordContext & { tra
   if (!record?.fieldPolicy) changed(); assertCapability(session, record.writeCapability);
   const targetNative = await registry.resolve(session, target.entity), targetRecord = entityDetailsSchema.parse(targetNative.details).record;
   const policy = targetRecord?.migrationSnapshot;
-  if (!targetRecord || !policy || !policy.sourceVersions.includes(current.entity.version)
+  if (!targetRecord || !policy || !supportsFieldMigrationIntent(policy, intent.schemaVersion) || !policy.sourceVersions.includes(current.entity.version)
     || policy.query.id !== intent.ownerQuery.id || policy.query.version !== intent.ownerQuery.version) changed();
   assertCapability(session, targetRecord.writeCapability);
   const query = await registry.resolve(session, intent.ownerQuery);

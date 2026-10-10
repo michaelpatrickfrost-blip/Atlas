@@ -38,6 +38,9 @@ export type NativeRequiredFact = {
   fieldId: string; type: "string" | "integer" | "boolean" | "date" | "datetime" | "enum";
   classification: Classification; capability?: string; codes?: readonly string[];
 };
+/** Reviewed intent format, independent of native entity or receipt versions. */
+export type FieldMigrationIntentVersion = 1 | 2;
+export type FieldMigrationIntentPolicy = { intentVersions?: readonly FieldMigrationIntentVersion[] };
 export type EntityDescriptor = ContractIdentity & {
   kind: "entity";
   key: "uuid" | "string";
@@ -59,13 +62,13 @@ export type EntityDescriptor = ContractIdentity & {
      * migration/settlement approval. Never grants native or extension writes. */
     requiredCoverage?: { query: { id: string; version: number }; fieldVersions: readonly number[] };
     /** Read-only migration capture/coverage; ordinary record write guards still apply. */
-    migrationSnapshot?: { query: { id: string; version: number }; sourceVersions: readonly number[];
+    migrationSnapshot?: FieldMigrationIntentPolicy & { query: { id: string; version: number }; sourceVersions: readonly number[];
       /** Explicit same-canonical-entity reference read versions covered by this
        * owner's pinned query. This metadata never grants reference permission. */
       referenceVersions?: readonly number[] };
     /** Representation-only approval of a persisted reviewed publication row.
      * This is distinct from normal extension editing and never grants native writes. */
-    migrationRepresentation?: { query: { id: string; version: number }; sourceVersions: readonly number[] };
+    migrationRepresentation?: FieldMigrationIntentPolicy & { query: { id: string; version: number }; sourceVersions: readonly number[] };
     authorise(ctx: RecordContext, request: RecordRequest): Promise<RecordAnchor>;
   };
 };
@@ -85,9 +88,12 @@ export type QueryDescriptor<I, O> = ContractIdentity & {
   costClass: "low" | "medium" | "high";
   /** Explicit server-only opt-in for atomic owner snapshots, not command execution. */
   transaction?: "required";
+  /** Explicit owner callback protocol. Entity metadata alone cannot widen an old
+   * query to conditional intents; omission preserves legacy format1 only. */
+  fieldMigration?: { entityId: string; purpose: "snapshot" | "representation"; intentVersions: readonly FieldMigrationIntentVersion[] };
   /** Current owning-domain coverage for retained field migration settlement.
    * Separate from sealed preparation contracts; grants no native/value writes. */
-  fieldSettlement?: { entityId: string; sourceVersions: readonly number[]; targetVersions: readonly number[]; referenceVersions: readonly number[] };
+  fieldSettlement?: FieldMigrationIntentPolicy & { entityId: string; sourceVersions: readonly number[]; targetVersions: readonly number[]; referenceVersions: readonly number[] };
   execute(ctx: Context, input: I): Promise<O>;
 };
 export type CommandDescriptor<I, O> = ContractIdentity & {

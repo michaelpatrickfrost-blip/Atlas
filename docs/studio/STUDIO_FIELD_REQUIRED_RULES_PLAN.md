@@ -373,3 +373,42 @@ v2 intent/review/digest/required failure/closed v1 boundary, no DB writes/files.
 First ESM stdin diagnostic failed module loading; correct CommonJS mode passed,
 no production defect or source change.32/4 + strict TS/scoped lint/build PASS.
 e2b real business inspection/SQL persistence and e3/d4 remain unfinished.
+
+## 11 October 2026 — d3e2b1 owner protocol approval IN PROGRESS
+
+Continue foundation-first Phase2. First coherent block adds closed intent-version
+approval to migration snapshot/representation and current settlement contracts.
+Absent means legacy1 without writing a default into retained metadata/hashes.
+An explicit v2 entity opt-in must also match a newly declared transactional owner
+query protocol; old callbacks cannot acquire v2 authority by changing an entity
+array. Preserve all Tickets1–8/query ranges, v1 hashes and closed packet parsers.
+Dependencies e1/e2a and d3d VERIFIED. Expected registry types/entities/contracts/
+registration, existing legacy migration policy checks and focused owner tests.
+No Prisma/DDL/backfill/routes/new owner version/conditional dispatch in this block.
+Verify malformed/duplicate/unknown approvals, same owner/capability/transaction,
+atomic failure, old hashes, latest-policy fail-closed and existing migration regressions.
+Next after this block: shared genuine-principal v1/v2 metadata inspection using
+locked provider, then actual row evaluation and additive SQL guards (e2b2/3).
+
+## 11 October 2026 — d3e2b1 owner protocol approval VERIFIED locally
+
+Closed optional intent-version contracts and independently hashed canonical owner
+query protocols implemented. Atomic registry rejects mismatched purpose/owner/
+capability/transaction/version; representation support is a snapshot subset.
+Legacy preparation/collection/observation/coverage/execution/settlement checks now
+reject explicitly format2-only policies. Newest settlement does not fall back.
+Tickets1–8 and existing query ranges/hashes retained; no owner9/new callback/DDL/
+Prisma/backfill/route/native hook/conditional dispatch added. Existing v1 packet
+parsers and engine stay closed. Future callbacks still need real implementation.
+
+72 cases/10 focused suites PASS (72989:31;19558:41), strict TypeScript62504 exit0,
+scoped ESLint33784 exit0, production build48191 exit0, diff review/check PASS.
+No full baseline suite/lint repeated. Local standalone import of service-work/studio
+hit its circular bootstrap entry; no runtime/source change claimed from that
+unsuitable diagnostic. Focused registered-owner tests and production build passed.
+Files registry types/entities/contracts/registry, seven existing migration policy
+checks, studio-migration-protocol-owner test and architecture/module/decision/plan/
+ledger/current memory. No unrelated functionality removed.
+Next: commit/pin this block and release under original Studio acceptance gates;
+while pinned release runs, prepare shared full version-aware metadata inspection
+(e2b2), keep actual v2 authoring/persistence disabled. Live proof pending.

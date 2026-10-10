@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
 import type { CommandDescriptor, ContractIdentity, Contribution, DeclarativeDescriptor, EntityDescriptor, QueryDescriptor } from "./types";
-import { entityDetailsSchema, fieldSettlementPolicySchema, recordAnchorSchema, recordRequestSchema } from "./entities";
+import { entityDetailsSchema, fieldMigrationQueryPolicySchema, fieldSettlementPolicySchema, recordAnchorSchema, recordRequestSchema } from "./entities";
 
 export function canonicalJson(value: unknown): string {
   if (value === null || typeof value !== "object") {
@@ -27,6 +27,7 @@ export function query<I, O>(d: QueryDescriptor<I, O>): Contribution {
     schemaHash: checksum({ inputSchema, outputSchema }),
     details: { pagination: d.pagination, maxCardinality: d.maxCardinality, costClass: d.costClass,
       ...(d.transaction ? { transaction: d.transaction } : {}),
+      ...(d.fieldMigration ? { fieldMigration: fieldMigrationQueryPolicySchema.parse(d.fieldMigration) } : {}),
       ...(d.fieldSettlement ? { fieldSettlement: fieldSettlementPolicySchema.parse(d.fieldSettlement) } : {}) } },
     run: async (ctx, value) => {
       if (requiresTransaction && !ctx.transaction) throw new Error("This owner query requires a shared server transaction.");

@@ -5,7 +5,7 @@ import type { CapabilityRegistry } from "../../registry/registry";
 import { checksum } from "../../registry/contracts";
 import { compileCustomField } from "../../compiler/fields";
 import { referenceSchema } from "../../compiler/kernel";
-import { entityDetailsSchema } from "../../registry/entities";
+import { entityDetailsSchema, supportsFieldMigrationIntent } from "../../registry/entities";
 import { customFieldPayloadSchema } from "../schema";
 import { assertFieldMigrationPolicies } from "./access";
 import { sealFieldMigrationIntent, FieldMigrationReviewError, type FieldMigrationIntent } from "./contracts";
@@ -31,9 +31,9 @@ export async function validateFieldMigrationSourceCoverage(context: RecordContex
   // a newer owner contract cannot substitute for a revoked source-version grant.
   assertCapability(session, sourceRecord.writeCapability); assertCapability(session, record.writeCapability);
   const query = await registry.resolve(session, intent.ownerQuery);
-  if (!policy || !policy.sourceVersions.includes(intent.source.payload.entity.version) || policy.query.id !== intent.ownerQuery.id || policy.query.version !== intent.ownerQuery.version
+  if (!policy || !supportsFieldMigrationIntent(policy, intent.schemaVersion) || !policy.sourceVersions.includes(intent.source.payload.entity.version) || policy.query.id !== intent.ownerQuery.id || policy.query.version !== intent.ownerQuery.version
     || query.kind !== "query" || query.details.transaction !== "required" || query.ownerModuleId !== owner.ownerModuleId) changed();
-  if ((stage === "execution" || stage === "cutover") && !record?.migrationRepresentation?.sourceVersions.includes(intent.source.payload.entity.version)) changed();
+  if ((stage === "execution" || stage === "cutover") && (!supportsFieldMigrationIntent(record?.migrationRepresentation, intent.schemaVersion) || !record?.migrationRepresentation?.sourceVersions.includes(intent.source.payload.entity.version))) changed();
   await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${intent.id}::uuid AND "organisationId"=${session.organisationId} FOR UPDATE`;
   // Derive post-cutover coverage solely from actual scoped retained rows; the
   // original preparation/publication/execution predicates remain source-active.

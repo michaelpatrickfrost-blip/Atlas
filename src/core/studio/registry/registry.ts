@@ -2,8 +2,8 @@ import { z } from "zod";
 import type { Session } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
 import { checksum } from "./contracts";
-import type { ContractMetadata, ContractReference, Contribution, RecordAnchor, RecordContext, StudioModuleContract } from "./types";
-import { entityDetailsSchema, fieldSettlementPolicySchema, recordAnchorSchema, recordRequestSchema } from "./entities";
+import type { ContractMetadata, ContractReference, Contribution, FieldMigrationIntentVersion, RecordAnchor, RecordContext, StudioModuleContract } from "./types";
+import { entityDetailsSchema, fieldMigrationQueryPolicySchema, fieldSettlementPolicySchema, recordAnchorSchema, recordRequestSchema, supportsFieldMigrationIntent, supportsFieldMigrationQueryIntent } from "./entities";
 
 const logicalId = /^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/;
 const identity = z.object({ id: z.string().regex(logicalId), version: z.number().int().positive(),
@@ -45,6 +45,15 @@ export class CapabilityRegistry {
       additions.set(key, { metadata, run: item.run, authoriseRecord: item.authoriseRecord, authoriseInitialRecord: item.authoriseInitialRecord });
     }
     for (const { metadata: m } of additions.values()) {
+      if (m.details.fieldMigration !== undefined) {
+        const policy = fieldMigrationQueryPolicySchema.parse(m.details.fieldMigration);
+        if (m.kind !== "query" || m.details.transaction !== "required") throw new Error("Field migration requires a transactional owner query.");
+        const owned = [...this.items.values(), ...additions.values()].some(({ metadata }) => metadata.kind === "entity"
+          && metadata.id === policy.entityId && metadata.ownerModuleId === ownerModuleId
+          && entityDetailsSchema.parse(metadata.details).record?.fieldPolicy
+          && entityDetailsSchema.parse(metadata.details).record?.writeCapability === m.capability);
+        if (!owned) throw new Error("Field migration query must declare a typed entity from the same owner and write capability.");
+      }
       if (m.details.fieldSettlement !== undefined) {
         const policy = fieldSettlementPolicySchema.parse(m.details.fieldSettlement);
         if (m.kind !== "query" || m.details.transaction !== "required") throw new Error("Field settlement requires a transactional owner query.");
@@ -132,6 +141,13 @@ export class CapabilityRegistry {
         if (!target || target.metadata.kind !== "query" || target.metadata.ownerModuleId !== ownerModuleId
           || target.metadata.capability !== record.writeCapability || target.metadata.details.transaction !== "required")
           throw new Error("Representation approval requires a registered transactional owner query with native write capability.");
+      }
+      for (const purpose of ["snapshot", "representation"] as const) {
+        const policy = purpose === "snapshot" ? record.migrationSnapshot : record.migrationRepresentation;
+        if (!policy) continue;
+        const target = additions.get(`${policy.query.id}@${policy.query.version}`) ?? this.items.get(`${policy.query.id}@${policy.query.version}`);
+        if (!target || (policy.intentVersions ?? [1]).some(version => !supportsFieldMigrationQueryIntent(target.metadata, m.id, purpose, version)))
+          throw new Error("Field migration intent versions require matching explicit owner query protocol approval.");
       }
     }
     for (const [key, item] of additions) this.items.set(key, item);
@@ -232,14 +248,14 @@ export class CapabilityRegistry {
   }
   /** Current registered owner policy only. Unsupported latest versions fail
    * closed rather than falling back to an older policy. No client query choice. */
-  async resolveFieldSettlement(session: Session, source: ContractReference, target: ContractReference): Promise<ContractMetadata> {
+  async resolveFieldSettlement(session: Session, source: ContractReference, target: ContractReference, intentVersion: FieldMigrationIntentVersion = 1): Promise<ContractMetadata> {
     const a = await this.resolve(session, source), b = await this.resolve(session, target);
     if (a.kind !== "entity" || b.kind !== "entity" || a.id !== b.id || a.ownerModuleId !== b.ownerModuleId)
       throw new Error("DEPENDENCY_BROKEN: canonical field settlement owner is unavailable.");
     const candidates = [...this.items.values()].map(item => item.metadata).filter(m => m.kind === "query" && m.ownerModuleId === a.ownerModuleId
       && m.details.fieldSettlement !== undefined && fieldSettlementPolicySchema.parse(m.details.fieldSettlement).entityId === a.id).sort((x, y) => y.version - x.version);
     const policy = candidates[0], details = policy && fieldSettlementPolicySchema.parse(policy.details.fieldSettlement);
-    if (!policy || !details || !details.sourceVersions.includes(source.version) || !details.targetVersions.includes(target.version))
+    if (!policy || !details || !supportsFieldMigrationIntent(details, intentVersion) || !details.sourceVersions.includes(source.version) || !details.targetVersions.includes(target.version))
       throw new Error("DEPENDENCY_BROKEN: field settlement needs current owning-domain coverage.");
     await this.allowed(session, policy);
     return policy;

@@ -446,3 +446,16 @@ Legacy v1 parsers/converters/digests/owner ranges remain closed and unchanged.
 These helpers grant no business access, persistence or execution. Real conditional
 inspection, additive SQL guards, existing execution/cutover/settlement adaptation
 and shared native locks/enforcement must precede authoring dispatch. No new engine.
+
+### Studio reviewed migration format approval — 11 October 2026
+
+Snapshot/representation/settlement policies may explicitly pin closed ordered
+`intentVersions` (1 or 2); omission preserves legacy1 JSON and hashes. A v2 entity
+snapshot/representation approval must match the pinned callback's hashed
+`fieldMigration` entity/purpose/version declaration, plus existing owning module,
+native write capability and required shared transaction. Representation support
+must be contained by snapshot support. Current settlement selection rejects an
+unsupported newest format without fallback. Existing Tickets1–8 and owner-query
+ranges remain unchanged. These contracts do not enable v2 authoring, persistence,
+execution or native mutation; actual owner implementation and remaining Phase2
+migration/lock/runtime gates are still required.

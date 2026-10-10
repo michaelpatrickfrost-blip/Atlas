@@ -6,7 +6,7 @@ import { writeAudit } from "@/core/audit/log";
 import { STUDIO_CAPABILITIES } from "../../permissions";
 import { studioRegistry } from "../../registry/runtime";
 import { checksum } from "../../registry/contracts";
-import { entityDetailsSchema } from "../../registry/entities";
+import { entityDetailsSchema, supportsFieldMigrationIntent } from "../../registry/entities";
 import { compileCustomField } from "../../compiler/fields";
 import { customFieldPayloadSchema } from "../schema";
 import { assertFieldBinding } from "../binding";
@@ -37,7 +37,7 @@ export async function startFieldMigrationPreparation(session: Session, serverPri
     if (source.checksum !== checksum(source.compiledPlan) || source.checksum !== compiledSource.checksum) changed();
     await assertFieldBinding(tx, fresh, definition.id, current);
     const owner = await registry.resolve(fresh, target.entity), policy = entityDetailsSchema.parse(owner.details).record?.migrationSnapshot;
-    if (!policy || !policy.sourceVersions.includes(current.entity.version) || current.entity.id !== target.entity.id)
+    if (!supportsFieldMigrationIntent(policy, 1) || !policy || !policy.sourceVersions.includes(current.entity.version) || current.entity.id !== target.entity.id)
       throw new Error("MIGRATION_OWNER_REQUIRED: this owner has not approved the source field snapshot protocol.");
     const ownerQuery = registry.describe(policy.query.id, policy.query.version);
     // Source/ref module availability cannot race compilation or preparation.

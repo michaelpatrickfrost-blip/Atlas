@@ -2059,3 +2059,16 @@ Failed value/uniqueness/CAS/Audit commits close nothing. Published source freeze
 remain authoritative, including later migrations after completed older targets.
 This implements the specification's rollback limits and atomic native-owner
 operations using existing additive0007/8 guards, without a second migration engine.
+
+## 10 October 2026 — Version conditional requirements without changing sealed fields
+
+Adding required-if defaults to the v1 payload would change sealed hashes, migration
+pins and historical interpretation. The v2 contract wraps the existing typed field
+with a bounded all/any group of owner-approved facts or immutable field-version pins.
+The pure compiler reuses existing field codecs/access checks, rejects cycles and
+sensitivity downgrade, and canonically seals metadata only. No arbitrary expression,
+SQL or Phase3 Decision engine is introduced. It remains outside definition dispatch
+until canonical coverage and native transaction hooks enforce the rule, so a partial
+configuration cannot become an active rule that ordinary native actions bypass.
+This preserves Section6.5 server validation and backward compatibility; d1 tests are
+pure-contract evidence, not proof of end-to-end native required enforcement.

@@ -1,3 +1,66 @@
+## 10 October 2026 —2B4d1 pure rule compiler VERIFIED locally; d2 next
+
+Closed bounded conditional v2 contract/compiler preserves sealed v1 definitions.
+Checks current owner/field/fact permissions, tenant/entity/native approvals and pins,
+sensitivity, typed literal codec normalization, duplicate predicates and cycles.
+67 files/416 regression tests, production build, strict post-build TypeScript,
+scoped lint and diff PASS. First TS found narrowing/fixture errors; corrected and
+rerun PASS. No DDL/native writes/client endpoint/conditional publication/provider.
+Source required-contract/required-compiler, two test suites, required-rules plan,
+phase plans/ledger/DECISIONS/current state. Live remains verified62201ae; d1 helpers
+are intentionally unwired until d2–4 native/canonical enforcement is complete.
+Exact next: shared transaction authority refresh, then registered owner facts and
+new-record creation proof contracts under d2. Visual2E and wholePhase2 remain.
+Evidence /tmp/atlas-studio-d1-{regression,build,postbuild-types,compiler-lint}.txt.
+
+## 10 October 2026 —2B4c VERIFIED live1235UTC; d1 pure grammar started
+
+Exact62201ae508ea6b6e594e343082188e0696adb9db candidateckDSFP/public9CdV2F
+ALL COMBINED ACCEPTANCE PASS; runner75784 exit0. Actual customer/no-authoring
+reference/value writes, uniqueness/CAS/current+written restrictions, source freeze,
+both target Audit failures/concurrent exactly once/history replay, genuine affiliated
+staff support Audit failure with authoring disabled, retirement/history/native
+snapshots PASS in both stages. All native suites PASS; zero reported browser errors.
+65files402/build/strictpostbuildTS/lint/diff PASS. No DDL/model/native/UI mutation.
+Backup122418, fixtures122557/123008; no ad-hoc dumps. Current/public62201ae,
+previous53c05ae retained; Atlas active, PG18main online, login200, root167GiBfree/
+14%used, both original locks idle. Retention retired only inactivea527ccd runtime
+output; source/static/history/data/backups preserved. Evidence b4c-live-deploy log.
+Nextd1 bounded typed required-if grammar/v2 contract is IN PROGRESS:12 focused
+assertions (3 files) and lint PASS, initial strict TS failed (compiler narrowing/fixture typing), corrected; strict post-build TS PASS. No definition dispatch/native
+hooks/new condition publication. d1 compiler implemented, 67 files/416 tests and production build PASS; final types/checkpoint next, then
+owner facts/new-record create policy and canonical/native d2–5 gates. Visual2E and
+wholePhase2 gate still outstanding; no later phase begins.
+
+## 10 October 2026 —2B4d1 pure required-if contract IN PROGRESS
+
+2B4c actual candidate/public feature helper PASS; remaining public native suites
+still running under pinned62201ae, no branch movement. Next independent pure
+contract work is part of2B4d1: closed bounded typed predicates and versioned field
+payload preservingv1. Expected fields/required-contract + focused tests then pure
+compiler; no DDL/native hook/definition dispatch. Do NOT allow publication of new
+conditional payload until d2–4 canonical/native enforcement is complete. Native
+facts and other field versions must be owner/server-approved, no client fact grants.
+Next implement pure grammar/schema and backward-hash tests, then compiler metadata
+resolution. Follow saved STUDIO_FIELD_REQUIRED_RULES_PLAN.md. No later phase engine.
+
+## 10 October 2026 —2B4c actual candidate proof PASS; public pending
+
+Pinned62201ae508ea6b6e594e343082188e0696adb9db full candidateckDSFP ALL
+COMBINED PASS; actual ordinary value helper PASS including reference writes,
+uniqueness/CAS/current+written, migration source freeze, both target Audits fail
+atomically, concurrent exactly once/history replay, true affiliated staff support
+Audit failure and authoring disabled, retirement/native preservation. Public9CdV2F
+running; not VERIFIED until runner75784 exit0/fullpublic/exacthealth. Backup122418,
+fixtures122557/123008. No DDL or native mutation; local65files402/build/types/lint.
+Source Section6.5/24/27 re-read and owner mutation paths inspected: createWork,
+lockWork transitions/merge/comment/watch/approval/file events; linked parent version
+updates and service-case reassociation preserve facts. Required-rule ordered d1–5
+plan saved at docs/studio/STUDIO_FIELD_REQUIRED_RULES_PLAN.md; no conditional/native
+implementation yet. Corrected top Phase2 plan/fields stale rollback/value-read claims.
+Next finish public release, then d1 versioned bounded condition contracts/compiler;
+keep them unwired to publication until canonical/native coverage works.
+
 ## 10 October 2026 —2B4c local release checkpoint ready
 
 Internal ordinary save service: current native extend/current+written field and

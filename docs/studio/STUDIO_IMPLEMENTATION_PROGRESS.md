@@ -15,7 +15,8 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 2B3f4c/d retained inspection, current-authority settlement and acceptance — VERIFIED livea527ccd.
 2B4a ordinary operator authority/read compiler — VERIFIED live53c05ae.
 2B4b scoped current/history gateway — VERIFIED live53c05ae.
-2B4c atomic ordinary saves — IMPLEMENTED locally; real proof pending; no endpoint/native hooks.
+2B4c atomic ordinary saves — VERIFIED live62201ae; internal only, no endpoint/native hooks.
+2B4d1 pure required-if contracts/compiler — VERIFIED locally;67files416/build/strict post-build TS/lint/diff PASS; no publication dispatch/native hooks.
 F4b2a active representation cosmetic binding remains VERIFIED.
 2B3f4b1 additive one-time settlement storage — VERIFIED live1d7f558, candidate/public
 combined acceptance PASS, original runner20133 exit0. Operational cleanup VERIFIED.
@@ -35,6 +36,26 @@ F4a VERIFIED locally (adfc357); strict TS/build/scoped lint,18 focused and45 fil
 candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
+
+## 10 October 2026 —2B4c VERIFIED live1235UTC; d1 pure grammar started
+
+Exact62201ae508ea6b6e594e343082188e0696adb9db candidateckDSFP/public9CdV2F
+ALL COMBINED ACCEPTANCE PASS; runner75784 exit0. Actual customer/no-authoring
+reference/value writes, uniqueness/CAS/current+written restrictions, source freeze,
+both target Audit failures/concurrent exactly once/history replay, genuine affiliated
+staff support Audit failure with authoring disabled, retirement/history/native
+snapshots PASS in both stages. All native suites PASS; zero reported browser errors.
+65files402/build/strictpostbuildTS/lint/diff PASS. No DDL/model/native/UI mutation.
+Backup122418, fixtures122557/123008; no ad-hoc dumps. Current/public62201ae,
+previous53c05ae retained; Atlas active, PG18main online, login200, root167GiBfree/
+14%used, both original locks idle. Retention retired only inactivea527ccd runtime
+output; source/static/history/data/backups preserved. Evidence b4c-live-deploy log.
+Nextd1 bounded typed required-if grammar/v2 contract is IN PROGRESS:12 focused
+assertions (3 files) and lint PASS, initial strict TS failed (compiler narrowing/fixture typing), corrected; strict post-build TS PASS. No definition dispatch/native
+hooks/new condition publication. d1 compiler implemented, 67 files/416 tests and production build PASS; final types/checkpoint next, then
+owner facts/new-record create policy and canonical/native d2–5 gates. Visual2E and
+wholePhase2 gate still outstanding; no later phase begins.
+
 
 ## 10 October 2026 —2B4a/b VERIFIED live;2B4c IMPLEMENTED locally
 
@@ -69,8 +90,11 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 
 # Completed Workstreams
 
+2B4d1 pure grammar/compiler VERIFIED locally:67files416/build/strictpostbuildTS/lint/diff PASS; no runtime/publication claim.
+
 | Workstream | Status | Evidence |
 | --- | --- | --- |
+| 2B4c Ordinary atomic saves/windows | VERIFIED | Exact62201ae candidateckDSFP/public9CdV2F ALL COMBINED PASS, runner75784 exit0; real references/unique/CAS/source freeze/both-Audit failure/concurrent/historical/customer/support/retirement/native proof;65files402/build/types/lint; no DDL. |
 | 2B4a/b Ordinary authority/current/history reads | VERIFIED | Exact53c05ae candidate1rQ6MH/publiccmZ7bt ALL COMBINED PASS, runner68174 exit0; actual ordinary customer typed/all-generation/reference/current access proof;63files390/build/types/lint; no DDL. |
 | 2B3f4c/d Retained/current settlement and service acceptance | VERIFIED | a527ccd candidate1qikYT/publicWMNUWf ALL COMBINED PASS, runner96792 exit0; real independent actor, paired Audit/CAS/revocation/drift/history/source freeze/native proof;60files372/build/types/lint; no new DDL. |
 | 2B3f4b2b Generation/history/cosmetic continuation | VERIFIED | f1a9bf1 candidatezDzdGq/publici1zMEw ALL COMBINED PASS, runner65486 exit0; actual both-terminal continuation/owner fixture and later real publication source-first freeze;0008 applied;55files343/build/types/lint. |
@@ -116,6 +140,49 @@ body/table paragraphs/footer read. Michael authorised source sequence on9 Octobe
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+## 10 October 2026 —2B4d1 pure compiler IMPLEMENTED
+
+Closed bounded v2 grammar and metadata-only compiler check owner/type/tenant pins,
+explicit native approval, target/source grants and sensitivity, source field cycles,
+typed codec normalization and canonical duplicate/order checks. Old v1 parser/plan
+hashes untouched. 67 files/416 regression tests and production build/scoped lint PASS.
+First strict TS caught impossible multi-enum comparison and union fixture typing;
+corrected, final strict post-build run pending. No DDL, record values, native hooks,
+authoring dispatch or new conditional publication. Trusted metadata provider/owner
+facts and runtime enforcement remain d2–4. New tests are required contract/compiler
+suites; no runtime feature claim. Next final types/review/checkpoint then d2.
+
+## 10 October 2026 —2B4d1 pure required-if contract IN PROGRESS
+
+2B4c actual candidate/public feature helper PASS; remaining public native suites
+still running under pinned62201ae, no branch movement. Next independent pure
+contract work is part of2B4d1: closed bounded typed predicates and versioned field
+payload preservingv1. Expected fields/required-contract + focused tests then pure
+compiler; no DDL/native hook/definition dispatch. Do NOT allow publication of new
+conditional payload until d2–4 canonical/native enforcement is complete. Native
+facts and other field versions must be owner/server-approved, no client fact grants.
+Next implement pure grammar/schema and backward-hash tests, then compiler metadata
+resolution. Follow saved STUDIO_FIELD_REQUIRED_RULES_PLAN.md. No later phase engine.
+
+
+## 10 October 2026 —2B4c actual candidate proof PASS; public pending
+
+Pinned62201ae508ea6b6e594e343082188e0696adb9db full candidateckDSFP ALL
+COMBINED PASS; actual ordinary value helper PASS including reference writes,
+uniqueness/CAS/current+written, migration source freeze, both target Audits fail
+atomically, concurrent exactly once/history replay, true affiliated staff support
+Audit failure and authoring disabled, retirement/native preservation. Public9CdV2F
+running; not VERIFIED until runner75784 exit0/fullpublic/exacthealth. Backup122418,
+fixtures122557/123008. No DDL or native mutation; local65files402/build/types/lint.
+Source Section6.5/24/27 re-read and owner mutation paths inspected: createWork,
+lockWork transitions/merge/comment/watch/approval/file events; linked parent version
+updates and service-case reassociation preserve facts. Required-rule ordered d1–5
+plan saved at docs/studio/STUDIO_FIELD_REQUIRED_RULES_PLAN.md; no conditional/native
+implementation yet. Corrected top Phase2 plan/fields stale rollback/value-read claims.
+Next finish public release, then d1 versioned bounded condition contracts/compiler;
+keep them unwired to publication until canonical/native coverage works.
+
 
 ## 10 October 2026 —2B4c local release checkpoint ready
 
@@ -1641,6 +1708,9 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+d1: fields/required-contract.ts, required-compiler.ts; two focused test suites;
+STUDIO_FIELD_REQUIRED_RULES_PLAN.md, phase plans, ledger/CURRENT_STATE/DECISIONS.
+
 2B4c: runtime-write, runtime-write-contract, runtime-write-window and internal runtime-read exports; two focused suites, real check-field-runtime-write/principal driver; PERMISSIONS/decisions/field plan/ledger/current state.
 
 2B4a/b: auth/session, compiler/fields, fields/runtime-authority/runtime-read; three focused test suites, check-field-runtime-authority and principal driver; PERMISSIONS/decisions/field plan/ledger/current state.
@@ -1807,6 +1877,8 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+d1: none. No new conditional payload can be published yet.
+
 Current f4c/d: NONE. Uses already-applied0007/0008; no models, DDL, data backfill, resets or native mutations.
 
 F4b2b: integrity functions only, no Prisma/table/data/backfill/reset change.
@@ -1912,6 +1984,9 @@ and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
 
+d1:14 pure contract/compiler tests; typed native/field pins, permission/sensitivity,
+cycles, unsupported/duplicate conditions, normalization and sealed v1 preservation.
+
 2B4c: closed revision/input capacity and canonical idempotency, owner/current/written/ref/required/unique before-mutation denials, paired CAS/Audit failures, historical replay, customer/support window frames; real central source freeze/migrations/failure/concurrency/history/native proof helper.
 
 2B4a/b: genuine Session/tenant/module/version refresh, independent read compiler/reference grants; current/history gateway native-first/current+written/corruption/generation/pagination/retirement/reference cases; real customer fixture helper.
@@ -1969,6 +2044,9 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+d1:67 files/416 tests, npm run build, strict post-build TypeScript, scoped lint,
+git diff --check PASS; no d1 live feature test because helpers remain unwired.
 
 2B4c:65 scoped files402 assertions/build/strict post-build TS/scoped lint/diff PASS. Actual writer acceptance NOT RUN yet;53c05ae read checkpoint complete candidate/public PASS.
 
@@ -2114,6 +2192,9 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
+d1 pure-contract gate PASS:67files416/build/types/lint/diff. First TS failed on
+narrowing/fixture typing, corrected; final strict rerun exit0. Runtime gate pending.
+
 2B4c IMPLEMENTED locally; local checks PASS, no actual writer verification claim. TypeScript helper narrowing corrected and rerun PASS. No DDL/native/UI changes.
 
 2B4a/b IMPLEMENTED locally, all local checks PASS. No live verification claim; current remainsa527ccd.
@@ -2238,6 +2319,9 @@ not a reason to claim full-suite success.
 
 # Architecture Decisions
 
+d1 decision: isolated v2 required-if preserves sealed v1 checksums; do not enable
+publishing until native/coverage enforcement. Recorded in DECISIONS.md.
+
 10 October user-authorised software retention supersedes keeping every accepted
 runtime runnable: keep current+immediate rollback+process pins; older source/static/
 markers/evidence retained, duplicated dependencies/build output retired. See DECISIONS.
@@ -2361,15 +2445,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Commit scoped2B4c internal atomic value save/window checkpoint and run pinned full
-Studio candidate/public acceptance under the original locks. Verify actual ordinary
-customer reference/value/CAS/unique/current+written/source-freeze proof, both paired
-Audit failures, concurrent exactly once/history replay, genuine staff support failure
-with disabled authoring, retirement/native preservation and complete native suites.
-Require runner exit0, exact current/previous/public SHA and health before VERIFIED.
-Then2B4d: closed versioned required-if schema/compiler, canonical missing-anchor
-coverage at publication/evolution and owning native create/save hooks. New native
-creators must use their existing create authority, not receive broad manage grants;
-new-record field initialisation needs explicit owner approval in the shared transaction.
-Existing sealed contracts stay unchanged. Only after2B4d–f proceed2C/D/visual2E;
-no Phase3 until wholePhase2 gate PASS.
+Checkpoint2B4d1 pure compiler and memory (67files416/build/types/lint/diff PASS).
+Then implement d2 shared transaction authority refresh and owner-approved facts /
+new-record proof contracts, preserving native create-only permission and sealed
+old owner versions. Keep v2 out of authoring/publication until canonical/native
+ d2–4 enforcement works. Follow STUDIO_FIELD_REQUIRED_RULES_PLAN.md, then2B4e/f,
+2C/D/visual2E. No Phase3 until wholePhase2 gate PASS. Live622 proof complete.

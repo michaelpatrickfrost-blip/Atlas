@@ -391,3 +391,11 @@ the installed Next guide and avoids retaining an unused compiler cache per SHA.
 Development caching is unchanged. The `tasks` acceptance selector now runs both
 Tasks drawer checks and the existing Messages composer/draft/attachment workflow
 on candidate/public; each stage stays inside the original locks and fixture backup.
+
+For whole-app UI acceptance, use `ATLAS_RELEASE_ACCEPTANCE=ui`. It backs up central
+fixtures for each stage, runs the read-only app-route/layout/menu/dialog/button
+reachability sweep and existing synthetic Operations, Finance, Quality, People,
+commercial, Manufacturing/Supply, Tasks and Chat workflows against both the
+candidate and public revision under the original locks. Restricted/unavailable
+or staff-console redirects are recorded separately, never counted as business
+screen passes. Fixture workflows retain audited history and revoke test access.

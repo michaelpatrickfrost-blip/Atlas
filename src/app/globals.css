@@ -2,17 +2,17 @@
 
 :root {
   --color-app-bg: #f2f4f8;
-  --color-surface: rgba(255, 255, 255, 0.78);
-  --color-surface-sunken: rgba(255, 255, 255, 0.5);
+  --color-surface: #fff;
+  --color-surface-sunken: #f5f8fd;
   --color-border: rgba(0, 0, 0, 0.08);
   --color-border-strong: rgba(0, 0, 0, 0.14);
 
-  --color-ink: #1d1d1f;
-  --color-ink-muted: #6e6e73;
-  --color-ink-faint: #86868b;
+  --color-ink: #17243d;
+  --color-ink-muted: #64748b;
+  --color-ink-faint: #94a3b8;
 
-  --color-atlas-blue: #0071e3;
-  --color-atlas-blue-hover: #0077ed;
+  --color-atlas-blue: #155dfc;
+  --color-atlas-blue-hover: #1447e6;
   --color-atlas-blue-soft: rgba(0, 113, 227, 0.12);
 
   --color-status-success: #0c8f62;
@@ -58,7 +58,7 @@
 
 body {
   background: #f2f4f8;
-  color: #1d1d1f;
+  color: var(--color-ink);
   font-family: var(--font-sans);
   font-feature-settings: "tnum" 1;
   text-rendering: optimizeLegibility;
@@ -151,11 +151,11 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
 a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--color-atlas-blue); outline-offset: 3px; }
 
 :where(button, a).bg-blue-600 {
-  background: #0071e3;
+  background: var(--color-atlas-blue);
   border-radius: 999px;
   box-shadow: none;
 }
-:where(button, a).bg-blue-600:hover { background: #0077ed; }
+:where(button, a).bg-blue-600:hover { background: var(--color-atlas-blue-hover); }
 
 @keyframes atlas-page-in {
   from { opacity: 0; transform: translateY(8px); }
@@ -185,7 +185,7 @@ main { scrollbar-color: #c5d0e2 transparent; }
 .atlas-app-mark {
   display: flex; width: 48px; height: 48px; flex: none; align-items: center; justify-content: center;
   border-radius: 14px; color: #fff;
-  background: #0a3d8f;
+  background: var(--color-atlas-blue);
   border: 0;
   box-shadow: 0 8px 18px -12px rgba(10, 61, 143, 0.7);
 }

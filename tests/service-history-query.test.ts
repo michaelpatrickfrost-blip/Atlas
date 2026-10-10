@@ -1,6 +1,6 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 const mocks=vi.hoisted(()=>({list:vi.fn(),record:vi.fn(),caseRecord:vi.fn(),enabled:vi.fn()}));
-vi.mock('@/core/db/client',()=>({db:{moduleState:{findFirst:mocks.enabled},serviceTicket:{findMany:mocks.list,findFirst:mocks.record},serviceCase:{findFirst:mocks.caseRecord}}}));
+vi.mock('@/core/db/client',()=>({db:{moduleState:{findFirst:mocks.enabled, findMany: async () => { const row = await mocks.enabled(); return row ? ['service'].map(moduleId => ({ moduleId, enabled: row.enabled !== false, entitled: row.entitled !== false })) : []; }},serviceTicket:{findMany:mocks.list,findFirst:mocks.record},serviceCase:{findFirst:mocks.caseRecord}}}));
 import { ticketList, ticketRecord } from '@/modules/service/services/queries';
 import type { Session } from '@/core/auth/session';
 const session={organisationId:'company',userId:'worker',capabilities:new Set(['service.ticket.read'])} as Session;
@@ -28,5 +28,5 @@ it('only exposes a case link when its independent case scope admits the record',
 });
 it('denies historical reads without the capability or an enabled service module',async()=>{
  await expect(ticketList({...session,capabilities:new Set()})).rejects.toThrow();expect(mocks.list).not.toHaveBeenCalled();
- mocks.enabled.mockResolvedValue(null);await expect(ticketRecord(session,'ticket')).rejects.toThrow('not enabled');expect(mocks.record).not.toHaveBeenCalled();
+ mocks.enabled.mockResolvedValue(null);await expect(ticketRecord(session,'ticket')).rejects.toThrow('disabled');expect(mocks.record).not.toHaveBeenCalled();
 });

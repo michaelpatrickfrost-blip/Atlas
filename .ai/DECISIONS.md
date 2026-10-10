@@ -1,3 +1,13 @@
+## 10 October 2026 — Whole-app verification separates reachability from saves
+
+Use the shared Atlas theme on all business routes, with explicit safe annotations
+for navigation menus and create dialogs. The ui release gate sweeps static routes
+and discovered record destinations, checks responsive bounds and pointer targets,
+then uses existing synthetic central workflows for real writes. Restricted, empty
+record and staff-console redirects are separate outcomes. Never infer that every
+business button works from an inventory, layout pass or HTTP200 alone. Preserve
+Tasks/Chat drawers and larger app page destinations.
+
 ## 10 October 2026 — Reserve cancellation capacity in bounded field operations
 
 Execution progress, two-transition FAILED resume and failure recording must leave a

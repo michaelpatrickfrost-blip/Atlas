@@ -48,7 +48,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   const maxStage = Math.max(1, ...report.open.map(() => 1), ... (pipeline?.stages.map((stage) => report.open.filter((row) => row.stageId === stage.id).length) ?? [1]));
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-6">
+    <div className="mx-auto flex w-full min-w-0 max-w-5xl flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-4xl font-semibold tracking-tight text-[#1d1d1f]">Reports</h1>
@@ -204,9 +204,9 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <label className="text-xs font-medium text-[#6e6e73]">
+    <label className="min-w-0 text-xs font-medium text-[#6e6e73]">
       {label}
-      <span className="mt-1.5 block">{children}</span>
+      <span className="mt-1.5 block min-w-0">{children}</span>
     </label>
   );
 }

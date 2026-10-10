@@ -62,6 +62,20 @@ export function FloatingModuleNav({ title, items }: { title: string; items: Modu
 
   useEffect(() => () => clearGroupHide(), []);
 
+  useEffect(() => {
+    if (!openGroup) return;
+    const fit = () => {
+      const menu = navRef.current?.querySelector<HTMLElement>('[role="menu"]:not([hidden])');
+      if (!menu) return;
+      menu.style.left = "0px";
+      const bounds = menu.getBoundingClientRect();
+      const shift = bounds.right > window.innerWidth - 8 ? window.innerWidth - 8 - bounds.right : bounds.left < 8 ? 8 - bounds.left : 0;
+      menu.style.left = `${shift}px`;
+    };
+    fit(); window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, [openGroup]);
+
   if (!items.length || !mounted) return null;
   const slot = document.getElementById("atlas-module-nav-slot");
   if (!slot) return null;
@@ -85,8 +99,15 @@ export function FloatingModuleNav({ title, items }: { title: string; items: Modu
             const groupActive = entry.items.some((i) => i.href === bestMatch);
             const open = openGroup === entry.label;
             return (
-              <div key={entry.label} className="relative" onMouseEnter={() => openGroupNow(entry.label)} onMouseLeave={scheduleGroupHide}>
-                <button type="button" onClick={() => toggleGroup(entry.label)} aria-expanded={open} aria-haspopup="menu"
+              <div key={entry.label} className="relative" onKeyDown={event => {
+                if (event.key === "Escape") { event.preventDefault(); clearGroupHide(); setOpenGroup(null); event.currentTarget.querySelector("button")?.focus(); }
+                if (["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
+                  event.preventDefault(); clearGroupHide(); setOpenGroup(entry.label);
+                  const group = event.currentTarget;
+                  requestAnimationFrame(() => { const links = [...group.querySelectorAll<HTMLAnchorElement>('[role="menuitem"]')]; const at = links.indexOf(document.activeElement as HTMLAnchorElement); const next = event.key === "Home" ? 0 : event.key === "End" ? links.length - 1 : event.key === "ArrowUp" ? (at <= 0 ? links.length - 1 : at - 1) : (at + 1) % links.length; links[next]?.focus(); });
+                }
+              }} onMouseEnter={() => openGroupNow(entry.label)} onMouseLeave={scheduleGroupHide}>
+                <button type="button" data-guardian-safe="menu" onClick={() => toggleGroup(entry.label)} aria-expanded={open} aria-haspopup="menu"
                   className={`atlas-float-tab inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium ${groupActive ? "atlas-float-tab-active" : ""}`}>
                   {entry.label}
                   <ChevronDown size={13} strokeWidth={2} className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />

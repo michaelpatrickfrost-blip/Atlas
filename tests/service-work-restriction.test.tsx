@@ -2,7 +2,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 const state = vi.hoisted(() => ({ session: { organisationId: "tenant", organisationName: "Test", membershipId: "member", userId: "reader", userName: "Reader", userEmail: "reader@example.test", capabilities: new Set<string>() }, enabled: vi.fn(), rows: vi.fn(), queues: vi.fn() }));
 vi.mock("@/core/auth/session", () => ({ requireSession: async () => state.session }));
-vi.mock("@/core/db/client", () => ({ db: { moduleState: { findFirst: state.enabled } } }));
+vi.mock("@/core/db/client", () => ({ db: { moduleState: { findMany: state.enabled } } }));
 vi.mock("@/core/service-work/queries", () => ({ workList: state.rows, deskQueues: state.queues, ticketSearch: vi.fn(), ticketAttention: vi.fn() }));
 vi.mock("@/core/service-work/actions", () => ({ createWork: vi.fn(), changeDeskMember: vi.fn(), updateWork: vi.fn(), commentWork: vi.fn(), mergeWork: vi.fn(), watchWork: vi.fn(), requestWorkApproval: vi.fn(), decideWorkApproval: vi.fn() }));
 vi.mock("@/core/service-work/file-actions", () => ({ attachServiceFile: vi.fn() }));
@@ -16,7 +16,7 @@ import { serviceWorkRestriction } from "@/components/service-work/access-state";
 import CreateTicket from "@/app/(app)/tickets/create/page";
 import Queues from "@/app/(app)/tickets/queues/page";
 import TicketsLayout from "@/app/(app)/tickets/layout";
-beforeEach(() => { vi.clearAllMocks(); state.session.capabilities = new Set(); state.enabled.mockResolvedValue({ enabled: true, entitled: true }); state.rows.mockResolvedValue([]); state.queues.mockResolvedValue([]); });
+beforeEach(() => { vi.clearAllMocks(); state.session.capabilities = new Set(); state.enabled.mockResolvedValue(["service", "tickets"].map(moduleId => ({ moduleId, enabled: true, entitled: true }))); state.rows.mockResolvedValue([]); state.queues.mockResolvedValue([]); });
 it("renders a permission explanation before reading any Tickets records", async () => {
   const html = renderToStaticMarkup(await WorkList({ filters: {} }));
   expect(html).toContain("have permission to view this.");
@@ -25,10 +25,10 @@ it("renders a permission explanation before reading any Tickets records", async 
   expect(state.rows).not.toHaveBeenCalled(); expect(state.queues).not.toHaveBeenCalled();
 });
 it("renders disabled/unentitled work without reading queues or work rows", async () => {
-  state.session.capabilities.add("tickets.ticket.read"); state.enabled.mockResolvedValue(null);
+  state.session.capabilities.add("tickets.ticket.read"); state.enabled.mockResolvedValue([]);
   const html = renderToStaticMarkup(await WorkList({ filters: {} }));
   expect(html).toContain("This app is not enabled for your company.");
-  expect(state.enabled).toHaveBeenCalledWith({ where: { organisationId: "tenant", moduleId: "tickets", enabled: true, entitled: true } });
+  expect(state.enabled).toHaveBeenCalledWith({ where: { organisationId: "tenant" } });
   expect(state.rows).not.toHaveBeenCalled(); expect(state.queues).not.toHaveBeenCalled();
 });
 it("preserves authorised list data and filters", async () => {
@@ -59,7 +59,7 @@ it("does not read detail, knowledge or report records on denied/disabled access"
   for (const render of [() => WorkDetail({ id: "hidden-record" }), () => Knowledge({ moduleId: "tickets" }), () => ServiceReports({ moduleId: "tickets" })]) {
     expect(renderToStaticMarkup(await render())).toContain("have permission");
   }
-  state.session.capabilities.add("tickets.ticket.read"); state.enabled.mockResolvedValue(null);
+  state.session.capabilities.add("tickets.ticket.read"); state.enabled.mockResolvedValue([]);
   expect(renderToStaticMarkup(await WorkDetail({ id: "hidden-record" }))).toContain("not enabled");
 });
 it("handles the Tickets layout restriction on the server, without the forbidden child", async () => {
@@ -70,6 +70,15 @@ it("handles the Tickets layout restriction on the server, without the forbidden 
 it("preserves Query/Service capability and module scope", async () => {
   state.session.capabilities.add("service.ticket.read");
   expect(await serviceWorkRestriction(state.session, "QUERY")).toBeNull();
-  expect(state.enabled).toHaveBeenCalledWith({ where: { organisationId: "tenant", moduleId: "service", enabled: true, entitled: true } });
+  expect(state.enabled).toHaveBeenCalledWith({ where: { organisationId: "tenant" } });
   expect(renderToStaticMarkup((await serviceWorkRestriction(state.session, "QUERY", ["service.case.read"]))!)).toContain("have permission");
+});
+
+it("keeps Tickets and Service enablement separate for the same authorised reader", async () => {
+  state.session.capabilities = new Set(["tickets.ticket.read", "service.ticket.read"]);
+  state.enabled.mockResolvedValue([{ moduleId: "tickets", enabled: true, entitled: true }]);
+  expect(await serviceWorkRestriction(state.session, "TICKET")).toBeNull();
+  expect(renderToStaticMarkup((await serviceWorkRestriction(state.session, "QUERY"))!)).toContain("not enabled");
+  state.enabled.mockResolvedValue([{ moduleId: "service", enabled: true, entitled: false }]);
+  expect(renderToStaticMarkup((await serviceWorkRestriction(state.session, "QUERY"))!)).toContain("not enabled");
 });

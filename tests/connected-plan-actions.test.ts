@@ -2,7 +2,7 @@ import { describe,it,expect,vi,beforeEach } from 'vitest';
 const state=vi.hoisted(()=>({session:{organisationId:'org',userId:'owner',userName:'Planner',capabilities:new Set(['plan.read','plan.edit','sop.read','sop.manage','sop.approve','sop.publish','manufacturing.plan.manage'])},db:{businessPlan:{findFirst:vi.fn(),findMany:vi.fn()},planInput:{findMany:vi.fn()},sopCycle:{findFirst:vi.fn(),findMany:vi.fn(),updateMany:vi.fn()},sopVersion:{findFirst:vi.fn(),findMany:vi.fn(),updateMany:vi.fn()},auditEntry:{create:vi.fn()},$transaction:vi.fn()},read:vi.fn(),publish:vi.fn()}));
 vi.mock('@/core/auth/session',()=>({requireSession:async()=>state.session}));
 vi.mock('@/core/modules/access',()=>({assertModuleEnabled:vi.fn()}));
-vi.mock('@/core/modules/runtime',()=>({getEnabledModuleIds:async()=>new Set(['plan','sop','sales','products','manufacturing','crm'])}));
+vi.mock('@/core/modules/runtime',()=>({enabledModulesForSession:async()=>new Set(['plan','sop','sales','products','manufacturing','crm'])}));
 vi.mock('@/core/modules/registry',()=>({getModule:()=>({planningPublicationConsumer:state.publish})}));
 vi.mock('@/core/db/client',()=>({db:state.db}));
 vi.mock('@/core/planning/business-read',()=>({readBusinessPlanning:state.read}));

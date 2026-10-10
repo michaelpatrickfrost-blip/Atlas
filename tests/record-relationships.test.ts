@@ -3,7 +3,7 @@ import type { Session } from "@/core/auth/session";
 const state = vi.hoisted(() => ({
   enabled: new Set(["sales", "finance"]), context: vi.fn(), sales: vi.fn(), finance: vi.fn(), customer: vi.fn(),
 }));
-vi.mock("@/core/modules/runtime", () => ({ getEnabledModuleIds: async () => state.enabled }));
+vi.mock("@/core/modules/runtime", () => ({ enabledModulesForSession: async () => state.enabled }));
 vi.mock("@/core/modules/registry", () => ({
   getModule: (id: string) => id === "sales" ? { recordContextProvider: state.context } : undefined,
   getImplementedModules: () => [{ id: "sales", recordRelationshipProvider: state.sales }, { id: "finance", recordRelationshipProvider: state.finance }],

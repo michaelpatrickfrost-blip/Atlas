@@ -1,7 +1,7 @@
 import { beforeEach,describe,expect,it,vi } from "vitest";
 const state=vi.hoisted(()=>({
  session:{userId:'user-a',organisationId:'org-a',membershipId:'member-a',capabilities:new Set<string>()},
- db:{organisation:{findUniqueOrThrow:vi.fn()},opportunity:{findFirst:vi.fn(),findUniqueOrThrow:vi.fn(),update:vi.fn()},pipelineStage:{findFirstOrThrow:vi.fn()},chatMessage:{create:vi.fn()},role:{findFirstOrThrow:vi.fn(),update:vi.fn()},roleOnMembership:{findFirst:vi.fn()},$transaction:vi.fn()},
+ db:{organisation:{findUniqueOrThrow:vi.fn()},opportunity:{findFirst:vi.fn(),findUniqueOrThrow:vi.fn(),update:vi.fn()},pipelineStage:{findFirstOrThrow:vi.fn()},chatMessage:{create:vi.fn()},role:{findFirstOrThrow:vi.fn(),findFirst:vi.fn(),update:vi.fn()},roleOnMembership:{findFirst:vi.fn()},$transaction:vi.fn()},
  enabled:vi.fn(),audit:vi.fn(),emit:vi.fn(),
 }));
 vi.mock('@/core/auth/session',()=>({requireSession:vi.fn(async()=>state.session)}));
@@ -14,6 +14,7 @@ vi.mock('next/cache',()=>({revalidatePath:vi.fn()}));
 vi.mock('@/modules/crm/services/pipelines',()=>({getDefaultPipeline:vi.fn()}));
 import { moveOpportunityStage } from '@/modules/crm/services/opportunities';
 import { postMessage } from '@/app/(app)/chat/actions';
+import { roleAccessRevision } from "@/core/permissions/access-revision";
 import { saveRole } from '@/app/(app)/settings/actions';
 beforeEach(()=>{vi.clearAllMocks();state.session.capabilities=new Set(['sales.opportunity.manage','core.chat.write','core.roles.manage']);state.enabled.mockResolvedValue(undefined);state.db.organisation.findUniqueOrThrow.mockResolvedValue({managerPolicy:{}});state.db.$transaction.mockImplementation(async fn=>fn(state.db));});
 describe('workspace security boundaries',()=>{
@@ -43,15 +44,15 @@ describe('workspace security boundaries',()=>{
  });
  it('does not allow administrators to remove their own administration access',async()=>{
   const form=new FormData();form.set('roleId','role-a');
-  state.db.role.findFirstOrThrow.mockResolvedValue({capabilities:['core.roles.manage','core.users.manage']});
+  const role={id:'role-a',name:'Administrators',capabilities:['core.roles.manage','core.users.manage']};form.set('accessRevision',roleAccessRevision(role));state.db.role.findFirstOrThrow.mockResolvedValue(role);state.db.role.findFirst.mockResolvedValue(null);
   state.db.roleOnMembership.findFirst.mockResolvedValue({roleId:'role-a'});
-  await expect(saveRole(form)).rejects.toThrow('own access administration');
+  await expect(saveRole(form)).resolves.toMatchObject({error:expect.stringContaining('own access administration')});
   expect(state.db.role.findFirstOrThrow).toHaveBeenCalledWith({where:{id:'role-a',organisationId:'org-a'}});
   expect(state.db.role.update).not.toHaveBeenCalled();
  });
  it('rejects invented capabilities before looking up the role',async()=>{
   const form=new FormData();form.set('roleId','role-a');form.set('capability','everything.superuser');
-  await expect(saveRole(form)).rejects.toThrow('Unknown permission');
+  await expect(saveRole(form)).resolves.toMatchObject({error:expect.stringContaining('Unknown permission')});
   expect(state.db.role.update).not.toHaveBeenCalled();
  });
 });

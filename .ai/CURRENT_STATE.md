@@ -1,5 +1,37 @@
 # Atlas current state
 
+## 10 October 2026 — Whole-app UI and controls audit (in progress)
+
+User requests every app screen use the new UI and all buttons work. Scope is the
+whole business route tree, preserving Tasks/Chat drawers and page-based larger apps.
+Source audit1343 files/311 routes/776 static destinations/957 buttons/783 dynamic
+links found no static broken-link or empty/dead-control candidates. Live97ceb35
+read-only sweep (private V8LJ61) reached243+ screens: CRM Reports and legacy Sales
+Reports phone overflow208px confirmed; staff Studio redirects to /atlas/studio as
+designed and is excluded from business-shell passing coverage. No write or grant.
+
+Candidate changes: shared blue/white tokens/operational headers, Finance overview
+legacy dark-green header removed, CRM Reports min-width containment, grouped module
+menu arrows/Home/End/Escape/focus and viewport fitting. Shared create-dialog safe
+annotation and check-app-ui cover layouts, safe menu/dialog actions and pointer
+reachability, following static plus rendered dynamic destinations with explicit
+restricted/unavailable/staff-redirect outcomes. Closed ui release selector adds
+backed-up existing operational/Finance/Quality/People/commercial/supply/Tasks/Chat
+synthetic workflows on candidate/public under unchanged release locks/rollback.
+Operational/Quality checkers accept validated loopback candidate URLs.
+
+Initial broad tests1527 pass/60 fail exposed outdated app-enablement mocks and form
+feedback expectations. Updated those test fixtures without production security
+changes; final1588 tests PASS (249files;22 skipped/3files). Production build PASS;
+final scoped types/lint and production build PASS after checker/menu additions.
+Menu keyboard regression10 tests PASS; enablement boundary10 tests PASS, including
+separate Tickets/Service and disabled entitlement. Candidate/public
+UI plus real synthetic workflows pending; no all-buttons or new live claim.
+SSH banner and public HTTPS repeatedly time out (DNS still85.190.118.218;
+independent GitHub HTTPS responds). No runtime switch attempted. Preserve deployed
+97ceb35 and diagnose reachability before release. Next: finish coverage, inspect
+remaining findings, verify final source then compatible locked deployment.
+
 ## 10 October 2026 — Tasks and Chat slide-out drawers LIVE
 
 Accepted runtime97ceb35b069845f637a43811d8200a99b9ade306 at

@@ -9,7 +9,7 @@ const state = vi.hoisted(() => ({
 vi.mock("@/core/finance/connections", () => ({ readOrderInvoices: state.invoices, readInvoiceQuantities: state.quantities }));
 vi.mock("@/core/db/client", () => ({ db: state.db }));
 vi.mock("@/core/auth/session", () => ({ requireSession: async () => state.session }));
-vi.mock("@/core/modules/runtime", () => ({ getEnabledModuleIds: async () => state.enabled }));
+vi.mock("@/core/modules/runtime", () => ({ getEnabledModuleIds: async () => state.enabled, isModuleEnabled: async (_session: unknown, moduleId: string) => state.enabled.has(moduleId) }));
 import { readAvailability, readOrderChain } from "@/modules/stock/services/availability";
 
 beforeEach(() => {

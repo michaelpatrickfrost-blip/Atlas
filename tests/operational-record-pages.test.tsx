@@ -11,7 +11,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/core/db/client", () => ({ db: mocks.db }));
 vi.mock("@/core/auth/session", () => ({ requireSession: async () => mocks.session }));
 vi.mock("@/core/modules/access", () => ({ assertModuleEnabled: mocks.enabled }));
-vi.mock("@/core/modules/runtime", () => ({ getEnabledModuleIds: mocks.enabledIds }));
+vi.mock("@/core/modules/runtime", () => ({ enabledModulesForSession: mocks.enabledIds }));
 vi.mock("@/core/shared/operational-forms", () => ({ members: mocks.members }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 import MeetingPage from "@/app/(app)/meetings/[id]/page";

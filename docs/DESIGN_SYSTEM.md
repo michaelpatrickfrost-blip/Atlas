@@ -90,8 +90,9 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
   Workspace controls use a larger Apps pill and search field. On phone search
   moves onto its own header row so utility controls remain reachable.
   `public/brand/atlas-mark.png` is a crop of Michael's supplied artwork.
-- **Messages** — wide blue/white pop-out, conversation list beside chat on desktop,
-  one pane at a time on phone, quiet date separators and structured record cards.
+- **Messages** — compact blue/white right-hand drawer, with conversation list and
+  chat shown one pane at a time; full-page Chat retains its desktop split view.
+  Quiet date separators and structured record cards retain their behavior.
   A horizontal composer groups attachments/work actions; conversation details
   contain participants and records in the displayed messages. Full `/chat` uses
   the Home utility shell. See [Messages](MESSAGES.md).
@@ -177,3 +178,13 @@ all drawer widths use a list/detail Back flow, with Escape and focus restoration
 Drawers are at most560px wide, animate entry/exit over240ms and honor reduced
 motion. The shade is light and unblurred so the current workspace remains visible.
 Dashboard and Settings keep their existing page/menu destinations.
+
+## Whole-app consistency and control coverage — 10 October 2026
+
+Business screens inherit the shared blue/white surface, ink and interaction tokens.
+Operational headings and Finance overview use the same pale-blue rounded headers;
+status colours remain meaningful. Grouped app navigation supports arrow keys,
+Home/End and Escape with trigger-focus return; dropdowns fit the viewport.
+Read-only UI coverage distinguishes layouts, pointer reachability, menu/dialog
+behavior and route restrictions from synthetic mutation workflow acceptance.
+A counted button or an HTTP200 alone is not a working-button claim.

@@ -168,3 +168,9 @@ searchable overview cards and section navigation (collapsed browser on smaller
 screens). Company access profiles have a searchable selector and one mounted
 editor; each app expands into source sections with RWA and fine-grained controls.
 Personal Settings is a separate own-account page without company controls.
+
+My tasks is a native modal pop-out, opened directly from the header Tasks icon or
+utility rail. Header/rail badges show open assignments; Messages badges show
+unread chats. Task detail uses progressive disclosure for notes, linked records,
+checklist and status. Native dialog top-layer positioning prevents card overlap;
+small screens use a task-list/detail back flow, with Escape and focus restoration.

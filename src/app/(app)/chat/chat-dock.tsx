@@ -135,6 +135,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
 
   const [open, setOpen] = useState(page);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
+  useEffect(() => { if (snapshot && !duplicate) window.dispatchEvent(new CustomEvent("atlas:chat-unread", { detail: snapshot.unread })); }, [snapshot, duplicate]);
   const [activeId, setActiveId] = useState<string | null>(initialConversation);
   const [query, setQuery] = useState("");
   const [mode, setMode] = useState<Mode>(initialDraft?.mode ?? "message");
@@ -1626,6 +1627,7 @@ export function ChatDock({ variant = "dock" }: { variant?: "dock" | "page" }) {
         <button
           type="button"
           aria-label="Open messages"
+            title={snapshot?.unread ? `Messages · ${snapshot.unread} unread` : "Messages"}
           aria-expanded={open}
           onClick={() => setOpen((value) => !value)}
           className="relative flex size-10 shrink-0 items-center justify-center rounded-full text-[#526587] hover:bg-blue-50"

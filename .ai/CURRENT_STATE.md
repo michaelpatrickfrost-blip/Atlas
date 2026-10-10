@@ -1,5 +1,29 @@
 # Atlas current state
 
+## 10 October 2026 — Assigned Tasks pop-out and task/chat notification controls (candidate)
+
+My tasks opens a native modal from the utility rail and header, preserving the
+current workspace. Search/filter/paging, task notes/discussion, authorized attached
+records and immediate status changes use canonical ProjectTask/EmployeeTask.
+Open assignment counts appear on the header/rail; Messages keeps its unread badge
+and publishes it to the rail. Company/user keyed shell, native modal focus/Escape,
+source module/capability/tenant/privacy scopes and read-only state are preserved.
+Project status delegates to its original checklist/dependency/version/recurrence/
+automation/audit lifecycle with fresh assigned-work authorization in a serializable
+transaction. Employee completion is own-assignment scoped, audited and atomic.
+No business cache, schema changes, profile grants or external messages.
+
+Paths: shell/my-tasks.tsx, task-notifications.tsx, workspace-navigation/topbar,
+app layout, profile/task-actions.ts, projects/actions.ts, chat actions/dock,
+projects/people services/assigned-tasks.ts, core/shared/my-tasks.ts.
+Checks: production build PASS; strict types PASS; scoped lint 0 errors (3 existing
+image warnings); 19 focused panel/access/project-domain tests PASS. Added central
+scripts/check-my-tasks.ts and `tasks` acceptance in existing deployment gates.
+Server candidate/public acceptance and visual inspection pending; do not call
+this task live yet. Next: merge exact accepted live Studio74fab2 parent, deploy
+reviewed scope, run candidate/public acceptance under original locks.
+
+
 ## 10 October 2026 — Customer menu correction live and verified
 
 Activated 1f2ab97f3ee954ac9829d2c3ea1d4681ce5320e5 at public Atlas, preserving

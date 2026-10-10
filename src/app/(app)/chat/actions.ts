@@ -1,7 +1,7 @@
 "use server";
 import { requireSession, type Session } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
-import { projectScope } from "@/core/permissions/work-access";
+import { projectScope, taskScope } from "@/core/permissions/work-access";
 import { enabledModulesForSession } from "@/core/modules/runtime";
 import { db } from "@/core/db/client";
 import {
@@ -741,6 +741,28 @@ function conversationTitle(
   if (!others.length) return "Group chat";
   if (others.length <= 3) return others.join(", ");
   return `${others.slice(0, 2).join(", ")} +${others.length - 2}`;
+}
+
+/** Task attachments use the same per-recipient record resolver as Messages.
+ * Reading them never marks the conversation read. */
+export async function taskChatAttachments(taskId: string) {
+  const session = await requireSession();
+  assertCapability(session, "core.chat.read");
+  assertCapability(session, "projects.read");
+  const enabled = await enabledModules(session);
+  if (!enabled.has("projects")) throw new Error("Projects is not available.");
+  if (typeof taskId !== "string" || !taskId || taskId.length > 80) throw new Error("Choose a task.");
+  const task = await db.projectTask.findFirst({ where: { AND: [taskScope(session), { id: taskId },
+    { OR: [{ assigneeUserId: session.userId }, { contributorUserIds: { has: session.userId } }] }] }, select: { id: true } });
+  if (!task) throw new Error("This task is no longer available to you.");
+  const messages = await db.chatMessage.findMany({ where: { organisationId: session.organisationId, taskId,
+    conversation: { organisationId: session.organisationId, participants: { some: { organisationId: session.organisationId, userId: session.userId } } } },
+    select: { links: { select: { entityType: true, entityId: true } } } });
+  const requested = messages.flatMap((message) => message.links.flatMap((link) => CHAT_LINK_TYPES.includes(link.entityType as ChatLinkType)
+    ? [{ type: link.entityType as ChatLinkType, id: link.entityId }] : []));
+  const found = await loadLinks(session, enabled, requested);
+  const distinct = new Map(requested.map((link) => [`${link.type}:${link.id}`, present(link.type, link.id, found)]));
+  return [...distinct.values()].map((link, index) => ({ key: `chat-${index}`, title: link.title, detail: link.subtitle, href: link.href || null }));
 }
 
 export async function chatSnapshot(

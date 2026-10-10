@@ -1,3 +1,4 @@
+import { TasksButton } from "./task-notifications";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { ChatDock } from "@/app/(app)/chat/chat-dock";
@@ -25,6 +26,7 @@ export function Topbar({ session }: { session: Session }) {
     </Link>
     <div className="order-3 w-full min-w-0 sm:order-none sm:flex-1 lg:ml-12 lg:max-w-[450px]"><CommandPalette /></div>
     <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-3">
+      {can(session, "core.profile.self") && <TasksButton />}
       <NoticeBell />
       {can(session, CORE_CAPABILITIES.chatRead) && <ChatDock />}
       <Link href="/profile" aria-label="My work" title="My work" className="flex items-center gap-3 rounded-2xl px-2 py-1.5 transition hover:bg-white/70">
@@ -47,7 +49,8 @@ export function Topbar({ session }: { session: Session }) {
       <div className="order-3 w-full min-w-0 sm:order-none sm:w-auto sm:flex-1 xl:max-w-[720px]"><CommandPalette variant="workspace" /></div>
       <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-1.5">
         <NewWindow />
-        <NoticeBell />
+        {can(session, "core.profile.self") && <TasksButton />}
+      <NoticeBell />
         {can(session, CORE_CAPABILITIES.chatRead) && <ChatDock />}
         <Link href="/profile" aria-label="My work" title="My work" className="rounded-full p-0.5"><Avatar name={session.userName} size="sm" /></Link>
         <form action={logoutAction}>

@@ -173,3 +173,14 @@ Finance cost assignments/commitments/actuals/billing/capitalisation, Procurement
 Manufacturing, Logistics and Service live orchestration; complete Analytics data
 views/drill-through/KPIs; smart return/history comparisons, deterministic briefing
 and grounded Ask Atlas; all ten supplied scenario tests and desktop/server activation.
+
+## Assigned tasks pop-out (10 October 2026)
+
+My tasks in the business header/rail opens assigned ProjectTask and EmployeeTask
+work without leaving the page. Notes, discussion, checklist and authorized linked
+records appear in detail; status saves immediately when native source permissions
+allow it. Project completion retains prerequisite/checklist/subtask guards,
+optimistic versions, recurrence and automations. Task visibility intersects the
+native project/private-work scope. Contributors with read-only access can inspect
+work but cannot mutate it. People checklist completion retains phase capability
+checks and own assignment scope. Open task count is separate from unread chat.

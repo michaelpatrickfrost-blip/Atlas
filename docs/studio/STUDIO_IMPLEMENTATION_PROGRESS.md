@@ -11,9 +11,9 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3c5a — Registry transaction-required query contract — VERIFIED locally;
-6 files/30 tests, production build, scoped lint and strict TypeScript PASS. c4 archive constraints
-VERIFIED live on 8780a07. No public preview/conversion feature or Phase 2 gate claim.
+2B3c5b — Tickets transactional canonical snapshot/coverage — IMPLEMENTED locally; central proof pending.
+c5a registry contract VERIFIED locally; c4 archive VERIFIED live 8780a07.
+Single pinned owner read protocol; no representation writer/value API/designer yet.
 
 # Overall Status
 
@@ -56,6 +56,11 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c4 Durable review archive | VERIFIED | 8780a07 candidate/public actual tenant/source/draft/slot/value guards, sealed rows/history, CAS/stale/audit rollback; no worker. |
 
 # Current Workstream Detail
+
+c5b read-only owner protocol/registry v3 opt-in implemented. Nine files/51 focused
+assertions, build, TypeScript and scoped lint PASS; diff reviewed. New central
+helper proof NOT RUN yet; do not mark VERIFIED. No DDL/value API/executor. Next
+pin clean scoped source and run combined backed-up candidate/public acceptance.
 
 8780a07 complete candidate/public PASS, deployment exit 0 and public source/current
 confirmed; prior 1646316 retained. c4 archive constraints VERIFIED; historical
@@ -175,6 +180,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+c5a/c5b: registry types/contracts/entities/registry, core/service-work/studio,
+transaction-query/entity/snapshot tests, exact-Test principal/review helpers,
+MODULE_SPEC/SERVICE_WORK_DESK and plan/ledger/shared state/decisions. No DDL.
+
 2B3c3/4: fields/principal-contract and migrations/contracts, Prisma schema/additive
 review migration, generated gateway metadata, check-field-reviews/principal driver,
 review/access tests and DATA_MODEL/plan/ledger/state/decisions.
@@ -263,6 +272,9 @@ and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
 
+Eight owner snapshot cases plus atomic registry opt-in case; central helper exact-
+set, private queue, actual membership, isolation and native preservation assertions.
+
 Seven codec cases cover all 15 field types, exact decimals and invalid/redacted
 storage; real decimal/money assertions passed in candidate/public Test helper.
 
@@ -274,6 +286,10 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+c5b: 9 files/51 assertions PASS; production build, TypeScript, scoped lint and
+whitespace/diff review PASS. Evidence /tmp/atlas-studio-snapshot-{tests,build,types,
+lint}.txt. New candidate/public helper NOT RUN; current accepted live 8780a07.
 
 Integrated Settings-preserving source: 37 files/197 focused assertions, build,
 strict post-build types, changed-source lint, generation, shell syntax/six dispatch
@@ -449,9 +465,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-2B3c5b: implement Tickets owner bounded canonical
-anchor snapshot and exact persisted observation-set/native-revision coverage under
-one supplied transaction. Enforce full private/native/source access before IDs or
-counts; preserve v1/v2 and ordinary final-record guards. Add missing/extra/same-count
-substitution/tenant/permission tests and central evidence before snapshot service.
+Pin c5a/c5b checkpoint, then run combined backed-up candidate/public acceptance.
+Require actual bounded snapshots and exact complete/missing/extra/equal-count/stale
+native-revision/tenant/private/membership/isolation proof before VERIFIED. Then
+2B3c6: implement authenticated review collection using pinned owner query, fresh
+principal/current+written field/reference access and immutable source snapshots.
 Phase 2 NOT PASSED; visual builder/company publication/custom buttons outstanding.

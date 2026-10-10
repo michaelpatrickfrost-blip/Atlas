@@ -46,6 +46,8 @@ export type EntityDescriptor = ContractIdentity & {
     listQuery: { id: string; version: number };
     getQuery: { id: string; version: number };
     fieldPolicy?: ExtensionFieldPolicy;
+    /** Read-only migration capture/coverage; ordinary record write guards still apply. */
+    migrationSnapshot?: { query: { id: string; version: number }; sourceVersions: readonly number[] };
     authorise(ctx: RecordContext, request: RecordRequest): Promise<RecordAnchor>;
   };
 };

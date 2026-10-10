@@ -1,5 +1,19 @@
 ## 10 October 2026 — Shared transactions are explicit query opt-ins
 
+## 10 October 2026 — Owner read-only migration snapshots use explicit version opt-in
+
+Keep old entity/query hashes immutable. Tickets v3 names one transaction-required
+owner query with preflight/snapshot/coverage modes, explicitly supporting typed
+source versions 2/3. Using one pinned read protocol fits the frozen review contract
+without a new interpretation or duplicate engine. The owner requires actual active
+company membership and SERIALIZABLE isolation, and checks complete native/private
+access before returning anchors/counts. Exact missing/extra record membership and
+native revisions establish coverage; equal counts alone cannot. This opt-in grants
+no final/merged write or conversion authority: normal native guards remain, and
+future collection must enforce current/written field and reference permissions.
+Registry validates query ownership/native capability/transaction/source references
+atomically. No schema change. See MODULE_SPEC and Studio evolution plan.
+
 Owner migration snapshots require a query that shares the server's short Prisma
 transaction with metadata observations. Add an explicit required-transaction
 query descriptor and registry method; ordinary calls reject it, while transactional

@@ -45,6 +45,7 @@ export function entity(d: EntityDescriptor): Contribution {
     ...(d.record ? { record: { writeCapability: d.record.writeCapability, detailRoute: d.record.detailRoute,
       labelField: d.record.labelField, listQuery: d.record.listQuery, getQuery: d.record.getQuery,
       ...(d.record.fieldPolicy ? { fieldPolicy: d.record.fieldPolicy } : {}),
+      ...(d.record.migrationSnapshot ? { migrationSnapshot: d.record.migrationSnapshot } : {}),
       nativeFields: "read_only", revision: "owner_positive_integer" } } : {}) });
   return { metadata: { ...identity(d), kind: d.kind, details, schemaHash: checksum(details) },
     ...(d.record ? { authoriseRecord: async (ctx, value) => recordAnchorSchema.parseAsync(await d.record!.authorise(ctx, recordRequestSchema.parse(value))) } : {}) };

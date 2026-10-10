@@ -275,6 +275,18 @@ generic denial returns no inaccessible identity/count. It grants no final/merged
 write or representation conversion authority. Future migration jobs pin that
 contract separately and must still enforce owner and current/written value access.
 
+An entity can add `record.migrationSnapshot` only in a new contract version. It
+names a registered same-owner query with native write capability and
+`transaction: "required"`, and explicitly approved typed-field source versions.
+The registry validates these references before adding any bundle. Tickets v3 opts
+in to `tickets.ticket.field_migration@1`; v1/v2 stay unchanged. The protocol has
+preflight, bounded canonical anchor snapshot and persisted observation coverage
+modes. Its supplied transaction must be SERIALIZABLE, with actual active company
+membership, native read/manage, enabled/entitled source and complete private queue
+access checked before IDs/counts. Coverage checks both missing/extra record IDs
+and native revisions; equal counts do not prove completeness. This read-only
+protocol grants no final/merged writes, value access or representation conversion.
+
 
 ## Consolidated workspaces
 

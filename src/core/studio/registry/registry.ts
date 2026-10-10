@@ -51,6 +51,19 @@ export class CapabilityRegistry {
         const target = additions.get(`${ref.id}@${ref.version}`) ?? this.items.get(`${ref.id}@${ref.version}`);
         if (!target || target.metadata.kind !== "query" || target.metadata.ownerModuleId !== ownerModuleId || target.metadata.capability !== m.capability) throw new Error("Entity projections must reference registered owner queries with the same read capability.");
       }
+      if (record.migrationSnapshot) {
+        const { query: ref, sourceVersions } = record.migrationSnapshot;
+        const target = additions.get(`${ref.id}@${ref.version}`) ?? this.items.get(`${ref.id}@${ref.version}`);
+        if (!target || target.metadata.kind !== "query" || target.metadata.ownerModuleId !== ownerModuleId
+          || target.metadata.capability !== record.writeCapability || target.metadata.details.transaction !== "required")
+          throw new Error("Migration snapshots require a registered transactional owner query with native write capability.");
+        for (const version of sourceVersions) {
+          const source = additions.get(`${m.id}@${version}`) ?? this.items.get(`${m.id}@${version}`);
+          if (!source || source.metadata.kind !== "entity" || source.metadata.ownerModuleId !== ownerModuleId
+            || !entityDetailsSchema.parse(source.metadata.details).record?.fieldPolicy)
+            throw new Error("Migration snapshots must declare approved typed-field source entity versions.");
+        }
+      }
     }
     for (const [key, item] of additions) this.items.set(key, item);
   }

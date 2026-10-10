@@ -65,3 +65,13 @@ snapshot. Incomplete coverage fails without private IDs/counts; final/merged and
 unanchored records remain part of coverage. It grants no conversion write and
 retains sealed v1/v2 and normal final/merged extension restrictions. See the Studio
 ledger for local versus central/public verification status.
+
+Tickets entity v3 declares a read-only migration snapshot policy for source entity
+versions 2/3. Its new `tickets.ticket.field_migration@1` query requires the same
+server-owned SERIALIZABLE transaction as Studio archive work. Actual active
+target-company membership and complete native/private access precede all returned
+anchors/counts. Snapshot pages include final/merged and unanchored canonical
+TICKET rows; archive coverage rejects missing/extra IDs and changed native
+revisions, including equal-count substitutions. It does not read business field
+values or authorise conversion writes. Existing v1/v2 descriptors, legacy cohort
+query and ordinary final/merged extension restrictions remain unchanged.

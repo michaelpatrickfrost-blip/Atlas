@@ -21,6 +21,25 @@ function setup(d = descriptor(goodOwner), available = true) {
 }
 const transaction = {} as Prisma.TransactionClient;
 describe("Studio owner record contracts", () => {
+  it("validates migration opt-ins atomically against owner capability, shared transaction and supported field versions", () => {
+    const source = descriptor(goodOwner);
+    source.record!.fieldPolicy = { types: ["string"], reservedKeys: ["id"], referenceEntities: [], maxFields: 10 };
+    const upgraded = { ...source, version: 2, record: { ...source.record!, migrationSnapshot: { query: { id: "tickets.ticket.snapshot", version: 1 }, sourceVersions: [1, 2] } } };
+    const projections = ["list", "get"].map(operation => query({ id: `tickets.ticket.${operation}`, version: 1, label: operation, capability: "tickets.ticket.read", lifecycle: "active", classification: "confidential", kind: "query", input: z.strictObject({}), output: z.null(), pagination: "none", maxCardinality: 1, costClass: "low", execute: async () => null }));
+    const ownerQuery = (capability = "tickets.ticket.manage", required = true) => query({ id: "tickets.ticket.snapshot", version: 1, label: "Snapshot", capability, lifecycle: "active", classification: "confidential", kind: "query", input: z.strictObject({}), output: z.null(), pagination: "none", maxCardinality: 1, costClass: "low", ...(required ? { transaction: "required" as const } : {}), execute: async () => null });
+    for (const invalid of [ownerQuery("tickets.ticket.read"), ownerQuery(undefined, false)]) {
+      const registry = new CapabilityRegistry(async () => true);
+      expect(() => registry.register("tickets", { contributions: [entity(source), entity(upgraded), ...projections, invalid] })).toThrow("transactional owner query");
+      expect(() => registry.describe(source.id, 1)).toThrow("missing Studio contract");
+    }
+    const unsupported = { ...upgraded, record: { ...upgraded.record, migrationSnapshot: { ...upgraded.record.migrationSnapshot, sourceVersions: [3] } } };
+    expect(() => new CapabilityRegistry(async () => true).register("tickets", { contributions: [entity(source), entity(unsupported), ...projections, ownerQuery()] })).toThrow("source entity versions");
+    const duplicate = { ...upgraded, record: { ...upgraded.record, migrationSnapshot: { ...upgraded.record.migrationSnapshot, sourceVersions: [1, 1] } } };
+    expect(() => entity(duplicate)).toThrow("Duplicate migration source");
+    const registry = new CapabilityRegistry(async () => true);
+    registry.register("tickets", { contributions: [entity(source), entity(upgraded), ...projections, ownerQuery()] });
+    expect(registry.describe(source.id, 2).details.record).toHaveProperty("migrationSnapshot");
+  });
   it("requires owner opt-in, unique native IDs and registered read projections", () => {
     const noOwner = descriptor(goodOwner); delete noOwner.record;
     expect(() => entity(noOwner)).toThrow("owner record policy");

@@ -27,12 +27,17 @@ export const entityDetailsSchema = z.strictObject({
     detailRoute: z.string().regex(/^\/[a-z0-9/_-]+\/\{recordId\}$/),
     labelField: fieldId, listQuery: queryReference, getQuery: queryReference,
     fieldPolicy: extensionFieldPolicySchema.optional(),
+    migrationSnapshot: z.strictObject({ query: queryReference,
+      sourceVersions: z.array(z.number().int().positive()).min(1).max(20)
+        .refine(versions => new Set(versions).size === versions.length, "Duplicate migration source version."),
+    }).optional(),
     nativeFields: z.literal("read_only"), revision: z.literal("owner_positive_integer"),
   }).optional(),
 }).superRefine((value, ctx) => {
   if (new Set(value.fields.map(f => f.id)).size !== value.fields.length) ctx.addIssue({ code: "custom", message: "Duplicate native field ID." });
   if (Object.values(value.extensionPolicy).some(Boolean) && !value.record) ctx.addIssue({ code: "custom", message: "Extensible entities need an owner record policy." });
   if (value.record && !value.fields.some(f => f.id === value.record!.labelField)) ctx.addIssue({ code: "custom", message: "Record label must reference an approved native field." });
+  if (value.record?.migrationSnapshot && !value.record.fieldPolicy) ctx.addIssue({ code: "custom", message: "Migration snapshots require an owner field policy." });
 });
 
 export const recordRequestSchema = z.strictObject({

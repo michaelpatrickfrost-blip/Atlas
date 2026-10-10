@@ -4,6 +4,8 @@ import { sessionForUser, type Session } from "../../src/core/auth/session";
 import { captureCustomerFieldMigrationPrincipal, openFieldMigrationSupportContext, resolveFieldMigrationPrincipal } from "../../src/core/studio/fields/principal";
 import { studioRegistry } from "../../src/core/studio/registry/runtime";
 import { checkFieldReviews } from "./check-field-reviews";
+import { z } from "zod";
+import { recordAnchorSchema } from "../../src/core/studio/registry/entities";
 
 /** Only the driver's freshly provisioned business user and explicit Test support affiliation. */
 export async function checkFieldPrincipal(customerUserId: string, staff: Session, organisationId: string, otherOrganisationId: string) {
@@ -46,17 +48,34 @@ export async function checkFieldPrincipal(customerUserId: string, staff: Session
   const nativeBefore = await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } });
   assert(nativeBefore.some(row => row.status === "CLOSED"), "Final records must remain part of coverage");
   assert.deepEqual(await registry.invoke(opened.session, cohort, {}), { organisationId, entityId: "tickets.ticket", count: nativeBefore.length, accessComplete: true });
+  const snapshot = registry.describe("tickets.ticket.field_migration", 1);
+  const invokeSnapshot = (session: Session, input: unknown) => db.$transaction(tx => registry.invokeQueryInTransaction({ session, transaction: tx }, snapshot, input), { isolationLevel: "Serializable" });
+  assert.deepEqual(await invokeSnapshot(opened.session, { mode: "preflight" }), { organisationId, entityId: "tickets.ticket", mode: "preflight", count: nativeBefore.length, nativeAccessComplete: true });
+  await assert.rejects(() => invokeSnapshot({ ...opened.session, membershipId: staff.membershipId }, { mode: "snapshot" }), /MIGRATION_ACCESS_REQUIRED/);
+  await assert.rejects(() => db.$transaction(tx => registry.invokeQueryInTransaction({ session: opened.session, transaction: tx }, snapshot, { mode: "snapshot" }), { isolationLevel: "ReadCommitted" }), /serializable/);
+  const collected: Array<z.infer<typeof recordAnchorSchema>> = [];
+  await db.$transaction(async tx => {
+    let cursor: string | undefined;
+    do {
+      const page = z.strictObject({ mode: z.literal("snapshot"), organisationId: z.literal(organisationId), entityId: z.literal("tickets.ticket"),
+        records: z.array(recordAnchorSchema).max(2), next: z.string().nullable() }).parse(await registry.invokeQueryInTransaction({ session: opened.session, transaction: tx }, snapshot, { mode: "snapshot", limit: 2, ...(cursor ? { cursor } : {}) }));
+      collected.push(...page.records); cursor = page.next ?? undefined;
+    } while (cursor);
+  }, { isolationLevel: "Serializable" });
+  assert.deepEqual(collected, nativeBefore.map(row => ({ recordId: row.id, organisationId, revision: row.version })));
   const queueMembership = await db.serviceQueueMember.findFirstOrThrow({ where: { organisationId, queueId: privateQueue.id, userId: staff.userId } });
   // Alter only this run's exact new queue-membership fixture. No count/identity
   // may be returned when owner coverage becomes incomplete, even to staff.
   await db.serviceQueueMember.delete({ where: { id: queueMembership.id, organisationId } });
   try {
     await assert.rejects(() => registry.invoke(opened.session, cohort, {}), /MIGRATION_ACCESS_REQUIRED/);
+    await assert.rejects(() => invokeSnapshot(opened.session, { mode: "preflight" }), /MIGRATION_ACCESS_REQUIRED/);
+    await assert.rejects(() => invokeSnapshot(opened.session, { mode: "snapshot" }), /MIGRATION_ACCESS_REQUIRED/);
   } finally {
     await db.serviceQueueMember.create({ data: queueMembership });
   }
   assert.deepEqual(await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } }), nativeBefore);
-  console.log("PASS real owner cohort access: canonical/final tickets counted without native edits, private nonmember denied before any count; source and v1/v2 contracts retained.");
+  console.log("PASS real owner cohort and shared snapshot: bounded exact canonical/final/unanchored anchors, Serializable and actual target membership required, private nonmember denied before IDs/counts; native rows and v1/v2 retained.");
   await checkFieldReviews(opened.session, opened.principal, unanchored.id, otherOrganisationId);
   assert.deepEqual(await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } }), nativeBefore);
   assert.equal(await db.auditEntry.count({ where: { id: opened.principal.authority === "staff_support" ? opened.principal.auditId : "impossible",

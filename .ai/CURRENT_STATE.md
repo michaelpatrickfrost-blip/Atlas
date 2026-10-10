@@ -1,5 +1,28 @@
 # Atlas current state
 
+## 10 October 2026 — Tickets shared snapshot implemented, central proof pending
+
+c5b IMPLEMENTED locally: transaction-only owner preflight/bounded snapshots/exact
+archive set and native revision coverage, entity v3 read-only opt-in. Actual active
+target membership, SERIALIZABLE isolation, native/private/source gates precede
+returned IDs/counts. Sealed v1/v2 and normal final/merged guards retained. Registry
+atomic opt-in validation plus owner/compatibility/archive regressions: 9 files/51
+assertions PASS; production build, TypeScript and scoped lint PASS. Final diff
+reviewed. Central exact-Test helper now challenges full/missing/equal-count extra/
+stale/cancelled coverage and real private/membership/isolation, but NOT RUN yet.
+No database migration, value gateway, preview service or visual builder. Live
+remains 8780a07. Next pin and deploy under combined candidate/public checks; only
+mark c5b VERIFIED after actual owner proof. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Tickets owner snapshot checkpoint started
+
+c5a registry opt-in verified locally; c5b IN PROGRESS. Plan specifies one required-
+transaction query with preflight/snapshot/exact-set coverage and entity v3 read-only
+approval; actual membership/Serializable/native/private/source guards. Preserve
+sealed v1/v2 and ordinary final writes; no value access/conversion/preview endpoint.
+No database change. Current live archive remains accepted 8780a07; next implement
+and test owner contracts, then central candidate/public proof. Phase 2 NOT PASSED.
+
 ## 10 October 2026 — Review archive VERIFIED on candidate/public and live
 
 Exact 8780a07b92654a9d2649b8b6518d609a9b431adb complete combined candidate/public

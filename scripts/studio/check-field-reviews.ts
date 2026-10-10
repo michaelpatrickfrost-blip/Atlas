@@ -101,6 +101,47 @@ export async function checkFieldReviews(session: Session, principal: FieldMigrat
   const storedDigest = fieldMigrationObservationDigest(); storedDigest.append(linked); const storedCoverage = storedDigest.finish();
   const linkedReview = sealFieldMigrationReview({ ...storedJob.intent as object, cohort: { recordCount: storedCoverage.recordCount, observationDigest: storedCoverage.observationDigest }, summary: storedCoverage.summary });
   await db.studioFieldMigrationReview.create({ data: { id: storedJob.id, organisationId: session.organisationId, definitionId: definition.id, review: linkedReview.review, checksum: linkedReview.checksum } });
+  // SQL fixtures establish the owning query's exact-set proof independently of
+  // the future preview service. Never change canonical native records to test it.
+  const snapshot = registry.describe("tickets.ticket.field_migration", 1);
+  const invokeCoverage = (id: string, actor = session) => db.$transaction(tx => registry.invokeQueryInTransaction({ session: actor, transaction: tx }, snapshot,
+    { mode: "coverage", preparationId: id }), { isolationLevel: "Serializable" });
+  await assert.rejects(() => invokeCoverage(job.id), /MIGRATION_COHORT_CHANGED/);
+  await assert.rejects(() => invokeCoverage(crypto.randomUUID()), /MIGRATION_REVIEW_UNAVAILABLE/);
+  await assert.rejects(() => invokeCoverage(job.id, { ...session, organisationId: otherOrganisationId }), /MIGRATION_ACCESS_REQUIRED|FORBIDDEN|unavailable/i);
+  const native = await db.serviceWorkItem.findMany({ where: { organisationId: session.organisationId, kind: "TICKET" }, orderBy: { id: "asc" }, select: { id: true, version: true } });
+  assert(native.length > 1);
+  async function coverageFixture(change: "none" | "missing" | "substitute" | "revision") {
+    const prepared = preparation();
+    const sealedIntent = sealFieldMigrationIntent({ ...prepared.intent, ownerQuery: { id: snapshot.id, version: snapshot.version, schemaHash: snapshot.schemaHash, contractHash: snapshot.contractHash } });
+    const coverageJob = await db.studioFieldMigrationPreparation.create({ data: { ...prepared, intent: sealedIntent.intent, intentChecksum: sealedIntent.checksum } });
+    for (let index = 0; index < native.length; index++) {
+      const record = native[index]; if (change === "missing" && index === 0) continue;
+      const recordId = change === "substitute" && index === 0 ? `missing-native-${crypto.randomUUID()}` : record.id;
+      const nativeRevision = record.version + (change === "revision" && index === 0 ? 1 : 0);
+      const extension = await db.studioExtensionRecord.findFirst({ where: { organisationId: session.organisationId, entityId: entity.id, recordId },
+        include: { slots: { where: { definitionId: definition.id, generationId: payload.storageGeneration }, include: { activeValue: true } } } });
+      const slot = extension?.slots[0], value = slot?.activeValue;
+      const observation: FieldMigrationObservation = { recordId, nativeRevision, extension: extension ? { id: extension.id, revision: extension.revision,
+        slot: slot ? { id: slot.id, revision: slot.revision, value: value ? { id: value.id, revision: value.revision, versionId: value.versionId, fingerprint: value.fingerprint } : null } : null } : null,
+        result: recordId === ticketId ? linked.result : absent.result };
+      await db.studioFieldMigrationObservation.create({ data: { preparationId: coverageJob.id, organisationId: session.organisationId, definitionId: definition.id,
+        entityId: entity.id, sourceGenerationId: payload.storageGeneration, recordId, nativeRevision,
+        ...(extension ? { extensionId: extension.id, extensionRevision: extension.revision } : {}),
+        ...(slot ? { slotId: slot.id, slotRevision: slot.revision } : {}), ...(value ? { valueId: value.id } : {}), observation } });
+    }
+    return coverageJob;
+  }
+  const completeJob = await coverageFixture("none");
+  assert.deepEqual(await invokeCoverage(completeJob.id), { mode: "coverage", organisationId: session.organisationId, entityId: entity.id, count: native.length, nativeCoverageComplete: true });
+  for (const change of ["missing", "substitute", "revision"] as const) {
+    const changed = await coverageFixture(change);
+    if (change !== "missing") assert.equal(await db.studioFieldMigrationObservation.count({ where: { preparationId: changed.id } }), native.length);
+    await assert.rejects(() => invokeCoverage(changed.id), /MIGRATION_COHORT_CHANGED/);
+  }
+  await db.studioFieldMigrationPreparation.update({ where: { id: completeJob.id }, data: { state: "CANCELLED", revision: 1 } });
+  await assert.rejects(() => invokeCoverage(completeJob.id), /MIGRATION_REVIEW_UNAVAILABLE/);
+  console.log("PASS actual owner coverage: exact canonical set and native revisions; incomplete, equal-count substituted, stale revision, foreign/missing/cancelled preparation denied; read-only native authority, no preview executor.");
   const stale = await db.studioFieldMigrationPreparation.create({ data: preparation() });
   await updateDraft(session, { definitionId: definition.id, revision: current.draft.revision, payload: { ...target, field: { ...target.field, label: "Changed after preparation" } } });
   await assert.rejects(() => db.studioFieldMigrationReview.create({ data: { id: stale.id, organisationId: session.organisationId, definitionId: definition.id,

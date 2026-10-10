@@ -329,3 +329,26 @@ post-build TypeScript and changed-file lint PASS. Tests cover server transaction
 identity, native/source/input/output guards, old hashes, source-descriptor mutation
 and command-idempotency boundaries. No owner snapshot query yet. This foundation
 will ship with the next owner checkpoint; current live archive remains 8780a07.
+
+
+2B3c5b scope IN PROGRESS: a single versioned Tickets transaction-only query with
+preflight/snapshot/coverage modes keeps the whole owner read protocol under one
+pinned reference. Entity v3 declares the read-only snapshot opt-in and approved
+source versions 2/3; sealed v1/v2 and ordinary final/merged write guards stay intact.
+Require actual active target membership and SERIALIZABLE isolation before native
+coverage/IDs/counts. Snapshot pages only canonical anchors; coverage checks exact
+persisted membership plus native revisions, not equal counts. No field values or
+representation writer. Core's subsequent collection service still checks explicit
+live-test authority, current/written field ACL and reference targets.
+Files: registry entity schema/types/factory/registration, service-work owner adapter,
+owner snapshot tests and existing exact-Test principal/review helper. Database: no
+new DDL, read only native records/membership and current archive. Tests include
+missing transaction/isolation/membership/source/permissions/private access, final/
+unanchored rows, foreign job, missing/extra/stale/same-count substitution, original
+hashes and no native writes. Real central acceptance required before completion.
+
+
+c5b implemented local evidence: 9 focused files/51 assertions, production build,
+TypeScript and scoped lint PASS. Central owner SQL/helper assertions added but
+NOT RUN. No new DDL. Pin shared-query foundation plus owner protocol together,
+then actual combined candidate/public acceptance before VERIFIED.

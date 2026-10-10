@@ -9390,6 +9390,8 @@ model StudioDefinitionVersion {
   fieldValues StudioFieldValue[] @relation("StudioFieldValueSchema")
   fieldMigrationSources StudioFieldMigrationPreparation[] @relation("StudioMigrationSource")
   fieldMigrationTargets StudioFieldMigrationPublication[] @relation("StudioPublicationTarget")
+  cutoverSources StudioFieldMigrationCutover[] @relation("StudioCutoverSource")
+  cutoverTargets StudioFieldMigrationCutover[] @relation("StudioCutoverTarget")
   @@unique([id,definitionId,organisationId])
   @@unique([definitionId,organisationId,version])
   @@unique([definitionId,organisationId,semanticVersion])
@@ -9647,9 +9649,33 @@ model StudioFieldMigrationExecution {
   updatedAt DateTime @updatedAt
   publication StudioFieldMigrationPublication @relation(fields:[preparationId,definitionId,organisationId],references:[preparationId,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_execution_publication_fk")
   outcomes StudioFieldMigrationOutcome[]
+  cutover StudioFieldMigrationCutover?
   @@unique([preparationId,definitionId,organisationId],map:"studio_execution_tenant_key")
   @@index([organisationId,definitionId,state],map:"studio_execution_field_state_idx")
   @@map("studio_field_migration_executions")
+}
+
+// Retained exact activation identity. SQL requires receipt/publication/pointer
+// to commit together; this model does not grant native or field authority.
+model StudioFieldMigrationCutover {
+  preparationId String @id @db.Uuid
+  organisationId String
+  definitionId String @db.Uuid
+  sourceVersionId String @db.Uuid
+  targetVersionId String @db.Uuid
+  pin Json
+  pinChecksum String @db.Char(64)
+  state String @default("ACTIVATED")
+  revision Int @default(0)
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  execution StudioFieldMigrationExecution @relation(fields:[preparationId,definitionId,organisationId],references:[preparationId,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_cutover_execution_fk")
+  sourceVersion StudioDefinitionVersion @relation("StudioCutoverSource",fields:[sourceVersionId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_cutover_source_fk")
+  targetVersion StudioDefinitionVersion @relation("StudioCutoverTarget",fields:[targetVersionId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_cutover_target_fk")
+  @@unique([preparationId,definitionId,organisationId],map:"studio_cutover_tenant_key")
+  @@index([organisationId,definitionId,state],map:"studio_cutover_field_state_idx")
+  @@map("studio_field_migration_cutovers")
 }
 
 // Immutable success lineage only; the target and outcome must commit together.

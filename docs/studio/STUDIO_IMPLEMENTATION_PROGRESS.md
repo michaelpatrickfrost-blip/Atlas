@@ -11,7 +11,7 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f2 — Additive cutover receipt and atomic-pointer storage guards — IN PROGRESS.
+2B3f2 — Additive cutover receipt and atomic-pointer storage guards — IMPLEMENTED; actual acceptance pending.
 2B3f1 VERIFIED on exact 080e4d7 complete candidate/public.
 2B3e6 VERIFIED on exact 8d6eb9e candidate/public.
 2B3d1–d4 VERIFIED ea27b2f; no row writer/designer.
@@ -69,6 +69,23 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+2B3f2 IMPLEMENTED, not runtime VERIFIED. Additive StudioFieldMigrationCutover
+scoped execution/source/target FKs, immutable closed pin/history and deferred receipt+
+CUTOVER publication+exact target pointer proof. Forward 20261010060000 retains old
+source-active predicates, denies cancellation/descendant bypass and freezes CUTOVER
+source/target/draft/configuration until f4/2B4. No production activator/rollback service.
+Prisma validate/generate, 392 model descriptors/unchanged 905 action allowlist,
+41 files/257 assertions incl generic receipt reads/counts denied, production build,
+strict post-build TypeScript/scoped lint/diff PASS. Central DDL BEGIN/ROLLBACK PASS
+under both original release locks, fresh atlas-cutover-ddl-20261010-0520.dump retained;
+/tmp/atlas-studio-cutover-storage-{ddl,validate,generate,catalogue,tests,build,types,
+postbuild-types,lint}.txt. Migration NOT APPLIED; actual guard lifecycle pending.
+Existing exact Test execution driver now runs rollback-only storage checks: standalone
+receipt/publication, foreign/tampered/stale identity denied; complete triple passes
+immediate deferred proof then deliberate rollback; receipt mutation, cancellation,
+old-source activation/draft/source saves denied. Not executed yet. Accepted 080e4d7.
+Checkpoint then full pinned candidate/public Studio proof; no f3 or Phase 2 gate yet.
 
 080e4d741e0e05d6c763a540900cc81b10b1147d complete candidate/public PASS;
 deploy session 67437 exit0, exact public health confirmed. Candidate AAnFme/public
@@ -964,6 +981,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+F2: schema, new 20261010060000 forward SQL, generated model metadata, private archive
+access test, new check-field-cutover-storage.ts and existing execution checker;
+field evolution plan/DATA_MODEL/DECISIONS/CURRENT_STATE/ledger updated.
+
 2B3f1: new migrations/cutover-contract.ts and studio-field-cutover-contract.test.ts;
 existing scripts/studio/check-field-execution.ts gets pure real-row proof;
 DATA_MODEL, field evolution plan, this ledger, CURRENT_STATE and DECISIONS updated.
@@ -1088,6 +1109,10 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+F2: one tenant receipt model, composite execution/source/target FKs and scope index;
+closed pin/history/atomic pointer triggers, added CUTOVER publication state, retained
+source-write freeze. Additive forward SQL; no native tables/backfill/reset.
+
 e2b: execution/outcome models, scoped FKs/immutable pins/CAS/prefix, deferred
 atomic target/progress guards and cancellation cascade. Pending migration
 20261010050000; no native table or row changes/backfill/reset.
@@ -1124,6 +1149,9 @@ business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
 
+20261010060000_studio_field_cutovers NOT APPLIED. Backed-up central DDL transaction
+rolled back PASS; actual runtime lifecycle awaits pinned candidate/public release.
+
 20261010050000_studio_field_executions applied successfully in central preparation
 for pinned 6d2f5a9, migrate log under backup 20261010-042335. Lifecycle not yet verified.
 
@@ -1148,6 +1176,9 @@ preserved. Final candidate/activation backup prefixes: `atlas-pre-deploy-2026100
 and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
+
+F2 extends generic metadata read/count denial; adds exact central rollback-only
+receipt/publication/pointer/storage/history guard checks (not yet executed).
 
 2B3f1: eight focused closed/stale/tenant/READY/integrity/loss/empty/revision-limit tests.
 
@@ -1175,6 +1206,9 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+F2: schema/client/catalogue generation,41 files/257 assertions, build/strict post-build
+types/scoped lint/diff and central backed-up DDL rollback PASS; actual proof pending.
 
 2B3f1 focused8, regression 41 files/257 assertions, production build, strict post-build
 TypeScript and changed-file lint/diff PASS. Actual pure-pin helper pending release.
@@ -1412,11 +1446,12 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement 2B3f2 additive StudioFieldMigrationCutover receipt and forward migration:
-exact READY/closed pin/source-target tenant FKs and retained history; receipt,
-PUBLISHED→CUTOVER CAS and source→exact target definition revision+1 must commit
-atomically. Preserve old source-active freshness and freeze CUTOVER source/target/
-configuration until f4/2B4. Regenerate client/model catalogue, prove generic reads/
-counts denied, add rollback-only exact central Test guard checks, run build/types/
-lint/regressions and backed-up SQL verification; checkpoint before actual service.
-Accepted 080e4d7; designer/customer dashboard/custom buttons remain incomplete.
+Checkpoint f2 additive receipt/atomic-pointer storage (257 local assertions/build/
+types/lint and central DDL rollback PASS), then pin full combined Studio release.
+Apply 20261010060000 only through normal backed-up deploy; actual Test helper must
+prove receipt/publication/pointer all-or-nothing and retained/frozen source/native
+compatibility, then public repeat. If FAIL preserve applied additive migration and
+history, repair exact cause without reset/guard weakening. After PASS begin f3:
+extract shared activation transaction primitive from definitions/service.ts, implement
+current-authority cutover and fresh replay with paired Audit. f4 rollback/value
+window follows; Phase 2 designer/customer dashboards/buttons remain incomplete.

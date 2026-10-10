@@ -1,5 +1,24 @@
 # Atlas current state
 
+## 10 October 2026 — Cutover receipt storage checked locally; actual proof pending
+
+2B3f2 IMPLEMENTED, not runtime VERIFIED. Additive StudioFieldMigrationCutover
+scoped execution/source/target FKs, immutable closed pin/history and deferred receipt+
+CUTOVER publication+exact target pointer proof. Forward 20261010060000 retains old
+source-active predicates, denies cancellation/descendant bypass and freezes CUTOVER
+source/target/draft/configuration until f4/2B4. No production activator/rollback service.
+Prisma validate/generate, 392 model descriptors/unchanged 905 action allowlist,
+41 files/257 assertions incl generic receipt reads/counts denied, production build,
+strict post-build TypeScript/scoped lint/diff PASS. Central DDL BEGIN/ROLLBACK PASS
+under both original release locks, fresh atlas-cutover-ddl-20261010-0520.dump retained;
+/tmp/atlas-studio-cutover-storage-{ddl,validate,generate,catalogue,tests,build,types,
+postbuild-types,lint}.txt. Migration NOT APPLIED; actual guard lifecycle pending.
+Existing exact Test execution driver now runs rollback-only storage checks: standalone
+receipt/publication, foreign/tampered/stale identity denied; complete triple passes
+immediate deferred proof then deliberate rollback; receipt mutation, cancellation,
+old-source activation/draft/source saves denied. Not executed yet. Accepted 080e4d7.
+Checkpoint then full pinned candidate/public Studio proof; no f3 or Phase 2 gate yet.
+
 ## 10 October 2026 — Cutover identity accepted live; receipt storage starts
 
 080e4d741e0e05d6c763a540900cc81b10b1147d complete candidate/public PASS;

@@ -10,7 +10,7 @@ const session: Session = { organisationId: "company", organisationName: "Company
   ]) };
 
 it("generic desktop queries cannot expose field review identities, source records, fingerprints or counts", () => {
-  for (const model of ["StudioFieldMigrationPreparation", "StudioFieldMigrationReview", "StudioFieldMigrationObservation", "StudioFieldMigrationPublication", "StudioFieldMigrationExecution", "StudioFieldMigrationOutcome"] as const) {
+  for (const model of ["StudioFieldMigrationPreparation", "StudioFieldMigrationReview", "StudioFieldMigrationObservation", "StudioFieldMigrationPublication", "StudioFieldMigrationExecution", "StudioFieldMigrationOutcome", "StudioFieldMigrationCutover"] as const) {
     expect(canReadModel(session, model)).toBe(false);
     for (const args of [{}, { where: { organisationId: "other" } }, { select: { id: true } }])
       expect(() => planRead(session, model, args)).toThrow("FORBIDDEN");

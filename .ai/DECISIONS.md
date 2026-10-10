@@ -1849,3 +1849,15 @@ no automatic reverse conversion or lossless promise after target-only writes. Th
 fulfils specification Section24 explicit rollback limits without discarding new
 customer work. Pin validation is pure integrity, never data/activation authority;
 receipt, current access, shared activation and paired Audit follow in 2B3f2–f4.
+
+## 10 October 2026 — Cutover closes publication only with its atomic receipt
+
+An additive CUTOVER state separates completed conversion from the source-active
+PUBLISHED operation. Its closed receipt and exact active pointer must commit together;
+old preparation/publication/execution freshness is not relaxed globally. Closing
+PUBLISHED cannot expose old source saves: add explicit retained-source write guard.
+F2 keeps target/configuration saves and cancellation/ordinary activation blocked;
+current-authority activation, honest rollback and normal owner writes follow through
+f3/f4/2B4. Existing publisher/activation primitives remain the platform engine.
+Receipt history is immutable at f2; guarded rollback requires a subsequent forward
+transition, never deletion or rewriting this applied migration.

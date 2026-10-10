@@ -21,6 +21,7 @@ import { executeFieldMigrationBatch, FieldMigrationExecutionError } from "../../
 import { inspectFieldMigrationExecution } from "../../src/core/studio/fields/migrations/execution-inspection";
 import { writeFieldMigrationRepresentation } from "../../src/core/studio/fields/migrations/representation";
 import { fieldMigrationOutcomePinSchema } from "../../src/core/studio/fields/migrations/execution-contract";
+import { checkFieldCutoverStorage } from "./check-field-cutover-storage";
 import { createFieldMigrationCutoverPin } from "../../src/core/studio/fields/migrations/cutover-contract";
 const child = promisify(execFile);
 
@@ -172,6 +173,7 @@ export async function checkFieldExecution(session: Session, principal: FieldMigr
   await assert.rejects(() => activateVersion(session, { definitionId: definition.id, versionId: published.targetVersionId, revision: finalDefinition.revision }), /completed conversion|explicit cutover/i);
   assert.deepEqual(await db.studioFieldValue.findMany({ where: { ...fieldScope, generationId: payload.storageGeneration }, orderBy: { id: "asc" } }), sourceValues);
   assert.deepEqual(await db.studioFieldSlot.findMany({ where: { ...fieldScope, generationId: payload.storageGeneration }, orderBy: { id: "asc" } }), sourceSlots);
+  await checkFieldCutoverStorage(session, principal, intent, otherOrganisationId);
   await cancelFieldMigrationPublication(session, principal, { preparationId: prepared.id, revision: published.publicationRevision });
   assert.equal((await execution()).state, "CANCELLED"); assert.deepEqual(await outcomes(), success); assert.deepEqual(await targets(), values);
   await assert.rejects(() => executeFieldMigrationBatch(session, { preparationId: prepared.id, revision: (state.revision + 1), limit: 1 }), e => e instanceof FieldMigrationExecutionError && !e.failureRecorded);

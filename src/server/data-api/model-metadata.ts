@@ -36936,6 +36936,18 @@ export const MODEL_FIELDS = {
       "list": true,
       "nullable": false,
       "relation": true
+    },
+    "cutoverSources": {
+      "type": "StudioFieldMigrationCutover",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "cutoverTargets": {
+      "type": "StudioFieldMigrationCutover",
+      "list": true,
+      "nullable": false,
+      "relation": true
     }
   },
   "StudioDependency": {
@@ -37976,6 +37988,104 @@ export const MODEL_FIELDS = {
     "outcomes": {
       "type": "StudioFieldMigrationOutcome",
       "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "cutover": {
+      "type": "StudioFieldMigrationCutover",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    }
+  },
+  "StudioFieldMigrationCutover": {
+    "preparationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "definitionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "sourceVersionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "targetVersionId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "pin": {
+      "type": "Json",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "pinChecksum": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "state": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "revision": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdBy": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "execution": {
+      "type": "StudioFieldMigrationExecution",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "sourceVersion": {
+      "type": "StudioDefinitionVersion",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "targetVersion": {
+      "type": "StudioDefinitionVersion",
+      "list": false,
       "nullable": false,
       "relation": true
     }

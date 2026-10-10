@@ -1,5 +1,16 @@
 # Atlas current state
 
+## 10 October 2026 — Actual cutover receipt identity checkpoint
+
+F3b1 closed actual ACTIVATED receipt reader IMPLEMENTED, checked locally: 12
+cutover identity assertions (four new replay identity tests), strict TypeScript,
+scoped lint and diff PASS. Receipt binds actual CUTOVER publication/target active
+CAS and unchanged READY execution/review; no simulated source pointer or grant.
+No DB/migration, public hook or writes. Logs /tmp/atlas-studio-cutover-receipt-
+{tests,types,lint}.txt. Build/live proof pending integrated f3b2/3 and f3c release.
+Accepted live 5f5fce5 retained, Phase 2 NOT PASSED. Next f3b2 actual receipt-derived
+review inspection with current native/private/current/written/reference policies.
+
 ## 10 October 2026 — Shared activation checked; authorised cutover next
 
 F3a IMPLEMENTED / VERIFIED locally: definitions/activation.ts extracts the existing

@@ -1231,3 +1231,21 @@ client stage, permission set, simulated pointer or checksum as authority. F3c ac
 central API proof includes concurrent/stale/denied/replay/paired-Audit rollback and
 complete candidate/public/native acceptance. Honest rollback and normal target-write
 window remain f4/2B4; no customer visual completion claim from this backend.
+
+### 2B3f3b bounded implementation plan — 10 October
+
+F3a checkpoint 499ef00 is locally checked; accepted live 5f5fce5 retained.
+F3b1: closed actual ACTIVATED receipt reader and identity tests; dependencies f1/f2;
+files migrations/cutover-receipt and contract tests; no database change.
+F3b2: receipt-derived current-authority review coverage; dependencies f3b1; files
+coverage/receipt inspection and tests. No simulated source pointer or old predicate
+relaxation. SQL scopes actual receipt/publication/execution/definition/draft/source/
+target; owning native/private and current/written/reference/unique checks reused.
+No database change unless evidence requires a forward guard.
+F3b3: explicit cutover using shared f3a activator, exact CAS/receipt/paired Audit and
+fresh replay; dependencies f3b1/2. Service and meaningful denial/atomicity tests.
+No public UI/endpoint or rollback/value saves.
+F3c: actual central Test service proof and full combined candidate/public acceptance,
+backup/build/types/lint; live 5f5fce5 retained until passed. Do not begin f4 early.
+Statuses: f3b1 IMPLEMENTED,12 focused assertions/types/lint/diff PASS; build/live
+proof integrated with f3c. f3b2/3 and f3c NOT STARTED.

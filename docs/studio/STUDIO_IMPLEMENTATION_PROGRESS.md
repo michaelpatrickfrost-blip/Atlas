@@ -11,7 +11,8 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f3a — Shared activation transaction primitive — IMPLEMENTED; local checks PASS, live proof pending.
+2B3f3b2 — Receipt-derived current review coverage — NOT STARTED.
+F3b1 IMPLEMENTED / checked locally; f3a local checks PASS, integrated live proof pending.
 2B3f2 VERIFIED on exact5f5fce5 complete candidate/public.
 2B3f1 VERIFIED on exact 080e4d7 complete candidate/public.
 2B3e6 VERIFIED on exact 8d6eb9e candidate/public.
@@ -71,6 +72,15 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+F3b1 closed actual ACTIVATED receipt reader IMPLEMENTED, checked locally: 12
+cutover identity assertions (four new replay identity tests), strict TypeScript,
+scoped lint and diff PASS. Receipt binds actual CUTOVER publication/target active
+CAS and unchanged READY execution/review; no simulated source pointer or grant.
+No DB/migration, public hook or writes. Logs /tmp/atlas-studio-cutover-receipt-
+{tests,types,lint}.txt. Build/live proof pending integrated f3b2/3 and f3c release.
+Accepted live 5f5fce5 retained, Phase 2 NOT PASSED. Next f3b2 actual receipt-derived
+review inspection with current native/private/current/written/reference policies.
 
 F3a IMPLEMENTED / VERIFIED locally: definitions/activation.ts extracts the existing
 compiler/checksum/generation-binding/source-module/CAS/activation-Audit transaction.
@@ -1508,12 +1518,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Checkpoint F3a shared activation helper/local 262 assertions/build/types/lint and
-superseded compiler-cache recovery. Implement f3b cutover service: refresh stored
-initiating authority, exact READY/review/publication/definition confirmation, create
-receipt, CAS PUBLISHED→CUTOVER, call shared activator with expected source pointer,
-paired activation/migration Audit, all atomic. Fresh replay derives its stage only
-from actual scoped retained receipt, reuses native/private/current/written/reference
-coverage and does not globally relax old source-active SQL. Add service/replay/Audit/
-revocation tests and actual central helper; full candidate/public proof before f4.
-Accepted 5f5fce5; no rollback/value API or visual/customer dashboard/buttons yet.
+Implement f3b2 receipt-derived review inspection from actual scoped ACTIVATED
+receipt/CUTOVER publication/READY execution/target-active definition, reusing current
+owning native/private/current/written/reference coverage. Preserve old source-active
+predicates. Add denial tests, then f3b3 explicit shared activation/paired Audit and
+fresh replay service; f3c actual central proof/full combined release before f4.
+Accepted 5f5fce5; no rollback/value API or customer visual/buttons completion.

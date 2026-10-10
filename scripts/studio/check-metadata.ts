@@ -102,13 +102,29 @@ async function main() {
     await expect(page.getByRole("navigation",{name:"Atlas administration",exact:true}).filter({visible:true})).toHaveCount(1);
     for (const label of ["Apps","Search apps, people, reports... ⌘K","Open chat","Notifications"]) await expect(page.getByRole("button",{name:label,exact:true})).toHaveCount(0);
     await expect(page.getByRole("link",{name:"My work",exact:true})).toHaveCount(0);
-    await expect(page.getByRole("heading",{name:"Configuration library",exact:true})).toBeVisible();
+    await expect(page.getByRole("heading",{name:"Business setup",exact:true})).toBeVisible();
+    await expect(page.getByText("Visual designer in development",{exact:true})).toBeVisible();
+    await expect(page.getByLabel("Name",{exact:true})).not.toBeVisible();
+    for (const width of [1440,820,390]) {
+      await page.setViewportSize({width,height:1000});
+      await expect(page.getByRole("heading",{name:"Business setup",exact:true})).toBeVisible();
+      assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),"Business setup viewport overflow");
+      await page.screenshot({path:`/tmp/atlas-studio-business-setup-${suffix}-${width}.png`,fullPage:true});
+    }
+    await page.setViewportSize({width:1440,height:1000});
+    await page.locator("#advanced-setup > summary").click();
+    await expect(page.getByLabel("Name",{exact:true})).toBeVisible();
+    console.log(`PASS business setup clarity and optional advanced records at desktop/tablet/phone; screenshots /tmp/atlas-studio-business-setup-${suffix}-*.png`);
     await page.getByLabel("Name",{exact:true}).fill("Browser accepted configuration");
     await expect(page.getByLabel("Stable key",{exact:true})).toHaveCount(0);
     await page.getByLabel("Description",{exact:true}).fill("Created through the real Admin form");
     await page.getByRole("button",{name:"Create draft",exact:true}).click();
     await expect(page.getByRole("heading",{name:"Browser accepted configuration",exact:true})).toBeVisible();
     await page.waitForURL(/\/atlas\/studio\/[^/]+\/[a-f0-9-]{36}$/);
+    await expect(page.getByText("Advanced setup · Reference set",{exact:true})).toBeVisible();
+    await expect(page.getByText(descriptor.id,{exact:false})).not.toBeVisible();
+    await page.getByText("Technical reference IDs",{exact:true}).click();
+    await expect(page.getByText(`${descriptor.id} · v${descriptor.version}`,{exact:true})).toBeVisible();
     console.log("CHECK draft save and two-editor conflict");
     const secondEditor=await context.newPage();await secondEditor.goto(page.url(),{waitUntil:"networkidle"});
     await page.getByLabel("Description",{exact:true}).fill("First editor saved this revision");
@@ -125,13 +141,25 @@ async function main() {
     assert.equal((browserDraft.payload as {description:string}).description,"First editor saved this revision");assert.equal(browserDraft.revision,1);
     await secondEditor.close();console.log("PASS real draft save and stale-editor structural diff preserves unsaved input without overwriting accepted changes");
     await page.getByRole("button",{name:"Validate saved draft",exact:true}).click();
-    await expect(page.locator('[aria-label="Validation results"]')).toContainText("checksum");
+    await expect(page.locator('[aria-label="Validation results"]')).toContainText("Ready to publish");
+    const savedCheck=await db.studioDraft.findFirstOrThrow({where:{organisationId:a.id,definitionId:browserDefinitionId}});
+    assert.match((savedCheck.validation as {checksum:string}).checksum,/^[a-f0-9]{64}$/,"The readable result retains the real saved check");
     await page.getByRole("button",{name:"Publish saved draft",exact:true}).click();
     await expect(page.getByRole("button",{name:"Activate this version",exact:true})).toBeVisible();
     await page.getByRole("button",{name:"Activate this version",exact:true}).click();
-    await expect(page.getByText("A published version is active",{exact:false})).toBeVisible();
+    await expect(page.getByText("A published reference set is active",{exact:false})).toBeVisible();
     await page.setViewportSize({width:390,height:844});
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),"Studio mobile overflow");
+    await page.setViewportSize({width:1440,height:1000});
+    await page.goto(`/atlas/studio/${a.id}/${def.id}?compare=${version1.versionId}`,{waitUntil:"networkidle"});
+    const comparisonView=page.locator('[aria-label="Version comparison"]');
+    await expect(comparisonView).toContainText("First accepted version");
+    await expect(comparisonView).toContainText("Second accepted version");
+    await expect(comparisonView).toContainText("The description changed.");
+    await expect(comparisonView).toContainText("Data references are unchanged.");
+    await expect(comparisonView.locator("pre")).toHaveCount(0);
+    await page.setViewportSize({width:390,height:844});
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),"Readable version comparison mobile overflow");
     await page.setViewportSize({width:1440,height:1000});
     await page.goto("/studio",{waitUntil:"networkidle"}); assert(new URL(page.url()).pathname.startsWith("/atlas/studio"));
     for (const address of ["/atlas","/home","/sales","/manufacturing","/templates"]) {
@@ -161,7 +189,11 @@ async function main() {
     await customerPage.getByLabel("Code",{exact:true}).fill(setupCode);
     await customerPage.getByLabel("New password",{exact:true}).fill(password);await customerPage.getByLabel("Confirm password",{exact:true}).fill(password);
     await customerPage.getByRole("button",{name:"Save password",exact:true}).click();await expect(customerPage).toHaveURL(`${base}/home`);
-    await customerPage.goto("/studio",{waitUntil:"networkidle"});await expect(customerPage.getByRole("heading",{name:"Configuration library",exact:true})).toBeVisible();
+    await customerPage.goto("/studio",{waitUntil:"networkidle"});await expect(customerPage.getByRole("heading",{name:"Business setup",exact:true})).toBeVisible();
+    await expect(customerPage.getByText("Visual designer in development",{exact:true})).toBeVisible();
+    await expect(customerPage.getByLabel("Name",{exact:true})).not.toBeVisible();
+    await expect(customerPage.getByText("Browser accepted configuration",{exact:true})).not.toBeVisible();
+    await customerPage.locator("#advanced-setup > summary").click();
     await expect(customerPage.getByText("Browser accepted configuration",{exact:true})).toBeVisible();
     // Browser navigation preserves the real Secure session on trusted loopback;
     // APIRequestContext omits that cookie on HTTP and would test anonymous 404.

@@ -11,11 +11,12 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-Phase 2 entry-point clarity companion — IN PROGRESS. Business setup must lead;
+Phase 2 entry-point clarity companion — IMPLEMENTED; final local verification PASS. Actual candidate/public pending. Business setup must lead;
 existing named capability-reference forms are advanced foundation tooling, not the
 visual designer. Purpose: make current availability clear and move optional technical
 setup out of the primary path without inventing an unfinished builder. Files:
-modules/studio/library and definition-view; existing Admin/customer wrappers retained.
+modules/studio/library, definition-view, reference-comparison, manifest and existing
+central check-metadata; Admin/customer wrappers retained.
 No database implications. Checks: existing Studio/Admin regressions, strict types,
 scoped lint, production build, actual candidate/public UI and native acceptance.
 
@@ -79,6 +80,45 @@ All 903 body/table paragraphs and additional footer read. No specification rewri
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+Final companion source review/diff/checks PASS: 45 files/286 assertions, production
+build, strict post-build TypeScript and scoped ESLint after the plain-language
+comparison/readiness changes. Logs /tmp/atlas-studio-business-setup-{tests,build,
+types,lint}.txt. No untracked customer data or DB/migration change. Browser read-only
+inspection confirmed original JSON comparison and stale saved validation on Michael's
+existing page; it was not reloaded/mutated, preserving any unsaved edits. Actual
+candidate/public and three-size screenshot inspection pending before VERIFIED.
+
+
+Michael's non-coder comparison feedback incorporated in this companion: reference
+versions now show readable before/after descriptions, named reference selections
+and additions/removals/changed contracts; raw JSON/hashes removed from comparison.
+Draft check readiness/warnings are structured plain language; saved validation is
+schema checked before display. These compare foundation records, not nonexistent
+screen designs. Real central proof adds actual two-version description/reference
+comparison, no raw pre block, mobile overflow and stored checksum preservation.
+Final build/types/lint must be rerun after this addition; earlier286 tests retained.
+Full visual layout comparison remains2E and must use the actual published renderer.
+
+
+Business setup entry companion IMPLEMENTED: selected-business header and honest
+visual-designer availability; named reference sets/forms under closed Advanced setup,
+technical IDs under separate disclosure. Existing selection/save/conflict/validate/
+publish/activate preserved; no native/configuration/compiler/DB changes. Manifest
+navigation uses Business setup. Actual central checker preserves prior operations
+and adds collapsed naming/ID disclosures, customer/Admin separation and desktop/
+tablet/phone overflow/screenshots. Local45 files/286 assertions/build/scoped lint
+PASS; strict post-build TS result pending at this update. Candidate/public pending.
+
+Guarded reclaim completed exit0 under both original locks with actualcurrent1f2/
+previous9aad pinned. Exact failedaea dependencies/build removed; full source/readiness/
+environment-link history retained at maintenance-backups/failed-studio-source-aea5ef1...;
+only now-inactive5f/080 Turbopack caches also removed. All accepted server/static/
+source/dependencies, central data/private files/backups retained. Inventory
+maintenance-backups/studio-failed-cutover-reclaim-20261010.txt; local
+/tmp/atlas-studio-reclaim-failed-cutover.{sh,txt}. Root7.0G/PGonline/current/prior
+unchanged verified. Supersedes previous blocked cleanup snapshots.
+
 
 10 October final f3c evidence supersedes the earlier running/pending entries below:
 runner54052 completed exit0. CandidatehHdOrk and publicibWIZD ALL COMBINED PASS;
@@ -1633,12 +1673,9 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-Implement the bounded business-setup entry-point clarity companion described above;
-review existing Studio/Admin checks, run build/types/lint/regressions. Keep technical
-reference forms available under explicit advanced setup, and do not claim a visual
-builder or change activation semantics. Before deployment reclaim only exact failed
-aea disposable dependencies/build under BOTH free locks with current1f2/prior9aad
-and all guards verified; preserve source/readiness/history/accepted assets/backups.
-If unsafe capacity persists, checkpoint this exact blocker. Then complete pinned
-candidate/public acceptance. Resume f4 lifecycle/contracts/forward rollback guards
-from STUDIO_FIELD_EVOLUTION_PLAN.md; do not start 2E before 2B–D dependencies pass.
+Commit reviewed UI/checker/memory companion, then pin its exact HEAD on
+codex/studio-phase2 with ATLAS_RELEASE_ACCEPTANCE=studio for full candidate/public
+acceptance. Preserve live1f2/prior9aad and monitor server7.0G. Inspect actual three-size
+screenshots and readable comparison; keep Michael's existing tab/unsaved edits intact.
+After accepted UI checkpoint resume f4 lifecycle/contracts/additive rollback guards
+from STUDIO_FIELD_EVOLUTION_PLAN.md. Full Phase2 gate remains NOT PASSED.

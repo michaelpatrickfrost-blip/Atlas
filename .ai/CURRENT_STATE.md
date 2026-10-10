@@ -1,5 +1,51 @@
 # Atlas current state
 
+## 10 October 2026 — Final readable business-setup companion checks PASS
+
+45 files/286 assertions, production build, strict post-build TypeScript/scoped
+ESLint/diff PASS after final readable comparison/check changes. Logs /tmp/atlas-
+studio-business-setup-{tests,build,types,lint}.txt. No DB/migration/native action or
+compiler change. Original user browser was read-only inspected, not reloaded or
+mutated; preserve unsaved edits. UI companion IMPLEMENTED, real candidate/public
+and three-size screenshot review pending before VERIFIED. Root7.0G/PGonline,
+current1f2/prior9aad confirmed; next exact reviewed commit and pinned complete
+Studio acceptance, then f4 rollback contracts. FullPhase2 NOT PASSED; bespoke
+screen/document/dashboard designer and custom button delivery remain required.
+
+## 10 October 2026 — Plain-language comparison/check results implemented
+
+Michael states he is not a coder and needs visual modular setup. Companion now
+replaces raw reference-version JSON/hashes with readable before/after descriptions,
+named selections and additions/removals/changed-reference summary. Draft checks
+show readiness/review and human reference labels; persisted validation is parsed.
+New modules/studio/reference-comparison plus definition-view; existing tenant-scoped
+comparison/service unchanged. Actual central checker now verifies real two-version
+comparison, no raw pre, phone overflow and preserved stored checksum. ATLAS_ADMIN
+and visual requirements/ledger updated. Final build/types/lint rerun pending after
+these last changes; prior45 files/286 assertions PASS. Real layout previews/comparison
+remain unimplemented2E. Next: final checks/coherent checkpoint then pinned full
+candidate/public and screenshot inspection, f4 afterwards. FullPhase2 NOT PASSED.
+
+## 10 October 2026 — Business setup entry clarity implemented; safe capacity recovered
+
+Studio now leads with selected-business setup and explicit designer-in-development
+status; named capability-reference forms/history are under closed Advanced setup,
+technical IDs separately disclosed. Existing saved definitions and publish/activate/
+conflict semantics preserved; no template/screen/dashboard builder claim. Files:
+modules/studio/{library,definition-view,manifest}; real check-metadata adds existing
+Admin/customer disclosure/responsive assertions/screenshots while retaining prior
+security/history/Audit checks. Local45 files/286 assertions/build/scoped lint PASS;
+strict post-build types result pending; actual pinned candidate/public next. No DB
+change. FullPhase2 NOT PASSED; dependent visual integration remains required.
+
+Failedaea disposable outputs reclaimed exit0 under BOTH original locks/pinned
+current1f2/prior9aad. Full failed source/readiness/envlink retained; only inactive5f/
+080 Turbopack caches also reclaimed, accepted assets/dependencies/backups/central
+records unchanged. Inventory maintenance-backups/studio-failed-cutover-reclaim-
+20261010.txt; /tmp/atlas-studio-reclaim-failed-cutover.{sh,txt}. Root7.0G/PGonline
+confirmed. Supersedes blocked attempts. Next: exact local types/lint/diff checkpoint
+and pinned full candidate/public Studio acceptance, then f4 lifecycle contract.
+
 ## 10 October 2026 — Preserve completed concurrent commercial release
 
 Current exact public1f2ab97f3ee954ac9829d2c3ea1d4681ce5320e5 includes Studio9aad1fc

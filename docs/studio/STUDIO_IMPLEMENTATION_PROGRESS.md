@@ -11,17 +11,21 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
-2B3f4a — Closed settlement identity and confirmation contracts — VERIFIED locally; strict post-build TypeScript PASS.
-Purpose: pin honest source rollback or finalization of the unchanged-data window,
-without granting authority or writing data. Dependencies: verified f1/f2/f3. Expected
-files: migrations/settlement-contract and existing cutover-contract tests. No DB
-implications; current original0006 remains unchanged. Tests: exact identities/CAS,
-stale/foreign/unknown/tampered/coercion and revision capacity; build/types/lint.
-Then f4b forward SQL, f4c current-authority rollback and f4d actual central proof.
+2B3f4b1 — Additive one-time settlement storage — IMPLEMENTED; actual Test proof pending.
+Purpose: retain original activation history while proving rollback/finalization
+receipt, publication and pointer commit together. Dependencies: verified0006/f3,
+f4a closed contract. Expected files: schema, additive0007, exact Test nested storage
+helper and cutover checker. No native/value conversion, backfill/reset or production
+settlement API. Existing ordinary value guards remain closed until f4b2/2B4.
+Tests: central rollback-only DDL, exact Test SQL closed pins/CAS/tenant/actor,
+standalone transitions, both terminal outcomes, retained history and changed-source
+rollback denial; schema generation, regression/types/lint/build and full release.
+F4b2 generation/cosmetic continuation, f4c current-authority service and f4d actual
+service proof follow. FullPhase2 NOT PASSED; visual designer remains required.
 
-Business-setup/readable-comparison clarity companion VERIFIED on exact74fab2d
-full candidate/public. F3a–c VERIFIED9aad1fc. FullPhase2 NOT PASSED; no visual builder
-or owner ordinary value gateway yet.
+F4a VERIFIED locally (adfc357); strict TS/build/scoped lint,18 focused and45 files/
+292 assertions passed. Business setup/readable comparison VERIFIED74fab2d full
+candidate/public. F3a–c VERIFIED9aad1fc.
 
 # Overall Status
 
@@ -1706,9 +1710,14 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-F4a strict post-build TypeScript session89249 passed; focused/regression/build/lint
-and final diff reviewed. Next f4b additive0007 nullable settlement identity/checksum/actor/time and guarded terminal
-states/deferred receipt-publication-pointer proof; never edit applied0006. Preserve
-initial ACT proof, later terminal history, closed historical source/target generations
-and ANY open source freeze priority. Read bounded plan/DECISIONS before SQL. No
-rollback service/value gateway/designer or fullPhase2 completion claim yet.
+Checkpoint reviewed f4b1, then merge exact live1bf0e2c source ancestry (previous845456e)
+preserving concurrent UI/task code/memory. Central additive0007 backed-up DDL rollback
+PASS071007 (five originalACT rows compatible, identity shape checks, columns after
+rollback0); no migration applied. Build/types/scoped lint/diff,41 Studio files268 and
+7 compatibility files48 PASS. Exact Test nested runtime proof still pending.
+Root2.0G/PG18main online: inspect/reclaim only eligible disposable task-owned inactive
+compiler/npm caches under both original locks, preserve current/previous/all accepted
+runtime/history/backups. Do not risk ENOSPC. If capacity allows, pinned compatible
+full Studio candidate/public/native acceptance. Then f4b2 generation/cosmetic
+continuation before f4c current-authority settlement and f4d actual service proof,
+2B4 values and visual2E. No rollback/value/designer completion claim yet.

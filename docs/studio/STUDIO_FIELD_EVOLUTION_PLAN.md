@@ -1392,3 +1392,19 @@ terminal receipts remain immutable history and do not pin every future definitio
 Rolled-back source saves are not permanently historical; completed source and every
 cancelled/rolled-back target remain retained/closed. ANY new open source freeze must
 precede old completed-target allowances.
+
+F4b split into reviewable checkpoints: f4b1 terminal storage/deferred atomic proof,
+then f4b2 generation priority/cosmetic continuation. f4b1 forward0007 prepared,
+original0006 unedited; existing ordinary value/target guards deliberately remain
+closed. No production service uses terminal settlement yet. Nested exact Test
+helper exercises both complete terminal outcomes then rolls back, immutable original
+identity, standalone receipt denial and changed-extension rollback denial while
+allowing metadata-only finalization. Central rolled-back DDL/current runtime and
+fullcandidate/public proof required before storage VERIFIED.
+
+F4b1 IMPLEMENTED locally10 October: schema validate/generate/build/strict types/
+scoped helper lint,41 Studio files268 and7 compatibility files48 assertions PASS.
+Central backup071007/full0007 DDL rolled back PASS: five oldACT rows compatible,
+principal shape checks and no new columns after rollback. Initial syntax issue
+corrected and rerun. No applied migration/production service or actual nested
+Test proof yet; full compatible candidate/public acceptance remains required.

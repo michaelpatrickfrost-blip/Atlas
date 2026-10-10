@@ -288,3 +288,15 @@ then owning native/private/current/written/reference/unique policies. Old freshn
 unchanged; normal values/rollback remain closed. 286 local assertions/build/types/
 lint PASS; actual candidate/public service proof PASS, including both paired-Audit
 failures, concurrent CAS/raw conflict, fresh replay and current access revocation. See Studio ledger.
+
+F4b1 settlement storage (IMPLEMENTED locally, central backed-up DDL rollback passed, actual Test proof pending): additive
+20261010070000 adds nullable settlement pin/checksum/actor/time; original0006
+ACTIVATED receipts and immutable source/target/conversion history remain compatible.
+Only ACTIVATED/revision0→ROLLED_BACK or FINALIZED/revision1, with matching
+CUTOVER→ROLLED_BACK or COMPLETED publication and exact source-restored or target-
+retained pointer, can commit. Terminal receipt update/delete remains denied. One
+open receipt per tenant/field. Rollback storage additionally requires unchanged
+source/target representation; metadata-only finalization closes the rollback
+window even if other extension data changed. SQL identity shape does not prove
+current native/private access; production current-authority services follow.
+Ordinary value/generation continuation remains closed pendingf4b2/2B4.

@@ -6,6 +6,7 @@ import { db } from "../../src/core/db/client";
 import { withFieldMigrationAuthority, type FieldMigrationAuthority } from "../../src/core/studio/fields/migrations/authority";
 import { inspectFieldMigrationExecution } from "../../src/core/studio/fields/migrations/execution-inspection";
 import { createFieldMigrationCutoverPin } from "../../src/core/studio/fields/migrations/cutover-contract";
+import { checkFieldSettlementStorage } from "./check-field-settlement-storage";
 import { checksum } from "../../src/core/studio/registry/contracts";
 
 /** Exact Test, rollback-only storage proof. Not a production activation service,
@@ -84,6 +85,7 @@ export async function checkFieldCutoverStorage(session: Session, principal: Fiel
     const sourceSlot = await tx.studioFieldSlot.findFirstOrThrow({ where: { organisationId: session.organisationId, definitionId: intent.definitionId, generationId: pin.publication.sourceGenerationId } });
     await assert.rejects(() => tx.studioFieldSlot.update({ where: { id: sourceSlot.id }, data: { revision: sourceSlot.revision + 1 } }), /retained history/i);
     await tx.$executeRaw`ROLLBACK TO SAVEPOINT cutover_test_denial`;
+    await checkFieldSettlementStorage(tx, { pin, checksum: checksum(pin) }, principal);
     completeChecked = true;
     throw rolledBack;
   }), error => error === rolledBack);

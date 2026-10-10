@@ -9667,6 +9667,10 @@ model StudioFieldMigrationCutover {
   pinChecksum String @db.Char(64)
   state String @default("ACTIVATED")
   revision Int @default(0)
+  settlementPin Json?
+  settlementChecksum String? @db.Char(64)
+  settledBy String?
+  settledAt DateTime?
   createdBy String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

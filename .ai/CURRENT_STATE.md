@@ -1,5 +1,26 @@
 # Atlas current state
 
+## 10 October 2026 — F4b1 additive settlement storage IMPLEMENTED; actual Test proof pending
+
+F4a adfc357 locally verified (18 focused/45files292/build/lint/strict TS PASS).
+Forward0007/schema adds nullable settlement pin/hash/actor/time and guarded
+one-time ACT0→ROLLED_BACK/FINALIZED1, paired publication state and deferred pointer
+proof. Original0006 insertion/source-active READY proof unchanged; original
+identities/values/native rows retained. Exact Test nested rollback-only helper
+checks both outcomes/standalone denial/history/changed extension; not a production
+service. Ordinary value opening and generation/cosmetic continuation remainf4b2/2B4.
+Schema validate/generate,41 Studio files268 regression,7 compatibility files48,
+production build/strict postbuildTS/scoped helper lint/diff PASS. Central backed-up
+DDL rolled back PASS (071007): five oldACT receipts compatible, closed actor shape
+valid/grants/fake support rejected; settlement columns after rollback0, PG18 online.
+First SQL syntax failure corrected and full DDL rerun; original locks never bypassed.
+No applied0007 or new Studio deployment. Logs /tmp/atlas-studio-settlement-{ddl,
+storage-*}.txt. Public/current now1bf0e2c (previous845456e), both separate concurrent
+releases to preserve; read-only root2.0G. Exact next: checkpoint reviewed f4b1,
+merge exact current live ancestry, safely reclaim only eligible disposable task
+caches under bothlocks if needed, then full pinned candidate/public acceptance.
+No capacity or actual runtime proof claim yet. FullPhase2 NOT PASSED; designer required.
+
 ## 10 October 2026 — F4a closed settlement contract implemented, no mutation authority
 
 New fields/migrations/settlement-contract and six cases in existing cutover-contract
@@ -10,8 +31,7 @@ historical transition not today's pointer. 18 focused/45 files292 regressions/bu
 scoped lint/diff PASS; strict post-build TS PASS (session89249 exit0). Logs /tmp/atlas-
 studio-settlement-contract-{tests,regression,build,types,lint}.txt. DECISIONS rationale/
 field plan/ledger updated. No DB/service/native/value/pointer mutation; live74fab2d
-verified and unchanged. F4b–d and2B4/2C–E remain. Exact next: obtain strict TS result,
-review/checkpoint f4a, then additive0007 lifecycle/deferred/history/generation guards
+verified and unchanged. F4b–d and2B4/2C–E remain. F4a strict TS PASS/checkpoint adfc357; current next is additive0007 lifecycle/deferred/history/generation guards
 with original0006 preserved. FullPhase2 NOT PASSED; visual builder still required.
 
 ## 10 October 2026 — Business setup/readable comparison VERIFIED live

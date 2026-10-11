@@ -40,7 +40,7 @@ export function assertVersionedFieldMigrationPolicies(session: Session, company:
 }
 
 /** Existing reference identity stays private unless its owning module permits reading it. */
-export async function authoriseFieldMigrationReference(context: RecordContext, registry: CapabilityRegistry, payload: CustomFieldPayload, value: FieldValue | null) {
+export async function authoriseFieldMigrationReference(context: RecordContext, registry: CapabilityRegistry, payload: Pick<CustomFieldPayload, "field">, value: FieldValue | null) {
   if (value === null || payload.field.storage.type !== "reference") return;
   if (!context.transaction || value.type !== "reference") denied();
   // Use the written reference contract, including its exact schema/contract hash.

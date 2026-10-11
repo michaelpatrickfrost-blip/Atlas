@@ -45,7 +45,7 @@ export function assertCosmeticFieldEvolution(previous: CustomFieldPayload, next:
   if (checksum(structural(previous)) !== checksum(structural(next))) throw new Error("MIGRATION_REQUIRED: changing published field storage, constraints or access needs a reviewed evolution plan.");
 }
 
-export async function assertFieldBinding(tx: Prisma.TransactionClient, session: Session, definitionId: string, payload: CustomFieldPayload) {
+export async function assertFieldBinding(tx: Prisma.TransactionClient, session: Session, definitionId: string, payload: Pick<CustomFieldPayload, "entity" | "field" | "storageGeneration">) {
   const generation = await tx.studioFieldGeneration.findFirst({ where: { id: payload.storageGeneration, definitionId, organisationId: session.organisationId, entityId: payload.entity.id, valueType: payload.field.storage.type,
     binding: { entityId: payload.entity.id, fieldKey: payload.field.key, organisationId: session.organisationId } }, select: { id: true } });
   if (!generation) throw new Error("DEPENDENCY_BROKEN: field schema has no matching tenant-owned storage generation.");

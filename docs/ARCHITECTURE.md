@@ -260,3 +260,18 @@ Condition value evidence excludes revision envelopes; ordinary fingerprints stil
 include native/global extension revisions. This allows upcoming migration evaluation
 to reuse the same reader while independently checking the exact original/own-outcome
 revision lineage. Equal condition evidence grants no drift waiver or execution right.
+
+### Studio real per-row conditional migration review — 11 October 2026
+
+The internal preparation-only `inspectRequiredFieldMigrationRecord` refreshes
+actual Serializable authentication, current customer/audited support identity and
+server company/source/draft state. Both full source and compiled server-target rules
+and owner/query format opt-in precede native/condition/value reads. Current/pinned/
+written/reference access is checked independently. Shared source decoding and
+structural conversion preserve legacy v1 gates/hashes; conditional evaluations can
+only strengthen unconditional required. Null/empty multi are absent, zero/false
+present; missing source INVALID_SOURCE, evaluated missing target FIELD_REQUIRED.
+Archive wrappers return references/semantic checksums only. Exact native/global
+revision envelopes remain separate; equality never waives drift. No v2 durable
+preparation/archive/owner/execution/authoring/native hook is enabled by this readonly
+component. Actual persistence/owner/central proof and later stage/lock gates remain.

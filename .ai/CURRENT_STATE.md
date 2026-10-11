@@ -1,3 +1,50 @@
+## 11 October 2026 — e2b3b per-row requirement review VERIFIED locally
+
+The existing observation layer now has an internal preparation-only v2 row reviewer:
+genuine Serializable authority/current customer or audited support identity; server
+company/source/draft reload and full source/normalised-target/written compilation;
+exact owner/query format opt-in; native/current/pinned/written/reference rights;
+actual source and target rule inputs; null/empty multi absent, false/zero present.
+Shared source decoder and structural converter retain v1 behavior. Evaluations only
+strengthen unconditional required; missing source is INVALID_SOURCE, evaluated
+missing target FIELD_REQUIRED. Archives contain refs/semantic checksums/presence
+meaning only, with native/global revision envelopes checked independently. Equal
+semantic evidence never waives drift. No client facts, copied-session authority,
+DB/schema/archive writes, new native owner/callback/hooks or authoring dispatch.
+
+47 focused cases/6 suites PASS (47330) +44 existing preparation/collection/coverage/
+execution/representation cases/5 PASS (35586). Strict TS66672 exit0, scoped lint87046
+exit0, production build44612 exit0, final diff reviewed/check PASS. Initial test
+failures included invalid fixture status/expectations and one real draft normalization
+comparison issue: now compile the server-loaded draft and compare its normalised
+payload/full checksum against the pinned intent; do not equate raw draft ordering
+with compiled meaning. Earlier test-only TS callback typing corrected. Runtime
+bridge copied-session denial tested through actual implementation; positive row
+checks use test-only protocol owner and transaction/authority fixtures, not a real
+new owner or durable v2 engine. Original live candidate/public verification pending.
+
+Files fields/evolution.ts,binding.ts,migrations/access.ts,observation.ts,new
+observation-source.ts; new required-observation (14) and required-conversion (2)
+suites; architecture/module/decisions/required-rules/ledger/current memory.
+Exact next: commit/pin/release this readonly row checkpoint with original Studio
+gates, then e2b3c: strict server-stored intent format selector, additive preparation/
+observation guards and exact v2 archive digest in the existing engine; preserve v1
+receipts and all unknown-version/extra-field denials. Owner callbacks supporting
+both formats follow e2b3d; real central v2 proof e2b3e before execution e3/native d4.
+Whole Phase2 remains IN PROGRESS. No full baseline suite/lint repeat, ad-hoc dumps
+or development copies. Visual stash28243b7 remains untouched for2E.
+
+## 11 October 2026 — e2b3b real record review IN PROGRESS
+
+Live remains a99b75b; clean f02d4f3 starting tree. Begin readonly row review using
+full source/target compilation and shared authorised condition/value readers.
+Expected migrations/observation.ts + observation-source.ts, shared evolution converter,
+structural reference/binding types and focused tests. No DB/schema/archive writes,
+activation/native hooks or visual changes. Tests not yet run for this block.
+Exact next: implement shared source observation decoder and evaluated conversion,
+then genuine per-row conditional review against server-locked current source/draft.
+Whole Phase2 remains IN PROGRESS; no Phase3. Visual stash28243b7 preserved.
+
 ## 11 October 2026 — Shared metadata/input inspection VERIFIED live
 
 Live a99b75b70c358a4878c265b2decc999f0c156639; original runner32194 exit0.

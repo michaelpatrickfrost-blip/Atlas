@@ -2243,3 +2243,18 @@ The condition result is combined with unconditional required by OR in the upcomi
 runtime, never used to relax that flag. Only internal fact fingerprints are returned;
 this pure evaluator grants no record access and remains unwired until d3–4 native
 and canonical validation. Later visual choices must communicate these semantics.
+
+## 11 October 2026 — Real reviewed field requirements reuse the existing engine
+
+Readonly v2 preparation-row review reuses the source observation decoder and all
+structural mapping/loss/type rules; evaluated flags are ORed with unconditional
+required and never relax them. Both full metadata graphs and actual authorised
+conditions precede source decoding. Source absence is INVALID_SOURCE; evaluated
+target absence is FIELD_REQUIRED, including empty multi-selection. False/zero remain
+present. Only reference/checksum/presence meaning is archived, separate from exact
+native/global extension revision envelopes. Equality is not a drift waiver.
+The actual server draft is compiled and its normalised payload/checksum compared to
+intent, because raw draft predicate ordering can differ from the compiler's stable
+ordering. Active published source identity remains exact. This routine is explicitly
+preparation-only; future execution/cutover/settlement needs its retained stage/own
+outcome checks, not a bypass of active/draft pins. No new engine/authoring/native grant.

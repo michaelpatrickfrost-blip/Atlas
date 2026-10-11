@@ -144,9 +144,28 @@ export class FieldConversionError extends Error {
   }
 }
 
+export class FieldRequirementConversionError extends Error {
+  readonly code = "FIELD_REQUIRED";
+  constructor() { super("The converted value is absent under its evaluated target requirement."); }
+}
+
 /** No coercion, rounding, currency inference or arbitrary executable conversion. */
 export function createFieldConverter(sourceInput: unknown, targetInput: unknown, ruleInput: unknown) {
-  const analysis = analyseFieldEvolution(sourceInput, targetInput), rule = fieldConversionSchema.parse(ruleInput);
+  const convert = checkedConverter(analyseFieldEvolution(sourceInput, targetInput), ruleInput);
+  return (raw: unknown) => convert(raw);
+}
+
+/** Internal conversion after actual authorised source/target rule evaluation.
+ * Shares every legacy type/mapping/loss check. Evaluations can only strengthen
+ * unconditional requirements; they cannot relax them or approve an operation. */
+export function createRequiredFieldConverter(sourceInput: unknown, targetInput: unknown, ruleInput: unknown) {
+  const convert = checkedConverter(analyseRequiredFieldEvolution(sourceInput, targetInput), ruleInput);
+  const requirements = z.strictObject({ sourceRequired: z.boolean(), targetRequired: z.boolean() });
+  return (raw: unknown, evaluated: z.infer<typeof requirements>) => convert(raw, requirements.parse(evaluated));
+}
+
+function checkedConverter(analysis: FieldEvolution<VersionedFieldPayload>, ruleInput: unknown) {
+  const rule = fieldConversionSchema.parse(ruleInput);
   const source = analysis.source.field, target = analysis.target.field;
   const from = source.storage.type, to = target.storage.type;
   const compatible = rule.kind === "same_type" ? from === to
@@ -163,9 +182,9 @@ export function createFieldConverter(sourceInput: unknown, targetInput: unknown,
   const historicalSource = source.storage.type === "enum" || source.storage.type === "multi_enum"
     ? { ...source, storage: { ...source.storage, options: source.storage.options.map(option => ({ ...option, retired: false })) } }
     : source;
-  return (raw: unknown): { value: FieldValue | null; lossy: boolean } => {
+  return (raw: unknown, evaluated?: { sourceRequired: boolean; targetRequired: boolean }): { value: FieldValue | null; lossy: boolean } => {
     let value: FieldValue | null;
-    try { value = validateFieldValue(historicalSource, raw); }
+    try { value = validateFieldValue(evaluated ? { ...historicalSource, required: source.required || evaluated.sourceRequired } : historicalSource, raw); }
     catch { throw new FieldConversionError("INVALID_SOURCE"); }
     let converted: unknown = value?.value ?? null, lossy = false;
     if (value) {
@@ -186,7 +205,10 @@ export function createFieldConverter(sourceInput: unknown, targetInput: unknown,
     const retainedTarget = rule.kind === "same_type" && (target.storage.type === "enum" || target.storage.type === "multi_enum")
       ? { ...target, storage: { ...target.storage, options: target.storage.options.map(option => ({ ...option, retired: false })) } }
       : target;
-    try { return { value: validateFieldValue(retainedTarget, converted), lossy }; }
+    const required = target.required || Boolean(evaluated?.targetRequired);
+    if (evaluated && required && (converted === null || converted === undefined || converted === ""
+      || (target.storage.type === "multi_enum" && Array.isArray(converted) && converted.length === 0))) throw new FieldRequirementConversionError();
+    try { return { value: validateFieldValue(evaluated ? { ...retainedTarget, required } : retainedTarget, converted), lossy }; }
     catch { throw new FieldConversionError("INVALID_TARGET"); }
   };
 }

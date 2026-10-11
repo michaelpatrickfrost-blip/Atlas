@@ -32,7 +32,7 @@ function nativeSlotSnapshot(slot: NativeSlot): NativeSlot {
 }
 /** Select only pointer/revision/written-schema metadata before any fact or value
  * projection. Native proof never substitutes written field or reference rights. */
-export async function preflightNativeResultingFieldValue(authority: FieldRuntimeAuthority, field: FieldContext, access: NativeFieldValidationAccess) {
+export async function preflightResultingFieldValue(authority: FieldRuntimeAuthority, field: FieldContext, proof?: object, access?: NativeFieldValidationAccess) {
   const slot = await nativeSlotMetadata(authority, field);
   if (!slot) return null;
   if (slot.organisationId !== authority.session.organisationId || slot.extensionId !== field.extension?.id || slot.definitionId !== field.definition.id
@@ -40,10 +40,18 @@ export async function preflightNativeResultingFieldValue(authority: FieldRuntime
     || ((slot.activeValueId === null) !== (slot.activeValue === null))) invalid();
   if (slot.activeValue) {
     if (slot.activeValueId !== slot.activeValue.id || slot.revision !== slot.activeValue.revision) invalid();
-    await preflightNativeWrittenFieldInTransaction(authority, field.payload, field.definition.id, field.payload.storageGeneration, slot.id, slot.activeValue, access);
+    if (access) await preflightNativeWrittenFieldInTransaction(authority, field.payload, field.definition.id, field.payload.storageGeneration, slot.id, slot.activeValue, access);
+    else {
+      const written = proof ? await readInitialFieldPlanInTransaction(authority, slot.activeValue.schemaVersion, field.definition.id)
+        : await readVersionedFieldPlanInTransaction(authority, slot.activeValue.schemaVersion, field.definition.id);
+      if (written.entity.id !== field.payload.entity.id || written.field.key !== field.payload.field.key
+        || written.storageGeneration !== field.payload.storageGeneration || written.field.storage.type !== slot.activeValue.valueType) invalid();
+    }
   }
   return nativeSlotSnapshot(slot);
 }
+export const preflightNativeResultingFieldValue = (authority: FieldRuntimeAuthority, field: FieldContext, access: NativeFieldValidationAccess) =>
+  preflightResultingFieldValue(authority, field, undefined, access);
 
 export async function readResultingFieldValue(authority: FieldRuntimeAuthority, field: FieldContext, recordId: string, proof?: object, native?: NativeFieldValidationAccess) {
   const { session, transaction } = authority;

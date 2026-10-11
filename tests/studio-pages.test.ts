@@ -17,7 +17,7 @@ const forms: PagePayload["formFactors"] = ["desktop", "tablet", "phone"];
 const identity = { ownerModuleId: "tickets", classification: "confidential" as const, capability: "tickets.ticket.read" };
 const approvals = (): PageApprovals => ({
   entity: { ...entity, ...identity, kind: "entity" },
-  sourcePage: { ...sourcePage, ...identity, kind: "surface" }, variants: true,
+  sourcePage: { ...sourcePage, ...identity, kind: "surface" }, variants: true, fieldSourceVersions: [1],
   recordWriteCapability: "tickets.ticket.manage",
   nativeFields: [{ id: "subject", classification: "confidential", editable: false, query: factQuery }, { id: "private_note", classification: "restricted", capability: "tickets.private.read", editable: false, query: factQuery }],
   customFields: [{ reference: fieldPin, entity, classification: "restricted", readCapability: "tickets.private.read", writeCapability: "tickets.private.write", editable: true, required: true }],

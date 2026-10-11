@@ -82,7 +82,7 @@ async function field(authority: FieldRuntimeAuthority, n = 1, options: { conditi
 }
 function saved(configured: Awaited<ReturnType<typeof field>>, value: unknown = 0) {
   const { definitionId, organisationId, entityId } = configured.binding;
-  extension ??= { id: uuid(400), organisationId, entityId, recordId: "first", revision: 4, updatedAt: new Date() };
+  extension ??= { id: uuid(400), organisationId, entityId, recordId: "first", revision: 4, updatedAt: new Date(), recordTypeAssignmentId: null };
   const row = { id: uuid(600 + values.length), ...encodeFieldValue(configured.payload.field, value), organisationId, definitionId,
     generationId: configured.payload.storageGeneration, slotId: uuid(500 + slots.length), versionId: configured.version.id, revision: 2,
     createdBy: "author", createdAt: new Date(), schemaVersion: configured.version } as StudioFieldValue & { schemaVersion: StudioDefinitionVersion };

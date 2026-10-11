@@ -3,7 +3,9 @@ import { join } from "node:path";
 import { z } from "zod";
 
 export const STUDIO_LITERAL_DEFAULT_FEATURE = "literalFieldDefaults.v1" as const;
-export const studioRuntimeFeatureSchema = z.enum([STUDIO_LITERAL_DEFAULT_FEATURE]);
+export const STUDIO_PAGE_FEATURE = "structuredPages.v1" as const;
+export const STUDIO_PROFILE_FEATURE = "recordProfiles.v1" as const;
+export const studioRuntimeFeatureSchema = z.enum([STUDIO_LITERAL_DEFAULT_FEATURE, STUDIO_PAGE_FEATURE, STUDIO_PROFILE_FEATURE]);
 export type StudioRuntimeFeature = z.infer<typeof studioRuntimeFeatureSchema>;
 export const studioRuntimeFeatureEvidenceSchema = z.strictObject({ schemaVersion: z.literal(1),
   releaseRevision: z.string().regex(/^[a-f0-9]{40}$/), rollbackRevision: z.string().regex(/^[a-f0-9]{40}$/),
@@ -34,6 +36,8 @@ export function assertStudioRuntimeFeatureEnabled(feature: StudioRuntimeFeature)
 /** Identify metadata requiring new readers without changing the original JSON
  * or historical checksums. A caller still parses/inspects the complete payload. */
 export function studioRuntimeFeaturesForPayload(kind: string, payload: unknown): StudioRuntimeFeature[] {
+  if (kind === "page") return [STUDIO_PAGE_FEATURE];
+  if (kind === "entityProfile" || kind === "recordType") return [STUDIO_PROFILE_FEATURE];
   if (kind !== "customField" || payload === null || typeof payload !== "object") return [];
   const field = "field" in payload ? payload.field : undefined;
   return field !== null && typeof field === "object" && Object.hasOwn(field, "defaultValue") ? [STUDIO_LITERAL_DEFAULT_FEATURE] : [];

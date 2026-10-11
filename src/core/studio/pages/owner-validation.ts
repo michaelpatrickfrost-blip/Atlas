@@ -27,6 +27,11 @@ export function validatePageSourceRegistration(metadata: ContractMetadata, callb
   if (source.capability !== metadata.capability || classificationRank[metadata.classification] < classificationRank[source.classification])
     throw new Error("Page source must preserve its native read capability and classification.");
   const fields = entityDetailsSchema.parse(source.details).fields;
+  for (const version of policy.fieldSourceVersions) {
+    const retained = requireContract({ id: policy.entity.id, version }, ["entity"]), details = entityDetailsSchema.parse(retained.details);
+    if (retained.capability !== source.capability || !details.extensionPolicy.customFields || !details.record?.fieldPolicy)
+      throw new Error("Page fields require explicitly approved typed-field source versions with native Read.");
+  }
   const queries = new Map(policy.queries.map(approval => {
     const query = requireContract(approval.query, ["query"]);
     if (query.details.transaction !== "required" || !Number.isInteger(query.details.maxCardinality)
@@ -39,6 +44,11 @@ export function validatePageSourceRegistration(metadata: ContractMetadata, callb
       throw new Error("Page lists require bounded owner pagination.");
     if (approval.columns.some(column => classificationRank[column.classification] < classificationRank[query.classification]))
       throw new Error("Page columns cannot downgrade owning query classification.");
+    for (const column of approval.columns) if (column.format) {
+      const currency = approval.columns.find(value => value.id === column.format!.currencyColumnId);
+      if (column.valueType !== "number" || !currency || currency.valueType !== "string" || currency.nullable)
+        throw new Error("Page money needs an explicit same-projection currency scalar.");
+    }
     if (checksum(query.outputSchema) !== checksum(z.toJSONSchema(pageProjectionSchema(approval.columns, Number(query.details.maxCardinality)))))
       throw new Error("Page query needs its complete closed approved projection schema.");
     return [key(approval.query), approval] as const;
@@ -56,6 +66,7 @@ export function validatePageSourceRegistration(metadata: ContractMetadata, callb
     const expectedType = ["integer", "decimal", "money"].includes(field.type) ? "number" : field.type === "boolean" ? "boolean" : "string";
     if (column.valueType !== expectedType || column.nullable !== field.nullable)
       throw new Error("Native page fields must preserve owning scalar type/nullability.");
+    if (field.type === "money" && !column.format) throw new Error("Native money needs explicit owning minor-unit currency presentation.");
   }
   for (const fact of policy.facts) {
     const contract = requireContract(fact.contract, ["entity", "decisionFact"]), query = requireQuery(fact.query, "fact"), column = query.columns.find(column => column.id === fact.columnId);

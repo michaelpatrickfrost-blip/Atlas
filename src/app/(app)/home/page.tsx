@@ -6,6 +6,7 @@ import { getAttentionOverview } from "@/core/attention/aggregate";
 import { AppDirectory } from "@/components/shell/app-directory";
 import { GoalMeter } from "@/modules/kpis/components/goal-meter";
 import { loadGoalWorkspace } from "@/modules/kpis/services/workspace";
+import { listCustomerScreens } from "@/core/studio/pages/customer-catalog";
 
 const PANEL = "rounded-2xl border border-black/[0.06] bg-white";
 const DOT = { critical: "bg-[#d12b45]", warning: "bg-[#c9820a]", info: "bg-[#c7c7cc]" } as const;
@@ -15,6 +16,7 @@ export default async function HomePage() {
   const [attention, enabled] = await Promise.all([getAttentionOverview(session), enabledModulesForSession(session)]);
   const goalBoard = enabled.has("kpis") ? await loadGoalWorkspace(session).catch(() => null) : null;
   const highlights = goalBoard?.goals.filter((goal) => goal.status === "ACTIVE").slice(0, 4) ?? [];
+  const screens = await listCustomerScreens(session);
   return (
     <div className="mx-auto flex max-w-[1440px] flex-col gap-5">
       <section id="your-apps" aria-labelledby="launcher-title" className="relative isolate scroll-mt-5 overflow-hidden rounded-[26px] border border-white bg-white/55 p-3 shadow-[0_10px_50px_-30px_rgba(64,98,151,0.25)] sm:p-5 lg:p-7">
@@ -29,6 +31,10 @@ export default async function HomePage() {
         </header>
         <AppDirectory session={session} variant="launcher" />
       </section>
+      {screens.length > 0 && <section aria-label="Your business screens" className={`${PANEL} px-5 py-5 sm:px-6`}>
+        <h2 className="text-sm font-semibold">Your business screens</h2><p className="mt-1 text-xs text-slate-500">Layouts published for {session.organisationName}.</p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{screens.map(screen => <Link key={screen.id} href={`/screens/${screen.id}`} className="rounded-xl border border-blue-100 bg-blue-50/40 px-4 py-3 text-sm font-medium text-blue-700 hover:bg-blue-50">{screen.name}</Link>)}</div>
+      </section>}
       <div className={`grid gap-5 ${highlights.length > 0 ? "lg:grid-cols-2" : ""}`}>
         <section aria-label="Needs attention" className={`${PANEL} px-5 py-4 sm:px-6`}>
           <h2 className="text-[13px] font-semibold text-[#1d1d1f]">Needs attention{attention.items.length > 0 && <span className="ml-2 font-normal text-[#86868b]">{attention.items.length}</span>}</h2>

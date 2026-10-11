@@ -2,9 +2,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Session } from "@/core/auth/session";
 import { Prisma } from "@/generated/prisma/client";
 
-const mocks = vi.hoisted(() => ({ transaction: vi.fn(), gate: vi.fn(), lock: vi.fn(), available: vi.fn(), change: vi.fn(), audit: vi.fn() }));
+const mocks = vi.hoisted(() => ({ transaction: vi.fn(), gate: vi.fn(), lock: vi.fn(), available: vi.fn(), change: vi.fn(), audit: vi.fn(), impact: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: { $transaction: mocks.transaction } }));
 vi.mock("@/core/modules/access", () => ({ assertModuleEnabled: mocks.gate }));
+vi.mock("@/core/studio/configuration/usage", () => ({ assertNoActiveConfigurationDependantsInTransaction: mocks.impact }));
 import { retireFieldDefinition } from "@/core/studio/fields/retirement";
 
 const definitionId = "f654330c-b287-48f0-be34-acf8b9d51010";
@@ -44,6 +45,11 @@ describe("Studio field retirement boundary", () => {
     expect(mocks.lock.mock.calls[1][0].join("?")).toContain("pg_advisory_xact_lock");
     expect(mocks.lock.mock.calls[1].slice(1)).toEqual([session.organisationId,definitionId]);
     expect(mocks.lock.mock.invocationCallOrder[1]).toBeLessThan(mocks.change.mock.invocationCallOrder[0]);
+  });
+  it("blocks active design usage before retirement or Audit", async () => {
+    mocks.impact.mockRejectedValueOnce(new Error("CONFIGURATION_IN_USE"));
+    await expect(retireFieldDefinition(session, { definitionId, revision: 2 })).rejects.toThrow("CONFIGURATION_IN_USE");
+    expect(mocks.change).not.toHaveBeenCalled(); expect(mocks.audit).not.toHaveBeenCalled();
   });
   it("fails stale/foreign/non-field/already-retired CAS without a success audit", async () => {
     mocks.change.mockResolvedValue({ count: 0 });

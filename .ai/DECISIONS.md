@@ -1,3 +1,29 @@
+## 11 October 2026 — One publisher and genuine standalone visual Studio context
+
+The standalone /design-studio route sits outside Admin/customer shell chrome;
+Atlas staff explicitly open an ACTIVE customer through the existing audited
+support-affiliation policy. Every subsequent operation freshly resolves actual
+source and selected-business sessions in the same Serializable transaction;
+GET/save never creates affiliations and target IDs grant no authority. Customer
+Studio stays scoped to its authenticated business. Publication/activation reuse
+original immutable version/CAS/Audit primitives atomically, not a second engine.
+Preview/customer rendering share Page runtime/renderer; design mode is inert.
+
+Owner Page contributions compose through lazy manifest getters and owner authority
+imports inside callbacks, because eager composition creates a Core registry /
+module callback import cycle. This preserves Core's only module-wiring point and
+all retained native/provider contracts. Each current source approves closed
+projections and exact supported field generations before reads; metadata-only
+Page reconstruction for native Create validation grants no ordinary Read.
+
+Record associations retain exact type/base evidence in append-only tenant-owned
+history and a revision-CAS head with paired Audit. Candidate profile activation
+validates the canonical owner-authorised cohort under the original entity lock
+before changing the pointer, including zero/false and unchanged requirement sets.
+Current field changes/retirement inspect active configuration ancestors through
+retained sealed versions. No direct protected domain writes or configuration
+permission grants are introduced. Actual central acceptance remains pending.
+
 ## 11 October — permanent profile identity and explicit Page owner approval
 
 A record design binds permanently to a canonical entity through metadata-only
@@ -2730,3 +2756,18 @@ Operations includes Finance-owned Procurement; an area must not hide relevant wo
 because its owning app has other Business guides. Filter entries within app groups,
 carry area/search into app hubs and back/search navigation, and expose All app
 guides as an explicit choice. Counts describe the currently filtered entries.
+
+## 11 October 2026 — Visual domain forms and explicit owning read context
+
+The current Sales/Tickets Page adapters approve separate list and canonical record
+anchors. Mixing those contexts would require a false native anchor; publication and
+palette therefore reject/filter such a mix. Record-scoped related Sales line lists
+remain supported. This preserves bounded owner query contracts; later owner-specific
+related projections can explicitly extend them without a generic table API.
+
+Editable Ticket Page surfaces reuse the complete existing native progress form,
+typed receipt and domain update action. Standalone additional field panels are read
+only; they cannot bypass complete-form validation or native CAS. Responsive route
+changes re-read only currently visible owning forms in SSR, and slots require the
+same Page version/head/device. Preview remains inert. No parallel form/publisher,
+permission system, native data mutation API or client-supplied tenant grants.

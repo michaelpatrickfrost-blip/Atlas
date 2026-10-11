@@ -17,9 +17,14 @@ export const pageReadAnchorSchema = z.discriminatedUnion("kind", [
     /** Owner revision may include native timestamp and domain revision. */
     revision: z.string().min(1).max(300), nativeRevision: z.number().int().positive().optional() }),
 ]);
-const column = z.strictObject({ id: pageNodeIdSchema, valueType: scalarType, nullable: z.boolean(), classification, capability: logicalId.optional() });
+export const pageMoneyFormatSchema = z.strictObject({ kind: z.literal("money_minor"), currencyColumnId: pageNodeIdSchema });
+const column = z.strictObject({ id: pageNodeIdSchema, label: z.string().trim().min(1).max(200).optional(), valueType: scalarType,
+  nullable: z.boolean(), classification, capability: logicalId.optional(), format: pageMoneyFormatSchema.optional() });
 export const pageSourcePolicySchema = z.strictObject({
   schemaVersion: z.literal(1), entity: reference, accessMode: z.literal("ordinary_read"), variants: z.boolean(),
+  /** Exact existing owner versions, not a numeric range or permission grant. */
+  fieldSourceVersions: z.array(z.number().int().positive()).max(100).default([])
+    .refine(values => new Set(values).size === values.length, "Duplicate field source version."),
   nativeFields: z.array(z.strictObject({ id: pageNodeIdSchema, query: reference, columnId: pageNodeIdSchema })).max(100),
   queries: z.array(z.strictObject({ query: reference, scope: z.enum(["list", "record"]),
     purpose: z.enum(["list", "fact", "metric", "surface", "preview"]), columns: z.array(column).max(50) })).max(100),
@@ -60,7 +65,8 @@ export function pageProjectionSchema(columns: readonly z.infer<typeof column>[],
   if (new Set(parsed.map(value => value.id)).size !== parsed.length) throw new Error("Duplicate page query column.");
   const shape: Record<string, z.ZodType<string | number | boolean | null>> = {};
   for (const value of parsed) {
-    const scalar = value.valueType === "string" ? z.string().max(10000) : value.valueType === "number" ? z.number().finite() : z.boolean();
+    const scalar = value.valueType === "string" ? z.string().max(10000) : value.valueType === "number"
+      ? value.format ? z.number().int().safe() : z.number().finite() : z.boolean();
     shape[value.id] = value.nullable ? scalar.nullable() : scalar;
   }
   return z.strictObject({ rows: z.array(z.strictObject({ id: z.string().min(1).max(200), values: z.strictObject(shape) })).max(bound), nextCursor: cursor.nullable() });

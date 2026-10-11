@@ -2,6 +2,7 @@ import { z } from "zod";
 import { referenceSchema } from "../compiler/reference";
 import { customFieldReferenceSchema } from "../record-types/schema";
 import { formFactorSchema, pageNodeIdSchema, surfaceFamilySchema } from "./schema";
+import { pageMoneyFormatSchema } from "./owner-contract";
 
 const capability = z.string().regex(/^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/);
 const classification = z.enum(["public_internal", "confidential", "restricted"]);
@@ -11,14 +12,14 @@ export const pageRegistryApprovalSchema = referenceSchema.extend({
   kind: z.enum(["entity", "query", "command", "decisionFact", "metric", "surface"]),
   classification, capability,
 });
-const property = { id: pageNodeIdSchema, classification, capability: capability.optional() };
+const property = { id: pageNodeIdSchema, label: z.string().trim().min(1).max(200).optional(), classification, capability: capability.optional() };
 const sourceEntityId = z.string().regex(/^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/);
 const queryApprovalSchema = pageRegistryApprovalSchema.extend({
   kind: z.literal("query"), sourceEntityId,
   purpose: z.enum(["list", "fact", "metric", "surface", "preview"]),
   pagination: z.enum(["cursor", "page", "none"]), maxCardinality: z.number().int().min(1).max(200),
   costClass: z.enum(["low", "medium", "high"]),
-  columns: z.array(z.strictObject(property)).max(50).default([]),
+  columns: z.array(z.strictObject({ ...property, format: pageMoneyFormatSchema.optional() })).max(50).default([]),
 });
 
 /** Internal server-supplied approvals, not a client authority DTO. Publication
@@ -30,8 +31,11 @@ export const pageApprovalsSchema = z.strictObject({
   entity: pageRegistryApprovalSchema.extend({ kind: z.literal("entity") }),
   sourcePage: pageRegistryApprovalSchema.extend({ kind: z.literal("surface") }),
   variants: z.boolean(),
+  fieldSourceVersions: z.array(z.number().int().positive()).max(100)
+    .refine(values => new Set(values).size === values.length, "Duplicate field source version."),
   recordWriteCapability: capability.optional(),
-  nativeFields: z.array(z.strictObject({ ...property, editable: z.boolean(), writeCapability: capability.optional(), query: referenceSchema })).max(100),
+  nativeFields: z.array(z.strictObject({ ...property, editable: z.boolean(), writeCapability: capability.optional(), query: referenceSchema,
+    format: pageMoneyFormatSchema.optional() })).max(100),
   customFields: z.array(z.strictObject({ reference: customFieldReferenceSchema, entity: referenceSchema,
     classification, readCapability: capability.optional(), writeCapability: capability.optional(), editable: z.boolean(), required: z.boolean() })).max(100),
   facts: z.array(z.strictObject({ id: pageNodeIdSchema, contract: referenceSchema, query: referenceSchema,

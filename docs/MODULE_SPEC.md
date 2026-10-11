@@ -569,3 +569,20 @@ SQL/private unit fixtures do not prove actual conditional execution. No DDL/engi
 Original0d315f7/46009 candidateMTZpXy/publicVvzibi BOTH ALL COMBINED PASS, exact
 public health. Existing conditional review/publication and module regressions verified
 live; normal execution2 remains unavailable until actual row/outcome inspection.
+
+## Phase 2 Page-source opt-in — 11 October 2026
+
+A Page owner declares its canonical entity generation, explicit supported extension
+generations, closed query projections (including each column's grants/format), scope,
+cardinality/cost/pagination, approved facts/actions/surfaces and device support.
+Registered callbacks authorise the actual canonical record/list anchor, bind typed
+query inputs and project exact outputs in the same genuine refreshed transaction.
+Current native/private/tenant checks remain independent from Studio visibility.
+
+Retained Page metadata reconstructs its exact stored source contract and field pins;
+Create-only validation may inspect metadata without executing Read queries or borrowing
+Read grants. Ordinary runtime must authorise all used current/written field and owning
+reference grants before values. Module-contributed forms reuse existing complete
+native forms/actions and CAS. Design preview shares the runtime display contract but
+cannot invoke commands, navigate, paginate or submit forms. Unsupported owners and
+protected domain edits are unavailable; no generic database or business table API.

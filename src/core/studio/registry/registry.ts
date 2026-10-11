@@ -236,6 +236,19 @@ export class CapabilityRegistry {
   }
   /** Exact metadata reconstruction does not require every authored query/fact
    * grant. Those grants are checked only before its actual visible read. */
+  describePageSourceForEntity(reference: ContractReference) {
+    const entity = this.describe(reference.id, reference.version);
+    if (entity.kind !== "entity" || entity.schemaHash !== reference.schemaHash || entity.contractHash !== reference.contractHash)
+      throw new Error("DEPENDENCY_BROKEN: page entity changed.");
+    const candidates = [...this.items.values()].filter(item => item.metadata.details.pageSource !== undefined
+      && pageSourcePolicySchema.parse(item.metadata.details.pageSource).entity.id === entity.id)
+      .sort((a, b) => b.metadata.version - a.metadata.version);
+    const current = candidates[0];
+    if (!current) throw new Error("DEPENDENCY_BROKEN: no owning page source is registered.");
+    const resolved = this.describePageSource(current.metadata);
+    if (resolved.source.version !== entity.version) throw new Error("DEPENDENCY_BROKEN: page source requires its exact entity version.");
+    return resolved;
+  }
   describePageSource(reference: ContractReference) {
     const metadata = this.describe(reference.id, reference.version);
     if (metadata.kind !== "surface" || metadata.schemaHash !== reference.schemaHash || metadata.contractHash !== reference.contractHash)
@@ -258,10 +271,23 @@ export class CapabilityRegistry {
       || stamp.membershipId !== context.session.membershipId)
       throw new Error("Page reads require a genuine current principal and owning transaction.");
   }
-  async authorisePageRead(context: RecordContext, reference: ContractReference, input: unknown) {
+  /** Metadata authority only. No canonical row, query or native fact is read. */
+  async resolvePageSourceMetadata(context: RecordContext, reference: ContractReference) {
     this.genuinePageContext(context);
-    const request = pageReadRequestSchema.parse(input), resolved = this.describePageSource(reference);
+    const resolved = this.describePageSource(reference);
+    for (const contract of [resolved.metadata, resolved.currentMetadata, resolved.source]) {
+      if (!await this.available(context.session, contract.ownerModuleId)) throw new Error(`DEPENDENCY_BROKEN: module ${contract.ownerModuleId} unavailable`);
+      if (contract.lifecycle === "deprecated" && Date.parse(contract.supportedUntil!) <= Date.now()) throw new Error("DEPENDENCY_BROKEN: contract support window expired");
+    }
+    return resolved;
+  }
+  async resolvePageSourcePolicy(context: RecordContext, reference: ContractReference) {
+    const resolved = await this.resolvePageSourceMetadata(context, reference);
     await this.allowed(context.session, resolved.metadata); await this.allowed(context.session, resolved.currentMetadata); await this.allowed(context.session, resolved.source);
+    return resolved;
+  }
+  async authorisePageRead(context: RecordContext, reference: ContractReference, input: unknown) {
+    const request = pageReadRequestSchema.parse(input), resolved = await this.resolvePageSourcePolicy(context, reference);
     const callbacks = this.items.get(`${resolved.currentMetadata.id}@${resolved.currentMetadata.version}`)?.pageSource;
     if (!callbacks) throw new Error("DEPENDENCY_BROKEN: owning page adapter is unavailable.");
     const anchor = pageReadAnchorSchema.parse(await callbacks.authoriseRead({ session: context.session, transaction: context.transaction }, request));
@@ -307,7 +333,7 @@ export class CapabilityRegistry {
         throw new Error("FIELD_STORAGE_INVALID: invalid owning page record projection.");
       if (Object.keys(row.values).length !== approval.columns.length || approval.columns.some(column => {
         const value = row.values[column.id];
-        return value === null ? !column.nullable : typeof value !== column.valueType;
+        return value === null ? !column.nullable : typeof value !== column.valueType || (column.format !== undefined && !Number.isSafeInteger(value));
       })) throw new Error("FIELD_STORAGE_INVALID: invalid owning page scalar projection.");
     }
     return { anchor: authorised.anchor, output };

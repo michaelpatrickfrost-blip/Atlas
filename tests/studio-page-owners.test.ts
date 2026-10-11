@@ -17,7 +17,7 @@ const tx = {} as Prisma.TransactionClient;
 const record = { kind: "record" as const, recordId: "order" };
 const queryRef = { id: "example.order.page_get", version: 1 };
 const column = { id: "subject", valueType: "string" as const, nullable: false, classification: "confidential" as const };
-const policy = (): PageSourcePolicy => ({ schemaVersion: 1, entity: { id: "example.order", version: 1 }, accessMode: "ordinary_read", variants: false,
+const policy = (): PageSourcePolicy => ({ schemaVersion: 1, entity: { id: "example.order", version: 1 }, accessMode: "ordinary_read", variants: false, fieldSourceVersions: [],
   nativeFields: [{ id: "subject", query: queryRef, columnId: "subject" }],
   queries: [{ query: queryRef, scope: "record", purpose: "fact", columns: [structuredClone(column)] }],
   facts: [], commands: [], metrics: [], surfaces: [], maxQueryCost: 24 });
@@ -61,6 +61,8 @@ describe("explicit owner page read contribution", () => {
     expect(registry.describe("example.order", 1)).toEqual(before.describe("example.order", 1));
     expect(registry.describe(queryRef.id, 1)).toEqual(before.describe(queryRef.id, 1));
     expect(registry.describePageSource(reference).policy.variants).toBe(false);
+    expect(registry.describePageSourceForEntity(registry.describe("example.order", 1)).metadata).toEqual(reference);
+    expect(() => registry.describePageSourceForEntity({ ...registry.describe("example.order", 1), schemaHash: "f".repeat(64) })).toThrow("changed");
     expect(registry.describe("example.order", 1).details.extensionPolicy).toEqual({ customFields: false, recordTypes: false, pageVariants: false });
     expect(Object.isFrozen(reference.details.pageSource)).toBe(true); expect(run).not.toHaveBeenCalled();
   });

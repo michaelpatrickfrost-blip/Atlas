@@ -14,31 +14,9 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
-Phase2 2B d4f/2B5/2B6 — integrated native forms/defaults/search and compatible release — IN PROGRESS. Native d4e foundation
-VERIFIED LIVE ad9d5a430e2b92e6b08448a45d11f694f5ce2066: original exec13566 EXIT0,
-candidate627MN9/publicjY9iVL BOTH ALL COMBINED PASS. Native enforcement/windows/
-concurrency and corrected required activation PASS; existing Admin/business and
-module regressions PASS. Historical native proof ad9/rollback1f4; latest live reconciliation below supersedes pointers.
-Required recovery UTC142445/142619/143132 retained; Test companies suspended and
-QA unchanged. No new typed form/UI claim from those native engine checks.
-
-D4f1–5 are IMPLEMENTED in the root: bounded packet, existing stored1/2 writer,
-current genuine manifests, exact immutable whole-form receipt, native create/update
-integration and shared 15-type controls on native/linked forms. Root182 assertions/
-8 suites PASS; original native regression initially13 fixture failures (missing
-existing genuine-session collaborator), explicitly corrected domain-only fixture;
-focused domain+genuine native-proof30/2 PASS. Production build26422 PASS; final production24417 exit0 after
-latest feedback/optional-child compatibility fixes. Final standalone strict58993/scoped lint8334 exit0.
-Independent source review found one optional Tickets discovery regression on Service
-Query/case pages; existing isModuleEnabled now gates child form/discovery. Actual
-Ticket action/manifest checks remain mandatory. Closed schema extraction keeps the
-browser dependency graph free of server crypto without changing hashes.
-D4f6 central browser/receipt SQL checker022ad6c IMPLEMENTED in the existing isolated
-worktree (localtypes/lintPASS), rootintegration complete, driver call after concurrency; no new migration applied or typed-form live claim. Live ad9 preserved.
-Old84 failed safely before activation; corrected ad9 passed without weakened policy.
-Original locked retention retired redundant generated runtimes only. Two older
-helper worktree archives queued, not confirmed removed. Root unused compiler cache
-2.4GB removed after exact source/process checks; source76MB, shared deps retained.
+2C2c–d / 2D2b–3 / 2E2–4 — association/activation coverage and standalone saved
+visual Studio/customer runtime — IMPLEMENTED locally; actual integration IN PROGRESS.
+Friendly fields/base/record-type setup78725538 ready for integration next. No Phase3.
 
 # Overall Status
 
@@ -76,155 +54,53 @@ source coverage, phase plan and this ledger. No rewritten specification.
 
 # Current Workstream Detail
 
-9ad9e078 release59282 EXIT1 beforeactivation atfirst actualcreate browsercheck:
-former URLpredicate matched reserved /tickets/create and prematurely read it asID.
-Exact-origin shared helper excludes that route; forms/defaults/search waits all
-corrected, two focused URL tests PASS. Original prior metadata/lifecycle/value/native/
-authority/concurrency checks PASS. No activation;213004/213146 recovery retained.
-070000 schema/proposed assignment helper remains separate IN PROGRESS, not applied.
-Genuine selected-business authoring context source9 testsPASS; actual Page save/live
-integration remains pending. Exactnext retrycorrected originalacceptance thenfinish
-Page factory/runtime/editor publication and recordtype coverage. Phase2FAIL.
+11 October source checkpoint: original saved Page editor now persists/reviews/goes
+live/restores through the existing publisher/activation in one genuine selected-
+business transaction. Shared sample and actual-record preview remain inert. Simple
+approved status/priority visibility and shallow presentation variants are editable.
+Sales presets and native PDF command, Tickets owner projection and complete native
+progress form surface, /home published cards and /screens live renderer are wired.
+List/record query anchors stay explicit; related Sales line table stays record scope.
+Responsive changes SSR-load only selected visible domain forms; changed Page/head/
+device slots cannot reuse stale forms. Private/current/field grants remain server-side.
 
-Latest ff91a303 release EXIT1 before activation: old metadata checker chose the new
-bounded Sales query. Exact sales.template.order.list@1 selection now preserves the
-legacy adapter assertion. Candidate p3K21h/recovery211714/fixture211859 retained;
-last confirmed live c385/rollback5b unchanged. No extra diagnostic dump.
+070 record assignment SQL/source + required profile union/cohort coverage integrated;
+original both-lock DDL rehearsal PASS/ROLLBACK, no 070 retained migration yet. 060
+actual migration history pending read. Current profile metadata-only Page compiler
+preserves genuine Create-only authority; no borrowing Read. Exact stored Page source
+refs preserved. Assignment UI/native initial type selector remains unfinished.
 
-2C2e configuration usage/sealed retained-history inspection integrated 105d7783;
-2D2a genuine owner Page source/gateway integrated efa8b13d with field-search merge
-preserved. Combined76/5 focused PASS. 2C2b permanent profile ownership model, binder
-and additive060000 SQL IMPLEMENTED; 23 binding/compiler tests PASS, Prisma validate/
-generate PASS, original both-lock central BEGIN/ROLLBACK DDL rehearsal PASS (not
-applied). Integrated production build3813 and scopedlint93011 PASS. Public
-profile/page authoring dispatch remains closed. Finalstandalonetypes49291 PASS;
-integratededitor17 interactions PASS. Full visual editor
-source interaction tests passed in helper; saved/live integration still pending.
-
-0a5fe343 originalrelease45875 EXIT1 beforeactivation atf6unexpectedorigin; actual
-NextRequest loopbacknormalisation confirmed. Strictsameoriginguard52bee corrected
-fromactualHost+requestprotocol, noexception/sessionwaiver; candidate/publicpending.
-LIVEc385/rollback5b unchanged.040000/050000 nowAPPLIED bycandidatebuild, central
-historyreadconfirmed. Required210453/210634 backupsretained; syntheticaccessclosed.
-
-2C2a authoringcompiler IMPLEMENTED/source13focusedPASS, publicdispatchcloseduntil
-binding/assignment/requiredcohort enforcement. Pure2D1 b739 andSales2E0 abf/116823
-read/nativePDFnavigation contractsintegrated. Combined55/5PASS, strict/lintPASS before
-finalorigin/command projection; Final71/4PASS54270, production48820/standalone1787/scopedlint1656 exit0. Actualsearchchecker9160
-originaldriverwired afterforms/defaults, centralruntimepending.2D2ownerfactory and
-controlled2E1 visualeditor activelyinparallel; no finishedvisual/liveclaim.
-
-Acceptedc385 merge preserves operational/Finance/UI source and shared memory.
-Production77784 PASS; focused70/8 PASS83796; Prisma67043PASS. Initial types sawold
-client during generation, final sequential standalone85658 exit0; scoped merge lint2995 exit0. Actual040000/050000 DDL
-compiled in central BEGIN/ROLLBACK under originalbothlocks23631 exit0, no persistent
-changes/no dump. Read-only migration history confirms030000 alreadyAPPLIED from
-earlierfailedcandidate; nativeforms publicverification stillpending. New040/050
-notapplied untiloriginalrelease. Retained required202921 recovery verified.
-
-Runtime feature bridge IMPLEMENTED: exact sealed release/rollback pair parser
-evidence, new-default publication+activation fail closed, original deployment gates.
-First legacy parser checked before optional newer module imports. Actual defaults
-checker integrated after native forms; first bridge DEFERRED before fixtures;
-later compatible pair must prove actual UI/native/receipt/SQL/replay behaviour.
-17/2 tests PASS41541, types38580/lint55661 exit0, syntax/diff PASS. No new central
-execution/build/public proof yet. Accepted livec385/rollback5b freshly confirmed;
-merge accepted source then integrated production build and locked bridge release.
-
-2C1 IMPLEMENTED/pure11 tests; root2C1+2C2a pin metadata32/2 PASS, types/lint PASS.
-New additive ConfigurationDependency model/050000 SQL source reviewed, no central
-DDL yet: original lock safety stopped BEGIN/ROLLBACK attempt before executing SQL.
-Source reader sealed/tenant/kind/edge/graph checks are not per-record authority or
-assignment/activation coverage. Pure2D1 IN PROGRESS, no customer visual UI claimed.
-
-
-Integrated scoped defaults/search checkpoints:223/11 PASS, strict/scopedlint exit0;
-reference rights now checked before protected values, strengthened95/3 PASS. Forward
-040000 receipt guard not yet centrally applied. Defaults/search IMPLEMENTED, not
-runtime VERIFIED. Literal metadata requires compatible immediate rollback; original
-per-release parser evidence/server publication+activation gate in progress.
-2C1 pure contracts now IN PROGRESS in existing helper, no active runtime yet.
-
-
-11October c152 deployment29161 EXIT1 before activation. Original candidateXyFyYX
-checks through native/window/concurrency PASS; new typed forms failed an ambiguous
-checker label (input and Clear button). Fixed selector targets actual control role
-and accessible name; no gate waived. Required recovery202921/fixture203058 retained,
-Test access suspended/QA unchanged. Typed-form SQL/runtime/public verification
-remains pending. Isolated default6c50c7a/searchb291e55 IMPLEMENTED with focused tests,
-not yet integrated/central verified. Full visual2E remains mandatory.
-
-
-11October concurrent release reconciliation: current publichealth+SSH confirm
-5b6390c874b42571f091a53b1b017aea70121df7, rollback6e5c39bebe2db2bf76dc9eabf49170f631c3f05b,
-Atlas active/root149GiBfree/tmp1.6GiBfree. Merge accepted live5b (containsad9) into94d3
-before sourcepin/deployment; preserve finished303-file Manufacturing/UI/account/docs
-changes and union memory. Native domain-only fixture conflict keeps completeSession/
-new modulelookup plus explicitgenuine-authority/validation collaborators; actualCAS
-engine unchanged. Integrated root212/10 PASS51673, standalone85862/scopedlint9881/regeneration56337/
-production56451 exit0; source/diff reviewed, no deployment/ancestry bypass.
-Parallel2B5 defaults/2B6 search in existinghelpers; source-bound plans recorded.
-
-
-D4c selects the whole bounded tenant Ticket publication set by source OR target
-entity, validates stored1/2 identities before effects, freezes ANY PUBLISHED window
-before finalizing ANY CUTOVER, and reuses existing receipt/publication CAS/Audit.
-Ticket owner queries explicitly cover the whole canonical cohort, so unrelated
-field writes/new unobserved Tickets also affect windows. Public ordinary writer
-closes this set after authorised native/value preflight, before typed persistence.
-Public single-save validates all resulting required fields after staged typed CAS/
-Audit; replay remains read-only. Internal/initial staging primitives require caller
-validation after ALL intended fields/native operations, preserving multi-field saves.
-
-D4d adds seven operation-specific native-validation queries without modifying sealed
-entity1–9/facts/migration fingerprints. Registry latest-policy selection, metadata
-proof approval and facts invocation require the exact actual operation capability.
-Generic invocation strips opaque proofs. Native receipts come only from actual
-INSERT/CAS/parent relation/update/case-child SQL helpers, not caller record lists.
-Private scope binds genuine refreshed stamp, same Serializable tx, exact operation,
-actual changed Ticket records and their final revisions. Proof is live only after
-successful domain callback and revoked on every exit. QUERY-only/no-config internal
-paths retain existing native authority; actual configured Ticket effects require
-strict ACTIVE CUSTOMER field authority. Scope returns frozen copied anchors.
-
-Separate native_validation mode is integrated. It retains independent current/
-pinned/written field Read and approved native fact/reference rights, and metadata-
-only preflight of the complete applicable input set before any facts/value columns.
-Seven actions +Service case merge use actual refreshed callback Session and receipt
-engine helpers. Update/comment refresh before stored-kind discovery, then re-read
-under operation scope. Engine CAS/parent events and creation INSERT feed actual
-receipts; existing creation proof remains distinct. The final wrapper projects exact
-four-field references, closes all affected windows once after all domain effects,
-and validates every final affected Ticket anchor in the original Serializable tx.
-Actual engine atomicity/windows/concurrency verified ad9 candidate/public; unit collaborators alone would not establish it. Native
-private/domain eligibility stays with the unchanged owning callback. D4e real first-publication/no-binding/maxFields/native races passed ad9 candidate/public.
-D4b prior shared writer/versioned reads VERIFIED locally at21825bd.
-Visual stash28243b7 preserved; visual authoring is required unfinished Phase2.
+Visual checker13263fa0 independently source-reviewed and original driver wired,
+alongside profile checker25941bed. Strict exact compatible runtime pair/health gates
+precede fixture writes; Sales scoped proof does not claim Ticket private/write proof.
+Original e5bf acceptance failed preactivation at Status label; actual Select named
+label now fixed. No actual current visual/profile central/browser proof yet.
+Last confirmed live c385a2be/rollback5b6390c8; no activation claimed by local tests.
 
 # Files Changed
 
-Current d4f: core/service-work/actions.ts; new field-forms/form contracts/discovery/
-receipt helpers; fields/form-packet/runtime-write/runtime-read/schema; compiler pure
-reference extraction; shared configured/typed controls; native Ticket create/detail
-and Service case child forms; narrow desktop search action registration; focused
-packet/manifest/writer/receipt/UI/domain suites; ledger/plan/source coverage/decisions/
-CURRENT_STATE. Six unrelated regenerated action exposures and unrelated metadata
-refresh were excluded; original905 desktop action entries retained plus one narrow
-field-reference search. No unrelated source changes removed.
+Current integration: Prisma assignment model/additive070 SQL; record-types
+assignment/runtime/coverage; Page owner policies, approval factory, runtime/shared
+renderer/design model/compiler; Sales/Tickets owner Page contributions/presets;
+authoring context/pages/catalog/preview; original compiler/service/publication/
+activation and configuration impact; standalone (studio)/design-studio routes,
+Admin launch/proxy headers; shared Select accessible label; actual-runtime probe,
+record-profile checker and focused tests. No unrelated source removed.
 
 # Database / Prisma Changes
 
-Additive20261011030000_studio_ticket_form_receipts/migration.sql reserves one existing
-Audit action/entity/ID namespace with validated immutable insert/update/delete guard.
-No new Prisma model/table/backfill/reset/native value rewrite. Other Audit privacy
-scrubbing stays unchanged. Whole-form receipt is part of the original native/value/
-events/final-validator transaction; historical replay is read-only.
+Additive060 permanent profile binding and070 append-only record-type association
+with tenant composite FKs, owner/extension CAS, exact immutable profile evidence,
+head/Audit guards and original Test-only cleanup support. Prisma validate/generate
+passed.070 DDL compiled on central under BOTH original locks in BEGIN/ROLLBACK
+using existing213632 recovery evidence; no persistent schema/data change from rehearsal.
 
 # Migrations Applied
 
-Prior additive20261011010000 and corrective20261011020000 remain applied from accepted
-releases. New20261011030000 is source-only, NOT APPLIED/SQL VERIFIED yet. Central
-history/private records/recovery retained; no local business DB/ad-hoc dump.
+030 receipts/040 defaults/050 configuration edges previously confirmed applied.
+060 may have applied during failed candidate builds: inspect actual history before
+claiming applied.070 NOT APPLIED. Existing central records/backups retained; no
+local business database or additional diagnostic dumps.
 
 # Tests Added
 
@@ -254,11 +130,13 @@ responsive and candidate/public verification still pending.
 
 # Test Results
 
-Native prerequisite ad9 VERIFIED LIVE: original13566 exit0, candidate627MN9 and
-publicjY9iVL BOTH ALL COMBINED PASS. This includes actual native enforcement/windows/
-concurrency and existing Admin/customer/module compatibility. It does not prove the
-new typed UI/forms/receipt migration. Current d4f IMPLEMENTED locally, actual gate
-pending. Full Phase2 FAIL incomplete; no Phase3 work.
+Latest source checks actually run: 89 assertions/11 suites,113/7,64/5 PASS; current
+context/read-scope, visual checker gate, native Ticket form/owner and authoring47/5
+PASS. Production41429 exit0 includes current visual routes/conditions/customer/forms.
+Standalone postbuild92519 exit0. Latest34665 strict found the surface reference descriptor type, fixed to registered
+logical IDs; final66403 exit0. Scopedlint72614 exit0.
+Earlier concurrent type/build generated-route race corrected by sequential checks.
+No actual candidate/public visual or profile/070 SQL acceptance outcome inferred.
 
 # Architecture Decisions
 
@@ -272,12 +150,15 @@ Decisions and rationale recorded in .ai/DECISIONS.md; no silent source divergenc
 
 # Known Issues
 
-Full Phase2 remains incomplete. Current genuine required activation/native windows/
-concurrency are verified live ad9; typed creation/edit inputs, whole-form receipt,
-usable migration controls, aliases/defaults/search, record types, pages/variants,
-visual presets/previews/publishing/customer dashboards/safe buttons remain required.
-No metadata Admin data-access widening. New receipt-specific SQL guard is root-integrated but not applied/SQL verified. No local business DB/ad-hoc dump.
-Two old helper worktree archives queued/unverified; preserved visual stash28243b7.
+Full Phase2 gate FAIL/incomplete: friendly field/type frontend and assigned-type
+selection/native form proof, existing Templates/Analytics selected-business reuse,
+actual visual/profile/typed forms/defaults/search central candidate/public proof and
+complete source matrix acceptance remain. Surface row navigation minimal safe seam
+being added independently. 070 not applied;060 actual migration history to refresh.
+Last original candidate e5bf failed at Status locator before activation; source fix
+is tested but actual rerun required. Keep current/rollback/central records unchanged
+until original release gates pass. Never mark new Page/Profile feature VERIFIED
+because local files/tests exist or a disabled runtime guard returns DEFERRED.
 
 # Deferred Items
 
@@ -296,15 +177,12 @@ Later phases remain architectural context only; no complete visual designer clai
 
 # Exact Next Action
 
-Checkpoint the accepted-live5b merge with completed originaldriver/f6 integration
-and actual merged212/type/lint/build evidence. Pin cleancompatibleStudio release
-and run original
-candidate/public Studio gates including actual browser forms/SQL guard/rollback and
-responsive checks. Then close actual remaining2B aliases/search/owner defaults from
-source audit, implement2C shallow record-type resolver,2D structured pages and2E
-full-screen visual builder/previews/Templates/dashboard publication/safe buttons.
-Record2F complete acceptance only after real published business runtime passes.
-Preserve latest accepted live5b6390c8/rollback6e5c39be, central history/recovery; no needless dumps or Phase3.
+Final strict66403/scopedlint72614 exit0; review complete current diff and checkpoint
+visual foundation/runtime source with this memory. Refresh live/rollback/health and
+migration history; run original clean pinned both-lock Studio candidate/public bridge.
+Then integrate78725538 friendly authoring backend and implement /design-studio/setup
+and typed draft detail UI; add actual assigned-type selector and owning native proof.
+Do not start Phase3. No extra build/dependency copies or diagnostic database dumps.
 
 # Historical checkpoint evidence
 
@@ -4234,3 +4112,19 @@ required-rule-only reviewed changes without widening old receipts. Next d4 commo
 mutation locks, native create/save resulting checks, initial typed writes/window
 closure; only then enable conditional authoring and run d5 gate. Continue2B forms/
 search,2C record types,2D pages,2E visual designer. Full Phase2 remains IN PROGRESS.
+
+## 11 October visual workspace integration checkpoint
+
+IMPLEMENTED source: owner Page reconstruction/money labels, separate metadata-only
+Page seal adapter, Sales read-only Page projections, genuine selected-business
+authoring session. IN PROGRESS: complete shared renderer/runtime, public saved-page
+routes/actions and append-only associations/profile cohort validation.
+Files changed now include pages/approvals/compiler/owner/server-approvals, registry,
+Sales studio-pages/manifest, definitions/publication, record-types/compiler, runtime
+feature kinds, authoring/context, Prisma070 model and focused tests.
+Checks: helper Page60/6 + metadata20/2 + Sales39/3 source assertions, types/lint PASS;
+root authoring9 PASS; root070 Prisma validate/generate PASS. Root integrated checks
+pending current changes. Original e5bf release38033 EXIT1; no public activation.
+Exact next action: integrate final070 source, precise Ticket Status locator, shared
+Page runtime/renderer and implement one original-publisher-backed saved screen
+authoring adapter/standalone route. Full Phase2 gate FAIL/incomplete; no Phase3.

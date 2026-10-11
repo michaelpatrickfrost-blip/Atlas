@@ -9586,6 +9586,8 @@ model StudioDefinitionVersion {
   @@unique([definitionId,organisationId,semanticVersion])
   @@index([organisationId,publishedAt])
   @@map("studio_definition_versions")
+  recordTypeAssignments StudioRecordTypeAssignment[] @relation("StudioAssignmentTypeVersion")
+  baseProfileAssignments StudioRecordTypeAssignment[] @relation("StudioAssignmentBaseVersion")
 }
 
 model StudioDependency {
@@ -9637,6 +9639,8 @@ model StudioProfileBinding {
   @@unique([definitionId,organisationId,entityId],map:"studio_profile_identity_key")
   @@index([organisationId,entityId,kind],map:"studio_profile_entity_idx")
   @@map("studio_profile_bindings")
+  recordTypeAssignments StudioRecordTypeAssignment[] @relation("StudioAssignmentTypeBinding")
+  baseProfileAssignments StudioRecordTypeAssignment[] @relation("StudioAssignmentBaseBinding")
 }
 
 // Studio owns only additional values and canonical references, never business copies.
@@ -9694,6 +9698,9 @@ model StudioExtensionRecord {
   @@unique([organisationId,entityId,recordId])
   @@unique([id,organisationId,entityId])
   @@map("studio_extension_records")
+  recordTypeAssignmentId String? @db.Uuid
+  recordTypeAssignment StudioRecordTypeAssignment? @relation("StudioRecordTypeHead",fields:[recordTypeAssignmentId,id,organisationId,entityId],references:[id,extensionId,organisationId,entityId],onDelete:NoAction,onUpdate:NoAction,map:"studio_record_type_head_fk")
+  recordTypeAssignments StudioRecordTypeAssignment[] @relation("StudioRecordTypeHistory")
 }
 
 model StudioFieldSlot {
@@ -10114,4 +10121,37 @@ model ManufacturingMaterialUse {
  @@index([organisationId,reportId])
  @@index([organisationId,stockAllocationId])
  @@map("manufacturing_material_uses")
+}
+
+// Immutable record-type assignment provenance on the existing canonical extension.
+model StudioRecordTypeAssignment {
+  id String @id @db.Uuid
+  organisationId String
+  entityId String
+  recordId String
+  extensionId String @db.Uuid
+  previousAssignmentId String? @db.Uuid
+  extensionRevision Int
+  nativeRevision Int
+  recordTypeDefinitionId String? @db.Uuid
+  recordTypeVersionId String? @db.Uuid
+  baseProfileDefinitionId String? @db.Uuid
+  baseProfileVersionId String? @db.Uuid
+  provenance Json
+  checksum String @db.Char(64)
+  requestChecksum String @db.Char(64)
+  createdBy String
+  createdAt DateTime @default(now())
+  extension StudioExtensionRecord @relation("StudioRecordTypeHistory",fields:[extensionId,organisationId,entityId],references:[id,organisationId,entityId],onDelete:Restrict,onUpdate:NoAction,map:"studio_assignment_extension_fk")
+  heads StudioExtensionRecord[] @relation("StudioRecordTypeHead")
+  previous StudioRecordTypeAssignment? @relation("StudioAssignmentPrevious",fields:[previousAssignmentId,extensionId,organisationId,entityId],references:[id,extensionId,organisationId,entityId],onDelete:Restrict,onUpdate:NoAction,map:"studio_assignment_previous_fk")
+  following StudioRecordTypeAssignment[] @relation("StudioAssignmentPrevious")
+  recordTypeBinding StudioProfileBinding? @relation("StudioAssignmentTypeBinding",fields:[recordTypeDefinitionId,organisationId,entityId],references:[definitionId,organisationId,entityId],onDelete:Restrict,onUpdate:NoAction,map:"studio_assignment_type_binding_fk")
+  baseProfileBinding StudioProfileBinding? @relation("StudioAssignmentBaseBinding",fields:[baseProfileDefinitionId,organisationId,entityId],references:[definitionId,organisationId,entityId],onDelete:Restrict,onUpdate:NoAction,map:"studio_assignment_base_binding_fk")
+  recordTypeVersion StudioDefinitionVersion? @relation("StudioAssignmentTypeVersion",fields:[recordTypeVersionId,recordTypeDefinitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_assignment_type_version_fk")
+  baseProfileVersion StudioDefinitionVersion? @relation("StudioAssignmentBaseVersion",fields:[baseProfileVersionId,baseProfileDefinitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_assignment_base_version_fk")
+  @@unique([id,extensionId,organisationId,entityId],map:"studio_assignment_head_key")
+  @@unique([extensionId,extensionRevision],map:"studio_assignment_revision_key")
+  @@index([organisationId,entityId,recordTypeDefinitionId,extensionId],map:"studio_assignment_type_idx")
+  @@map("studio_record_type_assignments")
 }

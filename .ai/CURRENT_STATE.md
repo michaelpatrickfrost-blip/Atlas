@@ -1,3 +1,35 @@
+## 11 October 2026 — Phase 2 visual customer runtime checkpoint IMPLEMENTED
+
+Dedicated /design-studio library/saved editor now uses genuine fresh selected-
+business authoring and original draft/review/publication/activation/Audit. Presets,
+outline/canvas/properties, desktop/tablet/phone sample/actual preview, approved
+buttons, simple fact visibility and shallow alternate layouts are wired. Customer
+/home published screen cards, bounded owner record chooser, /screens runtime and
+Sales native PDF action share the protected renderer/gateway. Ticket edit surface
+reuses the complete original native progress form and typed packet/receipt writer.
+Device changes re-read SSR forms; stale Page/head/device slots request refresh.
+
+070 assignment schema/source, profile required/cohort guards, metadata-only profile
+Page reconstruction and active ancestor field impact are integrated. 070 DDL both-
+lock central BEGIN/ROLLBACK passed; not applied. 060 actual history still to inspect.
+Original profile checker25941bed and independently reviewed visual checker13263fa0
+are wired to the original backed-up release harness. Actual features need compatible
+sealed current/rollback readers; disabled readiness remains DEFERRED, never PASS.
+
+Latest local evidence: 89/11, 113/7, 64/5 and new context/checker/form/authoring47/5
+focused assertions PASS. Production build41429 exit0. Final scoped lint72614 exit0; latest strict
+found a typed surface-reference mismatch, corrected to registered logical strings;
+final strict66403 exit0. Last postbuild92519 exit0. Source tests are not actual central/browser proof.
+Original e5bf candidate failed before activation at Status locator; explicit Select
+label/source regression corrected. Fresh SSH confirms live c385a2be/rollback5b6390c8;
+server150GiB free, tmp1.5GiB free. Preserve pinned runtime/recovery data. Full Phase2 FAIL/incomplete, no Phase3.
+
+Next: checkpoint compatible visual source after final types/lint; original pinned
+locked candidate/public bridge. Integrate friendly field/type setup78725538 and its
+noncoder UI, assigned type selection/native form proof, actual visual/profile gates,
+existing Templates/Analytics entry integration. No extra worktree/dependencies,
+local business data cache or ad-hoc dumps. Permanent Studio ledger is authoritative.
+
 ## 11 October — candidate creation-route wait corrected; Phase 2 continues
 
 9ad9e078 original Studio release59282 EXIT1 before activation. Candidate LwXpI8

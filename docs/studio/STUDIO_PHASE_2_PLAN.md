@@ -237,3 +237,56 @@ shared memory. Database: existing memberships and Audit only, no new permission
 architecture or customer roles. Validation: staff/tenant/session revocation, customer
 cannot choose another tenant, genuine authoring authority, source capabilities and
 module availability retained. Status NOT STARTED; depends on existing Admin policy.
+
+## 11 October — visual editor integration workstreams
+
+2D2b owner approval reconstruction IMPLEMENTED with actual retained entity version
+opt-ins, money/labels and separate metadata-only validator reconstruction. Sales
+owner Page source IMPLEMENTED; manifest integration in progress. Source checks
+remain distinct from candidate/public acceptance.
+
+2E2 saved screen authoring (root) — IN PROGRESS. Purpose: one standalone full-screen
+Studio workspace outside customer/Admin navigation chrome, explicit audited staff
+business entry, server-resolved current authoring authority, human-readable preset
+and screen library, CAS draft save/review using original publisher/activation/Audit.
+Files: studio/authoring, dedicated app route/actions, shared editor adapter, existing
+Admin/library links and focused tests. Depends2D owner compiler/runtime/shared
+renderer; no extra database/schema or parallel rendering/publishing engine.
+New Page publication remains fail closed until actual current/rollback reader
+evidence and complete activation/dependency checks. Save and preview are separately
+permitted for valid drafts; preview never executes business commands. Tests current
+tenant/membership/module/used grants, stale revisions, server recompile/atomicity,
+selection/preview inertness and native owner data.
+
+2C2d profile activation and dependency impact — IN PROGRESS. Purpose: exact sealed
+base/type activation validates the affected complete canonical owner cohort under
+the original entity lock/Serializable transaction; field retirement/structural
+activation cannot break active retained design pins. Files record-types coverage,
+definition activation/service, configuration usage and focused tests. Depends
+2C2b ownership/070 append-only associations/current required-field runtime. No new
+engine, temporary active pointers or waivers; Process/Decision remain unavailable.
+
+Original e5bf candidate failed before public activation at the native Ticket Status
+control locator after creation/receipt checks progressed. Inspector checks actual
+UI locator; live c385 preserved. All Phase2 visual/runtime acceptance remains open.
+
+## 11 October — visual runtime integration checkpoint and next bounded setup work
+
+2C2c–d/2D2b–3/2E1–2,4: source IMPLEMENTED with focused compiler/runtime/owner/
+editor checks, current production41429/types66403/lint72614 PASS. Dedicated visual
+routes, saved editor, conditional layouts, sample/actual preview, customer cards/
+record chooser/live Page/native PDF and complete Ticket form surface are integrated.
+070 actual assignment/SQL and original customer candidate/public acceptance pending.
+Each donor workstream remains individually checkpointed; root integration preserves
+its contracts and original Atlas services. FullPhase2 FAIL; no later engines.
+
+Next 2E6 friendly setup: purpose is noncoder additional-field/base/record-type forms
+inside the standalone designer. Dependencies: genuine authoring context, original
+publisher/activation, current closed field policy, exact sealed configuration pins,
+070 assignment/cohort services. Expectedfiles: core/studio/authoring/configuration,
+app/(studio)/design-studio/setup and configuration actions/typed UI/tests. DB: none
+beyond already proposed070. Tests: current independent field/reference rights,
+generated identity, cosmetic preservation, exact saved CAS, base/type pin handling,
+GoLive atomic publisher/activation, browser setup/runtime behavior. Status IN PROGRESS;
+backend78725538 locally26PASS ready, remaining owner-approved types separate bounded
+extension. Original reviewed migration remains structural post-publication path.

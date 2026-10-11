@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { sessionAuthorityStamp } from "@/core/auth/session";
 import type { Prisma } from "@/generated/prisma/client";
 import type { Session } from "@/core/auth/session";
 import { checksum } from "../registry/contracts";
@@ -11,6 +12,7 @@ import { assertFieldAccess } from "../fields/validation";
 import { assertFieldBinding } from "../fields/binding";
 import { entityProfilePayloadSchema, recordTypePayloadSchema, type ConfigurationReference, type EntityProfilePayload, type RecordTypePayload, type EntityProfile } from "./schema";
 import { normaliseConfigurationReferences, resolveEntityProfile, resolveRecordTypeProfile, type ResolvedEntityProfile } from "./resolver";
+import { compileStructuredPage } from "../pages/definition-compiler";
 
 type Dependency = Pick<ContractMetadata, "id" | "version" | "schemaHash" | "contractHash" | "ownerModuleId" | "kind" | "classification">;
 type CompileContext = { session: Session; transaction: Prisma.TransactionClient; registry: CapabilityRegistry; definitionId: string };
@@ -48,7 +50,6 @@ export async function compileRecordProfile(context: CompileContext, kind: "entit
   }
   if (resolved.profile.allowedProcesses.length || resolved.profile.defaultDecisions.length)
     throw new Error("This record design requires a later Process or Decision compiler.");
-  if (resolved.profile.page) throw new Error("Page references require the registered Page compiler adapter.");
   const references = normaliseConfigurationReferences(resolved.configurationDependencies, definitionId);
   await inspectConfigurationGraph(session, transaction, references, definitionId);
   const dependencies = new Map<string, Dependency>();
@@ -65,6 +66,15 @@ export async function compileRecordProfile(context: CompileContext, kind: "entit
     if (metadata.lifecycle === "deprecated") warnings.add(`Deprecated: ${metadata.id}@${metadata.version} supported until ${metadata.supportedUntil}`);
   }
   await add(resolved.entity);
+  if (resolved.profile.page) {
+    const page = await loadSealedConfigurationVersion(session, transaction, resolved.profile.page);
+    const stamp = sessionAuthorityStamp(session);
+    if (!stamp) throw new Error("FORBIDDEN: Page references require genuine current authoring authority.");
+    const compiledPage = await compileStructuredPage({ session, transaction, registry, stamp }, page.payload);
+    if (compiledPage.checksum !== page.checksum || compiledPage.payload.entity.id !== resolved.entity.id) unavailable();
+    for (const dependency of compiledPage.plan.dependencies) await add(dependency);
+    compiledPage.warnings.forEach(warning => warnings.add(warning));
+  }
   for (const reference of resolved.profile.requiredFields) {
     const version = await loadSealedConfigurationVersion(session, transaction, reference);
     const field = inspectSealedFieldVersion(registry, version, session.organisationId, reference.definitionId);

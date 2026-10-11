@@ -8,6 +8,7 @@ import { CapabilityRegistry } from "@/core/studio/registry/registry";
 import { ticketStudioContract } from "@/core/service-work/studio";
 import { compileDefinition } from "@/core/studio/compiler";
 import { canonicalJson } from "@/core/studio/registry/contracts";
+vi.mock("@/core/studio/configuration/impact", () => ({ assertFieldConfigurationCompatibilityInTransaction: vi.fn() }));
 import { activateCompiledVersionInTransaction } from "@/core/studio/definitions/activation";
 const uuid = (n: number) => `00000000-0000-4000-8000-${n.toString().padStart(12, "0")}`;
 const session: Session = { userId: "user", userName: "User", userEmail: "user@example.invalid", membershipId: "member", organisationId: "company", organisationName: "Company",

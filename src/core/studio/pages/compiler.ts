@@ -1,8 +1,9 @@
+import { applyPagePatches } from "./patches";
 import type { z } from "zod";
 import { referenceSchema } from "../compiler/reference";
 import { normaliseConfigurationReferences, type ConfigurationReference } from "../record-types";
 import { pageApprovalsSchema, type PageApprovals, type PageRegistryApproval, type PageRegistryDependency, type ValidatedPageApprovals } from "./approvals";
-import { pagePayloadSchema, pageSectionSchema, type PagePatch, type PagePayload, type PageSection, type VisibilityPredicate } from "./schema";
+import { pagePayloadSchema, pageSectionSchema, type PagePayload, type PageSection, type VisibilityPredicate } from "./schema";
 
 export type PageRegistryReference = z.infer<typeof referenceSchema>;
 export type PageReadRequest = { componentId: string; queries: PageRegistryReference[] };
@@ -43,81 +44,7 @@ function assertLayout(sections: readonly PageSection[], forms: PagePayload["form
   }
 }
 
-function locateComponent(sections: PageSection[], id: string) {
-  for (const section of sections) {
-    const index = section.components.findIndex(component => component.id === id);
-    if (index !== -1) return { section, index, component: section.components[index] };
-  }
-  throw new Error("Patch component target is missing.");
-}
-function locateSection(sections: PageSection[], id: string) {
-  const section = sections.find(value => value.id === id);
-  if (!section) throw new Error("Patch section target is missing.");
-  return section;
-}
 
-/** Patch array is an explicit editing sequence, not overlay merge precedence.
- * Each business property can be written only once. Multiple competing inserts or
- * moves at the same ordering anchor are rejected rather than silently reordered. */
-function applyPatches(base: PageSection[], patches: PagePatch[]): PageSection[] {
-  const sections = structuredClone(base), writes = new Map<string, Set<string>>(), anchors = new Set<string>();
-  const claim = (id: string, properties: readonly string[]) => {
-    const prior = writes.get(id) ?? new Set<string>();
-    if ((prior.has("*") && properties.length) || (properties.includes("*") && prior.size) || properties.some(property => prior.has(property)))
-      throw new Error("Conflicting page patches.");
-    properties.forEach(property => prior.add(property)); writes.set(id, prior);
-  };
-  const ordering = (kind: string, parent: string, after: string | null) => {
-    const anchor = `${kind}:${parent}:${after ?? "start"}`;
-    if (anchors.has(anchor)) throw new Error("Ambiguous patch ordering anchor.");
-    anchors.add(anchor);
-  };
-  for (const patch of patches) {
-    if (patch.operation === "setSection" || patch.operation === "setComponent") {
-      const id = patch.operation === "setSection" ? patch.sectionId : patch.componentId;
-      claim(id, Object.keys(patch.properties));
-      const target = patch.operation === "setSection" ? locateSection(sections, id) : locateComponent(sections, id).component;
-      const { visibleWhen, ...properties } = patch.properties;
-      Object.assign(target, properties);
-      if (visibleWhen === null) delete target.visibleWhen;
-      else if (visibleWhen !== undefined) target.visibleWhen = visibleWhen;
-    } else if (patch.operation === "addSection") {
-      claim(patch.section.id, ["*"]); ordering("section", "page", patch.afterSectionId);
-      const index = patch.afterSectionId === null ? -1 : sections.indexOf(locateSection(sections, patch.afterSectionId));
-      sections.splice(index + 1, 0, structuredClone(patch.section));
-    } else if (patch.operation === "removeSection") {
-      const section = locateSection(sections, patch.sectionId);
-      claim(section.id, ["*"]); section.components.forEach(component => claim(component.id, ["*"]));
-      sections.splice(sections.indexOf(section), 1);
-    } else if (patch.operation === "moveSection") {
-      if (patch.sectionId === patch.afterSectionId) throw new Error("Patch cannot move a section after itself.");
-      claim(patch.sectionId, ["position"]); ordering("section", "page", patch.afterSectionId);
-      const section = locateSection(sections, patch.sectionId);
-      sections.splice(sections.indexOf(section), 1);
-      const index = patch.afterSectionId === null ? -1 : sections.indexOf(locateSection(sections, patch.afterSectionId));
-      sections.splice(index + 1, 0, section);
-    } else if (patch.operation === "addComponent") {
-      claim(patch.component.id, ["*"]); ordering("component", patch.sectionId, patch.afterComponentId);
-      const section = locateSection(sections, patch.sectionId);
-      const after = patch.afterComponentId === null ? -1 : section.components.findIndex(component => component.id === patch.afterComponentId);
-      if (patch.afterComponentId !== null && after === -1) throw new Error("Patch component ordering anchor is missing.");
-      section.components.splice(after + 1, 0, structuredClone(patch.component));
-    } else if (patch.operation === "removeComponent") {
-      claim(patch.componentId, ["*"]); const current = locateComponent(sections, patch.componentId);
-      current.section.components.splice(current.index, 1);
-    } else {
-      if (patch.componentId === patch.afterComponentId) throw new Error("Patch cannot move a component after itself.");
-      claim(patch.componentId, ["position"]); ordering("component", patch.sectionId, patch.afterComponentId);
-      const current = locateComponent(sections, patch.componentId);
-      current.section.components.splice(current.index, 1);
-      const section = locateSection(sections, patch.sectionId);
-      const after = patch.afterComponentId === null ? -1 : section.components.findIndex(component => component.id === patch.afterComponentId);
-      if (patch.afterComponentId !== null && after === -1) throw new Error("Patch component ordering anchor is missing.");
-      section.components.splice(after + 1, 0, current.component);
-    }
-  }
-  return sections;
-}
 
 /** Pure compiler. Supplied approvals are trusted only as server-loaded metadata;
  * this function neither authenticates them nor queries/invokes their providers. */
@@ -207,7 +134,9 @@ export function compilePage(input: unknown, suppliedApprovals: PageApprovals): C
             }
             if (selected.source === "extension") {
               const extension = approvals.customFields.find(value => value.reference.definitionId === selected.reference.definitionId);
-              if (!extension || !samePageReference(extension.entity, payload.entity)) throw new Error("Extension field belongs to a different entity contract.");
+              if (!extension || extension.entity.id !== payload.entity.id) throw new Error("Extension field belongs to a different entity contract.");
+              if (!approvals.fieldSourceVersions.includes(extension.entity.version)) throw new Error("Extension field belongs to an unsupported entity contract.");
+              resolve(extension.entity, ["entity"]);
               fields.push(selected.reference);
               if (extension.required && (section.visibleWhen || component.visibleWhen)) warnings.add("Hidden required fields still require a valid value through the owning form.");
             }
@@ -255,14 +184,14 @@ export function compilePage(input: unknown, suppliedApprovals: PageApprovals): C
   payload.variants.forEach(variant => predicateFacts(variant.when, selectorFacts));
   const base = layout(structuredClone(payload.sections), selectorFacts);
   const variants = payload.variants.map(variant => {
-    return { id: variant.id, priority: variant.priority, when: variant.when, layout: layout(applyPatches(payload.sections, variant.patches), selectorFacts) };
+    return { id: variant.id, priority: variant.priority, when: variant.when, layout: layout(applyPagePatches(payload.sections, variant.patches), selectorFacts) };
   });
   const configurationDependencies = normaliseConfigurationReferences(fields);
   const used = <T extends PageRegistryApproval>(values: T[]) => values.filter(value => dependencies.has(refKey(value)))
     .sort((left, right) => compare(left.id, right.id) || left.version - right.version);
   const runtimeApprovals: ValidatedPageApprovals = {
     entity: approvals.entity,
-    sourcePage: approvals.sourcePage, variants: approvals.variants,
+    sourcePage: approvals.sourcePage, variants: approvals.variants, fieldSourceVersions: approvals.fieldSourceVersions,
     ...(approvals.recordWriteCapability ? { recordWriteCapability: approvals.recordWriteCapability } : {}),
     nativeFields: approvals.nativeFields.filter(value => nativeUsed.has(value.id)).sort((left, right) => compare(left.id, right.id)),
     customFields: approvals.customFields.filter(value => configurationDependencies.some(ref => ref.definitionId === value.reference.definitionId))

@@ -1,5 +1,6 @@
 import { reports } from './services/reports';
 import { salesStudioContract } from './services/studio';
+import { salesOrderPageContract } from './services/studio-pages';
 import { salesRecordContext, salesRecordRelationships } from "./services/relationships";
 import { salesBusinessPlanning } from "./services/business-planning";
 import { requestServiceReplacement } from "./services/service-replacement";
@@ -12,7 +13,7 @@ import type { ModuleManifest } from "@/core/modules/types";
 import { SALES_CAPABILITIES } from "@/core/permissions/capabilities";
 import { salesCustomerOverviewProvider } from "./services/customer-overview";
 export const salesManifest: ModuleManifest = {
- studio: salesStudioContract,
+ get studio() { return { contributions: [...salesStudioContract.contributions, ...salesOrderPageContract.contributions] }; },
  reportProvider: reports,
  recordContextProvider: salesRecordContext, recordRelationshipProvider: salesRecordRelationships,
  businessPlanningProvider:salesBusinessPlanning,

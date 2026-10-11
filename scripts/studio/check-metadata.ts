@@ -19,6 +19,9 @@ import { checkFieldConcurrency } from "./check-field-concurrency";
 import { checkTicketForms } from "./check-ticket-forms";
 import { checkTicketDefaults } from "./check-ticket-defaults";
 import { checkFieldSearch } from "./check-field-search";
+import { checkRecordProfiles } from "./check-record-profiles";
+import { checkVisualPages } from "./check-visual-pages";
+import { readStudioRuntimeFeatureEvidence, STUDIO_PROFILE_FEATURE } from "../../src/core/studio/runtime-features";
 
 async function main() {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1", "Explicit server acceptance opt-in required");
@@ -226,6 +229,12 @@ async function main() {
     await checkTicketForms(base, browser, storedUser.id, ids);
     await checkTicketDefaults(base, browser, storedUser.id, ids);
     await checkFieldSearch(base, browser, storedUser.id, ids);
+    const profileEvidence = readStudioRuntimeFeatureEvidence(process.cwd(), process.env.ATLAS_RELEASE_REVISION);
+    const profileCreator = profileEvidence?.features.includes(STUDIO_PROFILE_FEATURE)
+      ? await db.user.create({ data: { name: "Studio profile Create-only acceptance", email: `studio-check-profile-creator-${suffix}@example.test`,
+        passwordHash: "!studio-acceptance-login-disabled" }, select: { id: true } }) : { id: crypto.randomUUID() };
+    await checkRecordProfiles(base, storedUser.id, profileCreator.id, ids);
+    await checkVisualPages(base, browser, storedUser.id, ids);
     // The helper revokes only its new Test affiliation, not the original QA session.
     await context.addCookies([{name:"atlas_session",value:token,url:base,secure:base.startsWith("https"),httpOnly:true,sameSite:"Lax"}]);
     await page.goto(`/atlas/studio/${a.id}`,{waitUntil:"networkidle"});

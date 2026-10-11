@@ -9,10 +9,15 @@ import type { compileConditionalCustomField } from "../fields/conditional-compil
 import type { VersionedFieldPayload } from "../fields/required-contract";
 import { lockFieldEntitiesInTransaction } from "../fields/entity-lock";
 import { assertStudioRuntimeFeatureEnabled, studioRuntimeFeaturesForPayload } from "../runtime-features";
+import type { CompiledRecordProfile } from "../record-types/compiler";
+import type { CompiledPageDefinition } from "../pages/definition-compiler";
+import { bindPublishedProfile } from "../record-types/binding";
+import { inspectConfigurationGraph } from "../configuration/pins";
+import { pagePayloadSchema } from "../pages/schema";
 
 export type PublicationDraft = Prisma.StudioDraftGetPayload<{ include: { definition: true; baseVersion: { select: { version: true } } } }>;
 export type CompiledDefinition = Awaited<ReturnType<typeof compileDefinition>>;
-export type ReviewedCompiledDefinition = CompiledDefinition | Awaited<ReturnType<typeof compileConditionalCustomField>>;
+export type ReviewedCompiledDefinition = CompiledDefinition | Awaited<ReturnType<typeof compileConditionalCustomField>> | CompiledRecordProfile | CompiledPageDefinition;
 type ReviewedFieldBinder = (tx: Prisma.TransactionClient, session: Session, definitionId: string, key: string, versionId: string, payload: VersionedFieldPayload) => Promise<void>;
 function conflict(): never { throw new Error("CONFLICT: another editor changed this definition. Reload and compare your draft before saving."); }
 
@@ -38,8 +43,16 @@ export async function publishCompiledDefinitionInTransaction(tx: Prisma.Transact
   // First publication has no binding yet. Use the server-compiled primary
   // entity before any definition/version/draft mutation; the binder re-enters
   // the same transaction lock without introducing a later lock order.
-  if (compiled.plan.kind === "customField")
+  if (compiled.plan.kind === "customField" || compiled.plan.kind === "entityProfile" || compiled.plan.kind === "recordType" || compiled.plan.kind === "page")
     await lockFieldEntitiesInTransaction(tx, session.organisationId, [compiled.plan.payload.entity.id]);
+  if ("configurationDependencies" in compiled.plan)
+    await inspectConfigurationGraph(session, tx, compiled.plan.configurationDependencies, definitionId);
+  if (compiled.plan.kind === "page" && draft.definition.latestVersion > 0) {
+    const origin = await tx.studioDefinitionVersion.findFirst({ where: { organisationId: session.organisationId,
+      definitionId, version: 1, definition: { kind: "page", retiredAt: null } }, select: { payload: true } });
+    if (!origin || pagePayloadSchema.parse(origin.payload).entity.id !== compiled.plan.payload.entity.id)
+      throw new Error("A published screen keeps its original business area. Create a new screen for a different app.");
+  }
   const changed = await tx.studioDefinition.updateMany({ where: { id: definitionId, organisationId: session.organisationId,
     revision: draft.definition.revision, latestVersion: draft.definition.latestVersion, retiredAt: null }, data: { latestVersion: { increment: 1 }, revision: { increment: 1 } } });
   if (changed.count !== 1) conflict();
@@ -47,7 +60,10 @@ export async function publishCompiledDefinitionInTransaction(tx: Prisma.Transact
   const version = await tx.studioDefinitionVersion.create({ data: { organisationId: session.organisationId, definitionId, version: number,
     semanticVersion: `1.0.${number - 1}`, schemaVersion: compiled.plan.schemaVersion, payload: compiled.payload, compiledPlan: compiled.plan, checksum: compiled.checksum,
     createdBy: session.userId, dependencies: { create: compiled.plan.dependencies.map(ref => ({ ownerModuleId: ref.ownerModuleId, contractId: ref.id,
-      contractVersion: ref.version, schemaHash: ref.schemaHash, contractHash: ref.contractHash } satisfies Prisma.StudioDependencyCreateWithoutVersionInput)) } },
+      contractVersion: ref.version, schemaHash: ref.schemaHash, contractHash: ref.contractHash } satisfies Prisma.StudioDependencyCreateWithoutVersionInput)) },
+    ...("configurationDependencies" in compiled.plan ? { configurationDependencies: { create: compiled.plan.configurationDependencies.map(pin => ({
+      targetDefinitionId: pin.definitionId, targetVersionId: pin.versionId, targetKind: pin.kind,
+      targetSchemaVersion: pin.schemaVersion, targetChecksum: pin.checksum } satisfies Prisma.StudioConfigurationDependencyUncheckedCreateWithoutVersionInput)) } } : {}) },
     select: { id: true, organisationId: true, definitionId: true, version: true, payload: true, compiledPlan: true, checksum: true } });
   if (compiled.plan.kind === "customField") {
     if (bindField) await bindField(tx, session, definitionId, draft.definition.key, version.id, compiled.plan.payload);
@@ -56,6 +72,8 @@ export async function publishCompiledDefinitionInTransaction(tx: Prisma.Transact
       await bindPublishedField(tx, session, definitionId, draft.definition.key, version.id, compiled.plan.payload);
     }
   }
+  if (compiled.plan.kind === "entityProfile" || compiled.plan.kind === "recordType")
+    await bindPublishedProfile(tx, session, definitionId, draft.definition.key, version.id, compiled as CompiledRecordProfile);
   const updated = await tx.studioDraft.updateMany({ where: { id: draft.id, organisationId: session.organisationId, revision: expectedRevision },
     data: { revision: { increment: 1 }, baseVersionId: version.id, validation: { checksum: compiled.checksum, warnings: compiled.warnings, validatedRevision: expectedRevision } } });
   if (updated.count !== 1) conflict();

@@ -105,9 +105,10 @@ it("rejects disabled source modules and owners without record-type opt-in", asyn
     baseProfile: { kind: "entityProfile", definitionId: uuid(9), versionId: uuid(109), schemaVersion: 1, checksum: "a".repeat(64) } })).rejects.toThrow("DEPENDENCY_BROKEN");
   source.mockRestore();
 });
-it("keeps page/process/decision selectors unavailable until their actual compiler is wired", async () => {
+it("keeps Process and Decision selectors closed and rejects an unavailable exact Page pin", async () => {
   const pin = { definitionId: uuid(9), versionId: uuid(109), schemaVersion: 1, checksum: "a".repeat(64) };
-  for (const profile of [{ page: { ...pin, kind: "page" } }, { allowedProcesses: [{ ...pin, kind: "process" }] },
+  await expect(compileRecordProfile(context, "entityProfile", { ...base(), profile: { page: { ...pin, kind: "page" } } })).rejects.toThrow("DEPENDENCY_BROKEN");
+  for (const profile of [{ allowedProcesses: [{ ...pin, kind: "process" }] },
     { defaultDecisions: [{ key: "routing", decision: { ...pin, kind: "decision" } }] }])
     await expect(compileRecordProfile(context, "entityProfile", { ...base(), profile })).rejects.toThrow(/compiler/);
 });

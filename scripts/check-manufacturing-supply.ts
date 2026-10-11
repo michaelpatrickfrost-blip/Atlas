@@ -130,7 +130,7 @@ async function main(){
   await page.goto(`/products/${raw.id}`,{waitUntil:'networkidle'});await expect(page.getByText(/Internal \/ not sellable/)).toBeVisible();
   console.log('PASS internal material stays purchasable/stocked and Sales eligibility rejects it.');
   phase='finite kilns and flexible forecast';
-  await checkManufacturingKilns({context,page,organisationId:org.id,userId:qa.userId,partyId:supplier.id,out,origin:base.origin});
+  await checkManufacturingKilns({context,page,organisationId:org.id,userId:qa.userId,partyId:supplier.id,out});
   phase='synthetic balanced Finance report inputs';
   // Report source fixtures use real ledger guards. Approval/payment workflows are not claimed here.
   await db.$transaction(async tx=>{

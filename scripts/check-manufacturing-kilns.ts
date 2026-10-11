@@ -6,10 +6,10 @@ import { encodeWire, decodeWire } from '../src/core/desktop/wire';
 import type { previewDemandForecast } from '../src/modules/manufacturing/services/demand-forecast';
 import type { ScheduleImpact } from '../src/modules/manufacturing/services/scheduler';
 
-export async function checkManufacturingKilns(input: { context: BrowserContext; page: Page; organisationId: string; userId: string; partyId: string; out: string; origin: string }) {
-  const { context, page, organisationId, userId, partyId, out, origin } = input;
+export async function checkManufacturingKilns(input: { context: BrowserContext; page: Page; organisationId: string; userId: string; partyId: string; out: string }) {
+  const { context, page, organisationId, userId, partyId, out } = input;
   const call = async <T>(service: string, action: string, args: unknown[], error?: RegExp): Promise<T> => {
-    const response = await context.request.post('/api/desktop/action', { headers: { 'x-atlas-client': 'desktop', origin }, data: { action: `src/modules/manufacturing/services/${service}:${action}`, args: await encodeWire(args) } });
+    const response = await context.request.post('/api/desktop/action', { headers: { 'x-atlas-client': 'desktop' }, data: { action: `src/modules/manufacturing/services/${service}:${action}`, args: await encodeWire(args) } });
     const body = await response.json();
     if (error) { assert(response.status() >= 400, 'Rejected action must return an error'); assert.match(body.error, error); return undefined as T; }
     assert.equal(response.status(), 200, body.error ?? 'Authenticated action succeeded');

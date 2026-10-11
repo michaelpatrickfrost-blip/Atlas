@@ -197,3 +197,13 @@ ESLint and production build PASS; 16 files/114 assertions PASS. First b2a3891
 activation attempt stopped before backup/migration/candidate while live advanced;
 no first-candidate result or server change claimed. Retry uses the compatible
 live ancestor and same locked supply acceptance, with no force/reset.
+
+73210f8 candidate build/compatibility/smoke succeeded after central backup
+atlas-pre-deploy-20261011-160550; additive kiln migration applied. Candidate supply
+fixture backup atlas-pre-supply-candidate-20261011-160718, evidence
+/tmp/atlas-supply-candidate-iRsczq. Existing console/MRP/Make/Buy/internal checks
+PASS. New Node API helper sent a loopback Origin inconsistent with Next's internal
+request URL and was correctly refused before production release. Remove that
+Node-only Origin header, preserving the existing authenticated desktop API and all
+production guards. Fixture retired/session revoked; QA unchanged. Public activation
+did not occur; c607e12 remains current. Fresh exact pinned gates required.

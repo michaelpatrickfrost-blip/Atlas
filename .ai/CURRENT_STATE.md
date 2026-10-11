@@ -12381,3 +12381,22 @@ Merged accepted c607e12 phone header. Final corrected source strict TypeScript,
 scoped ESLint, production build and whitespace PASS; 16 files/114 focused tests
 PASS, including future MRP start retention. Public remains c607e12 at preflight.
 Next pinned supply deployment can now run against this actual live ancestor.
+
+Pinned 73210f8 prepared after backup atlas-pre-deploy-20261011-160550. Server
+immutable build/compatibility/smoke reached the candidate supply gate; additive
+kiln schema applied. Candidate fixture backup atlas-pre-supply-candidate-20261011-
+160718, evidence /tmp/atlas-supply-candidate-iRsczq. Existing console/MRP/Make/Buy/
+internal-item checks PASS; new helper's first authenticated command was refused
+with FORBIDDEN: unexpected origin. The Node API acceptance client sent 127.0.0.1
+Origin while Next represents its loopback request origin differently. This is a
+harness mismatch; the existing origin guard correctly refused it. Helper now uses
+the existing authenticated desktop-client contract without a browser Origin header.
+Production origin/auth/capability checks unchanged. Test fixture retired and session
+revoked in finally; original QA identity/permissions verified unchanged. No public
+activation occurred; c607e12 runtime retained and additive schema not rolled back.
+Fresh pinned candidate/public gate required; no new kiln feature pass claimed.
+
+Node-only acceptance Origin correction strict TypeScript, scoped checker ESLint,
+production build and whitespace PASS. App source is unchanged from the 114-test
+checkpoint; no redundant full-suite pass claim. Public preflight remains c607e12.
+Retry uses a new immutable revision and the existing central additive schema.

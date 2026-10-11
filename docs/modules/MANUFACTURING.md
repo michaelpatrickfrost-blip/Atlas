@@ -259,3 +259,8 @@ stock projections and rich MRP netting. Replenishment/automatic waiting fulfilme
 runs after Warehouse collection commits. Whole-unit stock execution remains the
 existing limitation; this does not implement repeated production receipts, WIP
 valuation, regulated lot release or all master-spec manufacturing coverage.
+Plant machine configuration and work-centre editing move directly into view on
+opening. Batch routing summaries expose load, cycle, cooling and transfer wait.
+Schedule changes require a released/running parent; closed production stays fixed.
+Actual recipe-editor save/version/eligible-machine acceptance extends the same
+backed-up candidate/public supply gate; results belong in the acceptance record.

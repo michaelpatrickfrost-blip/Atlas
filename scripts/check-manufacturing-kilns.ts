@@ -6,7 +6,7 @@ import { encodeWire, decodeWire } from '../src/core/desktop/wire';
 import type { previewDemandForecast } from '../src/modules/manufacturing/services/demand-forecast';
 import type { ScheduleImpact } from '../src/modules/manufacturing/services/scheduler';
 
-export async function checkManufacturingKilns(input: { context: BrowserContext; page: Page; organisationId: string; userId: string; partyId: string; rawId: string; out: string }) {
+export async function checkManufacturingKilns(input: { context: BrowserContext; page: Page; organisationId: string; userId: string; partyId: string; rawId: string; out: string; allowWrite: (path: string) => void }) {
   const { context, page, organisationId, userId, partyId, rawId, out } = input;
   const call = async <T>(service: string, action: string, args: unknown[], error?: RegExp): Promise<T> => {
     const response = await context.request.post('/api/desktop/action', { headers: { 'x-atlas-client': 'desktop' }, data: { action: `src/modules/manufacturing/services/${service}:${action}`, args: await encodeWire(args) } });
@@ -71,6 +71,10 @@ export async function checkManufacturingKilns(input: { context: BrowserContext; 
   assert.equal(saved[0].scheduledStart?.getTime(), fresh.proposedStart.getTime()); assert.equal(saved[1].scheduledStart?.getTime(), fresh.cascade[0].start.getTime());
   assert.equal(await db.auditEntry.count({ where: { organisationId, entityId: first[0].id, action: 'manufacturing.schedule.moved' } }), 1);
   console.log('PASS incompatible kiln and locked cascade refused; stale preview leaves both steps unchanged; fresh move commits both steps with one audit.');
+  await call('commands','closeOrder',[first[0].productionOrderId]);
+  await call('scheduler','schedulePreview',[first[0].id,move,b.id,fire.id],/no longer open/);
+  await call('commands','startWorkOrder',[first[0].id,'closed-start'],/Release the production order/);
+  console.log('PASS closed production refuses both schedule changes and execution.');
   const output = await db.product.create({data:{organisationId,code:'EXEC-TEST',name:'Execution output · Test',basePriceAmount:100}});
   const executable = await db.productDefinition.create({data:{organisationId,productId:output.id,version:1,status:'ACTIVE',supply:'MAKE',batchQuantity:1,yieldPercent:100,createdByUserId:userId}});
   await db.productBomLine.create({data:{organisationId,definitionId:executable.id,componentProductId:rawId,quantityPerUnit:1}});
@@ -130,12 +134,27 @@ export async function checkManufacturingKilns(input: { context: BrowserContext; 
   await workbench.getByLabel(`Forecast ${future.period}`, { exact: true }).fill('125');
   await expect(workbench.getByLabel(`Forecast ${future.period}`, { exact: true })).toHaveValue('125');
   console.log('PASS actual Sales seasonal backtest, last-year +10% +5 UI save, exact central quantity, stale review rejection, fixed target and individual override.');
+  input.allowWrite(`/products/${product.id}`);
+  await page.goto(`/products/${product.id}`,{waitUntil:'networkidle'});
+  await page.getByRole('tab',{name:/^Bill and routing/}).click();
+  const routing=page.getByRole('tabpanel');
+  await expect(routing.getByLabel('Units per load')).toHaveValue('100');
+  await expect(routing.getByLabel('Cycle / firing (min)',{exact:true})).toHaveValue('60');
+  await expect(routing.getByLabel('Cooling / unloading (min)',{exact:true})).toHaveValue('30');
+  await expect(routing.getByLabel('Crew',{exact:true}).first()).toHaveValue('0');
+  await routing.getByRole('button',{name:'Save bill and routing',exact:true}).click();
+  await expect(routing.getByRole('status')).toContainText('Saved as the new version');
+  const revised=await db.productDefinition.findFirstOrThrow({where:{organisationId,productId:product.id,status:'ACTIVE'},include:{operations:{orderBy:{position:'asc'}}}});
+  assert.equal(revised.version,2);assert.equal(revised.operations[0].timingMode,'BATCH');assert.equal(Number(revised.operations[0].batchCapacity),100);assert.equal(Number(revised.operations[0].cycleMinutes),60);assert.equal(Number(revised.operations[0].coolingMinutes),30);assert.equal(Number(revised.operations[0].crewSize),0);assert.deepEqual([...revised.operations[0].eligibleResourceIds].sort(),[a.id,b.id].sort());
+  assert.equal((await db.manufacturingOrder.findFirstOrThrow({where:{organisationId,id:second[0].productionOrderId}})).definitionId,recipe.id,'Released production retains its original recipe snapshot');
+  console.log('PASS actual routing editor retains load/cycle/cooling/zero-crew/eligibility on a new recipe version and preserves released production.');
   for (const [name, width, height] of [['desktop', 1448, 1086], ['tablet', 820, 1180], ['phone', 390, 844]] as const) {
     await page.setViewportSize({ width, height });
     for (const path of ['/manufacturing/plant', '/manufacturing/schedule', '/manufacturing/planning/forecast', '/manufacturing/shop-floor', `/products/${product.id}`]) {
       assert.equal((await page.goto(path, { waitUntil: 'networkidle' }))?.status(), 200);
-      if (path.endsWith('/plant')) { await expect(page.getByRole('heading', { name: 'Plant & kilns', exact: true })).toBeVisible(); await page.getByRole('button', { name: 'Configure Kiln B', exact: true }).click(); await expect(page.getByRole('region', { name: 'Machine configuration' })).toBeVisible(); }
+      if (path.endsWith('/plant')) { await expect(page.getByRole('heading', { name: 'Plant & kilns', exact: true })).toBeVisible(); await page.getByRole('button', { name: 'Configure Kiln B', exact: true }).click(); await expect(page.getByRole('region', { name: 'Machine configuration' })).toBeVisible(); await page.getByRole('region', { name: 'Machine configuration' }).scrollIntoViewIfNeeded(); }
       if (path.endsWith('/forecast')) { await workbench.getByRole('combobox').first().selectOption(product.id); await workbench.getByRole('button', { name: 'Review demand', exact: true }).click(); await expect(workbench.getByLabel('Starting point')).toBeVisible(); }
+      if (path.startsWith('/products/')) { await page.getByRole('tab',{name:/^Bill and routing/}).click(); await page.getByRole('tabpanel').getByLabel('Time basis').first().scrollIntoViewIfNeeded(); await expect(page.getByRole('tabpanel').getByLabel('Units per load')).toHaveValue('100'); }
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${path} fits ${name}`);
       await page.screenshot({ path: `${out}/kilns-${path.endsWith('/plant') ? 'plant' : path.endsWith('/schedule') ? 'schedule' : path.endsWith('/forecast') ? 'forecast' : path.endsWith('/shop-floor') ? 'floor' : 'recipe'}-${name}.png`, fullPage: false });
     }

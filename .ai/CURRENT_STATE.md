@@ -1,3 +1,26 @@
+## 11 October 2026 — Finished company-user administration deployed and verified
+
+Original pinned Settings candidate AND public acceptance PASS at exact immutable
+c607e12b3a4f6896b88fb19c2ee15c8c2f67e7c0. Actual identity/password/login/recovery,
+profiles/personal overrides, invoice view/procurement save/own view/bank and foreign
+request denial PASS. Desktop/tablet/phone account tabs and profile/Personal layouts,
+four-width Home/Apps and platform boundary PASS; zero browser errors/overflow.
+Final candidate/public phone images visually inspected: long names/status fixed.
+Public health matches c607e12; login 200. Previous accepted 1acc63c retained. Backup
+atlas-pre-deploy-20261011-155956; private candidate /tmp/atlas-settings-candidate-zx4A3e,
+public /tmp/atlas-settings-public-uba86z. Test access suspended/sessions revoked,
+Audit retained; runtime retirement safely deferred by retention guard.
+
+16 focused files/122 tests, strict types, scoped lint, production build, shell syntax
+and whitespace PASS; final header types/page lint/build and full live pipeline PASS.
+Full repository/opt-in database suites not run. No feature blocker remains for this
+scope. Manual recovery-code sharing and independent Atlas provisioning unchanged.
+Company guide/evidence/DECISIONS/DEPLOY reconciled. Shared-main 3898cc14 Dashboard
+evidence merged with both contributors' entries retained; integration changes only
+documentation and accepted runtime source stays byte-identical. Delivery evidence:
+docs/evidence/2026-10-11-company-user-administration.md. Next: shared-main handoff;
+no further runtime activation is needed for documentation-only evidence integration.
+
 ## 11 October 2026 — Company-user administration publicly accepted; phone polish
 
 Original pinned Settings deployment of 1acc63c6d0b3f62f6cf515029d89490f7f92c2a8
@@ -112,7 +135,7 @@ conflicts reconciled with contributor checkpoints retained. No application chang
 yet; no checks or new deployment run. Next: account details/password controls and
 clearer per-app access editor, focused checks and pinned candidate/public acceptance.
 
-## 11 October 2026 — Dynamic Dashboard canvas implemented; live acceptance next
+## 11 October 2026 — Dynamic Dashboards deployed and publicly verified
 
 Scoped from exact observed live ad9d5a430e2b92e6b08448a45d11f694f5ce2066 on
 codex/dynamic-dashboards-20261011; preserves all accepted owning sources. Gallery
@@ -139,10 +162,24 @@ or warnings), production build and diff whitespace PASS on the finished source.
 Playwright synthetic preview interactions and gallery/canvas/inspector/explorer at
 1440/768/390/320 PASS; final phone title/centered modal/opener focus/table values
 PASS with zero page errors. Screenshots visually inspected; local logs and images
-/tmp/atlas-dynamic-*. Full repository suite not run. Next: commit reviewed source,
-Shared-main Settings documentation from 5297d519 reconciled without runtime
-changes; all distinct Studio checkpoints retained. Next original pinned Dashboard candidate AND
-public release acceptance under both locks. No live activation claimed yet.
+/tmp/atlas-dynamic-*. Full repository suite not run.
+
+Activated immutable 50b39151b4f7cd1fc027ed576aeb7e3d7960efdc at public Atlas;
+previous ad9d5a43 retained for rollback. Original pinned Dashboard pipeline PASS:
+central backup, compatibility, immutable server build/smoke, candidate AND public
+Dashboard/Home/Reports/typography/Messages, with both locks and revision brackets.
+Actual personal save/rename/reload, saved period/groups/target/theme, currency guard,
+undo/redo, expanded values/Escape, monitor, source selection and three viewports PASS.
+Public synthetic preview separately confirms canvas/modal/values/opener focus and
+zero page errors. Only exact synthetic board/chat fixtures written and cleaned.
+Backup atlas-pre-deploy-20261011-154453; candidate
+/tmp/atlas-dashboards-candidate-tIT2em; public /tmp/atlas-dashboards-public-j35dEg.
+Login 200; current/previous pointers confirmed. Shared-main Settings documentation
+from 5297d519 reconciled without runtime changes and all distinct Studio checkpoints
+retained. Inactive-runtime retirement safely deferred by the existing retention
+guard; accepted runtime/rollback intact. No feature blocker remains. Full release
+evidence: docs/evidence/2026-10-11-dashboards.md. Evidence integration changes only
+documentation; public runtime remains exactly 50b3915.
 
 ## 11 October — native release84f64da FAILED safely before activation
 
@@ -12451,6 +12488,40 @@ Forecast harness selector correction: production build, sequential strict TypeSc
 scoped ESLint and whitespace PASS. App source unchanged from 116-test checkpoint.
 Public preflight confirms c607e12; exact pinned retry required.
 
+11 October 2026 live checkpoint b80f8baad0cc694422981238d201e150b927b522:
+candidate and public supply gates PASS, public login 200, immutable runtime active;
+previous c607e12 retained. Release backup atlas-pre-deploy-20261011-163626; candidate
+fixture backup atlas-pre-supply-candidate-20261011-163801, evidence /tmp/atlas-supply-
+candidate-YikYVo; public fixture backup atlas-pre-supply-public-20261011-163907,
+evidence /tmp/atlas-supply-public-N0Lkfi. Actual MRP Make/Buy→Finance, forecast future
+release, finite compatible full-load/cooling/shift/wait scheduling, stale/locked/
+wrong-machine refusals, atomic cascades, legacy execution/pause/resume/next-ready,
+final component/output stock and replay, Sales seasonal forecast and +10% +5 UI
+save/fixed/override, five routes at three widths, reports/guides/zero browser errors
+PASS. Both Test fixtures suspended/sessions revoked; original QA unchanged. Central
+additive kiln migration applied earlier and retained. Desktop/phone screenshots
+reviewed locally: Plant, Schedule and loaded Forecast fit; detailed recipe screenshot
+was Overview rather than active routing editor. Visual refinement will focus machine
+configuration on opening, tighten assumption labels and show batch timings in the
+read-only routing summary; further active-editor acceptance required for that work.
+Full-suite not rerun; full 173-section process programme remains open as documented.
+
+Post-release visual/source refinement: Plant opens/focuses machine configuration
+and work-centre editing directly in view; Forecast assumption labels have dedicated
+aligned space and explicit select names; read-only routing shows true batch load/
+cycle/cooling/wait instead of zero per-unit run. Scheduler now refuses closed/non-
+released parents, matching execution. Supply gate extends to actual routing UI save
+(version/zero crew/eligible machines/released recipe preservation), closed-parent
+refusals and active routing/configuration views at three widths. Browser write
+allowlist adds only the exact newly owned Test product path. Final local checks and
+new pinned candidate/public gate required; b80f8ba stays the verified live checkpoint.
+
+Visual/closed-parent refinement local production build, sequential strict TypeScript,
+scoped ESLint and whitespace PASS; all 16 files/116 focused tests PASS. Fresh exact
+release must verify the extended actual routing-save/closed-parent/UI gate publicly.
+Remote main divergence inspected: accepted company/Dashboard evidence only, no new
+app source. Merge these documentation entries without touching the dirty Desktop tree.
+
 ## 11 October 2026 — Atlas usability, Guides, website and production holding (local checkpoint)
 
 Scoped branch `codex/usability-guides-20261011` began from exact live ad9d5a43;
@@ -12509,3 +12580,8 @@ Combined exact-live source final checks PASS: full suite 300 files/2,197 tests
 on integration/acceptance paths and diff check. Earlier full ESLint had zero errors
 and 29 warnings (existing image/unused notices; removed this task's unused stock
 import afterward). Ready for sealed candidate and public usability acceptance.
+
+Final live integration: f8364d5e completed while our deployment waited for its lock.
+The ancestry gate stopped safely before any build/data change. Integrated its final
+plant/forecast labels, closed-order scheduler guard and accepted shared evidence;
+rechecking focused manufacturing regressions, build and explicit types.

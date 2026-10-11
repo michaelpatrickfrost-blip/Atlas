@@ -1,3 +1,36 @@
+## 11 October 2026 — conditional conversion VERIFIED live b34ce50; next closed2 receipts
+
+Original88202 exit0: b34ce50bd10fcbb39287444a753879e02044d0cc candidatekT6FVM
+and publicqTWEdH BOTH ALL COMBINED PASS. Immutable build/smoke, dependency
+compatibility, login200 and exact public health PASS. Actual normal closed2 start,
+second-row target failure/sparse FAILED/resume, outcome/progress/paired batch and
+failure Audit rollback, typed zero/null/new-anchor own+1, READY/replays and normal
+cancellation passed both stages. Source/native unchanged; immutable target/history
+retained and draft restored monotonically. Legacy Studio/current-history/save/
+migration/cutover/settlement and existing private Admin/business provisioning,
+Templates/module regressions passed. Local96tests/7suites/types/lint/build/diff PASS.
+Two old unused fixture warnings, zero errors; no schema/DDL/new engine.
+
+Original required recovery111129/111308/111743 only; no ad-hoc dumps. Currentb34ce50,
+rollback0d315f7 and process-pinned runtimes preserved; original retention retired
+only inactivebafa1c2 duplicate outputs, preserving source/static/history/business
+records/backups. Temporary2GiB build swap safely removed43583 exit0 under BOTH
+original locks/no compiler: available3481564KiB, used935480KiB, margin1572864KiB.
+No swap/root164GiB free/2.5GiB RAM available; no fstab/app/PG change; administrator
+lock inodes29187/13754 mode600 unchanged. Operational evidence retained in
+/opt/atlas-maintenance-backups/studio-build-memory-20261011.txt.
+
+Temporary review/execution worktree archive requests returned queued; actual removal
+unverified, about25MiB source each/shared dependencies. Do not race pending archival
+or claim removal. Shared Desktop work/unverified visual stash preserved.
+Next e3e1 separate closed2 cutover/settlement receipt entries +focused suites, preserving
+receipt1/closed1 lineage. Saved plan in STUDIO_FIELD_REQUIRED_RULES_PLAN.md includes
+actual post-cutover +2/target-active inspection, different fresh authorised settler,
+history/rollback distinction and required native write windows. Customer conditional
+activation remains withheld. Whole Phase2 gate incomplete; no Phase3.
+Log /tmp/atlas-studio-required-normal-execution-deploy.txt and original stage
+acceptance.log files. Historical notes below describe earlier checkpoint states.
+
 ## 11 October 2026 — usable conditional conversion milestone IMPLEMENTED; live proof pending
 
 Parallel root06eeda1/review13fe331/execution45c6896 integrated; scoped service tests

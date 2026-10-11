@@ -14,13 +14,11 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
-2B required-field evolution e3d2b–4 — usable conditional conversion milestone.
-E3d2b actual row/outcome/review and execution metadata inspectors integrated;
-e3d3 existing normal start/batch/representation VERIFIED locally. Combined96tests/
-7suites, strictTS/scoped lint/production build/diff PASS. E3d4 actual central checker
-IMPLEMENTED; normal runtime proof pending original candidate/public release.
-No new engine/DDL. Current public0d315f7; conditional cutover/settlement/native
-hooks/ordinary authoring and complete Phase2/visual gate remain unfinished.
+2B e3d2b–4 conditional conversion milestone VERIFIED live. Original pinned release
+88202 exit0; b34ce50bd10fcbb39287444a753879e02044d0cc candidate kT6FVM and public
+qTWEdH BOTH ALL COMBINED PASS. Exact public health confirmed after cleanup.
+Next e3e1 closed2 cutover/settlement receipt contracts; no customer conditional
+activation until post-cutover, settlement and native write-window integration pass.
 
 # Overall Status
 
@@ -48,50 +46,30 @@ source coverage, phase plan and this ledger. No rewritten specification.
   public publication reinspection PASS. E3c actual publisher/cancellation/replay:
   VERIFIED actual candidate/public and combined release PASS.
 - E3d2a separate execution coverage: VERIFIED locally;63focused/types/lint/build
-  PASS. Actual conditional execution runtime remains unimplemented.
+  PASS. Actual conditional execution now VERIFIED in b34ce50 candidate/public.
 - E3d1 pure closed2 execution/outcome integrity: VERIFIED locally; no inference
   of actual execution runtime from synthetic pure metadata or owner descriptors.
 
 # Current Workstream Detail
 
-Integrated06eeda1/13fe331/45c6896; review and metadata inspector branches merged,
-only parallel memory conflicts resolved by retaining both entries. Independent
-review no blocking defect. Existing normal conversion dispatch now being adapted,
-with focused suites/checker in isolated worktrees. No new DDL or later-phase work.
+Parallel row/outcome, bounded review and execution metadata inspection integrated
+with the existing normal start/batch/representation services. Server-loaded intent
+selects closed1/2; legacy schemas/hashes and existing engine retained. Exact actual
+current conditions, permissions and typed target decode precede archive normalization.
+Only the recorded own +1/new-anchor outcome permits historical-envelope comparison.
+No unexplained revision normalization or caller-supplied protocol/stage.
 
-E3d2b row/outcome observer VERIFIED locally:51tests/4suites, strictTS/scoped lint/
-diff PASS; independent read-only review no blocking defect. Exact own +1/new-anchor
-outcome mirrors and actual target typed decode precede archive normalization.
-Custom-field conditions use actual post-write envelope/independent Read; revoked
-input and unexplained extra increment denied. Unit authority/SQL/archive fixtures
-are not real execution evidence. Parallel review/execution inspectors next to merge;
-start/batch/representation remains gated. Build/release at integrated usable milestone.
+Actual central Test proof passed candidate AND public: start/Audit rollback,
+second-row target failure and sparse FAILED/resume, outcome/progress/paired batch and
+failure Audit rollback, typed zero/null/new-anchor values, READY/replays and normal
+cancellation retaining immutable history. Source/native unchanged. Customer
+conditional cutover/settlement/native authoring remain gated; no later-phase work.
 
-Michael authorised linked parallel work on11 October. Root owns actual row/outcome
-inspection and integration; isolated branches own server execution metadata/pin
-inspection and bounded aggregate review inspection. A fourth read-only review
-checks SQL/native/security gaps. Shared function contracts recorded in required
-rules plan; root alone merges, updates the main ledger and deploys the integrated
-usable milestone. No later phase feature work or duplicate runtime engines.
-
-Execution2 prerequisite now uses actual scoped RUNNING/READY/FAILED execution and
-existing source/outcome/target guards, after complete owning private preflight; exact
-current representation query2 support required. Caller still owns refreshed locked
-authority. This does not inspect conditional rows or enable any start/batch/cutover.
-
-Existing publication selects format from server-loaded intent/review, never request
-metadata or a target-schema guess. Conditional preparation/publication inspectors
-refresh genuine authority, exact scoped immutable metadata and +1 post-publication
-revisions, complete private preflight, source-active SQL freshness and actual native/
-condition/global/source evidence. Bounded actual rows match archived checksums and
-SQL/pure seal. Shared typed publisher/CAS/dependencies/reviewed binder save actual
-plan schemaVersion2 (rule removal1), generation/version/receipt and both Audits in
-one transaction. Original source remains active; native/typed values unchanged.
-Closed2 pure execution/outcome helpers retain receipt shape and bind full review/
-observation meaning; outcomes require the exact sealed review2. Legacy parsers and
-hashes remain. A recorded execution2 cannot fall back to publication inspection.
-Ordinary conditional authoring, activation, execution, cutover and native hooks
-remain gated until their own integration passes.
+Michael authorised linked parallel work. Root integrated 06eeda1/13fe331/45c6896 and
+scoped 1beafb4/a160372 contributions; independent SQL/native/security review found
+no blocking defect. Temporary worktrees share dependencies and occupy about25MiB
+source each. App archive requests returned queued; filesystem removal is unverified.
+Do not claim cleanup or edit those worktrees while archival is pending.
 
 # Files Changed
 
@@ -112,15 +90,12 @@ suites and central checker. Exact source checkpoints ede65ae,a475823,8cc2758,
 
 # Database / Prisma Changes
 
-Current local integration adds no DDL/schema/migration. Existing central checker
-will create only reviewed target/slot/value/outcome history for its exact isolated
-Test business; source/native untouched. Cancellation retains history/global own +1;
-draft restored with monotonic revision. This real proof is pending.
-
-No new schema/model/DDL for current owner/normal API/publication/integrity blocks.
-Reuse existing tenant-owned archive/generations/metadata/values and SQL guards.
-Immutable target schemaVersion2 is a metadata record, not a database schema change.
-Exact central Test metadata/history and Audits retained; no native/domain/value writes.
+No schema/model/DDL/migration for this milestone. Existing central checker created
+only reviewed target/slot/value/outcome/Audit history for its isolated Test business.
+Normal cancellation retained inactive target/history and own +1 global revisions;
+draft restored monotonically. Both real stages passed; no source/native mutation.
+Existing tenant-owned archives/generations/metadata/values/SQL guards reused.
+Immutable target schemaVersion2 is metadata, not a database schema change.
 No local business database/cache, reset, backfill or purge.
 
 # Migrations Applied
@@ -143,52 +118,34 @@ metadata are never described as normal runtime evidence.
 
 # Tests Run
 
-Current integrated96tests/7suites PASS30539; strictTS96474/scoped lint16281/build74651
-exit0; reviewed final diff/check PASS. Two existing fixture warnings, zero errors.
-Real central conditional execution not yet invoked; original release next.
-
-- E3d2a63tests/5suites PASS97635; strictTS99973/scoped lint26699/build97017 exit0.
-  Two pre-existing unused mock-argument lint warnings, zero errors.
-- Owner checkpoint138tests/19suites PASS; strictTS88342/lint84027/build93836 exit0.
-- E3b65tests/6suites PASS22326; strictTS78713/lint83710/build73098 exit0.
-- E3c96tests/9suites PASS12179; strictTS50065/lint58409/build3543 exit0.
-- E3d1 40tests/4suites PASS22772 plus21representation/batch/Tickets regressions
-  PASS61527; strictTS29427/lint5823/build29068 exit0.
-- Final code diffs reviewed and diff --check PASS. Focused counts overlap; do not
-  sum them as distinct coverage. Test-only strict fixture/type failures corrected;
-  no production parser or gate relaxed.
-Logs: /tmp/atlas-studio-required-published-inspection-{tests,types,lint,build}.txt,
-/tmp/atlas-studio-required-publication-{tests,types,lint,build}.txt,
-/tmp/atlas-studio-required-execution-pin-{tests,types,lint,build,regression}.txt.
+Integrated96tests/7suites PASS30539; strictTS96474/scoped lint16281/build74651
+exit0; final diff reviewed/check PASS. Two existing fixture warnings, zero errors.
+Original release88202 exit0: candidatekT6FVM/publicqTWEdH BOTH ALL COMBINED PASS,
+immutable build/smoke and active dependency compatibility PASS. Real normal closed2
+API/failure/replay/history proof passed both stages, plus existing legacy Studio,
+private Admin/business login/provisioning/Templates and module regressions.
+Logs: /tmp/atlas-studio-required-normal-execution-{integrated-tests,integrated-types,
+integrated-lint,build,deploy}.txt; original stage acceptance.log files.
+Earlier focused counts overlap and are not summed as distinct coverage.
 
 # Test Results
 
-Latest0d315f7 release46009 exit0: candidateMTZpXy/publicVvzibi BOTH ALL COMBINED
-PASS, compatibility PASS and health exact. Actual normal conditional publication/
-replay/cancellation and all five real review/publication Audit rollbacks PASS both
-stages. New execution coverage verified locally; normal execution2 is not enabled.
-Required101917/102050/102515 recovery only; original retention kept0d315f7/bafa1c2
-and retired only inactive8cc2758 duplicate runtime. Temporary build swap removed
-49396 exit0 under original lock inodes/no compiler, available4008312KiB versus used
-1381080KiB; root164GiB free/no swap/2.6GiB RAM available, no fstab/app/PG change.
-Log /tmp/atlas-studio-required-execution-coverage-live-deploy.txt and private stage
-acceptance.log evidence; operational memory-recovery evidence retained.
+VERIFIED live b34ce50bd10fcbb39287444a753879e02044d0cc. CandidatekT6FVM and
+publicqTWEdH BOTH ALL COMBINED PASS; original88202 exit0, login200, health exact.
+Normal conditional start/batch/recovery/replay/cancellation and all injected atomic
+failures passed both stages. Legacy migration/current-history/save/cutover/settlement,
+private/customer boundaries and existing modules passed both combined stages.
 
-Earlier checkpoints: local checks PASS. Previous pure-pin8cc2758 original95284 candidatezc2knY/
-publicPK9q8T ALL COMBINED PASS. A04349c original33124 failed before acceptance/
-activation: private build log and kernel confirm OOM094911UTC; live stayed8cc2758.
-Under BOTH original locks, failed source/static retained in maintenance backups,
-only confirmed failed generated outputs reclaimed, temporary2GiB build swap added.
-Normal retry bafa1c2 original24271 built successfully; candidatebseb8V ALL COMBINED
-PASS. Actual conditional publication/replay/cancellation and both real Audit-failure
-rollbacks PASS in publicZrTQuH too; complete public ALL COMBINED PASS, runner24271
-exit0. Exact bafa1c2 public health and live/rollback pointers verified. Temporary
-build swap safely removed93028 exit0 after MemAvailable3511732KiB versus used749308KiB;
-post-cleanup7.8GiB RAM/2.7GiB available/no swap, root164GiB free. No fstab changes.
-Original required recovery094734 retained; retry095503/095646/100108 only, no ad-hoc
-dump. Logs: /tmp/atlas-studio-required-publication-retry-live-deploy.txt and private
-/tmp/atlas-studio-{candidate-bseb8V,public-ZrTQuH}/acceptance.log. Failed candidate
-source and operational recovery evidence remain in maintenance backups.
+Original required recovery111129 pre-deploy/111308 candidate/111743 public retained;
+no ad-hoc dumps. Currentb34ce50/immediate rollback0d315f7 preserved. Original retention
+retired only inactive bafa1c2 duplicate runtime; source/static/history/business data
+and backups retained. Temporary2GiB build buffer removed43583 exit0 under BOTH
+original locks/no compiler: MemAvailable3481564KiB, used935480KiB, margin1572864KiB.
+Root164GiB free/no swap/2.5GiB RAM available; no fstab/app/PG change. Original lock
+inodes29187/13754 and administrator ownership/mode600 unchanged. Operational evidence
+/opt/atlas-maintenance-backups/studio-build-memory-20261011.txt retained.
+Archive requests for two temporary parallel worktrees remain queued/unverified.
+Older release evidence below is historical, not the current live pointer.
 
 # Architecture Decisions
 
@@ -202,12 +159,13 @@ Decisions and rationale recorded in .ai/DECISIONS.md; no silent source divergenc
 
 # Known Issues
 
-Whole Phase2 gate incomplete. Conditional execution/start/batches/cutover/settlement
-and common native create/save/write-window hooks remain. Remaining field aliases/
-defaults/search, record types, page compiler/variants/generated runtime, visual
-preview/publish/dashboard/button integration and final phase acceptance remain.
-Current foundation release and temporary swap cleanup passed; preserve all
-central records, current/rollback/process-pinned runtime and recovery evidence.
+Whole Phase2 gate incomplete. Conditional cutover/settlement and common native
+create/save/write-window hooks remain; customer conditional activation withheld.
+Remaining field aliases/defaults/search, record types, page compiler/variants/generated
+runtime, visual preview/publish/dashboard/button integration and final phase acceptance
+remain. Temporary worktree archive requests queued, removal unverified; about50MiB
+source total/shared dependencies, no duplicated build output. Current release and
+build-buffer cleanup passed. Preserve central records/recovery evidence.
 
 # Deferred Items
 
@@ -221,22 +179,20 @@ is IN PROGRESS and unverified; do not restore its superseded planning entries.
 # Acceptance Gate Status
 
 Phase0 PASS; Phase1 PASS; Phase2 FAIL (incomplete, not ready for gate evaluation).
-Current0d315f7 foundation release: candidate/public ALL COMBINED PASS; existing
-actual conditional review/publication public checks PASS. Execution coverage local
-verification does not prove normal conditional execution or enable start/batches.
-This is a workstream gate, not complete Phase2. The source whole-system
-Section29 checklist never substitutes for current Phase2 acceptance or authorises
-later-phase features. No complete Studio/visual builder claim.
+Currentb34ce50 conversion workstream: candidate/public ALL COMBINED PASS, real
+conditional execution/recovery/atomicity proof PASS. This is a workstream gate,
+not the whole Phase2 gate. Section29 whole-system acceptance never authorises
+later phases. No complete Studio/visual builder claim.
 
 # Exact Next Action
 
-Commit the reviewed integrated conditional conversion code/tests/checker/memory,
-run original clean pinned studio combined candidate/public release, verify real
-normal stored2 start/batches/failure resume/replays and atomic rollback, confirm exact
-public revision, safely remove temporary build-memory buffer under both original
-locks and archive recoverable temporary parallel worktrees. Update actual evidence;
-then adapt existing conditional cutover/settlement/native write-window paths before
-remaining fields/record types/pages/visual builder. No Phase3 features.
+Implement e3e1 separate closed2 create/read cutover and settlement receipt entries
+in cutover-contract.ts, cutover-receipt.ts and settlement-receipt.ts. Reuse immutable
+receipt1 shapes; bind full sealed review2 and exact READY execution/publisher/cohort/
+metadata/revision/terminal pairing. Preserve closed1 entry points/hashes. Add focused
+receipt tests, run strictTS/scoped lint, review diff and checkpoint. No actual
+conditional activation before e3e2–4 and native write-window proofs. Resolve queued
+worktree archive status without racing or deleting unrelated source.
 
 # Historical checkpoint evidence
 

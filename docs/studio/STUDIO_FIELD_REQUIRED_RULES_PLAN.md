@@ -1,3 +1,28 @@
+## 11 October — next conditional cutover/settlement workstreams (NOT STARTED)
+
+Independent read-only recovery confirms no apparent DDL need; keep receipt1 shapes,
+full review2 checksum/metadata, old closed1 entry points/hashes and original SQL.
+Original b34ce50 release88202 exit0; candidatekT6FVM/publicqTWEdH BOTH ALL COMBINED
+PASS, exact health and safe build-buffer cleanup confirmed. Begin e3e1 below.
+
+| Workstream | Expected files | Dependencies / database implications | Evidence / status |
+| --- | --- | --- | --- |
+| e3e1 Closed2 cutover/settlement receipts | cutover-contract.ts,cutover-receipt.ts,settlement-receipt.ts; existing receipt suites | Actual review2/READY receipt1 lineage; no new storage/shape; old entry closed1 | Full review checksum, publisher/cohort/metadata/CAS/terminal pairing; NOT STARTED |
+| e3e2 Actual post-cutover identity and row/review | cutover-inspection.ts,settlement-inspection.ts,observation.ts,inspection.ts,coverage.ts | Actual ACTIVATED/CUTOVER target-active pointer, definition +2/frozen draft, READY receipt; existing source/target SQL; no pretend source-active stage | Current native/field/reference/conditions and decoded own target/source under exact receipt, empty/bounded/hash evidence; NOT STARTED |
+| e3e3 Current settlement coverage | settlement-coverage.ts; existing suites | Fresh DIFFERENT authorised settler allowed; retain original review identity, no borrowed creator grants. Rollback unchanged lineage/rules; history/finalization tolerate later legitimate business/config changes | Current private/native/base/written/reference rights before values; historical metadata sealed without asserting original current fact revisions; NOT STARTED |
+| e3e4 Existing services and actual proof | cutover.ts,settlement.ts; existing central checker | Stored1/2 dispatch, existing activation/CAS/rollback limit/paired Audits; retained history | Test-only cutover/replay/rollback/finalization, different settler, denials and activation/receipt/publication/Audit rollback; NOT STARTED |
+| d4 Native/ordinary required write windows | runtime-write-window.ts,runtime-write.ts,initial writer/required runtime,Tickets mutations | Owner serializable/create-proof bridge; all resulting required rules and affected rollback windows atomic; preserve lock order/domain rules | Relevant native create/update/save/read paths, creation-only actors, rollback-window closure and business invariants; NOT STARTED |
+
+The executing observer cannot run unchanged after cutover: it requires active source,
+definition +1/PUBLISHED and initiating principal. Use explicit actual target-active
++2/CUTOVER receipt inspection. Settlement uses its CURRENT serverPrincipal while the
+original review principal remains immutable. Do not rewrite stored intent principal.
+History/finalization replay must survive legitimate later native/value/config changes;
+do not force original native revision or current original-condition evaluation there.
+Customer conditional activation stays withheld until all-active native required hooks
+and write-window integration are verified. Internal Test cutover/rollback proof only
+is suitable before that gate. No Phase3 or later feature work.
+
 ## 11 October — current linked execution checkpoint
 
 Root06eeda1/review13fe331/execution45c6896 integrated;86tests/7suites and strictTS
@@ -5,7 +30,7 @@ PASS. Independent SQL/native/security review found no blocking defect; custom
 condition post-write envelope/independent Read gap now covered. Root existing
 start/batch/representation and branch suites/checker now integrated. Combined96
 tests/7suites, strictTS/scoped lint/productionbuild/diff PASS. Actual central normal
-API proof pending original combined candidate/public release.
+API proof VERIFIED in b34ce50 candidate/public (both ALL COMBINED PASS).
 No new DDL/engine; source stays active, native rows untouched; conditional cutover/
 settlement/native authoring remains gated. Original combined release at usable
 integrated milestone, not each helper. Historical entries below are earlier evidence.

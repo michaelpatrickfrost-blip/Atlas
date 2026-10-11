@@ -3,7 +3,7 @@ import { canonicalJson } from "../../registry/contracts";
 import { FieldMigrationReviewError } from "./contracts";
 import { fieldMigrationCutoverPinSchema } from "./cutover-contract";
 import { fieldMigrationExecutionPinSchema } from "./execution-contract";
-import { readFieldMigrationCutoverIdentity } from "./cutover-receipt";
+import { readFieldMigrationCutoverIdentity, readRequiredFieldMigrationCutoverIdentity } from "./cutover-receipt";
 import { readFieldMigrationSettlementPin } from "./settlement-contract";
 
 const digest = z.string().regex(/^[a-f0-9]{64}$/);
@@ -21,11 +21,23 @@ function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"
  * neither today's active version nor current actor access is inferred from history.
  * In particular, terminal receipts remain valid after later legitimate editing. */
 export function readFieldMigrationSettlementReceipt(storedReview: unknown, serverExecution: unknown, serverPublication: unknown, serverReceipt: unknown) {
+  return settlementReceipt(readFieldMigrationCutoverIdentity, storedReview, serverExecution, serverPublication, serverReceipt);
+}
+
+/** Closed2 retained settlement pairing only. Bind original conditional review
+ * history without requiring its original actor to be today's settler or assuming
+ * today's active pointer/native state from immutable metadata. */
+export function readRequiredFieldMigrationSettlementReceipt(storedReview: unknown, serverExecution: unknown, serverPublication: unknown, serverReceipt: unknown) {
+  return settlementReceipt(readRequiredFieldMigrationCutoverIdentity, storedReview, serverExecution, serverPublication, serverReceipt);
+}
+
+function settlementReceipt(readIdentity: typeof readFieldMigrationCutoverIdentity, storedReview: unknown, serverExecution: unknown,
+  serverPublication: unknown, serverReceipt: unknown) {
   const publication = publicationSchema.parse(serverPublication), receipt = receiptSchema.parse(serverReceipt);
   if (canonicalJson(publication) !== canonicalJson(serverPublication) || canonicalJson(receipt) !== canonicalJson(serverReceipt)) changed();
   const original = receiptIdentity.parse(Object.fromEntries(Object.entries(receipt).filter(([key]) => key in receiptIdentity.shape)));
   const published = publicationIdentity.parse(Object.fromEntries(Object.entries(publication).filter(([key]) => key in publicationIdentity.shape)));
-  const retained = readFieldMigrationCutoverIdentity(storedReview, serverExecution, published, original);
+  const retained = readIdentity(storedReview, serverExecution, published, original);
   if (receipt.state === "ACTIVATED") {
     if (receipt.revision !== 0 || publication.state !== "CUTOVER" || publication.revision !== retained.pin.publication.revision + 1
       || receipt.settlementPin !== null || receipt.settlementChecksum !== null || receipt.settledBy !== null || receipt.settledAt !== null) changed();

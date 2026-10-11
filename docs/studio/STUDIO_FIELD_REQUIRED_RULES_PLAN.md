@@ -1,4 +1,31 @@
-## 11 October — next conditional cutover/settlement workstreams (NOT STARTED)
+## 11 October — e3e2 metadata and post-cutover observation split
+
+E3e1 receipt contracts implemented; focused validation/integration pending. Independent
+follow-on workstreams: e3e2a isolated branch owns actual cutover/settlement metadata
+inspectors and identity suites (no services); e3e2b root owns coverage/row/bounded
+review post-cutover entries and their tests after receipt dependency integration.
+Expected root files coverage.ts,observation.ts,inspection.ts and existing required
+observation/inspection suites. Use real target-active +2/CUTOVER/READY, existing
+source/target freshness, same actual condition/current-written typed target checks
+and complete own-outcome evidence before restoring historical envelopes. Require
+outcomes for every post-cutover row. No pretend source-active state, DDL or client
+stage; current actor authorisation before metadata SQL. These are prerequisites,
+not customer activation or full Phase2 completion. Different settler/history coverage
+is e3e3 and remains closed until independently implemented.
+
+## 11 October — e3e1 receipt integrity VERIFIED locally
+
+Purpose: accept only explicit sealed conditional review2 lineage in pure cutover and
+settlement receipt helpers; preserve closed1 exports, receipt1 shapes/hashes and all
+current service gates. Dependencies: verified conditional execution milestone and
+required-contracts parser. Root owns three production files; isolated test branch
+owns focused pure receipt tests; read-only reviewer checks lineage/security. No DDL,
+Prisma, business data, service dispatch or activation. Expected files are the first
+row below plus focused receipt suite and root/branch memory. Tests prove parser
+separation, complete review identity, source/target transitions, reserved counters,
+terminal pairing and different same-tenant settler without inferring current access.
+
+## 11 October — conditional cutover/settlement workstreams
 
 Independent read-only recovery confirms no apparent DDL need; keep receipt1 shapes,
 full review2 checksum/metadata, old closed1 entry points/hashes and original SQL.
@@ -7,7 +34,7 @@ PASS, exact health and safe build-buffer cleanup confirmed. Begin e3e1 below.
 
 | Workstream | Expected files | Dependencies / database implications | Evidence / status |
 | --- | --- | --- | --- |
-| e3e1 Closed2 cutover/settlement receipts | cutover-contract.ts,cutover-receipt.ts,settlement-receipt.ts; existing receipt suites | Actual review2/READY receipt1 lineage; no new storage/shape; old entry closed1 | Full review checksum, publisher/cohort/metadata/CAS/terminal pairing; NOT STARTED |
+| e3e1 Closed2 cutover/settlement receipts | cutover-contract.ts,cutover-receipt.ts,settlement-receipt.ts; existing receipt suites | Actual review2/READY receipt1 lineage; no new storage/shape; old entry closed1 | Full review checksum, publisher/cohort/metadata/CAS/terminal pairing; VERIFIED locally36tests/3suites/types/lint; actual activation gated |
 | e3e2 Actual post-cutover identity and row/review | cutover-inspection.ts,settlement-inspection.ts,observation.ts,inspection.ts,coverage.ts | Actual ACTIVATED/CUTOVER target-active pointer, definition +2/frozen draft, READY receipt; existing source/target SQL; no pretend source-active stage | Current native/field/reference/conditions and decoded own target/source under exact receipt, empty/bounded/hash evidence; NOT STARTED |
 | e3e3 Current settlement coverage | settlement-coverage.ts; existing suites | Fresh DIFFERENT authorised settler allowed; retain original review identity, no borrowed creator grants. Rollback unchanged lineage/rules; history/finalization tolerate later legitimate business/config changes | Current private/native/base/written/reference rights before values; historical metadata sealed without asserting original current fact revisions; NOT STARTED |
 | e3e4 Existing services and actual proof | cutover.ts,settlement.ts; existing central checker | Stored1/2 dispatch, existing activation/CAS/rollback limit/paired Audits; retained history | Test-only cutover/replay/rollback/finalization, different settler, denials and activation/receipt/publication/Audit rollback; NOT STARTED |

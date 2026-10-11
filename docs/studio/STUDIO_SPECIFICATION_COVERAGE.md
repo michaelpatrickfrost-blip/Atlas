@@ -36,7 +36,7 @@ related provider or service to adapt.
 | 6.4;6.1 | Immutable keys/identity, mutable labels, retained history | Permanent field binding, immutable versions/generations/value history; same-generation cosmetics verified live | Visual authoring must generate keys and preserve identity rather than asking noncoders for technical IDs |
 | 6.5 | Approved typed constraints including decimal/money/currency/enum versions/reference policy | Closed field/storage/value schemas, server validators, typed SQL families/constraints and atomic ordinary saves verified | Usable owner form inputs/approved defaults and presentation aliases, configured field search/filter/sort runtime, complete native writer integration |
 | 6.5;14 | Required-if on every write; hiding never waives validation; sensitivity/capabilities narrow access | Typed condition compiler/evaluator, authorised input reader, current-owner coverage and actual row observation; no arbitrary code/SQL | Native create/save atomic hooks/lock ordering, required configuration publication and conditional evolution acceptance; conditional authoring remains gated |
-| 24;24.1 | Review counts/examples/failures/index/rollback limits; resumable/idempotent conversion; compatible rolling reads; explicit cutover | Existing legacy review/publication/batches/cutover/rollback/finalization and current/history services verified live | Usable migration preview/control UI; conditional execution/cutover/settlement and native write-window proof (actual format2 prepare/collect/seal/publish/replay/cancel verified candidate/public bafa1c2) |
+| 24;24.1 | Review counts/examples/failures/index/rollback limits; resumable/idempotent conversion; compatible rolling reads; explicit cutover | Existing legacy review/publication/batches/cutover/rollback/finalization and current/history services verified live | Usable migration preview/control UI; conditional cutover/settlement and native write-window proof (actual format2 conversion/recovery/replays/cancel verified candidate/public b34ce50) |
 | 7;7.1–2 | Canonical record types, base + one overlay, deterministic resolution, explicit conflict policy, compiled result | Owner recordTypes opt-in exists as contract only | Record-type compiler/persistence/association and authorised resolution; no shadow customer/ticket tables or implicit security grants |
 | 8;8.1 | Structured approved components and registered record surfaces, bounded queries/metrics/actions | Registry/query/access and existing design-system/domain services are foundations | Page schema/compiler/runtime, approved component catalogue, list/detail/forms; reject arbitrary script/table access |
 | 8;8.2 | Default/conditional variants, shallow inspectable inheritance, capability/record-type/approved fact selection | Foundations only | Deterministic variants; ambiguity/depth rejection; hidden components do not query; underlying server permissions always enforced. Do not build Phase 3 Decision engine early |
@@ -78,21 +78,17 @@ STUDIO_VISUAL_BUILDER_REQUIREMENTS.md and are still unfinished Phase 2 work.
 
 ## Exact next checkpoint
 
-Actual Tickets owner and normal conditional prepare/collect/seal are VERIFIED live.
-Publication/replay inspection and existing typed publisher integration are implemented
-with96focused/types/lint/build PASS; exact central Test publication/replay/cancellation
-and both Audit failures VERIFIED on bafa1c2 candidatebseb8V/publicZrTQuH, both ALL
-COMBINED PASS, original24271 exit0 and public health exact. Pure closed2 execution/
-outcome integrity is VERIFIED locally (40focused +21regression/types/lint/build).
-Separate execution coverage e3d2a is VERIFIED locally:63focused/types/lint/build/diff
-PASS; original0d315f7/46009 candidateMTZpXy/publicVvzibi BOTH ALL COMBINED PASS,
-compatibility/health exact. E3d2b actual row/outcome/review and execution metadata
-inspection now integrated06eeda1/13fe331/45c6896:86tests/7suites/strictTS PASS.
-Existing start/batch/representation and scoped suites/checker now integrated;
-96tests/7suites/strictTS/scopedlint/build/diff PASS. Central normal API proof pending
-original combined release; no actual runtime2 claim yet. Next finish
-normal conversion proof, then cutover/settlement/native writer integration before2C
-record types,2D page compiler,2E visual authoring/runtime and2F full phase gate.
-Use this matrix and the original relevant sections at each checkpoint. No feature
-may be silently omitted, marked VERIFIED from a file or moved to a later phase
-merely to obtain PASS.
+Conditional prepare/collect/seal/publication and normal start/batch/representation
+are VERIFIED live b34ce50: candidatekT6FVM/publicqTWEdH BOTH ALL COMBINED PASS,
+original88202 exit0, exact health/build-buffer cleanup confirmed. Actual failed-prefix
+recovery, target/outcome/progress/Audit atomicity, own+1/null/zero values, READY/replays
+and cancellation retained history passed both stages; legacy/modules compatible.
+E3e1 explicit closed2 pure cutover/settlement receipt helpers and11newcases integrated:
+36tests/3suites PASS, source helpers strictTS/scopedlint and branch test types PASS,
+independent review no blockers. Actual conditional activation is still gated.
+Next integrate e3e2 actual target-active+2/CUTOVER/READY metadata, row/condition/typed
+outcome and bounded review; e3e3 different current settler/history coverage; e3e4
+normal services/actual central proof; native write windows. Then remaining2B fields,
+2C record types,2D pages,2E visual authoring/runtime and2F full phase gate.
+Use this matrix and original relevant sections at each checkpoint. No silent omission,
+VERIFIED from a file or moving a requirement to a later phase to obtain PASS.

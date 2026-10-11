@@ -1,3 +1,14 @@
+## 11 October 2026 — Conditional cutover and settlement preserve the existing receipt
+
+Separate closed2 integrity entries parse the full sealed conditional review, including
+rule removal to a schema1 target, then reuse unchanged receipt1 validation/hashes.
+Old public entries stay closed1; neither target schema nor receipt shape chooses
+protocol. Post-cutover requires actual ACT/CUTOVER/READY and target-active +2 CAS;
+historical settlement pairing stays independent of today's active pointer and records
+a different same-tenant settler without rewriting the original review principal.
+Actual authority/native/current-written/conditions and rollback-window coverage remain
+service prerequisites. No additional engine, receipt storage or DDL is necessary.
+
 ## 11 October 2026 — Conditional execution coverage uses existing source-active guards
 
 Expose a separate internal execution2 prerequisite under the caller's refreshed

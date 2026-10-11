@@ -17,7 +17,8 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 2B e3d2b–4 conditional conversion milestone VERIFIED live. Original pinned release
 88202 exit0; b34ce50bd10fcbb39287444a753879e02044d0cc candidate kT6FVM and public
 qTWEdH BOTH ALL COMBINED PASS. Exact public health confirmed after cleanup.
-Next e3e1 closed2 cutover/settlement receipt contracts; no customer conditional
+E3e1 receipt contracts VERIFIED locally36tests/3suites; e3e2 actual post-cutover
+metadata/row/review IN PROGRESS; no customer conditional
 activation until post-cutover, settlement and native write-window integration pass.
 
 # Overall Status
@@ -47,6 +48,8 @@ source coverage, phase plan and this ledger. No rewritten specification.
   VERIFIED actual candidate/public and combined release PASS.
 - E3d2a separate execution coverage: VERIFIED locally;63focused/types/lint/build
   PASS. Actual conditional execution now VERIFIED in b34ce50 candidate/public.
+- E3e1 pure closed2 cutover/settlement receipt entries: VERIFIED locally36tests/3suites,
+  strictTS/scoped lint and independent review PASS; no actual activation enabled.
 - E3d1 pure closed2 execution/outcome integrity: VERIFIED locally; no inference
   of actual execution runtime from synthetic pure metadata or owner descriptors.
 
@@ -186,13 +189,14 @@ later phases. No complete Studio/visual builder claim.
 
 # Exact Next Action
 
-Implement e3e1 separate closed2 create/read cutover and settlement receipt entries
-in cutover-contract.ts, cutover-receipt.ts and settlement-receipt.ts. Reuse immutable
-receipt1 shapes; bind full sealed review2 and exact READY execution/publisher/cohort/
-metadata/revision/terminal pairing. Preserve closed1 entry points/hashes. Add focused
-receipt tests, run strictTS/scoped lint, review diff and checkpoint. No actual
-conditional activation before e3e2–4 and native write-window proofs. Resolve queued
-worktree archive status without racing or deleting unrelated source.
+Integrate the isolated e3e2a actual conditional metadata inspectors from
+studio-required-cutover-identity with root e3e2b coverage/observation/inspection
+and tests. Verify full sealed2/ACT/CUTOVER/READY/target-active+2/frozen draft+1 and
+source-target SQL, current conditions/typed target/mandatory own outcome before
+archive normalization; bounded/empty review checks. Root50tests/2suites PASS89803
+with explicit metadata collaborator, not actual SQL identity proof. Run integrated
+strictTS/scoped lint/build/diff and checkpoint; then e3e3 fresh DIFFERENT current
+settler/history coverage. No service/customer activation until subsequent gates.
 
 # Historical checkpoint evidence
 

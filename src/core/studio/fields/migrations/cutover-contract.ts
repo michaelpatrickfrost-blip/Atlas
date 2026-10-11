@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { canonicalJson, checksum } from "../../registry/contracts";
-import { FieldMigrationReviewError, readSealedFieldMigrationReview } from "./contracts";
+import { FieldMigrationReviewError, readSealedFieldMigrationReview, type FieldMigrationReview } from "./contracts";
+import { readSealedRequiredFieldMigrationReview, type RequiredFieldMigrationReview } from "./required-contracts";
 import { fieldMigrationExecutionPinSchema, readFieldMigrationExecutionProgress } from "./execution-contract";
 import { assertFieldMigrationPublicationReady } from "./publication-contract";
 
@@ -43,7 +44,21 @@ function canonical<T>(schema: z.ZodType<T>, input: unknown): T {
  * Audit. No source/target value, native record or active pointer changes here. */
 export function createFieldMigrationCutoverPin(storedReview: unknown, serverExecution: unknown, serverPublication: unknown, serverDefinition: unknown)
   : { pin: FieldMigrationCutoverPin; checksum: string } {
-  const sealed = readSealedFieldMigrationReview(storedReview), review = sealed.review;
+  return cutoverPin(readSealedFieldMigrationReview(storedReview), serverExecution, serverPublication, serverDefinition);
+}
+
+/** Explicit closed2 integrity entry. Receipt1 binds the complete conditional
+ * review, including rule removal to a schema1 target. The caller must separately
+ * prove actual execution coverage/current authority before activation. Neither a
+ * receipt shape nor a target schema chooses the review protocol. */
+export function createRequiredFieldMigrationCutoverPin(storedReview: unknown, serverExecution: unknown, serverPublication: unknown, serverDefinition: unknown)
+  : { pin: FieldMigrationCutoverPin; checksum: string } {
+  return cutoverPin(readSealedRequiredFieldMigrationReview(storedReview), serverExecution, serverPublication, serverDefinition);
+}
+
+function cutoverPin(sealed: { review: FieldMigrationReview | RequiredFieldMigrationReview; checksum: string },
+  serverExecution: unknown, serverPublication: unknown, serverDefinition: unknown) {
+  const review = sealed.review;
   const execution = canonical(executionSchema, serverExecution), publication = canonical(publishedSchema, serverPublication);
   const definition = canonical(definitionSchema, serverDefinition), pinned = execution.pin;
   if (execution.pinChecksum !== checksum(pinned)

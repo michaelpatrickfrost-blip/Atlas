@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { canonicalJson, checksum } from "../../registry/contracts";
-import { FieldMigrationReviewError, readSealedFieldMigrationReview } from "./contracts";
+import { FieldMigrationReviewError, readSealedFieldMigrationReview, type FieldMigrationReview } from "./contracts";
+import { readSealedRequiredFieldMigrationReview, type RequiredFieldMigrationReview } from "./required-contracts";
 import { fieldMigrationExecutionPinSchema, readFieldMigrationExecutionProgress } from "./execution-contract";
 import { fieldMigrationCutoverPinSchema } from "./cutover-contract";
 import { assertFieldMigrationPublicationReady } from "./publication-contract";
@@ -27,7 +28,18 @@ function canonical<T>(schema: z.ZodType<T>, input: unknown): T {
  * current pointer or a fabricated transition state. Callers separately validate
  * actual ACT/terminal pairing and current native/field/reference authority. */
 export function readFieldMigrationCutoverIdentity(storedReview: unknown, serverExecution: unknown, serverPublication: unknown, serverReceipt: unknown) {
-  const stored = readSealedFieldMigrationReview(storedReview), review = stored.review;
+  return cutoverIdentity(readSealedFieldMigrationReview(storedReview), serverExecution, serverPublication, serverReceipt);
+}
+
+/** Closed2 original lineage only. Current pointers, actor permissions and
+ * conditional inputs remain actual server inspection responsibilities. */
+export function readRequiredFieldMigrationCutoverIdentity(storedReview: unknown, serverExecution: unknown, serverPublication: unknown, serverReceipt: unknown) {
+  return cutoverIdentity(readSealedRequiredFieldMigrationReview(storedReview), serverExecution, serverPublication, serverReceipt);
+}
+
+function cutoverIdentity(stored: { review: FieldMigrationReview | RequiredFieldMigrationReview; checksum: string },
+  serverExecution: unknown, serverPublication: unknown, serverReceipt: unknown) {
+  const review = stored.review;
   const receipt = canonical(receiptSchema.omit({ state: true, revision: true }), serverReceipt), pin = receipt.pin;
   const execution = canonical(executionSchema, serverExecution), publication = canonical(publicationIdentity, serverPublication);
   const identity = publication;
@@ -57,11 +69,23 @@ export function readFieldMigrationCutoverIdentity(storedReview: unknown, serverE
  * for ACT/CUTOVER, exact target pointer/configuration or current data coverage. */
 export function readFieldMigrationCutoverReceipt(storedReview: unknown, serverExecution: unknown, serverPublication: unknown,
   serverDefinition: unknown, serverReceipt: unknown) {
+  return cutoverReceipt(readFieldMigrationCutoverIdentity, storedReview, serverExecution, serverPublication, serverDefinition, serverReceipt);
+}
+
+/** Explicit closed2 ACT/CUTOVER window: same receipt1, actual target-active +2
+ * definition and exact READY history. Not activation or rollback authority. */
+export function readRequiredFieldMigrationCutoverReceipt(storedReview: unknown, serverExecution: unknown, serverPublication: unknown,
+  serverDefinition: unknown, serverReceipt: unknown) {
+  return cutoverReceipt(readRequiredFieldMigrationCutoverIdentity, storedReview, serverExecution, serverPublication, serverDefinition, serverReceipt);
+}
+
+function cutoverReceipt(readIdentity: typeof readFieldMigrationCutoverIdentity, storedReview: unknown, serverExecution: unknown,
+  serverPublication: unknown, serverDefinition: unknown, serverReceipt: unknown) {
   const receipt = canonical(receiptSchema, serverReceipt), publication = canonical(publicationSchema, serverPublication);
   const definition = canonical(definitionSchema, serverDefinition);
   const identity = publicationIdentity.parse(Object.fromEntries(Object.entries(publication).filter(([key]) => key !== "state" && key !== "revision")));
   const original = receiptSchema.omit({ state: true, revision: true }).parse(Object.fromEntries(Object.entries(receipt).filter(([key]) => key !== "state" && key !== "revision")));
-  const retained = readFieldMigrationCutoverIdentity(storedReview, serverExecution, identity, original);
+  const retained = readIdentity(storedReview, serverExecution, identity, original);
   if (definition.id !== receipt.definitionId || definition.organisationId !== receipt.organisationId
     || definition.activeVersionId !== receipt.targetVersionId || definition.latestVersion !== publication.targetVersionNumber
     || definition.revision !== retained.pin.definitionRevision + 1 || publication.revision !== retained.pin.publication.revision + 1) changed();

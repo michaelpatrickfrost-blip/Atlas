@@ -1,3 +1,65 @@
+## 11 October 2026 — e3e1 pure receipt contracts VERIFIED locally; e3e2 IN PROGRESS
+
+Root explicit closed2 cutover/identity/receipt/settlement helpers integrated with
+scoped54d6188 test contribution. Old entries stay closed1; unchanged receipt1
+whole-review hashes including source2→target1 rule removal, historical settlement
+independent of today's pointer/different settler. Independent review no blockers.
+Root36tests/3suites PASS57899; earlier root helper strictTS3139/scoped lint45085 exit0;
+branch final strictTS48812/scoped lint/diff PASS. Fixed legacy hash/regressions PASS.
+No DDL/business writes/service dispatch or customer conditional activation. Usable
+integrated release/build remains after actual coverage/services, not each pure helper.
+
+E3e2a isolated metadata inspectors and identity suites IN PROGRESS. Root e3e2b adds
+actual target-active+2/CUTOVER/READY row/coverage/bounded review with mandatory own
+outcome and current conditions/typed decoder, no fake source-active fallback.
+Root50tests/2suites PASS89803 using explicitly mocked metadata inspector; actual
+metadata SQL suite/integrated strictTS/lint/build pending agent merge. Initial one
+fixture findMany returnednull; corrected fixture for empty version set, no guard
+relaxed. E3e2 production/tests remain unstaged while coherent e3e1 checkpoint saved.
+Exact next: integrate actual metadata dependency, run integrated checks/checkpoint,
+then DIFFERENT fresh settler/history and native write windows before enabling
+conditional activation. Whole Phase2 incomplete; live remains verifiedb34ce50.
+
+## 11 October 2026 — parallel e3e1 conditional cutover/settlement receipt tests VERIFIED locally
+
+Explicitly scoped new isolated codex/studio-required-receipts branch/base5f9f210 adds
+one narrow tests/studio-field-required-receipts.test.ts suite. Genuine conditional
+compiler and sealed review2 fixtures cover adding rule/target2 and source2 rule removal/
+target1 under approved native9/query4/representation2. No forced schema2 cast of old
+review; synthetic READY/row projections are pure integrity, not native/SQL/permission/
+activation evidence. Eleven cases cover unchanged receipt1/full review2 binding,
+old/new four-entry closed-protocol rejection, unknown/coerced metadata, re-sealed
+changed condition plus rechecksummed execution still denied by original review pin,
+invalid required-null review summary/unacknowledged loss, exact READY/empty/source-active
+CAS/reserved bounds, native/cohort/source/generation/tenant/publisher identity, strict
+actual target-active+2 receipt, open pairing and terminal rollback/finalization history
+with different original creator/current settler and no today's-pointer inference.
+Fixed original legacy cutover checksum d70e0f4d9a4680b0a4e371ecf4e8d723483386a8ede0a01468366569492db988
+and legacy READY/source-active equality are included. Final36tests/3suites PASSd9c02c
+(11 new+25 existing), strictTypeScript48812 exit0, scoped lint/diff3d1f21 PASS. Initial
+snapshot update330404 only wrote the reviewed inline hash; final run did not update.
+Root's cutover-contract/cutover-receipt/settlement-receipt copied read-only solely for
+dependency checks, left UNSTAGED and excluded from this test/memory checkpoint. No
+install/generate/build/deploy/DDL/business writes or services/cutover enablement from
+this branch; root owns integrated source/docs/gates. Shared dependencies/generated
+client symlinked, no duplicated generated outputs. Exact next action: root integrate
+this scoped test checkpoint with its three explicit pure wrappers; verify integrated
+legacy/types/build, then implement actual post-cutover and CURRENT-settler coverage
+before stored2 cutover/settlement service dispatch and original central candidate/public
+proof. Whole Phase2 still IN PROGRESS; customer conditional activation remains gated.
+
+## 11 October 2026 — e3e1 pure conditional receipt integrity IN PROGRESS
+
+Root owns cutover-contract/cutover-receipt/settlement-receipt.ts explicit closed2
+entries; isolated studio-required-receipts branch owns focused pure suites, independent
+review is read-only. Preserve old closed1 entries/hashes, receipt1 shape, READY/source-
+active pre and actual target-active +2 post transitions. Settlement history stays
+pointer-independent and different fresh authorised settler remains allowed. No DDL,
+service dispatch/business activation or native writes. Dependencies: b34ce50 live
+conversion and required-contracts parser. Checks not yet run; exact next: implement
+private shared validation with separately selected sealed parsers, integrate tests,
+strictTS/scoped lint/diff and checkpoint. Full Phase2 remains incomplete.
+
 ## 11 October 2026 — conditional conversion VERIFIED live b34ce50; next closed2 receipts
 
 Original88202 exit0: b34ce50bd10fcbb39287444a753879e02044d0cc candidatekT6FVM

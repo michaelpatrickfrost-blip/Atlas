@@ -1,3 +1,30 @@
+## 11 October 2026 — isolated conditional execution metadata inspection VERIFIED locally
+
+Parallel branch codex/studio-execution-inspection adds only the separate
+inspectRequiredFieldMigrationExecution in existing execution-inspection.ts and
+its focused required-execution-inspection suite. Genuine runtime authority and
+full stored principal/support Audit resolve before migration metadata; exact scoped
+stored2 preparation/review, actor/schema1-or2 immutable target, current compiled
+metadata/module locks, actual published-versus-executing review selection and
+unchanged receipt1 owner/query2 pin/progress validation. Legacy closed1 body remains
+unchanged. No start/batch/cutover/native/authoring dispatch, values, DDL or migrations.
+Eight focused orchestration cases plus existing pin/start/batch suites:38 tests/4
+files PASS (94159); strict TypeScript63463 exit0; scoped lint96328 exit0; reviewed
+scoped diff/check PASS. Authority/compiler/row inspection/SQL fixtures are explicit
+mocks, not genuine authority or normal central execution acceptance. Rule removal
+retains stored2 inspection despite a schema1 target. Support uses the exact retained
+Audit principal. Initial type check was blocked by the absent upstream inspector;
+final check uses root's fixed observation.ts and review agent's inspection.ts copied
+solely for unstaged dependency verification, as root authorised. Those dependency
+files are excluded from this scoped commit; root integrates them before this block.
+No build/deployment run here: root owns single integrated build/release and permanent
+progress ledger. Generated dependency paths are symlinks to root, no install/Prisma
+regeneration/new business database/dump or duplicated generated runtime.
+Next: root integrates verified observation/review dependency checkpoints then this
+scoped source/test/memory checkpoint, runs the combined checks/build/live gates,
+and continues existing start/representation/batch integration only after actual
+conditional row/outcome inspection evidence is accepted. Whole Phase2 remains open.
+
 ## 11 October 2026 — parallel e3d2b bounded execution-review inspection VERIFIED locally, integration pending
 
 Explicitly authorised isolated branch codex/studio-review-inspection adds only the

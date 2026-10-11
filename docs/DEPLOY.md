@@ -104,6 +104,14 @@ staff rights, retires synthetic access and leaves the production pointer unchang
 For the Customers/CRM/Sales/Marketing refinement, exercise the actual commercial
 forms and responsive layouts on a sealed candidate before activation:
 
+Set `ATLAS_RELEASE_ACCEPTANCE=commercial` to run the checked-in commercial checker
+on the candidate and public HTTPS in one deployment, holding both existing locks
+through activation. Each run takes its own central fixture backup and verifies
+the exact revision, including Customer Actions/Manage Record layering at three
+viewport sizes. Existing rollback, source, compatibility and immutability gates
+remain. This prevents concurrent releases moving between feature checks and activation.
+The separate candidate-only command below remains available.
+
 ```bash
 ssh administrator@85.190.118.218 'ATLAS_COMMERCIAL_CHECK=1 bash /opt/atlas-releases/<candidate SHA>/scripts/deploy/check-commercial-workspaces.sh /opt/atlas <candidate SHA>'
 ```
@@ -156,6 +164,28 @@ Login is SSH key only; no password is stored in the repo. On a new Mac run
 Overrides: `ATLAS_VPS_HOST`, `ATLAS_VPS_DIR`, `ATLAS_VPS_URL`.
 
 The Mac-app procedure below is unchanged and still applies to the installed app.
+
+## When candidate installation stops with ENOSPC
+
+Check free space and the private stage log before retrying; a stopped installation
+is not a deployed release. Preserve the active/rollback runtime, central records,
+private files, backups and deployment evidence. Under both existing release locks,
+only disposable package/incremental compiler caches and positively identified failed
+candidate build/dependency outputs may be reclaimed. Retain failed candidate source
+and readiness history in maintenance backups; never follow environment/storage
+symlinks. The 10 October user-authorised software-retention policy below supersedes
+the former requirement to keep every inactive accepted runtime runnable. Preserve
+current/previous/process pins; retain older source/static/history while retiring
+duplicated dependencies and compiled server/cache output through the checked utility.
+Open an existing lock without recreating/truncating it when Linux protected regular
+files reject a root write-open; use exclusive flock on the same inode. Do not weaken
+locks or filesystem protections. Retry the normal pinned build and full acceptance.
+
+10 October Studio recovery retained failed source for 6d2f5a9/36c211b/bef1a40 and
+reclaimed 22 inactive incremental compiler caches, preserving current f5bb914 and
+rollback 64361cb. Free space reached 16G and public health stayed exact. Inventory is
+`/opt/atlas-maintenance-backups/studio-inactive-compiler-cache-reclaim-20261010.txt`;
+full evidence is in the Studio implementation ledger. No business data/backups removed.
 
 ## Additional Mac package (when needed)
 
@@ -342,3 +372,116 @@ existing business records and QA identity/profile grants are preserved. No local
 business database or new permission system. Default/People/Supply selectors retain
 their behavior. Candidate/public evidence stays private in reported /tmp paths.
 A partial checkpoint acceptance is not the full Phase 2 gate or visual builder.
+
+
+The combined Studio acceptance also preserves and exercises the accepted Company
+Settings/profile workflow through its checked-in native checker, with a separate
+private fixture backup. Field review archive checks run inside the Studio exact-
+Test principal driver; they verify storage guards, not an unimplemented migration
+preview or conversion engine. All existing closed release selectors are retained.
+
+For the assigned task pop-out, use `ATLAS_RELEASE_ACCEPTANCE=tasks`. The checked-in
+central QA harness tests notes, linked records, assigned-only filtering, guarded
+completion and persisted status at 320/390/820/1448 widths on candidate and public
+HTTPS under the same locks. Each stage backs up central data/private evidence.
+Only its synthetic tasks are written, and retained canceled at cleanup. Existing
+backup, immutable release, revision checks and rollback gates apply.
+
+Historical 10 October cache-only audit, superseded by software-retention cleanup:
+Studio settlement checkpoint was blocked before isolated release build:
+root3.2Gfree/99% after reclaiming only inactive1f2ab97/74fab2d compiler caches and
+npm downloads under both original locks. Disk200G/root partition198.9G fully
+allocated; current1bf0e2c/previous845456e and all accepted source/dependencies/
+server/static/history/backups preserved. Inventory studio-settlement-capacity-
+20261010.txt in maintenance backups. PostgreSQL18main remains online. Increase
+capacity/safe available build space before retry; do not remove accepted runtimes
+or backups to force another build. Forward0007 DDL was backed up/rolled back
+only, not applied; actual Test/candidate/public gate remains pending in ledger.
+
+## Software retention — 10 October 2026
+
+Michael explicitly authorised removal of redundant development/release copies.
+Keep the current runtime, immediate previous runtime and every process-pinned
+candidate intact. Retire only duplicated `node_modules` and `.next` output other
+than static assets from older SHA release folders. Keep source, configuration,
+readiness history, central records, private files and all business backups.
+The installed root-owned operator tool is `/opt/atlas-maintenance-tools/prune-releases.sh`.
+It takes both original exclusive locks nonblocking; busy means defer, never bypass.
+
+```bash
+ssh administrator@85.190.118.218 'sudo bash /opt/atlas-maintenance-tools/prune-releases.sh audit'
+ssh administrator@85.190.118.218 'sudo bash /opt/atlas-maintenance-tools/prune-releases.sh prune'
+```
+
+The checked-in deployer invokes the same utility only after complete public
+acceptance and rollback-pointer updates. It closes its lock descriptors, then
+reacquires both through the wrapper; maintenance failure/busy defers cleanup without
+rolling back an accepted runtime. This hook is active in accepted1d7f558 (10 October): after full candidate/public
+acceptance it retired only inactive1bf0e2c output, retaining current1d7f558 and
+previous97ceb35. The live operator tool is installed/tested.
+Retired readiness markers are renamed, so an older source cannot be mistaken for a
+prepared runtime. Older source needs an isolated rebuild and normal acceptance
+before activation. Immediate rollback remains available. Do not retire a runtime
+being investigated/running: pin it or defer maintenance.
+
+The cleanup recovered approximately160GiB including emergency relief; root reached168GiB
+free. This resolves the capacity blocker; new releases still require a fresh space
+and lock check. See [software-retention evidence](SOFTWARE_RETENTION.md).
+
+Michael also requested avoiding unnecessary dump files. Read-only space audits and
+software retirement do not need database dumps. Use existing recovery evidence
+where valid; do not generate ad-hoc duplicate exports/backups. Required reviewed
+pre-migration/release/fixture backups remain intact and mandatory. Any future backup
+rotation must verify recovery coverage and active-job pins before deleting a dump.
+
+Next16.3 filesystem build caching is disabled in next.config because immutable
+release candidates always build cold and never restore .next/cache. This follows
+the installed Next guide and avoids retaining an unused compiler cache per SHA.
+Development caching is unchanged. The `tasks` acceptance selector now runs both
+Tasks drawer checks and the existing Messages composer/draft/attachment workflow
+on candidate/public; each stage stays inside the original locks and fixture backup.
+
+## Pinned build access incident — 10 October 2026
+
+Studio1d7f558 preparation applied reviewed additive0007 after backup074339, then
+HTTPS TLS/health and SSH banner exchange timed out during server compilation.
+TCP22 accepted; last disk167GiBfree,7.8GiB RAM/no swap. Resource pressure is
+suspected, not proven. Exact candidate compiler cancellation could not connect.
+Do not start another candidate or claim activation/acceptance. Recover through
+independent hosting console, inspect actual kernel/resource/current/locks and
+original private build/deploy logs, then stop only confirmed non-current compiler
+if needed. Preserve applied migration/history/backups; no destructive DB recovery
+or broad service kill. Resolve proven resource cause before next pinned build.
+Current incident/handoff remains in CURRENT_STATE and Studio ledger.
+
+## Confirmed candidate memory failure — 11 October 2026
+
+Unlike the earlier unconfirmed incident, kernel094911UTC proves OOM killed a04349c's
+isolated compiler. Build stopped before acceptance/activation; live8cc2758 and
+rollbacka475823 stayed intact, disk163GiB free. Under both original locks we retained
+failed source/static at /opt/atlas-maintenance-backups/failed-a04349c-20261011-094734,
+retired only that failed candidate's generated outputs and activated a temporary
+2GiB /var/tmp/atlas-release-build.swap for the next normal pinned release. No fstab,
+PostgreSQL, application service, source/build configuration or database changes.
+Original094734 required recovery/logs remain; no ad-hoc dump. Operational evidence
+studio-build-memory-20261011.txt is in maintenance backups. Remove this exact swap
+after no candidate compiler remains and available RAM safely exceeds swap usage;
+hold both original locks, never swapoff under active memory pressure. Record retry
+and cleanup evidence in CURRENT_STATE/Studio ledger before a complete handoff.
+
+11 October1007UTC: retry bafa1c2 original24271 completed full candidatebseb8V/
+publicZrTQuH ALL COMBINED PASS and exit0. Under both original locks/no compiler,
+MemAvailable3511732KiB versus swap-used749308KiB satisfied the1.5GiB safety margin;
+exact temporary swap deactivated/removed93028 exit0. Post-cleanup no swap, root164GiB
+free,2.7GiB RAM available. Livebafa1c2 rollback8cc2758; failed source/logs/recovery
+retained. No application/PostgreSQL configuration or schema was changed for recovery.
+
+11 October1032UTC: execution coverage0d315f7 original46009 exit0, candidateMTZpXy/
+publicVvzibi BOTH ALL COMBINED PASS and exact health. Current0d315f7 rollbackbafa1c2;
+original retention retired only inactive8cc2758 duplicate runtime. Required recovery
+101917/102050/102515 retained. Temporary2GiB build buffer safely removed49396 exit0
+under both original lock inodes/no compiler, available4008312KiB versus used1381080KiB.
+Root164GiBfree/no swap/2.6GiB available RAM; no fstab/app/PG/database change. Open
+existing owner-administrator locks as that owner; privileged buffer operations run
+while the owner shell holds them. Initial root opens were denied before mutation;
+never recreate/change lock ownership/inodes to work around sticky-file protection.

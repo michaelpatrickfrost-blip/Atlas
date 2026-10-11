@@ -33,6 +33,14 @@ export type ExtensionFieldPolicy = {
   referenceEntities: readonly string[];
   maxFields: number;
 };
+/** Explicit native facts for field validation, distinct from Decision Studio. */
+export type NativeRequiredFact = {
+  fieldId: string; type: "string" | "integer" | "boolean" | "date" | "datetime" | "enum";
+  classification: Classification; capability?: string; codes?: readonly string[];
+};
+/** Reviewed intent format, independent of native entity or receipt versions. */
+export type FieldMigrationIntentVersion = 1 | 2;
+export type FieldMigrationIntentPolicy = { intentVersions?: readonly FieldMigrationIntentVersion[] };
 export type EntityDescriptor = ContractIdentity & {
   kind: "entity";
   key: "uuid" | "string";
@@ -46,14 +54,34 @@ export type EntityDescriptor = ContractIdentity & {
     listQuery: { id: string; version: number };
     getQuery: { id: string; version: number };
     fieldPolicy?: ExtensionFieldPolicy;
+    requiredFacts?: { query: { id: string; version: number }; initialQuery?: { id: string; version: number }; facts: readonly NativeRequiredFact[] };
+    /** Owner-issued opaque proof for a record actually created in this transaction.
+     * No ordinary read/manage grant is inferred from creation capability. */
+    initialisation?: { capability: string; acceptedFieldVersions?: readonly number[]; authorise(ctx: RecordContext, proof: object): Promise<RecordAnchor> };
+    /** Complete canonical read-only candidate validation, independent of reviewed
+     * migration/settlement approval. Never grants native or extension writes. */
+    requiredCoverage?: { query: { id: string; version: number }; fieldVersions: readonly number[] };
+    /** Read-only migration capture/coverage; ordinary record write guards still apply. */
+    migrationSnapshot?: FieldMigrationIntentPolicy & { query: { id: string; version: number }; sourceVersions: readonly number[];
+      /** Explicit same-canonical-entity reference read versions covered by this
+       * owner's pinned query. This metadata never grants reference permission. */
+      referenceVersions?: readonly number[] };
+    /** Representation-only approval of a persisted reviewed publication row.
+     * This is distinct from normal extension editing and never grants native writes. */
+    migrationRepresentation?: FieldMigrationIntentPolicy & { query: { id: string; version: number }; sourceVersions: readonly number[] };
     authorise(ctx: RecordContext, request: RecordRequest): Promise<RecordAnchor>;
   };
 };
 export type RecordContext = { session: Session; transaction?: Prisma.TransactionClient };
+export type NativeValidationRequest = { recordId: string; expectedRevision: number };
 export type RecordRequest = { recordId: string; intent: "read" | "extend"; expectedRevision?: number };
 /** A canonical record reference, not a duplicate business record or mutation API. */
 export type RecordAnchor = { recordId: string; organisationId: string; revision: number };
-export type Context = { session: Session; idempotencyKey?: string };
+export type Context = { session: Session; idempotencyKey?: string; transaction?: Prisma.TransactionClient;
+  /** Only the explicit proof-bound registry invocation supplies this opaque token. */
+  initialisationProof?: object;
+  /** Separate live owning-mutation proof; never accepted in query JSON input. */
+  nativeValidationProof?: object };
 export type QueryDescriptor<I, O> = ContractIdentity & {
   kind: "query";
   input: z.ZodType<I>;
@@ -61,6 +89,18 @@ export type QueryDescriptor<I, O> = ContractIdentity & {
   pagination: "cursor" | "page" | "none";
   maxCardinality: number;
   costClass: "low" | "medium" | "high";
+  /** Explicit server-only opt-in for atomic owner snapshots, not command execution. */
+  transaction?: "required";
+  /** Explicit owner callback protocol. Entity metadata alone cannot widen an old
+   * query to conditional intents; omission preserves legacy format1 only. */
+  fieldMigration?: { entityId: string; purpose: "snapshot" | "representation"; intentVersions: readonly FieldMigrationIntentVersion[] };
+  /** Current owning-domain coverage for retained field migration settlement.
+   * Separate from sealed preparation contracts; grants no native/value writes. */
+  fieldSettlement?: FieldMigrationIntentPolicy & { entityId: string; sourceVersions: readonly number[]; targetVersions: readonly number[]; referenceVersions: readonly number[] };
+  /** Current operation-specific read-only resulting-state validation. The callback
+   * checks opaque scope without reading protected native facts. */
+  nativeValidation?: { entityId: string; operation: string; fieldVersions: readonly number[];
+    authorise(ctx: RecordContext, request: NativeValidationRequest, proof: object): Promise<RecordAnchor> };
   execute(ctx: Context, input: I): Promise<O>;
 };
 export type CommandDescriptor<I, O> = ContractIdentity & {
@@ -92,6 +132,8 @@ export type Contribution = {
   metadata: Omit<ContractMetadata, "ownerModuleId" | "contractHash">;
   run?: (ctx: Context, input: unknown) => Promise<unknown>;
   authoriseRecord?: (ctx: RecordContext, request: unknown) => Promise<RecordAnchor>;
+  authoriseInitialRecord?: (ctx: RecordContext, proof: object) => Promise<RecordAnchor>;
+  authoriseNativeValidationProof?: (ctx: RecordContext, request: NativeValidationRequest, proof: object) => Promise<RecordAnchor>;
 };
 export type StudioModuleContract = { contributions: readonly Contribution[] };
 export type ContractReference = { id: string; version: number; schemaHash: string; contractHash: string };

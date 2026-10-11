@@ -1,4 +1,6 @@
 "use client";
+import { useEffect, useState } from "react";
+import { useTaskCount } from "./task-notifications";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -23,6 +25,9 @@ export function WorkspaceNavigation({
   links: Array<{ name: keyof typeof icons; href: string }>;
 }) {
   const pathname = usePathname();
+  const tasks = useTaskCount();
+  const [messages, setMessages] = useState(0);
+  useEffect(() => { const update = (event: Event) => setMessages((event as CustomEvent<number>).detail); window.addEventListener("atlas:chat-unread", update); return () => window.removeEventListener("atlas:chat-unread", update); }, []);
   return (
     <nav
       aria-label="Workspace utilities"
@@ -37,7 +42,7 @@ export function WorkspaceNavigation({
             href={href}
             prefetch={false}
             onClick={
-              name === "Messages"
+              (name === "Messages" || name === "My tasks")
                 ? (event) => {
                     if (
                       !event.metaKey &&
@@ -46,7 +51,7 @@ export function WorkspaceNavigation({
                       !event.altKey
                     ) {
                       event.preventDefault();
-                      window.dispatchEvent(new CustomEvent("atlas:open-chat"));
+                      window.dispatchEvent(new CustomEvent(name === "My tasks" ? "atlas:open-tasks" : "atlas:open-chat"));
                     }
                   }
                 : undefined
@@ -61,6 +66,7 @@ export function WorkspaceNavigation({
               className="shrink-0"
             />
             <span className="text-[9px] sm:text-xs">{name}</span>
+            {((name === "My tasks" && tasks) || (name === "Messages" && messages)) ? <span className="rounded-full bg-blue-600 px-1.5 text-[9px] leading-4 text-white">{Math.min(99, name === "My tasks" ? tasks! : messages)}</span> : null}
           </Link>
         );
       })}

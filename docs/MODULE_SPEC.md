@@ -275,6 +275,18 @@ generic denial returns no inaccessible identity/count. It grants no final/merged
 write or representation conversion authority. Future migration jobs pin that
 contract separately and must still enforce owner and current/written value access.
 
+An entity can add `record.migrationSnapshot` only in a new contract version. It
+names a registered same-owner query with native write capability and
+`transaction: "required"`, and explicitly approved typed-field source versions.
+The registry validates these references before adding any bundle. Tickets v3 opts
+in to `tickets.ticket.field_migration@1`; v1/v2 stay unchanged. The protocol has
+preflight, bounded canonical anchor snapshot and persisted observation coverage
+modes. Its supplied transaction must be SERIALIZABLE, with actual active company
+membership, native read/manage, enabled/entitled source and complete private queue
+access checked before IDs/counts. Coverage checks both missing/extra record IDs
+and native revisions; equal counts do not prove completeness. This read-only
+protocol grants no final/merged writes, value access or representation conversion.
+
 
 ## Consolidated workspaces
 
@@ -287,3 +299,273 @@ nested/cyclic consolidation. Retain source routes, record identity, capabilities
 audit, providers and exports. Shared workspace layouts must enforce their original
 source guards. Manufacturing & Supply includes Planning, Inventory and Products;
 companies without console access retain their existing licensed entry points.
+
+
+A Studio query may explicitly declare `transaction: "required"` when its owner
+must share the caller's server-owned Prisma transaction for an atomic snapshot.
+Core invokes these only through `invokeQueryInTransaction`; ordinary invocation
+rejects. Existing queries do not opt in implicitly, and this entry point cannot
+execute commands or bypass command idempotency. The owner still checks native
+permissions, tenant scope and module availability inside the supplied transaction.
+The option is a pinned contract change; publish a new descriptor/version instead
+of changing a sealed old contract. It adds no field conversion authority.
+
+An owner migration snapshot may additionally declare referenceVersions: explicit
+native read versions of the same canonical entity covered by its pinned query.
+Registry registration requires reference type/entity approval and actual registered
+native versions; omitting it preserves old metadata/hashes. This opt-in never
+grants data access: final reference review needs the new owner query's real target/
+tenant/private checks after Studio current/written policy and source coverage.
+Use new entity/query versions rather than changing already sealed descriptors.
+
+
+### Explicit representation approval (Phase 2 foundation)
+
+A new entity contract version may add `record.migrationRepresentation` with a
+registered same-owner query, mandatory shared transaction, native write capability
+and explicit source versions that are a subset of its approved migration snapshot.
+Registry validation is atomic. Existing snapshot contracts grant only read coverage;
+normal `read`/`extend` and final-record restrictions do not change. The future query
+must reload scoped persisted reviewed publication/observation proof and authorise the
+actual native row; it may approve extension representation only, never native writes.
+Tickets v5 declares this policy; real owner/SQL execution and cutover were verified
+on8d6eb9e/9aad1fc. These capabilities grant no ordinary final-record writes.
+
+
+### Current retained field settlement coverage
+
+A new transaction-required owner query can declare hashed `fieldSettlement`
+metadata: canonical entity ID and supported source/target/reference entity versions.
+Registration requires registered same-owner entity versions, typed field policies
+for source/target and the owner's native write capability. One query identifier per
+entity supports versioned evolution; `resolveFieldSettlement` selects the latest
+registered version and fails closed if unsupported, unavailable or expired. It
+never silently falls back or accepts client query selection. Older descriptors
+retain their exact hashes. Tickets adds `tickets.ticket.field_settlement@1`.
+
+Its rollback mode checks current complete native/private access and exact reviewed
+cohort/revisions; history mode permits unrelated native/extension changes but still
+checks current access, retained record existence and original source/target reference
+coverage. It uses immutable stored reviews/values instead of today's draft. No
+record ID/count/value is returned and no native or extension operation is granted.
+Studio independently refreshes the settling actor and enforces current active,
+source/target/written field policies, compiler/module compatibility and exact open
+configuration CAS. Separate internal rollback/finalization operations share existing
+authority and activation/Audit primitives. A terminal replay reports actual history,
+not today's active version. Verifieda527ccd full candidate/public: real current actor/private/field/module/tenant
+checks, atomic Audit/CAS/failure/replay and continued-history proof.
+
+## Native required facts and creation initialisation contracts
+
+An entity may explicitly opt into `record.requiredFacts`: registered same-owner,
+same-native-read-capability transaction-required query and bounded native fact
+IDs/types/sensitivity/enum codes. The registry validates declarations and hashes
+them; normal readable fields are not automatic condition inputs. The metadata
+adapter checks current module/owner/field grants; the owning query independently
+checks tenant/private/current native revision before projecting only approved facts.
+Tickets v6 approves status/priority; sealed v1–5 are retained.
+
+`record.initialisation` names the owner's create capability and opaque proof callback.
+`resolveForRecordInitialisation` resolves metadata only; it grants neither queries
+nor existing-record editing. The proof must come from the actual owning native
+INSERT in the same Serializable transaction and genuine principal; JSON/copies/
+sibling transactions/stale identities fail. Tickets' bridge owns that INSERT and
+expires its private proof when the callback finishes. Existing native creation
+validation remains with createWork; its field integration/coverage is still d3–4.
+
+## Current owner creation coverage — Phase2 contracts, 10 October 2026
+
+Optional hashed `record.initialisation.acceptedFieldVersions` declares the exact
+registered legacy typed-field entity versions the current owner approves for new
+records. Current resolution uses the newest owner policy and fails unsupported
+coverage without fallback. It grants no ordinary native read/manage access.
+Optional `requiredFacts.initialQuery` references a distinct same-owner creation-
+capability transactional query. Only explicit proof-bound invocation supplies the
+opaque INSERT token in server context; generic/JSON invocation cannot. Owner query
+rechecks NEW/version1/requester/tenant/source before projecting approved facts.
+New conditional plans seal both read and initialization query hashes; metadata
+sealing does not require an author's native Create grant. Explicit field grants and
+independent reference reads remain mandatory. Tickets v7 is additive; v1–6 and
+ordinary fact-query hashes/migration ranges unchanged. Consolidated central creation/
+staged-value/SQL rollback proof is VERIFIED live6b3d03f (candidate/public). Native
+hooks and conditional publication remain outstanding.
+
+## Resulting-field validation — internal Phase2 runtime, 10 October 2026
+
+`validateResultingFieldRequirements` reads actual staged native/typed rows in the
+caller's owning Serializable transaction. It validates all active requirements,
+including omitted targets, after current/pinned/written policies and exact native/
+extension revisions. Unconditional required remains mandatory; false/zero count
+as present. Optional unconditional private fields impose no unrelated value reads.
+Creation-only paths require the genuine same-INSERT current owner proof, approved
+legacy versions and sealed initialization-query meaning. They never borrow native
+Read/Manage or use the proof for an existing reference target/other record. Returned
+fingerprints/revisions remain internal; any validation failure must propagate through
+the owning transaction and roll back native/typed/Audit changes. No native hooks,
+initial writer or conditional publication dispatch is enabled yet: common lock order,
+canonical coverage and reviewed rollback-window closure remain integration gates.
+
+Candidate requirement checks may inspect a server-loaded immutable tenant version
+before activation while preserving the real active pointer. They use actual native/
+typed values and current/pinned/written/reference rights. This internal d3d helper
+does not grant publication or establish complete canonical coverage on its own;
+ordinary v1 gateways remain closed and unchanged. Not enabled in live authoring.
+
+## Complete candidate required-field coverage — 10 October 2026
+
+Optional hashed `record.requiredCoverage` identifies a same-owner, native-write-
+capability, transaction-required query and the exact typed field entity versions
+it covers. Registry registration validates the entire bundle atomically. Runtime
+selects the newest owner policy; missing coverage, changed hashes, expired contracts,
+disabled modules or insufficient current capabilities fail without fallback.
+Tickets v8 approves versions2–8 and reuses existing canonical preflight/snapshot
+logic through `tickets.ticket.required_coverage@1` (preflight/snapshot only).
+Existing v1–7 hashes and migration/representation/settlement ranges stay sealed;
+creation v8 explicitly extends existing proof-bound field-version approval.
+
+Internal `fields/required-coverage.ts` checks a server-loaded immutable candidate
+without changing activation. Genuine company identity or the existing explicitly
+audited support principal, Publish, Studio enablement, native Read/Manage and
+independent target/source/written/reference field policies apply. Full private
+access is checked before IDs/counts. Pages include final/merged/unanchored native
+records; exact cursor/count/revision reconciliation and current source-graph/value
+checks run inside the owning Serializable transaction. Empty cohorts still validate
+all declared metadata. Returned count/fingerprint is internal transaction evidence,
+not durable approval or a grant. No new DDL or publication endpoint. IMPLEMENTED
+locally with95 focused checks/build/types/lint; actual central probe and deployment
+pending. Native/common-lock/initial-writer/window prerequisites remain d4 before
+conditional authoring dispatch. Full Phase2 and visual designer remain unfinished.
+
+### Reviewed conditional field evolution — 10 October checkpoint
+
+The existing field evolution analyser now exposes a pure v1/v2 impact entry: rule
+addition/change/removal requires reviewed generation replacement; cosmetic labels
+preserve storage. Explicit migration packet v2 seals normalised intent/review and
+ordered observations containing references/requirement evaluation checksums only.
+Legacy v1 parsers/converters/digests/owner ranges remain closed and unchanged.
+These helpers grant no business access, persistence or execution. Real conditional
+inspection, additive SQL guards, existing execution/cutover/settlement adaptation
+and shared native locks/enforcement must precede authoring dispatch. No new engine.
+
+### Studio reviewed migration format approval — 11 October 2026
+
+Snapshot/representation/settlement policies may explicitly pin closed ordered
+`intentVersions` (1 or 2); omission preserves legacy1 JSON and hashes. A v2 entity
+snapshot/representation approval must match the pinned callback's hashed
+`fieldMigration` entity/purpose/version declaration, plus existing owning module,
+native write capability and required shared transaction. Representation support
+must be contained by snapshot support. Current settlement selection rejects an
+unsupported newest format without fallback. Existing Tickets1–8 and owner-query
+ranges remain unchanged. These contracts do not enable v2 authoring, persistence,
+execution or native mutation; actual owner implementation and remaining Phase2
+migration/lock/runtime gates are still required.
+
+### Studio migration metadata inspection — 11 October 2026
+
+The existing preparation, collection, coverage and written-value inspection paths
+share `fields/migrations/metadata.ts`. Their retained v1 intent/payload parsers
+remain closed and compilation/hash meaning is unchanged. The internal v2 compiler
+branch requires the existing genuine-principal Serializable source provider and
+uses its locked registry/current/pinned dependency graph to compile the full rule,
+including empty cohorts. It does not read business values, invoke native facts,
+persist a v2 preparation or permit authoring/execution. Actual stored-intent
+selection, per-row evaluation and additive SQL guards are the next integration gate.
+
+### Shared Studio rule-input reads — 11 October 2026
+
+Ordinary validation uses the internal `fields/required-inputs.ts` reader after full
+metadata inspection. It retains every native/private/current/pinned/written/reference
+check and uses the actual opaque creation gateway, accepting no supplied fact data.
+Condition value evidence excludes revision envelopes; ordinary fingerprints still
+include native/global extension revisions. This allows upcoming migration evaluation
+to reuse the same reader while independently checking the exact original/own-outcome
+revision lineage. Equal condition evidence grants no drift waiver or execution right.
+
+### Studio real per-row conditional migration review — 11 October 2026
+
+The internal preparation-only `inspectRequiredFieldMigrationRecord` refreshes
+actual Serializable authentication, current customer/audited support identity and
+server company/source/draft state. Both full source and compiled server-target rules
+and owner/query format opt-in precede native/condition/value reads. Current/pinned/
+written/reference access is checked independently. Shared source decoding and
+structural conversion preserve legacy v1 gates/hashes; conditional evaluations can
+only strengthen unconditional required. Null/empty multi are absent, zero/false
+present; missing source INVALID_SOURCE, evaluated missing target FIELD_REQUIRED.
+Archive wrappers return references/semantic checksums only. Exact native/global
+revision envelopes remain separate; equality never waives drift. No v2 durable
+preparation/archive/owner/execution/authoring/native hook is enabled by this readonly
+component. Actual persistence/owner/central proof and later stage/lock gates remain.
+
+### Studio server-stored migration format selection — 11 October 2026
+
+Internal `migrations/stored-protocol.ts` selects closed intent/review1/2 solely from
+server-loaded JSON and verifies canonical hashes/tenant/row identity. It grants no
+owner or data authority. Existing preparation/collection/sealing explicitly route
+1/2 from server metadata with full authority/metadata/owner approval; unknown/coerced/
+missing versions never fall back. Actual format2 owning callbacks/runtime acceptance
+are VERIFIED for normal prepare/collect/seal. Reviewed publication is implemented
+below; execution/cutover remain closed1 until their explicit lineage is delivered.
+
+### Required migration archive integrity — 11 October 2026
+
+The additive required-field-reviews migration extends the existing preparation and
+observation guards with explicit numeric2 metadata branches; legacy1 guards and
+immutable history/FKs/CAS remain. Requirement evidence stores only two semantic
+checksums and a required boolean. Real condition evaluation, owner approval and
+revision envelopes remain server responsibilities. The existing aggregate retains
+frame1 bytes and adds frame2 behind exact stored parent identity/hash verification.
+This integrity substrate does not enable format2 preparation, authoring or domain
+execution. The central Test SQL fixture uses synthetic semantic hashes, rolls back
+every attempt, and checks that native, typed, draft, metadata and Audit state is
+unchanged; it must not be reported as real format2 owner/condition/runtime proof.
+
+### Required migration preparation/review routing — 11 October 2026
+
+The existing engine derives protocol from saved source/draft or stored intent only.
+Conditional preparation requires an exact canonical saved draft; it never silently
+edits/normalizes metadata or accepts a client-selected protocol. Snapshot approval
+must name both entity and callback intent coverage and native write capability.
+Required preparation-only review refreshes genuine authority, validates owner/source/
+written metadata before archive IDs/counts, then reevaluates actual authorised rows
+in bounded pages. Matching conversions/hashes do not waive changed conditions or
+native/global revisions. Pure/SQL archive framing must agree before the existing
+CAS/Audit sealer writes. Reference coverage shares the retained helper. Empty cohorts
+still require actual authority/metadata/owner checks. Actual current-owner normal
+prepare/collect/seal APIs are VERIFIED live a475823. Reviewed publication is now
+implemented below; execution/settlement/native hooks and public conditional authoring
+remain gated.
+
+## Current Tickets review callback compatibility — 11 October 2026
+
+Tickets native9 declares explicit intent1/2 coverage through snapshot4 and
+representation2. Settlement2 covers retained native5 format1 plus native9 with
+explicit source/reference ranges. New owner contracts must not reinterpret old
+metadata/receipts or depend on a mutable current draft for historical operations.
+Stored intent/review tenant/identity/checksum and exact canonical private/revision
+checks precede approval; packet shape remains strict. Descriptor existence and unit
+fixtures do not prove the normal conditional migration runtime; consult Studio ledger.
+
+## Reviewed conditional publication contract — 11 October 2026
+
+Owning snapshot/private/native/reference and actual condition coverage still precede
+publication. The existing publisher selects closed1/2 from stored intent/review;
+immutable target publication and replay use explicit conditional stage inspection.
+It retains source activation and all native/typed values. Shared metadata publication
+saves the actual plan schemaVersion (2 for conditional rules, 1 for rule removal),
+with reviewed Core binding/CAS/dependencies and both Audits atomically. Ordinary
+conditional authoring stays disabled. Recorded format2 execution cannot replay by
+falling back to source-active publication inspection. Local checks PASS; actual
+central Test publication/replay/cancellation/both Audit rollbacks VERIFIED on bafa1c2
+candidatebseb8V/publicZrTQuH, both ALL COMBINED PASS. Actual conditional execution/
+cutover/native writer integration remains unfinished; pure integrity is not execution.
+
+11 October2026: a separate internal execution2 coverage prerequisite reuses existing
+source-active RUNNING/READY/FAILED execution/source/outcome/target guards. Complete
+owning private preflight precedes SQL freshness; current representation query must
+explicitly support protocol2. Caller owns refreshed locked authority; actual row/
+condition/review inspection remains required. Legacy entry closed1; conditional
+start/batch/cutover/authoring still unavailable. Local63/types/lint/build/diff PASS;
+SQL/private unit fixtures do not prove actual conditional execution. No DDL/engine.
+Original0d315f7/46009 candidateMTZpXy/publicVvzibi BOTH ALL COMBINED PASS, exact
+public health. Existing conditional review/publication and module regressions verified
+live; normal execution2 remains unavailable until actual row/outcome inspection.

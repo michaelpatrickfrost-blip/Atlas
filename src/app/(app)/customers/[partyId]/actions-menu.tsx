@@ -29,7 +29,7 @@ export function HeaderActionsMenu({ actions }: { actions: CustomerOverviewAction
         <ChevronDown size={14} strokeWidth={2} className={`transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div role="menu" className="absolute right-0 top-full z-20 mt-2 w-56 rounded-2xl border border-[var(--color-border)] bg-white p-1.5 shadow-lg">
+        <div role="menu" className="absolute left-0 top-full z-20 mt-2 w-56 rounded-2xl border border-[var(--color-border)] bg-white p-1.5 shadow-lg sm:left-auto sm:right-0">
           {actions.map((action) => (
             <Link
               key={action.href + action.label}

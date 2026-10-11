@@ -345,6 +345,33 @@ async function main() {
         path,
       );
     };
+    phase = "customer menu layering";
+    for (const [name, width, height] of [["desktop", 1448, 1086], ["tablet", 820, 1180], ["phone", 390, 844]] as const) {
+      await page.setViewportSize({ width, height });
+      await visit(page, `/customers/${seed.account.id}`);
+      for (const label of ["Actions", "Manage Record"]) {
+        const trigger = page.getByRole("button", { name: label, exact: true });
+        await trigger.click();
+        const menu = page.getByRole("menu");
+        await expect(menu).toBeVisible();
+        assert(await menu.evaluate((node) => {
+          const rect = node.getBoundingClientRect();
+          return rect.left >= 0 && rect.right <= innerWidth;
+        }), `${name}: ${label} menu fits viewport`);
+        for (const item of await menu.getByRole("menuitem").all()) {
+          await item.scrollIntoViewIfNeeded();
+          assert(await item.evaluate((node) => {
+            const rect = node.getBoundingClientRect();
+            return node.contains(document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2));
+          }), `${name}: ${label} item is above page content`);
+        }
+        await page.screenshot({ path: `${output}/customer-${label.replaceAll(" ", "-")}-${name}.png` });
+        await trigger.click();
+        await expect(menu).toHaveCount(0);
+      }
+    }
+    await page.setViewportSize({ width: 1448, height: 1086 });
+    console.log("PASS customer Actions and Manage Record menus above content at desktop/tablet/phone.");
     phase = "customer-scoped hierarchy";
     await visit(page, `/customers/${seed.account.id}?tab=relationships`);
     await expect(page.locator("[data-journey-stage]")).toHaveCount(0);

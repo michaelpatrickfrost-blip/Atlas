@@ -1,3 +1,5 @@
+import { TaskNotifications } from "@/components/shell/task-notifications";
+import { MyTasksPanel } from "@/components/shell/my-tasks";
 import { MessageDraftProvider } from "@/components/shell/message-drafts";
 import { GuardianObserver } from "@/components/shell/guardian-observer";
 import { redirect } from "next/navigation";
@@ -10,5 +12,5 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const session = await getSession();
   if (!session) redirect("/login");
 
-  return <MessageDraftProvider key={`${session.organisationId}:${session.userId}`}><ShellChrome topbar={<Topbar session={session} />} homeNavigation={<HomeNavigation session={session} />}><GuardianObserver />{children}</ShellChrome></MessageDraftProvider>;
+  return <MessageDraftProvider key={`${session.organisationId}:${session.userId}`}><TaskNotifications><MyTasksPanel /><ShellChrome topbar={<Topbar session={session} />} homeNavigation={<HomeNavigation session={session} />}><GuardianObserver />{children}</ShellChrome></TaskNotifications></MessageDraftProvider>;
 }

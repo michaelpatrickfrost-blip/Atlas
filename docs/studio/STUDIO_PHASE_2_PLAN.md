@@ -5,6 +5,16 @@ Sections 6.4–8, 14, 17–19, 22, 25–28. Phase 1 gate passed and is retained.
 Michael now requests continued ordered implementation, an administration-only
 Atlas console without the business app/tool shell, and the modern Atlas UI.
 
+## Current source coverage check — 11 October 2026
+
+The full supplied document has been re-read and original checksum confirmed.
+STUDIO_SPECIFICATION_COVERAGE.md maps every Phase2 deliverable and retains all later
+source requirements. Michael accepts the duration and requests complete adherence.
+Maintain foundation-first order. All fields/record-types/pages/generated runtime/
+visual preview/customer publication requirements remain part of Phase2; technical
+field checkpoint acceptance is not its phase gate. Ledger current dashboard
+supersedes dated running-session/next-step notes retained below.
+
 ## Immediate companion workstream — Admin shell separation
 
 Purpose: /atlas routes must not inherit business Apps, global search, chat,
@@ -27,7 +37,7 @@ Studio/Admin, Home and Reports acceptance; visible browser UI checked).
 | ID | Purpose and dependencies | Expected files | Database implications | Verification | Status |
 | --- | --- | --- | --- | --- | --- |
 | 2A | Owner-approved entity/extension contracts; inspect existing fields/page/settings before adding systems. Depends on Phase 1 registry. | core/studio/registry, owner manifests/services, contract inventory, MODULE_SPEC | None for contracts | Unique IDs, schema/hash compatibility, tenant and native access, protected native fields | VERIFIED; candidate/public owner checks PASS |
-| 2B | Versioned custom-field definitions, typed values, lifecycle/validation and indexed/unique strategies. Depends on 2A and metadata kernel. | core/studio/fields, compiler dispatch, schema/migration | Additive tenant-owned field/value models, stable identity/history, relational/index constraints; no canonical entity copy | Types/required/uniqueness, two tenants, access, retirement/history, atomic writes | IN PROGRESS; 2B1/2B2 verified live, 2B3a next |
+| 2B | Versioned custom-field definitions, typed values, lifecycle/validation and indexed/unique strategies. Depends on 2A and metadata kernel. | core/studio/fields, compiler dispatch, schema/migration | Additive tenant-owned field/value models, stable identity/history, relational/index constraints; no canonical entity copy | Types/required/uniqueness, two tenants, access, retirement/history, atomic writes | IN PROGRESS; 2B1/2B2 and review/batches/receipt storage verified live; authorised cutover/rollback/finalization and ordinary current/history reads verified live53c05ae; atomic ordinary saves verified62201ae; required native hooks remain |
 | 2C | Record types and shallow deterministic configuration resolution. Depends on 2A–B. | core/studio/definitions, compiler, record-type policies | Versioned metadata; canonical record associations only where approved | Base + one overlay, deterministic precedence/conflict rejection, incompatible references | NOT STARTED |
 | 2D | Structured page schemas/compiler, variants, dependency impact and validation. Depends on 2A–C. | core/studio/pages, compiler, compatibility | Published metadata/dependency graph | Safe components/references, mobile representation, permission visibility, no arbitrary scripts/SQL | NOT STARTED |
 | 2E | Modern customer builders and generated list/detail/form runtime at approved record surfaces; staff setup stays Admin. Depends on 2B–D. | modules/studio, customer Studio routes, owning record surfaces, design primitives | No independent business datastore | Real create/edit/read, field permissions, hidden components not queried, native domain rules retained, desktop/tablet/phone | NOT STARTED |
@@ -36,7 +46,9 @@ Studio/Admin, Home and Reports acceptance; visible browser UI checked).
 Each workstream must be reviewed, tested and checkpointed before the next begins.
 
 2B subworkstreams are detailed in STUDIO_PHASE_2_FIELDS.md. 2B1 typed validation
-library is VERIFIED locally; persistence/evolution/atomic services are not completed.
+library and 2B2 persistence are VERIFIED; review/publication/batches/receipt storage
+are VERIFIED live. Authorised cutover service and settlement storage are VERIFIED on full combined
+candidate/public proof; rollback/finalization and ordinary current/history reads VERIFIED live53c05ae; atomic saves VERIFIED live62201ae; required native hooks remain.
 Michael's visual/easy-setup requirements for 2E are in
 STUDIO_VISUAL_BUILDER_REQUIREMENTS.md and form part of its acceptance gate.
 Do not mark VERIFIED from code or schema existence. Reconcile the implementation
@@ -80,3 +92,67 @@ technical references. 2E is split before implementation into these dependencies:
 Do not display unsupported choices as working. These are explicit Phase 2 owner/UI
 integration workstreams once 2B–2D pass, not permission to implement later Flow,
 Process, Packages or broad module migration early.
+
+10 October f4b2 continuation checkpoints: a fixes active-vs-latest ordinary field
+binding with real cancelled-source label/help publish/activate proof (VERIFIED
+666efeb full candidate/public PASS, no DDL); b adds forward0008 generation/open-freeze/settled
+cosmetic activation guards and exact Test storage proof (IMPLEMENTED locally; runtime gate pending). See field
+evolution plan and execution ledger. Phase2 remains IN PROGRESS.
+
+10 October f4b2b IMPLEMENTED locally: forward0008 integrity-function changes only,
+no Prisma/table/backfill/reset. Source-first freeze and definition locking, retained
+completed sources/obsolete targets, approved active schema and same-generation
+label/help activation. Nested exact Test RB/FINAL continuation and real subsequent
+reviewed-publication helpers added to the existing acceptance pipeline. Central
+fullDDL BEGIN/ROLLBACK compatibility and cosmetic/generation/structure/malformed
+checks PASS with no persistent changes;55files343 regression/build/scoped lint/
+strict post-build TS PASS. Actual new helper runtime proof/candidate/public gate
+pending; not VERIFIED, no production settlement/value API or visual-designer claim.
+Exact next: reviewed clean checkpoint, pinned full Studio release, investigate any
+actual helper failure without weakening guards; then f4c/d and2B4 before2C/D/2E.
+
+F4b2b VERIFIED10 October1109UTC: exactf1a9bf1 candidatezDzdGq/publici1zMEw
+ALL COMBINED PASS, runner65486 exit0. Both nested terminal cosmetics/owner fixture
+and actual subsequent reviewed publication source-first freeze PASS; source/target/
+receipt/native history retained.0008 applied, no model/table/backfill/reset. Local
+55files343/build/types/lint PASS. Current/public exact, previous666efeb and168GiBfree
+verified; retention only retired inactive1d7f558 runtime output. Phase2 not passed;
+nextf4c1 historical/current settlement inspection before shared service/Audit/replay
+and2B4 normal owner forms. Visual2E remains required after2B–D. See ledger.
+
+## 10 October 2026 — f4c/d VERIFIED live1146UTC; next2B4a
+
+Exacta527ccdf3832c16da541e6a0df650b06e90d1e8e full candidate1qikYT/publicWMNUWf
+ALL COMBINED PASS; runner96792 exit0. Actual retained/open/terminal/post-cosmetic
+inspector, independent-current-customer rollback/finalize, both rollback Audit
+failures and finalization Audit failure, concurrent exactly-once CAS/Audit, fresh
+revocation/private/module/tenant/session checks, changed-extension rollback denial
+but finalization, continued cosmetics/writes/new-publication history replay and
+source-first freeze PASS in both stages. Native snapshots unchanged. Dashboards/
+Home/Settings/Reports/MRP/Messages/private Admin/Supply/Commercial/People allPASS;
+no reported browser errors.60files372/build/strict post-build TS/scoped lint/diff
+PASS. No schema/model/migration/backfill/reset/native/UI changes in this checkpoint.
+Required backup113558, fixtures113732/114133; no ad-hoc dumps. Retention retired
+only inactive666efeb runtime output; source/static/history/data/backups retained.
+Current/public exacta527ccd, previousf1a9bf1, atlas active, PG18main online/login200,
+root168GiBfree/14%used. Original locks idle verified using read-only file descriptors
+after plain flock open was denied; neither original file removed/replaced.
+Files: shared cutover identity; settlement receipt/inspector/coverage/services;
+registry owner policy and Tickets query; Test helpers/fixtures/five focused suites;
+MODULE_SPEC/decisions/field plan/ledger/current state. Source checkpoints35d471a,
+fa100f7,a527ccd. Evidence /tmp/atlas-studio-f4cd-live-deploy.txt and private stage dirs.
+Phase2 remains IN PROGRESS: ordinary values, required-if/native hooks, record types/
+pages/search and visual business/Sales/document/dashboard builder still outstanding.
+Exact next:2B4a ordinary operator authority and read compiler, then2B4b scoped
+current/history gateway. Preserve write/source/module/native/current+written checks;
+operators must not require authoring/write grants to read permitted fields.
+
+## 10 October — latest execution order
+
+Michael restored foundation-first dependency order. Finish d3d central proof, then
+d3e reviewed evolution, d4 shared native/field lock order and atomic writer/window
+integration, d5 gate, remaining 2B/2C/2D, then visual 2E. Unfinished document designer
+source is preserved in Git stash `28243b7fbe1bccd0458d770177aee24ce9607aec`
+(IN PROGRESS, unverified, not live). Do not restore its superseded planning entries.
+Keep focused checks proportionate and consolidate builds/releases per coherent
+block; security/integrity and phase gates remain mandatory.

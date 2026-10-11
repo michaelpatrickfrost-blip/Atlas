@@ -165,3 +165,147 @@ records approved actual hours/source timesheets. Drafts do not advance YTD.
 New tables stay closed to generic desktop queries; named permissioned readers
 serve their workspaces. Sensitive pay setup remains outside generic HR reads.
 See docs/plans/PEOPLE_PLATFORM_OVERHAUL.md for calculation and integration limits.
+
+
+## Studio field review archive — Phase 2 checkpoint
+
+StudioFieldMigrationPreparation pins the exact tenant-owned source version and
+storage generation, draft identity and frozen conversion intent. State/revision
+changes are separate from that immutable identity. StudioFieldMigrationReview seals
+one review per operation; StudioFieldMigrationObservation retains native IDs and
+source extension/slot/value revisions with immutable value fingerprints. Composite
+foreign keys preserve tenant/field/generation links. A new target/mapping requires
+a new operation. No business values are copied into review metadata, and generic
+desktop reads remain denied. These additive archive models do not provide a
+preview API, migration executor or cutover; see the Studio ledger for actual
+migration/constraint verification status.
+
+
+Studio field preparation service pins the server-loaded active source and target
+draft into the existing immutable archive under SERIALIZABLE and identity/profile/
+source locks. Matching operation UUID replay returns the same preparation without
+another Audit; stale/changed/cancelled intent requires a new review. Starting writes
+no field values, target generation or activation. See the Studio ledger for actual
+candidate/public proof versus locally implemented services. No new schema here.
+
+
+The migration observation helper fetches source pointer and immutable written-schema
+metadata before business columns, checks current/written policy and schema hashes,
+then decodes exact typed values. Referenced-owner denials abort; closed invalid
+source/target classes never copy raw values into observation metadata. It returns
+references/revisions plus a conversion fingerprint; persistence/sealing remains a
+separate workstream. No native data or target values are changed by observation.
+
+Studio field review collection uses the existing immutable archive in short
+Serializable transactions: refresh stored actor and policies, prove pinned source/
+draft/compiler/owner identity, derive the cursor from saved observations, append
+1–50 rows with preparation revision CAS and existing Audit atomically. Replaying
+an old revision does not advance. Cursor exhaustion is not sealed coverage or
+permission to execute; exact source/native review sealing follows separately. No
+new schema, target value or protected native write is introduced by collection.
+
+Source coverage validation delegates exact canonical membership/revisions to the
+owner, then locks and compares every current extension/slot/value pointer against
+immutable observations and checks distinct written-schema ACL/checksums without
+value columns. Equal native counts are insufficient. This internal prerequisite
+returns no data or approval; references, uniqueness and digest/state/Audit sealing
+remain required before an executable reviewed operation.
+
+Field review sealing derives the existing v1 canonical ordered digest and closed
+counts from immutable archive metadata inside the fresh source/native/written
+policy transaction. It rejects duplicate non-null converted fingerprints when
+target uniqueness is required, then inserts the same-operation immutable review,
+preparation REVIEWED/revision CAS and Audit atomically. Fresh sealed replay writes
+nothing; changed source invalidates it. Failed/lossy rows remain visible as review
+summary, never execution authority. No target publication or activation occurs.
+Reference fields additionally require explicit same-entity approved versions and
+pinned owning-domain reference coverage before aggregate/review, including replay.
+Tickets entity v4/query v2 implements actual canonical target existence/tenant/kind
+and complete current-member/private access; legacy/missing opt-in denies review.
+Reference coverage VERIFIED on 32ee77e full candidate/public acceptance. The service is internal and not a public/desktop generic-data endpoint.
+
+
+Reviewed publication (2B3d1–d4 VERIFIED candidate/public ea27b2f): StudioFieldMigrationPublication
+binds the immutable review to a distinct target generation/version/checksum and
+publisher/loss acknowledgement. An additive partial unique index permits only one
+PUBLISHED operation per field/tenant; retained identity is immutable and cancellation
+requires state/revision CAS. Exact post-publication metadata freshness does not
+relax earlier preparation freshness. Pending generation activation and normal
+target writes are denied; open source/draft/metadata changes freeze until cancellation
+or later reviewed execution/cutover. Native domain operations remain unchanged.
+The schema is not a migration executor; actual SQL constraints passed central candidate/public acceptance.
+
+
+The reviewed publisher and sparse cancellation service use the shared metadata
+publisher and exact review inspector. Migration 20261010040000 applied successfully;
+actual candidate/public receipt/freeze/Audit rollback/replay/cancellation/runtime
+constraints passed in ea27b2f. No target values/executor/cutover or public migration
+action is exposed. Native operations and permission architectures are retained.
+
+
+Execution persistence (2B3e2b VERIFIED candidate/public f5bb914):
+StudioFieldMigrationExecution retains exact publication/owner-policy pin and CAS
+state RUNNING/READY/FAILED/CANCELLED, cursor and count. Immutable
+StudioFieldMigrationOutcome binds the scoped source observation to exact target
+extension revision/slot/value; deferred FKs and commit guards require target and
+progress together. Only recorded own increments can explain source extension changes.
+Normal source saves and premature target activation stay denied. Cancellation of
+publication atomically cancels execution and retains outcomes, without business reads.
+The original preparation/publication freshness is unchanged; a separate execution
+proof validates source and target lineage. New generic models/counts remain denied.
+20261010050000 applied in central preparation (backup 20261010-042335). Exact
+candidate/public f5bb914 proof covers owner-approved final/unanchored/scalar rows,
+atomic/deferred progress and mid-batch/start/batch Audit rollback, process death,
+new-process resume, private/tenant/history/cancel/source compatibility. Both native
+tenant snapshots unchanged. No cutover/ordinary value gateway or visual builder yet;
+final RUNNING batch+failure-marker Audit proof and cancellation revision reserve also
+passed in 8d6eb9e complete candidate/public acceptance after PostgreSQL disk-event
+recovery. Migration remains applied; no reset, restore or SQL repair. Recovery backup
+and earlier failed candidate evidence are preserved in the Studio ledger.
+
+2B3f1 defines a pure closed cutover identity (no new model/migration or activation).
+It binds current READY execution/review/publication and source-active definition CAS,
+with explicit unchanged-representation rollback limits. Eight focused and 257 scoped
+regression assertions, build/types/lint PASS; actual authorised-row identity proof
+passed in 080e4d7 complete candidate/public acceptance. Receipt storage is now VERIFIED5f5fce5; atomic activation is VERIFIED9aad1fc complete candidate/public. Rollback/value gateway/visual builder remain pending.
+
+2B3f2 storage checkpoint (VERIFIED on 5f5fce5 complete candidate/public;0006 APPLIED):
+StudioFieldMigrationCutover has scoped execution and source/target immutable-version
+FKs, closed f1 pin/checksum and retained publisher/history. Additive 20261010060000
+requires receipt, PUBLISHED→CUTOVER CAS and exact source→target/revision+1 pointer
+together with deferred proof. Old freshness stays source-active; source/target and
+configuration remain frozen at this checkpoint. No normal-write or production
+activation/rollback API. Central backed-up DDL rollback and 257 scoped assertions/
+build/types/lint PASS; actual central rollback-only storage guards passed candidate/public. Generic
+receipt reads/counts denied; unchanged 905 actions. See Studio ledger.
+
+2B3f3 activation service checkpoint (VERIFIED9aad1fc complete candidate/public): no schema
+change. Strict current READY review/publication/definition confirmation creates the
+retained receipt, CASes publication and reuses the platform activator/source-pointer
+CAS with paired Audit in one refreshed-authority Serializable transaction. Replay
+checks actual receipt/target-active metadata and retained source/target coverage,
+then owning native/private/current/written/reference/unique policies. Old freshness
+unchanged; normal values/rollback remain closed. 286 local assertions/build/types/
+lint PASS; actual candidate/public service proof PASS, including both paired-Audit
+failures, concurrent CAS/raw conflict, fresh replay and current access revocation. See Studio ledger.
+
+F4b1 settlement storage (VERIFIED1d7f558 candidate/public actual Test proof): additive
+20261010070000 adds nullable settlement pin/checksum/actor/time; original0006
+ACTIVATED receipts and immutable source/target/conversion history remain compatible.
+Only ACTIVATED/revision0→ROLLED_BACK or FINALIZED/revision1, with matching
+CUTOVER→ROLLED_BACK or COMPLETED publication and exact source-restored or target-
+retained pointer, can commit. Terminal receipt update/delete remains denied. One
+open receipt per tenant/field. Rollback storage additionally requires unchanged
+source/target representation; metadata-only finalization closes the rollback
+window even if other extension data changed. SQL identity shape does not prove
+current native/private access; production current-authority services follow.
+Production settlement services and ordinary owner value APIs remain pendingf4c–d/2B4.
+
+F4b2b continuation (VERIFIEDf1a9bf1 candidate/public actual terminal/subsequent-publication proof): forward20261010080000 replaces integrity functions
+only; no table/model/backfill changes. Definition locking serializes publication and
+storage eligibility. ANY open source freeze precedes historical completed-target
+eligibility. Completed sources and obsolete targets stay closed; resumed related
+writes require nonretired tenant-owned active compatible schema. Only field label/help
+cosmetics can activate within that active generation, without bypassing open freezes
+or exact reviewed cutover/rollback. Immutable histories retained. Privileged exact
+Test fixture acceptance is not a production domain-write permission grant. See ledger.

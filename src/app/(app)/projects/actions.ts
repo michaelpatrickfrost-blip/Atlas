@@ -75,10 +75,28 @@ export async function createTask(form:FormData){
 }
 export async function changeTaskStatus(id:string,form:FormData){
  const session=await requireSession();
- assertCapability(session,'projects.manage');await assertModuleEnabled(session,'projects');const task=await requireTask(session,id,true),status=choice(text(form,'status'),TASK_STATUSES,'task status');
- await db.$transaction(async tx=>{if(status==='DONE'){if(await tx.projectTask.count({where:{organisationId:session.organisationId,parentTaskId:id,status:{notIn:['DONE','CANCELLED']}}}))throw new Error('Finish the subtasks first.');if(await tx.projectChecklistItem.count({where:{organisationId:session.organisationId,taskId:id,done:false}}))throw new Error('Finish the checklist first.');if(await tx.projectDependency.count({where:{organisationId:session.organisationId,successorId:id,predecessor:{status:{notIn:['DONE','CANCELLED']}}}}))throw new Error('A prerequisite is still incomplete.');}
+ assertCapability(session,'projects.manage');
+ await performTaskStatusChange(session,id,form);
+}
+/** Same source-owned lifecycle, restricted to the signed-in person's assigned work. */
+export async function changeAssignedTaskStatus(id:string,form:FormData){
+ const session=await requireSession();
+ assertCapability(session,'projects.manage');
+ await performTaskStatusChange(session,id,form,true);
+}
+async function performTaskStatusChange(session:Session,id:string,form:FormData,assignedOnly=false){
+ await assertModuleEnabled(session,'projects');const task=await requireTask(session,id,true),status=choice(text(form,'status'),TASK_STATUSES,'task status');
+ await db.$transaction(async tx=>{
+ if(assignedOnly){
+  const current=await tx.projectTask.findFirst({where:{AND:[taskScope(session),{id},{OR:[{assigneeUserId:session.userId},{contributorUserIds:{has:session.userId}}]}]},include:{project:{include:{members:true}}}});
+  if(!current)throw new Error('This task is no longer assigned to you.');
+  const p=current.project;
+  if(p&&(p.archivedAt||(p.ownerUserId!==session.userId&&!p.members.some(m=>m.userId===session.userId&&['LEAD','MANAGER','MEMBER','CONTRIBUTOR'].includes(m.role))&&!(p.visibility==='COMPANY'&&!p.ownerUserId))))throw new Error('You have read-only access to this project.');
+  if(!p&&current.creatorUserId!==session.userId&&current.assigneeUserId!==session.userId)throw new Error('Only the task owner can edit personal work.');
+ }
+ if(status==='DONE'){if(await tx.projectTask.count({where:{organisationId:session.organisationId,parentTaskId:id,status:{notIn:['DONE','CANCELLED']}}}))throw new Error('Finish the subtasks first.');if(await tx.projectChecklistItem.count({where:{organisationId:session.organisationId,taskId:id,done:false}}))throw new Error('Finish the checklist first.');if(await tx.projectDependency.count({where:{organisationId:session.organisationId,successorId:id,predecessor:{status:{notIn:['DONE','CANCELLED']}}}}))throw new Error('A prerequisite is still incomplete.');}
  conflict((await tx.projectTask.updateMany({where:{id,organisationId:session.organisationId,version:integer(form.get('version'),1,2147483646,'version')},data:{status,completedAt:status==='DONE'?new Date():null,version:{increment:1}}})).count);
- if(status==='DONE'&&task.status!=='DONE'&&task.recurrence){const next=nextOccurrence(task.dueAt??new Date(),task.recurrence);await tx.projectTask.create({data:{organisationId:session.organisationId,projectId:task.projectId,title:task.title,description:task.description,assigneeUserId:task.assigneeUserId,creatorUserId:session.userId,visibility:task.visibility,priority:task.priority,estimatedMinutes:task.estimatedMinutes,recurrence:task.recurrence,dueAt:next,reference:`TASK-${crypto.randomUUID().slice(0,8).toUpperCase()}`}});}if(task.status!==status&&['DONE','BLOCKED'].includes(status))await applyTaskAutomations(tx,session,task,status==='DONE'?'TASK_COMPLETED':'TASK_BLOCKED',task.version+1);await event(tx,session,status==='DONE'?'TaskCompleted':'TaskStatusChanged','ProjectTask',id,{status});});refresh();
+ if(status==='DONE'&&task.status!=='DONE'&&task.recurrence){const next=nextOccurrence(task.dueAt??new Date(),task.recurrence);await tx.projectTask.create({data:{organisationId:session.organisationId,projectId:task.projectId,title:task.title,description:task.description,assigneeUserId:task.assigneeUserId,creatorUserId:session.userId,visibility:task.visibility,priority:task.priority,estimatedMinutes:task.estimatedMinutes,recurrence:task.recurrence,dueAt:next,reference:`TASK-${crypto.randomUUID().slice(0,8).toUpperCase()}`}});}if(task.status!==status&&['DONE','BLOCKED'].includes(status))await applyTaskAutomations(tx,session,task,status==='DONE'?'TASK_COMPLETED':'TASK_BLOCKED',task.version+1);await event(tx,session,status==='DONE'?'TaskCompleted':'TaskStatusChanged','ProjectTask',id,{status});},{isolationLevel:'Serializable'});refresh();
 }
 export async function editTask(id:string,form:FormData){
  const session=await requireSession();

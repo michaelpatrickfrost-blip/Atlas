@@ -27,7 +27,7 @@
   --radius-atlas-sm: 12px;
   --radius-atlas-md: 18px;
   --radius-atlas-lg: 28px;
-  --atlas-topbar: 7.5rem;
+  --atlas-topbar: 6rem;
   --shadow-atlas: 0 1px 1px rgba(16, 24, 40, 0.04), 0 16px 40px -24px rgba(16, 24, 40, 0.28);
   --shadow-atlas-lg: 0 30px 70px -36px rgba(16, 24, 40, 0.45);
 
@@ -46,7 +46,7 @@
 }
 
 @media (min-width: 640px) {
-  :root { --atlas-topbar: 4.75rem; }
+  :root { --atlas-topbar: 3.75rem; }
 }
 
 @theme inline {
@@ -230,7 +230,9 @@ main :where(.rounded-2xl, .rounded-3xl, .rounded-\[28px\]):where(.border, .borde
   border-color: rgba(255, 255, 255, 0.9);
   background: #fff;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04), 0 16px 40px -24px rgba(0, 0, 0, 0.22);
-  backdrop-filter: blur(18px);
+  /* Solid cards need no blur: a filter creates a stacking context that traps
+     descendant menus underneath later cards, even with a menu z-index. */
+  backdrop-filter: none;
 }
 .atlas-home-shell .atlas-launcher-card {
   border-color: #e6edf7;
@@ -263,3 +265,31 @@ details[open] > summary::after { transform: rotate(180deg); }
 /* Mobile: one scroll container (main); stop the page behind it rubber-banding or scrolling sideways. */
 html, body { overflow-x: hidden; overscroll-behavior: none; }
 main { -webkit-overflow-scrolling: touch; padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }
+
+/* Small workspace utilities share a quiet, right-hand slide-out. */
+.atlas-side-panel {
+  position: fixed;
+  inset: 8px 8px 8px auto;
+  margin: 0;
+  padding: 0;
+  width: min(560px, calc(100vw - 16px));
+  max-width: none;
+  height: calc(100dvh - 16px);
+  max-height: none;
+  overflow: hidden;
+  border: 1px solid #dbeafe;
+  border-radius: 24px;
+  background: white;
+  color: #1e293b;
+  box-shadow: -16px 0 70px -24px rgb(17 47 103 / 28%);
+}
+.atlas-side-panel::backdrop { background: rgb(15 23 42 / 12%); animation: atlas-drawer-shade 240ms ease-out; }
+.atlas-side-panel[data-closing]::backdrop { animation: atlas-drawer-unshade 240ms ease-in forwards; }
+@keyframes atlas-drawer-shade { from { background: transparent; } to { background: rgb(15 23 42 / 12%); } }
+@keyframes atlas-drawer-unshade { from { background: rgb(15 23 42 / 12%); } to { background: transparent; } }
+@media (min-width: 640px) {
+  .atlas-side-panel { inset: 16px 16px 16px auto; height: calc(100dvh - 32px); width: min(560px, calc(100vw - 32px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atlas-side-panel::backdrop { animation: none; }
+}

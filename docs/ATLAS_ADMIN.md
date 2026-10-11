@@ -198,3 +198,13 @@ indexing policies passed. Existing staff credentials/grants were not changed;
 correct staff password handling is unit-verified and the live staff checks use an
 existing signed QA session. Isolated Test-company users were suspended afterward.
 See CURRENT_STATE for private evidence/backups and the full-suite limitation.
+
+## Studio business setup — 10 October 2026
+
+Studio begins with the selected business's setup. The visual screen/document/
+dashboard designer remains unfinished in Phase2; the entry page states availability
+explicitly. Named reference-set records are optional Advanced setup, closed by
+default. Existing metadata history and server permissions are preserved. Reference
+version comparison explains descriptions and added/removed/changed selections in
+plain language; draft checks show readiness/review instead of JSON or hashes.
+This is foundation UI clarity, not verification of the dependent visual builder.

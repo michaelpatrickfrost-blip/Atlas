@@ -21,6 +21,10 @@ cat "$STUDIO_EVIDENCE/acceptance.log"
 ATLAS_HOME_MENU_CHECK=1 ATLAS_HOME_MENU_URL="$STUDIO_URL" node --env-file=.env.local --import tsx scripts/check-home-menu.ts > "$STUDIO_EVIDENCE/home-acceptance.log" 2>&1 || { cat "$STUDIO_EVIDENCE/home-acceptance.log"; exit 1; }
 cat "$STUDIO_EVIDENCE/home-acceptance.log"
 
+pg_dump "${DATABASE_URL%%\?*}" -Fc -f "$STUDIO_EVIDENCE/pre-settings.dump"
+NODE_ENV=production ATLAS_SETTINGS_CHECK=1 ATLAS_SETTINGS_URL="$STUDIO_URL" ATLAS_SETTINGS_EVIDENCE="$STUDIO_EVIDENCE/settings" timeout 240s node --env-file=.env.local --import tsx scripts/check-company-settings.ts > "$STUDIO_EVIDENCE/settings.log" 2>&1 || { cat "$STUDIO_EVIDENCE/settings.log"; exit 1; }
+cat "$STUDIO_EVIDENCE/settings.log"
+
 ATLAS_REPORTS_CHECK=1 ATLAS_REPORTS_URL="$STUDIO_URL" node --env-file=.env.local --import tsx scripts/check-reports.ts > "$STUDIO_EVIDENCE/reports.log" 2>&1 || { cat "$STUDIO_EVIDENCE/reports.log"; exit 1; }
 cat "$STUDIO_EVIDENCE/reports.log"
 

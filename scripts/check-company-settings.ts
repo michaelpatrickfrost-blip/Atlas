@@ -722,9 +722,7 @@ async function main() {
     ).toBeVisible();
     await target.page.goto("/finance/banking");
     await expect(
-      target.page.getByRole("heading", {
-        name: /restricted|permission|Something went wrong/,
-      }),
+      target.page.getByText("Banking is restricted", { exact: true }),
     ).toBeVisible();
     await expect(
       target.page.getByRole("heading", { name: "Banking", exact: true }),

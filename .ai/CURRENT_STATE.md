@@ -1,3 +1,17 @@
+## 11 October 2026 — Company-user candidate stopped on denial-message selector
+
+Pinned 2e95fec candidate built/smoked and passed personal Settings, reusable/mixed
+profiles, stale/self/foreign profile guards, member overrides/session revocation,
+company restrictions, account details, wrong admin-password/stale rejection, direct
+password assignment, real sign-in and one-use recovery with credential-free Audit.
+Native banking denial rendered correctly as an EmptyState paragraph; checker wrongly
+expected a heading and safely stopped before activation. Live ad9d5a43 unchanged.
+Backup atlas-pre-deploy-20261011-153031; private candidate evidence
+/tmp/atlas-settings-candidate-up8yeD. Exact Test access retired, history retained.
+Checker now targets the exact actual denial paragraph. Strict types/checker lint/
+whitespace rerun PASS. Runtime source is unchanged from the locally passed build.
+Next: fresh pinned candidate/public acceptance including procurement and layouts.
+
 ## 11 October 2026 — Company account controls and detailed access ready for live acceptance
 
 Company account tabs now expose company-only name/email editing, direct password

@@ -312,3 +312,13 @@ CAS/Audit sealer writes. Reference coverage shares the retained helper. Empty co
 still require actual authority/metadata/owner checks. No public authoring or format2
 publication/execution/settlement/native hooks; actual owner2 callbacks and central
 runtime proof are mandatory before enabling the feature.
+
+## Studio current Tickets reviewed representation contracts — 11 October 2026
+
+Native9 and new owning snapshot4/representation2/settlement2 contracts add explicit
+migration formats1/2 while retaining every old descriptor/hash. Current callbacks
+load immutable scoped source/review evidence; retained history never assumes an
+editable draft. Native5 settlement preserves format1 only. Owner approval concerns
+representation, not a business mutation or Studio permission grant. Full conditional
+runtime/native writer integration is still gated. See the Studio source coverage map
+and permanent ledger for scope and verification; Phase2 is unfinished.

@@ -1,3 +1,16 @@
+## 11 October 2026 — Current Tickets callbacks retain immutable migration history
+
+Register new native9/query4/representation2/settlement2 contracts rather than widen
+old descriptor hashes. Both explicit intent formats route through existing owner
+code. Current callbacks validate actual stored preparation/review mirrors and source
+hashes after complete canonical/private preflight. History/settlement must not depend
+on an editable current draft. Native5 format1 retains the exact old settlement path;
+unknown formats/unsupported owner coverage fail without fallback. Extended model
+selection requires explicit {review,checksum} projection for the old strict parser.
+Representation approval does not permit protected native/domain mutations. Required
+semantic evidence must come from authorised actual row evaluation, not synthetic
+hashes; the rollback-only Test fixture is not normal format2 runtime acceptance.
+
 ## 11 October 2026 — Required review rechecks actual conditions in the existing engine
 
 Derive preparation intent1/2 from saved source/draft and collection/sealing from

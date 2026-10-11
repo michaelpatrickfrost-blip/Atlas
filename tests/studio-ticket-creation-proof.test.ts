@@ -88,7 +88,7 @@ it("uses explicit current v8 coverage and proof-bound facts for legacy fields wi
     retained = proof;
     const source = authority.registry.describe("tickets.ticket", 2), context = { session: authority.session, transaction: tx };
     const current = await authority.registry.resolveCurrentFieldInitialisation(authority.session, source);
-    expect(current.owner.version).toBe(8); expect(current.source.version).toBe(2);
+    expect(current.owner.version).toBe(9); expect(current.source.version).toBe(2);
     expect(await authority.registry.authoriseCurrentFieldInitialisation(context, source, proof)).toMatchObject({ recordId: "new", revision: 1 });
     expect(await authority.registry.invokeInitialRecordFacts(context, source, proof)).toEqual({ recordId: "new", organisationId: "company", revision: 1, fields: { status: "NEW", priority: "HIGH" } });
     expect(m.row).toHaveBeenCalledWith({ where: { id: "new", organisationId: "company", kind: "TICKET", version: 1 },
@@ -130,7 +130,7 @@ it("fails closed for unsupported latest coverage, exact source hashes and change
     const contribution = ticketStudioContract.contributions.find(c => c.metadata.id === "tickets.ticket" && c.metadata.version === 7)!;
     const details = entityDetailsSchema.parse(contribution.metadata.details);
     const changed = { ...details, record: { ...details.record!, initialisation: { ...details.record!.initialisation!, acceptedFieldVersions: [7] } } };
-    authority.registry.register("tickets", { contributions: [{ ...contribution, metadata: { ...contribution.metadata, version: 9, details: changed, schemaHash: checksum(changed) } }] });
+    authority.registry.register("tickets", { contributions: [{ ...contribution, metadata: { ...contribution.metadata, version: 10, details: changed, schemaHash: checksum(changed) } }] });
     await expect(authority.registry.resolveCurrentFieldInitialisation(authority.session, source)).rejects.toThrow("current owner does not approve");
   });
 });

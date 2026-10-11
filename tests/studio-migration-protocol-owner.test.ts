@@ -18,13 +18,13 @@ function registry() { const r = new CapabilityRegistry(async () => true); r.regi
 function owner(snapshotVersions: (1 | 2)[] = [2], representationVersions: (1 | 2)[] = [2]): Contribution {
   const details = entityDetailsSchema.parse(entity.metadata.details), record = details.record!;
   const changed = { ...details, record: { ...record,
-    migrationSnapshot: { ...record.migrationSnapshot!, query: { id: snapshot.metadata.id, version: 4 }, intentVersions: snapshotVersions },
-    migrationRepresentation: { ...record.migrationRepresentation!, query: { id: representation.metadata.id, version: 2 }, intentVersions: representationVersions } } };
-  return { ...entity, metadata: { ...entity.metadata, version: 9, details: changed, schemaHash: checksum(changed) } };
+    migrationSnapshot: { ...record.migrationSnapshot!, query: { id: snapshot.metadata.id, version: 5 }, intentVersions: snapshotVersions },
+    migrationRepresentation: { ...record.migrationRepresentation!, query: { id: representation.metadata.id, version: 3 }, intentVersions: representationVersions } } };
+  return { ...entity, metadata: { ...entity.metadata, version: 10, details: changed, schemaHash: checksum(changed) } };
 }
 function callback(base: Contribution, purpose: "snapshot" | "representation", intentVersions: (1 | 2)[] = [2]): Contribution {
   // Test-only callbacks never invoke the legacy implementation with a new intent.
-  return { metadata: { ...base.metadata, version: base === snapshot ? 4 : 2,
+  return { metadata: { ...base.metadata, version: base === snapshot ? 5 : 3,
     details: { ...base.metadata.details, fieldMigration: { entityId: "tickets.ticket", purpose, intentVersions } } }, run: vi.fn() };
 }
 it("omission preserves exact legacy-only meaning and existing Tickets contract hashes", () => {
@@ -58,21 +58,21 @@ it("an entity cannot reinterpret old callbacks as conditional migration support;
   details.record!.migrationSnapshot!.query = { id: snapshot.metadata.id, version: 3 };
   candidate.metadata = { ...candidate.metadata, details, schemaHash: checksum(details) };
   expect(() => r.register("tickets", { contributions: [candidate, callback(representation, "representation")] })).toThrow("protocol approval");
-  expect(() => r.describe("tickets.ticket", 9)).toThrow("missing");
-  expect(() => r.describe(representation.metadata.id, 2)).toThrow("missing");
+  expect(() => r.describe("tickets.ticket", 10)).toThrow("missing");
+  expect(() => r.describe(representation.metadata.id, 3)).toThrow("missing");
   expect(r.describe("tickets.ticket", 8)).toEqual(before);
 });
 it("pins entity and actual callback approvals independently without changing old source ranges or granting native writes", async () => {
   const r = registry(), old = r.describe("tickets.ticket", 8), oldQuery = r.describe(snapshot.metadata.id, 3);
   r.register("tickets", { contributions: [owner(), callback(snapshot, "snapshot"), callback(representation, "representation")] });
-  const latest = r.describe("tickets.ticket", 9), details = entityDetailsSchema.parse(latest.details);
+  const latest = r.describe("tickets.ticket", 10), details = entityDetailsSchema.parse(latest.details);
   expect(latest.contractHash).not.toBe(old.contractHash);
   expect(details.record!.migrationSnapshot!.sourceVersions).toEqual([2, 3, 4, 5]);
   expect(supportsFieldMigrationIntent(details.record!.migrationSnapshot, 1)).toBe(false);
   expect(supportsFieldMigrationIntent(details.record!.migrationSnapshot, 2)).toBe(true);
-  expect(supportsFieldMigrationQueryIntent(r.describe(snapshot.metadata.id, 4), latest.id, "snapshot", 2)).toBe(true);
+  expect(supportsFieldMigrationQueryIntent(r.describe(snapshot.metadata.id, 5), latest.id, "snapshot", 2)).toBe(true);
   expect(r.describe("tickets.ticket", 8)).toEqual(old); expect(r.describe(snapshot.metadata.id, 3)).toEqual(oldQuery);
-  await expect(r.invoke(session, r.describe(snapshot.metadata.id, 4), {})).rejects.toThrow("shared server transaction");
+  await expect(r.invoke(session, r.describe(snapshot.metadata.id, 5), {})).rejects.toThrow("shared server transaction");
 });
 it("rejects mismatched callback purpose, canonical owner, permission, transaction and protocol atomically", () => {
   const base = callback(snapshot, "snapshot");
@@ -82,16 +82,16 @@ it("rejects mismatched callback purpose, canonical owner, permission, transactio
     { ...base, metadata: { ...base.metadata, details: { ...base.metadata.details, fieldMigration: { entityId: "finance.ticket", purpose: "snapshot", intentVersions: [2] } } } }]) {
     const r = registry();
     expect(() => r.register("tickets", { contributions: [owner(), bad, callback(representation, "representation")] })).toThrow();
-    expect(() => r.describe("tickets.ticket", 9)).toThrow("missing");
-    expect(() => r.describe(snapshot.metadata.id, 4)).toThrow("missing");
+    expect(() => r.describe("tickets.ticket", 10)).toThrow("missing");
+    expect(() => r.describe(snapshot.metadata.id, 5)).toThrow("missing");
   }
 });
 it("current settlement covers intent formats explicitly and never falls back to an older query", async () => {
   const r = registry(), source = r.describe("tickets.ticket", 2), target = r.describe("tickets.ticket", 5);
-  await expect(r.resolveFieldSettlement(session, source, target, 2)).rejects.toThrow("current owning-domain coverage");
-  r.register("tickets", { contributions: [{ ...settlement, run: vi.fn(), metadata: { ...settlement.metadata, version: 2,
+  expect((await r.resolveFieldSettlement(session, source, r.describe("tickets.ticket", 9), 2)).version).toBe(2);
+  r.register("tickets", { contributions: [{ ...settlement, run: vi.fn(), metadata: { ...settlement.metadata, version: 3,
     details: { ...settlement.metadata.details, fieldSettlement: { ...fieldSettlementPolicySchema.parse(settlement.metadata.details.fieldSettlement), intentVersions: [2] } } } }] });
   await expect(r.resolveFieldSettlement(session, source, target)).rejects.toThrow("current owning-domain coverage");
-  expect((await r.resolveFieldSettlement(session, source, target, 2)).version).toBe(2);
+  expect((await r.resolveFieldSettlement(session, source, target, 2)).version).toBe(3);
   await expect(r.resolveFieldSettlement({ ...session, capabilities: new Set(["tickets.ticket.read"]) }, source, target, 2)).rejects.toThrow("FORBIDDEN");
 });

@@ -1,3 +1,16 @@
+## Current checkpoint — 11 October 2026
+
+Actual Tickets owner/native9/query4/representation2/settlement2 VERIFIED locally:
+138cases/19suites, strict types/scoped lint/production build/diff PASS. Central
+positive fixture now calls actual observeRequiredFieldMigrationRecord and
+inspectRequiredFieldMigrationReview; real SQL proof pending. No DDL/public conditional
+authoring or publication/execution/cutover/settlement dispatch added. Retained
+native5 format1 and old descriptor hashes preserved; legacy packet projection fixed.
+Source audited again; STUDIO_SPECIFICATION_COVERAGE.md accounts for all Phase2 and
+later requirements. Preserve foundation-first order, not a visual shortcut.
+Next: original pinned combined release; then normal format2 API/runtime/native hooks.
+Old running-session/next-step notes below are historical and superseded by the ledger.
+
 # Phase2B4d — required rules and native transaction integration
 
 10 October 2026. Source Sections6.5,14,23–28. Depends on ordinary read/write
@@ -820,3 +833,21 @@ C3 local66/7/TS74927/lint59309/build55330/diff PASS. Exact next: commit/pin/rele
 c3 five migration services + required-contract comment and focused tests/docs under
 original Studio gates; then actual dual-format Tickets callbacks/new current owner.
 WholePhase2 gate remains unpassed. Visual stash28243b7 unchanged for2E.
+
+## 11 October 2026 — e2b3d actual owner callbacks IN PROGRESS
+
+C3e395962 is pinned in runner40543 (UTC083206 required pre-release recovery);
+keep HEAD fixed. Next coherent owner block modifies core/service-work/studio.ts
+only after examining actual snapshot/reference/representation/settlement/creation
+contracts. Add new query4/representation2/settlement2 and native9 together, only
+with implemented support for retained1 + explicit2. Keep every old descriptor,
+array, callback branch/hash intact. New source versions2–9 and references1–9;
+current settlement covers old native5 plus new9 targets, never falls back. New
+current creation/candidate coverage explicitly retains2–8 and adds9. No DDL or
+native/domain/value mutation; owning queries approve scoped immutable representation
+only. Tests: actual callback/private/tenant/Serializable/source/review/hash/revision
+and legacy compatibility, plus current creation/candidate/no fallback. Core format2
+execution/publication/authoring remains gated; real central review proof follows.
+Status IN PROGRESS. Exact next: implement trusted stored preparation/review selection
+in the existing owner callbacks and the new explicit descriptors, then focused tests.
+WholePhase2 remains unpassed; no later phase or visual2E jump.

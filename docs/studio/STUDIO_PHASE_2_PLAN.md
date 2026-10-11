@@ -5,6 +5,16 @@ Sections 6.4–8, 14, 17–19, 22, 25–28. Phase 1 gate passed and is retained.
 Michael now requests continued ordered implementation, an administration-only
 Atlas console without the business app/tool shell, and the modern Atlas UI.
 
+## Current source coverage check — 11 October 2026
+
+The full supplied document has been re-read and original checksum confirmed.
+STUDIO_SPECIFICATION_COVERAGE.md maps every Phase2 deliverable and retains all later
+source requirements. Michael accepts the duration and requests complete adherence.
+Maintain foundation-first order. All fields/record-types/pages/generated runtime/
+visual preview/customer publication requirements remain part of Phase2; technical
+field checkpoint acceptance is not its phase gate. Ledger current dashboard
+supersedes dated running-session/next-step notes retained below.
+
 ## Immediate companion workstream — Admin shell separation
 
 Purpose: /atlas routes must not inherit business Apps, global search, chat,

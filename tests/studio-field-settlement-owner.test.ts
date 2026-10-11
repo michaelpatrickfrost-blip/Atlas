@@ -36,7 +36,7 @@ it("requires owner transactional registration and rejects foreign/unsupported de
 });
 it("latest unsupported policy does not silently fall back to an old settlement version", async () => {
   const policy = ticketStudioContract.contributions.find(item => item.metadata.id === "tickets.ticket.field_settlement")!;
-  f.registry.register("tickets", { contributions: [{ ...policy, metadata: { ...policy.metadata, version: 2,
+  f.registry.register("tickets", { contributions: [{ ...policy, metadata: { ...policy.metadata, version: 3,
     details: { ...policy.metadata.details, fieldSettlement: { entityId: "tickets.ticket", sourceVersions: [3], targetVersions: [5], referenceVersions: [1] } } } }] });
   await expect(f.registry.resolveFieldSettlement(currentActor(), f.intent.source.payload.entity, f.intent.target.payload.entity)).rejects.toThrow("current owning-domain coverage");
 });

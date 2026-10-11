@@ -532,3 +532,13 @@ CAS/Audit sealer writes. Reference coverage shares the retained helper. Empty co
 still require actual authority/metadata/owner checks. No public authoring or format2
 publication/execution/settlement/native hooks; actual owner2 callbacks and central
 runtime proof are mandatory before enabling the feature.
+
+## Current Tickets review callback compatibility — 11 October 2026
+
+Tickets native9 declares explicit intent1/2 coverage through snapshot4 and
+representation2. Settlement2 covers retained native5 format1 plus native9 with
+explicit source/reference ranges. New owner contracts must not reinterpret old
+metadata/receipts or depend on a mutable current draft for historical operations.
+Stored intent/review tenant/identity/checksum and exact canonical private/revision
+checks precede approval; packet shape remains strict. Descriptor existence and unit
+fixtures do not prove the normal conditional migration runtime; consult Studio ledger.

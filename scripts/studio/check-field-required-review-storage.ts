@@ -11,10 +11,13 @@ import { compileFieldMigrationMetadata } from "../../src/core/studio/fields/migr
 import { requiredFieldMigrationObservationDigest, sealRequiredFieldMigrationIntent, sealRequiredFieldMigrationReview,
   type RequiredFieldMigrationObservation } from "../../src/core/studio/fields/migrations/required-contracts";
 import { digestRequiredFieldMigrationArchive } from "../../src/core/studio/fields/migrations/archive-digest";
+import { observeRequiredFieldMigrationRecord } from "../../src/core/studio/fields/migrations/observation";
+import { inspectRequiredFieldMigrationReview } from "../../src/core/studio/fields/migrations/inspection";
 
-/** Privileged exact Test SQL integrity fixture only. Uses full real metadata
- * compilation but synthetic semantic hashes to exercise archive shape/framing,
- * not owner format2 approval, condition validity, publication or execution.
+/** Exact Test archive fixture. Positive rows/coverage/inspection use actual
+ * required-input/owner services; negative packets exercise SQL shape only.
+ * Preparation/sealing writes are privileged rollback-only fixtures, not the
+ * normal preparation/collection/CAS/Audit API or publication/execution proof.
  * Every attempt is rolled back; existing native/typed/metadata/Audit snapshots
  * must be unchanged. No new company, native operation, permission or dump. */
 export async function checkRequiredFieldReviewStorage(session: Session, principal: FieldMigrationPrincipal, definitionId: string) {
@@ -38,7 +41,7 @@ export async function checkRequiredFieldReviewStorage(session: Session, principa
     const definition = await tx.studioDefinition.findFirstOrThrow({ where: { id: definitionId, organisationId }, include: { activeVersion: true, draft: true } });
     assert(definition.activeVersion && definition.draft);
     const source = customFieldPayloadSchema.parse(definition.activeVersion.payload), draft = customFieldPayloadSchema.parse(definition.draft.payload);
-    const registry = studioRegistry(), entity = registry.describe("tickets.ticket", 8), ownerQuery = registry.describe("tickets.ticket.field_migration", 3);
+    const registry = studioRegistry(), entity = registry.describe("tickets.ticket", 9), ownerQuery = registry.describe("tickets.ticket.field_migration", 4);
     // Existing owner preflight guards canonical/private access before IDs/counts.
     await registry.invokeQueryInTransaction({ session, transaction: tx }, ownerQuery, { mode: "preflight" });
     const proposed = conditionalFieldPayloadSchema.parse({ ...draft, schemaVersion: 2,
@@ -55,11 +58,16 @@ export async function checkRequiredFieldReviewStorage(session: Session, principa
     return { intent: sealed.intent, data: { id: sealed.intent.id, organisationId, definitionId, entityId: entity.id, sourceVersionId: definition.activeVersion.id,
       sourceGenerationId: source.storageGeneration, draftId: updated.id, targetGenerationId: proposed.storageGeneration, intent: sealed.intent, intentChecksum: sealed.checksum } };
   }
-  async function records(tx: Prisma.TransactionClient, intent: Awaited<ReturnType<typeof setup>>["intent"]) {
+  async function records(tx: Prisma.TransactionClient, intent: Awaited<ReturnType<typeof setup>>["intent"], evaluate = false) {
     const native = await tx.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, select: { id: true, version: true }, orderBy: { id: "asc" } });
     assert(native.length > 1);
     const rows: RequiredFieldMigrationObservation[] = [];
     for (const record of native) {
+      if (evaluate) {
+        rows.push(await observeRequiredFieldMigrationRecord({ session, transaction: tx }, intent,
+          { recordId: record.id, organisationId, revision: record.version }));
+        continue;
+      }
       const extension = await tx.studioExtensionRecord.findFirst({ where: { organisationId, entityId: "tickets.ticket", recordId: record.id },
         include: { slots: { where: { definitionId, generationId: intent.source.payload.storageGeneration }, include: { activeValue: true } } } });
       const slot = extension?.slots[0], value = slot?.activeValue;
@@ -83,11 +91,17 @@ export async function checkRequiredFieldReviewStorage(session: Session, principa
   }
   await assert.rejects(db.$transaction(async tx => {
     const fixture = await setup(tx), job = await tx.studioFieldMigrationPreparation.create({ data: fixture.data });
-    const stream = requiredFieldMigrationObservationDigest(), rows = await records(tx, fixture.intent);
+    const stream = requiredFieldMigrationObservationDigest(), rows = await records(tx, fixture.intent, true);
+    assert(rows.some(row => row.result.kind === "valid" && !row.result.isNull && row.result.targetFingerprint === checksum({ type: "decimal", value: "0" })));
+    assert(rows.some(row => row.result.kind === "invalid" && row.result.code === "FIELD_REQUIRED"));
     for (const row of rows) { stream.append(row); await tx.studioFieldMigrationObservation.create({ data: rowData(job.id, fixture.intent, row) }); }
     const expected = stream.finish(), actual = await digestRequiredFieldMigrationArchive(tx, fixture.intent);
     assert.deepEqual(actual, { ...expected, duplicateTarget: false });
     const review = sealRequiredFieldMigrationReview({ ...fixture.intent, cohort: { recordCount: actual.recordCount, observationDigest: actual.observationDigest }, summary: actual.summary });
+    const inspected = await inspectRequiredFieldMigrationReview({ session, transaction: tx }, fixture.intent);
+    assert.deepEqual(inspected, review);
+    await assert.rejects(() => observeRequiredFieldMigrationRecord({ session: { ...session }, transaction: tx }, fixture.intent,
+      { organisationId, recordId: rows[0].recordId, revision: rows[0].nativeRevision }), /authenticated company access/);
     await tx.studioFieldMigrationReview.create({ data: { id: job.id, organisationId, definitionId, review: review.review, checksum: review.checksum } });
     await tx.studioFieldMigrationPreparation.update({ where: { id: job.id }, data: { state: "REVIEWED", revision: 1 } });
     await tx.auditEntry.create({ data: { organisationId, actorUserId: session.userId, action: "studio.required_archive.rollback_fixture", entityType: "StudioFieldMigrationPreparation", entityId: job.id } });
@@ -122,5 +136,5 @@ export async function checkRequiredFieldReviewStorage(session: Session, principa
     }, { isolationLevel: "Serializable", timeout: 30_000 }), /requirement evidence|preview result|immutable source|unsealed/i);
   }
   assert.deepEqual(await snapshot(), before);
-  console.log("PASS conditional archive SQL integrity: exact real source refs, closed2 requirement/result shape, rejected unknown/coerced/raw metadata, required-null failures, sealed append denial, SQL/pure ordered digest equality and complete native/typed/draft/metadata/Audit rollback; no format2 owner/condition/execution approval.");
+  console.log("PASS conditional archive SQL integrity and actual native9/query4 row review: real authorised source/target conditions, present zero and required unanchored failures, canonical owner coverage before IDs/counts, copied-session denial, bounded actual review inspection, exact source refs/closed2 shape, malformed and sealed denials, SQL/pure ordered digest equality and complete native/typed/draft/metadata/Audit rollback; privileged preparation/sealing fixture, not normal v2 API/publication/execution acceptance.");
 }

@@ -1,3 +1,52 @@
+## 11 October 2026 — Studio source audit and actual Tickets owner locally VERIFIED
+
+Michael clarified that time is acceptable; complete adherence to the supplied
+specification matters. Re-read full unchanged source; original/repository SHA256
+4afb01d98ead51cd70ec4958620eb9d27a19a0298cd0fa1cb8bd0aee69d9198d matches.
+New docs/studio/STUDIO_SPECIFICATION_COVERAGE.md maps source phases0–9, all Phase2
+requirements and cross-cutting/later requirements, without rewriting the source.
+Ledger now starts with all mandatory current headings; old checkpoint notes are
+explicitly historical. Preserve foundation-first order; no Phase3, phase2 gateFAIL
+(incomplete), visual/designer not yet delivered. Do not infer completed field
+services mean completed Phase2 or complete Studio.
+
+c3 e3959624c2ba65f61fcd29bec9b12cc21933670d VERIFIED live: original40543 completed
+Deployed; candidateZRGhyd/publicsuHccl ALL COMBINED PASS; exactpublicSHA confirmed.
+Required UTC083206/083340/083751 recovery only; rollbacke5ab126 retained, original
+both-lock retention retired cdec6c6 duplicate runtime only.
+
+Current owner checkpoint: actual Tickets native9/snapshot4/representation2/settlement2
+supports explicit1/2 with retained old descriptors/hashes and native5format1 history.
+Private/member/module/Serializable preflight, exact stored source/review hashes and
+identity, principal/queue/revision checks preserved. Ordinary protected native data
+is not mutated. Central positive archive fixture uses actual required row observation
+and inspection; synthetic negative shape cases prove SQL integrity only. Actual
+central proof still pending, no format2 authoring/publication/execution claim.
+Local138 tests/19suites PASS53975, strictTS88342/lint84027/build93836 exit0/diffPASS.
+Legacy settlement packet projection bug caught/fixed; old native7hash exact.
+No newDDL/schema/models/business data/dumps. Main/Desktop and visual stash unchanged.
+Exact next: reviewed commit/pinned original Studio deployment; inspect real positive
+conditional fixture/rollback evidence before claiming live VERIFIED; finish normal
+format2 review/execution/native-hook coverage, then2C/D/E and wholePhase2gate.
+
+## 11 October 2026 — e2b3d actual owner callbacks IN PROGRESS
+
+C3e395962 is pinned in runner40543 (UTC083206 required pre-release recovery);
+keep HEAD fixed. Next coherent owner block modifies core/service-work/studio.ts
+only after examining actual snapshot/reference/representation/settlement/creation
+contracts. Add new query4/representation2/settlement2 and native9 together, only
+with implemented support for retained1 + explicit2. Keep every old descriptor,
+array, callback branch/hash intact. New source versions2–9 and references1–9;
+current settlement covers old native5 plus new9 targets, never falls back. New
+current creation/candidate coverage explicitly retains2–8 and adds9. No DDL or
+native/domain/value mutation; owning queries approve scoped immutable representation
+only. Tests: actual callback/private/tenant/Serializable/source/review/hash/revision
+and legacy compatibility, plus current creation/candidate/no fallback. Core format2
+execution/publication/authoring remains gated; real central review proof follows.
+Status IN PROGRESS. Exact next: implement trusted stored preparation/review selection
+in the existing owner callbacks and the new explicit descriptors, then focused tests.
+WholePhase2 remains unpassed; no later phase or visual2E jump.
+
 ## 11 October 2026 — c2 archive integrity VERIFIED live e5ab126
 
 Original runner37255 exit0; candidateRDpurM/publicv8yyRV ALL COMBINED PASS.

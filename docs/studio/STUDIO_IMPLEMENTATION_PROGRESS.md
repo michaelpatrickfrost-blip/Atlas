@@ -1,15 +1,168 @@
 # Atlas Studio implementation progress
 
-Updated: 11 October 2026.
+Updated: 11 October 2026. The current dashboard below supersedes historical next
+steps. Dated evidence remains below; do not treat old plans as current execution.
 
 # Current Phase
 
 Phase 2 — Fields, record types and pages — IN PROGRESS. Phase 0/1 gates PASS.
-Michael reconciled the source mismatch on 9 October: “do all as a plan do 1 then
-once done contiune”. Use the supplied Section 27 sequence; complete prerequisites
-and Phase 1 first, then proceed sequentially only after each gate passes.
+The unchanged supplied document defines phases 0–9 in Section 27. Michael resolved
+the original five-phase wording on 9 October: proceed in that document's order.
+No Phase 3 feature may start before the complete Phase 2 gate passes.
 
 # Current Workstream
+
+2B required-field evolution: actual Tickets owning callbacks (e2b3d), VERIFIED
+locally; central actual conditional row-review evidence pending. Keep foundation-
+first order. On 11 October Michael clarified that duration is acceptable; complete
+coverage of the supplied specification matters. See STUDIO_SPECIFICATION_COVERAGE.md.
+
+# Overall Status
+
+IN PROGRESS. Registry and metadata kernel passed their gates. Phase 2 delivers
+fields AND record types AND structured pages; safe field services alone cannot
+pass it. The existing capability-set form is foundation tooling, not the visual
+Studio. Source DOCX checksum matches the original attachment exactly:
+4afb01d98ead51cd70ec4958620eb9d27a19a0298cd0fa1cb8bd0aee69d9198d.
+Full source re-read and exact Section 27 / Sections 6–8,18,24–29 mapping reviewed.
+
+# Completed Workstreams
+
+- Phase 0 registry/adapters and Phase 1 metadata kernel: VERIFIED, gate PASS.
+- Separate Admin console, staff/business login boundaries and administrator business
+  user provisioning: VERIFIED earlier; compatibility remains in release acceptance.
+- Phase 2A owner contracts: VERIFIED.
+- 2B field types, storage, legacy reviewed conversion/batches/cutover/rollback,
+  ordinary current/history reads and atomic value saves: VERIFIED in recorded live
+  checkpoints. Required-if/native integration and customer authoring remain incomplete.
+- Required review routing c3: VERIFIED live e3959624c2ba65f61fcd29bec9b12cc21933670d;
+  candidate ZRGhyd/public suHccl ALL COMBINED PASS. Immediate rollback e5ab126.
+- Current Tickets native9/query4/representation2/settlement2 callbacks: VERIFIED
+  locally, not yet central/live verified. All retained descriptors/hashes remain.
+
+# Current Workstream Detail
+
+Source requirements: 6.5 server required-if, 14 inherited security, 24 reviewed
+resumable evolution, 25 concurrency/compatibility, 26 release recovery. Extend the
+existing owner callbacks; do not create a second engine. Current source versions
+2–9/reference versions1–9; target9; explicitly retained native5 format1 settlement.
+Actual stored preparation/review identity and hashes precede count/row approval;
+private/member/module/Serializable/native revision checks remain. Owner callbacks
+approve representation only. Central rollback-only Test fixture now uses actual
+required observation and inspection instead of synthetic semantic evidence for
+its positive case. Full normal format2 API, publication/execution/cutover/settlement,
+native writer hooks, search, record types and visual pages remain separate unfinished
+work. No conditional authoring is enabled by this checkpoint.
+
+# Files Changed
+
+Current checkpoint: core/service-work/studio.ts; scripts/studio/check-field-required-
+review-storage.ts; actual current-owner test; required observation/routing and
+legacy owner/creation/cutover fixture tests; architecture/module docs; required-rule
+plan; specification coverage map; this ledger; .ai/CURRENT_STATE.md/DECISIONS.md.
+Inspect git diff/status for the exact paths; shared Desktop checkout is untouched.
+
+# Database / Prisma Changes
+
+No new schema/model/DDL in the current owner checkpoint. Reuse the existing
+archive/value/metadata models and tenant constraints; no native/business writes.
+
+# Migrations Applied
+
+Previously applied additive 20261011010000 required-review archive and corrective
+20261011020000 JSON precedence guards. The first candidate failed before activation;
+correction preserved its applied checksum/history. No reset/backfill/purge.
+
+# Tests Added
+
+Actual current Tickets owner tests: 8 cases, including retained format1/native5,
+stored identity/hash/tenant denial, private preflight, actual immutable reference
+inputs, exact principal/revision, dual-format representation and settlement. The
+positive central archive fixture now calls the actual conditional reader/inspector;
+central evidence still pending.
+
+# Tests Run
+
+138 tests /19 focused suites PASS (53975); strict TypeScript 88342 exit0; scoped
+ESLint 84027 exit0; production build 93836 exit0; final diff review/check PASS.
+Logs: /tmp/atlas-studio-e2b-owner-final-tests.txt and
+/tmp/atlas-studio-e2b-owner-{types,lint,build}.txt.
+Previous c3 release candidate/public ALL COMBINED PASS; exact public release SHA
+confirmed. Current owner's new central fixture has not yet run.
+
+# Test Results
+
+VERIFIED locally only for the current owner block. A real legacy settlement bug
+was caught by expanded actual model-row selection: retain strict packet parsing
+with explicit review/checksum projection. Obsolete future-owner expectations were
+moved above the newly registered actual versions, not relaxed. The actual native7
+contract hash remains exact. Mocked transactions do not prove central execution.
+
+# Architecture Decisions
+
+Retain one migration engine and explicit owner/query protocol coverage. Current
+callbacks load immutable intent/review for retained execution/history; never assume
+an editable draft. Native5 settlement delegates the exact old closed format1 path.
+The coverage map traces requirements; it does not rewrite the source or turn its
+whole-system checklist into a claim that later engines belong in Phase 2.
+
+# Known Issues
+
+Phase 2 gate unpassed. Format2 review owner central proof pending. Format2 normal
+API/publication/execution/cutover/settlement and native create/save lock hooks remain
+unfinished. No customer field editor/search, record types, page compiler/generated
+runtime or accepted visual Studio yet. No blocker justifies weakening requirements.
+
+# Deferred Items
+
+Phase 3 Decisions/Approvals;4 durable events;5 Flow;6 Automations migration;7 Process;
+8 packages/environments;9 broad adoption. These remain architectural context.
+Phase 2 visual/document/dashboard bespoke builders are required remaining work,
+not deferred to a later phase. Preserved visual stash28243b7 is IN PROGRESS and
+unverified, not active software; do not restore superseded planning entries.
+
+# Acceptance Gate Status
+
+Phase 0 PASS; Phase 1 PASS; Phase 2 FAIL (incomplete, not ready for gate evaluation).
+Maintain all Phase 2 workstreams and security/compatibility requirements. Section29
+is whole-system acceptance; source Sections6–8/18/24–28 govern the current layer.
+No later-phase work started and no complete Studio claim.
+
+# Exact Next Action
+
+Commit the reviewed actual-owner block with updated memory; pin and deploy it using
+the original combined Studio candidate/public gates. Investigate any failure in
+check-field-required-review-storage.ts without weakening its positive actual row
+inspection or rollback. Then finish normal format2 review/API and reviewed runtime
+integration in the existing services (publication, execution, cutover, settlement),
+followed by native writer hooks; only then continue 2C record types /2D pages /2E
+visual authoring and actual customer runtime. Use the coverage map to account for
+all requirements at each checkpoint, not the length of the historical ledger.
+
+# Historical checkpoint evidence
+
+The following dated notes record what was known at their checkpoints. Next actions,
+running sessions and live pointers here may be superseded by the dashboard above.
+
+## 11 October 2026 — e2b3d actual owner callbacks IN PROGRESS
+
+C3e395962 is pinned in runner40543 (UTC083206 required pre-release recovery);
+keep HEAD fixed. Next coherent owner block modifies core/service-work/studio.ts
+only after examining actual snapshot/reference/representation/settlement/creation
+contracts. Add new query4/representation2/settlement2 and native9 together, only
+with implemented support for retained1 + explicit2. Keep every old descriptor,
+array, callback branch/hash intact. New source versions2–9 and references1–9;
+current settlement covers old native5 plus new9 targets, never falls back. New
+current creation/candidate coverage explicitly retains2–8 and adds9. No DDL or
+native/domain/value mutation; owning queries approve scoped immutable representation
+only. Tests: actual callback/private/tenant/Serializable/source/review/hash/revision
+and legacy compatibility, plus current creation/candidate/no fallback. Core format2
+execution/publication/authoring remains gated; real central review proof follows.
+Status IN PROGRESS. Exact next: implement trusted stored preparation/review selection
+in the existing owner callbacks and the new explicit descriptors, then focused tests.
+WholePhase2 remains unpassed; no later phase or visual2E jump.
+
+
 
 ## 11 October 2026 — c2 archive integrity VERIFIED live e5ab126
 

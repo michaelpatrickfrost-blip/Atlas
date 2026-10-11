@@ -10,8 +10,6 @@ vi.mock("@/core/studio/fields/migrations/observation", () => ({ observeFieldMigr
 vi.mock("@/core/studio/registry/runtime", () => ({ studioRegistry: () => registry }));
 import { CapabilityRegistry } from "@/core/studio/registry/registry";
 import { ticketStudioContract } from "@/core/service-work/studio";
-import { entityDetailsSchema } from "@/core/studio/registry/entities";
-import { checksum } from "@/core/studio/registry/contracts";
 import { customFieldPayloadSchema } from "@/core/studio/fields/schema";
 import { conditionalFieldPayloadSchema, type VersionedFieldPayload } from "@/core/studio/fields/required-contract";
 import { compileCustomField } from "@/core/studio/compiler/fields";
@@ -37,14 +35,7 @@ const collect = (revision = 0) => collectFieldMigrationBatch(session, { preparat
 beforeEach(async () => {
   vi.resetAllMocks(); rows = []; audits = []; stored = null;
   registry = new CapabilityRegistry(async () => true); registry.register("tickets", ticketStudioContract);
-  // Test-only future owner, not actual owning callback acceptance. Full authority/
-  // metadata providers and real condition inputs are covered by their own suites.
-  const entity = ticketStudioContract.contributions.find(c => c.metadata.id === "tickets.ticket" && c.metadata.version === 8)!;
-  const snapshot = ticketStudioContract.contributions.find(c => c.metadata.id === "tickets.ticket.field_migration" && c.metadata.version === 3)!;
-  const details = entityDetailsSchema.parse(entity.metadata.details); details.record!.migrationSnapshot = { ...details.record!.migrationSnapshot!,
-    sourceVersions: [2, 3, 4, 5, 6, 7, 8, 9], query: { id: snapshot.metadata.id, version: 4 }, intentVersions: [1, 2] };
-  registry.register("tickets", { contributions: [{ ...entity, metadata: { ...entity.metadata, version: 9, details, schemaHash: checksum(details) } },
-    { metadata: { ...snapshot.metadata, version: 4, details: { ...snapshot.metadata.details, fieldMigration: { entityId: "tickets.ticket", purpose: "snapshot", intentVersions: [1, 2] } } }, run: vi.fn() }] });
+  // Actual owner descriptors; authority/transaction orchestration stays simulated.
   const ref = (version: number) => { const r = registry.describe("tickets.ticket", version); return { id: r.id, version, schemaHash: r.schemaHash, contractHash: r.contractHash }; };
   source = customFieldPayloadSchema.parse({ schemaVersion: 1, entity: ref(2), storageGeneration: id(1), field: { key: "extra", label: "Extra", classification: "confidential", storage: { type: "integer" } } });
   target = conditionalFieldPayloadSchema.parse({ ...source, schemaVersion: 2, entity: ref(9), storageGeneration: id(2), field: { ...source.field, storage: { type: "decimal" } },

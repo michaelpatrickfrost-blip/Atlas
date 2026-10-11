@@ -23,7 +23,7 @@ it("approves explicit latest complete coverage without changing older migration 
   expect(registry.describe("tickets.ticket", 7).contractHash).toBe("5f69287becebbd7658245afc78b1a1eabf30b297e0613d5a07db7b9ecf9655d8");
   for (const version of record.requiredCoverage!.fieldVersions) {
     const policy = await registry.resolveCurrentRequiredCoverage(session, registry.describe("tickets.ticket", version));
-    expect(policy.owner.version).toBe(8); expect(policy.query.id).toBe("tickets.ticket.required_coverage");
+    expect(policy.owner.version).toBe(9); expect(policy.query.id).toBe("tickets.ticket.required_coverage");
   }
   await expect(registry.resolveCurrentRequiredCoverage(session, registry.describe("tickets.ticket", 1))).rejects.toThrow("source is unavailable");
 });
@@ -49,13 +49,13 @@ it("rejects unpublished permissions, copied hashes, latest unsupported policies,
   await expect(setup(false).resolveCurrentRequiredCoverage(session, source)).rejects.toThrow("unavailable");
   const owner = ticketStudioContract.contributions.find(c => c.metadata.id === source.id && c.metadata.version === 8)!;
   const expired = setup();
-  expired.register("tickets", { contributions: [{ ...owner, metadata: { ...owner.metadata, version: 9, lifecycle: "deprecated", supportedUntil: "2000-01-01T00:00:00.000Z" } }] });
+  expired.register("tickets", { contributions: [{ ...owner, metadata: { ...owner.metadata, version: 10, lifecycle: "deprecated", supportedUntil: "2000-01-01T00:00:00.000Z" } }] });
   await expect(expired.resolveCurrentRequiredCoverage(session, source)).rejects.toThrow("expired");
   const details = entityDetailsSchema.parse(owner.metadata.details);
   const changed = { ...details, record: { ...details.record!, requiredCoverage: undefined } };
   // JSON metadata omits optional fields; new unsupported current versions must fail.
   const plain = JSON.parse(JSON.stringify(changed));
-  registry.register("tickets", { contributions: [{ ...owner, metadata: { ...owner.metadata, version: 9, details: plain, schemaHash: checksum(plain) } }] });
+  registry.register("tickets", { contributions: [{ ...owner, metadata: { ...owner.metadata, version: 10, details: plain, schemaHash: checksum(plain) } }] });
   await expect(registry.resolveCurrentRequiredCoverage(session, source)).rejects.toThrow("current owner");
 });
 it("atomically rejects missing/nontransactional/wrong-capability queries and unsupported or duplicate field versions", () => {

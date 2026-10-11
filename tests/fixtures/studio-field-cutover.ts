@@ -37,7 +37,8 @@ export async function retainedCutoverFixture() {
     pin: retained.pin, pinChecksum: retained.checksum, state: "ACTIVATED", revision: 0, createdBy: "actor", settlementPin: null as unknown,
     settlementChecksum: null as string | null, settledBy: null as string | null, settledAt: null as Date | null };
   return { registry, session, intent: sealed.intent, stored, retained, source, target, execution, receipt,
-    preparation: { id: cutoverUuid(3), organisationId: "company", definitionId: cutoverUuid(4), state: "REVIEWED", intent: sealed.intent, intentChecksum: sealed.checksum, review: stored },
+    preparation: { id: cutoverUuid(3), organisationId: "company", definitionId: cutoverUuid(4), state: "REVIEWED", intent: sealed.intent, intentChecksum: sealed.checksum,
+      review: { id: cutoverUuid(3), organisationId: "company", definitionId: cutoverUuid(4), ...stored } },
     publication: { ...publication, state: "CUTOVER", revision: 1 }, definition: { ...definition, activeVersionId: target.id, revision: 9 }, draft: { revision: 10, baseVersionId: target.id, payload: targetPayload } };
 }
 export function settleCutoverFixture(f: Awaited<ReturnType<typeof retainedCutoverFixture>>, disposition: "ROLLED_BACK" | "FINALIZED") {

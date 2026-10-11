@@ -8,7 +8,6 @@ vi.mock("@/core/studio/fields/runtime-authority", () => ({ fieldRuntimeAuthority
 vi.mock("@/core/studio/fields/principal", () => ({ resolveFieldMigrationPrincipal: m.principal }));
 import { CapabilityRegistry } from "@/core/studio/registry/registry";
 import { ticketStudioContract } from "@/core/service-work/studio";
-import { entityDetailsSchema } from "@/core/studio/registry/entities";
 import { checksum } from "@/core/studio/registry/contracts";
 import { customFieldPayloadSchema, type FieldStorage } from "@/core/studio/fields/schema";
 import { conditionalFieldPayloadSchema, type VersionedFieldPayload } from "@/core/studio/fields/required-contract";
@@ -62,13 +61,7 @@ async function stored(raw: unknown, written: VersionedFieldPayload = intent.sour
 const inspect = () => inspectRequiredFieldMigrationRecord({ session, transaction: tx }, intent, anchor);
 beforeEach(async () => {
   vi.resetAllMocks(); session = { ...actor, capabilities: new Set(actor.capabilities) }; registry = new CapabilityRegistry(async () => true); registry.register("tickets", ticketStudioContract);
-  // Test-only owner/protocol. No new production owner or legacy callback runs.
-  const entity = ticketStudioContract.contributions.find(c => c.metadata.id === "tickets.ticket" && c.metadata.version === 8)!;
-  const snapshot = ticketStudioContract.contributions.find(c => c.metadata.id === "tickets.ticket.field_migration" && c.metadata.version === 3)!;
-  const details = entityDetailsSchema.parse(entity.metadata.details); details.record!.migrationSnapshot = { ...details.record!.migrationSnapshot!,
-    sourceVersions: [2, 3, 4, 5, 6, 7, 8, 9], query: { id: snapshot.metadata.id, version: 4 }, intentVersions: [1, 2] };
-  registry.register("tickets", { contributions: [{ ...entity, metadata: { ...entity.metadata, version: 9, details, schemaHash: checksum(details) } },
-    { metadata: { ...snapshot.metadata, version: 4, details: { ...snapshot.metadata.details, fieldMigration: { entityId: "tickets.ticket", purpose: "snapshot", intentVersions: [1, 2] } } }, run: vi.fn() }] });
+  // Actual owner descriptors; transaction/authority/facts remain explicit unit fixtures.
   m.refresh.mockImplementation(async selected => ({ session: selected, stamp, transaction: tx, registry } satisfies FieldRuntimeAuthority));
   m.principal.mockResolvedValue(session); m.raw.mockResolvedValue([]); m.company.mockResolvedValue(company);
   m.definition.mockImplementation(async args => args.where.id === root ? rootRow : null);

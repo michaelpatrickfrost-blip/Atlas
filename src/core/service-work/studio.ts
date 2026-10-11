@@ -10,6 +10,9 @@ import { recordAnchorSchema } from "@/core/studio/registry/entities";
 import { authoriseNewTicketFields } from "./studio-create";
 import { customFieldPayloadSchema } from "@/core/studio/fields/schema";
 import { readSealedFieldMigrationReview } from "@/core/studio/fields/migrations/contracts";
+import { versionedFieldPayloadSchema } from "@/core/studio/fields/required-contract";
+import { readStoredFieldMigrationIntent, readStoredFieldMigrationReview } from "@/core/studio/fields/migrations/stored-protocol";
+import { checksum } from "@/core/studio/registry/contracts";
 
 const recordId = z.string().min(1).max(100).regex(/^[a-zA-Z0-9_-]+$/);
 const listInput = z.strictObject({
@@ -120,7 +123,7 @@ const ticketFieldEntity: EntityDescriptor = { ...ticketEntity, version: 2, recor
     maxFields: 100, referenceEntities: ["tickets.ticket"],
     reservedKeys: ["id", "organisation_id", "number", "kind", "subject", "description", "type", "category", "priority", "severity", "impact", "urgency", "status", "queue_id", "requester_user_id", "requested_for_user_id", "owner_user_id", "watcher_ids", "parent_case_id", "parent_id", "merged_into_id", "context", "definition", "sla", "first_response_due_at", "resolution_due_at", "first_response_at", "paused_at", "resolved_at", "resolution", "reopen_count", "version", "revision", "approval_id", "created_at", "updated_at", "entries", "files"],
   } } };
-async function executeMigrationSnapshot(ctx: RecordContext, input: z.output<typeof migrationInput>, sourceVersions: readonly number[]) {
+async function executeMigrationSnapshot(ctx: RecordContext, input: z.output<typeof migrationInput>, sourceVersions: readonly number[], versioned = false) {
   const client = await migrationSnapshotClient(ctx), organisationId = ctx.session.organisationId;
   const scope = { organisationId, kind: "TICKET" as const }, resultScope = { organisationId, entityId: "tickets.ticket" as const };
   if (input.mode === "preflight") return { ...resultScope, mode: input.mode,
@@ -132,6 +135,7 @@ async function executeMigrationSnapshot(ctx: RecordContext, input: z.output<type
     return { ...resultScope, mode: input.mode, records, next: rows.length > input.limit ? records.at(-1)!.recordId : null };
   }
   await ctx.transaction!.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id = ${input.preparationId}::uuid AND "organisationId" = ${organisationId} FOR SHARE`;
+  if (versioned) await currentTicketMigrationIntent(client, organisationId, input.preparationId);
   const preparation = await client.studioFieldMigrationPreparation.findFirst({ where: { id: input.preparationId, organisationId, entityId: "tickets.ticket",
     state: { in: ["PREPARING", "REVIEWED"] }, OR: sourceVersions.map(version => ({ sourceVersion: { payload: { path: ["entity", "version"], equals: version } } })) }, select: { id: true } });
   if (!preparation) throw new Error("MIGRATION_REVIEW_UNAVAILABLE: this ticket preparation is unavailable.");
@@ -165,24 +169,50 @@ const referenceMigrationOutput = z.discriminatedUnion("mode", [...migrationOutpu
 const executionSourceVersions = [2, 3, 4, 5] as const;
 const executionReadVersions = [1, 2, 3, 4, 5] as const;
 const executionReviewPolicy = { sourceVersions: executionSourceVersions, readVersions: executionReadVersions, queryVersion: 3, targetEntityVersion: 5 };
+// New explicit ranges only. Every old descriptor/array/receipt stays sealed.
+const currentMigrationSourceVersions = [2, 3, 4, 5, 6, 7, 8, 9] as const;
+const currentMigrationReadVersions = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
+const currentReviewPolicy = { sourceVersions: currentMigrationSourceVersions, readVersions: currentMigrationReadVersions, queryVersion: 4, targetEntityVersion: 9, versioned: true };
+
+/** Actual stored identity/integrity only, after complete native/private preflight.
+ * Do not assume an editable current draft in execution or retained settlement.
+ * Core separately proves the locked preparation/publication/execution lineage. */
+async function currentTicketMigrationIntent(client: Prisma.TransactionClient, organisationId: string, preparationId: string) {
+  const preparation = await client.studioFieldMigrationPreparation.findFirst({ where: { id: preparationId, organisationId, entityId: "tickets.ticket",
+    state: { in: ["PREPARING", "REVIEWED"] } }, select: { id: true, organisationId: true, definitionId: true, entityId: true,
+      sourceVersionId: true, sourceGenerationId: true, targetGenerationId: true, draftId: true, intent: true, intentChecksum: true,
+      sourceVersion: { select: { id: true, definitionId: true, organisationId: true, payload: true, checksum: true } } } });
+  const deny = () => { throw new Error("MIGRATION_REVIEW_UNAVAILABLE: current ticket preparation is unavailable."); };
+  if (!preparation) return deny();
+  const { intent } = readStoredFieldMigrationIntent(preparation, organisationId), source = preparation.sourceVersion;
+  if (intent.definitionId !== preparation.definitionId || intent.source.versionId !== preparation.sourceVersionId || intent.target.draftId !== preparation.draftId
+    || intent.source.payload.storageGeneration !== preparation.sourceGenerationId || intent.target.payload.storageGeneration !== preparation.targetGenerationId
+    || source.id !== intent.source.versionId || source.definitionId !== intent.definitionId || source.organisationId !== organisationId
+    || source.checksum !== intent.source.versionChecksum || checksum(source.payload) !== checksum(intent.source.payload)
+    || intent.source.payload.entity.id !== "tickets.ticket" || intent.target.payload.entity.id !== "tickets.ticket"
+    || !new Set<number>(currentMigrationSourceVersions).has(intent.source.payload.entity.version) || intent.target.payload.entity.version !== 9
+    || intent.ownerQuery.id !== "tickets.ticket.field_migration" || intent.ownerQuery.version !== 4) return deny();
+  return intent;
+}
 async function referenceCoverage(ctx: RecordContext, preparationId: string, policy: {
-  sourceVersions: readonly number[]; readVersions: readonly number[]; queryVersion: number; targetEntityVersion: number;
+  sourceVersions: readonly number[]; readVersions: readonly number[]; queryVersion: number; targetEntityVersion: number; versioned?: boolean;
 } = { sourceVersions: referenceSourceVersions, readVersions: referenceReadVersions, queryVersion: 2, targetEntityVersion: 4 }) {
   const client = await migrationSnapshotClient(ctx), organisationId = ctx.session.organisationId;
   await ctx.transaction!.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${preparationId}::uuid AND "organisationId"=${organisationId} FOR SHARE`;
+  const currentIntent = policy.versioned ? await currentTicketMigrationIntent(client, organisationId, preparationId) : null;
   const preparation = await client.studioFieldMigrationPreparation.findFirst({ where: { id: preparationId, organisationId, entityId: "tickets.ticket",
     state: { in: ["PREPARING", "REVIEWED"] }, OR: policy.sourceVersions.map(version => ({ sourceVersion: { payload: { path: ["entity", "version"], equals: version } } })) },
     select: { id: true, intent: true, sourceVersion: { select: { payload: true } }, draft: { select: { payload: true } } } });
   if (!preparation) throw new Error("MIGRATION_REVIEW_UNAVAILABLE: this ticket preparation is unavailable.");
   if (!z.object({ ownerQuery: z.object({ id: z.literal("tickets.ticket.field_migration"), version: z.literal(policy.queryVersion) }) }).safeParse(preparation.intent).success)
     throw new Error("MIGRATION_REFERENCE_COVERAGE_CHANGED: current ticket reference coverage is required.");
-  for (const raw of [preparation.sourceVersion.payload, preparation.draft.payload]) {
-    const payload = customFieldPayloadSchema.parse(raw), storage = payload.field.storage;
+  for (const raw of currentIntent ? [currentIntent.source.payload, currentIntent.target.payload] : [preparation.sourceVersion.payload, preparation.draft.payload]) {
+    const payload = currentIntent ? versionedFieldPayloadSchema.parse(raw) : customFieldPayloadSchema.parse(raw), storage = payload.field.storage;
     if (payload.entity.id !== "tickets.ticket" || storage.type !== "reference" || storage.entity.id !== "tickets.ticket"
       || !policy.readVersions.includes(storage.entity.version))
       throw new Error("MIGRATION_REFERENCE_COVERAGE_CHANGED: current ticket reference coverage is required.");
   }
-  if (customFieldPayloadSchema.parse(preparation.draft.payload).entity.version !== policy.targetEntityVersion)
+  if ((currentIntent?.target.payload ?? customFieldPayloadSchema.parse(preparation.draft.payload)).entity.version !== policy.targetEntityVersion)
     throw new Error("MIGRATION_REFERENCE_COVERAGE_CHANGED: current ticket reference coverage is required.");
   // Full canonical private/native read access above covers the same read policy
   // used by authoriseTicketRecord for the native versions declared by this policy.
@@ -212,24 +242,32 @@ const settlementOutput = z.strictObject({ ...migrationScope, mode: settlementInp
 
 /** Current owner/private authority over retained representation history. No
  * creator grants, draft payload assumption, native write or value disclosure. */
-async function coverTicketSettlement(ctx: RecordContext, input: z.output<typeof settlementInput>) {
+async function coverTicketSettlement(ctx: RecordContext, input: z.output<typeof settlementInput>, versioned = false) {
   const client = await migrationSnapshotClient(ctx), organisationId = ctx.session.organisationId;
   const deny = () => { throw new Error("MIGRATION_SETTLEMENT_COVERAGE_REQUIRED: current ticket history coverage is required."); };
   const preparation = await client.studioFieldMigrationPreparation.findFirst({ where: { id: input.preparationId, organisationId, entityId: "tickets.ticket", state: "REVIEWED" },
-    select: { id: true, review: { select: { review: true, checksum: true } } } });
+    select: { id: true, review: { select: { id: true, organisationId: true, definitionId: true, review: true, checksum: true } } } });
   const cutover = await client.studioFieldMigrationCutover.findFirst({ where: { preparationId: input.preparationId, organisationId }, select: { state: true } });
   if (!preparation?.review || !cutover) return deny();
-  const { review } = readSealedFieldMigrationReview(preparation.review);
+  const { review } = versioned ? readStoredFieldMigrationReview(preparation.review, organisationId)
+    : readSealedFieldMigrationReview({ review: preparation.review.review, checksum: preparation.review.checksum });
+  // The current callback explicitly implements retained legacy history. Keep
+  // its exact old source/reference ranges rather than widening old receipts.
+  if (versioned && review.schemaVersion === 1 && review.target.payload.entity.version === 5)
+    return coverTicketSettlement(ctx, input, false);
+  const sourceVersions = versioned ? currentMigrationSourceVersions : executionSourceVersions, readVersions = versioned ? currentMigrationReadVersions : executionReadVersions;
   if (review.id !== input.preparationId || review.organisationId !== organisationId || review.source.payload.entity.id !== "tickets.ticket"
-    || review.target.payload.entity.id !== "tickets.ticket" || !new Set<number>(executionSourceVersions).has(review.source.payload.entity.version)
-    || review.target.payload.entity.version !== 5) return deny();
+    || review.target.payload.entity.id !== "tickets.ticket" || !new Set<number>(sourceVersions).has(review.source.payload.entity.version)
+    || !(versioned ? [5, 9] : [5]).includes(review.target.payload.entity.version)
+    || (review.schemaVersion === 2 && review.target.payload.entity.version !== 9)
+    || (versioned && (review.ownerQuery.id !== "tickets.ticket.field_migration" || review.ownerQuery.version !== 4))) return deny();
   if (input.mode === "rollback") {
     if (cutover.state !== "ACTIVATED") return deny();
-    await executeMigrationSnapshot(ctx, { mode: "coverage", preparationId: input.preparationId }, executionSourceVersions);
+    await executeMigrationSnapshot(ctx, { mode: "coverage", preparationId: input.preparationId }, sourceVersions, versioned && review.target.payload.entity.version === 9);
   }
   for (const payload of [review.source.payload, review.target.payload]) {
     const storage = payload.field.storage;
-    if (storage.type === "reference" && (storage.entity.id !== "tickets.ticket" || !new Set<number>(executionReadVersions).has(storage.entity.version))) return deny();
+    if (storage.type === "reference" && (storage.entity.id !== "tickets.ticket" || !new Set<number>(readVersions).has(storage.entity.version))) return deny();
   }
   const rows = await ctx.transaction!.$queryRaw<Array<{ changed: boolean }>>`SELECT EXISTS (
     SELECT 1 FROM studio_field_migration_observations o
@@ -243,7 +281,7 @@ async function coverTicketSettlement(ctx: RecordContext, input: z.output<typeof 
       EXISTS (SELECT 1 FROM studio_field_migration_observations o WHERE o."preparationId"=${input.preparationId}::uuid AND o."organisationId"=v."organisationId" AND o."valueId"=v.id)
       OR EXISTS (SELECT 1 FROM studio_field_migration_outcomes outcome WHERE outcome."preparationId"=${input.preparationId}::uuid AND outcome."organisationId"=v."organisationId" AND outcome."targetValueId"=v.id)
     ) AND ((written.payload->'field'->'storage'->'entity'->>'id') IS DISTINCT FROM 'tickets.ticket'
-      OR ((written.payload->'field'->'storage'->'entity'->>'version') IN (${Prisma.join(executionReadVersions.map(String))})) IS NOT TRUE
+      OR ((written.payload->'field'->'storage'->'entity'->>'version') IN (${Prisma.join(readVersions.map(String))})) IS NOT TRUE
       OR (v."isNull"=false AND target.id IS NULL))
   ) AS changed`;
   if (rows.length !== 1 || rows[0].changed !== false) return deny();
@@ -252,21 +290,22 @@ async function coverTicketSettlement(ctx: RecordContext, input: z.output<typeof 
 
 /** Owner approval for reviewed extension representation only. Historical/final/
  * merged native work is not reopened, changed or made normally editable. */
-async function approveTicketRepresentation(ctx: RecordContext, input: z.output<typeof representationInput>) {
+async function approveTicketRepresentation(ctx: RecordContext, input: z.output<typeof representationInput>, versioned = false) {
   const client = await migrationSnapshotClient(ctx), organisationId = ctx.session.organisationId;
   const deny: () => never = () => { throw new Error("MIGRATION_REPRESENTATION_UNAVAILABLE: reviewed ticket representation is unavailable."); };
   await ctx.transaction!.$queryRaw`SELECT "preparationId" FROM studio_field_migration_publications
     WHERE "preparationId"=${input.preparationId}::uuid AND "organisationId"=${organisationId} FOR SHARE`;
   const pub = await client.studioFieldMigrationPublication.findFirst({ where: { preparationId: input.preparationId, organisationId, state: "PUBLISHED" },
     select: { preparationId: true, definitionId: true, reviewChecksum: true, sourceGenerationId: true, targetGenerationId: true,
-      review: { select: { review: true, checksum: true } } } });
+      review: { select: { id: true, organisationId: true, definitionId: true, review: true, checksum: true } } } });
   if (!pub) deny();
-  const { review } = readSealedFieldMigrationReview({ review: pub.review.review, checksum: pub.review.checksum });
+  const { review } = versioned ? readStoredFieldMigrationReview(pub.review, organisationId) : readSealedFieldMigrationReview({ review: pub.review.review, checksum: pub.review.checksum });
+  const sourceVersions = versioned ? currentMigrationSourceVersions : executionSourceVersions;
   if (pub.reviewChecksum !== pub.review.checksum || review.id !== pub.preparationId || review.organisationId !== organisationId
     || review.definitionId !== pub.definitionId || review.principal.userId !== ctx.session.userId || review.principal.membershipId !== ctx.session.membershipId
     || review.source.payload.entity.id !== "tickets.ticket" || review.target.payload.entity.id !== "tickets.ticket"
-    || review.target.payload.entity.version !== 5 || !executionSourceVersions.includes(review.source.payload.entity.version as typeof executionSourceVersions[number])
-    || review.ownerQuery.id !== "tickets.ticket.field_migration" || review.ownerQuery.version !== 3
+    || review.target.payload.entity.version !== (versioned ? 9 : 5) || !new Set<number>(sourceVersions).has(review.source.payload.entity.version)
+    || review.ownerQuery.id !== "tickets.ticket.field_migration" || review.ownerQuery.version !== (versioned ? 4 : 3)
     || review.source.payload.storageGeneration !== pub.sourceGenerationId || review.target.payload.storageGeneration !== pub.targetGenerationId) deny();
   const member = await client.membership.findFirst({ where: { id: ctx.session.membershipId, userId: ctx.session.userId, organisationId, active: true },
     select: { sessionVersion: true, user: { select: { authVersion: true } } } });
@@ -327,6 +366,10 @@ export const ticketStudioContract: StudioModuleContract = { contributions: [
     capability: "tickets.ticket.manage", input: settlementInput, output: settlementOutput, transaction: "required",
     fieldSettlement: { entityId: "tickets.ticket", sourceVersions: executionSourceVersions, targetVersions: [5], referenceVersions: executionReadVersions },
     pagination: "none", maxCardinality: 1, costClass: "high", execute: coverTicketSettlement }),
+  query({ ...identity, version: 2, id: "tickets.ticket.field_settlement", label: "Ticket versioned migration history coverage", kind: "query",
+    capability: "tickets.ticket.manage", input: settlementInput, output: settlementOutput, transaction: "required",
+    fieldSettlement: { entityId: "tickets.ticket", sourceVersions: currentMigrationSourceVersions, targetVersions: [5, 9], referenceVersions: currentMigrationReadVersions, intentVersions: [1, 2] },
+    pagination: "none", maxCardinality: 1, costClass: "high", execute: (ctx, input) => coverTicketSettlement(ctx, input, true) }),
   query({ ...identity, id: "tickets.ticket.field_migration", label: "Ticket field migration snapshots", kind: "query",
     capability: "tickets.ticket.manage", input: migrationInput, output: migrationOutput, transaction: "required",
     pagination: "cursor", maxCardinality: 50, costClass: "high",
@@ -345,9 +388,19 @@ export const ticketStudioContract: StudioModuleContract = { contributions: [
     pagination: "cursor", maxCardinality: 50, costClass: "high",
     execute: (ctx, input) => input.mode === "reference_coverage" ? referenceCoverage(ctx, input.preparationId, executionReviewPolicy)
       : executeMigrationSnapshot(ctx, input, executionSourceVersions) }),
+  query({ ...identity, version: 4, id: "tickets.ticket.field_migration", label: "Ticket versioned field review coverage", kind: "query",
+    capability: "tickets.ticket.manage", input: referenceMigrationInput, output: referenceMigrationOutput, transaction: "required",
+    fieldMigration: { entityId: "tickets.ticket", purpose: "snapshot", intentVersions: [1, 2] },
+    pagination: "cursor", maxCardinality: 50, costClass: "high",
+    execute: (ctx, input) => input.mode === "reference_coverage" ? referenceCoverage(ctx, input.preparationId, currentReviewPolicy)
+      : executeMigrationSnapshot(ctx, input, currentMigrationSourceVersions, true) }),
   query({ ...identity, id: "tickets.ticket.field_representation", label: "Approve reviewed ticket representation", kind: "query",
     capability: "tickets.ticket.manage", input: representationInput, output: representationOutput, transaction: "required",
     pagination: "none", maxCardinality: 1, costClass: "high", execute: approveTicketRepresentation }),
+  query({ ...identity, version: 2, id: "tickets.ticket.field_representation", label: "Approve versioned ticket representation", kind: "query",
+    capability: "tickets.ticket.manage", input: representationInput, output: representationOutput, transaction: "required",
+    fieldMigration: { entityId: "tickets.ticket", purpose: "representation", intentVersions: [1, 2] },
+    pagination: "none", maxCardinality: 1, costClass: "high", execute: (ctx, input) => approveTicketRepresentation(ctx, input, true) }),
   query({ ...identity, id: "tickets.ticket.migration_cohort", label: "Ticket migration access coverage", kind: "query",
     capability: "tickets.ticket.manage", input: z.strictObject({}),
     output: z.strictObject({ organisationId: z.string().min(1), entityId: z.literal("tickets.ticket"),
@@ -439,5 +492,15 @@ export const ticketStudioContract: StudioModuleContract = { contributions: [
     ] },
     initialisation: { capability: "tickets.ticket.create", acceptedFieldVersions: [2, 3, 4, 5, 6, 7, 8], authorise: authoriseNewTicketFields },
     requiredCoverage: { query: { id: "tickets.ticket.required_coverage", version: 1 }, fieldVersions: [2, 3, 4, 5, 6, 7, 8] },
+  } }),
+  entity({ ...ticketFieldEntity, version: 9, record: { ...ticketFieldEntity.record!, migrationSnapshot: {
+    query: { id: "tickets.ticket.field_migration", version: 4 }, sourceVersions: currentMigrationSourceVersions, referenceVersions: currentMigrationReadVersions, intentVersions: [1, 2],
+  }, migrationRepresentation: { query: { id: "tickets.ticket.field_representation", version: 2 }, sourceVersions: currentMigrationSourceVersions, intentVersions: [1, 2] },
+    requiredFacts: { query: { id: "tickets.ticket.required_facts", version: 1 }, initialQuery: { id: "tickets.ticket.initial_required_facts", version: 1 }, facts: [
+      { fieldId: "status", type: "enum", classification: "confidential", codes: WORK_STATUSES },
+      { fieldId: "priority", type: "enum", classification: "confidential", codes: ["LOW", "NORMAL", "HIGH", "URGENT"] },
+    ] },
+    initialisation: { capability: "tickets.ticket.create", acceptedFieldVersions: currentMigrationSourceVersions, authorise: authoriseNewTicketFields },
+    requiredCoverage: { query: { id: "tickets.ticket.required_coverage", version: 1 }, fieldVersions: currentMigrationSourceVersions },
   } }),
 ] };

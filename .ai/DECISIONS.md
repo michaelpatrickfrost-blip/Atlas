@@ -2633,3 +2633,10 @@ one-source constraints include both. Do not repurpose the Logistics key or remov
 its FK to accept purchasing documents. Source owners retain their native guards and
 all stock/receipt/value posting stays in the same transaction. This corrects the
 actual central FK failure caught by native purchasing acceptance.
+
+## 11 October 2026 — Area browsing keeps canonical app ownership
+
+Operations includes Finance-owned Procurement; an area must not hide relevant work
+because its owning app has other Business guides. Filter entries within app groups,
+carry area/search into app hubs and back/search navigation, and expose All app
+guides as an explicit choice. Counts describe the currently filtered entries.

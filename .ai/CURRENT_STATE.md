@@ -1,3 +1,20 @@
+## 11 October 2026 — Complete exact execution candidate passes; guide navigation refined
+
+Candidate e3b0639e passed every actual exact manufacturing/purchasing scenario,
+including Finance-owned receipt FK, receipt/damage MRP netting and late supplier
+date, balanced journals and filled trace/cost/load/production/collection screens at
+1440/768/390. Gate then stopped on an invalid test assumption that Finance must be
+absent from Operations; its Procurement guide correctly belongs there. Corrected
+native assertion checks that guide under Finance and excludes unrelated Marketing/
+Business instructions. App links/search/back now preserve area/search, with an
+explicit All app guides link, so filtered counts match the opened app hub. Seven
+focused guide tests, final build, strict TypeScript and scoped lint pass. Populated
+cost phone, mixed-load tablet and genealogy desktop screenshots were reviewed.
+Candidate/public guide acceptance, activation and all-Test cleanup pending.
+Live remains 5b6390c8; candidate access
+retired. Evidence /tmp/atlas-supply-candidate-BNxwrM; backup ...204054. Migration
+20261011230000_finance_receipt_stock_lineage applied compatibly, no DB rollback.
+
 ## 11 October 2026 — Finance receipt stock lineage repaired; native gate pending
 
 Candidate 4e1cf413 passed all core exact execution scenarios, then actual purchasing

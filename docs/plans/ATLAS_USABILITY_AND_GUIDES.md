@@ -94,3 +94,9 @@ duplicated guide text. The Manufacturing help index redirects to its app hub, ol
 individual links remain valid, and Field Service now explains preparation, scheduling,
 actual time/status progress, completion checks and supported handoffs. Release scope
 and tests are recorded in Manufacturing acceptance; public acceptance still pending.
+
+Area filters combine with app/search and continue into the selected app hub and
+its search/back links. Operations retains Procurement under its canonical Finance
+owner while excluding Finance's Business guide. All app guides explicitly widens
+that view. The actual native continuation checks this navigation, not app-name
+exclusion. Final live acceptance remains pending at this checkpoint.

@@ -24,6 +24,8 @@ model AuthenticationRateLimit {
 }
 
 model Organisation {
+  productionBatches StockProductionBatch[]
+  productionCollections StockProductionCollection[]
   studioDefinitions StudioDefinition[]
   studioExtensionRecords StudioExtensionRecord[]
  operationalMeetingEntry MeetingEntry[]
@@ -1002,6 +1004,7 @@ enum ProductKind {
 }
 
 model Product {
+  productionBatches StockProductionBatch[]
   planInputs PlanInput[]
   qualitySpecifications QualitySpecification[]
   qualityControlPoints QualityControlPoint[]
@@ -2466,6 +2469,8 @@ model Site {
  @@map("sites")
 }
 model Warehouse {
+ productionBatches StockProductionBatch[] @relation("ProductionBatchWarehouse")
+ productionCollections StockProductionCollection[] @relation("ProductionCollectionWarehouse")
  id String @id @default(cuid())
  organisationId String
  name String
@@ -2485,6 +2490,7 @@ model Warehouse {
  movesTo InternalMove[] @relation("MoveTo")
  @@unique([organisationId,code])
  @@index([organisationId,siteId])
+ @@unique([id,organisationId])
  @@map("warehouses")
 }
 model InventoryBalance {
@@ -3836,6 +3842,7 @@ enum ManufacturingOrderStatus {
 // snapshotted by reference to the ProductDefinition used at release so later edits
 // to the live definition never rewrite history for an order already running.
 model ManufacturingOrder {
+ stockBatches StockProductionBatch[]
  warehouseId String?
  id String @id @default(cuid())
  organisationId String
@@ -3863,6 +3870,7 @@ model ManufacturingOrder {
  sourceSalesOrderLine SalesOrderLine? @relation(fields:[sourceSalesOrderLineId],references:[id],onDelete:SetNull)
  workOrders ManufacturingWorkOrder[]
  @@unique([organisationId,orderNumber])
+ @@unique([id,organisationId])
  @@index([organisationId,status,requiredDate])
  @@index([organisationId,productId])
  @@index([organisationId,sourceSalesOrderLineId])
@@ -3917,6 +3925,8 @@ model ManufacturingWorkOrder {
  @@index([organisationId,productionOrderId,sequence])
  @@index([organisationId,workCentreId,status])
  @@map("manufacturing_work_orders")
+ stockBatches StockProductionBatch[]
+ @@unique([id,productionOrderId,organisationId])
 }
 
 // §156: a planning run has its own identity so results can be inspected/compared,
@@ -5668,6 +5678,8 @@ model SchedulingCalendarRule {
 // Stock owns locations, lots, serials, positions and reservations.
 // Logistics requests movements; it does not keep a second inventory balance.
 model StockLocation {
+ productionBatches StockProductionBatch[] @relation("ProductionBatchLocation")
+ productionCollections StockProductionCollection[] @relation("ProductionCollectionLocation")
  id String @id @default(cuid())
  organisationId String
  warehouseId String
@@ -5685,8 +5697,57 @@ model StockLocation {
  movesFrom InternalMove[] @relation("MoveFromLocation")
  movesTo InternalMove[] @relation("MoveToLocation")
  @@unique([warehouseId,code])
+ @@unique([id,warehouseId,organisationId])
  @@index([organisationId,warehouseId])
  @@map("stock_locations")
+}
+
+// Stock owns the physical production handoff; this is not a second stock balance.
+model StockProductionBatch {
+ id String @id @default(cuid())
+ organisationId String
+ manufacturingOrderId String
+ workOrderId String
+ productId String
+ warehouseId String
+ locationId String
+ lotCode String
+ quantity Int
+ collectedQuantity Int @default(0)
+ fullyCollected Boolean @default(false)
+ version Int @default(1)
+ createdByUserId String
+ createdAt DateTime @default(now())
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ workOrder ManufacturingWorkOrder @relation(fields:[workOrderId,manufacturingOrderId,organisationId],references:[id,productionOrderId,organisationId],onDelete:Restrict)
+ order ManufacturingOrder @relation(fields:[manufacturingOrderId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ product Product @relation(fields:[productId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ warehouse Warehouse @relation("ProductionBatchWarehouse",fields:[warehouseId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ location StockLocation @relation("ProductionBatchLocation",fields:[locationId,warehouseId,organisationId],references:[id,warehouseId,organisationId],onDelete:Restrict)
+ collections StockProductionCollection[]
+ @@unique([manufacturingOrderId,organisationId])
+ @@unique([id,organisationId])
+ @@index([organisationId,createdAt])
+ @@map("stock_production_batches")
+}
+model StockProductionCollection {
+ id String @id @default(cuid())
+ organisationId String
+ batchId String
+ warehouseId String
+ locationId String
+ quantity Int
+ requestKey String
+ actorUserId String
+ note String
+ createdAt DateTime @default(now())
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ batch StockProductionBatch @relation(fields:[batchId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ warehouse Warehouse @relation("ProductionCollectionWarehouse",fields:[warehouseId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ location StockLocation @relation("ProductionCollectionLocation",fields:[locationId,warehouseId,organisationId],references:[id,warehouseId,organisationId],onDelete:Restrict)
+ @@unique([organisationId,requestKey])
+ @@index([organisationId,batchId,createdAt])
+ @@map("stock_production_collections")
 }
 model StockLot {
  id String @id @default(cuid())

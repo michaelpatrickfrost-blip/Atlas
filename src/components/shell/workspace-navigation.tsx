@@ -10,6 +10,7 @@ import {
   ListTodo,
   MessageSquare,
   Settings,
+  BookOpen,
 } from "lucide-react";
 const icons = {
   Home,
@@ -18,6 +19,7 @@ const icons = {
   "My tasks": ListTodo,
   Messages: MessageSquare,
   Settings,
+  Guides: BookOpen,
 };
 export function WorkspaceNavigation({
   links,
@@ -31,11 +33,11 @@ export function WorkspaceNavigation({
   return (
     <nav
       aria-label="Workspace utilities"
-      className="flex gap-1 rounded-[24px] border border-white/90 bg-white/75 p-2 shadow-[0_8px_40px_-28px_rgba(44,81,136,0.3)] lg:h-full lg:flex-col lg:gap-2 lg:p-2.5"
+      className="flex flex-wrap gap-1 rounded-[24px] border border-white/90 bg-white/75 p-2 shadow-[0_8px_40px_-28px_rgba(44,81,136,0.3)] sm:flex-nowrap lg:h-full lg:flex-col lg:gap-2 lg:p-2.5"
     >
       {links.map(({ name, href }) => {
         const Icon = icons[name],
-          active = pathname === href.split("#")[0] || (name === "Settings" && (pathname.startsWith("/settings/") || pathname === "/profile/email"));
+          active = pathname === href.split("#")[0] || (name === "Guides" && pathname.startsWith('/guides/')) || (name === "Settings" && (pathname.startsWith("/settings/") || pathname === "/profile/email"));
         return (
           <Link
             key={href}
@@ -57,7 +59,7 @@ export function WorkspaceNavigation({
                 : undefined
             }
             aria-current={active ? "page" : undefined}
-            className={`flex min-h-11 min-w-0 flex-1 basis-0 flex-col items-center justify-center gap-1 rounded-2xl px-1 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:flex-row sm:gap-3 sm:px-3 lg:min-h-12 lg:flex-none lg:px-2 lg:justify-start ${active ? "bg-[#eaf3ff] text-[#075bff]" : "text-[#526587] hover:bg-blue-50 hover:text-blue-700"}`}
+            className={`flex min-h-11 min-w-0 flex-1 basis-[22%] flex-col items-center justify-center gap-1 rounded-2xl px-1 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:basis-0 sm:flex-row sm:gap-3 sm:px-3 lg:min-h-12 lg:flex-none lg:px-2 lg:justify-start ${active ? "bg-[#eaf3ff] text-[#075bff]" : "text-[#526587] hover:bg-blue-50 hover:text-blue-700"}`}
           >
             <Icon
               aria-hidden="true"

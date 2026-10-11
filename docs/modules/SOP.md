@@ -125,3 +125,13 @@ MRP, checks stale writes and tenant/read-only/source-access boundaries, then
 checks real pages and Chromium rendering. Its `finally` suspends those companies
 and revokes temporary credentials; immutable central evidence is retained.
 Production activation and acceptance results belong in `SOP_ACCEPTANCE.md`.
+
+## 11 October 2026 — practical orientation
+
+Prepare → Review → Decide → Approve & release stays visible on detailed views,
+retaining the selected cycle/version. New cycle opens the existing disclosure,
+scrolls it into view and focuses its name; no new cycle is created by that button.
+Department-plan links require Plan access. Shared Guides gives prerequisites, the
+seven reviews, terminology, release effects and blockers. Existing immutable
+versions, review/approval/publication and source access checks remain authoritative.
+Stock source projections exclude blocked production holding and in-transit units.

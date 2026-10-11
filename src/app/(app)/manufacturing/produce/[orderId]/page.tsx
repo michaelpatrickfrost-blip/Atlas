@@ -1,5 +1,6 @@
 import { RecordRelationships } from "@/components/records/relationships";
 import Link from "next/link";
+import {isModuleEnabled} from "@/core/modules/runtime";
 import { notFound } from "next/navigation";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
@@ -17,6 +18,7 @@ export default async function ProductionOrderPage({ params }: { params: Promise<
   const order = await orderDetail(session.organisationId, orderId);
   if (!order) notFound();
 
+  const handoffAvailable=session.capabilities.has('stock.read')&&await isModuleEnabled(session,'stock');
   const complete = order.workOrders.filter((w) => w.status === "COMPLETE").length;
   const progress = order.workOrders.length ? Math.round((complete / order.workOrders.length) * 100) : 0;
   const plannedMinutes = order.workOrders.reduce((sum, wo) => sum + wo.plannedMinutes, 0);
@@ -26,7 +28,7 @@ export default async function ProductionOrderPage({ params }: { params: Promise<
 
   return (
     <div className="space-y-8">
-      <header className="flex items-start justify-between gap-6">
+      <header className="flex flex-wrap items-start justify-between gap-6">
         <div>
           <p className="text-sm text-[var(--color-ink-muted)]">{order.orderNumber}</p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight">
@@ -34,9 +36,10 @@ export default async function ProductionOrderPage({ params }: { params: Promise<
           </h1>
           <p className="mt-2 text-sm text-[var(--color-ink-muted)]">{Number(order.quantity)} {order.unitOfMeasure}</p>
         </div>
-        <StatusPill label={order.status} tone={order.status === "RUNNING" ? "warning" : order.status === "COMPLETE" || order.status === "CLOSED" ? "success" : "neutral"} />
+        <div className="flex flex-wrap items-center gap-3">{session.capabilities.has(C.workOrderExecute)&&<Link href="/manufacturing/shop-floor" className="inline-flex min-h-11 items-center rounded-xl border border-blue-100 bg-white px-4 text-sm font-semibold text-blue-600">Open shop floor →</Link>}<StatusPill label={order.status} tone={order.status === "RUNNING" ? "warning" : order.status === "COMPLETE" || order.status === "CLOSED" ? "success" : "neutral"} /></div>
       </header>
 
+      {handoffAvailable&&<section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-blue-100 bg-blue-50/40 p-5"><div><h2 className="font-semibold">Production holding & Warehouse handoff</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">New good output enters production holding when the final operation completes. Warehouse collects the actual quantity and books it into the yard or storage location.</p></div><Link href={`/stock/handoffs?q=${encodeURIComponent(order.orderNumber)}&state=all`} className="inline-flex min-h-11 items-center rounded-xl bg-white px-4 text-sm font-semibold text-blue-600 ring-1 ring-blue-100">Follow this batch →</Link></section>}
       <div className="grid gap-6 lg:grid-cols-[1.4fr_0.8fr]">
         <section>
           <div className="flex flex-wrap items-baseline justify-between gap-3">

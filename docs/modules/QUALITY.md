@@ -61,3 +61,13 @@ calibration and full audit/change-control programmes are not added by this chang
 
 See [research mapping](../plans/QUALITY_WORKSPACE_RESEARCH.md), project current state
 and deployment evidence for checks actually run and live acceptance.
+
+## 11 October 2026 — clearer attention and containment
+
+Home presents Contain → Investigate → Correct → Verify with explicit next actions
+and shared Guides. Global counts are independent of its bounded preview lists.
+OPEN/INEFFECTIVE actions become due from their completion deadline; DONE actions
+become due from their effectiveness-review date. A completed action is no longer
+shown overdue merely because its old completion deadline passed. Entity queries
+and counts remain independently capability filtered. Production handoff refuses
+collection while an active Quality hold matches the batch/product and source place.

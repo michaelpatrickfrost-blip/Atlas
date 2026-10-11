@@ -191,3 +191,28 @@ already actioned proposals) require `manufacturing.cost.read` independently of
 `manufacturing.plan.read`. Planning access retains quantities, readiness and hours;
 restricted users see cost-access guidance rather than hidden totals in page output.
 Supplier spend remains separately governed by Finance's source permissions.
+
+## 11 October 2026 — Production holding and Warehouse collection
+
+New final-operation good output is received into the production warehouse's
+PROD-HOLD location with BLOCKED stock status and the manufacturing-order lot
+reference. `StockProductionBatch` records its source order/final work step and
+original quantity; it is not a second stock balance. Canonical material issues,
+blocked output, batch creation and completion share one transaction. Earlier
+completed orders keep their existing booking; no historic output is restaged.
+
+Inventory's `/stock/handoffs` is also linked inside Manufacturing & Supply. Warehouse
+can collect a partial or complete quantity and choose an active STORAGE/PICK_FACE/
+BULK destination in the same or another yard/warehouse. The collection updates the
+batch version, moves its BLOCKED lot to AVAILABLE and writes collection/audit
+history in one Serializable transaction. Stale versions, changed repeat keys,
+overcollection, disabled/inactive places and matching active Quality holds are
+rejected. Source identity and collection evidence are immutable in SQL; only the
+protected Test-company wipe may remove synthetic history. Read access and stock
+management remain independent. Production order links require Manufacturing read.
+
+Blocked and in-transit positions are excluded from operational availability, S&OP
+stock projections and rich MRP netting. Replenishment/automatic waiting fulfilment
+runs after Warehouse collection commits. Whole-unit stock execution remains the
+existing limitation; this does not implement repeated production receipts, WIP
+valuation, regulated lot release or all master-spec manufacturing coverage.

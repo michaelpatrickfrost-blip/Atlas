@@ -133,7 +133,8 @@ export type StockProvider = {
   getReservations(actor: LogisticsActor, productId: string): Promise<StockReservationView[]>;
   requestReservation(actor: LogisticsActor, command: StockCommand): Promise<StockCommandResult>;
   releaseReservation(actor: LogisticsActor, command: Pick<StockCommand, "requestKey" | "productId" | "warehouseId" | "quantity" | "sourceType" | "sourceId" | "reason" | "reference">): Promise<StockCommandResult>;
-  executeMovement(actor: LogisticsActor, command: StockCommand): Promise<StockCommandResult>;
+  executeMovement(actor: LogisticsActor, command: StockCommand, transaction?: import("@/generated/prisma/client").Prisma.TransactionClient): Promise<StockCommandResult>;
+  stageProduction(actor: LogisticsActor, command: StockCommand & { manufacturingOrderId: string; workOrderId: string }, transaction: import("@/generated/prisma/client").Prisma.TransactionClient): Promise<StockCommandResult>;
   /** Caller-owned transactions defer replenishment until after commit. */
   receiveStock(actor: LogisticsActor, command: StockCommand, transaction?: import("@/generated/prisma/client").Prisma.TransactionClient): Promise<StockCommandResult>;
   shipStock(actor: LogisticsActor, command: StockCommand, transaction?: import("@/generated/prisma/client").Prisma.TransactionClient): Promise<StockCommandResult>;

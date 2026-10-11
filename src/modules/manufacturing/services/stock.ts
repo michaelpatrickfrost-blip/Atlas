@@ -27,10 +27,10 @@ async function productionWarehouse(db: Prisma.TransactionClient, organisationId:
 }
 
 /**
- * Completing the last routing step books the finished goods into stock and uses up the bill-of-materials
+ * Completing the last routing step books finished goods into blocked production holding and uses up the bill-of-materials
  * components for the good quantity plus all scrap reported on the order. Stock moves first and every move
  * has a repeat-safe key. Every move uses the completion transaction, so failure
- * leaves stock and completion unchanged. Replenishment runs only after commit.
+ * leaves stock and completion unchanged. Warehouse collection makes output available and triggers replenishment after its own commit.
  */
 export async function backflushOnCompletion(
   session: Session,
@@ -78,19 +78,20 @@ export async function backflushOnCompletion(
   }
 
   if (good > 0) {
-    await provider.receiveStock(session, {
+    await provider.stageProduction(session, {
       requestKey: key("mfg", workOrder.id, requestKey, "made"),
       productId: order.productId,
       warehouseId,
       quantity: good,
       lotCode: null,
       serials: [],
-      status: "AVAILABLE",
-      reason: `Produced · ${order.orderNumber}`,
+      status: "BLOCKED",
+      reason: `Production holding area · ${order.orderNumber}`,
       reference: order.orderNumber,
       manufacturingOrderId: order.id,
       workOrderId: workOrder.id,
     }, db);
   }
-  return { productId: order.productId, warehouseId, requestKey: `balance:${key("mfg", workOrder.id, requestKey, "made")}` };
+  // Output is physical on-hand, held from picking until Warehouse books collection.
+  return { productId: order.productId, warehouseId, requestKey: `balance:${key("mfg", workOrder.id, requestKey, "made")}`, staged: true };
 }

@@ -2513,3 +2513,19 @@ explicitly audited support opening. Ordinary Session-only API does not claim dur
 support-principal audit verification or create target affiliations/grants. This
 implements source6.5/24 validity/security requirements without silently changing
 the migration architecture. Local verification only until actual central gates.
+
+## 11 October 2026 — white private ERP introduction and physical production handoff
+
+Michael chose crisp white, editorial and professional, with purposeful motion and
+real ERP detail. `/` explains Atlas and links existing users into their workspace;
+there is no public signup or subscription. Generated abstract artwork is excluded.
+Guides remain authenticated and filtered by app/capability, with plain steps and
+native source links; detailed specialist help is reused.
+
+Production completion and Warehouse collection are distinct physical facts. New
+good output enters the canonical stock ledger as BLOCKED production holding;
+Warehouse's guarded partial/all collection makes only collected quantity available
+at its destination. Retain source order/work step, lot and immutable collection
+history, tenant composite foreign keys, version/repeat checks and atomic posting.
+No historic output is restaged, no duplicate stock store and no availability before
+collection. Existing whole-unit execution limits remain explicit.

@@ -190,7 +190,7 @@ export function QuickLineAdder({
           className="z-[80]"
         >
           <div className="pointer-events-auto rounded-xl border border-slate-200 bg-white p-4 shadow-xl w-96 text-center text-sm text-slate-500">
-            No products match "{query}"
+            No products match &ldquo;{query}&rdquo;
           </div>
         </div>
       )}

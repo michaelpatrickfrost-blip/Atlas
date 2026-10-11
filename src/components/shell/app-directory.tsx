@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Briefcase, ChartNoAxesColumnIncreasing, ChevronRight, LayoutGrid, Settings, ShieldCheck, Users } from "lucide-react";
+import { BookOpen, Briefcase, ChartNoAxesColumnIncreasing, ChevronRight, LayoutGrid, Settings, ShieldCheck, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Session } from "@/core/auth/session";
 import { getNavigableModules } from "@/core/modules/runtime";
@@ -30,6 +30,7 @@ export async function AppDirectory({ session, variant = "menu" }: { session: Ses
   if (can(session, CUSTOMER_CAPABILITIES.read)) groups.get("Customers")!.push({ id: "customers", name: "Customers", href: "/customers", icon: Users, description: "Manage customer data and relationships." });
   for (const app of modules.filter(app=>variant!=="launcher"||app.id!=="analytics")) groups.get(areaForModule(app.id))!.push({ id: app.id, name: app.name, href: app.rootPath, icon: app.icon, description: app.id === "scheduling" && app.name === "My rota" ? app.description : APP_SUMMARIES[app.id] ?? app.description });
   const company: Entry[] = [
+    { id: 'guides', name: 'Guides', href: '/guides', icon: BookOpen, description: 'Clear steps, explanations and help for your work.' },
     ...(variant === "menu" ? [{id:"reports",name:"Reports",href:"/reports",icon:ChartNoAxesColumnIncreasing,description:"Filter data and download Excel."}] : []),
     { id: "my-work", name: "My work", href: "/profile", icon: Briefcase, description: "Your tasks, meetings and personal details." },
     ...(canOpenCompanyAdmin(session) ? [{ id: "settings", name: "Company admin", href: "/settings", icon: Settings, description: "Company setup, users and permissions." }] : []),

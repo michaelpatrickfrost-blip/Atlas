@@ -1,0 +1,7 @@
+'use client';
+import { useState } from 'react';
+import { field } from '@/components/operations/ui';
+export function MaintenanceAssetPicker({ equipment, vehicles, equipmentId, vehicleId }: { equipment: { id: string; name: string }[]; vehicles: { id: string; name: string }[]; equipmentId?: string; vehicleId?: string }) {
+ const [selection, setSelection] = useState(equipmentId ? `equipment:${equipmentId}` : vehicleId ? `vehicle:${vehicleId}` : '');
+ return <div className="sm:col-span-2"><label className="block text-sm">Equipment or vehicle<select aria-label="Equipment or vehicle" className={field} required value={selection} onChange={event => setSelection(event.target.value)}><option value="">Choose the asset for this work</option>{!!equipment.length && <optgroup label="Equipment">{equipment.map(item => <option key={item.id} value={`equipment:${item.id}`}>{item.name}</option>)}</optgroup>}{!!vehicles.length && <optgroup label="Fleet vehicles">{vehicles.map(item => <option key={item.id} value={`vehicle:${item.id}`}>{item.name}</option>)}</optgroup>}</select></label><input type="hidden" name="equipmentId" value={selection.startsWith('equipment:') ? selection.slice(10) : ''} /><input type="hidden" name="vehicleId" value={selection.startsWith('vehicle:') ? selection.slice(8) : ''} /><p className="mt-2 text-xs leading-5 text-slate-500">One work order belongs to one asset. If an older asset is missing, open its equipment record and create the work there.</p></div>;
+}

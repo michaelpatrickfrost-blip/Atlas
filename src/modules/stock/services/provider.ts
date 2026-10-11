@@ -36,7 +36,7 @@ async function availability(actor: LogisticsActor, query: { productId: string; w
   const quarantine = positions.filter((row) => row.status === "QUARANTINE").reduce((sum, row) => sum + row.quantity, 0);
   const blocked = positions.filter((row) => row.status === "BLOCKED").reduce((sum, row) => sum + row.quantity, 0);
   const inTransit = positions.filter((row) => row.status === "IN_TRANSIT").reduce((sum, row) => sum + row.quantity, 0);
-  const available = Math.max(0, onHand - reserved);
+  const available = Math.max(0, onHand - reserved - quarantine - blocked - inTransit);
   const located = positions.filter((row) => row.status === "AVAILABLE").reduce((sum, row) => sum + row.quantity, 0);
   const pickableBase = Math.max(0, onHand - reserved - quarantine - blocked - inTransit);
   const pickable = positions.length ? Math.min(pickableBase, located) : pickableBase;
@@ -218,9 +218,27 @@ export const stockProvider: StockProvider = {
     };
     return transaction ? work(transaction) : run(work);
   },
-  executeMovement(actor, command) {
+  async stageProduction(actor, command, tx) {
     assertCommand(command);
-    return run(async (tx) => {
+    const prior = await tx.stockProductionBatch.findUnique({ where: { manufacturingOrderId_organisationId: { manufacturingOrderId: command.manufacturingOrderId, organisationId: actor.organisationId } } });
+    if (prior) {
+      if (prior.productId !== command.productId || prior.quantity !== command.quantity || prior.warehouseId !== command.warehouseId || prior.workOrderId !== command.workOrderId) throw new Error('This production batch was already recorded with different details.');
+      return { requestKey: command.requestKey, movementIds: [], replayed: true };
+    }
+    await tx.warehouse.findFirstOrThrow({ where: { id: command.warehouseId, organisationId: actor.organisationId } });
+    const locations = await layout(tx, actor, command.warehouseId);
+    const storage = locations.find(row => row.active && row.capabilities.some(cap => ['STORAGE','PICK_FACE','BULK'].includes(cap)));
+    if (!storage) throw new Error('Set up an active storage location before completing production.');
+    await materialise(tx, actor, command.warehouseId, command.productId, storage.id);
+    const location = await tx.stockLocation.upsert({ where: { warehouseId_code: { warehouseId: command.warehouseId, code: 'PROD-HOLD' } }, create: { organisationId: actor.organisationId, warehouseId: command.warehouseId, code: 'PROD-HOLD', name: 'Production holding area', capabilities: ['PRODUCTION_STAGING'], sequence: 45 }, update: {} });
+    if (!location.active || location.organisationId !== actor.organisationId || !location.capabilities.includes('PRODUCTION_STAGING')) throw new Error('The production holding location needs an Inventory administrator to review its setup.');
+    const result = await receive(tx, actor, { ...command, locationId: location.id, lotCode: command.reference }, 'BLOCKED');
+    await tx.stockProductionBatch.create({ data: { organisationId: actor.organisationId, manufacturingOrderId: command.manufacturingOrderId, workOrderId: command.workOrderId, productId: command.productId, warehouseId: command.warehouseId, locationId: location.id, lotCode: command.reference, quantity: command.quantity, createdByUserId: actor.userId } });
+    return result;
+  },
+  executeMovement(actor, command, transaction) {
+    assertCommand(command);
+    const work = async (tx: Tx): Promise<StockCommandResult> => {
       const done = await replay(tx, actor, command.requestKey, command.productId, command.quantity);
       if (done) return done;
       const from = await locationFor(tx, actor, command.warehouseId, ["STORAGE", "PICK_FACE", "BULK"], command.locationId);
@@ -228,6 +246,8 @@ export const stockProvider: StockProvider = {
       const lot = await lotId(tx, actor, command.productId, command.lotCode);
       const toWarehouse = command.toWarehouseId ?? command.warehouseId;
       const to = await locationFor(tx, actor, toWarehouse, ["STORAGE", "PICK_FACE"], command.toLocationId);
+      if (!from.active || !to.active) throw new Error('Choose active stock locations.');
+      if (!transaction && [from, to].some(place => place.capabilities.includes('PRODUCTION_STAGING'))) throw new Error('Use Production handoff to collect stock from the holding area.');
       const toStatus = command.toStatus ?? "AVAILABLE";
       await changePosition(tx, actor, { warehouseId: command.warehouseId, locationId: from.id, productId: command.productId, lotId: lot, status: command.status ?? "AVAILABLE", delta: -command.quantity });
       await changePosition(tx, actor, { warehouseId: toWarehouse, locationId: to.id, productId: command.productId, lotId: lot, status: toStatus, delta: command.quantity });
@@ -244,9 +264,11 @@ export const stockProvider: StockProvider = {
         ids.push(out.id, incoming.id);
       }
       return { requestKey: command.requestKey, movementIds: ids, replayed: false };
-    }).then(async (result) => {
+    };
+    if (transaction) return work(transaction);
+    return run(work).then(async (result) => {
       const destination = command.toWarehouseId ?? command.warehouseId;
-      const arrived = (command.toStatus ?? "AVAILABLE") === "AVAILABLE" && (destination !== command.warehouseId || command.status === "IN_TRANSIT");
+      const arrived = (command.toStatus ?? "AVAILABLE") === "AVAILABLE" && (destination !== command.warehouseId || command.status === "IN_TRANSIT" || command.status === 'BLOCKED');
       if (arrived) await replenished(actor, command.productId, destination, `balance:${command.requestKey}`);
       return result;
     });

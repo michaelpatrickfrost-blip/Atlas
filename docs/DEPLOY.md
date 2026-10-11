@@ -485,3 +485,16 @@ Root164GiBfree/no swap/2.6GiB available RAM; no fstab/app/PG/database change. Op
 existing owner-administrator locks as that owner; privileged buffer operations run
 while the owner shell holds them. Initial root opens were denied before mutation;
 never recreate/change lock ownership/inodes to work around sticky-file protection.
+
+## Usability/Guides/production handoff acceptance
+
+Use `ATLAS_RELEASE_ACCEPTANCE=usability` with the exact reviewed release branch/SHA.
+The checked-in `scripts/check-usability-release.ts` exercises the sealed candidate
+and public HTTPS under the existing release locks, taking central backups at both
+stages. It uses the existing QA staff identity and a disposable central Test company,
+checks website scene spacing/navigation/motion at 1440/820/390/320, genuine final
+production completion/partial/full yard collections, stale/replayed/Quality-held
+bookings, Maintenance creation, S&OP form discovery, Procurement input, registered
+routes/guide links and key responsive workspaces. The exact fixture is wiped in
+finally and the existing QA affiliation remains unchanged. A candidate failure
+prevents activation; public failure retains the normal runtime rollback path.

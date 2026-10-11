@@ -1,12 +1,12 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import type { DemandLine } from '@/modules/manufacturing/domain/mrp-types';
 
-const state = vi.hoisted(() => ({ demand: [] as DemandLine[], db: Object.fromEntries(
-  ['salesOrder', 'fulfilmentLine', 'manufacturingDemandForecast', 'product', 'inventoryBalance', 'warehouse', 'stockReservation', 'qualityHold', 'productDefinition', 'manufacturingOrder', 'manufacturingPlanningRun', 'manufacturingSupplySuggestion'].map(name => [name, { findMany: vi.fn(), create: vi.fn() }]),
+const state = vi.hoisted(() => ({ inventory: new Map<string,{available:number;restricted?:number;qualityHeld:number}>(), demand: [] as DemandLine[], db: Object.fromEntries(
+  ['salesOrder', 'fulfilmentLine', 'manufacturingDemandForecast', 'product', 'inventoryBalance', 'warehouse', 'stockReservation', 'stockPosition', 'qualityHold', 'productDefinition', 'manufacturingOrder', 'manufacturingPlanningRun', 'manufacturingSupplySuggestion'].map(name => [name, { findMany: vi.fn(), create: vi.fn() }]),
 ) }));
 vi.mock('@/core/db/client', () => ({ db: state.db }));
 vi.mock('@/modules/manufacturing/domain/mrp-engine', () => ({ MrpEngine: class {
-  constructor(context: { demand: DemandLine[] }) { state.demand = context.demand; }
+  constructor(context: { demand: DemandLine[];inventory:typeof state.inventory }) { state.demand = context.demand; state.inventory=context.inventory; }
   async run() { return { plannedOrders: [], shortages: [], capacityIssues: [], warnings: [], peggingMap: new Map(), startedAt: new Date(), finishedAt: new Date(), runId: 'test' }; }
 } }));
 import { runMrp } from '@/modules/manufacturing/services/mrp-calculation';
@@ -42,3 +42,5 @@ describe('approved S&OP demand entering MRP', () => {
     expect(state.demand.reduce((sum, row) => sum + row.quantity, 0)).toBe(120000);
   });
 });
+
+it("nets blocked production, transit and quality from actual MRP supply without double-counting quarantine",async()=>{state.db.inventoryBalance.findMany.mockResolvedValue([{productId:"p",quantity:30}]);state.db.stockReservation.findMany.mockResolvedValue([{productId:"p",quantity:2}]);state.db.qualityHold.findMany.mockResolvedValue([{productId:"p",quantity:4}]);state.db.stockPosition.findMany.mockResolvedValue([{productId:"p",status:"QUARANTINE",quantity:4},{productId:"p",status:"BLOCKED",quantity:10},{productId:"p",status:"IN_TRANSIT",quantity:2}]);await runMrp("org","planner");expect(state.inventory.get("p")).toMatchObject({available:12,restricted:12,qualityHeld:4});});

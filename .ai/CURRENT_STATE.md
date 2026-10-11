@@ -12040,3 +12040,33 @@ The extended checker includes tablet/phone Stock and Product viewport checks.
 No full-suite rerun. Prepare and real candidate/public acceptance remain pending.
 
 Studio remaining Phase 2 correctness requirements recorded in STUDIO_PHASE_2_FIELDS.md: required-if, owner canonical-record coverage for new required fields and metadata-runtime schema compatibility. These remain unimplemented; Phase 2 gate not passed.
+
+## 11 October 2026 — Atlas usability, Guides, website and production holding (local checkpoint)
+
+Scoped branch `codex/usability-guides-20261011` began from exact live ad9d5a43;
+concurrent accepted c607e12b Dashboard/account changes will be integrated before
+release. Desktop main is concurrently dirty and has not been reset or deployed.
+Implementation: crisp-white private-access ERP website with animated product
+scenes, pause/reduced motion and separated responsive card/message/control spacing;
+searchable authorised Guides across business apps and contextual help; clearer
+Procurement type/filter/amount semantics and percentage tax entry; Maintenance
+single-asset selection, due queues, scoped filters and real-count pagination;
+Quality accurate due/review attention; S&OP task progression and working New cycle.
+Production final output enters canonical BLOCKED stock at PROD-HOLD; Warehouse
+collects partial/all into storage/yard using guarded same-transaction movement,
+version CAS, repeat key, Quality-hold protection and immutable collection history.
+Held/transit stock is excluded from availability, S&OP and rich MRP projections.
+Additive migration 20261011163000; no ordinary records/backups were removed.
+
+Relevant paths: `src/components/website`, `src/core/guides`, authenticated Guides,
+Stock handoffs, Finance/Maintenance/Quality pages, S&OP components, stock provider
+and manufacturing completion, schema/data API, and `scripts/check-usability-release.ts`.
+Existing stale runtime/feedback test doubles are reconciled to actual guards;
+no production security rule was removed. Initial baseline: 73 failures/11 files.
+Local build passed; focused guide/handoff/domain corrections passed. Full suite
+currently has only three 5-second timing failures during competing compile/lint
+work; isolated bounded-worker rerun is underway. Final types/lint/build and central
+candidate/public acceptance are pending. Cleanup of historical explicitly marked
+Test companies is authorised by Michael and pending reviewed backup/locked sweep;
+no local business database/cache was created. No deployment or full ERP-spec parity
+is claimed at this checkpoint. Plan: docs/plans/ATLAS_USABILITY_AND_GUIDES.md.

@@ -3,6 +3,7 @@
 import { db } from "@/core/db/client";
 import type { Session } from "@/core/auth/session";
 import { requireSession } from "@/core/auth/session";
+import { assertModuleEnabled } from "@/core/modules/access";
 import { assertCapability } from "@/core/permissions/check";
 import { writeAudit } from "@/core/audit/log";
 import { writeActivity } from "@/core/activity/log";
@@ -164,6 +165,7 @@ async function workOrderOrThrow(organisationId: string, workOrderId: string) {
 export async function startWorkOrder(workOrderId: string, requestKey: string) {
   const session = await requireSession();
   assertCapability(session, C.workOrderExecute);
+  await assertModuleEnabled(session,"manufacturing");
   const workOrder = await workOrderOrThrow(session.organisationId, workOrderId);
   if (workOrder.lastRequestKey === requestKey) return workOrder;
   if (!canTransitionWorkOrder(workOrder.status, "RUNNING")) throw new Error(`This step cannot start from ${workOrder.status}.`);
@@ -184,6 +186,7 @@ export async function startWorkOrder(workOrderId: string, requestKey: string) {
 export async function pauseWorkOrder(workOrderId: string, reason: string | null, requestKey: string) {
   const session = await requireSession();
   assertCapability(session, C.workOrderExecute);
+  await assertModuleEnabled(session,"manufacturing");
   const workOrder = await workOrderOrThrow(session.organisationId, workOrderId);
   if (workOrder.lastRequestKey === requestKey) return workOrder;
   if (!canTransitionWorkOrder(workOrder.status, "PAUSED")) throw new Error(`This step cannot pause from ${workOrder.status}.`);
@@ -200,6 +203,7 @@ export async function pauseWorkOrder(workOrderId: string, reason: string | null,
 export async function completeWorkOrder(workOrderId: string, goodQuantity: number, scrapQuantity: number, requestKey: string) {
   const session = await requireSession();
   assertCapability(session, C.workOrderExecute);
+  await assertModuleEnabled(session,"manufacturing");
   if (!Number.isSafeInteger(goodQuantity) || !Number.isSafeInteger(scrapQuantity) || goodQuantity < 0 || scrapQuantity < 0 || goodQuantity + scrapQuantity <= 0) throw new Error("Enter whole good and scrap quantities greater than zero in total.");
   if (!requestKey || requestKey.length > 80) throw new Error("A valid production request reference is required.");
   let replenishment: Awaited<ReturnType<typeof backflushOnCompletion>>;
@@ -248,7 +252,7 @@ export async function completeWorkOrder(workOrderId: string, goodQuantity: numbe
       throw error;
     }
   }
-  if (replenishment) {
+  if (replenishment && !replenishment.staged) {
     const { stockReplenished } = await import("@/core/stock/replenishment");
     await stockReplenished(session, replenishment);
   }

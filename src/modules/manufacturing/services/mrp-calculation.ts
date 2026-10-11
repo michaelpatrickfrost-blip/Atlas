@@ -164,7 +164,7 @@ async function loadInventory(organisationId: string): Promise<Map<string, Invent
   const stateFor = (productId: string) => {
     const current = inventory.get(productId);
     if (current) return current;
-    const created: InventoryState = { productId, onHand: 0, allocated: 0, qualityHeld: 0, available: 0, safetyStock: 0 };
+    const created: InventoryState = { productId, onHand: 0, allocated: 0, qualityHeld: 0, restricted: 0, available: 0, safetyStock: 0 };
     inventory.set(productId, created);
     return created;
   };
@@ -180,7 +180,15 @@ async function loadInventory(organisationId: string): Promise<Map<string, Invent
   const holds = await db.qualityHold.findMany({ where: { organisationId, status: "ACTIVE" }, select: { productId: true, quantity: true } });
   for (const hold of holds) stateFor(hold.productId).qualityHeld += Number(hold.quantity);
 
-  for (const state of inventory.values()) state.available = Math.max(0, state.onHand - state.allocated - state.qualityHeld);
+  const positions = await db.stockPosition.findMany({ where: { organisationId, status: { in: ["QUARANTINE", "BLOCKED", "IN_TRANSIT"] } }, select: { productId: true, status: true, quantity: true } });
+  const quarantined = new Map<string, number>();
+  for (const position of positions) {
+    if (position.status === 'QUARANTINE') quarantined.set(position.productId, (quarantined.get(position.productId) ?? 0) + position.quantity);
+    else stateFor(position.productId).restricted = (stateFor(position.productId).restricted ?? 0) + position.quantity;
+  }
+  // A quality hold and its quarantined position describe the same physical stock.
+  for (const [id, quantity] of quarantined) stateFor(id).qualityHeld = Math.max(stateFor(id).qualityHeld, quantity);
+  for (const state of inventory.values()) state.available = Math.max(0, state.onHand - state.allocated - state.qualityHeld - (state.restricted ?? 0));
   return inventory;
 }
 

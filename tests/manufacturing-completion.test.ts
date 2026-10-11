@@ -1,6 +1,7 @@
 import { beforeEach, expect, it, vi } from "vitest";
-const state = vi.hoisted(() => ({ saved: { used: 0, made: 0, completed: false }, failMaterial: false, failReceipt: false, unfinished: 0, later: 0, inventoryEnabled: true, conflict: false, provider: {} as Record<string, unknown>, session: { organisationId: "tenant", userId: "operator", capabilities: new Set(["manufacturing.work_order.execute"]) } }));
+const state = vi.hoisted(() => ({ saved: { used: 0, made: 0, completed: false }, failMaterial: false, failReceipt: false, unfinished: 0, later: 0, inventoryEnabled: true, manufacturingEnabled: true, conflict: false, provider: {} as Record<string, unknown>, session: { organisationId: "tenant", userId: "operator", capabilities: new Set(["manufacturing.work_order.execute"]) } }));
 vi.mock("@/core/auth/session", () => ({ requireSession: async () => state.session }));
+vi.mock("@/core/modules/access",()=>({assertModuleEnabled:async()=>{if(!state.manufacturingEnabled)throw new Error("Manufacturing disabled");}}));
 vi.mock("@/core/modules/registry", () => ({ getModule: () => ({ stockProvider: state.provider }) }));
 vi.mock("@/core/modules/runtime", () => ({ getEnabledModuleIds: async () => new Set(state.inventoryEnabled ? ["stock"] : []) }));
 vi.mock("@/core/stock/replenishment", () => ({ stockReplenished: vi.fn() }));
@@ -30,10 +31,10 @@ vi.mock("@/core/db/client", () => {
 });
 import { completeWorkOrder } from "@/modules/manufacturing/services/commands";
 beforeEach(() => {
-  state.saved = { used: 0, made: 0, completed: false }; state.failMaterial = false; state.failReceipt = false; state.unfinished = 0; state.later = 0; state.inventoryEnabled = true; state.conflict = false;
+  state.saved = { used: 0, made: 0, completed: false }; state.failMaterial = false; state.failReceipt = false; state.unfinished = 0; state.later = 0; state.inventoryEnabled = true; state.manufacturingEnabled = true; state.conflict = false;
   state.provider = {
     shipStock: async (_actor: unknown, command: { productId: string; quantity: number }, tx?: { saved: typeof state.saved }) => { if (state.failMaterial && command.productId === "second") throw new Error("Second material is short"); (tx?.saved ?? state.saved).used += command.quantity; },
-    receiveStock: async (_actor: unknown, command: { quantity: number }, tx?: { saved: typeof state.saved }) => { if (state.failReceipt) throw new Error("Output receipt refused"); (tx?.saved ?? state.saved).made += command.quantity; },
+    stageProduction: async (_actor: unknown, command: { quantity: number }, tx?: { saved: typeof state.saved }) => { if (state.failReceipt) throw new Error("Output receipt refused"); (tx?.saved ?? state.saved).made += command.quantity; },
   };
 });
 it("rolls all earlier material issues back if a later material is short", async () => {
@@ -77,3 +78,5 @@ it("completes an intermediate routing step without booking finished goods", asyn
   state.later = 1; await completeWorkOrder("step", 2, 0, "request");
   expect(state.saved).toEqual({ used: 0, made: 0, completed: true });
 });
+
+it("rejects a disabled Manufacturing app before reading or changing work", async()=>{state.manufacturingEnabled=false;await expect(completeWorkOrder("step",2,0,"request")).rejects.toThrow("Manufacturing disabled");expect(state.saved).toEqual({used:0,made:0,completed:false});});

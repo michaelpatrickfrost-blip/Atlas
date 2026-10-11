@@ -177,3 +177,16 @@ all drawer widths use a list/detail Back flow, with Escape and focus restoration
 Drawers are at most560px wide, animate entry/exit over240ms and honor reduced
 motion. The shade is light and unblurred so the current workspace remains visible.
 Dashboard and Settings keep their existing page/menu destinations.
+
+## 11 October 2026 — website and working guidance
+
+The private-access introduction at `/` uses a crisp white editorial composition,
+Nunito with a restrained serif accent, muted teal/lilac detail and Atlas blue for
+primary actions. Real ERP illustrations explain Plan → Make → Deliver. There is
+no signup, checkout or public company data. Product scenes, scroll reveals, charts
+and connection paths provide purposeful motion; Pause and reduced-motion support
+stop it. Floating messages retain their own layout space and never cover controls.
+The app stays task-focused: shared Guides, restrained operational headers, clear
+queues, bounded paging and native guarded actions. Instructions name preparation,
+steps, outcomes, terminology and common blockers; authorised source links stay
+beside the explanation. Use accessible 44px controls and verify 320px layouts.

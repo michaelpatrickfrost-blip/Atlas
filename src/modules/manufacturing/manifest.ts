@@ -33,6 +33,7 @@ export const manufacturingManifest: ModuleManifest = {
   searchProvider: async ({ session, query }) => (session.capabilities.has(C.orderRead) ? searchManufacturing(session, query) : []),
   navigation: [
     { label: "Console", href: "/manufacturing" },
+    { label: "Production handoff", href: "/stock/handoffs", capability: "stock.read" },
     { label: "Production today", href: "/manufacturing/today", capability: C.orderRead },
     { label: "How-to library", href: "/manufacturing/help" },
     { label: "Production plan", href: "/manufacturing/planning", capability: C.planRead, group: "Planning" },

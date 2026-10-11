@@ -1,5 +1,6 @@
 import {decimalUnits,roundRatio} from './money';
 export const DOCUMENT_KINDS=['REQUEST','PO','RECEIPT','AP_INVOICE','AR_INVOICE','AP_CREDIT','AR_CREDIT','AP_DEBIT','AR_DEBIT','EXPENSE'] as const;
+export const DOCUMENT_LABELS:Record<string,string>={REQUEST:'Purchase request',PO:'Purchase order',RECEIPT:'Goods receipt',AP_INVOICE:'Supplier invoice',AR_INVOICE:'Customer invoice',AP_CREDIT:'Supplier credit note',AR_CREDIT:'Customer credit note',AP_DEBIT:'Supplier debit note',AR_DEBIT:'Customer debit note',EXPENSE:'Expense'};
 export const TAX_CODES=['STANDARD','REDUCED','ZERO','EXEMPT','OUTSIDE_SCOPE'] as const;
 export function matchLine(input:{ordered:string;accepted:string;alreadyInvoiced:string;invoiceQuantity:string;expectedPrice:bigint;invoicePrice:bigint;toleranceBps:number}){
  const ordered=decimalUnits(input.ordered,6),accepted=decimalUnits(input.accepted,6),already=decimalUnits(input.alreadyInvoiced,6),quantity=decimalUnits(input.invoiceQuantity,6);

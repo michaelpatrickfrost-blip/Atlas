@@ -57,7 +57,7 @@ export async function readAvailability(): Promise<CommercialPicture> {
     db.product.findMany({ where: { organisationId }, select: { id: true, unitOfMeasure: true } }),
     db.inventoryBalance.findMany({ where: { organisationId }, select: { productId: true, quantity: true } }),
     optional(db.stockReservation.findMany({ where: { organisationId, status: "ACTIVE" }, select: { productId: true, quantity: true } }), []),
-    optional(db.stockPosition.findMany({ where: { organisationId, status: { in: ["QUARANTINE", "BLOCKED"] } }, select: { productId: true, quantity: true } }), []),
+    optional(db.stockPosition.findMany({ where: { organisationId, status: { in: ["QUARANTINE", "BLOCKED", "IN_TRANSIT"] } }, select: { productId: true, quantity: true } }), []),
     db.salesOrderLine.findMany({
       where: { type: "PRODUCT", productId: { not: null }, order: { organisationId, commercialStatus: "CONFIRMED", orderType: { not: "BLANKET" } } },
       select: { id: true, productId: true, orderedQuantity: true, cancelledQuantity: true, unitOfMeasure: true },

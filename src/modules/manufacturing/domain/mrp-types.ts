@@ -38,8 +38,9 @@ export interface InventoryState {
   productId: string;
   onHand: number; // Physical stock
   allocated: number; // Reserved for stock movements still to go out
-  qualityHeld: number; // Active quality hold
-  available: number; // max(0, onHand - allocated - qualityHeld)
+  restricted?: number; // Production holding and stock in transit
+  qualityHeld: number; // Active quality hold / quarantine, counted once
+  available: number; // max(0, onHand - allocated - qualityHeld - restricted)
   safetyStock: number; // Target safety stock level
 }
 

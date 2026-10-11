@@ -1,3 +1,4 @@
+import type {Prisma} from "@/generated/prisma/client";
 import { db } from "@/core/db/client";
 import { requireSession, type Session } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
@@ -15,14 +16,18 @@ export async function qualityToday() {
   await requireQuality(session);
   const organisationId = session.organisationId;
   const allow=(cap:string)=>session.capabilities.has(cap);
-  const [activeHolds, openNcr, criticalNcr, overdueActions, recentInspections] = await Promise.all([
+  const dueWhere:Prisma.NonConformanceActionWhereInput={organisationId,OR:[{status:{in:['OPEN','INEFFECTIVE']},dueDate:{lte:new Date()}},{status:'DONE',effectivenessReviewDate:{lte:new Date()}}]};
+  const [activeHolds, openNcr, criticalNcr, overdueActions, recentInspections, holdCount, ncrCount, dueCount] = await Promise.all([
     allow(QUALITY_CAPABILITIES.holdRead)?db.qualityHold.findMany({ where: { organisationId, status: "ACTIVE" }, include: { product: { select: { name: true, code: true } } }, orderBy: { placedAt: "desc" }, take: 20 }) : [],
     allow(QUALITY_CAPABILITIES.ncrRead)?db.nonConformance.findMany({ where: { organisationId, status: { not: "CLOSED" } }, include: { product: { select: { name: true } } }, orderBy: { reportedAt: "desc" }, take: 20 }) : [],
     allow(QUALITY_CAPABILITIES.ncrRead)?db.nonConformance.count({ where: { organisationId, status: { not: "CLOSED" }, severity: "CRITICAL" } }) : 0,
-    allow(QUALITY_CAPABILITIES.ncrRead)?db.nonConformanceAction.findMany({ where: { organisationId, status: { in: ["OPEN", "DONE", "INEFFECTIVE"] }, OR: [{dueDate:{lte:new Date()}},{effectivenessReviewDate:{lte:new Date()}}] }, include: { ncr: { select: { number: true, title: true } } }, take: 20 }) : [],
+    allow(QUALITY_CAPABILITIES.ncrRead)?db.nonConformanceAction.findMany({ where: dueWhere, include: { ncr: { select: { number: true, title: true } } }, take: 20 }) : [],
     allow(QUALITY_CAPABILITIES.checkExecute)?db.qualityInspection.findMany({ where: { organisationId }, orderBy: { inspectedAt: "desc" }, take: 10, include: { product: { select: { name: true } } } }) : [],
+    allow(QUALITY_CAPABILITIES.holdRead)?db.qualityHold.count({where:{organisationId,status:'ACTIVE'}}):0,
+    allow(QUALITY_CAPABILITIES.ncrRead)?db.nonConformance.count({where:{organisationId,status:{not:'CLOSED'}}}):0,
+    allow(QUALITY_CAPABILITIES.ncrRead)?db.nonConformanceAction.count({where:dueWhere}):0,
   ]);
-  return { activeHolds, openNcr, criticalNcr, overdueActions, recentInspections };
+  return { activeHolds, openNcr, criticalNcr, overdueActions, recentInspections, holdCount, ncrCount, dueCount };
 }
 
 export async function specificationList() {

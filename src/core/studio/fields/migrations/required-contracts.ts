@@ -14,8 +14,9 @@ const intentShape = {
   target: fieldMigrationIntentSchema.shape.target.extend({ payload: versionedFieldPayloadSchema }),
 };
 
-/** Upcoming explicit protocol version, never passed to the old v1 service or
- * SQL guards. Pure integrity is not business-value or execution authority. */
+/** Explicit protocol2 integrity for the versioned archive/preparation path;
+ * never passed to closed v1 wrappers. Pure integrity is not business-value,
+ * owning callback or execution authority. */
 export const requiredFieldMigrationIntentSchema = z.strictObject(intentShape);
 export type RequiredFieldMigrationIntent = z.infer<typeof requiredFieldMigrationIntentSchema>;
 

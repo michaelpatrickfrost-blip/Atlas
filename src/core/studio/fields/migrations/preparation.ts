@@ -6,15 +6,16 @@ import { writeAudit } from "@/core/audit/log";
 import { STUDIO_CAPABILITIES } from "../../permissions";
 import { studioRegistry } from "../../registry/runtime";
 import { checksum } from "../../registry/contracts";
-import { entityDetailsSchema, supportsFieldMigrationIntent } from "../../registry/entities";
+import { entityDetailsSchema, supportsFieldMigrationIntent, supportsFieldMigrationQueryIntent } from "../../registry/entities";
 import { compileFieldMigrationMetadata } from "./metadata";
-import { customFieldPayloadSchema } from "../schema";
+import { versionedFieldPayloadSchema } from "../required-contract";
 import { assertFieldBinding } from "../binding";
 import { fieldConversionSchema } from "../evolution";
 import type { FieldMigrationPrincipal } from "../principal-contract";
 import { withFieldMigrationAuthority } from "./authority";
-import { assertFieldMigrationPolicies } from "./access";
+import { assertFieldMigrationPolicies, assertVersionedFieldMigrationPolicies } from "./access";
 import { sealFieldMigrationIntent, FieldMigrationReviewError } from "./contracts";
+import { sealRequiredFieldMigrationIntent } from "./required-contracts";
 
 const requestSchema = z.strictObject({ operationId: z.uuid(), definitionId: z.uuid(),
   definitionRevision: z.number().int().nonnegative(), draftRevision: z.number().int().nonnegative(), conversion: fieldConversionSchema });
@@ -31,22 +32,30 @@ export async function startFieldMigrationPreparation(session: Session, serverPri
       kind: "customField", retiredAt: null, revision: request.definitionRevision }, include: { draft: true, activeVersion: true } });
     if (!definition?.activeVersion || !definition.draft || definition.draft.revision !== request.draftRevision) changed();
     const source = definition.activeVersion, draft = definition.draft;
-    const current = customFieldPayloadSchema.parse(source.payload), target = customFieldPayloadSchema.parse(draft.payload);
-    assertFieldMigrationPolicies(fresh, company, current);
+    const current = versionedFieldPayloadSchema.parse(source.payload), target = versionedFieldPayloadSchema.parse(draft.payload);
+    const protocol = current.schemaVersion === 1 && target.schemaVersion === 1 ? 1 : 2;
+    const policies = protocol === 1 ? assertFieldMigrationPolicies : assertVersionedFieldMigrationPolicies;
+    policies(fresh, company, current); policies(fresh, company, target);
     const registry = studioRegistry(), compiledSource = await compileFieldMigrationMetadata({ session: fresh, transaction: tx }, registry, company, definition.id, current), compiledTarget = await compileFieldMigrationMetadata({ session: fresh, transaction: tx }, registry, company, definition.id, target);
     if (source.checksum !== checksum(source.compiledPlan) || source.checksum !== compiledSource.checksum) changed();
+    // SQL freshness pins the exact saved draft. Never silently normalise/edit a
+    // user's draft or weaken equality to enable the conditional protocol.
+    if (protocol === 2 && checksum(draft.payload) !== checksum(compiledTarget.payload)) changed();
     await assertFieldBinding(tx, fresh, definition.id, current);
     const owner = await registry.resolve(fresh, target.entity), policy = entityDetailsSchema.parse(owner.details).record?.migrationSnapshot;
-    if (!supportsFieldMigrationIntent(policy, 1) || !policy || !policy.sourceVersions.includes(current.entity.version) || current.entity.id !== target.entity.id)
+    if (!supportsFieldMigrationIntent(policy, protocol) || !policy || !policy.sourceVersions.includes(current.entity.version) || current.entity.id !== target.entity.id)
       throw new Error("MIGRATION_OWNER_REQUIRED: this owner has not approved the source field snapshot protocol.");
     const ownerQuery = registry.describe(policy.query.id, policy.query.version);
+    if (protocol === 2 && (ownerQuery.ownerModuleId !== owner.ownerModuleId || ownerQuery.capability !== entityDetailsSchema.parse(owner.details).record?.writeCapability
+      || !supportsFieldMigrationQueryIntent(ownerQuery, owner.id, "snapshot", 2))) changed();
     // Source/ref module availability cannot race compilation or preparation.
     for (const id of [...new Set([...compiledSource.plan.dependencies, ...compiledTarget.plan.dependencies].map(ref => ref.ownerModuleId))].sort()) {
       await tx.$queryRaw`SELECT id FROM module_states WHERE "organisationId"=${fresh.organisationId} AND "moduleId"=${id} FOR SHARE`;
       if (!await tx.moduleState.findFirst({ where: { organisationId: fresh.organisationId, moduleId: id, enabled: true, entitled: true }, select: { id: true } }))
         throw new Error("DEPENDENCY_BROKEN: field source is unavailable.");
     }
-    const sealed = sealFieldMigrationIntent({ schemaVersion: 1, id: request.operationId, organisationId: fresh.organisationId,
+    const seal = protocol === 1 ? sealFieldMigrationIntent : sealRequiredFieldMigrationIntent;
+    const sealed = seal({ schemaVersion: protocol, id: request.operationId, organisationId: fresh.organisationId,
       definitionId: definition.id, definitionRevision: definition.revision, principal,
       source: { versionId: source.id, versionChecksum: source.checksum, payload: current },
       target: { draftId: draft.id, draftRevision: draft.revision, compiledChecksum: compiledTarget.checksum, payload: compiledTarget.payload },

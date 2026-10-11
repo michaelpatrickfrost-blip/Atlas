@@ -7,11 +7,11 @@ import { writeAudit } from "@/core/audit/log";
 import { STUDIO_CAPABILITIES } from "../../permissions";
 import { studioRegistry } from "../../registry/runtime";
 import { checksum } from "../../registry/contracts";
-import { analyseFieldEvolution } from "../evolution";
-import { readSealedFieldMigrationReview, FieldMigrationReviewError } from "./contracts";
-import { readStoredFieldMigrationIntent } from "./stored-protocol";
+import { analyseFieldEvolution, analyseRequiredFieldEvolution } from "../evolution";
+import { FieldMigrationReviewError } from "./contracts";
+import { readStoredFieldMigrationIntent, readStoredFieldMigrationReview } from "./stored-protocol";
 import { withFieldMigrationAuthority } from "./authority";
-import { inspectFieldMigrationReview } from "./inspection";
+import { inspectFieldMigrationReview, inspectRequiredFieldMigrationReview } from "./inspection";
 
 const requestSchema = z.strictObject({ preparationId: z.uuid(), revision: z.number().int().nonnegative().max(2147483646) });
 function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"); }
@@ -26,7 +26,6 @@ export async function sealFieldMigrationPreparation(session: Session, input: unk
   const initial = await db.studioFieldMigrationPreparation.findFirst({ where: scope });
   if (!initial) changed();
   const pinned = readStoredFieldMigrationIntent(initial, session.organisationId);
-  if (pinned.intent.schemaVersion !== 1) throw new FieldMigrationReviewError("REVIEW_INVALID");
   const pinnedIntent = pinned.intent;
   return withFieldMigrationAuthority(session, pinnedIntent.principal, async ({ session: fresh, transaction: tx, company }) => {
     await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${request.preparationId}::uuid AND "organisationId"=${fresh.organisationId} FOR UPDATE`;
@@ -35,10 +34,12 @@ export async function sealFieldMigrationPreparation(session: Session, input: unk
       || checksum(preparation.intent) !== pinned.checksum || request.revision > preparation.revision) changed();
     if (preparation.state === "PREPARING" && (preparation.review || preparation.revision !== request.revision)) changed();
     const intent = pinnedIntent, registry = studioRegistry();
-    const sealed = await inspectFieldMigrationReview({ session: fresh, transaction: tx }, registry, company, intent);
-    const impact = analyseFieldEvolution(intent.source.payload, intent.target.payload);
+    const sealed = intent.schemaVersion === 1 ? await inspectFieldMigrationReview({ session: fresh, transaction: tx }, registry, company, intent)
+      : await inspectRequiredFieldMigrationReview({ session: fresh, transaction: tx }, intent);
+    const impact = intent.schemaVersion === 1 ? analyseFieldEvolution(intent.source.payload, intent.target.payload)
+      : analyseRequiredFieldEvolution(intent.source.payload, intent.target.payload);
     if (preparation.state === "REVIEWED") {
-      if (!preparation.review || readSealedFieldMigrationReview({ review: preparation.review.review, checksum: preparation.review.checksum }).checksum !== sealed.checksum) changed();
+      if (!preparation.review || readStoredFieldMigrationReview(preparation.review, fresh.organisationId).checksum !== sealed.checksum) changed();
       return { id: preparation.id, revision: preparation.revision, state: "REVIEWED" as const, checksum: sealed.checksum, cohort: sealed.review.cohort,
         summary: sealed.review.summary, indexImpact: impact.indexImpact, rollbackLimit: impact.rollbackLimit, replayed: true };
     }

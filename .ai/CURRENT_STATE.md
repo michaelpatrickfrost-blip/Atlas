@@ -1,3 +1,57 @@
+## 11 October 2026 — c2 archive integrity VERIFIED live e5ab126
+
+Original runner37255 exit0; candidateRDpurM/publicv8yyRV ALL COMBINED PASS.
+Actual central format2 SQL fixture passed both stages: exact source refs, malformed/
+unknown/coerced/raw metadata denials, required-null/result shape, sealed append
+rejection, ordered SQL/pure digest equality, unchanged native/typed/draft/metadata/
+Audit snapshots after full rollback. Existing legacy field/native/module/Admin/
+business-login/browser compatibility passed. This verifies archive integrity only;
+synthetic semantic hashes are not actual format2 owning/runtime execution approval.
+
+Both additive migrations20261011010000 and20261011020000 applied. Initial d297576
+candidate failed on JSON operator precedence, caught before public switch; correction
+preserves applied history/checksum. Readonly exact SQL reproduction84624 PASS,
+production correction build44301 exit0. Original runtime e5ab126 activated; rollback
+cdec6c6 retained. Original both-lock retention retired only6ca2ac2/d297576 duplicate
+runtime, preserving source/static/evidence/private records/business backups.
+Required UTC082105/082245/082658 recovery only; no ad-hoc dumps or local data copies.
+
+C3 local66/7/TS74927/lint59309/build55330/diff PASS. Exact next: commit/pin/release
+c3 five migration services + required-contract comment and focused tests/docs under
+original Studio gates; then actual dual-format Tickets callbacks/new current owner.
+WholePhase2 gate remains unpassed. Visual stash28243b7 unchanged for2E.
+
+## 11 October 2026 — c3 routing VERIFIED locally; actual owner2 still required
+
+Existing preparation/collection/coverage/sealing now route explicit1/2 from actual
+saved source/draft or stored intent, never a client format override. Conditional
+preparation requires canonical saved draft exactly, full metadata/binding/native
+write and callback intent approval. Required preparation inspection refreshes genuine
+authority even for empty cohorts, validates full owner/source/written coverage before
+IDs/counts, reevaluates real rows in pages50, compares semantic evidence and native/
+global envelopes, and requires pure/SQL archive equality before CAS/Audit sealing.
+Reference coverage shares one helper; legacy wrappers/stages/receipts remain closed1.
+No new schema/domain writes/public authoring/publication/execution/settlement hooks.
+Actual owning callback supporting2 remains absent; future owner unit fixtures and
+simulated transactions prove orchestration only, not real central2 runtime acceptance.
+
+66 cases/7 suites PASS67311; strict TS74927/scoped lint59309/build55330 exit0;
+final diff review/check PASS. Added required-inspection5 and required-routing3 cases;
+two old format-denial expectations now test actual copied/genuine authority denial.
+Initial routing fixture omitted legacy source coverage required by its inherited
+representation contract; fixed test fixture, no registry relaxation. Earlier initial
+42/44 failures were obsolete assertions, not missing production authority checks.
+C3 five-file stash8a77e82 restored selectively; visual28243b7 still unchanged.
+
+C2 correctione5ab126 original release37255 still pinned, candidateRDpurM actual
+SQL fixture PASS: closed2/reference guards, required-null and sealed denials, SQL/
+pure framing match, complete native/typed/draft/metadata/Audit rollback. Whole
+candidate/public gate still pending. Do not move HEAD until original runner ends.
+Exact next: finish correction public gates, record live proof, commit/pin/release
+c3 under same gates; then implement actual Tickets snapshot owner/query supporting
+both retained1 and explicit2 (e2b3d), preserving every old descriptor/hash and private/
+canonical/final/merged/unanchored/revision/empty cohort policies. WholePhase2 unpassed.
+
 ## 11 October 2026 — c2 central gate FAIL; additive precedence correction IMPLEMENTED
 
 Original runner59086/d297576 exit1 at candidateDBHdhF: actual positive format2

@@ -7,6 +7,13 @@ import { sealFieldMigrationReview, FieldMigrationReviewError, type FieldMigratio
 import { validateFieldMigrationSourceCoverage, type FieldMigrationCoverageStage } from "./coverage";
 import { digestFieldMigrationArchive } from "./archive-digest";
 import type { assertFieldMigrationPolicies } from "./access";
+import { validateRequiredFieldMigrationSourceCoverage } from "./coverage";
+import { digestRequiredFieldMigrationArchive } from "./archive-digest";
+import { sealRequiredFieldMigrationIntent, sealRequiredFieldMigrationReview, requiredFieldMigrationObservationSchema,
+  requiredFieldMigrationObservationDigest, type RequiredFieldMigrationIntent } from "./required-contracts";
+import { observeRequiredFieldMigrationRecord } from "./observation";
+import { fieldRuntimeAuthorityInTransaction } from "../runtime-authority";
+import { checksum } from "../../registry/contracts";
 
 /** One exact internal review inspection for sealing, publication and execution/replay.
  * Caller owns the fresh authority/transaction. Stage is derived from a locked
@@ -15,6 +22,51 @@ import type { assertFieldMigrationPolicies } from "./access";
 export async function inspectFieldMigrationReview(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
   company: Parameters<typeof assertFieldMigrationPolicies>[1], intent: FieldMigrationIntent, stage: FieldMigrationCoverageStage = "preparation") {
   await validateFieldMigrationSourceCoverage(context, registry, company, intent, stage);
+  await validateReferenceCoverage(context, registry, intent);
+  const aggregate = await digestFieldMigrationArchive(context.transaction, intent);
+  if (intent.target.payload.field.unique && aggregate.duplicateTarget)
+    throw new Error("MIGRATION_UNIQUENESS_CONFLICT: target values need a new review after duplicates are resolved.");
+  return sealFieldMigrationReview({ ...intent, cohort: { recordCount: aggregate.recordCount, observationDigest: aggregate.observationDigest }, summary: aggregate.summary });
+}
+
+/** Explicit conditional preparation inspection. Re-evaluate actual authorised
+ * rows in bounded pages; a matching archive digest never substitutes for current
+ * conditions or exact native/global envelopes. No target writes or later stages. */
+export async function inspectRequiredFieldMigrationReview(context: RecordContext & { transaction: Prisma.TransactionClient }, serverIntent: RequiredFieldMigrationIntent) {
+  const authority = await fieldRuntimeAuthorityInTransaction(context.session, context.transaction), { session, registry, transaction: tx, stamp } = authority;
+  const intent = sealRequiredFieldMigrationIntent(serverIntent).intent;
+  if (intent.organisationId !== session.organisationId || intent.principal.userId !== session.userId || intent.principal.membershipId !== session.membershipId
+    || intent.principal.authVersion !== stamp.authVersion || intent.principal.sessionVersion !== stamp.sessionVersion) throw new FieldMigrationReviewError("REVIEW_CHANGED");
+  const company = await tx.organisation.findFirst({ where: { id: session.organisationId }, select: { id: true, kind: true, status: true, archivedAt: true, isTest: true } });
+  if (!company) throw new FieldMigrationReviewError("REVIEW_CHANGED");
+  const freshContext = { session, transaction: tx };
+  await validateRequiredFieldMigrationSourceCoverage(freshContext, registry, company, intent);
+  await validateReferenceCoverage(freshContext, registry, intent);
+  const stream = requiredFieldMigrationObservationDigest();
+  let cursor: string | undefined;
+  for (;;) {
+    const rows = await tx.studioFieldMigrationObservation.findMany({ where: { preparationId: intent.id, organisationId: session.organisationId,
+      definitionId: intent.definitionId, entityId: intent.source.payload.entity.id, sourceGenerationId: intent.source.payload.storageGeneration,
+      ...(cursor ? { recordId: { gt: cursor } } : {}) }, orderBy: { recordId: "asc" }, take: 50,
+      select: { recordId: true, nativeRevision: true, observation: true } });
+    for (const row of rows) {
+      const retained = requiredFieldMigrationObservationSchema.parse(row.observation);
+      if (retained.recordId !== row.recordId || retained.nativeRevision !== row.nativeRevision) throw new FieldMigrationReviewError("REVIEW_CHANGED");
+      const actual = await observeRequiredFieldMigrationRecord(freshContext, intent, { organisationId: session.organisationId, recordId: row.recordId, revision: row.nativeRevision });
+      if (checksum(actual) !== checksum(retained)) throw new FieldMigrationReviewError("REVIEW_CHANGED");
+      stream.append(actual); cursor = row.recordId;
+    }
+    if (rows.length < 50) break;
+  }
+  const actual = stream.finish(), aggregate = await digestRequiredFieldMigrationArchive(tx, intent);
+  if (checksum(actual) !== checksum({ recordCount: aggregate.recordCount, observationDigest: aggregate.observationDigest, summary: aggregate.summary }))
+    throw new FieldMigrationReviewError("REVIEW_CHANGED");
+  if (intent.target.payload.field.unique && aggregate.duplicateTarget) throw new Error("MIGRATION_UNIQUENESS_CONFLICT: target values need a new review after duplicates are resolved.");
+  return sealRequiredFieldMigrationReview({ ...intent, cohort: { recordCount: aggregate.recordCount, observationDigest: aggregate.observationDigest }, summary: aggregate.summary });
+}
+
+async function validateReferenceCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
+  intent: FieldMigrationIntent | RequiredFieldMigrationIntent) {
   if (intent.source.payload.field.storage.type === "reference" || intent.target.payload.field.storage.type === "reference") {
     const owner = await registry.resolve(context.session, intent.target.payload.entity), policy = entityDetailsSchema.parse(owner.details).record?.migrationSnapshot;
     const versions = policy?.referenceVersions, refs = [intent.source.payload.field.storage, intent.target.payload.field.storage];
@@ -24,8 +76,4 @@ export async function inspectFieldMigrationReview(context: RecordContext & { tra
       .parse(await registry.invokeQueryInTransaction(context, intent.ownerQuery, { mode: "reference_coverage", preparationId: intent.id }));
     if (result.organisationId !== context.session.organisationId || result.entityId !== owner.id) throw new FieldMigrationReviewError("REVIEW_CHANGED");
   }
-  const aggregate = await digestFieldMigrationArchive(context.transaction, intent);
-  if (intent.target.payload.field.unique && aggregate.duplicateTarget)
-    throw new Error("MIGRATION_UNIQUENESS_CONFLICT: target values need a new review after duplicates are resolved.");
-  return sealFieldMigrationReview({ ...intent, cohort: { recordCount: aggregate.recordCount, observationDigest: aggregate.observationDigest }, summary: aggregate.summary });
 }

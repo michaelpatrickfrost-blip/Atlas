@@ -6,13 +6,13 @@ import { assertModuleEnabled } from "@/core/modules/access";
 import { writeAudit } from "@/core/audit/log";
 import { STUDIO_CAPABILITIES } from "../../permissions";
 import { studioRegistry } from "../../registry/runtime";
-import { entityDetailsSchema, recordAnchorSchema, supportsFieldMigrationIntent } from "../../registry/entities";
+import { entityDetailsSchema, recordAnchorSchema, supportsFieldMigrationIntent, supportsFieldMigrationQueryIntent } from "../../registry/entities";
 import { compileFieldMigrationMetadata } from "./metadata";
 import { assertFieldBinding } from "../binding";
-import { sealFieldMigrationIntent, FieldMigrationReviewError } from "./contracts";
-import { assertFieldMigrationPolicies } from "./access";
+import { FieldMigrationReviewError } from "./contracts";
+import { assertFieldMigrationPolicies, assertVersionedFieldMigrationPolicies } from "./access";
 import { withFieldMigrationAuthority } from "./authority";
-import { observeFieldMigrationRecord } from "./observation";
+import { observeFieldMigrationRecord, observeRequiredFieldMigrationRecord } from "./observation";
 import { readStoredFieldMigrationIntent } from "./stored-protocol";
 
 const requestSchema = z.strictObject({ preparationId: z.uuid(), revision: z.number().int().nonnegative().max(2147483646),
@@ -32,22 +32,19 @@ export async function collectFieldMigrationBatch(session: Session, input: unknow
   const initial = await db.studioFieldMigrationPreparation.findFirst({ where: { id: request.preparationId, organisationId: session.organisationId } });
   if (!initial) changed();
   const sealed = readStoredFieldMigrationIntent(initial, session.organisationId);
-  // Conditional persistence/owner coverage is a later integration gate. A saved
-  // format header cannot reinterpret this legacy-only service implementation.
-  if (sealed.intent.schemaVersion !== 1) throw new FieldMigrationReviewError("REVIEW_INVALID");
   const pinnedIntent = sealed.intent;
   return withFieldMigrationAuthority(session, pinnedIntent.principal, async ({ session: fresh, transaction: tx, company }) => {
     const scope = { id: request.preparationId, organisationId: fresh.organisationId };
     await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${request.preparationId}::uuid AND "organisationId"=${fresh.organisationId} FOR UPDATE`;
     const preparation = await tx.studioFieldMigrationPreparation.findFirst({ where: scope, include: { review: { select: { id: true } } } });
     if (!preparation || preparation.state !== "PREPARING" || preparation.review || preparation.revision > 2147483646
-      || preparation.intentChecksum !== sealed.checksum || sealFieldMigrationIntent(preparation.intent).checksum !== sealed.checksum) changed();
+      || preparation.intentChecksum !== sealed.checksum || readStoredFieldMigrationIntent(preparation, fresh.organisationId).checksum !== sealed.checksum) changed();
     const intent = pinnedIntent;
     const freshness = await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_migration_fresh(p) AS fresh
       FROM studio_field_migration_preparations p WHERE p.id=${preparation.id}::uuid AND p."organisationId"=${fresh.organisationId}`;
     if (freshness.length !== 1 || freshness[0].fresh !== true) changed();
-    assertFieldMigrationPolicies(fresh, company, intent.source.payload);
-    assertFieldMigrationPolicies(fresh, company, intent.target.payload);
+    const policies = intent.schemaVersion === 1 ? assertFieldMigrationPolicies : assertVersionedFieldMigrationPolicies;
+    policies(fresh, company, intent.source.payload); policies(fresh, company, intent.target.payload);
     const registry = studioRegistry(), compiledSource = await compileFieldMigrationMetadata({ session: fresh, transaction: tx }, registry, company, intent.definitionId, intent.source.payload),
       compiledTarget = await compileFieldMigrationMetadata({ session: fresh, transaction: tx }, registry, company, intent.definitionId, intent.target.payload);
     if (compiledSource.checksum !== intent.source.versionChecksum || compiledTarget.checksum !== intent.target.compiledChecksum) changed();
@@ -59,6 +56,8 @@ export async function collectFieldMigrationBatch(session: Session, input: unknow
     assertCapability(fresh, record.writeCapability);
     const query = await registry.resolve(fresh, intent.ownerQuery);
     if (query.kind !== "query" || query.ownerModuleId !== owner.ownerModuleId || query.details.transaction !== "required") changed();
+    if (intent.schemaVersion === 2 && (query.capability !== record.writeCapability
+      || !supportsFieldMigrationQueryIntent(query, owner.id, "snapshot", 2))) changed();
     for (const id of [...new Set([...compiledSource.plan.dependencies, ...compiledTarget.plan.dependencies].map(ref => ref.ownerModuleId))].sort()) {
       await tx.$queryRaw`SELECT id FROM module_states WHERE "organisationId"=${fresh.organisationId} AND "moduleId"=${id} FOR SHARE`;
       if (!await tx.moduleState.findFirst({ where: { organisationId: fresh.organisationId, moduleId: id, enabled: true, entitled: true }, select: { id: true } }))
@@ -80,7 +79,8 @@ export async function collectFieldMigrationBatch(session: Session, input: unknow
     let cursor = last?.recordId;
     for (const anchor of page.records) {
       if (anchor.organisationId !== fresh.organisationId || (cursor && anchor.recordId <= cursor)) changed();
-      const observation = await observeFieldMigrationRecord(context, registry, company, intent, anchor);
+      const observation = intent.schemaVersion === 1 ? await observeFieldMigrationRecord(context, registry, company, intent, anchor)
+        : await observeRequiredFieldMigrationRecord(context, intent, anchor);
       const extension = observation.extension, slot = extension?.slot;
       await tx.studioFieldMigrationObservation.create({ data: { preparationId: preparation.id, organisationId: fresh.organisationId,
         definitionId: intent.definitionId, entityId: intent.source.payload.entity.id, sourceGenerationId: intent.source.payload.storageGeneration,

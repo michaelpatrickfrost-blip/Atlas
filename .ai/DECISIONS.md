@@ -1,3 +1,17 @@
+## 11 October 2026 — Required review rechecks actual conditions in the existing engine
+
+Derive preparation intent1/2 from saved source/draft and collection/sealing from
+closed stored metadata; clients cannot select the protocol. Keep canonical draft
+freshness exact and reject unsaved normalization rather than silently edit metadata.
+Shared coverage/reference/SQL logic preserves legacy1 stages and receipts. Required
+preparation-only inspection refreshes genuine authority even for an empty cohort,
+then checks actual condition/native/global evidence in bounded pages before sealing.
+Equal conversions or semantic hashes never waive changed revision envelopes.
+No format2 publication/execution/settlement or public authoring until their own
+retained lineage/domain callback/native writer gates have passed. Test-only future
+owners prove orchestration; actual owning callbacks and real central acceptance
+remain mandatory and are not inferred from those mocks.
+
 ## 11 October 2026 — Extend the existing field archive without granting runtime authority
 
 Use additive replacements of the existing preparation/observation SQL guards and

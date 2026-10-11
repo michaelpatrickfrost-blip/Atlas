@@ -5,10 +5,12 @@ import type { CapabilityRegistry } from "../../registry/registry";
 import { checksum } from "../../registry/contracts";
 import { compileFieldMigrationMetadata } from "./metadata";
 import { referenceSchema } from "../../compiler/kernel";
-import { entityDetailsSchema, supportsFieldMigrationIntent } from "../../registry/entities";
+import { entityDetailsSchema, supportsFieldMigrationIntent, supportsFieldMigrationQueryIntent } from "../../registry/entities";
 import { customFieldPayloadSchema } from "../schema";
-import { assertFieldMigrationPolicies } from "./access";
+import { versionedFieldPayloadSchema } from "../required-contract";
+import { assertFieldMigrationPolicies, assertVersionedFieldMigrationPolicies } from "./access";
 import { sealFieldMigrationIntent, FieldMigrationReviewError, type FieldMigrationIntent } from "./contracts";
+import { sealRequiredFieldMigrationIntent, type RequiredFieldMigrationIntent } from "./required-contracts";
 import { inspectFieldMigrationCutoverIdentity } from "./cutover-inspection";
 
 function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"); }
@@ -19,9 +21,23 @@ export type FieldMigrationCoverageStage = "preparation" | "publication" | "execu
  */
 export async function validateFieldMigrationSourceCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
   company: Parameters<typeof assertFieldMigrationPolicies>[1], serverIntent: FieldMigrationIntent, stage: FieldMigrationCoverageStage = "preparation"): Promise<void> {
-  const sealed = sealFieldMigrationIntent(serverIntent), intent = sealed.intent, session = context.session, tx = context.transaction;
+  return validateCoverage(context, registry, company, sealFieldMigrationIntent(serverIntent), stage);
+}
+
+/** Explicit conditional preparation coverage only. Later publication/execution/
+ * cutover require their own retained lineage, never a caller-selected stage. */
+export async function validateRequiredFieldMigrationSourceCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
+  company: Parameters<typeof assertFieldMigrationPolicies>[1], serverIntent: RequiredFieldMigrationIntent): Promise<void> {
+  return validateCoverage(context, registry, company, sealRequiredFieldMigrationIntent(serverIntent), "preparation");
+}
+
+async function validateCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
+  company: Parameters<typeof assertFieldMigrationPolicies>[1], sealed: { intent: FieldMigrationIntent | RequiredFieldMigrationIntent; checksum: string }, stage: FieldMigrationCoverageStage) {
+  const intent = sealed.intent, session = context.session, tx = context.transaction;
+  if (intent.schemaVersion === 2 && stage !== "preparation") changed();
   if (!tx || intent.organisationId !== session.organisationId || intent.principal.userId !== session.userId || intent.principal.membershipId !== session.membershipId) changed();
-  assertFieldMigrationPolicies(session, company, intent.source.payload); assertFieldMigrationPolicies(session, company, intent.target.payload);
+  const policies = intent.schemaVersion === 1 ? assertFieldMigrationPolicies : assertVersionedFieldMigrationPolicies;
+  policies(session, company, intent.source.payload); policies(session, company, intent.target.payload);
   const current = await compileFieldMigrationMetadata(context, registry, company, intent.definitionId, intent.source.payload), target = await compileFieldMigrationMetadata(context, registry, company, intent.definitionId, intent.target.payload);
   if (current.checksum !== intent.source.versionChecksum || target.checksum !== intent.target.compiledChecksum) changed();
   const owner = await registry.resolve(session, intent.target.payload.entity), record = entityDetailsSchema.parse(owner.details).record, policy = record?.migrationSnapshot;
@@ -33,11 +49,13 @@ export async function validateFieldMigrationSourceCoverage(context: RecordContex
   const query = await registry.resolve(session, intent.ownerQuery);
   if (!policy || !supportsFieldMigrationIntent(policy, intent.schemaVersion) || !policy.sourceVersions.includes(intent.source.payload.entity.version) || policy.query.id !== intent.ownerQuery.id || policy.query.version !== intent.ownerQuery.version
     || query.kind !== "query" || query.details.transaction !== "required" || query.ownerModuleId !== owner.ownerModuleId) changed();
+  if (intent.schemaVersion === 2 && (query.capability !== record.writeCapability
+    || !supportsFieldMigrationQueryIntent(query, owner.id, "snapshot", 2))) changed();
   if ((stage === "execution" || stage === "cutover") && (!supportsFieldMigrationIntent(record?.migrationRepresentation, intent.schemaVersion) || !record?.migrationRepresentation?.sourceVersions.includes(intent.source.payload.entity.version))) changed();
   await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${intent.id}::uuid AND "organisationId"=${session.organisationId} FOR UPDATE`;
   // Derive post-cutover coverage solely from actual scoped retained rows; the
   // original preparation/publication/execution predicates remain source-active.
-  const cutover = stage === "cutover" ? await inspectFieldMigrationCutoverIdentity(tx, intent) : null;
+  const cutover = stage === "cutover" && intent.schemaVersion === 1 ? await inspectFieldMigrationCutoverIdentity(tx, intent) : null;
   const fresh: Array<{ fresh: boolean; ownerApproval?: unknown }> = stage === "preparation" ? await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_migration_fresh(p) AS fresh
     FROM studio_field_migration_preparations p WHERE p.id=${intent.id}::uuid AND p."organisationId"=${session.organisationId}
       AND p."intentChecksum"=${sealed.checksum} AND p.state IN ('PREPARING','REVIEWED')`
@@ -97,9 +115,9 @@ export async function validateFieldMigrationSourceCoverage(context: RecordContex
     select: { id: true, payload: true, checksum: true, compiledPlan: true } });
   if (schemas.length !== versions.length) changed();
   for (const row of schemas) {
-    const written = customFieldPayloadSchema.parse(row.payload);
+    const written = intent.schemaVersion === 1 ? customFieldPayloadSchema.parse(row.payload) : versionedFieldPayloadSchema.parse(row.payload);
     if (written.storageGeneration !== intent.source.payload.storageGeneration) changed();
-    assertFieldMigrationPolicies(session, company, intent.source.payload, written);
+    policies(session, company, intent.source.payload, written);
     const compiled = await compileFieldMigrationMetadata(context, registry, company, intent.definitionId, written);
     if (compiled.checksum !== row.checksum || checksum(row.compiledPlan) !== row.checksum) changed();
   }

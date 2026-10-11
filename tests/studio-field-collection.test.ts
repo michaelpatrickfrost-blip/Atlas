@@ -122,7 +122,7 @@ it("rolls back observations and revision on Audit failure, then retries the same
   expect(await collectFieldMigrationBatch(session, request)).toMatchObject({ appended: 1, revision: 1 }); expect(store.map(row => row.recordId)).toEqual(["a"]);
 });
 
-it("keeps legacy collection closed after selecting a valid stored conditional intent", async () => {
+it("requires genuine authority for a stored conditional intent before source observation or append", async () => {
   const { conditionalFieldPayloadSchema } = await import("@/core/studio/fields/required-contract");
   const { sealRequiredFieldMigrationIntent } = await import("@/core/studio/fields/migrations/required-contracts");
   const payload = conditionalFieldPayloadSchema.parse({ ...intent.target.payload, schemaVersion: 2,
@@ -130,6 +130,6 @@ it("keeps legacy collection closed after selecting a valid stored conditional in
   const modern = sealRequiredFieldMigrationIntent({ ...intent, schemaVersion: 2, target: { ...intent.target, payload } });
   // The existing simulator types its stored JSON as v1; deliberately load v2.
   saved.intent = modern.intent as unknown as FieldMigrationIntent; saved.intentChecksum = modern.checksum;
-  await expect(collectFieldMigrationBatch(session, request)).rejects.toThrow("review is invalid");
-  expect(m.resolve).not.toHaveBeenCalled(); expect(m.transaction).not.toHaveBeenCalled(); expect(m.observe).not.toHaveBeenCalled(); expect(m.insert).not.toHaveBeenCalled();
+  await expect(collectFieldMigrationBatch(session, request)).rejects.toThrow("authenticated company access");
+  expect(m.resolve).toHaveBeenCalled(); expect(m.transaction).toHaveBeenCalledOnce(); expect(m.observe).not.toHaveBeenCalled(); expect(m.insert).not.toHaveBeenCalled();
 });

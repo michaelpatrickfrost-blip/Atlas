@@ -280,9 +280,10 @@ component. Actual persistence/owner/central proof and later stage/lock gates rem
 
 Internal `migrations/stored-protocol.ts` selects closed intent/review1/2 solely from
 server-loaded JSON and verifies canonical hashes/tenant/row identity. It grants no
-owner or data authority. Existing collection/sealing keep explicit1-only gates;
-unknown/coerced/missing versions never fall back. Actual version2 service routing/
-coverage/owner/runtime integration remains a later ordered prerequisite.
+owner or data authority. Existing preparation/collection/sealing explicitly route
+1/2 from server metadata with full authority/metadata/owner approval; unknown/coerced/
+missing versions never fall back. Actual format2 owning callbacks/runtime acceptance
+remain a later prerequisite. Legacy publication/execution/cutover wrappers stay1.
 
 ### Required migration archive integrity — 11 October 2026
 
@@ -296,3 +297,18 @@ This integrity substrate does not enable format2 preparation, authoring or domai
 execution. The central Test SQL fixture uses synthetic semantic hashes, rolls back
 every attempt, and checks that native, typed, draft, metadata and Audit state is
 unchanged; it must not be reported as real format2 owner/condition/runtime proof.
+
+### Required migration preparation/review routing — 11 October 2026
+
+The existing engine derives protocol from saved source/draft or stored intent only.
+Conditional preparation requires an exact canonical saved draft; it never silently
+edits/normalizes metadata or accepts a client-selected protocol. Snapshot approval
+must name both entity and callback intent coverage and native write capability.
+Required preparation-only review refreshes genuine authority, validates owner/source/
+written metadata before archive IDs/counts, then reevaluates actual authorised rows
+in bounded pages. Matching conversions/hashes do not waive changed conditions or
+native/global revisions. Pure/SQL archive framing must agree before the existing
+CAS/Audit sealer writes. Reference coverage shares the retained helper. Empty cohorts
+still require actual authority/metadata/owner checks. No public authoring or format2
+publication/execution/settlement/native hooks; actual owner2 callbacks and central
+runtime proof are mandatory before enabling the feature.

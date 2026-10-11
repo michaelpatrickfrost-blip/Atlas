@@ -12740,4 +12740,11 @@ card content; expanded Customer/Manufacturing/operation details and phone FAQ
 visually checked. No fixtures or local business data created; broad business tests
 not rerun for this CSS correction. Earlier acceptance does not establish software
 card layout quality; this focused section review supersedes that inference.
-Next: deploy the reviewed pinned correction and inspect the exact live section.
+Live correction verified at exact runtime/control/public revision
+01f890b3487cd0fa3f0eb8026d3fbaf53c3800cd. Immutable server build/smoke/public login
+checks PASS; backup atlas-pre-deploy-20261011-172643 retained, with a0fd2d0 rollback.
+Public browser at 1440 and 390 confirms all six cards have no internal overlap or
+clipping; expanded Manufacturing details visually checked. Local wide 1920 also
+passed and existing website motion remains running. Anonymous screenshot:
+`atlas-website-cards-live.png` in the task's visualizations output. No fixtures or
+data cleanup needed. Shared evidence updated with the correction for normal fast-forward main integration.

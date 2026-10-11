@@ -103,5 +103,13 @@ without an additional shell arrow.
 Local production build and diff checks passed. Browser inspection at
 1440/820/390/320 verified all six cards have readable paragraph widths and no
 internal clipping/overlap; expanded cards and phone FAQ were visually checked.
-No business fixtures or data writes were needed. Pinned deployment and live
-section verification follow.
+No business fixtures or data writes were needed. Wide desktop 1920 also passed.
+
+Deployed and verified exact runtime/control/public revision
+`01f890b3487cd0fa3f0eb8026d3fbaf53c3800cd`; prior a0fd2d0 retained for rollback.
+Server immutable build, smoke and public login checks passed; backup
+`atlas-pre-deploy-20261011-172643` retained. Public desktop 1440 and phone 390
+measurements show all six cards without internal overlap/clipping; actual expanded
+Manufacturing content was visually inspected. Motion remains running. Anonymous
+visual proof: `atlas-website-cards-live.png` in this task's visualization output.
+The full business acceptance suite was not rerun for this six-line CSS fix.

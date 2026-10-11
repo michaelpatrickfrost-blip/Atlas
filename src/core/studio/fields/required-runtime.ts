@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { sessionAuthorityStamp } from "@/core/auth/session";
 import type { Session } from "@/core/auth/session";
 import type { Prisma, StudioDefinitionVersion } from "@/generated/prisma/client";
 import { checksum } from "../registry/contracts";
@@ -6,12 +7,15 @@ import { entityDetailsSchema } from "../registry/entities";
 import { referenceSchema } from "../compiler/kernel";
 import { inspectSealedFieldVersion } from "./sealed-field";
 import { fieldRuntimeAuthorityInTransaction } from "./runtime-authority";
-import { createRequiredMetadataProvider, createInitialRequiredMetadataProvider } from "./required-source";
-import { readVersionedFieldContextInTransaction, readInitialFieldContextInTransaction, readCandidateFieldContextInTransaction } from "./runtime-read";
+import { createRequiredMetadataProvider, createInitialRequiredMetadataProvider, createNativeRequiredMetadataProvider } from "./required-source";
+import { readVersionedFieldContextInTransaction, readInitialFieldContextInTransaction, readCandidateFieldContextInTransaction, readNativeFieldContextInTransaction } from "./runtime-read";
 import type { FieldRuntimeAuthority } from "./runtime-authority";
-import { evaluateConditionalInputsInTransaction, nativeRequiredResultSchema as nativeResult, readResultingFieldValue as resultingValue } from "./required-inputs";
+import { evaluateConditionalInputsInTransaction, nativeRequiredResultSchema as nativeResult, readResultingFieldValue as resultingValue, preflightNativeResultingFieldValue, preflightNativeConditionalInputsInTransaction } from "./required-inputs";
 import type { RequiredFactMetadata } from "./required-compiler";
 import type { RequiredFactSource } from "./required-contract";
+
+import type { ContractReference } from "../registry/types";
+import type { NativeFieldValidationAccess } from "./native-validation-access";
 
 const recordId = z.string().min(1).max(100).regex(/^[a-zA-Z0-9_-]+$/);
 const requestSchema = z.strictObject({ definitionId: z.uuid(), recordId, expectedRevision: z.number().int().positive().max(Number.MAX_SAFE_INTEGER) });
@@ -24,11 +28,11 @@ function invalid(): never { throw new Error("FIELD_REQUIREMENT_INVALID: approved
 
 /** Metadata preflight also applies to an empty canonical record set. Inspect
  * every declared dependency/closure without reading business values. */
-export async function validateRequiredFieldMetadataInTransaction(authority: FieldRuntimeAuthority, definitionId: string, version: StudioDefinitionVersion, proof?: object) {
+export async function validateRequiredFieldMetadataInTransaction(authority: FieldRuntimeAuthority, definitionId: string, version: StudioDefinitionVersion, proof?: object, native?: NativeFieldValidationAccess) {
   const { session, transaction, registry } = authority;
   const plan = inspectSealedFieldVersion(registry, version, session.organisationId, definitionId);
   if (plan.schemaVersion === 2) {
-    const provider = proof ? await createInitialRequiredMetadataProvider(session, transaction, definitionId, plan.payload.entity, proof)
+    const provider = native ? await createNativeRequiredMetadataProvider(authority, definitionId, plan.payload.entity, native) : proof ? await createInitialRequiredMetadataProvider(session, transaction, definitionId, plan.payload.entity, proof)
       : await createRequiredMetadataProvider(session, transaction, definitionId, plan.payload.entity);
     for (const fact of plan.requiredIf.plan.facts) {
       const metadata = await provider.resolveMetadata(sourceOf(fact));
@@ -42,10 +46,10 @@ export async function validateRequiredFieldMetadataInTransaction(authority: Fiel
  * current owning creation proof. All input policies resolve before rule values
  * are read. No mutations, supplied facts, extra grants or publication. Returned
  * fingerprints remain internal. */
-async function evaluateRequirement(authenticated: Session, transaction: Prisma.TransactionClient, input: unknown, proof?: object, candidateVersionId?: string) {
+async function evaluateRequirement(authenticated: Session, transaction: Prisma.TransactionClient, input: unknown, proof?: object, candidateVersionId?: string, native?: NativeFieldValidationAccess) {
   const request = requestSchema.parse(input), authority = await fieldRuntimeAuthorityInTransaction(authenticated, transaction);
   const current = candidateVersionId ? await readCandidateFieldContextInTransaction(authority, request, candidateVersionId)
-    : proof ? await readInitialFieldContextInTransaction(authority, request, proof) : await readVersionedFieldContextInTransaction(authority, request), { session, registry } = authority;
+    : native ? await readNativeFieldContextInTransaction(authority, request, native) : proof ? await readInitialFieldContextInTransaction(authority, request, proof) : await readVersionedFieldContextInTransaction(authority, request), { session, registry } = authority;
   const plan = inspectSealedFieldVersion(registry, current.version, session.organisationId, request.definitionId);
   if (proof && plan.schemaVersion === 1) {
     const native = nativeResult.parse(await registry.invokeInitialRecordFacts({ session, transaction }, current.payload.entity, proof));
@@ -53,9 +57,9 @@ async function evaluateRequirement(authenticated: Session, transaction: Prisma.T
   }
   let conditional = false, conditionFingerprint: string | null = null;
   if (plan.schemaVersion === 2) {
-    await validateRequiredFieldMetadataInTransaction(authority, request.definitionId, current.version, proof);
+    await validateRequiredFieldMetadataInTransaction(authority, request.definitionId, current.version, proof, native);
     const evaluated = await evaluateConditionalInputsInTransaction(authority,
-      { entity: current.payload.entity, extension: current.extension }, plan, request, proof);
+      { entity: current.payload.entity, extension: current.extension }, plan, request, proof, native);
     conditional = evaluated.required; conditionFingerprint = evaluated.fingerprint;
   }
   return { authority, current, result: { definitionId: request.definitionId, versionId: current.version.id, recordRevision: current.anchor.revision,
@@ -84,12 +88,29 @@ export async function validateCandidateFieldRequirement(authenticated: Session, 
  * This does not grant writes, open a transaction, persist values or enable hooks.
  * Mutating integration must acquire the shared native/config lock order first. */
 export async function validateResultingFieldRequirements(authenticated: Session, transaction: Prisma.TransactionClient, input: unknown, proof?: object) {
-  const request = recordRequest.parse(input), authority = await fieldRuntimeAuthorityInTransaction(authenticated, transaction), { session, registry } = authority;
-  const metadata = proof ? (await registry.resolveCurrentFieldInitialisation(session, request.entity)).source : await registry.resolve(session, request.entity);
+  return validateResulting(await fieldRuntimeAuthorityInTransaction(authenticated, transaction), input, proof);
+}
+
+/** Internal owning mutation only. A live native proof substitutes this record's
+ * visibility, never field/native-fact/reference grants or creation authority. */
+export async function validateNativeResultingFieldRequirements(authority: FieldRuntimeAuthority, input: { entity: ContractReference; recordId: string; expectedRevision: number }, operation: string, proof: object) {
+  const stamp = sessionAuthorityStamp(authority.session);
+  if (!stamp || stamp !== authority.stamp || stamp.userId !== authority.session.userId || stamp.organisationId !== authority.session.organisationId
+    || stamp.membershipId !== authority.session.membershipId) throw new Error("FORBIDDEN: genuine current native validation authority is required.");
+  const request = recordRequest.parse(input);
+  const fresh = await fieldRuntimeAuthorityInTransaction(authority.session, authority.transaction);
+  const access: NativeFieldValidationAccess = { kind: "native_validation", request: { recordId: request.recordId, expectedRevision: request.expectedRevision }, operation, proof };
+  return validateResulting(fresh, request, undefined, access);
+}
+
+async function validateResulting(authority: FieldRuntimeAuthority, input: unknown, proof?: object, native?: NativeFieldValidationAccess) {
+  const request = recordRequest.parse(input), { session, transaction, registry } = authority;
+  const nativePolicy = native && await registry.resolveNativeValidationFieldPolicy({ session, transaction }, request.entity, native.request, native.operation, native.proof);
+  const metadata = nativePolicy ? nativePolicy.source : proof ? (await registry.resolveCurrentFieldInitialisation(session, request.entity)).source : await registry.resolve(session, request.entity);
   const policy = metadata.kind === "entity" ? entityDetailsSchema.parse(metadata.details).record?.fieldPolicy : null;
   if (!policy) invalid();
   const context = { session, transaction };
-  const anchor = proof ? await registry.authoriseCurrentFieldInitialisation(context, request.entity, proof)
+  const anchor = nativePolicy ? nativePolicy.anchor : proof ? await registry.authoriseCurrentFieldInitialisation(context, request.entity, proof)
     : await registry.authoriseRecord(context, request.entity, { recordId: request.recordId, intent: "read", expectedRevision: request.expectedRevision });
   if (anchor.recordId !== request.recordId || anchor.organisationId !== session.organisationId || anchor.revision !== request.expectedRevision) invalid();
   if (proof) {
@@ -103,6 +124,21 @@ export async function validateResultingFieldRequirements(authenticated: Session,
   const fields = await transaction.studioDefinition.findMany({ where: { organisationId: session.organisationId, kind: "customField", retiredAt: null,
     activeVersionId: { not: null }, fieldBinding: { entityId: request.entity.id } }, include: { activeVersion: true }, orderBy: { id: "asc" }, take: policy.maxFields + 1 });
   if (fields.length > policy.maxFields) invalid();
+  // Complete metadata-only preflight before ANY native facts or typed columns.
+  // False conditional targets have no written target read; their inputs do.
+  if (native) for (const field of fields) {
+    if (!field.activeVersion || field.organisationId !== session.organisationId || field.activeVersionId !== field.activeVersion.id) invalid();
+    const plan = inspectSealedFieldVersion(registry, field.activeVersion, session.organisationId, field.id);
+    if (plan.payload.entity.id !== request.entity.id || field.key !== `${request.entity.id}.${plan.payload.field.key}`) invalid();
+    if (plan.schemaVersion === 1 && !plan.payload.field.required) continue;
+    const current = await readNativeFieldContextInTransaction(authority, { definitionId: field.id, recordId: request.recordId, expectedRevision: request.expectedRevision }, native);
+    if (current.version.id !== field.activeVersionId || (current.extension?.id ?? null) !== (extension?.id ?? null)
+      || (current.extension?.revision ?? null) !== (extension?.revision ?? null)) invalid();
+    await validateRequiredFieldMetadataInTransaction(authority, field.id, current.version, undefined, native);
+    if (plan.schemaVersion === 2) await preflightNativeConditionalInputsInTransaction(authority, { entity: current.payload.entity, extension: current.extension }, plan,
+      { definitionId: field.id, recordId: request.recordId, expectedRevision: request.expectedRevision }, native);
+    if (plan.payload.field.required) await preflightNativeResultingFieldValue(authority, current, native);
+  }
   const checked: { definitionId: string; fingerprint: string }[] = [];
   for (const field of fields) {
     if (!field.activeVersion || field.organisationId !== session.organisationId || field.activeVersionId !== field.activeVersion.id) invalid();
@@ -111,11 +147,11 @@ export async function validateResultingFieldRequirements(authenticated: Session,
     // Optional unconditional fields cannot impose unrelated private value reads
     // on native operations. Their actual writes still validate type/access.
     if (plan.schemaVersion === 1 && !plan.payload.field.required) { checked.push({ definitionId: field.id, fingerprint: field.activeVersion.checksum }); continue; }
-    const evaluated = await evaluateRequirement(session, transaction, { definitionId: field.id, recordId: request.recordId, expectedRevision: request.expectedRevision }, proof);
+    const evaluated = await evaluateRequirement(session, transaction, { definitionId: field.id, recordId: request.recordId, expectedRevision: request.expectedRevision }, proof, undefined, native);
     if (evaluated.current.definition.activeVersionId !== field.activeVersionId) invalid();
     if ((evaluated.current.extension?.id ?? null) !== (extension?.id ?? null) || (evaluated.current.extension?.revision ?? null) !== (extension?.revision ?? null)) invalid();
     if (evaluated.result.required) {
-      const value = await resultingValue(evaluated.authority, evaluated.current, request.recordId, proof);
+      const value = await resultingValue(evaluated.authority, evaluated.current, request.recordId, proof, native);
       if (value === null || (value.type === "multi_enum" && value.value.length === 0)) throw new Error(`${evaluated.current.payload.field.label} is required.`);
     }
     checked.push({ definitionId: field.id, fingerprint: evaluated.result.fingerprint });

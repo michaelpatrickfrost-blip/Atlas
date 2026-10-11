@@ -1,3 +1,61 @@
+## 11 October 2026 — Studio native hooks local verification complete; d4e next
+
+D4d2d source integration VERIFIED locally:157distincttests/11 suites PASS25380,
+exact four-reference native boundary17repeatPASS92194, production57180exit0,
+scoped lint +unusedimport correction90228exit0, final standalone strict tsc35364
+exit0 after incomplete test Session fixture correction. Independent source review
+found no blocker in hooks/mode; reviewer ran no checks. CurrentPhase2 gateFAIL
+incomplete, visual designer/recordtypes/pages stillrequired. Updatedledger/current
+plan/sourcecoverage/ARCHITECTURE with implementation vsSQL/live limits. NoDDL/
+extra dumps/deploy; currentlive1f4/rollbackb34/recovery unchanged.
+
+Next d4e: review new real-native checker source in progress and actual SSI/first-
+publication/maxFields/no-binding/native race plan; bounded existing exact Test
+fixtures/original recovery/release gates must establish real atomic/security/
+concurrency before conditional typed input activation or compatible live release.
+
+## 11 October 2026 — actual native hooks IMPLEMENTED; integrated local gates
+
+Phase2 d4d2d current; no Phase3 or finished visual claim. Integratedc330e447 explicit
+native-validation compiler/provider/current-pinned-written readers and metadata-
+only whole-set preflight; independent field/native-fact/reference grants preserved.
+Integrated5f6eca9 actual engine CAS/parent receipts and creation INSERT delegation;
+distinct creation proof retained. Seven Work actions +Service mergeCases now use
+fresh owning callback Session, same original Serializable tx, full affected windows
+and final all-active validation. Update/comment refresh before stored-kind discovery
+then re-read under scope. Case guards/legacy tickets/SLA/approval/events/Audit/Outbox
+remain. New wrapper projects exact four-field references (full descriptor would
+fail strict input schema); final boundary test now enforces that shape.
+
+157tests/11suites PASS25380; final native17boundary repeatPASS92194; build57180exit0;
+scoped lint94775 had one unused old lock import removed/final90228exit0. Types76508
+failed only incomplete Session test fixture; fixed, standalone35364 pending. Source
+review found no blocker, no checks run by reviewer. No actual SQL rollback/SSI proof
+from collaborators. Ledger/plan/coverage/architecture reconciled. NoDDL/newdumps/
+deployment/customer conditional activation; live1f4/rollbackb34 unchanged.
+Next finish stricttypes/checkpoint; integrate real central-native checker and atomic/
+concurrency gates before typed packet/conditional customer activation/release.
+
+## 11 October — d4d2d owning action/engine enforcement IN PROGRESS
+
+Registry/receipt prerequisites04aa7f8 locally verified. Next native integration
+owns studio-enforcement.ts and seven ServiceWork actions +Service mergeCases;
+isolated engine/creation contributor owns CAS/parent/INSERT delegation. Wrapper
+uses exact existing operation capability, same Serializable tx and fresh callback
+Session for every domain/private/approval/SLA/event check. Update/comment discover
+stored kind only after genuine current refresh, then re-read under owning scope;
+never client-kind operation choice. Preserve legacy Query Watch/Merge capabilities.
+Only actual changed Tickets reach final boundary; server describes canonical typed
+Ticket9, closes full affected window set with generated operation UUID, then calls
+explicit native resulting validator for final frozen anchors. Existing domain errors
+propagate with typed/window/Audit/Outbox atomic transaction. Query-only/no-config
+native/internal paths unchanged. Queue config/member access coordination remains
+separate (no fabricated Ticket receipts). Case merge uses exact bounded actual
+source-child reparent helper while preserving Service-owned case/legacy ticket
+eligibility and records. No UI/schema/conditional write activation in this block.
+Creation forms' typed initial packet still needs explicit later integration before
+customer enabling; existing owning creation proof and native proof stay distinct.
+
 ## 11 October 2026 — Studio d4c/d4d native prerequisites VERIFIED locally
 
 Phase2 remains IN PROGRESS; no Phase3 or complete visual designer claim. Integrated

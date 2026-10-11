@@ -4,6 +4,7 @@ import { assertCapability } from "@/core/permissions/check";
 import type { RecordAnchor, RecordContext } from "@/core/studio/registry/types";
 import type { FieldRuntimeAuthority } from "@/core/studio/fields/runtime-authority";
 import { lockFieldEntitiesInTransaction } from "@/core/studio/fields/entity-lock";
+import { insertWorkWithFieldReceipt } from "./studio-native";
 
 type Creation = { transaction: Prisma.TransactionClient; stamp: SessionAuthorityStamp; anchor: RecordAnchor };
 const creations = new WeakMap<object, Creation>();
@@ -24,7 +25,7 @@ export async function createTicketWithFieldInitialisation<T>(context: RecordCont
   await lockFieldEntitiesInTransaction(context.transaction, authority.session.organisationId, ["tickets.ticket"]);
   if (!await context.transaction.moduleState.findFirst({ where: { organisationId: authority.session.organisationId, moduleId: "tickets", enabled: true, entitled: true }, select: { id: true } }))
     throw new Error("DEPENDENCY_BROKEN: Tickets is unavailable.");
-  const work = await context.transaction.serviceWorkItem.create({ data });
+  const work = await insertWorkWithFieldReceipt(context.transaction, authority.session, data);
   if (work.organisationId !== authority.session.organisationId || work.kind !== "TICKET" || work.requesterUserId !== authority.session.userId || work.version !== 1 || work.status !== "NEW" || work.mergedIntoId)
     throw new Error("Invalid created ticket scope.");
   const proof = Object.freeze({});

@@ -1,8 +1,18 @@
 import { beforeEach, expect, it, vi } from "vitest";
-const m = vi.hoisted(() => ({ session: { organisationId: "company", userId: "actor", capabilities: new Set<string>() }, raw: vi.fn(), transaction: vi.fn(),
+const m = vi.hoisted(() => ({ session: { organisationId: "company", userId: "actor", membershipId: "member", userName: "Actor", userEmail: "actor@example.invalid", organisationName: "Company", capabilities: new Set<string>() }, raw: vi.fn(), transaction: vi.fn(),
   work: vi.fn(), queue: vi.fn(), case: vi.fn(), workUpdate: vi.fn(), caseUpdate: vi.fn(), ticketUpdate: vi.fn(), entry: vi.fn(), audit: vi.fn(),
   outbox: vi.fn(), caseDirect: vi.fn(), activity: vi.fn(), queueMember: vi.fn(), approval: vi.fn() }));
 vi.mock("@/core/auth/session", () => ({ requireSession: async () => m.session }));
+// Identity/scope boundaries are explicit collaborators here; genuine proof/auth
+// and actual native enforcement are covered by the dedicated native suites.
+vi.mock("@/core/studio/fields/runtime-authority", () => ({ nativeFieldMutationSessionInTransaction: async (session: typeof m.session) => ({ session }) }));
+vi.mock("@/core/service-work/studio-enforcement", () => ({ withValidatedTicketMutation: async (context: { session: typeof m.session; transaction: { $queryRaw: typeof m.raw } }, capability: string, callback: (session: typeof m.session) => Promise<unknown>) => {
+  const { assertCapability } = await import("@/core/permissions/check");
+  const { lockFieldEntitiesInTransaction } = await import("@/core/studio/fields/entity-lock");
+  assertCapability(context.session, capability);
+  await lockFieldEntitiesInTransaction(context.transaction as never, context.session.organisationId, ["tickets.ticket"]);
+  return callback(context.session);
+} }));
 vi.mock("@/core/db/client", () => ({ db: { $transaction: m.transaction } }));
 vi.mock("@/core/modules/runtime", () => ({ isModuleEnabled: async () => true }));
 vi.mock("@/core/approvals/service", () => ({ createApproval: m.approval, decideApproval: m.approval }));

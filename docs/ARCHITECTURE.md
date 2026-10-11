@@ -403,5 +403,5 @@ genuine refreshed principal, transaction, exact existing operation capability an
 actual changed Ticket final revisions; generic queries cannot forward proofs.
 Proofs grant no field/native-fact/reference access and expire on every exit. Domain
 callbacks retain private access/transition/SLA/approval/Audit rules. Required final
-validator callback must run after all writes; actual native hooks and SQL atomic/
-concurrency gates remain incomplete. No-config native/internal behavior is retained.
+validator callback must run after all writes; actual native hooks are implemented locally; SQL atomic/concurrency and release
+gates remain incomplete. No-config native/internal behavior is retained.

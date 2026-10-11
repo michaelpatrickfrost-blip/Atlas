@@ -1,3 +1,37 @@
+## 11 October — d4d2d integration VERIFIED locally; d4e IN PROGRESS
+
+Root projectedc330e447 and5f6eca9 with actual seven Work actions/Service case merge,
+fresh callback identity, whole affected-window closure and all-active validation
+inside original Serializable transactions.157distincttests/11suites, final exact
+reference17repeat, final strict types35364/lint/build/source-review PASS. Test
+fixture type failure corrected; no actualSQL/SSI/live/customer conditional proof.
+Native mode preflights whole applicable current/pinned/written schema metadata
+before protected facts/values; references keep ordinary access. Wrapper projects
+only exact four-field references; generic full metadata is rejected by closed input.
+Next d4e actual native rollback/window/Audit/Outbox +multi-field initial writes and
+first-publication/maxFields/no-binding/native SSI races using existing exact Test
+fixtures. Native checker source and concurrency analysis parallel, no SQL yet.
+
+## 11 October — d4d2d owning action/engine enforcement IN PROGRESS
+
+Registry/receipt prerequisites04aa7f8 locally verified. Next native integration
+owns studio-enforcement.ts and seven ServiceWork actions +Service mergeCases;
+isolated engine/creation contributor owns CAS/parent/INSERT delegation. Wrapper
+uses exact existing operation capability, same Serializable tx and fresh callback
+Session for every domain/private/approval/SLA/event check. Update/comment discover
+stored kind only after genuine current refresh, then re-read under owning scope;
+never client-kind operation choice. Preserve legacy Query Watch/Merge capabilities.
+Only actual changed Tickets reach final boundary; server describes canonical typed
+Ticket9, closes full affected window set with generated operation UUID, then calls
+explicit native resulting validator for final frozen anchors. Existing domain errors
+propagate with typed/window/Audit/Outbox atomic transaction. Query-only/no-config
+native/internal paths unchanged. Queue config/member access coordination remains
+separate (no fabricated Ticket receipts). Case merge uses exact bounded actual
+source-child reparent helper while preserving Service-owned case/legacy ticket
+eligibility and records. No UI/schema/conditional write activation in this block.
+Creation forms' typed initial packet still needs explicit later integration before
+customer enabling; existing owning creation proof and native proof stay distinct.
+
 ## 11 October — integrated d4c/d4d prerequisites VERIFIED locally
 
 Stored1/2 whole-window selection and ordinary-save integration, complete public

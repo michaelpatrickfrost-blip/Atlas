@@ -36,6 +36,13 @@ export async function registeredInitialFactMetadata(session: Session, registry: 
   return declaredFactMetadata(session, source, fieldId);
 }
 
+/** Native operation proof replaces only same-record native visibility. Explicit
+ * approved fact/field grants still apply; this returns metadata, never values. */
+export async function registeredNativeValidationFactMetadata(authority: import("./runtime-authority").FieldRuntimeAuthority, entity: ContractReference, fieldId: string, access: import("./native-validation-access").NativeFieldValidationAccess) {
+  const { source } = await authority.registry.resolveNativeValidationFieldPolicy({ session: authority.session, transaction: authority.transaction }, entity, access.request, access.operation, access.proof);
+  return declaredFactMetadata(authority.session, source, fieldId);
+}
+
 function declaredFactMetadata(session: Session, owner: ContractMetadata, fieldId: string): Extract<RequiredFactMetadata, { kind: "native" }> {
   const details = entityDetailsSchema.parse(owner.details), fact = details.record?.requiredFacts?.facts.find(f => f.fieldId === fieldId), field = details.fields.find(f => f.id === fieldId);
   if (!fact || !field) throw new Error("FIELD_REQUIREMENT_INVALID: owner has not approved this native fact.");

@@ -1,3 +1,35 @@
+## 11 October 2026 — Pure conditional reviewed publication pin VERIFIED locally
+
+Existing publication-contract.ts now has an explicit closed2 helper alongside the
+unchanged closed1 helper. Both use one integrity/readiness check and retain the
+same receipt body, binding the full review checksum, target plan/payload/generation,
+tenant/definition/version and publisher. Rule removal may have a v1 target but still
+requires a closed2 review parser; do not infer protocol from target schema alone.
+No runtime/publication/activation/native/value enablement or DDL. Four meaningful
+cases added to the existing suite;39cases/4suites PASS99746, strictTS54579/scoped
+lint4993 exit0, diffPASS; production build91430 exit0. Dependencies: actual normal2
+review APIs PASS candidatep46Q3C, candidatep46Q3C/public79aa78 ALL COMBINED PASS; original55798 exit0.
+Exact publica475823 confirmed; rollbackede65ae retained, original both-lock retention
+retired inactivee395962 duplicate runtime only. Required091118/091258/091718 recovery.
+Next: reviewed scoped checkpoint;
+then server-derived conditional publication-stage metadata/coverage/inspection in
+existing services before enabling its runtime. Full execution/native/visual gaps
+remain in source map and ledger; wholePhase2 unpassed.
+
+## 11 October 2026 — Conditional normal APIs PASS candidate; pure publication pin IN PROGRESS
+
+Original55798/a475823 remains pinned; candidatep46Q3C real prepare/collect/seal APIs
+PASS, including all three actual Audit-failure rollbacks, bounded actual conditions,
+immutable replay/archive seal and finally restored draft with retained Test evidence.
+Whole combined/public gate pending; do not move HEAD. Required UTC091118/091258
+recovery only. Next coherent e3a block: closed pure conditional reviewed publication
+pin in existing publication-contract.ts + focused suite, no runtime enablement/DDL.
+Existing receipt body can retain its exact meaning and shape: it pins review checksum
+(which binds explicit intent/condition/archive2), target compiled checksum/generations
+and publisher. Old helper stays closed1; new helper explicitly parses closed2. No
+historical metadata/default/hash changes, no grant from pure pins. Exact tests and
+remaining runtime/native gate are in ledger. Phase2 incomplete; no later phase.
+
 ## 11 October 2026 — Normal conditional review API proof IMPLEMENTED, not runtime verified
 
 Actual-owner ede65ae original release34400 exit0; candidatef7uyoR/publicDetaCQ

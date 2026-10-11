@@ -12,13 +12,12 @@ No Phase 3 feature may start before the complete Phase 2 gate passes.
 
 # Current Workstream
 
-2B required-field evolution: actual Tickets owning callbacks (e2b3d), VERIFIED
-locally and actual row review VERIFIED live ede65ae: original release34400 exit0,
-candidate f7uyoR/public DetaCQ ALL COMBINED PASS.
-Normal conditional prepare/collect/seal API proof (e2b3e) IMPLEMENTED locally;
-central runtime evidence pending. Keep foundation-
-first order. On 11 October Michael clarified that duration is acceptable; complete
-coverage of the supplied specification matters. See STUDIO_SPECIFICATION_COVERAGE.md.
+2B required-field evolution e3a — pure reviewed conditional publication pin —
+VERIFIED locally:39 tests/4 suites, strict TypeScript/scoped lint/production build
+PASS. No runtime conditional publication is enabled. Actual normal prepare/collect/
+seal APIs now VERIFIED live a475823: original55798 exit0, candidatep46Q3C/public79aa78
+ALL COMBINED PASS. Continue foundation-first order; next e3b publication-stage
+conditional metadata/coverage/row reinspection before enabling publication.
 
 # Overall Status
 
@@ -39,7 +38,7 @@ Full source re-read and exact Section 27 / Sections 6–8,18,24–29 mapping rev
   ordinary current/history reads and atomic value saves: VERIFIED in recorded live
   checkpoints. Required-if/native integration and customer authoring remain incomplete.
 - Required review routing c3: VERIFIED live e3959624c2ba65f61fcd29bec9b12cc21933670d;
-  candidate ZRGhyd/public suHccl ALL COMBINED PASS. Immediate rollback at that checkpoint was e5ab126. Current live ede65ae retains
+  candidate ZRGhyd/public suHccl ALL COMBINED PASS. Immediate rollback at that checkpoint was e5ab126. At that checkpoint live ede65ae retained
   e395962; only inactive e5ab126 duplicate runtime was retired under both locks.
 - Current Tickets native9/query4/representation2/settlement2 callbacks: VERIFIED
   locally; actual conditional row/coverage/inspection VERIFIED candidate/public
@@ -61,7 +60,8 @@ work. No conditional authoring is enabled by this checkpoint.
 
 # Files Changed
 
-Current owner checkpoint: core/service-work/studio.ts; scripts/studio/check-field-required-
+Current e3a: migrations/publication-contract.ts, its existing focused test suite,
+.ai/DECISIONS.md and progress docs. Prior owner checkpoint: core/service-work/studio.ts; scripts/studio/check-field-required-
 review-storage.ts; actual current-owner test; required observation/routing and
 legacy owner/creation/cutover fixture tests; architecture/module docs; required-rule
 plan; specification coverage map; this ledger; .ai/CURRENT_STATE.md/DECISIONS.md.
@@ -69,7 +69,7 @@ Inspect git diff/status for the exact paths; shared Desktop checkout is untouche
 
 # Database / Prisma Changes
 
-No new schema/model/DDL in the current owner checkpoint. Reuse the existing
+No new schema/model/DDL in the owner, normal API proof or pure publication pin. Reuse the existing
 archive/value/metadata models and tenant constraints; no native/business writes.
 
 # Migrations Applied
@@ -84,7 +84,8 @@ Actual current Tickets owner tests: 8 cases, including retained format1/native5,
 stored identity/hash/tenant denial, private preflight, actual immutable reference
 inputs, exact principal/revision, dual-format representation and settlement. The
 positive central archive fixture now calls the actual conditional reader/inspector;
-normal API evidence still pending; prior row review passed candidate/public.
+normal APIs and actual row review passed candidate/public. Pure publication pin
+adds4 cases for closed protocol, tamper, readiness and rule removal to schema1.
 
 # Tests Run
 
@@ -100,7 +101,8 @@ pending. Current-owner candidate f7uyoR/public DetaCQ ALL COMBINED PASS; release
 # Test Results
 
 Owner block VERIFIED locally; actual row-review/coverage/SQL digest and complete
-rollback VERIFIED live. Normal API proof remains unverified centrally. A real legacy settlement bug
+rollback VERIFIED live. Normal API proof VERIFIED real candidatep46Q3C/public79aa78. Pure publication pin
+39cases/4suites PASS99746, strictTS54579/lint4993/build91430 exit0. A real legacy settlement bug
 was caught by expanded actual model-row selection: retain strict packet parsing
 with explicit review/checksum projection. Obsolete future-owner expectations were
 moved above the newly registered actual versions, not relaxed. The actual native7
@@ -116,9 +118,7 @@ whole-system checklist into a claim that later engines belong in Phase 2.
 
 # Known Issues
 
-Phase 2 gate unpassed. Actual format2 row-review owner proof PASS; normal API proof
-pending. Format2 normal
-API/publication/execution/cutover/settlement and native create/save lock hooks remain
+Phase 2 gate unpassed. Actual format2 row-review owner proof PASS; normal API proof PASS candidate/public. Format2 publication/execution/cutover/settlement and native create/save lock hooks remain
 unfinished. No customer field editor/search, record types, page compiler/generated
 runtime or accepted visual Studio yet. No blocker justifies weakening requirements.
 
@@ -139,15 +139,18 @@ No later-phase work started and no complete Studio claim.
 
 # Exact Next Action
 
-Original owner release34400 is complete, actual row-review evidence PASS. Review the new normal API fixture in
-check-field-required-review-storage.ts (types/lint/build PASS), then commit/pin its
-combined release after the current gate. Investigate any failure in
-check-field-required-review-storage.ts without weakening its positive actual row
-inspection or rollback. Then finish reviewed runtime
-integration in the existing services (publication, execution, cutover, settlement),
-followed by native writer hooks; only then continue 2C record types /2D pages /2E
-visual authoring and actual customer runtime. Use the coverage map to account for
-all requirements at each checkpoint, not the length of the historical ledger.
+Checkpoint the reviewed pure publication pin with its39 tests/types/lint/build and
+memory. Then add an explicit conditional publication-stage coverage wrapper in
+migrations/coverage.ts using the locked PUBLISHED row and exact source/draft/target
+version lineage. Extend the existing conditional row reader/inspection to verify
+that server stage (definition/draft +1 revisions, exact source-active/frozen target,
+whole conditions and native/global envelopes), without exposing a client stage.
+Add focused preparation/publication/tenant/freshness/condition drift cases. Keep
+conditional publication runtime disabled until that inspection and actual atomic
+publisher/CAS/Audit proof pass. Reuse the existing engine/receipt shapes; preserve
+all legacy hashes. Execution/cutover/settlement, native hooks, then2C/D/E/F remain.
+Current live a475823 has rollback ede65ae; original both-lock retention retired only
+inactive e395962 duplicate runtime. Required091118/091258/091718 recovery only.
 
 # Historical checkpoint evidence
 

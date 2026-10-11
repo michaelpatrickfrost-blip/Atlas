@@ -1,3 +1,15 @@
+## 11 October 2026 — Conditional publication retains the existing receipt meaning
+
+Use a separate closed2 review reader/pure publication helper, not a permissive
+legacy parser. The publication receipt shape needs no new fields: its review
+checksum seals explicit intent2/rules/semantic observation evidence, while target
+checksum/generation/version and actor pin the exact immutable publication. Reuse
+that unchanged integrity/readiness policy and retain all old hashes/output. A rule
+removal may produce a schema1 target but still has a schema2 review, so protocol
+comes from the sealed review, never a target guess or client override. This is only
+pure integrity; fresh authority/conditional stage inspection/owner coverage and
+atomic metadata/Audit remain mandatory before runtime publication is enabled.
+
 ## 11 October 2026 — Current Tickets callbacks retain immutable migration history
 
 Register new native9/query4/representation2/settlement2 contracts rather than widen

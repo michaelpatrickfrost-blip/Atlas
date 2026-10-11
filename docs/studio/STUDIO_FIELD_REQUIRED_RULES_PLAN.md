@@ -1,3 +1,25 @@
+## 11 October — e3a pure reviewed publication pin VERIFIED locally
+
+Explicit closed2 helper added to existing contract; closed1 parser/output retained.
+Receipt shape pins whole2 review and exact target plan/identity; rule removal to1
+still requires review2. No runtime/DDL/activation/value/native enablement. Four
+meaningful tests added;39cases/4suites +types/scoped lint/diff PASS, build PASS91430.
+Original55798/a475823 candidatep46Q3C/public79aa78 ALL COMBINED PASS, exit0.
+Next: reviewed checkpoint, then conditional publication-stage actual
+metadata/coverage/inspection before enabling runtime; retain full stage/Audit proof.
+
+## 11 October — e3a pure publication contract IN PROGRESS
+
+Normal API proof PASS candidatep46Q3C; original55798/a475823 full/public gate pending.
+Start only pure reviewed2 publication integrity, reusing existing publication receipt
+shape. Old helper/parser stays closed1; new explicit2 helper pins the complete sealed
+review checksum and actual target payload/plan hash/identity/publisher. No activation,
+execution, values, native writes, DDL or public authoring. Shared readiness policy
+rejects invalid rows and unacknowledged loss in both explicit formats. Focused tests
+cover protocol/canonical/tenant/condition/tamper/readiness and exact retained output.
+Runtime publication and later stages still need fresh authority/full conditional
+inspection/coverage and real central proof before enabling them.
+
 ## 11 October — Normal conditional API proof IMPLEMENTED
 
 Existing archive checker now separately exercises actual prepare/collect/seal APIs

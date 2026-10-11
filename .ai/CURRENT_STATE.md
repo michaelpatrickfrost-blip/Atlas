@@ -1,3 +1,25 @@
+## 11 October 2026 — Decimal rollback bridge publicly accepted
+
+Pinned 6e5c39bebe2db2bf76dc9eabf49170f631c3f05b passed the original Supply candidate
+AND public gates: actual MRP/Buy/Make/finite execution/flexible forecast/routing,
+app-grouped guide/library/new workspaces at three widths and zero browser exceptions.
+Three additive migrations applied after atlas-pre-deploy-20261011-194938 backup.
+Private candidate /tmp/atlas-supply-candidate-pOGTQm; public
+/tmp/atlas-supply-public-KIsVoA (fixture backup 195245). Old aaf9bc3a retained;
+temporary whole-quantity checks/one-output-order index remain centrally active.
+Exact accepted-runtime probe reads 1.250125 as Prisma Decimal without truncation;
+private probe schema removed. Live login 200/exact health; no local business DB.
+Test affiliations suspended/session-revoked; final authorised scrub remains pending.
+
+Final unlock migration 20261011210000_enable_fractional_manufacturing now removes
+the temporary checks/order index; it is authored, NOT yet applied. Native execution
+checker now additionally proves serial identities/manual material issues/partial
+serial outputs/collection. Traceability search includes recorded serial batch IDs.
+Strict types, scoped lint and final production build PASS. Visually inspected bridge
+guide library phone, Manufacturing app hub desktop and Finance costs phone: readable
+layout and app grouping. Final release/actual fractional WIP/mixed/trace/dispatch
+acceptance and Test cleanup are pending. Do not claim all complete.
+
 ## 11 October 2026 — Integrated manufacturing bridge build ready for live gate
 
 Preserved current aaf9bc3a opaque/mobile navigation source and contributor evidence.

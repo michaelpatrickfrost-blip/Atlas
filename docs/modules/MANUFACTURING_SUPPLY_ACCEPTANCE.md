@@ -338,3 +338,14 @@ blocked-material atomic rollback, partial output/WIP/backorders, batch collectio
 actual component genealogy, fractional dispatch/COGS, valued transfers and compatible
 mixed machine load/shared costs. App guide/library and new workspaces are checked at
 three widths. Required final Test-company cleanup is explicitly authorised.
+
+## Accepted Decimal rollback bridge — 11 October 2026
+
+Exact 6e5c39bebe2db2bf76dc9eabf49170f631c3f05b passed candidate/public Supply gates
+and exact public health/login. Three migrations applied after pre-deploy194938.
+Candidate pOGTQm/public KIsVoA private evidence and required fixture backups retained.
+Actual forecast/MRP/Buy/Make/finite/routing execution, guides and new workspaces at
+three widths passed; no browser exceptions. Old runtime aaf9bc3a was retained with
+all compatibility guards active. Accepted Decimal client independently reads
+1.250125 exactly; probe removed. This establishes safe Decimal rollback capability.
+Final unlock/actual fractional execution and authorised all-Test cleanup are pending.

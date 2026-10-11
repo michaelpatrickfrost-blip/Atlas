@@ -110,6 +110,30 @@ export async function checkManufacturingExecution({context,page,session,out}:{co
  const transferValues=await db.financeStockValue.findMany({where:{organisationId,productId:raw.id}});assert.equal(transferValues.reduce((sum,row)=>sum+row.valueMinor,0n),totalBefore);assert.equal(transferValues.find(row=>row.warehouseId===secondWarehouse.id)?.quantity.toString(),'0.125');assert.equal(await db.internalMove.count({where:{organisationId,requestKey:'exact-transfer'}}),1);
  console.log('PASS real fractional transfer preserves batch and total carrying value, moving 0.125 kg once between accounting warehouses.');
  console.log('PASS actual fractional dispatch takes the packed output batch once and posts Inventory → Cost of sales in the same stock transaction.');
+ // Serial identity requires whole units and actual manual component selections.
+ const serialRaw=await db.product.create({data:{organisationId,code:'SERIAL-RAW',name:'Serial component · Test',unitOfMeasure:'each',trackingMode:'SERIAL',basePriceAmount:999999}});
+ const serialOutput=await db.product.create({data:{organisationId,code:'SERIAL-OUT',name:'Serial finished product · Test',unitOfMeasure:'each',trackingMode:'SERIAL',basePriceAmount:999999}});
+ await adjust({mode:'add',productId:serialRaw.id,warehouseId:warehouse.id,quantity:1.5,serials:'SERIAL-IN-01 SERIAL-IN-02',reason:'Invalid serial fraction probe',requestKey:'serial-invalid'},/whole|serial/i);
+ assert.equal(await db.inventoryMovement.count({where:{organisationId,productId:serialRaw.id}}),0);
+ await adjust({mode:'add',productId:serialRaw.id,warehouseId:warehouse.id,quantity:2,lotCode:'SERIAL-RAW-LOT',serials:'SERIAL-IN-01 SERIAL-IN-02',reason:'Actual serial Test opening',requestKey:'serial-opening'});
+ await settings('reconcileOpeningStockValue',{warehouseId:warehouse.id,productId:serialRaw.id,totalValue:'2.00',requestKey:'serial-value',reason:'Reviewed serial Test opening'});
+ const serialRecipe=await db.productDefinition.create({data:{organisationId,productId:serialOutput.id,status:'ACTIVE',version:1,supply:'MAKE',batchQuantity:1,yieldPercent:100,createdByUserId:userId}});
+ await db.productBomLine.create({data:{organisationId,definitionId:serialRecipe.id,componentProductId:serialRaw.id,quantityPerUnit:1}});
+ await db.productOperation.create({data:{organisationId,definitionId:serialRecipe.id,position:1,name:'Assemble actual serials'}});
+ await settings('saveManufacturingProfile',{...profile,approvedDefinitionIds:[recipe.id,serialRecipe.id]});
+ const serialOrder=await create(serialOutput.id,serialRecipe.id,2);await command('startWorkOrder',[serialOrder.work.id,'serial-start']);
+ for(const index of [1,2]){
+  const serial=String(index).padStart(2,'0');
+  await call('src/modules/manufacturing/services/materials:issueProductionMaterial',[form({workOrderId:serialOrder.work.id,productId:serialRaw.id,quantity:1,lotCode:'SERIAL-RAW-LOT',serials:`SERIAL-IN-${serial}`,requestKey:`serial-issue-${index}`,reason:'Actual selected component identity'})]);
+  await command('completeWorkOrder',[serialOrder.work.id,1,0,`serial-output-${index}`,{finish:index===2,lotCode:`SERIAL-OUT-LOT-${index}`,serials:[`SERIAL-OUT-${serial}`]}]);
+ }
+ const serialBatches=await db.stockProductionBatch.findMany({where:{organisationId,manufacturingOrderId:serialOrder.order.id},orderBy:{createdAt:'asc'}});assert.equal(serialBatches.length,2);
+ await collect({...collection,batchId:serialBatches[0].id,version:serialBatches[0].version,quantity:1,serials:'SERIAL-OUT-02',requestKey:'serial-collect-invalid'},/serial|batch/i);
+ await collect({...collection,batchId:serialBatches[0].id,version:serialBatches[0].version,quantity:1,serials:'SERIAL-OUT-01',requestKey:'serial-collect'});
+ assert.equal((await db.stockSerial.findFirstOrThrow({where:{organisationId,productId:serialOutput.id,serial:'SERIAL-OUT-01'}})).locationId,yard.id);
+ const serialUses=await db.manufacturingMaterialUse.findMany({where:{organisationId,report:{productionOrderId:serialOrder.order.id}},include:{stockAllocation:true}});assert.deepEqual(serialUses.flatMap(row=>row.stockAllocation?.serials??[]).sort(),['SERIAL-IN-01','SERIAL-IN-02']);
+ await page.goto('/manufacturing/traceability?search=SERIAL-OUT-01',{waitUntil:'networkidle'});await expect(page.getByText('SERIAL-OUT-LOT-1',{exact:true})).toBeVisible();
+ console.log('PASS actual serial production: fractional identity rejected, selected component serials linked to two partial output batches, wrong collection identity refused and correct physical serial booked.');
  // Compatible products share one finite machine booking and one actual usage journal.
  const centre=await db.manufacturingWorkCentre.create({data:{organisationId,code:'MIXED',name:'Mixed processing · Test'}});
  const machine=await db.manufacturingResource.create({data:{organisationId,workCentreId:centre.id,name:'Shared batch machine · Test',type:'MACHINE',processKind:'BATCH_OVEN',calendarMode:'CONTINUOUS',timezone:'Europe/London',loadCapacity:300,loadUnit:'kg',processProfiles:['PROFILE-A']}});
@@ -121,7 +145,7 @@ export async function checkManufacturingExecution({context,page,session,out}:{co
   await db.productOperation.create({data:{organisationId,definitionId:definition.id,position:1,name:'Shared cycle',workCentreId:centre.id,resourceId:machine.id,eligibleResourceIds:[machine.id],timingMode:'BATCH',batchCapacity:100,cycleMinutes:60,coolingMinutes:0,processProfile:'PROFILE-A',loadUnit:'kg',loadPerUnit:footprint,machineMinorPerHour:1200,labourMinorPerHour:1800,overheadMinorPerHour:600}});
   mixed.push({product,recipe:definition,quantity});
  }
- await settings('saveManufacturingProfile',{...profile,approvedDefinitionIds:[recipe.id,...mixed.map(row=>row.recipe.id)]});
+ await settings('saveManufacturingProfile',{...profile,approvedDefinitionIds:[recipe.id,serialRecipe.id,...mixed.map(row=>row.recipe.id)]});
  const members=[];for(const row of mixed)members.push(await create(row.product.id,row.recipe.id,row.quantity));
  const loadInput={resourceId:machine.id,workOrderIds:members.map(row=>row.work.id),earliestStart:new Date(Date.now()-1000).toISOString()};
  const loadAction=<T=unknown>(action:string,args:unknown[],error?:RegExp)=>call<T>(`src/modules/manufacturing/services/machine-loads:${action}`,args,error);

@@ -116,8 +116,8 @@ Dropdown menu panels use an opaque white background with a subtle border and
 shadow. Page text must not show through open menus; do not rely on backdrop blur
 for readability. The shared `.atlas-float-dropdown` style applies to app navigation
 groups, including Manufacturing & Supply's Demand and Materials menus.
-On phones, app-navigation menus span the available width below the complete
-navigation bar with 16px side insets. At 640px and above they align to their own
+On phones/tablets, app-navigation menus span the available width below the complete
+navigation bar with 16px side insets. At 1024px and above they align to their own
 trigger. Verify the menu panel itself stays inside the viewport.
 
 Opaque white cards must not apply backdrop filters: these create stacking contexts

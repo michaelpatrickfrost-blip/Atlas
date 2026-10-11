@@ -1,4 +1,14 @@
-## 11 October — next e3d2 execution inspection workstreams (NOT STARTED)
+## 11 October — e3d2a execution coverage VERIFIED locally
+
+Separate internal stored2 execution coverage implemented in existing coverage.ts.
+Private preflight precedes actual execution/source/target freshness; explicit current
+representation/query2 required. Legacy wrapper stays closed1 and conditional cutover
+closed. 63tests/5suites/types/scoped lint/build/diff PASS; three meaningful cases in
+existing required observation suite, with explicit SQL/private unit fixtures. Actual
+format2 row/review/outcome inspection and start/batches remain NOT STARTED. No DDL
+or native/value changes. Original combined release pending; then e3d2b.
+
+## 11 October — e3d2 execution inspection workstreams
 
 Purpose: adapt the existing reviewed conversion engine to conditional requirements,
 not a Flow engine or a second migration service. Dependencies: actual closed2 review/
@@ -8,7 +18,7 @@ conditional authoring/activation remains gated throughout these internal steps.
 
 | Workstream | Expected files | Database implications | Required evidence | Status |
 | --- | --- | --- | --- | --- |
-| e3d2a Source-active execution coverage | migrations/coverage.ts and observation.ts; existing required suites | Reuse locked actual RUNNING/READY/FAILED execution, source SQL lineage; no planned DDL | Genuine authority/private/owner policy; exact review/pin/native/source; arbitrary global revision changes denied | NOT STARTED |
+| e3d2a Source-active execution coverage | migrations/coverage.ts; existing required observation and coverage suites | Reuse locked actual RUNNING/READY/FAILED execution, source/target SQL lineage; no planned DDL | Refreshed caller authority/private/owner policy; exact review/pin/native/source; arbitrary global revision changes denied | VERIFIED locally:63tests/5suites, strictTS/lint/build/diff PASS; runtime2 NOT enabled |
 | e3d2b Conditional row/review reinspection | observation.ts,inspection.ts,execution-inspection.ts; existing inspection suites | Read-only actual observation/outcome/target metadata; source remains active | Reevaluate all actual condition inputs; permit own +1 global envelope only through exact retained outcome and source/target mirrors; bounded SQL/pure seal equality | NOT STARTED |
 | e3d3 Start and representation/batches | Existing execution-start.ts,execution-batch.ts,representation.ts; existing suites | Same atomic generation/slot/value/outcome/progress/Audit; additive correction only if actual SQL evidence proves necessary | Stored-format dispatch; explicit owner approval; converted value matches reviewed requirements; response/retry/CAS/failure/Audit atomicity and exact source preservation | NOT STARTED |
 | e3d4 Actual normal execution proof | Extend exact central Test checker, no new company/parallel engine | Original fixture recovery and retained Test history; zero native writes | Real start/bounded batch/replay/resume/private/tenant/failure behaviour, all source-active; original candidate/public gates | NOT STARTED |

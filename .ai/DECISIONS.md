@@ -1,3 +1,14 @@
+## 11 October 2026 — Conditional execution coverage uses existing source-active guards
+
+Expose a separate internal execution2 prerequisite under the caller's refreshed
+locked authority. Publication freshness rejects own target writes, so execution
+must instead use the existing RUNNING/READY/FAILED execution/source/outcome/target
+lineage. Require complete owning private preflight before that SQL inspection and
+explicit current representation query2 approval. This is neither a client-selected
+stage nor a write grant: actual conditional row/outcome/review inspection is still
+required before enabling start/batches; conditional cutover remains closed. Keep
+legacy coverage/parsers/guards intact, without a second engine or speculative DDL.
+
 ## 11 October 2026 — Conditional execution integrity keeps receipts and explicit review meaning
 
 Add separate closed2 pure execution/outcome helpers; keep existing receipt schema1

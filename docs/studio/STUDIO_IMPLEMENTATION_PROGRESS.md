@@ -14,15 +14,14 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
-2B required-field evolution e3b/c/d1 — publication reinspection, actual reviewed
-publication and pure execution/outcome integrity. VERIFIED: local checks PASS; actual normal
-conditional publication/replay/cancellation and both Audit-failure rollbacks PASS
-on candidatebseb8V and publicZrTQuH. Original release24271 exit0, both ALL COMBINED
-PASS; exact public bafa1c2d075039c48db99ba589624c29e5c26a94 confirmed. Rollback8cc2758
-retained; original both-lock retention retired inactivea475823 duplicated runtime only. Next e3d2 execution
-inspection is NOT STARTED, with smaller workstreams/dependencies in required-rules
-plan. No execution2 start/batch/authoring enabled. Temporary build swap safely removed
-under BOTH original locks; root164GiB free, no swap/config/database change.
+2B required-field evolution e3d2a — source-active conditional execution coverage.
+VERIFIED locally:63tests/5suites, strictTS/scoped lint/production build/diff PASS.
+Separate internal entry/private preflight/current representation query2 support,
+existing execution/source/target SQL guards reused. No new DDL or writes. Original
+combined release pending; current public bafa1c2 and rollback8cc2758 retained.
+Actual conditional row/outcome/review inspection e3d2b is NOT STARTED; no execution2
+start/batch/cutover or ordinary authoring enabled. Detailed dependencies saved in
+required-rules plan. Unit SQL fixtures are not actual format2 runtime evidence.
 
 # Overall Status
 
@@ -49,10 +48,17 @@ source coverage, phase plan and this ledger. No rewritten specification.
 - E3b conditional publication inspection: VERIFIED locally and actual candidate/
   public publication reinspection PASS. E3c actual publisher/cancellation/replay:
   VERIFIED actual candidate/public and combined release PASS.
+- E3d2a separate execution coverage: VERIFIED locally;63focused/types/lint/build
+  PASS. Actual conditional execution runtime remains unimplemented.
 - E3d1 pure closed2 execution/outcome integrity: VERIFIED locally; no inference
   of actual execution runtime from synthetic pure metadata or owner descriptors.
 
 # Current Workstream Detail
+
+Execution2 prerequisite now uses actual scoped RUNNING/READY/FAILED execution and
+existing source/outcome/target guards, after complete owning private preflight; exact
+current representation query2 support required. Caller still owns refreshed locked
+authority. This does not inspect conditional rows or enable any start/batch/cutover.
 
 Existing publication selects format from server-loaded intent/review, never request
 metadata or a target-schema guess. Conditional preparation/publication inspectors
@@ -101,10 +107,14 @@ for typed publisher/schema2, rule removal1, replay/CAS/Audit and authoring gate;
 E3d1 two cases for pure owner/query protocol and sealed review/semantic outcome
 integrity. Central checker uses actual authorised conditions and normal APIs,
 including real Audit triggers/atomic rollback and retained immutable history.
-Mocks and pure synthetic metadata are never described as normal runtime evidence.
+E3d2a three cases add exact SQL-stage/private/owner/current-written/tenant denial
+coverage to the existing required observation suite. Mocks and pure synthetic
+metadata are never described as normal runtime evidence.
 
 # Tests Run
 
+- E3d2a63tests/5suites PASS97635; strictTS99973/scoped lint26699/build97017 exit0.
+  Two pre-existing unused mock-argument lint warnings, zero errors.
 - Owner checkpoint138tests/19suites PASS; strictTS88342/lint84027/build93836 exit0.
 - E3b65tests/6suites PASS22326; strictTS78713/lint83710/build73098 exit0.
 - E3c96tests/9suites PASS12179; strictTS50065/lint58409/build3543 exit0.
@@ -173,7 +183,8 @@ later-phase features. No complete Studio/visual builder claim.
 
 # Exact Next Action
 
-Next e3d2a/b: add explicit conditional execution coverage and actual row/review
+Checkpoint reviewed e3d2a coverage/docs and run the original pinned combined
+candidate/public release. Then e3d2b: add explicit conditional execution coverage and actual row/review
 inspection to existing coverage/observation/inspection/execution-inspection services.
 Verify actual retained outcomes for own +1 global extension revision, including
 formerly unanchored records, unchanged source slot/value/native revision, exact target

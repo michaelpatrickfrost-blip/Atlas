@@ -342,3 +342,11 @@ build PASS; normal central Test publication/replay/cancellation and both Audit-f
 rollbacks VERIFIED on bafa1c2 candidatebseb8V/publicZrTQuH, both ALL COMBINED PASS.
 Pure conditional execution/outcome integrity remains separate from runtime execution;
 actual start/batch/cutover/native hooks and visual Phase2 acceptance are unfinished.
+
+11 October2026: a separate internal execution2 coverage prerequisite reuses existing
+source-active RUNNING/READY/FAILED execution/source/outcome/target guards. Complete
+owning private preflight precedes SQL freshness; current representation query must
+explicitly support protocol2. Caller owns refreshed locked authority; actual row/
+condition/review inspection remains required. Legacy entry closed1; conditional
+start/batch/cutover/authoring still unavailable. Local63/types/lint/build/diff PASS;
+SQL/private unit fixtures do not prove actual conditional execution. No DDL/engine.

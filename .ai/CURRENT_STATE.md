@@ -1,3 +1,28 @@
+## 11 October 2026 — e3d2a execution coverage VERIFIED locally; release pending
+
+Existing coverage.ts now has a separate internal stored2 execution-only entry,
+current representation/query2 support and complete owning private preflight before
+source/target SQL freshness. Reuses actual RUNNING/READY/FAILED execution and
+existing exact source/outcome/target guards; old entry stays closed1, conditional
+cutover stays denied. No actual row/condition inspection or start/batch enabled.
+Three meaningful cases added to existing required observation suite. 63tests/5suites
+PASS97635; strictTS99973/scoped lint26699/build97017 exit0, diff reviewed/check PASS.
+Lint has two pre-existing unused mock-argument warnings, zero errors. Test SQL/private
+fixtures verify service bodies and actual owner descriptors, not normal format2
+execution. No DB/model/migration/value/native changes. Exact public bafa1c2 remains
+live; next reviewed checkpoint and original combined release, then e3d2b actual
+conditional row/outcome/envelope/review reinspection before start/representation.
+
+## 11 October 2026 — e3d2a source-active execution coverage IN PROGRESS
+
+Plan saved before code: existing coverage.ts and required observation/coverage
+suites; explicit server execution-only entry for stored2, current owner/query2
+approval and private preflight before actual execution/source/target SQL freshness.
+Reuse existing guards; no planned DDL, values/native writes, runtime start/batch/
+cutover or authoring enablement. Caller still owns refreshed locked authority.
+E3d2b actual row/outcome/condition reinspection remains NOT STARTED. Local tests
+and original candidate/public regression required; runtime2 not claimed from fixtures.
+
 ## 11 October 2026 — conditional publication VERIFIED live; cleanup complete1007UTC
 
 Exact public bafa1c2d075039c48db99ba589624c29e5c26a94 confirmed. Original retry24271

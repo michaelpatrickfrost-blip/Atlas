@@ -24,8 +24,8 @@ export async function validateFieldMigrationSourceCoverage(context: RecordContex
   return validateCoverage(context, registry, company, sealFieldMigrationIntent(serverIntent), stage);
 }
 
-/** Explicit conditional preparation coverage only. Later publication/execution/
- * cutover require their own retained lineage, never a caller-selected stage. */
+/** Explicit conditional preparation coverage only. Other stages require their
+ * own retained lineage, never a caller-selected stage. */
 export async function validateRequiredFieldMigrationSourceCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
   company: Parameters<typeof assertFieldMigrationPolicies>[1], serverIntent: RequiredFieldMigrationIntent): Promise<void> {
   return validateCoverage(context, registry, company, sealRequiredFieldMigrationIntent(serverIntent), "preparation");
@@ -39,10 +39,19 @@ export async function validatePublishedRequiredFieldMigrationSourceCoverage(cont
   return validateCoverage(context, registry, company, sealRequiredFieldMigrationIntent(serverIntent), "publication");
 }
 
+/** Internal execution prerequisite, under the caller's refreshed/locked authority.
+ * Actual RUNNING/READY/FAILED source-active execution and target lineage replace
+ * publication freshness after own target writes. This does not inspect actual
+ * conditional rows, approve a batch, enable start or permit cutover. */
+export async function validateExecutingRequiredFieldMigrationSourceCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
+  company: Parameters<typeof assertFieldMigrationPolicies>[1], serverIntent: RequiredFieldMigrationIntent): Promise<void> {
+  return validateCoverage(context, registry, company, sealRequiredFieldMigrationIntent(serverIntent), "execution");
+}
+
 async function validateCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
   company: Parameters<typeof assertFieldMigrationPolicies>[1], sealed: { intent: FieldMigrationIntent | RequiredFieldMigrationIntent; checksum: string }, stage: FieldMigrationCoverageStage) {
   const intent = sealed.intent, session = context.session, tx = context.transaction;
-  if (intent.schemaVersion === 2 && stage !== "preparation" && stage !== "publication") changed();
+  if (intent.schemaVersion === 2 && stage === "cutover") changed();
   if (!tx || intent.organisationId !== session.organisationId || intent.principal.userId !== session.userId || intent.principal.membershipId !== session.membershipId) changed();
   const policies = intent.schemaVersion === 1 ? assertFieldMigrationPolicies : assertVersionedFieldMigrationPolicies;
   policies(session, company, intent.source.payload); policies(session, company, intent.target.payload);
@@ -61,6 +70,11 @@ async function validateCoverage(context: RecordContext & { transaction: Prisma.T
     || !supportsFieldMigrationQueryIntent(query, owner.id, "snapshot", 2))) changed();
   if ((stage === "execution" || stage === "cutover") && (!supportsFieldMigrationIntent(record?.migrationRepresentation, intent.schemaVersion) || !record?.migrationRepresentation?.sourceVersions.includes(intent.source.payload.entity.version))) changed();
   await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${intent.id}::uuid AND "organisationId"=${session.organisationId} FOR UPDATE`;
+  // Conditional execution freshness examines stored source/target lineage. The
+  // owning module must approve complete private access before that inspection;
+  // no archive counts, values or IDs are exposed by a denied preflight.
+  if (intent.schemaVersion === 2 && stage === "execution")
+    await registry.invokeQueryInTransaction(context, intent.ownerQuery, { mode: "preflight" });
   // Derive post-cutover coverage solely from actual scoped retained rows; the
   // original preparation/publication/execution predicates remain source-active.
   const cutover = stage === "cutover" && intent.schemaVersion === 1 ? await inspectFieldMigrationCutoverIdentity(tx, intent) : null;
@@ -83,6 +97,7 @@ async function validateCoverage(context: RecordContext & { transaction: Prisma.T
     const declared = record!.migrationRepresentation!.query;
     if (reference.id !== declared.id || reference.version !== declared.version || approval.kind !== "query"
       || approval.ownerModuleId !== owner.ownerModuleId || approval.capability !== record!.writeCapability || approval.details.transaction !== "required") changed();
+    if (intent.schemaVersion === 2 && !supportsFieldMigrationQueryIntent(approval, owner.id, "representation", 2)) changed();
   }
   // Owner rejects incomplete native/private access before any archive count/IDs.
   await registry.invokeQueryInTransaction(context, intent.ownerQuery, { mode: "coverage", preparationId: intent.id });

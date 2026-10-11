@@ -15,7 +15,7 @@ import { compileFieldMigrationMetadata } from "@/core/studio/fields/migrations/m
 import { sealRequiredFieldMigrationIntent, sealRequiredFieldMigrationReview, requiredFieldMigrationObservationDigest, type RequiredFieldMigrationIntent } from "@/core/studio/fields/migrations/required-contracts";
 import { inspectRequiredFieldMigrationRecord, inspectPublishedRequiredFieldMigrationRecord, observePublishedRequiredFieldMigrationRecord, observeRequiredFieldMigrationRecord, observeFieldMigrationRecord } from "@/core/studio/fields/migrations/observation";
 import { reviewedRequiredFieldPublicationPin } from "@/core/studio/fields/migrations/publication-contract";
-import { validatePublishedRequiredFieldMigrationSourceCoverage, validateRequiredFieldMigrationSourceCoverage, validateFieldMigrationSourceCoverage } from "@/core/studio/fields/migrations/coverage";
+import { validatePublishedRequiredFieldMigrationSourceCoverage, validateExecutingRequiredFieldMigrationSourceCoverage, validateRequiredFieldMigrationSourceCoverage, validateFieldMigrationSourceCoverage } from "@/core/studio/fields/migrations/coverage";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
 const uuid = (n: number) => `00000000-0000-4000-8000-${n.toString().padStart(12, "0")}`;
 const root = uuid(4), inputId = uuid(14);
@@ -279,4 +279,76 @@ it("locks exact publication coverage without preparation fallback and rejects ch
     intent as unknown as Parameters<typeof validateFieldMigrationSourceCoverage>[3], "execution")).rejects.toThrow("review is invalid");
   expect(m.raw).not.toHaveBeenCalled();
   await expect(validateRequiredFieldMigrationSourceCoverage({ session, transaction: tx }, registry, company, intent)).rejects.toThrow("stale or has changed");
+});
+
+function executionCoverageFixture() {
+  // Real coverage service/owner descriptors, explicit SQL and private-authority
+  // unit fixtures. This does not prove real protocol2 start or batch execution.
+  const approval = registry.describe("tickets.ticket.field_representation", 2);
+  const reference = { id: approval.id, version: approval.version, schemaHash: approval.schemaHash, contractHash: approval.contractHash };
+  const state = { fresh: true, sourceChanged: false, approval: reference as unknown };
+  m.version.mockResolvedValue([]);
+  m.raw.mockImplementation(async (strings: TemplateStringsArray) => {
+    const sql = strings.join("");
+    if (sql.includes("atlas_studio_execution_fresh")) return [{ fresh: state.fresh, ownerApproval: state.approval }];
+    if (sql.includes("atlas_studio_execution_source_fresh")) return [{ changed: state.sourceChanged }];
+    return [];
+  });
+  return { state, run: () => validateExecutingRequiredFieldMigrationSourceCoverage({ session, transaction: tx }, registry, company, intent) };
+}
+
+it("uses actual source-active execution coverage after private preflight without invoking the preparation/publication predicates", async () => {
+  const { run } = executionCoverageFixture();
+  await expect(run()).resolves.toBeUndefined();
+  const sql = m.raw.mock.calls.map(call => (call[0] as TemplateStringsArray).join(""));
+  const freshIndex = sql.findIndex(text => text.includes("atlas_studio_execution_fresh"));
+  expect(freshIndex).toBeGreaterThan(0);
+  expect(sql[freshIndex]).toContain("x.state IN ('RUNNING','READY','FAILED')");
+  expect(m.raw.mock.calls[freshIndex].slice(1)).toEqual([intent.id, session.organisationId, checksum(intent)]);
+  expect(sql.some(text => text.includes("atlas_studio_execution_source_fresh"))).toBe(true);
+  expect(sql.some(text => text.includes("atlas_studio_migration_fresh") || text.includes("atlas_studio_publication_fresh") || text.includes("SELECT EXISTS"))).toBe(false);
+  expect(fact.mock.calls[0][2]).toEqual({ mode: "preflight" });
+  expect(fact.mock.invocationCallOrder[0]).toBeLessThan(m.raw.mock.invocationCallOrder[freshIndex]);
+  expect(fact.mock.calls[1][2]).toEqual({ mode: "coverage", preparationId: intent.id });
+  expect(m.value).not.toHaveBeenCalled();
+});
+
+it("denies conditional execution lineage drift, obsolete owning representation approval and source/private coverage failure", async () => {
+  const { run, state } = executionCoverageFixture();
+  state.fresh = false; await expect(run()).rejects.toThrow("stale or has changed"); state.fresh = true;
+  state.sourceChanged = true; await expect(run()).rejects.toThrow("stale or has changed"); state.sourceChanged = false;
+  const exact = state.approval, obsolete = registry.describe("tickets.ticket.field_representation", 1);
+  state.approval = { id: obsolete.id, version: obsolete.version, schemaHash: obsolete.schemaHash, contractHash: obsolete.contractHash };
+  await expect(run()).rejects.toThrow("stale or has changed"); state.approval = exact;
+  fact.mockRejectedValueOnce(new Error("private preflight denied")); m.raw.mockClear();
+  await expect(run()).rejects.toThrow("private preflight denied");
+  expect(m.raw.mock.calls.some(call => (call[0] as TemplateStringsArray).join("").includes("atlas_studio_execution_fresh"))).toBe(false);
+  expect(m.version).not.toHaveBeenCalled();
+  fact.mockImplementationOnce(async () => undefined).mockRejectedValueOnce(new Error("native cohort changed")); m.raw.mockClear();
+  await expect(run()).rejects.toThrow("native cohort changed");
+  expect(m.raw.mock.calls.some(call => (call[0] as TemplateStringsArray).join("").includes("FOR SHARE OF e"))).toBe(false);
+  expect(m.value).not.toHaveBeenCalled();
+});
+
+it("keeps current and written field permissions and tenant/owner protocol requirements during conditional execution coverage", async () => {
+  const { run } = executionCoverageFixture();
+  const exact = session;
+  session = { ...session, organisationId: "other" }; m.raw.mockClear();
+  await expect(run()).rejects.toThrow("stale or has changed"); expect(m.raw).not.toHaveBeenCalled(); session = exact;
+  session = { ...exact, capabilities: new Set(["studio.definition.publish", "tickets.ticket.read"]) };
+  await expect(run()).rejects.toThrow("tickets.ticket.manage"); session = exact;
+  await expect(validateExecutingRequiredFieldMigrationSourceCoverage({ session, transaction: tx }, registry, { ...company, isTest: false }, intent)).rejects.toThrow("studio.test.live_data");
+  const written = structuredClone(intent.source.payload); written.field.readCapability = "tickets.field.secret";
+  m.raw.mockImplementation(async (strings: TemplateStringsArray) => {
+    const sql = strings.join("");
+    if (sql.includes("atlas_studio_execution_fresh")) {
+      const approval = registry.describe("tickets.ticket.field_representation", 2);
+      return [{ fresh: true, ownerApproval: { id: approval.id, version: approval.version, schemaHash: approval.schemaHash, contractHash: approval.contractHash } }];
+    }
+    if (sql.includes("atlas_studio_execution_source_fresh")) return [{ changed: false }];
+    if (sql.includes("SELECT DISTINCT")) return [{ versionId: sourceVersion.id }];
+    return [];
+  });
+  m.version.mockResolvedValue([{ ...sourceVersion, payload: written }]);
+  await expect(run()).rejects.toThrow("tickets.field.secret"); expect(m.value).not.toHaveBeenCalled();
 });

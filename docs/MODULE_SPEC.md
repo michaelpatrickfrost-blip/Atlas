@@ -558,3 +558,11 @@ falling back to source-active publication inspection. Local checks PASS; actual
 central Test publication/replay/cancellation/both Audit rollbacks VERIFIED on bafa1c2
 candidatebseb8V/publicZrTQuH, both ALL COMBINED PASS. Actual conditional execution/
 cutover/native writer integration remains unfinished; pure integrity is not execution.
+
+11 October2026: a separate internal execution2 coverage prerequisite reuses existing
+source-active RUNNING/READY/FAILED execution/source/outcome/target guards. Complete
+owning private preflight precedes SQL freshness; current representation query must
+explicitly support protocol2. Caller owns refreshed locked authority; actual row/
+condition/review inspection remains required. Legacy entry closed1; conditional
+start/batch/cutover/authoring still unavailable. Local63/types/lint/build/diff PASS;
+SQL/private unit fixtures do not prove actual conditional execution. No DDL/engine.

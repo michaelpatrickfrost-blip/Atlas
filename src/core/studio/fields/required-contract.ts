@@ -43,13 +43,14 @@ export type RequiredFactLiteral = z.infer<typeof requiredFactLiteralSchema>;
 export type RequiredPredicate = z.infer<typeof requiredPredicateSchema>;
 export type RequiredCondition = z.infer<typeof requiredConditionSchema>;
 
-/** Pure upcoming contract. Intentionally NOT added to definition actions,
- * dispatch, storage or migration schemas until canonical/native hooks enforce it.
- * Old schema v1 and its compiler/checksums remain unchanged. */
+/** Conditional payload used by the explicit reviewed-preparation protocol.
+ * Ordinary definition actions/value publication remain gated until canonical
+ * native hooks and full reviewed execution enforce it. Old schema v1 and its
+ * compiler/checksums remain unchanged. */
 export const conditionalFieldPayloadSchema = z.strictObject({ schemaVersion: z.literal(2), entity: referenceSchema,
   storageGeneration: z.uuid(), field: customFieldSchema, requiredIf: requiredConditionSchema });
 export type ConditionalFieldPayload = z.infer<typeof conditionalFieldPayloadSchema>;
 
-/** Explicit upcoming protocol boundary; legacy dispatch/receipts still use v1. */
+/** Closed version boundary for review; retained execution receipts still use v1. */
 export const versionedFieldPayloadSchema = z.discriminatedUnion("schemaVersion", [customFieldPayloadSchema, conditionalFieldPayloadSchema]);
 export type VersionedFieldPayload = z.infer<typeof versionedFieldPayloadSchema>;

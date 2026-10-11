@@ -1,3 +1,21 @@
+## 11 October 2026 — Normal conditional review API proof IMPLEMENTED, not runtime verified
+
+Actual-owner ede65ae original release34400 exit0; candidatef7uyoR/publicDetaCQ
+ALL COMBINED PASS, public health exact. Current rollback e395962; both-lock
+retention retired only inactive e5ab126 duplicate runtime, not source/data/history. Required UTC085820 pre-release/085957 candidate backups only.
+Extended existing check-field-required-review-storage.ts: exact Test draft seed
+only (public conditional authoring still gated), then actual prepare/collect/seal
+APIs with server-derived2, bounded actual rows, CAS/response replay, SQL/pure archive
+seal, real Audit failures at all three stages, exact native/typed/active metadata
+unchanged. Finally restores saved draft payload with monotonically advanced revision,
+retains immutable review evidence and explicit fixture seed/restore Audit. No new
+company, domain/value write, permission engine, schema/DDL or dump.
+StrictTS61643/scoped lint6756/build77619 exit0; central execution pending, not VERIFIED.
+Current owner actual conditional rows/coverage/SQL digest/rollback PASS candidate;
+public original gates PASS (required UTC090416 fixture recovery).
+Next: current release outcome, review/build/pinned normal API fixture release, then
+existing publication/execution/cutover/settlement conditional support and native hooks.
+
 ## 11 October 2026 — Studio source audit and actual Tickets owner locally VERIFIED
 
 Michael clarified that time is acceptable; complete adherence to the supplied

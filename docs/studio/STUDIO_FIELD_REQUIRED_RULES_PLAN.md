@@ -1,3 +1,15 @@
+## 11 October — Normal conditional API proof IMPLEMENTED
+
+Existing archive checker now separately exercises actual prepare/collect/seal APIs
+with real condition rows, replay and Audit-failure rollback. Only the exact Test
+canonical draft is seeded directly and restored in finally with advanced revision;
+this does not enable customer conditional authoring or publication/execution.
+Retains archive/history and fixture audit; native/typed/active/source metadata unchanged.
+TS/lint/production build PASS; real central normal API acceptance pending.
+Actual-owner candidatef7uyoR/publicDetaCQ ALL COMBINED PASS; release34400 exit0,
+public health exact ede65ae.
+Actual-owner release34400/ede65ae complete; normal API fixture release is next.
+
 ## Current checkpoint — 11 October 2026
 
 Actual Tickets owner/native9/query4/representation2/settlement2 VERIFIED locally:

@@ -13,13 +13,18 @@ import { requiredFieldMigrationObservationDigest, sealRequiredFieldMigrationInte
 import { digestRequiredFieldMigrationArchive } from "../../src/core/studio/fields/migrations/archive-digest";
 import { observeRequiredFieldMigrationRecord } from "../../src/core/studio/fields/migrations/observation";
 import { inspectRequiredFieldMigrationReview } from "../../src/core/studio/fields/migrations/inspection";
+import { startFieldMigrationPreparation } from "../../src/core/studio/fields/migrations/preparation";
+import { collectFieldMigrationBatch } from "../../src/core/studio/fields/migrations/collection";
+import { sealFieldMigrationPreparation } from "../../src/core/studio/fields/migrations/sealing";
+import { readStoredFieldMigrationIntent, readStoredFieldMigrationReview } from "../../src/core/studio/fields/migrations/stored-protocol";
+import { Prisma as PrismaRuntime } from "../../src/generated/prisma/client";
 
-/** Exact Test archive fixture. Positive rows/coverage/inspection use actual
- * required-input/owner services; negative packets exercise SQL shape only.
- * Preparation/sealing writes are privileged rollback-only fixtures, not the
- * normal preparation/collection/CAS/Audit API or publication/execution proof.
- * Every attempt is rolled back; existing native/typed/metadata/Audit snapshots
- * must be unchanged. No new company, native operation, permission or dump. */
+/** Exact Test review checks. Archive fixtures roll back completely; their rows
+ * use actual authorised inputs and negative packets prove SQL shape only.
+ * A separate canonical draft seed then exercises actual prepare/collect/seal
+ * services, retaining their immutable history and restoring the saved draft.
+ * Native/typed values and active metadata must remain unchanged. No customer
+ * conditional authoring, publication/execution, new company, permission or dump. */
 export async function checkRequiredFieldReviewStorage(session: Session, principal: FieldMigrationPrincipal, definitionId: string) {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1");
   const organisationId = session.organisationId, scope = { organisationId };
@@ -137,4 +142,89 @@ export async function checkRequiredFieldReviewStorage(session: Session, principa
   }
   assert.deepEqual(await snapshot(), before);
   console.log("PASS conditional archive SQL integrity and actual native9/query4 row review: real authorised source/target conditions, present zero and required unanchored failures, canonical owner coverage before IDs/counts, copied-session denial, bounded actual review inspection, exact source refs/closed2 shape, malformed and sealed denials, SQL/pure ordered digest equality and complete native/typed/draft/metadata/Audit rollback; privileged preparation/sealing fixture, not normal v2 API/publication/execution acceptance.");
+  // Authoring stays gated. Seed a canonical draft only in this exact Test company,
+  // then prove real service transactions rather than direct archive inserts.
+  // Preserve immutable evidence and restore the draft without rewinding revisions.
+  const fixture = await db.$transaction(async tx => {
+    const result = await setup(tx);
+    await tx.auditEntry.create({ data: { organisationId, actorUserId: session.userId,
+      action: "studio.required_review.test_draft_seeded", entityType: "StudioDefinition", entityId: definitionId } });
+    return result;
+  }, { isolationLevel: "Serializable", timeout: 30_000 });
+  const operationId = fixture.intent.id;
+  async function archive() {
+    return { preparation: await db.studioFieldMigrationPreparation.findFirst({ where: { id: operationId, organisationId } }),
+      rows: await db.studioFieldMigrationObservation.findMany({ where: { preparationId: operationId, organisationId }, orderBy: { recordId: "asc" } }),
+      review: await db.studioFieldMigrationReview.findFirst({ where: { id: operationId, organisationId } }),
+      audits: await db.auditEntry.findMany({ where: { organisationId, entityId: operationId }, orderBy: { id: "asc" } }) };
+  }
+  async function auditFailure(action: "prepared" | "collection_batched" | "reviewed", run: () => Promise<unknown>) {
+    const trigger = `studio_required_api_${crypto.randomUUID().replaceAll("-", "")}`, initial = await archive();
+    assert(/^[a-z0-9_]+$/.test(trigger) && /^[a-zA-Z0-9_-]+$/.test(organisationId)
+      && /^[a-zA-Z0-9_-]+$/.test(session.userId) && /^[a-f0-9-]+$/.test(operationId));
+    try {
+      await db.$executeRawUnsafe(`CREATE FUNCTION ${trigger}() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW."organisationId"='${organisationId}' AND NEW."actorUserId"='${session.userId}' AND NEW."entityId"='${operationId}' AND NEW.action='studio.field.migration.${action}' THEN RAISE EXCEPTION 'Exact Test required review API Audit failure'; END IF; RETURN NEW; END $$;`);
+      await db.$executeRawUnsafe(`CREATE TRIGGER ${trigger} BEFORE INSERT ON audit_entries FOR EACH ROW EXECUTE FUNCTION ${trigger}();`);
+      await assert.rejects(run, /Exact Test required review API Audit failure/);
+      assert.deepEqual(await archive(), initial);
+    } finally {
+      await db.$executeRawUnsafe(`DROP TRIGGER IF EXISTS ${trigger} ON audit_entries;`);
+      await db.$executeRawUnsafe(`DROP FUNCTION IF EXISTS ${trigger}();`);
+    }
+  }
+  try {
+    const request = { operationId, definitionId, definitionRevision: fixture.intent.definitionRevision,
+      draftRevision: fixture.intent.target.draftRevision, conversion: { kind: "integer_to_decimal" } };
+    await auditFailure("prepared", () => startFieldMigrationPreparation(session, principal, request));
+    const prepared = await startFieldMigrationPreparation(session, principal, request);
+    assert.deepEqual(await startFieldMigrationPreparation(session, principal, request), prepared);
+    const saved = (await archive()).preparation!;
+    const sealed = readStoredFieldMigrationIntent(saved, organisationId);
+    assert.equal(sealed.intent.schemaVersion, 2); assert.equal(sealed.checksum, fixture.data.intentChecksum);
+    await assert.rejects(() => startFieldMigrationPreparation(session, principal, { ...request, schemaVersion: 1 }));
+    await assert.rejects(() => startFieldMigrationPreparation(session, principal, { ...request, organisationId: "foreign" }));
+    const firstRequest = { preparationId: operationId, revision: prepared.revision, limit: 1 };
+    await auditFailure("collection_batched", () => collectFieldMigrationBatch(session, firstRequest));
+    let batch = await collectFieldMigrationBatch(session, firstRequest);
+    const firstArchive = await archive();
+    assert.equal((await collectFieldMigrationBatch(session, firstRequest)).replayed, true);
+    assert.deepEqual(await archive(), firstArchive);
+    for (let page = 0; !batch.cursorExhausted; page++) {
+      assert(page < 100, "Conditional collection must be bounded and eventually exhausted.");
+      batch = await collectFieldMigrationBatch(session, { preparationId: operationId, revision: batch.revision, limit: 2 });
+    }
+    const collected = await archive(), stream = requiredFieldMigrationObservationDigest();
+    collected.rows.forEach(row => stream.append(row.observation));
+    const expected = stream.finish();
+    assert.equal(expected.recordCount, before.native.length);
+    assert(expected.summary.validCount > 0 && expected.summary.invalidCount > 0);
+    assert(collected.rows.some(row => (row.observation as RequiredFieldMigrationObservation).result.kind === "invalid" && row.extensionId === null));
+    const sealRequest = { preparationId: operationId, revision: batch.revision };
+    await auditFailure("reviewed", () => sealFieldMigrationPreparation(session, sealRequest));
+    const reviewed = await sealFieldMigrationPreparation(session, sealRequest);
+    assert.deepEqual(reviewed.cohort, { recordCount: expected.recordCount, observationDigest: expected.observationDigest });
+    assert.deepEqual(reviewed.summary, expected.summary);
+    assert.deepEqual(await sealFieldMigrationPreparation(session, sealRequest), { ...reviewed, replayed: true });
+    const final = await archive();
+    assert.equal(readStoredFieldMigrationReview(final.review!, organisationId).review.schemaVersion, 2);
+    for (const action of ["prepared", "reviewed"])
+      assert.equal(final.audits.filter(row => row.action === `studio.field.migration.${action}`).length, 1);
+    await assert.rejects(() => collectFieldMigrationBatch(session, { ...firstRequest, revision: reviewed.revision }), /stale|changed/i);
+    assert.equal(await db.studioFieldGeneration.count({ where: { id: fixture.intent.target.payload.storageGeneration } }), 0);
+  } finally {
+    await db.$transaction(async tx => {
+      const draft = await tx.studioDraft.findFirstOrThrow({ where: { id: before.draft.id, organisationId, definitionId } });
+      assert.equal(checksum(draft.payload), checksum(fixture.intent.target.payload));
+      assert.equal(draft.revision, fixture.intent.target.draftRevision);
+      assert.equal((await tx.studioDraft.updateMany({ where: { id: draft.id, organisationId, revision: draft.revision },
+        data: { payload: before.draft.payload!, revision: { increment: 1 }, validation: PrismaRuntime.DbNull } })).count, 1);
+      await tx.auditEntry.create({ data: { organisationId, actorUserId: session.userId,
+        action: "studio.required_review.test_draft_restored", entityType: "StudioDefinition", entityId: definitionId } });
+    }, { isolationLevel: "Serializable" });
+    const after = await snapshot();
+    assert.deepEqual(after.native, before.native); assert.deepEqual(after.slots, before.slots); assert.deepEqual(after.values, before.values);
+    assert.deepEqual(after.definition, before.definition); assert.deepEqual(after.counts.slice(0, 7), before.counts.slice(0, 7));
+    assert.deepEqual(after.draft.payload, before.draft.payload); assert.equal(after.draft.revision, before.draft.revision + 2);
+  }
+  console.log("PASS actual conditional preparation/collection/sealing APIs: server-derived2, exact current-owner pins, bounded actual condition rows including unanchored failures, response replay without duplicate evidence, SQL/pure seal, all three Audit-failure atomic rollbacks and restored draft with retained review history; privileged Test draft seed only, no conditional authoring/publication/execution/native writes.");
 }

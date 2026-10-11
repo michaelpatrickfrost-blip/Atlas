@@ -13,7 +13,10 @@ No Phase 3 feature may start before the complete Phase 2 gate passes.
 # Current Workstream
 
 2B required-field evolution: actual Tickets owning callbacks (e2b3d), VERIFIED
-locally; central actual conditional row-review evidence pending. Keep foundation-
+locally and actual row review VERIFIED live ede65ae: original release34400 exit0,
+candidate f7uyoR/public DetaCQ ALL COMBINED PASS.
+Normal conditional prepare/collect/seal API proof (e2b3e) IMPLEMENTED locally;
+central runtime evidence pending. Keep foundation-
 first order. On 11 October Michael clarified that duration is acceptable; complete
 coverage of the supplied specification matters. See STUDIO_SPECIFICATION_COVERAGE.md.
 
@@ -36,9 +39,11 @@ Full source re-read and exact Section 27 / Sections 6–8,18,24–29 mapping rev
   ordinary current/history reads and atomic value saves: VERIFIED in recorded live
   checkpoints. Required-if/native integration and customer authoring remain incomplete.
 - Required review routing c3: VERIFIED live e3959624c2ba65f61fcd29bec9b12cc21933670d;
-  candidate ZRGhyd/public suHccl ALL COMBINED PASS. Immediate rollback e5ab126.
+  candidate ZRGhyd/public suHccl ALL COMBINED PASS. Immediate rollback at that checkpoint was e5ab126. Current live ede65ae retains
+  e395962; only inactive e5ab126 duplicate runtime was retired under both locks.
 - Current Tickets native9/query4/representation2/settlement2 callbacks: VERIFIED
-  locally, not yet central/live verified. All retained descriptors/hashes remain.
+  locally; actual conditional row/coverage/inspection VERIFIED candidate/public
+  ede65ae. Full format2 execution/representation/settlement runtime still gated. All retained descriptors/hashes remain.
 
 # Current Workstream Detail
 
@@ -56,7 +61,7 @@ work. No conditional authoring is enabled by this checkpoint.
 
 # Files Changed
 
-Current checkpoint: core/service-work/studio.ts; scripts/studio/check-field-required-
+Current owner checkpoint: core/service-work/studio.ts; scripts/studio/check-field-required-
 review-storage.ts; actual current-owner test; required observation/routing and
 legacy owner/creation/cutover fixture tests; architecture/module docs; required-rule
 plan; specification coverage map; this ledger; .ai/CURRENT_STATE.md/DECISIONS.md.
@@ -79,7 +84,7 @@ Actual current Tickets owner tests: 8 cases, including retained format1/native5,
 stored identity/hash/tenant denial, private preflight, actual immutable reference
 inputs, exact principal/revision, dual-format representation and settlement. The
 positive central archive fixture now calls the actual conditional reader/inspector;
-central evidence still pending.
+normal API evidence still pending; prior row review passed candidate/public.
 
 # Tests Run
 
@@ -88,11 +93,14 @@ ESLint 84027 exit0; production build 93836 exit0; final diff review/check PASS.
 Logs: /tmp/atlas-studio-e2b-owner-final-tests.txt and
 /tmp/atlas-studio-e2b-owner-{types,lint,build}.txt.
 Previous c3 release candidate/public ALL COMBINED PASS; exact public release SHA
-confirmed. Current owner's new central fixture has not yet run.
+confirmed. Current owner ede65ae candidate/public ALL COMBINED PASS; public health exact. Normal API proof strict
+TypeScript61643, scoped lint6756 and production build77619 exit0; real runtime proof
+pending. Current-owner candidate f7uyoR/public DetaCQ ALL COMBINED PASS; release34400 exit0.
 
 # Test Results
 
-VERIFIED locally only for the current owner block. A real legacy settlement bug
+Owner block VERIFIED locally; actual row-review/coverage/SQL digest and complete
+rollback VERIFIED live. Normal API proof remains unverified centrally. A real legacy settlement bug
 was caught by expanded actual model-row selection: retain strict packet parsing
 with explicit review/checksum projection. Obsolete future-owner expectations were
 moved above the newly registered actual versions, not relaxed. The actual native7
@@ -108,7 +116,8 @@ whole-system checklist into a claim that later engines belong in Phase 2.
 
 # Known Issues
 
-Phase 2 gate unpassed. Format2 review owner central proof pending. Format2 normal
+Phase 2 gate unpassed. Actual format2 row-review owner proof PASS; normal API proof
+pending. Format2 normal
 API/publication/execution/cutover/settlement and native create/save lock hooks remain
 unfinished. No customer field editor/search, record types, page compiler/generated
 runtime or accepted visual Studio yet. No blocker justifies weakening requirements.
@@ -130,10 +139,11 @@ No later-phase work started and no complete Studio claim.
 
 # Exact Next Action
 
-Commit the reviewed actual-owner block with updated memory; pin and deploy it using
-the original combined Studio candidate/public gates. Investigate any failure in
+Original owner release34400 is complete, actual row-review evidence PASS. Review the new normal API fixture in
+check-field-required-review-storage.ts (types/lint/build PASS), then commit/pin its
+combined release after the current gate. Investigate any failure in
 check-field-required-review-storage.ts without weakening its positive actual row
-inspection or rollback. Then finish normal format2 review/API and reviewed runtime
+inspection or rollback. Then finish reviewed runtime
 integration in the existing services (publication, execution, cutover, settlement),
 followed by native writer hooks; only then continue 2C record types /2D pages /2E
 visual authoring and actual customer runtime. Use the coverage map to account for

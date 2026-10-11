@@ -2,14 +2,27 @@ import { Prisma } from "@/generated/prisma/client";
 import type { Session } from "@/core/auth/session";
 import { writeAudit } from "@/core/audit/log";
 import { compileCustomField, compileCustomFieldForInitialisation } from "../compiler/fields";
+import type { CustomFieldPayload } from "./schema";
+import type { VersionedFieldPayload } from "./required-contract";
 import { encodeFieldValue } from "./codec";
-import { readFieldContextInTransaction, readFieldPlanInTransaction, readFieldValueInTransaction,
+import { readVersionedFieldContextInTransaction, readVersionedFieldPlanInTransaction, readVersionedFieldValueInTransaction,
   readInitialFieldContextInTransaction, readInitialFieldPlanInTransaction, readInitialFieldValueInTransaction } from "./runtime-read";
 import { withFieldRuntimeAuthority, type FieldRuntimeAuthority } from "./runtime-authority";
 import { fieldWriteRequestSchema, fieldWriteRequestChecksum, fieldWriteAuditSchema } from "./runtime-write-contract";
 import { closeAffectedFieldWriteWindows } from "./runtime-write-window";
 import { validateResultingFieldRequirements } from "./required-runtime";
 import { lockBoundFieldEntityInTransaction } from "./entity-lock";
+/** Permission compilation projects only base metadata after the versioned reader
+ * verifies the actual sealed1/2 payload/plan. Never save this schema1 projection
+ * or evaluate a historical condition against today's input graph. Resulting-state
+ * requirements run once after the owning mutation stages its complete values. */
+function writePolicyPayload(payload: VersionedFieldPayload): CustomFieldPayload {
+  switch (payload.schemaVersion) {
+    case 1: return payload;
+    case 2: return { schemaVersion: 1, entity: payload.entity, storageGeneration: payload.storageGeneration, field: payload.field };
+    default: throw new Error("FIELD_STORAGE_INVALID: unsupported published field schema.");
+  }
+}
 function conflict(): never { throw new Error("CONFLICT: this record, field or value changed. Refresh before saving."); }
 function throwWriteError(error: unknown): never {
   // No conflicting tenant's ID/value or duplicate fingerprint is disclosed.
@@ -31,14 +44,14 @@ export async function writeFieldValue(authenticated: Session, input: unknown) {
  * resulting field requirements before committing their staged native/value state.
  * This does not open a transaction or grant native/field access. An error must
  * propagate so the caller rolls back values, windows, native changes and Audits.
- * Closed1 behaviour is retained until native enforcement enables newer writes. */
+ * Stored schemas1/2 share the same typed writer and owning final validator. */
 export async function writeFieldValueInTransaction(authority: FieldRuntimeAuthority, input: unknown) {
   return writeInTransaction(authority, input);
 }
 
 /** Actual owning INSERT callback only. The opaque proof grants no existing-record
  * access; field/reference rights and the native owner's current creation facts
- * remain mandatory. Conditional initial writes await all-active enforcement. */
+ * remain mandatory. The owner validates all active requirements after staging. */
 export async function initialiseFieldValueInTransaction(authority: FieldRuntimeAuthority, input: unknown, proof: object) {
   if (!proof || typeof proof !== "object") throw new Error("FORBIDDEN: owning creation proof is required.");
   return writeInTransaction(authority, input, proof);
@@ -54,16 +67,15 @@ async function writeInTransaction(authority: FieldRuntimeAuthority, input: unkno
     await tx.$queryRaw`SELECT id FROM studio_definitions WHERE id=${request.definitionId}::uuid AND "organisationId"=${session.organisationId} FOR UPDATE`;
     const { definition, payload, extension } = proof
       ? await readInitialFieldContextInTransaction(authority, { ...request, expectedRevision: request.recordRevision }, proof)
-      : await readFieldContextInTransaction(authority, request, false);
-    if (payload.schemaVersion !== 1) throw new Error("FIELD_UNAVAILABLE: conditional initial writes await owning required-field enforcement.");
+      : await readVersionedFieldContextInTransaction(authority, request);
     const context = { session, transaction: tx };
     if (proof) {
-      await compileCustomFieldForInitialisation(session, payload, registry, "write");
+      await compileCustomFieldForInitialisation(session, writePolicyPayload(payload), registry, "write");
       // The proof's immutable INSERT anchor alone does not establish that a
       // later operation in this callback left the actual native row unchanged.
       await registry.invokeInitialRecordFacts(context, payload.entity, proof);
       if (definition.revision !== request.definitionRevision || definition.activeVersionId !== request.versionId || payload.storageGeneration !== request.generationId) conflict();
-    } else await compileCustomField(session, payload, registry);
+    } else await compileCustomField(session, writePolicyPayload(payload), registry);
     const existing = await tx.studioFieldValue.findFirst({ where: { id: request.operationId, organisationId: session.organisationId, definitionId: request.definitionId }, include: { schemaVersion: true, slot: { include: { extension: true } } } });
     if (existing) {
       if (existing.createdBy !== session.userId || existing.slot.extension.recordId !== request.recordId || existing.slot.extension.entityId !== payload.entity.id
@@ -73,11 +85,10 @@ async function writeInTransaction(authority: FieldRuntimeAuthority, input: unkno
         || existing.slot.id !== existing.slotId || existing.slot.entityId !== payload.entity.id || existing.slot.definitionId !== definition.id || existing.slot.generationId !== request.generationId
         || existing.slot.activeValueId !== existing.id || existing.slot.revision !== existing.revision)) conflict();
       const written = proof ? await readInitialFieldPlanInTransaction(authority, existing.schemaVersion, definition.id)
-        : await readFieldPlanInTransaction(authority, existing.schemaVersion, definition.id);
+        : await readVersionedFieldPlanInTransaction(authority, existing.schemaVersion, definition.id);
       if (proof) {
-        if (written.schemaVersion !== 1) conflict();
-        await compileCustomFieldForInitialisation(session, written, registry, "write");
-      } else await compileCustomField(session, written, registry);
+        await compileCustomFieldForInitialisation(session, writePolicyPayload(written), registry, "write");
+      } else await compileCustomField(session, writePolicyPayload(written), registry);
       const encoded = encodeFieldValue(written.field, request.value), requestChecksum = fieldWriteRequestChecksum(request, encoded.fingerprint);
       const audit = await tx.auditEntry.findFirst({ where: { organisationId: session.organisationId, actorUserId: session.userId, entityId: existing.id,
         entityType: "StudioFieldValue", action: "studio.field.value.saved" }, select: { after: true } });
@@ -87,7 +98,7 @@ async function writeInTransaction(authority: FieldRuntimeAuthority, input: unkno
         || saved.data.slotRevision !== existing.revision || saved.data.extensionId !== existing.slot.extensionId
         || saved.data.slotRevision !== (request.slotRevision ?? 0) + 1 || saved.data.extensionRevision !== (request.extensionRevision ?? 0) + 1) conflict();
       if (proof) await readInitialFieldValueInTransaction(authority, payload, definition.id, existing.generationId, existing.slotId, request.recordId, existing, proof);
-      else await readFieldValueInTransaction(authority, payload, definition.id, existing.generationId, existing.slotId, request.recordId, existing);
+      else await readVersionedFieldValueInTransaction(authority, payload, definition.id, existing.generationId, existing.slotId, request.recordId, existing);
       return { operationId: existing.id, replayed: true, ...saved.data };
     }
     if (definition.revision !== request.definitionRevision || definition.activeVersionId !== request.versionId || payload.storageGeneration !== request.generationId) conflict();
@@ -98,10 +109,10 @@ async function writeInTransaction(authority: FieldRuntimeAuthority, input: unkno
     if ((proof && slot) || (slot?.revision ?? null) !== request.slotRevision || (slot?.activeValue?.revision ?? null) !== request.valueRevision) conflict();
     if (slot && (!slot.activeValue || slot.activeValueId !== slot.activeValue.id || slot.revision !== slot.activeValue.revision || slot.revision >= 2147483647)) conflict();
     if (slot?.activeValue) {
-      const written = await readFieldPlanInTransaction(authority, slot.activeValue.schemaVersion, definition.id);
-      await compileCustomField(session, written, registry);
+      const written = await readVersionedFieldPlanInTransaction(authority, slot.activeValue.schemaVersion, definition.id);
+      await compileCustomField(session, writePolicyPayload(written), registry);
       await registry.authoriseRecord(context, written.entity, { recordId: request.recordId, intent: "extend", expectedRevision: request.recordRevision });
-      await readFieldValueInTransaction(authority, payload, definition.id, payload.storageGeneration, slot.id, request.recordId, slot.activeValue);
+      await readVersionedFieldValueInTransaction(authority, payload, definition.id, payload.storageGeneration, slot.id, request.recordId, slot.activeValue);
     }
     const encoded = encodeFieldValue(payload.field, request.value), requestChecksum = fieldWriteRequestChecksum(request, encoded.fingerprint);
     if (encoded.referenceValue !== null && payload.field.storage.type === "reference")

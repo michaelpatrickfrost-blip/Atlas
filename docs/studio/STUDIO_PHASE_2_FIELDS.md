@@ -198,3 +198,22 @@ No Phase3 Decision engine or arbitrary expression/SQL is part of required-if.
 post-build TS/lint/diff PASS). Versioned v2 metadata stays outside authoring
 dispatch until d2–4 owner facts, canonical coverage and native enforcement work.
 See STUDIO_FIELD_REQUIRED_RULES_PLAN.md. No conditional runtime completion claim.
+
+## 11 October — remaining source-bound 2B work after native typed forms
+
+Re-read source6 model metadata,6.4–6.5,17/17.1,29. Current native controls/writer are
+IMPLEMENTED with182 focused assertions/build; actual f6 gate pending. Do not rebuild
+the verified typed storage/constraint/generation/history foundation.
+
+| Workstream | Purpose/dependencies | Expected files | Database implications | Verification | Status |
+| --- | --- | --- | --- | --- | --- |
+| 2B5 Literal defaults | Optional bounded typed literal value in versioned metadata; initial create only through actual owning writer, independent current/written/reference grants; explicit null retained | fields default contracts/codec integration, compiler, actual native form initialisation | Additive versioned metadata only; retained sealed1/2 shapes/hashes unchanged, no existing-record backfill | Type constraints, zero/false, omission versus clear, reference Read, actual create atomicity, required activation still checks real values | NOT STARTED |
+| 2B6 Configured field search | Owner-approved bounded indexed filters/query, reuse registered Tickets queries/search provider, active-generation values and native workScope; no new search engine | fields/search service, service-work owner query/registry contracts, focused tests/central acceptance | Existing typed indices; explicit supported indexed operators; new index only if evidence justifies | Current+written grants before protected matching, private/native/tenant boundaries, retired generations excluded, exact zero/false/filter bounds/pagination, real runtime | NOT STARTED |
+
+Native aliases are presentation-only source6.4/6.5 and will be implemented with2D
+structured pages: label/help/visibility/order/format changes cannot mutate canonical
+native storage or waive required rules. Field defaults are literal metadata from
+source6, not a new formula/default engine. Conditional authoring will use the
+existing reviewed migration service in2E; no direct ordinary schema2 bypass.
+After these2B checkpoints,2C shallow record-type resolution→2D structured pages→2E
+full-screen noncoder visual studio/shared previews/publishing→2F fullPhase2 gate.

@@ -75,3 +75,23 @@ layouts and clear additions/removals/changes. Foundation reference-set compariso
 must explain descriptions and selected references in plain language, not JSON,
 checksums or hashes. Draft check results also need readable readiness/review states.
 Technical integrity still runs on the server and never substitutes for design preview.
+
+11 October: Michael wants the visual Studio to open entirely as its own app-sized
+workspace. Workstream2E must deliver a dedicated full-screen Studio route/shell,
+its own task-focused navigation and enough room for a component library, large
+shared live-preview canvas, properties panel and preview/publication controls.
+Keep ordinary ERP app navigation out of that editing canvas; provide a clear way
+back to the business workspace. The separate private Atlas Admin console retains
+platform/company administration. This is a distinct workspace inside the same
+Atlas platform, canonical records, authenticated tenant and capabilities, not a
+new ERP or duplicate rendering/permission system. Current native typed controls
+are a dependency for shared preview; they do not satisfy this designer requirement.
+
+11 October: Michael also requires Atlas administrators to build for any business
+account they are authorised to administer. The visual workspace needs a clear
+selected-business entry from the separate Admin console and a persistent business
+context in the editor/preview/publication flow. Server derives that authorised
+context through existing audited support/company access; never a client tenant ID
+or a configuration-granted privilege. Customer Studio remains limited to its own
+business. Publication must affect only the selected business and its approved
+page/audience rules; verify another business and private data remain isolated.

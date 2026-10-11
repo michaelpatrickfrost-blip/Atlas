@@ -414,3 +414,23 @@ Proofs grant no field/native-fact/reference access and expire on every exit. Dom
 callbacks retain private access/transition/SLA/approval/Audit rules. Required final
 validator callback must run after all writes; actual native hooks are implemented locally; SQL atomic/concurrency and release
 gates remain incomplete. No-config native/internal behavior is retained.
+
+### Native configured Ticket form boundary — 11 October 2026
+
+Approved configured fields use the existing owning RequestForm/ActionForm and one
+server-owned bounded typed packet. Genuine current manifests expose permitted
+labels/types/observations and values; hidden condition graphs/private facts and
+tenant authority remain server-side. Current and written policies precede typed
+values. Original native domain/queue/transition/evidence/approval/SLA guards stay in
+the owning action. All staged fields/native events precede the same resulting-field
+validator in the original Serializable transaction. Reopen stages fields only after
+actual owning CAS; normal transitions stage before finalisation.
+
+One reserved existing Audit receipt binds exact actor/tenant/operation/native input/
+complete typed packet/result and written anchors. Exact lost-response retry checks
+current and written access and returns the original result without native/value/
+event effects or new condition evaluation. Reserved receipt SQL immutability is
+additive; ordinary Audit privacy scrubbing remains available. Shared typed controls
+are browser-safe and reusable for later structured previews. This is native form
+integration, not completion of the full visual builder. New migration actual SQL/
+public acceptance is pending in the current execution ledger.

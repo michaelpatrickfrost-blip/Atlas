@@ -2512,4 +2512,26 @@ business records; use an authorised genuine target business session or existing
 explicitly audited support opening. Ordinary Session-only API does not claim durable
 support-principal audit verification or create target affiliations/grants. This
 implements source6.5/24 validity/security requirements without silently changing
-the migration architecture. Local verification only until actual central gates.
+the migration architecture. Actual required activation and native races passed
+ad9 candidate/public original gates; typed native form inputs remain incomplete.
+
+## 11 October 2026 — Native form retries use one reserved existing Audit receipt
+
+A per-field operation UUID cannot prevent duplicate canonical Ticket creation or
+native events after a lost form response. The owning Serializable transaction will
+store one immutable whole-form receipt in existing AuditEntry, namespaced by its
+operation UUID, exact tenant/actor/create-or-update, parsed native request checksum,
+complete bounded typed packet checksum and actual INSERT/CAS result. Replay occurs
+before native/value/window/event effects, rechecks current owning permissions and
+current/written field/reference rights, and returns only the original result.
+Creation replay requires current Create and exact requester-owned identity without
+native Read/Manage or a reminted INSERT proof; update replay retains current
+Read/Manage/private queue access without re-running terminal Extend/old transitions.
+All fields stage through the existing writer in stable definition order; original
+packet order/casing stays bound by its checksum. Store actual field staging revision
+separately from native result revision for active-to-final versus authorised reopen.
+A targeted additive Audit guard protects only the reserved receipt namespace and
+pairing; legitimate existing Party/Contact Audit scrubbing remains possible. No
+second form engine, table, permission model or domain mutation API. Helper/DDL are
+IN PROGRESS and unexecuted centrally at this decision; actual atomicity/replay/SQL
+checks and original live release gates remain required before VERIFIED.

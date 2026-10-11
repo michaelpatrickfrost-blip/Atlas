@@ -1,3 +1,45 @@
+## 11 October — native foundation VERIFIED LIVE; typed forms in progress
+
+Original pinned ad9d5a430e2b92e6b08448a45d11f694f5ce2066 studio release
+completed: exec13566 EXIT0, /tmp/atlas-studio-native-release-retry.txt. Candidate
+/tmp/atlas-studio-candidate-627MN9 and public /tmp/atlas-studio-public-jY9iVL BOTH
+ALL COMBINED ACCEPTANCE CHECKS PASSED. Actual native windows, enforcement and
+concurrency PASS, including reviewed publication races and genuine required-field
+storage activation. Existing Admin/business login and module regression gates PASS.
+Fresh HTTPS release health and SSH /opt/atlas-current confirm ad9d5a4; immediate
+rollback /opt/atlas-previous is 1f4dc79d10e1017a203a5f181e8afa459376cc25.
+Required recovery UTC142445/142619/143132 retained; Test access suspended, history
+preserved, QA affiliation unchanged. Original locked retention retired only redundant
+generated runtimes for failed84/oldb34, preserving source/static/evidence/business
+records. No ad-hoc dump/local business database. This supersedes prior RUNNING and
+native SQL-pending claims below. Full Phase2 still FAIL incomplete; no Phase3.
+
+D4f1–5 IMPLEMENTED in root: bounded typed packet/shared stored1/2 writer, genuine
+current field manifest, narrow reference picker, whole-form immutable Audit receipt,
+atomic native create/update/reopen staging and existing ActionForm 15-type controls.
+Root182 assertions/8 suites PASS; production26422 PASS; final production24417 exit0 after latest feedback and
+optional Service child-discovery fix. Original domain regression13 stale fixtures
+failed missing sessionAuthorityStamp already required by HEAD native boundary;
+explicit domain-only authority/validated collaborators corrected, actual capability
+checks retained; domain+genuine proof30/2 PASS. Independent review found optional
+child Ticket manifests could block Service Query/case when Tickets disabled; existing
+isModuleEnabled now gates discovery/rendering. Mandatory action checks unchanged.
+Final standalone strict58993 and scoped lint8334 exit0; new20261011030000 reserved-Audit SQL guard source-only,
+not applied. No new Prisma model/table/backfill/reset/engine. Browser pure reference
+schema extraction preserves shape/hashes. Desktop registry adds only the intended
+narrow search; unrelated generator action/model drift excluded.
+Existing isolated checker workstream is preparing real central forms/receipt DDL/
+responsive/replay/atomic-failure acceptance. No typed-form public verification yet.
+User reaffirmed complete Phase2 INCLUDING visual editor and authorised parallel
+workstreams. Full-screen selected-business design workspace remains2E required;
+read-only2C/2D and remaining2B audits prepare exact next implementation dependencies,
+no Phase3. Exact next finish checker/types/lint/source checkpoint, original pinned
+build/candidate/public release, then2B gaps→2C→2D→2E→2F. Do not stop at foundation UI.
+Storage: removed2.4GB root .next/cache only after exact generated-path and process
+checks; source76MB/shared dependencies retained. No other app/process/source/business
+files touched, no extra dumps. Two older managed worktree archives remain queued,
+not confirmed completed; do not report their disk savings.
+
 ## 11 October — native release84f64da FAILED safely before activation
 
 Clean reviewed checkpoint84f64da8 created after local57/4/final types/lint/build/
@@ -12040,3 +12082,27 @@ The extended checker includes tablet/phone Stock and Product viewport checks.
 No full-suite rerun. Prepare and real candidate/public acceptance remain pending.
 
 Studio remaining Phase 2 correctness requirements recorded in STUDIO_PHASE_2_FIELDS.md: required-if, owner canonical-record coverage for new required fields and metadata-runtime schema compatibility. These remain unimplemented; Phase 2 gate not passed.
+
+## 11 October — Studio workspace product requirement and typed form integration
+
+Michael confirms Studio should open as its own app-sized workspace. Recorded in
+STUDIO_VISUAL_BUILDER_REQUIREMENTS.md for2E: dedicated full-screen route/navigation,
+component library/live preview/properties/preview-publish controls, clear return to
+business, separate private Admin console; same Atlas domains/data/security/renderers.
+No premature Phase3 or claim native typed controls complete the designer.
+
+Root packet/shared writer/read/required focused110/5 PASS; standalone strict96977
+exit0 and scoped lint10098 exit0. New current manifest/contract/narrow reference
+search source implemented; manifest strict71356 exit0 before action integration.
+Read-only review found cross-record identical-revision seal gap, corrected server
+company+actor+record identity in opaque checksum. Current+written metadata precedes
+typed values; active-generation batch scope avoids retained-history bounds. Native
+create/update packet integration now written locally: whole-form replay before
+effects, creation actual INSERT callback, normal update stage before CAS, authorised
+reopen stage after actual CAS, receipt completion after final native validation.
+Agent receipt/helper/guard and shared15-type renderer awaiting scoped integration.
+Browser boundary requires unchanged referenceSchema extraction to compiler/reference.ts;
+kernel reexports, field schema imports pure reference; sealed shapes/hashes unchanged.
+No DDL applied/build/new actual form proof/deploy yet. Exact next integrate helper/
+renderer/tests, final type/lint/build, actual central typed form/receipt guard and
+native compatibility checks, original candidate/public release. FullPhase2FAIL.

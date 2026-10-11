@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { referenceSchema } from "../compiler/kernel";
+import { referenceSchema } from "../compiler/reference";
 
 export const fieldKeySchema = z.string().regex(/^[a-z][a-z0-9_]{0,39}$/);
 const capability = z.string().regex(/^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/);

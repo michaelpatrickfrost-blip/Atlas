@@ -35,8 +35,8 @@ related provider or service to adapt.
 | 6.4;27 | Explicit owner opt-in; aliases vs extension storage vs record types vs native domain fields | Registry entity policy, reserved keys, typed compiler; Tickets canonical ServiceWorkItem owner; protected native columns read-only to fields | Customer editor must visibly separate these choices; record types/pages still required |
 | 6.4;6.1 | Immutable keys/identity, mutable labels, retained history | Permanent field binding, immutable versions/generations/value history; same-generation cosmetics verified live | Visual authoring must generate keys and preserve identity rather than asking noncoders for technical IDs |
 | 6.5 | Approved typed constraints including decimal/money/currency/enum versions/reference policy | Closed field/storage/value schemas, server validators, typed SQL families/constraints and atomic ordinary saves verified | Usable owner form inputs/approved defaults and presentation aliases, configured field search/filter/sort runtime, complete native writer integration |
-| 6.5;14 | Required-if on every write; hiding never waives validation; sensitivity/capabilities narrow access | Typed condition compiler/evaluator, authorised input reader, current-owner coverage and actual row observation; no arbitrary code/SQL | Native create/save hooks now IMPLEMENTED locally with shared lock/final validation; actual central atomic/concurrency/release proof, typed form inputs and conditional activation remain gated |
-| 24;24.1 | Review counts/examples/failures/index/rollback limits; resumable/idempotent conversion; compatible rolling reads; explicit cutover | Existing legacy review/publication/batches/cutover/rollback/finalization and current/history services verified live | Usable migration preview/control UI; conditional cutover/settlement verified actual candidate/public1f4 (independent current settler, original creator revoked, Audit atomicity, drift/history/replay); whole affected native window integration now IMPLEMENTED locally; actual central native/window proof and usable UI remain; format2 conversion/recovery/cancel also verified |
+| 6.5;14 | Required-if on every write; hiding never waives validation; sensitivity/capabilities narrow access | Typed condition compiler/evaluator, authorised input reader, current-owner coverage and actual row observation; no arbitrary code/SQL | Native hooks/final validation/required activation VERIFIED live ad9 with actual candidate/public atomicity/windows/concurrency proof; usable typed native form inputs remain incomplete |
+| 24;24.1 | Review counts/examples/failures/index/rollback limits; resumable/idempotent conversion; compatible rolling reads; explicit cutover | Existing legacy review/publication/batches/cutover/rollback/finalization and current/history services verified live | Usable migration preview/control UI; conditional cutover/settlement verified actual candidate/public1f4 (independent current settler, original creator revoked, Audit atomicity, drift/history/replay); whole affected native window integration VERIFIED live ad9 candidate/public; usable UI remains; format2 conversion/recovery/cancel also verified |
 | 7;7.1–2 | Canonical record types, base + one overlay, deterministic resolution, explicit conflict policy, compiled result | Owner recordTypes opt-in exists as contract only | Record-type compiler/persistence/association and authorised resolution; no shadow customer/ticket tables or implicit security grants |
 | 8;8.1 | Structured approved components and registered record surfaces, bounded queries/metrics/actions | Registry/query/access and existing design-system/domain services are foundations | Page schema/compiler/runtime, approved component catalogue, list/detail/forms; reject arbitrary script/table access |
 | 8;8.2 | Default/conditional variants, shallow inspectable inheritance, capability/record-type/approved fact selection | Foundations only | Deterministic variants; ambiguity/depth rejection; hidden components do not query; underlying server permissions always enforced. Do not build Phase 3 Decision engine early |
@@ -78,18 +78,15 @@ STUDIO_VISUAL_BUILDER_REQUIREMENTS.md and are still unfinished Phase 2 work.
 
 ## Exact next checkpoint
 
-Conditional cutover/settlement passed original candidate/public gates on live1f4dc79;
-native write integration and ordinary required activation correction are locally
-verified at84f64da8. The original release failed safely before activation at an old
-metadata-only required-field storage fixture; live1f4/rollbackb34 unchanged. Repair
-that fixture without weakening production policy, integrate the two reviewed-but-
-unpublished publication races, then retry original central candidate/public gates.
-Actual native enforcement, whole-window rollback and concurrency remain unverified
-until those gates execute successfully. Next implement the typed native form packet
-and shared controls, then remaining2B aliases/defaults/search,2C record types,2D pages,
-2E visual authoring/runtime and2F complete Phase2 gate. No Phase3 work.
-Use this matrix and original relevant sections at each checkpoint. No silent omission,
-VERIFIED from a file or moving a requirement to a later phase to obtain PASS.
+Native hooks/windows/enforcement/concurrency and genuine ordinary required activation
+VERIFIED livead9d5a4, original candidate627MN9/publicjY9iVL BOTH ALL COMBINED PASS;
+rollback1f4dc79. Failed84 history retained; corrected fixture did not weaken policy.
+Now integrate bounded typed packet/shared writer, current genuine narrow manifest,
+atomic whole-form receipt and shared native controls. Actual typed form/customer
+journey still needs its own central proof. Then remaining2B aliases/defaults/search,
+2C record types,2D pages,2E visual authoring/runtime and2F complete Phase2 gate.
+Use this matrix and unchanged source sections each checkpoint. No Phase3 work or
+VERIFIED from file existence; complete noncoder visual journey remains mandatory.
 
 ### 11 October — source6.5 native write integration checkpoint
 

@@ -30,8 +30,8 @@ export async function readFieldPlanInTransaction(authority: FieldRuntimeAuthorit
 }
 
 /** Versioned base-policy reader. Viewing an authorised value does not evaluate
- * its own rule or read private condition inputs. The closed v1 aliases remain
- * available to the ordinary writer until its owning enforcement enables v2. */
+ * its own rule or read private condition inputs. Legacy v1 aliases stay closed;
+ * the ordinary writer explicitly uses these sealed versioned entry points. */
 export async function readVersionedFieldPlanInTransaction(authority: FieldRuntimeAuthority, version: StudioDefinitionVersion, definitionId: string): Promise<FieldPayload> {
   if (version.schemaVersion === 1) return readFieldPlanInTransaction(authority, version, definitionId);
   const plan = inspectSealedFieldVersion(authority.registry, version, authority.session.organisationId, definitionId), payload = plan.payload;

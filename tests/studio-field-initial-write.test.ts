@@ -69,6 +69,21 @@ async function setup(authority: FieldRuntimeAuthority, field: Partial<CustomFiel
   request = { operationId: uuid(60 + suffix), definitionId: current.definitionId, versionId: current.id, generationId: payload.storageGeneration,
     definitionRevision, recordId: "new", recordRevision: 1, extensionRevision: extension?.revision ?? null, slotRevision: null, valueRevision: null, value: 0 };
 }
+async function conditionalSetup(authority: FieldRuntimeAuthority, field: Partial<CustomFieldPayload["field"]> = {}, suffix = 0, operator: "present" | "absent" = "absent") {
+  await setup(authority, field, suffix);
+  const { id, version, schemaHash, contractHash } = authority.registry.describe("tickets.ticket", 9), entity = { id, version, schemaHash, contractHash };
+  // Compiler metadata fixture only; actual staging retains genuine create-only
+  // authority/proof, independent Read/Write and ordinary reference permissions.
+  const author = { ...authority.session, capabilities: new Set([...authority.session.capabilities,
+    "tickets.ticket.read", "tickets.ticket.manage", "tickets.field.read", "tickets.field.write"]) };
+  const compiled = await compileConditionalCustomField({ session: author, registry: authority.registry, definitionId: current.definitionId,
+    resolveMetadata: async fact => fact.kind === "native" ? registeredRequiredFactMetadata(author, authority.registry, entity, fact.fieldId)
+      : Promise.reject(new Error("Unexpected fixture fact")) }, { ...payload, entity, schemaVersion: 2,
+    requiredIf: { match: "all", predicates: [{ source: { kind: "native", fieldId: "status" }, operator }] } });
+  current = { ...current, schemaVersion: 2, payload: compiled.payload as unknown as Prisma.JsonValue,
+    compiledPlan: compiled.plan as unknown as Prisma.JsonValue, checksum: compiled.checksum };
+  return compiled;
+}
 function replayRow() {
   if (!slot || !extension) throw new Error("Missing saved fixture.");
   return { ...value, schemaVersion: current, slot: { ...slot, extension } };
@@ -215,15 +230,83 @@ it("propagates window, value/pointer/Audit failures to the owning INSERT and san
   }
   expect(m.transaction).not.toHaveBeenCalled();
 });
-it("explicitly blocks genuine sealed conditional initial metadata until owning enforcement exists", async () => {
+it("stages sealed2 zero/false for the live owning INSERT before final validation without borrowing native Read/Manage", async () => {
   await owning(async (authority, proof) => {
-    await setup(authority); const { id, version, schemaHash, contractHash } = authority.registry.describe("tickets.ticket", 9), ref = { id, version, schemaHash, contractHash };
-    const author = { ...authority.session, capabilities: new Set([...authority.session.capabilities, "tickets.ticket.read", "tickets.ticket.manage"]) };
-    const compiled = await compileConditionalCustomField({ session: author, registry: authority.registry, definitionId: current.definitionId,
-      resolveMetadata: async fact => fact.kind === "native" ? registeredRequiredFactMetadata(author, authority.registry, ref, fact.fieldId) : Promise.reject(new Error("Unexpected fixture fact")) },
-    { ...payload, entity: ref, schemaVersion: 2, requiredIf: { match: "all", predicates: [{ source: { kind: "native", fieldId: "status" }, operator: "present" }] } });
-    current = { ...current, schemaVersion: 2, payload: compiled.payload as unknown as Prisma.JsonValue, compiledPlan: compiled.plan as unknown as Prisma.JsonValue, checksum: compiled.checksum };
-    await expect(initialiseFieldValueInTransaction(authority, request, proof)).rejects.toThrow("conditional initial writes");
-    expect(m.existing).not.toHaveBeenCalled(); expect(m.window).not.toHaveBeenCalled(); expect(m.valueCreate).not.toHaveBeenCalled();
+    await conditionalSetup(authority, {}, 0, "present");
+    const ordinary = vi.spyOn(authority.registry, "authoriseRecord");
+    const first = await initialiseFieldValueInTransaction(authority, request, proof);
+    expect(first).toMatchObject({ replayed: false, extensionRevision: 1, valueRevision: 1 });
+    expect(m.valueCreate.mock.calls[0][0].data).toMatchObject({ versionId: current.id, integerValue: 0n });
+    const firstStored = current;
+    slot = null; await conditionalSetup(authority, { storage: { type: "boolean" } }, 1, "present"); request = { ...request, value: false };
+    await expect(initialiseFieldValueInTransaction(authority, request, proof)).resolves.toMatchObject({ extensionRevision: 2, valueRevision: 1 });
+    expect(m.valueCreate.mock.calls[1][0].data.booleanValue).toBe(false);
+    expect(m.valueCreate.mock.calls[0][0].data).not.toHaveProperty("payload");
+    expect(firstStored.schemaVersion).toBe(2); expect(current.schemaVersion).toBe(2);
+    expect(m.nativeRow.mock.invocationCallOrder[0]).toBeLessThan(m.existing.mock.invocationCallOrder[0]);
+    expect(ordinary).not.toHaveBeenCalled(); expect(m.transaction).not.toHaveBeenCalled();
+    for (const grant of ["tickets.ticket.read", "tickets.ticket.manage", "studio.definition.publish"]) expect(authority.session.capabilities.has(grant)).toBe(false);
+    // Writer stages; the complete owning native boundary enforces all conditions
+    // after every intended value. This suite does not claim that final SQL gate.
+  });
+});
+it("does not waive sealed2 Read/Write or unconditional required because its rule is false", async () => {
+  await owning(async (authority, proof) => {
+    for (const field of [{ readCapability: "tickets.field.read" }, { writeCapability: "tickets.field.write" }]) {
+      await conditionalSetup(authority, field);
+      await expect(initialiseFieldValueInTransaction(authority, request, proof)).rejects.toThrow("FORBIDDEN");
+    }
+    expect(m.existing).not.toHaveBeenCalled();
+    await conditionalSetup(authority, { required: true });
+    await expect(initialiseFieldValueInTransaction(authority, { ...request, value: null }, proof)).rejects.toThrow("required");
+    expect(m.window).not.toHaveBeenCalled(); expect(m.valueCreate).not.toHaveBeenCalled();
+  });
+});
+it("requires existing-reference Read for sealed2 and preserves actual creation proof expiry/guard checks", async () => {
+  let retained: object | undefined, original: FieldRuntimeAuthority | undefined;
+  await owning(async (authority, proof) => {
+    const { id, version, schemaHash, contractHash } = authority.registry.describe("tickets.ticket", 9), entity = { id, version, schemaHash, contractHash };
+    await conditionalSetup(authority, { storage: { type: "reference", entity } }); retained = proof; original = authority;
+    await expect(initialiseFieldValueInTransaction(authority, { ...request, value: "private" }, proof)).rejects.toThrow("FORBIDDEN");
+    await conditionalSetup(authority); m.nativeRow.mockResolvedValue({ ...work, version: 2 });
+    await expect(initialiseFieldValueInTransaction(authority, request, proof)).rejects.toThrow("unavailable or changed");
+    m.nativeRow.mockResolvedValue(work);
+    await expect(initialiseFieldValueInTransaction(authority, request, { ...proof })).rejects.toThrow("FORBIDDEN");
+    expect(m.window).not.toHaveBeenCalled(); expect(m.valueCreate).not.toHaveBeenCalled();
+  });
+  await expect(initialiseFieldValueInTransaction(original!, request, retained!)).rejects.toThrow("FORBIDDEN");
+});
+it("replays only the exact live sealed2 initial value/current slot before effects and rejects overwritten or restricted written policy", async () => {
+  await owning(async (authority, proof) => {
+    await conditionalSetup(authority);
+    const result = await initialiseFieldValueInTransaction(authority, request, proof), saved = replayRow();
+    m.existing.mockResolvedValue(saved); m.findAudit.mockResolvedValue({ after: Object.fromEntries(Object.entries(result).filter(([key]) => !["operationId", "replayed"].includes(key))) });
+    m.valueCreate.mockClear(); m.window.mockClear(); m.audit.mockClear();
+    expect(await initialiseFieldValueInTransaction(authority, request, proof)).toEqual({ ...result, replayed: true });
+    await expect(initialiseFieldValueInTransaction(authority, { ...request, value: 2 }, proof)).rejects.toThrow("CONFLICT");
+    m.existing.mockResolvedValue({ ...saved, slot: { ...saved.slot, activeValueId: uuid(98) } });
+    await expect(initialiseFieldValueInTransaction(authority, request, proof)).rejects.toThrow("CONFLICT");
+    m.existing.mockResolvedValue(saved); definitionRevision++;
+    await expect(initialiseFieldValueInTransaction(authority, request, proof)).rejects.toThrow("CONFLICT"); definitionRevision--;
+    const unrestricted = current;
+    await conditionalSetup(authority, { writeCapability: "tickets.field.write" }); const restricted = current; current = unrestricted;
+    m.existing.mockResolvedValue({ ...saved, schemaVersion: restricted });
+    await expect(initialiseFieldValueInTransaction(authority, request, proof)).rejects.toThrow("FORBIDDEN");
+    expect(m.window).not.toHaveBeenCalled(); expect(m.valueCreate).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+  });
+});
+it("rejects unsupported, foreign or changed sealed2 before initial value access and propagates atomic-owner failures", async () => {
+  await owning(async (authority, proof) => {
+    await conditionalSetup(authority); const sealed = current;
+    for (const patch of [{ schemaVersion: 3 }, { organisationId: "foreign" }, { checksum: "f".repeat(64) }]) {
+      current = { ...sealed, ...patch }; await expect(initialiseFieldValueInTransaction(authority, request, proof)).rejects.toThrow("FIELD_STORAGE_INVALID");
+    }
+    expect(m.existing).not.toHaveBeenCalled(); expect(m.window).not.toHaveBeenCalled();
+    current = sealed; m.window.mockRejectedValue(new Error("Closed window unavailable"));
+    await expect(initialiseFieldValueInTransaction(authority, request, proof)).rejects.toThrow("Closed window unavailable");
+    expect(m.valueCreate).not.toHaveBeenCalled();
+    m.window.mockResolvedValue(undefined); m.audit.mockRejectedValue(new Error("Paired Audit unavailable"));
+    await expect(initialiseFieldValueInTransaction(authority, request, proof)).rejects.toThrow("Paired Audit unavailable");
+    // Error propagation to actual owning callback; unit stubs do not prove rollback.
   });
 });

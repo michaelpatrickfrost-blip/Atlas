@@ -66,3 +66,20 @@ Finance own-request and section guards. Full bounded-worker local suite: 298 fil
 passed, 3 skipped; 2,171 tests passed, 22 skipped. Production build and Prisma
 validation passed. Final explicit types/lint, candidate/public native acceptance
 and guarded historical Test cleanup are the remaining release gates.
+
+## Delivered and live
+
+Release a0fd2d0 is live at https://atlassystem.online. Candidate and public native
+acceptance passed 240 authorised destinations/Guide links and actual handoff,
+Maintenance, S&OP and purchasing interactions. The crisp-white website uses moving
+ERP illustrations, softer scene/detail transitions, deliberate card/message/control
+gaps, Pause/reduced motion, responsive menus and keyboard workflow tabs. Both gates
+verified 1440/820/390/320 layouts. The Guides library contains 37 task guides, filtered
+by available apps and permissions.
+
+The protected sweep removed 486 historical Test companies, verified no Test
+companies/pending file deletions, and retained ordinary/internal companies, shared
+staff and backups. Own native fixtures and record screenshots were removed.
+Detailed evidence and practical limits: docs/evidence/2026-10-11-atlas-usability.md.
+No additional broad test run is needed after this successful public acceptance
+unless source changes or a new failure is found.

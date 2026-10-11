@@ -12630,3 +12630,35 @@ the phone menu at 820px. Actual CSS uses full navigation there and the menu belo
 580px. Corrected checker to exercise whichever control is visible and require
 visible full navigation otherwise. Production remains exact accepted b6610512;
 no ordinary data changed. Backup atlas-pre-deploy-20261011-165521 retained.
+
+## 11 October 2026 — Atlas usability release live and Test cleanup verified
+
+Live/control/public revision a0fd2d01876103f879bb82f78873816227bc64ef; immutable
+activation completed with b6610512 retained for rollback. Candidate and public
+HTTPS native acceptance PASS: animated website and separated spacing at 1440/820/
+390/320, Pause/reduced motion, keyboard workflow tabs, mobile navigation, private
+auth boundary; actual final production completion → BLOCKED holding → partial/final
+yard collection, stale/repeat/Quality guards, conserved balances and history;
+Maintenance single-asset work creation, S&OP New cycle/focus and PO/percentage input.
+All 240 authorised registered destinations/Guide links resolved; critical workspaces
+had no root overflow or client errors. Both exact synthetic fixtures and their
+record screenshots were removed; original QA membership/rights stayed unchanged.
+
+Under the same locks and public central backup, the protected audited wipe removed
+486 historical CUSTOMER isTest companies and their scoped data/files. Verified zero
+Test companies or pending file deletions, retention of every ordinary/internal
+company and shared staff identity. Cleanup audit cmv42oh4n0000uxd5ys59qa1s. Existing
+backups/history remain. No local business DB/cache files were created or found in
+this worktree; rejected generated artwork is unused and removed.
+
+Evidence: docs/evidence/2026-10-11-atlas-usability.md. Server private acceptance:
+/tmp/atlas-usability-candidate-kRhM8p and /tmp/atlas-usability-public-YVhfdr. Backup:
+~/backups/atlas-pre-usability-public-20261011-170222 (plus deployment/candidate backups).
+Full suite checkpoint: 300 files/2,197 tests PASS, 3 files/22 tests skipped; subsequent
+accepted concurrent manufacturing refinements passed 62 focused tests, final build,
+explicit types/scoped lint and the complete native candidate/public gate. The last
+phone-only CSS integration passed build/scoped lint and native responsive checks.
+Existing full lint warnings and documented ERP/provider coverage gaps remain; this
+is a verified usability/Guides/physical-handoff release, not universal ERP parity.
+Canonical Desktop remains concurrently dirty and was not reset or deployed wholesale.
+Code, shared memory and evidence are retained on codex/usability-guides-20261011.

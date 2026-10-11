@@ -905,7 +905,10 @@ import {saveHandover as action901} from "@/modules/teams/services/commands";
 import {savePlace as action902} from "@/modules/teams/services/commands";
 import {saveMoment as action903} from "@/modules/teams/services/commands";
 import {removeMoment as action904} from "@/modules/teams/services/commands";
+import {saveManagedUserDetails, setManagedUserPassword} from "@/app/(app)/settings/user-actions";
 export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>=withAdminActionAliases({
+"src/app/(app)/settings/user-actions:saveManagedUserDetails":saveManagedUserDetails as (...args:never[])=>Promise<unknown>,
+"src/app/(app)/settings/user-actions:setManagedUserPassword":setManagedUserPassword as (...args:never[])=>Promise<unknown>,
 "src/app/(admin)/atlas/actions:updateCompanyAccount":action0 as (...args:never[])=>Promise<unknown>,
 "src/app/(admin)/atlas/actions:saveCompanyEntitlements":action1 as (...args:never[])=>Promise<unknown>,
 "src/app/(admin)/atlas/actions:createCompanyAccount":action2 as (...args:never[])=>Promise<unknown>,

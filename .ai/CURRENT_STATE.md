@@ -1,3 +1,34 @@
+## 11 October 2026 — Company account controls and detailed access ready for live acceptance
+
+Company account tabs now expose company-only name/email editing, direct password
+assignment, existing one-use recovery, suspension/session controls and employee
+linking. New audited Serializable actions require admin password confirmation,
+compare public snapshots and protect own/shared/Atlas staff identity/credentials.
+Email/password changes revoke old authentication/recovery codes; credentials are
+never in Audit. New native actions included in central data API allowlist.
+
+Access editor adds permission descriptions, profile inheritance/personal-exception
+badges, sensitive/selected/exception filters, draft review, company-blocked labels
+and explicit missing-workspace-entry prompts. Editable Logistics, invoice-viewer
+and service-manager starter profiles retain native Role/Membership storage.
+Service-manager example grants invoice view and own requests with banking off.
+Finance links/queries now honour those native sections and own-document scope;
+overview alone no longer exposes Service credits. Restricted sections have
+intentional access feedback. No schema/grant migration or local business database.
+
+Checks: 13 focused files/96 tests, strict TypeScript, scoped lint (zero warnings),
+Prisma generation, production build and diff whitespace PASS. Initial local clone
+lacked Playwright; clean npm ci restored locked dependencies. Initial types caught
+PlatformAdministrator key and Testing Library selector issues; corrected and
+rerun PASS. Repo-wide suite not run. Extended native central checker now exercises
+account identity/password/login/recovery and actual invoice/procurement/bank-denial
+flows plus desktop/tablet/phone user tabs. Candidate/public proof remains pending.
+Paths: settings/user-actions and account page; shared AccessEditor/access copy/
+levels/starters; managed-account snapshot; Finance access/queries/navigation;
+check-company-settings and focused suites. Topic docs/DECISIONS/DEPLOY reconciled.
+Next: pin reviewed branch, run original settings acceptance deployment, inspect
+responsive screenshots and record exact public runtime and backups.
+
 ## 11 October 2026 — Company user administration source preparation
 
 New company-admin task starts from shared Settings source 5297d519 and merges

@@ -1,3 +1,14 @@
+## 11 October 2026 — Final manufacturing release integrates accepted tablet menus
+
+Final fractional release stopped before backup/migration/build at server ancestry:
+accepted runtime advanced to 5b6390c8, preserving Decimal bridge plus tablet menu
+bounds. Integrated origin/main f168cdf7 source and evidence; no contributor history
+lost. Combined production build, strict types, scoped lint and whitespace PASS.
+Native actual-filled screens now capture desktop/tablet/phone layouts. Whole-quantity
+checks remain live pending
+final candidate. Native fractional execution/serial/mixed WIP acceptance and all-Test
+cleanup are still pending. Retained Decimal 6e5c39be is proven rollback-compatible.
+
 ## 11 October 2026 — Decimal rollback bridge publicly accepted
 
 Pinned 6e5c39bebe2db2bf76dc9eabf49170f631c3f05b passed the original Supply candidate

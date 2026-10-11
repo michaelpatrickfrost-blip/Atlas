@@ -162,9 +162,12 @@ export async function checkManufacturingExecution({context,page,session,out}:{co
  // All posted manufacturing journals balance, independent of their component rounding.
  const journals=await db.financeJournal.findMany({where:{organisationId,entityId:entity.id,status:'POSTED'},include:{lines:true}});assert(journals.length>8);for(const journal of journals)assert.equal(journal.lines.reduce((sum,line)=>sum+line.debit-line.credit,0n),0n);
  const rawLot=await db.stockLot.findFirstOrThrow({where:{organisationId,productId:raw.id,code:'RAW-MASS-01'}});
- await page.goto(`/manufacturing/traceability?lot=${rawLot.id}`,{waitUntil:'networkidle'});await expect(page.getByRole('heading',{name:'Batch traceability',exact:true})).toBeVisible();await expect(page.getByRole('link',{name:/FIN-PART-01/}).first()).toBeVisible();await page.screenshot({path:`${out}/exact-traceability.png`});
- for(const [path,title]of [[`/finance/manufacturing?warehouse=${warehouse.id}&entity=${entity.id}`,'Manufacturing costs'],['/manufacturing/machine-loads','Machine loads'],[`/manufacturing/produce/${order.id}`,null],['/stock/handoffs','Finished batches, ready to collect.']]as const){
-  assert.equal((await page.goto(path,{waitUntil:'networkidle'}))?.status(),200);if(title)await expect(page.getByRole('heading',{name:title,exact:true}).last()).toBeVisible();assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+ for(const [width,label]of [[1440,'desktop'],[768,'tablet'],[390,'phone']]as const){
+  await page.setViewportSize({width,height:1000});
+  await page.goto(`/manufacturing/traceability?lot=${rawLot.id}`,{waitUntil:'networkidle'});await expect(page.getByRole('heading',{name:'Batch traceability',exact:true})).toBeVisible();await expect(page.getByRole('link',{name:/FIN-PART-01/}).first()).toBeVisible();assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${out}/exact-traceability-${label}.png`});
+  for(const [path,title,labelPage]of [[`/finance/manufacturing?warehouse=${warehouse.id}&entity=${entity.id}`,'Manufacturing costs','costs'],['/manufacturing/machine-loads','Machine loads','loads'],[`/manufacturing/produce/${order.id}`,null,'production'],['/stock/handoffs','Finished batches, ready to collect.','collection']]as const){
+   assert.equal((await page.goto(path,{waitUntil:'networkidle'}))?.status(),200);if(title)await expect(page.getByRole('heading',{name:title,exact:true}).last()).toBeVisible();assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${out}/exact-${labelPage}-${label}.png`});
+  }
  }
  console.log('PASS actual genealogy/cost/holding/load pages and every manufacturing journal balances to the penny.');
 }

@@ -1,3 +1,15 @@
+## 11 October 2026 — Procurement acceptance uses the actual combobox name
+
+2420e30 immutable candidate again passed Settings/profile/member/password/login/
+recovery and native invoice/banking checks. Procurement form selection stopped on
+exact label text, which includes the nested REQUEST option. Local real Chromium
+reproduction confirms exact getByLabel count0 versus native combobox name count1.
+Checker now uses the accessible combobox name and asserts the real saved REQUEST
+reference on its detail and own Spend list. Strict types, checker lint and diff
+PASS; no application/runtime change. Backup atlas-pre-deploy-20261011-153431;
+private evidence /tmp/atlas-settings-candidate-l0QVrS. Test access retired, Audit
+retained and live ad9d5a43 unchanged. Next: fresh pinned full candidate/public proof.
+
 ## 11 October 2026 — Company-user candidate stopped on denial-message selector
 
 Pinned 2e95fec candidate built/smoked and passed personal Settings, reusable/mixed

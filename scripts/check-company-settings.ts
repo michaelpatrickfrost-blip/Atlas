@@ -517,14 +517,12 @@ async function main() {
       },
     });
     await page.goto(`/settings/users/${target.membership.id}?tab=security`);
-    const assignment = page
-      .locator("form")
-      .filter({
-        has: page.getByRole("button", {
-          name: "Set user password",
-          exact: true,
-        }),
-      });
+    const assignment = page.locator("form").filter({
+      has: page.getByRole("button", {
+        name: "Set user password",
+        exact: true,
+      }),
+    });
     await assignment
       .getByLabel("New user password", { exact: true })
       .fill(accountPassword);
@@ -561,14 +559,12 @@ async function main() {
     await target.page.getByRole("button", { name: /Sign in/ }).click();
     await expect(target.page).toHaveURL(/\/home$/);
     await page.reload();
-    const recovery = page
-      .locator("form")
-      .filter({
-        has: page.getByRole("button", {
-          name: "Generate recovery code",
-          exact: true,
-        }),
-      });
+    const recovery = page.locator("form").filter({
+      has: page.getByRole("button", {
+        name: "Generate recovery code",
+        exact: true,
+      }),
+    });
     await recovery
       .getByLabel("Confirm your password", { exact: true })
       .fill(adminPassword);
@@ -728,8 +724,15 @@ async function main() {
       target.page.getByRole("heading", { name: "Banking", exact: true }),
     ).toHaveCount(0);
     await target.page.goto("/finance/documents/new");
+    await expect(
+      target.page.getByRole("heading", {
+        name: "Create a financial document",
+        exact: true,
+      }),
+    ).toBeVisible();
+    // Exact label text includes nested option text; the combobox name is the native accessible label.
     await target.page
-      .getByLabel("Document", { exact: true })
+      .getByRole("combobox", { name: "Document", exact: true })
       .selectOption("REQUEST");
     await target.page
       .getByLabel("Description", { exact: true })
@@ -742,12 +745,24 @@ async function main() {
       .getByRole("button", { name: "Save draft", exact: true })
       .click();
     await expect(target.page).toHaveURL(/\/finance\/documents\/[a-z0-9]+$/);
+    const request = await db.financeDocument.findFirstOrThrow({
+      where: {
+        organisationId: company.id,
+        creatorUserId: target.user.id,
+        kind: "REQUEST",
+        title: `Procurement acceptance ${suffix}`,
+      },
+    });
     await expect(
-      target.page.getByText(`Procurement acceptance ${suffix}`, {
-        exact: false,
+      target.page.getByRole("heading", {
+        name: request.reference,
+        exact: true,
       }),
     ).toBeVisible();
     await target.page.goto("/finance/spend");
+    await expect(
+      target.page.getByRole("link", { name: request.reference, exact: true }),
+    ).toBeVisible();
     await expect(
       target.page.getByText(hidden.reference, { exact: true }),
     ).toHaveCount(0);

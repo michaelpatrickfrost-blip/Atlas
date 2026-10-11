@@ -1,3 +1,26 @@
+## 11 October 2026 — Finished company-user administration deployed and verified
+
+Original pinned Settings candidate AND public acceptance PASS at exact immutable
+c607e12b3a4f6896b88fb19c2ee15c8c2f67e7c0. Actual identity/password/login/recovery,
+profiles/personal overrides, invoice view/procurement save/own view/bank and foreign
+request denial PASS. Desktop/tablet/phone account tabs and profile/Personal layouts,
+four-width Home/Apps and platform boundary PASS; zero browser errors/overflow.
+Final candidate/public phone images visually inspected: long names/status fixed.
+Public health matches c607e12; login 200. Previous accepted 1acc63c retained. Backup
+atlas-pre-deploy-20261011-155956; private candidate /tmp/atlas-settings-candidate-zx4A3e,
+public /tmp/atlas-settings-public-uba86z. Test access suspended/sessions revoked,
+Audit retained; runtime retirement safely deferred by retention guard.
+
+16 focused files/122 tests, strict types, scoped lint, production build, shell syntax
+and whitespace PASS; final header types/page lint/build and full live pipeline PASS.
+Full repository/opt-in database suites not run. No feature blocker remains for this
+scope. Manual recovery-code sharing and independent Atlas provisioning unchanged.
+Company guide/evidence/DECISIONS/DEPLOY reconciled. Shared-main 3898cc14 Dashboard
+evidence merged with both contributors' entries retained; integration changes only
+documentation and accepted runtime source stays byte-identical. Delivery evidence:
+docs/evidence/2026-10-11-company-user-administration.md. Next: shared-main handoff;
+no further runtime activation is needed for documentation-only evidence integration.
+
 ## 11 October 2026 — Company-user administration publicly accepted; phone polish
 
 Original pinned Settings deployment of 1acc63c6d0b3f62f6cf515029d89490f7f92c2a8

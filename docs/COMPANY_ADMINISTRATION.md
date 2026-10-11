@@ -33,7 +33,9 @@ creators can open their own documents through the existing tenant/project/creato
 scope; company-wide spend still requires spend-read. Finance workspace entry alone
 no longer exposes Service credit records; receivables or approval access is needed.
 Home credit queries apply document scope and Money cards respect section access.
-Candidate/public validation and current runtime are recorded in CURRENT_STATE.md.
+Candidate/public validation passed at c607e12 on 11 October 2026. See
+[company-user acceptance evidence](evidence/2026-10-11-company-user-administration.md);
+current runtime is recorded in CURRENT_STATE.md.
 
 Company Settings is an administrator control centre with a searchable overview,
 company identity/brand, working rules, users, access profiles, security, apps and

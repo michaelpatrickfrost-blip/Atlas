@@ -1,4 +1,5 @@
 'use client';
+import { compatibleUnits } from "@/core/shared/measurement";
 import { useRef, useState } from 'react';
 import { ActionForm } from '@/components/ui/action-form';
 import { Button } from '@/components/ui/button';
@@ -16,19 +17,24 @@ const copy:Record<MovementMode,{quantity:string;submit:string;help:string;reason
 export function MovementForm({products,warehouses,balances,mode='add',productId}:{products:InventorySnapshot['products'];warehouses:InventorySnapshot['warehouses'];balances:InventorySnapshot['balances'];mode?:MovementMode;productId?:string}) {
  const key=useRef<string|null>(null),transfer=mode==='transfer',text=copy[mode];
  const live=products.filter(p=>p.active),firstProduct=productId??(live.length===1?live[0].id:''),firstPlace=warehouses.length===1?warehouses[0].id:'';
+ const [entryUnit,setEntryUnit]=useState("");
  const [product,setProduct]=useState(firstProduct),[place,setPlace]=useState(firstPlace);
  const chosen=products.find(p=>p.id===product),onHand=product&&place?balances.find(b=>b.productId===product&&b.warehouseId===place)?.quantity??0:null;
  async function submit(form:FormData) {
   key.current??=crypto.randomUUID();form.set('requestKey',key.current);
   if(!transfer)form.set('mode',mode);
+  form.set('enteredUnit',entryUnit||chosen?.unitOfMeasure||'each');
   await (transfer?transferStock:adjustStock)(form);
   key.current=null;setProduct(firstProduct);setPlace(firstPlace);
  }
  return <ActionForm action={submit}><div className="space-y-4">
-  <label className="block text-xs font-medium">Product<select name="productId" defaultValue={firstProduct} onChange={event=>setProduct(event.target.value)} required className={input}><option value="">Choose product</option>{products.filter(p=>p.active).map(p=><option key={p.id} value={p.id}>{p.code} · {p.name} ({p.unitOfMeasure})</option>)}</select></label>
+  <label className="block text-xs font-medium">Product<select name="productId" defaultValue={firstProduct} onChange={event=>{setProduct(event.target.value);setEntryUnit(products.find(p=>p.id===event.target.value)?.unitOfMeasure||"");}} required className={input}><option value="">Choose product</option>{products.filter(p=>p.active).map(p=><option key={p.id} value={p.id}>{p.code} · {p.name} ({p.unitOfMeasure})</option>)}</select></label>
   <div className="grid gap-4 sm:grid-cols-2"><label className="block text-xs font-medium">{transfer?'From':'Warehouse or yard'}<select name={transfer?'fromWarehouseId':'warehouseId'} defaultValue={firstPlace} onChange={event=>setPlace(event.target.value)} required className={input}><option value="">Choose a warehouse or yard</option>{warehouses.map(w=><option key={w.id} value={w.id}>{placeLabel(w)}</option>)}</select></label>{transfer&&<label className="block text-xs font-medium">To<select name="toWarehouseId" required className={input}><option value="">Choose a warehouse or yard</option>{warehouses.filter(w=>w.id!==place).map(w=><option key={w.id} value={w.id}>{placeLabel(w)}</option>)}</select></label>}</div>
   {onHand!=null&&<p className="rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-600">On hand here now: <span className="font-semibold tabular-nums text-slate-900">{onHand.toLocaleString('en-GB')}</span> {chosen?.unitOfMeasure}</p>}
-  <label className="block text-xs font-medium">{text.quantity}<input name="quantity" type="number" step="1" min={mode==='count'?0:1} max={mode==='remove'||transfer?Math.max(1,onHand??1000000):1000000} required className={input}/></label>
+  <label className="block text-xs font-medium">{text.quantity}<input name="quantity" type="number" step="0.000001" min={mode==='count'?0:0.000001} max={1000000} required className={input}/></label>
+  <label className="block text-xs font-medium">Quantity unit<select name="enteredUnit" value={entryUnit||chosen?.unitOfMeasure||"each"} onChange={event=>setEntryUnit(event.target.value)} className={input}>{compatibleUnits(chosen?.unitOfMeasure||"each").map(unit=><option key={unit.id} value={unit.id}>{unit.label}</option>)}</select><span className="mt-1 block text-slate-500">Stock is recorded in {chosen?.unitOfMeasure||"the product’s stock unit"}. Compatible units convert exactly.</span></label>
+  <label className="block text-xs font-medium">Batch reference<input name="lotCode" maxLength={80} placeholder="Required for tracked receipts or batch counts" className={input}/></label>
+  <label className="block text-xs font-medium">Serials<input name="serials" placeholder="One serial per unit, comma separated" className={input}/></label>
   <p className="text-xs leading-5 text-slate-500">{text.help}</p>
   <label className="block text-xs font-medium">{text.reason}<input name="reason" required={mode==='remove'||transfer} maxLength={1000} placeholder={mode==='add'?'Stock received':mode==='count'?'Who counted, or why':''} className={input}/></label>
   <label className="block text-xs font-medium">Reference (optional)<input name="reference" maxLength={150} placeholder="Delivery note, count sheet or transfer reference" className={input}/></label>

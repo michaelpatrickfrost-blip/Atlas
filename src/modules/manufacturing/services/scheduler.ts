@@ -30,6 +30,7 @@ async function planMove(tx: Prisma.TransactionClient, organisationId: string, wo
   const work = await tx.manufacturingWorkOrder.findFirst({ where: { id: workOrderId, organisationId }, include: { productionOrder: { include: { sourceSalesOrderLine: { include: { order: { select: { reference: true, party: { select: { name: true } } } } } } } } } });
   if (!work) throw new Error("This work order no longer exists.");
   if (!["RELEASED", "RUNNING"].includes(work.productionOrder.status)) throw new Error("Only released or running production can be rescheduled. This order is no longer open.");
+  if (work.machineLoadId) throw new Error("This operation belongs to a shared machine load. Cancel the unstarted load before moving its members.");
   if (work.locked) throw new Error("This step is locked. Unlock it first to reschedule.");
   if (["RUNNING", "PAUSED", "COMPLETE"].includes(work.status)) throw new Error("Work already in progress or finished cannot be rescheduled.");
   const all = await tx.manufacturingWorkOrder.findMany({ where: { organisationId, productionOrderId: work.productionOrderId }, orderBy: { sequence: "asc" } });
@@ -45,7 +46,7 @@ async function planMove(tx: Prisma.TransactionClient, organisationId: string, wo
   const slots: FiniteSlot[] = [];
   let cursor = new Date(newStart);
   for (const row of affected) {
-    if (row.locked || ["RUNNING", "PAUSED", "COMPLETE"].includes(row.status)) {
+    if (row.machineLoadId || row.locked || ["RUNNING", "PAUSED", "COMPLETE"].includes(row.status)) {
       if (!row.scheduledStart || !row.scheduledEnd || row.scheduledStart < cursor) throw new Error(`${row.operationName} is locked, running, paused or complete and would be displaced. Review the fixed operation first.`);
       cursor = new Date((row.actualEnd ?? row.scheduledEnd).getTime() + row.waitMinutes * 60_000);
       continue;

@@ -325,3 +325,16 @@ CTP, actual WIP/variance/valuation, telemetry, plant configuration and scale/res
 acceptance. Detailed programme: docs/plans/MANUFACTURING_KILN_RESEARCH.md and
 MANUFACTURING_COVERAGE.md. This release proves its bounded workflow; it does not
 close all 173 sections or establish £40,000/month commercial readiness.
+
+## 11 October exact execution continuation — not yet live
+
+Full local suite: 306 passed files/2,241 passed tests; 3 skipped files/22 skipped
+opt-in tests. Prisma validate/generate and Data API generation passed; 918 prior
+stable actions retained. Empty central-schema migration rehearsal and rollback-
+compatibility probes passed; old Int client truncation requires a two-stage technical
+release. Bridge and final candidate/public acceptance are pending, not inferred from
+unit tests. The full native checker now covers decimal measured receipts/replay,
+blocked-material atomic rollback, partial output/WIP/backorders, batch collection,
+actual component genealogy, fractional dispatch/COGS, valued transfers and compatible
+mixed machine load/shared costs. App guide/library and new workspaces are checked at
+three widths. Required final Test-company cleanup is explicitly authorised.

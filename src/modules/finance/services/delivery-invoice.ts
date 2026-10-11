@@ -50,7 +50,7 @@ export async function invoiceDeliveredShipment(session: Session, request: Delive
     let tax = 0n;
     let number = 1;
     for (const source of order.lines) {
-      const whole = source.orderedQuantity - source.cancelledQuantity;
+      const whole = Number(source.orderedQuantity) - Number(source.cancelledQuantity);
       const open = whole - (invoiced.get(source.id) ?? 0);
       const quantity = Math.min(quantities.get(source.id) ?? 0, Math.max(0, open));
       if (quantity <= 0 || whole <= 0) continue;

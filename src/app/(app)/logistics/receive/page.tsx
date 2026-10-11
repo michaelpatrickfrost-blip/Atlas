@@ -30,7 +30,7 @@ export default async function ReceivePage() {
         <input name="partyName" placeholder="Supplier" className="rounded-xl border px-3 py-2 text-sm" />
         <select name="warehouseId" className="rounded-xl border px-3 py-2 text-sm">{warehouses.map((warehouse) => <option key={warehouse.id} value={warehouse.id}>{warehouse.name}</option>)}</select>
         <input name="description" required placeholder="Product" className="rounded-xl border px-3 py-2 text-sm" />
-        <input name="quantity" type="number" min={1} required placeholder="Quantity" className="rounded-xl border px-3 py-2 text-sm" />
+        <input name="quantity" type="number" step="0.000001" min={0.000001} required placeholder="Quantity" className="rounded-xl border px-3 py-2 text-sm" />
         <button className="rounded-full bg-[var(--color-atlas-blue)] px-4 py-2 text-sm font-semibold text-white sm:col-span-2" type="submit">Expect receipt</button>
       </ActionForm>
     </div>

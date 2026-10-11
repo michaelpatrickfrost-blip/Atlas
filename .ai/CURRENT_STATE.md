@@ -1,3 +1,41 @@
+## 11 October 2026 — Decimal manufacturing, actual WIP and app guides prepared
+
+Integrated main 4494f92, current live cc01ca16 opaque navigation and the
+01f890b production handoff;
+retained all concurrent contributors' source and evidence. New tracked/untracked
+scope: exact six-decimal quantities and measured kg/g/metric-tonne conversions;
+physical lot/serial allocation/FEFO/hold/reservation controls; atomic partial output,
+material issues, replacement orders and unstarted splits; compatible mixed machine
+loads; immutable report/allocation genealogy; Finance-owned weighted actual stock,
+WIP/scrap/COGS/transfer values and actual time/energy rates. Estimated material costs
+now come from reviewed Finance carrying value/approved purchasing, never sale prices.
+Production output remains BLOCKED until actual Warehouse collection. Quality hold
+stock moves are inside their inspection/release transaction. Generic machine labels.
+Guides now group by accessible apps with app hubs, setup/daily/troubleshooting;
+canonical Manufacturing guides and detailed Field Service/handoff instructions.
+
+Prisma validate/generate and Data API generation PASS (918 existing stable action
+keys retained, 10 additions). Full local suite 306 files/2,241 tests PASS, 3 files/
+22 tests skipped. Final strict types, production build, six focused files/48 tests and shell syntax
+PASS, including the final build preserving accepted opaque navigation. Scoped lint 186 files: 0 errors/8 pre-existing warnings.
+Empty central schema rehearsal applied all three pending migrations, verified bridge
+fractional-write refusal and final unlock, then rolled back every temporary table.
+No business records or production schema changed. Confirmed retained Int Prisma
+runtime silently reads 1.25 as 1. Deployment therefore first accepts a Decimal-
+capable rollback runtime with temporary whole-quantity checks and the original
+one-output-batch/order index. Final unlock is NOT yet in migrations; it will only
+be added after that runtime's candidate/public acceptance. New functionality is
+NOT live. Native Supply checker adds app-guide/new-workspace layouts and actual
+fractional production/cost/genealogy/load/dispatch acceptance after unlock.
+
+Michael explicitly authorised scrubbing all Test data after verification. Final
+release must use ATLAS_RELEASE_TEST_CLEANUP=1: protected central Test-company wipe,
+ordinary/internal records, shared identity and required backups preserved. No local
+business DB/cache/new QA user/grants. Next: pinned bridge
+candidate/public Supply acceptance, unlock/full execution release, visual inspection,
+zero-Test cleanup, then factual delivery evidence. Full 173-section enterprise
+programme still has explicit open items in MANUFACTURING_COVERAGE.md.
+
 ## 11 October 2026 — Opaque app-navigation dropdowns prepared
 
 Request: page text shows through the Demand dropdown. Shared
@@ -12764,3 +12802,30 @@ clipping; expanded Manufacturing details visually checked. Local wide 1920 also
 passed and existing website motion remains running. Anonymous screenshot:
 `atlas-website-cards-live.png` in the task's visualizations output. No fixtures or
 data cleanup needed. Shared evidence updated with the correction for normal fast-forward main integration.
+## 11 October 2026 — Manufacturing continuation in progress (not deployed)
+
+User explicitly requires decimal stock, mixed machine loads, traceability, partial
+production and proper WIP costing, tested and live. Latest corrections: use general
+machine terminology; update plain-language in-app guides; support kg/tonnes and
+accurate BOM/cost units; retain complete requirements/acceptance coverage. Do not
+research the user's employer. These requests remain active and incomplete.
+
+Current isolated branch codex/manufacturing-kiln-planning-20261011 starts at a08a6a2d
+(main includes that prior handoff); public runtime remains b6610512. In-progress
+source widens 31 operational quantity fields and three product planning quantities
+to numeric(18,6), adds immutable BOM/movement entry/base-unit factors, explicit
+metric mass/length/volume conversions, guards used-product stock-unit edits, numeric
+Prisma read projections throughout connected Sales/Inventory/Logistics, decimal
+validation/entry, and exact scaled BOM/commercial money calculations. Generic
+Plant & machines copy and configurable batch/continuous process types added.
+Migration 20261011180000_decimal_operational_quantities is authored, NOT applied.
+No local business database/cache was created. No live customer records changed.
+
+Checks so far: Prisma generation passed; strict tsc passed at the intermediate
+quantity revision (must rerun after later edits); 12 relevant Vitest files / 101
+cases passed after adjusting fractional-stock expectations and completing the
+existing Finance-enablement mock. No build, deployment or live decimal acceptance
+yet. Unit/decimal work still needs final diff/security/replay review, central
+compatibility and live workflow evidence. Partial reports, actual lot-allocation
+history, mixed loads and Finance-owned WIP remain unimplemented at this checkpoint.
+See the current dated entry at the top for final status; this is not a finished handoff.

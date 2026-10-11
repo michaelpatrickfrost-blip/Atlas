@@ -21,9 +21,10 @@ describe('physical demand coverage',()=>{
  });
 });
 const state=vi.hoisted(()=>({
- session:{userId:'u',organisationId:'org-a',capabilities:new Set<string>()},enabled:vi.fn(),
- tx:{stockPosition:{findFirst:vi.fn(),findMany:vi.fn(),update:vi.fn()},inventoryMovement:{findMany:vi.fn(),create:vi.fn()},product:{findFirstOrThrow:vi.fn()},warehouse:{findMany:vi.fn()},inventoryBalance:{updateMany:vi.fn(),upsert:vi.fn()},auditEntry:{create:vi.fn()},internalMove:{findUnique:vi.fn(),count:vi.fn(),create:vi.fn()}},transaction:vi.fn(),salesLines:vi.fn(),
+ session:{userId:'u',organisationId:'org-a',capabilities:new Set<string>()},enabled:vi.fn(),movement:vi.fn(),
+ tx:{stockLot:{findMany:vi.fn()},stockReservation:{findMany:vi.fn()},qualityHold:{findMany:vi.fn()},stockSerial:{findMany:vi.fn()},stockPosition:{findFirst:vi.fn(),findMany:vi.fn(),update:vi.fn()},inventoryMovement:{findMany:vi.fn(),create:vi.fn()},product:{findFirstOrThrow:vi.fn()},warehouse:{findMany:vi.fn()},inventoryBalance:{findUnique:vi.fn(),updateMany:vi.fn(),upsert:vi.fn()},auditEntry:{create:vi.fn()},internalMove:{findUnique:vi.fn(),count:vi.fn(),create:vi.fn()}},transaction:vi.fn(),salesLines:vi.fn(),
 }));
+vi.mock('@/modules/stock/services/provider',()=>({stockProvider:{executeMovement:state.movement}}));
 vi.mock('@/core/db/client',()=>({db:{$transaction:state.transaction,salesOrderLine:{findMany:state.salesLines}}}));
 vi.mock('@/core/auth/session',()=>({requireSession:async()=>state.session}));
 vi.mock('@/core/modules/access',()=>({assertModuleEnabled:state.enabled}));
@@ -35,11 +36,11 @@ import type { Session } from '@/core/auth/session';
 const session=()=>state.session as Session;
 function transferForm(){const form=new FormData();for(const [key,value] of Object.entries({productId:'p',fromWarehouseId:'a',toWarehouseId:'b',quantity:'10',reason:'Rebalance',reference:'TR-1',requestKey:'request'}))form.set(key,value);return form;}
 beforeEach(()=>{
- vi.clearAllMocks();state.session.capabilities=new Set(['stock.manage','planning.demand.read']);state.enabled.mockResolvedValue(undefined);
- state.transaction.mockImplementation(async fn=>fn(state.tx));state.tx.stockPosition.findFirst.mockResolvedValue(null);state.tx.stockPosition.findMany.mockResolvedValue([]);state.tx.inventoryMovement.findMany.mockResolvedValue([]);state.tx.product.findFirstOrThrow.mockResolvedValue({id:'p'});state.tx.warehouse.findMany.mockResolvedValue([{id:'a'},{id:'b'}]);state.tx.inventoryBalance.updateMany.mockResolvedValue({count:1});state.tx.inventoryMovement.create.mockResolvedValue({id:'movement'});state.tx.internalMove.findUnique.mockResolvedValue(null);state.tx.internalMove.count.mockResolvedValue(0);state.tx.internalMove.create.mockResolvedValue({id:'move',reference:'MV-0001'});
+ vi.resetAllMocks();state.session.capabilities=new Set(['stock.manage','planning.demand.read']);state.enabled.mockResolvedValue(undefined);
+ state.transaction.mockImplementation(async fn=>fn(state.tx));state.tx.stockPosition.findFirst.mockResolvedValue(null);state.tx.stockPosition.findMany.mockResolvedValue([{id:"position",productId:"p",warehouseId:"a",locationId:"bin",lotId:"",status:"AVAILABLE",quantity:30}]); for(const model of [state.tx.stockLot,state.tx.stockReservation,state.tx.qualityHold,state.tx.stockSerial])model.findMany.mockResolvedValue([]);state.tx.inventoryMovement.findMany.mockResolvedValue([]);state.tx.product.findFirstOrThrow.mockResolvedValue({id:'p',unitOfMeasure:'kg',trackingMode:'NONE'});state.tx.warehouse.findMany.mockResolvedValue([{id:'a'},{id:'b'}]);state.tx.inventoryBalance.updateMany.mockResolvedValue({count:1});state.tx.inventoryMovement.create.mockResolvedValue({id:'movement'});state.tx.internalMove.findUnique.mockResolvedValue(null);state.tx.internalMove.count.mockResolvedValue(0);state.tx.internalMove.create.mockResolvedValue({id:'move',reference:'MV-0001'});
 });
 describe('controlled stock transfers',()=>{
- it('rejects same-warehouse and fractional transfers',()=>{const form=transferForm();form.set('toWarehouseId','a');expect(()=>parseTransfer(form)).toThrow('different');form.set('toWarehouseId','b');form.set('quantity','0.5');expect(()=>parseTransfer(form)).toThrow('whole');});
+ it('rejects same-warehouse and excess precision while accepting fractional transfers',()=>{const form=transferForm();form.set('toWarehouseId','a');expect(()=>parseTransfer(form)).toThrow('different');form.set('toWarehouseId','b');form.set('quantity','0.5');expect(parseTransfer(form).quantity).toBe(0.5);form.set('quantity','0.0000001');expect(()=>parseTransfer(form)).toThrow('six decimal');});
  it('checks capability and disabled app before touching stock',async()=>{
   state.session.capabilities.clear();await expect(transferStock(transferForm())).rejects.toThrow('FORBIDDEN');expect(state.transaction).not.toHaveBeenCalled();
   state.session.capabilities.add('stock.manage');state.enabled.mockRejectedValue(new Error('disabled'));await expect(transferStock(transferForm())).rejects.toThrow('disabled');expect(state.transaction).not.toHaveBeenCalled();
@@ -48,24 +49,25 @@ describe('controlled stock transfers',()=>{
   await transferStock(transferForm());
   expect(state.tx.warehouse.findMany).toHaveBeenCalledWith({where:{organisationId:'org-a',id:{in:['a','b']}},select:{id:true,siteId:true}});
   expect(state.tx.product.findFirstOrThrow).toHaveBeenCalledWith({where:{organisationId:'org-a',id:'p',kind:'PRODUCT',active:true}});
-  expect(state.tx.inventoryBalance.updateMany).toHaveBeenCalledWith({where:{organisationId:'org-a',warehouseId:'a',productId:'p',quantity:{gte:10}},data:{quantity:{decrement:10}}});
-  expect(state.tx.inventoryMovement.create.mock.calls.map(call=>call[0].data.delta)).toEqual([-10,10]);
+  expect(state.movement).toHaveBeenCalledWith(session(),expect.objectContaining({warehouseId:'a',toWarehouseId:'b',quantity:10,toStatus:'AVAILABLE'}),state.tx);
   expect(state.tx.auditEntry.create).toHaveBeenCalledTimes(1);expect(state.transaction.mock.calls[0][1]).toEqual({isolationLevel:'Serializable'});
  });
  it('rejects a foreign warehouse and insufficient stock before posting',async()=>{
-  state.tx.warehouse.findMany.mockResolvedValue([{id:'a'}]);await expect(transferStock(transferForm())).rejects.toThrow('workspace');expect(state.tx.inventoryBalance.updateMany).not.toHaveBeenCalled();
-  state.tx.warehouse.findMany.mockResolvedValue([{id:'a'},{id:'b'}]);state.tx.inventoryBalance.updateMany.mockResolvedValue({count:0});await expect(transferStock(transferForm())).rejects.toThrow('enough');expect(state.tx.inventoryMovement.create).not.toHaveBeenCalled();
+  state.tx.warehouse.findMany.mockResolvedValue([{id:'a'}]);await expect(transferStock(transferForm())).rejects.toThrow('company');expect(state.tx.inventoryBalance.updateMany).not.toHaveBeenCalled();
+  state.tx.warehouse.findMany.mockResolvedValue([{id:'a'},{id:'b'}]);state.tx.stockPosition.findMany.mockResolvedValue([]);state.tx.inventoryBalance.findUnique.mockResolvedValue(null);await expect(transferStock(transferForm())).rejects.toThrow('available stock');expect(state.tx.inventoryMovement.create).not.toHaveBeenCalled();
  });
  it('replaying a successful transfer does not issue twice; changed payload is rejected',async()=>{
-  state.tx.inventoryMovement.findMany.mockResolvedValue([{requestKey:'request:out',productId:'p',warehouseId:'a',delta:-10,reference:'TR-1',reason:'Transfer out · Rebalance'},{requestKey:'request:in',productId:'p',warehouseId:'b',delta:10,reference:'TR-1',reason:'Transfer in · Rebalance'}]);
-  await transferStock(transferForm());expect(state.tx.inventoryBalance.updateMany).not.toHaveBeenCalled();
-  const form=transferForm();form.set('quantity','11');await expect(transferStock(form)).rejects.toThrow('different movement');
+  let prior:Record<string,unknown>|null=null;
+  state.tx.internalMove.findUnique.mockImplementation(async()=>prior);
+  state.tx.internalMove.create.mockImplementation(async({data})=>{prior={...data,id:"move"};return prior;});
+  await transferStock(transferForm());await transferStock(transferForm());expect(state.movement).toHaveBeenCalledOnce();
+  const form=transferForm();form.set('quantity','11');await expect(transferStock(form)).rejects.toThrow('different details');
  });
  it('keeps a move between sites in transit until it is received',async()=>{
   state.tx.warehouse.findMany.mockResolvedValue([{id:'a',siteId:'north'},{id:'b',siteId:'south'}]);
   await transferStock(transferForm());
   expect(state.tx.inventoryBalance.upsert).not.toHaveBeenCalled();
-  expect(state.tx.inventoryMovement.create.mock.calls.map(call=>call[0].data.delta)).toEqual([-10]);
+  expect(state.movement).toHaveBeenCalledWith(session(),expect.objectContaining({warehouseId:'a',toWarehouseId:'a',toStatus:'IN_TRANSIT',quantity:10}),state.tx);
   expect(state.tx.internalMove.create.mock.calls[0][0].data).toMatchObject({fromWarehouseId:'a',toWarehouseId:'b',quantity:10});
   expect(state.tx.internalMove.create.mock.calls[0][0].data.reference).toBe('MV-0001');
  });

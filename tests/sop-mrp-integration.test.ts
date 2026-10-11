@@ -2,8 +2,10 @@ import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import type { DemandLine } from '@/modules/manufacturing/domain/mrp-types';
 
 const state = vi.hoisted(() => ({ inventory: new Map<string,{available:number;restricted?:number;qualityHeld:number}>(), demand: [] as DemandLine[], db: Object.fromEntries(
-  ['salesOrder', 'fulfilmentLine', 'manufacturingDemandForecast', 'product', 'inventoryBalance', 'warehouse', 'stockReservation', 'stockPosition', 'qualityHold', 'productDefinition', 'manufacturingOrder', 'manufacturingPlanningRun', 'manufacturingSupplySuggestion'].map(name => [name, { findMany: vi.fn(), create: vi.fn() }]),
+  ['salesOrder', 'fulfilmentLine', 'manufacturingDemandForecast', 'product', 'inventoryBalance', 'warehouse', 'stockReservation', 'stockLot', 'stockPosition', 'qualityHold', 'productDefinition', 'manufacturingOrder', 'manufacturingPlanningRun', 'manufacturingSupplySuggestion'].map(name => [name, { findMany: vi.fn(), create: vi.fn() }]),
 ) }));
+vi.mock('@/core/auth/session', () => ({ requireSession: async () => ({organisationId:'org',capabilities:new Set()}) }));
+vi.mock('@/core/finance/manufacturing', () => ({ materialCostBasis: async () => [] }));
 vi.mock('@/core/db/client', () => ({ db: state.db }));
 vi.mock('@/modules/manufacturing/domain/mrp-engine', () => ({ MrpEngine: class {
   constructor(context: { demand: DemandLine[];inventory:typeof state.inventory }) { state.demand = context.demand; state.inventory=context.inventory; }
@@ -43,4 +45,11 @@ describe('approved S&OP demand entering MRP', () => {
   });
 });
 
-it("nets blocked production, transit and quality from actual MRP supply without double-counting quarantine",async()=>{state.db.inventoryBalance.findMany.mockResolvedValue([{productId:"p",quantity:30}]);state.db.stockReservation.findMany.mockResolvedValue([{productId:"p",quantity:2}]);state.db.qualityHold.findMany.mockResolvedValue([{productId:"p",quantity:4}]);state.db.stockPosition.findMany.mockResolvedValue([{productId:"p",status:"QUARANTINE",quantity:4},{productId:"p",status:"BLOCKED",quantity:10},{productId:"p",status:"IN_TRANSIT",quantity:2}]);await runMrp("org","planner");expect(state.inventory.get("p")).toMatchObject({available:12,restricted:12,qualityHeld:4});});
+it("nets located blocked production, transit, scoped quality and reservations without double-counting",async()=>{
+state.db.inventoryBalance.findMany.mockResolvedValue([{productId:"p",warehouseId:"w",quantity:30}]);
+state.db.stockReservation.findMany.mockResolvedValue([{productId:"p",warehouseId:"w",quantity:2}]);
+state.db.stockLot.findMany.mockResolvedValue([{id:"held",productId:"p",code:"HOLD",expiresOn:null,removalOn:null}]);
+state.db.qualityHold.findMany.mockResolvedValue([{productId:"p",warehouseId:"w",lotCode:"HOLD",locationId:null,quantity:4}]);
+state.db.stockPosition.findMany.mockResolvedValue([{id:"quality",warehouseId:"w",productId:"p",lotId:"held",status:"QUARANTINE",quantity:4},{id:"holding",warehouseId:"w",productId:"p",lotId:"",status:"BLOCKED",quantity:10},{id:"transit",warehouseId:"w",productId:"p",lotId:"",status:"IN_TRANSIT",quantity:2},{id:"free",warehouseId:"w",productId:"p",lotId:"",status:"AVAILABLE",quantity:14}]);
+await runMrp("org","planner");expect(state.inventory.get("p")).toMatchObject({available:12,qualityHeld:16,allocated:2});
+});

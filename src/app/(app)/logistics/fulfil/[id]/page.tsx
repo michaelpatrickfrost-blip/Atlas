@@ -19,8 +19,8 @@ export default async function FulfilmentPage({ params }: { params: Promise<{ id:
   const row = await fulfilmentDetail(session.organisationId, id);
   if (!row) notFound();
   const policy = await policyFor(session.organisationId);
-  const required = row.lines.reduce((sum, line) => sum + Math.max(0, line.orderedQuantity - line.cancelledQuantity), 0);
-  const allocated = row.lines.reduce((sum, line) => sum + line.allocatedQuantity, 0);
+  const required = row.lines.reduce((sum, line) => sum + Math.max(0, Number(line.orderedQuantity) - Number(line.cancelledQuantity)), 0);
+  const allocated = row.lines.reduce((sum, line) => sum + Number(line.allocatedQuantity), 0);
   return (
     <div className="space-y-8">
       <Link href="/logistics/fulfil" className="text-sm text-[var(--color-ink-muted)]">Fulfil</Link>
@@ -54,14 +54,14 @@ export default async function FulfilmentPage({ params }: { params: Promise<{ id:
                 <h2 className="font-medium">{line.description}</h2>
                 <span className="text-sm text-[var(--color-ink-muted)]">{line.allocationStatus.replaceAll("_", " ")}</span>
               </div>
-              <p className="mt-2 text-sm text-[var(--color-ink-muted)]">{line.pickedQuantity} picked · {line.packedQuantity} packed · {line.shippedQuantity} shipped</p>
+              <p className="mt-2 text-sm text-[var(--color-ink-muted)]">{Number(line.pickedQuantity)} picked · {Number(line.packedQuantity)} packed · {Number(line.shippedQuantity)} shipped</p>
               {shortage && shortage.short > 0 && <div className="mt-4 whitespace-pre-line text-sm leading-6">{shortageText(shortage).join("\n\n")}<p className="mt-3 text-[var(--color-ink-muted)]">{shortage.actions.join(" · ")}</p></div>}
             </article>
           );
         })}
       </div>
       <div className="flex flex-wrap gap-4">{row.tasks.filter((task) => task.status !== "COMPLETE").map((task) => <Link key={task.id} className="text-sm text-[var(--color-atlas-blue)]" href={`/logistics/work/${task.id}`}>Open {task.kind.toLowerCase()} {task.reference}</Link>)}</div>
-      {row.packages.length > 0 && <section className="space-y-2">{row.packages.map((unit) => <p key={unit.id} className="text-sm">{unit.reference} · {unit.typeCode ?? unit.packageType}{unit.parent?.reference ? ` inside ${unit.parent.reference}` : ""} · {unit.contents.map((content) => `${content.description} × ${content.quantity}`).join(", ")}</p>)}</section>}
+      {row.packages.length > 0 && <section className="space-y-2">{row.packages.map((unit) => <p key={unit.id} className="text-sm">{unit.reference} · {unit.typeCode ?? unit.packageType}{unit.parent?.reference ? ` inside ${unit.parent.reference}` : ""} · {unit.contents.map((content) => `${content.description} × ${Number(content.quantity)}`).join(", ")}</p>)}</section>}
       {row.fulfilmentMode !== "WAREHOUSE" && can(session, C.shipmentCreate) && <ActionForm action={directShipAction.bind(null, row.id)} className="flex gap-2"><input name="tracking" placeholder="Supplier tracking" className="rounded-full border px-4 py-2 text-sm" /><button className="rounded-full border px-4 py-2 text-sm" type="submit">Record direct shipment</button></ActionForm>}
       <RecordRelationships session={session} record={{ moduleId: "logistics", type: "fulfilment", id: row.id }} />
     </div>

@@ -82,11 +82,11 @@ weekly plant-timezone calendars, open bookings and manual maintenance/downtime
 exclusions. Full finite dated materials, labour, tooling, CTP, time fences,
 alternate sourcing and isolated scenario publication remain target work.
 
-## Kilns, plant and flexible forecasting
+## Machines, plant and flexible forecasting
 
 See the [primary research and operational gap review](../plans/MANUFACTURING_KILN_RESEARCH.md).
-Plant & kilns configures process areas, batch/continuous kilns, dryers, forming and
-packing. Each machine has a plant timezone and a shift or continuous calendar.
+Plant & machines configures process areas and general, batch or continuous machines,
+with optional specialist types for drying, forming, packing and kilns. Each machine has a plant timezone and a shift or continuous calendar.
 Existing machines retain continuous operation; new UI entries default to shifts.
 Product operations explicitly define approved machines, per-unit or load/cycle
 work, load size, firing/drying cycle, cooling occupation and transfer wait.
@@ -264,3 +264,38 @@ opening. Batch routing summaries expose load, cycle, cooling and transfer wait.
 Schedule changes require a released/running parent; closed production stays fixed.
 Actual recipe-editor save/version/eligible-machine acceptance extends the same
 backed-up candidate/public supply gate; results belong in the acceptance record.
+
+## 11 October exact execution upgrade — implemented, live acceptance pending
+
+The execution upgrade uses six-decimal stock/report/warehouse/sales quantities.
+Explicit compatible conversions record entry and base units (mg/g/kg/t, lengths,
+volumes and count aliases); no hidden weight-per-piece assumption. Recipe quantity
+and cost bases are explicit, including a price per 1,000 kg. Serial identities remain
+one per whole unit. Stock-unit/tracking changes with history are guarded.
+
+Each partial output report is immutable and commits progress, actual/backflushed
+issues, material allocations, held finished stock, costs and Audit together. Replays
+must match the entire request. Closing short requires a reason; optional linked
+replacement production uses the actual good shortfall. Unstarted split orders keep
+their frozen recipe/source. A shared machine load requires compatible approved
+profile/timing, resource eligibility and summed physical footprints; one finite
+cycle and actual usage journal are allocated by occupied capacity. Traceability
+follows the actual lot/serial stock allocations and component-to-output reports.
+Quality inspection and hold-release stock moves are atomic with Quality history.
+
+Finance → Manufacturing costs configures warehouse books and six distinct posting
+accounts, approved recipe rates and reviewed opening TOTAL stock value. Weighted
+carrying value flows Inventory → WIP on actual material issue, then WIP → finished
+Inventory/Scrap on output; actual time/energy absorption is recorded separately.
+Partial output leaves proportional remaining WIP; final closure clears every minor
+unit. Dispatch moves the actual shipped value into COGS, and configured warehouse
+transfers preserve quantity/value. Cost estimates use Finance-owned reviewed stock
+or approved purchasing; missing cost remains explicitly incomplete. Financial
+values require the independent cost/ledger capabilities.
+
+App guides live at /guides/apps/manufacturing; /manufacturing/help redirects there.
+Existing detailed routes remain canonical, with worked examples for decimal units,
+partial output, mixed loads, actual costing and blocked work. /guides groups all
+accessible apps and includes detailed Field Service and production-handoff tasks.
+The deployment compatibility bridge and acceptance evidence are recorded in
+MANUFACTURING_SUPPLY_ACCEPTANCE.md. This implementation is not yet publicly accepted.

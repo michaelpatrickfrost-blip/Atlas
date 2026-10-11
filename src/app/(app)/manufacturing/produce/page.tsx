@@ -20,7 +20,7 @@ export default async function ProduceWorkspace({ searchParams }: { searchParams:
         </div>
         <MakeOrderDialog />
       </header>
-      <div className="overflow-hidden rounded-3xl border border-[var(--color-border)] bg-white">
+      <div className="overflow-x-auto rounded-3xl border border-[var(--color-border)] bg-white">
         <table className="w-full text-sm">
           <thead className="bg-[var(--color-surface-sunken)] text-left text-xs uppercase tracking-wide text-[var(--color-ink-faint)]">
             <tr>

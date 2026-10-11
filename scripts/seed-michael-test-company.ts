@@ -378,7 +378,7 @@ async function main() {
     await claimTask(session, taskId);
     for (const line of task.lines) {
       await scanTask(session, taskId, line.id, line.locationCode ?? "STOCK", `seed-loc:${line.id}`);
-      for (let scanned = 0; scanned < line.requiredQuantity; scanned++) {
+      for (let scanned = 0; scanned < Number(line.requiredQuantity); scanned++) {
         await scanTask(session, taskId, line.id, line.expectedBarcode || line.productCode, `seed-pick:${line.id}:${scanned}`);
       }
     }
@@ -387,7 +387,7 @@ async function main() {
     let shipment = await db.shipment.findFirst({ where: { organisationId: orgId, sources: { some: { requirementId: requirement.id } } } });
     if (!shipment) {
       const picked = await db.fulfilmentLine.findMany({ where: { organisationId: orgId, requirementId: requirement.id } });
-      const shipmentId = await createShipment(session, requirement.id, picked.map((line) => ({ fulfilmentLineId: line.id, quantity: line.pickedQuantity - line.shippedQuantity })).filter((row) => row.quantity > 0));
+      const shipmentId = await createShipment(session, requirement.id, picked.map((line) => ({ fulfilmentLineId: line.id, quantity: Number(line.pickedQuantity) - Number(line.shippedQuantity) })).filter((row) => row.quantity > 0));
       shipment = await db.shipment.findUniqueOrThrow({ where: { id: shipmentId } });
     }
     await dispatchShipment(session, shipment.id, `seed-dispatch:${shipment.id}`);
@@ -421,7 +421,7 @@ async function main() {
   console.log(`  Recipes: ${recipes.length} make definitions (BRACKET-01, FRAME-02, CONV-1500, CONV-HEAVY)`);
   console.log("\nWaiting for you in Logistics (open → release → pick):");
   for (const requirement of openFulfilments) {
-    const short = requirement.lines.some((line) => line.allocatedQuantity < line.orderedQuantity);
+    const short = requirement.lines.some((line) => Number(line.allocatedQuantity) < Number(line.orderedQuantity));
     console.log(`  • ${requirement.reference} · ${requirement.party.name} · ${requirement.salesOrder.reference} · ${requirement.status}${short ? " · SHORT on stock" : ""}`);
   }
   console.log("\nManufacturing: plant and recipes are already seeded.");

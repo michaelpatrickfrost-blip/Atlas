@@ -3,8 +3,8 @@ import type { Prisma } from "@/generated/prisma/client";
 import { assertDrawFits, openCommitment, type ReleasedDraw } from "../domain/call-off";
 
 type Store = typeof db | Prisma.TransactionClient;
-type AgreementLine = { id: string; productId: string | null; description: string; committedQuantity: number; unitPriceAmount: number };
-type SourceLine = { agreementLineId?: string | null; productId?: string | null; description?: string; type: string; orderedQuantity: number; cancelledQuantity?: number; discountPercent?: number | null; unitPriceAmount: number };
+type AgreementLine = { id: string; productId: string | null; description: string; committedQuantity: number | Prisma.Decimal; unitPriceAmount: number };
+type SourceLine = { agreementLineId?: string | null; productId?: string | null; description?: string; type: string; orderedQuantity: number | Prisma.Decimal; cancelledQuantity?: number | Prisma.Decimal; discountPercent?: number | null; unitPriceAmount: number };
 
 export function matchAgreementLine(lines: AgreementLine[], line: { agreementLineId?: string | null; productId?: string | null; description?: string }) {
   if (line.agreementLineId) {
@@ -25,7 +25,7 @@ export function callOffPrice(lines: AgreementLine[], line: { agreementLineId?: s
 function draws(lines: AgreementLine[], orders: { id: string; lines: SourceLine[] }[]): ReleasedDraw[] {
   return orders.flatMap((order) => order.lines.flatMap((line) => {
     if (["SECTION", "NOTE"].includes(line.type)) return [];
-    const quantity = line.orderedQuantity - (line.cancelledQuantity ?? 0);
+    const quantity = Number(line.orderedQuantity) - Number(line.cancelledQuantity ?? 0);
     if (quantity <= 0) return [];
     return [{ key: matchAgreementLine(lines, { ...line, description: line.description }).id, quantity, orderId: order.id }];
   }));
@@ -63,13 +63,13 @@ export async function assertCallOffCapacity(store: Store, input: { organisationI
     if (["SECTION", "NOTE"].includes(line.type)) return [];
     const slot = matchAgreementLine(agreement.lines, line);
     if ((line.discountPercent ?? 0) !== 0 || line.unitPriceAmount !== slot.unitPriceAmount) throw new Error(`Call-off orders use the agreed price for ${slot.description}.`);
-    return [{ key: slot.id, quantity: line.orderedQuantity - (line.cancelledQuantity ?? 0), label: slot.description }];
+    return [{ key: slot.id, quantity: Number(line.orderedQuantity) - Number(line.cancelledQuantity ?? 0), label: slot.description }];
   });
-  assertDrawFits(agreement.lines.map((line) => ({ key: line.id, committed: line.committedQuantity })), draws(agreement.lines, agreement.callOffs), proposed, input.orderId);
+  assertDrawFits(agreement.lines.map((line) => ({ key: line.id, committed: Number(line.committedQuantity) })), draws(agreement.lines, agreement.callOffs), proposed, input.orderId);
   return agreement;
 }
 
 export function commitmentView(lines: AgreementLine[], orders: { id: string; lines: SourceLine[] }[]) {
-  const open = openCommitment(lines.map((line) => ({ key: line.id, committed: line.committedQuantity })), draws(lines, orders));
+  const open = openCommitment(lines.map((line) => ({ key: line.id, committed: Number(line.committedQuantity) })), draws(lines, orders));
   return new Map(open.map((line) => [line.key, line]));
 }

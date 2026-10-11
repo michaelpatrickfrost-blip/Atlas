@@ -10,7 +10,7 @@ export async function inventoryExportRows(type:string,warehouse:string,q:string,
  if(type==='movements') {
   const rows=await db.inventoryMovement.findMany({where:{organisationId:session.organisationId,...(focus==='in'?{delta:{gt:0}}:focus==='out'?{delta:{lt:0}}:{}),...(warehouse?{warehouseId:warehouse}:{}),...(q?{OR:[{product:{code:{contains:q,mode:'insensitive'}}},{product:{name:{contains:q,mode:'insensitive'}}},{reason:{contains:q,mode:'insensitive'}},{reference:{contains:q,mode:'insensitive'}}]}:{})},select:{createdAt:true,delta:true,reason:true,reference:true,product:{select:{code:true,name:true,unitOfMeasure:true}},warehouse:{select:{code:true,name:true}}},orderBy:[{createdAt:'desc'},{id:'desc'}],take:10001});
   if(rows.length>10000)throw new Error('Narrow your filters to export at most 10,000 movements.');
-  return [['Recorded UTC','SKU','Product','Warehouse code','Warehouse','Quantity change','Unit','Reason','Reference'],...rows.map(m=>[m.createdAt.toISOString(),m.product.code,m.product.name,m.warehouse.code,m.warehouse.name,m.delta,m.product.unitOfMeasure,m.reason,m.reference??''])];
+  return [['Recorded UTC','SKU','Product','Warehouse code','Warehouse','Quantity change','Unit','Reason','Reference'],...rows.map(m=>[m.createdAt.toISOString(),m.product.code,m.product.name,m.warehouse.code,m.warehouse.name,Number(m.delta),m.product.unitOfMeasure,m.reason,m.reference??''])];
  }
  if(type==='forecast') {
   const {readStockForecast}=await import('./forecast');

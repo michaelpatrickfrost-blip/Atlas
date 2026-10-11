@@ -87,7 +87,7 @@ export default async function AgreementPage({ params }: { params: Promise<{ agre
             {agreement.prices.map((price) => (
               <tr key={price.id} className="border-b border-[var(--color-border)] last:border-0">
                 <td className="px-5 py-3"><span className="font-medium">{price.product.code}</span><span className="mt-0.5 block text-xs text-[var(--color-ink-muted)]">{price.product.name}</span></td>
-                <td className="px-3 py-3">{price.minimumQuantity}</td>
+                <td className="px-3 py-3">{Number(price.minimumQuantity)}</td>
                 <td className="px-3 py-3 text-right font-medium">{formatMoney(price.unitPriceAmount, currency)}</td>
                 {manage && (
                   <td className="px-5 py-3 text-right">

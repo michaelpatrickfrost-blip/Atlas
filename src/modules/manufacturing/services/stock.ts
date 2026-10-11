@@ -1,11 +1,14 @@
+import { settleProductionCost } from "@/core/finance/manufacturing";
+import { componentQuantity } from "@/core/shared/measurement";
+import { roundedQuantity, addQuantity } from "@/core/shared/quantity";
 import type { Prisma } from "@/generated/prisma/client";
 import { getEnabledModuleIds } from "@/core/modules/runtime";
 import type { Session } from "@/core/auth/session";
 import { getModule } from "@/core/modules/registry";
 
-function wholeUnits(value: number, what: string) {
-  if (!Number.isInteger(value)) throw new Error(`${what} must be a whole number of units because stock is counted in whole units.`);
-  return value;
+function stockQuantity(value: number, what: string) {
+  if (!Number.isFinite(value) || value < 0) throw new Error(`${what} must be a valid stock quantity.`);
+  return roundedQuantity(value);
 }
 
 function key(...parts: string[]) {
@@ -34,11 +37,12 @@ async function productionWarehouse(db: Prisma.TransactionClient, organisationId:
  */
 export async function backflushOnCompletion(
   session: Session,
-  workOrder: { id: string; productionOrderId: string; sequence: number },
+  workOrder: { id: string; productionOrderId: string; sequence: number; producedQuantity: number; scrapQuantity: number },
   goodQuantity: number,
   scrapQuantity: number,
   requestKey: string,
   db: Prisma.TransactionClient,
+  trace: { reportId?: string; lotCode: string; serials: string[]; finish?: boolean; remainingBefore?: number },
 ) {
   const organisationId = session.organisationId;
   const later = await db.manufacturingWorkOrder.count({ where: { organisationId, productionOrderId: workOrder.productionOrderId, sequence: { gt: workOrder.sequence } } });
@@ -54,16 +58,20 @@ export async function backflushOnCompletion(
     where: { organisationId, productionOrderId: order.id, id: { not: workOrder.id } },
     _sum: { scrapQuantity: true },
   });
-  const totalScrap = Number(earlierScrap._sum.scrapQuantity ?? 0) + scrapQuantity;
-  const good = wholeUnits(goodQuantity, "Good quantity");
-  if (good + totalScrap > Number(order.quantity)) throw new Error("Good and scrap quantities exceed the planned production quantity.");
+  const totalScrap = addQuantity(Number(earlierScrap._sum.scrapQuantity ?? 0), workOrder.scrapQuantity);
+  const good = stockQuantity(goodQuantity, "Good quantity");
+  if (addQuantity(workOrder.producedQuantity, totalScrap) > Number(order.quantity)) throw new Error("Good and scrap quantities exceed the planned production quantity.");
   const warehouseId = await productionWarehouse(db, organisationId, order);
 
+  const issued = await db.inventoryMovement.groupBy({ by: ["productId"], where: { organisationId, manufacturingOrderId: order.id, delta: { lt: 0 } }, _sum: { delta: true } });
+  const alreadyUsed = new Map(issued.map(row => [row.productId, Math.abs(Number(row._sum.delta ?? 0))]));
   const lines = order.definitionId ? await db.productBomLine.findMany({ where: { organisationId, definitionId: order.definitionId }, orderBy: { position: "asc" } }) : [];
+  const materialMovementIds: string[] = [];
   for (const line of lines) {
-    const quantity = wholeUnits((good + totalScrap) * Number(line.quantityPerUnit) * (1 + Number(line.scrapPercent) / 100), "Component consumption");
-    if (quantity <= 0) continue;
-    await provider.shipStock(session, {
+    const target = componentQuantity(addQuantity(workOrder.producedQuantity, totalScrap), Number(line.quantityPerUnit), Number(line.scrapPercent));
+    const quantity = stockQuantity(Math.max(0, addQuantity(target, -(alreadyUsed.get(line.componentProductId) ?? 0))), "Component consumption");
+    if (quantity > 0) {
+    const movement = await provider.shipStock(session, {
       requestKey: key("mfg", workOrder.id, requestKey, "use", line.id),
       productId: line.componentProductId,
       warehouseId,
@@ -72,26 +80,47 @@ export async function backflushOnCompletion(
       serials: [],
       reason: `Used in ${order.orderNumber}`,
       reference: order.orderNumber,
+      productionReportId: trace.reportId,
       manufacturingOrderId: order.id,
       workOrderId: workOrder.id,
     }, db);
+    materialMovementIds.push(...movement.movementIds);
+    }
+    if (trace.reportId) {
+      const previousTotal = addQuantity(workOrder.producedQuantity, -good, workOrder.scrapQuantity, -scrapQuantity);
+      const previousTarget = previousTotal > 0 ? componentQuantity(addQuantity(previousTotal, Number(earlierScrap._sum.scrapQuantity ?? 0)), Number(line.quantityPerUnit), Number(line.scrapPercent)) : 0;
+      let toLink = Math.max(0, addQuantity(target, -previousTarget));
+      const allocations = await db.stockMovementAllocation.findMany({ where: { organisationId, productId: line.componentProductId, direction: "OUT", movement: { organisationId, manufacturingOrderId: order.id } }, include: { materialUses: { select: { quantity: true } } }, orderBy: [{ movement: { createdAt: "asc" } }, { id: "asc" }] });
+      if (trace.finish !== false) toLink = Math.max(toLink, allocations.reduce((sum, allocation) => addQuantity(sum, Math.max(0, addQuantity(Number(allocation.quantity), -allocation.materialUses.reduce((used, row) => addQuantity(used, Number(row.quantity)), 0)))), 0));
+      for (const allocation of allocations) {
+        if (!toLink) break;
+        const unused = addQuantity(Number(allocation.quantity), -allocation.materialUses.reduce((sum, row) => addQuantity(sum, Number(row.quantity)), 0));
+        const take = Math.min(Math.max(0, unused), toLink);
+        if (take) await db.manufacturingMaterialUse.create({ data: { organisationId, reportId: trace.reportId, stockAllocationId: allocation.id, componentProductId: line.componentProductId, quantity: take } });
+        toLink = addQuantity(toLink, -take);
+      }
+      if (toLink) await db.manufacturingMaterialUse.create({ data: { organisationId, reportId: trace.reportId, componentProductId: line.componentProductId, quantity: toLink } });
+    }
   }
 
+  let receiptMovementId: string | undefined;
   if (good > 0) {
-    await provider.stageProduction(session, {
+    const receipt = await provider.stageProduction(session, {
       requestKey: key("mfg", workOrder.id, requestKey, "made"),
       productId: order.productId,
       warehouseId,
       quantity: good,
-      lotCode: null,
-      serials: [],
+      lotCode: trace.lotCode,
+      serials: trace.serials,
       status: "BLOCKED",
       reason: `Production holding area · ${order.orderNumber}`,
       reference: order.orderNumber,
+      productionReportId: trace.reportId,
       manufacturingOrderId: order.id,
       workOrderId: workOrder.id,
     }, db);
+    receiptMovementId = receipt.movementIds[0];
   }
-  // Output is physical on-hand, held from picking until Warehouse books collection.
-  return { productId: order.productId, warehouseId, requestKey: `balance:${key("mfg", workOrder.id, requestKey, "made")}`, staged: true };
+  await settleProductionCost(session, db, { productionOrderId: order.id, workOrderId: workOrder.id, warehouseId, productId: order.productId, receiptMovementId, newMaterialMovementIds: materialMovementIds, goodQuantity: good, scrapQuantity, remainingBefore: trace.remainingBefore ?? Number(order.quantity), finish: trace.finish !== false, requestKey });
+  return { productId: order.productId, warehouseId, requestKey: `balance:${key("mfg", workOrder.id, requestKey, "made")}`, staged:true };
 }

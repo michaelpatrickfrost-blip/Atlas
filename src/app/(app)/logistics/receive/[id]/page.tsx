@@ -19,15 +19,15 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
       {row.lines.map((line) => (
         <article key={line.id} className="rounded-3xl border border-[var(--color-border)] bg-white p-5">
           <h2 className="text-lg font-medium">{line.description}</h2>
-          <p className="mt-2 text-sm">Expected {line.expectedQuantity} · Received {line.receivedQuantity}{line.discrepancy ? ` · ${line.discrepancy}` : ""}</p>
+          <p className="mt-2 text-sm">Expected {Number(line.expectedQuantity)} · Received {Number(line.receivedQuantity)}{line.discrepancy ? ` · ${line.discrepancy}` : ""}</p>
           <ActionForm action={receiveLineAction.bind(null, line.id)} className="mt-4 flex flex-wrap gap-2">
-            <input type="hidden" name="requestKey" value={`recv:${line.id}:${line.receivedQuantity}`} />
-            <input name="quantity" type="number" min={1} defaultValue={Math.max(1, line.expectedQuantity - line.receivedQuantity)} className="w-24 rounded-xl border px-3 py-2 text-sm" />
+            <input type="hidden" name="requestKey" value={`recv:${line.id}:${Number(line.receivedQuantity)}`} />
+            <input name="quantity" type="number" step="0.000001" min={0.000001} defaultValue={Math.max(1, Number(line.expectedQuantity) - Number(line.receivedQuantity))} className="w-24 rounded-xl border px-3 py-2 text-sm" />
             <input name="lot" placeholder="Lot" className="rounded-xl border px-3 py-2 text-sm" />
             <select name="condition" className="rounded-xl border px-3 py-2 text-sm"><option value="GOOD">Good</option><option value="DAMAGED">Damaged</option><option value="QUARANTINE">Quarantine</option></select>
             <button className="rounded-full bg-[var(--color-atlas-blue)] px-4 py-2 text-sm font-semibold text-white" type="submit">Receive</button>
           </ActionForm>
-          {line.receivedQuantity > 0 && line.status !== "PUTAWAY" && (
+          {Number(line.receivedQuantity) > 0 && line.status !== "PUTAWAY" && (
             <ActionForm action={putAwayAction.bind(null, line.id)} className="mt-3 flex gap-2">
               <input type="hidden" name="requestKey" value={`putaway:${line.id}`} />
               <input name="destination" placeholder="Scan destination" defaultValue="STOCK" className="rounded-xl border px-3 py-3 text-lg" />

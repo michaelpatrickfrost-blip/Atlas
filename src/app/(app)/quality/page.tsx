@@ -136,7 +136,7 @@ export default async function QualityToday() {
                 >
                   <span className="min-w-0 break-words">
                     <span className="font-medium">{hold.number}</span> ·{" "}
-                    {hold.product.name} · {hold.quantity} units
+                    {hold.product.name} · {Number(hold.quantity)} units
                   </span>
                   <span className="max-w-lg break-words text-xs text-slate-500">
                     {hold.reason}

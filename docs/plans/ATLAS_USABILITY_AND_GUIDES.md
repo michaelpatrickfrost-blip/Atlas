@@ -83,3 +83,14 @@ staff and backups. Own native fixtures and record screenshots were removed.
 Detailed evidence and practical limits: docs/evidence/2026-10-11-atlas-usability.md.
 No additional broad test run is needed after this successful public acceptance
 unless source changes or a new failure is found.
+
+## App-grouped guide continuation — 11 October, pending release
+
+The shared library now groups by apps (including Manufacturing's consolidated source
+workflows), with dedicated app hubs and Setup/Daily work/Troubleshooting sections.
+Search covers the actual instructions and blockers. Module-owned detailed handbooks
+contribute metadata through the registry; no Core import of module business code or
+duplicated guide text. The Manufacturing help index redirects to its app hub, old
+individual links remain valid, and Field Service now explains preparation, scheduling,
+actual time/status progress, completion checks and supported handoffs. Release scope
+and tests are recorded in Manufacturing acceptance; public acceptance still pending.

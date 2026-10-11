@@ -326,7 +326,7 @@ export interface MrpInput {
   demand: DemandLine[];
   inventory: Map<string, InventoryState>;
   recipes: Map<string, Recipe>;
-  prices: Map<string, number>;
+  prices: Map<string, number | { amountMinor: number; quantity: number }>;
   existingSupply: Map<string, number>;
   leadTimes: Map<string, number>;
   safetyStock: Map<string, number>;

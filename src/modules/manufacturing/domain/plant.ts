@@ -11,6 +11,8 @@ export type ResourceType = (typeof RESOURCE_TYPES)[number]["id"];
 
 export const PROCESS_KINDS = [
   { id: "GENERAL", label: "General machinery" },
+  { id: "BATCH_PROCESS", label: "Batch machine" },
+  { id: "CONTINUOUS_PROCESS", label: "Continuous machine" },
   { id: "BATCH_KILN", label: "Batch kiln" },
   { id: "CONTINUOUS_KILN", label: "Continuous / tunnel kiln" },
   { id: "DRYER", label: "Drying equipment" },

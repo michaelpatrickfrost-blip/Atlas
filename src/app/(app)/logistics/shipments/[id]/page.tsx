@@ -34,7 +34,7 @@ export default async function ShipmentPage({ params }: { params: Promise<{ id: s
           <article key={box.id} className="rounded-2xl border border-[var(--color-border)] bg-white p-4">
             <h2 className="font-medium">{box.reference} · {box.typeCode ?? box.packageType} · {box.status}</h2>
             <p className="mt-1 text-sm text-[var(--color-ink-muted)]">{[box.lengthMm, box.widthMm, box.heightMm].filter(Boolean).join(" × ")}{box.lengthMm ? " mm" : ""}{box.weightGrams ? ` · ${(box.weightGrams / 1000).toFixed(1)} kg` : ""}{box.parentId ? " · nested" : ""}</p>
-            <ul className="mt-2 text-sm text-[var(--color-ink-muted)]">{box.contents.map((content) => <li key={content.id}>{content.description} · {content.quantity}</li>)}</ul>
+            <ul className="mt-2 text-sm text-[var(--color-ink-muted)]">{box.contents.map((content) => <li key={content.id}>{content.description} · {Number(content.quantity)}</li>)}</ul>
             {box.children.length > 0 && <p className="mt-2 text-xs">Contains {box.children.map((child) => child.reference).join(", ")}</p>}
           </article>
         ))}

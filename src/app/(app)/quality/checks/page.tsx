@@ -38,7 +38,7 @@ export default async function Checks({ searchParams }: { searchParams: Promise<{
       <QualityForm action={executeInspection} className="space-y-4 rounded-2xl border bg-white p-5">
         <input type="hidden" name="controlPointId" value={point.id} />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <label className="text-xs">Quantity inspected<input name="quantityInspected" type="number" min={1} defaultValue={point.sampleSize} className={input} /></label>
+          <label className="text-xs">Quantity inspected<input name="quantityInspected" type="number" step="0.000001" min="0.000001" defaultValue={point.sampleSize} className={input} /></label>
           <label className="text-xs">Lot / batch<input name="lotCode" className={input} /></label>
           <label className="text-xs">Warehouse<select name="warehouseId" className={input}>
             <option value="">Not applicable</option>

@@ -1,3 +1,4 @@
+import { validQuantity, addQuantity } from "@/core/shared/quantity";
 export type CommitmentLine = { key: string; committed: number };
 export type ReleasedDraw = { key: string; quantity: number; orderId: string };
 export type ProposedDraw = { key: string; quantity: number; label?: string };
@@ -10,13 +11,13 @@ export function openCommitment(lines: CommitmentLine[], draws: ReleasedDraw[], e
   const used = new Map<string, number>();
   for (const draw of draws) {
     if (excludeOrderId && draw.orderId === excludeOrderId) continue;
-    if (!Number.isInteger(draw.quantity) || draw.quantity < 0) throw new Error("A call-off quantity must be a whole number.");
-    used.set(draw.key, (used.get(draw.key) ?? 0) + draw.quantity);
+    if (!validQuantity(draw.quantity) || draw.quantity < 0) throw new Error("A call-off quantity must have up to six decimal places.");
+    used.set(draw.key, addQuantity(used.get(draw.key) ?? 0, draw.quantity));
   }
   return lines.map((line) => {
-    if (!Number.isInteger(line.committed) || line.committed < 1) throw new Error("An agreement line needs a committed quantity.");
+    if (!validQuantity(line.committed) || line.committed <= 0) throw new Error("An agreement line needs a committed quantity.");
     const released = used.get(line.key) ?? 0;
-    return { ...line, released, remaining: line.committed - released };
+    return { ...line, released, remaining: addQuantity(line.committed, -released) };
   });
 }
 
@@ -24,7 +25,7 @@ export function assertDrawFits(lines: CommitmentLine[], draws: ReleasedDraw[], p
   const open = new Map(openCommitment(lines, draws, excludeOrderId).map((line) => [line.key, line]));
   const seen = new Set<string>();
   for (const line of proposed) {
-    if (!Number.isInteger(line.quantity) || line.quantity < 1) throw new Error("Enter a call-off quantity of at least 1.");
+    if (!validQuantity(line.quantity) || line.quantity <= 0) throw new Error("Enter a positive call-off quantity.");
     if (seen.has(line.key)) throw new Error("Each agreement line can be called off once on an order.");
     seen.add(line.key);
     const slot = open.get(line.key);

@@ -16,7 +16,7 @@ export function operationTime(op: OperationTiming, quantity: number, normalBatch
   if (op.timingMode && !["PER_UNIT", "BATCH"].includes(op.timingMode)) throw new Error("Choose a per-unit or batch-cycle operation.");
   const capacity = batch ? op.batchCapacity ?? 0 : normalBatch;
   if (!(capacity > 0) || !Number.isFinite(capacity)) throw new Error("Enter a positive operation batch capacity.");
-  if (batch && !(Number(op.cycleMinutes) > 0)) throw new Error("Enter the firing or drying cycle time.");
+  if (batch && !(Number(op.cycleMinutes) > 0)) throw new Error("Enter the machine cycle time.");
   const batches = spread ? quantity / capacity : Math.ceil(quantity / capacity);
   const setupMinutes = batches * op.setupMinutes;
   const runMinutes = batch ? batches * ((op.cycleMinutes ?? 0) + (op.coolingMinutes ?? 0)) : quantity * op.runMinutesPerUnit;

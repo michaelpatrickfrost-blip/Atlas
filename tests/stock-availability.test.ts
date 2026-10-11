@@ -4,12 +4,12 @@ const state = vi.hoisted(() => ({
   session: { userId: "u", organisationId: "tenant", capabilities: new Set<string>() },
   invoices: vi.fn(), quantities: vi.fn(),
   enabled: new Set(["stock", "sales", "logistics", "finance"]),
-  db: Object.fromEntries(["product", "inventoryBalance", "stockReservation", "stockPosition", "salesOrderLine", "fulfilmentLine", "financeDocumentLine", "productionPlanLine", "manufacturingOrder", "receiptLine", "financeDocument", "salesOrder"].map(name => [name, { findMany: vi.fn(), findFirst: vi.fn() }])),
+  db: Object.fromEntries(["product", "inventoryBalance", "stockReservation", "stockLot", "qualityHold", "stockPosition", "salesOrderLine", "fulfilmentLine", "financeDocumentLine", "productionPlanLine", "manufacturingOrder", "receiptLine", "financeDocument", "salesOrder"].map(name => [name, { findMany: vi.fn(), findFirst: vi.fn() }])),
 }));
 vi.mock("@/core/finance/connections", () => ({ readOrderInvoices: state.invoices, readInvoiceQuantities: state.quantities }));
 vi.mock("@/core/db/client", () => ({ db: state.db }));
 vi.mock("@/core/auth/session", () => ({ requireSession: async () => state.session }));
-vi.mock("@/core/modules/runtime", () => ({ getEnabledModuleIds: async () => state.enabled, enabledModulesForSession: async () => state.enabled, isModuleEnabled: async (_session: unknown, id: string) => state.enabled.has(id) }));
+vi.mock("@/core/modules/runtime", () => ({ getEnabledModuleIds: async () => state.enabled, isModuleEnabled: async (_session:unknown,id:string)=>state.enabled.has(id) }));
 import { readAvailability, readOrderChain } from "@/modules/stock/services/availability";
 
 beforeEach(() => {
@@ -20,7 +20,7 @@ beforeEach(() => {
   for (const model of Object.values(state.db)) model.findMany.mockResolvedValue([]);
   state.db.product.findMany.mockResolvedValue([{ id: "p", unitOfMeasure: "each" }]);
   state.db.salesOrderLine.findMany.mockResolvedValue([{ id: "open", productId: "p", orderedQuantity: 100, cancelledQuantity: 0, unitOfMeasure: "each" }]);
-  state.db.inventoryBalance.findMany.mockResolvedValue([{ productId: "p", quantity: 20 }]);
+  state.db.inventoryBalance.findMany.mockResolvedValue([{ productId: "p", warehouseId: "w1", quantity: 20 }]);
   state.db.salesOrder.findFirst.mockResolvedValue({ id: "order", lines: [{ id: "open", productId: "p", orderedQuantity: 100, cancelledQuantity: 0, unitOfMeasure: "each", descriptionSnapshot: "Product" }] });
 });
 
@@ -121,4 +121,4 @@ describe("order chain financial boundary", () => {
   });
 });
 
-it("excludes production holding and transit from available-to-use supply",async()=>{state.db.stockPosition.findMany.mockResolvedValue([{productId:"p",quantity:5},{productId:"p",quantity:3}]);expect((await readAvailability()).products[0]).toMatchObject({onHand:20,held:8,availableNow:12});});
+it("excludes production holding and transit from available-to-use supply",async()=>{state.db.stockPosition.findMany.mockResolvedValue([{id:"hold",productId:"p",quantity:5,status:"BLOCKED",lotId:"",warehouseId:"w1",locationId:"holding"},{id:"transit",productId:"p",quantity:3,status:"IN_TRANSIT",lotId:"",warehouseId:"w1",locationId:"dispatch"},{id:"free",productId:"p",quantity:12,status:"AVAILABLE",lotId:"",warehouseId:"w1",locationId:"storage"}]);expect((await readAvailability()).products[0]).toMatchObject({onHand:20,held:8,availableNow:12});});

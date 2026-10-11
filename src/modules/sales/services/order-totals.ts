@@ -11,7 +11,7 @@ export async function recalcOrderTotals(orderId: string, organisationId: string)
   const country = (order.deliveryAddressSnapshot as { country?: string } | null)?.country ?? deliveryAddress?.country ?? null;
   const active = lines.filter((line) => !["SECTION", "NOTE"].includes(line.type));
   const commercial = active.map((line) => {
-    const quantity = line.orderedQuantity - line.cancelledQuantity;
+    const quantity = Number(line.orderedQuantity) - Number(line.cancelledQuantity);
     const net = commercialLineNet(line.unitPriceAmount, quantity, line.discountPercent ?? 0);
     const lineDiscount = line.unitPriceAmount * quantity - net;
     return { line, net, lineDiscount };

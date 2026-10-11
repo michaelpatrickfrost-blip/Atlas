@@ -44,7 +44,7 @@ export function CallOffOrderForm({ customers, products, initialCustomer }: { cus
               <option value="">Choose a product</option>
               {(line.productId && !matches.some((product) => product.id === line.productId) ? products.filter((product) => product.id === line.productId) : []).concat(matches).map((product) => <option key={product.id} value={product.id}>{product.code} · {product.name}</option>)}
             </select>
-            <input type="number" min={1} step={1} value={line.quantity} onChange={(event) => setLines(lines.map((item) => item.key === line.key ? { ...item, quantity: Number(event.target.value) } : item))} aria-label="Quantity" className="rounded-xl border border-slate-200 px-3 py-2 text-sm" />
+            <input type="number" step="0.000001" min={0.000001} value={line.quantity} onChange={(event) => setLines(lines.map((item) => item.key === line.key ? { ...item, quantity: Number(event.target.value) } : item))} aria-label="Quantity" className="rounded-xl border border-slate-200 px-3 py-2 text-sm" />
             <button type="button" className="text-sm text-slate-500" onClick={() => setLines(lines.length === 1 ? lines : lines.filter((item) => item.key !== line.key))}>Remove</button>
           </div>
         ))}

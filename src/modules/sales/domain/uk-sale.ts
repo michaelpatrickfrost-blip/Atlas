@@ -1,3 +1,4 @@
+import { scaledQuantity } from "@/core/shared/measurement";
 /** UK sales VAT and the order-level discount taken off before VAT. */
 
 export const UK_VAT_RATE = 0.2;
@@ -71,7 +72,10 @@ export function settleSale(lines: SaleLine[], headerDiscountPercent: number, del
 }
 
 export function commercialLineNet(unitAmount: number, quantity: number, discountPercent: number) {
-  return Math.round(unitAmount * quantity * (1 - (discountPercent || 0) / 100));
+  if (!Number.isSafeInteger(unitAmount) || unitAmount < 0 || !Number.isFinite(discountPercent) || discountPercent < 0 || discountPercent > 100) throw new Error("Enter a valid unit price and discount.");
+  const numerator = BigInt(unitAmount) * scaledQuantity(quantity) * BigInt(100_000 - Math.round((discountPercent || 0) * 1000));
+  const denominator = 100_000_000_000n;
+  return Number((numerator + denominator / 2n) / denominator);
 }
 
 export function presentationTotals(input: {

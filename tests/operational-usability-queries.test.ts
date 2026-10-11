@@ -17,6 +17,9 @@ const m = vi.hoisted(() => ({
       "fleetVehicle",
       "inventoryBalance",
       "stockPosition",
+      "stockReservation",
+      "stockLot",
+      "product",
     ].map((name) => [
       name,
       { findMany: vi.fn(), count: vi.fn(), groupBy: vi.fn() },
@@ -107,16 +110,14 @@ it("Maintenance searches and pages older work while keeping vehicle identities b
   expect(m.models.fleetVehicle.findMany).toHaveBeenCalledOnce();
 });
 it("Planning stock excludes held production and transit, without counting a Quality hold twice", async () => {
-  m.models.inventoryBalance.groupBy.mockResolvedValue([
-    { productId: "product", _sum: { quantity: 30 } },
-  ]);
-  m.models.qualityHold.groupBy.mockResolvedValue([
-    { productId: "product", _sum: { quantity: 4 } },
-  ]);
-  m.models.stockPosition.groupBy.mockResolvedValue([
-    { productId: "product", status: "QUARANTINE", _sum: { quantity: 4 } },
-    { productId: "product", status: "BLOCKED", _sum: { quantity: 10 } },
-    { productId: "product", status: "IN_TRANSIT", _sum: { quantity: 2 } },
+  m.models.inventoryBalance.findMany.mockResolvedValue([{ productId: "product", warehouseId: "w", quantity: 30 }]);
+  m.models.qualityHold.findMany.mockResolvedValue([{ productId: "product", warehouseId: "w", lotCode: "HOLD", locationId: null, quantity: 4 }]);
+  m.models.stockLot.findMany.mockResolvedValue([{ id: "held", productId: "product", code: "HOLD", expiresOn: null, removalOn: null }]);
+  m.models.stockPosition.findMany.mockResolvedValue([
+    { id: "q", productId: "product", warehouseId: "w", lotId: "held", status: "QUARANTINE", quantity: 4 },
+    { id: "b", productId: "product", warehouseId: "w", lotId: "", status: "BLOCKED", quantity: 10 },
+    { id: "t", productId: "product", warehouseId: "w", lotId: "", status: "IN_TRANSIT", quantity: 2 },
+    { id: "a", productId: "product", warehouseId: "w", lotId: "", status: "AVAILABLE", quantity: 14 },
   ]);
   const result = await stockBusinessPlanning(
     { ...m.session, capabilities: new Set(["stock.read"]) } as Session,
@@ -130,7 +131,7 @@ it("Planning stock excludes held production and transit, without counting a Qual
   );
   expect(result.stock).toEqual([{ productId: "product", quantity: 14 }]);
   for (const model of ["inventoryBalance", "qualityHold", "stockPosition"])
-    expect(m.models[model].groupBy.mock.calls[0][0].where.organisationId).toBe(
+    expect(m.models[model].findMany.mock.calls[0][0].where.organisationId).toBe(
       "company",
     );
 });

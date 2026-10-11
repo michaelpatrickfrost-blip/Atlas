@@ -1,4 +1,6 @@
 "use server";
+import { remainingProductionQuantity } from "@/core/planning/production-quantity";
+import { addQuantity } from "@/core/shared/quantity";
 
 import { db } from "@/core/db/client";
 import { assertModuleEnabled } from "@/core/modules/access";
@@ -56,13 +58,13 @@ export async function runMrp() {
 
   const chain = await readAvailability();
   const shippedRows = await db.fulfilmentLine.groupBy({ by: ["salesOrderLineId"], where: { organisationId, salesOrderLineId: { in: demandLines.map(line => line.id) } }, _sum: { shippedQuantity: true } });
-  const shipped = new Map(shippedRows.map(row => [row.salesOrderLineId, Number(row._sum.shippedQuantity ?? 0)]));
+  const shipped = new Map(shippedRows.map(row => [row.salesOrderLineId, Number(Number(row._sum.shippedQuantity ?? 0))]));
   const bookedByMonth = new Map<string, number>();
   for (const line of demandLines) {
     const due = line.requestedDeliveryDate ?? line.order.requestedDeliveryDate ?? line.promisedDeliveryDate ?? line.order.promisedDeliveryDate;
     if (!due || !line.productId || line.order.commercialStatus === "CLOSED" && due < periodStart) continue;
     const key = `${line.productId}|${(due < periodStart ? periodStart : due).toISOString().slice(0, 7)}`;
-    bookedByMonth.set(key, (bookedByMonth.get(key) ?? 0) + Math.max(0, line.orderedQuantity - line.cancelledQuantity));
+    bookedByMonth.set(key, (bookedByMonth.get(key) ?? 0) + Math.max(0, Number(line.orderedQuantity) - Number(line.cancelledQuantity)));
   }
   const manufacturable = demandLines.filter((line) => line.productId && line.product?.definitions.length);
   const manufacturableForecast = forecastRows.filter((row) => row.product.definitions.length);
@@ -72,7 +74,7 @@ export async function runMrp() {
   for (const line of manufacturable) {
     const key = line.productId!;
     const entry = byProduct.get(key) ?? { productId: key, pegs: [], demandQuantity: 0, definitionId: line.product!.definitions[0].id, earliestDemand: null };
-    const outstanding = line.order.commercialStatus === "CLOSED" ? 0 : Math.max(0, line.orderedQuantity - line.cancelledQuantity - (shipped.get(line.id) ?? 0));
+    const outstanding = line.order.commercialStatus === "CLOSED" ? 0 : Math.max(0, Number(line.orderedQuantity) - Number(line.cancelledQuantity) - (shipped.get(line.id) ?? 0));
     if (outstanding <= 0) continue;
     const due = line.requestedDeliveryDate ?? line.order.requestedDeliveryDate ?? line.promisedDeliveryDate ?? line.order.promisedDeliveryDate ?? null;
     entry.demandQuantity += outstanding;
@@ -93,12 +95,10 @@ export async function runMrp() {
 
   const stock = await stockProvider();
   const pictures = new Map(chain.products.map((row) => [row.productId, row]));
-  const openSupply = await db.manufacturingOrder.groupBy({
-    by: ["productId"],
-    where: { organisationId, status: { in: OPEN_PRODUCTION_ORDER_STATUSES } },
-    _sum: { quantity: true },
-  });
-  const openSupplyByProduct = new Map(openSupply.map((row) => [row.productId, Number(row._sum.quantity ?? 0)]));
+  const openSupply = await db.manufacturingOrder.findMany({ where: { organisationId, status: { in: OPEN_PRODUCTION_ORDER_STATUSES } }, select: { productId: true, quantity: true, workOrders: { select: { sequence: true, status: true, producedQuantity: true, scrapQuantity: true } } } });
+  const openSupplyByProduct = new Map<string, number>();
+  for (const row of openSupply) openSupplyByProduct.set(row.productId, addQuantity(openSupplyByProduct.get(row.productId) ?? 0, remainingProductionQuantity({ quantity: Number(row.quantity), workOrders: row.workOrders.map(w => ({ ...w, producedQuantity: Number(w.producedQuantity), scrapQuantity: Number(w.scrapQuantity) })) })));
+
 
   const run = await db.manufacturingPlanningRun.create({
     data: { organisationId, triggeredByUserId: session.userId, productCount: byProduct.size, warnings },
@@ -178,7 +178,7 @@ export async function firmSuggestion(suggestionId: string) {
     const orderNumber = await nextOrderNumber(tx, organisationId);
     const order = await tx.manufacturingOrder.create({ data: {
       organisationId, orderNumber, productId: product.id, definitionId: product.definitions[0].id,
-      quantity: suggestion.quantity, unitOfMeasure: product.unitOfMeasure, requiredDate: suggestion.neededBy,
+      quantity: Number(suggestion.quantity), unitOfMeasure: product.unitOfMeasure, requiredDate: suggestion.neededBy,
       plannedStart: suggestion.startBy, plannedFinish: suggestion.neededBy,
       priority: suggestion.startBy && suggestion.startBy < new Date() ? 10 : 0,
       sourceSalesOrderLineId: largestPeg && ["SALES_ORDER", "FIRM"].includes(largestPeg.sourceType) ? largestPeg.sourceId : null,

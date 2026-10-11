@@ -2,6 +2,8 @@
 export type GuideStep = {
   title: string;
   detail: string;
+  check?: string;
+  example?: string;
   href?: string;
   capability?: string;
   moduleId?: string;
@@ -11,6 +13,7 @@ export type Guide = {
   title: string;
   summary: string;
   area: string;
+  category?: import("./library").GuideCategory;
   moduleId?: string;
   capability?: string;
   before: string[];
@@ -37,14 +40,14 @@ export const GUIDES: Guide[] = [
     moduleId: "stock",
     capability: "stock.read",
     before: [
-      "Production has completed the final operation and recorded the actual good output.",
+      "Production has reported good output on the final operation. Partial output can be collected while further production is still running.",
       "An active destination storage location in the yard or warehouse.",
       "Warehouse stock-management permission to confirm a collection.",
     ],
     steps: [
       step(
         "Production records its output",
-        "Complete the final production operation with the actual good and scrap quantities. Good output enters Production holding as a blocked stock position with the production-order batch reference. Materials, output and operation completion save together.",
+        "Report the final operation’s NEW good and scrap quantities, keeping each report separate. Good output enters Production holding as a blocked stock position with its report, production order and physical batch identities. Materials, output, costs and the report save together. Finish the operation when no further output will be reported.",
         "/manufacturing/produce",
         "manufacturing.order.read",
         "manufacturing",
@@ -62,7 +65,7 @@ export const GUIDES: Guide[] = [
       ),
       step(
         "Book into the destination",
-        "Choose Collect & book into yard, enter the quantity, choose the destination storage location and add a collection reference. The booking moves those units from blocked production holding into available stock at the destination.",
+        "Choose Collect & book into yard, enter the quantity, choose the destination storage location and add a collection reference. For a serial-tracked product, enter the actual serials collected. The booking moves that quantity from blocked production holding into available stock at the destination.",
         "/stock/handoffs",
         "stock.manage",
         "stock",
@@ -1250,40 +1253,26 @@ export const GUIDES: Guide[] = [
     ],
   },
   {
-    id: "fieldservice",
-    title: "Schedule a visit and finish the job sheet",
-    summary:
-      "Give the engineer the right customer, place, time and instructions.",
-    area: "Operations",
-    moduleId: "fieldservice",
-    before: ["Customer/site, engineer, window, timezone and contact."],
+    id: "fieldservice", title: "Schedule an engineer visit and complete the job sheet",
+    summary: "Prepare the customer and site details, book a realistic visit, record progress and leave a clear outcome for the next team.", area: "Operations", moduleId: "fieldservice",
+    before: ["The existing customer record and full service address, including the site entrance or access instructions.", "An engineer who is an active member of your company, the visit start/end and its timezone.", "The site contact, required preparation and a realistic description of the work. You need Field Service job management and customer access to save a visit."],
     steps: [
-      step(
-        "Schedule the visit",
-        "Select the canonical customer and engineer; review booking conflicts.",
-        "/fieldservice",
-      ),
-      step(
-        "Prepare the job",
-        "Record access instructions, site contact and the actual work required.",
-      ),
-      step(
-        "Record progress",
-        "Use travel, on-site and waiting states as the visit progresses.",
-      ),
-      step(
-        "Complete with an outcome",
-        "Record findings, result and actual labour. Invoicing, customer messages and stock issue remain separate authorised work.",
-      ),
+      { ...step("Create the visit", "Open Engineer schedule and choose the new service-job action. Enter Job title, Customer and Job type: Installation, Repair, Service or Inspection. Choose the existing customer rather than creating another record for the same business.", "/fieldservice", "fieldservice.job.read", "fieldservice"), check: "The job belongs to the correct customer and describes one clear piece of work." },
+      { ...step("Book the engineer and visit window", "Choose Assigned engineer, Visit starts, Visit ends and Visit timezone. Use the site's local times and an explicit timezone such as Europe/London. Leave the engineer Unassigned only when allocation is still pending. Atlas checks overlapping open jobs for the selected engineer.", "/fieldservice", "fieldservice.job.read", "fieldservice"), example: "For a two-hour UK visit, enter 14 October 2026, 09:00 to 11:00, Europe/London. Actual job minutes will be recorded separately after the visit.", check: "The end is after the start and the engineer has a usable time window." },
+      { ...step("Prepare the mobile job sheet", "Enter Site / full service address, Site contact, Site contact phone and Job instructions / preparation. Include access, equipment and the requested result. Save service job, then read the Mobile job sheet to confirm the customer, address, engineer, contact and visit window.", "/fieldservice", "fieldservice.job.read", "fieldservice"), check: "The engineer can understand where to go and what to do without another explanation." },
+      { ...step("Record the visit as it happens", "Open the saved job and use Update the visit. Move Scheduled to Travelling or On site; move Travelling to On site when you arrive. Use Waiting from On site when work is interrupted, then return to On site when it resumes. Add a Visit note for useful observations or a reason for waiting."), check: "Visit notes & history shows the progress and evidence attached to this job." },
+      { ...step("Save findings, actual labour and the outcome", "From On site, select Completed. Enter Engineer findings, Work completed / customer outcome and Actual job minutes, then Save visit update. Actual job minutes is the job's TOTAL, not an increment; update the total as work progresses. Completion requires an outcome. For an unfinished job, use Waiting and explain the next action instead of marking it completed."), example: "After 75 minutes of work, enter 75 actual job minutes, describe the repair and record the test result. If another 20 minutes are later needed before closure, enter 95 as the total.", check: "The outcome says what was done, what was checked and whether follow-up is needed." },
+      { ...step("Arrange the next department's work", "Read the completed outcome and retained history. Arrange any required follow-up visit, customer communication, stock issue or invoice through the authorised owning app, using this job as the reference. Saving a visit does not automatically send a message, issue stock or create an invoice."), check: "Someone owns each remaining action and can find the service evidence." },
     ],
-    outcome:
-      "A clear engineer job sheet and retained customer service history.",
+    outcome: "The saved job sheet contains its customer/site, engineer, visit window, actual labour, outcome and progress history. Completed and cancelled jobs are closed; their operational fields and notes cannot be edited through the normal visit actions.",
     troubleshoot: [
-      issue(
-        "The visit cannot be booked",
-        "Check the engineer’s existing appointments and the start/end/timezone. Overlapping work is rejected.",
-      ),
+      issue("The engineer is already booked", "Check their open visits, including travelling, on-site and waiting jobs. Change the window or choose another engineer after reviewing the actual commitments. Closed visits are excluded from the overlap check."),
+      issue("I cannot complete the visit", "Completion is available from On site. Return from Waiting to On site when work resumes, enter a useful customer outcome and save the completed result. Travelling and Scheduled cannot jump directly to Completed."),
+      issue("I cannot edit the address or schedule", "Edit visit is available while the job is Scheduled. Check the saved customer/site before travelling. Closed jobs retain their history; arrange an authorised follow-up for additional work."),
+      issue("Someone else changed the visit", "Refresh, read the latest job sheet and notes, then apply only the outstanding update. A stale version cannot overwrite the other person's work."),
+      issue("The customer or save controls are missing", "Your access must include the Field Service app, job management and the required customer permission. Ask your company administrator to review your profile."),
     ],
+    terms: [{ word: "Visit window", meaning: "The planned start and finish at the site's timezone; it is different from actual labour recorded on the job." }, { word: "Waiting", meaning: "An open visit paused by an obstacle, with a note explaining what must happen next." }],
   },
   {
     id: "safety",

@@ -1,3 +1,4 @@
+import {validQuantity,addQuantity} from "@/core/shared/quantity";
 import { db } from "@/core/db/client";
 import type { Session } from "@/core/auth/session";
 import type { Prisma } from "@/generated/prisma/client";
@@ -10,6 +11,7 @@ export type CollectionInput = {
   batchId: string;
   version: number;
   quantity: number;
+  serials?: string[];
   locationId: string;
   requestKey: string;
   note: string;
@@ -19,6 +21,7 @@ export function readCollection(form: FormData): CollectionInput {
     batchId: String(form.get("batchId") ?? ""),
     version: Number(form.get("version")),
     quantity: Number(form.get("quantity")),
+    serials:String(form.get("serials")??"").split(/[\s,;]+/).filter(Boolean),
     locationId: String(form.get("locationId") ?? ""),
     requestKey: String(form.get("requestKey") ?? ""),
     note: String(form.get("note") ?? "").trim(),
@@ -35,12 +38,12 @@ export function readCollection(form: FormData): CollectionInput {
   if (!Number.isSafeInteger(value.version) || value.version < 1)
     throw new HandoffError("Refresh the batch before collecting it.");
   if (
-    !Number.isSafeInteger(value.quantity) ||
-    value.quantity < 1 ||
+    !validQuantity(value.quantity) ||
+    value.quantity <= 0 ||
     value.quantity > 1000000
   )
     throw new HandoffError(
-      "Enter the actual collected quantity, in whole units.",
+      "Enter the actual collected quantity, with up to six decimal places.",
     );
   if (value.note.length < 3 || value.note.length > 1000)
     throw new HandoffError(
@@ -77,9 +80,9 @@ export async function collectProductionBatch(
           if (prior) {
             if (
               prior.batchId !== input.batchId ||
-              prior.quantity !== input.quantity ||
+              Number(prior.quantity) !== input.quantity ||
               prior.locationId !== input.locationId ||
-              prior.note !== input.note
+              prior.note !== input.note || JSON.stringify([...(prior.serials??[])].sort()) !== JSON.stringify([...(input.serials??[])].sort())
             )
               throw new HandoffError(
                 "This collection reference was already used for different details.",
@@ -91,7 +94,7 @@ export async function collectProductionBatch(
               id: input.batchId,
               organisationId: session.organisationId,
             },
-            include: { location: true },
+            include: { location: true,product:{select:{trackingMode:true}} },
           });
           if (!batch)
             throw new HandoffError(
@@ -101,7 +104,7 @@ export async function collectProductionBatch(
             throw new HandoffError(
               "Someone else changed this batch. Refresh it and check the remaining quantity.",
             );
-          const remaining = batch.quantity - batch.collectedQuantity;
+          const remaining = addQuantity(Number(batch.quantity),-Number(batch.collectedQuantity));
           if (input.quantity > remaining)
             throw new HandoffError(
               `Only ${remaining.toLocaleString("en-GB")} units remain to collect.`,
@@ -185,6 +188,7 @@ export async function collectProductionBatch(
               locationId: batch.locationId,
               lotCode: batch.lotCode,
               status: "BLOCKED",
+              serials:input.serials??[],
               quantity: input.quantity,
               toWarehouseId: target.warehouseId,
               toLocationId: target.id,
@@ -204,6 +208,7 @@ export async function collectProductionBatch(
               warehouseId: target.warehouseId,
               locationId: target.id,
               quantity: input.quantity,
+              serials:input.serials??[],
               actorUserId: session.userId,
               requestKey: input.requestKey,
               note: input.note,
@@ -279,7 +284,7 @@ export async function readProductionHandoffs(
       where,
       orderBy: [{ createdAt: "asc" }, { id: "asc" }],
       include: {
-        product: { select: { code: true, name: true, unitOfMeasure: true } },
+        product: { select: { code: true, name: true, unitOfMeasure: true,trackingMode:true } },
         warehouse: { select: { name: true, kind: true } },
         location: { select: { name: true } },
         collections: {

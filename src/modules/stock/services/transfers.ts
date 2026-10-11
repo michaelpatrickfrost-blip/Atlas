@@ -1,87 +1,85 @@
-import { db } from '@/core/db/client';
-import type { Session } from '@/core/auth/session';
-import { moveTiming } from '../domain/places';
-export type StockTransfer = {productId:string;fromWarehouseId:string;toWarehouseId:string;quantity:number;reason:string;reference:string;requestKey:string};
+import { createHash } from "node:crypto";
+import { measuredQuantity } from "@/core/shared/measurement";
+import { addQuantity, validQuantity } from "@/core/shared/quantity";
+import { db } from "@/core/db/client";
+import type { Session } from "@/core/auth/session";
+import { moveTiming } from "../domain/places";
+import { stockProvider } from "./provider";
+import { eligiblePositions, unreservedPositions } from "../domain/eligibility";
+
+export type StockTransfer = { productId:string; fromWarehouseId:string; toWarehouseId:string; quantity:number; reason:string; reference:string; requestKey:string; enteredUnit?:string; lotCode?:string; serials?:string[] };
 export function parseTransfer(form:FormData):StockTransfer {
- const value={productId:String(form.get('productId')??''),fromWarehouseId:String(form.get('fromWarehouseId')??''),toWarehouseId:String(form.get('toWarehouseId')??''),quantity:Number(form.get('quantity')),reason:String(form.get('reason')??'').trim(),reference:String(form.get('reference')??'').trim(),requestKey:String(form.get('requestKey')??'')};
- if(!value.productId||!value.fromWarehouseId||!value.toWarehouseId||value.fromWarehouseId===value.toWarehouseId)throw new Error('Choose a product and two different warehouses.');
- if(!Number.isSafeInteger(value.quantity)||value.quantity<=0||value.quantity>1000000)throw new Error('Enter a positive whole quantity up to 1,000,000.');
- if(!value.reason||value.reason.length>1000||value.reference.length>150||!value.requestKey||value.requestKey.length>100)throw new Error('Enter a reason and a valid movement reference.');
+ const value={productId:String(form.get("productId")??""),fromWarehouseId:String(form.get("fromWarehouseId")??""),toWarehouseId:String(form.get("toWarehouseId")??""),quantity:Number(form.get("quantity")),enteredUnit:String(form.get("enteredUnit")||""),lotCode:String(form.get("lotCode")||"").trim(),serials:String(form.get("serials")||"").split(/[\s,;]+/).filter(Boolean),reason:String(form.get("reason")??"").trim(),reference:String(form.get("reference")??"").trim(),requestKey:String(form.get("requestKey")??"")};
+ if(!value.productId||!value.fromWarehouseId||!value.toWarehouseId||value.fromWarehouseId===value.toWarehouseId)throw new Error("Choose a product and two different warehouses.");
+ if(!validQuantity(value.quantity)||value.quantity<=0||value.quantity>1_000_000)throw new Error("Enter a positive quantity with up to six decimal places, up to 1,000,000.");
+ if(!value.reason||value.reason.length>1000||value.reference.length>150||!value.requestKey||value.requestKey.length>80||value.lotCode.length>80)throw new Error("Enter a reason and a valid movement reference.");
  return value;
 }
-/** A completed transfer is two immutable movements, in the same transaction as balances and audit. */
-export async function postTransfer(session:Session,value:StockTransfer) {
+
+/** The stock remains owned and valued at its source while in transit; receipt moves ownership between warehouses. */
+export async function postTransfer(session:Session, entered:StockTransfer) {
  for(let attempt=0;attempt<3;attempt++) {
   try {
-   await db.$transaction(async tx=>{
+   return await db.$transaction(async tx=>{
     const organisationId=session.organisationId;
-    const prior=await tx.inventoryMovement.findMany({where:{organisationId,requestKey:{in:[`${value.requestKey}:out`,`${value.requestKey}:in`]}}});
-    if(prior.length) {
-     const out=prior.find(m=>m.requestKey===`${value.requestKey}:out`),incoming=prior.find(m=>m.requestKey===`${value.requestKey}:in`);
-     if(out&&!incoming&&out.productId===value.productId&&out.warehouseId===value.fromWarehouseId&&out.delta===-value.quantity){
-      const open=await tx.internalMove.findUnique({where:{organisationId_requestKey:{organisationId,requestKey:value.requestKey}}});
-      if(open&&open.toWarehouseId===value.toWarehouseId&&open.quantity===value.quantity)return;
-     }
-     if(!out||!incoming||out.productId!==value.productId||incoming.productId!==value.productId||out.warehouseId!==value.fromWarehouseId||incoming.warehouseId!==value.toWarehouseId||out.delta!==-value.quantity||incoming.delta!==value.quantity||out.reference!==value.reference||out.reason!==`Transfer out · ${value.reason}`||incoming.reason!==`Transfer in · ${value.reason}`)throw new Error('This request was already used for a different movement.');
-     return;
+    const product=await tx.product.findFirstOrThrow({where:{id:entered.productId,organisationId,kind:"PRODUCT",active:true}});
+    const measure=measuredQuantity(entered.quantity,entered.enteredUnit||product.unitOfMeasure,product.unitOfMeasure);
+    const fingerprint=createHash("sha256").update(JSON.stringify({...entered,serials:[...(entered.serials??[])].sort(),measurement:measure})).digest("hex");
+    const prior=await tx.internalMove.findUnique({where:{organisationId_requestKey:{organisationId,requestKey:entered.requestKey}}});
+    if(prior){if(prior.requestFingerprint!==fingerprint)throw new Error("This transfer reference already belongs to different details.");return {replenished:false};}
+    const warehouses=await tx.warehouse.findMany({where:{organisationId,id:{in:[entered.fromWarehouseId,entered.toWarehouseId]}},select:{id:true,siteId:true}});
+    if(warehouses.length!==2)throw new Error("Both warehouses must belong to this company.");
+    const from=warehouses.find(row=>row.id===entered.fromWarehouseId)!,to=warehouses.find(row=>row.id===entered.toWarehouseId)!;
+    const transit=moveTiming(from.siteId,to.siteId)==="transit";
+    const [positions,lots,reservations,holds,serials]=await Promise.all([
+     tx.stockPosition.findMany({where:{organisationId,warehouseId:from.id,productId:product.id}}),
+     tx.stockLot.findMany({where:{organisationId,productId:product.id}}),
+     tx.stockReservation.findMany({where:{organisationId,warehouseId:from.id,productId:product.id,status:"ACTIVE"}}),
+     tx.qualityHold.findMany({where:{organisationId,productId:product.id,status:"ACTIVE"}}),
+     tx.stockSerial.findMany({where:{organisationId,productId:product.id,warehouseId:from.id,status:"ON_HAND",serial:{in:entered.serials??[]}}}),
+    ]);
+    if(product.trackingMode==="SERIAL"&&(!Number.isSafeInteger(measure.quantity)||new Set(entered.serials??[]).size!==measure.quantity||serials.length!==measure.quantity))throw new Error("Select one on-hand serial per unit to transfer.");
+    const free=unreservedPositions(eligiblePositions(positions.map(row=>({...row,quantity:Number(row.quantity)})),lots,holds,product.trackingMode),reservations.map(row=>({...row,quantity:Number(row.quantity)}))).filter(row=>!entered.lotCode||lots.find(lot=>lot.id===row.lotId)?.code===entered.lotCode);
+    // Legacy unlocated stock is materialised by the provider only for untracked products.
+    if(!positions.length&&product.trackingMode==="NONE"&&!holds.length&&!reservations.length){
+     const balance=await tx.inventoryBalance.findUnique({where:{warehouseId_productId:{warehouseId:from.id,productId:product.id}}});
+     if(Number(balance?.quantity??0)>=measure.quantity)free.push({id:"legacy",warehouseId:from.id,locationId:"",lotId:"",status:"AVAILABLE",quantity:Number(balance!.quantity)});
     }
-    await tx.product.findFirstOrThrow({where:{id:value.productId,organisationId,kind:'PRODUCT',active:true}});
-    const warehouses=await tx.warehouse.findMany({where:{organisationId,id:{in:[value.fromWarehouseId,value.toWarehouseId]}},select:{id:true,siteId:true}});
-    if(warehouses.length!==2)throw new Error('Both warehouses must belong to your workspace.');
-    const from=warehouses.find(item=>item.id===value.fromWarehouseId),to=warehouses.find(item=>item.id===value.toWarehouseId);
-    if(from&&to&&moveTiming(from.siteId,to.siteId)==='transit'){
-     const priorMove=await tx.internalMove.findUnique({where:{organisationId_requestKey:{organisationId,requestKey:value.requestKey}}});
-     if(priorMove){
-      if(priorMove.productId!==value.productId||priorMove.fromWarehouseId!==value.fromWarehouseId||priorMove.toWarehouseId!==value.toWarehouseId||priorMove.quantity!==value.quantity)throw new Error('This request was already used for a different movement.');
-      return;
-     }
-     const issued=await tx.inventoryBalance.updateMany({where:{organisationId,warehouseId:value.fromWarehouseId,productId:value.productId,quantity:{gte:value.quantity}},data:{quantity:{decrement:value.quantity}}});
-     if(issued.count!==1)throw new Error('The source warehouse does not have enough stock.');
-     if(tx.stockPosition){
-      const positions=await tx.stockPosition.findMany({where:{organisationId,warehouseId:value.fromWarehouseId,productId:value.productId,status:'AVAILABLE',quantity:{gt:0}},orderBy:{quantity:'desc'}});
-      let left=value.quantity;
-      for(const row of positions){if(!left)break;const take=Math.min(row.quantity,left);await tx.stockPosition.update({where:{id:row.id},data:{quantity:{decrement:take}}});left-=take;}
-     }
-     const count=await tx.internalMove.count({where:{organisationId}});
-     const move=await tx.internalMove.create({data:{organisationId,reference:`MV-${String(count+1).padStart(4,'0')}`,productId:value.productId,fromWarehouseId:value.fromWarehouseId,toWarehouseId:value.toWarehouseId,quantity:value.quantity,reason:value.reason,requestKey:value.requestKey,actorUserId:session.userId}});
-     await tx.inventoryMovement.create({data:{organisationId,warehouseId:value.fromWarehouseId,productId:value.productId,delta:-value.quantity,reason:`In transit · ${value.reason}`,reference:move.reference,requestKey:`${value.requestKey}:out`,actorUserId:session.userId}});
-     await tx.auditEntry.create({data:{organisationId,actorUserId:session.userId,action:'stock.transferred',entityType:'InternalMove',entityId:move.id,after:{productId:value.productId,fromWarehouseId:value.fromWarehouseId,toWarehouseId:value.toWarehouseId,quantity:value.quantity,status:'IN_TRANSIT'}}});
-     return;
+    let remaining=measure.quantity;
+    const count=await tx.internalMove.count({where:{organisationId}});
+    const move=await tx.internalMove.create({data:{organisationId,reference:`MV-${String(count+1).padStart(4,"0")}`,productId:product.id,fromWarehouseId:from.id,toWarehouseId:to.id,quantity:measure.quantity,reason:entered.reason,requestKey:entered.requestKey,requestFingerprint:fingerprint,actorUserId:session.userId,status:transit?"IN_TRANSIT":"RECEIVED",receivedAt:transit?null:new Date()}});
+    for(const row of free){
+     if(remaining<=0)break;
+     const selected=serials.filter(serial=>serial.locationId===row.locationId&&(serial.lotId??"")===row.lotId).map(serial=>serial.serial);
+     const take=Math.min(row.quantity,remaining,product.trackingMode==="SERIAL"?selected.length:Infinity);
+     if(take<=0)continue;
+     const suffix=createHash("sha256").update(row.id).digest("hex").slice(0,8);
+     await stockProvider.executeMovement(session,{requestKey:`${entered.requestKey}:dispatch:${suffix}`,productId:product.id,warehouseId:from.id,locationId:row.locationId||undefined,toWarehouseId:transit?from.id:to.id,toLocationId:transit?(row.locationId||undefined):undefined,lotCode:lots.find(lot=>lot.id===row.lotId)?.code,serials:selected.slice(0,take),quantity:take,toStatus:transit?"IN_TRANSIT":"AVAILABLE",reason:`Transfer · ${entered.reason}`,reference:move.reference},tx);
+     remaining=addQuantity(remaining,-take);
     }
-    const issued=await tx.inventoryBalance.updateMany({where:{organisationId,warehouseId:value.fromWarehouseId,productId:value.productId,quantity:{gte:value.quantity}},data:{quantity:{decrement:value.quantity}}});
-    if(issued.count!==1)throw new Error('The source warehouse does not have enough stock.');
-    await tx.inventoryBalance.upsert({where:{warehouseId_productId:{warehouseId:value.toWarehouseId,productId:value.productId}},create:{organisationId,warehouseId:value.toWarehouseId,productId:value.productId,quantity:value.quantity},update:{quantity:{increment:value.quantity}}});
-    const positioned=await tx.stockPosition.findFirst({where:{organisationId,warehouseId:value.toWarehouseId,productId:value.productId,status:'AVAILABLE'},orderBy:{quantity:'desc'}});
-    if(positioned)await tx.stockPosition.update({where:{id:positioned.id},data:{quantity:{increment:value.quantity}}});
-    const out=await tx.inventoryMovement.create({data:{organisationId,warehouseId:value.fromWarehouseId,productId:value.productId,delta:-value.quantity,reason:`Transfer out · ${value.reason}`,reference:value.reference,requestKey:`${value.requestKey}:out`,actorUserId:session.userId}});
-    await tx.inventoryMovement.create({data:{organisationId,warehouseId:value.toWarehouseId,productId:value.productId,delta:value.quantity,reason:`Transfer in · ${value.reason}`,reference:value.reference,requestKey:`${value.requestKey}:in`,actorUserId:session.userId}});
-    await tx.auditEntry.create({data:{organisationId,actorUserId:session.userId,action:'stock.transferred',entityType:'InventoryMovement',entityId:out.id,after:{productId:value.productId,fromWarehouseId:value.fromWarehouseId,toWarehouseId:value.toWarehouseId,quantity:value.quantity,reason:value.reason,reference:value.reference}}});
-   },{isolationLevel:'Serializable'});
-   return;
-  } catch(error) {
-   if(attempt<2&&typeof error==='object'&&error!==null&&'code' in error&&['P2034','P2002'].includes(String(error.code)))continue;
-   throw error;
-  }
+    if(remaining>0)throw new Error("This transfer exceeds available stock after reservations, quality holds and expiry.");
+    await tx.auditEntry.create({data:{organisationId,actorUserId:session.userId,action:"stock.transferred",entityType:"InternalMove",entityId:move.id,after:{...entered,quantity:measure.quantity,status:move.status}}});
+    return {replenished:!transit};
+   },{isolationLevel:"Serializable"});
+  }catch(error){if(attempt<2&&typeof error==="object"&&error!==null&&"code" in error&&["P2034","P2002"].includes(String(error.code)))continue;throw error;}
  }
 }
 
-export async function receiveInternalMove(session: Session, moveId: string) {
- return db.$transaction(async tx => {
-  const move = await tx.internalMove.findFirst({ where: { id: moveId, organisationId: session.organisationId } });
-  if (!move) throw new Error("That move is not in this company.");
-  if (move.status === "RECEIVED") return;
-  if (move.status !== "IN_TRANSIT") throw new Error("That move is no longer in transit.");
-  await tx.inventoryBalance.upsert({ where: { warehouseId_productId: { warehouseId: move.toWarehouseId, productId: move.productId } }, create: { organisationId: session.organisationId, warehouseId: move.toWarehouseId, productId: move.productId, quantity: move.quantity }, update: { quantity: { increment: move.quantity } } });
-  const locationId = move.toLocationId ?? (await tx.stockLocation.findFirst({ where: { organisationId: session.organisationId, warehouseId: move.toWarehouseId, active: true }, orderBy: { sequence: "asc" } }))?.id;
-  if (locationId) {
-   await tx.stockPosition.upsert({
-    where: { warehouseId_locationId_productId_lotId_status: { warehouseId: move.toWarehouseId, locationId, productId: move.productId, lotId: "", status: "AVAILABLE" } },
-    create: { organisationId: session.organisationId, warehouseId: move.toWarehouseId, locationId, productId: move.productId, quantity: move.quantity },
-    update: { quantity: { increment: move.quantity } },
-   });
+export async function receiveInternalMove(session:Session,moveId:string){
+ return db.$transaction(async tx=>{
+  const organisationId=session.organisationId;
+  const move=await tx.internalMove.findFirstOrThrow({where:{id:moveId,organisationId}});
+  if(move.status==="RECEIVED")return;
+  if(move.status!=="IN_TRANSIT")throw new Error("This transfer is no longer in transit.");
+  const allocations=await tx.stockMovementAllocation.findMany({where:{organisationId,direction:"IN",status:"IN_TRANSIT",movement:{organisationId,requestKey:{startsWith:`${move.requestKey}:dispatch:`}}}});
+  if(allocations.reduce((sum,row)=>addQuantity(sum,Number(row.quantity)),0)!==Number(move.quantity))throw new Error("This transfer has no complete batch allocation history. Review its source stock before receipt.");
+  for(const allocation of allocations){
+   const lot=allocation.lotId?await tx.stockLot.findFirstOrThrow({where:{id:allocation.lotId,organisationId,productId:move.productId}}):null;
+   await stockProvider.executeMovement(session,{requestKey:`${move.requestKey}:receive:${allocation.id.slice(-8)}`,productId:move.productId,warehouseId:move.fromWarehouseId,locationId:allocation.locationId,toWarehouseId:move.toWarehouseId,toLocationId:move.toLocationId,lotCode:lot?.code,serials:allocation.serials,quantity:Number(allocation.quantity),status:"IN_TRANSIT",toStatus:"AVAILABLE",reason:`Received · ${move.reason}`,reference:move.reference},tx);
   }
-  await tx.inventoryMovement.create({ data: { organisationId: session.organisationId, warehouseId: move.toWarehouseId, productId: move.productId, delta: move.quantity, reason: `Received · ${move.reason}`, reference: move.reference, requestKey: `${move.requestKey}:in`, actorUserId: session.userId } });
-  await tx.internalMove.update({ where: { id: move.id }, data: { status: "RECEIVED", receivedAt: new Date(), toLocationId: locationId } });
-  return { productId: move.productId, warehouseId: move.toWarehouseId, requestKey: move.requestKey };
- }, { isolationLevel: "Serializable" });
+  const changed=await tx.internalMove.updateMany({where:{id:move.id,organisationId,status:"IN_TRANSIT"},data:{status:"RECEIVED",receivedAt:new Date()}});
+  if(changed.count!==1)throw new Error("This transfer changed during receipt. Refresh and try again.");
+  await tx.auditEntry.create({data:{organisationId,actorUserId:session.userId,action:"stock.transfer.received",entityType:"InternalMove",entityId:move.id,after:{quantity:Number(move.quantity),batches:allocations.length}}});
+  return{productId:move.productId,warehouseId:move.toWarehouseId,requestKey:move.requestKey};
+ },{isolationLevel:"Serializable"});
 }

@@ -176,7 +176,7 @@ it.each(["foreign", "stale", "over", "inactive", "hold", "destination", "cas"])(
     expect(m.create).not.toHaveBeenCalled();
     expect(m.batch).toHaveBeenCalledWith({
       where: { id: "batch", organisationId: "company" },
-      include: { location: true },
+      include: { location: true, product: { select: { trackingMode: true } } },
     });
   },
 );
@@ -194,19 +194,31 @@ it("checks mutation capability and app enablement before reading business record
   );
   expect(m.transaction).not.toHaveBeenCalled();
 });
-it.each([0, -1, 1.5, NaN, Infinity, 1000001])(
+it.each([0, -1, 0.0000001, NaN, Infinity, 1000001])(
   "rejects invalid quantity %s without entering a transaction",
   async (quantity) => {
     await expect(
       collectProductionBatch(session, { ...input, quantity }),
-    ).rejects.toThrow("whole units");
+    ).rejects.toThrow("six decimal places");
     expect(m.transaction).not.toHaveBeenCalled();
   },
 );
 it("requires a useful reference and accepts an ordinary browser form", () => {
   const form = new FormData();
   Object.entries(input).forEach(([key, value]) => form.set(key, String(value)));
-  expect(readCollection(form)).toEqual(input);
+  expect(readCollection(form)).toEqual({ ...input, serials: [] });
   form.set("note", "");
   expect(() => readCollection(form)).toThrow("reference");
+});
+
+it("collects fractional output exactly and treats the same request as a replay", async () => {
+  m.batch.mockResolvedValue({ ...batch, quantity: 1.25 });
+  const fractional = { ...input, quantity: 0.125 };
+  await collectProductionBatch(session, fractional);
+  expect(m.saved.collected).toBe(0.125);
+  expect(m.movement.mock.calls[0][1].quantity).toBe(0.125);
+  m.prior.mockResolvedValue({ ...fractional, serials: [] });
+  await collectProductionBatch(session, fractional);
+  expect(m.movement).toHaveBeenCalledOnce();
+  expect(m.replenished).toHaveBeenCalledOnce();
 });

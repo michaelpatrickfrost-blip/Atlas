@@ -17,7 +17,7 @@ export default async function WorkPage({ params }: { params: Promise<{ taskId: s
   const task = await taskDetail(session.organisationId, taskId);
   if (!task) notFound();
   const current = task.lines.find((line) => line.status === "OPEN" || line.status === "LOCATED") ?? null;
-  const units = task.lines.reduce((sum, line) => sum + line.requiredQuantity, 0);
+  const units = task.lines.reduce((sum, line) => sum + Number(line.requiredQuantity), 0);
   const packing = task.kind === "PACK";
   const types = packing ? await handlingTypes(session.organisationId) : [];
   const packs = packing ? await skuPacks(session.organisationId, task.lines.map((line) => line.productId ?? "")) : new Map();
@@ -58,7 +58,7 @@ export default async function WorkPage({ params }: { params: Promise<{ taskId: s
           </div>
           <div className="space-y-2">
             {task.lines.map((line) => {
-              const open = Math.max(0, line.requiredQuantity - line.confirmedQuantity);
+              const open = Math.max(0, Number(line.requiredQuantity) - Number(line.confirmedQuantity));
               const sku = line.productId ? packs.get(line.productId) : undefined;
               const plan = palletLoad(open, sku?.perPallet ?? null);
               return (
@@ -83,7 +83,7 @@ export default async function WorkPage({ params }: { params: Promise<{ taskId: s
             <li key={unit.id} className="rounded-2xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm">
               <p className="font-medium">{unit.reference} · {unit.typeCode ?? unit.packageType}{unit.parentId ? " · nested" : ""}</p>
               <p className="text-[var(--color-ink-muted)]">{[unit.lengthMm, unit.widthMm, unit.heightMm].filter(Boolean).join(" × ")}{unit.lengthMm ? " mm" : ""}{unit.weightGrams ? ` · ${(unit.weightGrams / 1000).toFixed(1)} kg` : ""}</p>
-              <p>{unit.contents.map((content) => `${content.description} × ${content.quantity}`).join(", ")}</p>
+              <p>{unit.contents.map((content) => `${content.description} × ${Number(content.quantity)}`).join(", ")}</p>
             </li>
           ))}
         </ul>
@@ -116,12 +116,12 @@ export default async function WorkPage({ params }: { params: Promise<{ taskId: s
           </ActionForm>
         </details>
       )}
-      {!packing && can(session, C.pickExecute) && <ScanStation taskId={task.id} line={current} />}
+      {!packing && can(session, C.pickExecute) && <ScanStation taskId={task.id} line={current ? {...current,requiredQuantity:Number(current.requiredQuantity),confirmedQuantity:Number(current.confirmedQuantity)} : null} />}
       <ul className="divide-y divide-[var(--color-border)] rounded-3xl border border-[var(--color-border)] bg-white">
         {task.lines.map((line) => (
           <li key={line.id} className="flex items-center justify-between px-5 py-4 text-sm">
             <span>{line.clusterSlot ? `${line.clusterSlot} · ` : ""}{line.zoneCode ? `${line.zoneCode} · ` : ""}{line.locationCode} · {line.productCode || line.description}</span>
-            <span className={line.status === "DONE" ? "text-emerald-600" : line.status === "SHORT" || line.status === "EXCEPTION" ? "text-rose-600" : "text-[var(--color-ink-muted)]"}>{line.confirmedQuantity}/{line.requiredQuantity}</span>
+            <span className={line.status === "DONE" ? "text-emerald-600" : line.status === "SHORT" || line.status === "EXCEPTION" ? "text-rose-600" : "text-[var(--color-ink-muted)]"}>{Number(line.confirmedQuantity)}/{Number(line.requiredQuantity)}</span>
           </li>
         ))}
       </ul>

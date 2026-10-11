@@ -72,7 +72,7 @@ export default async function OrderPage({
     o.lines.map((l) => ({
       id: l.id,
       productId: l.productId,
-      quantity: l.orderedQuantity - l.cancelledQuantity,
+      quantity: Number(l.orderedQuantity) - Number(l.cancelledQuantity),
       invoiceWhenInStock: l.invoiceWhenInStock,
       kind: l.product?.kind ?? null,
     })),
@@ -107,7 +107,7 @@ export default async function OrderPage({
     description: l.descriptionSnapshot,
     code: l.product?.code,
     unit: l.unitOfMeasure,
-    quantity: l.orderedQuantity - l.cancelledQuantity,
+    quantity: Number(l.orderedQuantity) - Number(l.cancelledQuantity),
     price: l.unitPriceAmount,
     discount: l.discountPercent ?? 0,
     net:
@@ -115,7 +115,7 @@ export default async function OrderPage({
       !["SECTION", "NOTE"].includes(l.type)
         ? commercialLineNet(
             l.unitPriceAmount,
-            l.orderedQuantity - l.cancelledQuantity,
+            Number(l.orderedQuantity) - Number(l.cancelledQuantity),
             l.discountPercent ?? 0,
           )
         : l.netAmount,

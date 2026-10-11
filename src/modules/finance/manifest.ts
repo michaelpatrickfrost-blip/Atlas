@@ -1,3 +1,4 @@
+import { manufacturingCostProvider } from "./services/manufacturing-values";
 import { reports } from './services/reports';
 import { financeRecordContext, financeRecordRelationships } from "./services/relationships";
 import { salesInvoiceChain, salesInvoiceQuantities } from "./services/order-chain";
@@ -14,6 +15,7 @@ import {FINANCE_CAPABILITIES as C} from './capabilities';
 import { financeAnalytics } from "./services/analytics";
 import { supplySpendProvider } from "./services/supply-spend";
 export const financeManifest:ModuleManifest={reportProvider:reports,
+ manufacturingCostProvider,
  supplySpendProvider,
  recordContextProvider: financeRecordContext, recordRelationshipProvider: financeRecordRelationships,
  salesInvoiceChainProvider: salesInvoiceChain, salesInvoiceQuantitiesProvider: salesInvoiceQuantities,
@@ -36,6 +38,7 @@ export const financeManifest:ModuleManifest={reportProvider:reports,
  {label:'Tax',href:'/finance/tax',capability:C.taxRead,group:'Money'},
  {label:'Reporting',href:'/finance/reporting',capability:C.reportRead,group:'Insights'},
  {label:'Control Centre',href:'/finance/control',capability:C.controlRead,group:'Insights'},
+ {label:'Manufacturing costs',href:'/finance/manufacturing',capability:C.ledgerRead,group:'Insights'},
  {label:'Settings',href:'/finance/settings',capability:C.configure,group:'Insights'},
  {label:'Help',href:'/finance/help',capability:C.read,group:'Insights'},
 ]};

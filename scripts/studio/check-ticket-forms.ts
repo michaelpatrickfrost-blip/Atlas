@@ -160,14 +160,14 @@ export async function checkTicketForms(base: string, browser: Browser, existingS
     await expect(createForm.getByRole("heading", { name: "Additional details", exact: true })).toBeVisible();
     for (const width of [390, 320]) {
       await page.setViewportSize({ width, height: 844 });
-      await expect(createForm.getByLabel(label.zero, { exact: false })).toBeVisible();
+      await expect(createForm.getByRole("spinbutton", { name: /^Form zero count/ })).toBeVisible();
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `Configured Ticket form overflows at ${width}px.`);
     }
     await page.setViewportSize({ width: 1440, height: 1000 });
     await createForm.getByLabel("Subject", { exact: true }).fill("Exact Studio form browser ticket");
     await createForm.getByLabel("Details and requested action", { exact: true }).fill("Guarded central Test form acceptance.");
-    await createForm.getByLabel(label.zero, { exact: false }).fill("0");
-    await createForm.getByLabel(label.false, { exact: false }).selectOption("no");
+    await createForm.getByRole("spinbutton", { name: /^Form zero count/ }).fill("0");
+    await createForm.getByRole("combobox", { name: /^Form false answer/ }).selectOption("no");
     await createForm.getByLabel(label.conditional, { exact: true }).fill("12.5");
     const originalCreate = await entries(createForm), originalPacket = packet(originalCreate);
     assert.equal(originalPacket.fields.length, 3);
@@ -191,8 +191,8 @@ export async function checkTicketForms(base: string, browser: Browser, existingS
     await denied(originalCreate.map(([key, value]) => [key, key === "subject" ? "Conflicting retry" : value]), "create", /CONFLICT/);
     await page.reload({ waitUntil: "networkidle" });
     const edit = () => page.locator("form").filter({ has: page.getByRole("button", { name: "Update work", exact: true }) });
-    await expect(edit().getByLabel(label.zero, { exact: false })).toHaveValue("0");
-    await expect(edit().getByLabel(label.false, { exact: false })).toHaveValue("no");
+    await expect(edit().getByRole("spinbutton", { name: /^Form zero count/ })).toHaveValue("0");
+    await expect(edit().getByRole("combobox", { name: /^Form false answer/ })).toHaveValue("no");
     await expect(edit().getByLabel(label.conditional, { exact: true })).toHaveValue("12.5");
     // Same-form conditional clear uses resulting status, not pre-CAS NEW facts.
     await edit().getByLabel("Status", { exact: true }).selectOption("IN_PROGRESS");
@@ -222,7 +222,7 @@ export async function checkTicketForms(base: string, browser: Browser, existingS
     await edit().getByRole("button", { name: "Update work", exact: true }).click(); await expect(edit().getByRole("status")).toHaveText("Saved.");
     await page.reload({ waitUntil: "networkidle" });
     await edit().getByLabel("Status", { exact: true }).selectOption("IN_PROGRESS"); await edit().getByLabel("Resolution / reason", { exact: true }).fill("Exact Test reopen");
-    await edit().getByLabel(label.zero, { exact: false }).fill("1"); const reopen = await entries(edit());
+    await edit().getByRole("spinbutton", { name: /^Form zero count/ }).fill("1"); const reopen = await entries(edit());
     await edit().getByRole("button", { name: "Update work", exact: true }).click(); await expect(edit().getByRole("status")).toHaveText("Saved.");
     const reopened = await db.serviceWorkItem.findFirstOrThrow({ where: { ...scope, id: recordId } }); assert.equal(reopened.version, 4); assert.equal(reopened.reopenCount, 1);
     const reopenedReceipt = ticketFormReceiptSchema.parse((await db.auditEntry.findFirstOrThrow({ where: { ...scope, id: ticketFormReceiptKey(packet(reopen).operationId) } })).after);
@@ -253,7 +253,7 @@ export async function checkTicketForms(base: string, browser: Browser, existingS
     try { await denied(originalCreate, "create", /FORBIDDEN|do not have access/); } finally { await db.membership.update({ where: { id: membership.id, organisationId }, data: { deniedCapabilities: [] } }); }
     // Exact-tenant completion Audit failure must roll back the native CAS, typed
     // writes, owning history/outbox and all related windows together.
-    await page.reload({ waitUntil: "networkidle" }); await edit().getByLabel(label.zero, { exact: false }).fill("2");
+    await page.reload({ waitUntil: "networkidle" }); await edit().getByRole("spinbutton", { name: /^Form zero count/ }).fill("2");
     const failing = await entries(edit()), trigger = `studio_form_audit_${randomUUID().replaceAll("-", "")}`;
     assert(/^[a-zA-Z0-9_-]+$/.test(organisationId));
     try {

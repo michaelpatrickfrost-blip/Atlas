@@ -76,6 +76,15 @@ source coverage, phase plan and this ledger. No rewritten specification.
 
 # Current Workstream Detail
 
+11October c152 deployment29161 EXIT1 before activation. Original candidateXyFyYX
+checks through native/window/concurrency PASS; new typed forms failed an ambiguous
+checker label (input and Clear button). Fixed selector targets actual control role
+and accessible name; no gate waived. Required recovery202921/fixture203058 retained,
+Test access suspended/QA unchanged. Typed-form SQL/runtime/public verification
+remains pending. Isolated default6c50c7a/searchb291e55 IMPLEMENTED with focused tests,
+not yet integrated/central verified. Full visual2E remains mandatory.
+
+
 11October concurrent release reconciliation: current publichealth+SSH confirm
 5b6390c874b42571f091a53b1b017aea70121df7, rollback6e5c39bebe2db2bf76dc9eabf49170f631c3f05b,
 Atlas active/root149GiBfree/tmp1.6GiBfree. Merge accepted live5b (containsad9) into94d3

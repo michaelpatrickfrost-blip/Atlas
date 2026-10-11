@@ -1,3 +1,20 @@
+## 11 October — typed-form candidate stopped at checker locator ambiguity
+
+Pinned c152bb309eaac8dcc7d22a1ec146e79d8bb19429 deployment29161 EXIT1,
+/tmp/atlas-studio-typed-forms-release.txt. Candidate XyFyYX reached all original
+Studio/native/window/concurrency checks PASS, then typed-form check failed because
+substring accessible-label lookup matched both actual input and Clear button.
+No candidate activation/public typed-form claim. Recovery202921 and required fixture
+203058 retained; synthetic companies suspended, QA unchanged. Narrow checker now
+selects spinbutton/combobox with the actual accessible name; no requirement removed.
+Current live remains to be freshly checked before the next pinned release.
+Independent isolated default6c50c7a and bounded searchb291e55 source checkpoints
+implemented with focused checks; central/runtime evidence pending. Full Phase2
+including visual editor still incomplete. Independent pure2C contracts may proceed
+in parallel within this phase; publisher/runtime wiring follows verified2B.
+Exact next: review/import those scoped checkpoints, integrated focused checks/build,
+then original candidate/public gates; implement2C/D and full visual2E, no Phase3.
+
 ## 11 October — Studio/native forms preserving newer accepted live source
 
 Read-only public health+SSH confirm LIVE5b6390c874b42571f091a53b1b017aea70121df7,

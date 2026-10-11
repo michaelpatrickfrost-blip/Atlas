@@ -156,3 +156,27 @@ source is preserved in Git stash `28243b7fbe1bccd0458d770177aee24ce9607aec`
 (IN PROGRESS, unverified, not live). Do not restore its superseded planning entries.
 Keep focused checks proportionate and consolidate builds/releases per coherent
 block; security/integrity and phase gates remain mandatory.
+
+## 11 October — independent Phase2 contract work in parallel
+
+Michael explicitly authorised additional parallel work to complete the visual
+editor. Independent pure contracts/compilers within Phase2 may proceed while2B
+runtime gates complete. Do not activate2C/D runtime/publisher wiring until its2B
+inputs are verified; no Phase3 work. This clarifies the earlier serial-workstream
+sentence without weakening phase gates.
+
+2C1: purpose closed base/profile and one record-type overlay contracts, deterministic
+resolver and pinned configuration references. Files core/studio/record-types/* and
+focused tests. Database none; no runtime/publisher mutation. Tests absent metadata
+compatibility, one overlay, conflicts/cycles/bounds/tenant-independent pure output.
+Status NOT STARTED; exact ownership assigned before coding.
+2C2: purpose shared definition compiler/publisher integration plus tenant-scoped
+configuration dependency storage and canonical record association. Depends2C1/2B.
+Files compiler/kernel, definitions, schema additive migration, owner adapters/tests.
+Database additive tenant/version FKs, immutable pins, no canonical row copy/backfill.
+Tests exact references/where-used/retirement/activation, genuine owner/server rights,
+atomic assignments and required-field coverage. Status NOT STARTED.
+2D1: closed structured page/component/variant contracts and compiler consuming2C
+profile. Files core/studio/pages/* and owner-approved surface contracts. No engine
+for future phases; shallow predicates from existing approved facts. Tests conflict/
+ambiguity/cost/mobile/hidden-query safety and unsupported contributions. NOT STARTED.

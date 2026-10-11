@@ -90,3 +90,18 @@ to use whole units, older completed orders are not silently restaged, and regula
 lot release/WIP valuation/repeated production receipts remain separate coverage.
 Permission regressions plus actual existing staff acceptance were used; the 240
 route sweep is not a simulation of every possible custom access profile or action.
+
+## Follow-up: software-card layout correction
+
+The user's live screenshot revealed software-card internals squeezed into a row by
+the shared global summary style. The earlier hero geometry/root-overflow checks
+did not catch this, since the website clips horizontal overflow. Website card
+summaries now explicitly stack their content; the final wide desktop card keeps
+its intentional grid. Website summaries use their existing custom indicator
+without an additional shell arrow.
+
+Local production build and diff checks passed. Browser inspection at
+1440/820/390/320 verified all six cards have readable paragraph widths and no
+internal clipping/overlap; expanded cards and phone FAQ were visually checked.
+No business fixtures or data writes were needed. Pinned deployment and live
+section verification follow.

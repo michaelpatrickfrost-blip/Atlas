@@ -23,6 +23,10 @@
 .atlas-website :is(a, button, summary):focus-visible {
   outline: 2px solid var(--website-blue);
 }
+/* Website disclosures supply their own icons, separate from the app shell. */
+.atlas-website summary::after {
+  content: none;
+}
 .website-container {
   width: min(1320px, calc(100% - 100px));
   margin-inline: auto;
@@ -717,6 +721,8 @@
   box-shadow: 0 22px 45px -25px #21465c30;
 }
 .website-area summary {
+  /* Keep content stacked instead of inheriting the app's inline summary row. */
+  display: block;
   list-style: none;
   cursor: pointer;
   padding: 29px;

@@ -12723,3 +12723,21 @@ Main integration completed: normal fast-forward push published combined source a
 shared evidence at 3cefe948 on origin/main. Post-live differences are documentation
 only; app/schema/action source matches verified a0fd2d0. The canonical Desktop
 checkout's concurrent edits remain intact. No further test fixtures were created.
+
+## 11 October 2026 — Website software-card layout correction
+
+Michael's live screenshot exposed an internal layout defect missed by the earlier
+root-overflow/hero checks: the global `summary { display: flex }` squeezed software
+card headings, descriptions, diagrams and app chips into one row. Website card
+summaries now explicitly use block flow; the last desktop card retains its
+intentional grid. Website disclosures suppress the shell's additional arrow, using
+their own existing indicator. Only `src/components/website/website.css` changes
+runtime behavior; shared app styles and data are unchanged.
+
+Production build and diff whitespace PASS. Actual local browser checks at
+1440/820/390/320 show readable text, no clipped summary content and no overlapping
+card content; expanded Customer/Manufacturing/operation details and phone FAQ
+visually checked. No fixtures or local business data created; broad business tests
+not rerun for this CSS correction. Earlier acceptance does not establish software
+card layout quality; this focused section review supersedes that inference.
+Next: deploy the reviewed pinned correction and inspect the exact live section.

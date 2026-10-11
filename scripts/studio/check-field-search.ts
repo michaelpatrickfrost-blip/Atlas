@@ -1,3 +1,4 @@
+import { createdTicketUrl } from "./ticket-urls";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import jwt from "jsonwebtoken";
@@ -109,7 +110,7 @@ export async function checkFieldSearch(base: string, browser: Browser, existingS
         await form.getByLabel("Receiving team", { exact: true }).selectOption(queueId);
         await form.getByLabel("Subject", { exact: true }).fill(subject);
         await form.getByLabel("Details and requested action", { exact: true }).fill("Actual configured-search central Test fixture; no manual native/value insert.");
-        await form.getByRole("button", { name: "Create ticket", exact: true }).click(); await expect(page).toHaveURL(/\/tickets\/[a-zA-Z0-9_-]+$/);
+        await form.getByRole("button", { name: "Create ticket", exact: true }).click(); await expect(page).toHaveURL(createdTicketUrl(base));
         const id = new URL(page.url()).pathname.split("/").at(-1)!;
         assert(await db.serviceWorkItem.findFirst({ where: { id, organisationId, queueId, kind: "TICKET", requesterUserId: owner.id, version: 1 } })); ids.push(id);
       }

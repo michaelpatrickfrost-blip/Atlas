@@ -76,6 +76,16 @@ source coverage, phase plan and this ledger. No rewritten specification.
 
 # Current Workstream Detail
 
+9ad9e078 release59282 EXIT1 beforeactivation atfirst actualcreate browsercheck:
+former URLpredicate matched reserved /tickets/create and prematurely read it asID.
+Exact-origin shared helper excludes that route; forms/defaults/search waits all
+corrected, two focused URL tests PASS. Original prior metadata/lifecycle/value/native/
+authority/concurrency checks PASS. No activation;213004/213146 recovery retained.
+070000 schema/proposed assignment helper remains separate IN PROGRESS, not applied.
+Genuine selected-business authoring context source9 testsPASS; actual Page save/live
+integration remains pending. Exactnext retrycorrected originalacceptance thenfinish
+Page factory/runtime/editor publication and recordtype coverage. Phase2FAIL.
+
 Latest ff91a303 release EXIT1 before activation: old metadata checker chose the new
 bounded Sales query. Exact sales.template.order.list@1 selection now preserves the
 legacy adapter assertion. Candidate p3K21h/recovery211714/fixture211859 retained;

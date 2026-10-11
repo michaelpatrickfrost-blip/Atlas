@@ -1,3 +1,4 @@
+import { createdTicketUrl } from "./ticket-urls";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import jwt from "jsonwebtoken";
@@ -175,7 +176,7 @@ export async function checkTicketForms(base: string, browser: Browser, existingS
     await denied(replacePacket(originalCreate, missing), "create", /required/);
     await expect(createForm.getByLabel(label.conditional, { exact: true })).toHaveValue("12.5");
     await createForm.getByRole("button", { name: "Create ticket", exact: true }).click();
-    await expect(page).toHaveURL(new RegExp(`${base.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/tickets/[a-zA-Z0-9_-]+$`));
+    await expect(page).toHaveURL(createdTicketUrl(base));
     const recordId = new URL(page.url()).pathname.split("/").at(-1)!;
     const created = await db.serviceWorkItem.findFirstOrThrow({ where: { ...scope, id: recordId } });
     assert.equal(created.version, 1); assert.equal(created.status, "NEW"); assert.equal(created.requesterUserId, user.id);

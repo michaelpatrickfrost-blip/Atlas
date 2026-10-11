@@ -1,3 +1,24 @@
+## 11 October — candidate creation-route wait corrected; Phase 2 continues
+
+9ad9e078 original Studio release59282 EXIT1 before activation. Candidate LwXpI8
+passed the existing metadata, field lifecycle/review/execution, ordinary value,
+native enforcement, genuine authority and concurrency checks. The first browser
+form creation check then read the reserved /tickets/create URL as a record ID:
+the previous alphanumeric route pattern already matched that current form URL.
+A shared exact-origin createdTicketUrl helper now excludes /tickets/create;
+all three new form/default/search checkers use it and two URL regression cases pass.
+This strengthens the original wait rather than altering business/acceptance rules.
+Required213004 recovery and213146 fixtures retained; no ad-hoc dump. No activation;
+last confirmed live c385/rollback5b. Complete Phase 2 remains FAIL/incomplete.
+
+Next source work is preserved separately: genuine selected-business authoring
+context (9 focused tests passed), Page definition compiler adapter, and proposed
+070000 assignment schema/client (Prisma validate/generate passed; SQL not applied).
+These are not part of the checker correction or a live-feature claim. Exact next:
+retry original pinned acceptance with corrected route wait; integrate Page approval
+factory/runtime and actual visual save/publish routes while assignment/requirements
+continue under their owned workstream. No Phase 3 work or duplicated dependencies.
+
 ## 11 October — Phase 2 page ownership, configuration impact and profile binding checkpoint
 
 The ff91a303 original Studio release failed before activation: the metadata checker

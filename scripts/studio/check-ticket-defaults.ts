@@ -1,3 +1,4 @@
+import { createdTicketUrl } from "./ticket-urls";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { realpathSync } from "node:fs";
@@ -187,7 +188,7 @@ export async function checkTicketDefaults(base: string, browser: Browser, existi
     async function submitCreate() {
       const saved = await entries(createForm());
       await createForm().getByRole("button", { name: "Create ticket", exact: true }).click();
-      await expect(page).toHaveURL(/\/tickets\/[a-zA-Z0-9_-]+$/);
+      await expect(page).toHaveURL(createdTicketUrl(base));
       return { values: saved, recordId: new URL(page.url()).pathname.split("/").at(-1)! };
     }
     async function receipt(values: Entries) { return ticketFormReceiptSchema.parse((await db.auditEntry.findFirstOrThrow({ where: {

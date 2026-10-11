@@ -203,6 +203,15 @@ logic through `tickets.ticket.required_coverage@1` (preflight/snapshot only).
 Existing v1–7 hashes and migration/representation/settlement ranges stay sealed;
 creation v8 explicitly extends existing proof-bound field-version approval.
 
+Ordinary first required=true schema1 activation now calls this coverage engine in
+the same Serializable transaction before pointer CAS/Audit. Genuine current target
+business authority, sealed binding/immutable version and exact definition revision
+are mandatory. Exact already-active or same-generation sealed schema1 label/help
+changes retain existing requirement semantics; current field Read/Write and module
+policy still apply. Optional activation retains metadata behavior. Metadata-only
+Admin setup cannot supply business-data authority. Existing reviewed cutover/rollback
+keep their stronger lineage paths and shared activation primitive. No client bypass.
+
 Internal `fields/required-coverage.ts` checks a server-loaded immutable candidate
 without changing activation. Genuine company identity or the existing explicitly
 audited support principal, Publish, Studio enablement, native Read/Manage and

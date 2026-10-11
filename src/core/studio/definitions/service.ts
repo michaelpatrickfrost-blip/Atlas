@@ -15,6 +15,7 @@ import { activateCompiledVersionInTransaction } from "./activation";
 import { studioRegistry } from "../registry/runtime";
 import { checksum } from "../registry/contracts";
 import { lockBoundFieldEntityInTransaction } from "../fields/entity-lock";
+import { prepareRequiredFieldActivationInTransaction } from "../fields/activation-coverage";
 const uuid = z.uuid();
 const revision = z.number().int().nonnegative();
 const identity = { key: z.string().regex(/^[a-z][a-z0-9_.-]{0,99}$/), name: z.string().min(1).max(150) };
@@ -105,7 +106,13 @@ export async function activateVersion(session: Session, input: unknown) {
   const version = await db.studioDefinitionVersion.findFirst({ where: { id: value.versionId, definitionId: value.definitionId, organisationId: session.organisationId }, include: { definition: { select: { kind: true } } } });
   if (!version) throw new Error("This Studio version is unavailable.");
   const compiled = await compileDefinition(session, version.definition.kind, version.payload, studioRegistry());
-  return db.$transaction(tx => activateCompiledVersionInTransaction(tx, session, value.definitionId, value.revision, version, compiled), { isolationLevel: "Serializable" });
+  return db.$transaction(async tx => {
+    const current = compiled.plan.kind === "customField" && compiled.plan.payload.field.required
+      ? await prepareRequiredFieldActivationInTransaction(session, tx, { definitionId: value.definitionId, versionId: value.versionId, definitionRevision: value.revision },
+        { plan: compiled.plan, payload: compiled.plan.payload, checksum: compiled.checksum, warnings: compiled.warnings })
+      : session;
+    return activateCompiledVersionInTransaction(tx, current, value.definitionId, value.revision, version, compiled);
+  }, { isolationLevel: "Serializable" });
 }
 /** Read an active metadata plan; recheck owner availability and contracts every time. */
 export async function activeDefinition(session: Session, definitionId: string) {

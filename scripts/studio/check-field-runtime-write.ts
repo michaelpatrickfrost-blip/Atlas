@@ -15,9 +15,11 @@ import { startFieldMigrationExecution } from "../../src/core/studio/fields/migra
 import { executeFieldMigrationBatch } from "../../src/core/studio/fields/migrations/execution-batch";
 import { cutoverReviewedFieldMigration } from "../../src/core/studio/fields/migrations/cutover";
 import { retireFieldDefinition } from "../../src/core/studio/fields/retirement";
+import { checkFieldNativeWindows } from "./check-field-native-windows";
 
 /** Actual ordinary value service, exact synthetic Test accounts/company only.
- * Native rows are read-only. Required native-create/save hooks remain2B4d. */
+ * The nested native-window probes intentionally roll back; committed ordinary
+ * saves preserve the driver's original native records and their versions. */
 export async function checkFieldRuntimeWrite(staff: Session, principal: FieldMigrationPrincipal, customerUserId: string, parentId: string, peerId: string, otherOrganisationId: string) {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1");
   const organisationId = staff.organisationId;
@@ -146,6 +148,7 @@ export async function checkFieldRuntimeWrite(staff: Session, principal: FieldMig
     const supportPin = staffReceipt.settlementPin as { principal: { authority: string; auditId: string } }; assert.equal(supportPin.principal.authority, "staff_support");
     assert.equal(await db.auditEntry.count({ where: { id: supportPin.principal.auditId, organisationId, actorUserId: staff.userId, entityId: staffMember.id, action: "studio.field.migration.support_opened" } }), 1);
     await db.moduleState.update({ where: { id: moduleState.id, organisationId }, data: { enabled: moduleState.enabled } });
+    await checkFieldNativeWindows(author, principal, customerUserId, parentId, peerId, definition.id, caps);
     await retireFieldDefinition(author, { definitionId: definition.id, revision: (await state()).revision });
     await assert.rejects(() => readCurrentFieldValue(customer, { definitionId: definition.id, recordId: parentId }), /FIELD_UNAVAILABLE/);
     assert((await readFieldValueHistory(customer, { definitionId: definition.id, recordId: parentId, generationId: payload.storageGeneration })).retired);

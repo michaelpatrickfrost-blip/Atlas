@@ -2494,3 +2494,22 @@ Execution freshness handles intermediate writes; deferred progress guards prove 
 exact prefix at commit. Start/batch select protocol only from stored server intent;
 cutover/settlement stay closed1 pending their own integration. Cancellation preserves
 inactive target/outcome/history and the explained +1, never deletes or rewinds them.
+
+## 11 October 2026 — Ordinary required activation needs current cohort coverage
+
+First required=true schema1 ordinary activation previously moved the active pointer
+without reading canonical coverage. A legal native-before-activation serialization
+could therefore leave invalid records; advisory locks/SSI alone cannot establish
+required-state validity. Use the existing candidate coverage engine in activateVersion's
+same Serializable transaction before pointer CAS/Audit, with genuinely refreshed
+current authority and sealed binding/version/revision checks. Exact already-active
+or sealed same-generation schema1 label/help-only changes preserve existing semantics
+without re-reading cohort values; current Read/Write/module checks still apply.
+Shared reviewed cutover/rollback primitive and stronger lineage proof stay unchanged.
+No public waiver, duplicate engine, schema change or forced data backfill. Optional
+metadata activation remains unchanged. Metadata-only Admin setup cannot inspect
+business records; use an authorised genuine target business session or existing
+explicitly audited support opening. Ordinary Session-only API does not claim durable
+support-principal audit verification or create target affiliations/grants. This
+implements source6.5/24 validity/security requirements without silently changing
+the migration architecture. Local verification only until actual central gates.

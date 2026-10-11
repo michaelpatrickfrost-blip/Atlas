@@ -1,3 +1,86 @@
+## 11 October — d4e local checkpoint verified; central gate next
+
+Integrated correction5b7d136, native enforcement checker5d82090, concurrency source/
+minimal driver patch98ad339 and root native-window checker+runtime-write wiring.
+Preserved principal's existing fifth customerUserId argument during donor integration
+(old donor would have dropped conditional cutover regression); no unrelated removal.
+Independent source reviews found no blocker in activation/enforcement/windows/barrier.
+Root57/4 activation regressions64795 PASS; build92457/scoped lint67426 PASS; initial
+strict46426 failed only new checker captured Session|null narrowing, corrected explicit
+Session local; final standalone98624 exit0 and final window lint26292 exit0. NoSQL
+from static verification. Logs /tmp/atlas-studio-d4e-{activation-tests,types,final-types,
+lint,final-window-lint,build}.txt. Source/diff reviewed and diffcheck clean.
+Actual pg barrier clears ONLY local activity stats cache each poll (official PG docs),
+requires both real lock waits/snapshots, and checks permitted failure before recovery.
+Retains true100 field-limit fixture history including retired bindings; original
+cleanup registry/suspension plus explicit new synthetic membership revocation.
+NoDDL/newdump/deploy yet. Readonly server: health1f4/current1f4/rollbackb34,163GiBfree,
+4.3GiB available memory/no swap, original recovery backups123218/122723 retained.
+Phase2 stillFAIL incomplete; packet/control/visual prerequisites recorded in plan,
+not implemented. Next clean checkpoint then original pinned studio candidate/public
+acceptance; fix actual failures before activation, no skipped gates.
+
+## 11 October — d4e activation correction integrated; native-window acceptance source
+
+Projected5b7d136 ordinary required activation prerequisite/service/tests; contributor
+57 tests/4 suites +strict75622/scoped lint/diff PASS, source review in progress.
+NoSQL/build/deployment proof. Root added check-field-native-windows +runtime-write
+wiring after existing staff finalization/module restoration: two real optional
+sources (A populated via public writer for nonempty history), closed1 CUTOVER A /
+closed2 PUBLISHED B freeze unrelated C ordinary save and actual native write/create;
+normal cancellation/reviewed second cutover; native double-finalization then deliberate
+rollback, later-sort finalization Audit failure atomicity, real-barrier different-
+record public value finalizers, exact source history and original native preservation.
+Conditional draft seed privileged exact Test only, no customer dispatch. Native
+customer lacks authoring and B Write; full source/table snapshots cover effects.
+Source not SQL executed, barrier dependency awaits parallel contributor; lint93038
+pending/inspect log before claiming. Plan/ledger/ARCHITECTURE/DECISIONS updated.
+NoDDL/newdump/livechange. Next merge bounded concurrency source and review, integrated
+types/lint/build then pinned original candidate/public acceptance.
+
+## 11 October — d4e activation correction and actual acceptance in parallel
+
+Agreed minimal ordinary required activation prerequisite: genuinely refresh current
+field authority before same-tx sealed binding/version/revision/coverage checks and
+pointer CAS. No client waiver/Admin impersonation or new grants. Exact already-active
+or sealed same-generation cosmetic equality only may skip cohort coverage; shared
+reviewed cutover/rollback unchanged. Metadata DTO denied; genuine authorised target
+business Session allowed. Existing audited support opening may supply its genuine
+target Session, ordinary Session-only API does not assert durable support audit proof.
+Isolated activation contributor implementing; root owns ledger/plan/decisions.
+
+Integrated5d82090 new check-field-native-enforcement +principal wiring:13 rollback-only
+central SQL probes source; contributor strict62919/lint66ee3e PASS; independent source
+review no blocker/no checks. These actual engine/provider/initial-writer probes do
+not prove public action transition/SLA/approval or open windows/concurrency. NoSQL run.
+Parallel bounded concurrency source planned: dedicated exact central Test company
+registered original cleanup set, real pg_locks barrier, empty/no-binding first required
+activation-v-nativecreation +true maxFields−1 different-first-publisher race/retained
+retired limit. Synthetic access revoked/company suspended; history preserved.
+NoDDL/newdump/deploy; live1f4/rollbackb34 unchanged. Next integrate corrected activation
+and real checker source, open-window probes then original candidate/public gates.
+
+## 11 October — d4e confirmed first required-field activation gap (IN PROGRESS)
+
+Read-only source inspection confirms ordinary first required=true schema1 activation
+performs binding/module/CAS/Audit but no whole canonical cohort requirement check.
+Compiler allows that payload. Advisory locks cannot reject a legal serialization
+native-before-activation that leaves existing values missing; SSI alone is not proof
+of required-state correctness without reciprocal cohort reads. This is a pre-existing
+ordinary activation gap, identified before release of current native hooks.
+Reviewed required migration/cutover do read exact native/extension cohort/revisions;
+their race edges and maxFields/count predicate still require actual central evidence.
+
+Proposed minimum correction: require current genuine same-tx owner coverage before
+ordinary required target pointer change, reusing validateCandidateFieldCoverage;
+no metadata-only Admin context converted into a data principal/grants. Valid empty
+cohort permitted; nonempty incomplete records block activation. Optional→populate→
+reviewed required evolution remains safe. Retained already-active/cosmetic/rollback
+policy and explicit audited support target authority must be reconciled before code.
+Concurrency inspector is preparing exact files/interfaces/race probes; no edits/SQL
+or coverage PASS yet. Do not deploy native integration or enable conditional inputs
+before this confirmed gap and actual atomic/concurrency gate are resolved.
+
 ## 11 October 2026 — Studio native hooks local verification complete; d4e next
 
 D4d2d source integration VERIFIED locally:157distincttests/11 suites PASS25380,

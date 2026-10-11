@@ -14,7 +14,13 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
-Phase 2 2B d4e actual atomic/concurrency acceptance — IN PROGRESS. D4d2d
+Phase 2 2B d4e actual atomic/concurrency acceptance — IN PROGRESS. Ordinary first
+required activation gap corrected locally via5b7d136 (57/4 contributor focused checks,
+strict/scoped lint PASS; no actual SQL yet), integrated with root57/4, final standalone
+types98624/scoped lint/build92457 PASS. Independent source reviews no blocker.
+Native enforcement SQL source5d82090 and real pg_locks concurrency98ad339 integrated;
+root multi-window source verified statically. All three actual SQL gates still pending.
+D4d2d
 owning native integration is VERIFIED locally. Checkpoint04aa7f8 holds verified window/registry/receipt prerequisites.
 Integrated c330e447 native reader/provider/compiler/input mode and5f6eca9 actual
 engine/creation SQL delegation. Seven Work actions and Service case merge now use
@@ -100,6 +106,12 @@ Visual stash28243b7 preserved; visual authoring is required unfinished Phase2.
 
 # Files Changed
 
+Current d4e: definitions/service.ts +new fields/activation-coverage.ts and18-case
+activation suite; new check-field-native-enforcement.ts +principal call; new
+check-field-native-windows.ts +runtime-write call. New concurrency checker/driver
+wiring integrated98ad339. Ledger/plan/ARCHITECTURE/DECISIONS/current
+memory record first-required correction and actual vs local limits. NoDDL.
+
 Current block: service-work/actions.ts, engine.ts, studio-create.ts and new
 studio-enforcement.ts; Service services/commands.ts mergeCases. Studio compiler/
 fields.ts and fields/native-validation-access.ts, required-runtime/source/owner/
@@ -125,6 +137,11 @@ correction preserved its applied checksum/history. Current block adds no migrati
 
 # Tests Added
 
+18 ordinary activation prerequisite cases (real sealed registry/compiler/genuine
+session issuance, explicit authority/coverage/SQL collaborators). Native checker13
+rollback-only SQL transactions; real closed1/2 multi-window source prepared, noSQL
+PASS. Parallel control-lock commit races source pending, no inferred SSI evidence.
+
 Native mode19 and actual engine/creation10 new cases. Native-proof suite17 total
 includes actual Watch action/event/parent receipt/final callback, window/resulting
 failure propagation and strict four-field reference shape. Native-lock19 adapted
@@ -134,6 +151,13 @@ regressions retained. Storage/native SQL collaborators do NOT prove actual centr
 rollback or SSI; real acceptance checker source is being prepared separately.
 
 # Tests Run
+
+Current d4e root57/4 activation regressions64795 PASS. Production92457/scoped lint
+67426 exit0. Initial strict46426 failed only checker captured Session|null; corrected
+explicit Session local, final standalone98624 exit0/window lint26292 exit0. Diffcheck
+clean/source reviews no blocker. /tmp/atlas-studio-d4e-{activation-tests,types,final-
+types,lint,final-window-lint,build}.txt. Concurrency contributor strict58693/lint9536ab
+PASS; native checker62919/lint66ee3e PASS. These do not imply actual SQL PASS.
 
 Root157 tests/11 suites PASS25380; final native boundary17 PASS92194 after exact
 reference projection (17 repeats within157, not additional distinct tests). Production
@@ -173,6 +197,11 @@ Decisions and rationale recorded in .ai/DECISIONS.md; no silent source divergenc
 
 # Known Issues
 
+Confirmed pre-existing first required=true schema1 activation gap corrected locally
+via genuine current cohort coverage before pointer CAS/Audit. Focused checks PASS;
+actual central coverage/races IN PROGRESS. No current native release until those
+pass. Do not widen metadata Admin data access.
+
 Full Phase2 incomplete. Actual native hooks are implemented locally; central
 atomic/concurrency and release verification remain. Typed creation/edit packet and
 conditional writer/customer activation withheld. New checker source is IN PROGRESS,
@@ -199,8 +228,10 @@ remain architectural context only; no complete visual designer claim.
 
 # Exact Next Action
 
-Native hook local checks/source/diff/document reconciliation complete. Checkpoint
-coherent c330/5f6/root actions integration, then review and integrate real central-native acceptance checker source, then complete actual
+Native hook local checks/source/diff/document reconciliation complete at05f63a1.
+Correction5b7d136/native checker5d82090/concurrency98ad339/root native windows are
+integrated, root57/4/final strict/types/lint/build/source-diff review PASS. Create
+clean coherent checkpoint then run original pinned candidate/public pipeline for actual
 atomic/window/Audit/outbox rollback +multi-field initial saves and first-publication/
 no-binding/maxFields/native concurrency proof using existing exact Test fixtures and
 required recovery evidence. Connect typed form packets/conditional writer only after

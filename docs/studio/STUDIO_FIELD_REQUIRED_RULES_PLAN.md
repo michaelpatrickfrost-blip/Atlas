@@ -1,3 +1,88 @@
+## 11 October — d4e scoped correction and actual acceptance plan agreed
+
+Next dependent d4f remains NOT STARTED until d4e actual gates: reuse native RequestForm/
+work-detail ActionForm/service-fields controls for typed fields, then reuse that same
+renderer in visual previews. Normal createWork currently inserts via native receipt,
+not live initial-field callback; updateWork currently stages native final state first.
+Typed edit values must stage only after owning transition/private/approval/evidence
+guards and before final transition (ordinary Extend correctly rejects final rows).
+All values/native/events precede the one final native resulting validator.
+
+Proposed closed transport1 independent of stored field schema1/2: operation UUID,
+server manifest checksum, extension revision, bounded unique per-field UUID/config/
+version/generation/slot/value observations plus typed value/null. Owner max100 and
+byte bound; no client organisation/entity/record/creation flag/permission/condition.
+Server derives authenticated native operation/record and create baseline. Discover
+exact current tenant bindings/sealed schemas through initial metadata policy or
+ordinary record Read/Extend; never expose dependency graphs/private facts. Reuse
+existing writer with explicit stored1/2 validation and independent current/written/
+reference Read+Write; never persist fake schema1. Advance shared extension revision
+server-side between all staged fields. Omission unchanged/absent; final full required
+validator still applies. Query/no-packet/no-config legacy behavior remains.
+
+Whole-form replay is an identified design prerequisite: per-field UUID cannot prevent
+duplicate native INSERT/events. Candidate minimum is one immutable exact whole-form
+receipt in existing Audit unique operation UUID, actor/tenant/operation/native and
+typed-request fingerprints/original result, current legitimate policies rechecked
+before read-only exact replay; conflicting/partial/foreign replay rejected. Never
+remint creation proof for committed record. This is a PROPOSED next design, not an
+implemented new engine/API or accepted database/runtime claim. Resolve against source
+and actual owning form contracts before coding; record any lasting choice in DECISIONS.
+
+Ordinary activateVersion will refresh genuine current field authority for a required
+schema1 target in its owning Serializable transaction before entity/definition/
+immutable-version checks. Reuse sealed-field inspection and candidate cohort
+coverage before CAS/Audit. Only exact already-active or sealed same-generation
+structural equality (label/help only) may skip fresh cohort coverage. First required
+activation cannot skip. Shared reviewed cutover/rollback activation stays unchanged;
+there is no client waiver. Optional activation and capability sets preserve existing
+metadata behavior. Metadata-only Admin DTOs fail closed; current genuine business
+sessions remain permitted by capabilities. Existing explicitly audited support
+opening can supply a genuine target session; ordinary Session-only API does not
+claim durable support-principal audit verification. No new affiliation/grants/API.
+
+Parallel scopes: execution_inspector owns ordinary activation service/prerequisite/
+focused tests; review_inspector owns bounded real central concurrency checker and
+driver wiring; root owns integration, open-window probes, ledger/decisions/release.
+Acceptance source5d82090 integrated:13 rollback-only real SQL probes via original
+driver, strict types/scoped lint verified by contributor, independent source review
+found no blocker. No actual SQL PASS yet. Probes cover actual engine/provider proofs,
+field/native permission and atomicity, not public forms/SLA/approval transitions.
+
+Concurrency checker uses a purpose-limited dedicated central synthetic Test company,
+registered in original driver's cleanup set before mutations. Retain immutable
+records/history; revoke synthetic membership and suspend company in finally. Actual
+pg_locks on the exact common advisory key must show BOTH Serializable participants
+waiting before control releases: no sleep-as-evidence/fake registry or policy. First
+required publication/activation versus actual canonical creation starts on ZERO
+Tickets and no binding; both successful commits forbidden, fresh loser rejected.
+Nonempty missing-value activation must leave pointer/revision/Audit unchanged.
+Two different normal first optional publications at TRUE maxFields−1 (retired
+bindings included) must commit exactly one, retain100, reject fresh loser capacity.
+No local DB, extra dump or implicit public-action proof. Mixed windows/native/Audit
+and reviewed-publication/typed/cutover concurrency remain separately required.
+
+## 11 October — d4e confirmed first required-field activation gap (IN PROGRESS)
+
+Read-only source inspection confirms ordinary first required=true schema1 activation
+performs binding/module/CAS/Audit but no whole canonical cohort requirement check.
+Compiler allows that payload. Advisory locks cannot reject a legal serialization
+native-before-activation that leaves existing values missing; SSI alone is not proof
+of required-state correctness without reciprocal cohort reads. This is a pre-existing
+ordinary activation gap, identified before release of current native hooks.
+Reviewed required migration/cutover do read exact native/extension cohort/revisions;
+their race edges and maxFields/count predicate still require actual central evidence.
+
+Proposed minimum correction: require current genuine same-tx owner coverage before
+ordinary required target pointer change, reusing validateCandidateFieldCoverage;
+no metadata-only Admin context converted into a data principal/grants. Valid empty
+cohort permitted; nonempty incomplete records block activation. Optional→populate→
+reviewed required evolution remains safe. Retained already-active/cosmetic/rollback
+policy and explicit audited support target authority must be reconciled before code.
+Concurrency inspector is preparing exact files/interfaces/race probes; no edits/SQL
+or coverage PASS yet. Do not deploy native integration or enable conditional inputs
+before this confirmed gap and actual atomic/concurrency gate are resolved.
+
 ## 11 October — d4d2d integration VERIFIED locally; d4e IN PROGRESS
 
 Root projectedc330e447 and5f6eca9 with actual seven Work actions/Service case merge,

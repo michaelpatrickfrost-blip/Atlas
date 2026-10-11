@@ -15,6 +15,7 @@ import { checkFieldStorage } from "./check-field-storage";
 import { checkFieldPrincipal } from "./check-field-principal";
 import { sessionForUser } from "../../src/core/auth/session";
 import { openFieldMigrationSupportContext } from "../../src/core/studio/fields/principal";
+import { checkFieldConcurrency } from "./check-field-concurrency";
 
 async function main() {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1", "Explicit server acceptance opt-in required");
@@ -218,6 +219,7 @@ async function main() {
     await page.getByRole("button", { name: "Open company workspace →", exact: true }).click();
     await expect(page).toHaveURL(`${base}/home`);
     await checkFieldPrincipal(storedUser.id, originalStaff, a.id, b.id);
+    await checkFieldConcurrency(storedUser.id, ids);
     // The helper revokes only its new Test affiliation, not the original QA session.
     await context.addCookies([{name:"atlas_session",value:token,url:base,secure:base.startsWith("https"),httpOnly:true,sameSite:"Lax"}]);
     await page.goto(`/atlas/studio/${a.id}`,{waitUntil:"networkidle"});

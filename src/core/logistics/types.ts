@@ -121,6 +121,7 @@ export type StockCommand = {
   sourceId?: string;
   shipmentId?: string;
   receiptId?: string;
+  financeReceiptId?: string;
   productionReportId?: string;
   manufacturingOrderId?: string;
   workOrderId?: string;

@@ -174,7 +174,8 @@ export async function checkManufacturingExecution({context,page,session,out}:{co
  const materialPlan=async()=>{await call('src/app/(app)/manufacturing/planning/actions:runMrpAction',[]);const run=await db.manufacturingPlanningRun.findFirstOrThrow({where:{organisationId,finishedAt:{not:null}},orderBy:{startedAt:'desc'}});return db.manufacturingSupplySuggestion.findMany({where:{organisationId,runId:run.id,productId:purchaseRaw.id}});};
  assert.equal((await materialPlan()).length,0);
  const receipt={requestKey:'dated-receipt',warehouseId:warehouse.id,date:new Date().toISOString().slice(0,10),lines:[{lineId:purchaseRow.lines[0].id,quantity:'2',damaged:'1'}]};
- await call('src/modules/finance/services/commands:recordGoodsReceipt',[purchase.id,receipt]);await call('src/modules/finance/services/commands:recordGoodsReceipt',[purchase.id,receipt]);
+ const received=await call<{id:string}>('src/modules/finance/services/commands:recordGoodsReceipt',[purchase.id,receipt]);await call('src/modules/finance/services/commands:recordGoodsReceipt',[purchase.id,receipt]);
+ const receivedMovement=await db.inventoryMovement.findFirstOrThrow({where:{organisationId,productId:purchaseRaw.id}});assert.equal(receivedMovement.financeReceiptId,received.id);assert.equal(receivedMovement.receiptId,null);
  assert.equal((await materialPlan())[0]?.quantity.toString(),'1');
  assert.equal((await db.financeStockValue.findFirstOrThrow({where:{organisationId,warehouseId:warehouse.id,productId:purchaseRaw.id}})).quantity.toString(),'1');
  await call('src/modules/finance/services/purchase-arrivals:updatePurchaseArrival',[purchase.id,form({version:purchaseRow.version,expectedReceiptAt:late.toISOString().slice(0,10),reason:'Supplier confirmed later arrival · Test'})]);

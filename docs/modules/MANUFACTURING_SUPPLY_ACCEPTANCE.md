@@ -358,3 +358,14 @@ rolled back. Corrected existing-pool update uses its version instead of insertin
 negative upsert create. Native checker additionally exercises actual measured purchase
 receipt/damage/value/replay, dated MRP coverage and confirmed late supplier arrival.
 Focused new supply/Finance/guide checks pass; final runtime gate remains pending.
+
+## Purchasing receipt source correction — native acceptance pending
+
+Candidate 4e1cf413 passed decimal receipts, partial output/backorders, physical
+collection, manual serial costs/genealogy, fractional dispatch/transfer and shared
+mixed-load usage. Actual Finance purchasing receipt then hit the existing Logistics
+receipt FK; its complete transaction rolled back. Separate additive Finance receipt
+lineage now retains that Logistics FK, scopes the new FK by tenant and preserves the
+single-source check. Final candidate/public check must demonstrate one posted
+receipt/value entry, damage netting and the owning source link. No live or cleanup
+completion is claimed at this checkpoint.

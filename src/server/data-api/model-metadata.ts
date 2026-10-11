@@ -9039,6 +9039,18 @@ export const MODEL_FIELDS = {
     }
   },
   "InventoryMovement": {
+    "financeReceiptId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "financeReceipt": {
+      "type": "FinanceDocument",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
     "financeValueEntries": {
       "type": "FinanceManufacturingValueEntry",
       "list": true,
@@ -20209,6 +20221,12 @@ export const MODEL_FIELDS = {
     }
   },
   "FinanceDocument": {
+    "stockReceiptMovements": {
+      "type": "InventoryMovement",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "expectedReceiptAt": {
       "type": "DateTime",
       "list": false,

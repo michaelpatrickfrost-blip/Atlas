@@ -296,3 +296,8 @@ partial output, mixed loads, actual costing and blocked work. /guides groups all
 accessible apps and includes detailed Field Service and production-handoff tasks.
 The deployment compatibility bridge and acceptance evidence are recorded in
 MANUFACTURING_SUPPLY_ACCEPTANCE.md. This implementation is not yet publicly accepted.
+
+Finance purchase receipts carry their own tenant-protected movement lineage;
+Logistics receipt links remain distinct. Accepted quantity excludes damage and
+posts stock plus carrying value atomically with the purchasing receipt. The native
+release check verifies this owner link and repeat submission before acceptance.

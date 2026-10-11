@@ -2624,3 +2624,12 @@ publications remain owned by S&OP. Missing history stays missing; zero is valid.
 This does not establish an automatic customer promise or advanced probabilistic
 forecast. Existing whole-unit stock execution refuses fractional component use;
 it must not silently round decimal clay material quantities into stock facts.
+
+## 11 October 2026 — Separate Finance and Logistics receipt lineage
+
+Inventory movement receiptId remains owned by Logistics Receipt. Approved purchase
+receiving records financeReceiptId to FinanceDocument via its composite tenant FK;
+one-source constraints include both. Do not repurpose the Logistics key or remove
+its FK to accept purchasing documents. Source owners retain their native guards and
+all stock/receipt/value posting stays in the same transaction. This corrects the
+actual central FK failure caught by native purchasing acceptance.

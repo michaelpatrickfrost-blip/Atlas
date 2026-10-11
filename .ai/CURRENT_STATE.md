@@ -1,3 +1,18 @@
+## 11 October 2026 — Finance receipt stock lineage repaired; native gate pending
+
+Candidate 4e1cf413 passed all core exact execution scenarios, then actual purchasing
+receipt rolled back on inventory_movements_receipt_fkey: Finance's consumer passed
+its FinanceDocument id into a field owned by Logistics receipts. New additive
+20261011230000_finance_receipt_stock_lineage adds a separate nullable tenant-bound
+Finance receipt link, extends the single-source guard and retains the existing
+Logistics FK/data. Stock's Finance consumer now uses that link; actual acceptance
+asserts the saved owning document and null Logistics receipt link. No damaged stock
+or failed receipt was committed. Live remains 5b6390c8; failed Test access retired.
+Prisma validate/generate, generated model metadata and 4 focused files/39 tests
+passed; scoped lint, final production build and strict TypeScript passed. Native/
+public acceptance, activation and authorised all-Test cleanup remain pending.
+No whole-suite rerun for this correction.
+
 ## 11 October 2026 — Core exact execution passes candidate; Buy fixture corrected
 
 Candidate 20b3223f passed actual decimal receipt/replay, held-material atomic rollback,

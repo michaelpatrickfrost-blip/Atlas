@@ -12333,3 +12333,14 @@ managed-user actions and all four Manufacturing actions; no allowlist entries
 are removed. Manufacturing in-app demand/schedule instructions are being aligned
 with the delivered assumptions, calendars, downtime and stale-review controls.
 Final checks and locked candidate/public release acceptance remain required.
+
+Final local checkpoint on the live-compatible source: Prisma generation and schema
+validation PASS; explicit strict TypeScript PASS; scoped ESLint PASS; production
+build PASS; whitespace PASS. 16 files/113 focused assertions PASS, covering new
+kiln/demand/stock/MRP plus preserved Dashboard, company profiles, managed accounts
+and Finance section access. Full suite not rerun; historical baseline failures
+remain documented. Original 1acc63c action keys907 all retained, with exactly four
+new Manufacturing keys. In-app guides aligned. Next: pinned scoped deployment
+with ATLAS_RELEASE_ACCEPTANCE=supply; candidate and public actual central Test
+kiln/forecast acceptance, screenshot review, additive migration and final evidence.
+No candidate/public result claimed until the gate actually runs.

@@ -170,3 +170,22 @@ public-failure runtime rollback remain. No inherited-lock mechanism is included.
 Final exact-source hooked acceptance remains pending. Imported People migration
 EOF whitespace is retained to preserve already-applied checksums; owned diff
 against exact live `36d0d2d` passes whitespace checks.
+
+## 11 October 2026 — Finite kilns and flexible forecast checkpoint (pending live)
+
+Research and remaining programme: docs/plans/MANUFACTURING_KILN_RESEARCH.md.
+Implemented explicit batch/load/cooling/wait timing, eligible alternatives,
+timezone/shift/downtime-constrained release and atomic reviewed cascades, machine
+capacity and plant configuration, backtested Sales-history forecast assumptions
+(last-year percentage/additive/fixed/individual), gross-booking consumption and
+protected S&OP. Whole-unit stock limits stay open; fractional backflush refuses
+rather than rounds. No claim of complete process manufacturing or plant readiness.
+
+Local Prisma generation/validation, strict TypeScript, scoped ESLint, production
+build and whitespace PASS. 16 files/113 focused assertions PASS, including preserved
+live Dashboard, company administration and Finance access. Full suite not rerun.
+New scripts/check-manufacturing-kilns.ts runs from the existing backed-up supply
+Test gate on candidate and public, exercising actual release and forecast UI save,
+wrong-machine/tenant/locked/stale rejection, atomic cascade and three-width layout.
+Migration 20261011120000_manufacturing_finite_kilns is additive; central application,
+browser feature checks, visual review and deployment results remain pending.

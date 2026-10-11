@@ -186,7 +186,7 @@ Read `docs/modules/REPORTS.md` for source-owned dataset registration, filtering,
 permissions, Finance scope and workbook format. User-requested Excel downloads
 extend the explicit CSV exception: user-chosen files are permitted; local business
 databases, offline stores and automatic caches remain prohibited.
-## Manufacturing & Supply — 9 October 2026
+## Manufacturing & Supply — 11 October 2026
 
 One console connects demand, material planning, procurement, scheduling, production,
 Products, Inventory and Finance spend. Keep the existing canonical identities,
@@ -195,6 +195,11 @@ make/buy; internal materials remain stockable/purchasable. Dynamics 365 SCM is t
 researched capability benchmark; current delivery is partial. The full 173-section
 source and coverage remain binding. Read [Manufacturing & Supply](../docs/modules/MANUFACTURING.md)
 and its illustrated working-instruction library at `/manufacturing/help`.
+The [kiln/forecast research](../docs/plans/MANUFACTURING_KILN_RESEARCH.md) records
+explicit load/cycle/cooling/wait timings, approved machine alternatives, finite
+machine calendars/downtime and reviewed percentage/additive/fixed forecasts.
+Gross orders consume all monthly total forecasts once. Decimal stock, full process
+manufacturing, dated supply and WIP costing remain operational delivery gates.
 
 ## 10 October 2026 — Assigned work and chat controls
 

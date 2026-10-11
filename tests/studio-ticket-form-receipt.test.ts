@@ -11,6 +11,8 @@ import { checksum } from "@/core/studio/registry/contracts";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
 import { fieldWriteRequestChecksum } from "@/core/studio/fields/runtime-write-contract";
 import { completeTicketFormInTransaction, replayTicketFormInTransaction, throwTicketFormReceiptError } from "@/core/service-work/form-receipt";
+import { ticketFieldDefaultOperationId } from "@/core/service-work/field-defaults";
+import type { FieldFormPacket } from "@/core/studio/fields/form-packet";
 import { ticketFormReceiptKey, ticketFormPacketChecksum, ticketFormProcessingOrder, ticketFormReceiptSchema,
   TICKET_FORM_RECEIPT_ACTION, TICKET_FORM_RECEIPT_ENTITY, type TicketFormRequest, type TicketFormResult, type TicketFormReceipt } from "@/core/service-work/form-receipt-contract";
 
@@ -78,8 +80,8 @@ async function addField(n: number, conditional = false, reference = false) {
     jsonValue: null, slot: { id: slotId, definitionId: version.definitionId, generationId: payload.storageGeneration, organisationId: "company", entityId: "tickets.ticket",
       extensionId, activeValueId: uuid(300 + n), revision: 1, extension: { id: extensionId, organisationId: "company", entityId: "tickets.ticket", recordId: "native", revision: 0 } } });
 }
-function prepareAudits() {
-  for (const [index, entry] of ticketFormProcessingOrder(request.packet).entries()) {
+function prepareAudits(entries = request.packet.fields) {
+  for (const [index, entry] of ticketFormProcessingOrder({ ...request.packet, fields: entries }).entries()) {
     const row = values.find(row => row.id === entry.operationId)!;
     row.slot.extension.revision = (request.packet.extensionRevision ?? 0) + values.length;
     const extensionRevision = index === 0 ? request.packet.extensionRevision : (request.packet.extensionRevision ?? 0) + index;
@@ -91,7 +93,7 @@ function prepareAudits() {
       slotId: row.slot.id, slotRevision: 1, valueRevision: 1 } });
   }
 }
-const complete = () => completeTicketFormInTransaction(session, tx, request, result);
+const complete = (defaults: FieldFormPacket["fields"] = []) => completeTicketFormInTransaction(session, tx, request, result, defaults);
 const replay = () => replayTicketFormInTransaction(session, tx, request);
 
 it("records and replays exact create-only intent without native Read, returned values, condition evaluation or new effects", async () => {
@@ -159,7 +161,9 @@ it.each(["create", "read", "write", "module", "stamp"])("refreshes current %s de
 it("rechecks original reference target despite overwrite and denies revoked reference visibility", async () => {
   await addField(1, false, true); prepareAudits(); await complete(); values[0].slot.activeValueId = uuid(900); values[0].slot.revision = 3;
   vi.mocked(registry.authoriseRecord).mockRejectedValue(new Error("Ticket unavailable."));
+  m.value.mockClear();
   await expect(replay()).rejects.toThrow("Ticket unavailable");
+  expect(m.value).not.toHaveBeenCalled();
   expect(registry.authoriseRecord).toHaveBeenLastCalledWith(expect.objectContaining({ session, transaction: tx }), expect.objectContaining({ id: "tickets.ticket" }),
     { recordId: "original_reference", intent: "read" });
   expect(m.insert).toHaveBeenCalledTimes(1);
@@ -236,4 +240,58 @@ it.each(["P2002", "P2034", "40001", "40P01"])("propagates %s as conflict without
 it("preserves unrelated storage errors and prevents a second completion even for an exact receipt", async () => {
   const unrelated = new Error("Audit storage unavailable"); expect(() => throwTicketFormReceiptError(unrelated)).toThrow(unrelated);
   await complete(); await expect(complete()).rejects.toThrow("CONFLICT"); expect(m.insert).toHaveBeenCalledTimes(1);
+});
+
+
+async function retainedDefault(n: number, reference = false) {
+  await addField(n, false, reference);
+  const entry = request.packet.fields.pop()!, row = values.at(-1)!, definition = definitions.at(-1)!;
+  const payload = customFieldPayloadSchema.parse(row.schemaVersion.payload);
+  const compiled = await compileCustomField(session, { ...payload, field: { ...payload.field, defaultValue: entry.value } }, registry);
+  const version = { ...row.schemaVersion, payload: compiled.payload as unknown as Prisma.JsonValue, compiledPlan: compiled.plan as unknown as Prisma.JsonValue, checksum: compiled.checksum };
+  definition.activeVersion = version; row.schemaVersion = version;
+  entry.operationId = ticketFieldDefaultOperationId(request.packet.operationId, entry.definitionId, entry.versionId);
+  row.id = entry.operationId; row.slot.activeValueId = entry.operationId;
+  return entry;
+}
+it.each(["changed", "removed"])("retains server default anchors/raw client fingerprint; retry follows written literal after later %s default", async mode => {
+  await addField(2); const defaults = [await retainedDefault(1)]; prepareAudits([...request.packet.fields, ...defaults]);
+  const original = ticketFormPacketChecksum(request.packet);
+  expect(await complete(defaults)).toMatchObject({ replayed: false }); expect(receipt!.packetChecksum).toBe(original);
+  expect(receipt!.fields.map(field => field.defaulted ?? false)).toEqual([true, false]);
+  const retained = definitions[1].activeVersion, payload = customFieldPayloadSchema.parse(retained.payload);
+  const field = { ...payload.field };
+  if (mode === "changed") field.defaultValue = { type: "string", value: "New default" }; else delete field.defaultValue;
+  const compiled = await compileCustomField(session, { ...payload, storageGeneration: uuid(998), field }, registry);
+  definitions[1].activeVersion = { ...retained, id: uuid(999), payload: compiled.payload as unknown as Prisma.JsonValue, compiledPlan: compiled.plan as unknown as Prisma.JsonValue, checksum: compiled.checksum };
+  definitions[1].activeVersionId = uuid(999); definitions[1].revision += 3;
+  values[1].slot.activeValueId = uuid(997); values[1].slot.revision = 4; values[1].slot.extension.revision = 6;
+  expect(await replay()).toMatchObject({ replayed: true }); expect(m.insert).toHaveBeenCalledTimes(1);
+  expect(values[1].textValue).toBe("Value 1"); expect(ticketFormPacketChecksum(request.packet)).toBe(original);
+});
+it.each(["operation", "literal", "duplicate", "update", "written_checksum", "retained_origin"])("denies corrupted %s default origin/anchors without a new effect", async mode => {
+  const defaults = [await retainedDefault(1)]; prepareAudits(defaults);
+  if (mode === "operation") { defaults[0].operationId = uuid(999); values[0].id = uuid(999); }
+  if (mode === "literal") defaults[0].value = { type: "string", value: "Forged" };
+  if (mode === "duplicate") request.packet.fields.push(defaults[0]);
+  if (mode === "update") { request = { ...request, operation: "update", recordId: "native", recordRevision: 1 }; result = { recordId: "native", recordRevision: 2, fieldRecordRevision: 1 }; native.version = 2; }
+  if (mode === "written_checksum") values[0].schemaVersion = { ...values[0].schemaVersion, checksum: "f".repeat(64) };
+  if (mode === "retained_origin") {
+    await complete(defaults); delete receipt!.fields[0].defaulted;
+    await expect(replay()).rejects.toThrow("CONFLICT"); expect(m.insert).toHaveBeenCalledTimes(1); return;
+  }
+  await expect(complete(defaults)).rejects.toThrow(); expect(m.insert).not.toHaveBeenCalled();
+});
+it.each(["current", "written", "reference"])("rechecks independent %s rights for a default retry before a new operation", async mode => {
+  const defaults = [await retainedDefault(1, mode === "reference")]; prepareAudits(defaults); await complete(defaults);
+  const retained = definitions[0].activeVersion, payload = customFieldPayloadSchema.parse(retained.payload);
+  if (mode !== "reference") {
+    const field = { ...payload.field };
+    if (mode === "current") field.writeCapability = "tickets.field.current"; else delete field.writeCapability;
+    const compiled = await compileCustomField({ ...session, capabilities: new Set([...session.capabilities, "tickets.field.current"]) }, { ...payload, field }, registry);
+    definitions[0].activeVersion = { ...retained, id: uuid(999), payload: compiled.payload as unknown as Prisma.JsonValue, compiledPlan: compiled.plan as unknown as Prisma.JsonValue, checksum: compiled.checksum };
+    definitions[0].activeVersionId = uuid(999); if (mode === "written") session.capabilities.delete("tickets.field.write");
+  } else vi.mocked(registry.authoriseRecord).mockRejectedValue(new Error("Reference unavailable."));
+  m.value.mockClear(); await expect(replay()).rejects.toThrow(mode === "reference" ? "Reference unavailable" : "tickets.field.");
+  expect(m.value).not.toHaveBeenCalled(); expect(m.insert).toHaveBeenCalledTimes(1);
 });

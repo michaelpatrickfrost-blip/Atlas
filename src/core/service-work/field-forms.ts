@@ -14,6 +14,7 @@ import { fieldRuntimeAuthorityInTransaction, nativeFieldMutationSessionInTransac
 import { lockFieldEntitiesInTransaction } from "@/core/studio/fields/entity-lock";
 import { initialiseFieldValueInTransaction, writeFieldValueInTransaction } from "@/core/studio/fields/runtime-write";
 import { parseFieldFormPacketJson, type FieldFormPacket } from "@/core/studio/fields/form-packet";
+import { ticketDefaultFieldEntries } from "./field-defaults";
 import type { TicketFieldFormControl, TicketFieldFormManifest } from "./field-form-contract";
 import { workScope } from "./access";
 import { WORK_STATUSES } from "./config";
@@ -122,10 +123,13 @@ export async function ticketFieldFormManifestInTransaction(authority: FieldRunti
     const slot = slots.find(slot => slot.definitionId === definition.id && slot.generationId === payload.storageGeneration);
     const value = slot?.activeValueId ? values.find(row => row.id === slot.activeValueId) : null;
     if (slot?.activeValueId && !value) corrupt();
+    if (request.operation === "create" && payload.field.defaultValue?.type === "reference" && payload.field.storage.type === "reference")
+      await registry.authoriseRecord({ session, transaction: tx }, payload.field.storage.entity, { recordId: payload.field.defaultValue.value, intent: "read" });
     fields.push({ operationId: randomUUID(), definitionId: definition.id, definitionRevision: definition.revision, versionId: definition.activeVersionId!,
       generationId: payload.storageGeneration, slotRevision: slot?.revision ?? null, valueRevision: value?.revision ?? null,
       label: payload.field.label, help: payload.field.help, storage: payload.field.storage, required: payload.field.required,
       conditionalRequired: payload.schemaVersion === 2,
+      ...(request.operation === "create" && payload.field.defaultValue !== undefined ? { defaultValue: payload.field.defaultValue } : {}),
       value: value && request.operation === "update" ? await readVersionedFieldValueInTransaction(authority, payload, definition.id,
         payload.storageGeneration, slot!.id, request.recordId, value) : null });
   }
@@ -138,7 +142,8 @@ export async function ticketFieldFormManifestInTransaction(authority: FieldRunti
       versionId: binding.definition.activeVersionId, checksum: binding.definition.activeVersion!.checksum })),
     fields: fields.map(field => ({ definitionId: field.definitionId, definitionRevision: field.definitionRevision,
       versionId: field.versionId, generationId: field.generationId, slotRevision: field.slotRevision, valueRevision: field.valueRevision,
-      label: field.label, help: field.help, storage: field.storage, required: field.required, conditionalRequired: field.conditionalRequired })) });
+      label: field.label, help: field.help, storage: field.storage, required: field.required, conditionalRequired: field.conditionalRequired,
+      ...(field.defaultValue !== undefined ? { defaultValue: field.defaultValue } : {}) })) });
   return { schemaVersion: 1, operation: request.operation, operationId: randomUUID(), recordRevision,
     extensionRevision: extension?.revision ?? null, manifestChecksum, fields };
 }
@@ -160,8 +165,9 @@ export async function ticketFieldFormManifest(authenticated: Session, input: Tic
 export async function stageTicketFieldFormPacket(authority: FieldRuntimeAuthority, manifest: TicketFieldFormManifest | null,
   packet: FieldFormPacket, recordId: string, fieldRecordRevision: number, proof?: object) {
   if (!manifest || packet.manifestChecksum !== manifest.manifestChecksum || packet.extensionRevision !== manifest.extensionRevision) conflict();
+  const defaults = proof ? ticketDefaultFieldEntries(manifest, packet) : [];
   let extensionRevision = packet.extensionRevision;
-  for (const entry of [...packet.fields].sort((a, b) => a.definitionId.toLowerCase().localeCompare(b.definitionId.toLowerCase()))) {
+  for (const entry of [...packet.fields, ...defaults].sort((a, b) => a.definitionId.toLowerCase().localeCompare(b.definitionId.toLowerCase()))) {
     const current = manifest.fields.find(field => field.definitionId === entry.definitionId.toLowerCase());
     if (!current || current.definitionRevision !== entry.definitionRevision || current.versionId !== entry.versionId.toLowerCase()
       || current.generationId !== entry.generationId.toLowerCase() || current.slotRevision !== entry.slotRevision || current.valueRevision !== entry.valueRevision
@@ -173,6 +179,7 @@ export async function stageTicketFieldFormPacket(authority: FieldRuntimeAuthorit
     if (saved.replayed) conflict(); // Whole-form replay happens before native effects.
     extensionRevision = saved.extensionRevision;
   }
+  return defaults;
 }
 
 /** Hash precisely the bounded native inputs the owning form consumes. Database

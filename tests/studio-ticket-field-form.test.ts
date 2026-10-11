@@ -212,3 +212,32 @@ it("does not return private referenced values and denies unavailable owner/confi
   m.enabled.mockResolvedValue({ id: "enabled" }); configured.binding.definition.activeVersion = { ...configured.version, checksum: "f".repeat(64) };
   await expect(ticketFieldFormManifestInTransaction(current, { operation: "update", recordId: "first" })).rejects.toThrow("FIELD_STORAGE_INVALID"); expect(m.values).not.toHaveBeenCalled();
 });
+
+
+it("stages only authorised omitted creation defaults including false/zero, never explicit clears or existing-record fills", async () => {
+  grants = ["tickets.ticket.create", "tickets.ticket.read", "tickets.ticket.manage", "tickets.field.read", "tickets.field.write"];
+  const current = await authority();
+  await field(current, 1, { field: { defaultValue: { type: "integer", value: 0 } } });
+  await field(current, 2, { conditional: true, field: { storage: { type: "boolean" }, defaultValue: { type: "boolean", value: false } } });
+  await field({ ...current, session: { ...current.session, capabilities: new Set([...current.session.capabilities, "tickets.field.hidden"]) } }, 3, { field: { defaultValue: { type: "integer", value: 7 }, writeCapability: "tickets.field.hidden" } });
+  const manifest = await ticketFieldFormManifestInTransaction(current, { operation: "create" }); expect(manifest!.fields).toHaveLength(2);
+  expect(manifest!.fields.map(field => field.defaultValue)).toEqual([{ type: "integer", value: 0 }, { type: "boolean", value: false }]);
+  const submitted = packet(current, manifest!, [{ index: 0, value: null }]);
+  const created = await createTicketWithFieldInitialisation({ session: current.session, transaction: tx }, { organisationId: "company", kind: "TICKET", requesterUserId: "actor", queueId: "queue", number: "N", subject: "New" },
+    (authority, work, proof) => stageTicketFieldFormPacket(authority, manifest, submitted, work.id, 1, proof));
+  expect(created.result).toHaveLength(1); expect(created.result[0].value).toEqual({ type: "boolean", value: false });
+  expect(m.initial.mock.calls.map(call => call[1])).toMatchObject([{ definitionId: uuid(1), value: null, extensionRevision: null }, { definitionId: uuid(2), value: false, extensionRevision: 1 }]);
+  m.initial.mockClear(); m.ordinary.mockClear();
+  const editing = await ticketFieldFormManifestInTransaction(current, { operation: "update", recordId: "existing" });
+  expect(editing!.fields.every(field => !("defaultValue" in field))).toBe(true);
+  await stageTicketFieldFormPacket(current, editing, packet(current, editing!, []), "existing", 7);
+  expect(m.initial).not.toHaveBeenCalled(); expect(m.ordinary).not.toHaveBeenCalled();
+});
+it("reference suggestions require independent current canonical record Read before display or staging", async () => {
+  const current = await authority(), metadata = current.registry.describe("tickets.ticket", 9);
+  const ref = { id: metadata.id, version: metadata.version, schemaHash: metadata.schemaHash, contractHash: metadata.contractHash };
+  await field(current, 1, { field: { storage: { type: "reference", entity: ref }, defaultValue: { type: "reference", value: "private-target" } } });
+  m.native.mockResolvedValue(null);
+  await expect(ticketFieldFormManifestInTransaction(current, { operation: "create" })).rejects.toThrow("Ticket unavailable");
+  expect(m.initial).not.toHaveBeenCalled(); expect(m.values).not.toHaveBeenCalled();
+});

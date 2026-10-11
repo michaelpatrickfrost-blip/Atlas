@@ -217,3 +217,13 @@ source6, not a new formula/default engine. Conditional authoring will use the
 existing reviewed migration service in2E; no direct ordinary schema2 bypass.
 After these2B checkpoints,2C shallow record-type resolution→2D structured pages→2E
 full-screen noncoder visual studio/shared previews/publishing→2F fullPhase2 gate.
+
+11October2B5/2B6 isolated scoped checkpoints6c50c7a/b291e55 integrated in current
+root. 223/11 focused assertions plus standalone types/scopedlint PASS; strengthened
+reference preflight95/3 PASS. Status IMPLEMENTED, genuine central/defaultguard/
+indexed query/runtime checks pending. Defaults preserve absent legacy sealed1/2
+hashes and apply only actualcreate omission; changed defaults reviewed structural
+migration, exact receipt follows written literal, explicitnull/edit nofill. Search
+returns <=50 authorised native scan windows, exactcurrent slot/generation typed
+indexed equality/ranges and current+written policy preflight; empty-page+next valid.
+No globaltotal/substring/commandpalette/full-corpus claim; visualfilters belong2D/E.

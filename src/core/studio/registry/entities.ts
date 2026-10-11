@@ -35,6 +35,7 @@ export const nativeValidationRequestSchema = z.strictObject({
   recordId: z.string().min(1).max(100).regex(/^[a-zA-Z0-9_-]+$/),
   expectedRevision: z.number().int().positive().max(Number.MAX_SAFE_INTEGER),
 });
+export const fieldSearchPolicySchema = z.strictObject({ entityId: logicalId, fieldVersions: versions });
 export const fieldSettlementPolicySchema = z.strictObject({ entityId: logicalId, sourceVersions: versions, targetVersions: versions,
   intentVersions: migrationIntentVersionsSchema.optional(),
   referenceVersions: z.array(z.number().int().positive()).max(20).refine(value => new Set(value).size === value.length, "Duplicate settlement reference version.") });

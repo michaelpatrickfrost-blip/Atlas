@@ -93,6 +93,9 @@ export type QueryDescriptor<I, O> = ContractIdentity & {
   transaction?: "required";
   /** Explicit owner callback protocol. Entity metadata alone cannot widen an old
    * query to conditional intents; omission preserves legacy format1 only. */
+  /** Read-only canonical window for configured field search. Native access is
+   * enforced by the owner before extension predicates run. */
+  fieldSearch?: { entityId: string; fieldVersions: readonly number[] };
   fieldMigration?: { entityId: string; purpose: "snapshot" | "representation"; intentVersions: readonly FieldMigrationIntentVersion[] };
   /** Current owning-domain coverage for retained field migration settlement.
    * Separate from sealed preparation contracts; grants no native/value writes. */

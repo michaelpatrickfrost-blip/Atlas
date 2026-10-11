@@ -1,5 +1,7 @@
 "use server";
 import { z } from "zod";
+import { randomUUID } from "node:crypto";
+import type { FieldFormPacket } from "@/core/studio/fields/form-packet";
 import { db } from "@/core/db/client";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
@@ -48,8 +50,13 @@ export async function createWork(form: FormData) {
     await requireWork(session, kind, true);
     const id = await db.$transaction(async tx => {
       if (form.has("studioFields") && kind !== "TICKET") throw new Error("Additional Ticket details cannot be attached to a query.");
-      const authority = form.has("studioFields") ? await fieldRuntimeAuthorityInTransaction(session, tx) : null;
-      const request: TicketFormRequest | null = authority ? { operation: "create", nativeRequestChecksum: ticketNativeFormChecksum(form, "create"),
+      // Legacy native clients retain non-idempotent create semantics. A customer
+      // Ticket with authorised visible defaults still gets the SAME actual INSERT
+      // callback; no client operation means a new internal operation per call.
+      const company = kind === "TICKET" && !form.has("studioFields") ? await tx.organisation.findFirst({
+        where: { id: session.organisationId }, select: { kind: true } }) : null;
+      const authority = form.has("studioFields") || company?.kind === "CUSTOMER" ? await fieldRuntimeAuthorityInTransaction(session, tx) : null;
+      let request: TicketFormRequest | null = authority && form.has("studioFields") ? { operation: "create", nativeRequestChecksum: ticketNativeFormChecksum(form, "create"),
         packet: parseTicketFieldFormPacket(authority, form.get("studioFields")) } : null;
       if (authority && request) {
         // Priority override is an independent native operation permission today,
@@ -60,6 +67,11 @@ export async function createWork(form: FormData) {
         if (replay) return replay.recordId;
       }
       const manifest = authority ? await ticketFieldFormManifestInTransaction(authority, { operation: "create" }) : null;
+      if (!request && manifest?.fields.some(field => field.defaultValue !== undefined)) request = { operation: "create",
+        nativeRequestChecksum: ticketNativeFormChecksum(form, "create"), packet: { schemaVersion: 1, operationId: randomUUID(),
+          manifestChecksum: manifest.manifestChecksum, extensionRevision: null, fields: [] } };
+      const creationRequest = request;
+      let defaultFields: FieldFormPacket["fields"] = [];
       const result = await withValidatedTicketMutation({ session, transaction: tx }, kind === "QUERY" ? "service.ticket.create" : "tickets.ticket.create", async session => {
       const queue = await tx.serviceQueue.findFirst({ where: { id: need(form, "queueId", 100), organisationId: session.organisationId, active: true } });
       if (!queue) throw new Error("Choose an available queue.");
@@ -95,8 +107,8 @@ export async function createWork(form: FormData) {
         context: { answers, serviceId, origin: origin as import("@/generated/prisma/client").Prisma.InputJsonValue, priorityReason: text(form, "priorityReason"), ...Object.fromEntries(["asset", "service", "workaround", "problem", "rootCause", "risk", "implementationPlan", "rollbackPlan", "testingPlan", "schedule"].map(key => [key, text(form, key)])) },
         definition: service ?? {}, sla, firstResponseDueAt: addBusinessMinutes(now, sla.responseMinutes, sla.calendar), resolutionDueAt: addBusinessMinutes(now, sla.resolutionMinutes, sla.calendar),
       } satisfies import("@/generated/prisma/client").Prisma.ServiceWorkItemUncheckedCreateInput;
-      const work = request ? (await createTicketWithFieldInitialisation({ session, transaction: tx }, data,
-        (current, work, proof) => stageTicketFieldFormPacket(current, manifest, request.packet, work.id, work.version, proof))).work
+      const work = creationRequest ? (await createTicketWithFieldInitialisation({ session, transaction: tx }, data,
+        async (current, work, proof) => { defaultFields = await stageTicketFieldFormPacket(current, manifest, creationRequest.packet, work.id, work.version, proof); })).work
         : await insertWorkWithFieldReceipt(tx, session, data);
       await workEvent(tx, session, work, "CREATED", `${kind === "QUERY" ? "Cross-team query" : "Internal ticket"} received by ${queue.name}.`, "REQUESTER");
       if (parentCaseId) await tx.serviceCase.updateMany({ where: { id: parentCaseId, organisationId: session.organisationId }, data: { status: "WAITING_INTERNAL" } });
@@ -104,7 +116,7 @@ export async function createWork(form: FormData) {
       });
       // This occurs only after the owning complete native validator returned.
       if (request) await completeTicketFormInTransaction(session, tx, request,
-        { recordId: result.id, recordRevision: result.version, fieldRecordRevision: result.version });
+        { recordId: result.id, recordRevision: result.version, fieldRecordRevision: result.version }, defaultFields);
       return result.id;
     }, { isolationLevel: "Serializable" });
     refresh(); redirect(`/${kind === "QUERY" ? "service/queries" : "tickets"}/${id}`);

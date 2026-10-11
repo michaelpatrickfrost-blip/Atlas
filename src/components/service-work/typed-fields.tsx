@@ -12,7 +12,7 @@ type Result = { value: FieldValue | null; error: string };
 const emptyAddress = (): Address => ({ line1: "", line2: "", city: "", region: "", postalCode: "", country: "" });
 const countryNames = new Intl.DisplayNames(["en"], { type: "region" });
 function draftFor(field: TicketFieldFormControl): Draft {
-  const value = field.value;
+  const value = field.value ?? field.defaultValue;
   const draft: Draft = { text: "", amount: "", currency: field.storage.type === "money" ? field.storage.currencies[0] : "",
     selections: [], address: { ...emptyAddress(), country: field.storage.type === "address" ? field.storage.countries[0] : "" } };
   if (!value) return draft;
@@ -91,7 +91,7 @@ export function TicketTypedFields({ manifest, searchReferences }: { manifest: Ti
 function TypedField({ field, draft, error, onChange, onUndo, searchReferences }: { field: TicketFieldFormControl; draft: Draft | null; error: string;
   onChange: (draft: Draft | null) => void; onUndo?: () => void; searchReferences?: TicketFieldReferenceSearch }) {
   const id = useId(), helpId = `${id}-help`, errorId = `${id}-error`, storage = field.storage;
-  const current = draft ?? draftFor({ ...field, value: null });
+  const current = draft ?? draftFor({ ...field, value: null, defaultValue: undefined });
   const update = (patch: Partial<Draft>) => onChange({ ...current, ...patch });
   const primary = { id, "aria-describedby": `${helpId}${error ? ` ${errorId}` : ""}`, "aria-invalid": !!error,
     ref: (element: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null) => { element?.setCustomValidity(error); } };
@@ -117,7 +117,7 @@ function TypedField({ field, draft, error, onChange, onUndo, searchReferences }:
   }
   return <div className={storage.type === "address" || storage.type === "string" && storage.multiline ? "space-y-2 sm:col-span-2" : "space-y-2"}>
     <div className="flex items-start justify-between gap-2"><label id={`${id}-label`} htmlFor={id} className="text-xs font-semibold text-slate-700">{field.label}{field.required && <span className="ml-1 text-blue-700">Required</span>}</label><div className="flex gap-2 text-xs">{onUndo && <button type="button" className="text-blue-700 hover:underline" onClick={onUndo} aria-label={`Undo changes to ${field.label}`}>Undo</button>}<button type="button" className="text-slate-500 hover:text-slate-800" aria-label={`Clear ${field.label}`} onClick={() => onChange(null)}>Clear</button></div></div>
-    {control}<p id={helpId} className="text-xs text-slate-500">{field.help}{field.conditionalRequired && <span className="block">Required in some situations.</span>}</p>
+    {control}<p id={helpId} className="text-xs text-slate-500">{field.help}{field.defaultValue !== undefined && <span className="block">Suggested value for new requests. You can change or clear it.</span>}{field.conditionalRequired && <span className="block">Required in some situations.</span>}</p>
     {error && <p id={errorId} role="alert" className="text-xs text-red-700">{error}</p>}
   </div>;
 }

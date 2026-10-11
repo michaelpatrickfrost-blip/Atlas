@@ -16,6 +16,8 @@ export type TicketFieldFormControl = {
   required: boolean;
   conditionalRequired: boolean;
   value: FieldValue | null;
+  /** Authorised literal suggestion for creation only; never submitted authority. */
+  defaultValue?: FieldValue;
 };
 export type TicketFieldFormManifest = {
   schemaVersion: 1;

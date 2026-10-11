@@ -148,3 +148,17 @@ it("shows plain required/conditional guidance and preserves no-config forms", ()
   expect((screen.getByRole("textbox", { name: /Business detail/ }) as HTMLInputElement).required).toBe(true);
   rerender(<form><TicketTypedFields key="empty" manifest={manifest([])}/></form>); expect(container.querySelector('input[name="studioFields"]')).toBeNull();
 });
+
+it("shows a creation suggestion without submitting it, preserves false/zero, and clear/undo remain explicit", () => {
+  const suggested = { ...field({ type: "integer" }), defaultValue: { type: "integer" as const, value: 0 } };
+  const { container, rerender } = render(<form><TicketTypedFields manifest={manifest([suggested], "create")}/></form>);
+  expect((screen.getByLabelText("Business detail") as HTMLInputElement).value).toBe("0"); expect(packet(container).fields).toEqual([]);
+  expect(screen.getByText("Suggested value for new requests. You can change or clear it.")).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", { name: "Clear Business detail" }));
+  expect((screen.getByLabelText("Business detail") as HTMLInputElement).value).toBe(""); expect(packet(container).fields[0].value).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Undo changes to Business detail" }));
+  expect((screen.getByLabelText("Business detail") as HTMLInputElement).value).toBe("0"); expect(packet(container).fields).toEqual([]);
+  change("Business detail", "5"); expect(packet(container).fields[0].value).toEqual({ type: "integer", value: 5 });
+  rerender(<form><TicketTypedFields key="boolean" manifest={manifest([{ ...field({ type: "boolean" }), defaultValue: { type: "boolean", value: false } }], "create")}/></form>);
+  expect((screen.getByLabelText("Business detail") as HTMLSelectElement).value).toBe("no"); expect(packet(container).fields).toEqual([]);
+});

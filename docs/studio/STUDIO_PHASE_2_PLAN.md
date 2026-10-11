@@ -180,3 +180,17 @@ atomic assignments and required-field coverage. Status NOT STARTED.
 profile. Files core/studio/pages/* and owner-approved surface contracts. No engine
 for future phases; shallow predicates from existing approved facts. Tests conflict/
 ambiguity/cost/mobile/hidden-query safety and unsupported contributions. NOT STARTED.
+
+2C2 integration detail after actual source review: reuse original compiler/dispatch/
+publisher/CAS/Audit. Split(a) tenant/composite exact configuration dependency FKs,
+immutable guards and complete sealed-edge mirror; (b) entity/base/type binding and
+pinned deterministic active resolution; (c) canonical extension association with
+fresh owning access/revision/CAS and append-only assignment evidence; (d) additive
+per-record required-field validation/affected-cohort activation and field migration/
+retirement impacts; (e) where-used/release compiled metadata compatibility. No
+second publisher, canonical entity copy or automatic type assignment. Incoming base
+activation does not silently rewrite overlay pins; explicit republish remains
+required. Record-type activation/rollback must validate any stronger requirements
+against actual affected canonical cohort in same owning transaction. Unsupported
+owners and later process/decision refs fail closed. All2C2 pieces NOT STARTED until
+assigned; pure2C1 source in progress alongside field gates.

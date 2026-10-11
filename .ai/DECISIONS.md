@@ -1,3 +1,29 @@
+## 11 October — configured literal defaults and bounded owner search
+
+Optional typed field.defaultValue and create-only server receipt defaulted:true keep
+historical absent schema1/2 shapes/hashes exact. Default changes are structural
+reviewed migrations; actual owning INSERT proof fills omitted entries only, explicit
+null wins and edit/existing records never backfill. Deterministic domain-separated
+UUID8 binds whole operation/definition/written version; raw client packet fingerprint
+unchanged, replay uses immutable written literal with today's current/written and
+original reference rights. No-packet native create mints a fresh internal operation
+only for authorised defaults, preserving its non-idempotent historical API semantics.
+
+Configured indexed search uses owner-selected accessible canonical windows<=50,
+all selected written/current policies before typed predicates, exact active slot/
+generation and bounded indexable scalar equality/ranges. Cursor advances SCANNED
+native IDs, so empty results may have continuation. This fits current private owner
+contracts without generic cross-domain SQL/joins or private counts. UI must expose
+continuation; this does not claim global command-palette/full-text completeness.
+
+Absent hash compatibility does not make an old strict parser support a newly added
+metadata property. Default-bearing publication/activation therefore needs a release
+bridge: accepted current and proposed immediate rollback must execute actual parser/
+receipt probes. Bind small immutable per-release feature evidence to those SHAs
+under original BOTH locks; missing support stays server-closed. Reader/native writer
+support ships first, feature authoring opens only with compatible rollback. Apply
+this safety requirement to new2C/D artefact formats too, without schema rollback.
+
 ## 11 October 2026 — Exact stock and Finance-owned manufacturing cost
 
 Operational quantities use NUMERIC(18,6), explicit compatible measurement snapshots

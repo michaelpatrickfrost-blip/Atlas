@@ -23,7 +23,7 @@ export type TicketFormResult = z.infer<typeof ticketFormResultSchema>;
 
 export const ticketFormFieldReceiptSchema = z.strictObject({ operationId: uuid, definitionId: uuid, definitionRevision: z.number().int().nonnegative().max(2147483646),
   versionId: uuid, generationId: uuid, fingerprint: hash, requestChecksum: hash, extensionId: uuid, extensionRevision: revision,
-  slotId: uuid, slotRevision: revision, valueRevision: revision });
+  slotId: uuid, slotRevision: revision, valueRevision: revision, defaulted: z.literal(true).optional() });
 export const ticketFormReceiptSchema = z.strictObject({ schemaVersion: z.literal(1), organisationId: z.string().min(1), actorUserId: z.string().min(1),
   operationId: uuid, operation: z.enum(["create", "update"]), recordId, recordRevision: revision, requestRecordRevision: revision,
   fieldRecordRevision: revision, nativeRequestChecksum: hash, packetChecksum: hash, fields: z.array(ticketFormFieldReceiptSchema).max(100) })
@@ -34,7 +34,7 @@ export const ticketFormReceiptSchema = z.strictObject({ schemaVersion: z.literal
     const operations = new Set([receipt.operationId]);
     let previous = "";
     for (const [index, field] of receipt.fields.entries()) {
-      if (field.definitionId <= previous || operations.has(field.operationId) || field.slotRevision !== field.valueRevision)
+      if ((field.defaulted && receipt.operation !== "create") || field.definitionId <= previous || operations.has(field.operationId) || field.slotRevision !== field.valueRevision)
         context.addIssue({ code: "custom", path: ["fields", index], message: "Invalid receipt field order or identity." });
       previous = field.definitionId; operations.add(field.operationId);
     }

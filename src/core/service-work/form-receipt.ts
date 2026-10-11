@@ -9,6 +9,8 @@ import { assertFieldBinding, fieldDefinitionKey } from "@/core/studio/fields/bin
 import { decodeStoredFieldValue, encodeFieldValue } from "@/core/studio/fields/codec";
 import { fieldRuntimeAuthorityInTransaction, type FieldRuntimeAuthority } from "@/core/studio/fields/runtime-authority";
 import { lockFieldEntitiesInTransaction } from "@/core/studio/fields/entity-lock";
+import { fieldFormPacketSchema, type FieldFormPacket } from "@/core/studio/fields/form-packet";
+import { ticketFieldDefaultOperationId } from "./field-defaults";
 import { fieldWriteAuditSchema, fieldWriteRequestChecksum } from "@/core/studio/fields/runtime-write-contract";
 import { workScope } from "./access";
 import { TICKET_FORM_RECEIPT_ACTION as ACTION, TICKET_FORM_RECEIPT_ENTITY as ENTITY, ticketFormReceiptKey, ticketFormRequestSchema,
@@ -93,17 +95,24 @@ async function fieldPolicy(current: FieldRuntimeAuthority, operation: TicketForm
 }
 
 async function fields(current: FieldRuntimeAuthority, request: TicketFormRequest, result: TicketFormResult,
-  completed: boolean, retained?: TicketFormReceipt) {
-  const { session, transaction: tx, registry } = current, ordered = ticketFormProcessingOrder(request.packet);
+  completed: boolean, retained?: TicketFormReceipt, serverDefaults: FieldFormPacket["fields"] = []) {
+  const { session, transaction: tx, registry } = current;
+  const defaults = retained ? retained.fields.filter(field => field.defaulted).map(field => ({ operationId: field.operationId,
+    definitionId: field.definitionId, definitionRevision: field.definitionRevision, versionId: field.versionId, generationId: field.generationId,
+    slotRevision: null, valueRevision: null, value: null })) : serverDefaults;
+  if (defaults.length && (request.operation !== "create" || request.packet.extensionRevision !== null)) conflict();
+  const effective = fieldFormPacketSchema.parse({ ...request.packet, fields: [...request.packet.fields, ...defaults] });
+  const defaultIds = new Set(defaults.map(field => field.definitionId.toLowerCase()));
+  const ordered = ticketFormProcessingOrder(effective);
   const ids = ordered.map(entry => entry.definitionId.toLowerCase());
-  if (!ordered.length) return [];
+  if (!ordered.length) { if (retained?.fields.length) conflict(); return []; }
   // All supplied current/written metadata is checked before ANY typed column.
   const definitions = await tx.studioDefinition.findMany({ where: { organisationId: session.organisationId, id: { in: ids }, kind: "customField", retiredAt: null },
     include: { activeVersion: true }, orderBy: { id: "asc" }, take: 100 });
   const rows = await tx.studioFieldValue.findMany({ where: { organisationId: session.organisationId, id: { in: ordered.map(entry => entry.operationId.toLowerCase()) } },
     select: valueMetadata, take: 100 });
   if (definitions.length !== ordered.length || rows.length !== ordered.length) conflict();
-  const checked: { entry: typeof ordered[number]; row: MetadataValue; current: Awaited<ReturnType<typeof fieldPolicy>>; written: Awaited<ReturnType<typeof fieldPolicy>> }[] = [];
+  const checked: { entry: typeof ordered[number]; row: MetadataValue; current: Awaited<ReturnType<typeof fieldPolicy>>; written: Awaited<ReturnType<typeof fieldPolicy>>; encoded: ReturnType<typeof encodeFieldValue> }[] = [];
   for (const entry of ordered) {
     const definitionId = entry.definitionId.toLowerCase(), definition = definitions.find(row => row.id === definitionId),
       row = rows.find(row => row.id === entry.operationId.toLowerCase());
@@ -121,7 +130,24 @@ async function fields(current: FieldRuntimeAuthority, request: TicketFormRequest
     if (completed && (definition.revision !== entry.definitionRevision || definition.activeVersionId !== row.versionId || latest.storageGeneration !== row.generationId
       || row.slot.activeValueId !== row.id || row.slot.revision !== row.revision
       || row.slot.extension.revision !== (request.packet.extensionRevision ?? 0) + ordered.length)) conflict();
-    checked.push({ entry, row, current: latest, written });
+    if (defaultIds.has(definitionId)) {
+      if (entry.slotRevision !== null || entry.valueRevision !== null || written.field.defaultValue === undefined
+        || entry.operationId.toLowerCase() !== ticketFieldDefaultOperationId(request.packet.operationId, definitionId, row.versionId)
+        || (completed && checksum(entry.value) !== checksum(written.field.defaultValue))) conflict();
+      // Retry follows ONLY the retained written version, after all current and
+      // written metadata policies. Never apply a newly configured default.
+      entry.value = written.field.defaultValue;
+    }
+    if (entry.value !== null && entry.value.type !== written.field.storage.type) conflict();
+    const encoded = encodeFieldValue(written.field, entry.value?.value ?? null);
+    // Every original submitted/reference default target is authorised before
+    // any protected typed column, including replay after a later overwrite.
+    if (encoded.referenceValue !== null && written.field.storage.type === "reference") {
+      await registry.authoriseRecord({ session, transaction: tx }, written.field.storage.entity, { recordId: encoded.referenceValue, intent: "read" });
+      if (latest.field.storage.type === "reference")
+        await registry.authoriseRecord({ session, transaction: tx }, latest.field.storage.entity, { recordId: encoded.referenceValue, intent: "read" });
+    }
+    checked.push({ entry, row, current: latest, written, encoded });
   }
   if (request.operation === "update") {
     const owners = new Map(checked.flatMap(item => [item.current.entity, item.written.entity]).map(ref => [`${ref.id}@${ref.version}`, ref]));
@@ -130,9 +156,7 @@ async function fields(current: FieldRuntimeAuthority, request: TicketFormRequest
   }
   const saved: TicketFormReceipt["fields"] = [];
   for (const [index, item] of checked.entries()) {
-    const { entry, row, current: latest, written } = item;
-    if (entry.value !== null && entry.value.type !== written.field.storage.type) conflict();
-    const encoded = encodeFieldValue(written.field, entry.value?.value ?? null);
+    const { entry, row, written, encoded } = item;
     const extensionBefore = index === 0 ? request.packet.extensionRevision : (request.packet.extensionRevision ?? 0) + index;
     const original = { operationId: entry.operationId.toLowerCase(), definitionId: entry.definitionId.toLowerCase(), versionId: entry.versionId.toLowerCase(),
       generationId: entry.generationId.toLowerCase(), definitionRevision: entry.definitionRevision, recordId: result.recordId, recordRevision: result.fieldRecordRevision,
@@ -150,16 +174,10 @@ async function fields(current: FieldRuntimeAuthority, request: TicketFormRequest
     const value = await tx.studioFieldValue.findFirst({ where: { id: row.id, organisationId: session.organisationId, definitionId: row.definitionId,
       generationId: row.generationId, slotId: row.slotId, versionId: row.versionId, revision: row.revision, createdBy: session.userId } });
     if (!value || value.fingerprint !== encoded.fingerprint || checksum(decodeStoredFieldValue(written.field, value)) !== encoded.fingerprint) conflict();
-    // Original submitted reference rights still apply after a later overwrite.
-    // A changed current schema does not coerce the old value into its new type.
-    if (encoded.referenceValue !== null && written.field.storage.type === "reference") {
-      await registry.authoriseRecord({ session, transaction: tx }, written.field.storage.entity, { recordId: encoded.referenceValue, intent: "read" });
-      if (latest.field.storage.type === "reference")
-        await registry.authoriseRecord({ session, transaction: tx }, latest.field.storage.entity, { recordId: encoded.referenceValue, intent: "read" });
-    }
     saved.push({ operationId: row.id, definitionId: row.definitionId, definitionRevision: entry.definitionRevision, versionId: row.versionId, generationId: row.generationId,
       fingerprint: encoded.fingerprint, requestChecksum, extensionId: row.slot.extensionId, extensionRevision: parsed.data.extensionRevision,
-      slotId: row.slotId, slotRevision: row.revision, valueRevision: row.revision });
+      slotId: row.slotId, slotRevision: row.revision, valueRevision: row.revision,
+      ...(defaultIds.has(row.definitionId) ? { defaulted: true as const } : {}) });
   }
   if (retained && checksum(saved) !== checksum(retained.fields)) conflict();
   return saved;
@@ -186,17 +204,18 @@ async function replay(authenticated: Session, tx: Prisma.TransactionClient, inpu
 /** INTERNAL trusted post-final-validator completion only. Caller supplies actual
  * INSERT/CAS result and field staging revision, never a client's created ID or a
  * claim that a validator ran. Exceptions must roll back the WHOLE owning tx. */
-export async function completeTicketFormInTransaction(authenticated: Session, tx: Prisma.TransactionClient, input: TicketFormRequest, serverResult: TicketFormResult) {
-  try { return await complete(authenticated, tx, input, serverResult); } catch (error) { throwTicketFormReceiptError(error); }
+export async function completeTicketFormInTransaction(authenticated: Session, tx: Prisma.TransactionClient, input: TicketFormRequest, serverResult: TicketFormResult,
+  serverDefaults: FieldFormPacket["fields"] = []) {
+  try { return await complete(authenticated, tx, input, serverResult, serverDefaults); } catch (error) { throwTicketFormReceiptError(error); }
 }
-async function complete(authenticated: Session, tx: Prisma.TransactionClient, input: TicketFormRequest, serverResult: TicketFormResult) {
+async function complete(authenticated: Session, tx: Prisma.TransactionClient, input: TicketFormRequest, serverResult: TicketFormResult, serverDefaults: FieldFormPacket["fields"]) {
   const request = ticketFormRequestSchema.parse(input), result = ticketFormResultSchema.parse(serverResult), current = await authority(authenticated, tx, request);
   if (request.operation === "create" ? result.recordRevision !== 1 || result.fieldRecordRevision !== 1
     : result.recordId !== request.recordId || result.recordRevision !== request.recordRevision + 1 || ![request.recordRevision, result.recordRevision].includes(result.fieldRecordRevision)) conflict();
   if (await receiptRow(current, request)) conflict();
   const native = await owningRecord(current, request.operation, result.recordId);
   if (native.version !== result.recordRevision) conflict();
-  const written = await fields(current, request, result, true);
+  const written = await fields(current, request, result, true, undefined, serverDefaults);
   const receipt = ticketFormReceiptSchema.parse({ schemaVersion: 1, organisationId: current.session.organisationId, actorUserId: current.session.userId,
     operationId: request.packet.operationId.toLowerCase(), operation: request.operation, ...result,
     requestRecordRevision: request.operation === "create" ? 1 : request.recordRevision, nativeRequestChecksum: request.nativeRequestChecksum,

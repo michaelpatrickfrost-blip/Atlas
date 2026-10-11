@@ -3,7 +3,9 @@ import { sessionAuthorityStamp, type Session } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
 import { checksum } from "./contracts";
 import type { ContractMetadata, ContractReference, Contribution, FieldMigrationIntentVersion, NativeValidationRequest, RecordAnchor, RecordContext, StudioModuleContract } from "./types";
-import { entityDetailsSchema, fieldMigrationQueryPolicySchema, fieldSettlementPolicySchema, nativeValidationPolicySchema, nativeValidationRequestSchema, recordAnchorSchema, recordRequestSchema, supportsFieldMigrationIntent, supportsFieldMigrationQueryIntent } from "./entities";
+import { entityDetailsSchema, fieldSearchPolicySchema, fieldMigrationQueryPolicySchema, fieldSettlementPolicySchema, nativeValidationPolicySchema, nativeValidationRequestSchema, recordAnchorSchema, recordRequestSchema, supportsFieldMigrationIntent, supportsFieldMigrationQueryIntent } from "./entities";
+
+import { fieldSearchWindowSchema, fieldSearchWindowResultSchema } from "../fields/search-contract";
 
 const logicalId = /^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/;
 const identity = z.object({ id: z.string().regex(logicalId), version: z.number().int().positive(),
@@ -64,6 +66,25 @@ export class CapabilityRegistry {
           if ((other.entityId === policy.entityId && other.operation === policy.operation && item.metadata.id !== m.id)
             || (item.metadata.id === m.id && (other.entityId !== policy.entityId || other.operation !== policy.operation)))
             throw new Error("One stable native validation query identifier is allowed per entity and operation.");
+        }
+      }
+      if (m.details.fieldSearch !== undefined) {
+        const policy = fieldSearchPolicySchema.parse(m.details.fieldSearch);
+        if (m.kind !== "query" || m.details.transaction !== "required" || m.details.pagination !== "cursor"
+          || m.details.maxCardinality !== 50)
+          throw new Error("Field search requires a bounded transactional owner cursor query.");
+        for (const version of policy.fieldVersions) {
+          const source = additions.get(`${policy.entityId}@${version}`) ?? this.items.get(`${policy.entityId}@${version}`);
+          if (!source || source.metadata.kind !== "entity" || source.metadata.ownerModuleId !== ownerModuleId
+            || source.metadata.capability !== m.capability || !entityDetailsSchema.parse(source.metadata.details).record?.fieldPolicy)
+            throw new Error("Field search must cover typed-field versions with the same owner and native read capability.");
+        }
+        for (const item of [...this.items.values(), ...additions.values()]) {
+          if (item.metadata.details.fieldSearch === undefined) continue;
+          const other = fieldSearchPolicySchema.parse(item.metadata.details.fieldSearch);
+          if ((other.entityId === policy.entityId && item.metadata.id !== m.id)
+            || (item.metadata.id === m.id && other.entityId !== policy.entityId))
+            throw new Error("One stable field search window query identifier is allowed per entity.");
         }
       }
       if (m.details.fieldMigration !== undefined) {
@@ -327,6 +348,40 @@ export class CapabilityRegistry {
       throw new Error("DEPENDENCY_BROKEN: field settlement needs current owning-domain coverage.");
     await this.allowed(session, policy);
     return policy;
+  }
+  /** Only an explicit current owner window, never client-chosen record IDs or
+   * predicates. Latest unsupported policies fail closed rather than fall back. */
+  async invokeFieldSearchWindow(context: RecordContext, reference: ContractReference, input: unknown) {
+    const stamp = sessionAuthorityStamp(context.session);
+    if (!context.transaction || !stamp || stamp.userId !== context.session.userId
+      || stamp.organisationId !== context.session.organisationId || stamp.membershipId !== context.session.membershipId)
+      throw new Error("Field search requires a genuine current principal and shared transaction.");
+    const source = await this.resolve(context.session, reference);
+    if (source.kind !== "entity" || !entityDetailsSchema.parse(source.details).record?.fieldPolicy)
+      throw new Error("DEPENDENCY_BROKEN: field search source is unavailable.");
+    const policyId = [...this.items.values()].find(({ metadata }) => metadata.kind === "query"
+      && metadata.ownerModuleId === source.ownerModuleId && metadata.details.fieldSearch !== undefined
+      && fieldSearchPolicySchema.parse(metadata.details.fieldSearch).entityId === source.id)?.metadata.id;
+    const current = [...this.items.values()].filter(({ metadata }) => metadata.id === policyId).sort((a, b) => b.metadata.version - a.metadata.version)[0];
+    const policy = current?.metadata.details.fieldSearch === undefined ? undefined : fieldSearchPolicySchema.parse(current.metadata.details.fieldSearch);
+    if (!current?.run || current.metadata.kind !== "query" || current.metadata.ownerModuleId !== source.ownerModuleId
+      || current.metadata.capability !== source.capability || current.metadata.details.transaction !== "required"
+      || !policy?.fieldVersions.includes(source.version))
+      throw new Error("DEPENDENCY_BROKEN: current owner does not approve this field search version.");
+    await this.allowed(context.session, current.metadata);
+    const request = fieldSearchWindowSchema.parse(input);
+    const result = fieldSearchWindowResultSchema.parse(await current.run({ session: context.session, transaction: context.transaction }, request));
+    if (result.records.length > request.limit || (result.next !== null && result.next !== result.records.at(-1)?.recordId))
+      throw new Error("FIELD_STORAGE_INVALID: invalid owning search window.");
+    let previous = request.after ?? "";
+    for (const record of result.records) {
+      if (record.organisationId !== context.session.organisationId || record.recordId <= previous)
+        throw new Error("FIELD_STORAGE_INVALID: invalid owning search record order or tenant.");
+      const anchor = await this.authoriseRecord(context, reference, { recordId: record.recordId, intent: "read" });
+      if (anchor.revision !== record.revision) throw new Error("CONFLICT: owning search record changed.");
+      previous = record.recordId;
+    }
+    return result;
   }
   async invoke(session: Session, reference: ContractReference, input: unknown, idempotencyKey?: string): Promise<unknown> {
     const m = await this.resolve(session, reference);

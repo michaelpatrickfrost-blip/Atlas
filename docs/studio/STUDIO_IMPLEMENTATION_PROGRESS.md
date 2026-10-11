@@ -14,7 +14,7 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
-Phase2 2B d4f — typed native Ticket forms — IN PROGRESS. Native d4e foundation
+Phase2 2B d4f/2B5/2B6 — integrated native forms/defaults/search and compatible release — IN PROGRESS. Native d4e foundation
 VERIFIED LIVE ad9d5a430e2b92e6b08448a45d11f694f5ce2066: original exec13566 EXIT0,
 candidate627MN9/publicjY9iVL BOTH ALL COMBINED PASS. Native enforcement/windows/
 concurrency and corrected required activation PASS; existing Admin/business and
@@ -75,6 +75,14 @@ source coverage, phase plan and this ledger. No rewritten specification.
 - D4c/d4d/d4e stored1/2 whole windows, native hooks/final validation, ordinary required activation and actual races: VERIFIED live ad9 in original candidate AND public gates.
 
 # Current Workstream Detail
+
+Integrated scoped defaults/search checkpoints:223/11 PASS, strict/scopedlint exit0;
+reference rights now checked before protected values, strengthened95/3 PASS. Forward
+040000 receipt guard not yet centrally applied. Defaults/search IMPLEMENTED, not
+runtime VERIFIED. Literal metadata requires compatible immediate rollback; original
+per-release parser evidence/server publication+activation gate in progress.
+2C1 pure contracts now IN PROGRESS in existing helper, no active runtime yet.
+
 
 11October c152 deployment29161 EXIT1 before activation. Original candidateXyFyYX
 checks through native/window/concurrency PASS; new typed forms failed an ambiguous

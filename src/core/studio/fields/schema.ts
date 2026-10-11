@@ -1,7 +1,10 @@
 import { z } from "zod";
 import { referenceSchema } from "../compiler/reference";
 
-export const fieldKeySchema = z.string().regex(/^[a-z][a-z0-9_]{0,39}$/);
+import { fieldKeySchema } from "./value-contract";
+import { fieldFormValueSchema } from "./value-schema";
+export { fieldKeySchema, addressValueSchema } from "./value-contract";
+export type { FieldValue } from "./value-contract";
 const capability = z.string().regex(/^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/);
 const integer = z.number().int().min(-Number.MAX_SAFE_INTEGER).max(Number.MAX_SAFE_INTEGER);
 const decimal = z.string().regex(/^-?(?:0|[1-9]\d*)(?:\.\d+)?$/).max(40);
@@ -46,7 +49,10 @@ export const customFieldSchema = z.strictObject({
   classification: z.enum(["public_internal", "confidential", "restricted"]),
   required: z.boolean().default(false), indexed: z.boolean().default(false), unique: z.boolean().default(false),
   readCapability: capability.optional(), writeCapability: capability.optional(), storage: fieldStorageSchema,
+  // Optional literal only: absence preserves every historical schema1/2 shape.
+  defaultValue: fieldFormValueSchema.optional(),
 }).superRefine((value, ctx) => {
+  if (value.defaultValue && value.defaultValue.type !== value.storage.type) ctx.addIssue({ code: "custom", path: ["defaultValue"], message: "The default must match the field type." });
   if (value.classification === "restricted" && !value.readCapability) ctx.addIssue({ code: "custom", message: "Restricted fields require an additional read capability." });
   if ((value.indexed || value.unique) && ["multi_enum", "address"].includes(value.storage.type)) ctx.addIssue({ code: "custom", message: "This structured type does not support scalar indexing or uniqueness." });
 });
@@ -55,16 +61,3 @@ export const customFieldPayloadSchema = z.strictObject({ schemaVersion: z.litera
 export type CustomField = z.infer<typeof customFieldSchema>;
 export type FieldStorage = z.infer<typeof fieldStorageSchema>;
 export type CustomFieldPayload = z.infer<typeof customFieldPayloadSchema>;
-
-export const addressValueSchema = z.strictObject({
-  line1: z.string().min(1).max(200), line2: z.string().max(200).default(""), city: z.string().min(1).max(100),
-  region: z.string().max(100).default(""), postalCode: z.string().max(40).default(""), country: z.string().regex(/^[A-Z]{2}$/),
-});
-export type FieldValue =
-  | { type: "string" | "email" | "url" | "phone" | "date" | "datetime" | "enum" | "reference"; value: string }
-  | { type: "integer" | "duration"; value: number }
-  | { type: "decimal"; value: string }
-  | { type: "money"; value: { amount: string; currency: string } }
-  | { type: "boolean"; value: boolean }
-  | { type: "multi_enum"; value: string[] }
-  | { type: "address"; value: z.infer<typeof addressValueSchema> };

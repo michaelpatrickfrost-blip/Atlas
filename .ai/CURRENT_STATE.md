@@ -1,3 +1,28 @@
+## 11 October — defaults/search source integrated; rollback bridge preparation
+
+Imported only owned source/tests from defaults6c50c7a and searchb291e55 into accepted
+c152 lineage; preserved newer live Manufacturing/UI source. Integrated223 assertions/
+11 suites PASS16843, standalone64449 and scopedlint76994 exit0. Receipt reference
+preflight review found original submitted/default target checks after typed reads:
+now encode using retained written schema and check ALL current/written reference
+rights before any typed-column lookup. Focused receipt/required-runtime/native-proof
+95 assertions/3 suites PASS37424; stronger reference-before-columns cases included.
+Database forward040000 receipt guard source-only; no Prisma/model change here.
+Historical absent metadata/receipt shapes retained; create-only defaults fill only
+omissions under actual INSERT proof, null wins, no edit backfill, rawpacket checksum
+and immutable written literal replay; legacy no-packet create stays non-idempotent.
+Bounded configured scalar search selects authorised native windows<=50, preflights
+all written policies, then current-generation indexed typed predicates. Empty+next
+is intentional continuation, no global total or command-palette completeness claim.
+New settings must remain closed until compatible current+rollback parser proof.
+Original release-specific immutable feature evidence planned under BOTH original
+locks; no client flags or activation bypass. Default/shared SQL/runtime/browser gate
+pending, Phase2 incomplete, visual2E required. Pure2C1 contracts in isolated helper;
+2C2 dependency/association/requirement-impact plan captured before coding.
+Exact next: finish release feature readiness/server guard, build/source checkpoint,
+original candidate/public f6 gate; then defaults/search actual acceptance and2C/D/E.
+No ad-hoc dumps/localDB/duplicate installs. Macfree93GiB current observation.
+
 ## 11 October — typed-form candidate stopped at checker locator ambiguity
 
 Pinned c152bb309eaac8dcc7d22a1ec146e79d8bb19429 deployment29161 EXIT1,

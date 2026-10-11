@@ -275,3 +275,11 @@ Archive wrappers return references/semantic checksums only. Exact native/global
 revision envelopes remain separate; equality never waives drift. No v2 durable
 preparation/archive/owner/execution/authoring/native hook is enabled by this readonly
 component. Actual persistence/owner/central proof and later stage/lock gates remain.
+
+### Studio server-stored migration format selection — 11 October 2026
+
+Internal `migrations/stored-protocol.ts` selects closed intent/review1/2 solely from
+server-loaded JSON and verifies canonical hashes/tenant/row identity. It grants no
+owner or data authority. Existing collection/sealing keep explicit1-only gates;
+unknown/coerced/missing versions never fall back. Actual version2 SQL/archive/
+coverage/owner/runtime integration remains a later ordered prerequisite.

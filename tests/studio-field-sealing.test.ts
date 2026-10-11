@@ -153,3 +153,14 @@ it("reference opt-in cannot use an old pinned query or unsupported target versio
   await expect(sealFieldMigrationPreparation(session, request)).rejects.toThrow("MIGRATION_REFERENCE_REVIEW_REQUIRED");
   expect(m.digest).not.toHaveBeenCalled(); expect(m.create).not.toHaveBeenCalled();
 });
+
+it("keeps legacy sealing closed after selecting a valid stored conditional intent", async () => {
+  const { conditionalFieldPayloadSchema } = await import("@/core/studio/fields/required-contract");
+  const { sealRequiredFieldMigrationIntent } = await import("@/core/studio/fields/migrations/required-contracts");
+  const payload = conditionalFieldPayloadSchema.parse({ ...saved.intent.target.payload, schemaVersion: 2,
+    requiredIf: { match: "all", predicates: [{ source: { kind: "native", fieldId: "status" }, operator: "present" }] } });
+  const modern = sealRequiredFieldMigrationIntent({ ...saved.intent, schemaVersion: 2, target: { ...saved.intent.target, payload } });
+  saved.intent = modern.intent as unknown as FieldMigrationIntent; saved.intentChecksum = modern.checksum;
+  await expect(sealFieldMigrationPreparation(session, request)).rejects.toThrow("review is invalid");
+  expect(m.resolve).not.toHaveBeenCalled(); expect(m.transaction).not.toHaveBeenCalled(); expect(m.coverage).not.toHaveBeenCalled(); expect(m.create).not.toHaveBeenCalled();
+});

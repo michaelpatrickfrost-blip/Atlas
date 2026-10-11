@@ -11,6 +11,61 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
+## 11 October 2026 — Row checkpoint6ca2ac2 VERIFIED live
+
+Original pinned runner95743 exit0. CandidateffFOlj/publicblRJed ALL COMBINED PASS;
+actual canonical fields/native/required-result/creation/history/tenant/private/Audit
+rollback and separate Admin/existing modules/browser compatibility passed. Exact
+packaged readonly authority48406 PASS: copied DTO denied before queries; no DB/
+files/facts/values. Public health6ca2ac2, login200, service active. Previousa99b75b
+retained; original retention under both locks retired duplicate41e9432 runtime only,
+source/static/evidence/private records/business backups kept. Root166GiB free/15%.
+Required UTC11Oct pre-release074848/candidate075033/public075449 backups only;
+no ad-hoc dumps or development copies. Row scope is readonly internal preparation
+inspection, not new owner/SQL v2 persistence/execution/authoring.
+
+c1 selector VERIFIED locally28/3/TS/lint/build/diff. Exact next: commit/pin/release
+c1, then additive preparation/observation JSON guards and version2 SQL digest,
+actual central rollback-only fixture proof; preserve v1 receipts/exact draft pins.
+Phase2 IN PROGRESS; whole gate not passed, visual stash28243b7 preserved for2E.
+
+## 11 October 2026 — c1 stored protocol selector VERIFIED locally
+
+Stored intent/review formats are selected only from closed server-loaded JSON;
+full canonical/parser/hash/tenant/row identity checks retained, unknown/coerced/
+missing headers rejected without fallback. Existing collection/sealing use the
+selector but explicitly reject v2 before principal resolution/transaction/values.
+This is integrity plumbing, not v2 durable review or owner approval.
+28 cases/3 suites PASS (98717); final strict TS81564/scoped lint93007+18722/build38813
+exit0, diff review/check PASS. Initial tests used the wrong fixture property and
+hashed non-JSON undefined instead of omitting the missing header; corrected, no
+production relaxation. New stored-protocol suite6, legacy collection/sealing each
+add one explicit unsupported-format test. No schema/DDL/archive writes/new callbacks.
+Files migrations/stored-protocol.ts,collection.ts,sealing.ts; three focused suites;
+architecture/module/decision/plan/current/ledger memory. WholePhase2 IN PROGRESS.
+
+Row6ca2ac2 original release95743 remains pinned; candidateffFOlj ALL COMBINED PASS,
+publicblRJed ongoing, health exact6ca. Readonly actual packaged bridge48406 PASS,
+copied-session denial before queries, no DB/files/values. Do not move HEAD yet.
+Exact next: finish original row public gates, save proof and commit this stored
+selector checkpoint; then additive preparation/observation JSON guards and v2
+SQL archive digest, keeping exact saved draft pins and old v1 branches/receipts.
+Original central rollback-only fixture proof required before enabling routing.
+No public authoring before owner/e3/d4/d5. Visual stash28243b7 preserved for2E.
+
+## 11 October 2026 — e2b3c1 stored protocol selector IN PROGRESS
+
+Row checkpoint6ca2ac2 is pinned in original runner95743; candidateffFOlj running.
+Readonly exact packaged authority probe48406 PASS: copied DTO denied before queries;
+no files/facts/values/records read or written. Do not move HEAD during this release.
+Next small persistence block c1 adds an integrity-only closed selector for server-
+loaded intent/review JSON and wires legacy collection/sealing reads through it while
+explicitly retaining their v1-only gate. Expected migrations/stored-protocol.ts,
+collection.ts,sealing.ts,new stored-protocol test. No DB/schema/archive writes or
+conditional service dispatch; owner/metadata/current authority remain separate.
+Then c2 additive SQL guards/digest and c3 existing engine routing, actual owner c/d
+and central proof e before execution/native gates. Tests not yet run for c1.
+
 ## 11 October 2026 — e2b3b per-row requirement review VERIFIED locally
 
 The existing observation layer now has an internal preparation-only v2 row reviewer:
@@ -700,6 +755,8 @@ Authoritative ten-phase source preserved unchanged at docs/studio/ATLAS_STUDIO_S
 body/table paragraphs/footer read. Michael authorised source sequence on9 October.
 
 # Completed Workstreams
+
+c1 integrity-only stored protocol selection VERIFIED locally (28/3/TS/lint/build/diff); rowb candidate PASS/public pending. Full v2 persistence/routing/owner runtime remains incomplete.
 
 11Oct e2b1/2/3a VERIFIED scoped foundations; livea99b75b original32194/candidate reVg0w/public oiTds0 ALL COMBINED PASS, readonly metadata1938 PASS. Not a complete conditional business migration.
 
@@ -2704,6 +2761,8 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+c1 migrations/stored-protocol.ts,collection.ts,sealing.ts; stored-protocol6 +collection/sealing rejection tests; architecture/module/decision/plan/current/ledger memory.
+
 e2b3b: evolution.ts,binding.ts,migrations/access.ts,observation.ts,new observation-source.ts; new required-observation/conversion tests; architecture/module/decision/plan/current/ledger documentation.
 
 e2b3a fields/required-inputs.ts, required-runtime.ts, tests/studio-field-required-runtime.test.ts, decision/architecture/module/plan/current/ledger. Resulting-value/input bodies reused; no unrelated removals.
@@ -2910,6 +2969,8 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+c1 NONE. No DDL/archive writes/activation.
+
 e2b3b: NONE. Readonly code, no schema/archive writes/reset/backfill or new business tables.
 
 11Oct completed owner/metadata/input blocks: NONE. No schema/DDL/backfill/native mutation.
@@ -2990,6 +3051,8 @@ business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
 
+c1 NONE. c2 additive JSON guards/digest not started.
+
 e2b3b: NONE. Additive persistence guard work remains e2b3c.
 
 11Oct blocks: NONE. Original pre-release/fixture recovery backups only; no ad-hoc dumps.
@@ -3048,6 +3111,8 @@ preserved. Final candidate/activation backup prefixes: `atlas-pre-deploy-2026100
 and `atlas-pre-deploy-20261009-193700` in the same server backup directory.
 
 # Tests Added
+
+c1 stored-protocol6 and explicit unsupported-format guard in collection/sealing; actual legacy orchestration unchanged.
 
 e2b3b: tests/studio-field-required-observation.test.ts (14) and studio-field-required-conversion.test.ts (2). Actual shared compiler/evaluator/decoder/converter with test-only owner/transaction/principal; actual copied-session bridge denial. No claim of durable v2 runtime proof.
 
@@ -3134,6 +3199,8 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+c1 final28/3 (98717), finalTS81564, lint93007+18722, build38813/diff reviewed PASS. Initial test fixture/header mistakes corrected.
 
 e2b3b: 47330 focused47/6 +35586 regression44/5, strict TS66672, scoped lint87046, production build44612 and diff review/check. All final checks PASS. Live original gates pending. No full baseline suite/lint repeat.
 
@@ -3327,6 +3394,8 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
+c1 final scoped28/3/types/lint/build/diff PASS. No runtime positive v2 storage/execution claim. Row live candidateffFOlj combined PASS; public pending.
+
 e2b3b final47/6 +44/5/TS/lint/build/diff PASS. Initial fixture/expectation and test callback typing corrected; a draft normalization bug fixed by compiling the actual server draft before exact intent comparison. Positive real central v2 owner/persistence evidence remains e2b3d/e.
 
 Owner approval, shared full metadata compiler and authorised input reader VERIFIED for documented internal/runtime/compatibility scope. Actual v2 review persistence/conversion/execution and full Phase2 not delivered.
@@ -3508,6 +3577,8 @@ rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
 
+Persistence must retain exact SQL draft equality; c3 requires a canonical saved conditional draft or an explicitly authorised CAS normalization, never a equality waiver. V2 engine/native/visual gates remain open.
+
 No external blocker. V2 durable preparation/archive/execution/native hooks still incomplete by ordered plan; positive new-row fixtures are not central canonical proof. Visual builder remains unfinished/preserved for2E.
 
 Current Phase2 remains open: actual conditional migration row review/persistence and execution/lock/runtime/visual gates are not delivered. Future native9/current settlement callback must support both formats1/2 (v2 intent cannot accept all-v1 pairs; newest policy does not fall back). No new current owner/callback activated; live legacy operations remain covered by existing policies.
@@ -3594,6 +3665,8 @@ No later-phase implementation before preceding gate passes.
 
 # Acceptance Gate Status
 
+c1 scoped local PASS; original row candidate PASS/public pending. WholePhase2 NOT PASSED; noPhase3.
+
 e2b3b focused local scope PASS; live candidate/public pending. Whole Phase2 NOT PASSED. No Phase3.
 
 Phase0/1 PASS retained; Phase2 IN PROGRESS, gate NOT PASSED. e2b1/2/3a scoped gates checked live; e2b3b–e/e3/d4/d5 and remaining2B/C/D/E/F still required.
@@ -3656,14 +3729,13 @@ prematurely. Gates cannot PASS from file existence alone.
 
 # Exact Next Action
 
-CURRENT: commit/pin/release the readonly e2b3b row checkpoint through original Studio
-candidate/public gates; do not move HEAD while pinned. Then e2b3c: implement a closed
-server-stored intent1/2 selector and additive preparation/observation SQL guards,
-exact v2 archive digest and existing engine collection/coverage/sealing routing.
-Preserve every old v1 parser/hash/receipt/frame and unknown-version denial. Actual
-new owner/callbacks supporting1/2 follow e2b3d and real central v2 proof e2b3e before
-e3 execution/cutover/settlement and d4 native locks/writers. No authoring befored5.
-Visual stash28243b7 is for2E; no Phase3 before wholePhase2 gate.
+CURRENT: commit/pin/release locally verified c1 stored-protocol selector through
+original Studio candidate/public gates; row6ca2ac2 runner95743 finished PASS.
+Then c2: additive preparation/observation SQL JSON guards and exact v2 archive
+digest, retaining v1/FKs/history/receipts/exact draft pins; real central rollback-only
+fixture proof under original backups. c3 routing, actual owner d/central e proof
+before e3 execution/cutover/settlement and d4 native locks/writers/d5 authoring.
+Visual stash28243b7 for2E; wholePhase2 remains open, noPhase3.
 
 Historical next-action snapshots below are superseded by this current instruction.
 

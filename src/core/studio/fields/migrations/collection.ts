@@ -13,6 +13,7 @@ import { sealFieldMigrationIntent, FieldMigrationReviewError } from "./contracts
 import { assertFieldMigrationPolicies } from "./access";
 import { withFieldMigrationAuthority } from "./authority";
 import { observeFieldMigrationRecord } from "./observation";
+import { readStoredFieldMigrationIntent } from "./stored-protocol";
 
 const requestSchema = z.strictObject({ preparationId: z.uuid(), revision: z.number().int().nonnegative().max(2147483646),
   limit: z.number().int().min(1).max(50).default(25) });
@@ -30,15 +31,18 @@ export async function collectFieldMigrationBatch(session: Session, input: unknow
   // Identity metadata only. Actual native access is refreshed under locks below.
   const initial = await db.studioFieldMigrationPreparation.findFirst({ where: { id: request.preparationId, organisationId: session.organisationId } });
   if (!initial) changed();
-  const sealed = sealFieldMigrationIntent(initial.intent);
-  if (sealed.checksum !== initial.intentChecksum || sealed.intent.id !== initial.id || sealed.intent.organisationId !== session.organisationId) changed();
-  return withFieldMigrationAuthority(session, sealed.intent.principal, async ({ session: fresh, transaction: tx, company }) => {
+  const sealed = readStoredFieldMigrationIntent(initial, session.organisationId);
+  // Conditional persistence/owner coverage is a later integration gate. A saved
+  // format header cannot reinterpret this legacy-only service implementation.
+  if (sealed.intent.schemaVersion !== 1) throw new FieldMigrationReviewError("REVIEW_INVALID");
+  const pinnedIntent = sealed.intent;
+  return withFieldMigrationAuthority(session, pinnedIntent.principal, async ({ session: fresh, transaction: tx, company }) => {
     const scope = { id: request.preparationId, organisationId: fresh.organisationId };
     await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${request.preparationId}::uuid AND "organisationId"=${fresh.organisationId} FOR UPDATE`;
     const preparation = await tx.studioFieldMigrationPreparation.findFirst({ where: scope, include: { review: { select: { id: true } } } });
     if (!preparation || preparation.state !== "PREPARING" || preparation.review || preparation.revision > 2147483646
       || preparation.intentChecksum !== sealed.checksum || sealFieldMigrationIntent(preparation.intent).checksum !== sealed.checksum) changed();
-    const intent = sealed.intent;
+    const intent = pinnedIntent;
     const freshness = await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_migration_fresh(p) AS fresh
       FROM studio_field_migration_preparations p WHERE p.id=${preparation.id}::uuid AND p."organisationId"=${fresh.organisationId}`;
     if (freshness.length !== 1 || freshness[0].fresh !== true) changed();

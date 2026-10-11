@@ -642,3 +642,66 @@ receipts and all unknown-version/extra-field denials. Owner callbacks supporting
 both formats follow e2b3d; real central v2 proof e2b3e before execution e3/native d4.
 Whole Phase2 remains IN PROGRESS. No full baseline suite/lint repeat, ad-hoc dumps
 or development copies. Visual stash28243b7 remains untouched for2E.
+
+### e2b3c persistence split — 11 October 2026
+
+- c1 IN PROGRESS: closed integrity-only stored intent/review selector. Existing
+  collection/sealing route stored identity through it and retain explicit v1 gates.
+  Files stored-protocol.ts,collection.ts,sealing.ts,focused protocol tests. No DDL.
+- c2 NOT STARTED: additive preparation/observation JSON guards and deterministic
+  v2 SQL digest; all old branches/FKs/counts/history retained. Real central rollback
+  proof with the original mandatory backup; no reset/backfill.
+- c3 NOT STARTED: existing preparation/collection/coverage/sealing v2 routing,
+  full current metadata/conditions/source envelopes before archive/ID/counts.
+  No public authoring or execution before later owner/central/runtime gates.
+
+Confirmed c2/c3 prerequisite: existing SQL freshness/publication/execution/settlement
+requires draft.payload exactly equal to pinned target.payload, whereas conditional
+compilation normalises predicate/literal ordering. The row reviewer now compiles
+actual draft metadata correctly, but persistence must still pin exact saved metadata.
+Do not weaken the SQL equality or silently rewrite a draft without edit authority,
+CAS/revision/Audit. Before creating a durable v2 preparation require an already
+normalised saved draft (future authorised draft-save/validation can produce it), or
+implement an explicit authorised CAS normalization. V1 behavior remains exact.
+
+## 11 October 2026 — c1 stored protocol selector VERIFIED locally
+
+Stored intent/review formats are selected only from closed server-loaded JSON;
+full canonical/parser/hash/tenant/row identity checks retained, unknown/coerced/
+missing headers rejected without fallback. Existing collection/sealing use the
+selector but explicitly reject v2 before principal resolution/transaction/values.
+This is integrity plumbing, not v2 durable review or owner approval.
+28 cases/3 suites PASS (98717); final strict TS81564/scoped lint93007+18722/build38813
+exit0, diff review/check PASS. Initial tests used the wrong fixture property and
+hashed non-JSON undefined instead of omitting the missing header; corrected, no
+production relaxation. New stored-protocol suite6, legacy collection/sealing each
+add one explicit unsupported-format test. No schema/DDL/archive writes/new callbacks.
+Files migrations/stored-protocol.ts,collection.ts,sealing.ts; three focused suites;
+architecture/module/decision/plan/current/ledger memory. WholePhase2 IN PROGRESS.
+
+Row6ca2ac2 original release95743 remains pinned; candidateffFOlj ALL COMBINED PASS,
+publicblRJed ongoing, health exact6ca. Readonly actual packaged bridge48406 PASS,
+copied-session denial before queries, no DB/files/values. Do not move HEAD yet.
+Exact next: finish original row public gates, save proof and commit this stored
+selector checkpoint; then additive preparation/observation JSON guards and v2
+SQL archive digest, keeping exact saved draft pins and old v1 branches/receipts.
+Original central rollback-only fixture proof required before enabling routing.
+No public authoring before owner/e3/d4/d5. Visual stash28243b7 preserved for2E.
+
+## 11 October 2026 — Row checkpoint6ca2ac2 VERIFIED live
+
+Original pinned runner95743 exit0. CandidateffFOlj/publicblRJed ALL COMBINED PASS;
+actual canonical fields/native/required-result/creation/history/tenant/private/Audit
+rollback and separate Admin/existing modules/browser compatibility passed. Exact
+packaged readonly authority48406 PASS: copied DTO denied before queries; no DB/
+files/facts/values. Public health6ca2ac2, login200, service active. Previousa99b75b
+retained; original retention under both locks retired duplicate41e9432 runtime only,
+source/static/evidence/private records/business backups kept. Root166GiB free/15%.
+Required UTC11Oct pre-release074848/candidate075033/public075449 backups only;
+no ad-hoc dumps or development copies. Row scope is readonly internal preparation
+inspection, not new owner/SQL v2 persistence/execution/authoring.
+
+c1 selector VERIFIED locally28/3/TS/lint/build/diff. Exact next: commit/pin/release
+c1, then additive preparation/observation JSON guards and version2 SQL digest,
+actual central rollback-only fixture proof; preserve v1 receipts/exact draft pins.
+Phase2 IN PROGRESS; whole gate not passed, visual stash28243b7 preserved for2E.

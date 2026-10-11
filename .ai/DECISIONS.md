@@ -2258,3 +2258,12 @@ intent, because raw draft predicate ordering can differ from the compiler's stab
 ordering. Active published source identity remains exact. This routine is explicitly
 preparation-only; future execution/cutover/settlement needs its retained stage/own
 outcome checks, not a bypass of active/draft pins. No new engine/authoring/native grant.
+
+## 11 October 2026 — Stored protocol selection does not upgrade an implementation
+
+One closed integrity selector chooses intent/review format from actual server-loaded
+JSON and verifies complete canonical/parser/hash/tenant/row identity. Unknown,
+missing or coerced formats never fall back. Existing collection/sealing explicitly
+retain format1-only support until SQL/coverage/owner integration is complete, even
+if a stored format2 packet passes pure integrity. Format/hash metadata grants no
+principal, native, value, cohort or execution rights. No new permission engine.

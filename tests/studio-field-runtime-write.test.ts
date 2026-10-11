@@ -3,7 +3,7 @@ import { Prisma, type StudioDefinitionVersion, type StudioFieldValue } from "@/g
 import { retainedCutoverFixture, cutoverUuid as uuid } from "./fixtures/studio-field-cutover";
 import { compileCustomField } from "@/core/studio/compiler/fields";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
-import { writeFieldValue } from "@/core/studio/fields/runtime-write";
+import { writeFieldValue, writeFieldValueInTransaction } from "@/core/studio/fields/runtime-write";
 import { fieldWriteRequestSchema, fieldWriteRequestChecksum, type FieldWriteRequest } from "@/core/studio/fields/runtime-write-contract";
 const m = vi.hoisted(() => ({ authority: vi.fn(), definition: vi.fn(), extension: vi.fn(), generation: vi.fn(), slot: vi.fn(), existing: vi.fn(), create: vi.fn(), slotUpdate: vi.fn(), extensionUpdate: vi.fn(), audit: vi.fn(), findAudit: vi.fn(), raw: vi.fn(), window: vi.fn() }));
 vi.mock("@/core/studio/fields/runtime-authority", () => ({ withFieldRuntimeAuthority: m.authority }));
@@ -101,4 +101,22 @@ it("replays the exact recorded operation without treating it as today's current 
 it("closes untrusted request shape, revision capacity and explicit null, with canonical value idempotency", async () => {
   for (const patch of [{ organisationId: "foreign" }, { principal: {} }, { definitionRevision: 2147483647 }, { value: undefined }]) expect(() => fieldWriteRequestSchema.parse({ ...request, ...patch })).toThrow();
   expect(fieldWriteRequestChecksum(request, encodeFieldValue(f.target.payload.field, "13.50").fingerprint)).toBe(fieldWriteRequestChecksum({ ...request, value: "13.5" }, encodeFieldValue(f.target.payload.field, "13.5").fingerprint));
+});
+
+it("uses the caller's owning transaction without opening another authority boundary and retains failure/closed-input checks", async () => {
+  // Explicit unit authority/storage collaborators; actual genuine bridge and
+  // native-resulting-state atomic acceptance remain the owning integration gate.
+  const authority = { session: f.session, registry: f.registry, transaction: tx,
+    stamp: { organisationId: f.session.organisationId, userId: f.session.userId, membershipId: f.session.membershipId, authVersion: 1, sessionVersion: 1 } };
+  await expect(writeFieldValueInTransaction(authority, { ...request, organisationId: "foreign" })).rejects.toThrow();
+  expect(m.raw).not.toHaveBeenCalled();
+  const result = await writeFieldValueInTransaction(authority, request);
+  expect(result).toMatchObject({ operationId: request.operationId, replayed: false, slotRevision: 2, extensionRevision: 5 });
+  expect(m.authority).not.toHaveBeenCalled();
+  expect(m.window.mock.calls[0][0]).toBe(authority);
+  m.create.mockRejectedValue(new Prisma.PrismaClientKnownRequestError("private duplicate", { code: "P2002", clientVersion: "7" }));
+  await expect(writeFieldValueInTransaction(authority, request)).rejects.toThrow("CONFLICT");
+  m.create.mockImplementation(async ({ data }) => data);
+  m.audit.mockRejectedValue(new Error("Audit unavailable"));
+  await expect(writeFieldValueInTransaction(authority, request)).rejects.toThrow("Audit unavailable");
 });

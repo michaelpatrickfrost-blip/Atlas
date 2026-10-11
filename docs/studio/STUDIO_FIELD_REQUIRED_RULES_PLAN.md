@@ -1,3 +1,24 @@
+## 11 October — d4b3 initial writer contract agreed (IN PROGRESS)
+
+Root ordinary extraction retains writeFieldValueInTransaction(authority,input).
+New internal initialiseFieldValueInTransaction(authority,input,proof:object) delegates
+ONE private typed writer core with separate optional creation proof. Never proof in
+JSON; invalid supplied proof fails closed. Existing initial reader enforces field
+Read, independently compile initial Write; ordinary referenceRead remains mandatory.
+Actual invokeInitialRecordFacts even schema1 verifies actual same-tx still-NEW own
+version1 record before value lookup. Active definition revision/version/generation
+and requestrecordRevision1/null slot+value revisions required even replay. Freshslot
+absent; exact global extension CAS permits earlier different initialized fields.
+Replay only live proof/exact operation/current slot still owns that value/current
+schema+generation; no historical-slot overwrite/access. Ordinary historical replay
+unchanged. Closed1 only until conditional native enforcement; do not waive legacy
+window closure or wire form hooks until d4c/d4d complete. Scoped native agent owns
+initial mode/tests; root normal extraction, lifecycle agent versioned reader.
+
+E3e4 original64598 candidateDXZ53J/publicytFEJs BOTH ALL COMBINED PASS; current1f4,
+rollbackb34, login200. Temp buffer removed safely82954; recovery/source/history/data
+retained. D4a006d2a4 and current d4b source are locally verified/in progress, not live.
+
 ## 11 October — d4b transaction writer and versioned reader workstreams
 
 D4a integrated source reviewed with no additional blocker; integrated local checks

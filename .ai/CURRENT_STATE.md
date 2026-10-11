@@ -1,3 +1,68 @@
+## 11 October 2026 — e3e4 VERIFIED LIVE1f4; temporary resources safely retired
+
+Original clean pinned release64598 exit0. CandidateDXZ53J AND publicytFEJs BOTH
+ALL COMBINED PASS: actual conditional READY activation/replay, paired cutover/
+rollback Audit failures, genuine independent customer settlement/original creator
+revoked, current-private/field/module/session/tenant denials, global drift blocks
+rollback but allows finalization/history/replay and later pointer/retirement history.
+Legacy Studio/value/migration/native, separate private Admin/business login/user
+provisioning/Templates/Sales/Manufacturing/Home/settings/Reports/MRP/Messages/Supply/
+commercial/People regressions pass BOTH stages. Health/current exact1f4dc79d10e1017a-
+203a5f181e8afa459376cc25, immediate rollbackb34ce50, login200. Original122720/122723/
+123218 recovery retained; no ad-hoc dump. Automatic original retention retired only
+inactive0d315f7 duplicated runtime; source/static/history/data/recovery preserved.
+
+Temporary buffer82954 exit0: under BOTH original administrator lock inodes29187/
+13754, no compiler/checker/release; MemAvailable5120372KiB > exact bufferUsed621224
++1572864 margin. Exact2GiB swapoff/file removed, no swap/fstab/app/PG changes; later
+4.4GiB RAM available,163GiB rootfree,/tmp50%used/2GiBfree, health1f4. Maintenance
+history /opt/atlas-maintenance-backups/studio-build-memory-20261011.txt. Previously
+97%full tmp/cache pressure resolved; cause of browser traps not proven.
+
+Rootd4a checkpoint006d2a4 locally verified206/15/finaltypes/lint/build/review, not yet
+live. D4b1 writer extraction implemented and focused9tests52491/type56102/lint5682
+PASS; uses caller tx, closed1 CAS/replay/codec/window/pairedAudit and error mapping
+unchanged, no native result validator bypass/endpoint. Production rebuild deferred
+to combined d4b integration. Parallel7b6c6aa sealed versioned reader source/tests
+projected, branch36/3/type/lint PASS, root integration pending. D4b3 initial writer
+agreed separate initialiseFieldValueInTransaction(authority,input,proof), ONE private
+core, live exact same-tx creation proof/current active/freshslot/version1/actualstill-
+NEW facts/current-owned replay. Independent fieldRead+Write/referenceRead, no native
+Read/Manage/Publish borrowing; conditional initial writes stay gated until d4c/d4d.
+Exact next: checkpoint extracted writer, integrate initial/read work and final
+focused/type/lint/build/review; implement affected windows then owning required hooks.
+
+## 11 October 2026 — isolated d4b2 versioned public field reads VERIFIED locally
+
+runtime-read.ts public current/history gateways now use existing sealed schema1/2
+base-policy readers for current, written and generation-origin versions. New typed
+readVersionedFieldHistoryContextInTransaction resolves retired history without
+changing the existing current alias signature. Ordinary writer closed1 plan/context/
+value aliases, initial/candidate readers and public response shapes unchanged.
+No rule inputs/evaluation or write/Studio privileges required by ordinary reads;
+tenant/native/private/read/reference, binding/seal/pointer/history bounds/retirement
+checks retained. Conditional activation remains Test-only; no native hook/writer/
+compiler/authoring/window/schema/customer enablement changes.
+
+Existing runtime-read suite25 cases PASS: real conditional compiler/sealed metadata
+with read-only actor/private condition dependency, mixed written schema1/2 and
+origin1/2, retained schema2 history after current schema1/retirement, independent
+current/written/origin/reference grants, pagination sentinel, unknown/corrupt/foreign
+metadata, native/module denials, pointer/binding/fingerprint/value identity and strict
+client request checks. Existing read-compiler4 and ordinary-write7 regressions PASS:
+36 tests/3 suites. Fixed only read-compiler synthetic reference/query @7 fixture to
+@99 because genuine Ticket v7 now occupies @7. Fixture current pointer/generation
+lookup now mirror selected metadata. Authority, record visibility and transaction
+rows are bounded mocked collaborators, not real SQL/tenant contention or live proof.
+Strict TypeScript --noEmit --incremental false, scoped ESLint and final diff PASS.
+No DDL/native/domain/value writes, dumps/install/generate/build/deployment. Copied
+parent dependencies remain UNSTAGED/excluded; no known local read blocker. Whole
+d4b/d4 and Phase2 gates remain open. Exact next: parent integrates this four-file
+read checkpoint with ordinary writer bridge, completes creation bridge/native hooks/
+windows in dependency order, then runs integrated build plus real candidate/public
+read and native-write acceptance before customer conditional enablement.
+
+
 ## 11 October 2026 — shared d4a ordering VERIFIED locally, checkpoint ready
 
 Projected c1b79bdd native and714157a lifecycle scope only, contributor memory retained;

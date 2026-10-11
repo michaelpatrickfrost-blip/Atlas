@@ -14,15 +14,14 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
-2B d4a shared entity lock/order VERIFIED locally: integrated206tests/15suites,
-final strict TypeScript88441/scopedlint66840/productionbuild50380 exit0 and independent
-review no blocker. Projected scoped c1b79bdd native and714157a lifecycle, preserving
-source/tests/memory and root helper/metadata/value/draft/retirement. No actual SQL
-contention/native requirements/window/customer enablement claim. D4b next contracts
-recorded: normal in-transaction writer, sealed versioned readers and opaque initial
-writer. E3e4 pinned1f4 original64598 full candidateDXZ53J ALL COMBINED PASS; public
-ytFEJs running after activation, health exact1f4. Do not claim full public/Phase2 gate.
-/tmp cache maintenance freed2.06GB; all data/recovery/history retained.
+Phase2 2B d4b typed transaction writer /versioned reads /opaque initial writer
+IN PROGRESS. D4a shared locks/order VERIFIED locally in006d2a4 (206/15 +finaltype/
+lint/build/review PASS), not yet deployed. D4b1 ordinary writer extracted,9focused/
+type/lint PASS; isolated7b6c6aa versioned reader source/tests projected, branch36/3/
+type/lint PASS, combined verification pending. Opaque initial writer being implemented
+in separate scope under agreed shared private core. No conditional write/authoring
+or native-hook enablement. Previous e3e4 now VERIFIED LIVE1f4dc79: original64598 exit0,
+candidateDXZ53J/publicytFEJs BOTH ALL COMBINED PASS, exacthealth/login200.
 
 # Overall Status
 
@@ -128,15 +127,17 @@ passed; temporary pressure observed, no proven OOM/cause.
 
 # Test Results
 
-D4a VERIFIED locally only; source/current native integration rules unchanged,
-no actual first-publication/no-binding/max-fields contention proof yet. Shared
-Serializable snapshot freshness limitation remains required in d4e acceptance.
-E3e4 full candidateDXZ53J PASSED, publicytFEJs IN PROGRESS, health1f4dc79, immediate
-rollbackb34ce50 preserved; earlier0d315f7 history retained. Existing original
-retention and compatibility gates apply. Temporary2GiB buffer remains through
-public checks, remove exact buffer safely under both original locks afterwards.
-/tmp48%used/2.1GiBfree after removing2060439552bytes disposable tsx hash caches;
-source/runtime/private/business/recovery/acceptance history preserved.
+E3e4 VERIFIED LIVE1f4dc79d10e1017a203a5f181e8afa459376cc25: original64598 exit0,
+candidateDXZ53J/publicytFEJs BOTH ALL COMBINED PASS. Actual conditional/legacy and
+cross-module/private/business workflows passed both stages. Rollbackb34ce50 preserved,
+inactive0d315f7 duplicated runtime retired by original locked retention; source/static/
+history/business/recovery retained. Required backups122720/122723/123218 retained.
+Temporary2GiB buffer retired82954 exit0 under original lock inodes29187/13754,
+no compiler/checker/release; available5120372KiB vs used621224KiB +1572864margin.
+No swap/fstab/app/PG change;4.4GiB RAMavailable/163GiB rootfree,/tmp2GiBfree, health1f4.
+D4a local ordering206/15/type/lint/build/review PASS; not actual SQL races/enablement.
+D4b1 focused9/type/lint PASS; d4b combined build and real atomic native acceptance
+pending. Standalone checks distinct from production build which skips types.
 
 # Architecture Decisions
 
@@ -150,13 +151,13 @@ Decisions and rationale recorded in .ai/DECISIONS.md; no silent source divergenc
 
 # Known Issues
 
-Full Phase2 incomplete. Common native create/save required validators, typed
-creation writer and all affected native/cohort rollback windows remain; customer
+Full Phase2 incomplete. Common native create/save all-active validators, opaque
+initial writer and all affected native/cohort rollback windows remain; customer
 conditional activation withheld. Field aliases/defaults/search, record types,
-structured page/variants/generated runtime, polished visual template previews,
-publish/customer dashboard integration and safe custom buttons remain Phase2.
-Temporary worktree archives queued/unverified; shared dependencies, no duplicated
-build trees. Public old1f4 gate and temporary buffer removal still pending.
+structured pages/variants/generated runtime, visual presets/previews/publish/customer
+dashboards/custom domain buttons remain Phase2. D4a and current d4b local source
+not yet live. Temporary build buffer removed; original gate passes after tmp cache
+maintenance. Worktree archival queued/unverified, source/shared dependencies retained.
 
 # Deferred Items
 
@@ -169,22 +170,21 @@ is IN PROGRESS and unverified; do not restore its superseded planning entries.
 
 # Acceptance Gate Status
 
-Phase0 PASS; Phase1 PASS; Phase2 FAIL (incomplete). E3e4 full candidate PASS,
-public gate pending; d4a local ordering checkpoint PASS, not customer required-field
-or full phase acceptance. Whole-system source checklist never authorises jumping
-phases. No complete Studio/visual designer claim.
+Phase0 PASS; Phase1 PASS; Phase2 FAIL (incomplete). E3e4 workstream PASS actual
+candidate AND public; d4a ordering checkpoint PASS locally. Neither implies native
+required-field/customer conditional gate or entire Phase2 acceptance. Later phases
+remain architectural context only; no complete visual designer claim.
 
 # Exact Next Action
 
-Finish original pinned1f4 public gate64598 (log /tmp/atlas-studio-required-cutover-
-after-cache.txt, candidateDXZ53J/publicytFEJs), record exact final health and recovery,
-remove exact temporary buffer only after no compiler/checker and safe RAM vs swap
-under both original locks. Save d4a passing checkpoint without pushing while old
-remote-tip check runs. Then root extract writeFieldValueInTransaction preserving
-closed1 behaviour; isolated lifecycle agent wires current/history to existing sealed
-versioned reader, native agent initial proof contract agreed before implementation.
-Continue d4c affected-window coordinator and d4d owning native all-active validation;
-actual races required before customer conditional enablement. No Phase3 work.
+Save d4b1 extracted transaction writer checkpoint with actual test/type/lint evidence.
+Integrate isolated7b6c6aa versioned current/history reader and initial writer against
+shared private typed core; run combined focused/type/lint/build/review once source
+complete. Then d4c stored1/2 and all-affected native/cohort rollback windows, d4d
+owning staged native+typed all-active validation. Prove first-publication/no-binding/
+max-field and configured native atomic concurrency before customer activation.
+Keep original source/live1f4 rollbackb34, locked recovery/retention and no new dumps.
+Do not start Phase3 or claim designer finished.
 # Historical checkpoint evidence
 
 The following dated notes record what was known at their checkpoints. Next actions,

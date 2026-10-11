@@ -6,7 +6,9 @@ representation/query2 required. Legacy wrapper stays closed1 and conditional cut
 closed. 63tests/5suites/types/scoped lint/build/diff PASS; three meaningful cases in
 existing required observation suite, with explicit SQL/private unit fixtures. Actual
 format2 row/review/outcome inspection and start/batches remain NOT STARTED. No DDL
-or native/value changes. Original combined release pending; then e3d2b.
+or native/value changes. Original0d315f7/46009 candidateMTZpXy/publicVvzibi BOTH ALL COMBINED PASS/exit0;
+existing conditional API/module regressions verified live. Next e3d2b; new coverage
+unit fixtures do not prove normal execution2.
 
 ## 11 October — e3d2 execution inspection workstreams
 

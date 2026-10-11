@@ -18,7 +18,10 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 VERIFIED locally:63tests/5suites, strictTS/scoped lint/production build/diff PASS.
 Separate internal entry/private preflight/current representation query2 support,
 existing execution/source/target SQL guards reused. No new DDL or writes. Original
-combined release pending; current public bafa1c2 and rollback8cc2758 retained.
+0d315f7 release46009 exit0; candidateMTZpXy/publicVvzibi BOTH ALL COMBINED PASS,
+compatibility/public health exact. Current0d315f7 rollbackbafa1c2; only inactive8cc2758
+duplicate runtime retired. Temporary build swap safely removed49396 exit0 under
+BOTH original lock inodes; root164GiB free/no swap/2.6GiB RAM available.
 Actual conditional row/outcome/review inspection e3d2b is NOT STARTED; no execution2
 start/batch/cutover or ordinary authoring enabled. Detailed dependencies saved in
 required-rules plan. Unit SQL fixtures are not actual format2 runtime evidence.
@@ -83,7 +86,7 @@ scripts/studio/check-field-required-review-storage.ts; ARCHITECTURE/MODULE_SPEC/
 DEPLOY; source coverage/required rules plan/ledger and .ai/CURRENT_STATE.md/DECISIONS.md.
 Earlier owner checkpoint: core/service-work/studio.ts, actual-owner/compatibility
 suites and central checker. Exact source checkpoints ede65ae,a475823,8cc2758,
-01a79ed,a04349c,bafa1c2. Shared Desktop checkout and visual stash remain untouched.
+01a79ed,a04349c,bafa1c2,0d315f7. Shared Desktop checkout and visual stash remain untouched.
 
 # Database / Prisma Changes
 
@@ -129,7 +132,18 @@ Logs: /tmp/atlas-studio-required-published-inspection-{tests,types,lint,build}.t
 
 # Test Results
 
-Local checks PASS. Previous pure-pin8cc2758 original95284 candidatezc2knY/
+Latest0d315f7 release46009 exit0: candidateMTZpXy/publicVvzibi BOTH ALL COMBINED
+PASS, compatibility PASS and health exact. Actual normal conditional publication/
+replay/cancellation and all five real review/publication Audit rollbacks PASS both
+stages. New execution coverage verified locally; normal execution2 is not enabled.
+Required101917/102050/102515 recovery only; original retention kept0d315f7/bafa1c2
+and retired only inactive8cc2758 duplicate runtime. Temporary build swap removed
+49396 exit0 under original lock inodes/no compiler, available4008312KiB versus used
+1381080KiB; root164GiB free/no swap/2.6GiB RAM available, no fstab/app/PG change.
+Log /tmp/atlas-studio-required-execution-coverage-live-deploy.txt and private stage
+acceptance.log evidence; operational memory-recovery evidence retained.
+
+Earlier checkpoints: local checks PASS. Previous pure-pin8cc2758 original95284 candidatezc2knY/
 publicPK9q8T ALL COMBINED PASS. A04349c original33124 failed before acceptance/
 activation: private build log and kernel confirm OOM094911UTC; live stayed8cc2758.
 Under BOTH original locks, failed source/static retained in maintenance backups,
@@ -176,16 +190,19 @@ is IN PROGRESS and unverified; do not restore its superseded planning entries.
 # Acceptance Gate Status
 
 Phase0 PASS; Phase1 PASS; Phase2 FAIL (incomplete, not ready for gate evaluation).
-Current foundation release: candidate/public ALL COMBINED PASS; actual changed-
-feature public checks PASS. This is a workstream gate, not complete Phase2. The source whole-system
+Current0d315f7 foundation release: candidate/public ALL COMBINED PASS; existing
+actual conditional review/publication public checks PASS. Execution coverage local
+verification does not prove normal conditional execution or enable start/batches.
+This is a workstream gate, not complete Phase2. The source whole-system
 Section29 checklist never substitutes for current Phase2 acceptance or authorises
 later-phase features. No complete Studio/visual builder claim.
 
 # Exact Next Action
 
-Checkpoint reviewed e3d2a coverage/docs and run the original pinned combined
-candidate/public release. Then e3d2b: add explicit conditional execution coverage and actual row/review
-inspection to existing coverage/observation/inspection/execution-inspection services.
+Next e3d2b: add inspectExecutingRequiredFieldMigrationRecord/its archive wrapper
+to observation.ts, an explicit execution review entry in inspection.ts, and the
+closed2 server execution inspector in execution-inspection.ts. Reuse e3d2a coverage
+and existing pure pins; source remains active. Do not enable start/batches yet.
 Verify actual retained outcomes for own +1 global extension revision, including
 formerly unanchored records, unchanged source slot/value/native revision, exact target
 representation and reevaluated conditions/independent field Read rights. Bounded

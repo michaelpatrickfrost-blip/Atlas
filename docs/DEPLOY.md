@@ -475,3 +475,13 @@ MemAvailable3511732KiB versus swap-used749308KiB satisfied the1.5GiB safety marg
 exact temporary swap deactivated/removed93028 exit0. Post-cleanup no swap, root164GiB
 free,2.7GiB RAM available. Livebafa1c2 rollback8cc2758; failed source/logs/recovery
 retained. No application/PostgreSQL configuration or schema was changed for recovery.
+
+11 October1032UTC: execution coverage0d315f7 original46009 exit0, candidateMTZpXy/
+publicVvzibi BOTH ALL COMBINED PASS and exact health. Current0d315f7 rollbackbafa1c2;
+original retention retired only inactive8cc2758 duplicate runtime. Required recovery
+101917/102050/102515 retained. Temporary2GiB build buffer safely removed49396 exit0
+under both original lock inodes/no compiler, available4008312KiB versus used1381080KiB.
+Root164GiBfree/no swap/2.6GiB available RAM; no fstab/app/PG/database change. Open
+existing owner-administrator locks as that owner; privileged buffer operations run
+while the owner shell holds them. Initial root opens were denied before mutation;
+never recreate/change lock ownership/inodes to work around sticky-file protection.

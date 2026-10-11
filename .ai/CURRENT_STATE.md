@@ -1,4 +1,31 @@
-## 11 October 2026 — e3d2a execution coverage VERIFIED locally; release pending
+## 11 October 2026 — e3d2a deployed; exact remaining Phase2 scope1032UTC
+
+Original pinned release0d315f770812d2e6b7dc7179992256c1f3461900/46009 exit0.
+CandidateMTZpXy/publicVvzibi BOTH ALL COMBINED PASS, compatibility PASS, exact public
+health confirmed. Real normal conditional review/publication/replay/cancellation,
+all five real Audit rollbacks and existing Admin/business login/module checks PASS
+both stages. New execution coverage body VERIFIED locally63tests/5suites plus
+strictTS/scoped lint/build/diff; deployed regression proof does not enable or prove
+normal execution2. Actual conditional row/outcome/review inspector e3d2b NOT STARTED.
+Current0d315f7 rollbackbafa1c2; original retention retired only inactive8cc2758 runtime
+outputs, retaining source/static/history/central/private/backups. Required original
+recovery101917/candidate102050/public102515 only; no ad-hoc dumps or new DDL/models.
+Temporary2GiB build-memory file restored under BOTH original locks to avoid the
+confirmed earlier OOM; safely removed49396 exit0 after available4008312KiB versus
+used1381080KiB/no compiler. Root164GiBfree, no swap,2.6GiB RAM available; no fstab/app/
+PG/database configuration change. Lock inodes29187/13754 and permissions retained.
+Initial root lock opens denied before mutation; owner administrator holds original
+locks while privileged buffer operations run. Operational evidence retained.
+Updated source coverage, architecture/module/deploy docs, required-rules plan,
+ledger and decisions. Phase0/1 PASS; Phase2 IN PROGRESS/gate incomplete, visual
+builder remains mandatory and unfinished. Next: add executing conditional row/review
+inspection to observation.ts/inspection.ts/execution-inspection.ts, validating actual
+retained outcomes for own +1 envelope (including new anchors), exact source/native/
+target lineage and current conditions/independent field Read before digest comparison.
+Then existing start/batch/representation, cutover/settlement/native hooks, remaining
+fields/record types/pages/visual builder and complete Phase2 gate. No Phase3 work.
+
+## 11 October 2026 — e3d2a execution coverage VERIFIED locally; release pending (superseded above)
 
 Existing coverage.ts now has a separate internal stored2 execution-only entry,
 current representation/query2 support and complete owning private preflight before

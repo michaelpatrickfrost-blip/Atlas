@@ -350,3 +350,6 @@ explicitly support protocol2. Caller owns refreshed locked authority; actual row
 condition/review inspection remains required. Legacy entry closed1; conditional
 start/batch/cutover/authoring still unavailable. Local63/types/lint/build/diff PASS;
 SQL/private unit fixtures do not prove actual conditional execution. No DDL/engine.
+Original0d315f7/46009 candidateMTZpXy/publicVvzibi BOTH ALL COMBINED PASS, exact
+public health. Existing conditional review/publication and module regressions verified
+live; normal execution2 remains unavailable until actual row/outcome inspection.

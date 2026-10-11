@@ -1,3 +1,42 @@
+## 11 October 2026 — Exact Manufacturing & Supply and app guides LIVE / accepted
+
+Live runtime c385a2be2302a514e4b84e33198926cbf149bbf5 passed sealed candidate and public HTTPS
+Supply acceptance under the original release locks. Actual workflows passed: six-
+decimal measured receipts/replay, held-component rollback, partial good/scrap reports,
+replacement production, partial/stale/held batch collection, manual serial genealogy
+and direct material costs, fractional COGS dispatch/value-preserving transfers,
+compatible mixed machine loads/one shared cost journal, dated purchase coverage,
+damage netting/receipt replay and later confirmed supplier arrival. Every actual
+manufacturing journal balances; completed WIP is zero. Finite routing/scheduling,
+Sales-history last-year +10% plus additive/fixed/override forecast saving and Make/
+Buy source-linked conversion passed. Filled execution pages fit 1440/768/390; guide
+and console workspaces fit desktop/tablet/phone with zero browser exceptions.
+
+Guides group accessible apps; Operations filtering, combined app/search and filtered
+app-hub/back/search navigation work. Finance Procurement remains correctly under
+its canonical app. Real user tab refreshed; Operations shows 28 guides across nine
+apps, Manufacturing hub 20 guides with Setup/Daily work/Troubleshooting; opening and
+returning preserves the area. Actual cost phone, mixed-load tablet and genealogy
+desktop screenshots reviewed. Final guide seven tests, preceding receipt correction
+39 focused tests, production build, explicit strict types and scoped lint passed.
+The earlier foundation full suite passed 306 files/2,241 tests (3 files/22 skipped);
+no unnecessary whole-suite rerun after the focused corrections.
+
+Protected cleanup removed 13 marked CUSTOMER Test companies and scoped records,
+verified zero Test companies/pending file deletions and preserved ordinary/internal
+companies, shared staff identity, cleanup Audit and backups. Removed 378 task-owned
+server Test screenshots/failure payloads and six local review PNGs; text acceptance/
+cleanup logs retained. Candidate /tmp/atlas-supply-candidate-9ChVpt, public
+/tmp/atlas-supply-public-9AX7DW. Backups ...204732 and public fixture ...205051;
+previous Decimal-safe runtime 5b6390c8 retained. Six exact execution/purchase migrations
+applied compatibly; no DB rollback. App implementation is accepted and live; remaining
+broader engines, including site-specific supply, full yield/rework/CTP/subcontract/
+co-product planning and recall, stay open in MANUFACTURING_COVERAGE.md. Final release
+evidence reconciles shared documentation with the accepted implementation; the
+dirty canonical Desktop checkout remains untouched.
+PROJECT_MEMORY.md and the Manufacturing/Guides/deployment topic records now reflect
+the accepted exact-quantity/WIP/dated-purchase behavior and the remaining open scope.
+
 ## 11 October 2026 — Complete exact execution candidate passes; guide navigation refined
 
 Candidate e3b0639e passed every actual exact manufacturing/purchasing scenario,

@@ -1,4 +1,18 @@
-# Manufacturing & Supply acceptance — 9 October 2026
+# Manufacturing & Supply acceptance
+
+## Current exact execution acceptance — 11 October 2026, PASS
+
+Live c385a2be2302a514e4b84e33198926cbf149bbf5; original candidate/public release locks,
+backups, immutable builds, compatibility and rollback gates all preserved. Actual
+fractional/partial/mixed-load/serial/WIP/dispatch/transfer/purchasing and flexible
+forecast/MRP workflows passed; guides and filled screens passed at three widths.
+Public cleanup removed 13 marked Test companies, verified zero Test companies or
+pending file deletions, and preserved ordinary/internal records, shared staff and
+backups. Disposable Test screenshots/failure payloads were scrubbed after review.
+Full details: [execution release evidence](../evidence/2026-10-11-manufacturing-execution.md).
+All dated pending/failure checkpoints below are historical and superseded for this
+specific execution upgrade. Broader open programme rows stay open.
+
 
 Scope: modern connected console, preserved workspaces, independent sales eligibility,
 atomic Make/Buy conversion, Finance-owned supplier spend and illustrated instructions.

@@ -262,7 +262,7 @@ Schedule changes require a released/running parent; closed production stays fixe
 Actual recipe-editor save/version/eligible-machine acceptance extends the same
 backed-up candidate/public supply gate; results belong in the acceptance record.
 
-## 11 October exact execution upgrade — implemented, live acceptance pending
+## 11 October exact execution upgrade — live and accepted
 
 The execution upgrade uses six-decimal stock/report/warehouse/sales quantities.
 Explicit compatible conversions record entry and base units (mg/g/kg/t, lengths,
@@ -295,7 +295,7 @@ Existing detailed routes remain canonical, with worked examples for decimal unit
 partial output, mixed loads, actual costing and blocked work. /guides groups all
 accessible apps and includes detailed Field Service and production-handoff tasks.
 The deployment compatibility bridge and acceptance evidence are recorded in
-MANUFACTURING_SUPPLY_ACCEPTANCE.md. This implementation is not yet publicly accepted.
+MANUFACTURING_SUPPLY_ACCEPTANCE.md. Exact runtime c385a2be2302a514e4b84e33198926cbf149bbf5 passed candidate/public acceptance; broader open scope remains in MANUFACTURING_COVERAGE.md.
 
 Finance purchase receipts carry their own tenant-protected movement lineage;
 Logistics receipt links remain distinct. Accepted quantity excludes damage and

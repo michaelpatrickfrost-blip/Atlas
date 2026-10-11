@@ -194,12 +194,21 @@ owner controls and central ledger. Sales eligibility is independent of class and
 make/buy; internal materials remain stockable/purchasable. Dynamics 365 SCM is the
 researched capability benchmark; current delivery is partial. The full 173-section
 source and coverage remain binding. Read [Manufacturing & Supply](../docs/modules/MANUFACTURING.md)
-and its illustrated working-instruction library at `/manufacturing/help`.
-The [kiln/forecast research](../docs/plans/MANUFACTURING_KILN_RESEARCH.md) records
+and its app-grouped instructions at `/guides/apps/manufacturing`; detailed illustrated
+task routes remain canonical and `/manufacturing/help` redirects to the app hub.
+The [machine/forecast research](../docs/plans/MANUFACTURING_KILN_RESEARCH.md) records
 explicit load/cycle/cooling/wait timings, approved machine alternatives, finite
 machine calendars/downtime and reviewed percentage/additive/fixed forecasts.
-Gross orders consume all monthly total forecasts once. Decimal stock, full process
-manufacturing, dated supply and WIP costing remain operational delivery gates.
+Gross orders consume all monthly total forecasts once. Six-decimal base quantities
+and explicit compatible entry/conversion snapshots are accepted; serial identities
+remain whole units. Actual partial reports/issues/holding, component-to-output
+genealogy, compatible mixed machine loads and Finance-owned weighted material/time/
+energy WIP/output/scrap/dispatch/transfer values passed candidate/public acceptance.
+Supplier receipt dates stay distinct from payment dates; approved remaining purchase
+and production supply is dated for MRP, with actual receipt/damage netting. Full
+process/yield/rework, site-specific supply/transfer netting, CTP, subcontract/co-product
+costing and recall remain open in the coverage record. No £40,000/month readiness
+claim follows from this accepted operational workflow.
 
 ## 10 October 2026 — Assigned work and chat controls
 

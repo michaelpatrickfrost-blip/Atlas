@@ -7,6 +7,21 @@ Preserve data, backups, secrets, tenant/capability checks and existing permissio
 A Mac installation alone is insufficient. The Mac procedure below is optional
 additional packaging, not a substitute for server deployment.
 
+## Latest Manufacturing & Supply execution release — 11 October 2026
+
+Accepted runtime c385a2be2302a514e4b84e33198926cbf149bbf5, previous Decimal-capable rollback
+5b6390c874b42571f091a53b1b017aea70121df7. Candidate/public Supply gates and protected
+all-Test cleanup passed under the original locks, with pre-deploy ...204732 and
+public fixture ...205051 backups. Exact records/checks are in
+[manufacturing execution evidence](evidence/2026-10-11-manufacturing-execution.md).
+The fractional unlock is applied centrally; do not activate an old Int-client runtime.
+The retained current/previous pair is Decimal-safe. For an explicitly authorised
+all-Test scrub after public Supply acceptance, use ATLAS_RELEASE_TEST_CLEANUP=1
+with the pinned Supply release. It retains backups and verifies zero remaining
+marked Test companies/pending files; ordinary/internal companies and staff stay intact.
+The accepted application source remains pinned above; subsequent evidence records
+the release without changing application behavior.
+
 ## Server deployment — current required target
 
 Commit the reviewed compatible changes on main, then:

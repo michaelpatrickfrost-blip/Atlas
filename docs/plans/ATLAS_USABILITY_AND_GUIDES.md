@@ -84,7 +84,7 @@ Detailed evidence and practical limits: docs/evidence/2026-10-11-atlas-usability
 No additional broad test run is needed after this successful public acceptance
 unless source changes or a new failure is found.
 
-## App-grouped guide continuation — 11 October, pending release
+## App-grouped guide continuation — 11 October, live and accepted
 
 The shared library now groups by apps (including Manufacturing's consolidated source
 workflows), with dedicated app hubs and Setup/Daily work/Troubleshooting sections.
@@ -100,3 +100,14 @@ its search/back links. Operations retains Procurement under its canonical Financ
 owner while excluding Finance's Business guide. All app guides explicitly widens
 that view. The actual native continuation checks this navigation, not app-name
 exclusion. Final live acceptance remains pending at this checkpoint.
+
+## Final guide continuation — accepted
+
+Runtime c385a2be2302a514e4b84e33198926cbf149bbf5 passed candidate/public and real user-tab
+verification. Operations shows 28 working guides across nine app groups; Manufacturing
+has 20 grouped Setup/Daily work/Troubleshooting guides. Area/search selection continues
+through app links, app search and back navigation; all-app instructions are an explicit
+choice. Finance-owned Procurement remains in Operations. Seven focused guide tests,
+build/types/lint and responsive acceptance passed. Thirteen Test companies and their
+records were scrubbed; no Test companies/pending files remained. Earlier pending entries
+are retained as historical checkpoints and superseded by this acceptance.

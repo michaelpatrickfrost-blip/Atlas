@@ -1,6 +1,6 @@
 ## 11 October 2026 — Decimal manufacturing, actual WIP and app guides prepared
 
-Integrated main 4494f92, current live cc01ca16 opaque navigation and the
+Integrated main 4494f92, current live aaf9bc3a opaque, phone-safe navigation and the
 01f890b production handoff;
 retained all concurrent contributors' source and evidence. New tracked/untracked
 scope: exact six-decimal quantities and measured kg/g/metric-tonne conversions;
@@ -31,12 +31,14 @@ fractional production/cost/genealogy/load/dispatch acceptance after unlock.
 Michael explicitly authorised scrubbing all Test data after verification. Final
 release must use ATLAS_RELEASE_TEST_CLEANUP=1: protected central Test-company wipe,
 ordinary/internal records, shared identity and required backups preserved. No local
-business DB/cache/new QA user/grants. Next: pinned bridge
+business DB/cache/new QA user/grants. First bridge deployment stopped at the ancestry gate before backup/schema/build
+because current advanced from cc01ca16 to aaf9bc3a. Incoming source/evidence are
+preserved; no unsafe activation. Next: rerun integrated checks and pinned bridge
 candidate/public Supply acceptance, unlock/full execution release, visual inspection,
 zero-Test cleanup, then factual delivery evidence. Full 173-section enterprise
 programme still has explicit open items in MANUFACTURING_COVERAGE.md.
 
-## 11 October 2026 — Opaque app-navigation dropdowns prepared
+## 11 October 2026 — Opaque dropdowns live; phone positioning correction prepared
 
 Request: page text shows through the Demand dropdown. Shared
 `src/app/globals.css` now gives `.atlas-float-dropdown` a solid white background
@@ -47,10 +49,20 @@ Canonical shared checkout receives only this task's narrow style/document edits;
 isolated release starts from reviewed origin/main 4494f920, whose only difference
 from observed live 01f890b3 is completed layout verification documentation.
 No schema, tenant/capability, profile permission or data-store change.
-Checks: isolated production build, Next route type generation, strict TypeScript
-and final diff whitespace PASS. Full repository suite/lint not run for this CSS
-change. Release/live visual verification pending; next: deploy the pinned
-compatible release and verify open menus with all business writes blocked.
+Initial immutable release cc01ca16 deployed; backup atlas-pre-deploy-20261011-193859,
+rollback 01f890b3 retained and no pending migration. Production build, Next typegen,
+strict TypeScript and whitespace PASS. Public exact-revision read-only probe
+passed 30 Manufacturing/Finance/Sales menu openings at 1440/768/390px: opaque fill,
+no backdrop filter, full opacity, hit-testing and outside dismissal; zero browser/
+asset errors, 27 non-read requests blocked. Initial probe assumed grouped menus
+on Settings/Logistics; actual navigation differs, so corrected its selected pages.
+Visual screenshot review found existing phone panels extending past the viewport,
+which the initial page-overflow assertion missed. FloatingModuleNav now anchors
+phone menus beneath the entire navigation bar with 16px side insets; wider menus
+retain their trigger alignment. Panel-bound assertions added to disposable probe.
+Correction production build, strict TypeScript, scoped component lint and final
+diff whitespace PASS. Next: deploy this correction and verify full panel bounds/
+screenshots. Full repository suite/lint not run; final phone acceptance pending.
 
 ## 11 October 2026 — Finished company-user administration deployed and verified
 

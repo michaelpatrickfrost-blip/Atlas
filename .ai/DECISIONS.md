@@ -27,6 +27,8 @@ Use opaque white menu backgrounds, subtle borders and existing rounded/shadow
 treatment. The shared app-navigation dropdown removes its translucent fill and
 backdrop filter. This supersedes the earlier glass-chrome direction for menu
 panels; other shell surfaces retain their current styling.
+Phone navigation dropdowns share a panel beneath the full navigation bar with
+side insets, avoiding clipped menus when triggers sit near either screen edge.
 
 ## 11 October 2026 — Company admins manage company-only identity and credentials
 

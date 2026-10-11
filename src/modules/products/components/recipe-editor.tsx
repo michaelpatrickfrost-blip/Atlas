@@ -3,11 +3,12 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { operationTime } from "@/modules/products/domain/operation-time";
 import { COMPONENT_GROUPS } from "@/modules/products/domain/make";
 import { saveProductRecipe } from "@/modules/products/services/make";
 
 type Line = { componentId: string; quantityPerUnit: string; scrapPercent: string; notes: string };
-type Step = { name: string; workCentreId: string; resourceId: string; setupMinutes: string; runMinutesPerUnit: string; crewSize: string; machineRate: string; labourRate: string; overheadRate: string; logistics: string; machineIncludesLabour: boolean; machineIncludesOverhead: boolean };
+type Step = { timingMode: string; batchCapacity: string; cycleMinutes: string; coolingMinutes: string; waitMinutes: string; eligibleResourceIds: string[]; name: string; workCentreId: string; resourceId: string; setupMinutes: string; runMinutesPerUnit: string; crewSize: string; machineRate: string; labourRate: string; overheadRate: string; logistics: string; machineIncludesLabour: boolean; machineIncludesOverhead: boolean };
 type Choice = { id: string; code: string; name: string; unit: string; categoryName: string; supply: string; label: string; costMinor?: number; stock?: number };
 type PlantCentre = { id: string; name: string; active?: boolean; machines: Array<{ id: string; name: string; type: string; active?: boolean }> };
 const policies = [
@@ -16,7 +17,7 @@ const policies = [
   { id: "WIP", title: "Work in progress", detail: "An intermediate you make, hold in stock, and use on another product's bill." },
   { id: "SUBCONTRACT", title: "Sent out", detail: "A supplier makes it. You can still supply some of the parts." },
 ] as const;
-const blankStep = (): Step => ({ name: "", workCentreId: "", resourceId: "", setupMinutes: "0", runMinutesPerUnit: "0", crewSize: "1", machineRate: "0", labourRate: "0", overheadRate: "0", logistics: "0", machineIncludesLabour: false, machineIncludesOverhead: false });
+const blankStep = (): Step => ({ timingMode: "PER_UNIT", batchCapacity: "1", cycleMinutes: "0", coolingMinutes: "0", waitMinutes: "0", eligibleResourceIds: [], name: "", workCentreId: "", resourceId: "", setupMinutes: "0", runMinutesPerUnit: "0", crewSize: "1", machineRate: "0", labourRate: "0", overheadRate: "0", logistics: "0", machineIncludesLabour: false, machineIncludesOverhead: false });
 const field = "mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm";
 const resourceLabel = (value: string) => ({ MACHINE: "Machine", PRODUCTION_LINE: "Production line", LABOUR_TEAM: "Labour team", WORKSTATION: "Workstation", CELL: "Cell", SUBCONTRACT: "Subcontract bench" }[value] ?? "Machine");
 
@@ -26,7 +27,7 @@ export function RecipeEditor(props: {
   batchQuantity: number;
   yieldPercent: number;
   lines: Array<{ componentId: string; quantityPerUnit: number; scrapPercent: number; notes?: string }>;
-  operations: Array<{ name: string; workCentre?: string; workCentreId?: string | null; resourceId?: string | null; setupMinutes: number; runMinutesPerUnit: number; crewSize: number; machineMinorPerHour: number; labourMinorPerHour: number; overheadMinorPerHour?: number; logisticsMinorPerBatch: number; machineIncludesLabour: boolean; machineIncludesOverhead?: boolean }>;
+  operations: Array<{ name: string; workCentre?: string; workCentreId?: string | null; resourceId?: string | null; timingMode?: string; batchCapacity?: number; cycleMinutes?: number; coolingMinutes?: number; waitMinutes?: number; eligibleResourceIds?: string[]; setupMinutes: number; runMinutesPerUnit: number; crewSize: number; machineMinorPerHour: number; labourMinorPerHour: number; overheadMinorPerHour?: number; logisticsMinorPerBatch: number; machineIncludesLabour: boolean; machineIncludesOverhead?: boolean }>;
   choices: Choice[];
   plant: PlantCentre[];
   subcontractMinorPerUnit?: number;
@@ -37,7 +38,7 @@ export function RecipeEditor(props: {
   const [yieldPercent, setYieldPercent] = useState(String(props.yieldPercent || 100));
   const [fee, setFee] = useState(String((props.subcontractMinorPerUnit ?? 0) / 100));
   const [lines, setLines] = useState<Line[]>(props.lines.map((line) => ({ componentId: line.componentId, quantityPerUnit: String(line.quantityPerUnit), scrapPercent: String(line.scrapPercent), notes: line.notes ?? "" })));
-  const [steps, setSteps] = useState<Step[]>(props.operations.map((step) => ({ name: step.name, workCentreId: step.workCentreId ?? "", resourceId: step.resourceId ?? "", setupMinutes: String(step.setupMinutes), runMinutesPerUnit: String(step.runMinutesPerUnit), crewSize: String(step.crewSize), machineRate: String(step.machineMinorPerHour / 100), labourRate: String(step.labourMinorPerHour / 100), overheadRate: String((step.overheadMinorPerHour ?? 0) / 100), logistics: String(step.logisticsMinorPerBatch / 100), machineIncludesLabour: step.machineIncludesLabour, machineIncludesOverhead: step.machineIncludesOverhead ?? false })));
+  const [steps, setSteps] = useState<Step[]>(props.operations.map((step) => ({ timingMode: step.timingMode ?? "PER_UNIT", batchCapacity: String(step.batchCapacity ?? 1), cycleMinutes: String(step.cycleMinutes ?? 0), coolingMinutes: String(step.coolingMinutes ?? 0), waitMinutes: String(step.waitMinutes ?? 0), eligibleResourceIds: step.eligibleResourceIds ?? [], name: step.name, workCentreId: step.workCentreId ?? "", resourceId: step.resourceId ?? "", setupMinutes: String(step.setupMinutes), runMinutesPerUnit: String(step.runMinutesPerUnit), crewSize: String(step.crewSize), machineRate: String(step.machineMinorPerHour / 100), labourRate: String(step.labourMinorPerHour / 100), overheadRate: String((step.overheadMinorPerHour ?? 0) / 100), logistics: String(step.logisticsMinorPerBatch / 100), machineIncludesLabour: step.machineIncludesLabour, machineIncludesOverhead: step.machineIncludesOverhead ?? false })));
   const [pending, start] = useTransition();
   const [message, setMessage] = useState("");
   const [failed, setFailed] = useState(false);
@@ -53,7 +54,7 @@ export function RecipeEditor(props: {
         yieldPercent: Number(yieldPercent),
         lines: lines.filter((line) => line.componentId).map((line) => ({ componentId: line.componentId, quantityPerUnit: Number(line.quantityPerUnit), scrapPercent: Number(line.scrapPercent || 0), notes: line.notes })),
         subcontract: Number(fee || 0),
-        operations: steps.filter((step) => step.name.trim()).map((step) => ({ name: step.name.trim(), workCentreId: step.workCentreId, resourceId: step.resourceId, setupMinutes: Number(step.setupMinutes || 0), runMinutesPerUnit: Number(step.runMinutesPerUnit || 0), crewSize: Number(step.crewSize || 1), machineRate: Number(step.machineRate || 0), labourRate: Number(step.labourRate || 0), overheadRate: Number(step.overheadRate || 0), logistics: Number(step.logistics || 0), machineIncludesLabour: step.machineIncludesLabour, machineIncludesOverhead: step.machineIncludesOverhead })),
+        operations: steps.filter((step) => step.name.trim()).map((step) => ({ timingMode: step.timingMode, batchCapacity: Number(step.batchCapacity), cycleMinutes: Number(step.cycleMinutes), coolingMinutes: Number(step.coolingMinutes), waitMinutes: Number(step.waitMinutes), eligibleResourceIds: step.eligibleResourceIds, name: step.name.trim(), workCentreId: step.workCentreId, resourceId: step.resourceId, setupMinutes: Number(step.setupMinutes || 0), runMinutesPerUnit: Number(step.runMinutesPerUnit || 0), crewSize: Number(step.crewSize || 1), machineRate: Number(step.machineRate || 0), labourRate: Number(step.labourRate || 0), overheadRate: Number(step.overheadRate || 0), logistics: Number(step.logistics || 0), machineIncludesLabour: step.machineIncludesLabour, machineIncludesOverhead: step.machineIncludesOverhead })),
       });
       setFailed(false);
       setMessage("Saved as the new version. Manufacturing will use this bill and these machines on the next order you release.");
@@ -69,11 +70,12 @@ export function RecipeEditor(props: {
   const need = (line: Line) => { const quantity = Number(line.quantityPerUnit); return quantity > 0 ? quantity * (1 + Number(line.scrapPercent || 0) / 100) / (yieldValue / 100) : 0; };
   const materialMinor = lines.reduce((sum, line) => sum + need(line) * (choice(line.componentId)?.costMinor ?? 0), 0);
   const stepMinor = (step: Step) => {
-    const hours = (Number(step.setupMinutes || 0) / batchValue + Number(step.runMinutesPerUnit || 0)) / 60 / (yieldValue / 100);
+    let hours = 0, batches = 0;
+    try { const timing = operationTime({ setupMinutes: Number(step.setupMinutes), runMinutesPerUnit: Number(step.runMinutesPerUnit), timingMode: step.timingMode, batchCapacity: Number(step.batchCapacity), cycleMinutes: Number(step.cycleMinutes), coolingMinutes: Number(step.coolingMinutes) }, 1, batchValue, true); hours = (timing.setupMinutes + timing.runMinutes) / 60; batches = timing.batches; } catch { /* Incomplete edit; server validates before saving. */ }
     const machine = hours * Number(step.machineRate || 0) * 100;
     const labour = step.machineIncludesLabour ? 0 : hours * Number(step.crewSize || 1) * Number(step.labourRate || 0) * 100;
     const overhead = step.machineIncludesOverhead ? 0 : hours * Number(step.overheadRate || 0) * 100;
-    return { hours, total: machine + labour + overhead + Number(step.logistics || 0) * 100 / batchValue };
+    return { hours, total: machine + labour + overhead + Number(step.logistics || 0) * 100 * batches };
   };
   const routeMinor = steps.reduce((sum, step) => sum + stepMinor(step).total, 0);
   const feeMinor = supply === "SUBCONTRACT" ? Number(fee || 0) * 100 : 0;
@@ -120,14 +122,27 @@ export function RecipeEditor(props: {
         <div className="flex flex-wrap items-center justify-between gap-3"><span className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500"><span className="flex size-7 items-center justify-center rounded-full bg-slate-900 text-white">{(index + 1) * 10}</span>Step {index + 1}</span><span className="flex items-center gap-1"><span className="mr-2 text-xs text-slate-500">{figure(cost.hours * 60)} min · {money(cost.total)} per good unit</span><button type="button" disabled={index === 0} onClick={() => move(index, -1)} className="rounded-lg px-2 py-1 text-xs text-slate-500 hover:bg-slate-100 disabled:opacity-30">Up</button><button type="button" disabled={index === steps.length - 1} onClick={() => move(index, 1)} className="rounded-lg px-2 py-1 text-xs text-slate-500 hover:bg-slate-100 disabled:opacity-30">Down</button><button type="button" onClick={() => setSteps(steps.filter((_, i) => i !== index))} className="rounded-lg px-2 py-1 text-xs text-slate-400 hover:bg-red-50 hover:text-red-600">Remove</button></span></div>
         <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
           <label className="text-xs font-medium xl:col-span-2">Operation<input className={field} value={step.name} placeholder="Cut, form, weld, fire, pack" onChange={(event) => setStep(index, { name: event.target.value })} /></label>
-          <label className="text-xs font-medium xl:col-span-2">Work centre<select className={field} value={step.workCentreId} onChange={(event) => setStep(index, { workCentreId: event.target.value, resourceId: "" })}><option value="">Not chosen</option>{props.plant.map((item) => <option key={item.id} value={item.id}>{item.name}{item.active === false ? " · retired" : ""}</option>)}</select></label>
-          <label className="text-xs font-medium xl:col-span-2">Machine<select className={field} value={step.resourceId} onChange={(event) => setStep(index, { resourceId: event.target.value })} disabled={!centre}><option value="">{centre ? "Any machine in this centre" : "Choose a work centre first"}</option>{(centre?.machines ?? []).map((machine) => <option key={machine.id} value={machine.id}>{machine.name} · {resourceLabel(machine.type)}{machine.active === false ? " · retired" : ""}</option>)}</select></label>
+          <label className="text-xs font-medium xl:col-span-2">Work centre<select className={field} value={step.workCentreId} onChange={(event) => setStep(index, { workCentreId: event.target.value, resourceId: "", eligibleResourceIds: [] })}><option value="">Not chosen</option>{props.plant.map((item) => <option key={item.id} value={item.id}>{item.name}{item.active === false ? " · retired" : ""}</option>)}</select></label>
+          <label className="text-xs font-medium xl:col-span-2">Machine<select className={field} value={step.resourceId} onChange={(event) => setStep(index, { resourceId: event.target.value, eligibleResourceIds: step.eligibleResourceIds.length && event.target.value ? [...new Set([...step.eligibleResourceIds, event.target.value])] : step.eligibleResourceIds })} disabled={!centre}><option value="">{centre ? "Any machine in this centre" : "Choose a work centre first"}</option>{(centre?.machines ?? []).map((machine) => <option key={machine.id} value={machine.id}>{machine.name} · {resourceLabel(machine.type)}{machine.active === false ? " · retired" : ""}</option>)}</select></label>
           <label className="text-xs font-medium">Setup (min)<input className={field} inputMode="decimal" value={step.setupMinutes} onChange={(event) => setStep(index, { setupMinutes: event.target.value })} /></label>
-          <label className="text-xs font-medium">Run (min per unit)<input className={field} inputMode="decimal" value={step.runMinutesPerUnit} onChange={(event) => setStep(index, { runMinutesPerUnit: event.target.value })} /></label>
+          <label className="text-xs font-medium">Run (min per unit)<input className={field} inputMode="decimal" value={step.runMinutesPerUnit} disabled={step.timingMode === "BATCH"} onChange={(event) => setStep(index, { runMinutesPerUnit: event.target.value })} /></label>
           <label className="text-xs font-medium">Crew<input className={field} inputMode="decimal" value={step.crewSize} onChange={(event) => setStep(index, { crewSize: event.target.value })} /></label>
           <label className="text-xs font-medium">Machine £ / hour<input className={field} inputMode="decimal" value={step.machineRate} onChange={(event) => setStep(index, { machineRate: event.target.value })} /></label>
           <label className="text-xs font-medium">Labour £ / hour each<input className={field} inputMode="decimal" value={step.labourRate} disabled={step.machineIncludesLabour} onChange={(event) => setStep(index, { labourRate: event.target.value })} /></label>
           <label className="text-xs font-medium">Overhead £ / hour<input className={field} inputMode="decimal" value={step.overheadRate} disabled={step.machineIncludesOverhead} onChange={(event) => setStep(index, { overheadRate: event.target.value })} /></label>
+        </div>
+        <div className="mt-4 rounded-xl bg-blue-50/70 p-4">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            <label className="text-xs font-medium">Time basis<select className={field} value={step.timingMode} onChange={(event) => setStep(index, { timingMode: event.target.value })}><option value="PER_UNIT">Throughput per unit</option><option value="BATCH">Uninterrupted batch cycle</option></select></label>
+            {step.timingMode === "BATCH" && <>
+              <label className="text-xs font-medium">Units per load<input className={field} inputMode="decimal" value={step.batchCapacity} onChange={(event) => setStep(index, { batchCapacity: event.target.value })} /></label>
+              <label className="text-xs font-medium">Cycle / firing (min)<input className={field} inputMode="decimal" value={step.cycleMinutes} onChange={(event) => setStep(index, { cycleMinutes: event.target.value })} /></label>
+              <label className="text-xs font-medium">Cooling / unloading (min)<input className={field} inputMode="decimal" value={step.coolingMinutes} onChange={(event) => setStep(index, { coolingMinutes: event.target.value })} /></label>
+            </>}
+            <label className="text-xs font-medium">Wait before next step (min)<input className={field} inputMode="decimal" value={step.waitMinutes} onChange={(event) => setStep(index, { waitMinutes: event.target.value })} /></label>
+          </div>
+          <p className="mt-2 text-xs text-blue-800">Batch time = loads started × (setup + cycle + cooling). Cooling keeps this machine occupied. Transfer or maturation wait delays the next step without occupying the machine.</p>
+          {!!centre?.machines.length && <fieldset className="mt-4"><legend className="text-xs font-semibold">Eligible alternatives for this product</legend><p className="mt-1 text-xs text-slate-500">Choose machines approved for the same load size and cycle. The preferred machine stays eligible. An empty selection keeps the preferred machine, or allows the whole centre when no machine is selected.</p><div className="mt-2 flex flex-wrap gap-2">{centre.machines.filter((m) => m.active !== false).map((m) => <label key={m.id} className="flex min-h-10 items-center gap-2 rounded-lg border border-blue-100 bg-white px-3 text-xs"><input type="checkbox" disabled={m.id === step.resourceId} checked={m.id === step.resourceId || step.eligibleResourceIds.includes(m.id)} onChange={(event) => setStep(index, { eligibleResourceIds: event.target.checked ? [...new Set([...step.eligibleResourceIds, ...(step.resourceId ? [step.resourceId] : []), m.id])] : step.eligibleResourceIds.filter((id) => id !== m.id) })} />{m.name}</label>)}</div></fieldset>}
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2"><label className="flex items-center gap-2 text-xs text-slate-600"><input type="checkbox" checked={step.machineIncludesLabour} onChange={(event) => setStep(index, { machineIncludesLabour: event.target.checked })} />Machine rate includes the operator</label><label className="flex items-center gap-2 text-xs text-slate-600"><input type="checkbox" checked={step.machineIncludesOverhead} onChange={(event) => setStep(index, { machineIncludesOverhead: event.target.checked })} />Machine rate includes overhead</label><label className="flex items-center gap-2 text-xs text-slate-600">Handling or transport £ per batch<input aria-label="Logistics per batch" className="w-24 rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm" inputMode="decimal" value={step.logistics} onChange={(event) => setStep(index, { logistics: event.target.value })} /></label></div>
       </div>; })}</div> : <p className="mt-4 rounded-xl border border-dashed border-slate-200 p-6 text-center text-sm text-slate-500">No steps yet. Add the first operation.</p>}

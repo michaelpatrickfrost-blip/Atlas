@@ -12300,6 +12300,157 @@ external fonts; all writes blocked. Evidence /tmp/atlas-typography-check-FnJiZt.
 Initial standalone checker lacked /etc/atlas/guardian.env; rerun with that existing
 QA configuration passed. No credentials or grants were changed.
 
+## 11 October 2026 — Manufacturing finite kilns and flexible forecasts (in progress)
+
+User requests comprehensive researched clay manufacturing/MRP, machinery and
+eligible kilns, connected Sales/S&OP forecasts and premium workspaces; explicitly
+no Hepworth Clay research. Last-year +10%, additive/subtractive and fixed monthly
+forecasts with individual overrides are included. Scope/research and remaining
+operational gates: docs/plans/MANUFACTURING_KILN_RESEARCH.md. The full 173-section
+brief remains open, particularly decimal stock/units, dated site supply, materials/
+labour/tool constraints, mixed loads/process formulas, traceability and WIP/Finance.
+
+Source checkpoint: operation-time domain shared by recipes/cost/MRP/release;
+additive timing/resource/downtime schema and migration; timezone/overnight/DST
+finite machine calendar engine; approved alternatives; serializable release and
+reviewed atomic schedule cascades with stale/locked/force refusal; seven-day
+machine availability cards; plant/process/downtime configuration; Sales-owned
+history baseline/backtest workbench and assumption/individual forecast review;
+gross-order consumption in both MRP entry points/usage fallback; protected S&OP;
+start precedence/downtime/running-machine guards; fractional backflush refusal.
+Data API metadata/read policy and four new action registrations preserve existing
+allowlist. No local business database or cache created. Module/coverage/deploy
+and decisions reconciled. Supply gate extended with actual kiln/forecast Test UI
+and command checks plus three-width screenshots; existing fixture cleanup kept.
+
+Preserved accepted live ad9d5a4 with company Settings evidence in merge 923deeb.
+Public release moved to 50b3915 during work; its exact accepted Dashboard
+source and contributor evidence are now merged, preserving Settings evidence. Initial Prisma generation/validation, strict TypeScript,
+scoped lint and production build passed before latest edits. Updated 7-file/57-test
+MRP/recipe/kiln/stock suite passed after fixing the legacy MRP definition mock to
+exercise the tenant-bound shared timing source. Eight-file/65-test focused suite, strict TypeScript, Prisma schema validation
+and scoped lint passed on the then-current source. Final module/start guard and
+cost-label edits require rerun; build and central candidate/public acceptance
+remain pending.
+Deployment is required before completed handoff. No claim of factory readiness.
+
+Manufacturing follow-up checkpoint: strict types/scoped lint and build passed on
+the merged Dashboard checkpoint. Final review aligned the correct future month,
+batch handling-cost preview, preferred alternative selection and MRP estimated
+operation dates/transfer wait. 12 files/96 assertions PASS (including independent
+Dashboard/cost access regressions); final strict types caught optional test output
+access, now corrected. Final strict types/build/lint rerun required before release.
+New supply harness explicitly exercises actual last-year +10% +5 UI saving,
+seasonal source history, wrong-machine/locked/stale refusal and atomic cascades.
+Public release now 1acc63c; its company administration/Finance access changes must
+be preserved before this scoped release. Earlier product-wide gaps stay open.
+
+Exact accepted live 1acc63c company administration/Finance access source is now
+merged into the Manufacturing branch. Registry reconciliation retains both new
+managed-user actions and all four Manufacturing actions; no allowlist entries
+are removed. Manufacturing in-app demand/schedule instructions are being aligned
+with the delivered assumptions, calendars, downtime and stale-review controls.
+Final checks and locked candidate/public release acceptance remain required.
+
+Final local checkpoint on the live-compatible source: Prisma generation and schema
+validation PASS; explicit strict TypeScript PASS; scoped ESLint PASS; production
+build PASS; whitespace PASS. 16 files/113 focused assertions PASS, covering new
+kiln/demand/stock/MRP plus preserved Dashboard, company profiles, managed accounts
+and Finance section access. Full suite not rerun; historical baseline failures
+remain documented. Original 1acc63c action keys907 all retained, with exactly four
+new Manufacturing keys. In-app guides aligned. Next: pinned scoped deployment
+with ATLAS_RELEASE_ACCEPTANCE=supply; candidate and public actual central Test
+kiln/forecast acceptance, screenshot review, additive migration and final evidence.
+No candidate/public result claimed until the gate actually runs.
+
+Release integration review found MRP firming discarded its reviewed future start,
+so releasing forecast work would pull it into today. Firming now retains start/
+finish estimates and finite release uses max(now, retained planned start). Existing
+stock/cost/feasibility limits stay explicit. A source-lineage regression and actual
+central proposal→firm→release acceptance were added. Final checks required after
+this correction. First deployment is waiting on existing server locks; public
+moved to c607e12 (company account phone-header refinement), to be preserved before
+this new pinned release. No server release lock or other contributor interrupted.
+
+First pinned b2a3891 deployment exited before backup/migration/candidate build after
+accepted company phone-header release c607e12 advanced the server ancestry. This
+is a safe stop, not activation or feature acceptance. c607e12 source is now being
+merged; preserve its unchanged runtime behavior. No force/reset or lock bypass.
+
+Merged accepted c607e12 phone header. Final corrected source strict TypeScript,
+scoped ESLint, production build and whitespace PASS; 16 files/114 focused tests
+PASS, including future MRP start retention. Public remains c607e12 at preflight.
+Next pinned supply deployment can now run against this actual live ancestor.
+
+Pinned 73210f8 prepared after backup atlas-pre-deploy-20261011-160550. Server
+immutable build/compatibility/smoke reached the candidate supply gate; additive
+kiln schema applied. Candidate fixture backup atlas-pre-supply-candidate-20261011-
+160718, evidence /tmp/atlas-supply-candidate-iRsczq. Existing console/MRP/Make/Buy/
+internal-item checks PASS; new helper's first authenticated command was refused
+with FORBIDDEN: unexpected origin. The Node API acceptance client sent 127.0.0.1
+Origin while Next represents its loopback request origin differently. This is a
+harness mismatch; the existing origin guard correctly refused it. Helper now uses
+the existing authenticated desktop-client contract without a browser Origin header.
+Production origin/auth/capability checks unchanged. Test fixture retired and session
+revoked in finally; original QA identity/permissions verified unchanged. No public
+activation occurred; c607e12 runtime retained and additive schema not rolled back.
+Fresh pinned candidate/public gate required; no new kiln feature pass claimed.
+
+Node-only acceptance Origin correction strict TypeScript, scoped checker ESLint,
+production build and whitespace PASS. App source is unchanged from the 114-test
+checkpoint; no redundant full-suite pass claim. Public preflight remains c607e12.
+Retry uses a new immutable revision and the existing central additive schema.
+
+Second ef3ef9c candidate passed actual future proposal→firm→release and finite kiln
+release (full loads/cooling, eligible alternative, exclusivity, wait and shifts).
+Evidence /tmp/atlas-supply-candidate-5fouXA, fixture backup atlas-pre-supply-candidate-
+20261011-161158, release backup atlas-pre-deploy-20261011-161023. It exposed the
+pre-existing release lifecycle gap: every work row defaulted WAITING and no action
+made it READY. First release step now READY, later steps WAITING; intermediate
+completion promotes the immediate waiting successor inside the same transaction.
+Start gives explicit preceding-operation guidance. Acceptance now tests actual
+start/complete/next-ready/final stock posting and replay, beyond scheduling.
+Plant downtime displays explicit machine timezone to keep SSR/client values stable.
+Public still c607e12; candidate Test retired/session revoked and QA unchanged.
+Final tests/types/lint/build and fresh exact candidate/public gate required.
+
+Lifecycle refinement includes guarded compatibility for historical Waiting rows
+(no bulk data rewrite), floor exclusion of closed parents and clear future/dependency
+start guidance. Paused work remains fixed in scheduling. Gantt now uses explicit
+selectable timezone, shared plant-local day boundaries and wall-time-preserving day
+moves through DST; cascade review names its allocated machine. Browser fixture now
+uses Europe/London rather than relying on a UTC browser default. New domain DST
+regression and actual legacy-start/pause/resume/next-ready/stock replay acceptance
+exercise these facts. Documentation reconciled; final gate results still pending.
+
+Final occupied-machine guard treats paused work as physically occupied on start.
+Overdue running/paused work with no actual end puts the machine on a visible
+scheduling hold; its past planned end cannot invent free capacity. Approved
+alternatives remain usable, tested in the finite domain. No guessed completion or
+bulk data change. The floor and date changes are part of this unreleased candidate.
+
+Final lifecycle/timezone/occupied-machine checkpoint: 16 files/116 focused tests
+PASS; production build PASS; strict TypeScript and scoped ESLint PASS; whitespace
+PASS. A concurrent build temporarily regenerated .next route types during the
+first tsc attempt; sequential post-build strict tsc rerun passed, with no source
+waiver or skipped validation. Candidate/public end-to-end acceptance is still
+required for actual stock execution and responsive UK-timezone UI. Public remains
+c607e12 at preflight; prior central additive migration/backups retained.
+
+303cf56 candidate build/compatibility/smoke and actual supply/MRP/finite cascade/
+legacy-start/pause/resume/next-ready/final stock posting/replay PASS. Central Sales
+24-month seasonal backtest and correct future month PASS. Browser forecast selector
+timed out because implicit Product label includes option text; failure screenshot
+confirms workbench renders correctly. Harness now scopes the first combobox inside
+Demand intelligence. Application auth/forecast logic unchanged. Backup atlas-pre-
+deploy-20261011-162844, fixture backup atlas-pre-supply-candidate-20261011-163019,
+evidence /tmp/atlas-supply-candidate-FJmAK4. Test retired/session revoked; public
+still c607e12. Forecast browser save/responsive gate and public activation pending.
+
+Forecast harness selector correction: production build, sequential strict TypeScript,
+scoped ESLint and whitespace PASS. App source unchanged from 116-test checkpoint.
+Public preflight confirms c607e12; exact pinned retry required.
+
 ## 11 October 2026 — Atlas usability, Guides, website and production holding (local checkpoint)
 
 Scoped branch `codex/usability-guides-20261011` began from exact live ad9d5a43;
@@ -12345,3 +12496,10 @@ types found nullable actor narrowing in the new opt-in cleanup checker; fixed
 with an explicit active-membership assertion and rechecking. Acceptance removes
 its synthetic record screenshots after cleanup, retaining anonymous website proof.
 No local business database/cache files found. Candidate/public gates remain pending.
+
+Live advanced during final verification to accepted b80f8baa; control HEAD and
+public revision match. Integrated its finite kiln scheduling, future forecast/MRP
+timing and readiness guards before releasing this work. Retained staged production
+output and delayed replenishment alongside all new manufacturing controls. Five
+focused integrated files/62 tests PASS; regenerated Prisma client and 395 descriptors/
+918 native actions. Repeating final suite/build/types against this combined source.

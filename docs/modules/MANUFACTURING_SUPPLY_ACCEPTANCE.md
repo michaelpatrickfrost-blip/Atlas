@@ -170,3 +170,64 @@ public-failure runtime rollback remain. No inherited-lock mechanism is included.
 Final exact-source hooked acceptance remains pending. Imported People migration
 EOF whitespace is retained to preserve already-applied checksums; owned diff
 against exact live `36d0d2d` passes whitespace checks.
+
+## 11 October 2026 — Finite kilns and flexible forecast checkpoint (pending live)
+
+Research and remaining programme: docs/plans/MANUFACTURING_KILN_RESEARCH.md.
+Implemented explicit batch/load/cooling/wait timing, eligible alternatives,
+timezone/shift/downtime-constrained release and atomic reviewed cascades, machine
+capacity and plant configuration, backtested Sales-history forecast assumptions
+(last-year percentage/additive/fixed/individual), gross-booking consumption and
+protected S&OP. Whole-unit stock limits stay open; fractional backflush refuses
+rather than rounds. No claim of complete process manufacturing or plant readiness.
+
+Local Prisma generation/validation, strict TypeScript, scoped ESLint, production
+build and whitespace PASS. 16 files/113 focused assertions PASS, including preserved
+live Dashboard, company administration and Finance access. Full suite not rerun.
+New scripts/check-manufacturing-kilns.ts runs from the existing backed-up supply
+Test gate on candidate and public, exercising actual release and forecast UI save,
+wrong-machine/tenant/locked/stale rejection, atomic cascade and three-width layout.
+Migration 20261011120000_manufacturing_finite_kilns is additive; central application,
+browser feature checks, visual review and deployment results remain pending.
+
+Final correction preserves reviewed future start/finish through Make firming and
+finite release; new command/UI acceptance covers forecast proposal→release timing.
+Preserved accepted company phone-header c607e12. Final strict TypeScript, scoped
+ESLint and production build PASS; 16 files/114 assertions PASS. First b2a3891
+activation attempt stopped before backup/migration/candidate while live advanced;
+no first-candidate result or server change claimed. Retry uses the compatible
+live ancestor and same locked supply acceptance, with no force/reset.
+
+73210f8 candidate build/compatibility/smoke succeeded after central backup
+atlas-pre-deploy-20261011-160550; additive kiln migration applied. Candidate supply
+fixture backup atlas-pre-supply-candidate-20261011-160718, evidence
+/tmp/atlas-supply-candidate-iRsczq. Existing console/MRP/Make/Buy/internal checks
+PASS. New Node API helper sent a loopback Origin inconsistent with Next's internal
+request URL and was correctly refused before production release. Remove that
+Node-only Origin header, preserving the existing authenticated desktop API and all
+production guards. Fixture retired/session revoked; QA unchanged. Public activation
+did not occur; c607e12 remains current. Fresh exact pinned gates required.
+
+ef3ef9c candidate: future MRP timing and finite kiln release PASS. New execution
+assertion exposed the historical Waiting/Ready lifecycle gap; fixture cleanup PASS,
+no public switch. Current source makes first/next steps Ready, validates legacy
+Waiting start without bulk updates, keeps paused work fixed, and explains floor
+readiness. Actual central execution/stock-replay gate added. Explicit plant/timeline
+timezones avoid host-dependent rendering/moves; UK browser and DST domain checks
+added. Fresh final local checks and exact candidate/public gate remain required.
+
+Final lifecycle/timezone/occupied-machine source local checks: 16 files/116 tests,
+strict TypeScript, scoped ESLint, production build and whitespace PASS. Initial tsc
+hit generated-route-type regeneration during a concurrent build; sequential
+post-build rerun passed. No type waiver. Fresh pinned candidate/public full flow
+and five-workspace, three-width UK browser acceptance remain pending.
+
+303cf56 candidate build/compatibility/smoke and actual supply/MRP/finite cascade/
+legacy-start/pause/resume/next-ready/final stock posting/replay PASS. Central Sales
+24-month seasonal backtest and correct future month PASS. Browser forecast selector
+timed out because implicit Product label includes option text; failure screenshot
+confirms workbench renders correctly. Harness now scopes the first combobox inside
+Demand intelligence. Application auth/forecast logic unchanged. Backup atlas-pre-
+deploy-20261011-162844, fixture backup atlas-pre-supply-candidate-20261011-163019,
+evidence /tmp/atlas-supply-candidate-FJmAK4. Test retired/session revoked; public
+still c607e12. Forecast browser save/responsive gate and public activation pending.

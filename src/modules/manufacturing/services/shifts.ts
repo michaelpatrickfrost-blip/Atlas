@@ -45,12 +45,16 @@ export async function saveShift(input: { id?: string; workCentreId: string; reso
   const session = await requireSession();
   assertCapability(session, C.resourceManage);
   const startMinute = parseTimeToMinute(input.start);
-  const endMinute = parseTimeToMinute(input.end);
-  if (endMinute <= startMinute) throw new Error("End time must be after the start time.");
+  let endMinute = parseTimeToMinute(input.end);
+  if (startMinute >= 1440 || endMinute === startMinute) throw new Error("Enter different start and end times. Use 00:00 to 24:00 for a full day.");
+  if (endMinute < startMinute) endMinute += 1440;
   if (!input.daysOfWeek.length) throw new Error("Choose at least one day.");
-  if (input.crewCount < 1) throw new Error("Crew count must be at least 1.");
+  if (!Number.isInteger(input.crewCount) || input.crewCount < 1 || input.crewCount > 1000) throw new Error("Crew count must be a whole number between 1 and 1,000.");
+  if (input.daysOfWeek.some((d) => !Number.isInteger(d) || d < 0 || d > 6)) throw new Error("Choose valid working days.");
   const centre = await db.manufacturingWorkCentre.findFirst({ where: { id: input.workCentreId, organisationId: session.organisationId } });
   if (!centre) throw new Error("Choose a work centre in this company.");
+  if (input.resourceId && !await db.manufacturingResource.findFirst({ where: { id: input.resourceId, organisationId: session.organisationId, workCentreId: centre.id, active: true } })) throw new Error("Choose an active machine in this work centre.");
+  if (input.id && !await db.manufacturingShift.findFirst({ where: { id: input.id, organisationId: session.organisationId } })) throw new Error("This shift is not in this company.");
 
   const data = {
     organisationId: session.organisationId,
@@ -63,7 +67,7 @@ export async function saveShift(input: { id?: string; workCentreId: string; reso
     crewCount: Math.round(input.crewCount),
   };
   const saved = input.id
-    ? await db.manufacturingShift.update({ where: { id: input.id }, data })
+    ? await db.manufacturingShift.update({ where: { id: input.id, organisationId: session.organisationId }, data })
     : await db.manufacturingShift.create({ data });
   await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: input.id ? "manufacturing.shift.updated" : "manufacturing.shift.created", entityType: "ManufacturingShift", entityId: saved.id, after: data });
   revalidatePath("/manufacturing/schedule");

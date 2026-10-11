@@ -1,53 +1,23 @@
 "use server";
-
+import { createHash } from "node:crypto";
+import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/core/db/client";
 import { requireSession } from "@/core/auth/session";
+import { assertModuleEnabled } from "@/core/modules/access";
 import { assertCapability } from "@/core/permissions/check";
 import { writeAudit } from "@/core/audit/log";
 import { writeActivity } from "@/core/activity/log";
 import { MANUFACTURING_CAPABILITIES as C } from "@/core/permissions/capabilities";
-import { findConflicts, nextFeasibleSlot, cascadeFrom, type Booking } from "../domain/scheduling";
-
-/** The production planner's tool (§50-56): move a work order to a new start time
- * and/or a different resource/work centre. Gated behind `manufacturing.schedule.manage`
- * — a shop-floor operator or plain viewer (`manufacturing.schedule.read`) never
- * reaches this; they only ever see the resulting published schedule. */
-
-async function workOrderWithOrder(organisationId: string, workOrderId: string) {
-  const workOrder = await db.manufacturingWorkOrder.findFirst({
-    where: { id: workOrderId, organisationId },
-    include: { productionOrder: { select: { id: true, orderNumber: true, requiredDate: true, quantity: true, sourceSalesOrderLine: { include: { order: { select: { reference: true, party: { select: { name: true } } } } } } } } },
-  });
-  if (!workOrder) throw new Error("This work order no longer exists.");
-  return workOrder;
-}
-
-async function laterOperations(organisationId: string, productionOrderId: string, afterSequence: number) {
-  return db.manufacturingWorkOrder.findMany({
-    where: { organisationId, productionOrderId, sequence: { gt: afterSequence }, status: { notIn: ["RUNNING", "COMPLETE"] } },
-    orderBy: { sequence: "asc" },
-  });
-}
-
-async function resourceBookings(organisationId: string, resourceId: string | null, workCentreId: string | null): Promise<Booking[]> {
-  if (!resourceId && !workCentreId) return [];
-  const rows = await db.manufacturingWorkOrder.findMany({
-    where: {
-      organisationId,
-      status: { notIn: ["COMPLETE"] },
-      scheduledStart: { not: null },
-      scheduledEnd: { not: null },
-      ...(resourceId ? { resourceId } : { workCentreId, resourceId: null }),
-    },
-    select: { id: true, scheduledStart: true, scheduledEnd: true },
-  });
-  return rows.map((r) => ({ id: r.id, start: r.scheduledStart!, end: r.scheduledEnd! }));
-}
+import { finiteSchedule, type FiniteSlot } from "../domain/finite-scheduling";
+import { loadFiniteResources } from "./finite-data";
 
 export type ScheduleImpact = {
   conflicts: { bookingId: string; label: string }[];
   suggestedStart: Date | null;
-  cascade: { workOrderId: string; operationName: string; start: Date; end: Date }[];
+  proposedStart: Date;
+  proposedEnd: Date;
+  previewKey: string;
+  cascade: { workOrderId: string; operationName: string; resourceName: string | null; start: Date; end: Date }[];
   missesRequiredDate: boolean;
   requiredDate: Date | null;
   newFinish: Date | null;
@@ -55,83 +25,86 @@ export type ScheduleImpact = {
   salesOrderReference: string | null;
 };
 
-/** Dry run — computes what WOULD happen, writes nothing. The planner reviews
- * this before confirming (§52: "show consequence before committing"). */
+async function planMove(tx: Prisma.TransactionClient, organisationId: string, workOrderId: string, newStart: Date, resourceId: string | null, workCentreId: string | null, canSeeSales: boolean) {
+  if (!Number.isFinite(newStart.getTime())) throw new Error("Enter a valid start date.");
+  const work = await tx.manufacturingWorkOrder.findFirst({ where: { id: workOrderId, organisationId }, include: { productionOrder: { include: { sourceSalesOrderLine: { include: { order: { select: { reference: true, party: { select: { name: true } } } } } } } } } });
+  if (!work) throw new Error("This work order no longer exists.");
+  if (work.locked) throw new Error("This step is locked. Unlock it first to reschedule.");
+  if (["RUNNING", "PAUSED", "COMPLETE"].includes(work.status)) throw new Error("Work already in progress or finished cannot be rescheduled.");
+  const all = await tx.manufacturingWorkOrder.findMany({ where: { organisationId, productionOrderId: work.productionOrderId }, orderBy: { sequence: "asc" } });
+  const prior = all.filter((w) => w.sequence < work.sequence).at(-1);
+  const priorEnd = prior?.actualEnd ?? prior?.scheduledEnd;
+  if (priorEnd && newStart.getTime() < priorEnd.getTime() + (prior?.waitMinutes ?? 0) * 60_000) throw new Error("This start precedes the previous operation or its transfer/wait time.");
+  const affected = all.filter((w) => w.sequence >= work.sequence);
+  const movable = affected.filter((w) => !w.locked && !["RUNNING", "PAUSED", "COMPLETE"].includes(w.status));
+  const resources = await loadFiniteResources(tx, organisationId, movable.map((w) => w.id));
+  const eligible = work.eligibleResourceIds.length ? work.eligibleResourceIds : work.resourceId ? [work.resourceId] : resources.filter((r) => r.workCentreId === work.workCentreId).map((r) => r.id);
+  if (resourceId && (!eligible.includes(resourceId) || !resources.some((r) => r.id === resourceId && r.workCentreId === workCentreId))) throw new Error("This machine is not eligible for this product operation. Review the product routing.");
+  if (!resourceId && (work.resourceId || workCentreId !== work.workCentreId)) throw new Error("Keep an eligible machine and the routing's work centre.");
+  const slots: FiniteSlot[] = [];
+  let cursor = new Date(newStart);
+  for (const row of affected) {
+    if (row.locked || ["RUNNING", "PAUSED", "COMPLETE"].includes(row.status)) {
+      if (!row.scheduledStart || !row.scheduledEnd || row.scheduledStart < cursor) throw new Error(`${row.operationName} is locked, running, paused or complete and would be displaced. Review the fixed operation first.`);
+      cursor = new Date((row.actualEnd ?? row.scheduledEnd).getTime() + row.waitMinutes * 60_000);
+      continue;
+    }
+    const isFirst = row.id === work.id;
+    const duration = row.plannedMinutes || (row.scheduledStart && row.scheduledEnd ? (row.scheduledEnd.getTime() - row.scheduledStart.getTime()) / 60_000 : 60);
+    const allowed = row.eligibleResourceIds.length ? row.eligibleResourceIds : row.resourceId ? [row.resourceId] : [];
+    const [slot] = finiteSchedule([{ id: row.id, name: row.operationName, durationMinutes: duration, waitMinutes: row.waitMinutes, timingMode: row.timingMode, resourceId: isFirst ? resourceId : row.resourceId, workCentreId: isFirst ? workCentreId : row.workCentreId, eligibleResourceIds: isFirst && resourceId ? [resourceId] : allowed }], cursor, resources);
+    slots.push(slot);
+    const resource = resources.find((r) => r.id === slot.resourceId);
+    resource?.bookings.push({ id: row.id, start: slot.start, end: slot.end });
+    cursor = new Date(slot.end.getTime() + row.waitMinutes * 60_000);
+  }
+  const first = slots[0];
+  const finish = affected.at(-1)?.id === slots.at(-1)?.id ? slots.at(-1)!.end : affected.at(-1)!.actualEnd ?? affected.at(-1)!.scheduledEnd;
+  const previewKey = createHash("sha256").update(JSON.stringify({ newStart, resourceId, workCentreId, workVersion: work.productionOrder.version, rows: all, resources, slots })).digest("hex");
+  const impact: ScheduleImpact = { conflicts: [], suggestedStart: first.start.getTime() !== newStart.getTime() ? first.start : null, proposedStart: first.start, proposedEnd: first.end, previewKey,
+    cascade: slots.slice(1).map((s) => ({ workOrderId: s.id, operationName: s.name, resourceName: resources.find(r=>r.id===s.resourceId)?.name??null, start: s.start, end: s.end })), requiredDate: work.productionOrder.requiredDate, newFinish: finish ?? null, missesRequiredDate: Boolean(work.productionOrder.requiredDate && finish && finish > work.productionOrder.requiredDate),
+    customer: canSeeSales ? work.productionOrder.sourceSalesOrderLine?.order.party.name ?? null : null, salesOrderReference: canSeeSales ? work.productionOrder.sourceSalesOrderLine?.order.reference ?? null : null };
+  return { impact, slots, work, all };
+}
+
 export async function schedulePreview(workOrderId: string, newStart: Date, resourceId: string | null, workCentreId: string | null): Promise<ScheduleImpact> {
   const session = await requireSession();
   assertCapability(session, C.scheduleManage);
-  const workOrder = await workOrderWithOrder(session.organisationId, workOrderId);
-  if (workOrder.locked) throw new Error("This step is locked. Unlock it first to reschedule.");
-  if (workOrder.status === "RUNNING" || workOrder.status === "COMPLETE") throw new Error("Work already in progress or finished cannot be rescheduled.");
-
-  const durationMinutes = workOrder.scheduledStart && workOrder.scheduledEnd ? (workOrder.scheduledEnd.getTime() - workOrder.scheduledStart.getTime()) / 60_000 : 60;
-  const newEnd = new Date(newStart.getTime() + durationMinutes * 60_000);
-
-  const bookings = await resourceBookings(session.organisationId, resourceId, resourceId ? null : workCentreId);
-  const conflicts = findConflicts({ start: newStart, end: newEnd }, bookings, workOrder.id);
-  const suggestedStart = conflicts.length ? nextFeasibleSlot(durationMinutes, newStart, bookings, workOrder.id) : null;
-
-  const following = await laterOperations(session.organisationId, workOrder.productionOrderId, workOrder.sequence);
-  const cascaded = cascadeFrom(newEnd, following.map((op) => ({ id: op.id, durationMinutes: op.scheduledStart && op.scheduledEnd ? (op.scheduledEnd.getTime() - op.scheduledStart.getTime()) / 60_000 : 60 })));
-  const cascadeDetail = cascaded.map((c, i) => ({ workOrderId: c.id, operationName: following[i].operationName, start: c.start, end: c.end }));
-
-  const newFinish = cascadeDetail.length ? cascadeDetail[cascadeDetail.length - 1].end : newEnd;
-  const requiredDate = workOrder.productionOrder.requiredDate;
-
-  return {
-    conflicts: conflicts.map((c) => ({ bookingId: c.id, label: "Overlaps another booking on this resource" })),
-    suggestedStart,
-    cascade: cascadeDetail,
-    missesRequiredDate: Boolean(requiredDate && newFinish > requiredDate),
-    requiredDate,
-    newFinish,
-    customer: workOrder.productionOrder.sourceSalesOrderLine?.order.party.name ?? null,
-    salesOrderReference: workOrder.productionOrder.sourceSalesOrderLine?.order.reference ?? null,
-  };
+  await assertModuleEnabled(session, "manufacturing");
+  return db.$transaction(async (tx) => (await planMove(tx, session.organisationId, workOrderId, newStart, resourceId, workCentreId, session.capabilities.has("sales.order.read") && session.capabilities.has("customers.read"))).impact, { isolationLevel: "RepeatableRead", timeout: 20000 });
 }
 
-/** Commits a move the planner has already previewed. Refuses silently-overbooking
- * a resource (§47) unless `force` is passed — the UI only offers `force` after
- * showing the conflict and the suggested alternative slot. */
-export async function rescheduleWorkOrder(workOrderId: string, newStart: Date, resourceId: string | null, workCentreId: string | null, force = false) {
+/** Re-read all calendars/bookings within the serializable write transaction.
+ * The reviewed fingerprint must still match; overlaps cannot be forced. */
+export async function rescheduleWorkOrder(workOrderId: string, newStart: Date, resourceId: string | null, workCentreId: string | null, force = false, previewKey?: string) {
   const session = await requireSession();
   assertCapability(session, C.scheduleManage);
-  const workOrder = await workOrderWithOrder(session.organisationId, workOrderId);
-  if (workOrder.locked) throw new Error("This step is locked. Unlock it first to reschedule.");
-  if (workOrder.status === "RUNNING" || workOrder.status === "COMPLETE") throw new Error("Work already in progress or finished cannot be rescheduled.");
-
-  const durationMinutes = workOrder.scheduledStart && workOrder.scheduledEnd ? (workOrder.scheduledEnd.getTime() - workOrder.scheduledStart.getTime()) / 60_000 : 60;
-  const newEnd = new Date(newStart.getTime() + durationMinutes * 60_000);
-
-  const bookings = await resourceBookings(session.organisationId, resourceId, resourceId ? null : workCentreId);
-  const conflicts = findConflicts({ start: newStart, end: newEnd }, bookings, workOrder.id);
-  if (conflicts.length && !force) throw new Error("This slot overlaps work already booked on that resource. Choose the suggested slot or force an override.");
-
-  const following = await laterOperations(session.organisationId, workOrder.productionOrderId, workOrder.sequence);
-  const cascaded = cascadeFrom(newEnd, following.map((op) => ({ id: op.id, durationMinutes: op.scheduledStart && op.scheduledEnd ? (op.scheduledEnd.getTime() - op.scheduledStart.getTime()) / 60_000 : 60 })));
-
+  await assertModuleEnabled(session, "manufacturing");
+  if (force) throw new Error("Finite machine bookings cannot be overridden. Review the feasible slot.");
+  if (!previewKey) throw new Error("Preview this move before confirming it.");
   await db.$transaction(async (tx) => {
-    const updated = await tx.manufacturingWorkOrder.updateMany({
-      where: { id: workOrder.id, organisationId: session.organisationId, version: workOrder.version },
-      data: { scheduledStart: newStart, scheduledEnd: newEnd, resourceId, workCentreId, version: { increment: 1 } },
-    });
-    if (!updated.count) throw new Error("Someone else just updated this step. Reload and try again.");
-    for (const c of cascaded) {
-      await tx.manufacturingWorkOrder.update({ where: { id: c.id }, data: { scheduledStart: c.start, scheduledEnd: c.end } });
+    const plan = await planMove(tx, session.organisationId, workOrderId, newStart, resourceId, workCentreId, session.capabilities.has("sales.order.read") && session.capabilities.has("customers.read"));
+    if (plan.impact.previewKey !== previewKey) throw new Error("The order, calendar or bookings changed since preview. Review a fresh preview before confirming.");
+    for (const slot of plan.slots) {
+      const row = plan.all.find((w) => w.id === slot.id)!;
+      const updated = await tx.manufacturingWorkOrder.updateMany({ where: { id: row.id, organisationId: session.organisationId, version: row.version, locked: false, status: { notIn: ["RUNNING", "PAUSED", "COMPLETE"] } }, data: { scheduledStart: slot.start, scheduledEnd: slot.end, resourceId: slot.resourceId, workCentreId: slot.workCentreId, version: { increment: 1 } } });
+      if (!updated.count) throw new Error("A following step changed. Reload and preview again.");
     }
-    const newFinish = cascaded.length ? cascaded[cascaded.length - 1].end : newEnd;
-    await tx.manufacturingOrder.update({ where: { id: workOrder.productionOrderId }, data: { plannedFinish: newFinish } });
-  });
-
-  await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "manufacturing.schedule.moved", entityType: "ManufacturingWorkOrder", entityId: workOrder.id, after: { newStart, resourceId, workCentreId, forced: force, cascadedCount: cascaded.length } });
-  await writeActivity({ organisationId: session.organisationId, type: "manufacturing.order.rescheduled", summary: `${workOrder.productionOrder.orderNumber} — ${workOrder.operationName} moved${cascaded.length ? ` (${cascaded.length} later step${cascaded.length === 1 ? "" : "s"} shifted)` : ""}`, entityType: "ManufacturingOrder", entityId: workOrder.productionOrderId });
+    const earliest = plan.all.filter((w) => w.sequence < plan.work.sequence).map((w) => w.scheduledStart).find(Boolean) ?? plan.slots[0].start;
+    const parent = await tx.manufacturingOrder.updateMany({ where: { id: plan.work.productionOrderId, organisationId: session.organisationId, version: plan.work.productionOrder.version }, data: { plannedStart: earliest, plannedFinish: plan.impact.newFinish, version: { increment: 1 } } });
+    if (!parent.count) throw new Error("The production order changed. Reload and preview again.");
+    await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "manufacturing.schedule.moved", entityType: "ManufacturingWorkOrder", entityId: workOrderId, after: { requestedStart: newStart, scheduledStart: plan.impact.proposedStart, resourceId, workCentreId, cascadedCount: plan.slots.length - 1, previewKey } }, tx);
+    await writeActivity({ organisationId: session.organisationId, type: "manufacturing.order.rescheduled", summary: `${plan.work.productionOrder.orderNumber} — ${plan.work.operationName} rescheduled with finite calendars`, entityType: "ManufacturingOrder", entityId: plan.work.productionOrderId }, tx);
+  }, { isolationLevel: "Serializable", timeout: 20000 });
 }
 
-/** §54: lock/unlock a work order's assignment against scheduler moves. */
 export async function setWorkOrderLock(workOrderId: string, locked: boolean) {
   const session = await requireSession();
   assertCapability(session, C.scheduleLock);
-  const updated = await db.manufacturingWorkOrder.updateMany({ where: { id: workOrderId, organisationId: session.organisationId }, data: { locked } });
-  if (!updated.count) throw new Error("This work order no longer exists.");
-  await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: locked ? "manufacturing.schedule.locked" : "manufacturing.schedule.unlocked", entityType: "ManufacturingWorkOrder", entityId: workOrderId, after: { locked } });
+  await assertModuleEnabled(session, "manufacturing");
+  await db.$transaction(async (tx) => {
+    const updated = await tx.manufacturingWorkOrder.updateMany({ where: { id: workOrderId, organisationId: session.organisationId }, data: { locked, version: { increment: 1 } } });
+    if (!updated.count) throw new Error("This work order no longer exists.");
+    await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: locked ? "manufacturing.schedule.locked" : "manufacturing.schedule.unlocked", entityType: "ManufacturingWorkOrder", entityId: workOrderId, after: { locked } }, tx);
+  });
 }

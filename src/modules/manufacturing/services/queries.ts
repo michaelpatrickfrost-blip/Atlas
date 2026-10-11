@@ -5,6 +5,19 @@ import { getModule } from "@/core/modules/registry";
 import { OPEN_PRODUCTION_ORDER_STATUSES } from "../domain/lifecycle";
 import { manHoursInWindow } from "../domain/calendar";
 import { optionalStore } from "./optional";
+import { loadFiniteResources } from "./finite-data";
+import { finiteCapacity } from "../domain/finite-scheduling";
+
+export async function machineCapacity(organisationId: string) {
+  const start = new Date(), end = new Date(start.getTime() + 7 * 86_400_000);
+  return db.$transaction(async (tx) => {
+    const resources = await loadFiniteResources(tx, organisationId);
+    return resources.map((r) => {
+      try { return { id: r.id, name: r.name, timezone: r.timezone, calendarMode: r.calendarMode, ...finiteCapacity(r, start, end), error: null }; }
+      catch (error) { return { id: r.id, name: r.name, timezone: r.timezone, calendarMode: r.calendarMode, calendarHours: 0, downtimeHours: 0, bookedHours: 0, freeHours: 0, conflicts: 0, error: error instanceof Error ? error.message : "Review this machine calendar." }; }
+    });
+  }, { isolationLevel: "RepeatableRead", timeout: 20000 });
+}
 
 /** §7: Manufacturing Today — the production command centre. */
 export async function todayBoard(organisationId: string) {
@@ -142,23 +155,25 @@ export async function searchManufacturing(session: Session, query: string): Prom
  * phase scopes this to the operator's own work centre/badge scan. */
 export async function shopFloorQueue(organisationId: string) {
   const workOrders = await db.manufacturingWorkOrder.findMany({
-    where: { organisationId, status: { in: ["READY", "RUNNING", "PAUSED", "WAITING", "BLOCKED"] } },
-    include: { productionOrder: { select: { orderNumber: true, quantity: true, unitOfMeasure: true, product: { select: { name: true } } } }, workCentre: { select: { name: true } } },
-    orderBy: [{ status: "asc" }, { sequence: "asc" }],
+    where: { organisationId, status: { in: ["READY", "RUNNING", "PAUSED", "WAITING", "BLOCKED"] }, productionOrder: { status: { in: ["RELEASED", "RUNNING"] } } },
+    include: { productionOrder: { select: { orderNumber: true, quantity: true, unitOfMeasure: true, product: { select: { name: true } }, workOrders: { select: { sequence: true, status: true, actualEnd: true, waitMinutes: true } } } }, workCentre: { select: { name: true } }, resource: { select: { timezone: true } } },
+    orderBy: [{ status: "asc" }, { scheduledStart: "asc" }, { sequence: "asc" }],
     take: 100,
   });
-  return workOrders.map((w) => ({
-    id: w.id,
-    operationName: w.operationName,
-    orderNumber: w.productionOrder.orderNumber,
-    product: w.productionOrder.product.name,
-    quantity: Number(w.productionOrder.quantity),
-    unitOfMeasure: w.productionOrder.unitOfMeasure,
-    workCentre: w.workCentre?.name ?? "Unassigned",
-    status: w.status,
-    scheduledStart: w.scheduledStart,
-    producedQuantity: Number(w.producedQuantity),
-  }));
+  const now = new Date();
+  return workOrders.map((w) => {
+    const previous = w.productionOrder.workOrders.filter(p => p.sequence < w.sequence).sort((a,b) => b.sequence-a.sequence)[0];
+    const waitingForPrevious = previous && (previous.status !== "COMPLETE" || !previous.actualEnd || now.getTime() < previous.actualEnd.getTime() + previous.waitMinutes*60_000);
+    const future = w.scheduledStart && w.scheduledStart > now;
+    const timezone = w.resource?.timezone ?? "Europe/London";
+    return {
+      id: w.id, operationName: w.operationName, orderNumber: w.productionOrder.orderNumber, product: w.productionOrder.product.name,
+      quantity: Number(w.productionOrder.quantity), unitOfMeasure: w.productionOrder.unitOfMeasure, workCentre: w.workCentre?.name ?? "Unassigned",
+      status: w.status, scheduledStart: w.scheduledStart, producedQuantity: Number(w.producedQuantity),
+      canStart: !waitingForPrevious && !future,
+      startGuidance: waitingForPrevious ? "Waiting for the previous operation or transfer time" : future ? `Booked ${w.scheduledStart!.toLocaleString("en-GB",{timeZone:timezone})} · ${timezone}` : "Ready to start; machine availability checked when you start",
+    };
+  });
 }
 
 /** §50-51: Schedule, grouped By Work Centre (the brief's stated default). Not
@@ -188,7 +203,7 @@ export async function scheduleByWorkCentre(organisationId: string) {
  * with everything a planner needs to judge a move: BOM material readiness
  * (via the same `StockProvider` contract MRP uses — §113, never Stock tables
  * directly), the customer this protects, and whether it's locked (§54). */
-export async function schedulerBoard(organisationId: string, windowDays = 14) {
+export async function schedulerBoard(organisationId: string, windowDays = 14, canSeeSales = false) {
   const now = new Date();
   const windowEnd = new Date(now.getTime() + windowDays * 86_400_000);
 
@@ -238,14 +253,15 @@ export async function schedulerBoard(organisationId: string, windowDays = 14) {
     resourceId: w.resourceId,
     workCentreId: w.workCentreId,
     requiredDate: w.productionOrder.requiredDate,
-    customer: w.productionOrder.sourceSalesOrderLine?.order.party.name ?? null,
-    salesOrderReference: w.productionOrder.sourceSalesOrderLine?.order.reference ?? null,
+    customer: canSeeSales ? w.productionOrder.sourceSalesOrderLine?.order.party.name ?? null : null,
+    salesOrderReference: canSeeSales ? w.productionOrder.sourceSalesOrderLine?.order.reference ?? null : null,
     materialShort: materialFlags.get(w.productionOrder.id) ?? false,
   });
 
   const rows = resources.map((resource) => ({
     id: resource.id,
     kind: "resource" as const,
+    timezone: resource.timezone,
     name: resource.name,
     workCentreId: resource.workCentreId,
     workCentreName: workCentres.find((wc) => wc.id === resource.workCentreId)?.name ?? "",
@@ -255,6 +271,7 @@ export async function schedulerBoard(organisationId: string, windowDays = 14) {
   const unassignedByWorkCentre = workCentres.map((wc) => ({
     id: `wc-${wc.id}`,
     kind: "work-centre" as const,
+    timezone: "Europe/London",
     name: `${wc.name} (unassigned resource)`,
     workCentreId: wc.id,
     workCentreName: wc.name,

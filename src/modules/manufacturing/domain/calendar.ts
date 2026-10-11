@@ -37,6 +37,7 @@ export function formatMinuteOfDay(minute: number): string {
 }
 
 export function parseTimeToMinute(hhmm: string): number {
+  if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(hhmm) && hhmm !== "24:00") throw new Error("Enter a valid time as HH:MM.");
   const [h, m] = hhmm.split(":").map(Number);
   if (!Number.isFinite(h) || !Number.isFinite(m)) throw new Error("Enter a time as HH:MM.");
   return h * 60 + m;

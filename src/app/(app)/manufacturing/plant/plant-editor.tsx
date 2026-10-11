@@ -2,70 +2,41 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Flame, Factory, CalendarClock, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { RESOURCE_TYPES, resourceLabel } from "@/modules/manufacturing/domain/plant";
-import { retirePlantRecord, saveMachine, saveWorkCentre } from "@/modules/manufacturing/services/plant";
-
-const field = "mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm";
-
-type Machine = { id: string; name: string; type: string; nominalUnitsPerHour: number | null; active: boolean; products: Array<{ id: string; code: string; name: string; steps: string[] }> };
-type Centre = { id: string; code: string; name: string; description: string | null; active: boolean; machines: Machine[]; products: Array<{ id: string; code: string; name: string; steps: string[] }> };
-
-export function PlantEditor({ centres, canEdit }: { centres: Centre[]; canEdit: boolean }) {
-  const router = useRouter();
-  const [pending, start] = useTransition();
-  const [message, setMessage] = useState("");
-  const [failed, setFailed] = useState(false);
-  const [centre, setCentre] = useState({ id: "", code: "", name: "", description: "" });
-  const [machine, setMachine] = useState({ id: "", workCentreId: centres.find((item) => item.active)?.id ?? "", name: "", type: "MACHINE", rate: "" });
-  const run = (work: () => Promise<void>, done: string) => start(async () => {
-    setMessage("");
-    try { await work(); setFailed(false); setMessage(done); router.refresh(); }
-    catch (error) { setFailed(true); setMessage(error instanceof Error ? error.message : "Could not save."); }
-  });
-  const productLinks = (rows: Centre["products"]) => rows.length ? <div className="mt-2 flex flex-wrap gap-2">{rows.map((product) => <Link key={product.id} href={`/products/${product.id}`} className="rounded-full border border-slate-200 px-3 py-1 text-xs hover:bg-slate-50">{product.name}<span className="ml-1 text-slate-400">{product.steps.join(", ")}</span></Link>)}</div> : null;
-  return <div className="space-y-6">
-    <div className="space-y-4">
-      {centres.map((item) => <section key={item.id} className="rounded-2xl border border-slate-200 bg-white p-5">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div><p className="text-xs text-slate-400">{item.code}{item.active ? "" : " · retired"}</p><h3 className="text-lg font-semibold">{item.name}</h3>{item.description && <p className="mt-1 text-sm text-slate-500">{item.description}</p>}</div>
-          {canEdit && item.active && <button type="button" className="text-xs text-slate-500" onClick={() => run(() => retirePlantRecord("centre", item.id), `${item.name} retired. Products keep the name of the step.`)}>Retire</button>}
-        </div>
-        {productLinks(item.products)}
-        <ul className="mt-4 divide-y divide-slate-100">
-          {item.machines.map((row) => <li key={row.id} className="py-3">
-            <div className="flex flex-wrap items-baseline justify-between gap-2"><p className="text-sm font-medium">{row.name}{row.active ? "" : " · retired"}</p><p className="text-xs text-slate-500">{resourceLabel(row.type)}{row.nominalUnitsPerHour ? ` · ${row.nominalUnitsPerHour} per hour` : ""}</p></div>
-            {productLinks(row.products)}
-            {canEdit && row.active && <button type="button" className="mt-2 text-xs text-slate-500" onClick={() => run(() => retirePlantRecord("machine", row.id), `${row.name} retired.`)}>Retire machine</button>}
-          </li>)}
-          {!item.machines.length && <li className="py-3 text-sm text-slate-500">No machines in this work centre yet.</li>}
-        </ul>
-      </section>)}
-      {!centres.length && <p className="rounded-2xl border border-slate-200 bg-white px-5 py-8 text-sm text-slate-500">Add the work centres and machines this plant uses. A product step then chooses one, and a released production order runs on that machine.</p>}
-    </div>
-    {canEdit && <div className="grid gap-4 lg:grid-cols-2">
-      <form className="rounded-2xl border border-slate-200 bg-white p-5" onSubmit={(event) => { event.preventDefault(); run(async () => { await saveWorkCentre(centre); setCentre({ id: "", code: "", name: "", description: "" }); }, "Work centre saved."); }}>
-        <h3 className="text-sm font-semibold">Work centre</h3>
-        <p className="mt-1 text-xs text-slate-500">An area of the plant, such as forming, firing or packing.</p>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <label className="text-xs text-slate-500">Code<input className={field} value={centre.code} onChange={(event) => setCentre({ ...centre, code: event.target.value })} /></label>
-          <label className="text-xs text-slate-500">Name<input className={field} value={centre.name} onChange={(event) => setCentre({ ...centre, name: event.target.value })} /></label>
-          <label className="text-xs text-slate-500 sm:col-span-2">Description<input className={field} value={centre.description} onChange={(event) => setCentre({ ...centre, description: event.target.value })} /></label>
-        </div>
-        <Button type="submit" variant="primary" className="mt-4" disabled={pending}>Save work centre</Button>
-      </form>
-      <form className="rounded-2xl border border-slate-200 bg-white p-5" onSubmit={(event) => { event.preventDefault(); run(async () => { await saveMachine({ workCentreId: machine.workCentreId, name: machine.name, type: machine.type, nominalUnitsPerHour: machine.rate.trim() ? Number(machine.rate) : null }); setMachine({ ...machine, name: "", rate: "" }); }, "Machine saved. Choose it on a product step."); }}>
-        <h3 className="text-sm font-semibold">Machine</h3>
-        <p className="mt-1 text-xs text-slate-500">A press, line, kiln, bench or team inside a work centre. Products choose it on the step that uses it.</p>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <label className="text-xs text-slate-500 sm:col-span-2">Work centre<select className={field} value={machine.workCentreId} onChange={(event) => setMachine({ ...machine, workCentreId: event.target.value })}><option value="">Choose</option>{centres.filter((item) => item.active).map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
-          <label className="text-xs text-slate-500">Name<input className={field} value={machine.name} onChange={(event) => setMachine({ ...machine, name: event.target.value })} /></label>
-          <label className="text-xs text-slate-500">Kind<select className={field} value={machine.type} onChange={(event) => setMachine({ ...machine, type: event.target.value })}>{RESOURCE_TYPES.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
-          <label className="text-xs text-slate-500 sm:col-span-2">Nominal units per hour<input className={field} inputMode="decimal" value={machine.rate} placeholder="Optional" onChange={(event) => setMachine({ ...machine, rate: event.target.value })} /></label>
-        </div>
-        <Button type="submit" variant="primary" className="mt-4" disabled={pending || !centres.some((item) => item.active)}>Save machine</Button>
-      </form>
-    </div>}
-    <p role={failed ? "alert" : "status"} className={`text-xs ${failed ? "text-red-600" : "text-slate-500"}`}>{message}</p>
-  </div>;
+import { RESOURCE_TYPES, PROCESS_KINDS, resourceLabel } from "@/modules/manufacturing/domain/plant";
+import { cancelDowntime, retirePlantRecord, saveDowntime, saveMachine, saveWorkCentre } from "@/modules/manufacturing/services/plant";
+const field = "mt-1.5 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm focus:border-blue-400 focus:outline-blue-500";
+type Product = { id: string; code: string; name: string; steps: string[] };
+type Machine = { id: string; name: string; type: string; nominalUnitsPerHour: number | null; active: boolean; processKind: string; calendarMode: string; timezone: string; products: Product[] };
+type Centre = { id: string; code: string; name: string; description: string | null; active: boolean; machines: Machine[]; products: Product[] };
+type Downtime = { id: string; resourceId: string; startsAt: string; endsAt: string; reason: string };
+export function PlantEditor({ centres, downtime, canEdit }: { centres: Centre[]; downtime: Downtime[]; canEdit: boolean }) {
+ const router = useRouter(); const [pending,start] = useTransition(); const [message,setMessage] = useState(""); const [failed,setFailed] = useState(false); const [search,setSearch] = useState("");
+ const [centre,setCentre] = useState({ id:"",code:"",name:"",description:"" });
+ const blankMachine = { id:"",workCentreId:centres.find((c)=>c.active)?.id??"",name:"",type:"MACHINE",rate:"",processKind:"GENERAL",calendarMode:"SHIFTS",timezone:"Europe/London" };
+ const [machine,setMachine] = useState(blankMachine); const [editor,setEditor] = useState(false);
+ const [outage,setOutage] = useState({resourceId:"",startsAt:"",endsAt:"",reason:""});
+ const all = centres.flatMap((c)=>c.machines.map((m)=>({...m,workCentreId:c.id,centreName:c.name}))); const active = all.filter((m)=>m.active);
+ const run = (work:()=>Promise<void>,done:string)=>start(async()=>{setMessage("");try{await work();setFailed(false);setMessage(done);router.refresh();}catch(e){setFailed(true);setMessage(e instanceof Error?e.message:"Could not save.");}});
+ const links = (rows:Product[])=>rows.length?<div className="mt-3 flex flex-wrap gap-1.5">{rows.map((p)=><Link key={p.id} href={`/products/${p.id}`} title={p.steps.join(", ")} className="rounded-lg bg-blue-50 px-2.5 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100">{p.name}</Link>)}</div>:<p className="mt-3 text-xs text-slate-400">Assign products through their bill and routing.</p>;
+ return <div className="space-y-6">
+  <div className="grid gap-3 sm:grid-cols-3">{[{label:"Active machinery",value:active.length,icon:Factory},{label:"Kilns & dryers",value:active.filter(m=>["BATCH_KILN","CONTINUOUS_KILN","DRYER"].includes(m.processKind)).length,icon:Flame},{label:"Downtime windows",value:downtime.length,icon:CalendarClock}].map(({label,value,icon:Icon})=><div key={label} className="flex items-center justify-between rounded-2xl border border-blue-100 bg-white p-5"><div><p className="text-xs font-semibold text-slate-500">{label}</p><p className="mt-1 text-3xl font-bold tabular-nums">{value}</p></div><Icon className="size-7 text-blue-500"/></div>)}</div>
+  <div className="flex flex-wrap items-center justify-between gap-3"><input aria-label="Search plant" className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm sm:max-w-md" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Find a kiln, machine, work centre or product…"/>{canEdit&&<Button onClick={()=>{setMachine(blankMachine);setEditor(true);}}>Add machinery</Button>}</div>
+  <p role={failed?"alert":"status"} className={`text-sm ${failed?"text-red-600":"text-slate-600"}`}>{message}</p>
+  <div className="space-y-5">{centres.filter(c=>!search||[c.name,c.code,...c.machines.flatMap(m=>[m.name,...m.products.map(p=>p.name)])].join(" ").toLowerCase().includes(search.toLowerCase())).map(c=><section key={c.id} className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
+   <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-semibold tracking-wide text-blue-600">{c.code}{!c.active&&" · retired"}</p><h2 className="mt-1 text-xl font-semibold">{c.name}</h2>{c.description&&<p className="mt-1 text-sm text-slate-500">{c.description}</p>}</div>{canEdit&&<div className="flex gap-3"><button className="min-h-10 text-xs text-blue-700" onClick={()=>setCentre({id:c.id,code:c.code,name:c.name,description:c.description??""})}>Edit centre</button>{c.active&&<button disabled={pending} className="min-h-10 text-xs text-slate-500" onClick={()=>run(()=>retirePlantRecord("centre",c.id),"Work centre retired. Review its future assignments.")}>Retire</button>}</div>}</div>
+   <div className="mt-5 grid gap-3 xl:grid-cols-2">{c.machines.map(m=><article key={m.id} className={`rounded-2xl border p-4 ${m.active?"border-slate-200 bg-slate-50/50":"border-slate-100 opacity-60"}`}><div className="flex items-start justify-between gap-3"><div className="flex min-w-0 gap-3"><span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-600">{["BATCH_KILN","CONTINUOUS_KILN"].includes(m.processKind)?<Flame className="size-5"/>:<Factory className="size-5"/>}</span><div className="min-w-0"><h3 className="break-words font-semibold">{m.name}</h3><p className="mt-1 text-xs text-slate-500">{PROCESS_KINDS.find(p=>p.id===m.processKind)?.label??resourceLabel(m.type)}</p></div></div>{canEdit&&<button aria-label={`Configure ${m.name}`} className="rounded-lg p-2 text-blue-600 hover:bg-blue-50" onClick={()=>{setMachine({id:m.id,workCentreId:c.id,name:m.name,type:m.type,rate:String(m.nominalUnitsPerHour??""),processKind:m.processKind,calendarMode:m.calendarMode,timezone:m.timezone});setEditor(true);}}><Settings2 className="size-4"/></button>}</div>
+    <div className="mt-4 flex flex-wrap gap-2 text-xs"><span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5">{m.calendarMode==="CONTINUOUS"?"Continuous · 24/7":"Configured shift hours"}</span><span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5">{m.timezone}</span>{m.nominalUnitsPerHour&&<span className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5">{m.nominalUnitsPerHour} units / hour</span>}</div>{links(m.products)}{canEdit&&m.active&&<button disabled={pending} className="mt-3 min-h-9 text-xs text-slate-500" onClick={()=>run(()=>retirePlantRecord("machine",m.id),"Machine retired. Existing production history retained.")}>Retire machine</button>}
+   </article>)}</div>{!c.machines.length&&<p className="mt-4 text-sm text-slate-500">Add the machines in this area to start assigning product routes.</p>}
+  </section>)}</div>
+  {!centres.length&&<p className="rounded-2xl border border-dashed border-blue-200 bg-blue-50 p-6 text-sm text-blue-800">Start with your process areas, then add kilns, dryers, forming lines and packing equipment. Configure each product&apos;s eligible machines and timings in its routing.</p>}
+  {canEdit&&<div className="grid gap-5 lg:grid-cols-2"><form className="rounded-2xl border border-slate-200 bg-white p-5" onSubmit={e=>{e.preventDefault();run(async()=>{await saveWorkCentre(centre);setCentre({id:"",code:"",name:"",description:""});},"Work centre saved.");}}><h3 className="font-semibold">{centre.id?"Edit work centre":"Add work centre"}</h3><div className="mt-4 grid gap-3 sm:grid-cols-2"><label className="text-xs font-medium">Code<input required className={field} value={centre.code} onChange={e=>setCentre({...centre,code:e.target.value})}/></label><label className="text-xs font-medium">Name<input required className={field} value={centre.name} onChange={e=>setCentre({...centre,name:e.target.value})}/></label><label className="text-xs font-medium sm:col-span-2">Description<input className={field} value={centre.description} onChange={e=>setCentre({...centre,description:e.target.value})}/></label></div><Button variant="primary" type="submit" disabled={pending} className="mt-4">Save work centre</Button></form>
+  <form className="rounded-2xl border border-slate-200 bg-white p-5" onSubmit={e=>{e.preventDefault();run(async()=>{await saveDowntime({...outage,startsAt:new Date(outage.startsAt).toISOString(),endsAt:new Date(outage.endsAt).toISOString()});setOutage({...outage,reason:"",startsAt:"",endsAt:""});},"Downtime saved. New plans avoid this window; review already-booked work on the schedule.");}}><h3 className="font-semibold">Maintenance & downtime</h3><p className="mt-1 text-xs text-slate-500">Block servicing, shutdowns or unavailable equipment. Existing bookings remain for review.</p><div className="mt-4 grid gap-3 sm:grid-cols-2"><label className="text-xs font-medium sm:col-span-2">Machine<select required className={field} value={outage.resourceId} onChange={e=>setOutage({...outage,resourceId:e.target.value})}><option value="">Choose a machine</option>{active.map(m=><option key={m.id} value={m.id}>{m.name} · {m.centreName}</option>)}</select></label><label className="text-xs font-medium">From (your local time)<input required type="datetime-local" className={field} value={outage.startsAt} onChange={e=>setOutage({...outage,startsAt:e.target.value})}/></label><label className="text-xs font-medium">To (your local time)<input required type="datetime-local" className={field} value={outage.endsAt} onChange={e=>setOutage({...outage,endsAt:e.target.value})}/></label><label className="text-xs font-medium sm:col-span-2">Reason<input required className={field} value={outage.reason} onChange={e=>setOutage({...outage,reason:e.target.value})}/></label></div><Button variant="primary" type="submit" disabled={pending} className="mt-4">Block downtime</Button></form></div>}
+  {!!downtime.length&&<section className="rounded-2xl border border-slate-200 bg-white p-5"><h3 className="font-semibold">Upcoming exclusions</h3><div className="mt-3 divide-y divide-slate-100">{downtime.map(d=><div key={d.id} className="flex flex-wrap items-center justify-between gap-3 py-3"><div><p className="text-sm font-semibold">{all.find(m=>m.id===d.resourceId)?.name??"Machine"} · {d.reason}</p><p className="mt-1 text-xs text-slate-500">{new Date(d.startsAt).toLocaleString("en-GB", {timeZone:all.find(m=>m.id===d.resourceId)?.timezone??"Europe/London"})} → {new Date(d.endsAt).toLocaleString("en-GB", {timeZone:all.find(m=>m.id===d.resourceId)?.timezone??"Europe/London"})} · {all.find(m=>m.id===d.resourceId)?.timezone??"Europe/London"}</p></div>{canEdit&&<button disabled={pending} className="min-h-10 text-xs text-blue-600" onClick={()=>run(()=>cancelDowntime(d.id),"Downtime cancelled; history retained.")}>Cancel exclusion</button>}</div>)}</div></section>}
+  {canEdit&&editor&&<section role="region" aria-label="Machine configuration" className="rounded-3xl border border-blue-200 bg-blue-50/50 p-5 sm:p-6"><form onSubmit={e=>{e.preventDefault();run(async()=>{await saveMachine({...machine, id:machine.id||undefined,nominalUnitsPerHour:machine.rate.trim()?Number(machine.rate):null});setMachine(blankMachine);setEditor(false);},"Machine saved. Configure working shifts and product eligibility before releasing work.");}}><div className="flex items-center justify-between"><h3 className="text-lg font-semibold">{machine.id?"Configure machinery":"Add machinery"}</h3><button type="button" onClick={()=>setEditor(false)} className="min-h-10 text-sm text-blue-700">Close</button></div><div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+   <label className="text-xs font-medium">Name<input required className={field} value={machine.name} onChange={e=>setMachine({...machine,name:e.target.value})}/></label><label className="text-xs font-medium">Work centre<select required className={field} value={machine.workCentreId} onChange={e=>setMachine({...machine,workCentreId:e.target.value})}><option value="">Choose</option>{centres.filter(c=>c.active).map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label><label className="text-xs font-medium">Process<select className={field} value={machine.processKind} onChange={e=>setMachine({...machine,processKind:e.target.value})}>{PROCESS_KINDS.map(p=><option key={p.id} value={p.id}>{p.label}</option>)}</select></label>
+   <label className="text-xs font-medium">Resource kind<select className={field} value={machine.type} onChange={e=>setMachine({...machine,type:e.target.value})}>{RESOURCE_TYPES.map(p=><option key={p.id} value={p.id}>{p.label}</option>)}</select></label><label className="text-xs font-medium">Operating calendar<select className={field} value={machine.calendarMode} onChange={e=>setMachine({...machine,calendarMode:e.target.value})}><option value="SHIFTS">Use working shifts</option><option value="CONTINUOUS">Continuous operation · 24/7</option></select></label><label className="text-xs font-medium">Plant timezone<input required className={field} value={machine.timezone} onChange={e=>setMachine({...machine,timezone:e.target.value})}/></label><label className="text-xs font-medium">Nominal units / hour<input inputMode="decimal" className={field} placeholder="Optional throughput reference" value={machine.rate} onChange={e=>setMachine({...machine,rate:e.target.value})}/></label>
+  </div><p className="mt-4 text-xs text-blue-800">A batch kiln&apos;s load capacity, firing and cooling times belong to each product operation. Only approve alternative kilns that can run that same process. Shift calendars must be configured before scheduling; continuous equipment runs through nights and weekends.</p><div className="mt-4 flex flex-wrap items-center gap-4"><Button variant="primary" type="submit" disabled={pending}>Save machinery</Button><Link href="/manufacturing/schedule" className="text-sm font-semibold text-blue-700">Configure shifts →</Link></div></form></section>}
+ </div>;
 }

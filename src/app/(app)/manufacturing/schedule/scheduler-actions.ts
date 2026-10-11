@@ -7,8 +7,8 @@ export async function previewMoveAction(workOrderId: string, newStartISO: string
   return schedulePreview(workOrderId, new Date(newStartISO), resourceId, workCentreId);
 }
 
-export async function commitMoveAction(workOrderId: string, newStartISO: string, resourceId: string | null, workCentreId: string | null, force: boolean) {
-  await rescheduleWorkOrder(workOrderId, new Date(newStartISO), resourceId, workCentreId, force);
+export async function commitMoveAction(workOrderId: string, newStartISO: string, resourceId: string | null, workCentreId: string | null, force: boolean, previewKey?: string) {
+  await rescheduleWorkOrder(workOrderId, new Date(newStartISO), resourceId, workCentreId, force, previewKey);
   revalidatePath("/manufacturing/schedule");
   revalidatePath("/manufacturing/produce");
   revalidatePath("/manufacturing/shop-floor");

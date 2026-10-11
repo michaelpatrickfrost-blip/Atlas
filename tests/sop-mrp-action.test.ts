@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 const state = vi.hoisted(() => ({
- db: Object.fromEntries(['salesOrderLine','manufacturingDemandForecast','fulfilmentLine','manufacturingOrder','manufacturingPlanningRun','manufacturingSupplySuggestion','productOperation'].map(name => [name,{findMany:vi.fn(),groupBy:vi.fn(),create:vi.fn(),update:vi.fn()}])),
+ db: Object.fromEntries(['salesOrderLine','manufacturingDemandForecast','fulfilmentLine','manufacturingOrder','manufacturingPlanningRun','manufacturingSupplySuggestion','productOperation','productDefinition'].map(name => [name,{findFirst:vi.fn(),findMany:vi.fn(),groupBy:vi.fn(),create:vi.fn(),update:vi.fn()}])),
  assert:vi.fn(), enabled:vi.fn(), available:vi.fn(),
 }));
 vi.mock('@/core/db/client',()=>({db:state.db}));
@@ -18,11 +18,13 @@ const line=(id:string,status:string,quantity:number)=>({id,productId:'p',product
 beforeEach(()=>{
  vi.clearAllMocks();
  for(const model of Object.values(state.db)){model.findMany.mockResolvedValue([]);model.groupBy.mockResolvedValue([]);model.create.mockResolvedValue({id:'run'});model.update.mockResolvedValue({});}
+ state.db.productDefinition.findFirst.mockResolvedValue({batchQuantity:1,operations:[]});
  state.available.mockResolvedValue({products:[],deliveredByLine:{}});
  state.db.manufacturingDemandForecast.findMany.mockResolvedValue([{id:'forecast',productId:'p',product,quantity:1000,periodStart:month,sourceSopVersionId:'approved'}]);
 });
 describe('Manufacturing screen consumes published S&OP totals',()=>{
- it('nets gross closed and partly shipped bookings once while retaining open demand',async()=>{
+ it.each(['approved',null])('nets gross closed and partly shipped bookings once while retaining open demand for forecast source %s',async source=>{
+  state.db.manufacturingDemandForecast.findMany.mockResolvedValue([{id:'forecast',productId:'p',product,quantity:1000,periodStart:month,sourceSopVersionId:source}]);
   state.db.salesOrderLine.findMany.mockResolvedValue([line('open','CONFIRMED',400),line('closed','CLOSED',100)]);
   state.db.fulfilmentLine.groupBy.mockResolvedValue([{salesOrderLineId:'open',_sum:{shippedQuantity:200}}]);
   await runMrp();

@@ -12,6 +12,7 @@ import { supplySpendProvider } from '../src/modules/finance/services/supply-spen
 import { supplyPurchaseProvider } from '../src/modules/manufacturing/services/purchase-proposals';
 import { assertProductsSellable } from '../src/core/products/sales-eligibility';
 import { openBooks } from '../src/modules/finance/services/books';
+import { checkManufacturingKilns } from './check-manufacturing-kilns';
 import { postLedger } from '../src/modules/finance/services/ledger';
 
 let phase='configuration';
@@ -48,10 +49,10 @@ async function main(){
   await db.manufacturingDemandForecast.create({data:{organisationId:org.id,productId:finished.id,periodStart:forecastDate,quantity:10,createdByUserId:qa.userId}});
   const supplier=await db.party.create({data:{organisationId:org.id,kind:'COMPANY',name:'Fixture supplier',customerCode:'SUP-01',status:'ACTIVE'}});
   const entity=await db.$transaction(tx=>openBooks(tx,{organisationId:org.id,name:'Fixture books',code:'MAIN',currency:'GBP',startAt:new Date('2026-01-01'),endAt:new Date('2027-12-31'),actorUserId:qa.userId,reason:'Isolated acceptance fixture'}));
-  const context=await browser.newContext({baseURL:base.origin});
+  const context=await browser.newContext({baseURL:base.origin,timezoneId:"Europe/London"});
   await context.addCookies([{name:'atlas_session',value:token,url:base.origin,httpOnly:true,secure:base.protocol==='https:',sameSite:'Lax'}]);
   let writes=0;const errors:string[]=[];
-  await context.route('**/*',route=>{const request=route.request(),url=new URL(request.url());if(url.origin!==base.origin)return route.abort();if(url.pathname==='/api/guardian/telemetry')return route.fulfill({status:204});if(['GET','HEAD','OPTIONS'].includes(request.method()))return route.continue();if(request.method()==='POST'&&['/manufacturing','/manufacturing/planning/planned-orders','/finance/documents/new'].includes(url.pathname)){writes++;return route.continue();}return route.abort();});
+  await context.route('**/*',route=>{const request=route.request(),url=new URL(request.url());if(url.origin!==base.origin)return route.abort();if(url.pathname==='/api/guardian/telemetry')return route.fulfill({status:204});if(['GET','HEAD','OPTIONS'].includes(request.method()))return route.continue();if(request.method()==='POST'&&['/manufacturing','/manufacturing/planning/planned-orders','/finance/documents/new','/manufacturing/planning/forecast','/manufacturing/plant','/manufacturing/schedule'].includes(url.pathname)){writes++;return route.continue();}return route.abort();});
   const page=await context.newPage();currentPage=page;page.on('pageerror',error=>errors.push(error.name));
   const noOverflow=async()=>assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'No root horizontal overflow');
   phase='responsive console';
@@ -109,6 +110,8 @@ async function main(){
   phase='real Make conversion';await page.goto('/manufacturing/planning/planned-orders',{waitUntil:'networkidle'});await page.getByRole('button',{name:'Firm to production order'}).click();
   await expect.poll(()=>db.manufacturingOrder.count({where:{organisationId:org.id,productId:finished.id}})).toBe(1);
   await page.reload({waitUntil:'networkidle'});await expect(page.getByRole('link',{name:'View production order'})).toBeVisible();
+  const firmed=await db.manufacturingOrder.findFirstOrThrow({where:{organisationId:org.id,productId:finished.id}});
+  assert.equal(firmed.plannedStart?.getTime(),make.startBy?.getTime());
   console.log('PASS rich saved proposal converts to one production order with source audit.');
   phase='real Buy conversion';await page.getByRole('link',{name:/Review purchase draft/}).click();
   await expect(page.getByRole('textbox',{name:'Quantity',exact:true})).toHaveValue('15');await expect(page.getByRole('combobox',{name:'Shared product'})).toHaveValue(raw.id);
@@ -126,6 +129,8 @@ async function main(){
   await assert.rejects(()=>assertProductsSellable(db,org.id,[raw.id]),/internal|inactive/);await assertProductsSellable(db,org.id,[finished.id]);
   await page.goto(`/products/${raw.id}`,{waitUntil:'networkidle'});await expect(page.getByText(/Internal \/ not sellable/)).toBeVisible();
   console.log('PASS internal material stays purchasable/stocked and Sales eligibility rejects it.');
+  phase='finite kilns and flexible forecast';
+  await checkManufacturingKilns({context,page,organisationId:org.id,userId:qa.userId,partyId:supplier.id,rawId:raw.id,out});
   phase='synthetic balanced Finance report inputs';
   // Report source fixtures use real ledger guards. Approval/payment workflows are not claimed here.
   await db.$transaction(async tx=>{

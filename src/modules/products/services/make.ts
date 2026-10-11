@@ -21,7 +21,7 @@ export async function saveProductRecipe(productId: string, input: {
   batchQuantity: number;
   yieldPercent: number;
   lines: Array<{ componentId: string; quantityPerUnit: number; scrapPercent: number; notes?: string }>;
-  operations: Array<{ name: string; workCentre?: string; workCentreId?: string | null; resourceId?: string | null; setupMinutes: number; runMinutesPerUnit: number; crewSize: number; machineRate: number; labourRate: number; overheadRate?: number; logistics: number; machineIncludesLabour: boolean; machineIncludesOverhead?: boolean }>;
+  operations: Array<{ name: string; workCentre?: string; workCentreId?: string | null; resourceId?: string | null; eligibleResourceIds?: string[]; timingMode?: string; batchCapacity?: number; cycleMinutes?: number; coolingMinutes?: number; waitMinutes?: number; setupMinutes: number; runMinutesPerUnit: number; crewSize: number; machineRate: number; labourRate: number; overheadRate?: number; logistics: number; machineIncludesLabour: boolean; machineIncludesOverhead?: boolean }>;
   subcontract?: number;
 }) {
   const session = await requireSession();
@@ -37,6 +37,12 @@ export async function saveProductRecipe(productId: string, input: {
   })).filter((line) => line.componentId);
   const operations: MakeOperation[] = (input.operations ?? []).slice(0, 20).map((operation) => ({
     name: String(operation.name ?? "").trim().slice(0, 80),
+    timingMode: operation.timingMode ?? "PER_UNIT",
+    batchCapacity: number(operation.batchCapacity ?? 1, "load capacity"),
+    cycleMinutes: number(operation.cycleMinutes ?? 0, "cycle time"),
+    coolingMinutes: number(operation.coolingMinutes ?? 0, "cooling time"),
+    waitMinutes: number(operation.waitMinutes ?? 0, "transfer/wait time"),
+    eligibleResourceIds: [...new Set((operation.eligibleResourceIds ?? []).map(String))],
     setupMinutes: number(operation.setupMinutes ?? 0, "setup time"),
     runMinutesPerUnit: number(operation.runMinutesPerUnit ?? 0, "run time"),
     crewSize: number(operation.crewSize ?? 1, "crew size"),
@@ -58,7 +64,7 @@ export async function saveProductRecipe(productId: string, input: {
   const components = lines.length ? await db.product.findMany({ where: { organisationId: session.organisationId, id: { in: lines.map((line) => line.componentId) }, kind: "PRODUCT" }, select: { id: true, basePriceAmount: true } }) : [];
   if (components.length !== new Set(lines.map((line) => line.componentId)).size) throw new Error("Choose components from this company's products.");
   const centreIds = [...new Set(operations.map((operation) => operation.workCentreId).filter((id): id is string => !!id))];
-  const resourceIds = [...new Set(operations.map((operation) => operation.resourceId).filter((id): id is string => !!id))];
+  const resourceIds = [...new Set(operations.flatMap((operation) => [operation.resourceId, ...(operation.eligibleResourceIds ?? [])]).filter((id): id is string => !!id))];
   const [centres, machines] = await Promise.all([
     centreIds.length ? db.manufacturingWorkCentre.findMany({ where: { organisationId: session.organisationId, id: { in: centreIds } }, select: { id: true, name: true } }) : Promise.resolve([]),
     resourceIds.length ? db.manufacturingResource.findMany({ where: { organisationId: session.organisationId, id: { in: resourceIds } }, select: { id: true, name: true, workCentreId: true } }) : Promise.resolve([]),
@@ -68,7 +74,8 @@ export async function saveProductRecipe(productId: string, input: {
   const machineCentre = new Map(machines.map((machine) => [machine.id, machine.workCentreId]));
   for (const operation of operations) {
     if (operation.resourceId && !operation.workCentreId) throw new Error(`Choose the work centre for ${operation.name}.`);
-    if (operation.resourceId && machineCentre.get(operation.resourceId) !== operation.workCentreId) throw new Error(`${operation.name} must use a machine in the work centre you chose.`);
+    if ([operation.resourceId, ...(operation.eligibleResourceIds ?? [])].filter(Boolean).some((id) => machineCentre.get(id!) !== operation.workCentreId)) throw new Error(`${operation.name} must use a machine in the work centre you chose.`);
+    if (operation.resourceId && operation.eligibleResourceIds?.length && !operation.eligibleResourceIds.includes(operation.resourceId)) throw new Error(`Include the preferred machine in the eligible machines for ${operation.name}.`);
     if (operation.workCentreId) operation.workCentre = centreName.get(operation.workCentreId) ?? operation.workCentre;
   }
   const active = await db.productDefinition.findMany({
@@ -85,7 +92,7 @@ export async function saveProductRecipe(productId: string, input: {
       yieldPercent: Number(row.yieldPercent),
       purchaseMinor: row.product.basePriceAmount,
       lines: row.lines.map((line) => ({ componentId: line.componentProductId, quantityPerUnit: Number(line.quantityPerUnit), scrapPercent: Number(line.scrapPercent), notes: line.notes })),
-      operations: row.operations.map((operation) => ({ name: operation.name, setupMinutes: Number(operation.setupMinutes), runMinutesPerUnit: Number(operation.runMinutesPerUnit), crewSize: Number(operation.crewSize), machineMinorPerHour: operation.machineMinorPerHour, labourMinorPerHour: operation.labourMinorPerHour, logisticsMinorPerBatch: operation.logisticsMinorPerBatch, machineIncludesLabour: operation.machineIncludesLabour, workCentre: operation.workCentre, workCentreId: operation.workCentreId, resourceId: operation.resourceId, overheadMinorPerHour: operation.overheadMinorPerHour, machineIncludesOverhead: operation.machineIncludesOverhead })),
+      operations: row.operations.map((operation) => ({ name: operation.name, timingMode: operation.timingMode, batchCapacity: Number(operation.batchCapacity), cycleMinutes: Number(operation.cycleMinutes), coolingMinutes: Number(operation.coolingMinutes), waitMinutes: Number(operation.waitMinutes), eligibleResourceIds: operation.eligibleResourceIds, setupMinutes: Number(operation.setupMinutes), runMinutesPerUnit: Number(operation.runMinutesPerUnit), crewSize: Number(operation.crewSize), machineMinorPerHour: operation.machineMinorPerHour, labourMinorPerHour: operation.labourMinorPerHour, logisticsMinorPerBatch: operation.logisticsMinorPerBatch, machineIncludesLabour: operation.machineIncludesLabour, workCentre: operation.workCentre, workCentreId: operation.workCentreId, resourceId: operation.resourceId, overheadMinorPerHour: operation.overheadMinorPerHour, machineIncludesOverhead: operation.machineIncludesOverhead })),
     });
   }
   const draft: MakeDefinition = { productId, supply, batchQuantity: number(input.batchQuantity, "a batch size"), yieldPercent: number(input.yieldPercent, "yield"), purchaseMinor: product.basePriceAmount, subcontractMinorPerUnit, lines: supply === "BUY" ? [] : lines, operations: supply === "BUY" ? [] : operations };
@@ -106,7 +113,7 @@ export async function saveProductRecipe(productId: string, input: {
         subcontractMinorPerUnit,
         createdByUserId: session.userId,
         lines: { create: draft.lines.map((line, index) => ({ organisationId: session.organisationId, componentProductId: line.componentId, quantityPerUnit: line.quantityPerUnit, scrapPercent: line.scrapPercent, notes: line.notes ?? "", position: index })) },
-        operations: { create: draft.operations.map((operation, index) => ({ organisationId: session.organisationId, name: operation.name, workCentre: operation.workCentre ?? "", workCentreId: operation.workCentreId || null, resourceId: operation.resourceId || null, position: index, setupMinutes: operation.setupMinutes, runMinutesPerUnit: operation.runMinutesPerUnit, crewSize: operation.crewSize, machineMinorPerHour: operation.machineMinorPerHour, labourMinorPerHour: operation.labourMinorPerHour, overheadMinorPerHour: operation.overheadMinorPerHour ?? 0, logisticsMinorPerBatch: operation.logisticsMinorPerBatch, machineIncludesLabour: operation.machineIncludesLabour, machineIncludesOverhead: operation.machineIncludesOverhead ?? false })) },
+        operations: { create: draft.operations.map((operation, index) => ({ organisationId: session.organisationId, name: operation.name, workCentre: operation.workCentre ?? "", workCentreId: operation.workCentreId || null, resourceId: operation.resourceId || null, position: index, timingMode: operation.timingMode ?? "PER_UNIT", batchCapacity: operation.batchCapacity ?? 1, cycleMinutes: operation.cycleMinutes ?? 0, coolingMinutes: operation.coolingMinutes ?? 0, waitMinutes: operation.waitMinutes ?? 0, eligibleResourceIds: operation.eligibleResourceIds ?? [], setupMinutes: operation.setupMinutes, runMinutesPerUnit: operation.runMinutesPerUnit, crewSize: operation.crewSize, machineMinorPerHour: operation.machineMinorPerHour, labourMinorPerHour: operation.labourMinorPerHour, overheadMinorPerHour: operation.overheadMinorPerHour ?? 0, logisticsMinorPerBatch: operation.logisticsMinorPerBatch, machineIncludesLabour: operation.machineIncludesLabour, machineIncludesOverhead: operation.machineIncludesOverhead ?? false })) },
       },
     });
   });

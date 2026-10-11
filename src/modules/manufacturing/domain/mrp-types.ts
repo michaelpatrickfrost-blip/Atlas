@@ -57,6 +57,11 @@ export interface RecipeComponent {
 /** One routing step. Machine/labour/overhead rates mirror the Products recipe so
  * the plan and the product page price the same work the same way. */
 export interface RecipeOperation {
+  timingMode?: string;
+  batchCapacity?: number;
+  cycleMinutes?: number;
+  coolingMinutes?: number;
+  waitMinutes?: number;
   position: number;
   name: string;
   setupMinutes: number;
@@ -114,6 +119,7 @@ export type CostBuckets = Record<CostKind, number>;
 
 /** A routing step of a proposed order: the machine, the people and the hours. */
 export interface PlannedOperation {
+  waitMinutes?: number;
   sequence: number;
   name: string;
   workCentreId: string | null;

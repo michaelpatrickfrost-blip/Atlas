@@ -41,7 +41,7 @@ export async function releaseBalancedStock(actor: LogisticsActor, input: { produ
     include: { requirement: true },
   });
   const pending = await pendingLineIds(actor.organisationId, input.productId, input.warehouseId);
-  const openLines = lines.filter((line) => line.orderedQuantity - line.cancelledQuantity > line.shippedQuantity && !pending.has(line.id));
+  const openLines = lines.filter((line) => Number(line.orderedQuantity) - Number(line.cancelledQuantity) > Number(line.shippedQuantity) && !pending.has(line.id));
   if (!openLines.length) {
     await remember(actor, input.requestKey, { skipped: true });
     return;
@@ -53,15 +53,15 @@ export async function releaseBalancedStock(actor: LogisticsActor, input: { produ
   const onPick = new Map<string, number>();
   for (const pick of picks) {
     if (!pick.fulfilmentLineId) continue;
-    onPick.set(pick.fulfilmentLineId, (onPick.get(pick.fulfilmentLineId) ?? 0) + Math.max(0, pick.requiredQuantity - pick.confirmedQuantity));
+    onPick.set(pick.fulfilmentLineId, (onPick.get(pick.fulfilmentLineId) ?? 0) + Math.max(0, Number(pick.requiredQuantity) - Number(pick.confirmedQuantity)));
   }
   const waiting: WaitingBalance[] = openLines.map((line) => {
-    const required = line.orderedQuantity - line.cancelledQuantity;
+    const required = Number(line.orderedQuantity) - Number(line.cancelledQuantity);
     return {
       id: line.id,
-      open: required - line.shippedQuantity,
-      allocated: line.allocatedQuantity,
-      shipped: line.shippedQuantity,
+      open: required - Number(line.shippedQuantity),
+      allocated: Number(line.allocatedQuantity),
+      shipped: Number(line.shippedQuantity),
       onPick: onPick.get(line.id) ?? 0,
       partialAllowed: line.requirement.partialPolicy,
       short: line.allocationStatus !== "ALLOCATED",
@@ -78,9 +78,9 @@ export async function releaseBalancedStock(actor: LogisticsActor, input: { produ
     if (!line || line.requirement.partialPolicy) continue;
     const siblings = await db.fulfilmentLine.findMany({ where: { organisationId: actor.organisationId, requirementId: line.requirementId } });
     const complete = siblings.every((sibling) => {
-      const required = sibling.orderedQuantity - sibling.cancelledQuantity;
+      const required = Number(sibling.orderedQuantity) - Number(sibling.cancelledQuantity);
       const extra = sibling.productId === input.productId ? plan.find((item) => item.id === sibling.id)?.deliver ?? 0 : 0;
-      return sibling.shippedQuantity + extra >= required;
+      return Number(sibling.shippedQuantity) + extra >= required;
     });
     if (!complete) blocked.add(line.requirementId);
   }
@@ -171,12 +171,12 @@ async function finishPending(session: Session, productId: string, warehouseId: s
 async function deliverShipment(session: Session, shipmentId: string, lineIds: string[]) {
   await dispatchShipment(session, shipmentId, shortKey(`dispatch:${shipmentId}`));
   const fresh = await db.fulfilmentLine.findMany({ where: { organisationId: session.organisationId, id: { in: lineIds } } });
-  const partial = fresh.some((line) => line.shippedQuantity < line.orderedQuantity - line.cancelledQuantity);
+  const partial = fresh.some((line) => Number(line.shippedQuantity) < Number(line.orderedQuantity) - Number(line.cancelledQuantity));
   await confirmDelivery(session, shipmentId, { outcome: partial ? "PARTIAL" : "DELIVERED", note: BALANCE_REASON });
   for (const line of fresh) {
-    const required = line.orderedQuantity - line.cancelledQuantity;
+    const required = Number(line.orderedQuantity) - Number(line.cancelledQuantity);
     const current = await db.fulfilmentLine.findFirst({ where: { id: line.id, organisationId: session.organisationId } });
-    const shipped = current?.shippedQuantity ?? line.shippedQuantity;
+    const shipped = Number(current?.shippedQuantity ?? line.shippedQuantity);
     const still = Math.max(0, required - shipped);
     await db.fulfilmentLine.update({
       where: { id: line.id },

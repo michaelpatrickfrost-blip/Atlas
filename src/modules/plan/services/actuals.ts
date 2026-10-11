@@ -91,7 +91,7 @@ export async function liveActuals(session: Session, keys: string[], start: Date,
       const byPeriod: Record<string, number> = {};
       let total = 0;
       for (const line of lines) {
-        const quantity = line.orderedQuantity - line.cancelledQuantity;
+        const quantity = Number(line.orderedQuantity) - Number(line.cancelledQuantity);
         total += quantity;
         const key = monthKey(line.order.orderDate);
         byPeriod[key] = (byPeriod[key] ?? 0) + quantity;
@@ -243,7 +243,7 @@ export async function liveActuals(session: Session, keys: string[], start: Date,
 
   if (need("stock_on_hand")) {
     const stock = await db.stockPosition.aggregate({ where: { organisationId: session.organisationId, status: "AVAILABLE" }, _sum: { quantity: true } });
-    result.stock_on_hand = { value: stock._sum.quantity ?? 0, byPeriod: {}, note: "Available quantity now. It is not a forecast of stock at the end of the period.", href: "/stock", partial: false, contributors: [] };
+    result.stock_on_hand = { value: Number(stock._sum.quantity ?? 0), byPeriod: {}, note: "Available quantity now. It is not a forecast of stock at the end of the period.", href: "/stock", partial: false, contributors: [] };
   }
 
   if (["production_scheduled", "production_completed"].some(need)) {
@@ -254,11 +254,11 @@ export async function liveActuals(session: Session, keys: string[], start: Date,
     });
     if (wanted.has("production_scheduled")) {
       const open = orders.filter((order) => ["PLANNED", "READY", "RELEASED", "RUNNING"].includes(order.status));
-      result.production_scheduled = { value: open.reduce((total, order) => total + num(order.quantity), 0), byPeriod: {}, note: "Open manufacturing orders dated in this period.", href: "/manufacturing", partial: orders.length === 5000, contributors: open.slice(0, 6).map((order) => ({ label: order.orderNumber, href: "/manufacturing/produce", detail: order.status })) };
+      result.production_scheduled = { value: open.reduce((total, order) => total + num(Number(order.quantity)), 0), byPeriod: {}, note: "Open manufacturing orders dated in this period.", href: "/manufacturing", partial: orders.length === 5000, contributors: open.slice(0, 6).map((order) => ({ label: order.orderNumber, href: "/manufacturing/produce", detail: order.status })) };
     }
     if (wanted.has("production_completed")) {
       const done = orders.filter((order) => order.status === "COMPLETE" || order.status === "CLOSED");
-      result.production_completed = { value: done.reduce((total, order) => total + num(order.quantity), 0), byPeriod: {}, note: "Completed and closed manufacturing orders dated in this period.", href: "/manufacturing", partial: orders.length === 5000, contributors: [] };
+      result.production_completed = { value: done.reduce((total, order) => total + num(Number(order.quantity)), 0), byPeriod: {}, note: "Completed and closed manufacturing orders dated in this period.", href: "/manufacturing", partial: orders.length === 5000, contributors: [] };
     }
   }
 
@@ -268,7 +268,7 @@ export async function liveActuals(session: Session, keys: string[], start: Date,
       select: { quantity: true },
       take: 5000,
     });
-    result.production_plan = { value: lines.reduce((total, line) => total + num(line.quantity), 0), byPeriod: {}, note: "Saved Production Planning quantities that overlap this period. This is a live total, not a copy.", href: "/planning/plans", partial: lines.length === 5000, contributors: [] };
+    result.production_plan = { value: lines.reduce((total, line) => total + num(Number(line.quantity)), 0), byPeriod: {}, note: "Saved Production Planning quantities that overlap this period. This is a live total, not a copy.", href: "/planning/plans", partial: lines.length === 5000, contributors: [] };
   }
 
   for (const key of keys) {
@@ -289,7 +289,7 @@ export async function productionPicture(session: Session, start: Date, end: Date
   const span = range(start, end);
   if (enabled.has("planning") && session.capabilities.has("planning.demand.read")) {
     const plans = await db.productionPlan.findMany({ where: { organisationId: session.organisationId, startsOn: { lte: end }, endsOn: { gte: start } }, include: { lines: { select: { quantity: true, productId: true } } }, take: 20 });
-    picture.plans = plans.map((plan) => ({ id: plan.id, name: plan.name, quantity: plan.lines.reduce((total, line) => total + num(line.quantity), 0) }));
+    picture.plans = plans.map((plan) => ({ id: plan.id, name: plan.name, quantity: plan.lines.reduce((total, line) => total + num(Number(line.quantity)), 0) }));
   }
   if (enabled.has("manufacturing") && session.capabilities.has("manufacturing.order.read")) {
     const centres = await db.manufacturingResource.findMany({ where: { organisationId: session.organisationId, active: true }, select: { name: true, nominalUnitsPerHour: true, workCentre: { select: { name: true } } }, take: 30 });
@@ -306,18 +306,18 @@ export async function productionPicture(session: Session, start: Date, end: Date
     for (const line of lines) {
       if (!line.productId) continue;
       const row = ensure(line.productId, line.descriptionSnapshot);
-      const quantity = line.orderedQuantity - line.cancelledQuantity;
+      const quantity = Number(line.orderedQuantity) - Number(line.cancelledQuantity);
       row.demand += quantity;
       if (row.orders.length < 5) row.orders.push({ id: line.order.id, reference: line.order.reference, quantity });
     }
   }
   if (enabled.has("planning") && session.capabilities.has("planning.demand.read")) {
     const lines = await db.productionPlanLine.findMany({ where: { organisationId: session.organisationId, startsOn: { lte: end }, endsOn: { gte: start } }, select: { productId: true, quantity: true }, take: 5000 });
-    for (const line of lines) ensure(line.productId, line.productId).planned += num(line.quantity);
+    for (const line of lines) ensure(line.productId, line.productId).planned += num(Number(line.quantity));
   }
   if (enabled.has("manufacturing") && session.capabilities.has("manufacturing.order.read")) {
     const orders = await db.manufacturingOrder.findMany({ where: { organisationId: session.organisationId, status: { in: ["PLANNED", "READY", "RELEASED", "RUNNING"] }, OR: [{ requiredDate: span }, { plannedStart: span }] }, select: { productId: true, quantity: true }, take: 5000 });
-    for (const order of orders) ensure(order.productId, order.productId).scheduled += num(order.quantity);
+    for (const order of orders) ensure(order.productId, order.productId).scheduled += num(Number(order.quantity));
   }
   if (session.capabilities.has("core.products.read") || session.capabilities.has("stock.read") || session.capabilities.has("sales.order.read")) {
     const products = await db.product.findMany({ where: { organisationId: session.organisationId, id: { in: [...demand.keys()].slice(0, 40) } }, select: { id: true, name: true, code: true }, take: 40 });

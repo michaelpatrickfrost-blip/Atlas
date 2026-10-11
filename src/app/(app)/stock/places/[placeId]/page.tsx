@@ -23,7 +23,7 @@ export default async function PlacePage({ params }: { params: Promise<{ placeId:
   const manage = can(session, "stock.manage");
   const others = manage ? await db.stockLocation.findMany({ where: { organisationId: session.organisationId, warehouseId: { not: data.place.id }, active: true }, include: { warehouse: { include: { site: true } } }, orderBy: { code: "asc" }, take: 200 }) : [];
   const held = new Map<string, number>();
-  for (const row of data.positions) held.set(row.locationId, (held.get(row.locationId) ?? 0) + row.quantity);
+  for (const row of data.positions) held.set(row.locationId, (held.get(row.locationId) ?? 0) + Number(row.quantity));
   return <div className="space-y-6">
     <div>
       <Link href="/stock/warehouses" className="text-xs text-slate-500">← Warehouses and yards</Link>
@@ -49,8 +49,8 @@ export default async function PlacePage({ params }: { params: Promise<{ placeId:
     <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
       <table className="w-full text-sm"><thead className="bg-slate-50 text-left text-xs text-slate-500"><tr><th className="px-4 py-3">Product</th><th className="px-4 py-3">Location</th><th className="px-4 py-3 text-right">Quantity</th></tr></thead>
         <tbody>
-          {data.positions.map((row) => <tr key={row.id} className="border-t border-slate-100"><td className="px-4 py-3"><Link href={`/stock/items/${row.product.id}`} className="font-medium">{row.product.name}</Link><span className="mt-1 block text-xs text-slate-400">{row.product.code}</span></td><td className="px-4 py-3">{data.place.locations.find((location) => location.id === row.locationId)?.name ?? "Location"}</td><td className="px-4 py-3 text-right">{row.quantity.toLocaleString("en-GB")} {row.product.unitOfMeasure}</td></tr>)}
-          {data.unlocated.map((row) => { const product = data.products.find((item) => item.id === row.productId); return <tr key={row.productId} className="border-t border-slate-100"><td className="px-4 py-3">{product?.name ?? "Product"}<span className="mt-1 block text-xs text-slate-400">{product?.code}</span></td><td className="px-4 py-3 text-slate-500">Not in a location yet</td><td className="px-4 py-3 text-right">{row.quantity.toLocaleString("en-GB")}</td></tr>; })}
+          {data.positions.map((row) => <tr key={row.id} className="border-t border-slate-100"><td className="px-4 py-3"><Link href={`/stock/items/${row.product.id}`} className="font-medium">{row.product.name}</Link><span className="mt-1 block text-xs text-slate-400">{row.product.code}</span></td><td className="px-4 py-3">{data.place.locations.find((location) => location.id === row.locationId)?.name ?? "Location"}</td><td className="px-4 py-3 text-right">{Number(row.quantity).toLocaleString("en-GB")} {row.product.unitOfMeasure}</td></tr>)}
+          {data.unlocated.map((row) => { const product = data.products.find((item) => item.id === row.productId); return <tr key={row.productId} className="border-t border-slate-100"><td className="px-4 py-3">{product?.name ?? "Product"}<span className="mt-1 block text-xs text-slate-400">{product?.code}</span></td><td className="px-4 py-3 text-slate-500">Not in a location yet</td><td className="px-4 py-3 text-right">{Number(row.quantity).toLocaleString("en-GB")}</td></tr>; })}
           {!data.positions.length && !data.unlocated.length && <tr><td colSpan={3} className="px-4 py-6 text-slate-500">No stock is recorded in this place.</td></tr>}
         </tbody>
       </table>

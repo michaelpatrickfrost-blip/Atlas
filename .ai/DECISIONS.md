@@ -1,3 +1,25 @@
+## 11 October 2026 — Exact stock and Finance-owned manufacturing cost
+
+Operational quantities use NUMERIC(18,6), explicit compatible measurement snapshots
+and scaled integer arithmetic; posted monetary values use integer minor units with
+the accounting currency exponent. Metric tonnes are explicit t; ambiguous ton or
+piece-to-mass guesses are refused. Serial-tracked quantities remain whole identities.
+Sale prices must never supply purchase/material cost. Reviewed weighted carrying
+value and approved purchasing can supply estimates; actual stock/WIP/COGS postings
+are a Finance owner contract within the stock/report transaction. Production output
+stays blocked until the physical collection, including partial final output.
+
+Old Prisma Int clients truncate fractional NUMERIC values, confirmed on a private
+empty central schema. Accept the new Decimal-capable runtime while temporary whole-
+quantity checks and legacy output-order uniqueness preserve old rollback behaviour.
+Only then unlock fractional writes/multi-report batches and retain that Decimal
+runtime as rollback. No schema rollback or local business database is used.
+Guides group by the user's accessible apps; consolidated apps collect their source
+workflows through registered guide metadata, while each linked source retains its
+capability/module checks. One canonical owner handbook; app hubs support setup,
+daily work and troubleshooting. Explicit final Test cleanup preserves real data,
+internal/shared staff and required recovery evidence.
+
 ## 11 October 2026 — Dropdown readability takes priority over glass styling
 
 Michael requests that dropdowns stop showing page content through their panels.

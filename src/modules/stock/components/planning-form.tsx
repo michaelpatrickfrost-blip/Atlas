@@ -9,9 +9,9 @@ export function PlanningForm({productId,unit,safetyStock,leadTimeDays,monthlyUsa
  return <ActionForm action={savePlanningAction}><div className="space-y-4">
   <input type="hidden" name="productId" value={productId}/>
   <div className="grid gap-4 sm:grid-cols-3">
-   <label className="block text-xs font-medium">Safety stock ({unit})<input name="safetyStockLevel" type="number" min={0} step={1} defaultValue={safetyStock} className={input}/><span className="mt-1 block font-normal text-slate-500">Keep at least this much.</span></label>
+   <label className="block text-xs font-medium">Safety stock ({unit})<input name="safetyStockLevel" type="number" min={0} step="0.000001" defaultValue={safetyStock} className={input}/><span className="mt-1 block font-normal text-slate-500">Keep at least this much.</span></label>
    <label className="block text-xs font-medium">Lead time (days)<input name="leadTimeDays" type="number" min={0} max={730} step={1} defaultValue={leadTimeDays} className={input}/><span className="mt-1 block font-normal text-slate-500">Order to arrival, or time to make.</span></label>
-   <label className="block text-xs font-medium">Expected usage a month ({unit})<input name="monthlyUsage" type="number" min={0} step={1} defaultValue={monthlyUsage??''} placeholder={historyMonthly?`${historyMonthly.toLocaleString('en-GB')} from history`:'From history'} className={input}/><span className="mt-1 block font-normal text-slate-500">Leave blank to use what actually left stock.</span></label>
+   <label className="block text-xs font-medium">Expected usage a month ({unit})<input name="monthlyUsage" type="number" min={0} step="0.000001" defaultValue={monthlyUsage??''} placeholder={historyMonthly?`${historyMonthly.toLocaleString('en-GB')} from history`:'From history'} className={input}/><span className="mt-1 block font-normal text-slate-500">Leave blank to use what actually left stock.</span></label>
   </div>
   <Button type="submit" variant="primary">Save planning</Button>
  </div></ActionForm>;

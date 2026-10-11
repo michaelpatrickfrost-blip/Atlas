@@ -144,7 +144,7 @@ export async function resolvePrice(params: {
     }
   }
 
-  const special = agreement?.prices.slice().sort((a, b) => b.minimumQuantity - a.minimumQuantity || a.id.localeCompare(b.id))[0];
+  const special = agreement?.prices.slice().sort((a, b) => Number(b.minimumQuantity) - Number(a.minimumQuantity) || a.id.localeCompare(b.id))[0];
   if (special && agreement) {
     return {
       unitPriceAmount: special.unitPriceAmount,
@@ -181,7 +181,7 @@ export async function resolvePrice(params: {
       },
     });
     const entry = selectPriceRule(
-      entries.map((item) => ({ ...item, validFrom: item.validFrom?.toISOString() ?? null, validTo: item.validTo?.toISOString() ?? null })),
+      entries.map((item) => ({ ...item, minimumQuantity:Number(item.minimumQuantity), validFrom: item.validFrom?.toISOString() ?? null, validTo: item.validTo?.toISOString() ?? null })),
       product,
       params.quantity,
       asOf,

@@ -218,7 +218,7 @@ export async function returnOrderToQuote(orderId: string) {
       });
       if (changed.count !== 1) throw new Error("This order changed. Reload it.");
       for (const line of current.lines) {
-        await tx.salesOrderLine.update({ where: { id: line.id }, data: { cancelledQuantity: line.orderedQuantity, netAmount: 0, taxAmount: 0 } });
+        await tx.salesOrderLine.update({ where: { id: line.id }, data: { cancelledQuantity: Number(line.orderedQuantity), netAmount: 0, taxAmount: 0 } });
       }
       const cancelled = await tx.salesOrder.findUniqueOrThrow({ where: { id: orderId }, include: { lines: true } });
       await tx.salesOrderRevision.create({

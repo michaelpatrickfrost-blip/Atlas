@@ -12,6 +12,7 @@ import { supplySpendProvider } from '../src/modules/finance/services/supply-spen
 import { supplyPurchaseProvider } from '../src/modules/manufacturing/services/purchase-proposals';
 import { assertProductsSellable } from '../src/core/products/sales-eligibility';
 import { openBooks } from '../src/modules/finance/services/books';
+import { checkManufacturingExecution } from './check-manufacturing-execution';
 import { checkManufacturingKilns } from './check-manufacturing-kilns';
 import { postLedger } from '../src/modules/finance/services/ledger';
 
@@ -32,7 +33,7 @@ async function main(){
  const browser=await chromium.launch({headless:true});
  try{
   phase='Test fixture';
-  const org=await db.organisation.create({data:{name:'Manufacturing verification · Test',slug,isTest:true,moduleStates:{create:['manufacturing','planning','stock','products','sales','finance'].map(moduleId=>({moduleId,enabled:true,entitled:true}))}}});fixtureId=org.id;
+  const org=await db.organisation.create({data:{name:'Manufacturing verification · Test',slug,isTest:true,moduleStates:{create:['manufacturing','planning','stock','products','sales','finance','quality','fieldservice','logistics'].map(moduleId=>({moduleId,enabled:true,entitled:true}))}}});fixtureId=org.id;
   // Staff already have full company rights. This new affiliation has no roles/grants.
   const membership=await db.membership.create({data:{organisationId:org.id,userId:qa.userId}});
   const session=await sessionForUser(org.id,qa.userId);assert(session);
@@ -131,6 +132,8 @@ async function main(){
   console.log('PASS internal material stays purchasable/stocked and Sales eligibility rejects it.');
   phase='finite kilns and flexible forecast';
   await checkManufacturingKilns({context,page,organisationId:org.id,userId:qa.userId,partyId:supplier.id,rawId:raw.id,out,allowWrite:path=>ownedWriteRoutes.add(path)});
+  phase='exact manufacturing execution and costing';
+  await checkManufacturingExecution({context,page,session,out});
   phase='synthetic balanced Finance report inputs';
   // Report source fixtures use real ledger guards. Approval/payment workflows are not claimed here.
   await db.$transaction(async tx=>{
@@ -153,6 +156,16 @@ async function main(){
   await expect(page.getByText('£85.00',{exact:true}).first()).toBeVisible();await page.getByRole('link',{name:'FIX-AP_INVOICE-GBP',exact:true}).click();await expect(page.getByRole('heading',{name:'FIX-AP_INVOICE-GBP'})).toBeVisible();
   for(const [name,width,height]of [['desktop',1448,1086],['phone',390,844]]as const){await page.setViewportSize({width,height});assert.equal((await page.goto('/manufacturing/help/products-stock',{waitUntil:'networkidle'}))?.status(),200);await expect(page.getByRole('heading',{name:'Set up products, materials and stock',exact:true})).toBeVisible();assert(await page.locator('img').evaluateAll(images=>images.every(image=>(image as HTMLImageElement).complete&&(image as HTMLImageElement).naturalWidth>0)));await noOverflow();await page.screenshot({path:`${out}/guide-${name}.png`,fullPage:false});}
   for(const guide of ['start','demand','mrp','procurement','receiving','schedule','production','spend'])assert.equal((await page.goto(`/manufacturing/help/${guide}`,{waitUntil:'networkidle'}))?.status(),200);
+  for(const [name,width,height]of [['desktop',1448,1086],['tablet',820,1180],['phone',390,844]]as const){
+   await page.setViewportSize({width,height});
+   for(const [path,title]of [['/guides','Your apps. Clear working instructions.'],['/guides/apps/manufacturing','Manufacturing & Supply'],['/guides/apps/fieldservice','Field Service'],['/manufacturing/machine-loads','Machine loads'],['/manufacturing/traceability','Batch traceability'],['/finance/manufacturing','Manufacturing costs']]as const){
+    assert.equal((await page.goto(path,{waitUntil:'networkidle'}))?.status(),200);await expect(page.getByRole('heading',{name:title,exact:true}).last()).toBeVisible();await noOverflow();
+    await page.screenshot({path:`${out}/${path.replaceAll('/','-').slice(1)}-${name}.png`,fullPage:false});
+   }
+  }
+  await page.goto('/guides/apps/manufacturing',{waitUntil:'networkidle'});await expect(page.getByRole('heading',{name:'Setup',exact:true})).toBeVisible();await expect(page.getByRole('heading',{name:'Daily work',exact:true})).toBeVisible();await expect(page.getByRole('heading',{name:'Troubleshooting',exact:true})).toBeVisible();
+  assert.equal((await page.goto('/manufacturing/help',{waitUntil:'networkidle'}))?.status(),200);assert.equal(new URL(page.url()).pathname,'/guides/apps/manufacturing');
+  console.log('PASS app-grouped guides and new manufacturing/cost workspaces at desktop/tablet/phone; canonical help redirect.');
   assert.equal(errors.length,0);assert(writes>=3);console.log('PASS report drill-through, nine illustrated guides, responsive pictures and zero browser exceptions.');
   await context.close();
  }finally{

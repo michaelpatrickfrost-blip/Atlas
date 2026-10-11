@@ -1,3 +1,4 @@
+import {addQuantity} from "@/core/shared/quantity";
 import Link from "next/link";
 import { PackageCheck, Factory, ArrowRight, Boxes } from "lucide-react";
 import { randomUUID } from "node:crypto";
@@ -101,7 +102,7 @@ export default async function Handoffs({
       </form>
       <section aria-label="Production batches" className="space-y-4">
         {data.rows.map((batch) => {
-          const remaining = batch.quantity - batch.collectedQuantity;
+          const remaining = addQuantity(Number(batch.quantity),-Number(batch.collectedQuantity));
           return (
             <article
               key={batch.id}
@@ -130,7 +131,7 @@ export default async function Handoffs({
                   className={`rounded-full px-3 py-1.5 text-xs font-semibold ${remaining ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}`}
                 >
                   {remaining
-                    ? batch.collectedQuantity
+                    ? Number(batch.collectedQuantity)
                       ? "Part collected"
                       : "Awaiting collection"
                     : "Collected"}
@@ -138,14 +139,14 @@ export default async function Handoffs({
               </div>
               <dl className="mt-5 grid grid-cols-3 gap-3 rounded-2xl bg-slate-50 p-4">
                 {[
-                  ["Produced", batch.quantity],
-                  ["Collected", batch.collectedQuantity],
+                  ["Produced", Number(batch.quantity)],
+                  ["Collected", Number(batch.collectedQuantity)],
                   ["To collect", remaining],
                 ].map(([label, quantity]) => (
-                  <div key={label}>
-                    <dt className="text-xs text-slate-500">{label}</dt>
+                  <div key={String(label)}>
+                    <dt className="text-xs text-slate-500">{String(label)}</dt>
                     <dd className="mt-1 text-lg font-bold text-slate-900">
-                      {Number(quantity).toLocaleString("en-GB")}{" "}
+                      {Number(quantity).toLocaleString("en-GB",{maximumFractionDigits:6})}{" "}
                       <span className="text-xs font-normal text-slate-400">
                         {batch.product.unitOfMeasure}
                       </span>
@@ -184,14 +185,15 @@ export default async function Handoffs({
                           <input
                             name="quantity"
                             type="number"
-                            min={1}
+                            min={0.000001}
                             max={remaining}
-                            step={1}
+                            step={0.000001}
                             required
                             defaultValue={remaining}
                             className={field}
                           />
                         </label>
+                        {batch.product.trackingMode === "SERIAL" && <label className="block text-sm">Serials collected<textarea name="serials" required placeholder="One serial per collected unit" className={field}/></label>}
                         <label className="block text-sm">
                           Destination yard or storage location
                           <select
@@ -261,7 +263,7 @@ export default async function Handoffs({
                         className="rounded-xl bg-slate-50 p-4 text-sm"
                       >
                         <p className="font-semibold">
-                          {item.quantity.toLocaleString("en-GB")}{" "}
+                          {Number(item.quantity).toLocaleString("en-GB",{maximumFractionDigits:6})}{" "}
                           {batch.product.unitOfMeasure} → {item.warehouse.name}{" "}
                           / {item.location.name}
                         </p>

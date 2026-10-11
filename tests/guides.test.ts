@@ -53,3 +53,21 @@ it("gives every guide preparation, actual steps, an outcome and blocker help wit
       if (s.href) expect(s.href.startsWith("/")).toBe(true);
   }
 });
+
+import { guideApps, searchGuideApps } from "@/core/guides/library";
+import type { ModuleManifest } from "@/core/modules/types";
+it("groups consolidated supply guides under the app and leaves disabled app contributions out", () => {
+  const modules = [
+    { id: "manufacturing", name: "Manufacturing & Supply", guides: [{ id: "partial", title: "Partial output", summary: "Actual kg", href: "/manufacturing/help/partial-production", category: "Daily work" }] },
+    { id: "stock", name: "Inventory", launcherConsolidatedInto: "manufacturing" },
+    { id: "products", name: "Products", launcherConsolidatedInto: "manufacturing" },
+  ] as ModuleManifest[];
+  const apps = guideApps(new Set(["stock.read"]), modules);
+  expect(apps.find(app => app.id === "manufacturing")?.guides.map(guide => guide.id)).toEqual(expect.arrayContaining(["stock", "products", "production-handoff", "partial"]));
+  expect(apps.some(app => app.id === "stock")).toBe(false);
+  expect(apps.some(app => app.id === "fieldservice")).toBe(false);
+  expect(searchGuideApps(apps, "kg")[0].guides[0].id).toBe("partial");
+  const standalone = guideApps(new Set(["stock.read"]), modules.filter(module => module.id === "stock"));
+  expect(standalone.some(app => app.id === "stock")).toBe(true);
+  expect(standalone.some(app => app.id === "manufacturing")).toBe(false);
+});

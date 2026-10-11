@@ -1,3 +1,4 @@
+import { validQuantity, addQuantity } from "@/core/shared/quantity";
 /** Handling units and courier files. No database access. */
 
 export const DEFAULT_HANDLING_TYPES = [
@@ -14,8 +15,8 @@ export const DEFAULT_HANDLING_TYPES = [
 const PALLET_CODES = new Set(["PALLET", "STILLAGE", "ROLL_CAGE", "CONTAINER"]);
 
 export function packQuantity(input: { picked: number; packed: number; requested: number }): { ok: true; quantity: number } | { ok: false; message: string } {
-  if (!Number.isSafeInteger(input.requested) || input.requested <= 0) return { ok: false, message: "Enter the quantity to pack." };
-  const open = input.picked - input.packed;
+  if (!validQuantity(input.requested) || input.requested <= 0) return { ok: false, message: "Enter the quantity to pack." };
+  const open = addQuantity(input.picked, -input.packed);
   if (input.requested > open) return { ok: false, message: `Only ${Math.max(0, open)} can still be packed.` };
   return { ok: true, quantity: input.requested };
 }

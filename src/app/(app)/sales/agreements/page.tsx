@@ -24,11 +24,11 @@ export default async function AgreementsPage() {
     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
       {agreements.map((agreement) => {
         const open = commitmentView(agreement.lines, agreement.callOffs);
-        const remaining = agreement.lines.reduce((sum, line) => sum + (open.get(line.id)?.remaining ?? line.committedQuantity), 0);
-        const committed = agreement.lines.reduce((sum, line) => sum + line.committedQuantity, 0);
+        const remaining = agreement.lines.reduce((sum, line) => sum + (open.get(line.id)?.remaining ?? Number(line.committedQuantity)), 0);
+        const committed = agreement.lines.reduce((sum, line) => sum + Number(line.committedQuantity), 0);
         return <Link key={agreement.id} href={`/sales/agreements/${agreement.id}`} className="grid gap-2 border-b border-slate-100 px-5 py-4 last:border-0 sm:grid-cols-[1.2fr_1fr_auto] sm:items-center">
           <span><span className="font-medium">{agreement.reference}</span><span className="mt-1 block text-sm text-slate-500">{agreement.party.name}</span></span>
-          <span className="text-sm text-slate-500">{agreement.status} · until {agreement.endsAt.toLocaleDateString("en-GB")} · {formatMoney(agreement.lines.reduce((sum, line) => sum + line.unitPriceAmount * line.committedQuantity, 0), agreement.currency)}</span>
+          <span className="text-sm text-slate-500">{agreement.status} · until {agreement.endsAt.toLocaleDateString("en-GB")} · {formatMoney(agreement.lines.reduce((sum, line) => sum + line.unitPriceAmount * Number(line.committedQuantity), 0), agreement.currency)}</span>
           <span className="text-sm">{remaining} of {committed} still open</span>
         </Link>;
       })}

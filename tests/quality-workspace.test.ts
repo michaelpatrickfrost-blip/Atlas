@@ -2,7 +2,7 @@ import { expect,it } from 'vitest';
 import { canClose,evaluateMeasurement } from '@/modules/quality/domain/workflow';
 import { ncrInput, actionTransition, qualityDate } from '@/modules/quality/domain/workspace';
 function form(extra:Record<string,string>={}){const f=new FormData();Object.entries({title:'Defect',defect:'Not to specification',source:'FINAL',severity:'MAJOR',disposition:'PENDING',...extra}).forEach(([k,v])=>f.set(k,v));return f;}
-it.each(['-1','1.5','NaN','2147483648'])('rejects invalid affected quantity %s',value=>expect(()=>ncrInput(form({quantityAffected:value}))).toThrow('whole number'));
+it.each(['-1','0.0000001','NaN','2147483648'])('rejects invalid affected quantity %s',value=>expect(()=>ncrInput(form({quantityAffected:value}))).toThrow('six decimal places'));
 it.each(['2026-02-30','NaN','2026-13-01'])('rejects impossible calendar dates %s',value=>expect(()=>qualityDate(form({dueAt:value}),'dueAt')).toThrow('valid calendar date'));
 it('refuses unsupported enum values',()=>expect(()=>ncrInput(form({source:'FOREIGN'}))).toThrow('available source'));
 it('captures extended issue information and five whys',()=>expect(ncrInput(form({location:'Factory',why1:'Wrong setup',causeEvidence:'Checked setup log'}))).toMatchObject({workspace:{location:'Factory',why1:'Wrong setup',causeEvidence:'Checked setup log'}}));
@@ -11,3 +11,5 @@ it('minor issues still require disposition and resolve every recorded action',()
 it('does not jump from open straight to verified, and ineffective work must reopen',()=>{expect(()=>actionTransition('OPEN','VERIFIED','Evidence reviewed','No recurrence')).toThrow('completion');expect(()=>actionTransition('INEFFECTIVE','DONE','Evidence reviewed','No recurrence')).toThrow();expect(()=>actionTransition('INEFFECTIVE','OPEN','','No recurrence')).not.toThrow();});
 it('requires criterion and real evidence for effectiveness outcomes',()=>{expect(()=>actionTransition('DONE','VERIFIED','ok','No repeat')).toThrow('evidence');expect(()=>actionTransition('DONE','VERIFIED','Reviewed 20 subsequent batches',null)).toThrow('criterion');expect(()=>actionTransition('DONE','INEFFECTIVE','Repeat defect on next batch','No repeat')).not.toThrow();});
 it('missing and non-finite measurements cannot pass; zero limit is respected',()=>{for(const value of [null,NaN,Infinity])expect(evaluateMeasurement('MEASUREMENT',value,0,10,true)).toBe(false);expect(evaluateMeasurement('MEASUREMENT',-1,0,10,true)).toBe(false);expect(evaluateMeasurement('MEASUREMENT',0,0,10,false)).toBe(true);});
+
+it("accepts a fractional physical affected quantity",()=>expect(ncrInput(form({quantityAffected:"1.25"})).quantityAffected).toBe(1.25));

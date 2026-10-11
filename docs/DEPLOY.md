@@ -520,3 +520,24 @@ the live revision and existing staff identity, snapshots at most 1,000 explicitl
 marked CUSTOMER Test companies, and invokes the existing protected atomic wipe.
 It verifies zero Test companies/pending file deletions and retention of every
 ordinary/internal company and the staff identity. Backups and cleanup audit remain.
+
+## Decimal manufacturing rollback bridge — 11 October 2026
+
+The retained Int Prisma runtime silently truncates fractional NUMERIC quantities.
+The exact empty-schema probe confirms 1.25 is read as 1. Do not enable fractional
+writes while such a runtime is the rollback target. First deploy/accept the new
+Decimal runtime with the pending decimal/report/WIP migrations, temporary
+atlas_quantity_bridge_* whole-quantity checks and legacy one-batch/order unique
+index retained. The original pinned Supply acceptance must pass candidate AND public.
+Only after that accepted Decimal runtime is retained may the final unlock migration
+remove those temporary checks/index and the full fractional execution checker run.
+Never roll the database back or activate an Int runtime after unlock. All release
+locks, required backups, immutable builds, revision/Studio compatibility and original
+rollback gates remain mandatory. The empty central-schema DDL rehearsal applied all
+three migrations and final unlock then rolled back completely; no business records.
+
+Michael explicitly requests all Test data scrubbed after this completed release.
+Use ATLAS_RELEASE_TEST_CLEANUP=1 on the final accepted release. The existing protected
+cleanup checks exact public revision and required backup, deletes only explicitly
+marked CUSTOMER Test companies, resolves scoped records/files and verifies ordinary/
+internal companies/shared QA identity preserved and no Test/file cleanup pending.

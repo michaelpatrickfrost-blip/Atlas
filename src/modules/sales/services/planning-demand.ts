@@ -12,5 +12,5 @@ export async function planningDemand(session:Session):Promise<PlanningDemand[]> 
   where:{type:'PRODUCT',productId:{not:null},order:{organisationId:session.organisationId,commercialStatus:'CONFIRMED',orderType:{not:'BLANKET'}},product:{organisationId:session.organisationId,kind:'PRODUCT'}},
   select:{id:true,productId:true,orderedQuantity:true,cancelledQuantity:true,unitOfMeasure:true,requestedDeliveryDate:true,order:{select:{id:true,reference:true,requestedDeliveryDate:true}}},
  });
- return lines.map(line=>({id:line.id,productId:line.productId!,orderId:line.order.id,reference:line.order.reference,quantity:Math.max(0,line.orderedQuantity-line.cancelledQuantity),unitOfMeasure:line.unitOfMeasure,requiredDate:(line.requestedDeliveryDate??line.order.requestedDeliveryDate)?.toISOString()??null})).filter(line=>line.quantity>0);
+ return lines.map(line=>({id:line.id,productId:line.productId!,orderId:line.order.id,reference:line.order.reference,quantity:Math.max(0,Number(line.orderedQuantity)-Number(line.cancelledQuantity)),unitOfMeasure:line.unitOfMeasure,requiredDate:(line.requestedDeliveryDate??line.order.requestedDeliveryDate)?.toISOString()??null})).filter(line=>line.quantity>0);
 }

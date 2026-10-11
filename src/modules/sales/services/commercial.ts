@@ -1,4 +1,6 @@
 "use server";
+
+import { validQuantity } from "@/core/shared/quantity";
 import { requireSession, type Session } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
 import { assertModuleEnabled } from "@/core/modules/access";
@@ -86,7 +88,7 @@ export async function linkCommercialProject(form: FormData) {
   refresh();
 }
 
-const callOffLines = z.array(z.object({ productId: z.string().min(1), quantity: z.number().int().positive() })).min(1);
+const callOffLines = z.array(z.object({ productId: z.string().min(1), quantity: z.number().positive().max(1000000).refine(validQuantity, "Use up to six decimal places.") })).min(1);
 
 type AddressRow = { id: string; partyId: string; type: string; label: string | null; line1: string; line2: string | null; city: string | null; region: string | null; postcode: string | null; country: string | null; active: boolean; isDefaultBilling: boolean; isDefaultDelivery: boolean };
 
@@ -113,7 +115,7 @@ export async function openCallOffOrder(form: FormData) {
   if (endsRaw < today) throw new Error("The order must run until today or later.");
   const customerPoReference = String(form.get("customerPoReference") ?? "").trim().slice(0, 150) || null;
   let inputs: z.infer<typeof callOffLines>;
-  try { inputs = callOffLines.parse(JSON.parse(String(form.get("lines") ?? "[]"))); } catch { throw new Error("Add at least one product and a whole quantity."); }
+  try { inputs = callOffLines.parse(JSON.parse(String(form.get("lines") ?? "[]"))); } catch { throw new Error("Add at least one product and a positive quantity."); }
   const party = await db.party.findFirstOrThrow({ where: { id: partyId, organisationId: session.organisationId }, include: { commercialSettings: true, creditProfile: true } });
   if (["ON_HOLD", "INACTIVE", "CLOSED"].includes(party.status)) throw new Error("This customer account is unavailable for new sales.");
   if (party.commercialSettings?.customerPoRequired && !customerPoReference) throw new Error("This customer requires a purchase order number.");
@@ -156,14 +158,14 @@ async function createCallOffRelease(session: Awaited<ReturnType<typeof requireSe
     if (party.commercialSettings?.customerPoRequired && !customerPoReference?.trim()) throw new Error("This customer requires a purchase order number.");
     const selected = agreement.lines.flatMap((line) => {
       const quantity = Number(form.get(`qty:${line.id}`) ?? 0);
-      return Number.isInteger(quantity) && quantity > 0 ? [{ line, quantity }] : [];
+      return validQuantity(quantity) && quantity > 0 ? [{ line, quantity }] : [];
     });
     if (!selected.length) throw new Error("Enter the quantity to deliver this time.");
     const products = await tx.product.findMany({ where: { organisationId: session.organisationId, id: { in: selected.flatMap((item) => item.line.productId ? [item.line.productId] : []) } } });
     const lines = await Promise.all(selected.map(async ({ line, quantity }, index) => {
       const product = products.find((item) => item.id === line.productId);
       if (line.productId && (!product || product.sellable === false || !product.active)) throw new Error("This item is internal or inactive and cannot be used for a new sale.");
-      const netAmount = line.unitPriceAmount * quantity;
+      const netAmount = Math.round(line.unitPriceAmount * quantity);
       const taxCategory = product?.taxCategory ?? "STANDARD";
       const tax = await resolveStandardUkVat({ sellingOrganisationId: session.organisationId, partyId: agreement.partyId, deliveryCountry: delivery.country, productTaxCategory: taxCategory, transactionDate: requestedDeliveryDate ?? new Date(), netAmount });
       const type = product?.kind === "SERVICE" ? "SERVICE" as const : product?.kind === "CHARGE" ? "CHARGE" as const : line.productId ? "PRODUCT" as const : "TEXT" as const;
@@ -211,7 +213,7 @@ export async function invoiceCallOffDelivery(form: FormData) {
   if (order.commercialStatus !== "CONFIRMED") throw new Error("Confirm the delivery before it can be invoiced.");
   await requireCallOffBooks(session, order.currency);
   const { handoffDeliveredShipment } = await import("@/core/finance/handoff");
-  await handoffDeliveredShipment(session, { shipmentId: `call-off-release:${order.id}`, shipmentReference: order.reference, deliveredAt: order.requestedDeliveryDate ?? new Date(), lines: callOffInvoiceLines(order.id, order.lines) });
+  await handoffDeliveredShipment(session, { shipmentId: `call-off-release:${order.id}`, shipmentReference: order.reference, deliveredAt: order.requestedDeliveryDate ?? new Date(), lines: callOffInvoiceLines(order.id, order.lines.map(line=>({...line,orderedQuantity:Number(line.orderedQuantity),cancelledQuantity:Number(line.cancelledQuantity)}))) });
   const invoice = await db.financeDocument.findFirst({ where: { organisationId: session.organisationId, salesOrderId: order.id, kind: "AR_INVOICE", status: { not: "CANCELLED" } }, select: { id: true } });
   if (!invoice) throw new Error("Finance did not raise a draft invoice for this delivery.");
   refresh();

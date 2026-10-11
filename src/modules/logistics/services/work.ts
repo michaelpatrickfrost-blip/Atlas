@@ -1,3 +1,4 @@
+import { validQuantity } from "@/core/shared/quantity";
 import { db } from "@/core/db/client";
 import type { Session } from "@/core/auth/session";
 import { PICK_EXCEPTIONS, quantityDecision, replenishmentNeed, sequenceStops, verifyScan } from "../domain/operations";
@@ -45,17 +46,17 @@ export async function scanTask(session: Session, taskId: string, lineId: string,
   }
   const product = line.productId ? await db.product.findFirst({ where: { id: line.productId, organisationId: session.organisationId } }) : null;
   if (product?.trackingMode === "LOT" && !line.lotCode) throw new Error("Scan or enter the lot before confirming this product.");
-  if (product?.trackingMode === "SERIAL" && line.serials.length < line.confirmedQuantity + 1) throw new Error("Scan the serial number for this unit.");
+  if (product?.trackingMode === "SERIAL" && line.serials.length < Number(line.confirmedQuantity) + 1) throw new Error("Scan the serial number for this unit.");
   if (product?.trackingMode === "LOT" && line.lotCode) {
     const lot = await db.stockLot.findFirst({ where: { organisationId: session.organisationId, productId: product.id, code: line.lotCode } });
     if (lot?.expiresOn && lot.expiresOn.getTime() < Date.now()) throw new Error("This lot is past its expiry date and cannot be shipped.");
   }
-  const nextQuantity = line.confirmedQuantity + 1;
-  const decision = quantityDecision({ required: line.requiredQuantity, scanned: nextQuantity, policy: policy.overPickPolicy === "WARNING" || policy.overPickPolicy === "ALLOWED" ? policy.overPickPolicy : "PROHIBITED" });
+  const nextQuantity = Number(line.confirmedQuantity) + 1;
+  const decision = quantityDecision({ required: Number(line.requiredQuantity), scanned: nextQuantity, policy: policy.overPickPolicy === "WARNING" || policy.overPickPolicy === "ALLOWED" ? policy.overPickPolicy : "PROHIBITED" });
   if (!decision.allowed) throw new Error(decision.warning ?? "That quantity is not allowed.");
-  const done = nextQuantity >= line.requiredQuantity;
+  const done = nextQuantity >= Number(line.requiredQuantity);
   await db.warehouseTaskLine.update({ where: { id: line.id }, data: { confirmedQuantity: nextQuantity, status: done ? "DONE" : "LOCATED" } });
-  const result = { ok: true, complete: done, message: done ? "Complete" : `${nextQuantity} / ${line.requiredQuantity}`, warning: "warning" in decision ? decision.warning : null };
+  const result = { ok: true, complete: done, message: done ? "Complete" : `${nextQuantity} / ${Number(line.requiredQuantity)}`, warning: "warning" in decision ? decision.warning : null };
   await db.logisticsOperation.create({ data: { organisationId: session.organisationId, requestKey, action: "scan.product", result } });
   return result;
 }
@@ -79,11 +80,11 @@ export async function shortPick(session: Session, lineId: string, quantity: numb
   if (!PICK_EXCEPTIONS.includes(reason as typeof PICK_EXCEPTIONS[number]) && reason !== "Short pick") throw new Error("Choose an exception reason.");
   const line = await db.warehouseTaskLine.findFirst({ where: { id: lineId, organisationId: session.organisationId }, include: { task: { include: { requirement: true } } } });
   if (!line) throw new Error("This line is no longer on the task.");
-  if (!Number.isSafeInteger(quantity) || quantity < 0 || quantity > line.requiredQuantity) throw new Error("Enter the quantity you actually picked.");
+  if (!validQuantity(quantity) || quantity < 0 || quantity > Number(line.requiredQuantity)) throw new Error("Enter the quantity you actually picked.");
   await db.warehouseTaskLine.update({ where: { id: line.id }, data: { confirmedQuantity: quantity, status: quantity === 0 ? "EXCEPTION" : "SHORT", exceptionReason: reason } });
   if (line.productId && line.task.requirement?.warehouseId && reason === "Stock missing") {
     const provider = await stock();
-    await provider.reportDiscrepancy(session, { requestKey: `discrepancy:${line.id}`, productId: line.productId, warehouseId: line.task.requirement.warehouseId, systemQuantity: line.requiredQuantity, reportedQuantity: quantity, sourceType: "PICK_LINE", sourceId: line.id });
+    await provider.reportDiscrepancy(session, { requestKey: `discrepancy:${line.id}`, productId: line.productId, warehouseId: line.task.requirement.warehouseId, systemQuantity: Number(line.requiredQuantity), reportedQuantity: quantity, sourceType: "PICK_LINE", sourceId: line.id });
   }
   await milestone({ organisationId: session.organisationId, actorUserId: session.userId, action: "logistics.pick.exception", entityType: "WarehouseTask", entityId: line.taskId, summary: `${line.task.reference} exception · ${reason}`, event: "logisticsPickException", eventKey: `logistics.pick.exception:${line.id}`, payload: { lineId, reason, quantity } });
 }
@@ -101,7 +102,7 @@ export async function completeTask(session: Session, taskId: string) {
   if (task.kind === "PICK") {
     for (const line of task.lines) {
       if (!line.fulfilmentLineId) continue;
-      await db.fulfilmentLine.update({ where: { id: line.fulfilmentLineId }, data: { pickedQuantity: { increment: line.confirmedQuantity } } });
+      await db.fulfilmentLine.update({ where: { id: line.fulfilmentLineId }, data: { pickedQuantity: { increment: Number(line.confirmedQuantity) } } });
     }
     if (task.requirementId) await db.fulfilmentRequirement.update({ where: { id: task.requirementId }, data: { status: policy.mode === "SIMPLE" ? "STAGED" : "PACKING" } });
     if (policy.mode !== "SIMPLE" && task.requirementId) await createFollowOn(session, task.requirementId, "PACK");
@@ -112,7 +113,7 @@ export async function completeTask(session: Session, taskId: string) {
 
 async function shipPicked(session: Session, requirementId: string) {
   const lines = await db.fulfilmentLine.findMany({ where: { organisationId: session.organisationId, requirementId } });
-  const quantities = lines.map((line) => ({ fulfilmentLineId: line.id, quantity: line.pickedQuantity - line.shippedQuantity })).filter((line) => line.quantity > 0);
+  const quantities = lines.map((line) => ({ fulfilmentLineId: line.id, quantity: Number(line.pickedQuantity) - Number(line.shippedQuantity) })).filter((line) => line.quantity > 0);
   if (quantities.length) await createShipment(session, requirementId, quantities);
 }
 
@@ -125,7 +126,7 @@ async function createFollowOn(session: Session, requirementId: string, kind: "PA
     const reference = await nextReference(tx, session.organisationId, kind === "PACK" ? "PACK" : "PA", kind === "PACK" ? "PACK" : "PA");
     const task = await tx.warehouseTask.create({ data: { organisationId: session.organisationId, reference, kind, requirementId, status: "READY" } });
     for (const line of requirement.lines) {
-      const quantity = kind === "PACK" ? line.pickedQuantity - line.packedQuantity : 0;
+      const quantity = kind === "PACK" ? Number(line.pickedQuantity) - Number(line.packedQuantity) : 0;
       if (quantity <= 0) continue;
       await tx.warehouseTaskLine.create({ data: { organisationId: session.organisationId, taskId: task.id, fulfilmentLineId: line.id, productId: line.productId, description: line.description, requiredQuantity: quantity, sequence: 10 } });
     }
@@ -150,7 +151,7 @@ export async function groupWork(session: Session, requirementIds: string[], meth
       slot += 1;
       await tx.fulfilmentRequirement.update({ where: { id: requirement.id }, data: { status: "RELEASED", releasedAt: requirement.releasedAt ?? new Date() } });
       for (const line of requirement.lines) {
-        const quantity = line.allocatedQuantity - line.pickedQuantity;
+        const quantity = Number(line.allocatedQuantity) - Number(line.pickedQuantity);
         if (quantity <= 0) continue;
         const product = products.find((item) => item.id === line.productId);
         const zone = method === "ZONE" ? (slot % 2 === 0 ? "B" : "A") : null;
@@ -174,8 +175,8 @@ export async function suggestReplenishment(session: Session, productId: string, 
   const provider = await stock();
   const locations = await provider.getLocations(session, warehouseId);
   const positions = await db.stockPosition.findMany({ where: { organisationId: session.organisationId, warehouseId, productId, status: "AVAILABLE" }, include: { location: true } });
-  const pickFace = positions.filter((row) => row.location.capabilities.includes("PICK_FACE")).reduce((sum, row) => sum + row.quantity, 0);
-  const bulk = positions.filter((row) => row.location.capabilities.includes("BULK")).reduce((sum, row) => sum + row.quantity, 0);
+  const pickFace = positions.filter((row) => row.location.capabilities.includes("PICK_FACE")).reduce((sum, row) => sum + Number(row.quantity), 0);
+  const bulk = positions.filter((row) => row.location.capabilities.includes("BULK")).reduce((sum, row) => sum + Number(row.quantity), 0);
   const suggestion = replenishmentNeed({ pickFace, required, bulk });
   if (!suggestion) return null;
   const from = locations.find((location) => location.capabilities.includes("BULK"));

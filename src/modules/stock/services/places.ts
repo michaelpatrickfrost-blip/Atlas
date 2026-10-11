@@ -1,3 +1,4 @@
+import { validQuantity } from "@/core/shared/quantity";
 import { db } from "@/core/db/client";
 import type { Session } from "@/core/auth/session";
 import { moveTiming, placeCode, placeKind, starterLocations } from "../domain/places";
@@ -9,7 +10,7 @@ function label(value: string, empty: string, maximum: number) {
 }
 
 function whole(value: number) {
-  if (!Number.isSafeInteger(value) || value <= 0 || value > 1_000_000) throw new Error("Enter a positive whole quantity up to 1,000,000.");
+  if (!validQuantity(value) || value <= 0 || value > 1_000_000) throw new Error("Enter a positive quantity with up to six decimal places up to 1,000,000.");
   return value;
 }
 
@@ -79,9 +80,9 @@ export async function readPlace(session: Session, placeId: string) {
     db.product.findMany({ where: { organisationId: session.organisationId, kind: "PRODUCT", active: true }, select: { id: true, code: true, name: true, unitOfMeasure: true }, orderBy: { name: "asc" } }),
   ]);
   const located = new Map<string, number>();
-  for (const row of positions) located.set(row.productId, (located.get(row.productId) ?? 0) + row.quantity);
+  for (const row of positions) located.set(row.productId, (located.get(row.productId) ?? 0) + Number(row.quantity));
   const unlocated = balances.flatMap((balance) => {
-    const loose = balance.quantity - (located.get(balance.productId) ?? 0);
+    const loose = Number(balance.quantity) - (located.get(balance.productId) ?? 0);
     return loose > 0 ? [{ productId: balance.productId, quantity: loose }] : [];
   });
   return { place, positions, unlocated, products };
@@ -94,9 +95,9 @@ export async function productLocations(session: Session, productId: string) {
     db.internalMove.findMany({ where: { organisationId: session.organisationId, productId, status: "IN_TRANSIT" }, include: { toWarehouse: { include: { site: true } }, fromWarehouse: { include: { site: true } } } }),
   ]);
   const located = new Map<string, number>();
-  for (const row of positions) located.set(row.warehouseId, (located.get(row.warehouseId) ?? 0) + row.quantity);
+  for (const row of positions) located.set(row.warehouseId, (located.get(row.warehouseId) ?? 0) + Number(row.quantity));
   const loose = balances.flatMap((balance) => {
-    const quantity = balance.quantity - (located.get(balance.warehouseId) ?? 0);
+    const quantity = Number(balance.quantity) - (located.get(balance.warehouseId) ?? 0);
     return quantity > 0 ? [{ warehouse: balance.warehouse, quantity }] : [];
   });
   return { positions, loose, moves };
@@ -115,7 +116,7 @@ export async function putOnLocation(session: Session, input: { locationId: strin
       tx.inventoryBalance.findUnique({ where: { warehouseId_productId: { warehouseId: location.warehouseId, productId: input.productId } } }),
       tx.stockPosition.findMany({ where: { organisationId: session.organisationId, warehouseId: location.warehouseId, productId: input.productId } }),
     ]);
-    const loose = (balance?.quantity ?? 0) - positions.reduce((sum, row) => sum + row.quantity, 0);
+    const loose = (Number(balance?.quantity ?? 0)) - positions.reduce((sum, row) => sum + Number(row.quantity), 0);
     if (quantity > loose) throw new Error("There is not that much stock waiting to be placed.");
     await tx.stockPosition.upsert({
       where: { warehouseId_locationId_productId_lotId_status: { warehouseId: location.warehouseId, locationId: location.id, productId: input.productId, lotId: "", status: "AVAILABLE" } },

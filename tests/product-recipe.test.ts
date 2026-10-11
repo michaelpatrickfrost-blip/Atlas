@@ -62,3 +62,12 @@ describe("product recipes", () => {
     expect(() => standardUnitMinor("a", new Map([...catalog, ["a", { productId: "a", supply: "WIP", batchQuantity: 1, yieldPercent: 100, purchaseMinor: 0, lines: [{ componentId: "b", quantityPerUnit: 1, scrapPercent: 0 }], operations: [] }]]))).toThrow(/loops/);
   });
 });
+
+it("retains a small material cost across a meaningful price quantity", () => {
+  const catalog = new Map<string, MakeDefinition>([
+    ["material", { productId: "material", supply: "BUY", purchaseMinor: 25000, purchasePriceQuantity: 1000, batchQuantity: 1, yieldPercent: 100, lines: [], operations: [] }],
+    ["made", { productId: "made", supply: "MAKE", purchaseMinor: 0, batchQuantity: 100, yieldPercent: 100, lines: [{ componentId: "material", quantityPerUnit: 0.00025, scrapPercent: 0 }], operations: [] }],
+  ]);
+  expect(costToMake("made", 10000, catalog).totalMinor).toBe(63);
+  expect(standardUnitMinor("made", catalog)).toBe(0);
+});

@@ -1,3 +1,8 @@
+import { materialCostBasis } from "@/core/finance/manufacturing";
+import { requireSession } from "@/core/auth/session";
+import { remainingProductionQuantity } from "@/core/planning/production-quantity";
+import { addQuantity } from "@/core/shared/quantity";
+import { physicalStockState } from "@/modules/stock/services/physical-state";
 // MRP calculation services — wire domain logic to the database.
 import { db } from "@/core/db/client";
 import type { Prisma } from "@/generated/prisma/client";
@@ -80,7 +85,7 @@ async function loadDemand(organisationId: string, start: Date, end: Date): Promi
   });
   const shipped = new Map<string, number>();
   const bookedByMonth = new Map<string, number>();
-  for (const row of shippedRows) shipped.set(row.salesOrderLineId, (shipped.get(row.salesOrderLineId) ?? 0) + row.shippedQuantity);
+  for (const row of shippedRows) shipped.set(row.salesOrderLineId, (shipped.get(row.salesOrderLineId) ?? 0) + Number(row.shippedQuantity));
   for (const order of orders) {
     for (const line of order.lines) {
       const due = line.requestedDeliveryDate ?? order.requestedDeliveryDate ?? line.promisedDeliveryDate ?? order.promisedDeliveryDate;
@@ -88,7 +93,7 @@ async function loadDemand(organisationId: string, start: Date, end: Date): Promi
       if (order.commercialStatus === "CLOSED" && due < periodStart) continue;
       const requiredDate = due < periodStart ? periodStart : due;
       const key = `${line.productId}|${requiredDate.toISOString().slice(0, 7)}`;
-      const quantity = Math.max(0, line.orderedQuantity - line.cancelledQuantity);
+      const quantity = Math.max(0, Number(line.orderedQuantity) - Number(line.cancelledQuantity));
       bookedByMonth.set(key, (bookedByMonth.get(key) ?? 0) + quantity);
       const open = order.commercialStatus === "CLOSED" ? 0 : Math.max(0, quantity - (shipped.get(line.id) ?? 0));
       if (!open) continue;
@@ -137,7 +142,7 @@ async function loadDemand(organisationId: string, start: Date, end: Date): Promi
         demandType: DemandType.FORECAST,
         source: DemandSource.FORECAST,
         productId: product.id,
-        quantity: Math.max(0, (product.monthlyUsage ?? 0) - (bookedByMonth.get(`${product.id}|${month.toISOString().slice(0, 7)}`) ?? 0)),
+        quantity: Math.max(0, Number(product.monthlyUsage ?? 0) - (bookedByMonth.get(`${product.id}|${month.toISOString().slice(0, 7)}`) ?? 0)),
         forecastIsResidual: true,
         requiredDate: month < now ? now : month,
         sourceId: product.id,
@@ -159,36 +164,8 @@ async function loadDemand(organisationId: string, start: Date, end: Date): Promi
  * Sales, Inventory, Planning and Manufacturing.
  */
 async function loadInventory(organisationId: string): Promise<Map<string, InventoryState>> {
-  const inventory = new Map<string, InventoryState>();
-  const stateFor = (productId: string) => {
-    const current = inventory.get(productId);
-    if (current) return current;
-    const created: InventoryState = { productId, onHand: 0, allocated: 0, qualityHeld: 0, restricted: 0, available: 0, safetyStock: 0 };
-    inventory.set(productId, created);
-    return created;
-  };
-
-  const balances = await db.inventoryBalance.findMany({ where: { organisationId }, select: { productId: true, quantity: true } });
-  for (const balance of balances) stateFor(balance.productId).onHand += balance.quantity;
-
-  const reservations = await db.stockReservation.findMany({ where: { organisationId, status: "ACTIVE" }, select: { productId: true, quantity: true } });
-  for (const reservation of reservations) stateFor(reservation.productId).allocated += reservation.quantity;
-
-  // Only an ACTIVE hold removes stock. Released holds are history, and counting
-  // them would keep permanent phantom shortfalls in the plan.
-  const holds = await db.qualityHold.findMany({ where: { organisationId, status: "ACTIVE" }, select: { productId: true, quantity: true } });
-  for (const hold of holds) stateFor(hold.productId).qualityHeld += Number(hold.quantity);
-
-  const positions = await db.stockPosition.findMany({ where: { organisationId, status: { in: ["QUARANTINE", "BLOCKED", "IN_TRANSIT"] } }, select: { productId: true, status: true, quantity: true } });
-  const quarantined = new Map<string, number>();
-  for (const position of positions) {
-    if (position.status === 'QUARANTINE') quarantined.set(position.productId, (quarantined.get(position.productId) ?? 0) + position.quantity);
-    else stateFor(position.productId).restricted = (stateFor(position.productId).restricted ?? 0) + position.quantity;
-  }
-  // A quality hold and its quarantined position describe the same physical stock.
-  for (const [id, quantity] of quarantined) stateFor(id).qualityHeld = Math.max(stateFor(id).qualityHeld, quantity);
-  for (const state of inventory.values()) state.available = Math.max(0, state.onHand - state.allocated - state.qualityHeld - (state.restricted ?? 0));
-  return inventory;
+  const physical = await physicalStockState(organisationId);
+  return new Map([...physical].map(([productId,row]) => [productId,{ productId,onHand:row.onHand,allocated:row.reserved,qualityHeld:row.held,available:row.pickable,safetyStock:0 }]));
 }
 
 /**
@@ -255,11 +232,13 @@ async function loadRecipes(organisationId: string): Promise<Map<string, Recipe>>
   return recipes;
 }
 
-/** Standard price of every product, so a bought part is never costed at zero —
- * the same figure the product page and the sales side use. */
-async function loadPrices(organisationId: string): Promise<Map<string, number>> {
-  const products = await db.product.findMany({ where: { organisationId }, select: { id: true, basePriceAmount: true } });
-  return new Map(products.map((product) => [product.id, product.basePriceAmount ?? 0]));
+/** Finance owns reviewed carrying values and approved purchasing prices. */
+async function loadPrices(organisationId: string): Promise<Map<string, { amountMinor: number; quantity: number }>> {
+  const session = await requireSession();
+  if (session.organisationId !== organisationId) throw new Error("Material cost estimates require the current company.");
+  const [basis, products] = await Promise.all([materialCostBasis(session), db.product.findMany({ where: { organisationId }, select: { id: true, baseCurrency: true } })]);
+  const currency = new Map(products.map(product => [product.id, product.baseCurrency]));
+  return new Map(basis.filter(row => currency.get(row.productId) === row.currency).map(row => [row.productId, { amountMinor: row.amountMinor, quantity: row.quantity }]));
 }
 
 /** Open production supply only. Dated purchase supply is not loaded yet — see
@@ -268,9 +247,9 @@ async function loadExistingSupply(organisationId: string): Promise<Map<string, n
   const supply = new Map<string, number>();
   const openOrders = await db.manufacturingOrder.findMany({
     where: { organisationId, status: { in: ["PLANNED", "READY", "RELEASED", "RUNNING"] } },
-    select: { productId: true, quantity: true },
+    select: { productId: true, quantity: true, workOrders: { select: {sequence:true,status:true,producedQuantity:true,scrapQuantity:true} } },
   });
-  for (const order of openOrders) supply.set(order.productId, (supply.get(order.productId) ?? 0) + Number(order.quantity));
+  for (const order of openOrders) supply.set(order.productId, addQuantity(supply.get(order.productId) ?? 0, remainingProductionQuantity({quantity:Number(order.quantity),workOrders:order.workOrders.map(w=>({...w,producedQuantity:Number(w.producedQuantity),scrapQuantity:Number(w.scrapQuantity)}))})));
   return supply;
 }
 
@@ -289,7 +268,7 @@ async function loadLeadTimes(organisationId: string): Promise<Map<string, number
 async function loadSafetyStocks(organisationId: string): Promise<Map<string, number>> {
   const safetyStocks = new Map<string, number>();
   const products = await db.product.findMany({ where: { organisationId }, select: { id: true, safetyStockLevel: true } });
-  for (const product of products) safetyStocks.set(product.id, Math.max(0, product.safetyStockLevel));
+  for (const product of products) safetyStocks.set(product.id, Math.max(0, Number(product.safetyStockLevel)));
   return safetyStocks;
 }
 

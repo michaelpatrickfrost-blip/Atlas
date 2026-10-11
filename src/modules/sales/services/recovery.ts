@@ -18,19 +18,19 @@ export async function redeemServiceRecovery(form: FormData) {
     if (!benefit || benefit.usedCount >= benefit.usageLimit) throw new Error("This benefit is unavailable or already used.");
     if (order.headerDiscountPercent) throw new Error("Review the existing overall order discount before applying service recovery.");
     if (order.netAmount < benefit.minimumOrder) throw new Error("This order does not meet the benefit’s minimum value.");
-    const eligible = order.lines.filter(line => line.productId && !benefit.excludedProductIds.includes(line.productId) && (!benefit.eligibleProductIds.length || benefit.eligibleProductIds.includes(line.productId)) && line.orderedQuantity > line.cancelledQuantity && line.unitPriceAmount > 0);
-    const total = eligible.reduce((sum, line) => sum + commercialLineNet(line.unitPriceAmount, line.orderedQuantity - line.cancelledQuantity, line.discountPercent ?? 0), 0);
+    const eligible = order.lines.filter(line => line.productId && !benefit.excludedProductIds.includes(line.productId) && (!benefit.eligibleProductIds.length || benefit.eligibleProductIds.includes(line.productId)) && Number(line.orderedQuantity) > Number(line.cancelledQuantity) && line.unitPriceAmount > 0);
+    const total = eligible.reduce((sum, line) => sum + commercialLineNet(line.unitPriceAmount, Number(line.orderedQuantity) - Number(line.cancelledQuantity), line.discountPercent ?? 0), 0);
     const discount = Math.min(total, benefit.maximum ?? total, benefit.type === "PERCENT" ? Math.round(total * benefit.value / 10000) : benefit.value);
     if (discount <= 0) throw new Error("No eligible product value is available on this order.");
     let left = discount;
     for (const [index, line] of eligible.entries()) {
-      const base = line.unitPriceAmount * (line.orderedQuantity - line.cancelledQuantity), net = commercialLineNet(line.unitPriceAmount, line.orderedQuantity - line.cancelledQuantity, line.discountPercent ?? 0);
+      const base = line.unitPriceAmount * (Number(line.orderedQuantity) - Number(line.cancelledQuantity)), net = commercialLineNet(line.unitPriceAmount, Number(line.orderedQuantity) - Number(line.cancelledQuantity), line.discountPercent ?? 0);
       const share = index === eligible.length - 1 ? left : Math.min(left, Math.floor(discount * net / total)); left -= share;
       await tx.salesOrderLine.update({ where: { id: line.id }, data: { discountPercent: 100 * (1 - (net - share) / base) } });
     }
     const updated = await tx.salesOrderLine.findMany({ where: { orderId } });
     const active = updated.filter(line => !["SECTION", "NOTE"].includes(line.type));
-    const totals = settleSale(active.map(line => ({ net: commercialLineNet(line.unitPriceAmount, line.orderedQuantity - line.cancelledQuantity, line.discountPercent ?? 0), taxCategory: line.taxCategory })), 0, (order.deliveryAddressSnapshot as { country?: string } | null)?.country);
+    const totals = settleSale(active.map(line => ({ net: commercialLineNet(line.unitPriceAmount, Number(line.orderedQuantity) - Number(line.cancelledQuantity), line.discountPercent ?? 0), taxCategory: line.taxCategory })), 0, (order.deliveryAddressSnapshot as { country?: string } | null)?.country);
     for (const [index, line] of active.entries()) await tx.salesOrderLine.update({ where: { id: line.id }, data: { netAmount: totals.lines[index].net, taxAmount: totals.lines[index].tax } });
     await tx.salesOrder.update({ where: { id: orderId }, data: { netAmount: totals.net, taxAmount: totals.tax, grossAmount: totals.gross, discountAmount: order.discountAmount + discount } });
     const changed = await tx.serviceRecovery.updateMany({ where: { id: recoveryId, organisationId: session.organisationId, version: benefit.version }, data: { usedCount: { increment: 1 }, status: benefit.usedCount + 1 >= benefit.usageLimit ? "REDEEMED" : "PARTIALLY_REDEEMED", version: { increment: 1 } } });

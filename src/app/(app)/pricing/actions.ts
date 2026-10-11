@@ -1,4 +1,5 @@
 "use server";
+import { validQuantity } from "@/core/shared/quantity";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { CORE_CAPABILITIES } from "@/core/permissions/capabilities";
@@ -32,7 +33,7 @@ export async function createPriceList(form: FormData) {
     const source = mode === "copy" ? await tx.priceList.findFirstOrThrow({ where: { id: String(form.get("sourceListId") ?? ""), organisationId: session.organisationId }, include: { entries: true } }) : null;
     if (source && source.currency !== currency) throw new Error("Copy a list in the same currency. Saved prices are not currency converted.");
     const list = await tx.priceList.create({ data: { organisationId: session.organisationId, key: crypto.randomUUID(), name, currency, baseCurrency: source?.baseCurrency ?? currency, exchangeRate: source?.exchangeRate ?? 1 } });
-    if (source?.entries.length) await tx.priceListEntry.createMany({ data: source.entries.map(entry => ({ priceListId: list.id, productId: entry.productId, categoryCode: entry.categoryCode, scope: entry.scope, method: entry.method, minimumQuantity: entry.minimumQuantity, unitPriceAmount: entry.unitPriceAmount, percentage: entry.percentage, adjustmentAmount: entry.adjustmentAmount, priority: entry.priority, validFrom: entry.validFrom, validTo: entry.validTo, active: entry.active })) });
+    if (source?.entries.length) await tx.priceListEntry.createMany({ data: source.entries.map(entry => ({ priceListId: list.id, productId: entry.productId, categoryCode: entry.categoryCode, scope: entry.scope, method: entry.method, minimumQuantity: Number(entry.minimumQuantity), unitPriceAmount: entry.unitPriceAmount, percentage: entry.percentage, adjustmentAmount: entry.adjustmentAmount, priority: entry.priority, validFrom: entry.validFrom, validTo: entry.validTo, active: entry.active })) });
     if (mode === "catalogue") {
       const percentage = discountOf(form.get("catalogueDiscount"));
       const categoryCode = String(form.get("categoryCode") ?? "").trim();
@@ -59,7 +60,7 @@ export async function savePriceEntry(priceListId:string,form:FormData) {
  if (!String(form.get('price') ?? '').trim()) throw new Error('Enter a price.');
  const minimumQuantity=Number(form.get('quantity')),unitPriceAmount=Math.round(Number(form.get('price'))*100),discountPercent=discountOf(form.get('discount'));
  const from=String(form.get('validFrom')??''),to=String(form.get('validTo')??''),validFrom=from?new Date(from):null,validTo=to?new Date(`${to}T23:59:59.999Z`):null;
- if(!Number.isInteger(minimumQuantity)||minimumQuantity<1||!Number.isSafeInteger(unitPriceAmount)||unitPriceAmount<0||unitPriceAmount>2147483647|| (validFrom&&isNaN(validFrom.getTime())) || (validTo&&isNaN(validTo.getTime())) ||(validFrom&&validTo&&validFrom>validTo))throw new Error('Enter valid quantity, price and dates.');
+ if(!validQuantity(minimumQuantity)||minimumQuantity<=0||!Number.isSafeInteger(unitPriceAmount)||unitPriceAmount<0||unitPriceAmount>2147483647|| (validFrom&&isNaN(validFrom.getTime())) || (validTo&&isNaN(validTo.getTime())) ||(validFrom&&validTo&&validFrom>validTo))throw new Error('Enter valid quantity, price and dates.');
  const entryId = String(form.get("entryId") ?? "");
  await db.$transaction(async tx => {
    if (entryId) await tx.priceListEntry.findFirstOrThrow({ where: { id: entryId, priceListId, scope: "PRODUCT", method: "FIXED" } });
@@ -78,7 +79,7 @@ export async function saveRule(priceListId:string,form:FormData) {
  await db.priceList.findFirstOrThrow({where:{id:priceListId,organisationId:session.organisationId}});
  const scope=String(form.get('scope')),method=String(form.get('method')),productId=scope==='PRODUCT'?String(form.get('productId')):null,categoryCode=scope==='CATEGORY'?String(form.get('categoryCode')??'').trim():null;
  const minimumQuantity=Number(form.get('quantity')),value=Number(form.get('value')),priority=Number(form.get('priority')??0),from=String(form.get('validFrom')??''),to=String(form.get('validTo')??''),validFrom=from?new Date(from):null,validTo=to?new Date(`${to}T23:59:59.999Z`):null;
- if(!['PRODUCT','CATEGORY','ALL'].includes(scope)||!['FIXED','PERCENT','AMOUNT'].includes(method)||!Number.isInteger(minimumQuantity)||minimumQuantity<1||minimumQuantity>1000000||!Number.isFinite(value)||!Number.isInteger(priority)||priority<0||priority>1000||(method==='PERCENT'&&(value>100||value< -1000))||(method==='FIXED'&&value<0)||Math.abs(value*100)>2147483647||(validFrom&&isNaN(validFrom.getTime()))||(validTo&&isNaN(validTo.getTime()))||(validFrom&&validTo&&validFrom>validTo))throw new Error('Enter a valid rule, amount, quantity and date range.');
+ if(!['PRODUCT','CATEGORY','ALL'].includes(scope)||!['FIXED','PERCENT','AMOUNT'].includes(method)||!validQuantity(minimumQuantity)||minimumQuantity<=0||minimumQuantity>1000000||!Number.isFinite(value)||!Number.isInteger(priority)||priority<0||priority>1000||(method==='PERCENT'&&(value>100||value< -1000))||(method==='FIXED'&&value<0)||Math.abs(value*100)>2147483647||(validFrom&&isNaN(validFrom.getTime()))||(validTo&&isNaN(validTo.getTime()))||(validFrom&&validTo&&validFrom>validTo))throw new Error('Enter a valid rule, amount, quantity and date range.');
  if(productId)await db.product.findFirstOrThrow({where:{id:productId,organisationId:session.organisationId,active:true}});
  if(scope==='CATEGORY'){if(!categoryCode)throw new Error('Choose a category.');const [category,categorised]=await Promise.all([db.productCategory.findFirst({where:{code:categoryCode,organisationId:session.organisationId,active:true}}),db.product.findFirst({where:{categoryCode,organisationId:session.organisationId,active:true}})]);if(!category&&!categorised)throw new Error('Choose a category from the catalogue.');}
  let id=String(form.get('ruleId')??'');
@@ -205,7 +206,7 @@ export async function previewPriceCsv(priceListId: string, csv: string) {
   await assertModuleEnabled(session, "pricing");
   await db.priceList.findFirstOrThrow({ where: { id: priceListId, organisationId: session.organisationId } });
   const current = await db.priceListEntry.findMany({ where: { priceListId, scope: "PRODUCT", method: "FIXED" }, select: { productId: true, minimumQuantity: true } });
-  const { parsed, rows } = await matchPriceRows(session.organisationId, csv, new Set(current.filter((row) => row.productId).map((row) => `${row.productId}:${row.minimumQuantity}`)));
+  const { parsed, rows } = await matchPriceRows(session.organisationId, csv, new Set(current.filter((row) => row.productId).map((row) => `${row.productId}:${Number(row.minimumQuantity)}`)));
   return { skipped: parsed.skipped, issues: parsed.issues, rows };
 }
 
@@ -288,7 +289,7 @@ export async function saveAgreementPrice(agreementId: string, form: FormData) {
   const minimumQuantity = Number(form.get("quantity"));
   if (!String(form.get("price") ?? "").trim()) throw new Error("Enter a price.");
   const unitPriceAmount = Math.round(Number(form.get("price")) * 100);
-  if (!Number.isInteger(minimumQuantity) || minimumQuantity < 1 || !Number.isSafeInteger(unitPriceAmount) || unitPriceAmount < 0 || unitPriceAmount > 2147483647) throw new Error("Enter a valid quantity and price.");
+  if (!validQuantity(minimumQuantity) || minimumQuantity <= 0 || !Number.isSafeInteger(unitPriceAmount) || unitPriceAmount < 0 || unitPriceAmount > 2147483647) throw new Error("Enter a valid quantity and price.");
   await db.product.findFirstOrThrow({ where: { id: productId, organisationId: session.organisationId, active: true } });
   const price = await db.agreementPrice.upsert({
     where: { agreementId_productId_minimumQuantity: { agreementId, productId, minimumQuantity } },
@@ -315,7 +316,7 @@ export async function previewAgreementCsv(agreementId: string, csv: string) {
   await assertModuleEnabled(session, "pricing");
   await db.commercialAgreement.findFirstOrThrow({ where: { id: agreementId, organisationId: session.organisationId } });
   const current = await db.agreementPrice.findMany({ where: { agreementId }, select: { productId: true, minimumQuantity: true } });
-  const { parsed, rows } = await matchPriceRows(session.organisationId, csv, new Set(current.map((row) => `${row.productId}:${row.minimumQuantity}`)));
+  const { parsed, rows } = await matchPriceRows(session.organisationId, csv, new Set(current.map((row) => `${row.productId}:${Number(row.minimumQuantity)}`)));
   return { skipped: parsed.skipped, issues: parsed.issues, rows };
 }
 

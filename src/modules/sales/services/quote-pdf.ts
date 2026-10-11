@@ -145,7 +145,7 @@ export async function buildQuotePdf(quote: QuotePdfData) {
       let noteAt = at - (item.code ? 16 : 3);
       for (const row of noteRows) { text(row, 52, noteAt, 8, false, muted); noteAt -= 11; }
     }
-    const quantity = Number.isInteger(item.quantity) ? String(item.quantity) : String(Math.round(item.quantity * 1000) / 1000);
+    const quantity = Number.isInteger(item.quantity) ? String(item.quantity) : item.quantity.toLocaleString("en-GB",{maximumFractionDigits:6});
     right(quantity, 352, y, 9);
     right(formatMoney(item.unitAmount, quote.currency), 423, y, 9);
     right(item.discountPercent.toFixed(1), 473, y, 9);

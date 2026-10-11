@@ -1,3 +1,4 @@
+import { assertStockUnitChange, assertTrackingChange } from "./unit-guard";
 import type { Session } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { db } from "@/core/db/client";
@@ -71,9 +72,12 @@ export async function saveProductDetails(session: Session, productId: string, in
     ...(input.sellable !== undefined ? { sellable: input.sellable } : {}),
   };
   await db.$transaction(async (tx) => {
+    const current = await tx.product.findFirstOrThrow({ where: { id: product.id, organisationId: session.organisationId } });
+    await assertStockUnitChange(tx,session.organisationId,current.id,current.unitOfMeasure,unitOfMeasure);
+    await assertTrackingChange(tx,session.organisationId,current.id,current.trackingMode,input.trackingMode);
     await tx.product.update({ where: { id: product.id }, data });
     await tx.auditEntry.create({ data: { organisationId: session.organisationId, actorUserId: session.userId, action: "product.updated", entityType: "Product", entityId: product.id, before: { code: product.code, name: product.name, categoryCode: product.categoryCode, itemClass: product.itemClass, basePriceAmount: product.basePriceAmount, sellable: product.sellable }, after: data } });
-  });
+  }, { isolationLevel: "Serializable" });
 }
 
 export async function saveProductCategory(session: Session, input: {

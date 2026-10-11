@@ -1,16 +1,18 @@
+import { quantityCostMinor } from "@/core/shared/measurement";
 import { operationTime, type OperationTiming } from "./operation-time";
 export const COMPONENT_GROUPS = [
   { supply: "WIP", title: "Work in progress", detail: "An intermediate you make and can hold in stock. It has its own bill, and this product consumes it." },
   { supply: "MAKE", title: "Made here", detail: "A subassembly made in this plant, then used on this bill." },
-  { supply: "BUY", title: "Bought materials", detail: "Purchased parts. Their cost is the standard price." },
+  { supply: "BUY", title: "Bought materials", detail: "Purchased parts. Their estimate uses Finance carrying value or an approved purchase price." },
   { supply: "SUBCONTRACT", title: "Sent out", detail: "A supplier makes this component. You may still supply some of its parts." },
 ] as const;
 
 export const SUPPLY = ["MAKE", "BUY", "WIP", "SUBCONTRACT"] as const;
 export type SupplyPolicy = (typeof SUPPLY)[number];
 
-export type MakeLine = { componentId: string; quantityPerUnit: number; scrapPercent: number; notes?: string };
+export type MakeLine = { componentId: string; quantityPerUnit: number; scrapPercent: number; notes?: string; enteredQuantityPerUnit?: number; enteredUnit?: string; baseUnit?: string };
 export type MakeOperation = OperationTiming & {
+ processProfile?: string | null; loadUnit?: string | null; loadPerUnit?: number | null;
   eligibleResourceIds?: string[];
   name: string;
   setupMinutes: number;
@@ -33,6 +35,8 @@ export type MakeDefinition = {
   batchQuantity: number;
   yieldPercent: number;
   purchaseMinor: number;
+  purchasePriceQuantity?: number;
+  costBasisMissing?: boolean;
   /** Fee paid per good unit when the product is sent out. */
   subcontractMinorPerUnit?: number;
   lines: MakeLine[];
@@ -125,7 +129,7 @@ export function rolledCost(productId: string, quantity: number, catalog: Map<str
   if (!(quantity > 0)) return zero;
   const definition = catalog.get(productId);
   if (!definition || definition.supply === "BUY") {
-    const material = round((definition?.purchaseMinor ?? 0) * quantity);
+    const material = Number(quantityCostMinor(Number(quantity.toFixed(6)), BigInt(definition?.purchaseMinor ?? 0), definition?.purchasePriceQuantity ?? 1));
     return { totalMinor: material, buckets: { ...emptyBuckets(), material }, hours: zero.hours };
   }
   if (stack.includes(productId)) throw new Error("This recipe loops. Remove the component that leads back to itself.");
@@ -189,14 +193,13 @@ export function costToMake(productId: string, quantity: number, catalog: Map<str
   if (!(quantity > 0)) return { totalMinor: 0, rows: [], hours: { setup: 0, run: 0, crew: 0 } };
   const definition = catalog.get(productId);
   if (!definition || definition.supply === "BUY") {
-    const minor = round((definition?.purchaseMinor ?? 0) * quantity);
+    const minor = Number(quantityCostMinor(Number(quantity.toFixed(6)), BigInt(definition?.purchaseMinor ?? 0), definition?.purchasePriceQuantity ?? 1));
     return { totalMinor: minor, rows: minor ? [{ label: "Purchase price", kind: "material", minor, detail: `${quantity} at the standard price` }] : [], hours: { setup: 0, run: 0, crew: 0 } };
   }
   const rows: CostRow[] = [];
   for (const line of definition.lines) {
     const needed = quantity * componentPerGoodUnit(line, definition.yieldPercent);
-    const each = standardUnitMinor(line.componentId, catalog, [productId]);
-    const minor = round(needed * each);
+    const minor = rolledCost(line.componentId, needed, catalog, [productId], false).totalMinor;
     rows.push({ label: line.componentId, kind: "material", minor, detail: `${needed} including yield and scrap` });
   }
   const time = hours(definition, quantity, false);

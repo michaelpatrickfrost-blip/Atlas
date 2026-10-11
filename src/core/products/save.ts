@@ -1,3 +1,4 @@
+import { assertStockUnitChange } from "./unit-guard";
 import type {Session} from '@/core/auth/session';
 import {assertCapability} from '@/core/permissions/check';
 import {assertRecordCreationAllowed} from '@/core/policies/record-creation';
@@ -13,6 +14,8 @@ export async function persistBusinessProduct(session:Session,form:FormData){
  const description=form.has('description')?String(form.get('description')??'').trim().slice(0,2000)||null:undefined;
  const existing=await db.product.findUnique({where:{organisationId_code:{organisationId:session.organisationId,code}}});if(!existing)await assertRecordCreationAllowed(session.organisationId,'products');
  return db.$transaction(async tx=>{
+  const current=await tx.product.findUnique({where:{organisationId_code:{organisationId:session.organisationId,code}}});
+  if(current)await assertStockUnitChange(tx,session.organisationId,current.id,current.unitOfMeasure,unitOfMeasure);
   const category=categoryCode?await tx.productCategory.upsert({where:{organisationId_code:{organisationId:session.organisationId,code:categoryCode}},create:{organisationId:session.organisationId,code:categoryCode,name:categoryCode,itemClass:'OTHER',description:''},update:{}}):null;
   const itemClass=form.has('itemClass')||!existing?productClassChoice(String(form.get('itemClass')??''),category?.itemClass):undefined;
   const salesEligibility = form.has('sellable') ? String(form.get('sellable')) : '';
@@ -25,7 +28,7 @@ export async function persistBusinessProduct(session:Session,form:FormData){
   }
   await tx.auditEntry.create({data:{organisationId:session.organisationId,actorUserId:session.userId,action:existing?'product.updated':'product.created',entityType:'Product',entityId:product.id,before:existing?{code:existing.code,name:existing.name,itemClass:existing.itemClass,basePriceAmount:existing.basePriceAmount}:undefined,after:{code,...values}}});
   return product;
- });
+ },{isolationLevel:"Serializable"});
 }
 export async function saveProductMeasures(session:Session,productId:string,input:Parameters<typeof measuresFromInput>[0]){
  assertCapability(session,'core.products.manage');

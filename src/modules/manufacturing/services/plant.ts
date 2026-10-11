@@ -1,4 +1,5 @@
 "use server";
+import { quantity } from "@/core/shared/quantity";
 import { revalidatePath } from "next/cache";
 import { db } from "@/core/db/client";
 import { requireSession } from "@/core/auth/session";
@@ -46,6 +47,7 @@ export async function loadPlant() {
         type: resource.type,
         nominalUnitsPerHour: resource.nominalUnitsPerHour == null ? null : Number(resource.nominalUnitsPerHour),
         active: resource.active,
+        loadCapacity: resource.loadCapacity === null ? null : Number(resource.loadCapacity), loadUnit: resource.loadUnit, processProfiles: resource.processProfiles,
         processKind: resource.processKind,
         calendarMode: resource.calendarMode,
         timezone: resource.timezone,
@@ -76,7 +78,7 @@ export async function saveWorkCentre(input: { id?: string; code: string; name: s
   revalidatePath("/products");
 }
 
-export async function saveMachine(input: { id?: string; workCentreId: string; name: string; type: string; nominalUnitsPerHour: number | null; processKind?: string; calendarMode?: string; timezone?: string }) {
+export async function saveMachine(input: { id?: string; workCentreId: string; name: string; type: string; nominalUnitsPerHour: number | null; processKind?: string; calendarMode?: string; timezone?: string; loadCapacity?: number | null; loadUnit?: string | null; processProfiles?: string[] }) {
   const session = await requireSession();
   assertCapability(session, C.resourceManage);
   await assertModuleEnabled(session, "manufacturing");
@@ -100,7 +102,9 @@ export async function saveMachine(input: { id?: string; workCentreId: string; na
     const booked = await db.manufacturingWorkOrder.count({ where: { organisationId: session.organisationId, resourceId: existing.id, status: { not: "COMPLETE" } } });
     if (used || booked) throw new Error("This machine has routings or open production. Keep its work centre, or review those assignments first.");
   }
-  const data = { workCentreId: centre.id, name, type, nominalUnitsPerHour: rate, active: true, processKind, calendarMode, timezone };
+  const loadCapacity = input.loadCapacity ? quantity(input.loadCapacity, "Machine load capacity") : null, loadUnit = input.loadUnit?.trim().slice(0,30) || null, processProfiles = [...new Set((input.processProfiles ?? []).map(value => value.trim()).filter(Boolean))];
+  if (loadCapacity && !loadUnit || !loadCapacity && loadUnit || processProfiles.some(value => value.length > 80) || processProfiles.length > 100) throw new Error("Enter a capacity and unit together, with valid approved process profiles.");
+  const data = { loadCapacity, loadUnit, processProfiles, workCentreId: centre.id, name, type, nominalUnitsPerHour: rate, active: true, processKind, calendarMode, timezone };
   const saved = existing
     ? await db.manufacturingResource.update({ where: { id: existing.id, organisationId: session.organisationId, updatedAt: existing.updatedAt }, data })
     : await db.manufacturingResource.create({ data: { organisationId: session.organisationId, ...data } });

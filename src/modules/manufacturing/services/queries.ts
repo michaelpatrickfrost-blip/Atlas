@@ -1,3 +1,4 @@
+import { addQuantity } from "@/core/shared/quantity";
 import { db } from "@/core/db/client";
 import type { Session } from "@/core/auth/session";
 import type { AttentionItem, SearchResult } from "@/core/modules/types";
@@ -112,9 +113,10 @@ export async function orderDetail(organisationId: string, orderId: string) {
   const order = await db.manufacturingOrder.findFirst({
     where: { id: orderId, organisationId },
     include: {
+      originOrder:{select:{id:true,orderNumber:true}},followOnOrders:{select:{id:true,orderNumber:true,quantity:true,status:true}},stockBatches:{select:{id:true,quantity:true,collectedQuantity:true,lotCode:true}},
       product: { select: { name: true, code: true, unitOfMeasure: true } },
-      definition: { include: { lines: { include: { component: { select: { id: true, name: true, code: true } } } } } },
-      workOrders: { orderBy: { sequence: "asc" }, include: { workCentre: { select: { name: true } }, resource: { select: { name: true } } } },
+      definition: { include: { lines: { include: { component: { select: { id: true, name: true, code: true, unitOfMeasure: true } } } } } },
+      workOrders: { orderBy: { sequence: "asc" }, include: { reports: { orderBy: { createdAt: "asc" } }, workCentre: { select: { name: true } }, resource: { select: { name: true } } } },
       sourceSalesOrderLine: { include: { order: { include: { party: { select: { name: true } } } } } },
     },
   });
@@ -130,7 +132,7 @@ export async function orderDetail(organisationId: string, orderId: string) {
   const consumed = new Map<string, { productId: string; name: string; code: string; quantity: number }>();
   for (const move of movements) {
     const row = consumed.get(move.productId) ?? { productId: move.productId, name: move.product.name, code: move.product.code, quantity: 0 };
-    row.quantity += Math.abs(move.delta);
+    row.quantity += Math.abs(Number(move.delta));
     consumed.set(move.productId, row);
   }
   return { ...order, consumption: [...consumed.values()] };
@@ -156,10 +158,11 @@ export async function searchManufacturing(session: Session, query: string): Prom
 export async function shopFloorQueue(organisationId: string) {
   const workOrders = await db.manufacturingWorkOrder.findMany({
     where: { organisationId, status: { in: ["READY", "RUNNING", "PAUSED", "WAITING", "BLOCKED"] }, productionOrder: { status: { in: ["RELEASED", "RUNNING"] } } },
-    include: { productionOrder: { select: { orderNumber: true, quantity: true, unitOfMeasure: true, product: { select: { name: true } }, workOrders: { select: { sequence: true, status: true, actualEnd: true, waitMinutes: true } } } }, workCentre: { select: { name: true } }, resource: { select: { timezone: true } } },
+    include: { productionOrder: { select: { orderNumber: true, quantity: true, warehouseId: true, unitOfMeasure: true, product: { select: { name: true, trackingMode: true } }, workOrders: { select: { sequence: true, status: true, actualEnd: true, waitMinutes: true, producedQuantity: true } } } }, workCentre: { select: { name: true } }, resource: { select: { timezone: true } } },
     orderBy: [{ status: "asc" }, { scheduledStart: "asc" }, { sequence: "asc" }],
     take: 100,
   });
+  const costing = await db.financeManufacturingProfile.findMany({ where: { organisationId, active: true }, select: { warehouseId: true } });
   const now = new Date();
   return workOrders.map((w) => {
     const previous = w.productionOrder.workOrders.filter(p => p.sequence < w.sequence).sort((a,b) => b.sequence-a.sequence)[0];
@@ -167,11 +170,11 @@ export async function shopFloorQueue(organisationId: string) {
     const future = w.scheduledStart && w.scheduledStart > now;
     const timezone = w.resource?.timezone ?? "Europe/London";
     return {
-      id: w.id, operationName: w.operationName, orderNumber: w.productionOrder.orderNumber, product: w.productionOrder.product.name,
+      id: w.id, version: w.version, machineLoadId: w.machineLoadId, costingConfigured: costing.some(p => p.warehouseId === w.productionOrder.warehouseId), trackingMode: w.productionOrder.product.trackingMode, remainingQuantity: Math.max(0, addQuantity(previous ? Number(previous.producedQuantity) : Number(w.productionOrder.quantity), -Number(w.producedQuantity), -Number(w.scrapQuantity))), operationName: w.operationName, orderNumber: w.productionOrder.orderNumber, product: w.productionOrder.product.name,
       quantity: Number(w.productionOrder.quantity), unitOfMeasure: w.productionOrder.unitOfMeasure, workCentre: w.workCentre?.name ?? "Unassigned",
-      status: w.status, scheduledStart: w.scheduledStart, producedQuantity: Number(w.producedQuantity),
-      canStart: !waitingForPrevious && !future,
-      startGuidance: waitingForPrevious ? "Waiting for the previous operation or transfer time" : future ? `Booked ${w.scheduledStart!.toLocaleString("en-GB",{timeZone:timezone})} · ${timezone}` : "Ready to start; machine availability checked when you start",
+      status: w.status, scrapQuantity: Number(w.scrapQuantity), scheduledStart: w.scheduledStart, producedQuantity: Number(w.producedQuantity),
+      canStart: !waitingForPrevious && !future && !!w.scheduledStart && (!w.machineLoadId || w.status === "PAUSED"),
+      startGuidance: w.machineLoadId ? "Start this operation with its cohort from Machine loads" : !w.scheduledStart ? "Review and book this operation on the schedule" : waitingForPrevious ? "Waiting for the previous operation or transfer time" : future ? `Booked ${w.scheduledStart!.toLocaleString("en-GB",{timeZone:timezone})} · ${timezone}` : "Ready to start; machine availability checked when you start",
     };
   });
 }

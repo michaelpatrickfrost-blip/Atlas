@@ -110,7 +110,7 @@ export async function packOntoUnit(session: Session, input: { taskId: string; ty
       if (!line?.fulfilmentLineId) throw new Error("One of those lines is no longer on this pack.");
       const fulfilment = fulfilmentLines.find((item) => item.id === line.fulfilmentLineId);
       if (!fulfilment) throw new Error("That order line is no longer open.");
-      const decision = packQuantity({ picked: fulfilment.pickedQuantity, packed: fulfilment.packedQuantity, requested: row.quantity });
+      const decision = packQuantity({ picked: Number(fulfilment.pickedQuantity), packed: Number(fulfilment.packedQuantity), requested: row.quantity });
       if (!decision.ok) throw new Error(`${line.productCode || line.description}: ${decision.message}`);
       const product = products.find((item) => item.id === line.productId);
       const fit = palletLimit(type.code, decision.quantity, product ? unitsPerPallet(product) : null);
@@ -118,10 +118,10 @@ export async function packOntoUnit(session: Session, input: { taskId: string; ty
       goodsGrams += (product?.grossWeightGrams ?? 0) * decision.quantity;
       await tx.packageContent.create({ data: { organisationId: session.organisationId, packageId: created.id, productId: line.productId, description: line.description, quantity: decision.quantity, lotCode: line.lotCode, serials: line.serials, fulfilmentLineId: line.fulfilmentLineId } });
       await tx.fulfilmentLine.update({ where: { id: fulfilment.id }, data: { packedQuantity: { increment: decision.quantity } } });
-      const confirmed = line.confirmedQuantity + decision.quantity;
-      await tx.warehouseTaskLine.update({ where: { id: line.id }, data: { confirmedQuantity: confirmed, status: confirmed >= line.requiredQuantity ? "DONE" : "LOCATED" } });
-      fulfilment.packedQuantity += decision.quantity;
-      line.confirmedQuantity = confirmed;
+      const confirmed = Number(line.confirmedQuantity) + decision.quantity;
+      await tx.warehouseTaskLine.update({ where: { id: line.id }, data: { confirmedQuantity: confirmed, status: confirmed >= Number(line.requiredQuantity) ? "DONE" : "LOCATED" } });
+      fulfilment.packedQuantity = fulfilment.packedQuantity.plus(decision.quantity);
+      line.confirmedQuantity = line.confirmedQuantity.add(decision.quantity);
     }
     const weightGrams = input.weightGrams && input.weightGrams > 0 ? input.weightGrams : goodsGrams || null;
     await tx.logisticsPackage.update({ where: { id: created.id }, data: { weightGrams, barcode: created.reference, expectedWeightGrams: goodsGrams || null } });
@@ -137,7 +137,7 @@ export async function finishPack(session: Session, taskId: string) {
   if (task.status === "COMPLETE") return;
   if (task.lines.some((line) => line.status === "OPEN" || line.status === "LOCATED")) throw new Error("Pack the remaining quantity onto a handling unit before completing this work.");
   const lines = await db.fulfilmentLine.findMany({ where: { organisationId: session.organisationId, requirementId: task.requirementId } });
-  const quantities = lines.map((line) => ({ fulfilmentLineId: line.id, quantity: line.packedQuantity - line.shippedQuantity })).filter((line) => line.quantity > 0);
+  const quantities = lines.map((line) => ({ fulfilmentLineId: line.id, quantity: Number(line.packedQuantity) - Number(line.shippedQuantity) })).filter((line) => line.quantity > 0);
   if (!quantities.length) throw new Error("Nothing has been packed onto a handling unit yet.");
   const shipmentId = await createShipment(session, task.requirementId, quantities);
   await db.logisticsPackage.updateMany({ where: { organisationId: session.organisationId, requirementId: task.requirementId, shipmentId: null }, data: { shipmentId, status: "STAGED" } });
@@ -184,7 +184,7 @@ export async function courierRecords(organisationId: string, shipmentIds: string
     };
     const packed = shipment.packages.flatMap((box) => box.contents.map((content) => ({ box, content })));
     if (!packed.length) {
-      for (const row of shipment.sources) records.push({ ...shared, itemCode: "", item: row.line.description, quantity: row.quantity, itemsPerPallet: "", unit: row.line.unitOfMeasure, handlingUnit: "", handlingType: "", parentUnit: "", lengthMm: "", widthMm: "", heightMm: "", weightKg: "" });
+      for (const row of shipment.sources) records.push({ ...shared, itemCode: "", item: row.line.description, quantity: Number(row.quantity), itemsPerPallet: "", unit: row.line.unitOfMeasure, handlingUnit: "", handlingType: "", parentUnit: "", lengthMm: "", widthMm: "", heightMm: "", weightKg: "" });
       if (!shipment.sources.length) records.push({ ...shared, itemCode: "", item: "", quantity: "", itemsPerPallet: "", unit: "", handlingUnit: "", handlingType: "", parentUnit: "", lengthMm: "", widthMm: "", heightMm: "", weightKg: "" });
       continue;
     }
@@ -194,7 +194,7 @@ export async function courierRecords(organisationId: string, shipmentIds: string
         ...shared,
         itemCode: product?.code ?? "",
         item: content.description,
-        quantity: content.quantity,
+        quantity: Number(content.quantity),
         itemsPerPallet: product ? unitsPerPallet(product) ?? "" : "",
         unit: product?.unitOfMeasure ?? "",
         handlingUnit: box.reference,

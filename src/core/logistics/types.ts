@@ -109,6 +109,8 @@ export type StockCommand = {
   lotCode?: string | null;
   serials?: string[];
   quantity: number;
+  /** Quantity is in this compatible entry unit; omitted means the product stock unit. */
+  enteredUnit?: string;
   status?: "AVAILABLE" | "QUARANTINE" | "BLOCKED" | "IN_TRANSIT" | "SCRAP";
   toWarehouseId?: string;
   toLocationId?: string | null;
@@ -119,6 +121,7 @@ export type StockCommand = {
   sourceId?: string;
   shipmentId?: string;
   receiptId?: string;
+  productionReportId?: string;
   manufacturingOrderId?: string;
   workOrderId?: string;
 };
@@ -133,8 +136,8 @@ export type StockProvider = {
   getReservations(actor: LogisticsActor, productId: string): Promise<StockReservationView[]>;
   requestReservation(actor: LogisticsActor, command: StockCommand): Promise<StockCommandResult>;
   releaseReservation(actor: LogisticsActor, command: Pick<StockCommand, "requestKey" | "productId" | "warehouseId" | "quantity" | "sourceType" | "sourceId" | "reason" | "reference">): Promise<StockCommandResult>;
-  executeMovement(actor: LogisticsActor, command: StockCommand, transaction?: import("@/generated/prisma/client").Prisma.TransactionClient): Promise<StockCommandResult>;
   stageProduction(actor: LogisticsActor, command: StockCommand & { manufacturingOrderId: string; workOrderId: string }, transaction: import("@/generated/prisma/client").Prisma.TransactionClient): Promise<StockCommandResult>;
+  executeMovement(actor: LogisticsActor, command: StockCommand, transaction?: import("@/generated/prisma/client").Prisma.TransactionClient): Promise<StockCommandResult>;
   /** Caller-owned transactions defer replenishment until after commit. */
   receiveStock(actor: LogisticsActor, command: StockCommand, transaction?: import("@/generated/prisma/client").Prisma.TransactionClient): Promise<StockCommandResult>;
   shipStock(actor: LogisticsActor, command: StockCommand, transaction?: import("@/generated/prisma/client").Prisma.TransactionClient): Promise<StockCommandResult>;

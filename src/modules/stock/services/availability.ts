@@ -1,4 +1,7 @@
 "use server";
+import { physicalStockState } from "./physical-state";
+import { remainingProductionQuantity } from "@/core/planning/production-quantity";
+import { addQuantity } from "@/core/shared/quantity";
 
 import { db } from "@/core/db/client";
 import { readOrderInvoices, readInvoiceQuantities } from "@/core/finance/connections";
@@ -53,11 +56,9 @@ export async function readAvailability(): Promise<CommercialPicture> {
   const financeVisible = session.capabilities.has("finance.receivables.read") && (await isModuleEnabled(session, "finance"));
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const [products, balances, reservations, positions, salesLines, fulfilment, plans, production, receipts] = await Promise.all([
+  const [products, physicalState, salesLines, fulfilment, plans, production, receipts] = await Promise.all([
     db.product.findMany({ where: { organisationId }, select: { id: true, unitOfMeasure: true } }),
-    db.inventoryBalance.findMany({ where: { organisationId }, select: { productId: true, quantity: true } }),
-    optional(db.stockReservation.findMany({ where: { organisationId, status: "ACTIVE" }, select: { productId: true, quantity: true } }), []),
-    optional(db.stockPosition.findMany({ where: { organisationId, status: { in: ["QUARANTINE", "BLOCKED", "IN_TRANSIT"] } }, select: { productId: true, quantity: true } }), []),
+    physicalStockState(organisationId),
     db.salesOrderLine.findMany({
       where: { type: "PRODUCT", productId: { not: null }, order: { organisationId, commercialStatus: "CONFIRMED", orderType: { not: "BLANKET" } } },
       select: { id: true, productId: true, orderedQuantity: true, cancelledQuantity: true, unitOfMeasure: true },
@@ -67,7 +68,7 @@ export async function readAvailability(): Promise<CommercialPicture> {
       select: { productId: true, salesOrderLineId: true, allocatedQuantity: true, shippedQuantity: true, deliveredQuantity: true },
     }), []),
     optional(db.productionPlanLine.findMany({ where: { organisationId, endsOn: { gte: today } }, select: { productId: true, quantity: true, endsOn: true } }), []),
-    optional(db.manufacturingOrder.findMany({ where: { organisationId, status: { in: OPEN_PRODUCTION } }, select: { productId: true, quantity: true, plannedFinish: true, requiredDate: true } }), []),
+    optional(db.manufacturingOrder.findMany({ where: { organisationId, status: { in: OPEN_PRODUCTION } }, select: { productId: true, quantity: true, plannedFinish: true, requiredDate: true, workOrders: { select: { sequence: true, status: true, producedQuantity: true, scrapQuantity: true } } } }), []),
     optional(db.receiptLine.findMany({
       where: { organisationId, productId: { not: null }, status: { in: ["OPEN", "DISCREPANCY"] }, receipt: { organisationId, status: { notIn: ["COMPLETE", "CANCELLED"] } } },
       select: { productId: true, expectedQuantity: true, receivedQuantity: true, receipt: { select: { expectedOn: true } } },
@@ -81,24 +82,22 @@ export async function readAvailability(): Promise<CommercialPicture> {
     return current;
   };
   const deliveredByLine: Record<string, number> = {};
-  for (const row of balances) bucket(row.productId).onHand += row.quantity;
-  for (const row of reservations) bucket(row.productId).reserved += row.quantity;
-  for (const row of positions) bucket(row.productId).held += row.quantity;
+  for (const [productId,state] of physicalState) { const row=bucket(productId);row.onHand=state.onHand;row.reserved=state.reserved;row.held=state.held; }
   for (const line of salesLines) {
     if (!line.productId) continue;
     const unit = units.get(line.productId);
     if (unit && !sameUnit(line.unitOfMeasure, unit)) continue;
-    bucket(line.productId).ordered += Math.max(0, line.orderedQuantity - line.cancelledQuantity);
+    bucket(line.productId).ordered += Math.max(0, Number(line.orderedQuantity) - Number(line.cancelledQuantity));
   }
   const activeLines = new Map(salesLines.filter(line => line.productId && sameUnit(line.unitOfMeasure, units.get(line.productId) ?? "")).map(line => [line.id, line]));
   const movementByLine = new Map<string, { allocated: number; shipped: number; delivered: number }>();
   for (const line of fulfilment) {
-    deliveredByLine[line.salesOrderLineId] = (deliveredByLine[line.salesOrderLineId] ?? 0) + line.deliveredQuantity;
+    deliveredByLine[line.salesOrderLineId] = (deliveredByLine[line.salesOrderLineId] ?? 0) + Number(line.deliveredQuantity);
     if (!activeLines.has(line.salesOrderLineId)) continue;
     const movement = movementByLine.get(line.salesOrderLineId) ?? { allocated: 0, shipped: 0, delivered: 0 };
-    movement.allocated += line.allocatedQuantity;
-    movement.shipped += line.shippedQuantity;
-    movement.delivered += line.deliveredQuantity;
+    movement.allocated += Number(line.allocatedQuantity);
+    movement.shipped += Number(line.shippedQuantity);
+    movement.delivered += Number(line.deliveredQuantity);
     movementByLine.set(line.salesOrderLineId, movement);
   }
   // Match fulfilment to the same live, base-unit sales line. Historical deliveries
@@ -106,7 +105,7 @@ export async function readAvailability(): Promise<CommercialPicture> {
   for (const [id, line] of activeLines) {
     const movement = movementByLine.get(id);
     if (!movement || !line.productId) continue;
-    const quantity = Math.max(0, line.orderedQuantity - line.cancelledQuantity);
+    const quantity = Math.max(0, Number(line.orderedQuantity) - Number(line.cancelledQuantity));
     const row = bucket(line.productId);
     row.delivered += Math.min(quantity, Math.max(0, movement.delivered));
     row.allocated += Math.min(quantity, Math.max(0, movement.allocated));
@@ -120,10 +119,11 @@ export async function readAvailability(): Promise<CommercialPicture> {
     bucket(line.productId).invoiced += quantity;
   }
   for (const line of receipts) {
-    if (line.productId) bucket(line.productId).expectedReceipts += Math.max(0, line.expectedQuantity - line.receivedQuantity);
+    if (line.productId) bucket(line.productId).expectedReceipts += Math.max(0, Number(line.expectedQuantity) - Number(line.receivedQuantity));
   }
   for (const line of plans) bucket(line.productId).planned += Number(line.quantity);
-  for (const order of production) bucket(order.productId).inProduction += Number(order.quantity);
+  const remaining = (order: typeof production[number]) => remainingProductionQuantity({ quantity: Number(order.quantity), workOrders: order.workOrders.map(w => ({ ...w, producedQuantity: Number(w.producedQuantity), scrapQuantity: Number(w.scrapQuantity) })) });
+  for (const order of production) bucket(order.productId).inProduction = addQuantity(bucket(order.productId).inProduction, remaining(order));
   const rows: ProductAvailability[] = [...buckets].map(([productId, row]) => ({ productId, ...availabilityPicture(row), ...(!financeVisible ? { invoiced: null, toInvoice: null } : {}) }));
   const day = (value: Date | null | undefined) => (value ? value.toISOString().slice(0, 10) : "");
   const group = new Map<string, { receipts: SupplyArrival[]; plan: SupplyArrival[]; production: SupplyArrival[] }>();
@@ -134,7 +134,7 @@ export async function readAvailability(): Promise<CommercialPicture> {
   };
   for (const line of receipts) {
     if (!line.productId || !line.receipt.expectedOn) continue;
-    const quantity = line.expectedQuantity - line.receivedQuantity;
+    const quantity = Number(line.expectedQuantity) - Number(line.receivedQuantity);
     if (quantity <= 0) continue;
     bucketSupply(line.productId).receipts.push({ on: day(line.receipt.expectedOn), quantity, source: "receipt" });
   }
@@ -142,7 +142,7 @@ export async function readAvailability(): Promise<CommercialPicture> {
   for (const order of production) {
     const on = day(order.plannedFinish ?? order.requiredDate);
     if (!on) continue;
-    bucketSupply(order.productId).production.push({ on, quantity: Number(order.quantity), source: "production" });
+    bucketSupply(order.productId).production.push({ on, quantity: remaining(order), source: "production" });
   }
   const arrivals: Record<string, SupplyArrival[]> = {};
   for (const [productId, supply] of group) arrivals[productId] = incomingArrivals(supply);
@@ -172,10 +172,10 @@ export async function readOrderChain(orderId: string) {
       id: line.id,
       description: line.descriptionSnapshot,
       unit: line.unitOfMeasure,
-      ordered: Math.max(0, line.orderedQuantity - line.cancelledQuantity),
-      allocated: movement.reduce((sum, row) => sum + row.allocatedQuantity, 0),
-      shipped: movement.reduce((sum, row) => sum + row.shippedQuantity, 0),
-      delivered: movement.reduce((sum, row) => sum + row.deliveredQuantity, 0),
+      ordered: Math.max(0, Number(line.orderedQuantity) - Number(line.cancelledQuantity)),
+      allocated: movement.reduce((sum, row) => sum + Number(row.allocatedQuantity), 0),
+      shipped: movement.reduce((sum, row) => sum + Number(row.shippedQuantity), 0),
+      delivered: movement.reduce((sum, row) => sum + Number(row.deliveredQuantity), 0),
       invoiced: financeVisible ? invoiced : null,
       available: line.productId ? available.get(line.productId) ?? 0 : null,
     };

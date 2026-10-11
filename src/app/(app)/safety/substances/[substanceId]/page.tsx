@@ -33,7 +33,7 @@ export default async function SubstancePage({ params }: { params: Promise<{ subs
       <section>
         <h2 className="text-sm font-semibold">Where stock says it is</h2>
         {substance.stock.length === 0 && <p className="mt-2 text-sm text-[var(--color-ink-muted)]">No stock location is linked. Link a product when Inventory should show the quantity. Safety does not invent the quantity.</p>}
-        <ul className="mt-2 text-sm">{substance.stock.map((row) => <li key={row.id}>{row.warehouse.name} · {row.quantity}</li>)}</ul>
+        <ul className="mt-2 text-sm">{substance.stock.map((row) => <li key={row.id}>{row.warehouse.name} · {Number(row.quantity)}</li>)}</ul>
       </section>
       {can(session, C.coshhManage) && (
         <div className="grid gap-6 lg:grid-cols-2">

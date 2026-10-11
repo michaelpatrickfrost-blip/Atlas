@@ -136,7 +136,7 @@ export async function prepareExportProforma(organisationId: string, orderId: str
     deliveryAddress: order.deliveryAddressSnapshot,
     sellerEori: seller.eori,
     lines: order.lines.map((line) => ({
-      type: line.type, description: line.descriptionSnapshot, code: line.product?.code, quantity: line.orderedQuantity - line.cancelledQuantity,
+      type: line.type, description: line.descriptionSnapshot, code: line.product?.code, quantity: Number(line.orderedQuantity) - Number(line.cancelledQuantity),
       unitAmount: line.unitPriceAmount, netAmount: line.netAmount, measures: measuresOf(line.product),
     })),
   });

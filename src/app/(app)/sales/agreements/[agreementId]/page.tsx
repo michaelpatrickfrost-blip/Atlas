@@ -64,10 +64,10 @@ export default async function AgreementPage({ params, searchParams }: { params: 
         return <div key={line.id} className="grid gap-2 border-b border-slate-100 px-5 py-4 last:border-0 sm:grid-cols-[1.4fr_repeat(5,auto)] sm:items-center">
           <span className="font-medium">{line.product?.code ? `${line.product.code} · ` : ""}{line.description}</span>
           <span className="text-sm text-slate-500">{formatMoney(line.unitPriceAmount, agreement.currency)}</span>
-          <span className="text-sm">{line.committedQuantity} {line.unitOfMeasure}</span>
+          <span className="text-sm">{Number(line.committedQuantity)} {line.unitOfMeasure}</span>
           <span className="text-sm">{delivered.get(line.id)?.released ?? 0}</span>
           <span className="text-sm">{invoiced.get(line.id) ?? 0}</span>
-          <span className="text-sm font-medium">{slot?.remaining ?? line.committedQuantity}</span>
+          <span className="text-sm font-medium">{slot?.remaining ?? Number(line.committedQuantity)}</span>
         </div>;
       })}
     </section>
@@ -90,7 +90,7 @@ export default async function AgreementPage({ params, searchParams }: { params: 
         const docs = invoices.filter((invoice) => invoice.salesOrderId === order.id);
         return <div key={order.id} className="text-sm">
           <Link href={`/sales/orders/${order.id}`} className="text-blue-600">{order.reference}</Link>
-          <span className="text-slate-500"> · {order.commercialStatus.replaceAll("_", " ")}{order.requestedDeliveryDate ? ` · ${order.requestedDeliveryDate.toLocaleDateString("en-GB")}` : ""} · {order.lines.reduce((sum, line) => sum + line.orderedQuantity - line.cancelledQuantity, 0)} items</span>
+          <span className="text-slate-500"> · {order.commercialStatus.replaceAll("_", " ")}{order.requestedDeliveryDate ? ` · ${order.requestedDeliveryDate.toLocaleDateString("en-GB")}` : ""} · {order.lines.reduce((sum, line) => sum + Number(line.orderedQuantity) - Number(line.cancelledQuantity), 0)} items</span>
           <div className="mt-1 flex flex-wrap items-center gap-3">{docs.map((invoice) => seeFinance ? <Link key={invoice.id} href={`/finance/documents/${invoice.id}`} className="text-emerald-700">{invoice.reference} · {invoice.documentDate.toLocaleDateString("en-GB")} · {invoice.status}</Link> : <span key={invoice.id} className="text-slate-600">{invoice.reference} · {invoice.status}</span>)}{!docs.length && order.commercialStatus === "CONFIRMED" && books && can(session, "sales.order.confirm") && <ActionForm action={invoiceCallOffDelivery} className="flex flex-wrap items-center gap-3"><input type="hidden" name="orderId" value={order.id} /><Button type="submit">Raise the invoice</Button></ActionForm>}{!docs.length && order.commercialStatus === "CONFIRMED" && !books && <span className="text-slate-400">No invoice yet. Finance books in {agreement.currency} are required.</span>}</div>
         </div>;
       })}{!agreement.callOffs.length && <p className="text-sm text-slate-400">Nothing has been delivered yet.</p>}</div>

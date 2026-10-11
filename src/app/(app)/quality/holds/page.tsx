@@ -20,7 +20,7 @@ export default async function Holds() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium">{hold.number} · {hold.product.name}</p>
-                <p className="text-sm text-slate-500">{hold.quantity} units · {hold.reason}{hold.lotCode ? ` · Lot ${hold.lotCode}` : ""}</p>
+                <p className="text-sm text-slate-500">{Number(hold.quantity)} units · {hold.reason}{hold.lotCode ? ` · Lot ${hold.lotCode}` : ""}</p>
               </div>
               <StatusPill label={hold.status === "ACTIVE" ? "Active" : "Released"} tone={hold.status === "ACTIVE" ? "danger" : "success"} />
             </div>

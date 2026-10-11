@@ -25,10 +25,10 @@ export async function checkManufacturingKilns(input: { context: BrowserContext; 
   await call('plant', 'saveWorkCentre', [{ code: 'PACK', name: 'Packing hall', description: 'Isolated shift acceptance' }]);
   const fire = await db.manufacturingWorkCentre.findFirstOrThrow({ where: { organisationId, code: 'FIRE' } });
   const pack = await db.manufacturingWorkCentre.findFirstOrThrow({ where: { organisationId, code: 'PACK' } });
-  for (const name of ['Kiln A', 'Kiln B', 'Incompatible kiln']) await call('plant', 'saveMachine', [{ workCentreId: fire.id, name, type: 'MACHINE', processKind: 'BATCH_KILN', calendarMode: 'CONTINUOUS', timezone: 'Europe/London', nominalUnitsPerHour: null }]);
+  for (const name of ['Machine A', 'Machine B', 'Incompatible kiln']) await call('plant', 'saveMachine', [{ workCentreId: fire.id, name, type: 'MACHINE', processKind: 'BATCH_KILN', calendarMode: 'CONTINUOUS', timezone: 'Europe/London', nominalUnitsPerHour: null }]);
   await call('plant', 'saveMachine', [{ workCentreId: pack.id, name: 'Packing line', type: 'MACHINE', processKind: 'PACKING', calendarMode: 'SHIFTS', timezone: 'Europe/London', nominalUnitsPerHour: 60 }]);
   const machines = await db.manufacturingResource.findMany({ where: { organisationId } });
-  const a = machines.find(m => m.name === 'Kiln A')!, b = machines.find(m => m.name === 'Kiln B')!, wrong = machines.find(m => m.name === 'Incompatible kiln')!, packing = machines.find(m => m.name === 'Packing line')!;
+  const a = machines.find(m => m.name === 'Machine A')!, b = machines.find(m => m.name === 'Machine B')!, wrong = machines.find(m => m.name === 'Incompatible kiln')!, packing = machines.find(m => m.name === 'Packing line')!;
   await call('shifts', 'saveShift', [{ workCentreId: pack.id, resourceId: packing.id, label: 'Packing days', daysOfWeek: [0, 1, 2, 3, 4, 5, 6], start: '08:00', end: '16:00', crewCount: 1 }]);
   const now = new Date(), later = new Date(now.getTime() + 7 * 86_400_000);
   await call('plant', 'saveDowntime', [{ resourceId: a.id, startsAt: now.toISOString(), endsAt: later.toISOString(), reason: 'Kiln lining maintenance · Test' }]);
@@ -53,7 +53,7 @@ export async function checkManufacturingKilns(input: { context: BrowserContext; 
   assert(second[0].scheduledStart! >= first[0].scheduledEnd);
   const localHour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: '2-digit', hourCycle: 'h23' }).format(first[1].scheduledStart));
   assert(localHour >= 8 && localHour < 16);
-  console.log('PASS actual finite release: two full firing/cooling loads, compatible alternative kiln, exclusive bookings, transfer wait and packing shifts.');
+  console.log('PASS actual finite release: two full batch cycles with cooling, compatible alternative machine, exclusive bookings, transfer wait and packing shifts.');
   await call('commands', 'startWorkOrder', [first[1].id, 'refuse-out-of-sequence'], /previous operation/);
   const move = new Date(later.getTime() + 86_400_000);
   await call('scheduler', 'schedulePreview', [first[0].id, move, wrong.id, fire.id], /not eligible/);
@@ -144,7 +144,7 @@ export async function checkManufacturingKilns(input: { context: BrowserContext; 
   await page.getByRole('tab',{name:/^Bill and routing/}).click();
   const routing=page.getByRole('tabpanel');
   await expect(routing.getByLabel('Units per load')).toHaveValue('100');
-  await expect(routing.getByLabel('Cycle / firing (min)',{exact:true})).toHaveValue('60');
+  await expect(routing.getByLabel('Cycle time (min)',{exact:true})).toHaveValue('60');
   await expect(routing.getByLabel('Cooling / unloading (min)',{exact:true})).toHaveValue('30');
   await expect(routing.getByLabel('Crew',{exact:true}).first()).toHaveValue('0');
   await routing.getByRole('button',{name:'Save bill and routing',exact:true}).click();
@@ -157,10 +157,10 @@ export async function checkManufacturingKilns(input: { context: BrowserContext; 
     await page.setViewportSize({ width, height });
     for (const path of ['/manufacturing/plant', '/manufacturing/schedule', '/manufacturing/planning/forecast', '/manufacturing/shop-floor', `/products/${product.id}`]) {
       assert.equal((await page.goto(path, { waitUntil: 'networkidle' }))?.status(), 200);
-      if (path.endsWith('/plant')) { await expect(page.getByRole('heading', { name: 'Plant & kilns', exact: true })).toBeVisible(); await page.getByRole('button', { name: 'Configure Kiln B', exact: true }).click(); await expect(page.getByRole('region', { name: 'Machine configuration' })).toBeFocused(); }
+      if (path.endsWith('/plant')) { await expect(page.getByRole('heading', { name: 'Plant & machines', exact: true })).toBeVisible(); await page.getByRole('button', { name: 'Configure Machine B', exact: true }).click(); await expect(page.getByRole('region', { name: 'Machine configuration' })).toBeFocused(); }
       if (path.endsWith('/forecast')) { await workbench.getByRole('combobox').first().selectOption(product.id); await workbench.getByRole('button', { name: 'Review demand', exact: true }).click(); await expect(workbench.getByLabel('Starting point')).toBeVisible(); }
       if (path.startsWith('/products/')) { await page.getByRole('tab',{name:/^Bill and routing/}).click(); await page.getByRole('tabpanel').getByLabel('Time basis').first().scrollIntoViewIfNeeded(); await expect(page.getByRole('tabpanel').getByLabel('Units per load')).toHaveValue('100'); if(name==='phone') { const footer=page.getByRole('tabpanel').locator('div.sticky'); assert((await footer.boundingBox())!.height < 140,'Mobile routing footer leaves room to edit'); } }
-      if (path.endsWith('/shop-floor')) { await expect(page.getByRole('button',{name:'Pause',exact:true})).toBeVisible(); await expect(page.getByRole('button',{name:'Complete',exact:true})).toBeVisible(); }
+      if (path.endsWith('/shop-floor')) { await expect(page.getByRole('button',{name:'Pause',exact:true})).toBeVisible(); await expect(page.getByRole('button',{name:'Finish step',exact:true})).toBeVisible(); }
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${path} fits ${name}`);
       await page.screenshot({ path: `${out}/kilns-${path.endsWith('/plant') ? 'plant' : path.endsWith('/schedule') ? 'schedule' : path.endsWith('/forecast') ? 'forecast' : path.endsWith('/shop-floor') ? 'floor' : 'recipe'}-${name}.png`, fullPage: false });
     }

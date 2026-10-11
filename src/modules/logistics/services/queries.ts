@@ -16,8 +16,8 @@ export async function todayBoard(organisationId: string) {
   const open = requirements.filter((row) => !["SHIPPED", "CANCELLED"].includes(row.status));
   const picks = tasks.filter((task) => task.kind === "PICK");
   const packs = tasks.filter((task) => task.kind === "PACK");
-  const pickUnits = picks.reduce((sum, task) => sum + task.lines.reduce((lineSum, line) => lineSum + line.requiredQuantity, 0), 0);
-  const pickedUnits = picks.reduce((sum, task) => sum + task.lines.reduce((lineSum, line) => lineSum + line.confirmedQuantity, 0), 0);
+  const pickUnits = picks.reduce((sum, task) => sum + task.lines.reduce((lineSum, line) => lineSum + Number(line.requiredQuantity), 0), 0);
+  const pickedUnits = picks.reduce((sum, task) => sum + task.lines.reduce((lineSum, line) => lineSum + Number(line.confirmedQuantity), 0), 0);
   const cutOffs = policy.cutOffs && typeof policy.cutOffs === "object" ? policy.cutOffs as Record<string, string> : {};
   const carriers = new Map<string, number>();
   for (const shipment of shipments.filter((row) => !row.dispatchedAt && (!row.plannedDispatchAt || row.plannedDispatchAt < end))) carriers.set(shipment.carrierCode, (carriers.get(shipment.carrierCode) ?? 0) + 1);
@@ -25,7 +25,7 @@ export async function todayBoard(organisationId: string) {
   const attention = [
     ...open.filter((row) => row.promisedOn && row.promisedOn < start).slice(0, 12).map((row) => ({ href: `/logistics/fulfil/${row.id}`, label: `${row.reference} risks missing ${row.party.name}`, tone: "critical" as const })),
     ...requirements.filter((row) => row.lines.some((line) => line.allocationStatus === "SHORT")).slice(0, 8).map((row) => ({ href: `/logistics/fulfil/${row.id}`, label: `${row.reference} is short`, tone: "warning" as const })),
-    ...open.filter((row) => !row.lines.some((line) => line.orderedQuantity > line.cancelledQuantity)).slice(0, 8).map((row) => ({ href: `/logistics/fulfil/${row.id}`, label: `${row.reference} has no items to fulfil. Check the sales order.`, tone: "warning" as const })),
+    ...open.filter((row) => !row.lines.some((line) => Number(line.orderedQuantity) > Number(line.cancelledQuantity))).slice(0, 8).map((row) => ({ href: `/logistics/fulfil/${row.id}`, label: `${row.reference} has no items to fulfil. Check the sales order.`, tone: "warning" as const })),
     ...open.filter((row) => row.holdSummary).slice(0, 8).map((row) => ({ href: `/logistics/fulfil/${row.id}`, label: `${row.reference} · ${row.holdSummary}`, tone: "warning" as const })),
     ...shipments.filter((row) => row.status === "EXCEPTION").slice(0, 8).map((row) => ({ href: `/logistics/shipments/${row.id}`, label: `${row.reference} needs a delivery decision`, tone: "critical" as const })),
     ...returns.filter((row) => row.status === "RECEIVED" || row.status === "INSPECTING").slice(0, 8).map((row) => ({ href: `/logistics/returns/${row.id}`, label: `${row.reference} is waiting for inspection`, tone: "warning" as const })),
@@ -38,7 +38,7 @@ export async function todayBoard(organisationId: string) {
   }
   return {
     open: open.length,
-    readyToPick: open.filter((row) => row.lines.some((line) => line.orderedQuantity > line.cancelledQuantity) && (row.status === "RELEASED" || row.lines.every((line) => line.allocationStatus === "ALLOCATED"))).length,
+    readyToPick: open.filter((row) => row.lines.some((line) => Number(line.orderedQuantity) > Number(line.cancelledQuantity)) && (row.status === "RELEASED" || row.lines.every((line) => line.allocationStatus === "ALLOCATED"))).length,
     packing: packs.filter((task) => task.status !== "COMPLETE").length,
     readyToDispatch: shipments.filter((row) => ["READY", "LABELLED", "STAGED", "LOADED"].includes(row.status)).length,
     attention: attention.slice(0, 12),
@@ -60,7 +60,7 @@ export async function fulfilBoard(organisationId: string, view?: string) {
   });
   const count = (status: string) => rows.filter((row) => row.status === status).length;
   return { rows: filtered, buckets: [
-    { label: "Ready to release", value: rows.filter((row) => row.status === "OPEN" && !row.holdSummary && row.lines.some((line) => line.orderedQuantity > line.cancelledQuantity)).length, view: "" },
+    { label: "Ready to release", value: rows.filter((row) => row.status === "OPEN" && !row.holdSummary && row.lines.some((line) => Number(line.orderedQuantity) > Number(line.cancelledQuantity))).length, view: "" },
     { label: "Picking", value: count("RELEASED") + count("PICKING"), view: "ready" },
     { label: "Packing", value: count("PACKING"), view: "" },
     { label: "Ready to dispatch", value: count("STAGED") + count("PART_SHIPPED"), view: "" },
@@ -135,7 +135,7 @@ export async function reportBoard(organisationId: string, canSeeCost: boolean) {
   return {
     fulfilled: delivered.length,
     shipments: shipments.length,
-    units: shipments.reduce((sum, row) => sum + row.sources.reduce((inner, source) => inner + source.quantity, 0), 0),
+    units: shipments.reduce((sum, row) => sum + row.sources.reduce((inner, source) => inner + Number(source.quantity), 0), 0),
     backlog: requirements.length,
     otif: measured.length ? Math.round((otif / measured.length) * 100) : null,
     onTime: measured.length ? Math.round((onTime / measured.length) * 100) : null,

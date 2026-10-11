@@ -52,7 +52,7 @@ export default async function ForecastPage() {
           </label>
           <label className="flex flex-col text-xs text-[var(--color-ink-muted)]">
             Quantity
-            <input type="number" name="quantity" min="0" required className="mt-1 w-28 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm" />
+            <input type="number" step="0.000001" name="quantity" min="0" required className="mt-1 w-28 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm" />
           </label>
           <label className="flex flex-col text-xs text-[var(--color-ink-muted)]">
             Notes

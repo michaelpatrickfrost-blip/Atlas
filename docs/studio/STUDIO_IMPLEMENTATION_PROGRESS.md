@@ -14,13 +14,13 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
-2B e3d2b–4 conditional conversion milestone VERIFIED live. Original pinned release
-88202 exit0; b34ce50bd10fcbb39287444a753879e02044d0cc candidate kT6FVM and public
-qTWEdH BOTH ALL COMBINED PASS. Exact public health confirmed after cleanup.
-E3e1 receipt contracts and e3e2 actual post-cutover metadata/row/review VERIFIED
-locally108tests/8suites/types/scopedlint/build/diff. E3e3 current-settler coverage
-IN PROGRESS; no customer conditional
-activation until post-cutover, settlement and native write-window integration pass.
+2B e3e4 existing cutover/settlement services IMPLEMENTED; integrated123tests/7suites,
+strictTS/scopedlint/productionbuild/diff PASS. E3e1 receipts, e3e2 post-cutover identity/
+row/review, e3e3 current-settler coverage VERIFIED locally. Dedicated actual Test
+checker IMPLEMENTED, real database/current-actor service proof NOT RUN yet. Customer
+conditional activation withheld until native required/write-window integration.
+Latest actual live remainsb34ce50: original88202 candidatekT6FVM/publicqTWEdH BOTH
+ALL COMBINED PASS for normal conditional execution/cancellation, no cutover claim.
 
 # Overall Status
 
@@ -126,6 +126,12 @@ metadata are never described as normal runtime evidence.
 
 # Tests Run
 
+E3e4 final integrated123tests/7suites PASS79973; scopedlint17913/
+productionbuild31793 exit0; FINAL standalone strictTS18897 exit0; earlier root63311 and
+correction branch73661 are overlapping evidence; final diff/check PASS. New central checker lint/types PASS,
+actual SQL invocation pending original candidate/public release. Service unit mocks
+and authority/SQL collaborators documented; no customer activation inference.
+
 E3e1/e3e2 integrated108tests/8suites PASS84436; strictTS42569/scopedlint49724/
 productionbuild20746 exit0. Final diff/check PASS; two existing fixture warnings,
 zero lint errors. Initial strict fixture callback implicit type corrected; no guard
@@ -199,15 +205,16 @@ later phases. No complete Studio/visual builder claim.
 
 # Exact Next Action
 
-Integrate parallel required settlement-coverage/sealed-field typed projection and
-focused tests into the root current-principal rollback bridge. Root55tests/2suites/
-strictTS/scopedlint PASS; independent security review no blockers. History uses full
-sealed original metadata with current/base/native/reference access, not original
-conditional input graph/current old fact-module access. Rollback alone rechecks actual
-original cohort/source/target/conditions under genuine CURRENT principal; original
-publisher identity remains immutable. Run integrated strictTS/lint/build/diff/checkpoint.
-Then e3e4 EXISTING stored1/2 cutover/settlement services and actual central Test proof;
-customer conditional activation withheld until native write windows. Liveb34ce50.
+Independent coverage/services/central checker review passed after scoped replay-order
+fix4b611f0 (private preflight before protected identity SQL; legacy untouched).
+Integrated123tests/7suites PASS79973, scopedlint17913/productionbuild31793 exit0; FINAL standalone strictTS18897 exit0; diff/check PASS.
+Checkpoint/push the clean reviewed
+source and run original pinned Studio candidate/public release acceptance, preserving
+current/rollback/processes/required recovery and original lock pair; temporary build
+memory buffer only under both original locks, remove after safe memory check.
+Record actual conditional cutover/current independent rollback/creator revoke/finalize/
+replay/failure results. Then d4 native every-write hooks/write windows (read-only
+reconnaissance in progress), still before customer activation. No Phase3; liveb34ce50.
 
 # Historical checkpoint evidence
 
@@ -3549,6 +3556,12 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+E3e4 final integrated123tests/7suites PASS79973; scopedlint17913/
+productionbuild31793 exit0; FINAL standalone strictTS18897 exit0; earlier root63311 and
+correction branch73661 are overlapping evidence; final diff/check PASS. New central checker lint/types PASS,
+actual SQL invocation pending original candidate/public release. Service unit mocks
+and authority/SQL collaborators documented; no customer activation inference.
 
 E3e1/e3e2 integrated108tests/8suites PASS84436; strictTS42569/scopedlint49724/
 productionbuild20746 exit0. Final diff/check PASS; two existing fixture warnings,

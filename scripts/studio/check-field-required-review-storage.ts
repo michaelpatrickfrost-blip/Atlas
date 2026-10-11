@@ -27,6 +27,7 @@ import { createRequiredFieldMigrationOutcomePin, fieldMigrationOutcomePinSchema 
 import { requiredFieldMigrationObservationSchema } from "../../src/core/studio/fields/migrations/required-contracts";
 import { decodeStoredFieldValue } from "../../src/core/studio/fields/codec";
 import { Prisma as PrismaRuntime } from "../../src/generated/prisma/client";
+import { checkRequiredFieldCutoverService } from "./check-field-required-cutover-service";
 
 /** Exact Test review checks. Archive fixtures roll back completely; their rows
  * use actual authorised inputs and negative packets prove SQL shape only.
@@ -37,7 +38,7 @@ import { Prisma as PrismaRuntime } from "../../src/generated/prisma/client";
  * source remain unchanged; immutable inactive targets/outcomes and their exact
  * own extension increments are retained. No customer authoring/cutover, new
  * company/record/permission or ad-hoc dump. */
-export async function checkRequiredFieldReviewStorage(session: Session, principal: FieldMigrationPrincipal, definitionId: string) {
+export async function checkRequiredFieldReviewStorage(session: Session, principal: FieldMigrationPrincipal, definitionId: string, customerUserId: string) {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1");
   const organisationId = session.organisationId, scope = { organisationId };
   const company = await db.organisation.findFirstOrThrow({ where: { id: organisationId, kind: "CUSTOMER", status: "ACTIVE", isTest: true, slug: { startsWith: "studio-check-" } },
@@ -448,4 +449,5 @@ export async function checkRequiredFieldReviewStorage(session: Session, principa
   }
   console.log("PASS actual conditional execution APIs: stored2/current native9 representation2; start Audit rollback, second-row target failure/sparse FAILED and normal resume, second-row outcome/late progress/paired Audit exact committed-prefix rollback, typed zero/null and unanchored own +1 lineage, READY/start/batch lost-response replay without duplicates, client/tenant/bounds denial; source remains active and native/source values untouched, no cutover or authoring.");
   console.log("PASS actual conditional reviewed publication/execution cancellation: source active, canonical schema2 target/plan/generation and closed review pinned, actual conditions/native/global inspection, no duplicate metadata or Audit, client/tenant and invalid-review denial, both publication Audit-failure atomic rollbacks; restored Test draft, immutable metadata/target/outcome history retained, cancelled execution and unchanged native/source values. Conditional cutover and customer authoring remain gated.");
+  await checkRequiredFieldCutoverService(session, principal, definitionId, customerUserId);
 }

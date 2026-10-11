@@ -1,3 +1,126 @@
+## 11 October 2026 — integrated conditional cutover/settlement source VERIFIED locally
+
+Root integrated76377d8/a047b6e current settlement coverage plus scoped7727ed4 normal
+services and4b611f0 replay-order correction. Stored closed1/2 dispatch, original
+publisher/intent retained, CURRENT independent settlement principal, actual target-
+active identity/condition/source/target/outcome rollback and sealed base-policy
+history checks linked. First conditional cutover and conditional-source rollback
+activation are Test-only until native required/write-window hooks pass. Ordinary
+public authoring remains closed1. Existing shared typed activation/CAS/paired Audits
+and legacy paths retained; no second engine, DDL/migration or native mutation path.
+
+Root dedicated check-field-required-cutover-service.ts called through existing
+principal/review/storage driver uses its existing fresh Test account/definition.
+Keeps earlier cancellation proof; adds normal Test cutover/replay, both paired Audit
+rollback snapshots, CURRENT different customer's concurrent exact-once rollback
+while original creator affiliation revoked, private/field/current-principal denials,
+legitimate global drift blocking rollback but allowing finalization/history, and
+current history module/field denials. Original native/source values unchanged;
+immutable target/outcome/review history retained. Exact checker-only finalized
+conditional definition retires via CAS/Audit, draft restored monotonically; temporary
+grants/private affiliations restore finally and outer driver suspends Test access
+on failure. Actual database proof NOT RUN yet; no user/company/native row added.
+
+Final integrated123tests/7suites PASS79973, scopedlint17913/productionbuild31793
+exit0, FINAL standalone strictTS18897 exit0, reviewed diff/check PASS. Build skips
+source type validation via existing ignoreBuildErrors; standalone check is the
+actual current type evidence. Independent review found replay freshness SQL before
+private preflight:4b611f0 fixes actual registered owner preflight first, meaningful
+ordering/denial regression passes; reviewer confirms no remaining blocker. Earlier
+root/branch counts overlap, not summed. Architecture/decisions/source coverage/plan/
+ledger updated. All intended7727ed4/4b611f0 files projected because root checker and
+memory work was active; their contributor entries preserved, no unrelated edits.
+
+Read-only d4 mutation inventory saved: shared existing entity advisory lock order,
+ordinary schema2 readers/transaction+initial proof writer, all-active requirements
+and all affected rollback windows; native create/update/merge/approvals, comment/
+watch/requestApproval Serializable gaps, workEvent parent revision, Service mergeCases
+Ticket parentCaseId/version. Agree interfaces before parallel coding; no Query field
+support or blanket Manage/Publish grant. Full Phase2 and visual designer unfinished.
+Exact temporary2GiB build buffer54220 enabled under BOTH original locks/no compiler;
+locks administrator600/inodes29187/13754 unchanged, disk164GiB free, no fstab/app/PG
+change or ad-hoc dump. Operational log retained. Exact next: save/push coherent clean
+checkpoint then original pinned combined Studio candidate/public acceptance; record
+actual SQL result and remove exact build buffer after safe RAM/no-compiler check.
+Live remainsb34ce50 until successful activation; d4 next before customer authoring.
+
+## 11 October 2026 — conditional replay private preflight ordering VERIFIED locally
+
+Independent security review found e3e4 replay inspected retained required identity
+(including protected source/target freshness SQL) before owner private preflight.
+cutover.ts now invokes actual registered owner query preflight with refreshed
+initiating session/transaction BEFORE conditional receipt identity. Legacy branch
+unchanged; all identity/current review/compiler/dependency/freshness checks retained.
+No grant, native/value mutation, DDL/build/deployment or additional service changes.
+
+Existing execution-start suite22 tests PASS, including new denial/normal ordering
+case: denied preflight permits only minimal receipt-existence lookup, never full
+preparation/version/identity freshness/current review/compiler/Audits; normal
+preflight precedes actual identity and protected freshness predicates. Owner
+callback is explicitly mocked for ordering; real private/native/SQL acceptance
+remains parent-owned. Strict TypeScript (no incremental), scoped ESLint and diff
+checks PASS. Independent read-only reviewer confirms reported defect resolved;
+reviewer ran no checks. Copied root dependencies remain UNSTAGED/excluded.
+Exact next: parent integrates this three-file correction on top of its7727ed4
+projection before integrated build and real backed-up Test candidate/public proof.
+Full e3e4 runtime/Phase2 gate remains open; customer conditional activation gated.
+
+## 11 October 2026 — isolated e3e4 existing service adaptation VERIFIED locally
+
+Existing migrations/cutover.ts and settlement.ts select only actual stored1/2
+through the closed stored reader plus scalar definition mirror. Cutover preserves
+original initiating authority and explicit required READY/pin/metadata branches;
+replay uses actual target-active identity/current conditional review. Closed2 FIRST
+cutover is gated to genuine refreshed company.isTest with
+STUDIO_FIELD_REQUIRED_NOT_READY until native required hooks/write windows verified.
+Settlement uses CURRENT server principal, required retained identity/current coverage
+and original receipt1/confirmation/window/CAS/Audits. New rollback activating schema2
+source also Test-only; schema1 rollback, finalization and terminal history/replays
+retain current policy without a blanket activation gate. Rule removal target1 stays
+stored protocol2. No original-principal rewrite or fake pre-cutover state.
+
+Definitions/publication.ts exports its existing ReviewedCompiledDefinition union;
+activation.ts accepts that type in the existing INTERNAL primitive only. Ordinary
+compiler/authoring/public activation dispatch unchanged. Existing generation/module/
+expected-pointer/definition CAS and paired activation/migration Audits retained.
+No DDL, native/domain/value mutation paths, second engine, dump, install/generate,
+build or deploy performed. All root pure/identity/row/review/coverage/sealed metadata
+dependencies copied UNSTAGED only and excluded from this checkpoint.
+
+Existing execution-start and settlement-service suites add 12 conditional cases:
+normal source1→target2/source2→target1 cutover/replay and current-different-settler
+rollback, source2 Test gate, non-Test finalization/history, later-current-actor replay,
+scalar/client/coverage/compiler denial, receipt/publication/activation/both Audit
+failure restore and retry. Legacy fixtures now include actual review row mirrors
+and explicit selected version schema/publisher projections. Real compilers/closed
+parsers/actual cutover identity/shared activation run in snapshot tx mocks;
+settlement identity/coverage/activation remain documented collaborators. These are
+local orchestration checks, not real PostgreSQL/current-policy/runtime acceptance.
+39 tests/3 service+ordinary activation suites PASS; strict TypeScript (no incremental),
+scoped ESLint and final diff checks PASS. No known local blocker; full e3e4 runtime
+and Phase2 gate remain open. Exact next: parent cherry-picks this scoped checkpoint
+after76377d8, runs integrated build and existing backed-up Test candidate/public
+checker for real cutover/different-current-settler rollback/finalization/paired-Audit
+atomicity; native hooks/write-window gate remains before customer activation.
+
+## 11 October 2026 — e3e4 normal services and central proof IN PROGRESS
+
+Integrated scoped a047b6e as76377d8, preserving both contributor memory entries.
+Required coverage refreshes current authority, checks full sealed metadata and base
+current/source/target/written/native/reference rights, private preflight before IDs;
+rollback uses current-actor bounded bridge, history avoids old condition graph.
+Branch51tests/5suites/types/lint PASS; independent final review and integrated actual
+service/runtime checks pending. No live/whole-phase completion inferred.
+Parallel branch owns existing cutover/settlement services/internal activation type;
+root owns dedicated actual Test checker plus existing caller customer-ID plumbing.
+No new Test user/company/domain records, DDL, duplicate engine or ad-hoc dump.
+Existing cancellation proof retained, temporary exact Test customer grants/private
+memberships restored, metadata/values/history retained. Finalized fresh checker-only
+conditional definition retires via CAS/Audit to keep later fixture checks safe.
+Plan/ledger updated before implementation. Exact next: implement normal Test flow,
+merge service branch, integrated tests/types/lint/build/review then original release.
+Customer conditional authoring remains gated until native hooks; liveb34ce50.
+
 ## 11 October 2026 — parallel e3e3 CURRENT-settler coverage VERIFIED locally
 
 Explicitly scoped codex/studio-required-receipts worktree preserves54d6188 and adds

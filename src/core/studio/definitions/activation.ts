@@ -5,7 +5,7 @@ import { writeAudit } from "@/core/audit/log";
 import { STUDIO_CAPABILITIES } from "../permissions";
 import { assertFieldBinding } from "../fields/binding";
 import { checksum } from "../registry/contracts";
-import type { CompiledDefinition } from "./publication";
+import type { ReviewedCompiledDefinition } from "./publication";
 
 type ActivationVersion = Pick<Prisma.StudioDefinitionVersionGetPayload<object>,
   "id" | "organisationId" | "definitionId" | "version" | "compiledPlan" | "checksum">;
@@ -15,7 +15,7 @@ type ActivationVersion = Pick<Prisma.StudioDefinitionVersionGetPayload<object>,
  * where needed and owns the transaction. No client hook or migration waiver.
  * Database guards independently require exact reviewed cutover lineage. */
 export async function activateCompiledVersionInTransaction(tx: Prisma.TransactionClient, session: Session,
-  definitionId: string, expectedRevision: number, version: ActivationVersion, compiled: CompiledDefinition, expectedActiveVersionId?: string) {
+  definitionId: string, expectedRevision: number, version: ActivationVersion, compiled: ReviewedCompiledDefinition, expectedActiveVersionId?: string) {
   assertCapability(session, STUDIO_CAPABILITIES.publish);
   if (version.organisationId !== session.organisationId || version.definitionId !== definitionId)
     throw new Error("FORBIDDEN: this Studio version is unavailable in the current company.");

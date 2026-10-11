@@ -1,3 +1,60 @@
+## 11 October — d4 confirmed native/ordinary integration inventory (NOT STARTED)
+
+Read-only reconnaissance mapped actual gaps; this is the next Phase2 workstream,
+not evidence that native safeguards work. No new schema appears necessary.
+
+| Ordered workstream | Purpose and expected files | Dependencies / verification |
+| --- | --- | --- |
+| d4a Shared lock/API | Reuse binding.ts exact tenant/entity advisory key before definition, migration, native, sequence, parent/case locks; definitions/service/activation and migration lifecycle plus owning native/field transaction entries | Agree ordering and coordinator signatures first; no duplicate lock system; races/cross-field lock order and no-config domain journeys |
+| d4b Typed transaction writers/versioned reads | runtime-write/write-contract/read, required-runtime, service-work/studio-create; retain wrapper/replay/CAS/type/reference/Audit and use existing opaque creation proof | Genuine current authority, proof-bound initial writer without borrowed Read/Manage/Publish, schema2 sealed current/written/history support, actual zero/null/reference/permission/replay behaviour |
+| d4c All affected rollback windows | runtime-write-window plus stored1/2 identity/pins, separate from all-active resulting-state validation | Existing native/global extension changes can affect other observed definitions; creation affects entity cohort. Preserve PUBLISHED freezes, receipt/publication CAS/Audit; ordinary actors need no publish/whole-cohort data grants |
+| d4d Owning native hooks | service-work/actions/engine/studio-create and modules/service/services/commands mergeCases | Stage native+typed writes, call resulting-state validator before atomic commit, close affected windows; preserve domain transitions/SLA/intake/approval/parent/Outbox rules |
+| d4e Real acceptance/customer gate | Existing native/required/runtime/window suites and central checkers | Concurrency/failure/security/no-config and normal configured journeys/module regressions; original immutable candidate/public release before customer conditional activation |
+
+Confirmed mutation inventory: createWork bypasses existing createTicketWithField-
+Initialisation bridge and has no initial writer; updateWork/mergeWork/decideWorkApproval
+already Serializable; commentWork/watchWork/requestWorkApproval lock and increment
+native version but omit Serializable; workEvent changes parent version directly;
+Service mergeCases bulk changes Ticket parentCaseId/version outside service-work
+hooks. QUERY shares the table but has no approved Ticket field contract; do not
+silently add support. Current ordinary read/write/history and one-definition window
+closure are closed1, and writeFieldValue does not yet invoke all-active validator.
+The existing validator/proof foundation is reused, not replaced. Narrow reply/watch/
+create/parent/case actors require careful independent current capability handling;
+no blanket Ticket Manage/Studio Publish grants or fabricated existing-record proofs.
+Record exact lock/coordinator/writer/window contracts before parallel coding.
+
+## 11 October — e3e4 normal services and central proof IN PROGRESS
+
+Purpose: connect the existing migration/activation/settlement engine to stored closed2
+lineage, retaining all closed1 behaviour. Parallel service branch owns cutover.ts,
+settlement.ts, internal activation/publication type and existing service unit suites.
+Root owns a dedicated check-field-required-cutover-service.ts called by the existing
+required-review checker and passes the driver's already provisioned Test customer
+through check-field-principal/check-field-reviews. No new user/company/domain rows,
+engine, migration or ad-hoc dump. Existing approved Test grants/private affiliations
+are temporarily changed only on that run's account and restored. Retain immutable
+metadata/values/outcomes/Audits. Preserve existing cancellation proof separately.
+
+Dependencies: e3e1 receipts, e3e2 actual post-cutover identity/rows, e3e3 current-actor
+rollback bridge and settlement coverage (integrated76377d8/a047b6e). Service dispatch
+comes from actual stored JSON, not caller schema/tenant/stage. Conditional first
+activation and conditional source rollback activation are Test-only until native
+hooks pass; terminal history/finalization have current access checks, no blanket
+Test restriction. Root actual proof covers cutover/replay/receipt-publication-shared
+activation-paired Audit atomicity, independent current customer rollback and original
+creator revocation, actual private/field/module/session/tenant denials, exact CAS,
+retained history after legitimate extension drift and finalization. The exact fresh
+checker-only definition may retire with CAS/Audit after finalization so unsupported
+conditional ordinary authoring never leaks into later fixture/module checks. Native
+rows/source values remain unchanged. No customer release claim from unit fixtures.
+
+Completion: IMPLEMENTED; services/root checker linked, final123tests/7suites, scoped
+lint/build/diff PASS; final standalone strictTS18897 PASS. Independent review caught replay SQL before
+private preflight; scoped4b611f0 fixes order and meaningful denial/order regression
+passes. Actual SQL proof pending original immutable candidate/public combined
+acceptance. Preserve all history and recovery; no runtime completion inference.
+
 ## 11 October — e3e3 current settlement coverage IN PROGRESS (prerequisites only)
 
 After e3e1 pure checkpoint, independent branch owns distinct closed2 settlement

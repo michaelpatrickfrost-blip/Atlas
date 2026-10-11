@@ -90,7 +90,7 @@ export async function checkFieldPrincipal(customerUserId: string, staff: Session
   }
   assert.deepEqual(await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } }), nativeBefore);
   console.log("PASS real owner cohort and shared snapshot: bounded exact canonical/final/unanchored anchors, Serializable and actual target membership required, private nonmember denied before IDs/counts; native rows and v1/v2 retained.");
-  await checkFieldReviews(opened.session, opened.principal, unanchored.id, otherOrganisationId);
+  await checkFieldReviews(opened.session, opened.principal, unanchored.id, otherOrganisationId, customerUserId);
   await checkFieldPreparation(opened.session, opened.principal, otherOrganisationId, unanchored.id);
   await checkFieldUniqueSealing(opened.session, opened.principal, [unanchored.id, uniquePeer.id]);
   await checkFieldReferenceSealing(opened.session, opened.principal, unanchored.id, nativeBefore.find(row => row.status === "CLOSED")!.id, foreignTicket.id, otherOrganisationId);

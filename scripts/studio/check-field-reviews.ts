@@ -12,7 +12,7 @@ import { fieldMigrationObservationDigest, sealFieldMigrationIntent, sealFieldMig
   readSealedFieldMigrationReview, type FieldMigrationObservation } from "../../src/core/studio/fields/migrations/contracts";
 
 /** Exact synthetic schema fixtures; not the unfinished migration preview API. */
-export async function checkFieldReviews(session: Session, principal: FieldMigrationPrincipal, ticketId: string, otherOrganisationId: string) {
+export async function checkFieldReviews(session: Session, principal: FieldMigrationPrincipal, ticketId: string, otherOrganisationId: string, customerUserId: string) {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1");
   for (const id of [session.organisationId, otherOrganisationId])
     assert(await db.organisation.findFirst({ where: { id, isTest: true, slug: { startsWith: "studio-check-" } } }));
@@ -149,6 +149,6 @@ export async function checkFieldReviews(session: Session, principal: FieldMigrat
     review: { ...sealed.review, id: stale.id }, checksum: sealed.checksum } }), /fresh tenant-owned intent/);
   assert.equal(await db.studioFieldMigrationReview.count({ where: { id: stale.id } }), 0);
   assert.equal(await db.studioFieldGeneration.count({ where: { id: target.storageGeneration } }), 0);
-  await checkRequiredFieldReviewStorage(session, principal, definition.id);
+  await checkRequiredFieldReviewStorage(session, principal, definition.id, customerUserId);
   console.log("PASS preparation/review SQL archive: tenant/source/draft FKs, missing-anchor and exact stored value observations, immutable pins/history, sealed append denial, state/revision CAS, stale draft and audit-failure rollback; privileged synthetic source fixture only, no native mutation or migration executor.");
 }

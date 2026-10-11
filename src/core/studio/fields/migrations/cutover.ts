@@ -7,12 +7,14 @@ import { STUDIO_CAPABILITIES } from "../../permissions";
 import { studioRegistry } from "../../registry/runtime";
 import { compileCustomField } from "../../compiler/fields";
 import { activateCompiledVersionInTransaction } from "../../definitions/activation";
-import { sealFieldMigrationIntent, FieldMigrationReviewError } from "./contracts";
+import { FieldMigrationReviewError } from "./contracts";
 import { withFieldMigrationAuthority } from "./authority";
-import { inspectFieldMigrationExecution } from "./execution-inspection";
-import { inspectFieldMigrationCutoverIdentity } from "./cutover-inspection";
-import { inspectFieldMigrationReview } from "./inspection";
-import { createFieldMigrationCutoverPin, fieldMigrationCutoverRequestSchema, type FieldMigrationCutoverPin } from "./cutover-contract";
+import { inspectFieldMigrationExecution, inspectRequiredFieldMigrationExecution } from "./execution-inspection";
+import { inspectFieldMigrationCutoverIdentity, inspectRequiredFieldMigrationCutoverIdentity } from "./cutover-inspection";
+import { inspectFieldMigrationReview, inspectCutoverRequiredFieldMigrationReview } from "./inspection";
+import { createRequiredFieldMigrationCutoverPin, createFieldMigrationCutoverPin, fieldMigrationCutoverRequestSchema, type FieldMigrationCutoverPin } from "./cutover-contract";
+import { readStoredFieldMigrationIntent } from "./stored-protocol";
+import { compileFieldMigrationMetadata } from "./metadata";
 
 function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"); }
 
@@ -26,8 +28,8 @@ export async function cutoverReviewedFieldMigration(session: Session, input: unk
   const request = fieldMigrationCutoverRequestSchema.parse(input);
   const initial = await db.studioFieldMigrationPreparation.findFirst({ where: { id: request.preparationId, organisationId: session.organisationId } });
   if (!initial) changed();
-  const sealed = sealFieldMigrationIntent(initial.intent), intent = sealed.intent;
-  if (sealed.checksum !== initial.intentChecksum || intent.id !== initial.id || intent.organisationId !== session.organisationId) changed();
+  const { intent } = readStoredFieldMigrationIntent(initial, session.organisationId);
+  if (initial.definitionId !== intent.definitionId) changed();
   function confirm(pin: FieldMigrationCutoverPin) {
     if (request.reviewChecksum !== pin.publication.reviewChecksum || request.definitionRevision !== pin.definitionRevision
       || request.publicationRevision !== pin.publication.revision || request.executionRevision !== pin.execution.revision) changed();
@@ -43,20 +45,37 @@ export async function cutoverReviewedFieldMigration(session: Session, input: unk
     await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${intent.id}::uuid AND "organisationId"=${fresh.organisationId} FOR UPDATE`;
     const receipt = await tx.studioFieldMigrationCutover.findFirst({ where: scope, select: { preparationId: true } });
     if (receipt) {
-      const registry = studioRegistry(), inspected = await inspectFieldMigrationCutoverIdentity(tx, intent);
+      const registry = studioRegistry();
+      // Actual receipt inspection includes protected source/target freshness SQL.
+      // Prove current owner private access before those retained predicates.
+      if (intent.schemaVersion === 2)
+        await registry.invokeQueryInTransaction({ session: fresh, transaction: tx }, intent.ownerQuery, { mode: "preflight" });
+      const inspected = intent.schemaVersion === 2
+        ? await inspectRequiredFieldMigrationCutoverIdentity(tx, intent) : await inspectFieldMigrationCutoverIdentity(tx, intent);
       confirm(inspected.pin);
-      const compiled = await compileCustomField(fresh, intent.target.payload, registry);
+      const compiled = intent.schemaVersion === 2
+        ? await compileFieldMigrationMetadata({ session: fresh, transaction: tx }, registry, company, intent.definitionId, intent.target.payload)
+        : await compileCustomField(fresh, intent.target.payload, registry);
       if (compiled.checksum !== intent.target.compiledChecksum) changed();
       for (const moduleId of [...new Set(compiled.plan.dependencies.map(ref => ref.ownerModuleId))].sort()) {
         await tx.$queryRaw`SELECT id FROM module_states WHERE "organisationId"=${fresh.organisationId} AND "moduleId"=${moduleId} FOR SHARE`;
         if (!await tx.moduleState.findFirst({ where: { organisationId: fresh.organisationId, moduleId, enabled: true, entitled: true }, select: { id: true } }))
           throw new Error("DEPENDENCY_BROKEN: field source is unavailable.");
       }
-      const current = await inspectFieldMigrationReview({ session: fresh, transaction: tx }, registry, company, intent, "cutover");
+      const current = intent.schemaVersion === 2
+        ? await inspectCutoverRequiredFieldMigrationReview({ session: fresh, transaction: tx }, intent)
+        : await inspectFieldMigrationReview({ session: fresh, transaction: tx }, registry, company, intent, "cutover");
       if (current.checksum !== inspected.stored.checksum) changed();
       return result(inspected.pin, true);
     }
-    const inspected = await inspectFieldMigrationExecution(authority, intent), x = inspected.existing;
+    // Conditional activation is internal Test proof only until every native
+    // required hook and ordinary write-window integration is verified. Replay
+    // above never activates and still requires exact current cutover coverage.
+    if (intent.schemaVersion === 2 && !company.isTest)
+      throw new Error("STUDIO_FIELD_REQUIRED_NOT_READY: conditional cutover is available only in a Test company until native required safeguards are verified.");
+    const inspected = intent.schemaVersion === 2
+      ? await inspectRequiredFieldMigrationExecution(authority, intent) : await inspectFieldMigrationExecution(authority, intent);
+    const x = inspected.existing;
     if (!x || x.state !== "READY") changed();
     await tx.$queryRaw`SELECT d.id FROM studio_definitions d JOIN studio_drafts draft ON draft."definitionId"=d.id AND draft."organisationId"=d."organisationId"
       WHERE d.id=${intent.definitionId}::uuid AND d."organisationId"=${fresh.organisationId} FOR UPDATE OF d,draft`;
@@ -64,11 +83,13 @@ export async function cutoverReviewedFieldMigration(session: Session, input: unk
       select: { id: true, organisationId: true, kind: true, activeVersionId: true, revision: true, latestVersion: true, retiredAt: true } });
     if (!definition) changed();
     const publicationIdentity = Object.fromEntries(Object.keys(inspected.pin.publication).map(key => [key, inspected.publication[key as keyof typeof inspected.pin.publication]]));
-    const pinned = createFieldMigrationCutoverPin(inspected.stored, { preparationId: x.preparationId, organisationId: x.organisationId, definitionId: x.definitionId,
+    const pinned = (intent.schemaVersion === 2 ? createRequiredFieldMigrationCutoverPin : createFieldMigrationCutoverPin)(inspected.stored, { preparationId: x.preparationId, organisationId: x.organisationId, definitionId: x.definitionId,
       entityId: x.entityId, pin: x.pin, pinChecksum: x.pinChecksum, state: x.state, revision: x.revision, cursor: x.cursor, processedCount: x.processedCount, failureCode: x.failureCode },
     { ...publicationIdentity, state: inspected.publication.state, revision: inspected.publication.revision }, definition);
     confirm(pinned.pin);
-    const compiled = await compileCustomField(fresh, inspected.target.payload, inspected.registry);
+    const compiled = intent.schemaVersion === 2
+      ? await compileFieldMigrationMetadata({ session: fresh, transaction: tx }, inspected.registry, company, intent.definitionId, inspected.target.payload)
+      : await compileCustomField(fresh, intent.target.payload, inspected.registry);
     if (compiled.checksum !== intent.target.compiledChecksum) changed();
     await tx.studioFieldMigrationCutover.create({ data: { ...scope, sourceVersionId: pinned.pin.source.versionId, targetVersionId: pinned.pin.publication.targetVersionId,
       pin: pinned.pin, pinChecksum: pinned.checksum, createdBy: fresh.userId } });

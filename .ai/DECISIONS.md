@@ -1,3 +1,24 @@
+## 11 October 2026 — Current settlement authority and staged conditional activation
+
+The original sealed review/publisher remains immutable, but a later different
+current authorised settler must not borrow or resolve its creator's current grants.
+Refresh genuine current principal/support evidence, check current/base/written/native/
+reference rights and full sealed historical metadata. Only rollback additionally
+reevaluates the original condition graph/cohort/source/target; finalization/history
+must survive legitimate changed old inputs. Lock base compiled dependencies for
+history, not old condition-input modules. This satisfies source24 rollback limits
+and14 current access without creating a new permission or migration architecture.
+
+Existing service dispatch selects stored closed1/2; the internal shared activation
+accepts the reviewed compiled-plan union while ordinary public authoring stays
+closed1. First conditional cutover and rollback activation of a conditional source
+are Test-only until source6.5 native every-write hooks/write windows pass. Terminal
+history/finalization have current access checks without blanket Test gating. Actual
+central proof uses the existing run's Test account/definition; after finalization
+its exact checker-only definition retires via CAS/Audit with immutable values and
+history retained, so later fixture/native checks cannot consume unfinished ordinary
+conditional authoring. No source business data or new engine/DDL required.
+
 ## 11 October 2026 — Conditional cutover and settlement preserve the existing receipt
 
 Separate closed2 integrity entries parse the full sealed conditional review, including

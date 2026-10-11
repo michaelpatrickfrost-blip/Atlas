@@ -2,17 +2,18 @@ import { beforeEach, expect, it, vi } from "vitest";
 import type { Session } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 const m = vi.hoisted(() => ({ initial: vi.fn(), transaction: vi.fn(), resolve: vi.fn(), enabled: vi.fn(), raw: vi.fn(), member: vi.fn(), module: vi.fn(), company: vi.fn(),
-  preparation: vi.fn(), publication: vi.fn(), execution: vi.fn(), create: vi.fn(), target: vi.fn(), audit: vi.fn(), inspect: vi.fn(), requiredInspect: vi.fn(),
+  preparation: vi.fn(), publication: vi.fn(), execution: vi.fn(), create: vi.fn(), target: vi.fn(), audit: vi.fn(), inspect: vi.fn(), requiredInspect: vi.fn(), requiredCutoverReview: vi.fn(), metadata: vi.fn(),
   receipt: vi.fn(), receiptCreate: vi.fn(), publicationUpdate: vi.fn(), definition: vi.fn(), definitionUpdate: vi.fn(), generation: vi.fn(), modules: vi.fn(), draft: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: { $transaction: m.transaction, studioFieldMigrationPreparation: { findFirst: m.initial } } }));
 vi.mock("@/core/studio/fields/principal", () => ({ resolveFieldMigrationPrincipal: m.resolve }));
 vi.mock("@/core/modules/access", () => ({ assertModuleEnabled: m.enabled }));
 vi.mock("@/core/studio/registry/runtime", () => ({ studioRegistry: () => registry }));
-vi.mock("@/core/studio/fields/migrations/inspection", () => ({ inspectFieldMigrationReview: m.inspect }));
+vi.mock("@/core/studio/fields/migrations/inspection", () => ({ inspectFieldMigrationReview: m.inspect, inspectCutoverRequiredFieldMigrationReview: m.requiredCutoverReview }));
 vi.mock("@/core/studio/fields/migrations/execution-inspection", async importOriginal => ({
   ...await importOriginal<typeof import("@/core/studio/fields/migrations/execution-inspection")>(),
   inspectRequiredFieldMigrationExecution: m.requiredInspect,
 }));
+vi.mock("@/core/studio/fields/migrations/metadata", () => ({ compileFieldMigrationMetadata: m.metadata }));
 import { conditionalFieldPayloadSchema } from "@/core/studio/fields/required-contract";
 import { compileConditionalCustomField } from "@/core/studio/fields/conditional-compiler";
 import { registeredRequiredFactMetadata } from "@/core/studio/fields/required-owner";
@@ -31,6 +32,9 @@ import { startFieldMigrationExecution } from "@/core/studio/fields/migrations/ex
 const uuid = (n: number) => `00000000-0000-4000-8000-${n.toString().padStart(12, "0")}`;
 let available = true;
 const registry = new CapabilityRegistry(async () => available); registry.register("tickets", ticketStudioContract);
+// Owner preflight callback is a collaborator: prove service ordering/denial here,
+// while genuine native/private policy and SQL proof remain separate acceptance.
+const ownerPreflight = vi.spyOn(registry, "invokeQueryInTransaction");
 const ref = (id: string, version: number) => { const meta = registry.describe(id, version); return { id, version, schemaHash: meta.schemaHash, contractHash: meta.contractHash }; };
 const session: Session = { userId: "user", userName: "User", userEmail: "user@example.invalid", membershipId: "member", organisationId: "company", organisationName: "Company",
   capabilities: new Set(["studio.definition.publish", "tickets.ticket.read", "tickets.ticket.manage"]) };
@@ -39,12 +43,13 @@ const source = customFieldPayloadSchema.parse({ schemaVersion: 1, entity: ref("t
   field: { key: "extra", label: "Extra", classification: "confidential", storage: { type: "integer" } } });
 const targetPayload = customFieldPayloadSchema.parse({ ...source, entity: ref("tickets.ticket", 5), storageGeneration: uuid(2), field: { ...source.field, storage: { type: "decimal" } } });
 let sealed: ReturnType<typeof sealFieldMigrationReview> | ReturnType<typeof sealRequiredFieldMigrationReview>;
-let prepared: { id: string; organisationId: string; definitionId: string; state: string; intent: unknown; intentChecksum: string; review: { review: unknown; checksum: string } };
+let prepared: { id: string; organisationId: string; definitionId: string; state: string; intent: unknown; intentChecksum: string; review: { id: string; organisationId: string; definitionId: string; review: unknown; checksum: string } };
 let publication: ReturnType<typeof reviewedFieldPublicationPin> & { state: string; revision: number };
-let target: { id: string; organisationId: string; definitionId: string; version: number; payload: unknown; compiledPlan: unknown; checksum: string };
+let target: { id: string; organisationId: string; definitionId: string; version: number; payload: unknown; compiledPlan: unknown; checksum: string; schemaVersion: number; createdBy: string };
 type Row = { preparationId: string; organisationId: string; definitionId: string; entityId: string; pin: unknown; pinChecksum: string;
   state: string; revision: number; cursor: string | null; processedCount: number; failureCode: string | null };
 let execution: Row | null;
+function versionProjection(row: typeof target) { const { schemaVersion, createdBy, ...projection } = row; void schemaVersion; void createdBy; return projection; }
 let sourceVersion: typeof target;
 let definition: { id: string; organisationId: string; kind: string; activeVersionId: string; revision: number; latestVersion: number; retiredAt: null };
 let receipt: { preparationId: string; organisationId: string; definitionId: string; sourceVersionId: string; targetVersionId: string; pin: unknown; pinChecksum: string; state: string; revision: number; createdBy: string } | null;
@@ -54,7 +59,7 @@ const tx = { $queryRaw: m.raw, membership: { findFirst: m.member }, moduleState:
   studioDefinition: { findFirst: m.definition, updateMany: m.definitionUpdate }, studioFieldGeneration: { findFirst: m.generation }, studioDraft: { findFirst: m.draft } };
 const request = () => ({ preparationId: uuid(3), publicationRevision: 0, reviewChecksum: sealed.checksum });
 beforeEach(async () => {
-  vi.clearAllMocks(); available = true; execution = null; receipt = null; m.resolve.mockResolvedValue(session); m.enabled.mockResolvedValue(undefined); m.raw.mockImplementation(async (strings: TemplateStringsArray) => strings.join("?").includes("AS fresh") ? [{ fresh: true }] : []);
+  vi.clearAllMocks(); ownerPreflight.mockResolvedValue(undefined); available = true; execution = null; receipt = null; m.resolve.mockResolvedValue(session); m.enabled.mockResolvedValue(undefined); m.raw.mockImplementation(async (strings: TemplateStringsArray) => strings.join("?").includes("AS fresh") ? [{ fresh: true }] : []);
   m.member.mockResolvedValue({ sessionVersion: 2, user: { authVersion: 3 } }); m.module.mockResolvedValue({ id: "enabled" });
   m.company.mockResolvedValue({ id: "company", kind: "CUSTOMER", status: "ACTIVE", archivedAt: null, isTest: true });
   const a = await compileCustomField(session, source, registry), b = await compileCustomField(session, targetPayload, registry);
@@ -62,18 +67,18 @@ beforeEach(async () => {
     source: { versionId: uuid(6), versionChecksum: a.checksum, payload: source }, target: { draftId: uuid(5), draftRevision: 9, compiledChecksum: b.checksum, payload: targetPayload },
     conversion: { kind: "integer_to_decimal" }, ownerQuery: ref("tickets.ticket.field_migration", 3) });
   sealed = sealFieldMigrationReview({ ...pinned.intent, cohort: { recordCount: 3, observationDigest: "a".repeat(64) }, summary: { validCount: 3, invalidCount: 0, lossyCount: 0 } });
-  prepared = { id: uuid(3), organisationId: "company", definitionId: uuid(4), state: "REVIEWED", intent: pinned.intent, intentChecksum: pinned.checksum, review: { review: sealed.review, checksum: sealed.checksum } };
-  target = { id: uuid(8), organisationId: "company", definitionId: uuid(4), version: 2, payload: targetPayload, compiledPlan: b.plan, checksum: b.checksum };
-  sourceVersion = { id: uuid(6), organisationId: "company", definitionId: uuid(4), version: 1, payload: source, compiledPlan: a.plan, checksum: a.checksum };
+  prepared = { id: uuid(3), organisationId: "company", definitionId: uuid(4), state: "REVIEWED", intent: pinned.intent, intentChecksum: pinned.checksum, review: { id: uuid(3), organisationId: "company", definitionId: uuid(4), review: sealed.review, checksum: sealed.checksum } };
+  target = { id: uuid(8), organisationId: "company", definitionId: uuid(4), version: 2, payload: targetPayload, compiledPlan: b.plan, checksum: b.checksum, schemaVersion: 1, createdBy: "user" };
+  sourceVersion = { id: uuid(6), organisationId: "company", definitionId: uuid(4), version: 1, payload: source, compiledPlan: a.plan, checksum: a.checksum, schemaVersion: 1, createdBy: "historical-author" };
   definition = { id: uuid(4), organisationId: "company", kind: "customField", activeVersionId: uuid(6), revision: 8, latestVersion: 2, retiredAt: null };
-  publication = { ...reviewedFieldPublicationPin(sealed, target, "user", false), state: "PUBLISHED", revision: 0 };
+  publication = { ...reviewedFieldPublicationPin(sealed, versionProjection(target), "user", false), state: "PUBLISHED", revision: 0 };
   m.initial.mockImplementation(async ({ where }) => where.id === prepared.id && where.organisationId === prepared.organisationId ? structuredClone(prepared) : null);
   m.preparation.mockImplementation(async () => structuredClone(prepared)); m.publication.mockImplementation(async () => structuredClone(publication));
-  m.execution.mockImplementation(async () => structuredClone(execution)); m.target.mockImplementation(async ({ where }) => structuredClone(where.id === sourceVersion.id ? sourceVersion : target)); m.inspect.mockImplementation(async () => structuredClone(sealed));
+  m.execution.mockImplementation(async () => structuredClone(execution)); m.target.mockImplementation(async ({ where, select }) => { const row = where.id === sourceVersion.id ? sourceVersion : target; return Object.fromEntries(Object.keys(select).map(key => [key, structuredClone(row[key as keyof typeof row])])); }); m.inspect.mockImplementation(async () => structuredClone(sealed));
   m.create.mockImplementation(async ({ data }) => { execution = { ...data, state: "RUNNING", revision: 0, cursor: null, processedCount: 0, failureCode: null }; return structuredClone(execution); });
   m.receipt.mockImplementation(async () => structuredClone(receipt)); m.definition.mockImplementation(async () => structuredClone(definition));
   m.generation.mockResolvedValue({ id: targetPayload.storageGeneration }); m.modules.mockResolvedValue(1);
-  m.draft.mockImplementation(async () => ({ revision: 10, baseVersionId: target.id, payload: targetPayload }));
+  m.draft.mockImplementation(async () => ({ revision: 10, baseVersionId: target.id, payload: target.payload }));
   m.receiptCreate.mockImplementation(async ({ data }) => { receipt = { ...data, state: "ACTIVATED", revision: 0 }; return structuredClone(receipt); });
   m.publicationUpdate.mockImplementation(async ({ where, data }) => {
     if (where.organisationId !== publication.organisationId || where.preparationId !== publication.preparationId || where.state !== publication.state || where.revision !== publication.revision) return { count: 0 };
@@ -208,21 +213,27 @@ it("replay refuses changed representation/draft/receipt/CAS and stale requests e
 // Conditional inspector is deliberately delegated here. Real compiler/pin and
 // start transaction are exercised; authority/whole-cohort row proof has its own
 // executing inspector suite and still requires central runtime acceptance.
-async function conditionalStartFixture() {
+async function conditionalStartFixture(sourceConditional = false, targetConditional = true) {
   const payload = conditionalFieldPayloadSchema.parse({ ...targetPayload, schemaVersion: 2, entity: ref("tickets.ticket", 9),
     requiredIf: { match: "all", predicates: [{ source: { kind: "native", fieldId: "status" }, operator: "present" }] } });
-  const compiled = await compileConditionalCustomField({ session, registry, definitionId: uuid(4),
-    resolveMetadata: async source => source.kind === "native" ? registeredRequiredFactMetadata(session, registry, payload.entity, source.fieldId) : Promise.reject(new Error("Unexpected field fixture")) }, payload);
+  const compile = (input: typeof payload) => compileConditionalCustomField({ session, registry, definitionId: uuid(4),
+    resolveMetadata: async source => source.kind === "native" ? registeredRequiredFactMetadata(session, registry, input.entity, source.fieldId) : Promise.reject(new Error("Unexpected field fixture")) }, input);
+  const compiled = targetConditional ? await compile(payload) : await compileCustomField(session, { schemaVersion: 1, entity: payload.entity, storageGeneration: payload.storageGeneration, field: payload.field }, registry);
+  const sourceCompiled = sourceConditional ? await compile(conditionalFieldPayloadSchema.parse({ ...payload, storageGeneration: source.storageGeneration, field: source.field })) : await compileCustomField(session, source, registry);
   const { cohort: _cohort, summary: _summary, ...reviewIntent } = sealed.review; void _cohort; void _summary;
   const intent = sealRequiredFieldMigrationIntent({ ...reviewIntent, schemaVersion: 2,
+    source: { ...sealed.review.source, payload: sourceCompiled.payload, versionChecksum: sourceCompiled.checksum },
     target: { ...sealed.review.target, payload: compiled.payload, compiledChecksum: compiled.checksum }, ownerQuery: ref("tickets.ticket.field_migration", 4) });
   sealed = sealRequiredFieldMigrationReview({ ...intent.intent, cohort: { recordCount: 3, observationDigest: "a".repeat(64) },
     summary: { validCount: 3, invalidCount: 0, lossyCount: 0 } });
-  prepared = { ...prepared, intent: intent.intent, intentChecksum: intent.checksum, review: sealed };
-  target = { ...target, payload: compiled.payload, compiledPlan: compiled.plan, checksum: compiled.checksum };
-  const identity = reviewedRequiredFieldPublicationPin(sealed, target, "user", false);
+  prepared = { ...prepared, intent: intent.intent, intentChecksum: intent.checksum, review: { ...prepared.review, ...sealed } };
+  target = { ...target, payload: compiled.payload, compiledPlan: compiled.plan, checksum: compiled.checksum, schemaVersion: compiled.payload.schemaVersion };
+  sourceVersion = { ...sourceVersion, payload: sourceCompiled.payload, compiledPlan: sourceCompiled.plan, checksum: sourceCompiled.checksum, schemaVersion: sourceCompiled.payload.schemaVersion };
+  m.metadata.mockImplementation(async (_context, _registry, _company, _definitionId, input) => checksum(input) === checksum(compiled.payload) ? compiled : sourceCompiled);
+  m.requiredCutoverReview.mockImplementation(async () => structuredClone(sealed));
+  const identity = reviewedRequiredFieldPublicationPin(sealed, versionProjection(target), "user", false);
   publication = { ...identity, state: "PUBLISHED", revision: 0 };
-  const pinned = createRequiredFieldMigrationExecutionPin(sealed, target, identity, registry.describe("tickets.ticket", 9), registry.describe("tickets.ticket.field_representation", 2));
+  const pinned = createRequiredFieldMigrationExecutionPin(sealed, versionProjection(target), identity, registry.describe("tickets.ticket", 9), registry.describe("tickets.ticket.field_representation", 2));
   m.requiredInspect.mockImplementation(async () => ({ intent: intent.intent, stored: sealed, publication, target, registry,
     pin: pinned.pin, pinChecksum: pinned.checksum, existing: structuredClone(execution), progress: execution ? readFieldMigrationExecutionProgress(pinned.pin,
       { state: execution.state, revision: execution.revision, cursor: execution.cursor, processedCount: execution.processedCount, failureCode: execution.failureCode }) : null }));
@@ -254,4 +265,80 @@ it("conditional start Audit failure rolls back its receipt and exact retry creat
   await expect(startFieldMigrationExecution(session, request())).rejects.toThrow("conditional start Audit unavailable"); expect(execution).toBeNull();
   expect(await startFieldMigrationExecution(session, request())).toMatchObject({ replayed: false, revision: 0 });
   expect(execution?.pin).toMatchObject({ schemaVersion: 1, entity: ref("tickets.ticket", 9) }); expect(m.inspect).not.toHaveBeenCalled();
+});
+
+
+// Required execution and row review remain collaborators. Normal cutover service,
+// stored dispatch, real identity/pin/compiler and shared activation/Audit primitive
+// run against snapshotting tx mocks; real PostgreSQL atomicity is root-owned proof.
+async function readyRequiredCutover(sourceConditional = false, targetConditional = true) {
+  await conditionalStartFixture(sourceConditional, targetConditional);
+  await startFieldMigrationExecution(session, request());
+  execution!.state = "READY"; execution!.revision = 2; execution!.processedCount = 3; execution!.cursor = "ticket_z";
+  m.audit.mockClear(); m.create.mockClear();
+  return { ...request(), definitionRevision: 8, executionRevision: 2 };
+}
+it.each([[false, true], [true, false]])("normal required cutover/replay preserves protocol2 for source2=%s,target2=%s", async (source2, target2) => {
+  const input = await readyRequiredCutover(source2, target2);
+  const originalSource = structuredClone(sourceVersion), originalExecution = structuredClone(execution);
+  expect(await cutoverReviewedFieldMigration(session, input)).toMatchObject({ state: "ACTIVATED", definitionRevision: 9, replayed: false });
+  expect(receipt?.pin).toMatchObject({ schemaVersion: 1, publication: { reviewChecksum: sealed.checksum } });
+  expect(m.audit.mock.calls.map(([arg]) => arg.data.action)).toEqual(["studio.definition.activated", "studio.field.migration.cutover"]);
+  expect(m.metadata.mock.calls.at(-1)?.[4]).toEqual(target.payload); expect(sourceVersion).toEqual(originalSource); expect(execution).toEqual(originalExecution);
+  for (const mock of [m.receiptCreate, m.publicationUpdate, m.definitionUpdate, m.audit]) mock.mockClear();
+  m.company.mockResolvedValue({ id: "company", kind: "CUSTOMER", status: "ACTIVE", archivedAt: null, isTest: false });
+  expect(await cutoverReviewedFieldMigration(session, input)).toMatchObject({ replayed: true });
+  expect(m.requiredCutoverReview).toHaveBeenCalledOnce(); expect(m.inspect).not.toHaveBeenCalled();
+  for (const mock of [m.receiptCreate, m.publicationUpdate, m.definitionUpdate, m.audit]) expect(mock).not.toHaveBeenCalled();
+});
+it("gates normal conditional first activation from refreshed Test-company status before execution proof or writes", async () => {
+  const input = await readyRequiredCutover(); m.requiredInspect.mockClear();
+  m.company.mockResolvedValue({ id: "company", kind: "CUSTOMER", status: "ACTIVE", archivedAt: null, isTest: false });
+  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("STUDIO_FIELD_REQUIRED_NOT_READY");
+  expect(m.requiredInspect).not.toHaveBeenCalled(); expect(m.receiptCreate).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+  expect(definition.activeVersionId).toBe(sourceVersion.id); expect(publication.state).toBe("PUBLISHED");
+});
+it("normal conditional receipt/CAS/activation/both Audit failures restore exact state and permit retry", async () => {
+  const input = await readyRequiredCutover(), before = structuredClone({ execution, receipt, publication, definition, sourceVersion, target });
+  for (const reject of [() => m.receiptCreate.mockRejectedValueOnce(new Error("receipt unavailable")),
+    () => m.publicationUpdate.mockResolvedValueOnce({ count: 0 }), () => m.definitionUpdate.mockResolvedValueOnce({ count: 0 }),
+    () => m.audit.mockRejectedValueOnce(new Error("activation Audit unavailable")),
+    () => { m.audit.mockResolvedValueOnce({ id: "activation" }).mockRejectedValueOnce(new Error("cutover Audit unavailable")); }]) {
+    reject(); await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow();
+    expect({ execution, receipt, publication, definition, sourceVersion, target }).toEqual(before);
+  }
+  expect(await cutoverReviewedFieldMigration(session, input)).toMatchObject({ replayed: false });
+});
+it("conditional requests and replay deny scalar mirror drift, native/coverage/compiler changes and invented client format", async () => {
+  const input = await readyRequiredCutover();
+  for (const patch of [{ id: uuid(99) }, { organisationId: "foreign" }, { definitionId: uuid(99) }, { intentChecksum: "a".repeat(64) }]) {
+    m.initial.mockResolvedValueOnce({ ...prepared, ...patch }); await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow();
+  }
+  await expect(cutoverReviewedFieldMigration(session, { ...input, schemaVersion: 2 })).rejects.toThrow();
+  m.requiredInspect.mockRejectedValueOnce(new Error("FORBIDDEN: actual private/condition/source coverage"));
+  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("private/condition/source");
+  m.metadata.mockResolvedValueOnce({ checksum: "a".repeat(64) }); await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow();
+  expect(receipt).toBeNull(); await cutoverReviewedFieldMigration(session, input); m.audit.mockClear();
+  m.requiredCutoverReview.mockRejectedValueOnce(new Error("FORBIDDEN: current native condition drift"));
+  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("native condition drift"); expect(m.audit).not.toHaveBeenCalled();
+});
+
+it("conditional replay proves current private preflight before retained identity/freshness and stops on denial", async () => {
+  const input = await readyRequiredCutover(); await cutoverReviewedFieldMigration(session, input);
+  for (const mock of [ownerPreflight, m.preparation, m.target, m.receipt, m.raw, m.requiredCutoverReview, m.metadata, m.audit]) mock.mockClear();
+  ownerPreflight.mockRejectedValueOnce(new Error("FORBIDDEN: owner private cohort access revoked"));
+  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("private cohort access revoked");
+  expect(ownerPreflight).toHaveBeenCalledWith({ session, transaction: tx }, sealed.review.ownerQuery, { mode: "preflight" });
+  // Receipt existence lookup is allowed; full retained identity never starts.
+  expect(m.receipt).toHaveBeenCalledOnce(); expect(m.receipt.mock.calls[0][0].select).toEqual({ preparationId: true });
+  for (const mock of [m.preparation, m.target, m.requiredCutoverReview, m.metadata, m.audit]) expect(mock).not.toHaveBeenCalled();
+  expect(m.raw.mock.calls.every(([strings]) => !strings.join("?").includes("AS fresh"))).toBe(true);
+  ownerPreflight.mockClear(); m.raw.mockClear(); m.receipt.mockClear();
+  expect(await cutoverReviewedFieldMigration(session, input)).toMatchObject({ replayed: true });
+  expect(ownerPreflight).toHaveBeenCalledOnce();
+  expect(ownerPreflight.mock.invocationCallOrder[0]).toBeLessThan(m.preparation.mock.invocationCallOrder[0]);
+  const freshnessIndex = m.raw.mock.calls.findIndex(([strings]) => strings.join("?").includes("AS fresh"));
+  expect(freshnessIndex).toBeGreaterThanOrEqual(0);
+  expect(ownerPreflight.mock.invocationCallOrder[0]).toBeLessThan(m.raw.mock.invocationCallOrder[freshnessIndex]);
+  expect(m.audit).not.toHaveBeenCalled();
 });

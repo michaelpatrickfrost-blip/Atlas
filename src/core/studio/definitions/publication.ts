@@ -10,7 +10,7 @@ import type { VersionedFieldPayload } from "../fields/required-contract";
 
 export type PublicationDraft = Prisma.StudioDraftGetPayload<{ include: { definition: true; baseVersion: { select: { version: true } } } }>;
 export type CompiledDefinition = Awaited<ReturnType<typeof compileDefinition>>;
-type ReviewedCompiledDefinition = CompiledDefinition | Awaited<ReturnType<typeof compileConditionalCustomField>>;
+export type ReviewedCompiledDefinition = CompiledDefinition | Awaited<ReturnType<typeof compileConditionalCustomField>>;
 type ReviewedFieldBinder = (tx: Prisma.TransactionClient, session: Session, definitionId: string, key: string, versionId: string, payload: VersionedFieldPayload) => Promise<void>;
 function conflict(): never { throw new Error("CONFLICT: another editor changed this definition. Reload and compare your draft before saving."); }
 

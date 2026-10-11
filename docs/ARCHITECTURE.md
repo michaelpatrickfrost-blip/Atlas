@@ -339,12 +339,21 @@ or typed values change. A recorded format2 execution cannot fall back to publica
 inspection. The separate execution row/review reader now proves current conditions,
 exact own +1/new-anchor outcome lineage, unchanged source/native and actual decoded
 target under current/written policies before normalizing the archive envelope.
-No ordinary conditional authoring or activation is enabled. Local tests/types/lint/
-build PASS; normal central Test publication/replay/cancellation and both Audit-failure
-rollbacks VERIFIED on bafa1c2 candidatebseb8V/publicZrTQuH, both ALL COMBINED PASS.
-Pure conditional execution/outcome integrity remains separate from runtime execution;
-existing start/batch/representation integration and normal central proof are in
-progress; cutover/native hooks and visual Phase2 acceptance remain unfinished.
+Ordinary conditional authoring/customer activation remains gated. Normal conditional
+start/batches/recovery/replay/cancellation are VERIFIED on b34ce50 candidatekT6FVM/
+publicqTWEdH, both ALL COMBINED PASS. Existing cutover/settlement services now dispatch
+from server-stored closed1/2 intent; local orchestration/identity/coverage tests pass,
+actual conditional activation/settlement SQL proof is pending. First conditional
+cutover and reactivation of a conditional source on rollback are Test-only until all
+native required/write-window hooks pass. Finalization and retained receipt replay
+still require current permissions, without a blanket Test restriction. Shared
+activation accepts the existing reviewed typed compiled-plan union; ordinary public
+compiler/authoring dispatch remains closed1. A different current authorised settler
+uses genuine current authority and base/native/field/reference rights while original
+publisher/review metadata remains immutable. Rollback reevaluates exact original
+conditions/cohort/source/target; history checks full sealed original metadata without
+requiring its old input graph to remain current. No second engine, DDL or domain
+mutation; native hooks and complete visual Phase2 acceptance remain unfinished.
 
 11 October2026: a separate internal execution2 coverage prerequisite reuses existing
 source-active RUNNING/READY/FAILED execution/source/outcome/target guards. Complete

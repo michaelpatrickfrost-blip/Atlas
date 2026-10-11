@@ -27,4 +27,8 @@ describe('Make proposal conversion',()=>{
  it('continues to accept historical array pegging',async()=>{
   s.suggestion.findFirst.mockResolvedValue({...proposal,pegging:proposal.pegging.demand});await firmSuggestion('make');expect(s.order.create).toHaveBeenCalledOnce();
  });
+ it('preserves the reviewed future production start instead of discarding it at firming',async()=>{
+  const start=new Date('2026-10-28T08:00:00Z');s.suggestion.findFirst.mockResolvedValue({...proposal,startBy:start});await firmSuggestion('make');expect(s.order.create.mock.calls[0][0].data).toMatchObject({plannedStart:start,plannedFinish:proposal.neededBy});
+ });
+
 });

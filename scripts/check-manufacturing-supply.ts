@@ -110,6 +110,8 @@ async function main(){
   phase='real Make conversion';await page.goto('/manufacturing/planning/planned-orders',{waitUntil:'networkidle'});await page.getByRole('button',{name:'Firm to production order'}).click();
   await expect.poll(()=>db.manufacturingOrder.count({where:{organisationId:org.id,productId:finished.id}})).toBe(1);
   await page.reload({waitUntil:'networkidle'});await expect(page.getByRole('link',{name:'View production order'})).toBeVisible();
+  const firmed=await db.manufacturingOrder.findFirstOrThrow({where:{organisationId:org.id,productId:finished.id}});
+  assert.equal(firmed.plannedStart?.getTime(),make.startBy?.getTime());
   console.log('PASS rich saved proposal converts to one production order with source audit.');
   phase='real Buy conversion';await page.getByRole('link',{name:/Review purchase draft/}).click();
   await expect(page.getByRole('textbox',{name:'Quantity',exact:true})).toHaveValue('15');await expect(page.getByRole('combobox',{name:'Shared product'})).toHaveValue(raw.id);

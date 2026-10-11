@@ -109,7 +109,9 @@ export async function releaseOrder(orderId: string) {
         const eligibleResourceIds = op.eligibleResourceIds.length ? op.eligibleResourceIds : assignment.resourceId ? [assignment.resourceId] : resources.filter((r) => r.workCentreId === assignment.workCentreId).map((r) => r.id);
         return { id: op.id, name: op.name, ...assignment, ...timing, timingMode: op.timingMode, eligibleResourceIds };
       });
-      const scheduled = finiteSchedule(operations, new Date(), resources);
+      const now = new Date();
+      const earliestStart = order.plannedStart && order.plannedStart > now ? order.plannedStart : now;
+      const scheduled = finiteSchedule(operations, earliestStart, resources);
       if (scheduled.length) {
         plannedStart = scheduled[0].start; plannedFinish = scheduled.at(-1)!.end;
         const rows = scheduled.map((slot, index) => ({ organisationId: session.organisationId, productionOrderId: order.id, sequence: index + 1, operationName: slot.name, workCentreId: slot.workCentreId, resourceId: slot.resourceId, scheduledStart: slot.start, scheduledEnd: slot.end,

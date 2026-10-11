@@ -179,6 +179,7 @@ export async function firmSuggestion(suggestionId: string) {
     const order = await tx.manufacturingOrder.create({ data: {
       organisationId, orderNumber, productId: product.id, definitionId: product.definitions[0].id,
       quantity: suggestion.quantity, unitOfMeasure: product.unitOfMeasure, requiredDate: suggestion.neededBy,
+      plannedStart: suggestion.startBy, plannedFinish: suggestion.neededBy,
       priority: suggestion.startBy && suggestion.startBy < new Date() ? 10 : 0,
       sourceSalesOrderLineId: largestPeg && ["SALES_ORDER", "FIRM"].includes(largestPeg.sourceType) ? largestPeg.sourceId : null,
       notes: `Firmed from MRP run ${suggestion.runId}. ${pegs.length} source demand link(s) retained on the proposal.${short.length ? ` ${short.length} component shortage(s) need review before release.` : ""}`,

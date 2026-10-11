@@ -33,6 +33,8 @@ readiness or close the existing 173-section acceptance programme.
   elapsed spans. Batch work is uninterrupted; per-unit work can span shifts while
   retaining the machine booking. This is conservative serial forward scheduling,
   not parallel mixed-product kiln-load packing or a global optimization solver.
+  Make firming retains the reviewed MRP start/finish estimates; release starts
+  no earlier than max(now, planned start), preserving future forecast timing.
 - Schedule review rechecks calendars, downtime, all affected operations and other
   reservations inside serializable isolation. Fingerprints reject stale reviews;
   fixed/running/completed work cannot be displaced. Force-overlap is removed.

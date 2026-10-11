@@ -12344,3 +12344,17 @@ new Manufacturing keys. In-app guides aligned. Next: pinned scoped deployment
 with ATLAS_RELEASE_ACCEPTANCE=supply; candidate and public actual central Test
 kiln/forecast acceptance, screenshot review, additive migration and final evidence.
 No candidate/public result claimed until the gate actually runs.
+
+Release integration review found MRP firming discarded its reviewed future start,
+so releasing forecast work would pull it into today. Firming now retains start/
+finish estimates and finite release uses max(now, retained planned start). Existing
+stock/cost/feasibility limits stay explicit. A source-lineage regression and actual
+central proposal→firm→release acceptance were added. Final checks required after
+this correction. First deployment is waiting on existing server locks; public
+moved to c607e12 (company account phone-header refinement), to be preserved before
+this new pinned release. No server release lock or other contributor interrupted.
+
+First pinned b2a3891 deployment exited before backup/migration/candidate build after
+accepted company phone-header release c607e12 advanced the server ancestry. This
+is a safe stop, not activation or feature acceptance. c607e12 source is now being
+merged; preserve its unchanged runtime behavior. No force/reset or lock bypass.

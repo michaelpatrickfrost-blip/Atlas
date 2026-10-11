@@ -15,3 +15,25 @@ it("accepts exact safe SQL count strings and rejects unsafe/malformed/inconsiste
   }
   raw.mockResolvedValueOnce([]); await expect(digestFieldMigrationArchive(tx, intent)).rejects.toThrow("observation is invalid");
 });
+
+it("requires actual stored format2 parent identity before reading its requirement archive", async () => {
+  const { retainedCutoverFixture } = await import("./fixtures/studio-field-cutover");
+  const { conditionalFieldPayloadSchema } = await import("@/core/studio/fields/required-contract");
+  const { sealRequiredFieldMigrationIntent } = await import("@/core/studio/fields/migrations/required-contracts");
+  const { digestRequiredFieldMigrationArchive } = await import("@/core/studio/fields/migrations/archive-digest");
+  const f = await retainedCutoverFixture(), payload = conditionalFieldPayloadSchema.parse({ ...f.intent.target.payload, schemaVersion: 2,
+    requiredIf: { match: "all", predicates: [{ source: { kind: "native", fieldId: "status" }, operator: "present" }] } });
+  const modern = sealRequiredFieldMigrationIntent({ ...f.intent, schemaVersion: 2, target: { ...f.intent.target, payload } });
+  const raw = vi.fn(), tx = { $queryRaw: raw } as unknown as Prisma.TransactionClient;
+  for (const parents of [[], [{ format: 1 }], [{ format: "2" }], [{ format: 2 }, { format: 2 }]]) {
+    raw.mockReset(); raw.mockResolvedValueOnce(parents);
+    await expect(digestRequiredFieldMigrationArchive(tx, modern.intent)).rejects.toThrow("observation is invalid"); expect(raw).toHaveBeenCalledTimes(1);
+  }
+  raw.mockReset(); raw.mockResolvedValueOnce([{ format: 2 }]).mockResolvedValueOnce([valid]);
+  expect(await digestRequiredFieldMigrationArchive(tx, modern.intent)).toEqual({ recordCount: 3, observationDigest: valid.observationDigest,
+    summary: { validCount: 2, invalidCount: 1, lossyCount: 1 }, duplicateTarget: false });
+  expect(raw.mock.calls[0].slice(1)).toContain(modern.checksum);
+  expect(raw.mock.calls[1].slice(1)).toContain("atlas.studio.field-observations@2\n");
+  raw.mockReset(); raw.mockResolvedValueOnce([valid]); await digestFieldMigrationArchive(tx, f.intent);
+  expect(raw).toHaveBeenCalledTimes(1); expect(raw.mock.calls[0].slice(1)).toContain("atlas.studio.field-observations@1\n");
+});

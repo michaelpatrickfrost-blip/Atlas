@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { checkRequiredFieldReviewStorage } from "./check-field-required-review-storage";
 import { db } from "../../src/core/db/client";
 import type { Session } from "../../src/core/auth/session";
 import type { FieldMigrationPrincipal } from "../../src/core/studio/fields/principal-contract";
@@ -148,5 +149,6 @@ export async function checkFieldReviews(session: Session, principal: FieldMigrat
     review: { ...sealed.review, id: stale.id }, checksum: sealed.checksum } }), /fresh tenant-owned intent/);
   assert.equal(await db.studioFieldMigrationReview.count({ where: { id: stale.id } }), 0);
   assert.equal(await db.studioFieldGeneration.count({ where: { id: target.storageGeneration } }), 0);
+  await checkRequiredFieldReviewStorage(session, principal, definition.id);
   console.log("PASS preparation/review SQL archive: tenant/source/draft FKs, missing-anchor and exact stored value observations, immutable pins/history, sealed append denial, state/revision CAS, stale draft and audit-failure rollback; privileged synthetic source fixture only, no native mutation or migration executor.");
 }

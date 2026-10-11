@@ -501,5 +501,18 @@ component. Actual persistence/owner/central proof and later stage/lock gates rem
 Internal `migrations/stored-protocol.ts` selects closed intent/review1/2 solely from
 server-loaded JSON and verifies canonical hashes/tenant/row identity. It grants no
 owner or data authority. Existing collection/sealing keep explicit1-only gates;
-unknown/coerced/missing versions never fall back. Actual version2 SQL/archive/
+unknown/coerced/missing versions never fall back. Actual version2 service routing/
 coverage/owner/runtime integration remains a later ordered prerequisite.
+
+### Required migration archive integrity — 11 October 2026
+
+The additive required-field-reviews migration extends the existing preparation and
+observation guards with explicit numeric2 metadata branches; legacy1 guards and
+immutable history/FKs/CAS remain. Requirement evidence stores only two semantic
+checksums and a required boolean. Real condition evaluation, owner approval and
+revision envelopes remain server responsibilities. The existing aggregate retains
+frame1 bytes and adds frame2 behind exact stored parent identity/hash verification.
+This integrity substrate does not enable format2 preparation, authoring or domain
+execution. The central Test SQL fixture uses synthetic semantic hashes, rolls back
+every attempt, and checks that native, typed, draft, metadata and Audit state is
+unchanged; it must not be reported as real format2 owner/condition/runtime proof.

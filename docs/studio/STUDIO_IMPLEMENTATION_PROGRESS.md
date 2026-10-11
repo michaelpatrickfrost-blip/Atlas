@@ -11,6 +11,27 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
+## 11 October 2026 — c2 archive integrity IMPLEMENTED; central proof pending
+
+c1 cdec6c6 original runner78290 exit0: candidateOfcY48/publicqyEgPq ALL COMBINED
+PASS, activated exact pinned release; rollback6ca2ac2 retained. Both-lock retention
+retired a99b75b duplicate runtime only, preserving source/static/evidence/private
+records/business backups. Required UTC11Oct080037/080213/080626 backups only.
+
+c2 additive migration20261011010000_studio_required_field_reviews replaces only
+preparation/observation guard functions; closed2 requirement/result integrity,
+immutable refs/history/FKs/CAS and exact saved draft equality retained. Shared SQL
+aggregate keeps legacy frame1 exact; required entry verifies real stored parent
+before frame2. Central Test fixture exercises actual SQL/pure digest equality and
+malformed/sealed denials, rolling every attempt back and checking native/typed/
+draft/metadata/Audit unchanged. Synthetic semantic hashes are integrity evidence,
+not real format2 condition/owner/engine approval. No Prisma model/reset/backfill.
+31 tests/4 suites PASS62571; strict TS52977/scoped lint10209 exit0. Production build31019 exit0; final diff reviewed/check PASS.
+Migration not applied; central fixture not yet run. Exact next: finish build,
+review/commit scoped c2, deploy under original Studio gates/required recovery,
+verify actual SQL and legacy compatibility; only then implement c3 routing.
+WholePhase2 IN PROGRESS, visual stash28243b7 unchanged for2E.
+
 ## 11 October 2026 — Row checkpoint6ca2ac2 VERIFIED live
 
 Original pinned runner95743 exit0. CandidateffFOlj/publicblRJed ALL COMBINED PASS;

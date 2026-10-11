@@ -1,0 +1,126 @@
+import assert from "node:assert/strict";
+import type { Prisma } from "../../src/generated/prisma/client";
+import { db } from "../../src/core/db/client";
+import type { Session } from "../../src/core/auth/session";
+import type { FieldMigrationPrincipal } from "../../src/core/studio/fields/principal-contract";
+import { studioRegistry } from "../../src/core/studio/registry/runtime";
+import { checksum } from "../../src/core/studio/registry/contracts";
+import { customFieldPayloadSchema } from "../../src/core/studio/fields/schema";
+import { conditionalFieldPayloadSchema } from "../../src/core/studio/fields/required-contract";
+import { compileFieldMigrationMetadata } from "../../src/core/studio/fields/migrations/metadata";
+import { requiredFieldMigrationObservationDigest, sealRequiredFieldMigrationIntent, sealRequiredFieldMigrationReview,
+  type RequiredFieldMigrationObservation } from "../../src/core/studio/fields/migrations/required-contracts";
+import { digestRequiredFieldMigrationArchive } from "../../src/core/studio/fields/migrations/archive-digest";
+
+/** Privileged exact Test SQL integrity fixture only. Uses full real metadata
+ * compilation but synthetic semantic hashes to exercise archive shape/framing,
+ * not owner format2 approval, condition validity, publication or execution.
+ * Every attempt is rolled back; existing native/typed/metadata/Audit snapshots
+ * must be unchanged. No new company, native operation, permission or dump. */
+export async function checkRequiredFieldReviewStorage(session: Session, principal: FieldMigrationPrincipal, definitionId: string) {
+  assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1");
+  const organisationId = session.organisationId, scope = { organisationId };
+  const company = await db.organisation.findFirstOrThrow({ where: { id: organisationId, kind: "CUSTOMER", status: "ACTIVE", isTest: true, slug: { startsWith: "studio-check-" } },
+    select: { id: true, kind: true, status: true, archivedAt: true, isTest: true } });
+  async function snapshot() {
+    const counts = [await db.studioDefinition.count({ where: scope }), await db.studioDefinitionVersion.count({ where: scope }),
+      await db.studioDraft.count({ where: scope }), await db.studioFieldGeneration.count({ where: scope }), await db.studioExtensionRecord.count({ where: scope }),
+      await db.studioFieldSlot.count({ where: scope }), await db.studioFieldValue.count({ where: scope }), await db.studioFieldMigrationPreparation.count({ where: scope }),
+      await db.studioFieldMigrationObservation.count({ where: scope }), await db.studioFieldMigrationReview.count({ where: scope }), await db.auditEntry.count({ where: scope })];
+    return { counts, definition: await db.studioDefinition.findFirstOrThrow({ where: { id: definitionId, organisationId } }),
+      draft: await db.studioDraft.findFirstOrThrow({ where: { definitionId, organisationId } }),
+      native: await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } }),
+      slots: await db.studioFieldSlot.findMany({ where: scope, orderBy: { id: "asc" } }),
+      values: await db.studioFieldValue.findMany({ where: scope, orderBy: { id: "asc" } }) };
+  }
+  const before = await snapshot(), rolledBack = new Error("Exact conditional archive fixture rollback");
+  async function setup(tx: Prisma.TransactionClient) {
+    const definition = await tx.studioDefinition.findFirstOrThrow({ where: { id: definitionId, organisationId }, include: { activeVersion: true, draft: true } });
+    assert(definition.activeVersion && definition.draft);
+    const source = customFieldPayloadSchema.parse(definition.activeVersion.payload), draft = customFieldPayloadSchema.parse(definition.draft.payload);
+    const registry = studioRegistry(), entity = registry.describe("tickets.ticket", 8), ownerQuery = registry.describe("tickets.ticket.field_migration", 3);
+    // Existing owner preflight guards canonical/private access before IDs/counts.
+    await registry.invokeQueryInTransaction({ session, transaction: tx }, ownerQuery, { mode: "preflight" });
+    const proposed = conditionalFieldPayloadSchema.parse({ ...draft, schemaVersion: 2,
+      entity: { id: entity.id, version: entity.version, schemaHash: entity.schemaHash, contractHash: entity.contractHash }, storageGeneration: crypto.randomUUID(),
+      requiredIf: { match: "all", predicates: [{ source: { kind: "native", fieldId: "status" }, operator: "present" }] } });
+    const compiled = await compileFieldMigrationMetadata({ session, transaction: tx }, registry, company, definitionId, proposed);
+    // Exact saved canonical draft pin. Privileged Test fixture, rollback-only;
+    // production preparation must use edit-authorised CAS/Audit or a saved draft.
+    const updated = await tx.studioDraft.update({ where: { id: definition.draft.id }, data: { revision: definition.draft.revision + 1, payload: compiled.payload } });
+    const sealed = sealRequiredFieldMigrationIntent({ schemaVersion: 2, id: crypto.randomUUID(), organisationId, definitionId,
+      definitionRevision: definition.revision, principal, source: { versionId: definition.activeVersion.id, versionChecksum: definition.activeVersion.checksum, payload: source },
+      target: { draftId: updated.id, draftRevision: updated.revision, compiledChecksum: compiled.checksum, payload: compiled.payload }, conversion: { kind: "integer_to_decimal" },
+      ownerQuery: { id: ownerQuery.id, version: ownerQuery.version, schemaHash: ownerQuery.schemaHash, contractHash: ownerQuery.contractHash } });
+    return { intent: sealed.intent, data: { id: sealed.intent.id, organisationId, definitionId, entityId: entity.id, sourceVersionId: definition.activeVersion.id,
+      sourceGenerationId: source.storageGeneration, draftId: updated.id, targetGenerationId: proposed.storageGeneration, intent: sealed.intent, intentChecksum: sealed.checksum } };
+  }
+  async function records(tx: Prisma.TransactionClient, intent: Awaited<ReturnType<typeof setup>>["intent"]) {
+    const native = await tx.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, select: { id: true, version: true }, orderBy: { id: "asc" } });
+    assert(native.length > 1);
+    const rows: RequiredFieldMigrationObservation[] = [];
+    for (const record of native) {
+      const extension = await tx.studioExtensionRecord.findFirst({ where: { organisationId, entityId: "tickets.ticket", recordId: record.id },
+        include: { slots: { where: { definitionId, generationId: intent.source.payload.storageGeneration }, include: { activeValue: true } } } });
+      const slot = extension?.slots[0], value = slot?.activeValue;
+      if (value && !value.isNull) {
+        assert.equal(value.valueType, "integer"); assert.equal(value.integerValue, 0n);
+        assert.equal(value.fingerprint, checksum({ type: "integer", value: 0 }));
+      }
+      rows.push({ recordId: record.id, nativeRevision: record.version, extension: extension ? { id: extension.id, revision: extension.revision,
+        slot: slot ? { id: slot.id, revision: slot.revision, value: value ? { id: value.id, revision: value.revision, versionId: value.versionId, fingerprint: value.fingerprint } : null } : null } : null,
+        requirement: { sourceEvaluationChecksum: checksum("SQL source integrity fixture"), targetEvaluationChecksum: checksum("SQL target integrity fixture"), targetRequired: true },
+        result: value && !value.isNull ? { kind: "valid", targetFingerprint: checksum({ type: "decimal", value: "0" }), isNull: false, lossy: false }
+          : { kind: "invalid", code: "FIELD_REQUIRED" } });
+    }
+    return rows;
+  }
+  function rowData(id: string, intent: Awaited<ReturnType<typeof setup>>["intent"], observation: RequiredFieldMigrationObservation) {
+    const extension = observation.extension, slot = extension?.slot;
+    return { preparationId: id, organisationId, definitionId, entityId: "tickets.ticket", sourceGenerationId: intent.source.payload.storageGeneration,
+      recordId: observation.recordId, nativeRevision: observation.nativeRevision, extensionId: extension?.id ?? null, extensionRevision: extension?.revision ?? null,
+      slotId: slot?.id ?? null, slotRevision: slot?.revision ?? null, valueId: slot?.value?.id ?? null, observation };
+  }
+  await assert.rejects(db.$transaction(async tx => {
+    const fixture = await setup(tx), job = await tx.studioFieldMigrationPreparation.create({ data: fixture.data });
+    const stream = requiredFieldMigrationObservationDigest(), rows = await records(tx, fixture.intent);
+    for (const row of rows) { stream.append(row); await tx.studioFieldMigrationObservation.create({ data: rowData(job.id, fixture.intent, row) }); }
+    const expected = stream.finish(), actual = await digestRequiredFieldMigrationArchive(tx, fixture.intent);
+    assert.deepEqual(actual, { ...expected, duplicateTarget: false });
+    const review = sealRequiredFieldMigrationReview({ ...fixture.intent, cohort: { recordCount: actual.recordCount, observationDigest: actual.observationDigest }, summary: actual.summary });
+    await tx.studioFieldMigrationReview.create({ data: { id: job.id, organisationId, definitionId, review: review.review, checksum: review.checksum } });
+    await tx.studioFieldMigrationPreparation.update({ where: { id: job.id }, data: { state: "REVIEWED", revision: 1 } });
+    await tx.auditEntry.create({ data: { organisationId, actorUserId: session.userId, action: "studio.required_archive.rollback_fixture", entityType: "StudioFieldMigrationPreparation", entityId: job.id } });
+    await tx.$executeRaw`SET CONSTRAINTS ALL IMMEDIATE`;
+    throw rolledBack;
+  }, { isolationLevel: "Serializable", timeout: 30_000 }), error => error === rolledBack);
+  assert.deepEqual(await snapshot(), before);
+  for (const change of ["unknown", "coerced", "extra"] as const) {
+    await assert.rejects(db.$transaction(async tx => {
+      const { data } = await setup(tx);
+      const intent = change === "unknown" ? { ...data.intent, schemaVersion: 3 } : change === "coerced" ? { ...data.intent, schemaVersion: "2" }
+        : { ...data.intent, suppliedFacts: { status: "private" } };
+      await tx.studioFieldMigrationPreparation.create({ data: { ...data, intent } });
+    }, { isolationLevel: "Serializable", timeout: 30_000 }), /intent format|intent metadata/i);
+  }
+  for (const change of ["missing", "raw", "checksum", "optional_required", "required_null", "references", "sealed"] as const) {
+    await assert.rejects(db.$transaction(async tx => {
+      const fixture = await setup(tx), job = await tx.studioFieldMigrationPreparation.create({ data: fixture.data });
+      const row = (await records(tx, fixture.intent))[0];
+      let observation: object = row;
+      if (change === "missing") { const { requirement, ...without } = row; void requirement; observation = without; }
+      if (change === "raw") observation = { ...row, requirement: { ...row.requirement, actualValue: "private" } };
+      if (change === "checksum") observation = { ...row, requirement: { ...row.requirement, targetEvaluationChecksum: "bad" } };
+      if (change === "optional_required") observation = { ...row, requirement: { ...row.requirement, targetRequired: false }, result: { kind: "invalid", code: "FIELD_REQUIRED" } };
+      if (change === "required_null") observation = { ...row, result: { kind: "valid", isNull: true, lossy: false, targetFingerprint: checksum(null) } };
+      if (change === "references") observation = { ...row, nativeRevision: row.nativeRevision + 1 };
+      if (change === "sealed") {
+        const review = sealRequiredFieldMigrationReview({ ...fixture.intent, cohort: { recordCount: 0, observationDigest: requiredFieldMigrationObservationDigest().finish().observationDigest }, summary: { validCount: 0, invalidCount: 0, lossyCount: 0 } });
+        await tx.studioFieldMigrationReview.create({ data: { id: job.id, organisationId, definitionId, review: review.review, checksum: review.checksum } });
+      }
+      await tx.studioFieldMigrationObservation.create({ data: { ...rowData(job.id, fixture.intent, row), observation: observation as Prisma.InputJsonValue } });
+    }, { isolationLevel: "Serializable", timeout: 30_000 }), /requirement evidence|preview result|immutable source|unsealed/i);
+  }
+  assert.deepEqual(await snapshot(), before);
+  console.log("PASS conditional archive SQL integrity: exact real source refs, closed2 requirement/result shape, rejected unknown/coerced/raw metadata, required-null failures, sealed append denial, SQL/pure ordered digest equality and complete native/typed/draft/metadata/Audit rollback; no format2 owner/condition/execution approval.");
+}

@@ -1,3 +1,17 @@
+## 11 October 2026 — Extend the existing field archive without granting runtime authority
+
+Use additive replacements of the existing preparation/observation SQL guards and
+a shared canonical digest aggregate. Retain old format1 framing/history/FKs/CAS;
+only explicit numeric2 gets requirement-evidence shape and FIELD_REQUIRED checks.
+The required digest verifies the actual stored parent identity/hash before frame2.
+SQL checks integrity rather than evaluating rules or granting owner coverage. Full
+server compilation, actual authorised condition reads and owning module approval
+remain mandatory. Keep exact saved draft equality; canonicalization must not
+silently mutate a draft without edit authority/CAS/revision/Audit. No parallel
+archive or permission system, no resets/backfills. The rollback-only privileged
+central SQL fixture proves integrity only; synthetic evidence is not real owner
+approval or format2 execution acceptance.
+
 ## 11 October 2026 — One authorised rule-input reader; semantic evidence is not revision approval
 
 Extract the existing ordinary required-runtime reader into fields/required-inputs.ts

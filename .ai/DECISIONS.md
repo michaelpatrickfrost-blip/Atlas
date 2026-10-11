@@ -2362,3 +2362,18 @@ missing or coerced formats never fall back. Existing collection/sealing explicit
 retain format1-only support until SQL/coverage/owner integration is complete, even
 if a stored format2 packet passes pure integrity. Format/hash metadata grants no
 principal, native, value, cohort or execution rights. No new permission engine.
+
+## 11 October 2026 — Conditional execution proves actual values before archive normalization
+
+Reuse existing receipt1/outcome tables and deferred SQL guards for stored review2;
+no extra engine or DDL is necessary. SQL source/target guards prove exact pointers,
+metadata and own envelope increment but do not evaluate conditions or decode typed
+columns. The execution reader therefore evaluates all authorised inputs using the
+actual post-write envelope, validates every retained outcome mirror, reads/decodes
+actual target through current/written/native/reference policy and compares freshly
+converted source before restoring only the historical envelope for sealed digest
+comparison. No outcome or unexplained extra revision never permits normalization.
+Execution freshness handles intermediate writes; deferred progress guards prove the
+exact prefix at commit. Start/batch select protocol only from stored server intent;
+cutover/settlement stay closed1 pending their own integration. Cancellation preserves
+inactive target/outcome/history and the explained +1, never deletes or rewinds them.

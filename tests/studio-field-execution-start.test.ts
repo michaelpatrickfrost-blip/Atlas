@@ -2,13 +2,23 @@ import { beforeEach, expect, it, vi } from "vitest";
 import type { Session } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 const m = vi.hoisted(() => ({ initial: vi.fn(), transaction: vi.fn(), resolve: vi.fn(), enabled: vi.fn(), raw: vi.fn(), member: vi.fn(), module: vi.fn(), company: vi.fn(),
-  preparation: vi.fn(), publication: vi.fn(), execution: vi.fn(), create: vi.fn(), target: vi.fn(), audit: vi.fn(), inspect: vi.fn(),
+  preparation: vi.fn(), publication: vi.fn(), execution: vi.fn(), create: vi.fn(), target: vi.fn(), audit: vi.fn(), inspect: vi.fn(), requiredInspect: vi.fn(),
   receipt: vi.fn(), receiptCreate: vi.fn(), publicationUpdate: vi.fn(), definition: vi.fn(), definitionUpdate: vi.fn(), generation: vi.fn(), modules: vi.fn(), draft: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: { $transaction: m.transaction, studioFieldMigrationPreparation: { findFirst: m.initial } } }));
 vi.mock("@/core/studio/fields/principal", () => ({ resolveFieldMigrationPrincipal: m.resolve }));
 vi.mock("@/core/modules/access", () => ({ assertModuleEnabled: m.enabled }));
 vi.mock("@/core/studio/registry/runtime", () => ({ studioRegistry: () => registry }));
 vi.mock("@/core/studio/fields/migrations/inspection", () => ({ inspectFieldMigrationReview: m.inspect }));
+vi.mock("@/core/studio/fields/migrations/execution-inspection", async importOriginal => ({
+  ...await importOriginal<typeof import("@/core/studio/fields/migrations/execution-inspection")>(),
+  inspectRequiredFieldMigrationExecution: m.requiredInspect,
+}));
+import { conditionalFieldPayloadSchema } from "@/core/studio/fields/required-contract";
+import { compileConditionalCustomField } from "@/core/studio/fields/conditional-compiler";
+import { registeredRequiredFactMetadata } from "@/core/studio/fields/required-owner";
+import { sealRequiredFieldMigrationIntent, sealRequiredFieldMigrationReview } from "@/core/studio/fields/migrations/required-contracts";
+import { reviewedRequiredFieldPublicationPin } from "@/core/studio/fields/migrations/publication-contract";
+import { createRequiredFieldMigrationExecutionPin, readFieldMigrationExecutionProgress } from "@/core/studio/fields/migrations/execution-contract";
 import { CapabilityRegistry } from "@/core/studio/registry/registry";
 import { ticketStudioContract } from "@/core/service-work/studio";
 import { compileCustomField } from "@/core/studio/compiler/fields";
@@ -28,7 +38,7 @@ const principal = { organisationId: "company", userId: "user", membershipId: "me
 const source = customFieldPayloadSchema.parse({ schemaVersion: 1, entity: ref("tickets.ticket", 2), storageGeneration: uuid(1),
   field: { key: "extra", label: "Extra", classification: "confidential", storage: { type: "integer" } } });
 const targetPayload = customFieldPayloadSchema.parse({ ...source, entity: ref("tickets.ticket", 5), storageGeneration: uuid(2), field: { ...source.field, storage: { type: "decimal" } } });
-let sealed: ReturnType<typeof sealFieldMigrationReview>;
+let sealed: ReturnType<typeof sealFieldMigrationReview> | ReturnType<typeof sealRequiredFieldMigrationReview>;
 let prepared: { id: string; organisationId: string; definitionId: string; state: string; intent: unknown; intentChecksum: string; review: { review: unknown; checksum: string } };
 let publication: ReturnType<typeof reviewedFieldPublicationPin> & { state: string; revision: number };
 let target: { id: string; organisationId: string; definitionId: string; version: number; payload: unknown; compiledPlan: unknown; checksum: string };
@@ -193,4 +203,55 @@ it("replay refuses changed representation/draft/receipt/CAS and stale requests e
   m.raw.mockImplementationOnce(async () => []).mockImplementation(async (strings: TemplateStringsArray) => strings.join("?").includes("AS fresh") ? [{ fresh: false }] : []);
   await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("stale or has changed");
   expect(m.audit).not.toHaveBeenCalled();
+});
+
+// Conditional inspector is deliberately delegated here. Real compiler/pin and
+// start transaction are exercised; authority/whole-cohort row proof has its own
+// executing inspector suite and still requires central runtime acceptance.
+async function conditionalStartFixture() {
+  const payload = conditionalFieldPayloadSchema.parse({ ...targetPayload, schemaVersion: 2, entity: ref("tickets.ticket", 9),
+    requiredIf: { match: "all", predicates: [{ source: { kind: "native", fieldId: "status" }, operator: "present" }] } });
+  const compiled = await compileConditionalCustomField({ session, registry, definitionId: uuid(4),
+    resolveMetadata: async source => source.kind === "native" ? registeredRequiredFactMetadata(session, registry, payload.entity, source.fieldId) : Promise.reject(new Error("Unexpected field fixture")) }, payload);
+  const { cohort: _cohort, summary: _summary, ...reviewIntent } = sealed.review; void _cohort; void _summary;
+  const intent = sealRequiredFieldMigrationIntent({ ...reviewIntent, schemaVersion: 2,
+    target: { ...sealed.review.target, payload: compiled.payload, compiledChecksum: compiled.checksum }, ownerQuery: ref("tickets.ticket.field_migration", 4) });
+  sealed = sealRequiredFieldMigrationReview({ ...intent.intent, cohort: { recordCount: 3, observationDigest: "a".repeat(64) },
+    summary: { validCount: 3, invalidCount: 0, lossyCount: 0 } });
+  prepared = { ...prepared, intent: intent.intent, intentChecksum: intent.checksum, review: sealed };
+  target = { ...target, payload: compiled.payload, compiledPlan: compiled.plan, checksum: compiled.checksum };
+  const identity = reviewedRequiredFieldPublicationPin(sealed, target, "user", false);
+  publication = { ...identity, state: "PUBLISHED", revision: 0 };
+  const pinned = createRequiredFieldMigrationExecutionPin(sealed, target, identity, registry.describe("tickets.ticket", 9), registry.describe("tickets.ticket.field_representation", 2));
+  m.requiredInspect.mockImplementation(async () => ({ intent: intent.intent, stored: sealed, publication, target, registry,
+    pin: pinned.pin, pinChecksum: pinned.checksum, existing: structuredClone(execution), progress: execution ? readFieldMigrationExecutionProgress(pinned.pin,
+      { state: execution.state, revision: execution.revision, cursor: execution.cursor, processedCount: execution.processedCount, failureCode: execution.failureCode }) : null }));
+  return pinned;
+}
+it("dispatches actual stored conditional start and replay to required inspection and preserves receipt1 with whole review2", async () => {
+  const pinned = await conditionalStartFixture();
+  expect(await startFieldMigrationExecution(session, request())).toMatchObject({ state: "RUNNING", revision: 0, replayed: false });
+  expect(execution?.pin).toEqual(pinned.pin); expect(pinned.pin.schemaVersion).toBe(1);
+  expect(pinned.pin.publication.reviewChecksum).toBe(sealed.checksum); expect(pinned.pin.ownerApproval).toEqual(ref("tickets.ticket.field_representation", 2));
+  expect(m.requiredInspect).toHaveBeenCalledOnce(); expect(m.inspect).not.toHaveBeenCalled();
+  m.audit.mockClear(); m.create.mockClear();
+  expect(await startFieldMigrationExecution(session, request())).toMatchObject({ replayed: true, processedCount: 0 });
+  expect(m.requiredInspect).toHaveBeenCalledTimes(2); expect(m.audit).not.toHaveBeenCalled(); expect(m.create).not.toHaveBeenCalled();
+});
+it("conditional start refresh conflicts and denied replay do not fall back or duplicate history", async () => {
+  await conditionalStartFixture(); await startFieldMigrationExecution(session, request()); m.audit.mockClear(); m.create.mockClear();
+  m.requiredInspect.mockRejectedValueOnce(new Error("FORBIDDEN: current condition/private access"));
+  await expect(startFieldMigrationExecution(session, request())).rejects.toThrow("current condition/private");
+  for (const patch of [{ schemaVersion: 1 }, { schemaVersion: 3 }]) {
+    m.initial.mockResolvedValueOnce({ ...prepared, intent: { ...(prepared.intent as object), ...patch } });
+    await expect(startFieldMigrationExecution(session, request())).rejects.toThrow();
+  }
+  await expect(startFieldMigrationExecution(session, { ...request(), schemaVersion: 2 })).rejects.toThrow();
+  expect(m.inspect).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled(); expect(m.create).not.toHaveBeenCalled();
+});
+it("conditional start Audit failure rolls back its receipt and exact retry creates one execution", async () => {
+  await conditionalStartFixture(); m.audit.mockRejectedValueOnce(new Error("conditional start Audit unavailable"));
+  await expect(startFieldMigrationExecution(session, request())).rejects.toThrow("conditional start Audit unavailable"); expect(execution).toBeNull();
+  expect(await startFieldMigrationExecution(session, request())).toMatchObject({ replayed: false, revision: 0 });
+  expect(execution?.pin).toMatchObject({ schemaVersion: 1, entity: ref("tickets.ticket", 9) }); expect(m.inspect).not.toHaveBeenCalled();
 });

@@ -14,17 +14,13 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
-2B required-field evolution e3d2a — source-active conditional execution coverage.
-VERIFIED locally:63tests/5suites, strictTS/scoped lint/production build/diff PASS.
-Separate internal entry/private preflight/current representation query2 support,
-existing execution/source/target SQL guards reused. No new DDL or writes. Original
-0d315f7 release46009 exit0; candidateMTZpXy/publicVvzibi BOTH ALL COMBINED PASS,
-compatibility/public health exact. Current0d315f7 rollbackbafa1c2; only inactive8cc2758
-duplicate runtime retired. Temporary build swap safely removed49396 exit0 under
-BOTH original lock inodes; root164GiB free/no swap/2.6GiB RAM available.
-Actual conditional row/outcome/review inspection e3d2b is IN PROGRESS; no execution2
-start/batch/cutover or ordinary authoring enabled. Detailed dependencies saved in
-required-rules plan. Unit SQL fixtures are not actual format2 runtime evidence.
+2B required-field evolution e3d2b–4 — usable conditional conversion milestone.
+E3d2b actual row/outcome/review and execution metadata inspectors integrated;
+e3d3 existing normal start/batch/representation VERIFIED locally. Combined96tests/
+7suites, strictTS/scoped lint/production build/diff PASS. E3d4 actual central checker
+IMPLEMENTED; normal runtime proof pending original candidate/public release.
+No new engine/DDL. Current public0d315f7; conditional cutover/settlement/native
+hooks/ordinary authoring and complete Phase2/visual gate remain unfinished.
 
 # Overall Status
 
@@ -57,6 +53,11 @@ source coverage, phase plan and this ledger. No rewritten specification.
   of actual execution runtime from synthetic pure metadata or owner descriptors.
 
 # Current Workstream Detail
+
+Integrated06eeda1/13fe331/45c6896; review and metadata inspector branches merged,
+only parallel memory conflicts resolved by retaining both entries. Independent
+review no blocking defect. Existing normal conversion dispatch now being adapted,
+with focused suites/checker in isolated worktrees. No new DDL or later-phase work.
 
 E3d2b row/outcome observer VERIFIED locally:51tests/4suites, strictTS/scoped lint/
 diff PASS; independent read-only review no blocking defect. Exact own +1/new-anchor
@@ -94,6 +95,12 @@ remain gated until their own integration passes.
 
 # Files Changed
 
+Current milestone additionally changes existing execution-start/batch/representation,
+required-execution-inspection, current row/review inspectors, existing service suites
+and existing central required-review checker; root ledger/coverage/architecture/
+required-rules plan and .ai/CURRENT_STATE/DECISIONS reconciled. Parallel scoped
+commits06eeda1/13fe331/45c6896 plus contributions1beafb4/a160372 reviewed.
+
 Current integrated blocks: fields/migrations/{coverage,observation,inspection,
 publication,publication-contract,execution-contract}.ts; definitions/publication.ts;
 existing required observation/inspection/publication/execution-contract suites;
@@ -104,6 +111,11 @@ suites and central checker. Exact source checkpoints ede65ae,a475823,8cc2758,
 01a79ed,a04349c,bafa1c2,0d315f7. Shared Desktop checkout and visual stash remain untouched.
 
 # Database / Prisma Changes
+
+Current local integration adds no DDL/schema/migration. Existing central checker
+will create only reviewed target/slot/value/outcome history for its exact isolated
+Test business; source/native untouched. Cancellation retains history/global own +1;
+draft restored with monotonic revision. This real proof is pending.
 
 No new schema/model/DDL for current owner/normal API/publication/integrity blocks.
 Reuse existing tenant-owned archive/generations/metadata/values and SQL guards.
@@ -130,6 +142,10 @@ coverage to the existing required observation suite. Mocks and pure synthetic
 metadata are never described as normal runtime evidence.
 
 # Tests Run
+
+Current integrated96tests/7suites PASS30539; strictTS96474/scoped lint16281/build74651
+exit0; reviewed final diff/check PASS. Two existing fixture warnings, zero errors.
+Real central conditional execution not yet invoked; original release next.
 
 - E3d2a63tests/5suites PASS97635; strictTS99973/scoped lint26699/build97017 exit0.
   Two pre-existing unused mock-argument lint warnings, zero errors.
@@ -214,22 +230,13 @@ later-phase features. No complete Studio/visual builder claim.
 
 # Exact Next Action
 
-Merge scoped parallel review/execution inspectors after reviewing their code and
-combined checks, then adapt existing start/batch/representation using actual stored
-protocol, add normal central Test conversion/replay/rollback proof and run original
-combined release. No cutover/settlement/authoring2 enablement from this checkpoint.
-
-Current e3d2b: add inspectExecutingRequiredFieldMigrationRecord/its archive wrapper
-to observation.ts, an explicit execution review entry in inspection.ts, and the
-closed2 server execution inspector in execution-inspection.ts. Reuse e3d2a coverage
-and existing pure pins; source remains active. Do not enable start/batches yet.
-Verify actual retained outcomes for own +1 global extension revision, including
-formerly unanchored records, unchanged source slot/value/native revision, exact target
-representation and reevaluated conditions/independent field Read rights. Bounded
-actual rows and SQL/pure seals must agree; semantic equality never waives arbitrary
-revision drift. Add focused legacy/permission/tenant/own-outcome/drift tests. Only
-then adapt existing start/batch/representation, followed by cutover/settlement/native
-hooks and remaining2B/2C/2D/2E/2F. No ordinary conditional authoring before its gate.
+Commit the reviewed integrated conditional conversion code/tests/checker/memory,
+run original clean pinned studio combined candidate/public release, verify real
+normal stored2 start/batches/failure resume/replays and atomic rollback, confirm exact
+public revision, safely remove temporary build-memory buffer under both original
+locks and archive recoverable temporary parallel worktrees. Update actual evidence;
+then adapt existing conditional cutover/settlement/native write-window paths before
+remaining fields/record types/pages/visual builder. No Phase3 features.
 
 # Historical checkpoint evidence
 

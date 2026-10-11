@@ -1,3 +1,97 @@
+## 11 October 2026 — usable conditional conversion milestone IMPLEMENTED; live proof pending
+
+Parallel root06eeda1/review13fe331/execution45c6896 integrated; scoped service tests
+from1beafb4 and existing central checker froma160372 reviewed/integrated with root
+start/batch/representation. Actual stored intent selects closed1/2; same owner query,
+claim/extension/typed slot/value/outcome/progress/Audit transaction, bounded failure/
+resume and no client format. Actual target decoder/current conditions and full own
+outcome lineage precede archive normalization. Independent SQL/native/security
+reviews found no blockers. No new engine/schema/migration or source/native mutation.
+Combined96tests/7suites PASS30539, strictTS96474/scoped lint16281/build74651 exit0,
+diff reviewed/check PASS. Two existing unused mock warnings, zero lint errors.
+Initial legacy batch fixture lacked actual scalar organisationId; fixture corrected,
+selector unchanged and all28 legacy service cases +ten conditional cases PASS.
+Local collaborators are explicit authority/transaction fixtures; real normal API
+proof still pending. Existing central checker adds real start/target/outcome/progress/
+paired Audit rollback, FAILED resume, own +1/null/zero values, READY/replays and
+cancellation retaining immutable targets/history and exact source/native/draft.
+No central invocation yet. Current public remains0d315f7. Next clean pinned original
+studio combined candidate/public release; use existing required recovery gates only,
+temporary build-memory buffer under BOTH original locks, then safely remove it and
+archive recoverable parallel worktrees. Conditional cutover/settlement/native hooks,
+remaining fields/record types/pages/visual builder and full Phase2 gate remain open.
+
+## 11 October 2026 — isolated conditional execution central checker IMPLEMENTED
+
+Extended existing check-field-required-review-storage.ts only, on its same valid
+absent-rule publication/retained Test definition/company/records. Existing normal
+start/batch APIs derive stored2; root owns their adaptation. Checker adds exact
+execution/outcome/global-extension snapshots, start Audit rollback, second-row target
+failure/sparse FAILED and normal resumed prefix, second-row outcome/late progress/
+paired batch and recovery Audit rollback, bounded READY and response/start replay.
+Verifies actual closed2 observations and unchanged receipt1 outcomes, typed zero/null,
+written target version/pointers/fingerprint, own +1 global envelope including new
+anchors, immutable outcome/execution denial, actual READY reinspection and retained
+cancellation prefix/history. Every source/native row preserved, exact draft payload
+restored with monotonic revision; no new native records/entities/definitions/company/
+grants, schema migration, cutover/settlement or authoring. Scoped temporary SQL triggers
+follow existing failure-injection policy and always drop in finally. READY/cleanup
+PASS messages emit only after normal cancellation/restoration finishes.
+Strict TypeScript12814/scoped lint89784 exit0, final diff reviewed/check PASS, using
+root observation/review/start/batch/representation files copied solely UNSTAGED for
+integration verification (excluded from scoped commit). No central invocation,
+write, test backup/dump, build or deployment run here. Runtime checks are IMPLEMENTED,
+not VERIFIED: original runner must first prove real PostgreSQL/API behaviour after
+root service integration, with mandatory existing recovery policy. Earlier pure
+script compilation passed82600; final checks include current root service types.
+Known integration risk: converting originally unanchored Test records retains new
+inactive target anchors; inspected later checks are field-specific and appear
+compatible, but original full combined acceptance remains mandatory. Source keeps
+its active pointer; target/outcome/history/global revisions cannot be deleted or
+rewound merely to clean this fixture. Conditional publication replay after existing
+execution remains separately gated and is not exercised here.
+Next: root cherry-picks scoped checker/memory, runs original single candidate/public
+central acceptance after conditional execution service integration, confirms each
+failure/replay/cancellation proof, and records exact live evidence or failing guard.
+
+## 11 October 2026 — parallel conditional start/batch/representation suites VERIFIED locally; integration pending
+
+Root owns service dispatch; isolated codex/studio-review-inspection adds ten meaningful
+closed2 cases to existing execution-start/execution-batch/representation suites, keeping
+all28 prior cases. Actual conditional compiler/native9/query4/approval2 and closed2
+review/publication/execution/outcome helpers are used; native/whole-cohort row inspection
+and transactional database collaborators are explicitly unit fixtures. Start covers
+stored2 dispatch, exact receipt1/fullreview2 binding, current denied replay, unknown/
+legacy/client override rejection and Audit rollback/retry. Batch covers bounded exact
+prefix, stale/READY replay, sparse failure/resume and batch+failure Audit rollback.
+Representation covers owner2/row2 dispatch before claim, complete conditional checksum,
+exact large decimal encoding, unanchored and anchored-without-source-slot optional null,
+semantic/condition/fingerprint/read/required absence denial, sealed review and extension
+CAS. Canonical initial preparation fixture now includes organisationId required by the
+shared stored selector; production selector remains strict. Final38cases/3suites PASS
+6bd2be and scoped lint/diff aafdb6 PASS. Initial writer fixture return shape and test
+union-correlation typing corrected without production relaxation. Strict TypeScript
+87992 exit0; earlier55826 failed only two test fixture union-correlation assignments.
+Root services/observer/execution inspector copied read-only for dependency verification
+and left unstaged; commit only these three assigned suites plus this memory entry.
+No production build/deploy, DDL, native/business writes, cutover/settlement or later-phase
+enablement from this branch. Exact next action: root integrate this scoped checkpoint
+with its dispatch and inspect integrated results; normal central start/
+batch/replay/resume/owner/Audit proof in BOTH candidate/public remains mandatory.
+Whole Phase2 remains IN PROGRESS; unit fixtures do not establish normal live execution.
+
+## 11 October 2026 — parallel inspectors integrated; normal execution IN PROGRESS
+
+Root06eeda1, bounded review13fe331 (from0cf00ea), execution metadata45c6896
+(from6a49ca2) reviewed/integrated, preserving every branch memory entry. Combined
+86tests/7suites and strictTS PASS; no normal format2 execution inferred. Existing
+start/batch now select closed1/2 from server-loaded intent; existing representation
+chooses corresponding row/outcome parser and codec with unchanged owning query/
+claim/typed writes/CAS/progress/Audit transaction. No new engine/model/DDL. Core
+service changes IN PROGRESS; isolated branches now own focused existing service
+suites and existing central checker proof. Build and original combined release at
+usable integrated milestone; actual cutover/settlement/native authoring still gated.
+
 ## 11 October 2026 — isolated conditional execution metadata inspection VERIFIED locally
 
 Parallel branch codex/studio-execution-inspection adds only the separate

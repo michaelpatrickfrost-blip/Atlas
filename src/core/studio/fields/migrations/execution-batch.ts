@@ -5,11 +5,13 @@ import { assertModuleEnabled } from "@/core/modules/access";
 import { writeAudit } from "@/core/audit/log";
 import { STUDIO_CAPABILITIES } from "../../permissions";
 import { checksum } from "../../registry/contracts";
-import { sealFieldMigrationIntent, FieldMigrationReviewError, type FieldMigrationIntent } from "./contracts";
+import { FieldMigrationReviewError, type FieldMigrationIntent } from "./contracts";
 import { withFieldMigrationAuthority } from "./authority";
-import { inspectFieldMigrationExecution } from "./execution-inspection";
+import { inspectFieldMigrationExecution, inspectRequiredFieldMigrationExecution } from "./execution-inspection";
 import { writeFieldMigrationRepresentation } from "./representation";
 import { fieldMigrationExecutionBatchSchema, fieldMigrationExecutionFailureSchema, fieldMigrationExecutionPinSchema, readFieldMigrationExecutionProgress } from "./execution-contract";
+import { readStoredFieldMigrationIntent } from "./stored-protocol";
+import type { RequiredFieldMigrationIntent } from "./required-contracts";
 import type { z } from "zod";
 
 type Failure = z.infer<typeof fieldMigrationExecutionFailureSchema>;
@@ -29,7 +31,7 @@ export class FieldMigrationExecutionError extends Error {
 
 /** Sparse recovery only. Metadata permission never grants native data access;
  * no counts, cursor, native identifiers or values are returned or audited here. */
-async function recordFailure(session: Session, intent: FieldMigrationIntent, revision: number, code: Failure): Promise<boolean> {
+async function recordFailure(session: Session, intent: FieldMigrationIntent | RequiredFieldMigrationIntent, revision: number, code: Failure): Promise<boolean> {
   // Reserve the last SQL integer revision for sparse cancellation.
   if (revision > 2147483645) return false;
   try { return await withFieldMigrationAuthority(session, intent.principal, async ({ session: fresh, transaction: tx }) => {
@@ -61,10 +63,10 @@ export async function executeFieldMigrationBatch(session: Session, input: unknow
   const request = fieldMigrationExecutionBatchSchema.parse(input);
   const initial = await db.studioFieldMigrationPreparation.findFirst({ where: { id: request.preparationId, organisationId: session.organisationId } });
   if (!initial) changed();
-  const sealed = sealFieldMigrationIntent(initial.intent), intent = sealed.intent;
-  if (sealed.checksum !== initial.intentChecksum || intent.id !== initial.id || intent.organisationId !== session.organisationId) changed();
+  const { intent } = readStoredFieldMigrationIntent(initial, session.organisationId);
   try { return await withFieldMigrationAuthority(session, intent.principal, async authority => {
-    const { session: fresh, transaction: tx } = authority, inspected = await inspectFieldMigrationExecution(authority, intent);
+    const { session: fresh, transaction: tx } = authority, inspected = intent.schemaVersion === 2 ? await inspectRequiredFieldMigrationExecution(authority, intent)
+      : await inspectFieldMigrationExecution(authority, intent);
     if (!inspected.existing || !inspected.progress) changed();
     const prior = inspected.progress;
     if (request.revision > prior.revision) changed();

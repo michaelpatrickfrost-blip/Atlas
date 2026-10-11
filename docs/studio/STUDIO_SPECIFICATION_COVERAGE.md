@@ -86,9 +86,12 @@ COMBINED PASS, original24271 exit0 and public health exact. Pure closed2 executi
 outcome integrity is VERIFIED locally (40focused +21regression/types/lint/build).
 Separate execution coverage e3d2a is VERIFIED locally:63focused/types/lint/build/diff
 PASS; original0d315f7/46009 candidateMTZpXy/publicVvzibi BOTH ALL COMBINED PASS,
-compatibility/health exact; no actual execution2 enabled. Next conditional
-row/retained-outcome/review inspection e3d2b, then
-conditional execution/cutover/settlement/native writer integration before 2C
+compatibility/health exact. E3d2b actual row/outcome/review and execution metadata
+inspection now integrated06eeda1/13fe331/45c6896:86tests/7suites/strictTS PASS.
+Existing start/batch/representation and scoped suites/checker now integrated;
+96tests/7suites/strictTS/scopedlint/build/diff PASS. Central normal API proof pending
+original combined release; no actual runtime2 claim yet. Next finish
+normal conversion proof, then cutover/settlement/native writer integration before2C
 record types,2D page compiler,2E visual authoring/runtime and2F full phase gate.
 Use this matrix and the original relevant sections at each checkpoint. No feature
 may be silently omitted, marked VERIFIED from a file or moved to a later phase

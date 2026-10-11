@@ -1,6 +1,15 @@
-<!-- 11 October checkpoint: root e3d2b row/outcome observer VERIFIED locally,
-51tests/4suites/types/lint/diff PASS; branch inspectors awaiting integration.
-Actual start/batch/representation and central runtime proof remain NOT STARTED. -->
+## 11 October — current linked execution checkpoint
+
+Root06eeda1/review13fe331/execution45c6896 integrated;86tests/7suites and strictTS
+PASS. Independent SQL/native/security review found no blocking defect; custom
+condition post-write envelope/independent Read gap now covered. Root existing
+start/batch/representation and branch suites/checker now integrated. Combined96
+tests/7suites, strictTS/scoped lint/productionbuild/diff PASS. Actual central normal
+API proof pending original combined candidate/public release.
+No new DDL/engine; source stays active, native rows untouched; conditional cutover/
+settlement/native authoring remains gated. Original combined release at usable
+integrated milestone, not each helper. Historical entries below are earlier evidence.
+
 
 ## 11 October — authorised parallel e3d2b delivery
 
@@ -43,9 +52,9 @@ conditional authoring/activation remains gated throughout these internal steps.
 | Workstream | Expected files | Database implications | Required evidence | Status |
 | --- | --- | --- | --- | --- |
 | e3d2a Source-active execution coverage | migrations/coverage.ts; existing required observation and coverage suites | Reuse locked actual RUNNING/READY/FAILED execution, source/target SQL lineage; no planned DDL | Refreshed caller authority/private/owner policy; exact review/pin/native/source; arbitrary global revision changes denied | VERIFIED locally:63tests/5suites, strictTS/lint/build/diff PASS; runtime2 NOT enabled |
-| e3d2b Conditional row/review reinspection | observation.ts,inspection.ts,execution-inspection.ts; existing inspection suites | Read-only actual observation/outcome/target metadata; source remains active | Reevaluate all actual condition inputs; permit own +1 global envelope only through exact retained outcome and source/target mirrors; bounded SQL/pure seal equality | IN PROGRESS |
-| e3d3 Start and representation/batches | Existing execution-start.ts,execution-batch.ts,representation.ts; existing suites | Same atomic generation/slot/value/outcome/progress/Audit; additive correction only if actual SQL evidence proves necessary | Stored-format dispatch; explicit owner approval; converted value matches reviewed requirements; response/retry/CAS/failure/Audit atomicity and exact source preservation | NOT STARTED |
-| e3d4 Actual normal execution proof | Extend exact central Test checker, no new company/parallel engine | Original fixture recovery and retained Test history; zero native writes | Real start/bounded batch/replay/resume/private/tenant/failure behaviour, all source-active; original candidate/public gates | NOT STARTED |
+| e3d2b Conditional row/review reinspection | observation.ts,inspection.ts,execution-inspection.ts; existing inspection suites | Read-only actual observation/outcome/target metadata; source remains active | Reevaluate all actual condition inputs; permit own +1 global envelope only through exact retained outcome and source/target mirrors; bounded SQL/pure seal equality | VERIFIED locally integrated86tests/7suites/strictTS; central proof pending |
+| e3d3 Start and representation/batches | Existing execution-start.ts,execution-batch.ts,representation.ts; existing suites | Same atomic generation/slot/value/outcome/progress/Audit; additive correction only if actual SQL evidence proves necessary | Stored-format dispatch; explicit owner approval; converted value matches reviewed requirements; response/retry/CAS/failure/Audit atomicity and exact source preservation | VERIFIED locally;96integrated/type/lint/build PASS; actual proof pending |
+| e3d4 Actual normal execution proof | Extend exact central Test checker, no new company/parallel engine | Original fixture recovery and retained Test history; zero native writes | Real start/bounded batch/replay/resume/private/tenant/failure behaviour, all source-active; original candidate/public gates | IMPLEMENTED checker; actual invocation pending |
 
 Important inspection detail from actual source: every converted row changes the
 global extension envelope once, including creation for a formerly unanchored row.

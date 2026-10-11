@@ -2,14 +2,16 @@ import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { Prisma } from "@/generated/prisma/client";
 import type { FieldMigrationAuthority } from "./authority";
-import type { inspectFieldMigrationExecution } from "./execution-inspection";
+import type { inspectFieldMigrationExecution, inspectRequiredFieldMigrationExecution } from "./execution-inspection";
 import { FieldMigrationReviewError, fieldMigrationObservationSchema } from "./contracts";
 import { canonicalJson, checksum } from "../../registry/contracts";
 import { encodeFieldRepresentation } from "../codec";
-import { inspectFieldMigrationRecord } from "./observation";
-import { createFieldMigrationOutcomePin } from "./execution-contract";
+import { inspectFieldMigrationRecord, inspectExecutingRequiredFieldMigrationRecord } from "./observation";
+import { createFieldMigrationOutcomePin, createRequiredFieldMigrationOutcomePin } from "./execution-contract";
 
-type Inspection = Awaited<ReturnType<typeof inspectFieldMigrationExecution>>;
+import { requiredFieldMigrationObservationSchema } from "./required-contracts";
+
+type Inspection = Awaited<ReturnType<typeof inspectFieldMigrationExecution>> | Awaited<ReturnType<typeof inspectRequiredFieldMigrationExecution>>;
 const approvalSchema = z.strictObject({ organisationId: z.string(), recordId: z.string(), revision: z.number().int().positive(),
   preparationId: z.uuid(), observationId: z.uuid(), representationOnly: z.literal(true) });
 function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"); }
@@ -26,7 +28,7 @@ export async function writeFieldMigrationRepresentation(authority: FieldMigratio
     entityId: intent.source.payload.entity.id, sourceGenerationId: intent.source.payload.storageGeneration };
   const row = await tx.studioFieldMigrationObservation.findFirst({ where });
   if (!row) changed();
-  const stored = fieldMigrationObservationSchema.parse(row.observation);
+  const stored = intent.schemaVersion === 2 ? requiredFieldMigrationObservationSchema.parse(row.observation) : fieldMigrationObservationSchema.parse(row.observation);
   if (stored.result.kind !== "valid" || stored.recordId !== row.recordId || stored.nativeRevision !== row.nativeRevision) changed();
   // Exact owner query locks and approves the native row, including historical
   // representation policy, before any Studio business-value columns are read.
@@ -34,15 +36,18 @@ export async function writeFieldMigrationRepresentation(authority: FieldMigratio
     { preparationId: intent.id, observationId: row.id }));
   if (approved.organisationId !== session.organisationId || approved.recordId !== row.recordId || approved.revision !== row.nativeRevision
     || approved.preparationId !== intent.id || approved.observationId !== row.id) changed();
-  const current = await inspectFieldMigrationRecord({ session, transaction: tx }, registry, company, intent,
-    { recordId: approved.recordId, organisationId: approved.organisationId, revision: approved.revision });
+  const context = { session, transaction: tx }, anchor = { recordId: approved.recordId, organisationId: approved.organisationId, revision: approved.revision };
+  const current = intent.schemaVersion === 2 ? await inspectExecutingRequiredFieldMigrationRecord(context, intent, anchor)
+    : await inspectFieldMigrationRecord(context, registry, company, intent, anchor);
   if (canonicalJson(current.observation) !== canonicalJson(stored)) changed();
   const encoded = encodeFieldRepresentation(intent.target.payload.field, current.convertedValue);
   if (encoded.fingerprint !== stored.result.targetFingerprint || encoded.isNull !== stored.result.isNull
     || (stored.result.lossy && !pin.publication.acknowledgedLoss)) changed();
-  const outcome = createFieldMigrationOutcomePin(pin, { id: row.id, preparationId: row.preparationId, organisationId: row.organisationId,
+  const archived = { id: row.id, preparationId: row.preparationId, organisationId: row.organisationId,
     definitionId: row.definitionId, entityId: row.entityId, sourceGenerationId: row.sourceGenerationId, recordId: row.recordId,
-    nativeRevision: row.nativeRevision, observation: stored }, { extensionId: stored.extension?.id ?? randomUUID(), slotId: randomUUID(), valueId: randomUUID() });
+    nativeRevision: row.nativeRevision, observation: stored }, ids = { extensionId: stored.extension?.id ?? randomUUID(), slotId: randomUUID(), valueId: randomUUID() };
+  const outcome = intent.schemaVersion === 2 ? createRequiredFieldMigrationOutcomePin(pin, inspected.stored, archived, ids)
+    : createFieldMigrationOutcomePin(pin, archived, ids);
   // Claim first: deferred target FKs and commit guards permit only this exact
   // target to be inserted. A subsequent error rolls the claim back as well.
   await tx.studioFieldMigrationOutcome.create({ data: { observationId: outcome.observationId, preparationId: outcome.preparationId,

@@ -20,16 +20,23 @@ import { startFieldMigrationPreparation } from "../../src/core/studio/fields/mig
 import { collectFieldMigrationBatch } from "../../src/core/studio/fields/migrations/collection";
 import { sealFieldMigrationPreparation } from "../../src/core/studio/fields/migrations/sealing";
 import { readStoredFieldMigrationIntent, readStoredFieldMigrationReview } from "../../src/core/studio/fields/migrations/stored-protocol";
+import { startFieldMigrationExecution } from "../../src/core/studio/fields/migrations/execution-start";
+import { executeFieldMigrationBatch, FieldMigrationExecutionError } from "../../src/core/studio/fields/migrations/execution-batch";
+import { inspectRequiredFieldMigrationExecution } from "../../src/core/studio/fields/migrations/execution-inspection";
+import { createRequiredFieldMigrationOutcomePin, fieldMigrationOutcomePinSchema } from "../../src/core/studio/fields/migrations/execution-contract";
+import { requiredFieldMigrationObservationSchema } from "../../src/core/studio/fields/migrations/required-contracts";
+import { decodeStoredFieldValue } from "../../src/core/studio/fields/codec";
 import { Prisma as PrismaRuntime } from "../../src/generated/prisma/client";
 
 /** Exact Test review checks. Archive fixtures roll back completely; their rows
  * use actual authorised inputs and negative packets prove SQL shape only.
  * A separate canonical draft seed then exercises actual prepare/collect/seal
  * services, retaining their immutable history and restoring the saved draft.
- * A second canonical draft proves normal reviewed publication/replay/cancellation
- * with retained immutable metadata history. Native/typed values and active source
- * remain unchanged. No customer conditional authoring/execution, new company,
- * permission or ad-hoc dump. */
+ * A second canonical draft proves normal reviewed publication and bounded
+ * conditional execution/replay/resume/cancellation. Native/source rows and active
+ * source remain unchanged; immutable inactive targets/outcomes and their exact
+ * own extension increments are retained. No customer authoring/cutover, new
+ * company/record/permission or ad-hoc dump. */
 export async function checkRequiredFieldReviewStorage(session: Session, principal: FieldMigrationPrincipal, definitionId: string) {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1");
   const organisationId = session.organisationId, scope = { organisationId };
@@ -42,6 +49,7 @@ export async function checkRequiredFieldReviewStorage(session: Session, principa
       await db.studioFieldMigrationObservation.count({ where: scope }), await db.studioFieldMigrationReview.count({ where: scope }), await db.auditEntry.count({ where: scope })];
     return { counts, definition: await db.studioDefinition.findFirstOrThrow({ where: { id: definitionId, organisationId } }),
       draft: await db.studioDraft.findFirstOrThrow({ where: { definitionId, organisationId } }),
+      extensions: await db.studioExtensionRecord.findMany({ where: scope, orderBy: { id: "asc" } }),
       native: await db.serviceWorkItem.findMany({ where: { organisationId, kind: "TICKET" }, orderBy: { id: "asc" } }),
       slots: await db.studioFieldSlot.findMany({ where: scope, orderBy: { id: "asc" } }),
       values: await db.studioFieldValue.findMany({ where: scope, orderBy: { id: "asc" } }) };
@@ -250,6 +258,8 @@ export async function checkRequiredFieldReviewStorage(session: Session, principa
       versions: await db.studioDefinitionVersion.findMany({ where: { organisationId, definitionId }, orderBy: { version: "asc" } }),
       generations: await db.studioFieldGeneration.findMany({ where: { organisationId, definitionId }, orderBy: { id: "asc" } }),
       publication: await db.studioFieldMigrationPublication.findFirst({ where: { preparationId: publicationId, organisationId } }),
+      execution: await db.studioFieldMigrationExecution.findFirst({ where: { preparationId: publicationId, organisationId } }),
+      outcomes: await db.studioFieldMigrationOutcome.findMany({ where: { preparationId: publicationId, organisationId }, orderBy: { recordId: "asc" } }),
       audits: await db.auditEntry.findMany({ where: { organisationId, entityId: { in: [definitionId, publicationId] } }, orderBy: { id: "asc" } }) };
   }
   try {
@@ -291,8 +301,126 @@ export async function checkRequiredFieldReviewStorage(session: Session, principa
     const rechecked = await withFieldMigrationAuthority(session, principal, authority => inspectPublishedRequiredFieldMigrationReview({ session: authority.session, transaction: authority.transaction }, validFixture.intent));
     assert.equal(rechecked.checksum, reviewed.checksum);
     assert.equal(current.audits.filter(row => row.entityId === publicationId && row.action === "studio.field.migration.published").length, 1);
+    // Normal existing service APIs, not direct target/outcome/progress inserts.
+    // All conditions are evaluated against the canonical Test records above.
+    const executionScope = { preparationId: publicationId, organisationId };
+    const observations = await db.studioFieldMigrationObservation.findMany({ where: executionScope, orderBy: { recordId: "asc" } });
+    assert(observations.length >= 3, "Conditional rollback proof needs a committed prefix and two remaining actual records.");
+    assert(observations.some(row => row.extensionId === null));
+    const startRequest = { preparationId: publicationId, publicationRevision: published.publicationRevision, reviewChecksum: reviewed.checksum };
+    const execute = (revision: number, limit: number) => executeFieldMigrationBatch(session, { preparationId: publicationId, revision, limit });
+    const execution = () => db.studioFieldMigrationExecution.findFirstOrThrow({ where: executionScope });
+    const currentSnapshot = await publicationSnapshot();
+    for (const id of [organisationId, session.userId, publicationId, validFixture.intent.target.payload.storageGeneration, observations[1].recordId, observations[2].recordId])
+      assert(/^[a-zA-Z0-9_-]+$/.test(id));
+    async function failureTrigger(table: "audit_entries" | "studio_field_values" | "studio_field_migration_outcomes" | "studio_field_migration_executions",
+      event: "INSERT" | "UPDATE", condition: string, run: () => Promise<void>) {
+      const trigger = `studio_required_exec_${crypto.randomUUID().replaceAll("-", "")}`;
+      assert(/^[a-z0-9_]+$/.test(trigger));
+      try {
+        await db.$executeRawUnsafe(`CREATE FUNCTION ${trigger}() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF ${condition} THEN RAISE EXCEPTION 'Exact Test conditional execution failure'; END IF; RETURN NEW; END $$;`);
+        await db.$executeRawUnsafe(`CREATE TRIGGER ${trigger} BEFORE ${event} ON ${table} FOR EACH ROW EXECUTE FUNCTION ${trigger}();`);
+        await run();
+      } finally {
+        await db.$executeRawUnsafe(`DROP TRIGGER IF EXISTS ${trigger} ON ${table};`);
+        await db.$executeRawUnsafe(`DROP FUNCTION IF EXISTS ${trigger}();`);
+      }
+    }
+    const auditScope = `NEW."organisationId"='${organisationId}' AND NEW."actorUserId"='${session.userId}' AND NEW."entityId"='${publicationId}'`;
+    const blockedRecovery = `${auditScope} AND NEW.action='studio.field.migration.execution_failed'`;
+    await failureTrigger("audit_entries", "INSERT", `${auditScope} AND NEW.action='studio.field.migration.execution_started'`, async () => {
+      await assert.rejects(() => startFieldMigrationExecution(session, startRequest), /Exact Test conditional execution failure/);
+      assert.deepEqual(await publicationSnapshot(), currentSnapshot);
+    });
+    for (const patch of [{ schemaVersion: 1 }, { organisationId: "foreign" }, { publicationRevision: published.publicationRevision + 1 }, { reviewChecksum: "f".repeat(64) }])
+      await assert.rejects(() => startFieldMigrationExecution(session, { ...startRequest, ...patch }));
+    await assert.rejects(() => startFieldMigrationExecution({ ...session, organisationId: "foreign" }, startRequest));
+    assert.deepEqual(await publicationSnapshot(), currentSnapshot);
+    const started = await startFieldMigrationExecution(session, startRequest), initialExecution = await publicationSnapshot();
+    assert.equal(started.state, "RUNNING"); assert.equal(started.processedCount, 0); assert.equal(started.cursor, null);
+    assert.deepEqual(await startFieldMigrationExecution(session, startRequest), { ...started, replayed: true });
+    assert.deepEqual(await publicationSnapshot(), initialExecution);
+    assert.equal(initialExecution.audits.filter(row => row.action === "studio.field.migration.execution_started").length, 1);
+    const targets = (state: Awaited<ReturnType<typeof publicationSnapshot>>) => ({ native: state.snapshot.native, extensions: state.snapshot.extensions,
+      slots: state.snapshot.slots, values: state.snapshot.values, outcomes: state.outcomes });
+    const targetScope = `NEW."organisationId"='${organisationId}' AND NEW."generationId"='${validFixture.intent.target.payload.storageGeneration}'`;
+    await failureTrigger("studio_field_values", "INSERT", `${targetScope} AND EXISTS (SELECT 1 FROM studio_field_slots s JOIN studio_extension_records e ON e.id=s."extensionId" AND e."organisationId"=s."organisationId" WHERE s.id=NEW."slotId" AND e."recordId"='${observations[1].recordId}')`, async () => {
+      await assert.rejects(() => execute(started.revision, 2), error => error instanceof FieldMigrationExecutionError && error.code === "WRITE_FAILED" && error.failureRecorded);
+      const failed = await publicationSnapshot(); assert.deepEqual(targets(failed), targets(initialExecution));
+      assert.equal(failed.execution?.state, "FAILED"); assert.equal(failed.execution?.processedCount, 0); assert.equal(failed.execution?.cursor, null);
+      assert.equal(failed.execution?.revision, started.revision + 1); assert.equal(failed.execution?.failureCode, "WRITE_FAILED");
+      assert(failed.execution && initialExecution.execution);
+      const stableExecution = (row: NonNullable<typeof failed.execution>) => {
+        const { state, revision, failureCode, updatedAt, ...stable } = row; void state; void revision; void failureCode; void updatedAt; return stable;
+      };
+      assert.deepEqual(stableExecution(failed.execution), stableExecution(initialExecution.execution));
+      assert.equal(failed.audits.filter(row => row.action === "studio.field.migration.execution_failed").length, 1);
+    });
+    const failed = await execution(), first = await execute(failed.revision, 1);
+    assert.equal(first.processedCount, 1); assert.equal(first.state, "RUNNING"); assert.equal(first.appended, 1); assert.equal(first.revision, failed.revision + 2);
+    const committed = await publicationSnapshot();
+    assert.equal(committed.outcomes.length, 1);
+    const firstAudit = committed.audits.find(row => row.action === "studio.field.migration.execution_batched");
+    assert(firstAudit); assert.equal((firstAudit.after as { resumed?: boolean } | null)?.resumed, true);
+    assert.equal((await execute(failed.revision, 2)).replayed, true); assert.deepEqual(await publicationSnapshot(), committed);
+    const executionCondition = `NEW."organisationId"='${organisationId}' AND NEW."preparationId"='${publicationId}'`;
+    // Recovery Audit is deliberately blocked too, so failures below cannot change
+    // even the sparse state/revision/Audit prefix after the batch rolls back.
+    for (const [table, event, condition] of [
+      ["studio_field_migration_outcomes", "INSERT", `${executionCondition} AND NEW."recordId"='${observations[2].recordId}'`],
+      ["studio_field_migration_executions", "UPDATE", `${executionCondition} AND NEW."processedCount">OLD."processedCount"`],
+      ["audit_entries", "INSERT", `${auditScope} AND NEW.action='studio.field.migration.execution_batched'`],
+    ] as const) {
+      await failureTrigger("audit_entries", "INSERT", blockedRecovery, () => failureTrigger(table, event, condition, async () => {
+        await assert.rejects(() => execute(first.revision, 2), error => error instanceof FieldMigrationExecutionError && error.code === "WRITE_FAILED" && !error.failureRecorded);
+        assert.deepEqual(await publicationSnapshot(), committed);
+      }));
+    }
+    for (const patch of [{ schemaVersion: 1 }, { organisationId: "foreign" }, { limit: 51 }])
+      await assert.rejects(() => executeFieldMigrationBatch(session, { preparationId: publicationId, revision: first.revision, limit: 1, ...patch }));
+    assert.deepEqual(await publicationSnapshot(), committed);
+    let progress = await execution();
+    for (let page = 0; progress.state !== "READY"; page++) {
+      assert(page < 100, "Conditional execution must be bounded and eventually ready.");
+      await execute(progress.revision, 2); progress = await execution();
+    }
+    const ready = await publicationSnapshot(); assert.equal(progress.processedCount, reviewed.cohort.recordCount);
+    assert.equal(ready.outcomes.length, observations.length);
+    const targetSlots = ready.snapshot.slots.filter(slot => slot.generationId === validFixture.intent.target.payload.storageGeneration);
+    const targetValues = ready.snapshot.values.filter(value => value.generationId === validFixture.intent.target.payload.storageGeneration);
+    assert.equal(targetSlots.length, observations.length); assert.equal(targetValues.length, observations.length);
+    const sealedExecutionReview = readStoredFieldMigrationReview(await db.studioFieldMigrationReview.findFirstOrThrow({ where: { id: publicationId, organisationId } }), organisationId);
+    assert.equal(sealedExecutionReview.review.schemaVersion, 2);
+    for (const outcome of ready.outcomes) {
+      const row = observations.find(observation => observation.id === outcome.observationId); assert(row);
+      const retained = requiredFieldMigrationObservationSchema.parse(row.observation); assert.equal(retained.requirement.targetRequired, false);
+      const pin = fieldMigrationOutcomePinSchema.parse(outcome.outcome);
+      const expected = createRequiredFieldMigrationOutcomePin(progress.pin, { review: sealedExecutionReview.review, checksum: sealedExecutionReview.checksum }, { id: row.id, preparationId: row.preparationId, organisationId: row.organisationId, definitionId: row.definitionId,
+        entityId: row.entityId, sourceGenerationId: row.sourceGenerationId, recordId: row.recordId, nativeRevision: row.nativeRevision, observation: retained },
+      { extensionId: outcome.extensionId, slotId: outcome.targetSlotId, valueId: outcome.targetValueId });
+      assert.deepEqual(pin, expected); assert.equal(outcome.observationChecksum, checksum(retained));
+      const value = targetValues.find(item => item.id === outcome.targetValueId), slot = targetSlots.find(item => item.id === outcome.targetSlotId); assert(value && slot);
+      assert.equal(slot.activeValueId, value.id); assert.equal(slot.revision, 1); assert.equal(value.revision, 1); assert.equal(value.versionId, published.targetVersionId);
+      assert.equal(value.fingerprint, outcome.targetFingerprint); assert.equal(value.isNull, outcome.targetIsNull); assert.equal(value.jsonValue, null);
+      assert.deepEqual(decodeStoredFieldValue(validFixture.intent.target.payload.field, value), retained.result.kind === "valid" && !retained.result.isNull ? { type: "decimal", value: "0" } : null);
+      const extension = ready.snapshot.extensions.find(item => item.id === outcome.extensionId); assert(extension);
+      assert.equal(extension.revision, (retained.extension?.revision ?? 0) + 1); assert.equal(extension.recordId, row.recordId);
+    }
+    const recheckedExecution = await withFieldMigrationAuthority(session, principal, authority => inspectRequiredFieldMigrationExecution(authority, validFixture.intent));
+    assert.equal(recheckedExecution.stored.checksum, reviewed.checksum); assert.equal(recheckedExecution.progress?.state, "READY");
+    assert.equal((await execute(first.revision, 2)).replayed, true); assert.equal((await execute(progress.revision, 2)).appended, 0);
+    const startReplay = await startFieldMigrationExecution(session, startRequest); assert.equal(startReplay.replayed, true); assert.equal(startReplay.state, "READY");
+    assert.deepEqual(await publicationSnapshot(), ready);
+    await assert.rejects(() => db.studioFieldMigrationOutcome.update({ where: { observationId: ready.outcomes[0].observationId }, data: { targetFingerprint: "f".repeat(64) } }), /immutable|history|retained/i);
+    await assert.rejects(() => db.studioFieldMigrationOutcome.delete({ where: { observationId: ready.outcomes[0].observationId } }), /immutable|history|retained/i);
+    await assert.rejects(() => db.studioFieldMigrationExecution.update({ where: { preparationId: publicationId }, data: { pinChecksum: "f".repeat(64) } }), /immutable|CAS/i);
+    assert.deepEqual(await publicationSnapshot(), ready);
+    assert.deepEqual(ready.snapshot.native, publicationBefore.native); assert.equal(ready.snapshot.definition.activeVersionId, publicationBefore.definition.activeVersionId);
+    assert.deepEqual(ready.snapshot.slots.filter(slot => slot.generationId !== validFixture.intent.target.payload.storageGeneration), publicationBefore.slots);
+    assert.deepEqual(ready.snapshot.values.filter(value => value.generationId !== validFixture.intent.target.payload.storageGeneration), publicationBefore.values);
   } finally {
-    const publication = await db.studioFieldMigrationPublication.findFirst({ where: { preparationId: publicationId, organisationId } });
+    const cancellationBefore = await publicationSnapshot();
+    const publication = cancellationBefore.publication;
     if (publication?.state === "PUBLISHED") await cancelFieldMigrationPublication(session, principal, { preparationId: publicationId, revision: publication.revision });
     await db.$transaction(async tx => {
       const draft = await tx.studioDraft.findFirstOrThrow({ where: { definitionId, organisationId } });
@@ -303,8 +431,21 @@ export async function checkRequiredFieldReviewStorage(session: Session, principa
         action: "studio.required_publication.test_draft_restored", entityType: "StudioDefinition", entityId: definitionId } });
     }, { isolationLevel: "Serializable" });
     const after = await snapshot();
-    assert.deepEqual(after.native, publicationBefore.native); assert.deepEqual(after.slots, publicationBefore.slots); assert.deepEqual(after.values, publicationBefore.values);
+    assert.deepEqual(after.native, publicationBefore.native);
+    assert.deepEqual(after.slots.filter(slot => slot.generationId !== validFixture.intent.target.payload.storageGeneration), publicationBefore.slots);
+    assert.deepEqual(after.values.filter(value => value.generationId !== validFixture.intent.target.payload.storageGeneration), publicationBefore.values);
+    const retainedExecution = await db.studioFieldMigrationExecution.findFirst({ where: { preparationId: publicationId, organisationId } });
+    if (retainedExecution) {
+      assert.equal(retainedExecution.state, "CANCELLED");
+      assert.equal(retainedExecution.processedCount, cancellationBefore.execution?.processedCount);
+      assert.equal(retainedExecution.cursor, cancellationBefore.execution?.cursor);
+    }
+    assert.deepEqual(after.extensions, cancellationBefore.snapshot.extensions);
+    assert.deepEqual(after.slots, cancellationBefore.snapshot.slots); assert.deepEqual(after.values, cancellationBefore.snapshot.values);
+    assert.deepEqual(await db.studioFieldMigrationOutcome.findMany({ where: { preparationId: publicationId, organisationId }, orderBy: { recordId: "asc" } }), cancellationBefore.outcomes);
     assert.equal(after.definition.activeVersionId, publicationBefore.definition.activeVersionId); assert.deepEqual(after.draft.payload, publicationBefore.draft.payload);
+    assert.equal(after.draft.revision, cancellationBefore.snapshot.draft.revision + 1);
   }
-  console.log("PASS actual conditional reviewed publication/replay/cancellation APIs: source active, canonical schema2 target/plan/generation and closed review pinned, actual conditions/native/global inspection, no duplicate metadata or Audit, client/tenant and invalid-review denial, both actual Audit-failure atomic rollbacks; restored Test draft and retained immutable metadata/history, zero native/typed writes. Conditional execution/authoring still gated.");
+  console.log("PASS actual conditional execution APIs: stored2/current native9 representation2; start Audit rollback, second-row target failure/sparse FAILED and normal resume, second-row outcome/late progress/paired Audit exact committed-prefix rollback, typed zero/null and unanchored own +1 lineage, READY/start/batch lost-response replay without duplicates, client/tenant/bounds denial; source remains active and native/source values untouched, no cutover or authoring.");
+  console.log("PASS actual conditional reviewed publication/execution cancellation: source active, canonical schema2 target/plan/generation and closed review pinned, actual conditions/native/global inspection, no duplicate metadata or Audit, client/tenant and invalid-review denial, both publication Audit-failure atomic rollbacks; restored Test draft, immutable metadata/target/outcome history retained, cancelled execution and unchanged native/source values. Conditional cutover and customer authoring remain gated.");
 }

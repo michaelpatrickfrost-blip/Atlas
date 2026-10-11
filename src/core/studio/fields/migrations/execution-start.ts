@@ -5,9 +5,10 @@ import { assertCapability } from "@/core/permissions/check";
 import { assertModuleEnabled } from "@/core/modules/access";
 import { writeAudit } from "@/core/audit/log";
 import { STUDIO_CAPABILITIES } from "../../permissions";
-import { sealFieldMigrationIntent, FieldMigrationReviewError } from "./contracts";
+import { FieldMigrationReviewError } from "./contracts";
 import { withFieldMigrationAuthority } from "./authority";
-import { inspectFieldMigrationExecution } from "./execution-inspection";
+import { inspectFieldMigrationExecution, inspectRequiredFieldMigrationExecution } from "./execution-inspection";
+import { readStoredFieldMigrationIntent } from "./stored-protocol";
 import { readFieldMigrationExecutionProgress } from "./execution-contract";
 
 const requestSchema = z.strictObject({ preparationId: z.uuid(), publicationRevision: z.number().int().nonnegative().max(2147483647),
@@ -22,10 +23,10 @@ export async function startFieldMigrationExecution(session: Session, input: unkn
   const request = requestSchema.parse(input);
   const initial = await db.studioFieldMigrationPreparation.findFirst({ where: { id: request.preparationId, organisationId: session.organisationId } });
   if (!initial) changed();
-  const sealed = sealFieldMigrationIntent(initial.intent), intent = sealed.intent;
-  if (sealed.checksum !== initial.intentChecksum || intent.id !== initial.id || intent.organisationId !== session.organisationId) changed();
+  const { intent } = readStoredFieldMigrationIntent(initial, session.organisationId);
   return withFieldMigrationAuthority(session, intent.principal, async authority => {
-    const inspected = await inspectFieldMigrationExecution(authority, intent);
+    const inspected = intent.schemaVersion === 2 ? await inspectRequiredFieldMigrationExecution(authority, intent)
+      : await inspectFieldMigrationExecution(authority, intent);
     if (request.publicationRevision !== inspected.publication.revision || request.reviewChecksum !== inspected.stored.checksum) changed();
     if (inspected.progress) return { id: intent.id, ...inspected.progress, replayed: true };
     const execution = await authority.transaction.studioFieldMigrationExecution.create({ data: { preparationId: intent.id,

@@ -1,12 +1,18 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import type { Session } from "@/core/auth/session";
 const m = vi.hoisted(() => ({ initial: vi.fn(), transaction: vi.fn(), resolve: vi.fn(), enabled: vi.fn(), raw: vi.fn(), member: vi.fn(), module: vi.fn(), company: vi.fn(),
-  publication: vi.fn(), execution: vi.fn(), update: vi.fn(), audit: vi.fn(), inspect: vi.fn(), writer: vi.fn() }));
+  publication: vi.fn(), execution: vi.fn(), update: vi.fn(), audit: vi.fn(), inspect: vi.fn(), requiredInspect: vi.fn(), writer: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: { $transaction: m.transaction, studioFieldMigrationPreparation: { findFirst: m.initial } } }));
 vi.mock("@/core/studio/fields/principal", () => ({ resolveFieldMigrationPrincipal: m.resolve }));
 vi.mock("@/core/modules/access", () => ({ assertModuleEnabled: m.enabled }));
-vi.mock("@/core/studio/fields/migrations/execution-inspection", () => ({ inspectFieldMigrationExecution: m.inspect }));
+vi.mock("@/core/studio/fields/migrations/execution-inspection", () => ({ inspectFieldMigrationExecution: m.inspect, inspectRequiredFieldMigrationExecution: m.requiredInspect }));
 vi.mock("@/core/studio/fields/migrations/representation", () => ({ writeFieldMigrationRepresentation: m.writer }));
+import { conditionalFieldPayloadSchema } from "@/core/studio/fields/required-contract";
+import { compileConditionalCustomField } from "@/core/studio/fields/conditional-compiler";
+import { registeredRequiredFactMetadata } from "@/core/studio/fields/required-owner";
+import { sealRequiredFieldMigrationIntent, sealRequiredFieldMigrationReview } from "@/core/studio/fields/migrations/required-contracts";
+import { reviewedRequiredFieldPublicationPin } from "@/core/studio/fields/migrations/publication-contract";
+import { createRequiredFieldMigrationExecutionPin } from "@/core/studio/fields/migrations/execution-contract";
 import { CapabilityRegistry } from "@/core/studio/registry/registry";
 import { ticketStudioContract } from "@/core/service-work/studio";
 import { compileCustomField } from "@/core/studio/compiler/fields";
@@ -26,7 +32,7 @@ const source = customFieldPayloadSchema.parse({ schemaVersion: 1, entity: ref("t
 const targetPayload = customFieldPayloadSchema.parse({ ...source, entity: ref("tickets.ticket", 5), storageGeneration: uuid(2), field: { ...source.field, storage: { type: "decimal" } } });
 type Row = { preparationId: string; organisationId: string; definitionId: string; entityId: string; pin: unknown; pinChecksum: string;
   state: string; revision: number; cursor: string | null; processedCount: number; failureCode: string | null };
-let row: Row, pin: ReturnType<typeof createFieldMigrationExecutionPin>, intent: ReturnType<typeof sealFieldMigrationIntent>;
+let row: Row, pin: ReturnType<typeof createFieldMigrationExecutionPin>, intent: ReturnType<typeof sealFieldMigrationIntent> | ReturnType<typeof sealRequiredFieldMigrationIntent>;
 let publication: ReturnType<typeof reviewedFieldPublicationPin> & { state: string };
 let observations: Array<{ id: string; recordId: string }>, outcomes: string[], audits: string[];
 const tx = { $queryRaw: m.raw, membership: { findFirst: m.member }, moduleState: { findFirst: m.module }, organisation: { findFirst: m.company },
@@ -47,7 +53,7 @@ beforeEach(async () => {
   row = { preparationId: uuid(3), organisationId: "company", definitionId: uuid(4), entityId: "tickets.ticket", pin: pin.pin, pinChecksum: pin.checksum,
     state: "RUNNING", revision: 0, cursor: null, processedCount: 0, failureCode: null };
   observations = ["A_ticket", "Z_ticket", "a_ticket"].map((recordId, i) => ({ id: uuid(i + 20), recordId }));
-  m.initial.mockImplementation(async ({ where }) => where.id === uuid(3) && where.organisationId === "company" ? { id: uuid(3), intent: intent.intent, intentChecksum: intent.checksum } : null);
+  m.initial.mockImplementation(async ({ where }) => where.id === uuid(3) && where.organisationId === "company" ? { id: uuid(3), organisationId: "company", intent: intent.intent, intentChecksum: intent.checksum } : null);
   m.inspect.mockImplementation(async () => ({ intent: intent.intent, stored, publication, target, registry, pin: pin.pin, pinChecksum: pin.checksum,
     existing: structuredClone(row), progress: readFieldMigrationExecutionProgress(pin.pin, { state: row.state, revision: row.revision, cursor: row.cursor, processedCount: row.processedCount, failureCode: row.failureCode }) }));
   m.raw.mockImplementation(async (parts: TemplateStringsArray, ...values: unknown[]) => parts.join("").includes('ORDER BY "recordId"')
@@ -128,4 +134,61 @@ it("reserves a SQL revision for cancellation instead of allowing progress/failur
   row.revision = 2147483645; row.state = "FAILED"; row.failureCode = "WRITE_FAILED";
   await expect(executeFieldMigrationBatch(session, request(2147483645))).rejects.toMatchObject({ code: "REVIEW_CHANGED", failureRecorded: false });
   expect(row.revision).toBe(2147483645); expect(m.writer).not.toHaveBeenCalled(); expect(m.update).not.toHaveBeenCalled();
+});
+
+// Delegated required inspector and writer are unit fixtures. These cases verify
+// stored-format dispatch, transaction progress and sparse recovery; row/condition/
+// outcome proofs are covered by their service suites and central acceptance.
+async function conditionalBatchFixture() {
+  const payload = conditionalFieldPayloadSchema.parse({ ...targetPayload, schemaVersion: 2, entity: ref("tickets.ticket", 9),
+    requiredIf: { match: "all", predicates: [{ source: { kind: "native", fieldId: "status" }, operator: "present" }] } });
+  const compiled = await compileConditionalCustomField({ session, registry, definitionId: uuid(4), resolveMetadata: async fact => fact.kind === "native"
+    ? registeredRequiredFactMetadata(session, registry, payload.entity, fact.fieldId) : Promise.reject(new Error("Unexpected field fixture")) }, payload);
+  intent = sealRequiredFieldMigrationIntent({ ...intent.intent, schemaVersion: 2, ownerQuery: ref("tickets.ticket.field_migration", 4),
+    target: { ...intent.intent.target, payload: compiled.payload, compiledChecksum: compiled.checksum } });
+  const stored = sealRequiredFieldMigrationReview({ ...intent.intent, cohort: { recordCount: 3, observationDigest: "a".repeat(64) },
+    summary: { validCount: 3, invalidCount: 0, lossyCount: 0 } });
+  const target = { id: uuid(8), organisationId: "company", definitionId: uuid(4), version: 2, payload: compiled.payload, compiledPlan: compiled.plan, checksum: compiled.checksum };
+  const identity = reviewedRequiredFieldPublicationPin(stored, target, "user", false);
+  publication = { ...identity, state: "PUBLISHED" };
+  pin = createRequiredFieldMigrationExecutionPin(stored, target, identity, registry.describe("tickets.ticket", 9), registry.describe("tickets.ticket.field_representation", 2));
+  row = { ...row, pin: pin.pin, pinChecksum: pin.checksum };
+  m.requiredInspect.mockImplementation(async () => ({ intent: intent.intent, stored, publication, target, registry, pin: pin.pin, pinChecksum: pin.checksum,
+    existing: structuredClone(row), progress: readFieldMigrationExecutionProgress(pin.pin, { state: row.state, revision: row.revision,
+      cursor: row.cursor, processedCount: row.processedCount, failureCode: row.failureCode }) }));
+}
+it("conditional batches derive stored2, retain exact bounded prefix and recheck stale/READY replay without appending", async () => {
+  await conditionalBatchFixture();
+  expect(await executeFieldMigrationBatch(session, request())).toMatchObject({ state: "RUNNING", revision: 1, processedCount: 2, appended: 2 });
+  expect(m.inspect).not.toHaveBeenCalled(); expect(m.requiredInspect).toHaveBeenCalledOnce();
+  expect(m.writer.mock.calls[0][1].intent.schemaVersion).toBe(2); expect(m.writer.mock.calls[0][1].pin.schemaVersion).toBe(1);
+  m.writer.mockClear(); m.audit.mockClear();
+  expect(await executeFieldMigrationBatch(session, request())).toMatchObject({ replayed: true, revision: 1, processedCount: 2, appended: 0 });
+  expect(m.writer).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+  expect(await executeFieldMigrationBatch(session, request(1))).toMatchObject({ state: "READY", revision: 2, processedCount: 3, appended: 1 });
+  m.writer.mockClear(); m.audit.mockClear();
+  expect(await executeFieldMigrationBatch(session, request(2))).toMatchObject({ state: "READY", replayed: true, appended: 0 });
+  expect(m.writer).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled(); expect(m.requiredInspect).toHaveBeenCalledTimes(4);
+});
+it("conditional failure rolls back that prefix, records sparse failure and resumes only the confirmed next revision", async () => {
+  await conditionalBatchFixture();
+  m.writer.mockImplementationOnce(async () => { outcomes.push(uuid(20)); return { observationId: observations[0].id, recordId: observations[0].recordId }; }).mockRejectedValueOnce(new Error("private conditional payload"));
+  await expect(executeFieldMigrationBatch(session, request())).rejects.toMatchObject({ code: "WRITE_FAILED", failureRecorded: true });
+  expect(outcomes).toEqual([]); expect(row).toMatchObject({ state: "FAILED", revision: 1, processedCount: 0, cursor: null });
+  expect(audits).toEqual(["studio.field.migration.execution_failed"]);
+  const failure = m.audit.mock.calls[0][0].data.after;
+  expect(failure).not.toHaveProperty("cursor"); expect(JSON.stringify(failure)).not.toContain("private conditional payload");
+  expect(await executeFieldMigrationBatch(session, request(1))).toMatchObject({ state: "RUNNING", revision: 3, processedCount: 2, appended: 2 });
+  expect(outcomes).toEqual([uuid(20), uuid(21)]); expect(m.inspect).not.toHaveBeenCalled();
+});
+it("conditional replay denial and both Audit failures retain committed prefix without legacy fallback", async () => {
+  await conditionalBatchFixture(); await executeFieldMigrationBatch(session, request(0, 1));
+  m.requiredInspect.mockRejectedValueOnce(new Error("FORBIDDEN: current independent condition access"));
+  await expect(executeFieldMigrationBatch(session, request())).rejects.toMatchObject({ code: "ACCESS_CHANGED", failureRecorded: false });
+  expect(row).toMatchObject({ state: "RUNNING", revision: 1, processedCount: 1 });
+  m.audit.mockRejectedValueOnce(new Error("conditional batch Audit down")).mockRejectedValueOnce(new Error("conditional failure Audit down"));
+  await expect(executeFieldMigrationBatch(session, request(1, 2))).rejects.toMatchObject({ code: "WRITE_FAILED", failureRecorded: false });
+  expect(outcomes).toEqual([uuid(20)]); expect(row).toMatchObject({ state: "RUNNING", revision: 1, processedCount: 1 });
+  expect(m.inspect).not.toHaveBeenCalled();
+  expect(await executeFieldMigrationBatch(session, request(1, 2))).toMatchObject({ state: "READY", revision: 2, processedCount: 3 });
 });

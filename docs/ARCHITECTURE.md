@@ -336,20 +336,27 @@ only with the trusted reviewed Core binder and saves the plan's actual schemaVer
 Definition/draft CAS, dependency checks, immutable version/generation/publication
 and both Audits share one transaction. The original source stays active; no native
 or typed values change. A recorded format2 execution cannot fall back to publication
-inspection; it remains denied until its outcome/lineage reader is implemented.
+inspection. The separate execution row/review reader now proves current conditions,
+exact own +1/new-anchor outcome lineage, unchanged source/native and actual decoded
+target under current/written policies before normalizing the archive envelope.
 No ordinary conditional authoring or activation is enabled. Local tests/types/lint/
 build PASS; normal central Test publication/replay/cancellation and both Audit-failure
 rollbacks VERIFIED on bafa1c2 candidatebseb8V/publicZrTQuH, both ALL COMBINED PASS.
 Pure conditional execution/outcome integrity remains separate from runtime execution;
-actual start/batch/cutover/native hooks and visual Phase2 acceptance are unfinished.
+existing start/batch/representation integration and normal central proof are in
+progress; cutover/native hooks and visual Phase2 acceptance remain unfinished.
 
 11 October2026: a separate internal execution2 coverage prerequisite reuses existing
 source-active RUNNING/READY/FAILED execution/source/outcome/target guards. Complete
 owning private preflight precedes SQL freshness; current representation query must
-explicitly support protocol2. Caller owns refreshed locked authority; actual row/
-condition/review inspection remains required. Legacy entry closed1; conditional
-start/batch/cutover/authoring still unavailable. Local63/types/lint/build/diff PASS;
+explicitly support protocol2. Caller owns refreshed locked authority. E3d2b now supplies separate actual row/
+condition/review and execution metadata inspection, with full support principal,
+source/draft/target checksums, dependencies and exact receipt/progress. Legacy entry
+closed1. Existing start/batch/representation derive protocol from stored intent and
+reuse the same claim/typed write/CAS/progress/Audit transaction; actual normal proof
+pending. Conditional cutover/settlement/native authoring remains unavailable. Local63/types/lint/build/diff PASS;
 SQL/private unit fixtures do not prove actual conditional execution. No DDL/engine.
 Original0d315f7/46009 candidateMTZpXy/publicVvzibi BOTH ALL COMBINED PASS, exact
 public health. Existing conditional review/publication and module regressions verified
-live; normal execution2 remains unavailable until actual row/outcome inspection.
+live. E3d2b integrated86tests/7suites/strictTS PASS; explicit unit transaction/
+authority fixtures do not prove real normal execution. No new engine or DDL.

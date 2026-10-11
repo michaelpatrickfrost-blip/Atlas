@@ -11,6 +11,7 @@ import { workScope, requireWork } from "./access";
 import { workNumber, workEvent, lockWork } from "./engine";
 import { queueConfig, queueConfigSchema, validateAnswers, WORK_STATUSES, FINAL_WORK, suggestedPriority } from "./config";
 import { addBusinessMinutes, businessMinutesBetween, slaSchema } from "./sla";
+import { lockFieldEntitiesInTransaction } from "@/core/studio/fields/entity-lock";
 
 const text = (form: FormData, key: string, max = 4000) => z.string().max(max).parse(String(form.get(key) ?? "").trim());
 const need = (form: FormData, key: string, max = 4000) => z.string().min(1, `${key} is required.`).max(max).parse(text(form, key, max));
@@ -23,6 +24,7 @@ export async function createWork(form: FormData) {
   const kind = z.enum(["TICKET", "QUERY"]).parse(text(form, "kind"));
   await requireWork(session, kind, true);
   const id = await db.$transaction(async tx => {
+    await lockFieldEntitiesInTransaction(tx, session.organisationId, ["tickets.ticket"]);
     const queue = await tx.serviceQueue.findFirst({ where: { id: need(form, "queueId", 100), organisationId: session.organisationId, active: true } });
     if (!queue) throw new Error("Choose an available queue.");
     const configuration = queueConfig(queue.configuration);
@@ -72,6 +74,7 @@ export async function updateWork(form: FormData) {
     const work = await tx.serviceWorkItem.findFirst({ where: { AND: [workScope(session), { id, mergedIntoId: null }] } });
     if (!work) throw new Error("Work item unavailable.");
     assertCapability(session, work.kind === "TICKET" ? "tickets.ticket.manage" : "service.ticket.update");
+    await lockFieldEntitiesInTransaction(tx, session.organisationId, ["tickets.ticket"]);
     const member = await tx.serviceQueueMember.findFirst({ where: { organisationId: session.organisationId, queueId: work.queueId, userId: session.userId } });
     const queue=await tx.serviceQueue.findFirstOrThrow({where:{id:work.queueId,organisationId:session.organisationId}});
     if (queue.restricted && !member) throw new Error("Only this restricted queue’s members can progress work.");
@@ -109,30 +112,33 @@ export async function commentWork(form: FormData) {
     const work = await tx.serviceWorkItem.findFirst({ where: { AND: [workScope(session), { id, mergedIntoId: null, status: { notIn: ["CLOSED", "CANCELLED"] } }] } });
     if (!work) throw new Error("Reopen accessible work before commenting.");
     assertCapability(session, work.kind === "TICKET" ? "tickets.ticket.reply" : "service.ticket.update");
+    await lockFieldEntitiesInTransaction(tx, session.organisationId, ["tickets.ticket"]);
     const agent = !!await tx.serviceQueueMember.findFirst({ where: { organisationId: session.organisationId, queueId: work.queueId, userId: session.userId } });
     const internal = text(form, "visibility") === "INTERNAL";
     if (internal && !agent) throw new Error("Internal notes are restricted to the receiving team.");
     await lockWork(tx, session, id, ref(form), { ...(!internal && agent && !work.firstResponseAt ? { firstResponseAt: new Date() } : {}) });
     await workEvent(tx, session, work, internal ? "INTERNAL_NOTE" : "COMMENT", need(form, "body", 20000), internal ? "INTERNAL" : "REQUESTER");
-  }); refresh();
+  }, { isolationLevel: "Serializable" }); refresh();
 }
 
 export async function watchWork(form: FormData) {
   const session = await requireSession();
   assertCapability(session, "tickets.ticket.watch");
   await db.$transaction(async tx => {
+    await lockFieldEntitiesInTransaction(tx, session.organisationId, ["tickets.ticket"]);
     const work = await tx.serviceWorkItem.findFirst({ where: { AND: [workScope(session), { id: need(form, "workId", 100) }] } });
     if (!work) throw new Error("Work item unavailable.");
     const watching = work.watcherIds.includes(session.userId);
     await lockWork(tx, session, work.id, ref(form), { watcherIds: watching ? work.watcherIds.filter(id => id !== session.userId) : [...work.watcherIds, session.userId] });
     await workEvent(tx, session, work, "WATCH_CHANGED", watching ? "Stopped following." : "Following updates.");
-  }); refresh();
+  }, { isolationLevel: "Serializable" }); refresh();
 }
 
 export async function mergeWork(form: FormData) {
   const session = await requireSession();
   assertCapability(session, "tickets.ticket.manage");
   await db.$transaction(async tx => {
+    await lockFieldEntitiesInTransaction(tx, session.organisationId, ["tickets.ticket"]);
     const source = await tx.serviceWorkItem.findFirst({ where: { AND: [workScope(session), { id: need(form, "workId", 100), mergedIntoId: null }] } });
     const target = await tx.serviceWorkItem.findFirst({ where: { AND: [workScope(session), { number: need(form, "targetNumber", 40), mergedIntoId: null, status: { notIn: FINAL_WORK } }] } });
     if (!source || !target || source.id === target.id || source.kind !== target.kind || source.queueId !== target.queueId || source.parentCaseId !== target.parentCaseId || source.parentId !== target.parentId) throw new Error("Merge work of the same kind, queue and origin only.");
@@ -147,18 +153,20 @@ export async function requestWorkApproval(form: FormData) {
   const session = await requireSession();
   assertCapability(session, "tickets.ticket.manage");
   await db.$transaction(async tx => {
+    await lockFieldEntitiesInTransaction(tx, session.organisationId, ["tickets.ticket"]);
     const work = await tx.serviceWorkItem.findFirst({ where: { AND: [workScope(session), { id: need(form, "workId", 100), kind: "TICKET", status: { notIn: FINAL_WORK } }] } });
     if (!work) throw new Error("Ticket unavailable.");
     if (work.approvalId && await tx.approvalInstance.findFirst({ where: { id: work.approvalId, organisationId: session.organisationId, status: { in: ["PENDING", "APPROVED"] } } })) throw new Error("This ticket already has an active approval.");
     const approval = await createApproval(tx, session, { subjectType: "SERVICE_TICKET", subjectId: work.id, subjectVersion: work.version, amount: 0n, currency: "GBP", context: { department: (await tx.serviceQueue.findUniqueOrThrow({ where: { id: work.queueId } })).department, category: work.type } });
     await lockWork(tx, session, work.id, ref(form), { approvalId: approval.id });
     await workEvent(tx, session, work, "APPROVAL_REQUESTED", "Approval requested using the configured company route.");
-  }); refresh();
+  }, { isolationLevel: "Serializable" }); refresh();
 }
 export async function decideWorkApproval(form: FormData) {
   const session = await requireSession();
   assertCapability(session, "tickets.ticket.manage");
   await db.$transaction(async tx => {
+    await lockFieldEntitiesInTransaction(tx, session.organisationId, ["tickets.ticket"]);
     const work = await tx.serviceWorkItem.findFirst({ where: { AND: [workScope(session), { id: need(form, "workId", 100) }] } });
     if (!work?.approvalId) throw new Error("No approval is pending.");
     const approval = await decideApproval(tx, session, work.approvalId, z.enum(["APPROVED", "REJECTED", "INFORMATION"]).parse(need(form, "decision")), need(form, "reason"));
@@ -175,6 +183,7 @@ export async function saveDeskQueue(form: FormData) {
   const configuration = queueConfigSchema.parse(JSON.parse(text(form, "configuration", 150000) || "{}"));
   const id = text(form, "queueId", 100);
   await db.$transaction(async tx => {
+    await lockFieldEntitiesInTransaction(tx, session.organisationId, ["tickets.ticket"]);
     const queue = id ? await tx.serviceQueue.findFirstOrThrow({ where: { id, organisationId: session.organisationId } }) : null;
     if(queue?.restricted&&!await tx.serviceQueueMember.findFirst({where:{organisationId:session.organisationId,queueId:queue.id,userId:session.userId}}))throw new Error("Restricted queue configuration requires membership.");
     if(queue){const timestamp=new Date(text(form,"updatedAt",50));if(!Number.isFinite(timestamp.getTime())||timestamp.getTime()!==queue.updatedAt.getTime())throw new Error("Queue changed. Refresh before saving.");}
@@ -190,6 +199,7 @@ export async function changeDeskMember(form: FormData) {
   await requireWork(session, session.capabilities.has("tickets.queue.manage") ? "TICKET" : "QUERY");
   const queueId = need(form, "queueId", 100), userId = need(form, "userId", 100);
   await db.$transaction(async tx => {
+    await lockFieldEntitiesInTransaction(tx, session.organisationId, ["tickets.ticket"]);
     const queue = await tx.serviceQueue.findFirstOrThrow({ where: { id: queueId, organisationId: session.organisationId } });
     if (queue.restricted && !await tx.serviceQueueMember.findFirst({ where: { queueId, organisationId: session.organisationId, userId: session.userId } })) throw new Error("Restricted queue membership requires a current queue manager.");
     if (!await tx.membership.findFirst({ where: { userId, organisationId: session.organisationId, active: true } })) throw new Error("Choose an active colleague.");

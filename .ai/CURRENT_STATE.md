@@ -1,3 +1,173 @@
+## 11 October 2026 — shared d4a ordering VERIFIED locally, checkpoint ready
+
+Projected c1b79bdd native and714157a lifecycle scope only, contributor memory retained;
+root helper +metadata publication/activation/draft/retirement/value ordering linked.
+Final integrated206tests/15suites58370 PASS, final strictTS88441 exit0,
+scopedlint66840/build50380 exit0, independent review/diff check PASS. Build skips
+source types; standalone tsc is actual type evidence. Separate counts overlap.
+No domain/security/typed/CAS/Audit logic removed, DDL or native required/window/customer
+enablement. Locks grant no access or refreshed snapshot; actual SSI/CAS concurrency
+proof remains d4e. D4b contracts recorded before coding; initial proof proposal saved
+on contributor23a8666, actual still-NEW same-tx facts before fresh slot/current replay.
+
+Unchanged original1f4 release64598 candidateDXZ53J ALL COMBINED PASS after disposable
+cache maintenance; publicytFEJs running, public health exact1f4, immediate rollback
+b34ce50. Both earlier failed attempts never activated. Original122720/122723/123218
+recovery retained, no ad-hoc dump; temp2GiB buffer remains through final gates.
+Exact next: checkpoint d4a without moving remote tip until old release finishes;
+normal transaction writer +versioned reader, then native windows/all-active hooks.
+Record final public gate/health and safely remove temporary buffer under both locks.
+
+## 11 October 2026 — d4a integration reviewed; d4b contracts recorded
+
+Projected only scoped nativec1b79bdd and lifecycle714157a source/tests, preserved
+both contributor memory entries, helper/root metadata/value/draft/retirement added.
+Independent review reports no new blocker: one key/order across nine migration
+services/ten callbacks, native QUERY/Case parents, first publication, saved draft,
+retirement and ordinary value; no permissions/domain logic or conditional enablement
+change. Integrated19suites/strict types running, final lint/build next; no SQL race
+or snapshot freshness claim. Recorded d4b normal in-transaction writer extraction
+and existing sealed versioned current/history reader split before coding; creation
+proof writer signature still to agree. No DDL, new engine or native validation yet.
+Exact next: finish d4a checks/checkpoint, typed extraction/versioned reads in isolated
+scopes; monitor old pinned1f4 original64598 candidate/public gate after cache cleanup.
+
+## 11 October 2026 — isolated d4a migration lifecycle early locks VERIFIED locally
+
+Nine lifecycle services now acquire shared tenant/entity advisory coordination at
+all TEN withFieldMigrationAuthority callback entries after genuine current auth/
+company/module validation, before definition/draft/preparation/publication/execution/
+receipt/native protected row locks: preparation, collection, sealing, publication,
+execution-start, execution-batch (normal AND separate sparse recordFailure),
+cancellation, cutover, settlement (rollback/finalization including replay).
+Preparation uses server tenant/definition binding helper. Stored1/2 operations lock
+complete source/target PRIMARY owning entity IDs (currently same Ticket) sorted/
+unique through root helper's unchanged compact JSON/seed0 key. Cancellation loads
+only scoped actual publication definitionId, takes bound entity lock, then existing
+publication lock/re-read and immutable definition equality before replay/CAS/Audit.
+No client entity/tenant derivation, grants or new engine. Capability/private preflight/
+actual predicates/CAS/Audit/Test-only activation gates retained. Low-level inspectors/
+representation remain caller-owned collaborators; only other receipt/publication
+mutation site found is root-owned ordinary runtime-write-window.ts. Collection's
+existing atlas_studio_migration_fresh SQL checks metadata only, not private values.
+
+New studio-field-migration-lock-order.test.ts29 cases exercise real shared helpers
+and every service boundary, stored1/2 rule removal, sparse failure transaction,
+server scoping/dedup and authority denial. Bounded authority/inspector mocks stop
+before protected work; no PostgreSQL contention or snapshot freshness proof claimed.
+Existing cancellation suite adds actual definition re-read drift denial/order;
+settlement suite supplies required raw-query tx collaborator. 123 tests/9 lifecycle
+suites PASS; strict TypeScript (no incremental), scoped ESLint/final diff PASS.
+No schema/DDL, native/domain/value writes, required validators/window/conditional
+customer enablement, dumps/install/generate/build/deployment. Root entity-lock.ts
+copied UNTRACKED dependency excluded from commit; prior root dependencies remain
+UNSTAGED. No known local lifecycle blocker. Serializable snapshots can predate lock
+wait; existing SSI/updated-row/freshness guards still required, never lock-only proof.
+Exact next: parent integrates scoped lifecycle checkpoint AFTER shared helper, links
+ordinary/native early locks and runs integrated checks/build plus actual same-tenant
+contention, cross-tenant/entity independence and no-binding/first-publication/runtime
+candidate/public acceptance. Whole d4a/d4 and Phase2 gate remain open.
+
+
+## 11 October 2026 — parallel d4a native early entity-lock entries VERIFIED locally
+
+Scoped isolated codex/studio-required-receipts branch preserves54d6188/a047b6e.
+service-work/actions.ts acquires root's shared Tickets logical entity advisory key
+in all nine mutation transactions before native/sequence/parent/case mutation locks,
+including QUERY paths that can update a Ticket parent. Dynamic update/comment first
+perform the existing accessible Work Item read and kind-specific owner capability
+check (no explicit tuple lock), then acquire coordination before private/team checks
+and writes. Other known owner grants precede callback entry. studio-create.ts locks
+after genuine refreshed Create/scope validation before the actual INSERT. Service
+commands.ts mergeCases locks at transaction entry before Case lookup/mutations and
+bulk Work Item parentCaseId/version changes. comment/watch/requestApproval now use
+Serializable; other domain rules, narrow capabilities, SLA/transitions, intake,
+membership/private checks, CAS, Audits, parent feeds and Outbox are unchanged.
+
+New19case studio-native-entity-lock.test.ts suite uses the real SQL helper with unit
+storage stubs: entry ordering, Query parent coordination, exact server-session tenant key,
+narrow public reply grants, three isolation options, paired Case history and existing
+customer/security denials, lock/capability failure before writes. Existing creation
+proof suite asserts lock before INSERT; old action fixture adds required raw-query
+stub. Final62tests/5suites PASS81538 (focused ordering, existing actions, creation,
+result validator and Service workflow). Final strictTypeScript15957 exit0. Scoped
+ESLint7916 exit0/no warnings; diff check
+PASS. These mocks do not prove actual PostgreSQL blocking/concurrency. Root owns
+integrated lock/candidate/public verification and shared plan/ledger/decision update.
+entity-lock.ts copied solely as an UNCOMMITTED dependency; previous copied root
+dependencies remain unstaged/excluded. Shared node_modules/client symlinks reused;
+no install/build/push/deploy/DDL/data/dumps or conditional validator/writer/window/
+authoring changes from this branch. Whole Phase2 and complete d4 remain IN PROGRESS.
+Exact next action: root integrate this native-entry checkpoint with the exact helper
+and metadata/lifecycle early locks, run integrated order/types/build and actual central
+lock/concurrency/no-config acceptance, then proceed d4b transactional typed writers.
+
+
+## 11 October 2026 — temporary filesystem pressure resolved; unchanged release gate running
+
+Retry14880 candidateSl9slY again FAIL before activation, after new conditional
+services/native proofs PASS; browser Compositor trap at personal Settings. Actual
+/tmp tmpfs97% full (135MiB free), generated tsx UID0/1000 caches2060439552bytes,
+no OOM finding. Under ORIGINAL administrator lock inodes29187/13754 and no active
+node --import tsx/checker/release, removed ONLY disposable numeric/hash cache files
+in /tmp/tsx-0,/tmp/tsx-1000; preserved directories/socket paths, all source/releases/
+business/private/recovery/acceptance evidence. /tmp now48%used/2.1GiBfree, livehealth
+b34ce50 unchanged. Maintenance evidence /opt/atlas-maintenance-backups/studio-build-
+memory-20261011.txt; no new dump by maintenance. This confirms pressure, not a
+proven browser crash cause; unchanged original gate64598 candidateDXZ53J pending.
+Existing original backup122720/predeploy and122723/candidate required; no duplicate
+install/build, remote tip1f4 unchanged. Temporary2GiB buffer remains through gates.
+
+D4a root early lock helper/publication/activation/binding/ordinary value/retirement/
+saved draft edits IMPLEMENTED; targeted tests running9386, no runtime/concurrency
+or snapshot-freshness claim. Two isolated branches own lifecycle and native entries;
+review caught retirement/draft trigger inversion, both root paths now coordinated.
+Lock is coordination only: pre-wait Serializable snapshots may stay stale; existing
+CAS/row locks/SSI and actual first-publication/no-binding/max-field races must pass
+before required native/customer enablement. Exact next: monitor64598, integrate
+scoped d4a agents and review/check, then implement d4b typed in-transaction writers.
+
+## 11 October 2026 — d4a lock foundation IN PROGRESS alongside unchanged release retry
+
+Recorded exact shared lock/API/order and parallel ownership in required-rules plan
+before code. Root helper uses existing tenant/entity compact JSON/seed0 advisory key;
+bound helper server-derives entity from existing scoped binding. Locks grant no
+access. Metadata/native/field writes acquire before configuration/receipt/native/
+sequence/parent locks, keeping owner capability/CAS/Audit rules and tenant boundaries.
+Coarse same-entity serialisation is initially chosen for correctness; no global lock
+across businesses. d4 native validation/writers/windows and customer enablement remain
+NOT STARTED/gated. No new schema or Query field support. Existing candidate1f4dc79
+normal conditional service proof PASS, combined original retry14880 candidateSl9slY
+running; commercial crash first attempt kernel trap, no OOM evidence. Preserve old
+liveb34ce50/current rollback/tempbuffer/required recovery; no additional dumps/builds.
+Exact next: root helper/shared early lock, parallel lifecycle/native lock entries,
+review integrated order and checks while monitor14880; don't claim full gate PASS.
+
+## 11 October 2026 — real conditional candidate proof PASS; combined release retry running
+
+Clean pinned1f4dc79 deploy33109 exited1 BEFORE activation. Sealed candidateYJIweS
+actual required cutover/settlement service proof PASS: normal READY activation/replay,
+paired cutover/rollback Audit atomic failures, genuine independent current customer
+concurrent exact-once rollback while original creator revoked, stale current principal/
+private/field denial, source restored, later global drift blocks rollback but finalizes/
+replays, history survives later pointer/checker-only retirement, native/source unchanged.
+Legacy Studio/runtime/save/migration/native contracts, Admin/business portals, Home,
+settings, Reports/MRP, Messages, private Admin, Supply and commercial core workflows
+passed. Commercial responsive browser then page-crashed at candidate /crm/accounts;
+People/full combined/public checks NOT passed/run. Exact fixture access suspended,
+audited history/recovery retained. Do NOT mark combined release/Phase2 PASS.
+
+Kernel121540UTC confirms Compositor chrome-headless-shell trap int3, not an OOM
+finding; no OOM observed in inspected1210-onward window. Root160GiB free, /dev/shm
+1.1MiB of3.9GiB, postfailure RAMavailable3682MiB/swapused1229MiB. Live health still
+b34ce50, previous0d315f7 untouched. Required original121004 predeploy/121141 candidate
+backups retained; no ad-hoc dumps, config/source changes or gate weakening.
+One unchanged pinned original pipeline retry started, reusing sealed1f4 candidate
+without duplicate install/build; pending local /tmp/atlas-studio-required-cutover-retry.txt.
+Temporary buffer54220 remains active through acceptance; remove after no compiler/
+safe RAM check. Exact next: monitor retry, preserve full gates, record actual result,
+then native shared lock/API workstream; d4 reconnaissance saved, code NOT STARTED.
+
 ## 11 October 2026 — integrated conditional cutover/settlement source VERIFIED locally
 
 Root integrated76377d8/a047b6e current settlement coverage plus scoped7727ed4 normal

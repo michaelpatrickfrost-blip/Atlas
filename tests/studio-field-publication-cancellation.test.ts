@@ -10,14 +10,14 @@ const session: Session = { userId: "current-publisher", userName: "Publisher", u
   capabilities: new Set(["studio.definition.publish"]) };
 const principal = { organisationId: "company", userId: session.userId, membershipId: session.membershipId, sessionVersion: 2, authVersion: 3, authority: "customer" as const };
 const request = { preparationId: "00000000-0000-4000-8000-000000000001", revision: 0 };
-let publication: { preparationId: string; organisationId: string; state: string; revision: number; publisherUserId: string };
+let publication: { preparationId: string; organisationId: string; definitionId: string; state: string; revision: number; publisherUserId: string };
 const tx = { $queryRaw: m.raw, membership: { findFirst: m.member }, moduleState: { findFirst: m.module }, organisation: { findFirst: m.company },
   studioFieldMigrationPublication: { findFirst: m.publication, updateMany: m.update }, auditEntry: { create: m.audit } };
 beforeEach(() => {
   vi.clearAllMocks(); m.resolve.mockResolvedValue(session); m.enabled.mockResolvedValue(undefined); m.raw.mockResolvedValue([]);
   m.member.mockResolvedValue({ id: session.membershipId, sessionVersion: 2, user: { authVersion: 3 } }); m.module.mockResolvedValue({ id: "enabled" });
   m.company.mockResolvedValue({ id: "company", kind: "CUSTOMER", status: "ACTIVE", archivedAt: null, isTest: false });
-  publication = { preparationId: request.preparationId, organisationId: "company", state: "PUBLISHED", revision: 0, publisherUserId: "revoked-creator" };
+  publication = { preparationId: request.preparationId, organisationId: "company", definitionId: "00000000-0000-4000-8000-000000000004", state: "PUBLISHED", revision: 0, publisherUserId: "revoked-creator" };
   m.publication.mockImplementation(async ({ where }) => where.preparationId === publication.preparationId && where.organisationId === publication.organisationId ? structuredClone(publication) : null);
   m.update.mockImplementation(async ({ where, data }) => { if (where.revision !== publication.revision) return { count: 0 }; publication.state = data.state; publication.revision = data.revision; return { count: 1 }; });
   m.audit.mockResolvedValue({ id: "audit" });
@@ -29,7 +29,7 @@ beforeEach(() => {
 it("current authorised publisher cancels a stopped creator with sparse CAS/Audit, no live-data/native permission or reads", async () => {
   expect(await cancelFieldMigrationPublication(session, principal, request)).toEqual({ id: request.preparationId, revision: 1, state: "CANCELLED", replayed: false });
   expect(m.resolve).toHaveBeenCalledWith(principal);
-  expect(m.publication).toHaveBeenCalledWith({ where: { preparationId: request.preparationId, organisationId: "company" }, select: { preparationId: true, revision: true, state: true } });
+  expect(m.publication).toHaveBeenCalledWith({ where: { preparationId: request.preparationId, organisationId: "company" }, select: { preparationId: true, definitionId: true, revision: true, state: true } });
   expect(m.audit).toHaveBeenCalledWith({ data: expect.objectContaining({ action: "studio.field.migration.cancelled", actorUserId: session.userId,
     organisationId: "company", entityId: request.preparationId, after: { state: "CANCELLED", revision: 1 } }) });
   expect(m.transaction).toHaveBeenCalledWith(expect.any(Function), { isolationLevel: "Serializable" });
@@ -58,4 +58,14 @@ it("lost CAS or Audit failure rolls state back, and the same request can retry",
   m.audit.mockRejectedValueOnce(new Error("Audit unavailable")); await expect(cancelFieldMigrationPublication(session, principal, request)).rejects.toThrow("Audit unavailable");
   expect(publication).toMatchObject({ state: "PUBLISHED", revision: 0 });
   expect(await cancelFieldMigrationPublication(session, principal, request)).toMatchObject({ state: "CANCELLED", revision: 1 });
+});
+
+it("cancellation rejects changed server definition identity after the early bound lock and publication re-read", async () => {
+  m.publication.mockResolvedValueOnce({ definitionId: publication.definitionId }).mockResolvedValueOnce({ ...publication,
+    definitionId: "00000000-0000-4000-8000-000000000099" });
+  await expect(cancelFieldMigrationPublication(session, principal, request)).rejects.toThrow("stale or has changed");
+  expect(m.update).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+  const bindingIndex = m.raw.mock.calls.findIndex(([strings]) => strings.join("?").includes("FROM studio_field_bindings b"));
+  const rowIndex = m.raw.mock.calls.findIndex(([strings]) => strings.join("?").includes('SELECT "preparationId" FROM studio_field_migration_publications'));
+  expect(bindingIndex).toBeGreaterThanOrEqual(0); expect(bindingIndex).toBeLessThan(rowIndex);
 });

@@ -6,6 +6,7 @@ import { STUDIO_CAPABILITIES } from "../permissions";
 import { assertFieldBinding } from "../fields/binding";
 import { checksum } from "../registry/contracts";
 import type { ReviewedCompiledDefinition } from "./publication";
+import { lockFieldEntitiesInTransaction } from "../fields/entity-lock";
 
 type ActivationVersion = Pick<Prisma.StudioDefinitionVersionGetPayload<object>,
   "id" | "organisationId" | "definitionId" | "version" | "compiledPlan" | "checksum">;
@@ -21,10 +22,13 @@ export async function activateCompiledVersionInTransaction(tx: Prisma.Transactio
     throw new Error("FORBIDDEN: this Studio version is unavailable in the current company.");
   if (version.checksum !== checksum(version.compiledPlan) || version.checksum !== compiled.checksum)
     throw new Error("DEPENDENCY_BROKEN: published Studio plan changed or is incompatible");
-  if (compiled.plan.kind === "customField") await assertFieldBinding(tx, session, definitionId, compiled.plan.payload);
   const modules = [...new Set(compiled.plan.dependencies.map(d => d.ownerModuleId))];
   if (await tx.moduleState.count({ where: { organisationId: session.organisationId, moduleId: { in: modules }, enabled: true, entitled: true } }) !== modules.length)
     throw new Error("DEPENDENCY_BROKEN: source module unavailable");
+  if (compiled.plan.kind === "customField") {
+    await lockFieldEntitiesInTransaction(tx, session.organisationId, [compiled.plan.payload.entity.id]);
+    await assertFieldBinding(tx, session, definitionId, compiled.plan.payload);
+  }
   const changed = await tx.studioDefinition.updateMany({ where: { id: definitionId, organisationId: session.organisationId, revision: expectedRevision,
     retiredAt: null, ...(expectedActiveVersionId !== undefined ? { activeVersionId: expectedActiveVersionId } : {}) },
     data: { activeVersionId: version.id, revision: { increment: 1 } } });

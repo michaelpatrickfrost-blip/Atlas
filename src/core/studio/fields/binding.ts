@@ -4,6 +4,7 @@ import { checksum } from "../registry/contracts";
 import { studioRegistry } from "../registry/runtime";
 import { entityDetailsSchema } from "../registry/entities";
 import { customFieldPayloadSchema, type CustomFieldPayload } from "./schema";
+import { lockFieldEntitiesInTransaction } from "./entity-lock";
 
 export function fieldDefinitionKey(payload: Pick<CustomFieldPayload, "entity" | "field">) {
   return `${payload.entity.id}.${payload.field.key}`;
@@ -14,7 +15,7 @@ export async function bindPublishedField(tx: Prisma.TransactionClient, session: 
   if (definitionKey !== fieldDefinitionKey(payload)) throw new Error("Field definition key must match its permanent entity and field key.");
   // Serialize first publications per tenant/entity, including different definition
   // keys, so the owner's field limit cannot be raced. No business rows are locked.
-  await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtextextended(${JSON.stringify([session.organisationId, payload.entity.id])}, 0))::text`;
+  await lockFieldEntitiesInTransaction(tx, session.organisationId, [payload.entity.id]);
   const binding = await tx.studioFieldBinding.findFirst({ where: { definitionId, organisationId: session.organisationId } });
   if (binding) {
     await assertFieldBinding(tx, session, definitionId, payload);

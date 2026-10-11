@@ -25,10 +25,12 @@ describe("Studio metadata security and draft concurrency",()=>{
   });
   it("reports optimistic conflict before audit when the submitted draft revision lost",async()=>{
     const updateMany=vi.fn().mockResolvedValue({count:0});
-    const audit=vi.fn();mocks.transaction.mockImplementation(async cb=>cb({studioDefinition:{findFirst:vi.fn().mockResolvedValue({kind:"capabilitySet",key:"x"})},studioDraft:{updateMany},auditEntry:{create:audit}}));
+    const raw=vi.fn().mockResolvedValue([]),audit=vi.fn();mocks.transaction.mockImplementation(async cb=>cb({$queryRaw:raw,studioDefinition:{findFirst:vi.fn().mockResolvedValue({kind:"capabilitySet",key:"x"})},studioDraft:{updateMany},auditEntry:{create:audit}}));
     await expect(updateDraft(s,{definitionId:id,revision:3,payload:{schemaVersion:1,description:"",references:[]}})).rejects.toThrow("CONFLICT");
     expect(updateMany.mock.calls[0][0].where).toMatchObject({organisationId:"tenant-a",revision:3});
     expect(audit).not.toHaveBeenCalled();
+    expect(raw.mock.calls[0].slice(1)).toEqual([s.organisationId,id]);
+    expect(raw.mock.invocationCallOrder[0]).toBeLessThan(updateMany.mock.invocationCallOrder[0]);
   });
   it("requires module access independently of permission strings",async()=>{
     mocks.moduleGate.mockRejectedValue(new Error("disabled"));

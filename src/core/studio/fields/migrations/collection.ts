@@ -1,3 +1,4 @@
+import { lockFieldEntitiesInTransaction } from "../entity-lock";
 import { z } from "zod";
 import type { Session } from "@/core/auth/session";
 import { db } from "@/core/db/client";
@@ -34,6 +35,7 @@ export async function collectFieldMigrationBatch(session: Session, input: unknow
   const sealed = readStoredFieldMigrationIntent(initial, session.organisationId);
   const pinnedIntent = sealed.intent;
   return withFieldMigrationAuthority(session, pinnedIntent.principal, async ({ session: fresh, transaction: tx, company }) => {
+    await lockFieldEntitiesInTransaction(tx, fresh.organisationId, [pinnedIntent.source.payload.entity.id, pinnedIntent.target.payload.entity.id]);
     const scope = { id: request.preparationId, organisationId: fresh.organisationId };
     await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${request.preparationId}::uuid AND "organisationId"=${fresh.organisationId} FOR UPDATE`;
     const preparation = await tx.studioFieldMigrationPreparation.findFirst({ where: scope, include: { review: { select: { id: true } } } });

@@ -1,6 +1,6 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import type { FieldMigrationAuthority } from "@/core/studio/fields/migrations/authority";
-const m = vi.hoisted(() => ({ initial: vi.fn(), authority: vi.fn(), inspect: vi.fn(), window: vi.fn(), coverage: vi.fn(), receipt: vi.fn(), publication: vi.fn(), activate: vi.fn(), audit: vi.fn(), enabled: vi.fn(), registry: vi.fn(), requiredInspect: vi.fn(), requiredCoverage: vi.fn(), metadata: vi.fn() }));
+const m = vi.hoisted(() => ({ initial: vi.fn(), authority: vi.fn(), inspect: vi.fn(), window: vi.fn(), coverage: vi.fn(), receipt: vi.fn(), publication: vi.fn(), activate: vi.fn(), audit: vi.fn(), enabled: vi.fn(), registry: vi.fn(), raw: vi.fn(), requiredInspect: vi.fn(), requiredCoverage: vi.fn(), metadata: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: { studioFieldMigrationPreparation: { findFirst: m.initial } } }));
 vi.mock("@/core/modules/access", () => ({ assertModuleEnabled: m.enabled }));
 vi.mock("@/core/audit/log", () => ({ writeAudit: m.audit }));
@@ -28,7 +28,8 @@ beforeEach(async () => {
   vi.resetAllMocks(); usingRequired = false; f = await retainedCutoverFixture();
   authority = { session: { ...f.session, userId: "current-actor", membershipId: "current-member" }, principal: { ...f.intent.principal, userId: "current-actor", membershipId: "current-member" },
     company: { id: "company", kind: "CUSTOMER", status: "ACTIVE", archivedAt: null, isTest: true },
-    transaction: { studioFieldMigrationCutover: { updateMany: m.receipt }, studioFieldMigrationPublication: { updateMany: m.publication } } as unknown as FieldMigrationAuthority["transaction"] };
+    transaction: { $queryRaw: m.raw, studioFieldMigrationCutover: { updateMany: m.receipt }, studioFieldMigrationPublication: { updateMany: m.publication } } as unknown as FieldMigrationAuthority["transaction"] };
+  m.raw.mockResolvedValue([]);
   m.initial.mockImplementation(async () => usingRequired ? rf.preparation : f.preparation); m.registry.mockReturnValue(f.registry);
   m.inspect.mockImplementation(async () => ({ ...f, state: f.receipt.state, settlement: f.receipt.settlementPin === null ? null : { pin: f.receipt.settlementPin, checksum: f.receipt.settlementChecksum } }));
   m.authority.mockImplementation(async (_session, _principal, operation) => operation(authority));

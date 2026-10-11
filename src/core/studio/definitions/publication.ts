@@ -7,6 +7,7 @@ import type { compileDefinition } from "../compiler";
 import { bindPublishedField } from "../fields/binding";
 import type { compileConditionalCustomField } from "../fields/conditional-compiler";
 import type { VersionedFieldPayload } from "../fields/required-contract";
+import { lockFieldEntitiesInTransaction } from "../fields/entity-lock";
 
 export type PublicationDraft = Prisma.StudioDraftGetPayload<{ include: { definition: true; baseVersion: { select: { version: true } } } }>;
 export type CompiledDefinition = Awaited<ReturnType<typeof compileDefinition>>;
@@ -32,6 +33,11 @@ export async function publishCompiledDefinitionInTransaction(tx: Prisma.Transact
   const modules = [...new Set(compiled.plan.dependencies.map(d => d.ownerModuleId))];
   const available = await tx.moduleState.count({ where: { organisationId: session.organisationId, moduleId: { in: modules }, enabled: true, entitled: true } });
   if (available !== modules.length) throw new Error("DEPENDENCY_BROKEN: source module unavailable");
+  // First publication has no binding yet. Use the server-compiled primary
+  // entity before any definition/version/draft mutation; the binder re-enters
+  // the same transaction lock without introducing a later lock order.
+  if (compiled.plan.kind === "customField")
+    await lockFieldEntitiesInTransaction(tx, session.organisationId, [compiled.plan.payload.entity.id]);
   const changed = await tx.studioDefinition.updateMany({ where: { id: definitionId, organisationId: session.organisationId,
     revision: draft.definition.revision, latestVersion: draft.definition.latestVersion, retiredAt: null }, data: { latestVersion: { increment: 1 }, revision: { increment: 1 } } });
   if (changed.count !== 1) conflict();

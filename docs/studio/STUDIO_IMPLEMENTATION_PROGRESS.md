@@ -14,13 +14,15 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
-2B e3e4 existing cutover/settlement services IMPLEMENTED; integrated123tests/7suites,
-strictTS/scopedlint/productionbuild/diff PASS. E3e1 receipts, e3e2 post-cutover identity/
-row/review, e3e3 current-settler coverage VERIFIED locally. Dedicated actual Test
-checker IMPLEMENTED, real database/current-actor service proof NOT RUN yet. Customer
-conditional activation withheld until native required/write-window integration.
-Latest actual live remainsb34ce50: original88202 candidatekT6FVM/publicqTWEdH BOTH
-ALL COMBINED PASS for normal conditional execution/cancellation, no cutover claim.
+2B d4a shared entity lock/order VERIFIED locally: integrated206tests/15suites,
+final strict TypeScript88441/scopedlint66840/productionbuild50380 exit0 and independent
+review no blocker. Projected scoped c1b79bdd native and714157a lifecycle, preserving
+source/tests/memory and root helper/metadata/value/draft/retirement. No actual SQL
+contention/native requirements/window/customer enablement claim. D4b next contracts
+recorded: normal in-transaction writer, sealed versioned readers and opaque initial
+writer. E3e4 pinned1f4 original64598 full candidateDXZ53J ALL COMBINED PASS; public
+ytFEJs running after activation, health exact1f4. Do not claim full public/Phase2 gate.
+/tmp cache maintenance freed2.06GB; all data/recovery/history retained.
 
 # Overall Status
 
@@ -77,34 +79,23 @@ Do not claim cleanup or edit those worktrees while archival is pending.
 
 # Files Changed
 
-E3e1/e3e2: cutover-contract/receipt/inspection, settlement-receipt/inspection,
-coverage/observation/inspection, focused required receipt/identity/row/aggregate suites.
-No existing functionality removed; independent review no blockers.
-
-Current milestone additionally changes existing execution-start/batch/representation,
-required-execution-inspection, current row/review inspectors, existing service suites
-and existing central required-review checker; root ledger/coverage/architecture/
-required-rules plan and .ai/CURRENT_STATE/DECISIONS reconciled. Parallel scoped
-commits06eeda1/13fe331/45c6896 plus contributions1beafb4/a160372 reviewed.
-
-Current integrated blocks: fields/migrations/{coverage,observation,inspection,
-publication,publication-contract,execution-contract}.ts; definitions/publication.ts;
-existing required observation/inspection/publication/execution-contract suites;
-scripts/studio/check-field-required-review-storage.ts; ARCHITECTURE/MODULE_SPEC/
-DEPLOY; source coverage/required rules plan/ledger and .ai/CURRENT_STATE.md/DECISIONS.md.
-Earlier owner checkpoint: core/service-work/studio.ts, actual-owner/compatibility
-suites and central checker. Exact source checkpoints ede65ae,a475823,8cc2758,
-01a79ed,a04349c,bafa1c2,0d315f7. Shared Desktop checkout and visual stash remain untouched.
+D4a root: fields/entity-lock.ts, binding/runtime-write/retirement.ts,
+definitions/publication/activation/service.ts; parallel nine migration lifecycle
+files, service-work/actions/studio-create.ts and Service commands.mergeCases.
+Three new helper/lifecycle/native ordering suites; existing metadata/activation/
+retirement/value/cancellation/settlement/creation/action tests adapted. Memory,
+required-rules plan, ledger, decisions, architecture and retention documentation
+reconciled; unrelated shared Desktop edits and visual stash preserved.
+E3e4 preceding checkpoint1f4 services/actual checker/replay private-order correction
+remain under normal original candidate/public acceptance; see historical evidence.
 
 # Database / Prisma Changes
 
-No schema/model/DDL/migration for this milestone. Existing central checker created
-only reviewed target/slot/value/outcome/Audit history for its isolated Test business.
-Normal cancellation retained inactive target/history and own +1 global revisions;
-draft restored monotonically. Both real stages passed; no source/native mutation.
-Existing tenant-owned archives/generations/metadata/values/SQL guards reused.
-Immutable target schemaVersion2 is metadata, not a database schema change.
-No local business database/cache, reset, backfill or purge.
+No schema/model/DDL/migration for d4a/e3e4. Existing central fixture history and
+immutable review/targets/values/outcomes/Audits retained, Test access suspended.
+Actual service proof uses isolated existing driver Test identities and no native
+mutation. No local business database/cache/reset/backfill/purge. Temporary compiler
+cache removal created no dump; original release fixture backups remain required.
 
 # Migrations Applied
 
@@ -114,57 +105,38 @@ correction preserved its applied checksum/history. Current block adds no migrati
 
 # Tests Added
 
-Actual current owner8 cases; E3b6 cases for real coverage/row-reader bodies with
-explicit unit authority/transaction fixtures and stage/evidence drift; E3c4 cases
-for typed publisher/schema2, rule removal1, replay/CAS/Audit and authoring gate;
-E3d1 two cases for pure owner/query protocol and sealed review/semantic outcome
-integrity. Central checker uses actual authorised conditions and normal APIs,
-including real Audit triggers/atomic rollback and retained immutable history.
-E3d2a three cases add exact SQL-stage/private/owner/current-written/tenant denial
-coverage to the existing required observation suite. Mocks and pure synthetic
-metadata are never described as normal runtime evidence.
+D4a three new helper/lifecycle/native ordering suites (3/29/19 cases), plus actual
+creation-entry, draft/retirement/value/activation ordering assertions and publication
+identity re-read drift. SQL/key/acquisition contracts use explicit unit collaborators;
+not claimed as PostgreSQL contention/freshness proof. Existing domain/legacy closed1/2
+migration/current-history/value checks retained. E3e4 actual central Test checker
+proves normal activation/current-independent rollback/finalization/history and real
+paired Audit-failure rollback against candidate; public stage running.
 
 # Tests Run
 
-E3e4 final integrated123tests/7suites PASS79973; scopedlint17913/
-productionbuild31793 exit0; FINAL standalone strictTS18897 exit0; earlier root63311 and
-correction branch73661 are overlapping evidence; final diff/check PASS. New central checker lint/types PASS,
-actual SQL invocation pending original candidate/public release. Service unit mocks
-and authority/SQL collaborators documented; no customer activation inference.
-
-E3e1/e3e2 integrated108tests/8suites PASS84436; strictTS42569/scopedlint49724/
-productionbuild20746 exit0. Final diff/check PASS; two existing fixture warnings,
-zero lint errors. Initial strict fixture callback implicit type corrected; no guard
-relaxed. Real SQL/private/native/activation acceptance pending normal services.
-
-Integrated96tests/7suites PASS30539; strictTS96474/scoped lint16281/build74651
-exit0; final diff reviewed/check PASS. Two existing fixture warnings, zero errors.
-Original release88202 exit0: candidatekT6FVM/publicqTWEdH BOTH ALL COMBINED PASS,
-immutable build/smoke and active dependency compatibility PASS. Real normal closed2
-API/failure/replay/history proof passed both stages, plus existing legacy Studio,
-private Admin/business login/provisioning/Templates and module regressions.
-Logs: /tmp/atlas-studio-required-normal-execution-{integrated-tests,integrated-types,
-integrated-lint,build,deploy}.txt; original stage acceptance.log files.
-Earlier focused counts overlap and are not summed as distinct coverage.
+D4a final integrated206tests/15suites PASS58370, scopedlint66840/productionbuild50380
+exit0, FINAL standalone strictTS88441 exit0, final diff/check and independent review
+PASS. Next build uses existing ignoreBuildErrors; standalone tsc is actual type proof.
+Separate root30/5/native62/5/lifecycle123/9 overlap and are not summed. Logs
+/tmp/atlas-studio-d4a-{integrated-tests,final-types,lint,build}.txt.
+E3e4 preceding123/7/type/lint/build locally PASS; original64598 candidateDXZ53J
+ALL COMBINED PASS after concrete temporary cache cleanup. PublicytFEJs pending,
+exact health1f4; original backups122720/122723/123218 retained. First two unchanged
+attempts failed browser Compositor traps before activation, all new service proofs
+passed; temporary pressure observed, no proven OOM/cause.
 
 # Test Results
 
-VERIFIED live b34ce50bd10fcbb39287444a753879e02044d0cc. CandidatekT6FVM and
-publicqTWEdH BOTH ALL COMBINED PASS; original88202 exit0, login200, health exact.
-Normal conditional start/batch/recovery/replay/cancellation and all injected atomic
-failures passed both stages. Legacy migration/current-history/save/cutover/settlement,
-private/customer boundaries and existing modules passed both combined stages.
-
-Original required recovery111129 pre-deploy/111308 candidate/111743 public retained;
-no ad-hoc dumps. Currentb34ce50/immediate rollback0d315f7 preserved. Original retention
-retired only inactive bafa1c2 duplicate runtime; source/static/history/business data
-and backups retained. Temporary2GiB build buffer removed43583 exit0 under BOTH
-original locks/no compiler: MemAvailable3481564KiB, used935480KiB, margin1572864KiB.
-Root164GiB free/no swap/2.5GiB RAM available; no fstab/app/PG change. Original lock
-inodes29187/13754 and administrator ownership/mode600 unchanged. Operational evidence
-/opt/atlas-maintenance-backups/studio-build-memory-20261011.txt retained.
-Archive requests for two temporary parallel worktrees remain queued/unverified.
-Older release evidence below is historical, not the current live pointer.
+D4a VERIFIED locally only; source/current native integration rules unchanged,
+no actual first-publication/no-binding/max-fields contention proof yet. Shared
+Serializable snapshot freshness limitation remains required in d4e acceptance.
+E3e4 full candidateDXZ53J PASSED, publicytFEJs IN PROGRESS, health1f4dc79, immediate
+rollbackb34ce50 preserved; earlier0d315f7 history retained. Existing original
+retention and compatibility gates apply. Temporary2GiB buffer remains through
+public checks, remove exact buffer safely under both original locks afterwards.
+/tmp48%used/2.1GiBfree after removing2060439552bytes disposable tsx hash caches;
+source/runtime/private/business/recovery/acceptance history preserved.
 
 # Architecture Decisions
 
@@ -178,13 +150,13 @@ Decisions and rationale recorded in .ai/DECISIONS.md; no silent source divergenc
 
 # Known Issues
 
-Whole Phase2 gate incomplete. Conditional cutover/settlement and common native
-create/save/write-window hooks remain; customer conditional activation withheld.
-Remaining field aliases/defaults/search, record types, page compiler/variants/generated
-runtime, visual preview/publish/dashboard/button integration and final phase acceptance
-remain. Temporary worktree archive requests queued, removal unverified; about50MiB
-source total/shared dependencies, no duplicated build output. Current release and
-build-buffer cleanup passed. Preserve central records/recovery evidence.
+Full Phase2 incomplete. Common native create/save required validators, typed
+creation writer and all affected native/cohort rollback windows remain; customer
+conditional activation withheld. Field aliases/defaults/search, record types,
+structured page/variants/generated runtime, polished visual template previews,
+publish/customer dashboard integration and safe custom buttons remain Phase2.
+Temporary worktree archives queued/unverified; shared dependencies, no duplicated
+build trees. Public old1f4 gate and temporary buffer removal still pending.
 
 # Deferred Items
 
@@ -197,25 +169,22 @@ is IN PROGRESS and unverified; do not restore its superseded planning entries.
 
 # Acceptance Gate Status
 
-Phase0 PASS; Phase1 PASS; Phase2 FAIL (incomplete, not ready for gate evaluation).
-Currentb34ce50 conversion workstream: candidate/public ALL COMBINED PASS, real
-conditional execution/recovery/atomicity proof PASS. This is a workstream gate,
-not the whole Phase2 gate. Section29 whole-system acceptance never authorises
-later phases. No complete Studio/visual builder claim.
+Phase0 PASS; Phase1 PASS; Phase2 FAIL (incomplete). E3e4 full candidate PASS,
+public gate pending; d4a local ordering checkpoint PASS, not customer required-field
+or full phase acceptance. Whole-system source checklist never authorises jumping
+phases. No complete Studio/visual designer claim.
 
 # Exact Next Action
 
-Independent coverage/services/central checker review passed after scoped replay-order
-fix4b611f0 (private preflight before protected identity SQL; legacy untouched).
-Integrated123tests/7suites PASS79973, scopedlint17913/productionbuild31793 exit0; FINAL standalone strictTS18897 exit0; diff/check PASS.
-Checkpoint/push the clean reviewed
-source and run original pinned Studio candidate/public release acceptance, preserving
-current/rollback/processes/required recovery and original lock pair; temporary build
-memory buffer only under both original locks, remove after safe memory check.
-Record actual conditional cutover/current independent rollback/creator revoke/finalize/
-replay/failure results. Then d4 native every-write hooks/write windows (read-only
-reconnaissance in progress), still before customer activation. No Phase3; liveb34ce50.
-
+Finish original pinned1f4 public gate64598 (log /tmp/atlas-studio-required-cutover-
+after-cache.txt, candidateDXZ53J/publicytFEJs), record exact final health and recovery,
+remove exact temporary buffer only after no compiler/checker and safe RAM vs swap
+under both original locks. Save d4a passing checkpoint without pushing while old
+remote-tip check runs. Then root extract writeFieldValueInTransaction preserving
+closed1 behaviour; isolated lifecycle agent wires current/history to existing sealed
+versioned reader, native agent initial proof contract agreed before implementation.
+Continue d4c affected-window coordinator and d4d owning native all-active validation;
+actual races required before customer conditional enablement. No Phase3 work.
 # Historical checkpoint evidence
 
 The following dated notes record what was known at their checkpoints. Next actions,

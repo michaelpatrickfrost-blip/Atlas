@@ -1,3 +1,4 @@
+import { lockBoundFieldEntityInTransaction } from "../entity-lock";
 import { z } from "zod";
 import type { Session } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
@@ -20,9 +21,13 @@ export async function cancelFieldMigrationPublication(session: Session, serverPr
   const request = requestSchema.parse(input);
   return withFieldMigrationAuthority(session, serverPrincipal, async ({ session: fresh, transaction: tx }) => {
     const scope = { preparationId: request.preparationId, organisationId: fresh.organisationId };
+    // Metadata-only scoped identity; never derive the entity from client input.
+    const initial = await tx.studioFieldMigrationPublication.findFirst({ where: scope, select: { definitionId: true } });
+    if (!initial) changed();
+    await lockBoundFieldEntityInTransaction(tx, fresh.organisationId, initial.definitionId);
     await tx.$queryRaw`SELECT "preparationId" FROM studio_field_migration_publications WHERE "preparationId"=${request.preparationId}::uuid AND "organisationId"=${fresh.organisationId} FOR UPDATE`;
-    const publication = await tx.studioFieldMigrationPublication.findFirst({ where: scope, select: { preparationId: true, revision: true, state: true } });
-    if (!publication || request.revision > publication.revision) changed();
+    const publication = await tx.studioFieldMigrationPublication.findFirst({ where: scope, select: { preparationId: true, definitionId: true, revision: true, state: true } });
+    if (!publication || publication.definitionId !== initial.definitionId || request.revision > publication.revision) changed();
     if (publication.state === "CANCELLED") return { id: publication.preparationId, revision: publication.revision, state: "CANCELLED" as const, replayed: true };
     if (publication.state !== "PUBLISHED" || publication.revision !== request.revision) changed();
     const revision = publication.revision + 1;

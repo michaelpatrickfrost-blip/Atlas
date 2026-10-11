@@ -1,7 +1,7 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import type { Session } from "@/core/auth/session";
 import type { Prisma } from "@/generated/prisma/client";
-const m = vi.hoisted(() => ({ binding: vi.fn(), count: vi.fn(), update: vi.fn(), audit: vi.fn() }));
+const m = vi.hoisted(() => ({ binding: vi.fn(), count: vi.fn(), update: vi.fn(), audit: vi.fn(), raw: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: {} }));
 vi.mock("@/core/studio/fields/binding", () => ({ assertFieldBinding: m.binding }));
 import { CapabilityRegistry } from "@/core/studio/registry/registry";
@@ -14,10 +14,10 @@ const session: Session = { userId: "user", userName: "User", userEmail: "user@ex
   capabilities: new Set(["studio.definition.publish", "tickets.ticket.read", "tickets.ticket.manage"]) };
 const registry = new CapabilityRegistry(async () => true); registry.register("tickets", ticketStudioContract);
 const ref = (id: string, version: number) => { const meta = registry.describe(id, version); return { id: meta.id, version: meta.version, schemaHash: meta.schemaHash, contractHash: meta.contractHash }; };
-const tx = { moduleState: { count: m.count }, studioDefinition: { updateMany: m.update }, auditEntry: { create: m.audit } } as unknown as Prisma.TransactionClient;
+const tx = { $queryRaw: m.raw, moduleState: { count: m.count }, studioDefinition: { updateMany: m.update }, auditEntry: { create: m.audit } } as unknown as Prisma.TransactionClient;
 let current = { activeVersionId: uuid(3), revision: 7 };
 beforeEach(() => {
-  vi.clearAllMocks(); current = { activeVersionId: uuid(3), revision: 7 }; m.binding.mockResolvedValue(undefined); m.count.mockResolvedValue(1); m.audit.mockResolvedValue({ id: "audit" });
+  vi.clearAllMocks(); current = { activeVersionId: uuid(3), revision: 7 }; m.binding.mockResolvedValue(undefined); m.count.mockResolvedValue(1); m.audit.mockResolvedValue({ id: "audit" }); m.raw.mockResolvedValue([]);
   m.update.mockImplementation(async ({ where, data }) => {
     if (where.revision !== current.revision || (where.activeVersionId !== undefined && where.activeVersionId !== current.activeVersionId)) return { count: 0 };
     current = { activeVersionId: data.activeVersionId, revision: current.revision + 1 }; return { count: 1 };
@@ -48,11 +48,14 @@ it("denies missing publish capability and foreign/inconsistent immutable version
     await expect(activateCompiledVersionInTransaction(tx, session, uuid(1), 7, { ...version, ...change }, compiled)).rejects.toThrow("DEPENDENCY_BROKEN");
   for (const effect of [m.binding, m.count, m.update, m.audit]) expect(effect).not.toHaveBeenCalled();
 });
-it("keeps custom-field generation binding mandatory before source modules and activation", async () => {
+it("checks source availability then coordinates the entity before mandatory generation binding and activation", async () => {
   const { compiled, version } = await fixture(true);
   m.binding.mockRejectedValueOnce(new Error("DEPENDENCY_BROKEN: field has no tenant generation"));
   await expect(activateCompiledVersionInTransaction(tx, session, uuid(1), 7, version, compiled)).rejects.toThrow("tenant generation");
-  expect(m.count).not.toHaveBeenCalled(); expect(m.update).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+  expect(m.count).toHaveBeenCalledOnce(); expect(m.update).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+  expect(m.raw.mock.calls[0][1]).toBe(JSON.stringify([session.organisationId, "tickets.ticket"]));
+  expect(m.count.mock.invocationCallOrder[0]).toBeLessThan(m.raw.mock.invocationCallOrder[0]);
+  expect(m.raw.mock.invocationCallOrder[0]).toBeLessThan(m.binding.mock.invocationCallOrder[0]);
   await activateCompiledVersionInTransaction(tx, session, uuid(1), 7, version, compiled, uuid(3));
   expect(m.binding).toHaveBeenCalledWith(tx, session, uuid(1), compiled.payload);
   expect(m.update.mock.calls[0][0].where.activeVersionId).toBe(uuid(3));

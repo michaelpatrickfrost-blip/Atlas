@@ -76,11 +76,26 @@ Local operator evidence: `/tmp/atlas-release-retirement-live.txt`,
 Durable server inventory is `/opt/atlas-maintenance-backups/software-retention-20261010.txt`.
 The repository records the results so temporary logs are not required for recovery.
 
+## Studio temporary compiler caches — 11 October 2026
+
+During unchanged pinned1f4dc79 combined acceptance, browser Compositor traps occurred
+in different screens before activation. Inspection found /tmp tmpfs97%full/135MiB
+free, including2060439552bytes of disposable tsx UID0/1000 compilation cache files.
+No OOM observed in inspected windows; temporary space pressure is confirmed, its
+causal link to the crashes remains unproven.
+
+Under BOTH ORIGINAL administrator lock inodes29187/13754, with no active tsx importer/
+checker/release, removed only regular numeric/hash generated cache files inside
+/tmp/tsx-0 and /tmp/tsx-1000. Directory/socket paths, all source/releases/business/
+private/recovery and acceptance evidence retained. /tmp fell to48%used/2.1GiBfree;
+publichealth stillb34ce50. Maintenance creates no database dump. Exact evidence:
+/opt/atlas-maintenance-backups/studio-build-memory-20261011.txt. Existing original
+pre-migration/release/fixture recovery gates remain mandatory.
+
 ## Studio handoff
 
-Capacity is resolved. Phase2 f4b1 VERIFIED on1d7f558 after real nested Test SQL
-and full candidate/public native acceptance;0007 applied under required backup.
-Current1d7f558/previous97ceb35, login200/service/PGonline and168GiBfree confirmed
-0810UTC (13%used). Temporary SSH/HTTPS access delay recovered; cause unconfirmed.
-F4b2 generation/cosmetic continuation is next; Phase2/designer not complete.
-See the Studio implementation ledger.
+Current implementation and deployment result are recorded in
+`studio/STUDIO_IMPLEMENTATION_PROGRESS.md`. Phase2 remains incomplete; do not infer
+current runtime or gate status from older retention evidence above. D4a shared lock
+integration is underway while the unchanged pinned original release gate runs after
+temporary resource correction; the visual designer and later phases are unfinished.

@@ -369,3 +369,21 @@ Original0d315f7/46009 candidateMTZpXy/publicVvzibi BOTH ALL COMBINED PASS, exact
 public health. Existing conditional review/publication and module regressions verified
 live. E3d2b integrated86tests/7suites/strictTS PASS; explicit unit transaction/
 authority fixtures do not prove real normal execution. No new engine or DDL.
+
+## Field/native transaction coordination — Phase2 d4a, 11 October 2026
+
+Internal `fields/entity-lock.ts` reuses the existing first-publication tenant/entity
+compact JSON/seed0 advisory key. Acquire sorted unique complete owning entity sets
+before configuration/receipt/native/sequence/parent/value row locks, after existing
+authenticated tenant/module authority. Existing binding may server-derive primary
+entity; no binding grants nothing. Native creation and first publication use their
+actual approved entity. Draft payload changes and retirement join this order because
+existing archive triggers otherwise reverse migration publication-row ordering.
+
+Native Tickets/QUERY parent operations and Service Case merge preserve narrow owning
+permissions; three previously default-isolation actions now use Serializable. No
+Query field contract, alternative engine, DDL or conditional authoring enablement.
+Advisory waiting does not refresh a pre-existing Serializable snapshot; CAS/row locks/
+SSI and real first-publication/no-binding/field-limit concurrency remain required.
+D4a is locally verified ordering; every-write requirements/all-affected windows and
+customer conditional enablement remain incomplete in the permanent Studio ledger.

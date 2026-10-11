@@ -1,3 +1,85 @@
+## 11 October — d4b transaction writer and versioned reader workstreams
+
+D4a integrated source reviewed with no additional blocker; integrated local checks
+running before checkpoint. D4b contracts recorded before further coding:
+
+- d4b1 root extracts writeFieldValueInTransaction(authority:FieldRuntimeAuthority,
+  input:unknown) from the existing normal service. Existing writeFieldValue remains
+  the genuine authority/Serializable/conflict wrapper. Same request schema, native/
+  current/written/reference checks, codec, replay/checksum, value/slot/extension CAS,
+  window and paired Audit; no nested transaction, DTO grants or schema2 write waiver.
+- d4b2 isolated lifecycle agent connects current/history public read gateways to
+  existing readVersionedFieldPlan/Value base-policy readers, preserving current and
+  written field/native/reference rights, sealed schema1/2 checksums, bounded retained
+  generations, tenant/pointer integrity, retirement and malformed/client denials.
+  Reads do not evaluate private conditions or grant authoring/Write. Internal helper
+  aliases remain compatible; no native mutation or conditional activation enablement.
+- d4b3 opaque initial writer design reuses actual owning INSERT proof and same typed
+  engine; creation-only owner grant cannot be exchanged for native Read/Manage or
+  access to a historical slot. Independent field Read+Write restrictions and real
+  reference Read remain mandatory. Final signature/creation request contract agreed
+  before implementation; no fabricated existing-record proof or duplicate writer.
+
+No DDL/migrations/dumps; normal source test collaborations are local evidence only.
+All-active required validation, affected native/cohort rollback windows and normal
+form hooks remain d4c/d4d prerequisites before customer conditional enablement.
+
+## 11 October — d4a review refinement and release infrastructure evidence
+
+Reviewer found retirement UPDATE and saved draft payload/revision UPDATE acquire
+metadata-trigger publication locks after row locks, reversing migration order.
+Root now coordinates those entries as well; validateDraft validation-only metadata
+has no such publication lock and is unchanged. Existing first-publisher binding
+helper becomes reentrant fallback while shared publisher/activator lock BEFORE
+configuration mutation. Ordinary typed save uses scoped bound lock before definition
+FOR UPDATE; capability/CAS/Audit/history logic remains unchanged.
+
+Important limitation: refreshed authority reads establish a Serializable snapshot
+before an advisory wait; acquiring lock does not refresh it. D4a is ordering only.
+Keep existing CAS/row locks/SSI; actual first binding/native creation/max-field
+concurrency acceptance required in d4e before customer conditional enablement.
+Two original combined gates failed browser traps before activation; exact required
+service proofs passed both. /tmp was97%full,2.06GB generated tsx caches cleared
+under original locks/no active importer, no source/data/evidence/backups removed.
+Unchanged pinned gate64598 now running after concrete resource correction.
+
+## 11 October — d4a shared lock contract IN PROGRESS (no conditional enablement)
+
+Actual e3e4 candidateYJIweS service proof PASS; original combined retry14880 for
+unchanged1f4dc79 is running after unrelated commercial Compositor trap before live
+switch. This independent lock foundation stays in Phase2 and enables no conditional
+customer authoring/native validator by itself.
+
+Root owns fields/entity-lock.ts and ordinary definitions/publication/activation plus
+binding/runtime-write early acquisition. Internal signatures:
+lockFieldEntitiesInTransaction(tx: Prisma.TransactionClient, serverOrganisationId:
+string, entityIds: readonly string[]): Promise<void>; and
+lockBoundFieldEntityInTransaction(tx, serverOrganisationId, definitionId): Promise<void>.
+First locks sorted unique logical entity IDs using EXACT existing JSON.stringify
+([organisationId,entityId])/hashtextextended seed0 key. Bound helper derives primary
+entity from the tenant/definition binding in SQL using the same compact JSON bytes;
+no binding grants no access, and callers still enforce their existing binding/state
+requirements. Neither helper authenticates, returns domain data nor permits writes.
+
+Order: existing authenticated principal/company/module authority, shared tenant/entity
+advisory lock, then configuration/receipt/native/sequence/parent/extension/value
+locks. Same scope serialises initially for correctness; independent tenants/entities
+remain independent. Preserve all owner/CAS/Audit/idempotency/typed rules. Ordinary
+publication/activation lock before definition mutations; existing migration lifecycle
+locks at callback entry before protected row locks. Native action/case-merge entries
+lock Tickets before native/sequence/parent mutations, including QUERY paths which can
+update Ticket parents. Existing narrow capability policy remains unchanged; three
+native transactions become Serializable. No new Query extension support or grants.
+
+Parallel work scopes after helper contract: one branch migration lifecycle + relevant
+lock ordering regressions; another native actions/studio-create + Service mergeCases
+and relevant regressions. Root owns helper/shared publication/runtime/checker and
+integration; reviewer audits ordering/permissions. All use existing dependency/client
+symlinks, no install/build copies/DDL/data/reset/dumps. Each scope updates memory.
+Completion requires integrated focused/type/lint/build and actual lock/concurrency/
+normal no-config journeys via original central acceptance at a usable milestone.
+Other d4 typed writers/required validation/all-affected windows remain NOT STARTED.
+
 ## 11 October — d4 confirmed native/ordinary integration inventory (NOT STARTED)
 
 Read-only reconnaissance mapped actual gaps; this is the next Phase2 workstream,

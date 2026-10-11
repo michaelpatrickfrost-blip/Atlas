@@ -43,6 +43,10 @@ it("initialises only the actual freshly inserted record for create-only authorit
     return "initialised";
   });
   expect(result).toEqual({ work, result: "initialised" }); expect(m.transaction).not.toHaveBeenCalled();
+  const lockIndex = m.raw.mock.calls.findIndex(([strings]) => (strings as TemplateStringsArray).join("").includes("pg_advisory_xact_lock"));
+  expect(lockIndex).toBeGreaterThan(-1);
+  expect(m.raw.mock.calls[lockIndex][1]).toBe(JSON.stringify(["company", "tickets.ticket"]));
+  expect(m.raw.mock.invocationCallOrder[lockIndex]).toBeLessThan(m.create.mock.invocationCallOrder[0]);
   await expect(authoriseNewTicketFields({ session, transaction: tx }, retained!)).rejects.toThrow("FORBIDDEN");
 });
 it("rejects invented/copied/foreign transaction/principal/tenant proofs during the valid callback", async () => {

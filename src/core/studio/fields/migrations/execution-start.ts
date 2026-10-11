@@ -1,3 +1,4 @@
+import { lockFieldEntitiesInTransaction } from "../entity-lock";
 import { z } from "zod";
 import type { Session } from "@/core/auth/session";
 import { db } from "@/core/db/client";
@@ -25,6 +26,7 @@ export async function startFieldMigrationExecution(session: Session, input: unkn
   if (!initial) changed();
   const { intent } = readStoredFieldMigrationIntent(initial, session.organisationId);
   return withFieldMigrationAuthority(session, intent.principal, async authority => {
+    await lockFieldEntitiesInTransaction(authority.transaction, authority.session.organisationId, [intent.source.payload.entity.id, intent.target.payload.entity.id]);
     const inspected = intent.schemaVersion === 2 ? await inspectRequiredFieldMigrationExecution(authority, intent)
       : await inspectFieldMigrationExecution(authority, intent);
     if (request.publicationRevision !== inspected.publication.revision || request.reviewChecksum !== inspected.stored.checksum) changed();

@@ -7,6 +7,7 @@ import { readFieldContextInTransaction, readFieldPlanInTransaction, readFieldVal
 import { withFieldRuntimeAuthority } from "./runtime-authority";
 import { fieldWriteRequestSchema, fieldWriteRequestChecksum, fieldWriteAuditSchema } from "./runtime-write-contract";
 import { closeFieldWriteWindow } from "./runtime-write-window";
+import { lockBoundFieldEntityInTransaction } from "./entity-lock";
 function conflict(): never { throw new Error("CONFLICT: this record, field or value changed. Refresh before saving."); }
 
 /** Internal server service. An owning native form must invoke this (or the same
@@ -17,6 +18,7 @@ export async function writeFieldValue(authenticated: Session, input: unknown) {
   try {
     return await withFieldRuntimeAuthority(authenticated, async authority => {
       const { session, transaction: tx, registry } = authority;
+      await lockBoundFieldEntityInTransaction(tx, session.organisationId, request.definitionId);
       // Serialize configuration and value CAS against activation/retirement.
       await tx.$queryRaw`SELECT id FROM studio_definitions WHERE id=${request.definitionId}::uuid AND "organisationId"=${session.organisationId} FOR UPDATE`;
       const { definition, payload, extension } = await readFieldContextInTransaction(authority, request, false);

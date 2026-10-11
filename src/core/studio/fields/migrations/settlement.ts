@@ -1,3 +1,4 @@
+import { lockFieldEntitiesInTransaction } from "../entity-lock";
 import type { Session } from "@/core/auth/session";
 import { db } from "@/core/db/client";
 import { assertCapability } from "@/core/permissions/check";
@@ -28,6 +29,7 @@ async function settle(session: Session, serverPrincipal: FieldMigrationPrincipal
   if (initial.definitionId !== intent.definitionId) changed();
   return withFieldMigrationAuthority(session, serverPrincipal, async authority => {
     const { transaction: tx, session: fresh, principal, company } = authority;
+    await lockFieldEntitiesInTransaction(tx, fresh.organisationId, [intent.source.payload.entity.id, intent.target.payload.entity.id]);
     const inspection = intent.schemaVersion === 2
       ? { protocol: 2 as const, value: await inspectRequiredFieldMigrationSettlementIdentity(tx, intent) }
       : { protocol: 1 as const, value: await inspectFieldMigrationSettlementIdentity(tx, intent) };

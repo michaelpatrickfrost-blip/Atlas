@@ -41,6 +41,9 @@ describe("Studio field retirement boundary", () => {
     expect(mocks.audit).toHaveBeenCalledWith({ data: expect.objectContaining({ organisationId: "tenant-a", actorUserId: "actor", action: "studio.field.retired", entityId: definitionId,
       before: { revision: 2 }, after: { revision: 3, retiredAt: retired.retiredAt.toISOString() } }) });
     expect(mocks.transaction.mock.calls[0][1]).toEqual({ isolationLevel: "Serializable" });
+    expect(mocks.lock.mock.calls[1][0].join("?")).toContain("pg_advisory_xact_lock");
+    expect(mocks.lock.mock.calls[1].slice(1)).toEqual([session.organisationId,definitionId]);
+    expect(mocks.lock.mock.invocationCallOrder[1]).toBeLessThan(mocks.change.mock.invocationCallOrder[0]);
   });
   it("fails stale/foreign/non-field/already-retired CAS without a success audit", async () => {
     mocks.change.mockResolvedValue({ count: 0 });

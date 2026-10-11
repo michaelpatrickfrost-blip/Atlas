@@ -14,6 +14,7 @@ import { publishCompiledDefinitionInTransaction } from "./publication";
 import { activateCompiledVersionInTransaction } from "./activation";
 import { studioRegistry } from "../registry/runtime";
 import { checksum } from "../registry/contracts";
+import { lockBoundFieldEntityInTransaction } from "../fields/entity-lock";
 const uuid = z.uuid();
 const revision = z.number().int().nonnegative();
 const identity = { key: z.string().regex(/^[a-z][a-z0-9_.-]{0,99}$/), name: z.string().min(1).max(150) };
@@ -56,6 +57,7 @@ export async function updateDraft(session: Session, input: unknown) {
   await assertModuleEnabled(session, "studio");
   const value = updateSchema.parse(input);
   return db.$transaction(async tx => {
+    await lockBoundFieldEntityInTransaction(tx, session.organisationId, value.definitionId);
     const definition = await tx.studioDefinition.findFirst({ where: { id: value.definitionId, organisationId: session.organisationId, retiredAt: null }, select: { kind: true, key: true } });
     if (!definition) conflict();
     const payload = parseDefinitionPayload(definition.kind, value.payload);

@@ -1,3 +1,4 @@
+import { lockFieldEntitiesInTransaction } from "../entity-lock";
 import type { Session } from "@/core/auth/session";
 import { db } from "@/core/db/client";
 import { assertCapability } from "@/core/permissions/check";
@@ -35,6 +36,7 @@ async function recordFailure(session: Session, intent: FieldMigrationIntent | Re
   // Reserve the last SQL integer revision for sparse cancellation.
   if (revision > 2147483645) return false;
   try { return await withFieldMigrationAuthority(session, intent.principal, async ({ session: fresh, transaction: tx }) => {
+    await lockFieldEntitiesInTransaction(tx, fresh.organisationId, [intent.source.payload.entity.id, intent.target.payload.entity.id]);
     const scope = { preparationId: intent.id, organisationId: fresh.organisationId, definitionId: intent.definitionId };
     await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${intent.id}::uuid AND "organisationId"=${fresh.organisationId} FOR UPDATE`;
     await tx.$queryRaw`SELECT "preparationId" FROM studio_field_migration_publications WHERE "preparationId"=${intent.id}::uuid AND "organisationId"=${fresh.organisationId} FOR UPDATE`;
@@ -65,7 +67,9 @@ export async function executeFieldMigrationBatch(session: Session, input: unknow
   if (!initial) changed();
   const { intent } = readStoredFieldMigrationIntent(initial, session.organisationId);
   try { return await withFieldMigrationAuthority(session, intent.principal, async authority => {
-    const { session: fresh, transaction: tx } = authority, inspected = intent.schemaVersion === 2 ? await inspectRequiredFieldMigrationExecution(authority, intent)
+    const { session: fresh, transaction: tx } = authority;
+    await lockFieldEntitiesInTransaction(tx, fresh.organisationId, [intent.source.payload.entity.id, intent.target.payload.entity.id]);
+    const inspected = intent.schemaVersion === 2 ? await inspectRequiredFieldMigrationExecution(authority, intent)
       : await inspectFieldMigrationExecution(authority, intent);
     if (!inspected.existing || !inspected.progress) changed();
     const prior = inspected.progress;

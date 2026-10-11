@@ -1,3 +1,4 @@
+import { lockFieldEntitiesInTransaction } from "../entity-lock";
 import type { Session } from "@/core/auth/session";
 import { db } from "@/core/db/client";
 import { assertCapability } from "@/core/permissions/check";
@@ -41,6 +42,7 @@ export async function cutoverReviewedFieldMigration(session: Session, input: unk
   }
   return withFieldMigrationAuthority(session, intent.principal, async authority => {
     const { session: fresh, transaction: tx, company } = authority;
+    await lockFieldEntitiesInTransaction(tx, fresh.organisationId, [intent.source.payload.entity.id, intent.target.payload.entity.id]);
     const scope = { preparationId: intent.id, organisationId: fresh.organisationId, definitionId: intent.definitionId };
     await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${intent.id}::uuid AND "organisationId"=${fresh.organisationId} FOR UPDATE`;
     const receipt = await tx.studioFieldMigrationCutover.findFirst({ where: scope, select: { preparationId: true } });

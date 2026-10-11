@@ -1,3 +1,4 @@
+import { lockBoundFieldEntityInTransaction } from "../entity-lock";
 import { z } from "zod";
 import type { Session } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
@@ -26,6 +27,7 @@ export async function startFieldMigrationPreparation(session: Session, serverPri
   await assertModuleEnabled(session, "studio");
   const request = requestSchema.parse(input);
   return withFieldMigrationAuthority(session, serverPrincipal, async ({ session: fresh, principal, transaction: tx, company }) => {
+    await lockBoundFieldEntityInTransaction(tx, fresh.organisationId, request.definitionId);
     await tx.$queryRaw`SELECT d.id FROM studio_definitions d JOIN studio_drafts draft ON draft."definitionId"=d.id AND draft."organisationId"=d."organisationId"
       WHERE d.id=${request.definitionId}::uuid AND d."organisationId"=${fresh.organisationId} FOR SHARE OF d,draft`;
     const definition = await tx.studioDefinition.findFirst({ where: { id: request.definitionId, organisationId: fresh.organisationId,

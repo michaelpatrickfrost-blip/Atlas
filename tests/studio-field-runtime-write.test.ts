@@ -48,6 +48,10 @@ it("commits one typed immutable value, CAS pointers and Audit using only ordinar
   expect(m.audit.mock.calls[0][0].data).toMatchObject({ action: "studio.field.value.saved", entityId: request.operationId, after: { requestChecksum: result.requestChecksum } });
   expect(JSON.stringify(m.audit.mock.calls[0][0])).not.toContain("13.50");
   expect(f.session.capabilities.has("studio.definition.publish")).toBe(false);
+  expect(m.raw.mock.calls[0][0].join("?")).toContain("pg_advisory_xact_lock");
+  expect(m.raw.mock.calls[0].slice(1)).toEqual([f.session.organisationId,request.definitionId]);
+  expect(m.raw.mock.calls[1][0].join("?")).toContain("FOR UPDATE");
+  expect(m.raw.mock.invocationCallOrder[0]).toBeLessThan(m.definition.mock.invocationCallOrder[0]);
 });
 it("rejects stale native/config/generation/value revisions before settlement or mutations", async () => {
   for (const patch of [{ recordRevision: 6 }, { definitionRevision: 1 }, { versionId: uuid(91) }, { generationId: uuid(92) }, { extensionRevision: null }, { slotRevision: null }, { valueRevision: 4 }])

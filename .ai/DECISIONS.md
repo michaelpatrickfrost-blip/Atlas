@@ -1,3 +1,21 @@
+## 11 October 2026 — one shared field/native coordination key (Phase2 d4a)
+
+Reuse the existing first-publication tenant/entity compact JSON hashtextextended
+seed0 advisory key across metadata, reviewed migration lifecycle, ordinary typed
+values and owning native mutations. Acquire sorted unique complete owning entity
+sets after existing authenticated company/module authority and before configuration/
+receipt/native/sequence/parent/value locks. Existing bindings server-derive primary
+entity; absent binding grants nothing. First publishers/native creators use actual
+approved entity directly. Saved draft payload and retirement updates participate
+because their existing triggers otherwise reverse migration publication-row order.
+
+Coarse same-business/entity coordination is chosen initially for correctness and
+one consistent lock order, preserving independent businesses/entities. It is not
+new permission or business data and requires no DDL. Advisory acquisition does not
+refresh pre-wait Serializable snapshots; retain CAS/row locks/SSI and prove actual
+first-publication/no-binding/max-field races before conditional native enablement.
+No claim that this foundation delivers every-write required validation or windows.
+
 ## 11 October 2026 — Current settlement authority and staged conditional activation
 
 The original sealed review/publisher remains immutable, but a later different

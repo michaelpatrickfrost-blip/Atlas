@@ -1,3 +1,11 @@
+## 11 October 2026 — Dropdown readability takes priority over glass styling
+
+Michael requests that dropdowns stop showing page content through their panels.
+Use opaque white menu backgrounds, subtle borders and existing rounded/shadow
+treatment. The shared app-navigation dropdown removes its translucent fill and
+backdrop filter. This supersedes the earlier glass-chrome direction for menu
+panels; other shell surfaces retain their current styling.
+
 ## 11 October 2026 — Company admins manage company-only identity and credentials
 
 Michael explicitly requests editable user accounts and direct password assignment

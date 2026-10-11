@@ -112,6 +112,11 @@ the Sales quotes/orders pages for the pattern.
 
 ## Motion & accessibility
 
+Dropdown menu panels use an opaque white background with a subtle border and
+shadow. Page text must not show through open menus; do not rely on backdrop blur
+for readability. The shared `.atlas-float-dropdown` style applies to app navigation
+groups, including Manufacturing & Supply's Demand and Materials menus.
+
 Opaque white cards must not apply backdrop filters: these create stacking contexts
 that can trap descendant dropdowns underneath later cards. Reserve backdrop blur
 for intentionally translucent surfaces with explicit overlay layering. Customer

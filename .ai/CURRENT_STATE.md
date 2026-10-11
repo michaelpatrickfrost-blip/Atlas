@@ -1,3 +1,19 @@
+## 11 October 2026 — Opaque app-navigation dropdowns prepared
+
+Request: page text shows through the Demand dropdown. Shared
+`src/app/globals.css` now gives `.atlas-float-dropdown` a solid white background
+and subtle border, retaining its rounded shape, shadow and existing interactions.
+Removed panel backdrop filters; Apps, notification, record and Dashboard menus
+already have opaque backgrounds. Design guidance and DECISIONS updated.
+Canonical shared checkout receives only this task's narrow style/document edits;
+isolated release starts from reviewed origin/main 4494f920, whose only difference
+from observed live 01f890b3 is completed layout verification documentation.
+No schema, tenant/capability, profile permission or data-store change.
+Checks: isolated production build, Next route type generation, strict TypeScript
+and final diff whitespace PASS. Full repository suite/lint not run for this CSS
+change. Release/live visual verification pending; next: deploy the pinned
+compatible release and verify open menus with all business writes blocked.
+
 ## 11 October 2026 — Finished company-user administration deployed and verified
 
 Original pinned Settings candidate AND public acceptance PASS at exact immutable

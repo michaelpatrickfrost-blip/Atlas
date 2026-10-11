@@ -212,11 +212,9 @@ main { scrollbar-color: #c5d0e2 transparent; }
 }
 .atlas-float-tab-active:hover { background: var(--color-atlas-blue-hover); color: #fff; }
 .atlas-float-dropdown {
-  background: rgba(255, 255, 255, 0.86);
-  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: #fff;
+  border: 1px solid var(--color-border);
   box-shadow: var(--shadow-atlas-lg);
-  backdrop-filter: blur(28px) saturate(1.8);
-  -webkit-backdrop-filter: blur(28px) saturate(1.8);
 }
 .atlas-float-dropdown-active { background: var(--color-atlas-blue-soft); color: var(--color-atlas-blue); }
 .atlas-hero {

@@ -162,7 +162,7 @@ export async function checkManufacturingExecution({context,page,session,out}:{co
  console.log('PASS actual mixed products: 250/300 kg compatible load, one 60-minute booking/cycle, one shared usage journal, exact 80%/20% cost allocation and zero completed WIP.');
  // Purchasing evidence covers demand only on its receipt date, and actual receipts replace open supply.
  const purchaseRaw=await db.product.create({data:{organisationId,code:'DATED-RAW',name:'Dated purchasing material · Test',itemClass:'RAW',sellable:false,unitOfMeasure:'kg',basePriceAmount:0}});
- await db.productDefinition.create({data:{organisationId,productId:purchaseRaw.id,version:1,status:'ACTIVE',supply:'BUY',batchQuantity:0,yieldPercent:100,createdByUserId:userId}});
+ await db.productDefinition.create({data:{organisationId,productId:purchaseRaw.id,version:1,status:'ACTIVE',supply:'BUY',batchQuantity:1,yieldPercent:100,createdByUserId:userId}});
  const needDate=new Date(Date.UTC(new Date().getUTCFullYear(),new Date().getUTCMonth()+1,1));
  const arrival=new Date(needDate.getTime()-86400000),late=new Date(needDate.getTime()+86400000);
  await db.manufacturingDemandForecast.create({data:{organisationId,productId:purchaseRaw.id,periodStart:needDate,quantity:12,createdByUserId:userId}});

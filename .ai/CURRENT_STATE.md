@@ -1,3 +1,16 @@
+## 11 October 2026 — Core exact execution passes candidate; Buy fixture corrected
+
+Candidate 20b3223f passed actual decimal receipt/replay, held-material atomic rollback,
+partial reports/backorder/collection, zero completed WIP, serial material genealogy
+and £1-per-output carrying values, fractional COGS dispatch/value transfer and mixed
+load/shared costs. The later dated-purchasing fixture used batchQuantity=0, refused
+by product_definitions_batch_check; corrected to the valid one-unit Buy batch.
+No application/accounting guard was weakened. No public activation; live remains
+5b6390c8. Evidence /tmp/atlas-supply-candidate-c15GjD, backup ...202559. Test access
+retired/session revoked. Final purchasing, responsive guides, public acceptance and
+authorised all-Test cleanup pending. Production code unchanged since passing build,
+strict types, lint and 24 focused tests; no unnecessary broad rerun.
+
 ## 11 October 2026 — Execution fixture storage corrected; release pending
 Candidate f091fa8a passed dated planning and receipt/replay checks but stopped at
 the first partial production report because its synthetic YARD location had no

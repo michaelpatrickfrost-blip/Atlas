@@ -313,8 +313,9 @@ services/screens; Sales planning provider; additive Prisma schema/migration and 
 API registry/policy. Research, module guide, full coverage and acceptance reconciled.
 All accepted company/Dashboard evidence merged from main; no new unrelated app
 source imported. Final evidence handoff changes documentation only, so its Git SHA
-will differ from the byte-identical accepted runtime. Push reviewed implementation
-and memory to origin/main and scoped branch; preserve the dirty Desktop checkout.
+differs from the byte-identical accepted runtime. Reviewed implementation and
+shared memory published to origin/main and the scoped branch by atomic fast-forward
+push; dirty Desktop checkout was not modified. Final runtime recheck confirms b661051.
 
 Full process-manufacturing readiness remains OPEN: decimal material/stock/Sales and
 unit conversion, dated site supply/material availability, mixed kiln loads/formula/

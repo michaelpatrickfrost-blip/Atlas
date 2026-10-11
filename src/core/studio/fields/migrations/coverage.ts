@@ -31,10 +31,18 @@ export async function validateRequiredFieldMigrationSourceCoverage(context: Reco
   return validateCoverage(context, registry, company, sealRequiredFieldMigrationIntent(serverIntent), "preparation");
 }
 
+/** Server publication replay prerequisite only. The shared SQL predicate proves
+ * the actual source-active PUBLISHED row and frozen target lineage. No client
+ * stage selection, execution/cutover approval or permission from a checksum. */
+export async function validatePublishedRequiredFieldMigrationSourceCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
+  company: Parameters<typeof assertFieldMigrationPolicies>[1], serverIntent: RequiredFieldMigrationIntent): Promise<void> {
+  return validateCoverage(context, registry, company, sealRequiredFieldMigrationIntent(serverIntent), "publication");
+}
+
 async function validateCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
   company: Parameters<typeof assertFieldMigrationPolicies>[1], sealed: { intent: FieldMigrationIntent | RequiredFieldMigrationIntent; checksum: string }, stage: FieldMigrationCoverageStage) {
   const intent = sealed.intent, session = context.session, tx = context.transaction;
-  if (intent.schemaVersion === 2 && stage !== "preparation") changed();
+  if (intent.schemaVersion === 2 && stage !== "preparation" && stage !== "publication") changed();
   if (!tx || intent.organisationId !== session.organisationId || intent.principal.userId !== session.userId || intent.principal.membershipId !== session.membershipId) changed();
   const policies = intent.schemaVersion === 1 ? assertFieldMigrationPolicies : assertVersionedFieldMigrationPolicies;
   policies(session, company, intent.source.payload); policies(session, company, intent.target.payload);

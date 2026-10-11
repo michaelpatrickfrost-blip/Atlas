@@ -1,3 +1,13 @@
+## 11 October 2026 — Conditional publication reinspection is a distinct server entry
+
+Preparation and source-active publication have different immutable metadata/CAS
+lineage. Expose separate internal readers/inspectors rather than accept a stage in
+request metadata or fall back when preparation fails. Publication2 rechecks actual
+closed review/pure pin, exact target and +1 revisions, complete private preflight,
+SQL lineage and actual condition/native/global envelopes. Equal semantic or result
+hashes never waive revision drift. Reuse bounded inspection and existing SQL engine;
+this read-only block does not enable execution2 or grant authority from a receipt.
+
 ## 11 October 2026 — Conditional publication retains the existing receipt meaning
 
 Use a separate closed2 review reader/pure publication helper, not a permissive

@@ -7,11 +7,11 @@ import { sealFieldMigrationReview, FieldMigrationReviewError, type FieldMigratio
 import { validateFieldMigrationSourceCoverage, type FieldMigrationCoverageStage } from "./coverage";
 import { digestFieldMigrationArchive } from "./archive-digest";
 import type { assertFieldMigrationPolicies } from "./access";
-import { validateRequiredFieldMigrationSourceCoverage } from "./coverage";
+import { validateRequiredFieldMigrationSourceCoverage, validatePublishedRequiredFieldMigrationSourceCoverage } from "./coverage";
 import { digestRequiredFieldMigrationArchive } from "./archive-digest";
 import { sealRequiredFieldMigrationIntent, sealRequiredFieldMigrationReview, requiredFieldMigrationObservationSchema,
   requiredFieldMigrationObservationDigest, type RequiredFieldMigrationIntent } from "./required-contracts";
-import { observeRequiredFieldMigrationRecord } from "./observation";
+import { observeRequiredFieldMigrationRecord, observePublishedRequiredFieldMigrationRecord } from "./observation";
 import { fieldRuntimeAuthorityInTransaction } from "../runtime-authority";
 import { checksum } from "../../registry/contracts";
 
@@ -33,6 +33,16 @@ export async function inspectFieldMigrationReview(context: RecordContext & { tra
  * rows in bounded pages; a matching archive digest never substitutes for current
  * conditions or exact native/global envelopes. No target writes or later stages. */
 export async function inspectRequiredFieldMigrationReview(context: RecordContext & { transaction: Prisma.TransactionClient }, serverIntent: RequiredFieldMigrationIntent) {
+  return inspectRequiredReview(context, serverIntent, "preparation");
+}
+
+/** Reinspect an actual source-active publication through a separate server entry.
+ * This does not enable execution or accept a caller-selected stage. */
+export async function inspectPublishedRequiredFieldMigrationReview(context: RecordContext & { transaction: Prisma.TransactionClient }, serverIntent: RequiredFieldMigrationIntent) {
+  return inspectRequiredReview(context, serverIntent, "publication");
+}
+
+async function inspectRequiredReview(context: RecordContext & { transaction: Prisma.TransactionClient }, serverIntent: RequiredFieldMigrationIntent, stage: "preparation" | "publication") {
   const authority = await fieldRuntimeAuthorityInTransaction(context.session, context.transaction), { session, registry, transaction: tx, stamp } = authority;
   const intent = sealRequiredFieldMigrationIntent(serverIntent).intent;
   if (intent.organisationId !== session.organisationId || intent.principal.userId !== session.userId || intent.principal.membershipId !== session.membershipId
@@ -40,7 +50,9 @@ export async function inspectRequiredFieldMigrationReview(context: RecordContext
   const company = await tx.organisation.findFirst({ where: { id: session.organisationId }, select: { id: true, kind: true, status: true, archivedAt: true, isTest: true } });
   if (!company) throw new FieldMigrationReviewError("REVIEW_CHANGED");
   const freshContext = { session, transaction: tx };
-  await validateRequiredFieldMigrationSourceCoverage(freshContext, registry, company, intent);
+  const coverage = stage === "publication" ? validatePublishedRequiredFieldMigrationSourceCoverage : validateRequiredFieldMigrationSourceCoverage;
+  const observe = stage === "publication" ? observePublishedRequiredFieldMigrationRecord : observeRequiredFieldMigrationRecord;
+  await coverage(freshContext, registry, company, intent);
   await validateReferenceCoverage(freshContext, registry, intent);
   const stream = requiredFieldMigrationObservationDigest();
   let cursor: string | undefined;
@@ -52,7 +64,7 @@ export async function inspectRequiredFieldMigrationReview(context: RecordContext
     for (const row of rows) {
       const retained = requiredFieldMigrationObservationSchema.parse(row.observation);
       if (retained.recordId !== row.recordId || retained.nativeRevision !== row.nativeRevision) throw new FieldMigrationReviewError("REVIEW_CHANGED");
-      const actual = await observeRequiredFieldMigrationRecord(freshContext, intent, { organisationId: session.organisationId, recordId: row.recordId, revision: row.nativeRevision });
+      const actual = await observe(freshContext, intent, { organisationId: session.organisationId, recordId: row.recordId, revision: row.nativeRevision });
       if (checksum(actual) !== checksum(retained)) throw new FieldMigrationReviewError("REVIEW_CHANGED");
       stream.append(actual); cursor = row.recordId;
     }

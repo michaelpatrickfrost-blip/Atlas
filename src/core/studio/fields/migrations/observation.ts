@@ -18,6 +18,8 @@ import { evaluateConditionalInputsInTransaction } from "../required-inputs";
 import { conditionalFieldPlanSchema } from "../conditional-compiler";
 import { resolveFieldMigrationPrincipal } from "../principal";
 import { assertFieldBinding, fieldDefinitionKey } from "../binding";
+import { readStoredFieldMigrationReview } from "./stored-protocol";
+import { reviewedRequiredFieldPublicationPin } from "./publication-contract";
 
 function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"); }
 
@@ -74,6 +76,19 @@ export async function observeFieldMigrationRecord(...args: Parameters<typeof ins
  * Later execution/settlement must independently prove their retained lineage. */
 export async function inspectRequiredFieldMigrationRecord(context: RecordContext & { transaction: Prisma.TransactionClient },
   serverIntent: RequiredFieldMigrationIntent, serverAnchor: RecordAnchor): Promise<{ observation: RequiredFieldMigrationObservation; convertedValue: FieldValue | null }> {
+  return inspectRequiredRecord(context, serverIntent, serverAnchor, "preparation");
+}
+
+/** Explicit source-active publication replay. A caller cannot turn preparation
+ * into this stage with request metadata. Actual immutable publication/review/
+ * target lineage and native/private access remain mandatory before values. */
+export async function inspectPublishedRequiredFieldMigrationRecord(context: RecordContext & { transaction: Prisma.TransactionClient },
+  serverIntent: RequiredFieldMigrationIntent, serverAnchor: RecordAnchor): Promise<{ observation: RequiredFieldMigrationObservation; convertedValue: FieldValue | null }> {
+  return inspectRequiredRecord(context, serverIntent, serverAnchor, "publication");
+}
+
+async function inspectRequiredRecord(context: RecordContext & { transaction: Prisma.TransactionClient },
+  serverIntent: RequiredFieldMigrationIntent, serverAnchor: RecordAnchor, stage: "preparation" | "publication") {
   const authority = await fieldRuntimeAuthorityInTransaction(context.session, context.transaction), { session, registry, transaction: tx } = authority;
   const intent = sealRequiredFieldMigrationIntent(serverIntent).intent, anchor = recordAnchorSchema.parse(serverAnchor), stamp = authority.stamp;
   if (intent.organisationId !== session.organisationId || anchor.organisationId !== session.organisationId
@@ -90,14 +105,14 @@ export async function inspectRequiredFieldMigrationRecord(context: RecordContext
   await tx.$queryRaw`SELECT d.id FROM studio_definitions d JOIN studio_drafts draft ON draft."definitionId"=d.id AND draft."organisationId"=d."organisationId"
     WHERE d.id=${intent.definitionId}::uuid AND d."organisationId"=${session.organisationId} FOR SHARE OF d,draft`;
   const definition = await tx.studioDefinition.findFirst({ where: { id: intent.definitionId, organisationId: session.organisationId,
-    kind: "customField", retiredAt: null, revision: intent.definitionRevision }, include: { activeVersion: true, draft: true } });
+    kind: "customField", retiredAt: null, revision: intent.definitionRevision + (stage === "publication" ? 1 : 0) }, include: { activeVersion: true, draft: true } });
   const version = definition?.activeVersion, draft = definition?.draft;
   if (!definition || !version || !draft || definition.activeVersionId !== intent.source.versionId || version.id !== intent.source.versionId
     || version.definitionId !== intent.definitionId || version.organisationId !== session.organisationId || version.schemaVersion !== current.schemaVersion
     || version.checksum !== intent.source.versionChecksum || checksum(version.compiledPlan) !== version.checksum
     || checksum(version.payload) !== checksum(current) || definition.key !== fieldDefinitionKey(current)
     || draft.id !== intent.target.draftId || draft.definitionId !== intent.definitionId || draft.organisationId !== session.organisationId
-    || draft.revision !== intent.target.draftRevision) changed();
+    || draft.revision !== intent.target.draftRevision + (stage === "publication" ? 1 : 0)) changed();
   const compiledSource = await compileFieldMigrationMetadata(freshContext, registry, company, intent.definitionId, current),
     compiledTarget = await compileFieldMigrationMetadata(freshContext, registry, company, intent.definitionId, draft.payload);
   if (compiledSource.checksum !== intent.source.versionChecksum || compiledTarget.checksum !== intent.target.compiledChecksum
@@ -111,6 +126,29 @@ export async function inspectRequiredFieldMigrationRecord(context: RecordContext
   const query = await registry.resolve(session, intent.ownerQuery);
   if (query.ownerModuleId !== targetNative.ownerModuleId || query.capability !== targetRecord.writeCapability
     || !supportsFieldMigrationQueryIntent(query, targetNative.id, "snapshot", 2)) changed();
+  if (stage === "publication") {
+    // Complete owning private preflight before checking source-value freshness.
+    await registry.invokeQueryInTransaction(freshContext, intent.ownerQuery, { mode: "preflight" });
+    const publication = await tx.studioFieldMigrationPublication.findFirst({ where: { preparationId: intent.id, organisationId: session.organisationId,
+      definitionId: intent.definitionId, state: "PUBLISHED" }, include: { review: true, targetVersion: true } });
+    if (!publication) changed();
+    const targetVersion = publication.targetVersion, stored = readStoredFieldMigrationReview(publication.review, session.organisationId);
+    const { cohort, summary, ...reviewIntent } = stored.review; void cohort; void summary;
+    if (stored.review.schemaVersion !== 2 || stored.review.id !== intent.id || checksum(reviewIntent) !== checksum(intent)
+      || draft.baseVersionId !== targetVersion.id || definition.latestVersion !== targetVersion.version
+      || targetVersion.schemaVersion !== target.schemaVersion || targetVersion.createdBy !== session.userId) changed();
+    const pin = reviewedRequiredFieldPublicationPin({ review: stored.review, checksum: stored.checksum },
+      { id: targetVersion.id, organisationId: targetVersion.organisationId, definitionId: targetVersion.definitionId,
+        version: targetVersion.version, checksum: targetVersion.checksum, payload: targetVersion.payload, compiledPlan: targetVersion.compiledPlan },
+      session.userId, publication.acknowledgedLoss);
+    if (Object.entries(pin).some(([key, value]) => publication[key as keyof typeof pin] !== value)) changed();
+    const fresh = await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_publication_fresh(pub) AS fresh
+      FROM studio_field_migration_publications pub JOIN studio_field_migration_preparations p ON p.id=pub."preparationId"
+        AND p."organisationId"=pub."organisationId" AND p."definitionId"=pub."definitionId"
+      WHERE p.id=${intent.id}::uuid AND p."organisationId"=${session.organisationId} AND p."intentChecksum"=${checksum(intent)}
+        AND p.state='REVIEWED' AND pub.state='PUBLISHED'`;
+    if (fresh.length !== 1 || fresh[0].fresh !== true) changed();
+  }
   for (const entity of [current.entity, target.entity]) {
     const actual = await registry.authoriseRecord(freshContext, entity, { recordId: anchor.recordId, intent: "read" });
     if (actual.recordId !== anchor.recordId || actual.organisationId !== session.organisationId || actual.revision !== anchor.revision) changed();
@@ -155,4 +193,8 @@ export async function inspectRequiredFieldMigrationRecord(context: RecordContext
 
 export async function observeRequiredFieldMigrationRecord(...args: Parameters<typeof inspectRequiredFieldMigrationRecord>): Promise<RequiredFieldMigrationObservation> {
   return (await inspectRequiredFieldMigrationRecord(...args)).observation;
+}
+
+export async function observePublishedRequiredFieldMigrationRecord(...args: Parameters<typeof inspectPublishedRequiredFieldMigrationRecord>): Promise<RequiredFieldMigrationObservation> {
+  return (await inspectPublishedRequiredFieldMigrationRecord(...args)).observation;
 }

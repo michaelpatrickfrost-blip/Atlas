@@ -1,3 +1,33 @@
+## 11 October 2026 — e3b conditional publication reinspection VERIFIED locally
+
+Existing coverage/observation/inspection now expose separate preparation and
+source-active publication2 server entries. Exact closed review/target/publisher/
+generation, +1 definition/draft revisions, genuine refreshed authority and complete
+private preflight precede actual SQL/native/conditions/source value freshness.
+Bounded rows compare actual evidence with archived envelopes and SQL/pure seal.
+No execution/cutover, DDL, native/value writes or conditional authoring enabled.
+Six new meaningful cases;65cases/6suites PASS22326, strictTS78713/lint83710/build73098
+exit0, diff review/check PASS. Test-only implicit types failed first, fixed explicitly.
+Unit transaction/authority fixtures are not real conditional publisher acceptance.
+Pure pin8cc2758 now VERIFIED live: original95284 exit0, candidatezc2knY/publicPK9q8T
+ALL COMBINED PASS; exact health8cc2758. Rollbacka475823 retained, both-lock retention
+retired inactiveede65ae duplicate runtime only; required092639/092819/093242 backups.
+Next e3c: actual stored-format publication dispatch + typed conditional metadata
+publisher/binder and central normal API replay/Audit rollback proof; no new engine.
+Whole Phase2 remains open, source coverage retains record types/pages/visual builders.
+
+## 11 October 2026 — e3b conditional publication reinspection initial plan (superseded above)
+
+Pure pin8cc2758 original95284 running; keep HEAD fixed. Actual normal review APIs
+VERIFIED livea475823, no phase gate claim. Next coherent read-only block: explicit
+publication coverage wrapper and conditional row/review inspection in existing
+coverage/observation/inspection services. Derive stage from trusted server entry,
+never request metadata; require source-active PUBLISHED freshness, exact +1 revisions,
+immutable target payload/plan/generation/version and publisher/closed review identity.
+No DDL, values/native writes, execution/cutover or public conditional authoring.
+Tests and precise dependencies recorded in ledger before coding. Source full
+publisher/CAS/Audit and native writer integration remain mandatory afterward.
+
 ## 11 October 2026 — Pure conditional reviewed publication pin VERIFIED locally
 
 Existing publication-contract.ts now has an explicit closed2 helper alongside the

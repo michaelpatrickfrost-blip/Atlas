@@ -12,12 +12,17 @@ No Phase 3 feature may start before the complete Phase 2 gate passes.
 
 # Current Workstream
 
-2B required-field evolution e3a — pure reviewed conditional publication pin —
-VERIFIED locally:39 tests/4 suites, strict TypeScript/scoped lint/production build
-PASS. No runtime conditional publication is enabled. Actual normal prepare/collect/
-seal APIs now VERIFIED live a475823: original55798 exit0, candidatep46Q3C/public79aa78
-ALL COMBINED PASS. Continue foundation-first order; next e3b publication-stage
-conditional metadata/coverage/row reinspection before enabling publication.
+2B required-field evolution e3b — conditional publication-stage reinspection —
+VERIFIED locally; real publication API integration remains the next workstream.
+The explicit server publication reader uses genuine authority, exact +1 definition/
+draft revisions, closed stored review and frozen target/publisher/generation, complete
+private preflight, source-active SQL freshness and actual native/condition/value
+envelopes. Bounded inspection compares every actual row and SQL/pure archive seal.
+No client stage, execution/cutover, DDL or value/native mutation. Legacy entry stays
+closed1. Pure pin8cc2758 is now VERIFIED live: original95284 exit0, candidatezc2knY/
+publicPK9q8T ALL COMBINED PASS, health exact. Current rollback a475823; both-lock
+retention retired inactive ede65ae duplicate runtime only. Required recovery UTC
+092639/092819/093242 only. Runtime conditional publication and authoring remain gated.
 
 # Overall Status
 
@@ -60,7 +65,8 @@ work. No conditional authoring is enabled by this checkpoint.
 
 # Files Changed
 
-Current e3a: migrations/publication-contract.ts, its existing focused test suite,
+Current e3b: migrations/coverage.ts,observation.ts,inspection.ts and existing required
+observation/inspection suites; progress docs. Current e3a: migrations/publication-contract.ts, its existing focused test suite,
 .ai/DECISIONS.md and progress docs. Prior owner checkpoint: core/service-work/studio.ts; scripts/studio/check-field-required-
 review-storage.ts; actual current-owner test; required observation/routing and
 legacy owner/creation/cutover fixture tests; architecture/module docs; required-rule
@@ -80,6 +86,10 @@ correction preserved its applied checksum/history. No reset/backfill/purge.
 
 # Tests Added
 
+E3b adds six cases covering the real coverage/row-reader bodies with explicit unit
+transaction/authority fixtures, stage routing, frozen publication integrity, private
+preflight ordering, source/condition/native/global drift and empty-cohort denial.
+These fixtures do not prove the actual conditional publisher or central execution.
 Actual current Tickets owner tests: 8 cases, including retained format1/native5,
 stored identity/hash/tenant denial, private preflight, actual immutable reference
 inputs, exact principal/revision, dual-format representation and settlement. The
@@ -89,6 +99,10 @@ adds4 cases for closed protocol, tamper, readiness and rule removal to schema1.
 
 # Tests Run
 
+E3b:65 tests/6 suites PASS22326; strict TypeScript78713 exit0; scoped ESLint83710
+exit0; production build73098 exit0; final diff/check PASS. Initial test-only implicit
+types failed24479 and were corrected with explicit registry parameter types.
+Logs /tmp/atlas-studio-required-published-inspection-{tests,types,lint,build}.txt.
 138 tests /19 focused suites PASS (53975); strict TypeScript 88342 exit0; scoped
 ESLint 84027 exit0; production build 93836 exit0; final diff review/check PASS.
 Logs: /tmp/atlas-studio-e2b-owner-final-tests.txt and
@@ -139,18 +153,16 @@ No later-phase work started and no complete Studio claim.
 
 # Exact Next Action
 
-Checkpoint the reviewed pure publication pin with its39 tests/types/lint/build and
-memory. Then add an explicit conditional publication-stage coverage wrapper in
-migrations/coverage.ts using the locked PUBLISHED row and exact source/draft/target
-version lineage. Extend the existing conditional row reader/inspection to verify
-that server stage (definition/draft +1 revisions, exact source-active/frozen target,
-whole conditions and native/global envelopes), without exposing a client stage.
-Add focused preparation/publication/tenant/freshness/condition drift cases. Keep
-conditional publication runtime disabled until that inspection and actual atomic
-publisher/CAS/Audit proof pass. Reuse the existing engine/receipt shapes; preserve
-all legacy hashes. Execution/cutover/settlement, native hooks, then2C/D/E/F remain.
-Current live a475823 has rollback ede65ae; original both-lock retention retired only
-inactive e395962 duplicate runtime. Required091118/091258/091718 recovery only.
+Checkpoint e3b with its local evidence, then e3c: derive publication format from the
+actual stored intent/review in migrations/publication.ts. Route explicit2 through
+the genuine conditional preparation/publication inspectors and metadata compiler;
+keep execution2 replay denied until its own lineage is implemented. Extend the
+existing trusted publisher compiled union/binder to persist actual schemaVersion2
+without opening ordinary conditional authoring. Add actual central Test normal
+publication/replay and failed metadata/Audit atomic rollback proof, retaining active
+source and native/value snapshots. Run focused regression/types/lint/build, deploy
+the coherent integrated block under original gates, then execution/cutover/settlement
+and native hooks before remaining2B/2C/2D/2E/2F. Live8cc2758 rollbacka475823.
 
 # Historical checkpoint evidence
 

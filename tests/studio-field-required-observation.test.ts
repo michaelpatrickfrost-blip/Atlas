@@ -2,7 +2,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 import type { Prisma, StudioDefinitionVersion } from "@/generated/prisma/client";
 import type { Session } from "@/core/auth/session";
 import type { FieldRuntimeAuthority } from "@/core/studio/fields/runtime-authority";
-const m = vi.hoisted(() => ({ refresh: vi.fn(), principal: vi.fn(), raw: vi.fn(), company: vi.fn(), definition: vi.fn(), version: vi.fn(), generation: vi.fn(), extension: vi.fn(), value: vi.fn(), slot: vi.fn() }));
+const m = vi.hoisted(() => ({ refresh: vi.fn(), principal: vi.fn(), raw: vi.fn(), company: vi.fn(), definition: vi.fn(), version: vi.fn(), generation: vi.fn(), extension: vi.fn(), value: vi.fn(), slot: vi.fn(), publication: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: {} }));
 vi.mock("@/core/studio/fields/runtime-authority", () => ({ fieldRuntimeAuthorityInTransaction: m.refresh }));
 vi.mock("@/core/studio/fields/principal", () => ({ resolveFieldMigrationPrincipal: m.principal }));
@@ -12,8 +12,10 @@ import { checksum } from "@/core/studio/registry/contracts";
 import { customFieldPayloadSchema, type FieldStorage } from "@/core/studio/fields/schema";
 import { conditionalFieldPayloadSchema, type VersionedFieldPayload } from "@/core/studio/fields/required-contract";
 import { compileFieldMigrationMetadata } from "@/core/studio/fields/migrations/metadata";
-import { sealRequiredFieldMigrationIntent, type RequiredFieldMigrationIntent } from "@/core/studio/fields/migrations/required-contracts";
-import { inspectRequiredFieldMigrationRecord, observeRequiredFieldMigrationRecord, observeFieldMigrationRecord } from "@/core/studio/fields/migrations/observation";
+import { sealRequiredFieldMigrationIntent, sealRequiredFieldMigrationReview, requiredFieldMigrationObservationDigest, type RequiredFieldMigrationIntent } from "@/core/studio/fields/migrations/required-contracts";
+import { inspectRequiredFieldMigrationRecord, inspectPublishedRequiredFieldMigrationRecord, observePublishedRequiredFieldMigrationRecord, observeRequiredFieldMigrationRecord, observeFieldMigrationRecord } from "@/core/studio/fields/migrations/observation";
+import { reviewedRequiredFieldPublicationPin } from "@/core/studio/fields/migrations/publication-contract";
+import { validatePublishedRequiredFieldMigrationSourceCoverage, validateRequiredFieldMigrationSourceCoverage, validateFieldMigrationSourceCoverage } from "@/core/studio/fields/migrations/coverage";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
 const uuid = (n: number) => `00000000-0000-4000-8000-${n.toString().padStart(12, "0")}`;
 const root = uuid(4), inputId = uuid(14);
@@ -22,10 +24,11 @@ const actor: Session = { userId: "actor", userName: "Actor", userEmail: "actor@e
   capabilities: new Set(["studio.definition.publish", "tickets.ticket.read", "tickets.ticket.manage"]) };
 const stamp = { organisationId: "company", userId: "actor", membershipId: "member", authVersion: 1, sessionVersion: 2 };
 const anchor = { recordId: "record", organisationId: "company", revision: 7 };
-const tx = { $queryRaw: m.raw, organisation: { findFirst: m.company }, studioDefinition: { findFirst: m.definition }, studioDefinitionVersion: { findFirst: m.version },
-  studioFieldGeneration: { findFirst: m.generation }, studioExtensionRecord: { findFirst: m.extension }, studioFieldValue: { findFirst: m.value }, studioFieldSlot: { findFirst: m.slot } } as unknown as Prisma.TransactionClient;
+const tx = { $queryRaw: m.raw, organisation: { findFirst: m.company }, studioDefinition: { findFirst: m.definition }, studioDefinitionVersion: { findFirst: m.version, findMany: m.version },
+  studioFieldGeneration: { findFirst: m.generation }, studioExtensionRecord: { findFirst: m.extension }, studioFieldValue: { findFirst: m.value }, studioFieldSlot: { findFirst: m.slot },
+  studioFieldMigrationPublication: { findFirst: m.publication } } as unknown as Prisma.TransactionClient;
 let registry: CapabilityRegistry, session: Session, intent: RequiredFieldMigrationIntent;
-let sourceVersion: StudioDefinitionVersion, rootRow: { id: string; organisationId: string; kind: string; key: string; retiredAt: null; revision: number; activeVersionId: string; activeVersion: StudioDefinitionVersion; draft: { id: string; definitionId: string; organisationId: string; revision: number; payload: Prisma.JsonValue } };
+let sourceVersion: StudioDefinitionVersion, rootRow: { id: string; organisationId: string; kind: string; key: string; retiredAt: null; revision: number; latestVersion: number; activeVersionId: string; activeVersion: StudioDefinitionVersion; draft: { id: string; definitionId: string; organisationId: string; revision: number; baseVersionId: string; payload: Prisma.JsonValue } };
 let fact: ReturnType<typeof vi.spyOn>, native: ReturnType<typeof vi.spyOn>;
 function ref(version = 9) { const r = registry.describe("tickets.ticket", version); return { id: r.id, version, schemaHash: r.schemaHash, contractHash: r.contractHash }; }
 function payload(generation: number, conditional = true, storage: FieldStorage = { type: "boolean" }, required = false): VersionedFieldPayload {
@@ -35,9 +38,9 @@ function payload(generation: number, conditional = true, storage: FieldStorage =
     requiredIf: { match: "all", predicates: [{ source: { kind: "native", fieldId: "status" }, operator: "equals", value: { type: "enum", value: "RESOLVED" } }] } }) : base;
 }
 async function prepare(source = payload(1, false), target = payload(2)) {
-  rootRow = { id: root, organisationId: "company", kind: "customField", key: "tickets.ticket.detail", retiredAt: null, revision: 1,
+  rootRow = { id: root, organisationId: "company", kind: "customField", key: "tickets.ticket.detail", retiredAt: null, revision: 1, latestVersion: 1,
     activeVersionId: uuid(5), activeVersion: {} as StudioDefinitionVersion,
-    draft: { id: uuid(6), definitionId: root, organisationId: "company", revision: 2, payload: target as unknown as Prisma.JsonValue } };
+    draft: { id: uuid(6), definitionId: root, organisationId: "company", revision: 2, baseVersionId: uuid(5), payload: target as unknown as Prisma.JsonValue } };
   const context = { session, transaction: tx }, from = await compileFieldMigrationMetadata(context, registry, company, root, source), to = await compileFieldMigrationMetadata(context, registry, company, root, target);
   sourceVersion = { id: uuid(5), definitionId: root, organisationId: "company", version: 1, schemaVersion: source.schemaVersion,
     semanticVersion: "1.0.0", payload: from.payload as unknown as Prisma.JsonValue, compiledPlan: from.plan as unknown as Prisma.JsonValue, checksum: from.checksum, createdBy: "actor", publishedAt: new Date() };
@@ -59,12 +62,31 @@ async function stored(raw: unknown, written: VersionedFieldPayload = intent.sour
   return value;
 }
 const inspect = () => inspectRequiredFieldMigrationRecord({ session, transaction: tx }, intent, anchor);
+const inspectPublished = () => inspectPublishedRequiredFieldMigrationRecord({ session, transaction: tx }, intent, anchor);
+async function publishedFixture() {
+  // Read-only unit metadata fixture, not proof of the actual publication API.
+  fact.mockResolvedValue({ ...anchor, fields: { status: "NEW", priority: "NORMAL" } });
+  const observation = await observeRequiredFieldMigrationRecord({ session, transaction: tx }, intent, anchor);
+  const stream = requiredFieldMigrationObservationDigest(); stream.append(observation);
+  const digest = stream.finish(), sealed = sealRequiredFieldMigrationReview({ ...intent, cohort: { recordCount: digest.recordCount, observationDigest: digest.observationDigest }, summary: digest.summary });
+  const compiled = await compileFieldMigrationMetadata({ session, transaction: tx }, registry, company, root, intent.target.payload);
+  const target = { ...sourceVersion, id: uuid(25), version: 2, schemaVersion: intent.target.payload.schemaVersion,
+    payload: compiled.payload as unknown as Prisma.JsonValue, compiledPlan: compiled.plan as unknown as Prisma.JsonValue, checksum: compiled.checksum };
+  const pin = reviewedRequiredFieldPublicationPin(sealed, { id: target.id, organisationId: target.organisationId, definitionId: target.definitionId,
+    version: target.version, payload: target.payload, compiledPlan: target.compiledPlan, checksum: target.checksum }, session.userId, false);
+  const publication = { ...pin, state: "PUBLISHED", review: { id: intent.id, definitionId: root, organisationId: "company", review: sealed.review as unknown as Prisma.JsonValue, checksum: sealed.checksum }, targetVersion: target };
+  rootRow.revision++; rootRow.latestVersion = 2; rootRow.draft.revision++; rootRow.draft.baseVersionId = target.id;
+  m.publication.mockResolvedValue(publication);
+  m.raw.mockImplementation(async (sql: TemplateStringsArray) => sql.join("").includes("atlas_studio_publication_fresh") ? [{ fresh: true }] : []);
+  fact.mockClear(); m.value.mockClear();
+  return { publication, observation };
+}
 beforeEach(async () => {
   vi.resetAllMocks(); session = { ...actor, capabilities: new Set(actor.capabilities) }; registry = new CapabilityRegistry(async () => true); registry.register("tickets", ticketStudioContract);
   // Actual owner descriptors; transaction/authority/facts remain explicit unit fixtures.
   m.refresh.mockImplementation(async selected => ({ session: selected, stamp, transaction: tx, registry } satisfies FieldRuntimeAuthority));
   m.principal.mockResolvedValue(session); m.raw.mockResolvedValue([]); m.company.mockResolvedValue(company);
-  m.definition.mockImplementation(async args => args.where.id === root ? rootRow : null);
+  m.definition.mockImplementation(async args => args.where.id === root && (args.where.revision === undefined || args.where.revision === rootRow.revision) ? rootRow : null);
   m.generation.mockImplementation(async args => ({ id: args.where.id })); m.extension.mockResolvedValue(null);
   native = vi.spyOn(registry, "authoriseRecord").mockImplementation(async (context, reference, input) => {
     await registry.resolve(context.session, reference); return { ...anchor, recordId: (input as { recordId: string }).recordId };
@@ -196,4 +218,65 @@ it("reads a retained conditional written schema without changing its rule or inv
   await prepare(payload(1), payload(2)); await stored(false);
   const row = await inspect(); expect(row.convertedValue).toEqual({ type: "boolean", value: false }); expect(row.observation.result.kind).toBe("valid");
   expect(fact).toHaveBeenCalledTimes(2);
+});
+it("reinspects a source-active publication using exact review/target pins and private preflight before SQL/value freshness", async () => {
+  const { observation } = await publishedFixture();
+  expect((await inspectPublished()).observation).toEqual(observation);
+  expect(await observePublishedRequiredFieldMigrationRecord({ session, transaction: tx }, intent, anchor)).toEqual(observation);
+  expect(m.definition).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ revision: intent.definitionRevision + 1 }) }));
+  expect(m.publication).toHaveBeenCalledWith(expect.objectContaining({ where: { preparationId: intent.id, organisationId: "company", definitionId: root, state: "PUBLISHED" } }));
+  const preflight = fact.mock.calls.findIndex((call: Parameters<CapabilityRegistry["invokeQueryInTransaction"]>) => (call[2] as { mode: string }).mode === "preflight");
+  const freshness = m.raw.mock.calls.findIndex(call => (call[0] as TemplateStringsArray).join("").includes("atlas_studio_publication_fresh"));
+  expect(fact.mock.invocationCallOrder[preflight]).toBeLessThan(m.raw.mock.invocationCallOrder[freshness]);
+  await expect(inspect()).rejects.toThrow("stale or has changed");
+});
+it("rejects changed publication identity, frozen target and saved draft lineage before reading source values", async () => {
+  const { publication } = await publishedFixture(), savedRoot = structuredClone(rootRow), saved = structuredClone(publication);
+  const mutations = [() => { rootRow.revision++; }, () => { rootRow.draft.revision++; }, () => { rootRow.draft.baseVersionId = uuid(99); },
+    () => { rootRow.latestVersion++; }, () => { publication.review.organisationId = "foreign"; }, () => { publication.review.id = uuid(99); },
+    () => { publication.review.checksum = "f".repeat(64); }, () => { publication.targetVersion.schemaVersion = 1; },
+    () => { publication.targetVersion.createdBy = "another"; }, () => { publication.targetVersion.payload = {} as Prisma.JsonValue; },
+    () => { publication.targetVersion.compiledPlan = {}; }, () => { publication.targetGenerationId = uuid(99); }, () => { publication.publisherUserId = "another"; }];
+  for (const mutate of mutations) {
+    rootRow = structuredClone(savedRoot); Object.assign(publication, structuredClone(saved)); mutate(); m.value.mockClear();
+    await expect(inspectPublished()).rejects.toThrow(); expect(m.value).not.toHaveBeenCalled();
+  }
+});
+it("denies missing or stale publications and private/native/condition access without allowing execution-stage fallback", async () => {
+  await publishedFixture();
+  m.publication.mockResolvedValueOnce(null); await expect(inspectPublished()).rejects.toThrow("stale or has changed");
+  m.raw.mockImplementation(async (sql: TemplateStringsArray) => sql.join("").includes("atlas_studio_publication_fresh") ? [{ fresh: false }] : []);
+  await expect(inspectPublished()).rejects.toThrow("stale or has changed"); expect(m.value).not.toHaveBeenCalled();
+  m.raw.mockImplementation(async (sql: TemplateStringsArray) => sql.join("").includes("atlas_studio_publication_fresh") ? [{ fresh: true }] : []);
+  fact.mockRejectedValueOnce(new Error("private cohort denied")); await expect(inspectPublished()).rejects.toThrow("private cohort denied");
+  native.mockResolvedValueOnce({ ...anchor, revision: 8 }); await expect(inspectPublished()).rejects.toThrow("stale or has changed");
+  fact.mockImplementation(async (...[_context, _reference, input]: Parameters<CapabilityRegistry["invokeQueryInTransaction"]>) => (input as { mode: string }).mode === "preflight" ? {} : { ...anchor, fields: {} });
+  await expect(inspectPublished()).rejects.toThrow("FIELD_REQUIREMENT_INVALID"); expect(m.value).not.toHaveBeenCalled();
+  const actual = await vi.importActual<typeof import("@/core/studio/fields/runtime-authority")>("@/core/studio/fields/runtime-authority");
+  m.refresh.mockImplementation(actual.fieldRuntimeAuthorityInTransaction); m.raw.mockClear();
+  await expect(inspectPublished()).rejects.toThrow("authenticated company access"); expect(m.raw).not.toHaveBeenCalled();
+});
+it("locks exact publication coverage without preparation fallback and rejects changed source pointers or denied owner coverage", async () => {
+  let fresh = true, changed = false;
+  m.version.mockResolvedValue([]);
+  m.raw.mockImplementation(async (strings: TemplateStringsArray) => {
+    const sql = strings.join("");
+    if (sql.includes("atlas_studio_publication_fresh")) return [{ fresh }];
+    if (sql.includes("SELECT EXISTS")) return [{ changed }];
+    return [];
+  });
+  const run = () => validatePublishedRequiredFieldMigrationSourceCoverage({ session, transaction: tx }, registry, company, intent);
+  await expect(run()).resolves.toBeUndefined();
+  const receipt = m.raw.mock.calls.find(call => (call[0] as TemplateStringsArray).join("").includes("atlas_studio_publication_fresh"));
+  expect(receipt?.slice(1)).toEqual([intent.id, session.organisationId, checksum(intent)]);
+  expect((receipt?.[0] as TemplateStringsArray).join("")).toContain("p.state='REVIEWED' AND pub.state='PUBLISHED'");
+  expect(m.raw.mock.calls.some(call => (call[0] as TemplateStringsArray).join("").includes("atlas_studio_migration_fresh"))).toBe(false);
+  fresh = false; await expect(run()).rejects.toThrow("stale or has changed"); fresh = true;
+  changed = true; await expect(run()).rejects.toThrow("stale or has changed"); changed = false;
+  fact.mockRejectedValueOnce(new Error("private cohort denied")); m.raw.mockClear(); await expect(run()).rejects.toThrow("private cohort denied");
+  expect(m.raw.mock.calls.some(call => (call[0] as TemplateStringsArray).join("").includes("FOR SHARE OF e"))).toBe(false);
+  m.raw.mockClear(); await expect(validateFieldMigrationSourceCoverage({ session, transaction: tx }, registry, company,
+    intent as unknown as Parameters<typeof validateFieldMigrationSourceCoverage>[3], "execution")).rejects.toThrow("review is invalid");
+  expect(m.raw).not.toHaveBeenCalled();
+  await expect(validateRequiredFieldMigrationSourceCoverage({ session, transaction: tx }, registry, company, intent)).rejects.toThrow("stale or has changed");
 });

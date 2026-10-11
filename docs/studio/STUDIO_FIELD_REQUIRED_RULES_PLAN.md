@@ -1,3 +1,25 @@
+## 11 October — e3b read-only publication reinspection VERIFIED locally
+
+Separate trusted publication2 coverage/row/review entries implemented in existing
+services. Exact stored review/pin/frozen target, +1 metadata revisions, private
+preflight and source-active SQL lineage required before actual conditions/values;
+bounded archive comparison preserves exact semantic/native/global evidence.
+65cases/6suites/types/lint/build/diff PASS. No runtime publisher/execution/native
+enablement or DDL. Unit fixtures do not prove real conditional publication. Pure
+pin8cc2758 original95284 candidate/public ALL COMBINED PASS and health exact.
+Next e3c actual stored-format dispatch/publisher/binder + central API/Audit rollback
+proof; then required execution/cutover/settlement/native hooks in original order.
+
+## 11 October — e3b initial plan (superseded above)
+
+Explicit server publication entry with unchanged legacy/preparation paths; reuse
+PUBLISHED freshness/metadata lineage and exact +1 draft/definition revisions.
+Validate immutable target and re-evaluate every authorised conditional row before
+seal comparison. No client stage, execution/cutover or native/value writes/DDL;
+conditional publisher/runtime still disabled until full atomic/CAS/Audit proof.
+Expected coverage/observation/inspection changes + focused tests. Pin8cc2758 original
+release95284 remains fixed; real normal review APIsa475823 already VERIFIED live.
+
 ## 11 October — e3a pure reviewed publication pin VERIFIED locally
 
 Explicit closed2 helper added to existing contract; closed1 parser/output retained.

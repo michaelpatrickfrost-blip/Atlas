@@ -189,3 +189,11 @@ Test gate on candidate and public, exercising actual release and forecast UI sav
 wrong-machine/tenant/locked/stale rejection, atomic cascade and three-width layout.
 Migration 20261011120000_manufacturing_finite_kilns is additive; central application,
 browser feature checks, visual review and deployment results remain pending.
+
+Final correction preserves reviewed future start/finish through Make firming and
+finite release; new command/UI acceptance covers forecast proposal→release timing.
+Preserved accepted company phone-header c607e12. Final strict TypeScript, scoped
+ESLint and production build PASS; 16 files/114 assertions PASS. First b2a3891
+activation attempt stopped before backup/migration/candidate while live advanced;
+no first-candidate result or server change claimed. Retry uses the compatible
+live ancestor and same locked supply acceptance, with no force/reset.

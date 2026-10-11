@@ -5,9 +5,10 @@ import { compileCustomField } from "@/core/studio/compiler/fields";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
 import { writeFieldValue, writeFieldValueInTransaction } from "@/core/studio/fields/runtime-write";
 import { fieldWriteRequestSchema, fieldWriteRequestChecksum, type FieldWriteRequest } from "@/core/studio/fields/runtime-write-contract";
-const m = vi.hoisted(() => ({ authority: vi.fn(), definition: vi.fn(), extension: vi.fn(), generation: vi.fn(), slot: vi.fn(), existing: vi.fn(), create: vi.fn(), slotUpdate: vi.fn(), extensionUpdate: vi.fn(), audit: vi.fn(), findAudit: vi.fn(), raw: vi.fn(), window: vi.fn() }));
+const m = vi.hoisted(() => ({ authority: vi.fn(), definition: vi.fn(), extension: vi.fn(), generation: vi.fn(), slot: vi.fn(), existing: vi.fn(), create: vi.fn(), slotUpdate: vi.fn(), extensionUpdate: vi.fn(), audit: vi.fn(), findAudit: vi.fn(), raw: vi.fn(), window: vi.fn(), resulting: vi.fn() }));
 vi.mock("@/core/studio/fields/runtime-authority", () => ({ withFieldRuntimeAuthority: m.authority }));
-vi.mock("@/core/studio/fields/runtime-write-window", () => ({ closeFieldWriteWindow: m.window }));
+vi.mock("@/core/studio/fields/runtime-write-window", () => ({ closeAffectedFieldWriteWindows: m.window }));
+vi.mock("@/core/studio/fields/required-runtime", () => ({ validateResultingFieldRequirements: m.resulting }));
 let f: Awaited<ReturnType<typeof retainedCutoverFixture>>;
 let current: StudioDefinitionVersion;
 let row: StudioFieldValue & { schemaVersion: StudioDefinitionVersion };
@@ -93,10 +94,10 @@ it("replays the exact recorded operation without treating it as today's current 
   const result = await writeFieldValue(f.session, request), data = m.create.mock.calls[0][0].data;
   m.existing.mockResolvedValue({ ...row, ...data, jsonValue: null, schemaVersion: current, slot: { extensionId: uuid(20), extension: { recordId: "native", entityId: "tickets.ticket" } } });
   m.findAudit.mockResolvedValue({ after: Object.fromEntries(Object.entries(result).filter(([key]) => !["operationId", "replayed"].includes(key))) });
-  m.create.mockClear(); m.window.mockClear();
+  m.create.mockClear(); m.window.mockClear(); m.resulting.mockClear();
   expect(await writeFieldValue(f.session, request)).toEqual({ ...result, replayed: true });
   await expect(writeFieldValue(f.session, { ...request, value: "99" })).rejects.toThrow("CONFLICT");
-  expect(m.create).not.toHaveBeenCalled(); expect(m.window).not.toHaveBeenCalled();
+  expect(m.create).not.toHaveBeenCalled(); expect(m.window).not.toHaveBeenCalled(); expect(m.resulting).not.toHaveBeenCalled();
 });
 it("closes untrusted request shape, revision capacity and explicit null, with canonical value idempotency", async () => {
   for (const patch of [{ organisationId: "foreign" }, { principal: {} }, { definitionRevision: 2147483647 }, { value: undefined }]) expect(() => fieldWriteRequestSchema.parse({ ...request, ...patch })).toThrow();
@@ -114,9 +115,26 @@ it("uses the caller's owning transaction without opening another authority bound
   expect(result).toMatchObject({ operationId: request.operationId, replayed: false, slotRevision: 2, extensionRevision: 5 });
   expect(m.authority).not.toHaveBeenCalled();
   expect(m.window.mock.calls[0][0]).toBe(authority);
+  expect(m.window.mock.calls[0][1]).toEqual({ entity: f.target.payload.entity, operationId: request.operationId, trigger: "ordinary_field_save" });
+  expect(m.window.mock.invocationCallOrder[0]).toBeLessThan(m.create.mock.invocationCallOrder[0]);
+  expect(m.resulting).not.toHaveBeenCalled(); // caller stages the whole batch first
   m.create.mockRejectedValue(new Prisma.PrismaClientKnownRequestError("private duplicate", { code: "P2002", clientVersion: "7" }));
   await expect(writeFieldValueInTransaction(authority, request)).rejects.toThrow("CONFLICT");
   m.create.mockImplementation(async ({ data }) => data);
   m.audit.mockRejectedValue(new Error("Audit unavailable"));
   await expect(writeFieldValueInTransaction(authority, request)).rejects.toThrow("Audit unavailable");
+});
+
+it("validates the public save's complete staged state in the same transaction and propagates another field's failure", async () => {
+  await writeFieldValue(f.session, request);
+  expect(m.resulting).toHaveBeenCalledWith(f.session, tx,
+    { entity: f.target.payload.entity, recordId: request.recordId, expectedRevision: request.recordRevision });
+  expect(m.resulting.mock.invocationCallOrder[0]).toBeGreaterThan(m.extensionUpdate.mock.invocationCallOrder[0]);
+  expect(m.resulting.mock.invocationCallOrder[0]).toBeGreaterThan(m.audit.mock.invocationCallOrder[0]);
+  const failure = new Error("Another approved field is required.");
+  m.resulting.mockRejectedValue(failure);
+  await expect(writeFieldValue(f.session, request)).rejects.toBe(failure);
+  // Storage is a unit collaborator. Propagation is proved here; actual rollback
+  // of typed pointers, window and Audit needs the central PostgreSQL gate.
+  expect(m.resulting).toHaveBeenCalledTimes(2);
 });

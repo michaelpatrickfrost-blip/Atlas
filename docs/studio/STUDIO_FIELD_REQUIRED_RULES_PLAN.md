@@ -1,3 +1,143 @@
+## 11 October — integrated d4c/d4d prerequisites VERIFIED locally
+
+Stored1/2 whole-window selection and ordinary-save integration, complete public
+single-save boundary, registry operation policies, genuine native identity, actual
+SQL-effect receipts and seven separate Ticket fact queries are integrated locally.
+118 tests/11 suites, strict TypeScript/scoped lint/build PASS; no DDL/deploy/hooks/
+conditional activation. Native withTicketFieldMutation has a REQUIRED fourth
+internal final validator callback (authority, frozen actual anchors, operation,
+proof), analogous to the existing creation bridge. It keeps owning domain mutation
+and Studio validator separate without creating another execution engine; actual
+callers MUST supply complete validator and whole-window closure when hooked.
+Stage all fields/native mutations before final all-active validation, never after
+each initial field. Private WeakMaps revoke proof/scope on every exit. No-config
+internal actual platform grants and QUERY-only effects retain existing semantics.
+Next explicit required native mode, then actual domain hooks and real SQL gates.
+
+## 11 October — d4d2 existing-record owner proof / registry contract agreed
+
+Separate native-validation QUERY policies (same model as current settlement) keep
+all sealed entity1–9, fact query1 and migration ranges/hashes unchanged. Seven new
+stable tickets.ticket.native_validation_{create,manage,reply,watch,query_create,
+query_update,case_merge}@1 queries declare nativeValidation:{entityId:'tickets.ticket',
+operation:<actual capability>,fieldVersions:[2..9]}, transaction required, capability
+EXACTLY operation. Existing capabilities only: tickets.ticket.create/manage/reply/
+watch, service.ticket.create/update, service.case.assign. One stable query ID per
+entity/operation; latest version governs supported field versions without fallback.
+Optional authoriseNativeValidationProof(ctx,request:{recordId,expectedRevision},proof)
+contribution exists IFF explicit transactional nativeValidation query. Callback
+returns exact RecordAnchor without fetching protected native facts. Registry validates
+source field entity fingerprints/owner/type/field-policy, query/ranges/capability/
+availability and metadata proof before any fact operation. API:
+resolveNativeValidationFieldPolicy(context,source,request,operation,proof), and
+invokeNativeValidationFacts(context,source,request,operation,proof). Latter repeats
+preflight then invokes only declared query with Context.nativeValidationProof.
+Generic query APIs strip proof; actual execute rejects missing/expired/foreign proof
+BEFORE protected fact SQL. Never new permission, neutral-capability or old creator.
+
+Owning withTicketFieldMutation(context,operation,callback) uses a PRIVATE tx scope,
+genuine refreshed principal/current operation CAP/module BEFORE common entity lock.
+Existing callback performs unchanged domain/private/transition/SLA/approval/CAS/Audit/
+Outbox guards and mutations. Receipt collection ONLY from actual owning SQL helpers:
+verified INSERT; lockWork successful CAS + actual same-tx resulting record/version;
+workEvent stored-source parent relation and actual parent UPDATE; exact case-child
+reparent UPDATE. No generic mint accepting caller record IDs. Query-only effects are
+not Ticket extensions; actual linked Ticket parents are. Multiple effects deduplicate
+FINAL actual revisions. Case capture covers every affected row in bounded same-tx
+pages, never target-case rows that were not changed. After callback succeeds, issue
+opaque proof of exact genuine stamp/tx/operation/affected records/revisions, run
+all-active validation and all-affected window closure, revoke finally. Proof distinct
+from creation and never grants native/field writes, UI reads or reference target access.
+
+Required reader/compiler/provider/input paths use explicit ordinary/creation/
+native_validation modes and separate internal gateways; never catch/fallback or
+interpret arbitrary objects as creation. Native mode substitutes ONLY owning-record
+visibility for actual proved mutation. Independent current/pinned/written field Read,
+explicit native fact/field grants and ordinary reference Read remain mandatory even
+when reference target is another affected Ticket. Preflight applicable written input
+schema policy using metadata-only value-schema projection BEFORE protected facts/
+values. Optional unconditional field skip and false-condition target behavior remain.
+Actual typed saves retain independent Write; no conditional authoring/write yet.
+
+No-config native/internal Atlas staff behavior must remain. Reuse genuine native
+identity refresh/auth locks without silently imposing CUSTOMER field restrictions;
+then common lock and bounded active-field/open-window metadata probe. Without either
+and without typed input, retain existing domain path with no field/proof/value reads
+or Tickets entitlement requirement for Query-only work. Configured Studio effects
+use unchanged strict genuine ACTIVE CUSTOMER field authority. Preserve auth-before-
+entity lock order; acquiring advisory lock does not refresh Serializable snapshot.
+Actual first publication/no-binding/native creation races remain d4e hard gate.
+
+Workstreams: d4d2a registry types/factory/registration/gateways +focused tests in
+isolated owner scope; d4d2b root owning receipts/query callbacks/auth refresh; d4d2c
+explicit shared validator access mode after interfaces integrated; d4d2d native form
+and linked parent/case hooks +actual atomic/concurrency acceptance. No DDL/extra
+engine/schema copies/neutral grants. Independent integration review before enablement.
+
+## 11 October — d4d1 single-save resulting-state boundary agreed (IN PROGRESS)
+
+Public writeFieldValue performs one complete field save in its existing genuine
+Serializable transaction, then calls existing validateResultingFieldRequirements
+against actual staged native/typed/current state before returning/commit. Exact
+historical replay remains read-only and performs no new validation/window effects.
+Private shared writer receives the internal single-save boundary choice; public
+clients cannot disable it. Owning transaction primitives remain staging operations:
+caller MUST validate after ALL intended native/typed fields are staged. Per-field
+initial validation would incorrectly reject the first of several required values;
+initial callback and ordinary batch hooks therefore validate once at their complete
+resulting-state boundary. No automatic per-initial-field validation or waiver.
+
+Root owns runtime-write.ts, existing ordinary writer tests and test dependency stubs.
+Call occurs after typed CAS and paired saved Audit, same tx, and every exception
+propagates; independent other-required/current/pinned/reference rights unchanged.
+Tests verify actual transaction/canonical entity/native revision, order, error
+propagation and replay no-op. Existing resulting validator tests cover rule/value
+semantics; actual PostgreSQL multi-field/atomic failure proof remains d4e.
+D4c2 all-affected helper hookup before first typed mutation follows integration.
+No conditional write enablement, native hooks, new engine/schema or later phases.
+
+## 11 October — d4c2 affected-window contract agreed (IN PROGRESS)
+
+Internal closeAffectedFieldWriteWindows(authority:FieldRuntimeAuthority,
+ cause:{entity:ContractReference,operationId:UUID,trigger:'ordinary_field_save' |
+ 'native_record_write' | 'native_record_creation'}) reuses ONE existing settlement
+finalizer. Cause is server constructed after the actual owning operation's existing
+permissions/private scope/CAS; never an endpoint, supplied client entity/tenant or
+proof of permission. Genuine sessionAuthorityStamp must match authority.stamp and
+Session identity; require caller-owned Serializable transaction. Describe exact
+registered entity/ref fingerprints and current fieldPolicy bound without resolving
+native Read, another field or Studio grants. Explicitly support current canonical
+Tickets entity versions2–9 only; unsupported entities fail closed pending owner
+impact contracts, never generalise complete Tickets cohort to future partial cohorts.
+
+Actual Tickets review includes ALL tenant TICKET rows (final/merged/unanchored too).
+Therefore any legal Ticket native/global-extension change or canonical creation
+invalidates every open entity review, not merely observations of the written field.
+Select server tenant open PUBLISHED/CUTOVER publications whose source OR target
+owning entity is tickets.ticket, bounded maxFields+1, stable definition/preparation
+order. Validate both generation tenant/definition/entity mirrors and reject overflow,
+duplicates, corrupt/unsupported retained intent. Preflight COMPLETE set for any
+PUBLISHED before finalizing ANY CUTOVER. Strict actual source/target/receipt/draft/
+config window checks remain; current actor/support evidence, pure pin, receipt/pub
+CAS and paired Audit in same owning transaction. No source/other-field/cohort values,
+private counts/IDs, metadata pointer/value/native mutation, Publish or new engine/DDL.
+
+Keep closeFieldWriteWindow target/request wrapper compatible and share only its
+already-locked inspection/finalization primitives. Root ordinary writer will call
+all-affected helper after existing actual write/CAS policy and before first typed
+persistence; native hooks do likewise after legitimate staged owning mutation before
+commit. Exact replay adds no window effects. Other actual operations may close the
+same windows later in one transaction and naturally no-op after COMPLETED.
+
+Native cause follows actual own/parent Ticket mutations, including workEvent parent
+version increments from QUERY work and Service mergeCases Ticket children under
+existing Service authority. QUERY-only/no-Ticket effects do not close windows merely
+because d4a acquired Tickets coordination. Creation includes unobserved new Tickets.
+All errors propagate to rollback native+typed+window+Audit. Tests cover mixed-state
+freeze/no partial closure, cross-field global impact, creation/current actor/support,
+metadata bounds/identity, receipt/pub/Audit failure propagation and no borrowed grants.
+Real PostgreSQL concurrency/failure proof remains d4e before customer activation.
+
 ## 11 October — d4c1 versioned single-field window prerequisite
 
 After d4b reader contribution, isolated lifecycle scope owns runtime-write-window.ts

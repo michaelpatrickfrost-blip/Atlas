@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
 import type { CommandDescriptor, ContractIdentity, Contribution, DeclarativeDescriptor, EntityDescriptor, QueryDescriptor } from "./types";
-import { entityDetailsSchema, fieldMigrationQueryPolicySchema, fieldSettlementPolicySchema, recordAnchorSchema, recordRequestSchema } from "./entities";
+import { entityDetailsSchema, fieldMigrationQueryPolicySchema, fieldSettlementPolicySchema, nativeValidationPolicySchema, nativeValidationRequestSchema, recordAnchorSchema, recordRequestSchema } from "./entities";
 
 export function canonicalJson(value: unknown): string {
   if (value === null || typeof value !== "object") {
@@ -21,6 +21,11 @@ function identity(d: ContractIdentity): ContractIdentity {
 }
 export function query<I, O>(d: QueryDescriptor<I, O>): Contribution {
   const requiresTransaction = d.transaction === "required";
+  const nativeValidation = d.nativeValidation && (() => {
+    const { authorise, ...policy } = d.nativeValidation;
+    if (typeof authorise !== "function") throw new Error("Native validation requires an owner proof callback.");
+    return { authorise, policy: nativeValidationPolicySchema.parse(policy) };
+  })();
   const inputSchema = z.toJSONSchema(d.input, { io: "input" });
   const outputSchema = z.toJSONSchema(d.output, { io: "output" });
   return { metadata: { ...identity(d), kind: d.kind, inputSchema, outputSchema,
@@ -28,7 +33,10 @@ export function query<I, O>(d: QueryDescriptor<I, O>): Contribution {
     details: { pagination: d.pagination, maxCardinality: d.maxCardinality, costClass: d.costClass,
       ...(d.transaction ? { transaction: d.transaction } : {}),
       ...(d.fieldMigration ? { fieldMigration: fieldMigrationQueryPolicySchema.parse(d.fieldMigration) } : {}),
-      ...(d.fieldSettlement ? { fieldSettlement: fieldSettlementPolicySchema.parse(d.fieldSettlement) } : {}) } },
+      ...(d.fieldSettlement ? { fieldSettlement: fieldSettlementPolicySchema.parse(d.fieldSettlement) } : {}),
+      ...(nativeValidation ? { nativeValidation: nativeValidation.policy } : {}) } },
+    ...(nativeValidation ? { authoriseNativeValidationProof: async (ctx, request, proof) =>
+      recordAnchorSchema.parseAsync(await nativeValidation.authorise(ctx, nativeValidationRequestSchema.parse(request), proof)) } : {}),
     run: async (ctx, value) => {
       if (requiresTransaction && !ctx.transaction) throw new Error("This owner query requires a shared server transaction.");
       return d.output.parseAsync(await d.execute(ctx, await d.input.parseAsync(value)));

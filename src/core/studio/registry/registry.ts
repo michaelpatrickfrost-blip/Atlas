@@ -1,9 +1,9 @@
 import { z } from "zod";
-import type { Session } from "@/core/auth/session";
+import { sessionAuthorityStamp, type Session } from "@/core/auth/session";
 import { assertCapability, can } from "@/core/permissions/check";
 import { checksum } from "./contracts";
-import type { ContractMetadata, ContractReference, Contribution, FieldMigrationIntentVersion, RecordAnchor, RecordContext, StudioModuleContract } from "./types";
-import { entityDetailsSchema, fieldMigrationQueryPolicySchema, fieldSettlementPolicySchema, recordAnchorSchema, recordRequestSchema, supportsFieldMigrationIntent, supportsFieldMigrationQueryIntent } from "./entities";
+import type { ContractMetadata, ContractReference, Contribution, FieldMigrationIntentVersion, NativeValidationRequest, RecordAnchor, RecordContext, StudioModuleContract } from "./types";
+import { entityDetailsSchema, fieldMigrationQueryPolicySchema, fieldSettlementPolicySchema, nativeValidationPolicySchema, nativeValidationRequestSchema, recordAnchorSchema, recordRequestSchema, supportsFieldMigrationIntent, supportsFieldMigrationQueryIntent } from "./entities";
 
 const logicalId = /^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/;
 const identity = z.object({ id: z.string().regex(logicalId), version: z.number().int().positive(),
@@ -19,13 +19,13 @@ function freezeJson<T>(value: T): T {
 }
 export type ModuleAvailability = (session: Session, ownerModuleId: string) => Promise<boolean>;
 export class CapabilityRegistry {
-  private readonly items = new Map<string, { metadata: ContractMetadata; run?: Contribution["run"]; authoriseRecord?: Contribution["authoriseRecord"]; authoriseInitialRecord?: Contribution["authoriseInitialRecord"] }>();
+  private readonly items = new Map<string, { metadata: ContractMetadata; run?: Contribution["run"]; authoriseRecord?: Contribution["authoriseRecord"]; authoriseInitialRecord?: Contribution["authoriseInitialRecord"]; authoriseNativeValidationProof?: Contribution["authoriseNativeValidationProof"] }>();
   constructor(private readonly available: ModuleAvailability) {}
 
   register(ownerModuleId: string, bundle: StudioModuleContract): void {
     if (!/^[a-z][a-z0-9_]*$/.test(ownerModuleId)) throw new Error("Invalid Studio contract owner.");
     // Validate an entire bundle before adding anything; duplicate failures are atomic.
-    const additions = new Map<string, { metadata: ContractMetadata; run?: Contribution["run"]; authoriseRecord?: Contribution["authoriseRecord"]; authoriseInitialRecord?: Contribution["authoriseInitialRecord"] }>();
+    const additions = new Map<string, { metadata: ContractMetadata; run?: Contribution["run"]; authoriseRecord?: Contribution["authoriseRecord"]; authoriseInitialRecord?: Contribution["authoriseInitialRecord"]; authoriseNativeValidationProof?: Contribution["authoriseNativeValidationProof"] }>();
     for (const item of bundle.contributions) {
       const m = identity.parse(item.metadata);
       if (!m.id.startsWith(`${ownerModuleId}.`)) throw new Error("Studio identifier must belong to its owner.");
@@ -37,14 +37,35 @@ export class CapabilityRegistry {
         if (Boolean(details.record) !== Boolean(item.authoriseRecord)) throw new Error("Missing Studio owner record authorisation.");
         if (Boolean(details.record?.initialisation) !== Boolean(item.authoriseInitialRecord)) throw new Error("Missing owner new-record initialisation proof policy.");
       } else if (item.authoriseRecord || item.authoriseInitialRecord) throw new Error("Only entities can authorise records.");
+      if (item.metadata.details.nativeValidation === undefined ? item.authoriseNativeValidationProof !== undefined
+        : typeof item.authoriseNativeValidationProof !== "function")
+        throw new Error("Native validation proof callback requires an explicit query policy.");
       const key = `${m.id}@${m.version}`;
       if (this.items.has(key) || additions.has(key)) throw new Error(`Duplicate Studio contract: ${key}`);
       const snapshot = JSON.parse(JSON.stringify({ ...item.metadata, ownerModuleId })) as Omit<ContractMetadata, "contractHash">;
       const contract = Object.fromEntries(Object.entries(snapshot).filter(([key]) => key !== "label"));
       const metadata = freezeJson({ ...snapshot, contractHash: checksum(contract) });
-      additions.set(key, { metadata, run: item.run, authoriseRecord: item.authoriseRecord, authoriseInitialRecord: item.authoriseInitialRecord });
+      additions.set(key, { metadata, run: item.run, authoriseRecord: item.authoriseRecord, authoriseInitialRecord: item.authoriseInitialRecord, authoriseNativeValidationProof: item.authoriseNativeValidationProof });
     }
     for (const { metadata: m } of additions.values()) {
+      if (m.details.nativeValidation !== undefined) {
+        const policy = nativeValidationPolicySchema.parse(m.details.nativeValidation);
+        if (m.kind !== "query" || m.details.transaction !== "required" || m.capability !== policy.operation)
+          throw new Error("Native validation requires a transactional query with the exact owning operation capability.");
+        for (const version of policy.fieldVersions) {
+          const source = additions.get(`${policy.entityId}@${version}`) ?? this.items.get(`${policy.entityId}@${version}`);
+          if (!source || source.metadata.kind !== "entity" || source.metadata.ownerModuleId !== ownerModuleId
+            || !entityDetailsSchema.parse(source.metadata.details).record?.fieldPolicy)
+            throw new Error("Native validation must cover registered typed-field entity versions from the same owner.");
+        }
+        for (const item of [...this.items.values(), ...additions.values()]) {
+          if (item.metadata.details.nativeValidation === undefined) continue;
+          const other = nativeValidationPolicySchema.parse(item.metadata.details.nativeValidation);
+          if ((other.entityId === policy.entityId && other.operation === policy.operation && item.metadata.id !== m.id)
+            || (item.metadata.id === m.id && (other.entityId !== policy.entityId || other.operation !== policy.operation)))
+            throw new Error("One stable native validation query identifier is allowed per entity and operation.");
+        }
+      }
       if (m.details.fieldMigration !== undefined) {
         const policy = fieldMigrationQueryPolicySchema.parse(m.details.fieldMigration);
         if (m.kind !== "query" || m.details.transaction !== "required") throw new Error("Field migration requires a transactional owner query.");
@@ -175,6 +196,53 @@ export class CapabilityRegistry {
     await this.allowed(session, m);
     if (reference.schemaHash !== m.schemaHash || reference.contractHash !== m.contractHash) throw new Error("DEPENDENCY_BROKEN: Studio contract changed; republish or restore compatibility");
     return m;
+  }
+  /** Exact live owning-mutation proof substitutes only this record's visibility.
+   * Metadata approval happens before any native facts are projected. */
+  async resolveNativeValidationFieldPolicy(context: RecordContext, reference: ContractReference,
+    request: NativeValidationRequest, operation: string, proof: object) {
+    const stamp = sessionAuthorityStamp(context.session);
+    if (!context.transaction || !proof || typeof proof !== "object" || !stamp
+      || stamp.userId !== context.session.userId || stamp.organisationId !== context.session.organisationId
+      || stamp.membershipId !== context.session.membershipId)
+      throw new Error("Native validation requires a genuine current principal and owning transaction proof.");
+    const parsedRequest = nativeValidationRequestSchema.parse(request);
+    z.string().regex(logicalId).parse(operation);
+    const source = this.describe(reference.id, reference.version);
+    if (source.kind !== "entity" || source.schemaHash !== reference.schemaHash || source.contractHash !== reference.contractHash
+      || !entityDetailsSchema.parse(source.details).record?.fieldPolicy)
+      throw new Error("DEPENDENCY_BROKEN: native validation field source changed.");
+    const policyId = [...this.items.values()].find(({ metadata }) => {
+      if (metadata.kind !== "query" || metadata.ownerModuleId !== source.ownerModuleId || metadata.details.nativeValidation === undefined) return false;
+      const policy = nativeValidationPolicySchema.parse(metadata.details.nativeValidation);
+      return policy.entityId === source.id && policy.operation === operation;
+    })?.metadata.id;
+    const current = policyId ? [...this.items.values()].filter(({ metadata }) => metadata.id === policyId)
+      .sort((a, b) => b.metadata.version - a.metadata.version)[0] : undefined;
+    const query = current?.metadata;
+    const policy = query?.details.nativeValidation !== undefined ? nativeValidationPolicySchema.parse(query.details.nativeValidation) : undefined;
+    if (!query || !policy || !current?.authoriseNativeValidationProof || query.kind !== "query"
+      || query.ownerModuleId !== source.ownerModuleId || query.details.transaction !== "required"
+      || query.capability !== operation || policy.entityId !== source.id || policy.operation !== operation
+      || !policy.fieldVersions.includes(source.version))
+      throw new Error("DEPENDENCY_BROKEN: current owner does not approve this native validation field version and operation.");
+    await this.allowed(context.session, source, operation);
+    await this.allowed(context.session, query);
+    const anchor = recordAnchorSchema.parse(await current.authoriseNativeValidationProof(
+      { session: context.session, transaction: context.transaction }, parsedRequest, proof));
+    if (anchor.organisationId !== context.session.organisationId || anchor.recordId !== parsedRequest.recordId
+      || anchor.revision !== parsedRequest.expectedRevision) throw new Error("Owner returned invalid native validation scope.");
+    return { source, query, anchor };
+  }
+  /** Only this server-only gateway carries the opaque mutation proof into facts.
+   * Generic query invocation never forwards it, even from a supplied context. */
+  async invokeNativeValidationFacts(context: RecordContext, reference: ContractReference,
+    request: NativeValidationRequest, operation: string, proof: object): Promise<unknown> {
+    const { query } = await this.resolveNativeValidationFieldPolicy(context, reference, request, operation, proof);
+    const run = this.items.get(`${query.id}@${query.version}`)!.run;
+    if (!run) throw new Error("Native validation owner query is unavailable.");
+    return run({ session: context.session, transaction: context.transaction, nativeValidationProof: proof },
+      nativeValidationRequestSchema.parse(request));
   }
   /** Metadata only for an explicit native creation path. It grants no record read,
    * existing extension editing, query or command invocation. */

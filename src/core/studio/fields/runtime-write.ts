@@ -7,7 +7,8 @@ import { readFieldContextInTransaction, readFieldPlanInTransaction, readFieldVal
   readInitialFieldContextInTransaction, readInitialFieldPlanInTransaction, readInitialFieldValueInTransaction } from "./runtime-read";
 import { withFieldRuntimeAuthority, type FieldRuntimeAuthority } from "./runtime-authority";
 import { fieldWriteRequestSchema, fieldWriteRequestChecksum, fieldWriteAuditSchema } from "./runtime-write-contract";
-import { closeFieldWriteWindow } from "./runtime-write-window";
+import { closeAffectedFieldWriteWindows } from "./runtime-write-window";
+import { validateResultingFieldRequirements } from "./required-runtime";
 import { lockBoundFieldEntityInTransaction } from "./entity-lock";
 function conflict(): never { throw new Error("CONFLICT: this record, field or value changed. Refresh before saving."); }
 function throwWriteError(error: unknown): never {
@@ -21,7 +22,7 @@ function throwWriteError(error: unknown): never {
  * columns. No client endpoint is enabled by this service alone. */
 export async function writeFieldValue(authenticated: Session, input: unknown) {
   const request = fieldWriteRequestSchema.parse(input);
-  try { return await withFieldRuntimeAuthority(authenticated, authority => writeFieldValueInTransaction(authority, request)); }
+  try { return await withFieldRuntimeAuthority(authenticated, authority => writeInTransaction(authority, request, undefined, true)); }
   catch (error) { throwWriteError(error); }
 }
 
@@ -43,7 +44,7 @@ export async function initialiseFieldValueInTransaction(authority: FieldRuntimeA
   return writeInTransaction(authority, input, proof);
 }
 
-async function writeInTransaction(authority: FieldRuntimeAuthority, input: unknown, proof?: object) {
+async function writeInTransaction(authority: FieldRuntimeAuthority, input: unknown, proof?: object, validateResultingState = false) {
   const request = fieldWriteRequestSchema.parse(input);
   if (proof && (request.recordRevision !== 1 || request.slotRevision !== null || request.valueRevision !== null)) conflict();
   try {
@@ -108,7 +109,8 @@ async function writeInTransaction(authority: FieldRuntimeAuthority, input: unkno
     // All owner/reference/constraint/CAS guards run before either settlement or
     // value mutation. Settlement, typed history, pointer and paired Audit commit
     // together; any failure leaves rollback eligibility and values unchanged.
-    await closeFieldWriteWindow(authority, request);
+    await closeAffectedFieldWriteWindows(authority,
+      { entity: payload.entity, operationId: request.operationId, trigger: "ordinary_field_save" });
     const nativeExtension = extension ?? await tx.studioExtensionRecord.create({ data: { organisationId: session.organisationId, entityId: payload.entity.id, recordId: request.recordId } });
     const nativeSlot = slot ?? await tx.studioFieldSlot.create({ data: { organisationId: session.organisationId, entityId: payload.entity.id,
       extensionId: nativeExtension.id, definitionId: definition.id, generationId: payload.storageGeneration } });
@@ -125,6 +127,11 @@ async function writeInTransaction(authority: FieldRuntimeAuthority, input: unkno
       slotId: nativeSlot.id, slotRevision: valueRevision, valueRevision, fingerprint: encoded.fingerprint };
     await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "studio.field.value.saved", entityType: "StudioFieldValue", entityId: value.id,
       before: { definitionRevision: request.definitionRevision, recordRevision: request.recordRevision, extensionRevision: request.extensionRevision, slotRevision: request.slotRevision, valueRevision: request.valueRevision }, after }, tx);
+    // The public single-save operation is a complete mutation boundary. Owning
+    // batch/creation callers stage every value first and validate once at their
+    // own boundary, so an earlier required field cannot prevent staging another.
+    if (validateResultingState) await validateResultingFieldRequirements(session, tx,
+      { entity: payload.entity, recordId: request.recordId, expectedRevision: request.recordRevision });
     return { operationId: value.id, replayed: false, ...after };
   } catch (error) {
     throwWriteError(error);

@@ -1,3 +1,53 @@
+## 11 October 2026 — own native SQL receipts; validate at complete mutation boundary
+
+Use private same-transaction native scopes and actual INSERT/CAS/parent/case-child
+SQL helper receipts, never a callback API accepting caller-supplied affected IDs.
+Required fourth internal final validator callback keeps the existing domain's
+eligibility/private guards authoritative while Studio validates actual final state
+once after all intended changes. Proof substitutes only proved record visibility;
+no field/native-fact/reference grant. Scope/token expire on every exit. Genuine
+native identity refresh preserves no-config internal platform workflows; strict
+CUSTOMER field authority is applied only to actual configured Ticket effects.
+No extra execution engine or entity-version/hash rewrite. Existing/query/policy
+storage unchanged. Actual hooks and SQL acceptance required before enablement.
+
+## 11 October 2026 — narrow native validation uses an owning mutation proof
+
+Post-unwatch visibility and legitimate Query-parent/Service-case Ticket effects can
+fall outside ordinary Ticket record Read. Requiring broad Ticket Manage/Read would
+change working domain permissions; reusing a creation token for old records would
+be unsafe. Add explicit operation-capability native-validation query policies and
+opaque actual-owning-mutation receipts. They approve only validation of exact final
+Ticket revisions inside that operation/transaction, preserving all independent
+custom-field, native-fact and reference grants. No query/record/Write grant results.
+
+Separate current query policies avoid changing sealed entity descriptors/native pins
+or historical fact/migration contracts. Actual owner helpers collect verified SQL
+effects; no client or generic server mint can supply arbitrary record IDs. Generic
+query invocation strips proof. The existing all-active validator uses an explicit
+mode and preflights required metadata/written policies before protected facts.
+No-config native/internal staff paths preserve their existing authority; actual
+configured Studio effects retain strict customer field authority. Source6.5/14/24
+requires this atomic owning integration; no later-phase engine or DDL is introduced.
+
+## 11 October 2026 — affected rollback windows follow the owning canonical cohort
+
+Tickets migration review snapshots cover the complete tenant Ticket cohort, not a
+filtered observation subset. Native creation changes that cohort; any Ticket native
+revision or typed field save changes retained global record/extension freshness.
+Close all affected open Ticket windows in the same legitimate owning transaction,
+with complete PUBLISHED preflight before any CUTOVER finalization. Reuse existing
+locked immutable inspection, strict config/draft checks, settlement pins, CAS and
+paired Audit. No source/other-field/private cohort reads or extra grants are needed
+to record that the legal mutation ends unchanged-data rollback eligibility.
+
+Use internal server cause and genuine runtime authority, explicitly bound to current
+Tickets complete-cohort support. Observation-only selection is unsuitable because it
+misses new native rows and unrelated-field global revision changes. Future partial
+cohorts need explicit owning impact semantics; do not silently assume this policy.
+This satisfies source24 safe rollback limits and source6.5 same-transaction invariants
+without a new engine, metadata pointer mutation or new schema.
+
 ## 11 October 2026 — owning field writers share one engine; reads use base policy
 
 Expose the existing field writer within the owning Serializable transaction instead

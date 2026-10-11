@@ -9,7 +9,7 @@ vi.mock("@/core/studio/registry/runtime", async () => {
   const { ticketStudioContract } = await import("@/core/service-work/studio");
   return { buildRegistry: (available: ConstructorParameters<typeof CapabilityRegistry>[0]) => { const registry = new CapabilityRegistry(available); registry.register("tickets", ticketStudioContract); return registry; } };
 });
-vi.mock("@/core/studio/fields/runtime-write-window", () => ({ closeFieldWriteWindow: m.window }));
+vi.mock("@/core/studio/fields/runtime-write-window", () => ({ closeAffectedFieldWriteWindows: m.window }));
 import { sessionForUser } from "@/core/auth/session";
 import { createTicketWithFieldInitialisation, authoriseNewTicketFields } from "@/core/service-work/studio-create";
 import { compileCustomFieldForInitialisation } from "@/core/studio/compiler/fields";

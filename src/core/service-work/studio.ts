@@ -8,6 +8,8 @@ import { workScope } from "./access";
 import { FINAL_WORK, WORK_STATUSES } from "./config";
 import { recordAnchorSchema } from "@/core/studio/registry/entities";
 import { authoriseNewTicketFields } from "./studio-create";
+import { authoriseTicketNativeValidation, type TicketFieldOperation } from "./studio-native";
+import { nativeValidationRequestSchema } from "@/core/studio/registry/entities";
 import { customFieldPayloadSchema } from "@/core/studio/fields/schema";
 import { readSealedFieldMigrationReview } from "@/core/studio/fields/migrations/contracts";
 import { versionedFieldPayloadSchema } from "@/core/studio/fields/required-contract";
@@ -325,8 +327,41 @@ async function approveTicketRepresentation(ctx: RecordContext, input: z.output<t
     preparationId: pub.preparationId, observationId: observation.id, representationOnly: true as const };
 }
 
+// Separate operation-specific validation contracts preserve every existing entity
+// and sealed facts/migration hash. These queries project only approved conditions
+// of actual affected rows while the owning mutation proof is live.
+const nativeValidationQueries = [
+  ["create", "tickets.ticket.create"], ["manage", "tickets.ticket.manage"],
+  ["reply", "tickets.ticket.reply"], ["watch", "tickets.ticket.watch"],
+  ["query_create", "service.ticket.create"], ["query_update", "service.ticket.update"],
+  ["case_merge", "service.case.assign"],
+] as const satisfies readonly (readonly [string, TicketFieldOperation])[];
+const nativeValidationOutput = z.strictObject({ recordId, organisationId: z.string().min(1), revision: z.number().int().positive(),
+  fields: z.strictObject({ status: z.enum(WORK_STATUSES), priority: z.enum(["LOW", "NORMAL", "HIGH", "URGENT"]) }) });
+
 /** Canonical ServiceWorkItem/TICKET only. Existing intake answers stay native. */
 export const ticketStudioContract: StudioModuleContract = { contributions: [
+  ...nativeValidationQueries.map(([suffix, operation]) => query({ ...identity,
+    id: `tickets.ticket.native_validation_${suffix}`, label: "Ticket resulting-state conditions", kind: "query", capability: operation,
+    input: nativeValidationRequestSchema, output: nativeValidationOutput,
+    transaction: "required", pagination: "none", maxCardinality: 1, costClass: "low",
+    nativeValidation: { entityId: "tickets.ticket", operation, fieldVersions: [2, 3, 4, 5, 6, 7, 8, 9],
+      authorise: (ctx, input, proof) => authoriseTicketNativeValidation(ctx, input, operation, proof) },
+    async execute(ctx, input) {
+      // Proof approval is metadata-only and precedes isolation/module/native SQL.
+      if (!ctx.nativeValidationProof) throw new Error("FORBIDDEN: owning mutation proof is required.");
+      const anchor = await authoriseTicketNativeValidation(ctx, input, operation, ctx.nativeValidationProof);
+      const isolation = await ctx.transaction!.$queryRaw<Array<{ transaction_isolation: string }>>`SHOW transaction_isolation`;
+      if (isolation.length !== 1 || isolation[0].transaction_isolation !== "serializable")
+        throw new Error("Native validation facts need the owning serializable transaction.");
+      if (!await ctx.transaction!.moduleState.findFirst({ where: { organisationId: ctx.session.organisationId, moduleId: "tickets", enabled: true, entitled: true }, select: { id: true } }))
+        throw new Error("DEPENDENCY_BROKEN: Tickets is unavailable.");
+      const row = await ctx.transaction!.serviceWorkItem.findFirst({ where: { id: anchor.recordId, organisationId: anchor.organisationId, kind: "TICKET", version: anchor.revision },
+        select: { id: true, organisationId: true, kind: true, version: true, status: true, priority: true } });
+      if (!row || row.id !== anchor.recordId || row.organisationId !== anchor.organisationId || row.kind !== "TICKET" || row.version !== anchor.revision)
+        throw new Error("Ticket unavailable or changed.");
+      return { recordId: row.id, organisationId: row.organisationId, revision: row.version, fields: { status: row.status, priority: row.priority } };
+    } })),
   query({ ...identity, id: "tickets.ticket.initial_required_facts", label: "New ticket required-field conditions", kind: "query", capability: "tickets.ticket.create",
     input: z.strictObject({ recordId, expectedRevision: z.number().int().positive().max(Number.MAX_SAFE_INTEGER) }),
     output: z.strictObject({ recordId, organisationId: z.string().min(1), revision: z.number().int().positive(),

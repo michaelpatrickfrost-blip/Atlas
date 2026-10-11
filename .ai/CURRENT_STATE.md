@@ -1,3 +1,150 @@
+## 11 October 2026 — Studio d4c/d4d native prerequisites VERIFIED locally
+
+Phase2 remains IN PROGRESS; no Phase3 or complete visual designer claim. Integrated
+402786a/e4e29c0 stored1/2 whole affected Ticket windows; ordinary writer now closes
+all affected windows and public single-save validates complete staged required
+state after typed CAS/Audit. Exact replay stays read-only; initial/internal writers
+stage all fields before caller final validation. Integrated0b2aa19 proof-bound
+registry policies and actual seven Ticket validation queries; sealed old entity/
+facts/migration hashes unchanged. New service-work/studio-native.ts collects actual
+INSERT/CAS/linked-parent/case-child SQL receipts; private live token binds genuine
+refreshed principal/exact original tx/operation/final changed Ticket revisions.
+Required internal fourth validator callback, finally cleanup, frozen copied anchors.
+No-config internal platform authority/QUERY-only behavior preserved; configured
+Ticket effects retain strict CUSTOMER field authority. No actual native hooks yet.
+
+Root118 tests/11 distinct suites PASS (93/7 operation/window/writer +25/4 unchanged
+compatibility), strict tsc31849/lint42593/build9091 exit0. Genuine sessions/owner
+registry/private receipt implementation with explicit storage collaborators; no
+actual SQL atomic rollback/SSI claim. Final query/writer source review found no blocker; previous
+scoped review also no blocker. Ledger/plan/ARCHITECTURE/DECISIONS updated. No DDL/new
+dumps/local business DB/deploy; live1f4dc79/rollbackb34ce50/recovery unchanged.
+Next: explicit shared native_validation mode with independent current/pinned/
+written field/native fact rights +ordinary references, then actual engine/actions/
+Service hooks using fresh callback session, whole affected windows and complete
+resulting validator; real atomic/concurrency gate before customer activation.
+
+## 11 October 2026 — isolated d4c2 all affected Ticket windows VERIFIED locally
+
+New internal closeAffectedFieldWriteWindows(authority,cause:FieldWindowMutationCause)
+with exact registered entity reference/operation UUID and ordinary_field_save/native_
+record_write/native_record_creation trigger. Cause is server constructed only after
+actual owning operation rights/private/CAS and earlier Ticket coordination; it grants
+nothing and is not an endpoint. Genuine sessionAuthorityStamp WeakMap evidence must
+match authority stamp/auth+session versions and Session identity BEFORE SQL; caller
+transaction must SHOW Serializable. Describe-only canonical Tickets versions2–9,
+exact kind/tickets owner/schema+contract hashes/current fieldPolicy bound, no native
+Read/other-field/Studio resolution. Explicit complete-cohort snapshot queries1–4
+must match kind/owner/hashes/transaction; retained protocol2 uses query4. Future
+entity/query/partial-cohort impact needs explicit opt-in, not inferred support.
+
+Bounded maxFields+1 tenant source OR target entity publication selector, stable
+field/preparation ordering, minimal both-generation identity/type metadata. Complete
+set validates malformed/scalar/tenant/generation mirrors, duplicates and overflow;
+ANY PUBLISHED freezes before ANY preparation/inspector/support/CAS/Audit. All CUTOVER
+windows then undergo matching stored1/2 immutable identity and exact FINALIZED
+configuration/draft checks; generation types/refs pair actual intents before ANY
+settlement. Private inspectWindow/finalizeWindow reused by unchanged single-field
+request wrapper. Current customer/support stamp/purpose evidence, pure receipt1
+pins, receipt/publication CAS and paired Audit remain one caller transaction. No
+source/other-field/cohort/native/value reads or source/target pointer/value changes.
+Tickets full-cohort/global extension impact covers unrelated field writes and newly
+created unobserved Tickets; later same-tx calls naturally no-op after COMPLETED.
+
+New affected suite18 +single-field13 +ordinary writer7 +required identity12:50 tests/
+4 suites PASS. Real registry/closed compilers/stored seals/pure pins; genuine stamp
+issuance/immutable inspectors/visibility and SQL rows/mutations explicitly mocked.
+Mixed-state complete preflight and later metadata denial permit zero settlements;
+second receipt/pub/Audit/support failures propagate for caller rollback. No real
+owning permission, SQL freshness/cohort/concurrency or DB rollback proof claimed.
+Strict TypeScript --noEmit --incremental false, scoped ESLint/final diff PASS.
+No DDL/native/value writes/dumps/install/generate/build/deploy/customer conditional
+write enablement; parent dependencies remain UNSTAGED/excluded. No known local
+blocker; independent review requested/pending. Whole d4c/d4/Phase2 gate remains open.
+Exact next: parent project this three-file checkpoint, wire ordinary/native actual
+Ticket mutation causes (exact replay and QUERY-only/no-Ticket effects do not close
+windows), combine all-active required enforcement then run integrated build and real
+PostgreSQL native/value/window/Audit rollback +contention candidate/public acceptance.
+
+## 11 October 2026 — d4d2 native-validation contract recorded before coding
+
+Read-only owning/reviewer evidence accepted and recorded in required plan/DECISIONS:
+separate latest operation-capability query policies (seven stable IDs), explicit
+metadata proof gateway +proof-only actual fact query; old entities1–9/query/migration
+hashes unchanged. Private actual-owning-SQL receipt scope, final actual Ticket
+revisions including Query parents/Service case children, exact session/tx/lifetime;
+not a creation grant or caller-ID mint. Explicit validator mode substitutes only
+proved record visibility, independent current/pinned/written/native-fact/ref Read;
+no-config/internal staff preserved, strict configured customer authority unchanged.
+Scopes: isolated registry/gateway/tests, root actual receipts/owner query/auth bridge,
+then shared validator mode and actual native hooks/atomic gate. No code/SQL/runtime
+completion claim from reconnaissance. Next: implement scoped query registry contract
+and actual owning receipt helpers in parallel; keep conditional writes unenabled.
+
+## 11 October 2026 — d4d1 single-save validator boundary recorded
+
+Public single-field write will run existing all-active resulting-state validator in
+same actual transaction after typed CAS/Audit and before commit; exact replay stays
+read-only. Internal ordinary/initial staging primitives require caller validation
+AFTER complete native+typed batch, not after each initial value (several required
+fields need staging together). Private single-write choice only, no client bypass.
+Root writer/tests scope; native-proof/query contract still under review, no hooks or
+conditional enablement. All-affected windows implementing in separate existing-engine
+scope. Exact next: add public final validation/order/failure/replay regression, then
+link all-affected helper and finish native proof contract before native integration.
+
+## 11 October 2026 — d4c2 server cause / complete Ticket cohort contract recorded
+
+D4c1 402786a source/tests projected, local32/3/type/lint PASS; root integrated check
+pending. New all-affected internal cause/selection recorded before coding in required-
+rules plan/DECISIONS. Actual Ticket canonical reviews include final/merged/unanchored:
+new rows/global extension/native changes affect all open entity windows. Complete
+bounded metadata-only PUBLISHED preflight precedes all strict CUTOVER finalizers;
+current actor/genuine stamp/Serializable/ref identity, no borrowed B/nativeRead/Publish
+or source/cohort values. Explicit Tickets versions2–9 only; future partial cohorts
+require owner contract. No actual native hooks/conditional writes/customer enablement.
+Root d4b checkpoint21825bd local76/6/types/lint/build/review PASS, not yet live.
+Next: isolated existing-window agent implements reusable inspected finalizer/all-
+affected helper/tests; root wires ordinary writer after policy/CAS before persistence.
+Native operation-proof design remains under review before d4d coding.
+
+## 11 October 2026 — isolated d4c1 single-field versioned window VERIFIED locally
+
+runtime-write-window.ts closeFieldWriteWindow signature unchanged. Actual server
+preparation readStoredFieldMigrationIntent selects closed1/2, matching immutable
+settlement inspector. Explicit initial publication/preparation/intent tenant/field/
+generation mirrors and locked inspected intent/publication/definition/receipt/source/
+target IDs, tenants, definition IDs and checksums pair request before support/CAS/
+Audit. Source version comes sealed intent/receipt (publication has no sourceVersionId).
+Strict existing FINALIZED target/draft/current config checks and source/PUBLISHED
+freezes remain. Pure settlement receipt1/transition, receipt/publication CAS and paired
+Audit unchanged; current runtime stamp/support evidence retained, original creator
+unmodified, no Studio Publish or full-cohort/source-data grants required/inferred.
+No values/native/config pointer mutation or conditional activation/write enablement.
+
+Window suite13 cases (9 new) plus ordinary writer7 and required identity12:32 tests/
+3 suites PASS. Real conditional compiler, closed2 intent/review seals and pure pins
+cover conditional target2 and source2-to-target1 rule removal/current different actor,
+current audited support/companies denial, malformed unknown/foreign/checksum and
+scalar mirrors, strict stale target/draft guards/freezes, inspector/support/receipt/
+publication/Audit error propagation. Immutable/window inspectors and transaction
+writes are bounded mocks; no real SQL freshness, authenticated tenant/native access
+or atomic database rollback proof claimed. Legacy normal behaviour retained.
+Strict TypeScript --noEmit --incremental false, scoped ESLint/final diff PASS.
+No schema/DDL/native/value writes, dumps/install/generate/build/deploy; parent copied
+dependencies remain UNSTAGED/excluded. No known local blocker. Whole d4c/d4/Phase2
+acceptance remains open; this closes only the directly saved field's existing window.
+
+Minimum later extraction: keep single-field selector/request checks; share only
+already-locked inspected-window finalization (current stamp/support +pure pin +receipt/
+publication CAS +Audit) after parent records server-selected affected windows, mutation
+cause and current authority contract. Do not invent a signature now, treat a native/
+input/cohort cause as target-write authority, borrow old creator authority or weaken
+strict target/draft/config rules. Exact next: parent project this three-file checkpoint,
+record observed-record/cohort/PUBLISHED freeze selection and safe mutation cause, then
+extract shared finalization and implement all-affected windows before native hooks.
+Integrated build/candidate/public rollback and required writes remain parent-owned.
+
 ## 11 October 2026 — integrated d4b bridges VERIFIED locally
 
 Root projected sealed versioned reader 7b6c6aa and initial-only affa55c patch onto

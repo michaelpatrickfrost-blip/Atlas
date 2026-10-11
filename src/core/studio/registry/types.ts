@@ -73,12 +73,15 @@ export type EntityDescriptor = ContractIdentity & {
   };
 };
 export type RecordContext = { session: Session; transaction?: Prisma.TransactionClient };
+export type NativeValidationRequest = { recordId: string; expectedRevision: number };
 export type RecordRequest = { recordId: string; intent: "read" | "extend"; expectedRevision?: number };
 /** A canonical record reference, not a duplicate business record or mutation API. */
 export type RecordAnchor = { recordId: string; organisationId: string; revision: number };
 export type Context = { session: Session; idempotencyKey?: string; transaction?: Prisma.TransactionClient;
   /** Only the explicit proof-bound registry invocation supplies this opaque token. */
-  initialisationProof?: object };
+  initialisationProof?: object;
+  /** Separate live owning-mutation proof; never accepted in query JSON input. */
+  nativeValidationProof?: object };
 export type QueryDescriptor<I, O> = ContractIdentity & {
   kind: "query";
   input: z.ZodType<I>;
@@ -94,6 +97,10 @@ export type QueryDescriptor<I, O> = ContractIdentity & {
   /** Current owning-domain coverage for retained field migration settlement.
    * Separate from sealed preparation contracts; grants no native/value writes. */
   fieldSettlement?: FieldMigrationIntentPolicy & { entityId: string; sourceVersions: readonly number[]; targetVersions: readonly number[]; referenceVersions: readonly number[] };
+  /** Current operation-specific read-only resulting-state validation. The callback
+   * checks opaque scope without reading protected native facts. */
+  nativeValidation?: { entityId: string; operation: string; fieldVersions: readonly number[];
+    authorise(ctx: RecordContext, request: NativeValidationRequest, proof: object): Promise<RecordAnchor> };
   execute(ctx: Context, input: I): Promise<O>;
 };
 export type CommandDescriptor<I, O> = ContractIdentity & {
@@ -126,6 +133,7 @@ export type Contribution = {
   run?: (ctx: Context, input: unknown) => Promise<unknown>;
   authoriseRecord?: (ctx: RecordContext, request: unknown) => Promise<RecordAnchor>;
   authoriseInitialRecord?: (ctx: RecordContext, proof: object) => Promise<RecordAnchor>;
+  authoriseNativeValidationProof?: (ctx: RecordContext, request: NativeValidationRequest, proof: object) => Promise<RecordAnchor>;
 };
 export type StudioModuleContract = { contributions: readonly Contribution[] };
 export type ContractReference = { id: string; version: number; schemaHash: string; contractHash: string };

@@ -37,16 +37,29 @@ export async function withFieldRuntimeAuthority<T>(authenticated: Session, opera
  * This neither opens a nested transaction nor approves any record/field operation.
  * Untrusted Session DTOs fail before querying the supplied transaction. */
 export async function fieldRuntimeAuthorityInTransaction(authenticated: Session, transaction: Prisma.TransactionClient): Promise<FieldRuntimeAuthority> {
+  await requireSerializableTransaction(authenticated, transaction);
+  return refreshAuthority(authenticated, transaction);
+}
+
+/** Genuine current identity for an owning native operation, including the
+ * existing internal Atlas workspace. This is NOT field authority: it carries
+ * neither a registry nor the customer-only approval required by Studio effects.
+ * The owner must enforce its actual operation capability/module before writes. */
+export async function nativeFieldMutationSessionInTransaction(authenticated: Session, transaction: Prisma.TransactionClient): Promise<Pick<FieldRuntimeAuthority, "session" | "stamp">> {
+  await requireSerializableTransaction(authenticated, transaction);
+  return refreshAuthenticatedSession(authenticated, transaction);
+}
+
+async function requireSerializableTransaction(authenticated: Session, transaction: Prisma.TransactionClient) {
   const stamp = sessionAuthorityStamp(authenticated);
   if (!stamp) denied();
   sameIdentity(authenticated, stamp);
   const isolation = await transaction.$queryRaw<Array<{ transaction_isolation: string }>>`SHOW transaction_isolation`;
   if (isolation.length !== 1 || isolation[0].transaction_isolation !== "serializable")
     throw new Error("Field runtime requires the owning serializable transaction.");
-  return refreshAuthority(authenticated, transaction);
 }
 
-async function refreshAuthority(authenticated: Session, tx: Prisma.TransactionClient): Promise<FieldRuntimeAuthority> {
+async function refreshAuthenticatedSession(authenticated: Session, tx: Prisma.TransactionClient): Promise<Pick<FieldRuntimeAuthority, "session" | "stamp">> {
   const stamp = sessionAuthorityStamp(authenticated);
   if (!stamp) denied();
   sameIdentity(authenticated, stamp);
@@ -60,10 +73,15 @@ async function refreshAuthority(authenticated: Session, tx: Prisma.TransactionCl
   if (!fresh || !currentStamp) denied();
   sameIdentity(fresh, stamp);
   if (currentStamp.authVersion !== stamp.authVersion || currentStamp.sessionVersion !== stamp.sessionVersion) denied();
+  return { session: fresh, stamp: currentStamp };
+}
+
+async function refreshAuthority(authenticated: Session, tx: Prisma.TransactionClient): Promise<FieldRuntimeAuthority> {
+  const { session: fresh, stamp } = await refreshAuthenticatedSession(authenticated, tx);
   const company = await tx.organisation.findFirst({ where: { id: stamp.organisationId, kind: "CUSTOMER", status: "ACTIVE", archivedAt: null }, select: { id: true } });
   if (!company) denied();
   const states = await tx.moduleState.findMany({ where: { organisationId: stamp.organisationId }, select: { moduleId: true, enabled: true, entitled: true } });
   const enabled = new Set(states.filter(state => state.enabled && state.entitled).map(state => state.moduleId));
   const registry = buildRegistry(async (session, moduleId) => session.organisationId === stamp.organisationId && enabled.has(moduleId));
-  return { session: fresh, stamp: currentStamp, transaction: tx, registry };
+  return { session: fresh, stamp, transaction: tx, registry };
 }

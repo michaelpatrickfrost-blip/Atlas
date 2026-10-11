@@ -387,3 +387,21 @@ Advisory waiting does not refresh a pre-existing Serializable snapshot; CAS/row 
 SSI and real first-publication/no-binding/field-limit concurrency remain required.
 D4a is locally verified ordering; every-write requirements/all-affected windows and
 customer conditional enablement remain incomplete in the permanent Studio ledger.
+
+### Studio owning mutation validation contracts — 11 October 2026
+
+The single typed field writer can stage within an owning Serializable transaction;
+public single-field saves validate all resulting required fields before commit.
+Initial/batch callers validate once after all intended fields/native writes. Whole
+Ticket rollback-window selection covers the owner's complete canonical cohort,
+including unrelated field saves/new records, using existing sealed1/2 inspectors
+and finalizer rather than another migration engine.
+
+Operation-specific query policies approve native resulting validation without
+rewriting existing entity descriptors. Private service-work SQL receipt scopes bind
+genuine refreshed principal, transaction, exact existing operation capability and
+actual changed Ticket final revisions; generic queries cannot forward proofs.
+Proofs grant no field/native-fact/reference access and expire on every exit. Domain
+callbacks retain private access/transition/SLA/approval/Audit rules. Required final
+validator callback must run after all writes; actual native hooks and SQL atomic/
+concurrency gates remain incomplete. No-config native/internal behavior is retained.

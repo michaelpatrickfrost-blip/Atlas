@@ -7,12 +7,12 @@ vi.mock("@/core/studio/registry/runtime", async () => {
   return { buildRegistry: (available: ConstructorParameters<typeof CapabilityRegistry>[0]) => new CapabilityRegistry(available) };
 });
 import { sessionForUser, sessionAuthorityStamp } from "@/core/auth/session";
-import { withFieldRuntimeAuthority, fieldRuntimeAuthorityInTransaction } from "@/core/studio/fields/runtime-authority";
+import { withFieldRuntimeAuthority, fieldRuntimeAuthorityInTransaction, nativeFieldMutationSessionInTransaction } from "@/core/studio/fields/runtime-authority";
 import { ticketStudioContract } from "@/core/service-work/studio";
 
 const fixture = () => ({ id: "member", userId: "actor", organisationId: "company", sessionVersion: 2, active: true,
   grantedCapabilities: ["tickets.ticket.read"], deniedCapabilities: [] as string[], roles: [],
-  user: { name: "Actor", email: "actor@example.invalid", authVersion: 3, platformAdmin: null },
+  user: { name: "Actor", email: "actor@example.invalid", authVersion: 3, platformAdmin: null as { role: string; active: boolean } | null },
   organisation: { id: "company", name: "Company", kind: "CUSTOMER", status: "ACTIVE", archivedAt: null as Date | null, auditAccess: null, restrictedAccessAreas: [] } });
 let row: ReturnType<typeof fixture>;
 const tx = { membership: { findUnique: m.member }, $queryRaw: m.raw, organisation: { findFirst: m.company }, moduleState: { findMany: m.modules } } as unknown as Prisma.TransactionClient;
@@ -111,4 +111,34 @@ it("rejects current native-operation authentication revocation and propagates ca
   row.sessionVersion--; const failure = new Error("Native transaction failed"); m.raw.mockRejectedValueOnce(failure);
   await expect(fieldRuntimeAuthorityInTransaction(session, tx)).rejects.toBe(failure);
   expect(m.transaction).not.toHaveBeenCalled();
+});
+
+it("refreshes native identity for an internal workspace without granting customer field authority", async () => {
+  row.organisation.kind = "INTERNAL"; row.user.platformAdmin = { role: "EMPLOYEE", active: true };
+  row.grantedCapabilities = ["tickets.ticket.watch"];
+  const session = await authenticated();
+  m.raw.mockImplementation(async strings => strings.join("") === "SHOW transaction_isolation" ? [{ transaction_isolation: "serializable" }] : []);
+  row.deniedCapabilities = ["tickets.ticket.watch"];
+  const native = await nativeFieldMutationSessionInTransaction(session, tx);
+  expect(native.session).not.toBe(session);
+  expect(native.stamp).toEqual(sessionAuthorityStamp(session));
+  expect(native.session.capabilities.has("tickets.ticket.watch")).toBe(true); // Existing platform staff business authority is preserved.
+  expect(Object.keys(native).sort()).toEqual(["session", "stamp"]);
+  expect(m.company).not.toHaveBeenCalled(); expect(m.modules).not.toHaveBeenCalled();
+  await expect(fieldRuntimeAuthorityInTransaction(native.session, tx)).rejects.toThrow("FORBIDDEN");
+  expect(m.transaction).not.toHaveBeenCalled();
+});
+
+it("rejects native identity clones, stale authentication and unsafe isolation before returning a mutation context", async () => {
+  const session = await authenticated();
+  await expect(nativeFieldMutationSessionInTransaction({ ...session }, tx)).rejects.toThrow("FORBIDDEN");
+  expect(m.raw).not.toHaveBeenCalled();
+  m.raw.mockResolvedValue([{ transaction_isolation: "read committed" }]);
+  m.member.mockClear();
+  await expect(nativeFieldMutationSessionInTransaction(session, tx)).rejects.toThrow("serializable");
+  expect(m.member).not.toHaveBeenCalled();
+  m.raw.mockImplementation(async strings => strings.join("") === "SHOW transaction_isolation" ? [{ transaction_isolation: "serializable" }] : []);
+  row.user.authVersion++;
+  await expect(nativeFieldMutationSessionInTransaction(session, tx)).rejects.toThrow("FORBIDDEN");
+  expect(m.company).not.toHaveBeenCalled(); expect(m.modules).not.toHaveBeenCalled();
 });

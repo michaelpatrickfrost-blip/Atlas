@@ -1,17 +1,18 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import type { Prisma } from "@/generated/prisma/client";
-const m = vi.hoisted(() => ({ authority: vi.fn(), company: vi.fn(), coverage: vi.fn(), publishedCoverage: vi.fn(), executingCoverage: vi.fn(), cutoverCoverage: vi.fn(), rows: vi.fn(), observe: vi.fn(), publishedObserve: vi.fn(), executingObserve: vi.fn(), cutoverObserve: vi.fn(), digest: vi.fn() }));
+const m = vi.hoisted(() => ({ authority: vi.fn(), company: vi.fn(), coverage: vi.fn(), publishedCoverage: vi.fn(), executingCoverage: vi.fn(), cutoverCoverage: vi.fn(), rollbackCoverage: vi.fn(), principal: vi.fn(), rows: vi.fn(), observe: vi.fn(), publishedObserve: vi.fn(), executingObserve: vi.fn(), cutoverObserve: vi.fn(), rollbackObserve: vi.fn(), digest: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: {} }));
+vi.mock("@/core/studio/fields/principal", () => ({ resolveFieldMigrationPrincipal: m.principal }));
 vi.mock("@/core/studio/fields/runtime-authority", () => ({ fieldRuntimeAuthorityInTransaction: m.authority }));
 vi.mock("@/core/studio/fields/migrations/coverage", () => ({ validateFieldMigrationSourceCoverage: vi.fn(), validateRequiredFieldMigrationSourceCoverage: m.coverage,
-  validatePublishedRequiredFieldMigrationSourceCoverage: m.publishedCoverage, validateExecutingRequiredFieldMigrationSourceCoverage: m.executingCoverage, validateCutoverRequiredFieldMigrationSourceCoverage: m.cutoverCoverage }));
-vi.mock("@/core/studio/fields/migrations/observation", () => ({ observeRequiredFieldMigrationRecord: m.observe, observePublishedRequiredFieldMigrationRecord: m.publishedObserve, observeExecutingRequiredFieldMigrationRecord: m.executingObserve, observeCutoverRequiredFieldMigrationRecord: m.cutoverObserve }));
+  validatePublishedRequiredFieldMigrationSourceCoverage: m.publishedCoverage, validateExecutingRequiredFieldMigrationSourceCoverage: m.executingCoverage, validateCutoverRequiredFieldMigrationSourceCoverage: m.cutoverCoverage, validateRollbackRequiredFieldMigrationSourceCoverage: m.rollbackCoverage }));
+vi.mock("@/core/studio/fields/migrations/observation", () => ({ observeRequiredFieldMigrationRecord: m.observe, observePublishedRequiredFieldMigrationRecord: m.publishedObserve, observeExecutingRequiredFieldMigrationRecord: m.executingObserve, observeCutoverRequiredFieldMigrationRecord: m.cutoverObserve, observeRollbackRequiredFieldMigrationRecord: m.rollbackObserve }));
 vi.mock("@/core/studio/fields/migrations/archive-digest", () => ({ digestFieldMigrationArchive: vi.fn(), digestRequiredFieldMigrationArchive: m.digest }));
 import { retainedCutoverFixture } from "./fixtures/studio-field-cutover";
 import { conditionalFieldPayloadSchema } from "@/core/studio/fields/required-contract";
 import { requiredFieldMigrationObservationDigest, sealRequiredFieldMigrationIntent, type RequiredFieldMigrationIntent,
   type RequiredFieldMigrationObservation } from "@/core/studio/fields/migrations/required-contracts";
-import { inspectRequiredFieldMigrationReview, inspectPublishedRequiredFieldMigrationReview, inspectExecutingRequiredFieldMigrationReview, inspectCutoverRequiredFieldMigrationReview } from "@/core/studio/fields/migrations/inspection";
+import { inspectRequiredFieldMigrationReview, inspectPublishedRequiredFieldMigrationReview, inspectExecutingRequiredFieldMigrationReview, inspectCutoverRequiredFieldMigrationReview, inspectRollbackRequiredFieldMigrationReview } from "@/core/studio/fields/migrations/inspection";
 let fixture: Awaited<ReturnType<typeof retainedCutoverFixture>>, intent: RequiredFieldMigrationIntent, observations: RequiredFieldMigrationObservation[];
 const tx = { organisation: { findFirst: m.company }, studioFieldMigrationObservation: { findMany: m.rows } } as unknown as Prisma.TransactionClient;
 const inspect = () => inspectRequiredFieldMigrationReview({ session: fixture.session, transaction: tx }, intent);
@@ -35,6 +36,8 @@ beforeEach(async () => {
   m.publishedObserve.mockImplementation(async (_context, _intent, anchor) => structuredClone(observations.find(row => row.recordId === anchor.recordId)));
   m.executingObserve.mockImplementation(async (_context, _intent, anchor) => structuredClone(observations.find(row => row.recordId === anchor.recordId)));
   m.cutoverObserve.mockImplementation(async (_context, _intent, anchor) => structuredClone(observations.find(row => row.recordId === anchor.recordId)));
+  m.rollbackObserve.mockImplementation(async (_authority, _intent, anchor) => structuredClone(observations.find(row => row.recordId === anchor.recordId)));
+  m.principal.mockResolvedValue(fixture.session);
   m.digest.mockImplementation(async () => aggregate());
 });
 it("checks authority and exact owner coverage before bounded archive reads, then compares actual row evidence and SQL/pure framing", async () => {
@@ -196,4 +199,33 @@ it("refuses changed post-cutover row meaning or SQL/pure digest and uniqueness c
   m.digest.mockResolvedValueOnce({ ...aggregate(), observationDigest: "d".repeat(64) }); await expect(inspectCutover()).rejects.toThrow();
   intent = { ...intent, target: { ...intent.target, payload: { ...intent.target.payload, field: { ...intent.target.payload.field, unique: true } } } };
   m.digest.mockResolvedValueOnce({ ...aggregate(), duplicateTarget: true }); await expect(inspectCutover()).rejects.toThrow("MIGRATION_UNIQUENESS_CONFLICT");
+});
+
+function rollbackAuthority() {
+  const session = { ...fixture.session, userId: "current-settler", membershipId: "current-member" };
+  const principal = { ...intent.principal, userId: session.userId, membershipId: session.membershipId, authVersion: 11, sessionVersion: 12 };
+  const company = { id: "company", kind: "CUSTOMER" as const, status: "ACTIVE" as const, archivedAt: null, isTest: true };
+  m.authority.mockResolvedValue({ session, registry: fixture.registry, transaction: tx, stamp: principal });
+  m.principal.mockImplementation(async selected => { if (selected.userId === intent.principal.userId) throw new Error("creator revoked"); return session; });
+  return { session, principal, transaction: tx, company };
+}
+it("seals original rollback review under a different fresh principal and passes current authority to coverage and each bounded row", async () => {
+  const authority = rollbackAuthority(), original = structuredClone(intent);
+  const result = await inspectRollbackRequiredFieldMigrationReview(authority, intent);
+  expect(result.review.principal).toEqual(original.principal); expect(intent).toEqual(original);
+  expect(m.rollbackCoverage).toHaveBeenCalledWith(expect.objectContaining({ principal: authority.principal, session: authority.session }), intent);
+  expect(m.rollbackObserve).toHaveBeenCalledTimes(2);
+  expect(m.rollbackObserve.mock.calls.every(([selected]) => selected.principal.userId === "current-settler")).toBe(true);
+  expect(m.principal).toHaveBeenCalledWith(authority.principal);
+  expect(m.cutoverCoverage).not.toHaveBeenCalled(); expect(m.executingCoverage).not.toHaveBeenCalled(); expect(m.coverage).not.toHaveBeenCalled();
+});
+it("checks current rollback principal/support/coverage for empty cohorts and rejects authority drift before archived IDs", async () => {
+  const authority = rollbackAuthority(); observations = [];
+  expect((await inspectRollbackRequiredFieldMigrationReview(authority, intent)).review.cohort.recordCount).toBe(0);
+  expect(m.principal).toHaveBeenCalledWith(authority.principal); expect(m.rollbackCoverage).toHaveBeenCalledOnce(); expect(m.rollbackObserve).not.toHaveBeenCalled();
+  m.rows.mockClear(); m.principal.mockRejectedValueOnce(new Error("current support denied"));
+  await expect(inspectRollbackRequiredFieldMigrationReview(authority, intent)).rejects.toThrow("current support denied"); expect(m.rows).not.toHaveBeenCalled();
+  await expect(inspectRollbackRequiredFieldMigrationReview({ ...authority, principal: { ...authority.principal, sessionVersion: 13 } }, intent)).rejects.toThrow(); expect(m.rows).not.toHaveBeenCalled();
+  m.rollbackCoverage.mockRejectedValueOnce(new Error("current rollback cohort denied"));
+  await expect(inspectRollbackRequiredFieldMigrationReview(authority, intent)).rejects.toThrow("current rollback cohort denied"); expect(m.rows).not.toHaveBeenCalled();
 });

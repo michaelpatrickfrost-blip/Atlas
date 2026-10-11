@@ -1,3 +1,29 @@
+## 11 October 2026 — e3e3 current-principal rollback bridge VERIFIED locally
+
+Root distinct authority-taking rollback row/coverage/bounded review entries in
+observation/coverage/inspection.ts refresh genuine current identity/stamp and resolve
+ONLY the current principal/support Audit. Original sealed intent/principal/publisher/
+createdBy/pins remain immutable; revoked original creator no longer blocks a different
+properly authorised settler. Actual target-active+2/CUTOVER/READY, private preflight,
+source/cohort/current rules/typed source+target and every own outcome still required.
+Earlier entries remain creator-bound. No client stage/identity override, borrowed
+creator grants, service dispatch, activation, DDL or value/native mutations.
+Root55tests/2suites PASS94197, strictTS61617/scopedlint20361 exit0; two old fixture
+warnings/zero errors, independent diff security review no blocker. Five meaningful
+new cases prove current actor/creator revoke/original publisher, current stamp/support/
+private/native denial, current strict source guard and empty-cohort aggregate. These
+unit collaborators do not prove actual different-user SQL/runtime settlement.
+
+Parallel required settlement coverage/sealed metadata base-right suite remains IN
+PROGRESS. Root review requested base compiled dependencies for historical module
+checks, so legitimate changed old condition inputs/modules do not block history;
+full sealed original metadata and base/native/reference rights remain checked.
+Exact next: integrate that scoped source/tests, run integrated strictTS/lint/build/
+diff checkpoint; then adapt EXISTING cutover/settlement services with stored1/2
+selection and normal central Test proof. Customer conditional activation remains
+withheld until required native write-window hooks. Full Phase2 gate incomplete;
+latest actual live remainsb34ce50. Plan/ledger updated.
+
 ## 11 October 2026 — e3e2 actual conditional cutover prerequisites VERIFIED locally
 
 Integrated a9e4b7c/ec6c0c2 metadata inspectors with root coverage/row/bounded review.

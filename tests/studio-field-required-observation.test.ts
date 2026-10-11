@@ -16,9 +16,9 @@ import { customFieldPayloadSchema, type FieldStorage } from "@/core/studio/field
 import { conditionalFieldPayloadSchema, type VersionedFieldPayload } from "@/core/studio/fields/required-contract";
 import { compileFieldMigrationMetadata } from "@/core/studio/fields/migrations/metadata";
 import { sealRequiredFieldMigrationIntent, sealRequiredFieldMigrationReview, requiredFieldMigrationObservationDigest, type RequiredFieldMigrationIntent } from "@/core/studio/fields/migrations/required-contracts";
-import { inspectRequiredFieldMigrationRecord, inspectPublishedRequiredFieldMigrationRecord, inspectExecutingRequiredFieldMigrationRecord, observeExecutingRequiredFieldMigrationRecord, inspectCutoverRequiredFieldMigrationRecord, observeCutoverRequiredFieldMigrationRecord, observePublishedRequiredFieldMigrationRecord, observeRequiredFieldMigrationRecord, observeFieldMigrationRecord } from "@/core/studio/fields/migrations/observation";
+import { inspectRequiredFieldMigrationRecord, inspectPublishedRequiredFieldMigrationRecord, inspectExecutingRequiredFieldMigrationRecord, observeExecutingRequiredFieldMigrationRecord, inspectCutoverRequiredFieldMigrationRecord, observeCutoverRequiredFieldMigrationRecord, inspectRollbackRequiredFieldMigrationRecord, observeRollbackRequiredFieldMigrationRecord, observePublishedRequiredFieldMigrationRecord, observeRequiredFieldMigrationRecord, observeFieldMigrationRecord } from "@/core/studio/fields/migrations/observation";
 import { reviewedRequiredFieldPublicationPin } from "@/core/studio/fields/migrations/publication-contract";
-import { validatePublishedRequiredFieldMigrationSourceCoverage, validateExecutingRequiredFieldMigrationSourceCoverage, validateCutoverRequiredFieldMigrationSourceCoverage, validateRequiredFieldMigrationSourceCoverage, validateFieldMigrationSourceCoverage } from "@/core/studio/fields/migrations/coverage";
+import { validatePublishedRequiredFieldMigrationSourceCoverage, validateExecutingRequiredFieldMigrationSourceCoverage, validateCutoverRequiredFieldMigrationSourceCoverage, validateRollbackRequiredFieldMigrationSourceCoverage, validateRequiredFieldMigrationSourceCoverage, validateFieldMigrationSourceCoverage } from "@/core/studio/fields/migrations/coverage";
 import { createRequiredFieldMigrationExecutionPin, createRequiredFieldMigrationOutcomePin } from "@/core/studio/fields/migrations/execution-contract";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
 const uuid = (n: number) => `00000000-0000-4000-8000-${n.toString().padStart(12, "0")}`;
@@ -604,4 +604,50 @@ it("keeps cutover coverage private preflight before lineage, exact source SQL an
   const old = registry.describe("tickets.ticket.field_representation", 1);
   f.execution.pin.ownerApproval = { id: old.id, version: old.version, schemaHash: old.schemaHash, contractHash: old.contractHash };
   await expect(run()).rejects.toThrow();
+});
+
+function currentSettler() {
+  session = { ...session, userId: "current-settler", membershipId: "current-membership", capabilities: new Set(session.capabilities) };
+  const principal = { organisationId: "company", userId: session.userId, membershipId: session.membershipId, authVersion: 11, sessionVersion: 12, authority: "customer" as const };
+  m.refresh.mockImplementation(async selected => ({ session: selected, stamp: principal, transaction: tx, registry } satisfies FieldRuntimeAuthority));
+  m.principal.mockImplementation(async selected => { if (selected.userId === intent.principal.userId) throw new Error("original creator revoked"); return session; });
+  return { session, principal, company, transaction: tx };
+}
+it("proves rollback under a different current settler even when original creator authority is revoked, preserving every original pin", async () => {
+  const f = await cutoverFixture(), originalIntent = structuredClone(intent), authority = currentSettler();
+  m.principal.mockClear(); fact.mockClear(); native.mockClear();
+  const inspected = await inspectRollbackRequiredFieldMigrationRecord(authority, intent, anchor);
+  expect(inspected.observation).toEqual(f.observation);
+  expect(await observeRollbackRequiredFieldMigrationRecord(authority, intent, anchor)).toEqual(f.observation);
+  expect(intent).toEqual(originalIntent); expect(f.publication.publisherUserId).toBe("actor"); expect(f.publication.targetVersion.createdBy).toBe("actor");
+  expect(m.principal.mock.calls.every(([principal]) => principal.userId === "current-settler")).toBe(true);
+  expect(fact.mock.calls.every((call: Parameters<CapabilityRegistry["invokeQueryInTransaction"]>) => call[0].session.userId === "current-settler")).toBe(true);
+  expect(native.mock.calls.every((call: Parameters<CapabilityRegistry["authoriseRecord"]>) => call[0].session.userId === "current-settler")).toBe(true);
+  await expect(inspectCutover()).rejects.toThrow();
+  f.publication.targetVersion.createdBy = "current-settler";
+  await expect(inspectRollbackRequiredFieldMigrationRecord(authority, intent, anchor)).rejects.toThrow();
+});
+it("denies current rollback stamp/support/private and required input access before target columns without borrowing creator grants", async () => {
+  await cutoverFixture(); const authority = currentSettler(); m.value.mockClear(); m.cutover.mockClear();
+  await expect(inspectRollbackRequiredFieldMigrationRecord({ ...authority, principal: { ...authority.principal, authVersion: 10 } }, intent, anchor)).rejects.toThrow();
+  expect(m.cutover).not.toHaveBeenCalled(); expect(m.value).not.toHaveBeenCalled();
+  m.principal.mockRejectedValueOnce(new Error("current support Audit unavailable"));
+  await expect(inspectRollbackRequiredFieldMigrationRecord(authority, intent, anchor)).rejects.toThrow("current support Audit unavailable");
+  expect(m.value).not.toHaveBeenCalled();
+  fact.mockRejectedValueOnce(new Error("current private scope denied"));
+  await expect(inspectRollbackRequiredFieldMigrationRecord(authority, intent, anchor)).rejects.toThrow("current private scope denied"); expect(m.value).not.toHaveBeenCalled();
+  session.capabilities.delete("tickets.ticket.manage");
+  await expect(inspectRollbackRequiredFieldMigrationRecord(authority, intent, anchor)).rejects.toThrow("tickets.ticket.manage"); expect(m.value).not.toHaveBeenCalled();
+});
+it("different-settler rollback coverage keeps actual sealed2, private preflight and original source/cohort guards", async () => {
+  const f = await cutoverFixture(), authority = currentSettler();
+  m.version.mockImplementation(async args => typeof args.where.id === "object" ? [] : args.where.id === sourceVersion.id ? sourceVersion : null);
+  m.raw.mockImplementation(async (strings: TemplateStringsArray) => strings.join("").includes("NOT atlas_studio_execution_source_fresh") ? [{ changed: false }] : []);
+  const run = () => validateRollbackRequiredFieldMigrationSourceCoverage(authority, intent);
+  await expect(run()).resolves.toBeUndefined(); expect(m.cutover).toHaveBeenCalledWith(tx, intent);
+  expect(f.execution.pin.publication.publisherUserId).toBe("actor");
+  m.raw.mockImplementation(async (strings: TemplateStringsArray) => strings.join("").includes("NOT atlas_studio_execution_source_fresh") ? [{ changed: true }] : []);
+  await expect(run()).rejects.toThrow();
+  m.cutover.mockClear(); m.principal.mockRejectedValueOnce(new Error("current access revoked"));
+  await expect(run()).rejects.toThrow("current access revoked"); expect(m.cutover).not.toHaveBeenCalled();
 });

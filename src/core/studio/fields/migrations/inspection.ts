@@ -7,13 +7,16 @@ import { sealFieldMigrationReview, FieldMigrationReviewError, type FieldMigratio
 import { validateFieldMigrationSourceCoverage, type FieldMigrationCoverageStage } from "./coverage";
 import { digestFieldMigrationArchive } from "./archive-digest";
 import type { assertFieldMigrationPolicies } from "./access";
-import { validateRequiredFieldMigrationSourceCoverage, validatePublishedRequiredFieldMigrationSourceCoverage, validateExecutingRequiredFieldMigrationSourceCoverage, validateCutoverRequiredFieldMigrationSourceCoverage } from "./coverage";
+import { validateRequiredFieldMigrationSourceCoverage, validatePublishedRequiredFieldMigrationSourceCoverage, validateExecutingRequiredFieldMigrationSourceCoverage, validateCutoverRequiredFieldMigrationSourceCoverage, validateRollbackRequiredFieldMigrationSourceCoverage } from "./coverage";
 import { digestRequiredFieldMigrationArchive } from "./archive-digest";
 import { sealRequiredFieldMigrationIntent, sealRequiredFieldMigrationReview, requiredFieldMigrationObservationSchema,
   requiredFieldMigrationObservationDigest, type RequiredFieldMigrationIntent } from "./required-contracts";
-import { observeRequiredFieldMigrationRecord, observePublishedRequiredFieldMigrationRecord, observeExecutingRequiredFieldMigrationRecord, observeCutoverRequiredFieldMigrationRecord } from "./observation";
+import { observeRequiredFieldMigrationRecord, observePublishedRequiredFieldMigrationRecord, observeExecutingRequiredFieldMigrationRecord, observeCutoverRequiredFieldMigrationRecord, observeRollbackRequiredFieldMigrationRecord } from "./observation";
 import { fieldRuntimeAuthorityInTransaction } from "../runtime-authority";
 import { checksum } from "../../registry/contracts";
+import type { FieldMigrationAuthority } from "./authority";
+import type { FieldMigrationPrincipal } from "../principal-contract";
+import { resolveFieldMigrationPrincipal } from "../principal";
 
 /** One exact internal review inspection for sealing, publication and execution/replay.
  * Caller owns the fresh authority/transaction. Stage is derived from a locked
@@ -55,19 +58,31 @@ export async function inspectCutoverRequiredFieldMigrationReview(context: Record
   return inspectRequiredReview(context, serverIntent, "cutover");
 }
 
-async function inspectRequiredReview(context: RecordContext & { transaction: Prisma.TransactionClient }, serverIntent: RequiredFieldMigrationIntent, stage: "preparation" | "publication" | "execution" | "cutover") {
+/** Current settler rollback proof without rewriting original sealed intent. Even
+ * an empty cohort must prove genuine current authority and actual cutover state. */
+export async function inspectRollbackRequiredFieldMigrationReview(authority: FieldMigrationAuthority, serverIntent: RequiredFieldMigrationIntent) {
+  return inspectRequiredReview({ session: authority.session, transaction: authority.transaction }, serverIntent, "rollback", authority.principal);
+}
+
+async function inspectRequiredReview(context: RecordContext & { transaction: Prisma.TransactionClient }, serverIntent: RequiredFieldMigrationIntent,
+  stage: "preparation" | "publication" | "execution" | "cutover" | "rollback", currentPrincipal?: FieldMigrationPrincipal) {
   const authority = await fieldRuntimeAuthorityInTransaction(context.session, context.transaction), { session, registry, transaction: tx, stamp } = authority;
   const intent = sealRequiredFieldMigrationIntent(serverIntent).intent;
-  if (intent.organisationId !== session.organisationId || intent.principal.userId !== session.userId || intent.principal.membershipId !== session.membershipId
-    || intent.principal.authVersion !== stamp.authVersion || intent.principal.sessionVersion !== stamp.sessionVersion) throw new FieldMigrationReviewError("REVIEW_CHANGED");
+  const principal = stage === "rollback" ? currentPrincipal : intent.principal;
+  if (!principal || intent.organisationId !== session.organisationId || principal.organisationId !== session.organisationId
+    || principal.userId !== session.userId || principal.membershipId !== session.membershipId
+    || principal.authVersion !== stamp.authVersion || principal.sessionVersion !== stamp.sessionVersion) throw new FieldMigrationReviewError("REVIEW_CHANGED");
+  if (stage === "rollback") await resolveFieldMigrationPrincipal(principal);
   const company = await tx.organisation.findFirst({ where: { id: session.organisationId }, select: { id: true, kind: true, status: true, archivedAt: true, isTest: true } });
   if (!company) throw new FieldMigrationReviewError("REVIEW_CHANGED");
   const freshContext = { session, transaction: tx };
+  const rollbackAuthority: FieldMigrationAuthority = { ...freshContext, principal, company };
   const coverage = stage === "cutover" ? validateCutoverRequiredFieldMigrationSourceCoverage : stage === "execution" ? validateExecutingRequiredFieldMigrationSourceCoverage
     : stage === "publication" ? validatePublishedRequiredFieldMigrationSourceCoverage : validateRequiredFieldMigrationSourceCoverage;
   const observe = stage === "cutover" ? observeCutoverRequiredFieldMigrationRecord : stage === "execution" ? observeExecutingRequiredFieldMigrationRecord
     : stage === "publication" ? observePublishedRequiredFieldMigrationRecord : observeRequiredFieldMigrationRecord;
-  await coverage(freshContext, registry, company, intent);
+  if (stage === "rollback") await validateRollbackRequiredFieldMigrationSourceCoverage(rollbackAuthority, intent);
+  else await coverage(freshContext, registry, company, intent);
   await validateReferenceCoverage(freshContext, registry, intent);
   const stream = requiredFieldMigrationObservationDigest();
   let cursor: string | undefined;
@@ -79,7 +94,8 @@ async function inspectRequiredReview(context: RecordContext & { transaction: Pri
     for (const row of rows) {
       const retained = requiredFieldMigrationObservationSchema.parse(row.observation);
       if (retained.recordId !== row.recordId || retained.nativeRevision !== row.nativeRevision) throw new FieldMigrationReviewError("REVIEW_CHANGED");
-      const actual = await observe(freshContext, intent, { organisationId: session.organisationId, recordId: row.recordId, revision: row.nativeRevision });
+      const anchor = { organisationId: session.organisationId, recordId: row.recordId, revision: row.nativeRevision };
+      const actual = stage === "rollback" ? await observeRollbackRequiredFieldMigrationRecord(rollbackAuthority, intent, anchor) : await observe(freshContext, intent, anchor);
       if (checksum(actual) !== checksum(retained)) throw new FieldMigrationReviewError("REVIEW_CHANGED");
       stream.append(actual); cursor = row.recordId;
     }

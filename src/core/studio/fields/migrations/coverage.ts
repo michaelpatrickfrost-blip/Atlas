@@ -12,6 +12,10 @@ import { assertFieldMigrationPolicies, assertVersionedFieldMigrationPolicies } f
 import { sealFieldMigrationIntent, FieldMigrationReviewError, type FieldMigrationIntent } from "./contracts";
 import { sealRequiredFieldMigrationIntent, type RequiredFieldMigrationIntent } from "./required-contracts";
 import { inspectFieldMigrationCutoverIdentity, inspectRequiredFieldMigrationCutoverIdentity } from "./cutover-inspection";
+import type { FieldMigrationAuthority } from "./authority";
+import type { FieldMigrationPrincipal } from "../principal-contract";
+import { fieldRuntimeAuthorityInTransaction } from "../runtime-authority";
+import { resolveFieldMigrationPrincipal } from "../principal";
 
 function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"); }
 export type FieldMigrationCoverageStage = "preparation" | "publication" | "execution" | "cutover";
@@ -56,10 +60,28 @@ export async function validateCutoverRequiredFieldMigrationSourceCoverage(contex
   return validateCoverage(context, registry, company, sealRequiredFieldMigrationIntent(serverIntent), "cutover");
 }
 
+/** Rollback-only coverage under the CURRENT genuine principal, even when the
+ * original creator's login has since changed. Stored intent/hashes stay original;
+ * no client principal/stage or borrowed creator permissions. */
+export async function validateRollbackRequiredFieldMigrationSourceCoverage(authority: FieldMigrationAuthority, serverIntent: RequiredFieldMigrationIntent): Promise<void> {
+  const refreshed = await fieldRuntimeAuthorityInTransaction(authority.session, authority.transaction), { session, transaction: tx, registry, stamp } = refreshed;
+  const principal = authority.principal;
+  if (principal.organisationId !== session.organisationId || principal.userId !== session.userId || principal.membershipId !== session.membershipId
+    || principal.authVersion !== stamp.authVersion || principal.sessionVersion !== stamp.sessionVersion) changed();
+  await resolveFieldMigrationPrincipal(principal);
+  const company = await tx.organisation.findFirst({ where: { id: session.organisationId }, select: { id: true, kind: true, status: true, archivedAt: true, isTest: true } });
+  if (!company) changed();
+  return validateCoverage({ session, transaction: tx }, registry, company, sealRequiredFieldMigrationIntent(serverIntent), "cutover", principal);
+}
+
 async function validateCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
-  company: Parameters<typeof assertFieldMigrationPolicies>[1], sealed: { intent: FieldMigrationIntent | RequiredFieldMigrationIntent; checksum: string }, stage: FieldMigrationCoverageStage) {
+  company: Parameters<typeof assertFieldMigrationPolicies>[1], sealed: { intent: FieldMigrationIntent | RequiredFieldMigrationIntent; checksum: string }, stage: FieldMigrationCoverageStage,
+  currentPrincipal?: FieldMigrationPrincipal) {
   const intent = sealed.intent, session = context.session, tx = context.transaction;
-  if (!tx || intent.organisationId !== session.organisationId || intent.principal.userId !== session.userId || intent.principal.membershipId !== session.membershipId) changed();
+  const principal = currentPrincipal ?? intent.principal;
+  if (currentPrincipal && (intent.schemaVersion !== 2 || stage !== "cutover")) changed();
+  if (!tx || intent.organisationId !== session.organisationId || principal.organisationId !== session.organisationId
+    || principal.userId !== session.userId || principal.membershipId !== session.membershipId) changed();
   const policies = intent.schemaVersion === 1 ? assertFieldMigrationPolicies : assertVersionedFieldMigrationPolicies;
   policies(session, company, intent.source.payload); policies(session, company, intent.target.payload);
   const current = await compileFieldMigrationMetadata(context, registry, company, intent.definitionId, intent.source.payload), target = await compileFieldMigrationMetadata(context, registry, company, intent.definitionId, intent.target.payload);

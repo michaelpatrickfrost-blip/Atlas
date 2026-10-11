@@ -199,15 +199,15 @@ later phases. No complete Studio/visual builder claim.
 
 # Exact Next Action
 
-Implement root e3e3 current-principal rollback observer/review bridge after the
-verified local cutover checkpoint. New internal rollback entries accept genuine
-FieldMigrationAuthority, check ONLY current principal/stamp/support Audit, retain
-original sealed principal for immutable publisher/createdBy/review lineage, and
-reuse actual target-active+2/CUTOVER/READY conditions/typed target/mandatory outcome.
-Add different-settler/creator-revocation/current-denial and empty-cohort tests.
-Integrate parallel settlement-coverage/sealed-field typed projection and tests,
-then strictTS/scopedlint/build/diff checkpoint. No services/customer activation until
-normal e3e4 and native write windows pass. Live remainsb34ce50.
+Integrate parallel required settlement-coverage/sealed-field typed projection and
+focused tests into the root current-principal rollback bridge. Root55tests/2suites/
+strictTS/scopedlint PASS; independent security review no blockers. History uses full
+sealed original metadata with current/base/native/reference access, not original
+conditional input graph/current old fact-module access. Rollback alone rechecks actual
+original cohort/source/target/conditions under genuine CURRENT principal; original
+publisher identity remains immutable. Run integrated strictTS/lint/build/diff/checkpoint.
+Then e3e4 EXISTING stored1/2 cutover/settlement services and actual central Test proof;
+customer conditional activation withheld until native write windows. Liveb34ce50.
 
 # Historical checkpoint evidence
 

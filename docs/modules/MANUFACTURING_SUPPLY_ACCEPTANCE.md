@@ -349,3 +349,12 @@ three widths passed; no browser exceptions. Old runtime aaf9bc3a was retained wi
 all compatibility guards active. Accepted Decimal client independently reads
 1.250125 exactly; probe removed. This establishes safe Decimal rollback capability.
 Final unlock/actual fractional execution and authorised all-Test cleanup are pending.
+
+## Fractional candidate correction and dated purchasing — prepared
+
+667d546d candidate stopped on PostgreSQL stock-value nonnegative check during the
+first partial report. No public activation; the report/material/stock/cost transaction
+rolled back. Corrected existing-pool update uses its version instead of inserting a
+negative upsert create. Native checker additionally exercises actual measured purchase
+receipt/damage/value/replay, dated MRP coverage and confirmed late supplier arrival.
+Focused new supply/Finance/guide checks pass; final runtime gate remains pending.

@@ -159,6 +159,27 @@ export async function checkManufacturingExecution({context,page,session,out}:{co
  assert.equal((await db.manufacturingMachineLoad.findFirstOrThrow({where:{organisationId,id:load.id}})).status,'COMPLETE');
  const mixedCosts=await db.financeManufacturingValueEntry.findMany({where:{organisationId,productionOrderId:{in:members.map(row=>row.order.id)}}});assert.equal(mixedCosts.reduce((sum,row)=>sum+row.wipMinor,0n),0n);
  console.log('PASS actual mixed products: 250/300 kg compatible load, one 60-minute booking/cycle, one shared usage journal, exact 80%/20% cost allocation and zero completed WIP.');
+ // Purchasing evidence covers demand only on its receipt date, and actual receipts replace open supply.
+ const purchaseRaw=await db.product.create({data:{organisationId,code:'DATED-RAW',name:'Dated purchasing material · Test',itemClass:'RAW',sellable:false,unitOfMeasure:'kg',basePriceAmount:0}});
+ await db.productDefinition.create({data:{organisationId,productId:purchaseRaw.id,version:1,status:'ACTIVE',supply:'BUY',batchQuantity:0,yieldPercent:100,createdByUserId:userId}});
+ const needDate=new Date(Date.UTC(new Date().getUTCFullYear(),new Date().getUTCMonth()+1,1));
+ const arrival=new Date(needDate.getTime()-86400000),late=new Date(needDate.getTime()+86400000);
+ await db.manufacturingDemandForecast.create({data:{organisationId,productId:purchaseRaw.id,periodStart:needDate,quantity:12,createdByUserId:userId}});
+ const supplier=await db.party.create({data:{organisationId,kind:'COMPANY',name:'Dated supply vendor · Test',customerCode:'DATED-VENDOR'}});
+ const purchase=await call<{id:string}>('src/modules/finance/services/commands:createFinanceDocument',[{entityId:entity.id,kind:'PO',title:'Dated material · Test',currency:'GBP',exchangeRate:'1',documentDate:new Date().toISOString().slice(0,10),dueAt:late.toISOString().slice(0,10),expectedReceiptAt:arrival.toISOString().slice(0,10),partyId:supplier.id,lines:[{productId:purchaseRaw.id,description:purchaseRaw.name,quantity:'12',unitPrice:'1.00',taxCode:'OUTSIDE_SCOPE',taxRateBps:0}]}]);
+ // The approved commitment is a synthetic source fixture; this check does not claim independent approval acceptance.
+ await db.financeDocument.update({where:{id:purchase.id},data:{status:'APPROVED'}});
+ const purchaseRow=await db.financeDocument.findFirstOrThrow({where:{organisationId,id:purchase.id},include:{lines:true}});assert.equal(purchaseRow.expectedReceiptAt?.toISOString().slice(0,10),arrival.toISOString().slice(0,10));assert.notEqual(purchaseRow.dueAt?.toISOString(),purchaseRow.expectedReceiptAt?.toISOString());
+ const materialPlan=async()=>{await call('src/app/(app)/manufacturing/planning/actions:runMrpAction',[]);const run=await db.manufacturingPlanningRun.findFirstOrThrow({where:{organisationId,finishedAt:{not:null}},orderBy:{startedAt:'desc'}});return db.manufacturingSupplySuggestion.findMany({where:{organisationId,runId:run.id,productId:purchaseRaw.id}});};
+ assert.equal((await materialPlan()).length,0);
+ const receipt={requestKey:'dated-receipt',warehouseId:warehouse.id,date:new Date().toISOString().slice(0,10),lines:[{lineId:purchaseRow.lines[0].id,quantity:'2',damaged:'1'}]};
+ await call('src/modules/finance/services/commands:recordGoodsReceipt',[purchase.id,receipt]);await call('src/modules/finance/services/commands:recordGoodsReceipt',[purchase.id,receipt]);
+ assert.equal((await materialPlan())[0]?.quantity.toString(),'1');
+ assert.equal((await db.financeStockValue.findFirstOrThrow({where:{organisationId,warehouseId:warehouse.id,productId:purchaseRaw.id}})).quantity.toString(),'1');
+ await call('src/modules/finance/services/purchase-arrivals:updatePurchaseArrival',[purchase.id,form({version:purchaseRow.version,expectedReceiptAt:late.toISOString().slice(0,10),reason:'Supplier confirmed later arrival · Test'})]);
+ assert.equal((await materialPlan())[0]?.quantity.toString(),'11');
+ await page.goto(`/finance/documents/${purchase.id}`,{waitUntil:'networkidle'});await expect(page.getByRole('heading',{name:'Supplier receipt plan',exact:true})).toBeVisible();
+ console.log('PASS actual dated purchasing: supplier receipt date stays separate from payment due date, on-time outstanding PO covers MRP once, 2 received/1 damaged leaves 1 kg replacement and one receipt/value posting, later confirmed arrival leaves 11 kg uncovered before need.');
  // All posted manufacturing journals balance, independent of their component rounding.
  const journals=await db.financeJournal.findMany({where:{organisationId,entityId:entity.id,status:'POSTED'},include:{lines:true}});assert(journals.length>8);for(const journal of journals)assert.equal(journal.lines.reduce((sum,line)=>sum+line.debit-line.credit,0n),0n);
  const rawLot=await db.stockLot.findFirstOrThrow({where:{organisationId,productId:raw.id,code:'RAW-MASS-01'}});

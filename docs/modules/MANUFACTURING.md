@@ -60,7 +60,7 @@ Do not round a fractional raw-material receipt into a fictitious whole-unit fact
 The rich material-plan action uses `mrp-calculation.ts` and the recursive domain
 engine. It reads confirmed/on-hold open Sales demand, approved S&OP forecast
 publication, manual forecasts, expected usage, active recipes, usable stock,
-reservations, active quality holds and aggregate existing production supply.
+reservations, active quality holds and dated remaining production/approved purchase supply. Supplier receipt dates are separate from payment due dates; posted receipts subtract their full received quantity, including damage, from the remaining purchase. Undated, overdue or access-restricted purchases are excluded with review warnings.
 Manual, published S&OP and expected-usage monthly totals consume gross
 product/month bookings, including shipped/closed quantities. Only outstanding
 orders plus the remaining unbooked forecast enter production demand; review
@@ -74,8 +74,7 @@ creates the order plus source claim/audit/activity in one serializable transacti
 Stale runs and concurrent claims fail; repeating an already linked Make conversion
 returns the original order. Release/execution retains its existing controls.
 
-The current engine aggregates stock across warehouses and existing production
-supply without full dated receipt/location matching. Planning estimates, rough
+The current engine aggregates usable stock across warehouses; open production and approved purchase quantities enter only on their finish/receipt date. Site-specific matching, transfers and full supply change/cancellation reconciliation remain open. Planning estimates, rough
 capacity and a machine-overlap check do not establish a guaranteed customer date.
 Machine release and reviewed schedule moves now constrain eligible equipment,
 weekly plant-timezone calendars, open bookings and manual maintenance/downtime
@@ -117,9 +116,7 @@ Zero is valid; missing history is not invented. Saves retain assumptions and
 quantities, reject stale source fingerprints and protect approved S&OP demand.
 Saving does not release production: run MRP and review its Make/Buy proposals.
 
-Whole-unit stock execution remains a blocker for decimal clay quantities and
-conversions. Final component backflush now rejects fractional consumption instead
-of rounding it up. The full 173-section programme remains open; this checkpoint
+The former whole-unit stock restriction is superseded by exact six-decimal quantities, compatible measured conversions and incremental actual material backflush. Final live acceptance is recorded separately below. The full 173-section programme remains open; this checkpoint
 is not evidence of a fully configured or production-ready clay factory.
 
 ## Procurement attached to the plan

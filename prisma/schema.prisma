@@ -5375,6 +5375,7 @@ model FinanceBankVersion {
  @@map("finance_bank_versions")
 }
 model FinanceDocument {
+ expectedReceiptAt DateTime?
  expenseClaimId String?
  id String @id @default(cuid())
  organisationId String

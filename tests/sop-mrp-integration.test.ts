@@ -5,6 +5,7 @@ const state = vi.hoisted(() => ({ inventory: new Map<string,{available:number;re
   ['salesOrder', 'fulfilmentLine', 'manufacturingDemandForecast', 'product', 'inventoryBalance', 'warehouse', 'stockReservation', 'stockLot', 'stockPosition', 'qualityHold', 'productDefinition', 'manufacturingOrder', 'manufacturingPlanningRun', 'manufacturingSupplySuggestion'].map(name => [name, { findMany: vi.fn(), create: vi.fn() }]),
 ) }));
 vi.mock('@/core/auth/session', () => ({ requireSession: async () => ({organisationId:'org',capabilities:new Set()}) }));
+vi.mock('@/core/supply/incoming', () => ({ incomingPurchaseSupply: async () => ({rows:[],warnings:[]}) }));
 vi.mock('@/core/finance/manufacturing', () => ({ materialCostBasis: async () => [] }));
 vi.mock('@/core/db/client', () => ({ db: state.db }));
 vi.mock('@/modules/manufacturing/domain/mrp-engine', () => ({ MrpEngine: class {

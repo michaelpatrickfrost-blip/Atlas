@@ -27,7 +27,12 @@ async function valueBalance(tx: Prisma.TransactionClient, session: Session, p: P
   const where = { organisationId_warehouseId_productId: { organisationId: session.organisationId, warehouseId: p.warehouseId, productId } };
   const current = await tx.financeStockValue.findUnique({ where });
   if (addQuantity(Number(current?.quantity ?? 0), quantityDelta) < 0 || (current?.valueMinor ?? 0n) + valueDelta < 0n) throw new Error("Inventory valuation would become negative. Review Finance manufacturing values.");
-  await tx.financeStockValue.upsert({ where, create: { organisationId: session.organisationId, entityId: p.entityId, warehouseId: p.warehouseId, productId, quantity: quantityDelta, valueMinor: valueDelta }, update: { quantity: { increment: quantityDelta }, valueMinor: { increment: valueDelta }, version: { increment: 1 } } });
+  if (current) {
+    const updated = await tx.financeStockValue.updateMany({ where: { ...where.organisationId_warehouseId_productId, version: current.version }, data: { quantity: { increment: quantityDelta }, valueMinor: { increment: valueDelta }, version: { increment: 1 } } });
+    if (updated.count !== 1) throw new Error("Inventory valuation changed. Refresh and retry the stock transaction.");
+  } else {
+    await tx.financeStockValue.create({ data: { organisationId: session.organisationId, entityId: p.entityId, warehouseId: p.warehouseId, productId, quantity: quantityDelta, valueMinor: valueDelta } });
+  }
 }
 
 export const manufacturingCostProvider: ManufacturingCostProvider = {

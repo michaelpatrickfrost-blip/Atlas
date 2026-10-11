@@ -1,3 +1,25 @@
+## 11 October 2026 — Fractional candidate caught valuation constraint; fix prepared
+
+Candidate 667d546d applied fractional unlock after backup ...200301; retained live
+5b6390c8 remains Decimal-capable. Candidate acceptance caught FinanceStockValue
+upsert attempting a negative create before updating its existing value pool: PostgreSQL
+rejected it and the partial report rolled back atomically. Corrected to an explicit
+version-checked update of existing pools/create of new positive pools. Failed Test
+access retired/session revoked; fixtures await the final authorised all-Test scrub.
+No public activation of this candidate. Protected backup/Audit retained.
+
+Also prepared dated approved purchasing/open production supply: supplier receipt
+field separate from payment due date, reviewed date changes, Finance-owned scoped
+provider, receipt/damage netting, time-phased quantity netting and explicit undated/
+overdue/access warnings. Guides user-reported ?area=Operations ignored was confirmed
+on their live tab; area/app/search filters now combine, app browsing avoids repeating
+all 51 instructions and retains capability boundaries. Six focused files/25 tests and
+guide six tests PASS; Prisma validate/generate/Data API PASS (929 stable actions).
+Corrected production build, strict types and scoped lint PASS (0 errors, one existing
+unused import warning). Fractional BOM/yield tests and four source-netting tests PASS;
+no repeated full suite. Live execution and cleanup remain pending. Michael asks for focused
+verification without redundant full-suite reruns; earlier 2,241-test suite retained.
+
 ## 11 October 2026 — Final manufacturing release integrates accepted tablet menus
 
 Final fractional release stopped before backup/migration/build at server ancestry:

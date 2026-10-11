@@ -1,3 +1,15 @@
+## 11 October 2026 — Supplier receipt date is an operational planning fact
+
+Keep FinanceDocument.expectedReceiptAt distinct from payment dueAt. Only approved/
+part-received physical purchase quantities can cover demand, from their current
+supplier receipt date; subtract all posted received quantities including rejected
+units. Missing/overdue/access-restricted supply is disclosed and excluded. Finance
+owns document/project/tenant access through a Core-typed incomingSupplyProvider.
+Confirmed receipt-date changes require Purchasing management, version check and
+reason/Audit. Stock remains available only after actual accepted goods receipt.
+Guide area links remain supported alongside app grouping and combined search;
+browsing shows apps, with detailed results on search or app selection.
+
 ## 11 October 2026 — Exact stock and Finance-owned manufacturing cost
 
 Operational quantities use NUMERIC(18,6), explicit compatible measurement snapshots

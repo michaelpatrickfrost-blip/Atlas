@@ -20209,6 +20209,12 @@ export const MODEL_FIELDS = {
     }
   },
   "FinanceDocument": {
+    "expectedReceiptAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
     "expenseClaimId": {
       "type": "String",
       "list": false,

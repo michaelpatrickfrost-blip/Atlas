@@ -1,4 +1,5 @@
 import { manufacturingCostProvider } from "./services/manufacturing-values";
+import { incomingSupplyProvider } from "./services/incoming-supply";
 import { reports } from './services/reports';
 import { financeRecordContext, financeRecordRelationships } from "./services/relationships";
 import { salesInvoiceChain, salesInvoiceQuantities } from "./services/order-chain";
@@ -16,6 +17,7 @@ import { financeAnalytics } from "./services/analytics";
 import { supplySpendProvider } from "./services/supply-spend";
 export const financeManifest:ModuleManifest={reportProvider:reports,
  manufacturingCostProvider,
+ incomingSupplyProvider,
  supplySpendProvider,
  recordContextProvider: financeRecordContext, recordRelationshipProvider: financeRecordRelationships,
  salesInvoiceChainProvider: salesInvoiceChain, salesInvoiceQuantitiesProvider: salesInvoiceQuantities,

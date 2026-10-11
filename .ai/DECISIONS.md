@@ -1,3 +1,20 @@
+## 11 October 2026 — owning field writers share one engine; reads use base policy
+
+Expose the existing field writer within the owning Serializable transaction instead
+of nesting a transaction or building a second persistence engine. Initialisation is
+a separate internal function with an opaque live actual-INSERT proof, never a JSON
+flag or existing-record grant. Re-read owning creation facts before values; require
+current metadata and current-owned slot replay. Independent field Read+Write and
+reference Read remain mandatory. Exceptions propagate to roll back native/typed/
+window/Audit effects together. Conditional writes await all-active native enforcement.
+
+Ordinary current/history reads use the existing sealed schema1/2 base-policy readers,
+including written/origin versions. Viewing an authorised field must not require
+private condition inputs or write/Studio privileges. Required-rule evaluation stays
+in the separate existing validator; legacy writer aliases remain closed1 meanwhile.
+This preserves source6.5/14/24, existing domain ownership and one permission system;
+no specification requirement waived and no new schema/engine needed.
+
 ## 11 October 2026 — one shared field/native coordination key (Phase2 d4a)
 
 Reuse the existing first-publication tenant/entity compact JSON hashtextextended

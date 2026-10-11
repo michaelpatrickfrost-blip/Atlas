@@ -14,14 +14,15 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
-Phase2 2B d4b typed transaction writer /versioned reads /opaque initial writer
-IN PROGRESS. D4a shared locks/order VERIFIED locally in006d2a4 (206/15 +finaltype/
-lint/build/review PASS), not yet deployed. D4b1 ordinary writer extracted,9focused/
-type/lint PASS; isolated7b6c6aa versioned reader source/tests projected, branch36/3/
-type/lint PASS, combined verification pending. Opaque initial writer being implemented
-in separate scope under agreed shared private core. No conditional write/authoring
-or native-hook enablement. Previous e3e4 now VERIFIED LIVE1f4dc79: original64598 exit0,
-candidateDXZ53J/publicytFEJs BOTH ALL COMBINED PASS, exacthealth/login200.
+Phase 2 2B d4c affected rollback windows — IN PROGRESS. D4b ordinary/initial
+transaction writers and versioned current/history reads are VERIFIED locally.
+Root integrated 7b6c6aa + initial-only affa55c delta with c9e44e9 shared writer:
+49 tests/4 suites plus 27 owning-proof/lock tests/2 suites PASS; standalone strict
+TypeScript, scoped lint, production build and independent source review PASS.
+D4a ordering remains locally verified. These checkpoints are not yet live;
+current live 1f4dc79 and immediate rollback b34ce50 remain unchanged.
+D4c1 stored1/2 single-field window checkpoint 402786a is ready for integration.
+No native hooks, conditional writes/customer authoring or Phase3 enablement.
 
 # Overall Status
 
@@ -57,36 +58,35 @@ source coverage, phase plan and this ledger. No rewritten specification.
 
 # Current Workstream Detail
 
-Parallel row/outcome, bounded review and execution metadata inspection integrated
-with the existing normal start/batch/representation services. Server-loaded intent
-selects closed1/2; legacy schemas/hashes and existing engine retained. Exact actual
-current conditions, permissions and typed target decode precede archive normalization.
-Only the recorded own +1/new-anchor outcome permits historical-envelope comparison.
-No unexplained revision normalization or caller-supplied protocol/stage.
+D4b retains one typed field writer, its current/written/reference rights, replay,
+codec, extension/slot/value CAS and paired Audit. The internal owning transaction
+entry opens no nested transaction. Initial mode requires the live opaque actual
+INSERT callback proof and owner still-NEW/version1/requester/unmerged facts before
+value lookup; current schema/generation and fresh/current-owned slot constraints
+apply even on replay. Field Read+Write and reference Read remain independent.
+Conditional initial/normal writes are still gated until all-active native enforcement.
 
-Actual central Test proof passed candidate AND public: start/Audit rollback,
-second-row target failure and sparse FAILED/resume, outcome/progress/paired batch and
-failure Audit rollback, typed zero/null/new-anchor values, READY/replays and normal
-cancellation retaining immutable history. Source/native unchanged. Customer
-conditional cutover/settlement/native authoring remain gated; no later-phase work.
+Public current/history reads now use existing sealed schema1/2 base-policy readers
+for current/written/origin metadata. They do not fetch/evaluate private condition
+inputs or require write/Studio grants. Legacy writer aliases remain closed1.
+Genuine sessions/proofs/registered compiler are exercised with explicit storage/
+window collaborators; these unit tests do not prove PostgreSQL atomicity/races.
+D4c next reuses existing settlement identities/pins/CAS/Audit for all affected windows;
+actual Ticket owner reviews cover the complete tenant Ticket cohort. Observation-only
+selection misses newly created native rows and cross-field global extension changes.
+Record server cause/selection contract before further coding; no unrelated data scan.
 
-Michael authorised linked parallel work. Root integrated 06eeda1/13fe331/45c6896 and
-scoped 1beafb4/a160372 contributions; independent SQL/native/security review found
-no blocking defect. Temporary worktrees share dependencies and occupy about25MiB
-source each. App archive requests returned queued; filesystem removal is unverified.
-Do not claim cleanup or edit those worktrees while archival is pending.
+Parallel worktrees share dependencies; independent review links API/owner/security
+contracts. Visual stash 28243b7 stays preserved for Phase2 2E. No later-phase engine.
 
 # Files Changed
 
-D4a root: fields/entity-lock.ts, binding/runtime-write/retirement.ts,
-definitions/publication/activation/service.ts; parallel nine migration lifecycle
-files, service-work/actions/studio-create.ts and Service commands.mergeCases.
-Three new helper/lifecycle/native ordering suites; existing metadata/activation/
-retirement/value/cancellation/settlement/creation/action tests adapted. Memory,
-required-rules plan, ledger, decisions, architecture and retention documentation
-reconciled; unrelated shared Desktop edits and visual stash preserved.
-E3e4 preceding checkpoint1f4 services/actual checker/replay private-order correction
-remain under normal original candidate/public acceptance; see historical evidence.
+D4b runtime-write.ts/runtime-read.ts, existing runtime/read-compiler suites and new
+studio-field-initial-write.test.ts; owning creation/lock regressions run unchanged.
+Shared plan, ledger, CURRENT_STATE and DECISIONS reconcile the internal bridges.
+D4a helper/metadata/lifecycle/native ordering files remain in preceding checkpoint
+006d2a4. D4c1 source/tests remain on isolated 402786a pending integration.
+No unrelated shared Desktop edits or preserved visual stash overwritten.
 
 # Database / Prisma Changes
 
@@ -104,26 +104,25 @@ correction preserved its applied checksum/history. Current block adds no migrati
 
 # Tests Added
 
-D4a three new helper/lifecycle/native ordering suites (3/29/19 cases), plus actual
-creation-entry, draft/retirement/value/activation ordering assertions and publication
-identity re-read drift. SQL/key/acquisition contracts use explicit unit collaborators;
-not claimed as PostgreSQL contention/freshness proof. Existing domain/legacy closed1/2
-migration/current-history/value checks retained. E3e4 actual central Test checker
-proves normal activation/current-independent rollback/finalization/history and real
-paired Audit-failure rollback against candidate; public stage running.
+D4b new initial writer suite (12 cases), expanded versioned runtime reader suite
+(25 total), genuine registered read-compiler fixtures (4), and ordinary writer
+transaction/error propagation (9 total). Creation-proof (8) and native lock (19)
+regressions are unchanged. Actual conditional compiled metadata, sessions/proofs,
+current/written/origin/reference policies, missing/zero/false/null, strict replay,
+corrupt/foreign metadata and failure propagation exercised with bounded storage.
+D4a earlier helper/lifecycle/native ordering (3/29/19) checks remain valid locally.
+No inference of actual SQL rollback/concurrency from these collaborators.
 
 # Tests Run
 
-D4a final integrated206tests/15suites PASS58370, scopedlint66840/productionbuild50380
-exit0, FINAL standalone strictTS88441 exit0, final diff/check and independent review
-PASS. Next build uses existing ignoreBuildErrors; standalone tsc is actual type proof.
-Separate root30/5/native62/5/lifecycle123/9 overlap and are not summed. Logs
-/tmp/atlas-studio-d4a-{integrated-tests,final-types,lint,build}.txt.
-E3e4 preceding123/7/type/lint/build locally PASS; original64598 candidateDXZ53J
-ALL COMBINED PASS after concrete temporary cache cleanup. PublicytFEJs pending,
-exact health1f4; original backups122720/122723/123218 retained. First two unchanged
-attempts failed browser Compositor traps before activation, all new service proofs
-passed; temporary pressure observed, no proven OOM/cause.
+D4b root 49 tests/4 suites PASS (85265), separate owning-proof/native-lock 27/2
+PASS (14426): 76 tests across six distinct suites. Standalone strict TypeScript
+--noEmit --incremental false (42536), scoped ESLint (60530), production build (3522)
+all exit0. Independent source review found no blocker; final diff check PASS.
+Logs /tmp/atlas-studio-d4b-{integrated-tests,owning-tests,types,lint,build}.txt.
+Production build skips types; standalone tsc supplies actual type evidence.
+D4a 206/15/types/lint/build/review PASS at 006d2a4. E3e4 original64598 candidate
+DXZ53J/publicytFEJs BOTH ALL COMBINED PASS, current exact1f4; recovery retained.
 
 # Test Results
 
@@ -151,13 +150,13 @@ Decisions and rationale recorded in .ai/DECISIONS.md; no silent source divergenc
 
 # Known Issues
 
-Full Phase2 incomplete. Common native create/save all-active validators, opaque
-initial writer and all affected native/cohort rollback windows remain; customer
-conditional activation withheld. Field aliases/defaults/search, record types,
-structured pages/variants/generated runtime, visual presets/previews/publish/customer
-dashboards/custom domain buttons remain Phase2. D4a and current d4b local source
-not yet live. Temporary build buffer removed; original gate passes after tmp cache
-maintenance. Worktree archival queued/unverified, source/shared dependencies retained.
+Full Phase2 incomplete. Common native create/save all-active hooks and all affected
+native/cohort rollback windows remain; conditional write/customer activation withheld.
+Opaque initial writer is locally implemented/verified but not yet connected to normal
+forms. Field aliases/defaults/search, record types, structured pages/variants/generated
+runtime, visual presets/previews/publish/customer dashboards/custom domain buttons
+remain Phase2. D4a/d4b source not yet live. Temporary build buffer removed; original
+live gate passed after tmp cache maintenance. Worktree archival queued/unverified.
 
 # Deferred Items
 
@@ -177,14 +176,15 @@ remain architectural context only; no complete visual designer claim.
 
 # Exact Next Action
 
-Save d4b1 extracted transaction writer checkpoint with actual test/type/lint evidence.
-Integrate isolated7b6c6aa versioned current/history reader and initial writer against
-shared private typed core; run combined focused/type/lint/build/review once source
-complete. Then d4c stored1/2 and all-affected native/cohort rollback windows, d4d
-owning staged native+typed all-active validation. Prove first-publication/no-binding/
-max-field and configured native atomic concurrency before customer activation.
-Keep original source/live1f4 rollbackb34, locked recovery/retention and no new dumps.
-Do not start Phase3 or claim designer finished.
+Integrate 402786a stored1/2 single-field window prerequisite, preserving strict
+configuration/draft/receipt checks. Agree and record server-owned all-affected Ticket
+window selection/cause and reuse the existing locked finalizer, then implement/test
+it. Record the owning existing-record operation-proof/resulting-validation contract
+for narrow native/parent/case effects before d4d hooks. Complete real first-publication/
+no-binding/max-field and configured native atomic concurrency before customer
+conditional activation. Preserve live1f4/rollbackb34/recovery; no extra dumps.
+Do not start Phase3 or claim the visual designer finished.
+
 # Historical checkpoint evidence
 
 The following dated notes record what was known at their checkpoints. Next actions,

@@ -1,3 +1,63 @@
+## 11 October 2026 — integrated d4b bridges VERIFIED locally
+
+Root projected sealed versioned reader 7b6c6aa and initial-only affa55c patch onto
+c9e44e9 ordinary transaction extraction; existing writer/test dependency preserved.
+One shared writer, live genuine INSERT proof/actual still-NEW facts, independent
+Read+Write/reference, strict initial current-slot replay, public sealed schema1/2
+current/written/origin base reads and legacy closed1 writer behavior retained.
+Conditional writes/native hooks remain gated. No DDL, domain rows, dumps or release.
+Root 49tests/4suites85265 + owning proof/lock27/2 14426 PASS (76 distinct tests/six
+suites), standalone strictTS42536/scopedlint60530/productionbuild3522 exit0; independent
+source review/no blocker and diff check PASS. Build skips types; standalone tsc is
+actual evidence. Explicit storage/window collaborators, no actual SQL/race claim.
+Root d4a/d4b source not yet live; verified live1f4/rollbackb34/resource cleanup intact.
+Next: integrate d4c1 402786a; record server-owned all-affected Ticket window cause/
+selection and existing-record narrow native validation proof, then implement windows/
+hooks. Whole Phase2 FAIL incomplete; designer still required, no Phase3 work.
+
+## 11 October 2026 — d4b3 opaque initial writer VERIFIED locally (closed1)
+
+Supersedes the d4b3 signature proposal below. runtime-write.ts adds internal
+initialiseFieldValueInTransaction(authority,input,proof), delegating the SAME private
+write engine as ordinary writeFieldValueInTransaction. Proof stays a separate server
+parameter; absent/invented/copied/foreign/expired proofs fail closed, never fall back.
+Initial context retains genuine owning INSERT proof plus independent field Read and
+compileCustomFieldForInitialisation(...,"write"); ordinary reference Read remains
+mandatory. Actual owning invokeInitialRecordFacts checks still-NEW version1/requester/
+unmerged native state even for schema1 BEFORE stored-value lookup/persistence.
+Current definition revision/version/generation must match even on replay; native
+revision1 and null initial slot/value revisions are required. Occupied slots cannot
+be overwritten through creation. Extension CAS may advance across different initial
+fields. Exact operation replay additionally requires the actual current slot still
+owns that value and exact tenant/entity/generation/slot mirrors and paired saved
+Audit; it permits another initial field's later extension revision. Original ordinary
+historical replay remains intact. Reuses codec, window, value/slot/extension CAS,
+uniqueness, Audit and sanitized conflict propagation; no nested transaction. Sealed
+conditional schema2 initial writes explicitly deny until owning enforcement exists.
+
+New12case studio-field-initial-write.test.ts uses genuine authenticated sessions,
+registered actual owner/compiler and live WeakMap creation proofs, with explicit
+storage/window stubs. Covers zero/false/null, sequential extension CAS, independent
+field Read/Write/reference rights, actual native drift, copied/expired proofs,
+closed requests/current metadata/fresh slot, current-only replay/Audit pairing,
+source schema/tenant/hash corruption and window/value/slot/extension/Audit/unique
+failure propagation with callback proof revocation. Final48tests/4suites PASS12372
+(new12, ordinary9, creation8, native lock19); strictTypeScript76053 exit0; scoped
+ESLint28487 exit0/no warnings; diff check PASS. Unit mocks do NOT establish actual
+PostgreSQL atomic rollback/concurrency or complete affected-window behaviour.
+
+Root d4b1 extracted runtime source/test copied solely for dependency; existing writer
+test remains UNSTAGED/excluded along with prior copied migration/helper dependencies.
+Scoped commit contains runtime-write.ts/new initial suite/this memory only; narrow
+initial source diff against root extraction saved for integration at
+/tmp/atlas-studio-initial-write-from-extraction.patch. No hooks/all-active validator/
+windows/DDL/install/build/push/deploy/customer enablement or dumps from this branch.
+Whole Phase2 remains IN PROGRESS; root owns shared docs/ledger/integration/release.
+Exact next action: root integrate the narrow initial-mode diff with its extracted
+ordinary writer, review integrated source/types/tests/build, then d4c/d4d implement
+all-active resulting-state validation and affected rollback-window closure before
+owning Ticket create/update form hooks and actual central atomic acceptance.
+
 ## 11 October 2026 — e3e4 VERIFIED LIVE1f4; temporary resources safely retired
 
 Original clean pinned release64598 exit0. CandidateDXZ53J AND publicytFEJs BOTH

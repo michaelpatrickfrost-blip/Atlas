@@ -15,15 +15,15 @@ it("checks a reference owner's separate read permission even when the source is 
   const f = await retainedCutoverFixture(), capability = "tickets.reference.read";
   const original = ticketStudioContract.contributions.find(item => item.metadata.id === "tickets.ticket" && item.metadata.version === 1)!;
   const details = entityDetailsSchema.parse(original.metadata.details); expect(details.record).toBeDefined();
-  const targetDetails = { ...details, record: { ...details.record!, listQuery: { id: "tickets.ticket.list", version: 7 }, getQuery: { id: "tickets.ticket.get", version: 7 } } };
+  const targetDetails = { ...details, record: { ...details.record!, listQuery: { id: "tickets.ticket.list", version: 99 }, getQuery: { id: "tickets.ticket.get", version: 99 } } };
   f.registry.register("tickets", { contributions: [
     ...["tickets.ticket.list", "tickets.ticket.get"].map(id => {
       const query = ticketStudioContract.contributions.find(item => item.metadata.id === id && item.metadata.version === 1)!;
-      return { ...query, metadata: { ...query.metadata, version: 7, capability } };
+      return { ...query, metadata: { ...query.metadata, version: 99, capability } };
     }),
-    { ...original, metadata: { ...original.metadata, version: 7, capability, details: targetDetails, schemaHash: checksum(targetDetails) } },
+    { ...original, metadata: { ...original.metadata, version: 99, capability, details: targetDetails, schemaHash: checksum(targetDetails) } },
   ] });
-  const target = f.registry.describe("tickets.ticket", 7), reference = { id: target.id, version: target.version, schemaHash: target.schemaHash, contractHash: target.contractHash };
+  const target = f.registry.describe("tickets.ticket", 99), reference = { id: target.id, version: target.version, schemaHash: target.schemaHash, contractHash: target.contractHash };
   const payload = { ...f.source.payload, field: { ...f.source.payload.field, storage: { type: "reference", entity: reference } } };
   await expect(compileCustomFieldForRead(f.session, payload, f.registry)).rejects.toThrow("FORBIDDEN");
   expect((await compileCustomFieldForRead({ ...f.session, capabilities: new Set([...f.session.capabilities, capability]) }, payload, f.registry)).payload.field.storage.type).toBe("reference");

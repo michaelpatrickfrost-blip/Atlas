@@ -1,4 +1,23 @@
-## 11 October — d4b3 initial writer contract agreed (IN PROGRESS)
+## 11 October — d4c1 versioned single-field window prerequisite
+
+After d4b reader contribution, isolated lifecycle scope owns runtime-write-window.ts
+stored1/2 dispatch ONLY, with existing window tests. Existing closeFieldWriteWindow
+signature stays; actual tenant-scoped preparation uses readStoredFieldMigrationIntent,
+then matching legacy/required immutable settlement identity, same FINALIZED window,
+pure settlement pin/CAS/paired Audit. Preserve original principal, normal current
+stamp/support evidence; no Publish or whole-cohort grants. Source/target/draft/
+publication/receipt mirrors must pair actual preparation and request before mutation.
+Unknown/corrupt formats fail closed, current actor remains actual runtime principal.
+No config pointer or values/native mutated by helper; no extra engine, DDL or waiver.
+
+This prerequisite does NOT yet close all affected windows. Root next will record
+bounded observed-record/cohort selection and safe server mutation-cause contract,
+reusing the same finalization primitive. Creation writer/native hooks remain unhooked;
+conditional normal/initial writes remain gated until all affected windows and
+all-active validation are integrated. Exact target/cutover config checks remain
+strict; do not silently permit cosmetics or relax eligibility.
+
+## 11 October — d4b3 initial writer contract agreed (VERIFIED locally)
 
 Root ordinary extraction retains writeFieldValueInTransaction(authority,input).
 New internal initialiseFieldValueInTransaction(authority,input,proof:object) delegates

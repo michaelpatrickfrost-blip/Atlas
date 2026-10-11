@@ -27,9 +27,9 @@ export async function readFieldPlanInTransaction(authority: FieldRuntimeAuthorit
   return compiled.payload;
 }
 
-/** Internal v2 base-policy reader. Viewing an authorised value does not evaluate
- * its own rule or read private condition inputs. Ordinary v1 gateways above keep
- * their existing schema gate until owning native enforcement enables v2. */
+/** Versioned base-policy reader. Viewing an authorised value does not evaluate
+ * its own rule or read private condition inputs. The closed v1 aliases remain
+ * available to the ordinary writer until its owning enforcement enables v2. */
 export async function readVersionedFieldPlanInTransaction(authority: FieldRuntimeAuthority, version: StudioDefinitionVersion, definitionId: string): Promise<FieldPayload> {
   if (version.schemaVersion === 1) return readFieldPlanInTransaction(authority, version, definitionId);
   const plan = inspectSealedFieldVersion(authority.registry, version, authority.session.organisationId, definitionId), payload = plan.payload;
@@ -64,6 +64,7 @@ async function readContext<P extends FieldPayload>(authority: FieldRuntimeAuthor
 }
 export const readFieldContextInTransaction = (authority: FieldRuntimeAuthority, request: z.infer<typeof currentRequest>, history: boolean) => readContext(authority, request, history, readFieldPlanInTransaction);
 export const readVersionedFieldContextInTransaction = (authority: FieldRuntimeAuthority, request: z.infer<typeof currentRequest> & { expectedRevision?: number }) => readContext(authority, request, false, readVersionedFieldPlanInTransaction);
+export const readVersionedFieldHistoryContextInTransaction = (authority: FieldRuntimeAuthority, request: z.infer<typeof currentRequest>) => readContext(authority, request, true, readVersionedFieldPlanInTransaction);
 export const readInitialFieldContextInTransaction = (authority: FieldRuntimeAuthority, request: z.infer<typeof currentRequest> & { expectedRevision?: number }, proof: object) => readContext(authority, request, false, readInitialFieldPlanInTransaction, proof);
 /** Internal publication/activation coverage reads an immutable candidate, not
  * the current active schema. Keep the real activation pointer intact; caller
@@ -101,11 +102,11 @@ export const readInitialFieldValueInTransaction = (authority: FieldRuntimeAuthor
 export async function readCurrentFieldValue(authenticated: Session, input: unknown) {
   const request = currentRequest.parse(input);
   return withFieldRuntimeAuthority(authenticated, async authority => {
-    const { definition, payload, anchor, extension } = await readFieldContextInTransaction(authority, request, false);
+    const { definition, payload, anchor, extension } = await readVersionedFieldContextInTransaction(authority, request);
     const slot = extension && await authority.transaction.studioFieldSlot.findFirst({ where: { organisationId: authority.session.organisationId, extensionId: extension.id, definitionId: definition.id, generationId: payload.storageGeneration }, include: { activeValue: { include: { schemaVersion: true } } } });
     if (slot && ((slot.activeValueId === null) !== (slot.activeValue === null))) corrupt();
     if (slot?.activeValue && slot.activeValueId !== slot.activeValue.id) corrupt();
-    const value = slot?.activeValue ? await readFieldValueInTransaction(authority, payload, definition.id, payload.storageGeneration, slot.id, request.recordId, slot.activeValue) : null;
+    const value = slot?.activeValue ? await readVersionedFieldValueInTransaction(authority, payload, definition.id, payload.storageGeneration, slot.id, request.recordId, slot.activeValue) : null;
     return { definitionId: definition.id, definitionRevision: definition.revision, versionId: definition.activeVersion!.id, generationId: payload.storageGeneration,
       recordRevision: anchor.revision, extensionRevision: extension?.revision ?? null, slotRevision: slot?.revision ?? null, valueRevision: slot?.activeValue?.revision ?? null,
       state: slot?.activeValue ? "set" as const : "missing" as const, value };
@@ -117,15 +118,15 @@ export async function readCurrentFieldValue(authenticated: Session, input: unkno
 export async function readFieldValueHistory(authenticated: Session, input: unknown) {
   const request = historyRequest.parse(input);
   return withFieldRuntimeAuthority(authenticated, async authority => {
-    const { definition, payload, anchor, extension } = await readFieldContextInTransaction(authority, request, true), tx = authority.transaction;
+    const { definition, payload, anchor, extension } = await readVersionedFieldHistoryContextInTransaction(authority, request), tx = authority.transaction;
     const generation = await tx.studioFieldGeneration.findFirst({ where: { id: request.generationId, organisationId: authority.session.organisationId, definitionId: definition.id, entityId: payload.entity.id, binding: { fieldKey: payload.field.key } }, include: { originVersion: true } });
     if (!generation) unavailable();
-    const origin = await readFieldPlanInTransaction(authority, generation.originVersion, definition.id);
+    const origin = await readVersionedFieldPlanInTransaction(authority, generation.originVersion, definition.id);
     if (origin.storageGeneration !== generation.id || origin.field.key !== payload.field.key || origin.entity.id !== payload.entity.id) corrupt();
     const slot = extension && await tx.studioFieldSlot.findFirst({ where: { organisationId: authority.session.organisationId, extensionId: extension.id, definitionId: definition.id, generationId: generation.id } });
     const rows = slot ? await tx.studioFieldValue.findMany({ where: { organisationId: authority.session.organisationId, definitionId: definition.id, generationId: generation.id, slotId: slot.id, ...(request.beforeRevision === undefined ? {} : { revision: { lt: request.beforeRevision } }) }, orderBy: { revision: "desc" }, take: request.limit + 1, include: { schemaVersion: true } }) : [];
     const checked = [];
-    for (const row of rows) checked.push({ id: row.id, revision: row.revision, versionId: row.versionId, createdAt: row.createdAt.toISOString(), value: await readFieldValueInTransaction(authority, payload, definition.id, generation.id, slot!.id, request.recordId, row) });
+    for (const row of rows) checked.push({ id: row.id, revision: row.revision, versionId: row.versionId, createdAt: row.createdAt.toISOString(), value: await readVersionedFieldValueInTransaction(authority, payload, definition.id, generation.id, slot!.id, request.recordId, row) });
     const items = checked.slice(0, request.limit);
     return { definitionId: definition.id, generationId: generation.id, recordRevision: anchor.revision, retired: definition.retiredAt !== null,
       currentGeneration: generation.id === payload.storageGeneration, items, nextBeforeRevision: checked.length > request.limit ? items.at(-1)!.revision : null };

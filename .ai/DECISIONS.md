@@ -1,3 +1,16 @@
+## 11 October 2026 — Dashboard design and exploration are separate
+
+Michael explicitly wants stylish, dynamic dashboards that are easy to build.
+Use Data/Design/Focus inspector sections, disclosed filters, coordinated widget
+looks/layouts and a compact viewing toolbar. Reuse source-owned measures and the
+authorised Reports datasets; do not add another data store or global query layer.
+Click-to-focus, chart/value switching and expanded exploration stay transient,
+including for readers. Saved category selections and positive gauge references
+are validated widget settings; personal references never update company Goals.
+Use complete aggregates/weighted calculations and reject overlapping distinct
+subset totals. Existing central owner/tenant/revision saves and source permissions
+remain authoritative. No new grants, migration or sharing boundary.
+
 ## 11 October 2026 — own native SQL receipts; validate at complete mutation boundary
 
 Use private same-transaction native scopes and actual INSERT/CAS/parent/case-child

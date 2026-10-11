@@ -1,3 +1,35 @@
+## 11 October 2026 — Dynamic Dashboard canvas implemented; live acceptance next
+
+Scoped from exact observed live ad9d5a430e2b92e6b08448a45d11f694f5ce2066 on
+codex/dynamic-dashboards-20261011; preserves all accepted owning sources. Gallery
+illustration, compact view/filter shelf, Data/Design/Focus inspector, coordinated
+Atlas blue/Botanical/Prism/After hours looks and three undoable layouts. Starters
+use deliberate colour/height/tone and mixed-currency pipeline tables. Existing
+saved boards retain their own layout. Added bounded saved multi-category choices
+and personal gauge targets; averages/extrema/distinct/currency/complete-target
+calculations retain their semantics. Measure period is now in undo/dirty history.
+Chart focus/value toggles and native expanded chart/aggregate-values/type controls
+remain transient, including for readers. Escape/backdrop/close restore opener focus.
+Responsive title/controls and chart tables corrected through actual visual QA;
+phone explorer shows both category and value. Gradient time plots have axes and
+keyboard-accessible points. Styling no longer refetches source record queries.
+
+Paths: modules/analytics definition/appearance/templates/components, Dashboard
+and People acceptance selectors, chart/workspace/schema regressions. No schema
+migration, grants, raw-row browser/local cache or local business database. Native
+source authority and central personal owner/tenant/revision saves unchanged.
+Analytics/design/decisions guides reconciled; full source brief remains partial.
+
+Checks: 8 focused suites/52 assertions, strict TypeScript, scoped lint (zero errors
+or warnings), production build and diff whitespace PASS on the finished source.
+Playwright synthetic preview interactions and gallery/canvas/inspector/explorer at
+1440/768/390/320 PASS; final phone title/centered modal/opener focus/table values
+PASS with zero page errors. Screenshots visually inspected; local logs and images
+/tmp/atlas-dynamic-*. Full repository suite not run. Next: commit reviewed source,
+Shared-main Settings documentation from 5297d519 reconciled without runtime
+changes; all distinct Studio checkpoints retained. Next original pinned Dashboard candidate AND
+public release acceptance under both locks. No live activation claimed yet.
+
 ## 11 October — native release84f64da FAILED safely before activation
 
 Clean reviewed checkpoint84f64da8 created after local57/4/final types/lint/build/
@@ -2625,7 +2657,6 @@ candidate/public release. Phase2 gate remains IN PROGRESS, c1 not VERIFIED live.
 
 # Atlas current state
 
-## 10 October 2026 — Company Settings and access profiles deployed and verified
 ## 10 October 2026 — continuous Phase2 implementation: f4c1 IN PROGRESS
 
 Michael explicitly requires continued ordered implementation through all phases.
@@ -12179,8 +12210,8 @@ and decisions reconciled. Supply gate extended with actual kiln/forecast Test UI
 and command checks plus three-width screenshots; existing fixture cleanup kept.
 
 Preserved accepted live ad9d5a4 with company Settings evidence in merge 923deeb.
-Public release moved to 50b3915 during work; that exact Dashboard source must be
-merged before activation. Initial Prisma generation/validation, strict TypeScript,
+Public release moved to 50b3915 during work; its exact accepted Dashboard
+source and contributor evidence are now merged, preserving Settings evidence. Initial Prisma generation/validation, strict TypeScript,
 scoped lint and production build passed before latest edits. Updated 7-file/57-test
 MRP/recipe/kiln/stock suite passed after fixing the legacy MRP definition mock to
 exercise the tenant-bound shared timing source. Eight-file/65-test focused suite, strict TypeScript, Prisma schema validation

@@ -177,3 +177,15 @@ all drawer widths use a list/detail Back flow, with Escape and focus restoration
 Drawers are at most560px wide, animate entry/exit over240ms and honor reduced
 motion. The shade is light and unblurred so the current workspace remains visible.
 Dashboard and Settings keep their existing page/menu destinations.
+
+
+## 11 October 2026 — Dashboard canvas and exploration
+
+Dashboards uses the shared Nunito/Atlas shell with a decorative gallery canvas,
+compact period/filter shelf, spacious chart cards and a three-section inspector
+(Data, Design, Focus). Four coordinated themes and three layout presets apply to
+existing widgets and support undo. Keep advanced record filters disclosed and
+view mode uncluttered. A centered native chart explorer has chart/aggregate-value
+views, keyboard dismissal and focus restoration. Phone headers stack controls
+below the complete board title; all supported viewports keep overflow within chart
+panels. Inspect geometry and text wrapping visually, not only scroll widths.

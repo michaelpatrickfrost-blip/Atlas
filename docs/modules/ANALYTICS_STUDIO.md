@@ -1,6 +1,6 @@
 # Atlas Dashboards
 
-9 October 2026. The complete [Analytics source requirements](ANALYTICS_SOURCE_REQUIREMENTS.md)
+11 October 2026. The complete [Analytics source requirements](ANALYTICS_SOURCE_REQUIREMENTS.md)
 remain the long-term target; [coverage](ANALYTICS_COVERAGE.md) is not a declaration
 that all 195 sections are accepted. This document describes the implemented workspace.
 
@@ -12,11 +12,11 @@ Analytics remains an entitled/enabled module with its original read/manage
 capabilities; navigation relocation grants no licence or data access. The Admin
 console remains separate. Reports at `/reports` owns filtered detailed Excel exports.
 
-The logo-based pale-blue/white gallery offers personal boards, a blank canvas and
+The pale-blue/white gallery uses a decorative canvas illustration and offers personal boards, a blank canvas and
 Whole business, Commercial, Operations and People starters. Visual previews depict
 chart shapes, not invented live business figures. The editor has a searchable,
 app-filtered library and a widget inspector beside the canvas on desktop and above
-it on smaller screens. View mode hides editing controls. A public
+it on smaller screens. The inspector groups Data, Design and Focus separately; record filters are disclosed when needed. View mode hides editing controls. A public
 `/analytics-preview` uses synthetic curated measures without tenant reads or saves.
 
 Up to 24 widgets support number, bars, split, columns, line, area, donut, pie, gauge,
@@ -24,7 +24,27 @@ funnel and grouped table views. Configure title, category focus, value threshold
 sort, displayed group limit, 4/6/8/12-column width, compact/standard/tall height,
 colour, white/soft-blue/midnight tone and borderless style. Reorder by desktop drag
 or accessible earlier/later buttons; duplicate, remove and undo/redo 30 changes.
-Number widgets use all matching groups, not a truncated top-eight display.
+Number widgets and target gauges use all matching groups, not a truncated top-eight display.
+
+Atlas blue, Botanical, Prism and After hours apply coordinated colours/card tones
+in one undoable action. Balanced pairs, Hero + supporting and Compact grid arrange
+existing widgets; individual sizes/styles remain editable. Themes/layouts change
+only existing widget settings, with no separate appearance store. Starters use
+smaller number/distribution/gauge/table cards and a dark number card; mixed-currency
+pipeline starts as a table. Existing saved boards retain their chosen appearance.
+
+Chart clicks and the values toggle explore aggregates in transient page state,
+including for readers, without dirtying or saving the board. Expand opens a native
+modal with chart/values/type controls and Escape/focus restoration. Exploration
+stays within the saved group/value selection and resets when the source query or
+period changes. The expanded table shows aggregate groups, never raw transactions.
+Focus settings may save up to 50 exact category labels; no selection means all.
+An optional positive gauge target is a personal visual reference in the measure's
+unit, not a company Goal. Progress above 100% remains labelled above target while
+the arc clamps at 100%. Filtered distinct totals still reject overlapping groups;
+unfiltered gauges may use the exact server-provided distinct total. Weighted
+averages/extrema retain their calculation. Line/area charts use readable axes,
+gradient fills and keyboard-accessible points; dark cards use lighter chart colours.
 
 ## Flexible data
 
@@ -73,7 +93,7 @@ New boards/copies use unique-name creation. No sharing grants are introduced.
 
 Save stores the measure period, record filters and refresh preference (manual,
 15/30/60/120 seconds). Changing period retains the unsaved canvas. Failed saves
-retain edits; editing is disabled during save. Undo covers canvas/settings; internal
+retain edits; editing is disabled during save. Undo covers canvas/settings, including the measure period; internal
 board navigation asks before discarding edits and browser unload warns. Unsaved
 work is in page memory only and does not survive reload. No automatic persistent
 local cache or local business database is created.
@@ -90,7 +110,7 @@ Focused query, persistence, UI, catalogue/private-project, CRM, Reports, Message
 and Admin regressions, TypeScript, lint and production build are required. The
 opt-in `scripts/check-dashboards.ts` exercises central Guardian QA personal board
 creation/rename/reload, record configuration/currency guard, duplicate/undo/redo,
-monitor and three viewports; it deletes only its synthetic personal boards afterward.
+monitor, persisted groups/target/theme, expanded values/Escape and three viewports; it deletes only its synthetic personal boards afterward.
 Candidate and public deployment status is recorded in `.ai/CURRENT_STATE.md`.
 
 The broader source brief still includes future governed relationships/calculated

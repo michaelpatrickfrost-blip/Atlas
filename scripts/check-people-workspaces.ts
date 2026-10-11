@@ -63,6 +63,7 @@ async function main() {
     await widgetLibrary.getByRole("button",{name:"Business measures",exact:true}).click();
     await widgetLibrary.getByLabel("Search widget data",{exact:true}).fill("Scorecard attainment");
     await widgetLibrary.getByRole("button",{name:/Scorecard attainment/}).click();
+    await page.getByRole("button",{name:"Design",exact:true}).click();
     await page.getByRole("button",{name:"Table visual",exact:true}).click();
     await page.getByRole("button",{name:"Save",exact:true}).click();await expect.poll(()=>db.dashboard.count({where:{organisationId:company.id,userId:manager.user.id,name:"Analytics · People performance"}})).toBe(1);const dashboard=await db.dashboard.findFirstOrThrow({where:{organisationId:company.id,name:"Analytics · People performance"}});await expect(page).toHaveURL(new RegExp(`dashboard=${dashboard.id}`));await page.reload({waitUntil:"networkidle"});await expect(page.getByRole("heading",{name:"Scorecard attainment",exact:true})).toBeVisible();await expect(page.getByText("Operations strategy",{exact:true})).toBeVisible();assert(dashboard.widgets.some(widget=>widget.includes("kpis.attainment")));await expect(page.getByRole("cell",{name:"90%",exact:true})).toBeVisible();await db.kpi.update({where:{id:goal.id},data:{current:95}});await page.reload({waitUntil:"networkidle"});await expect(page.getByRole("cell",{name:"95%",exact:true})).toBeVisible();
 

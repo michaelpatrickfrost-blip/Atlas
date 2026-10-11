@@ -57,6 +57,7 @@ model Organisation {
   manufacturingPlanningRuns ManufacturingPlanningRun[]
   manufacturingSupplySuggestions ManufacturingSupplySuggestion[]
   manufacturingShifts ManufacturingShift[]
+  manufacturingDowntime ManufacturingDowntime[]
   manufacturingDemandForecasts ManufacturingDemandForecast[]
   schedulingHoursBudgets SchedulingHoursBudget[]
   schedulingWorkTypes SchedulingWorkType[]
@@ -1130,6 +1131,12 @@ model ProductOperation {
  position Int @default(0)
  setupMinutes Decimal @db.Decimal(18,6) @default(0)
  runMinutesPerUnit Decimal @db.Decimal(18,6) @default(0)
+ timingMode String @default("PER_UNIT")
+ batchCapacity Decimal @db.Decimal(18,6) @default(1)
+ cycleMinutes Decimal @db.Decimal(18,6) @default(0)
+ coolingMinutes Decimal @db.Decimal(18,6) @default(0)
+ waitMinutes Decimal @db.Decimal(18,6) @default(0)
+ eligibleResourceIds String[] @default([])
  crewSize Decimal @db.Decimal(8,2) @default(1)
  machineMinorPerHour Int @default(0)
  labourMinorPerHour Int @default(0)
@@ -3783,6 +3790,9 @@ model ManufacturingResource {
  nominalUnitsPerHour Decimal? @db.Decimal(18,6)
  planningEfficiencyPercent Decimal @db.Decimal(8,4) @default(100)
  active Boolean @default(true)
+ processKind String @default("GENERAL")
+ calendarMode String @default("CONTINUOUS")
+ timezone String @default("Europe/London")
  createdAt DateTime @default(now())
  updatedAt DateTime @updatedAt
  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
@@ -3790,8 +3800,27 @@ model ManufacturingResource {
  workOrders ManufacturingWorkOrder[]
  recipeSteps ProductOperation[]
  shifts ManufacturingShift[]
+ downtime ManufacturingDowntime[]
+ @@unique([id,organisationId])
  @@index([organisationId,workCentreId,active])
  @@map("manufacturing_resources")
+}
+
+// Planner-entered maintenance/holiday exclusions; central, tenant-bound records.
+model ManufacturingDowntime {
+ id String @id @default(cuid())
+ organisationId String
+ resourceId String
+ startsAt DateTime
+ endsAt DateTime
+ reason String
+ active Boolean @default(true)
+ createdByUserId String
+ createdAt DateTime @default(now())
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ resource ManufacturingResource @relation(fields:[resourceId,organisationId],references:[id,organisationId],onDelete:Cascade)
+ @@index([organisationId,resourceId,active,startsAt],map:"manufacturing_downtime_org_resource_active_start_idx")
+ @@map("manufacturing_downtime")
 }
 
 // §25-27: a real (if simple) working-hours calendar — man-hours and times a
@@ -3899,6 +3928,9 @@ model ManufacturingWorkOrder {
   plannedMinutes Int @default(0)
   setupMinutes Int @default(0)
   runMinutes Int @default(0)
+  timingMode String @default("PER_UNIT")
+  waitMinutes Int @default(0)
+  eligibleResourceIds String[] @default([])
   // §20 plan-vs-actual: elapsed clock time between actualStart and actualEnd,
   // written when the step completes.
   actualMinutes Int @default(0)

@@ -86,7 +86,7 @@ export function SchedulerBoard({ rows, unassigned, windowStart, windowDays, edit
     const { bar, newStart, resourceId, workCentreId } = modal;
     startTransition(async () => {
       try {
-        await commitMoveAction(bar.id, newStart.toISOString(), resourceId, workCentreId, force);
+        await commitMoveAction(bar.id, newStart.toISOString(), resourceId, workCentreId, force, modal.impact.previewKey);
         setModal(null);
         router.refresh();
       } catch (e) {
@@ -194,15 +194,11 @@ export function SchedulerBoard({ rows, unassigned, windowStart, windowDays, edit
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
             <h3 className="text-lg font-semibold">Move {modal.bar.orderNumber} — {modal.bar.operationName}</h3>
             <p className="mt-1 text-sm text-[var(--color-ink-muted)]">
-              New start {modal.newStart.toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+              Feasible start {modal.impact.proposedStart.toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
             </p>
 
-            {modal.impact.conflicts.length > 0 && (
-              <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">
-                This overlaps work already booked on that resource.
-                {modal.impact.suggestedStart && <> Next free slot: {new Date(modal.impact.suggestedStart).toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" })}.</>}
-              </p>
-            )}
+            {modal.impact.suggestedStart && <p className="mt-3 rounded-xl bg-blue-50 px-3 py-2 text-sm text-blue-800">The requested slot is unavailable. The preview uses the next feasible start after existing bookings, downtime and closed shifts.</p>}
+            <p className="mt-2 text-xs text-slate-500">Finishes {modal.impact.proposedEnd.toLocaleString("en-GB")}. Cooling and transfer waits are included where configured.</p>
 
             {modal.impact.missesRequiredDate && (
               <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
@@ -221,16 +217,12 @@ export function SchedulerBoard({ rows, unassigned, windowStart, windowDays, edit
             )}
 
             {modal.impact.conflicts.length === 0 && !modal.impact.missesRequiredDate && modal.impact.cascade.length === 0 && (
-              <p className="mt-3 text-sm text-emerald-700">No conflicts. Customer delivery is still achievable.</p>
+              <p className="mt-3 text-sm text-emerald-700">No machine conflicts. Review material readiness before promising delivery.</p>
             )}
 
             <div className="mt-6 flex justify-end gap-2">
               <button type="button" disabled={pending} onClick={() => setModal(null)} className="rounded-full border border-[var(--color-border)] px-4 py-2 text-sm font-semibold">Cancel</button>
-              {modal.impact.conflicts.length > 0 ? (
-                <button type="button" disabled={pending} onClick={() => confirmMove(true)} className="rounded-full bg-rose-600 px-4 py-2 text-sm font-semibold text-white">Force anyway</button>
-              ) : (
-                <button type="button" disabled={pending} onClick={() => confirmMove(false)} className="rounded-full bg-[var(--color-atlas-blue)] px-4 py-2 text-sm font-semibold text-white">Confirm move</button>
-              )}
+              <button type="button" disabled={pending} onClick={() => confirmMove(false)} className="rounded-full bg-[var(--color-atlas-blue)] px-4 py-2 text-sm font-semibold text-white">Confirm feasible move</button>
             </div>
           </div>
         </div>

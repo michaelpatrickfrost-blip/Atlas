@@ -1,6 +1,7 @@
 import { beforeEach, expect, it, vi } from "vitest";
-const state = vi.hoisted(() => ({ saved: { used: 0, made: 0, completed: false }, failMaterial: false, failReceipt: false, unfinished: 0, later: 0, inventoryEnabled: true, conflict: false, provider: {} as Record<string, unknown>, session: { organisationId: "tenant", userId: "operator", capabilities: new Set(["manufacturing.work_order.execute"]) } }));
+const state = vi.hoisted(() => ({ saved: { used: 0, made: 0, completed: false }, fractional: false, failMaterial: false, failReceipt: false, unfinished: 0, later: 0, manufacturingEnabled: true, inventoryEnabled: true, conflict: false, provider: {} as Record<string, unknown>, session: { organisationId: "tenant", userId: "operator", capabilities: new Set(["manufacturing.work_order.execute"]) } }));
 vi.mock("@/core/auth/session", () => ({ requireSession: async () => state.session }));
+vi.mock("@/core/modules/access", () => ({ assertModuleEnabled: async () => { if (!state.manufacturingEnabled) throw new Error("Manufacturing app disabled"); } }));
 vi.mock("@/core/modules/registry", () => ({ getModule: () => ({ stockProvider: state.provider }) }));
 vi.mock("@/core/modules/runtime", () => ({ getEnabledModuleIds: async () => new Set(state.inventoryEnabled ? ["stock"] : []) }));
 vi.mock("@/core/stock/replenishment", () => ({ stockReplenished: vi.fn() }));
@@ -20,7 +21,7 @@ vi.mock("@/core/db/client", () => {
       updateMany: async () => ({ count: 1 }),
     },
     warehouse: { findFirst: async () => ({ id: "warehouse" }), findFirstOrThrow: async () => ({ id: "warehouse" }) },
-    productBomLine: { findMany: async () => [{ id: "first", componentProductId: "first", quantityPerUnit: 1, scrapPercent: 0 }, { id: "second", componentProductId: "second", quantityPerUnit: 1, scrapPercent: 0 }] },
+    productBomLine: { findMany: async () => [{ id: "first", componentProductId: "first", quantityPerUnit: state.fractional ? 0.25 : 1, scrapPercent: 0 }, { id: "second", componentProductId: "second", quantityPerUnit: 1, scrapPercent: 0 }] },
     auditEntry: { create: vi.fn() }, activity: { create: vi.fn() },
   });
   return { db: new Proxy({}, { get(_target, key) {
@@ -30,7 +31,7 @@ vi.mock("@/core/db/client", () => {
 });
 import { completeWorkOrder } from "@/modules/manufacturing/services/commands";
 beforeEach(() => {
-  state.saved = { used: 0, made: 0, completed: false }; state.failMaterial = false; state.failReceipt = false; state.unfinished = 0; state.later = 0; state.inventoryEnabled = true; state.conflict = false;
+  state.saved = { used: 0, made: 0, completed: false }; state.fractional = false; state.failMaterial = false; state.failReceipt = false; state.unfinished = 0; state.later = 0; state.manufacturingEnabled = true; state.inventoryEnabled = true; state.conflict = false;
   state.provider = {
     shipStock: async (_actor: unknown, command: { productId: string; quantity: number }, tx?: { saved: typeof state.saved }) => { if (state.failMaterial && command.productId === "second") throw new Error("Second material is short"); (tx?.saved ?? state.saved).used += command.quantity; },
     receiveStock: async (_actor: unknown, command: { quantity: number }, tx?: { saved: typeof state.saved }) => { if (state.failReceipt) throw new Error("Output receipt refused"); (tx?.saved ?? state.saved).made += command.quantity; },
@@ -76,4 +77,14 @@ it("does not book stock when the Inventory app is disabled", async () => {
 it("completes an intermediate routing step without booking finished goods", async () => {
   state.later = 1; await completeWorkOrder("step", 2, 0, "request");
   expect(state.saved).toEqual({ used: 0, made: 0, completed: true });
+});
+
+it("refuses fractional material consumption without silently rounding stock", async () => {
+  state.fractional = true; await expect(completeWorkOrder("step", 2, 0, "request")).rejects.toThrow("whole number");
+  expect(state.saved).toEqual({ used: 0, made: 0, completed: false });
+});
+
+it("refuses direct completion when Manufacturing is disabled", async () => {
+  state.manufacturingEnabled = false; await expect(completeWorkOrder("step", 2, 0, "request")).rejects.toThrow("disabled");
+  expect(state.saved).toEqual({ used: 0, made: 0, completed: false });
 });

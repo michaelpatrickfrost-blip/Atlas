@@ -61,7 +61,7 @@ export async function backflushOnCompletion(
 
   const lines = order.definitionId ? await db.productBomLine.findMany({ where: { organisationId, definitionId: order.definitionId }, orderBy: { position: "asc" } }) : [];
   for (const line of lines) {
-    const quantity = Math.ceil((good + totalScrap) * Number(line.quantityPerUnit) * (1 + Number(line.scrapPercent) / 100));
+    const quantity = wholeUnits((good + totalScrap) * Number(line.quantityPerUnit) * (1 + Number(line.scrapPercent) / 100), "Component consumption");
     if (quantity <= 0) continue;
     await provider.shipStock(session, {
       requestKey: key("mfg", workOrder.id, requestKey, "use", line.id),

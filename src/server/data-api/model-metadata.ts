@@ -193,6 +193,12 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": true
     },
+    "manufacturingDowntime": {
+      "type": "ManufacturingDowntime",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "manufacturingDemandForecasts": {
       "type": "ManufacturingDemandForecast",
       "list": true,
@@ -4346,6 +4352,42 @@ export const MODEL_FIELDS = {
     "runMinutesPerUnit": {
       "type": "Decimal",
       "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "timingMode": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "batchCapacity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "cycleMinutes": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "coolingMinutes": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "waitMinutes": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "eligibleResourceIds": {
+      "type": "String",
+      "list": true,
       "nullable": false,
       "relation": false
     },
@@ -13405,6 +13447,24 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "processKind": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "calendarMode": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "timezone": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
     "createdAt": {
       "type": "DateTime",
       "list": false,
@@ -13444,6 +13504,80 @@ export const MODEL_FIELDS = {
     "shifts": {
       "type": "ManufacturingShift",
       "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "downtime": {
+      "type": "ManufacturingDowntime",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "ManufacturingDowntime": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "resourceId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "startsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "endsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "reason": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "active": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdByUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "resource": {
+      "type": "ManufacturingResource",
+      "list": false,
       "nullable": false,
       "relation": true
     }
@@ -13786,6 +13920,24 @@ export const MODEL_FIELDS = {
     "runMinutes": {
       "type": "Int",
       "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "timingMode": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "waitMinutes": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "eligibleResourceIds": {
+      "type": "String",
+      "list": true,
       "nullable": false,
       "relation": false
     },
@@ -38051,6 +38203,30 @@ export const MODEL_FIELDS = {
       "type": "Int",
       "list": false,
       "nullable": false,
+      "relation": false
+    },
+    "settlementPin": {
+      "type": "Json",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "settlementChecksum": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "settledBy": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "settledAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
       "relation": false
     },
     "createdBy": {

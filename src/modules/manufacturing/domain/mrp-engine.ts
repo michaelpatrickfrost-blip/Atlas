@@ -1,3 +1,4 @@
+import { operationTime } from "@/modules/products/domain/operation-time";
 import {
   DemandType,
   MaterialReadiness,
@@ -212,7 +213,7 @@ export class MrpEngine {
       }),
       { setup: 0, run: 0, crew: 0 },
     );
-    const spanMinutes = operations.reduce((sum, operation) => sum + operation.durationMinutes, 0);
+    const spanMinutes = operations.reduce((sum, operation) => sum + operation.durationMinutes + (operation.waitMinutes ?? 0), 0);
     const startDate = new Date(requirement.requiredDate.getTime() - spanMinutes * MINUTE_MS);
 
     return {
@@ -235,12 +236,11 @@ export class MrpEngine {
   }
 
   private planOperations(recipe: Recipe, quantity: number): PlannedOperation[] {
-    const batchQuantity = recipe.batchQuantity > 0 ? recipe.batchQuantity : quantity;
-    const batches = Math.max(1, Math.ceil(quantity / batchQuantity));
     let cursor: Date | null = null;
     return recipe.operations.map((operation, index) => {
-      const setupMinutes = batches * operation.setupMinutes;
-      const runMinutes = quantity * operation.runMinutesPerUnit;
+      const timing = operationTime(operation, quantity, recipe.batchQuantity);
+      const setupMinutes = timing.setupMinutes;
+      const runMinutes = timing.runMinutes;
       const durationMinutes = setupMinutes + runMinutes;
       const start = cursor;
       const end = cursor ? new Date(cursor.getTime() + durationMinutes * MINUTE_MS) : null;
@@ -253,7 +253,8 @@ export class MrpEngine {
         workCentreName: operation.workCentreName,
         resourceId: operation.resourceId,
         resourceName: operation.resourceName,
-        batches,
+        batches: timing.batches,
+        waitMinutes: timing.waitMinutes,
         setupMinutes,
         runMinutes,
         durationMinutes,
@@ -333,16 +334,15 @@ export class MrpEngine {
       const child = this.rolledCost(component.componentProductId, needed, 0);
       for (const key of Object.keys(buckets) as CostKind[]) buckets[key] += child.buckets[key];
     }
-    const batchQuantity = recipe.batchQuantity > 0 ? recipe.batchQuantity : quantity;
-    const batches = Math.max(1, Math.ceil(quantity / batchQuantity));
     for (const operation of recipe.operations) {
-      const setupHours = batches * (operation.setupMinutes / 60);
-      const runHours = quantity * (operation.runMinutesPerUnit / 60);
+      const timing = operationTime(operation, quantity, recipe.batchQuantity);
+      const setupHours = timing.setupMinutes / 60;
+      const runHours = timing.runMinutes / 60;
       const span = setupHours + runHours;
       buckets.machine += span * operation.machineMinorPerHour;
       if (!operation.machineIncludesLabour) buckets.labour += operation.crewSize * span * operation.labourMinorPerHour;
       if (!operation.machineIncludesOverhead) buckets.overhead += span * operation.overheadMinorPerHour;
-      buckets.logistics += batches * operation.logisticsMinorPerBatch;
+      buckets.logistics += timing.batches * operation.logisticsMinorPerBatch;
     }
     if (recipe.supply === "SUBCONTRACT") buckets.subcontract += round(recipe.subcontractMinorPerUnit * quantity);
     for (const key of Object.keys(buckets) as CostKind[]) buckets[key] = round(buckets[key]);

@@ -2513,3 +2513,29 @@ explicitly audited support opening. Ordinary Session-only API does not claim dur
 support-principal audit verification or create target affiliations/grants. This
 implements source6.5/24 validity/security requirements without silently changing
 the migration architecture. Local verification only until actual central gates.
+
+## 11 October 2026 — Explicit kiln timing and reviewed finite machine reservations
+
+A product operation chooses per-unit or batch-cycle timing. Full loads, setup,
+cooling occupation and transfer wait use one domain calculation in costing, MRP
+and release. Approved alternatives share that operation's timing; no generic
+machine compatibility or machine-specific cycle parameter is inferred. Plant
+calendars use an explicit timezone and shifts/continuous mode, with audited manual
+downtime. Existing resources default continuous to preserve previous behaviour;
+new UI resources default shifts and must be configured. Release and schedule
+cascades reserve machine spans using serializable central transactions. Reviewed
+fingerprints reject changed sources; force-overlap cannot bypass capacity or
+fixed work. Full material/labour/tool constraints and CTP remain unimplemented.
+
+## 11 October 2026 — Flexible monthly total forecast with explicit consumption
+
+Manual, approved S&OP and expected-usage totals all consume gross monthly Sales
+bookings once, including shipped units. Production demand is outstanding orders
+plus unbooked forecast. Sales-owned requested-date history supports transparent
+backtested baselines and planner choices: last year plus percentage, additive
+quantity, recent averages, saved forecast, fixed targets and individual overrides.
+Assumptions and reviewed values are audited; stale source reviews fail and S&OP
+publications remain owned by S&OP. Missing history stays missing; zero is valid.
+This does not establish an automatic customer promise or advanced probabilistic
+forecast. Existing whole-unit stock execution refuses fractional component use;
+it must not silently round decimal clay material quantities into stock facts.

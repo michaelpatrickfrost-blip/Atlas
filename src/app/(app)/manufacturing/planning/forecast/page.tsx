@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ForecastWorkbench } from "./forecast-workbench";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { MANUFACTURING_CAPABILITIES as C } from "@/core/permissions/capabilities";
@@ -26,14 +27,14 @@ export default async function ForecastPage() {
       <header>
         <h1 className="text-3xl font-semibold tracking-tight">Forecast demand</h1>
         <p className="mt-2 max-w-2xl text-sm text-[var(--color-ink-muted)]">
-          Confirmed sales orders feed MRP automatically. Nothing upstream yet forecasts a quantity of a specific
-          product — CRM opportunities carry a deal value, not a product line — so planners enter an expected monthly
-          quantity here, and MRP treats it as demand alongside confirmed orders.
+          Connect customer bookings, sales history and an agreed monthly forecast. Gross orders consume the forecast once; production plans cover outstanding orders and the remaining unbooked demand. Approved S&OP publications retain their source.
         </p>
         <p className="mt-2 text-xs text-[var(--color-ink-faint)]">
           Expected monthly usage set on a product in Inventory fills any month you have not given a figure here.
         </p>
       </header>
+
+      {session.capabilities.has("sales.order.read") && session.capabilities.has("customers.read") && session.capabilities.has("core.products.read") && <ForecastWorkbench products={products} canManage={canManage} />}
 
       {canManage && (
         <ActionForm action={setForecastAction} className="flex flex-wrap items-end gap-3 rounded-2xl border border-[var(--color-border)] bg-white px-4 py-4">
@@ -73,7 +74,7 @@ export default async function ForecastPage() {
               <span className="text-[var(--color-ink-faint)]">{forecast.productCode}</span> · {whole(forecast.quantity)}
               {forecast.notes ? ` · ${forecast.notes}` : ""} · available {available.get(forecast.productId)?.available.toLocaleString("en-GB") ?? "—"}
             </span>
-            {canManage && (
+            {canManage && !forecast.published && (
               <ActionForm action={deleteForecastAction}>
                 <input type="hidden" name="forecastId" value={forecast.id} />
                 <button type="submit" className="text-xs font-semibold text-rose-600">Remove</button>

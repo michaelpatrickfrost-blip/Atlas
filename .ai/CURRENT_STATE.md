@@ -12154,3 +12154,37 @@ aligned numerals and page fit across 10 routes/3 widths, no browser/asset errors
 external fonts; all writes blocked. Evidence /tmp/atlas-typography-check-FnJiZt.
 Initial standalone checker lacked /etc/atlas/guardian.env; rerun with that existing
 QA configuration passed. No credentials or grants were changed.
+
+## 11 October 2026 — Manufacturing finite kilns and flexible forecasts (in progress)
+
+User requests comprehensive researched clay manufacturing/MRP, machinery and
+eligible kilns, connected Sales/S&OP forecasts and premium workspaces; explicitly
+no Hepworth Clay research. Last-year +10%, additive/subtractive and fixed monthly
+forecasts with individual overrides are included. Scope/research and remaining
+operational gates: docs/plans/MANUFACTURING_KILN_RESEARCH.md. The full 173-section
+brief remains open, particularly decimal stock/units, dated site supply, materials/
+labour/tool constraints, mixed loads/process formulas, traceability and WIP/Finance.
+
+Source checkpoint: operation-time domain shared by recipes/cost/MRP/release;
+additive timing/resource/downtime schema and migration; timezone/overnight/DST
+finite machine calendar engine; approved alternatives; serializable release and
+reviewed atomic schedule cascades with stale/locked/force refusal; seven-day
+machine availability cards; plant/process/downtime configuration; Sales-owned
+history baseline/backtest workbench and assumption/individual forecast review;
+gross-order consumption in both MRP entry points/usage fallback; protected S&OP;
+start precedence/downtime/running-machine guards; fractional backflush refusal.
+Data API metadata/read policy and four new action registrations preserve existing
+allowlist. No local business database or cache created. Module/coverage/deploy
+and decisions reconciled. Supply gate extended with actual kiln/forecast Test UI
+and command checks plus three-width screenshots; existing fixture cleanup kept.
+
+Preserved accepted live ad9d5a4 with company Settings evidence in merge 923deeb.
+Public release moved to 50b3915 during work; that exact Dashboard source must be
+merged before activation. Initial Prisma generation/validation, strict TypeScript,
+scoped lint and production build passed before latest edits. Updated 7-file/57-test
+MRP/recipe/kiln/stock suite passed after fixing the legacy MRP definition mock to
+exercise the tenant-bound shared timing source. Eight-file/65-test focused suite, strict TypeScript, Prisma schema validation
+and scoped lint passed on the then-current source. Final module/start guard and
+cost-label edits require rerun; build and central candidate/public acceptance
+remain pending.
+Deployment is required before completed handoff. No claim of factory readiness.

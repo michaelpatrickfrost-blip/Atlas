@@ -1,6 +1,6 @@
 # Manufacturing & Supply
 
-Research and implementation review: 9 October 2026. Microsoft Dynamics 365 Supply
+Research and implementation review: 11 October 2026. Microsoft Dynamics 365 Supply
 Chain Management is the functional benchmark. The console is a connected entry
 point to Atlas's existing owners and central records. It is not a claim of
 Dynamics parity. The [173-section source](MANUFACTURING_SOURCE_REQUIREMENTS.md)
@@ -61,9 +61,10 @@ The rich material-plan action uses `mrp-calculation.ts` and the recursive domain
 engine. It reads confirmed/on-hold open Sales demand, approved S&OP forecast
 publication, manual forecasts, expected usage, active recipes, usable stock,
 reservations, active quality holds and aggregate existing production supply.
-Published S&OP totals consume gross product/month bookings. Manual forecasts
-consume remaining firm demand in the domain engine; review overlapping forecast
-sources and expected usage before committing supply. Saved suggestions retain
+Manual, published S&OP and expected-usage monthly totals consume gross
+product/month bookings, including shipped/closed quantities. Only outstanding
+orders plus the remaining unbooked forecast enter production demand; review
+missing source dates and overlapping forecast sources before committing supply. Saved suggestions retain
 demand, component shortages, routing operations, planned hours/cost and run ID.
 Only completed runs are presented as the current plan.
 
@@ -76,8 +77,46 @@ returns the original order. Release/execution retains its existing controls.
 The current engine aggregates stock across warehouses and existing production
 supply without full dated receipt/location matching. Planning estimates, rough
 capacity and a machine-overlap check do not establish a guaranteed customer date.
-Full finite materials, labour, tooling, maintenance exclusions, CTP, time fences,
+Machine release and reviewed schedule moves now constrain eligible equipment,
+weekly plant-timezone calendars, open bookings and manual maintenance/downtime
+exclusions. Full finite dated materials, labour, tooling, CTP, time fences,
 alternate sourcing and isolated scenario publication remain target work.
+
+## Kilns, plant and flexible forecasting
+
+See the [primary research and operational gap review](../plans/MANUFACTURING_KILN_RESEARCH.md).
+Plant & kilns configures process areas, batch/continuous kilns, dryers, forming and
+packing. Each machine has a plant timezone and a shift or continuous calendar.
+Existing machines retain continuous operation; new UI entries default to shifts.
+Product operations explicitly define approved machines, per-unit or load/cycle
+work, load size, firing/drying cycle, cooling occupation and transfer wait.
+Partial loads consume full cycles; alternatives share that operation's timings.
+Mixed-product kiln loads and machine-specific alternate timing are still open.
+
+Release reserves the earliest-finishing eligible machine through the complete
+elapsed operation. Batch work is uninterrupted, including cooling; per-unit work
+may span shifts. Downstream moves are previewed against the same finite engine.
+A stale review, displaced fixed operation or forced overlap is rejected, and all
+moved work/parent dates/audit commit atomically. Capacity cards expose seven-day
+calendar, booked, downtime and free machine hours plus existing downtime conflicts.
+Adding downtime leaves existing bookings visible for deliberate replanning.
+Shop-floor start requires the prior operation/wait, a released parent, an available
+machine, no current downtime and no other running work on that equipment.
+
+The Demand intelligence workbench reads Sales-owned requested-demand history,
+shows monthly gross bookings/outstanding units/residual forecast, compares recent
+3/6-month and seasonal baselines on a common rolling holdout, and exposes WAPE,
+signed bias and short/intermittent-history warnings. Select same month last year
+plus 10%, another percentage, added/subtracted quantity, a recent average, saved
+forecast or fixed target. Override individual months and review before saving.
+Zero is valid; missing history is not invented. Saves retain assumptions and
+quantities, reject stale source fingerprints and protect approved S&OP demand.
+Saving does not release production: run MRP and review its Make/Buy proposals.
+
+Whole-unit stock execution remains a blocker for decimal clay quantities and
+conversions. Final component backflush now rejects fractional consumption instead
+of rounding it up. The full 173-section programme remains open; this checkpoint
+is not evidence of a fully configured or production-ready clay factory.
 
 ## Procurement attached to the plan
 

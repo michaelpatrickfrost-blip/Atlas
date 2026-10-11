@@ -1,9 +1,11 @@
-# Manufacturing coverage — 9 October 2026
+# Manufacturing coverage — 11 October 2026
 
 All 173 sections of [the source brief](MANUFACTURING_SOURCE_REQUIREMENTS.md) remain
 in scope. This replaces stale Phase 1-only claims; historical wording is in Git.
 Read [Manufacturing & Supply](MANUFACTURING.md) for the researched benchmark,
 current workflows, ownership and remaining programme. A partial row stays open.
+The [kiln/forecast research checkpoint](../plans/MANUFACTURING_KILN_RESEARCH.md)
+distinguishes implemented machinery constraints from full process manufacturing.
 Current live validation is recorded separately in
 [acceptance](MANUFACTURING_SUPPLY_ACCEPTANCE.md) and `.ai/CURRENT_STATE.md`.
 
@@ -11,11 +13,11 @@ Current live validation is recorded separately in
 | --- | --- | --- |
 | 1–8 | Purpose, workflow, ownership, navigation | Connected Manufacturing & Supply console, demand workbench and role views; business owners/data identities remain separate. Full bidirectional supply genealogy remains partial. |
 | 9–16 | Product/BOM profile and versions | Canonical Product, independent sales eligibility, active recipe versions, multi-level components, make/buy/WIP, yield/scrap/batch and cost estimates. Open: effective alternates, substitution, variants and complete engineering-to-production governance. |
-| 17–20 | Routing/operations/dependencies | Ordered recipe operations with actual work-centre/machine references, release-generated work orders and ordered execution. Open: separate effective routing versions, parallel/overlapping dependencies and alternative routings. |
-| 21–27 | Resources/calendars/capacity | Plant resources and weekly centre/machine shifts with man-hour capacity. Open: capability matching, alternate resources, complete exception calendars and efficiency rules. |
+| 17–20 | Routing/operations/dependencies | Ordered recipe operations with actual work-centre/machine references, shared per-unit/load-cycle/cooling/wait timings, release snapshots and ordered execution. Open: separate effective routing versions, parallel/overlapping dependencies and alternative routings. |
+| 21–27 | Resources/calendars/capacity | Plant/kiln process profiles, approved operation alternatives, machine-timezone weekly/overnight calendars, continuous operation, manual downtime and seven-day machine capacity. Open: generic capability/skill matching, full exception calendars and efficiency rules. |
 | 28 | Bottlenecks | Load/capacity and overlap conflicts exist. Open: complete constraint attribution and optimization. |
-| 29–43 | MPS/MRP/forecasts/pegging/suggestions | Recursive BOM netting, consumed forecasts, usable stock/holds/reservations, batch sizing, saved rich run/pegging/cost/hour output, shortages, atomic Make conversion and Buy-to-Finance draft. Open: MPS period grid, dated site-specific purchase/transfer supply, action-message taxonomy, time fences, CTP and scenario publication. |
-| 44–56 | Finite scheduling/Gantt/cascade/locks | Machine Gantt, conflict/next-slot/cascade preview, force/lock controls, shifts. Open: backward and multi-constraint finite scheduling, setup-family optimization, material/skill/tool gates and fine drag precision. |
+| 29–43 | MPS/MRP/forecasts/pegging/suggestions | Sales-history forecast review (seasonal/recent baselines, holdout error/bias), editable last-year percentage/additive/fixed targets, protected S&OP publications, gross-booking forecast consumption, recursive BOM netting, usable stock/holds/reservations, batch sizing, saved rich run/pegging/cost/hour output, shortages, atomic Make conversion and Buy-to-Finance draft. Open: MPS period grid, dated site-specific purchase/transfer supply, action-message taxonomy, time fences, CTP and scenario publication. |
+| 44–56 | Finite scheduling/Gantt/cascade/locks | Finite eligible-machine release and Gantt moves using shifts/downtime; reviewed atomic cascades, locked work and stale fingerprints; forced overlaps refused. Open: backward and multi-constraint finite scheduling, setup-family optimization, material/skill/tool gates and fine drag precision. |
 | 57–60 | Production orders/lifecycle/readiness | Guarded production lifecycle and release-generated routing work. Open: complete materials/capacity/tool/document readiness review. |
 | 61–65 | Staging/reservation/issues/consumption | Inventory reservation/issue owner contracts and final-operation transactional component backflush exist. Open: complete production-specific stage/pick/actual-issue/overconsumption flow and decimal stock execution. |
 | 66–68 | Work orders/status/concurrency | Work orders, times, good/scrap counts, optimistic version and request keys. Open: broader exception/reversal acceptance. |
@@ -23,7 +25,7 @@ Current live validation is recorded separately in
 | 78–83 | Lots/serials/genealogy/output/put-away | Stock lot/serial foundations, output movements linked to production/work order and shared warehouse. Open: complete component-to-output genealogy and scan-led put-away. |
 | 84–90 | Scrap/yield/rework/co-products/process | Good/scrap capture and recipe yield/scrap calculations. Open: reason taxonomy, rework orders, co/by-product allocation and full batch/formula manufacturing. |
 | 91–94 | Subcontract | Recipe supply/cost concept exists. Open: executable vendor operation, shipped components, receipt and actual allocation. |
-| 95–99 | Quality/maintenance | Quality and Maintenance owners exist; active quality holds reduce usable MRP stock. Open: full production inspection gates, disposition/genealogy and breakdown-calendar replanning. |
+| 95–99 | Quality/maintenance | Quality and Maintenance owners exist; active quality holds reduce usable MRP stock. Manual machine downtime constrains new release/moves and current starts. Open: full production inspection gates, disposition/genealogy and integrated breakdown-calendar replanning. |
 | 100–102 | People/labour/tooling | Crew and estimated labour, shared People/rota and planning teams exist. Open: finite skilled labour, attendance actuals and tool reservations. |
 | 103–108 | Cost/Finance/WIP | Recipe/planned cost estimates; Finance owns purchasing/receiving/posting/matching; new source-currency supplier spend report. Open: approved production cost versions, actual labour/overheads, WIP/variance/COGS and inventory valuation reconciliation. |
 | 109–117 | Sales/CRM/Inventory/Procurement/Logistics/CTP | Canonical demand/products/stock, Sales handoffs, transactional production output and Buy-to-purchase source link. Open: complete dated supply/change/cancellation reconciliation, transfer/subcontract conversion and protected CTP. |

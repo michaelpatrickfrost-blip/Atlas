@@ -52,6 +52,11 @@ synthetic personal boards/chat fixtures are written; underlying source records
 are read-only, explicit exports audited, and fixtures cleaned/retired in finally.
 It keeps the same preparation, backup, compatibility and runtime rollback gates.
 
+The supply acceptance also invokes `scripts/check-manufacturing-kilns.ts` for
+finite release/cascade, tenant-bound downtime, Sales seasonal history, flexible
+forecast UI saving and plant/schedule/forecast/recipe at three viewport widths.
+It runs inside the same backed-up central Test fixture and retirement boundary.
+
 For the Manufacturing & Supply console, use `ATLAS_RELEASE_ACCEPTANCE=supply`
 with the pinned scoped branch. Its existing central Test checker runs against the
 sealed smoke candidate and publicly before completion, under this same lock pair.

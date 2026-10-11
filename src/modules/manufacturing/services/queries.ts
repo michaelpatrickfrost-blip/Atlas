@@ -5,6 +5,19 @@ import { getModule } from "@/core/modules/registry";
 import { OPEN_PRODUCTION_ORDER_STATUSES } from "../domain/lifecycle";
 import { manHoursInWindow } from "../domain/calendar";
 import { optionalStore } from "./optional";
+import { loadFiniteResources } from "./finite-data";
+import { finiteCapacity } from "../domain/finite-scheduling";
+
+export async function machineCapacity(organisationId: string) {
+  const start = new Date(), end = new Date(start.getTime() + 7 * 86_400_000);
+  return db.$transaction(async (tx) => {
+    const resources = await loadFiniteResources(tx, organisationId);
+    return resources.map((r) => {
+      try { return { id: r.id, name: r.name, timezone: r.timezone, calendarMode: r.calendarMode, ...finiteCapacity(r, start, end), error: null }; }
+      catch (error) { return { id: r.id, name: r.name, timezone: r.timezone, calendarMode: r.calendarMode, calendarHours: 0, downtimeHours: 0, bookedHours: 0, freeHours: 0, conflicts: 0, error: error instanceof Error ? error.message : "Review this machine calendar." }; }
+    });
+  }, { isolationLevel: "RepeatableRead", timeout: 20000 });
+}
 
 /** §7: Manufacturing Today — the production command centre. */
 export async function todayBoard(organisationId: string) {
@@ -188,7 +201,7 @@ export async function scheduleByWorkCentre(organisationId: string) {
  * with everything a planner needs to judge a move: BOM material readiness
  * (via the same `StockProvider` contract MRP uses — §113, never Stock tables
  * directly), the customer this protects, and whether it's locked (§54). */
-export async function schedulerBoard(organisationId: string, windowDays = 14) {
+export async function schedulerBoard(organisationId: string, windowDays = 14, canSeeSales = false) {
   const now = new Date();
   const windowEnd = new Date(now.getTime() + windowDays * 86_400_000);
 
@@ -238,8 +251,8 @@ export async function schedulerBoard(organisationId: string, windowDays = 14) {
     resourceId: w.resourceId,
     workCentreId: w.workCentreId,
     requiredDate: w.productionOrder.requiredDate,
-    customer: w.productionOrder.sourceSalesOrderLine?.order.party.name ?? null,
-    salesOrderReference: w.productionOrder.sourceSalesOrderLine?.order.reference ?? null,
+    customer: canSeeSales ? w.productionOrder.sourceSalesOrderLine?.order.party.name ?? null : null,
+    salesOrderReference: canSeeSales ? w.productionOrder.sourceSalesOrderLine?.order.reference ?? null : null,
     materialShort: materialFlags.get(w.productionOrder.id) ?? false,
   });
 

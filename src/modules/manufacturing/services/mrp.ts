@@ -9,7 +9,7 @@ import { MANUFACTURING_CAPABILITIES as C } from "@/core/permissions/capabilities
 import { getModule } from "@/core/modules/registry";
 import { OPEN_PRODUCTION_ORDER_STATUSES } from "../domain/lifecycle";
 import { nextOrderNumber } from "./numbers";
-import { totalLeadTimeMinutes } from "../domain/scheduling";
+import { operationTime } from "@/modules/products/domain/operation-time";
 import { readAvailability } from "@/modules/stock/services/availability";
 import { readSuggestionDetail } from "./mrp-queries";
 
@@ -83,7 +83,7 @@ export async function runMrp() {
   for (const row of manufacturableForecast) {
     const key = row.productId;
     const entry = byProduct.get(key) ?? { productId: key, pegs: [], demandQuantity: 0, definitionId: row.product.definitions[0].id, earliestDemand: null };
-    const quantity = row.sourceSopVersionId ? Math.max(0, Number(row.quantity) - (bookedByMonth.get(`${key}|${row.periodStart.toISOString().slice(0, 7)}`) ?? 0)) : Number(row.quantity);
+    const quantity = Math.max(0, Number(row.quantity) - (bookedByMonth.get(`${key}|${row.periodStart.toISOString().slice(0, 7)}`) ?? 0));
     if (quantity <= 0) continue;
     entry.demandQuantity += quantity;
     entry.pegs.push({ sourceType: "FORECAST", sourceId: row.id, label: `Forecast · ${row.periodStart.toLocaleDateString("en-GB", { month: "short", year: "numeric" })}`, quantity });
@@ -113,7 +113,7 @@ export async function runMrp() {
     const net = entry.demandQuantity - free - supply;
     if (net <= 0) continue;
     const neededBy = entry.earliestDemand;
-    const startBy = await suggestedStartDate(entry.definitionId, net, neededBy);
+    const startBy = await suggestedStartDate(organisationId, entry.definitionId, net, neededBy);
     await db.manufacturingSupplySuggestion.create({
       data: {
         organisationId,
@@ -138,11 +138,14 @@ export async function runMrp() {
  * product's actual manufacturing lead time, computed from its live routing at
  * the suggested quantity (not a separate static lead-time field that could
  * silently drift from the real routing). */
-async function suggestedStartDate(definitionId: string, quantity: number, neededBy: Date | null): Promise<Date | null> {
+async function suggestedStartDate(organisationId: string, definitionId: string, quantity: number, neededBy: Date | null): Promise<Date | null> {
   if (!neededBy) return null;
-  const operations = await db.productOperation.findMany({ where: { definitionId } });
-  if (!operations.length) return neededBy;
-  const leadMinutes = totalLeadTimeMinutes(operations.map((op) => ({ setupMinutes: Number(op.setupMinutes), runMinutesPerUnit: Number(op.runMinutesPerUnit) })), quantity);
+  const definition = await db.productDefinition.findFirst({ where: { id: definitionId, organisationId }, include: { operations: true } });
+  if (!definition) throw new Error("This planning recipe is unavailable in this company.");
+  const leadMinutes = definition.operations.reduce((sum, op) => {
+    const timing = operationTime({ setupMinutes: Number(op.setupMinutes), runMinutesPerUnit: Number(op.runMinutesPerUnit), timingMode: op.timingMode, batchCapacity: Number(op.batchCapacity), cycleMinutes: Number(op.cycleMinutes), coolingMinutes: Number(op.coolingMinutes), waitMinutes: Number(op.waitMinutes) }, quantity, Number(definition.batchQuantity));
+    return sum + timing.durationMinutes + timing.waitMinutes;
+  }, 0);
   return new Date(neededBy.getTime() - leadMinutes * 60_000);
 }
 

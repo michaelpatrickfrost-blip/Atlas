@@ -13086,3 +13086,23 @@ yet. Unit/decimal work still needs final diff/security/replay review, central
 compatibility and live workflow evidence. Partial reports, actual lot-allocation
 history, mixed loads and Finance-owned WIP remain unimplemented at this checkpoint.
 See the current dated entry at the top for final status; this is not a finished handoff.
+## 11 October — immutable field-default compatibility bridge source checkpoint
+
+Integrated feature06cb19a9/e37bd2e4 and defaults acceptance40b9bf77; root17 tests/
+2 suites PASS41541, standalone38580/scopedlint55661 exit0, bash syntax/diff PASS.
+Actual candidate and rollback probe their own parsers/loaders. First bridge probes
+the predecessor's strict field schema before importing absent new receipt modules;
+unsupported defaults produce an empty immutable feature set, not a probe crash.
+Release-bound .studio-runtime-features.json is written once before sealing; new
+default-bearing publication/activation closed until both accepted readers support
+it. Readers remain available on rollback. Original locks/backups/ancestry/gates
+retained. Actual defaults checker wired immediately after typed forms; disabled
+bridge reports DEFERRED before fixture writes, never a default-runtime PASS.
+Source implementation only: candidate/public browser and SQL checks still pending.
+Fresh SSH: current/control/HTTPS c385a2be2302a514e4b84e33198926cbf149bbf5,
+rollback5b6390c874b42571f091a53b1b017aea70121df7; original locks no longer held.
+Reconcile that accepted newer source before the pinned integrated build/deployment.
+No new dumps/local business DB/dependency copies. Full Phase2/visual editor unfinished.
+Exact next: merge acceptedc385, refresh Prisma, integrated build; original locked
+candidate/public typed-form bridge; then defaults/search gates and2C/D/E runtime.
+

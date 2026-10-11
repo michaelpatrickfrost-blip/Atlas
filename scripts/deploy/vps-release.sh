@@ -89,6 +89,7 @@ fi
 [[ "$(cat "$CANDIDATE/.atlas-ready")" = "$REV" ]] || exit 1
 [[ -s "$CANDIDATE/.next/BUILD_ID" && -f "$CANDIDATE/.next/server/app-paths-manifest.json" ]] || { echo 'Candidate build outputs are incomplete; running release unchanged.' >&2; exit 1; }
 [[ ! -w "$CANDIDATE/.next/server/app-paths-manifest.json" ]] || { echo 'Candidate code is not immutable.' >&2; exit 1; }
+(cd "$CANDIDATE" && node --import tsx scripts/studio/runtime-feature-probe.ts "$CANDIDATE" "$PREVIOUS" "$REV")
 
 PROBE_PID=''; SWITCHED=0; TIMER_WAS_ACTIVE=0
 healthy() { curl --max-time 2 -fsS "http://127.0.0.1:$1/login" -o /dev/null 2>/dev/null; }

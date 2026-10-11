@@ -386,6 +386,18 @@ business database or new permission system. Default/People/Supply selectors reta
 their behavior. Candidate/public evidence stays private in reported /tmp paths.
 A partial checkpoint acceptance is not the full Phase 2 gate or visual builder.
 
+Literal Studio field defaults use immutable `.studio-runtime-features.json`
+evidence prepared before sealing by the original build pipeline. The candidate
+and actual proposed rollback are probed through their own source parsers and tsx
+loaders. The first bridge retains default authoring disabled when the predecessor
+cannot read the payload/receipt extension. A subsequent compatible candidate and
+accepted bridge enable it; server publication and activation enforce this evidence.
+The original activation pipeline rechecks the exact sealed pair before smoke.
+Do not write the marker manually, bypass readiness with an environment flag, or
+replace the original release locks. The default checker reports DEFERRED before
+fixture writes on the first bridge; only the later actual candidate and public
+checks establish default runtime acceptance. Existing backup requirements remain.
+
 
 The combined Studio acceptance also preserves and exercises the accepted Company
 Settings/profile workflow through its checked-in native checker, with a separate

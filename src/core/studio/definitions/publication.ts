@@ -8,6 +8,7 @@ import { bindPublishedField } from "../fields/binding";
 import type { compileConditionalCustomField } from "../fields/conditional-compiler";
 import type { VersionedFieldPayload } from "../fields/required-contract";
 import { lockFieldEntitiesInTransaction } from "../fields/entity-lock";
+import { assertStudioRuntimeFeatureEnabled, studioRuntimeFeaturesForPayload } from "../runtime-features";
 
 export type PublicationDraft = Prisma.StudioDraftGetPayload<{ include: { definition: true; baseVersion: { select: { version: true } } } }>;
 export type CompiledDefinition = Awaited<ReturnType<typeof compileDefinition>>;
@@ -29,6 +30,7 @@ export async function publishCompiledDefinitionInTransaction(tx: Prisma.Transact
   if (draft.organisationId !== session.organisationId || draft.definition.organisationId !== session.organisationId
     || draft.definitionId !== draft.definition.id || draft.revision !== expectedRevision || draft.definition.kind !== compiled.plan.kind
     || draft.definition.latestVersion !== (draft.baseVersion?.version ?? 0)) conflict();
+  for (const feature of studioRuntimeFeaturesForPayload(compiled.plan.kind, compiled.plan.payload)) assertStudioRuntimeFeatureEnabled(feature);
   const definitionId = draft.definitionId;
   const modules = [...new Set(compiled.plan.dependencies.map(d => d.ownerModuleId))];
   const available = await tx.moduleState.count({ where: { organisationId: session.organisationId, moduleId: { in: modules }, enabled: true, entitled: true } });

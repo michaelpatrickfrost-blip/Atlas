@@ -76,6 +76,15 @@ source coverage, phase plan and this ledger. No rewritten specification.
 
 # Current Workstream Detail
 
+Runtime feature bridge IMPLEMENTED: exact sealed release/rollback pair parser
+evidence, new-default publication+activation fail closed, original deployment gates.
+First legacy parser checked before optional newer module imports. Actual defaults
+checker integrated after native forms; first bridge DEFERRED before fixtures;
+later compatible pair must prove actual UI/native/receipt/SQL/replay behaviour.
+17/2 tests PASS41541, types38580/lint55661 exit0, syntax/diff PASS. No new central
+execution/build/public proof yet. Accepted livec385/rollback5b freshly confirmed;
+merge accepted source then integrated production build and locked bridge release.
+
 2C1 IMPLEMENTED/pure11 tests; root2C1+2C2a pin metadata32/2 PASS, types/lint PASS.
 New additive ConfigurationDependency model/050000 SQL source reviewed, no central
 DDL yet: original lock safety stopped BEGIN/ROLLBACK attempt before executing SQL.

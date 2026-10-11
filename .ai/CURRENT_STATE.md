@@ -12542,3 +12542,52 @@ Compact mobile footer/active-floor layout local production build, sequential str
 TypeScript, scoped ESLint and whitespace PASS. Engine remains at the 116-test
 checkpoint; final browser gate covers the changed UI and running job. Public preflight
 f8364d5; exact pinned retry uses the same protected central release process.
+
+## 11 October 2026 — Live finite kilns, flexible forecasting and mobile execution
+
+Final runtime b6610512138ba40e16a294fd4e296016d75d03b5 is active at
+https://atlassystem.online; public release endpoint and /opt/atlas-current both
+confirm that exact revision. Previous immutable f8364d5 remains available. Central
+20261011120000_manufacturing_finite_kilns migration confirmed applied; no local
+business database, secret/profile rewrite or production customer fixture created.
+
+Release backup: atlas-pre-deploy-20261011-165006. Candidate fixture backup:
+atlas-pre-supply-candidate-20261011-165141; evidence /tmp/atlas-supply-candidate-binGtS.
+Public fixture backup: atlas-pre-supply-public-20261011-165249; evidence
+/tmp/atlas-supply-public-JYtKfY. Both exact candidate and public backed-up supply
+gates PASS. Actual Make/Buy/Finance values, future MRP firming/release, full kiln
+loads/cooling/eligible alternatives/shifts/downtime/wait, locked/stale/foreign/wrong-
+machine/closed-parent refusals, atomic cascade, legacy execution/pause/resume/
+next-ready, final stock and replay, 24-month Sales backtest, +10% +5/fixed/individual
+forecast controls and central save, actual new recipe version and released-version
+preservation PASS. Plant/Schedule/Forecast/active Shop Floor/active routing editor
+fit 1448/820/390 widths without root overflow; mobile save footer under 140px.
+Zero browser exceptions; reports/guides also PASS. Test companies suspended, fixture
+sessions revoked, audited history retained and original QA identity/permissions
+unchanged. Synthetic screenshot visual review: desktop plant/routing/schedule/
+forecast, tablet forecast, phone active floor/compact routing/configuration.
+
+Latest production build, separate post-build strict TypeScript, scoped ESLint and
+whitespace PASS. Domain/owner regression checkpoint: 16 files/116 tests PASS after
+lifecycle/timezone/source-guard work; final UI-only changes verified by the extended
+candidate/public browser gates. Full suite not rerun; historical unrelated failures
+are not presented as passing. Inactive runtime pruning safely deferred at its lock
+guard; active/previous runtimes and backup evidence preserved.
+
+Relevant source: products operation-time/recipe editor/product view; manufacturing
+finite scheduling/data, release/execution/stock, plant/downtime, schedule and forecast
+services/screens; Sales planning provider; additive Prisma schema/migration and data
+API registry/policy. Research, module guide, full coverage and acceptance reconciled.
+All accepted company/Dashboard evidence merged from main; no new unrelated app
+source imported. Final evidence handoff changes documentation only, so its Git SHA
+will differ from the byte-identical accepted runtime. Push reviewed implementation
+and memory to origin/main and scoped branch; preserve the dirty Desktop checkout.
+
+Full process-manufacturing readiness remains OPEN: decimal material/stock/Sales and
+unit conversion, dated site supply/material availability, mixed kiln loads/formula/
+moisture/shrinkage/co-products, production picks/actual issues/partial/reversals,
+lot genealogy/quality gates, skilled labour/tool/energy constraints and protected
+CTP, actual WIP/variance/valuation, telemetry, plant configuration and scale/restore
+acceptance. Detailed programme: docs/plans/MANUFACTURING_KILN_RESEARCH.md and
+MANUFACTURING_COVERAGE.md. This release proves its bounded workflow; it does not
+close all 173 sections or establish £40,000/month commercial readiness.

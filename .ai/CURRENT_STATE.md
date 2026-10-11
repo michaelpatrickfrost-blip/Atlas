@@ -1,3 +1,33 @@
+## 11 October 2026 — Execution fixture storage corrected; release pending
+Candidate f091fa8a passed dated planning and receipt/replay checks but stopped at
+the first partial production report because its synthetic YARD location had no
+storage capabilities. The application correctly refused to receive production
+without an active storage location. The native fixture now explicitly configures
+STORAGE/PICK_FACE. Candidate did not activate; live remains Decimal-compatible
+5b6390c8. Nullable purchase receipt-date migration applied compatibly. For the
+manual material trace correction, 24 focused tests, strict TypeScript and focused
+lint passed; production build and final strict TypeScript passed. Native/public
+execution, activation and authorised all-Test cleanup remain pending.
+
+## 11 October 2026 — Partial manual issues follow actual report genealogy
+
+Finance settlement now uses each immutable report’s actual allocated material-use
+quantities, including earlier manual issues, to identify direct material cost.
+Previously a one-unit manual issue for the first unit of a two-unit order was treated
+as general prior WIP and spread into later output. Native serial acceptance now checks
+both selected one-unit issues value their respective outputs at £1 each. Automatic
+backflush retains the same direct basis; final closure still allocates every remaining
+penny. The focused 24 tests, strict TypeScript, lint and build pass; native/public
+release acceptance remains pending, with no passing execution claim yet.
+
+## 11 October 2026 — Native carrying-value expectation corrected
+
+Independent exact ratio calculation for the Test opening £250/1000.125 kg confirms
+both actual 2.5 kg issues round to 62 pence at the current weighted value pool:
+124 pence total, with the remainder retained in raw inventory. Corrected the native
+checker’s former 125-pence aggregate assumption; production accounting is unchanged.
+Candidate f091fa8a stopped before activation; final acceptance remains pending.
+
 ## 11 October 2026 — Fractional candidate caught valuation constraint; fix prepared
 
 Candidate 667d546d applied fractional unlock after backup ...200301; retained live

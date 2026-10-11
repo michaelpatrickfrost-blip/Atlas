@@ -121,6 +121,6 @@ export async function backflushOnCompletion(
     }, db);
     receiptMovementId = receipt.movementIds[0];
   }
-  await settleProductionCost(session, db, { productionOrderId: order.id, workOrderId: workOrder.id, warehouseId, productId: order.productId, receiptMovementId, newMaterialMovementIds: materialMovementIds, goodQuantity: good, scrapQuantity, remainingBefore: trace.remainingBefore ?? Number(order.quantity), finish: trace.finish !== false, requestKey });
+  await settleProductionCost(session, db, { productionOrderId: order.id, workOrderId: workOrder.id, warehouseId, productId: order.productId, reportId: trace.reportId, receiptMovementId, newMaterialMovementIds: materialMovementIds, goodQuantity: good, scrapQuantity, remainingBefore: trace.remainingBefore ?? Number(order.quantity), finish: trace.finish !== false, requestKey });
   return { productId: order.productId, warehouseId, requestKey: `balance:${key("mfg", workOrder.id, requestKey, "made")}`, staged:true };
 }

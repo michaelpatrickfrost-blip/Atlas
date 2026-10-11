@@ -23,7 +23,7 @@ export async function checkManufacturingExecution({context,page,session,out}:{co
  const settings=(action:string,data:Record<string,string|number|string[]>,error?:RegExp)=>call(`src/modules/finance/services/manufacturing-settings:${action}`,[form(data)],error);
  const adjust=(data:Record<string,string|number>,error?:RegExp)=>call('src/app/(app)/stock/actions:adjustStock',[form(data)],error);
  const warehouse=await db.warehouse.create({data:{organisationId,code:'EXACT',name:'Exact production · Test'}});
- const yard=await db.stockLocation.create({data:{organisationId,warehouseId:warehouse.id,code:'YARD',name:'Collected stock · Test'}});
+ const yard=await db.stockLocation.create({data:{organisationId,warehouseId:warehouse.id,code:'YARD',name:'Collected stock · Test',capabilities:['STORAGE','PICK_FACE']}});
  const raw=await db.product.create({data:{organisationId,code:'MASS-RAW',name:'Weighed raw material · Test',itemClass:'RAW',sellable:false,unitOfMeasure:'kg',trackingMode:'LOT',basePriceAmount:999999}});
  const output=await db.product.create({data:{organisationId,code:'MASS-FIN',name:'Weighed finished product · Test',unitOfMeasure:'kg',trackingMode:'LOT',basePriceAmount:999999}});
  const recipe=await db.productDefinition.create({data:{organisationId,productId:output.id,version:1,status:'ACTIVE',supply:'MAKE',batchQuantity:1,yieldPercent:100,createdByUserId:userId}});
@@ -83,7 +83,7 @@ export async function checkManufacturingExecution({context,page,session,out}:{co
  assert.equal((await db.manufacturingOrder.findFirstOrThrow({where:{organisationId,originOrderId:order.id}})).quantity.toString(),'0.25');
  const closed=await costRows();assert.equal(closed.reduce((sum,row)=>sum+row.wipMinor,0n),0n);
  const materials=closed.filter(row=>row.kind==='MATERIAL').reduce((sum,row)=>sum+row.wipMinor,0n);
- assert.equal(materials,125n);assert.equal(closed.filter(row=>row.kind==='OUTPUT').reduce((sum,row)=>sum+row.inventoryMinor+row.expenseMinor,0n),materials+2760n);
+ assert.equal(materials,124n);assert.equal(closed.filter(row=>row.kind==='OUTPUT').reduce((sum,row)=>sum+row.inventoryMinor+row.expenseMinor,0n),materials+2760n);
  await settings('recordProductionUsage',{workOrderId:work.id,machineMinutes:60,personMinutes:30,energyKwh:2,requestKey:'exact-usage'});assert.equal(await db.financeManufacturingValueEntry.count({where:{organisationId,productionOrderId:order.id,kind:'USAGE'}}),1);
  const batchCount=await db.stockProductionBatch.count({where:{organisationId,manufacturingOrderId:order.id}});assert.equal(batchCount,2);
  const uses=await db.manufacturingMaterialUse.findMany({where:{organisationId,report:{productionOrderId:order.id}}});assert.equal(uses.reduce((sum,row)=>addQuantity(sum,Number(row.quantity)),0),5);assert(uses.every(row=>row.stockAllocationId));
@@ -127,6 +127,7 @@ export async function checkManufacturingExecution({context,page,session,out}:{co
   await call('src/modules/manufacturing/services/materials:issueProductionMaterial',[form({workOrderId:serialOrder.work.id,productId:serialRaw.id,quantity:1,lotCode:'SERIAL-RAW-LOT',serials:`SERIAL-IN-${serial}`,requestKey:`serial-issue-${index}`,reason:'Actual selected component identity'})]);
   await command('completeWorkOrder',[serialOrder.work.id,1,0,`serial-output-${index}`,{finish:index===2,lotCode:`SERIAL-OUT-LOT-${index}`,serials:[`SERIAL-OUT-${serial}`]}]);
  }
+ const serialValues=await db.financeManufacturingValueEntry.findMany({where:{organisationId,productionOrderId:serialOrder.order.id,kind:'OUTPUT'}});assert.deepEqual(serialValues.map(row=>row.inventoryMinor),[100n,100n]);
  const serialBatches=await db.stockProductionBatch.findMany({where:{organisationId,manufacturingOrderId:serialOrder.order.id},orderBy:{createdAt:'asc'}});assert.equal(serialBatches.length,2);
  await collect({...collection,batchId:serialBatches[0].id,version:serialBatches[0].version,quantity:1,serials:'SERIAL-OUT-02',requestKey:'serial-collect-invalid'},/serial|batch/i);
  await collect({...collection,batchId:serialBatches[0].id,version:serialBatches[0].version,quantity:1,serials:'SERIAL-OUT-01',requestKey:'serial-collect'});

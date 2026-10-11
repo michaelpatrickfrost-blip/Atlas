@@ -120,7 +120,15 @@ export const manufacturingCostProvider: ManufacturingCostProvider = {
     const entries = await tx.financeManufacturingValueEntry.findMany({ where: { organisationId: session.organisationId, productionOrderId: input.productionOrderId } });
     if (entries.some(row => row.entityId !== p.entityId)) throw new Error("A production order cannot move between accounting entities after costs have been posted.");
     const wip = entries.reduce((sum, row) => sum + row.wipMinor, 0n);
-    const direct = entries.filter(row => row.movementId && input.newMaterialMovementIds.includes(row.movementId)).reduce((sum, row) => sum + row.wipMinor, 0n);
+    let direct = entries.filter(row => row.movementId && input.newMaterialMovementIds.includes(row.movementId)).reduce((sum, row) => sum + row.wipMinor, 0n);
+    if (input.reportId) {
+      // Actual report genealogy identifies the portion of earlier manual issues
+      // consumed by this output; treat it like newly backflushed material.
+      const uses = await tx.manufacturingMaterialUse.findMany({ where: { organisationId: session.organisationId, reportId: input.reportId }, include: { stockAllocation: true } });
+      const byMovement = new Map<string, number>();
+      for (const use of uses) if (use.stockAllocation) byMovement.set(use.stockAllocation.movementId, addQuantity(byMovement.get(use.stockAllocation.movementId) ?? 0, Number(use.quantity)));
+      direct = entries.filter(row => row.kind === "MATERIAL" && row.movementId && byMovement.has(row.movementId)).reduce((sum, row) => sum + proportionalValue(row.wipMinor, byMovement.get(row.movementId!)!, -Number(row.quantity)), 0n);
+    }
     const currentQuantity = addQuantity(input.goodQuantity, input.scrapQuantity);
     const allocated = productionCostAllocation(wip, direct, currentQuantity, input.remainingBefore, input.finish);
     // Closing after earlier partial receipts must allocate late costs to the goods that

@@ -4,7 +4,7 @@ import type { LogisticsActor } from "@/core/logistics/types";
 
 export type StockCostMovement = { movementId: string; warehouseId: string; productId: string; quantity: number; productionOrderId?: string; workOrderId?: string; shipmentId?: string };
 export type StockCostTransfer = { productId: string; quantity: number; fromWarehouseId: string; toWarehouseId: string; outMovementId: string; inMovementId: string };
-export type ProductionCostReport = { workOrderId: string; productionOrderId: string; warehouseId: string; productId: string; receiptMovementId?: string; newMaterialMovementIds: string[]; goodQuantity: number; scrapQuantity: number; remainingBefore: number; finish: boolean; requestKey: string };
+export type ProductionCostReport = { workOrderId: string; productionOrderId: string; warehouseId: string; productId: string; reportId?: string; receiptMovementId?: string; newMaterialMovementIds: string[]; goodQuantity: number; scrapQuantity: number; remainingBefore: number; finish: boolean; requestKey: string };
 export type LoadCostMember = { warehouseId:string|null; costBasisCaptured:boolean; definitionId:string|null; machineMinorPerHour:number; labourMinorPerHour:number; overheadMinorPerHour:number; machineIncludesLabour:boolean; machineIncludesOverhead:boolean };
 export type MaterialCostBasis = { productId: string; amountMinor: number; quantity: number; currency: string; source: "CARRYING_VALUE" | "APPROVED_PURCHASE" };
 export type ManufacturingCostProvider = {

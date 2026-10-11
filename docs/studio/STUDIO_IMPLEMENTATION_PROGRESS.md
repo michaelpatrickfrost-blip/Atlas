@@ -11,6 +11,50 @@ and Phase 1 first, then proceed sequentially only after each gate passes.
 
 # Current Workstream
 
+## 11 October 2026 — c2 central gate FAIL; additive precedence correction IMPLEMENTED
+
+Original runner59086/d297576 exit1 at candidateDBHdhF: actual positive format2
+preparation raised invalid JSON syntax. No public switch; live cdec6c6 preserved.
+Migration20261011010000 was already applied, so never edit its checksum/history.
+Confirmed source/target object subtraction lacked parentheses around JSON -> access;
+add20261011020000_studio_required_review_json_precedence replacing only preparation
+function with (intent->source/target)-keys. Legacy/state/FKs/freshness unchanged.
+No business writes, reset/backfill or new models. Existing native/schema fixture
+finally suspended Test companies and retained audit/history. Required UTC081542/
+081715 backups only. Readonly actual SQL probe84624 exit0 reproduces failure and confirms corrected
+object expression returns exact expected JSON; no business reads/writes/files.
+Production build44301 exit0; scoped SQL diff reviewed/check PASS. Full central
+gate remains pending, not VERIFIED.
+
+C3 WIP preserved in exact stash8a77e82ca157197a7564e6aedb04102ede364d19 (five
+migration service files only). Strict TS39215 exit0; 42/44 legacy cases PASS68296,
+two obsolete early-format gate expectations fail because genuine authority now runs
+instead. C3 has not been committed/released, actual owner2 remains absent. Original
+visual stash28243b7 untouched. Exact next: verify readonly SQL correction probe,
+review/build/commit/release correction via original Studio gate, prove actual central
+archive integrity, then restore only c3 five files and complete focused routing tests.
+WholePhase2 IN PROGRESS, gate not passed; no Phase3 or public conditional authoring.
+
+
+
+## 11 October 2026 — c3 preparation/review routing IN PROGRESS
+
+c2d297576 is pinned in runner59086; candidateDBHdhF has started after original
+required UTC081542/081715 recovery backups. Keep HEAD fixed until release ends.
+C3 extends the existing preparation/collection/coverage/sealer, not a second engine.
+Format derives only from actual source/draft or stored server intent. Dependencies:
+c2 SQL proof before release; actual owner format2 approval remains absent/mandatory.
+Expected files preparation,collection,coverage,inspection,sealing and focused tests.
+No new DB schema, authoring, publication/execution/settlement or native mutation.
+Require exact saved canonical draft, full metadata/policies/owner coverage before
+archive reads; bounded actual row reevaluation compares semantic evidence and exact
+revision envelopes before sealing. Keep old1 wrappers/stages/receipts unchanged.
+Status IN PROGRESS, tests not yet run. Exact next: implement the shared closed routing
+and required preparation-only inspection, then focused orchestration/regression checks.
+WholePhase2 gate remains unpassed; visual2E follows prerequisites.
+
+
+
 ## 11 October 2026 — c2 archive integrity IMPLEMENTED; central proof pending
 
 c1 cdec6c6 original runner78290 exit0: candidateOfcY48/publicqyEgPq ALL COMBINED

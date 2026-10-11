@@ -207,3 +207,17 @@ request URL and was correctly refused before production release. Remove that
 Node-only Origin header, preserving the existing authenticated desktop API and all
 production guards. Fixture retired/session revoked; QA unchanged. Public activation
 did not occur; c607e12 remains current. Fresh exact pinned gates required.
+
+ef3ef9c candidate: future MRP timing and finite kiln release PASS. New execution
+assertion exposed the historical Waiting/Ready lifecycle gap; fixture cleanup PASS,
+no public switch. Current source makes first/next steps Ready, validates legacy
+Waiting start without bulk updates, keeps paused work fixed, and explains floor
+readiness. Actual central execution/stock-replay gate added. Explicit plant/timeline
+timezones avoid host-dependent rendering/moves; UK browser and DST domain checks
+added. Fresh final local checks and exact candidate/public gate remain required.
+
+Final lifecycle/timezone/occupied-machine source local checks: 16 files/116 tests,
+strict TypeScript, scoped ESLint, production build and whitespace PASS. Initial tsc
+hit generated-route-type regeneration during a concurrent build; sequential
+post-build rerun passed. No type waiver. Fresh pinned candidate/public full flow
+and five-workspace, three-width UK browser acceptance remain pending.

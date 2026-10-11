@@ -1,6 +1,6 @@
 import { describe,it,expect } from 'vitest';
 import { operationTime } from '@/modules/products/domain/operation-time';
-import { finiteSchedule,finiteSlot,finiteCapacity,type FiniteResource } from '@/modules/manufacturing/domain/finite-scheduling';
+import { finiteSchedule,finiteSlot,finiteCapacity,plantTimeline,moveToPlantDay,type FiniteResource } from '@/modules/manufacturing/domain/finite-scheduling';
 import { MrpEngine } from '@/modules/manufacturing/domain/mrp-engine';
 import { DemandSource,DemandType,type RecipeOperation } from '@/modules/manufacturing/domain/mrp-types';
 import { rolledCost,type MakeDefinition } from '@/modules/products/domain/make';
@@ -55,5 +55,9 @@ describe('kiln planning and demand',()=>{
   const result=new MrpEngine({demand:[{id:'d',demandType:DemandType.FIRM,source:DemandSource.SALES_ORDER,productId:'p',quantity:150,requiredDate:required,sourceId:'sales'}],inventory:new Map(),recipes:new Map([['p',{productId:'p',definitionId:'r',version:1,supply:'MAKE',batchQuantity:100,yieldPercent:100,subcontractMinorPerUnit:0,components:[],operations:[{...base,timingMode:'BATCH',batchCapacity:100,cycleMinutes:60,coolingMinutes:30,waitMinutes:15},{...base,position:2,name:'Pack',setupMinutes:0,runMinutesPerUnit:1,waitMinutes:99}]}]]),prices:new Map(),existingSupply:new Map(),leadTimes:new Map(),safetyStock:new Map(),names:new Map()}).run();
   const plan=result.plannedOrders[0];expect(plan.quantity).toBe(200);expect(plan.operations![0].durationMinutes).toBe(200);expect(plan.operations![0].batches).toBe(2);expect(plan.operations![1].start!.getTime()-plan.operations![0].end!.getTime()).toBe(15*60000);expect(plan.operations![1].end).toEqual(required);
  });
+
+ it('keeps Gantt day boundaries and moved wall time stable across the clock change',()=>{const edges=plantTimeline(date('2026-10-24T12:00Z'),3,'Europe/London');expect(edges[2].getTime()-edges[1].getTime()).toBe(25*3600000);expect(moveToPlantDay(date('2026-10-24T12:30Z'),edges[1],'Europe/London').toISOString()).toBe('2026-10-25T13:30:00.000Z');});
+
+ it('does not promise capacity on an overdue occupied machine and can use an approved alternative',()=>{const held={...resource(),holdReason:'Overdue running work needs review'};expect(()=>finiteSlot(held,60,date('2026-10-12T08:00Z'),false,date('2026-10-13T08:00Z'))).toThrow('Overdue');expect(finiteSchedule([{...op,eligibleResourceIds:['kiln','alternative']}],date('2026-10-12T08:00Z'),[held,resource('alternative')])[0].resourceId).toBe('alternative');});
 
 });

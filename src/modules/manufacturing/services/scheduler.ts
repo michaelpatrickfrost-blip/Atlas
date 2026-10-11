@@ -17,7 +17,7 @@ export type ScheduleImpact = {
   proposedStart: Date;
   proposedEnd: Date;
   previewKey: string;
-  cascade: { workOrderId: string; operationName: string; start: Date; end: Date }[];
+  cascade: { workOrderId: string; operationName: string; resourceName: string | null; start: Date; end: Date }[];
   missesRequiredDate: boolean;
   requiredDate: Date | null;
   newFinish: Date | null;
@@ -30,13 +30,13 @@ async function planMove(tx: Prisma.TransactionClient, organisationId: string, wo
   const work = await tx.manufacturingWorkOrder.findFirst({ where: { id: workOrderId, organisationId }, include: { productionOrder: { include: { sourceSalesOrderLine: { include: { order: { select: { reference: true, party: { select: { name: true } } } } } } } } } });
   if (!work) throw new Error("This work order no longer exists.");
   if (work.locked) throw new Error("This step is locked. Unlock it first to reschedule.");
-  if (["RUNNING", "COMPLETE"].includes(work.status)) throw new Error("Work already in progress or finished cannot be rescheduled.");
+  if (["RUNNING", "PAUSED", "COMPLETE"].includes(work.status)) throw new Error("Work already in progress or finished cannot be rescheduled.");
   const all = await tx.manufacturingWorkOrder.findMany({ where: { organisationId, productionOrderId: work.productionOrderId }, orderBy: { sequence: "asc" } });
   const prior = all.filter((w) => w.sequence < work.sequence).at(-1);
   const priorEnd = prior?.actualEnd ?? prior?.scheduledEnd;
   if (priorEnd && newStart.getTime() < priorEnd.getTime() + (prior?.waitMinutes ?? 0) * 60_000) throw new Error("This start precedes the previous operation or its transfer/wait time.");
   const affected = all.filter((w) => w.sequence >= work.sequence);
-  const movable = affected.filter((w) => !w.locked && !["RUNNING", "COMPLETE"].includes(w.status));
+  const movable = affected.filter((w) => !w.locked && !["RUNNING", "PAUSED", "COMPLETE"].includes(w.status));
   const resources = await loadFiniteResources(tx, organisationId, movable.map((w) => w.id));
   const eligible = work.eligibleResourceIds.length ? work.eligibleResourceIds : work.resourceId ? [work.resourceId] : resources.filter((r) => r.workCentreId === work.workCentreId).map((r) => r.id);
   if (resourceId && (!eligible.includes(resourceId) || !resources.some((r) => r.id === resourceId && r.workCentreId === workCentreId))) throw new Error("This machine is not eligible for this product operation. Review the product routing.");
@@ -44,8 +44,8 @@ async function planMove(tx: Prisma.TransactionClient, organisationId: string, wo
   const slots: FiniteSlot[] = [];
   let cursor = new Date(newStart);
   for (const row of affected) {
-    if (row.locked || ["RUNNING", "COMPLETE"].includes(row.status)) {
-      if (!row.scheduledStart || !row.scheduledEnd || row.scheduledStart < cursor) throw new Error(`${row.operationName} is locked, running or complete and would be displaced. Review the fixed operation first.`);
+    if (row.locked || ["RUNNING", "PAUSED", "COMPLETE"].includes(row.status)) {
+      if (!row.scheduledStart || !row.scheduledEnd || row.scheduledStart < cursor) throw new Error(`${row.operationName} is locked, running, paused or complete and would be displaced. Review the fixed operation first.`);
       cursor = new Date((row.actualEnd ?? row.scheduledEnd).getTime() + row.waitMinutes * 60_000);
       continue;
     }
@@ -62,7 +62,7 @@ async function planMove(tx: Prisma.TransactionClient, organisationId: string, wo
   const finish = affected.at(-1)?.id === slots.at(-1)?.id ? slots.at(-1)!.end : affected.at(-1)!.actualEnd ?? affected.at(-1)!.scheduledEnd;
   const previewKey = createHash("sha256").update(JSON.stringify({ newStart, resourceId, workCentreId, workVersion: work.productionOrder.version, rows: all, resources, slots })).digest("hex");
   const impact: ScheduleImpact = { conflicts: [], suggestedStart: first.start.getTime() !== newStart.getTime() ? first.start : null, proposedStart: first.start, proposedEnd: first.end, previewKey,
-    cascade: slots.slice(1).map((s) => ({ workOrderId: s.id, operationName: s.name, start: s.start, end: s.end })), requiredDate: work.productionOrder.requiredDate, newFinish: finish ?? null, missesRequiredDate: Boolean(work.productionOrder.requiredDate && finish && finish > work.productionOrder.requiredDate),
+    cascade: slots.slice(1).map((s) => ({ workOrderId: s.id, operationName: s.name, resourceName: resources.find(r=>r.id===s.resourceId)?.name??null, start: s.start, end: s.end })), requiredDate: work.productionOrder.requiredDate, newFinish: finish ?? null, missesRequiredDate: Boolean(work.productionOrder.requiredDate && finish && finish > work.productionOrder.requiredDate),
     customer: canSeeSales ? work.productionOrder.sourceSalesOrderLine?.order.party.name ?? null : null, salesOrderReference: canSeeSales ? work.productionOrder.sourceSalesOrderLine?.order.reference ?? null : null };
   return { impact, slots, work, all };
 }
@@ -87,7 +87,7 @@ export async function rescheduleWorkOrder(workOrderId: string, newStart: Date, r
     if (plan.impact.previewKey !== previewKey) throw new Error("The order, calendar or bookings changed since preview. Review a fresh preview before confirming.");
     for (const slot of plan.slots) {
       const row = plan.all.find((w) => w.id === slot.id)!;
-      const updated = await tx.manufacturingWorkOrder.updateMany({ where: { id: row.id, organisationId: session.organisationId, version: row.version, locked: false, status: { notIn: ["RUNNING", "COMPLETE"] } }, data: { scheduledStart: slot.start, scheduledEnd: slot.end, resourceId: slot.resourceId, workCentreId: slot.workCentreId, version: { increment: 1 } } });
+      const updated = await tx.manufacturingWorkOrder.updateMany({ where: { id: row.id, organisationId: session.organisationId, version: row.version, locked: false, status: { notIn: ["RUNNING", "PAUSED", "COMPLETE"] } }, data: { scheduledStart: slot.start, scheduledEnd: slot.end, resourceId: slot.resourceId, workCentreId: slot.workCentreId, version: { increment: 1 } } });
       if (!updated.count) throw new Error("A following step changed. Reload and preview again.");
     }
     const earliest = plan.all.filter((w) => w.sequence < plan.work.sequence).map((w) => w.scheduledStart).find(Boolean) ?? plan.slots[0].start;

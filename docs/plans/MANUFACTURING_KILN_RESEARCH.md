@@ -38,6 +38,11 @@ readiness or close the existing 173-section acceptance programme.
 - Schedule review rechecks calendars, downtime, all affected operations and other
   reservations inside serializable isolation. Fingerprints reject stale reviews;
   fixed/running/completed work cannot be displaced. Force-overlap is removed.
+  Gantt has an explicit selectable timeline timezone and correct 23/25-hour day
+  edges; dragging retains local wall-clock start across daylight-saving changes.
+  Paused/started work remains fixed, and cascade review shows the selected machine.
+  Overdue occupied equipment is visibly held until completion is recorded; a past
+  planned end cannot invent new free capacity. Paused work also blocks another start.
   Seven-day machine capacity cards distinguish calendar, booked and downtime
   hours and expose existing downtime conflicts. Adding downtime preserves already
   booked work for deliberate review, rather than silently changing production.
@@ -55,7 +60,10 @@ readiness or close the existing 173-section acceptance programme.
 - Both MRP entry points and expected-usage fallback consume gross monthly orders,
   including shipped units, once. Existing Make/Buy proposal review, procurement
   drafts and final-operation transactional stock posting remain in their owners.
-  Out-of-sequence starts, current downtime, unavailable machines and another
+  Release makes the first step Ready; intermediate completion makes the next
+  waiting step Ready atomically. Legacy Waiting rows can start only after the same
+  predecessor/time/machine checks. The floor excludes closed parents and explains
+  disabled future/dependent starts. Out-of-sequence starts, current downtime, unavailable machines and another
   running operation are rejected. Fractional component consumption is rejected
   under the existing whole-unit stock contract rather than silently rounded.
 

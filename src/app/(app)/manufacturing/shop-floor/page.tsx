@@ -72,11 +72,12 @@ export default async function ShopFloorPage() {
               <div>
                 <p className="text-lg font-medium">{w.product} — {w.operationName}</p>
                 <p className="text-sm text-[var(--color-ink-muted)]">{w.orderNumber} · {w.workCentre} · {w.quantity} {w.unitOfMeasure}</p>
+                <p className="mt-1 text-xs text-[var(--color-ink-faint)]">{w.startGuidance}</p>
               </div>
               <ActionForm action={startAction}>
                 <input type="hidden" name="workOrderId" value={w.id} />
                 <input type="hidden" name="requestKey" value={`${w.id}-${w.status}-${w.producedQuantity}`} />
-                <button type="submit" className="rounded-full bg-[var(--color-atlas-blue)] px-8 py-4 text-lg font-semibold text-white">Start</button>
+                <button type="submit" disabled={!w.canStart} className="rounded-full bg-[var(--color-atlas-blue)] px-8 py-4 text-lg font-semibold text-white disabled:opacity-40">Start</button>
               </ActionForm>
             </div>
           ))}

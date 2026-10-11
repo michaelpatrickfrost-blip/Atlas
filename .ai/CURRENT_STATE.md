@@ -12400,3 +12400,39 @@ Node-only acceptance Origin correction strict TypeScript, scoped checker ESLint,
 production build and whitespace PASS. App source is unchanged from the 114-test
 checkpoint; no redundant full-suite pass claim. Public preflight remains c607e12.
 Retry uses a new immutable revision and the existing central additive schema.
+
+Second ef3ef9c candidate passed actual future proposal→firm→release and finite kiln
+release (full loads/cooling, eligible alternative, exclusivity, wait and shifts).
+Evidence /tmp/atlas-supply-candidate-5fouXA, fixture backup atlas-pre-supply-candidate-
+20261011-161158, release backup atlas-pre-deploy-20261011-161023. It exposed the
+pre-existing release lifecycle gap: every work row defaulted WAITING and no action
+made it READY. First release step now READY, later steps WAITING; intermediate
+completion promotes the immediate waiting successor inside the same transaction.
+Start gives explicit preceding-operation guidance. Acceptance now tests actual
+start/complete/next-ready/final stock posting and replay, beyond scheduling.
+Plant downtime displays explicit machine timezone to keep SSR/client values stable.
+Public still c607e12; candidate Test retired/session revoked and QA unchanged.
+Final tests/types/lint/build and fresh exact candidate/public gate required.
+
+Lifecycle refinement includes guarded compatibility for historical Waiting rows
+(no bulk data rewrite), floor exclusion of closed parents and clear future/dependency
+start guidance. Paused work remains fixed in scheduling. Gantt now uses explicit
+selectable timezone, shared plant-local day boundaries and wall-time-preserving day
+moves through DST; cascade review names its allocated machine. Browser fixture now
+uses Europe/London rather than relying on a UTC browser default. New domain DST
+regression and actual legacy-start/pause/resume/next-ready/stock replay acceptance
+exercise these facts. Documentation reconciled; final gate results still pending.
+
+Final occupied-machine guard treats paused work as physically occupied on start.
+Overdue running/paused work with no actual end puts the machine on a visible
+scheduling hold; its past planned end cannot invent free capacity. Approved
+alternatives remain usable, tested in the finite domain. No guessed completion or
+bulk data change. The floor and date changes are part of this unreleased candidate.
+
+Final lifecycle/timezone/occupied-machine checkpoint: 16 files/116 focused tests
+PASS; production build PASS; strict TypeScript and scoped ESLint PASS; whitespace
+PASS. A concurrent build temporarily regenerated .next route types during the
+first tsc attempt; sequential post-build strict tsc rerun passed, with no source
+waiver or skipped validation. Candidate/public end-to-end acceptance is still
+required for actual stock execution and responsive UK-timezone UI. Public remains
+c607e12 at preflight; prior central additive migration/backups retained.

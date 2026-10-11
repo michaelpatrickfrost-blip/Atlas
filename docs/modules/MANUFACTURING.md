@@ -96,11 +96,15 @@ Mixed-product kiln loads and machine-specific alternate timing are still open.
 Release reserves the earliest-finishing eligible machine through the complete
 elapsed operation. Batch work is uninterrupted, including cooling; per-unit work
 may span shifts. Downstream moves are previewed against the same finite engine.
-A stale review, displaced fixed operation or forced overlap is rejected, and all
+A stale review, displaced fixed/started/paused operation or forced overlap is rejected, and all
 moved work/parent dates/audit commit atomically. Capacity cards expose seven-day
 calendar, booked, downtime and free machine hours plus existing downtime conflicts.
 Adding downtime leaves existing bookings visible for deliberate replanning.
-Shop-floor start requires the prior operation/wait, a released parent, an available
+The Gantt has a selectable timeline timezone and plant-local day edges, including
+23/25-hour daylight-saving days; day moves retain wall-clock time. First work is
+Ready on release, and completion makes the immediate successor Ready atomically.
+Legacy Waiting rows validate the same readiness on start. The floor explains
+future/dependent starts and excludes closed parents. Shop-floor start requires the prior operation/wait, a released parent, an available
 machine, no current downtime and no other running work on that equipment.
 
 The Demand intelligence workbench reads Sales-owned requested-demand history,

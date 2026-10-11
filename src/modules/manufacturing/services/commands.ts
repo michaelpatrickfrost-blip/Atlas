@@ -114,7 +114,7 @@ export async function releaseOrder(orderId: string) {
       const scheduled = finiteSchedule(operations, earliestStart, resources);
       if (scheduled.length) {
         plannedStart = scheduled[0].start; plannedFinish = scheduled.at(-1)!.end;
-        const rows = scheduled.map((slot, index) => ({ organisationId: session.organisationId, productionOrderId: order.id, sequence: index + 1, operationName: slot.name, workCentreId: slot.workCentreId, resourceId: slot.resourceId, scheduledStart: slot.start, scheduledEnd: slot.end,
+        const rows = scheduled.map((slot, index) => ({ organisationId: session.organisationId, productionOrderId: order.id, sequence: index + 1, status: index === 0 ? "READY" as const : "WAITING" as const, operationName: slot.name, workCentreId: slot.workCentreId, resourceId: slot.resourceId, scheduledStart: slot.start, scheduledEnd: slot.end,
           setupMinutes: Math.ceil(operations[index].setupMinutes), runMinutes: Math.ceil(operations[index].runMinutes), plannedMinutes: Math.ceil(slot.durationMinutes), timingMode: operations[index].timingMode, waitMinutes: Math.ceil(slot.waitMinutes), eligibleResourceIds: operations[index].eligibleResourceIds }));
         await tx.manufacturingWorkOrder.createMany({ data: rows }); workOrderCount = rows.length;
       }
@@ -158,7 +158,7 @@ export async function startWorkOrder(workOrderId: string, requestKey: string) {
   await assertModuleEnabled(session, "manufacturing");
   const workOrder = await workOrderOrThrow(session.organisationId, workOrderId);
   if (workOrder.lastRequestKey === requestKey) return workOrder;
-  if (!canTransitionWorkOrder(workOrder.status, "RUNNING")) throw new Error(`This step cannot start from ${workOrder.status}.`);
+  if (workOrder.status !== "WAITING" && !canTransitionWorkOrder(workOrder.status, "RUNNING")) throw new Error(`This step cannot start from ${workOrder.status}.`);
   if (workOrder.resourceId) {
     const { getModule } = await import("@/core/modules/registry");
     const status = await getModule("safety")?.safetyProvider?.resourceStatus(session.organisationId, workOrder.resourceId);
@@ -167,7 +167,7 @@ export async function startWorkOrder(workOrderId: string, requestKey: string) {
   if (!requestKey || requestKey.length > 80) throw new Error("A valid production request reference is required.");
   await db.$transaction(async (tx) => {
     const current = await tx.manufacturingWorkOrder.findFirst({ where: { id: workOrderId, organisationId: session.organisationId }, include: { productionOrder: true } });
-    if (!current || current.version !== workOrder.version || !canTransitionWorkOrder(current.status, "RUNNING")) throw new Error("This step changed. Reload before starting.");
+    if (!current || current.version !== workOrder.version || current.status !== "WAITING" && !canTransitionWorkOrder(current.status, "RUNNING")) throw new Error("This step changed. Reload before starting.");
     if (!["RELEASED", "RUNNING"].includes(current.productionOrder.status)) throw new Error("Release the production order before starting work.");
     const previous = await tx.manufacturingWorkOrder.findFirst({ where: { organisationId: session.organisationId, productionOrderId: current.productionOrderId, sequence: { lt: current.sequence } }, orderBy: { sequence: "desc" } });
     const now = new Date();
@@ -178,8 +178,16 @@ export async function startWorkOrder(workOrderId: string, requestKey: string) {
       if (!resource) throw new Error("This machine is unavailable. Review the plant and schedule.");
       const downtime = await tx.manufacturingDowntime.findFirst({ where: { organisationId: session.organisationId, resourceId: resource.id, active: true, startsAt: { lte: now }, endsAt: { gt: now } } });
       if (downtime) throw new Error(`Machine downtime: ${downtime.reason}. Review the schedule before starting.`);
-      const running = await tx.manufacturingWorkOrder.count({ where: { organisationId: session.organisationId, resourceId: resource.id, id: { not: current.id }, status: "RUNNING" } });
-      if (running) throw new Error("Another operation is already running on this machine.");
+      const running = await tx.manufacturingWorkOrder.count({ where: { organisationId: session.organisationId, resourceId: resource.id, id: { not: current.id }, status: { in: ["RUNNING", "PAUSED"] } } });
+      if (running) throw new Error("Another operation is already running or paused on this machine.");
+    }
+    // Compatibility for previously released rows that defaulted to WAITING.
+    // Promotion is legal only after the same predecessor/time/machine guards.
+    if (current.status === "WAITING") {
+      const ready = await tx.manufacturingWorkOrder.updateMany({ where: { id: current.id, organisationId: session.organisationId, version: current.version, status: "WAITING" }, data: { status: "READY", version: { increment: 1 } } });
+      if (!ready.count) throw new Error("This step changed. Reload before starting.");
+      await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "manufacturing.work_order.ready", entityType: "ManufacturingWorkOrder", entityId: current.id, after: { precedingWorkOrderId: previous?.id ?? null, reason: "validated-start" } }, tx);
+      current.version += 1; current.status = "READY";
     }
     const updated = await tx.manufacturingWorkOrder.updateMany({ where: { id: current.id, organisationId: session.organisationId, version: current.version, status: current.status }, data: { status: "RUNNING", actualStart: current.actualStart ?? now, version: { increment: 1 }, lastRequestKey: requestKey } });
     if (!updated.count) throw new Error("Someone else just updated this step. Reload and try again.");
@@ -247,6 +255,14 @@ export async function completeWorkOrder(workOrderId: string, goodQuantity: numbe
         });
         if (!updated.count) throw new Error("Someone else just updated this step. Reload and try again.");
         const receipt = await backflushOnCompletion(session, workOrder, goodQuantity, scrapQuantity, requestKey, tx);
+        if (!receipt) {
+          const next = await tx.manufacturingWorkOrder.findFirst({ where: { organisationId: session.organisationId, productionOrderId: order.id, sequence: { gt: workOrder.sequence } }, orderBy: { sequence: "asc" } });
+          if (next?.status === "WAITING") {
+            const advanced = await tx.manufacturingWorkOrder.updateMany({ where: { id: next.id, organisationId: session.organisationId, status: "WAITING", version: next.version }, data: { status: "READY", version: { increment: 1 } } });
+            if (!advanced.count) throw new Error("The next operation changed. Reload before completing.");
+            await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "manufacturing.work_order.ready", entityType: "ManufacturingWorkOrder", entityId: next.id, after: { precedingWorkOrderId: workOrder.id } }, tx);
+          }
+        }
         await tx.manufacturingOrder.updateMany({ where: { id: order.id, organisationId: session.organisationId }, data: receipt ? { status: "COMPLETE", actualFinish: new Date() } : { status: "RUNNING", actualStart: order.actualStart ?? new Date() } });
         if (scrapQuantity > 0) await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "manufacturing.scrap.reported", entityType: "ManufacturingWorkOrder", entityId: workOrderId, after: { scrapQuantity } }, tx);
         await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "manufacturing.work_order.completed", entityType: "ManufacturingWorkOrder", entityId: workOrderId, after: { goodQuantity, scrapQuantity, requestKey } }, tx);

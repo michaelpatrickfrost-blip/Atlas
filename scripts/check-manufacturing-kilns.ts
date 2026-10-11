@@ -6,8 +6,8 @@ import { encodeWire, decodeWire } from '../src/core/desktop/wire';
 import type { previewDemandForecast } from '../src/modules/manufacturing/services/demand-forecast';
 import type { ScheduleImpact } from '../src/modules/manufacturing/services/scheduler';
 
-export async function checkManufacturingKilns(input: { context: BrowserContext; page: Page; organisationId: string; userId: string; partyId: string; out: string }) {
-  const { context, page, organisationId, userId, partyId, out } = input;
+export async function checkManufacturingKilns(input: { context: BrowserContext; page: Page; organisationId: string; userId: string; partyId: string; rawId: string; out: string }) {
+  const { context, page, organisationId, userId, partyId, rawId, out } = input;
   const call = async <T>(service: string, action: string, args: unknown[], error?: RegExp): Promise<T> => {
     const response = await context.request.post('/api/desktop/action', { headers: { 'x-atlas-client': 'desktop' }, data: { action: `src/modules/manufacturing/services/${service}:${action}`, args: await encodeWire(args) } });
     const body = await response.json();
@@ -47,7 +47,7 @@ export async function checkManufacturingKilns(input: { context: BrowserContext; 
     return db.manufacturingWorkOrder.findMany({ where: { organisationId, productionOrderId: order.id }, orderBy: { sequence: 'asc' } });
   };
   const first = await create(), second = await create();
-  assert.equal(first.length, 2); assert.equal(first[0].resourceId, b.id); assert.equal(first[0].plannedMinutes, 200);
+  assert.equal(first.length, 2); assert.equal(first[0].status, "READY"); assert.equal(first[1].status, "WAITING"); assert.equal(first[0].resourceId, b.id); assert.equal(first[0].plannedMinutes, 200);
   assert(first[0].scheduledStart && first[0].scheduledEnd && first[1].scheduledStart && first[1].scheduledEnd);
   assert(first[1].scheduledStart.getTime() >= first[0].scheduledEnd.getTime() + 15 * 60_000);
   assert(second[0].scheduledStart! >= first[0].scheduledEnd);
@@ -58,7 +58,7 @@ export async function checkManufacturingKilns(input: { context: BrowserContext; 
   const move = new Date(later.getTime() + 86_400_000);
   await call('scheduler', 'schedulePreview', [first[0].id, move, wrong.id, fire.id], /not eligible/);
   await call('scheduler', 'setWorkOrderLock', [first[1].id, true]);
-  await call('scheduler', 'schedulePreview', [first[0].id, move, b.id, fire.id], /locked, running or complete/);
+  await call('scheduler', 'schedulePreview', [first[0].id, move, b.id, fire.id], /locked, running, paused or complete/);
   await call('scheduler', 'setWorkOrderLock', [first[1].id, false]);
   const preview = await call<ScheduleImpact>('scheduler', 'schedulePreview', [first[0].id, move, b.id, fire.id]);
   const original = await db.manufacturingWorkOrder.findMany({ where: { organisationId, productionOrderId: first[0].productionOrderId }, orderBy: { sequence: 'asc' } });
@@ -71,6 +71,32 @@ export async function checkManufacturingKilns(input: { context: BrowserContext; 
   assert.equal(saved[0].scheduledStart?.getTime(), fresh.proposedStart.getTime()); assert.equal(saved[1].scheduledStart?.getTime(), fresh.cascade[0].start.getTime());
   assert.equal(await db.auditEntry.count({ where: { organisationId, entityId: first[0].id, action: 'manufacturing.schedule.moved' } }), 1);
   console.log('PASS incompatible kiln and locked cascade refused; stale preview leaves both steps unchanged; fresh move commits both steps with one audit.');
+  const output = await db.product.create({data:{organisationId,code:'EXEC-TEST',name:'Execution output · Test',basePriceAmount:100}});
+  const executable = await db.productDefinition.create({data:{organisationId,productId:output.id,version:1,status:'ACTIVE',supply:'MAKE',batchQuantity:1,yieldPercent:100,createdByUserId:userId}});
+  await db.productBomLine.create({data:{organisationId,definitionId:executable.id,componentProductId:rawId,quantityPerUnit:1}});
+  await db.productOperation.createMany({data:[{organisationId,definitionId:executable.id,position:1,name:'Prepare'},{organisationId,definitionId:executable.id,position:2,name:'Finish'}]});
+  const execution = await call<{id:string}>('commands','createProductionOrder',[{productId:output.id,definitionId:executable.id,quantity:2}]);
+  await call('commands','markOrderReady',[execution.id]); await call('commands','releaseOrder',[execution.id]);
+  const work = await db.manufacturingWorkOrder.findMany({where:{organisationId,productionOrderId:execution.id},orderBy:{sequence:'asc'}});
+  const rawBefore = Number((await db.inventoryBalance.aggregate({where:{organisationId,productId:rawId},_sum:{quantity:true}}))._sum.quantity??0);
+  assert.equal(work[0].status,'READY');
+  await db.manufacturingWorkOrder.update({where:{organisationId,id:work[0].id},data:{status:'WAITING',version:{increment:1}}}); // simulate legacy released state in this Test fixture only
+  await call('commands','startWorkOrder',[work[0].id,'execution-start']);
+  await call('commands','pauseWorkOrder',[work[0].id,'Test pause','execution-pause']);
+  await call('scheduler','schedulePreview',[work[0].id,new Date(),null,null],/in progress/);
+  await call('commands','startWorkOrder',[work[0].id,'execution-resume']);
+  await call('commands','completeWorkOrder',[work[0].id,2,0,'execution-first']);
+  assert.equal((await db.manufacturingWorkOrder.findFirstOrThrow({where:{organisationId,id:work[1].id}})).status,'READY');
+  const actual = new Date(); const next = await call<ScheduleImpact>('scheduler','schedulePreview',[work[1].id,actual,null,null]);
+  await call('scheduler','rescheduleWorkOrder',[work[1].id,actual,null,null,false,next.previewKey]);
+  await call('commands','startWorkOrder',[work[1].id,'execution-next']);
+  await call('commands','completeWorkOrder',[work[1].id,2,0,'execution-final']);
+  await call('commands','completeWorkOrder',[work[1].id,2,0,'execution-final']);
+  assert.equal((await db.manufacturingOrder.findFirstOrThrow({where:{organisationId,id:execution.id}})).status,'COMPLETE');
+  assert.equal(Number((await db.inventoryBalance.aggregate({where:{organisationId,productId:output.id},_sum:{quantity:true}}))._sum.quantity),2);
+  assert.equal(Number((await db.inventoryBalance.aggregate({where:{organisationId,productId:rawId},_sum:{quantity:true}}))._sum.quantity),rawBefore-2);
+  console.log('PASS actual Ready → start → completion → next Ready; final stock uses two components and receives two units once, including replay.');
+
   // Authoritative requested-demand history belongs to Sales, using the shared product and Party.
   const month = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
   for (let offset = -24; offset < 0; offset++) {
@@ -106,14 +132,14 @@ export async function checkManufacturingKilns(input: { context: BrowserContext; 
   console.log('PASS actual Sales seasonal backtest, last-year +10% +5 UI save, exact central quantity, stale review rejection, fixed target and individual override.');
   for (const [name, width, height] of [['desktop', 1448, 1086], ['tablet', 820, 1180], ['phone', 390, 844]] as const) {
     await page.setViewportSize({ width, height });
-    for (const path of ['/manufacturing/plant', '/manufacturing/schedule', '/manufacturing/planning/forecast', `/products/${product.id}`]) {
+    for (const path of ['/manufacturing/plant', '/manufacturing/schedule', '/manufacturing/planning/forecast', '/manufacturing/shop-floor', `/products/${product.id}`]) {
       assert.equal((await page.goto(path, { waitUntil: 'networkidle' }))?.status(), 200);
       if (path.endsWith('/plant')) { await expect(page.getByRole('heading', { name: 'Plant & kilns', exact: true })).toBeVisible(); await page.getByRole('button', { name: 'Configure Kiln B', exact: true }).click(); await expect(page.getByRole('region', { name: 'Machine configuration' })).toBeVisible(); }
       if (path.endsWith('/forecast')) { await workbench.getByLabel('Product', { exact: true }).selectOption(product.id); await workbench.getByRole('button', { name: 'Review demand', exact: true }).click(); await expect(workbench.getByLabel('Starting point')).toBeVisible(); }
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${path} fits ${name}`);
-      await page.screenshot({ path: `${out}/kilns-${path.endsWith('/plant') ? 'plant' : path.endsWith('/schedule') ? 'schedule' : path.endsWith('/forecast') ? 'forecast' : 'recipe'}-${name}.png`, fullPage: false });
+      await page.screenshot({ path: `${out}/kilns-${path.endsWith('/plant') ? 'plant' : path.endsWith('/schedule') ? 'schedule' : path.endsWith('/forecast') ? 'forecast' : path.endsWith('/shop-floor') ? 'floor' : 'recipe'}-${name}.png`, fullPage: false });
     }
   }
   await page.setViewportSize({ width: 1448, height: 1086 });
-  console.log('PASS plant configuration, finite schedule, editable forecast and recipe at desktop/tablet/phone widths without root overflow.');
+  console.log('PASS plant configuration, finite schedule, editable forecast, Shop Floor and recipe at desktop/tablet/phone widths without root overflow.');
 }

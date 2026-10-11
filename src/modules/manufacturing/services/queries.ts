@@ -155,23 +155,25 @@ export async function searchManufacturing(session: Session, query: string): Prom
  * phase scopes this to the operator's own work centre/badge scan. */
 export async function shopFloorQueue(organisationId: string) {
   const workOrders = await db.manufacturingWorkOrder.findMany({
-    where: { organisationId, status: { in: ["READY", "RUNNING", "PAUSED", "WAITING", "BLOCKED"] } },
-    include: { productionOrder: { select: { orderNumber: true, quantity: true, unitOfMeasure: true, product: { select: { name: true } } } }, workCentre: { select: { name: true } } },
-    orderBy: [{ status: "asc" }, { sequence: "asc" }],
+    where: { organisationId, status: { in: ["READY", "RUNNING", "PAUSED", "WAITING", "BLOCKED"] }, productionOrder: { status: { in: ["RELEASED", "RUNNING"] } } },
+    include: { productionOrder: { select: { orderNumber: true, quantity: true, unitOfMeasure: true, product: { select: { name: true } }, workOrders: { select: { sequence: true, status: true, actualEnd: true, waitMinutes: true } } } }, workCentre: { select: { name: true } }, resource: { select: { timezone: true } } },
+    orderBy: [{ status: "asc" }, { scheduledStart: "asc" }, { sequence: "asc" }],
     take: 100,
   });
-  return workOrders.map((w) => ({
-    id: w.id,
-    operationName: w.operationName,
-    orderNumber: w.productionOrder.orderNumber,
-    product: w.productionOrder.product.name,
-    quantity: Number(w.productionOrder.quantity),
-    unitOfMeasure: w.productionOrder.unitOfMeasure,
-    workCentre: w.workCentre?.name ?? "Unassigned",
-    status: w.status,
-    scheduledStart: w.scheduledStart,
-    producedQuantity: Number(w.producedQuantity),
-  }));
+  const now = new Date();
+  return workOrders.map((w) => {
+    const previous = w.productionOrder.workOrders.filter(p => p.sequence < w.sequence).sort((a,b) => b.sequence-a.sequence)[0];
+    const waitingForPrevious = previous && (previous.status !== "COMPLETE" || !previous.actualEnd || now.getTime() < previous.actualEnd.getTime() + previous.waitMinutes*60_000);
+    const future = w.scheduledStart && w.scheduledStart > now;
+    const timezone = w.resource?.timezone ?? "Europe/London";
+    return {
+      id: w.id, operationName: w.operationName, orderNumber: w.productionOrder.orderNumber, product: w.productionOrder.product.name,
+      quantity: Number(w.productionOrder.quantity), unitOfMeasure: w.productionOrder.unitOfMeasure, workCentre: w.workCentre?.name ?? "Unassigned",
+      status: w.status, scheduledStart: w.scheduledStart, producedQuantity: Number(w.producedQuantity),
+      canStart: !waitingForPrevious && !future,
+      startGuidance: waitingForPrevious ? "Waiting for the previous operation or transfer time" : future ? `Booked ${w.scheduledStart!.toLocaleString("en-GB",{timeZone:timezone})} · ${timezone}` : "Ready to start; machine availability checked when you start",
+    };
+  });
 }
 
 /** §50-51: Schedule, grouped By Work Centre (the brief's stated default). Not
@@ -259,6 +261,7 @@ export async function schedulerBoard(organisationId: string, windowDays = 14, ca
   const rows = resources.map((resource) => ({
     id: resource.id,
     kind: "resource" as const,
+    timezone: resource.timezone,
     name: resource.name,
     workCentreId: resource.workCentreId,
     workCentreName: workCentres.find((wc) => wc.id === resource.workCentreId)?.name ?? "",
@@ -268,6 +271,7 @@ export async function schedulerBoard(organisationId: string, windowDays = 14, ca
   const unassignedByWorkCentre = workCentres.map((wc) => ({
     id: `wc-${wc.id}`,
     kind: "work-centre" as const,
+    timezone: "Europe/London",
     name: `${wc.name} (unassigned resource)`,
     workCentreId: wc.id,
     workCentreName: wc.name,

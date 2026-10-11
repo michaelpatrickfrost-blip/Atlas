@@ -1,7 +1,7 @@
 import type { Booking } from "./scheduling";
 import type { Shift } from "./calendar";
 
-export type FiniteResource = { id: string; workCentreId: string; name: string; active: boolean; calendarMode: string; timezone: string; shifts: Shift[]; bookings: Booking[]; downtime: Booking[] };
+export type FiniteResource = { id: string; workCentreId: string; name: string; active: boolean; calendarMode: string; timezone: string; holdReason?: string | null; shifts: Shift[]; bookings: Booking[]; downtime: Booking[] };
 export type FiniteOperation = { id: string; name: string; durationMinutes: number; waitMinutes: number; timingMode: string; workCentreId: string | null; resourceId: string | null; eligibleResourceIds: string[] };
 export type FiniteSlot = { id: string; name: string; resourceId: string | null; workCentreId: string | null; start: Date; end: Date; durationMinutes: number; waitMinutes: number };
 
@@ -24,7 +24,25 @@ function wallDate(day: string, minute: number, timezone: string, end = false): D
   throw new Error("This plant calendar contains an invalid local time.");
 }
 
+function localParts(date: Date, timezone: string) {
+  return Object.fromEntries(new Intl.DateTimeFormat("en-CA", {timeZone:timezone,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(date).map(p=>[p.type,p.value]));
+}
+/** Stable server/browser day boundaries, including 23/25-hour plant days. */
+export function plantTimeline(after: Date, days: number, timezone: string) {
+  if (!Number.isFinite(after.getTime()) || !Number.isInteger(days) || days < 1 || days > 365) throw new Error("Enter a valid calendar window.");
+  const p = localParts(after,timezone), day = new Date(`${p.year}-${p.month}-${p.day}T00:00:00Z`);
+  return Array.from({length:days+1},(_,index)=>{const d=new Date(day);d.setUTCDate(d.getUTCDate()+index);return wallDate(d.toISOString().slice(0,10),0,timezone);});
+}
+/** Move a day while retaining the wall-clock start, rather than a host offset. */
+export function moveToPlantDay(original: Date, target: Date, timezone: string) {
+  const p=localParts(original,timezone), d=localParts(target,timezone);
+  if(p.year===d.year&&p.month===d.month&&p.day===d.day)return new Date(original);
+  const moved=wallDate(`${d.year}-${d.month}-${d.day}`,Number(p.hour)*60+Number(p.minute),timezone);
+  return new Date(moved.getTime()+original.getUTCSeconds()*1000+original.getUTCMilliseconds());
+}
+
 function windows(resource: FiniteResource, after: Date, horizon: Date): Booking[] {
+  if (resource.holdReason) throw new Error(resource.holdReason);
   if (resource.calendarMode === "CONTINUOUS") return [{ id: "continuous", start: after, end: horizon }];
   if (!resource.shifts.length) throw new Error(`${resource.name} needs working shifts. Configure its calendar or select continuous operation.`);
   const localDay = new Intl.DateTimeFormat("en-CA", { timeZone: resource.timezone, year: "numeric", month: "2-digit", day: "2-digit" }).format(after);

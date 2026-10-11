@@ -259,3 +259,19 @@ released parents, matching execution. Supply gate extends to actual routing UI s
 refusals and active routing/configuration views at three widths. Browser write
 allowlist adds only the exact newly owned Test product path. Final local checks and
 new pinned candidate/public gate required; b80f8ba stays the verified live checkpoint.
+
+Refined f8364d5e7f038ba1bb6b2057e9280e59ec30adc8 candidate and public supply gates
+PASS; public login 200 and immutable runtime active, previous b80f8ba retained.
+Backup atlas-pre-deploy-20261011-164352; candidate fixture backup atlas-pre-supply-
+candidate-20261011-164534/evidence /tmp/atlas-supply-candidate-Xe8SPS; public fixture
+backup atlas-pre-supply-public-20261011-164703/evidence /tmp/atlas-supply-public-tCZLtu.
+New actual routing UI save validates version 2/load/cycle/cooling/zero crew/eligible
+machines and retains released recipe; closed parents refuse schedule/start. Prior
+full operational acceptance repeats PASS, no browser errors, fixtures retired and
+QA unchanged. Desktop/phone active routing and configuration images reviewed.
+Phone recipe sticky footer was too tall despite fitting width; compact mobile total/
+save controls now retain desktop detail, and active Shop Floor forms wrap. Gate adds
+an actually running Test order, checks its controls at all widths and constrains the
+mobile footer height; Plant verifies focus before screenshots. New local build/type/
+lint and exact candidate/public verification required. Inactive-runtime retirement
+was safely deferred at its lock guard; active/previous pointers and data unaffected.

@@ -101,6 +101,11 @@ export async function checkManufacturingKilns(input: { context: BrowserContext; 
   assert.equal(Number((await db.inventoryBalance.aggregate({where:{organisationId,productId:rawId},_sum:{quantity:true}}))._sum.quantity),rawBefore-2);
   console.log('PASS actual Ready → start → completion → next Ready; final stock uses two components and receives two units once, including replay.');
 
+  const liveFloor=await call<{id:string}>('commands','createProductionOrder',[{productId:output.id,definitionId:executable.id,quantity:1}]);
+  await call('commands','markOrderReady',[liveFloor.id]);await call('commands','releaseOrder',[liveFloor.id]);
+  const floorWork=await db.manufacturingWorkOrder.findFirstOrThrow({where:{organisationId,productionOrderId:liveFloor.id},orderBy:{sequence:'asc'}});
+  await call('commands','startWorkOrder',[floorWork.id,'responsive-floor']);
+
   // Authoritative requested-demand history belongs to Sales, using the shared product and Party.
   const month = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
   for (let offset = -24; offset < 0; offset++) {
@@ -152,9 +157,10 @@ export async function checkManufacturingKilns(input: { context: BrowserContext; 
     await page.setViewportSize({ width, height });
     for (const path of ['/manufacturing/plant', '/manufacturing/schedule', '/manufacturing/planning/forecast', '/manufacturing/shop-floor', `/products/${product.id}`]) {
       assert.equal((await page.goto(path, { waitUntil: 'networkidle' }))?.status(), 200);
-      if (path.endsWith('/plant')) { await expect(page.getByRole('heading', { name: 'Plant & kilns', exact: true })).toBeVisible(); await page.getByRole('button', { name: 'Configure Kiln B', exact: true }).click(); await expect(page.getByRole('region', { name: 'Machine configuration' })).toBeVisible(); await page.getByRole('region', { name: 'Machine configuration' }).scrollIntoViewIfNeeded(); }
+      if (path.endsWith('/plant')) { await expect(page.getByRole('heading', { name: 'Plant & kilns', exact: true })).toBeVisible(); await page.getByRole('button', { name: 'Configure Kiln B', exact: true }).click(); await expect(page.getByRole('region', { name: 'Machine configuration' })).toBeFocused(); }
       if (path.endsWith('/forecast')) { await workbench.getByRole('combobox').first().selectOption(product.id); await workbench.getByRole('button', { name: 'Review demand', exact: true }).click(); await expect(workbench.getByLabel('Starting point')).toBeVisible(); }
-      if (path.startsWith('/products/')) { await page.getByRole('tab',{name:/^Bill and routing/}).click(); await page.getByRole('tabpanel').getByLabel('Time basis').first().scrollIntoViewIfNeeded(); await expect(page.getByRole('tabpanel').getByLabel('Units per load')).toHaveValue('100'); }
+      if (path.startsWith('/products/')) { await page.getByRole('tab',{name:/^Bill and routing/}).click(); await page.getByRole('tabpanel').getByLabel('Time basis').first().scrollIntoViewIfNeeded(); await expect(page.getByRole('tabpanel').getByLabel('Units per load')).toHaveValue('100'); if(name==='phone') { const footer=page.getByRole('tabpanel').locator('div.sticky'); assert((await footer.boundingBox())!.height < 140,'Mobile routing footer leaves room to edit'); } }
+      if (path.endsWith('/shop-floor')) { await expect(page.getByRole('button',{name:'Pause',exact:true})).toBeVisible(); await expect(page.getByRole('button',{name:'Complete',exact:true})).toBeVisible(); }
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${path} fits ${name}`);
       await page.screenshot({ path: `${out}/kilns-${path.endsWith('/plant') ? 'plant' : path.endsWith('/schedule') ? 'schedule' : path.endsWith('/forecast') ? 'forecast' : path.endsWith('/shop-floor') ? 'floor' : 'recipe'}-${name}.png`, fullPage: false });
     }

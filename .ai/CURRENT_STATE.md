@@ -1,3 +1,33 @@
+## 11 October 2026 — Opaque dropdowns deployed and visually verified
+
+Live runtime 5b6390c874b42571f091a53b1b017aea70121df7 gives shared app-navigation
+menus a solid white background and subtle border, retaining rounded corners and
+shadow. Removed panel backdrop filters in src/app/globals.css. In
+src/components/shell/floating-module-nav.tsx, phone/tablet panels span below the
+complete navigation bar with 16px side insets; desktop panels align to the trigger.
+Design guidance and DECISIONS supersede translucent glass styling for menu panels.
+
+Final isolated production build, strict TypeScript, scoped component lint and diff
+whitespace PASS; initial Next route typegen also passed. Exact-revision public
+read-only checks passed 30 menu openings on Manufacturing, Finance and Sales at
+1440/768/390px: opaque fill/no blur/full opacity, entire horizontal panel bounds,
+item hit-testing, outside-click dismissal and no page overflow. Zero browser or
+asset errors; all 27 non-read requests blocked. Final screenshots at all three
+widths visually inspected; local evidence build/opaque-dropdowns/final/. Full
+repository suite/lint not run for this presentation change.
+
+Backup atlas-pre-deploy-20261011-195638; exact accepted Decimal-capable Supply bridge
+6e5c39be retained as rollback and preserved byte-for-byte except these two menu
+positioning classes and task notes. No new migration was pending; no business-data,
+permission/profile, tenant-boundary or local-store change from this task.
+Earlier opacity release cc01ca16 (backup ...193859) and phone correction aaf9bc3a
+(backup ...194501) retained in Git/deployment history. Screenshot review exposed
+phone clipping; stronger bounds checks then exposed tablet clipping and both are
+fixed. Old-baseline 2722e98a safely stopped at ancestry before backup/build/activation
+when the concurrent Supply bridge activated; preserved its accepted source and
+both contributors' memory before the final release. Source and notes are mirrored
+narrowly into the canonical shared checkout; unrelated edits preserved.
+
 ## 11 October 2026 — Integrated manufacturing bridge build ready for live gate
 
 Preserved current aaf9bc3a opaque/mobile navigation source and contributor evidence.
@@ -46,42 +76,6 @@ preserved; no unsafe activation. Next: rerun integrated checks and pinned bridge
 candidate/public Supply acceptance, unlock/full execution release, visual inspection,
 zero-Test cleanup, then factual delivery evidence. Full 173-section enterprise
 programme still has explicit open items in MANUFACTURING_COVERAGE.md.
-
-## 11 October 2026 — Opaque dropdowns live; phone positioning correction prepared
-
-Request: page text shows through the Demand dropdown. Shared
-`src/app/globals.css` now gives `.atlas-float-dropdown` a solid white background
-and subtle border, retaining its rounded shape, shadow and existing interactions.
-Removed panel backdrop filters; Apps, notification, record and Dashboard menus
-already have opaque backgrounds. Design guidance and DECISIONS updated.
-Canonical shared checkout receives only this task's narrow style/document edits;
-isolated release starts from reviewed origin/main 4494f920, whose only difference
-from observed live 01f890b3 is completed layout verification documentation.
-No schema, tenant/capability, profile permission or data-store change.
-Initial immutable release cc01ca16 deployed; backup atlas-pre-deploy-20261011-193859,
-rollback 01f890b3 retained and no pending migration. Production build, Next typegen,
-strict TypeScript and whitespace PASS. Public exact-revision read-only probe
-passed 30 Manufacturing/Finance/Sales menu openings at 1440/768/390px: opaque fill,
-no backdrop filter, full opacity, hit-testing and outside dismissal; zero browser/
-asset errors, 27 non-read requests blocked. Initial probe assumed grouped menus
-on Settings/Logistics; actual navigation differs, so corrected its selected pages.
-Visual screenshot review found existing phone panels extending past the viewport,
-which the initial page-overflow assertion missed. FloatingModuleNav now anchors
-phone/tablet menus beneath the entire navigation bar with 16px side insets; desktop menus
-retain their trigger alignment. Panel-bound assertions added to disposable probe.
-Correction production build, strict TypeScript, scoped component lint and final
-diff whitespace PASS. Phone correction aaf9bc3a deployed (backup
-atlas-pre-deploy-20261011-194501); stronger bounds probe caught the same existing
-clipping at 768px Production. Extended shared below-bar placement to tablets
-(below 1024px). Final build, strict types, scoped lint and whitespace PASS.
-Next: deploy and repeat panel bounds/screenshots.
-Full repository suite/lint not run; final responsive acceptance pending.
-Concurrent Supply bridge 6e5c39be publicly activated while 2722e98a waited.
-Queued old-baseline release stopped at ancestry before backup/build/activation.
-Preserved exact accepted Decimal-capable bridge source and both contributors'
-memory in the release worktree; the only runtime delta against 6e5c39be is the
-two responsive navigation classes. Integrated production build, strict types,
-scoped component lint and diff whitespace PASS before a new pinned release.
 
 ## 11 October 2026 — Finished company-user administration deployed and verified
 

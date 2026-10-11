@@ -744,7 +744,18 @@ async function main() {
     await target.page
       .getByRole("button", { name: "Save draft", exact: true })
       .click();
-    await expect(target.page).toHaveURL(/\/finance\/documents\/[a-z0-9]+$/);
+    await expect
+      .poll(() =>
+        db.financeDocument.count({
+          where: {
+            organisationId: company.id,
+            creatorUserId: target.user.id,
+            kind: "REQUEST",
+            title: `Procurement acceptance ${suffix}`,
+          },
+        }),
+      )
+      .toBe(1);
     const request = await db.financeDocument.findFirstOrThrow({
       where: {
         organisationId: company.id,
@@ -753,6 +764,9 @@ async function main() {
         title: `Procurement acceptance ${suffix}`,
       },
     });
+    await expect(target.page).toHaveURL(
+      new RegExp(`/finance/documents/${request.id}$`),
+    );
     await expect(
       target.page.getByRole("heading", {
         name: request.reference,

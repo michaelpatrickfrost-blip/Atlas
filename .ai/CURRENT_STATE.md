@@ -1,3 +1,14 @@
+## 11 October 2026 — Procurement test now waits for persisted record
+
+1448224 candidate passed account/profile/password/recovery/invoice/banking checks.
+Its new save test used a broad record URL regex that also matched /documents/new,
+then queried before the asynchronous save committed. Corrected checker waits for
+one exact synthetic REQUEST, then its exact saved-record URL and own Spend link.
+Strict types/checker lint/whitespace PASS; runtime source remains unchanged.
+Backup atlas-pre-deploy-20261011-154042; evidence
+/tmp/atlas-settings-candidate-Sit9rX. Test access retired/history retained; production
+ad9d5a43 unchanged. Next: fresh complete candidate/public acceptance and visuals.
+
 ## 11 October 2026 — Procurement acceptance uses the actual combobox name
 
 2420e30 immutable candidate again passed Settings/profile/member/password/login/

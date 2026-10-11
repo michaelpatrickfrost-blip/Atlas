@@ -12718,3 +12718,8 @@ and remaining-gap documentation into this verified usability branch. The merge
 changes documentation only; runtime a0fd2d0 remains verified live. Publishing this
 combined source/memory to main by normal fast-forward, preserving dirty canonical
 Desktop files and unrelated contributor edits.
+
+Main integration completed: normal fast-forward push published combined source and
+shared evidence at 3cefe948 on origin/main. Post-live differences are documentation
+only; app/schema/action source matches verified a0fd2d0. The canonical Desktop
+checkout's concurrent edits remain intact. No further test fixtures were created.

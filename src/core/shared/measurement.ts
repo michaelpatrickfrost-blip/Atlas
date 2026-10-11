@@ -47,12 +47,15 @@ export function measuredQuantity(value: number | string, enteredUnit: string, ba
 }
 
 /** Sum exact scaled requirements before any stock-precision rounding. */
-export function componentQuantity(output: number, perUnit: number, scrapPercent: number) {
+export function componentQuantity(output: number, perUnit: number, scrapPercent: number, yieldPercent = 100) {
   const q = scaledQuantity(output), rate = scaledQuantity(perUnit);
   if (!Number.isFinite(scrapPercent) || scrapPercent < 0 || scrapPercent > 100) throw new Error("Scrap must be between zero and 100 percent.");
   const scrap = BigInt(Math.round(scrapPercent * 10_000));
-  const denominator = 1_000_000n * 1_000_000n;
-  const numerator = q * rate * (1_000_000n + scrap);
+  if (!Number.isFinite(yieldPercent) || yieldPercent <= 0 || yieldPercent > 100) throw new Error("Yield must be greater than zero and at most 100 percent.");
+  const yieldRate = BigInt(Math.round(yieldPercent * 10_000));
+  if (yieldRate <= 0n) throw new Error("Yield must be at least 0.0001 percent.");
+  const denominator = 1_000_000n * 1_000_000n * yieldRate;
+  const numerator = q * rate * (1_000_000n + scrap) * 1_000_000n;
   // Requirements round upwards only to one millionth of the stock unit; actual
   // measured movements are never rounded or rounded to whole units.
   return Number((numerator + denominator - 1n) / denominator) / 1_000_000;

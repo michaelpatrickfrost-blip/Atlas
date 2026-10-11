@@ -27,7 +27,12 @@ async function valueBalance(tx: Prisma.TransactionClient, session: Session, p: P
   const where = { organisationId_warehouseId_productId: { organisationId: session.organisationId, warehouseId: p.warehouseId, productId } };
   const current = await tx.financeStockValue.findUnique({ where });
   if (addQuantity(Number(current?.quantity ?? 0), quantityDelta) < 0 || (current?.valueMinor ?? 0n) + valueDelta < 0n) throw new Error("Inventory valuation would become negative. Review Finance manufacturing values.");
-  await tx.financeStockValue.upsert({ where, create: { organisationId: session.organisationId, entityId: p.entityId, warehouseId: p.warehouseId, productId, quantity: quantityDelta, valueMinor: valueDelta }, update: { quantity: { increment: quantityDelta }, valueMinor: { increment: valueDelta }, version: { increment: 1 } } });
+  if (current) {
+    const updated = await tx.financeStockValue.updateMany({ where: { ...where.organisationId_warehouseId_productId, version: current.version }, data: { quantity: { increment: quantityDelta }, valueMinor: { increment: valueDelta }, version: { increment: 1 } } });
+    if (updated.count !== 1) throw new Error("Inventory valuation changed. Refresh and retry the stock transaction.");
+  } else {
+    await tx.financeStockValue.create({ data: { organisationId: session.organisationId, entityId: p.entityId, warehouseId: p.warehouseId, productId, quantity: quantityDelta, valueMinor: valueDelta } });
+  }
 }
 
 export const manufacturingCostProvider: ManufacturingCostProvider = {
@@ -115,7 +120,15 @@ export const manufacturingCostProvider: ManufacturingCostProvider = {
     const entries = await tx.financeManufacturingValueEntry.findMany({ where: { organisationId: session.organisationId, productionOrderId: input.productionOrderId } });
     if (entries.some(row => row.entityId !== p.entityId)) throw new Error("A production order cannot move between accounting entities after costs have been posted.");
     const wip = entries.reduce((sum, row) => sum + row.wipMinor, 0n);
-    const direct = entries.filter(row => row.movementId && input.newMaterialMovementIds.includes(row.movementId)).reduce((sum, row) => sum + row.wipMinor, 0n);
+    let direct = entries.filter(row => row.movementId && input.newMaterialMovementIds.includes(row.movementId)).reduce((sum, row) => sum + row.wipMinor, 0n);
+    if (input.reportId) {
+      // Actual report genealogy identifies the portion of earlier manual issues
+      // consumed by this output; treat it like newly backflushed material.
+      const uses = await tx.manufacturingMaterialUse.findMany({ where: { organisationId: session.organisationId, reportId: input.reportId }, include: { stockAllocation: true } });
+      const byMovement = new Map<string, number>();
+      for (const use of uses) if (use.stockAllocation) byMovement.set(use.stockAllocation.movementId, addQuantity(byMovement.get(use.stockAllocation.movementId) ?? 0, Number(use.quantity)));
+      direct = entries.filter(row => row.kind === "MATERIAL" && row.movementId && byMovement.has(row.movementId)).reduce((sum, row) => sum + proportionalValue(row.wipMinor, byMovement.get(row.movementId!)!, -Number(row.quantity)), 0n);
+    }
     const currentQuantity = addQuantity(input.goodQuantity, input.scrapQuantity);
     const allocated = productionCostAllocation(wip, direct, currentQuantity, input.remainingBefore, input.finish);
     // Closing after earlier partial receipts must allocate late costs to the goods that

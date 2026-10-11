@@ -169,7 +169,7 @@ sentence without weakening phase gates.
 resolver and pinned configuration references. Files core/studio/record-types/* and
 focused tests. Database none; no runtime/publisher mutation. Tests absent metadata
 compatibility, one overlay, conflicts/cycles/bounds/tenant-independent pure output.
-Status NOT STARTED; exact ownership assigned before coding.
+Status IMPLEMENTED: pure checkpoint5c06 integratedfe915;11focused assertionsPASS, no actual assignment/runtime yet.
 2C2: purpose shared definition compiler/publisher integration plus tenant-scoped
 configuration dependency storage and canonical record association. Depends2C1/2B.
 Files compiler/kernel, definitions, schema additive migration, owner adapters/tests.
@@ -192,5 +192,6 @@ second publisher, canonical entity copy or automatic type assignment. Incoming b
 activation does not silently rewrite overlay pins; explicit republish remains
 required. Record-type activation/rollback must validate any stronger requirements
 against actual affected canonical cohort in same owning transaction. Unsupported
-owners and later process/decision refs fail closed. All2C2 pieces NOT STARTED until
-assigned; pure2C1 source in progress alongside field gates.
+owners and later process/decision refs fail closed. 2C2a pin table/sealed metadata reader IMPLEMENTEDfe915; SQL040/050 compiles in
+central BEGIN/ROLLBACK underbothlocks, no persistent changes. Compiler/publication
+wiring and2C2b–e remain NOT STARTED. Pure2C1 localverified; actualruntime pending.

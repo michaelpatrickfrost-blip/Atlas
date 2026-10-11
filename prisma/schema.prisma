@@ -2536,6 +2536,8 @@ model InventoryBalance {
  @@map("inventory_balances")
 }
 model InventoryMovement {
+ financeReceiptId String?
+ financeReceipt FinanceDocument? @relation("FinanceReceiptStock",fields:[financeReceiptId,organisationId],references:[id,organisationId],onDelete:NoAction,onUpdate:Cascade)
  financeValueEntries FinanceManufacturingValueEntry[]
  productionReportId String?
  productionReport ManufacturingProductionReport? @relation(fields:[productionReportId,organisationId],references:[id,organisationId])
@@ -2565,6 +2567,7 @@ model InventoryMovement {
  @@unique([organisationId,requestKey])
  @@unique([id,organisationId])
  @@index([organisationId,createdAt])
+ @@index([organisationId,financeReceiptId],map:"inventory_movements_finance_receipt_idx")
  @@map("inventory_movements")
 }
 model InternalMove {
@@ -5375,6 +5378,8 @@ model FinanceBankVersion {
  @@map("finance_bank_versions")
 }
 model FinanceDocument {
+ stockReceiptMovements InventoryMovement[] @relation("FinanceReceiptStock")
+ expectedReceiptAt DateTime?
  expenseClaimId String?
  id String @id @default(cuid())
  organisationId String

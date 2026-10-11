@@ -2,7 +2,7 @@ import { visibleGuides, type Guide } from './catalogue';
 import type { ModuleManifest } from '@/core/modules/types';
 
 export type GuideCategory = 'Setup' | 'Daily work' | 'Troubleshooting';
-export type GuideLibraryEntry = { id: string; title: string; summary: string; href: string; category: GuideCategory; searchText?: string; steps?: number };
+export type GuideLibraryEntry = { id: string; title: string; summary: string; href: string; category: GuideCategory; area?: string; searchText?: string; steps?: number };
 export type GuideApp = { id: string; name: string; description: string; guides: GuideLibraryEntry[] };
 const setup = new Set(['getting-started', 'products', 'customers', 'studio', 'templates']);
 export function guideCategory(guide: Guide): GuideCategory { return guide.category ?? (setup.has(guide.id) ? 'Setup' : 'Daily work'); }
@@ -21,13 +21,17 @@ export function guideApps(capabilities: ReadonlySet<string>, modules: readonly M
     if (!group.guides.some(guide => guide.href === entry.href)) group.guides.push(entry);
   };
   for (const guide of visibleGuides(capabilities, new Set(modules.map(module => module.id)))) add(guideAppId(guide, modules), {
-    id: guide.id, title: guide.title, summary: guide.summary, category: guideCategory(guide), href: `/guides/${guide.id}`, steps: guide.steps.length,
+    id: guide.id, title: guide.title, summary: guide.summary, category: guideCategory(guide), area: guide.area, href: `/guides/${guide.id}`, steps: guide.steps.length,
     searchText: [...guide.before, ...guide.steps.flatMap(step => [step.title, step.detail]), ...guide.troubleshoot.flatMap(issue => [issue.question, issue.answer]), ...(guide.terms ?? []).flatMap(term => [term.word, term.meaning])].join(' '),
   });
-  for (const appModule of modules) for (const guide of appModule.guides ?? []) add(appModule.id, guide);
+  for (const appModule of modules) for (const guide of appModule.guides ?? []) add(appModule.id, { ...guide, area: guide.area ?? groups.get(appModule.id)?.guides[0]?.area });
   return [...groups.values()].sort((a, b) => a.id === 'workspace' ? -1 : b.id === 'workspace' ? 1 : a.name.localeCompare(b.name, 'en-GB'));
 }
 export function searchGuideApps(apps: GuideApp[], query: string): GuideApp[] {
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
   return apps.map(app => ({ ...app, guides: app.guides.filter(guide => words.every(word => `${app.name} ${guide.title} ${guide.summary} ${guide.searchText ?? ''}`.toLowerCase().includes(word))) })).filter(app => app.guides.length > 0);
+}
+
+export function filterGuideApps(apps: GuideApp[], filters: { q?: string; app?: string; area?: string }) {
+  return searchGuideApps(apps.filter(app => !filters.app || app.id === filters.app).map(app => ({ ...app, guides: app.guides.filter(guide => !filters.area || guide.area === filters.area) })), filters.q ?? "");
 }

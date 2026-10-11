@@ -40,3 +40,8 @@ it("calculates money once from exact weight and a price quantity", () => {
   expect(commercialLineNet(15, 0.1, 0)).toBe(2);
   expect(commercialLineNet(12345, 1.25, 10)).toBe(13888);
 });
+
+it('keeps fractional BOM quantities and yield precise before stock and money rounding',()=>{
+ expect(componentQuantity(10.5,1.23456,0)).toBe(12.96288);
+ expect(componentQuantity(10.5,1.23456,0,80)).toBe(16.2036);
+});

@@ -123,6 +123,165 @@ Storage: removed2.4GB root .next/cache only after exact generated-path and proce
 checks; source76MB/shared dependencies retained. No other app/process/source/business
 files touched, no extra dumps. Two older managed worktree archives remain queued,
 not confirmed completed; do not report their disk savings.
+## 11 October 2026 — Complete exact execution candidate passes; guide navigation refined
+
+Candidate e3b0639e passed every actual exact manufacturing/purchasing scenario,
+including Finance-owned receipt FK, receipt/damage MRP netting and late supplier
+date, balanced journals and filled trace/cost/load/production/collection screens at
+1440/768/390. Gate then stopped on an invalid test assumption that Finance must be
+absent from Operations; its Procurement guide correctly belongs there. Corrected
+native assertion checks that guide under Finance and excludes unrelated Marketing/
+Business instructions. App links/search/back now preserve area/search, with an
+explicit All app guides link, so filtered counts match the opened app hub. Seven
+focused guide tests, final build, strict TypeScript and scoped lint pass. Populated
+cost phone, mixed-load tablet and genealogy desktop screenshots were reviewed.
+Candidate/public guide acceptance, activation and all-Test cleanup pending.
+Live remains 5b6390c8; candidate access
+retired. Evidence /tmp/atlas-supply-candidate-BNxwrM; backup ...204054. Migration
+20261011230000_finance_receipt_stock_lineage applied compatibly, no DB rollback.
+
+## 11 October 2026 — Finance receipt stock lineage repaired; native gate pending
+
+Candidate 4e1cf413 passed all core exact execution scenarios, then actual purchasing
+receipt rolled back on inventory_movements_receipt_fkey: Finance's consumer passed
+its FinanceDocument id into a field owned by Logistics receipts. New additive
+20261011230000_finance_receipt_stock_lineage adds a separate nullable tenant-bound
+Finance receipt link, extends the single-source guard and retains the existing
+Logistics FK/data. Stock's Finance consumer now uses that link; actual acceptance
+asserts the saved owning document and null Logistics receipt link. No damaged stock
+or failed receipt was committed. Live remains 5b6390c8; failed Test access retired.
+Prisma validate/generate, generated model metadata and 4 focused files/39 tests
+passed; scoped lint, final production build and strict TypeScript passed. Native/
+public acceptance, activation and authorised all-Test cleanup remain pending.
+No whole-suite rerun for this correction.
+
+## 11 October 2026 — Core exact execution passes candidate; Buy fixture corrected
+
+Candidate 20b3223f passed actual decimal receipt/replay, held-material atomic rollback,
+partial reports/backorder/collection, zero completed WIP, serial material genealogy
+and £1-per-output carrying values, fractional COGS dispatch/value transfer and mixed
+load/shared costs. The later dated-purchasing fixture used batchQuantity=0, refused
+by product_definitions_batch_check; corrected to the valid one-unit Buy batch.
+No application/accounting guard was weakened. No public activation; live remains
+5b6390c8. Evidence /tmp/atlas-supply-candidate-c15GjD, backup ...202559. Test access
+retired/session revoked. Final purchasing, responsive guides, public acceptance and
+authorised all-Test cleanup pending. Production code unchanged since passing build,
+strict types, lint and 24 focused tests; no unnecessary broad rerun.
+
+## 11 October 2026 — Execution fixture storage corrected; release pending
+Candidate f091fa8a passed dated planning and receipt/replay checks but stopped at
+the first partial production report because its synthetic YARD location had no
+storage capabilities. The application correctly refused to receive production
+without an active storage location. The native fixture now explicitly configures
+STORAGE/PICK_FACE. Candidate did not activate; live remains Decimal-compatible
+5b6390c8. Nullable purchase receipt-date migration applied compatibly. For the
+manual material trace correction, 24 focused tests, strict TypeScript and focused
+lint passed; production build and final strict TypeScript passed. Native/public
+execution, activation and authorised all-Test cleanup remain pending.
+
+## 11 October 2026 — Partial manual issues follow actual report genealogy
+
+Finance settlement now uses each immutable report’s actual allocated material-use
+quantities, including earlier manual issues, to identify direct material cost.
+Previously a one-unit manual issue for the first unit of a two-unit order was treated
+as general prior WIP and spread into later output. Native serial acceptance now checks
+both selected one-unit issues value their respective outputs at £1 each. Automatic
+backflush retains the same direct basis; final closure still allocates every remaining
+penny. The focused 24 tests, strict TypeScript, lint and build pass; native/public
+release acceptance remains pending, with no passing execution claim yet.
+
+## 11 October 2026 — Native carrying-value expectation corrected
+
+Independent exact ratio calculation for the Test opening £250/1000.125 kg confirms
+both actual 2.5 kg issues round to 62 pence at the current weighted value pool:
+124 pence total, with the remainder retained in raw inventory. Corrected the native
+checker’s former 125-pence aggregate assumption; production accounting is unchanged.
+Candidate f091fa8a stopped before activation; final acceptance remains pending.
+
+## 11 October 2026 — Fractional candidate caught valuation constraint; fix prepared
+
+Candidate 667d546d applied fractional unlock after backup ...200301; retained live
+5b6390c8 remains Decimal-capable. Candidate acceptance caught FinanceStockValue
+upsert attempting a negative create before updating its existing value pool: PostgreSQL
+rejected it and the partial report rolled back atomically. Corrected to an explicit
+version-checked update of existing pools/create of new positive pools. Failed Test
+access retired/session revoked; fixtures await the final authorised all-Test scrub.
+No public activation of this candidate. Protected backup/Audit retained.
+
+Also prepared dated approved purchasing/open production supply: supplier receipt
+field separate from payment due date, reviewed date changes, Finance-owned scoped
+provider, receipt/damage netting, time-phased quantity netting and explicit undated/
+overdue/access warnings. Guides user-reported ?area=Operations ignored was confirmed
+on their live tab; area/app/search filters now combine, app browsing avoids repeating
+all 51 instructions and retains capability boundaries. Six focused files/25 tests and
+guide six tests PASS; Prisma validate/generate/Data API PASS (929 stable actions).
+Corrected production build, strict types and scoped lint PASS (0 errors, one existing
+unused import warning). Fractional BOM/yield tests and four source-netting tests PASS;
+no repeated full suite. Live execution and cleanup remain pending. Michael asks for focused
+verification without redundant full-suite reruns; earlier 2,241-test suite retained.
+
+## 11 October 2026 — Final manufacturing release integrates accepted tablet menus
+
+Final fractional release stopped before backup/migration/build at server ancestry:
+accepted runtime advanced to 5b6390c8, preserving Decimal bridge plus tablet menu
+bounds. Integrated origin/main f168cdf7 source and evidence; no contributor history
+lost. Combined production build, strict types, scoped lint and whitespace PASS.
+Native actual-filled screens now capture desktop/tablet/phone layouts. Whole-quantity
+checks remain live pending
+final candidate. Native fractional execution/serial/mixed WIP acceptance and all-Test
+cleanup are still pending. Retained Decimal 6e5c39be is proven rollback-compatible.
+
+## 11 October 2026 — Decimal rollback bridge publicly accepted
+
+Pinned 6e5c39bebe2db2bf76dc9eabf49170f631c3f05b passed the original Supply candidate
+AND public gates: actual MRP/Buy/Make/finite execution/flexible forecast/routing,
+app-grouped guide/library/new workspaces at three widths and zero browser exceptions.
+Three additive migrations applied after atlas-pre-deploy-20261011-194938 backup.
+Private candidate /tmp/atlas-supply-candidate-pOGTQm; public
+/tmp/atlas-supply-public-KIsVoA (fixture backup 195245). Old aaf9bc3a retained;
+temporary whole-quantity checks/one-output-order index remain centrally active.
+Exact accepted-runtime probe reads 1.250125 as Prisma Decimal without truncation;
+private probe schema removed. Live login 200/exact health; no local business DB.
+Test affiliations suspended/session-revoked; final authorised scrub remains pending.
+
+Final unlock migration 20261011210000_enable_fractional_manufacturing now removes
+the temporary checks/order index; it is authored, NOT yet applied. Native execution
+checker now additionally proves serial identities/manual material issues/partial
+serial outputs/collection. Traceability search includes recorded serial batch IDs.
+Strict types, scoped lint and final production build PASS. Visually inspected bridge
+guide library phone, Manufacturing app hub desktop and Finance costs phone: readable
+layout and app grouping. Final release/actual fractional WIP/mixed/trace/dispatch
+acceptance and Test cleanup are pending. Do not claim all complete.
+
+## 11 October 2026 — Opaque dropdowns deployed and visually verified
+
+Live runtime 5b6390c874b42571f091a53b1b017aea70121df7 gives shared app-navigation
+menus a solid white background and subtle border, retaining rounded corners and
+shadow. Removed panel backdrop filters in src/app/globals.css. In
+src/components/shell/floating-module-nav.tsx, phone/tablet panels span below the
+complete navigation bar with 16px side insets; desktop panels align to the trigger.
+Design guidance and DECISIONS supersede translucent glass styling for menu panels.
+
+Final isolated production build, strict TypeScript, scoped component lint and diff
+whitespace PASS; initial Next route typegen also passed. Exact-revision public
+read-only checks passed 30 menu openings on Manufacturing, Finance and Sales at
+1440/768/390px: opaque fill/no blur/full opacity, entire horizontal panel bounds,
+item hit-testing, outside-click dismissal and no page overflow. Zero browser or
+asset errors; all 27 non-read requests blocked. Final screenshots at all three
+widths visually inspected; local evidence build/opaque-dropdowns/final/. Full
+repository suite/lint not run for this presentation change.
+
+Backup atlas-pre-deploy-20261011-195638; exact accepted Decimal-capable Supply bridge
+6e5c39be retained as rollback and preserved byte-for-byte except these two menu
+positioning classes and task notes. No new migration was pending; no business-data,
+permission/profile, tenant-boundary or local-store change from this task.
+Earlier opacity release cc01ca16 (backup ...193859) and phone correction aaf9bc3a
+(backup ...194501) retained in Git/deployment history. Screenshot review exposed
+phone clipping; stronger bounds checks then exposed tablet clipping and both are
+fixed. Old-baseline 2722e98a safely stopped at ancestry before backup/build/activation
+when the concurrent Supply bridge activated; preserved its accepted source and
+both contributors' memory before the final release. Source and notes are mirrored
+narrowly into the canonical shared checkout; unrelated edits preserved.
 
 ## 11 October 2026 — Integrated manufacturing bridge build ready for live gate
 
@@ -172,42 +331,6 @@ preserved; no unsafe activation. Next: rerun integrated checks and pinned bridge
 candidate/public Supply acceptance, unlock/full execution release, visual inspection,
 zero-Test cleanup, then factual delivery evidence. Full 173-section enterprise
 programme still has explicit open items in MANUFACTURING_COVERAGE.md.
-
-## 11 October 2026 — Opaque dropdowns live; phone positioning correction prepared
-
-Request: page text shows through the Demand dropdown. Shared
-`src/app/globals.css` now gives `.atlas-float-dropdown` a solid white background
-and subtle border, retaining its rounded shape, shadow and existing interactions.
-Removed panel backdrop filters; Apps, notification, record and Dashboard menus
-already have opaque backgrounds. Design guidance and DECISIONS updated.
-Canonical shared checkout receives only this task's narrow style/document edits;
-isolated release starts from reviewed origin/main 4494f920, whose only difference
-from observed live 01f890b3 is completed layout verification documentation.
-No schema, tenant/capability, profile permission or data-store change.
-Initial immutable release cc01ca16 deployed; backup atlas-pre-deploy-20261011-193859,
-rollback 01f890b3 retained and no pending migration. Production build, Next typegen,
-strict TypeScript and whitespace PASS. Public exact-revision read-only probe
-passed 30 Manufacturing/Finance/Sales menu openings at 1440/768/390px: opaque fill,
-no backdrop filter, full opacity, hit-testing and outside dismissal; zero browser/
-asset errors, 27 non-read requests blocked. Initial probe assumed grouped menus
-on Settings/Logistics; actual navigation differs, so corrected its selected pages.
-Visual screenshot review found existing phone panels extending past the viewport,
-which the initial page-overflow assertion missed. FloatingModuleNav now anchors
-phone/tablet menus beneath the entire navigation bar with 16px side insets; desktop menus
-retain their trigger alignment. Panel-bound assertions added to disposable probe.
-Correction production build, strict TypeScript, scoped component lint and final
-diff whitespace PASS. Phone correction aaf9bc3a deployed (backup
-atlas-pre-deploy-20261011-194501); stronger bounds probe caught the same existing
-clipping at 768px Production. Extended shared below-bar placement to tablets
-(below 1024px). Final build, strict types, scoped lint and whitespace PASS.
-Next: deploy and repeat panel bounds/screenshots.
-Full repository suite/lint not run; final responsive acceptance pending.
-Concurrent Supply bridge 6e5c39be publicly activated while 2722e98a waited.
-Queued old-baseline release stopped at ancestry before backup/build/activation.
-Preserved exact accepted Decimal-capable bridge source and both contributors'
-memory in the release worktree; the only runtime delta against 6e5c39be is the
-two responsive navigation classes. Integrated production build, strict types,
-scoped component lint and diff whitespace PASS before a new pinned release.
 
 ## 11 October 2026 — Finished company-user administration deployed and verified
 
@@ -13105,4 +13228,17 @@ Reconcile that accepted newer source before the pinned integrated build/deployme
 No new dumps/local business DB/dependency copies. Full Phase2/visual editor unfinished.
 Exact next: merge acceptedc385, refresh Prisma, integrated build; original locked
 candidate/public typed-form bridge; then defaults/search gates and2C/D/E runtime.
+## 11 October — accepted c385 source reconciliation and additive DDL rehearsal
 
+Merged acceptedc385 into scopedStudio source preserving operational purchase dates,
+Finance receipt ownership, guide/UI changes and both contributors' memory. Narrow
+native reference-picker action retained in regenerated actionregistry. Prisma
+validate/generate67043 exit0, integrated production77784 exit0, merged70 assertions/
+8 suites PASS83796. Initial standalone types raced generation and saw stale client;
+final sequential standalone85658 exit0. Central both-lock BEGIN/ROLLBACK23631
+exit0 compiled040000/defaultreceipt and050000/configurationpin SQL without retaining
+changes. No new dump. Read-only central migration query confirms030000 native form
+receipt migration already applied by earlier candidate, correcting source-only claim;
+040000/050000 NOT applied at this checkpoint. FullPhase2/visual editor incomplete.
+Exact next: final standalone types, commit/pin integratedbridge; original candidate
+and public typed-form gates, then compatible default/search evidence and2C/D/E.

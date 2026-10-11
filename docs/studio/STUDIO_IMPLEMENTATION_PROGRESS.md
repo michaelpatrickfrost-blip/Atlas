@@ -76,6 +76,14 @@ source coverage, phase plan and this ledger. No rewritten specification.
 
 # Current Workstream Detail
 
+Acceptedc385 merge preserves operational/Finance/UI source and shared memory.
+Production77784 PASS; focused70/8 PASS83796; Prisma67043PASS. Initial types sawold
+client during generation, final sequential standalone85658 exit0; scoped merge lint2995 exit0. Actual040000/050000 DDL
+compiled in central BEGIN/ROLLBACK under originalbothlocks23631 exit0, no persistent
+changes/no dump. Read-only migration history confirms030000 alreadyAPPLIED from
+earlierfailedcandidate; nativeforms publicverification stillpending. New040/050
+notapplied untiloriginalrelease. Retained required202921 recovery verified.
+
 Runtime feature bridge IMPLEMENTED: exact sealed release/rollback pair parser
 evidence, new-default publication+activation fail closed, original deployment gates.
 First legacy parser checked before optional newer module imports. Actual defaults

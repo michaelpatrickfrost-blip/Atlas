@@ -23,7 +23,7 @@ export async function checkManufacturingExecution({context,page,session,out}:{co
  const settings=(action:string,data:Record<string,string|number|string[]>,error?:RegExp)=>call(`src/modules/finance/services/manufacturing-settings:${action}`,[form(data)],error);
  const adjust=(data:Record<string,string|number>,error?:RegExp)=>call('src/app/(app)/stock/actions:adjustStock',[form(data)],error);
  const warehouse=await db.warehouse.create({data:{organisationId,code:'EXACT',name:'Exact production · Test'}});
- const yard=await db.stockLocation.create({data:{organisationId,warehouseId:warehouse.id,code:'YARD',name:'Collected stock · Test'}});
+ const yard=await db.stockLocation.create({data:{organisationId,warehouseId:warehouse.id,code:'YARD',name:'Collected stock · Test',capabilities:['STORAGE','PICK_FACE']}});
  const raw=await db.product.create({data:{organisationId,code:'MASS-RAW',name:'Weighed raw material · Test',itemClass:'RAW',sellable:false,unitOfMeasure:'kg',trackingMode:'LOT',basePriceAmount:999999}});
  const output=await db.product.create({data:{organisationId,code:'MASS-FIN',name:'Weighed finished product · Test',unitOfMeasure:'kg',trackingMode:'LOT',basePriceAmount:999999}});
  const recipe=await db.productDefinition.create({data:{organisationId,productId:output.id,version:1,status:'ACTIVE',supply:'MAKE',batchQuantity:1,yieldPercent:100,createdByUserId:userId}});
@@ -83,7 +83,7 @@ export async function checkManufacturingExecution({context,page,session,out}:{co
  assert.equal((await db.manufacturingOrder.findFirstOrThrow({where:{organisationId,originOrderId:order.id}})).quantity.toString(),'0.25');
  const closed=await costRows();assert.equal(closed.reduce((sum,row)=>sum+row.wipMinor,0n),0n);
  const materials=closed.filter(row=>row.kind==='MATERIAL').reduce((sum,row)=>sum+row.wipMinor,0n);
- assert.equal(materials,125n);assert.equal(closed.filter(row=>row.kind==='OUTPUT').reduce((sum,row)=>sum+row.inventoryMinor+row.expenseMinor,0n),materials+2760n);
+ assert.equal(materials,124n);assert.equal(closed.filter(row=>row.kind==='OUTPUT').reduce((sum,row)=>sum+row.inventoryMinor+row.expenseMinor,0n),materials+2760n);
  await settings('recordProductionUsage',{workOrderId:work.id,machineMinutes:60,personMinutes:30,energyKwh:2,requestKey:'exact-usage'});assert.equal(await db.financeManufacturingValueEntry.count({where:{organisationId,productionOrderId:order.id,kind:'USAGE'}}),1);
  const batchCount=await db.stockProductionBatch.count({where:{organisationId,manufacturingOrderId:order.id}});assert.equal(batchCount,2);
  const uses=await db.manufacturingMaterialUse.findMany({where:{organisationId,report:{productionOrderId:order.id}}});assert.equal(uses.reduce((sum,row)=>addQuantity(sum,Number(row.quantity)),0),5);assert(uses.every(row=>row.stockAllocationId));
@@ -110,6 +110,31 @@ export async function checkManufacturingExecution({context,page,session,out}:{co
  const transferValues=await db.financeStockValue.findMany({where:{organisationId,productId:raw.id}});assert.equal(transferValues.reduce((sum,row)=>sum+row.valueMinor,0n),totalBefore);assert.equal(transferValues.find(row=>row.warehouseId===secondWarehouse.id)?.quantity.toString(),'0.125');assert.equal(await db.internalMove.count({where:{organisationId,requestKey:'exact-transfer'}}),1);
  console.log('PASS real fractional transfer preserves batch and total carrying value, moving 0.125 kg once between accounting warehouses.');
  console.log('PASS actual fractional dispatch takes the packed output batch once and posts Inventory → Cost of sales in the same stock transaction.');
+ // Serial identity requires whole units and actual manual component selections.
+ const serialRaw=await db.product.create({data:{organisationId,code:'SERIAL-RAW',name:'Serial component · Test',unitOfMeasure:'each',trackingMode:'SERIAL',basePriceAmount:999999}});
+ const serialOutput=await db.product.create({data:{organisationId,code:'SERIAL-OUT',name:'Serial finished product · Test',unitOfMeasure:'each',trackingMode:'SERIAL',basePriceAmount:999999}});
+ await adjust({mode:'add',productId:serialRaw.id,warehouseId:warehouse.id,quantity:1.5,serials:'SERIAL-IN-01 SERIAL-IN-02',reason:'Invalid serial fraction probe',requestKey:'serial-invalid'},/whole|serial/i);
+ assert.equal(await db.inventoryMovement.count({where:{organisationId,productId:serialRaw.id}}),0);
+ await adjust({mode:'add',productId:serialRaw.id,warehouseId:warehouse.id,quantity:2,lotCode:'SERIAL-RAW-LOT',serials:'SERIAL-IN-01 SERIAL-IN-02',reason:'Actual serial Test opening',requestKey:'serial-opening'});
+ await settings('reconcileOpeningStockValue',{warehouseId:warehouse.id,productId:serialRaw.id,totalValue:'2.00',requestKey:'serial-value',reason:'Reviewed serial Test opening'});
+ const serialRecipe=await db.productDefinition.create({data:{organisationId,productId:serialOutput.id,status:'ACTIVE',version:1,supply:'MAKE',batchQuantity:1,yieldPercent:100,createdByUserId:userId}});
+ await db.productBomLine.create({data:{organisationId,definitionId:serialRecipe.id,componentProductId:serialRaw.id,quantityPerUnit:1}});
+ await db.productOperation.create({data:{organisationId,definitionId:serialRecipe.id,position:1,name:'Assemble actual serials'}});
+ await settings('saveManufacturingProfile',{...profile,approvedDefinitionIds:[recipe.id,serialRecipe.id]});
+ const serialOrder=await create(serialOutput.id,serialRecipe.id,2);await command('startWorkOrder',[serialOrder.work.id,'serial-start']);
+ for(const index of [1,2]){
+  const serial=String(index).padStart(2,'0');
+  await call('src/modules/manufacturing/services/materials:issueProductionMaterial',[form({workOrderId:serialOrder.work.id,productId:serialRaw.id,quantity:1,lotCode:'SERIAL-RAW-LOT',serials:`SERIAL-IN-${serial}`,requestKey:`serial-issue-${index}`,reason:'Actual selected component identity'})]);
+  await command('completeWorkOrder',[serialOrder.work.id,1,0,`serial-output-${index}`,{finish:index===2,lotCode:`SERIAL-OUT-LOT-${index}`,serials:[`SERIAL-OUT-${serial}`]}]);
+ }
+ const serialValues=await db.financeManufacturingValueEntry.findMany({where:{organisationId,productionOrderId:serialOrder.order.id,kind:'OUTPUT'}});assert.deepEqual(serialValues.map(row=>row.inventoryMinor),[100n,100n]);
+ const serialBatches=await db.stockProductionBatch.findMany({where:{organisationId,manufacturingOrderId:serialOrder.order.id},orderBy:{createdAt:'asc'}});assert.equal(serialBatches.length,2);
+ await collect({...collection,batchId:serialBatches[0].id,version:serialBatches[0].version,quantity:1,serials:'SERIAL-OUT-02',requestKey:'serial-collect-invalid'},/serial|batch/i);
+ await collect({...collection,batchId:serialBatches[0].id,version:serialBatches[0].version,quantity:1,serials:'SERIAL-OUT-01',requestKey:'serial-collect'});
+ assert.equal((await db.stockSerial.findFirstOrThrow({where:{organisationId,productId:serialOutput.id,serial:'SERIAL-OUT-01'}})).locationId,yard.id);
+ const serialUses=await db.manufacturingMaterialUse.findMany({where:{organisationId,report:{productionOrderId:serialOrder.order.id}},include:{stockAllocation:true}});assert.deepEqual(serialUses.flatMap(row=>row.stockAllocation?.serials??[]).sort(),['SERIAL-IN-01','SERIAL-IN-02']);
+ await page.goto('/manufacturing/traceability?search=SERIAL-OUT-01',{waitUntil:'networkidle'});await expect(page.getByText('SERIAL-OUT-LOT-1',{exact:true})).toBeVisible();
+ console.log('PASS actual serial production: fractional identity rejected, selected component serials linked to two partial output batches, wrong collection identity refused and correct physical serial booked.');
  // Compatible products share one finite machine booking and one actual usage journal.
  const centre=await db.manufacturingWorkCentre.create({data:{organisationId,code:'MIXED',name:'Mixed processing · Test'}});
  const machine=await db.manufacturingResource.create({data:{organisationId,workCentreId:centre.id,name:'Shared batch machine · Test',type:'MACHINE',processKind:'BATCH_OVEN',calendarMode:'CONTINUOUS',timezone:'Europe/London',loadCapacity:300,loadUnit:'kg',processProfiles:['PROFILE-A']}});
@@ -121,7 +146,7 @@ export async function checkManufacturingExecution({context,page,session,out}:{co
   await db.productOperation.create({data:{organisationId,definitionId:definition.id,position:1,name:'Shared cycle',workCentreId:centre.id,resourceId:machine.id,eligibleResourceIds:[machine.id],timingMode:'BATCH',batchCapacity:100,cycleMinutes:60,coolingMinutes:0,processProfile:'PROFILE-A',loadUnit:'kg',loadPerUnit:footprint,machineMinorPerHour:1200,labourMinorPerHour:1800,overheadMinorPerHour:600}});
   mixed.push({product,recipe:definition,quantity});
  }
- await settings('saveManufacturingProfile',{...profile,approvedDefinitionIds:[recipe.id,...mixed.map(row=>row.recipe.id)]});
+ await settings('saveManufacturingProfile',{...profile,approvedDefinitionIds:[recipe.id,serialRecipe.id,...mixed.map(row=>row.recipe.id)]});
  const members=[];for(const row of mixed)members.push(await create(row.product.id,row.recipe.id,row.quantity));
  const loadInput={resourceId:machine.id,workOrderIds:members.map(row=>row.work.id),earliestStart:new Date(Date.now()-1000).toISOString()};
  const loadAction=<T=unknown>(action:string,args:unknown[],error?:RegExp)=>call<T>(`src/modules/manufacturing/services/machine-loads:${action}`,args,error);
@@ -135,12 +160,37 @@ export async function checkManufacturingExecution({context,page,session,out}:{co
  assert.equal((await db.manufacturingMachineLoad.findFirstOrThrow({where:{organisationId,id:load.id}})).status,'COMPLETE');
  const mixedCosts=await db.financeManufacturingValueEntry.findMany({where:{organisationId,productionOrderId:{in:members.map(row=>row.order.id)}}});assert.equal(mixedCosts.reduce((sum,row)=>sum+row.wipMinor,0n),0n);
  console.log('PASS actual mixed products: 250/300 kg compatible load, one 60-minute booking/cycle, one shared usage journal, exact 80%/20% cost allocation and zero completed WIP.');
+ // Purchasing evidence covers demand only on its receipt date, and actual receipts replace open supply.
+ const purchaseRaw=await db.product.create({data:{organisationId,code:'DATED-RAW',name:'Dated purchasing material · Test',itemClass:'RAW',sellable:false,unitOfMeasure:'kg',basePriceAmount:0}});
+ await db.productDefinition.create({data:{organisationId,productId:purchaseRaw.id,version:1,status:'ACTIVE',supply:'BUY',batchQuantity:1,yieldPercent:100,createdByUserId:userId}});
+ const needDate=new Date(Date.UTC(new Date().getUTCFullYear(),new Date().getUTCMonth()+1,1));
+ const arrival=new Date(needDate.getTime()-86400000),late=new Date(needDate.getTime()+86400000);
+ await db.manufacturingDemandForecast.create({data:{organisationId,productId:purchaseRaw.id,periodStart:needDate,quantity:12,createdByUserId:userId}});
+ const supplier=await db.party.create({data:{organisationId,kind:'COMPANY',name:'Dated supply vendor · Test',customerCode:'DATED-VENDOR'}});
+ const purchase=await call<{id:string}>('src/modules/finance/services/commands:createFinanceDocument',[{entityId:entity.id,kind:'PO',title:'Dated material · Test',currency:'GBP',exchangeRate:'1',documentDate:new Date().toISOString().slice(0,10),dueAt:late.toISOString().slice(0,10),expectedReceiptAt:arrival.toISOString().slice(0,10),partyId:supplier.id,lines:[{productId:purchaseRaw.id,description:purchaseRaw.name,quantity:'12',unitPrice:'1.00',taxCode:'OUTSIDE_SCOPE',taxRateBps:0}]}]);
+ // The approved commitment is a synthetic source fixture; this check does not claim independent approval acceptance.
+ await db.financeDocument.update({where:{id:purchase.id},data:{status:'APPROVED'}});
+ const purchaseRow=await db.financeDocument.findFirstOrThrow({where:{organisationId,id:purchase.id},include:{lines:true}});assert.equal(purchaseRow.expectedReceiptAt?.toISOString().slice(0,10),arrival.toISOString().slice(0,10));assert.notEqual(purchaseRow.dueAt?.toISOString(),purchaseRow.expectedReceiptAt?.toISOString());
+ const materialPlan=async()=>{await call('src/app/(app)/manufacturing/planning/actions:runMrpAction',[]);const run=await db.manufacturingPlanningRun.findFirstOrThrow({where:{organisationId,finishedAt:{not:null}},orderBy:{startedAt:'desc'}});return db.manufacturingSupplySuggestion.findMany({where:{organisationId,runId:run.id,productId:purchaseRaw.id}});};
+ assert.equal((await materialPlan()).length,0);
+ const receipt={requestKey:'dated-receipt',warehouseId:warehouse.id,date:new Date().toISOString().slice(0,10),lines:[{lineId:purchaseRow.lines[0].id,quantity:'2',damaged:'1'}]};
+ const received=await call<{id:string}>('src/modules/finance/services/commands:recordGoodsReceipt',[purchase.id,receipt]);await call('src/modules/finance/services/commands:recordGoodsReceipt',[purchase.id,receipt]);
+ const receivedMovement=await db.inventoryMovement.findFirstOrThrow({where:{organisationId,productId:purchaseRaw.id}});assert.equal(receivedMovement.financeReceiptId,received.id);assert.equal(receivedMovement.receiptId,null);
+ assert.equal((await materialPlan())[0]?.quantity.toString(),'1');
+ assert.equal((await db.financeStockValue.findFirstOrThrow({where:{organisationId,warehouseId:warehouse.id,productId:purchaseRaw.id}})).quantity.toString(),'1');
+ await call('src/modules/finance/services/purchase-arrivals:updatePurchaseArrival',[purchase.id,form({version:purchaseRow.version,expectedReceiptAt:late.toISOString().slice(0,10),reason:'Supplier confirmed later arrival · Test'})]);
+ assert.equal((await materialPlan())[0]?.quantity.toString(),'11');
+ await page.goto(`/finance/documents/${purchase.id}`,{waitUntil:'networkidle'});await expect(page.getByRole('heading',{name:'Supplier receipt plan',exact:true})).toBeVisible();
+ console.log('PASS actual dated purchasing: supplier receipt date stays separate from payment due date, on-time outstanding PO covers MRP once, 2 received/1 damaged leaves 1 kg replacement and one receipt/value posting, later confirmed arrival leaves 11 kg uncovered before need.');
  // All posted manufacturing journals balance, independent of their component rounding.
  const journals=await db.financeJournal.findMany({where:{organisationId,entityId:entity.id,status:'POSTED'},include:{lines:true}});assert(journals.length>8);for(const journal of journals)assert.equal(journal.lines.reduce((sum,line)=>sum+line.debit-line.credit,0n),0n);
  const rawLot=await db.stockLot.findFirstOrThrow({where:{organisationId,productId:raw.id,code:'RAW-MASS-01'}});
- await page.goto(`/manufacturing/traceability?lot=${rawLot.id}`,{waitUntil:'networkidle'});await expect(page.getByRole('heading',{name:'Batch traceability',exact:true})).toBeVisible();await expect(page.getByRole('link',{name:/FIN-PART-01/}).first()).toBeVisible();await page.screenshot({path:`${out}/exact-traceability.png`});
- for(const [path,title]of [[`/finance/manufacturing?warehouse=${warehouse.id}&entity=${entity.id}`,'Manufacturing costs'],['/manufacturing/machine-loads','Machine loads'],[`/manufacturing/produce/${order.id}`,null],['/stock/handoffs','Finished batches, ready to collect.']]as const){
-  assert.equal((await page.goto(path,{waitUntil:'networkidle'}))?.status(),200);if(title)await expect(page.getByRole('heading',{name:title,exact:true}).last()).toBeVisible();assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+ for(const [width,label]of [[1440,'desktop'],[768,'tablet'],[390,'phone']]as const){
+  await page.setViewportSize({width,height:1000});
+  await page.goto(`/manufacturing/traceability?lot=${rawLot.id}`,{waitUntil:'networkidle'});await expect(page.getByRole('heading',{name:'Batch traceability',exact:true})).toBeVisible();await expect(page.getByRole('link',{name:/FIN-PART-01/}).first()).toBeVisible();assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${out}/exact-traceability-${label}.png`});
+  for(const [path,title,labelPage]of [[`/finance/manufacturing?warehouse=${warehouse.id}&entity=${entity.id}`,'Manufacturing costs','costs'],['/manufacturing/machine-loads','Machine loads','loads'],[`/manufacturing/produce/${order.id}`,null,'production'],['/stock/handoffs','Finished batches, ready to collect.','collection']]as const){
+   assert.equal((await page.goto(path,{waitUntil:'networkidle'}))?.status(),200);if(title)await expect(page.getByRole('heading',{name:title,exact:true}).last()).toBeVisible();assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${out}/exact-${labelPage}-${label}.png`});
+  }
  }
  console.log('PASS actual genealogy/cost/holding/load pages and every manufacturing journal balances to the penny.');
 }

@@ -1,7 +1,7 @@
+import { incomingPurchaseSupply } from "@/core/supply/incoming";
 import { materialCostBasis } from "@/core/finance/manufacturing";
 import { requireSession } from "@/core/auth/session";
 import { remainingProductionQuantity } from "@/core/planning/production-quantity";
-import { addQuantity } from "@/core/shared/quantity";
 import { physicalStockState } from "@/modules/stock/services/physical-state";
 // MRP calculation services — wire domain logic to the database.
 import { db } from "@/core/db/client";
@@ -41,7 +41,9 @@ export async function runMrp(organisationId: string, userId: string, horizonDays
     inventory,
     recipes,
     prices,
-    existingSupply,
+    existingSupply: new Map(),
+    datedSupply: existingSupply.rows,
+    supplyWarnings: existingSupply.warnings,
     leadTimes,
     safetyStock: safetyStocks,
     names,
@@ -241,16 +243,27 @@ async function loadPrices(organisationId: string): Promise<Map<string, { amountM
   return new Map(basis.filter(row => currency.get(row.productId) === row.currency).map(row => [row.productId, { amountMinor: row.amountMinor, quantity: row.quantity }]));
 }
 
-/** Open production supply only. Dated purchase supply is not loaded yet — see
- * the known MRP limits in docs/modules/MANUFACTURING.md. */
-async function loadExistingSupply(organisationId: string): Promise<Map<string, number>> {
-  const supply = new Map<string, number>();
-  const openOrders = await db.manufacturingOrder.findMany({
-    where: { organisationId, status: { in: ["PLANNED", "READY", "RELEASED", "RUNNING"] } },
-    select: { productId: true, quantity: true, workOrders: { select: {sequence:true,status:true,producedQuantity:true,scrapQuantity:true} } },
-  });
-  for (const order of openOrders) supply.set(order.productId, addQuantity(supply.get(order.productId) ?? 0, remainingProductionQuantity({quantity:Number(order.quantity),workOrders:order.workOrders.map(w=>({...w,producedQuantity:Number(w.producedQuantity),scrapQuantity:Number(w.scrapQuantity)}))})));
-  return supply;
+/** Count each open quantity once, only from its expected completion/receipt day. */
+async function loadExistingSupply(organisationId: string) {
+  const session = await requireSession();
+  if (session.organisationId !== organisationId) throw new Error("Supply planning requires the current company.");
+  const [purchases, openOrders] = await Promise.all([
+    incomingPurchaseSupply(session),
+    db.manufacturingOrder.findMany({
+      where: { organisationId, status: { in: ["PLANNED", "READY", "RELEASED", "RUNNING"] } },
+      select: { id: true, productId: true, quantity: true, plannedFinish: true, requiredDate: true, workOrders: { select: {sequence:true,status:true,producedQuantity:true,scrapQuantity:true} } },
+    }),
+  ]);
+  const rows = [...purchases.rows];
+  let undated = 0;
+  for (const order of openOrders) {
+    const quantity = remainingProductionQuantity({quantity:Number(order.quantity),workOrders:order.workOrders.map(w=>({...w,producedQuantity:Number(w.producedQuantity),scrapQuantity:Number(w.scrapQuantity)}))});
+    if (!quantity) continue;
+    const availableDate = order.plannedFinish ?? order.requiredDate;
+    if (!availableDate) { undated++; continue; }
+    rows.push({ productId: order.productId, quantity, availableDate, sourceId: order.id });
+  }
+  return { rows, warnings: [...purchases.warnings, ...(undated ? [`${undated} open production order(s) have no finish/required date and are excluded from dated supply. Schedule them before relying on their output.`] : [])] };
 }
 
 /** Planned start is computed from the real routing, so the static lead time is

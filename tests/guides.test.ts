@@ -71,3 +71,18 @@ it("groups consolidated supply guides under the app and leaves disabled app cont
   expect(standalone.some(app => app.id === "stock")).toBe(true);
   expect(standalone.some(app => app.id === "manufacturing")).toBe(false);
 });
+
+import { filterGuideApps } from '@/core/guides/library';
+it('keeps legacy Operations links filtered while retaining app grouping and combined search',()=>{
+ const apps=[{id:'manufacturing',name:'Manufacturing & Supply',description:'',guides:[{id:'weights',title:'Use kg',summary:'',href:'/weights',category:'Setup' as const,area:'Operations'}]},{id:'finance',name:'Finance',description:'',guides:[{id:'books',title:'Open books',summary:'',href:'/books',category:'Setup' as const,area:'Business'}]}];
+ expect(filterGuideApps(apps,{area:'Operations'}).map(app=>app.id)).toEqual(['manufacturing']);
+ expect(filterGuideApps(apps,{area:'Operations',q:'kg'})[0].guides[0].id).toBe('weights');
+ expect(filterGuideApps(apps,{area:'Operations',app:'finance'})).toEqual([]);
+});
+
+it('keeps operational purchasing under Finance while excluding its Business guide', () => {
+ const modules=[{id:'finance',name:'Finance'}] as ModuleManifest[];
+ const apps=guideApps(new Set(['finance.purchase.read']),modules);
+ expect(filterGuideApps(apps,{area:'Operations',app:'finance'})[0].guides.map(guide=>guide.id)).toEqual(['procurement']);
+ expect(filterGuideApps(apps,{area:'Business',app:'finance'})[0].guides.map(guide=>guide.id)).toContain('finance');
+});

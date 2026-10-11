@@ -11,7 +11,7 @@ export async function receiveFinanceGoods(session: Session, tx: Prisma.Transacti
   const organisationId = session.organisationId, requestKey = `finance-receipt:${input.receiptLineId}`;
   const line = await tx.financeDocumentLine.findFirstOrThrow({ where: { id: input.receiptLineId, organisationId, documentId: input.receiptId, productId: input.productId, document: { kind: "RECEIPT", status: "DRAFT" } } });
   if (addQuantity(Number(line.quantity), -Number(line.damagedQuantity)) !== input.quantity) throw new Error("Inventory acceptance must match the Finance receipt.");
-  const result = await stockProvider.receiveStock(session, { requestKey, productId: input.productId, warehouseId: input.warehouseId, quantity: input.quantity, lotCode: input.lotCode, serials: input.serials, reason: "Approved purchasing receipt", reference: input.reference, receiptId: input.receiptId }, tx);
+  const result = await stockProvider.receiveStock(session, { requestKey, productId: input.productId, warehouseId: input.warehouseId, quantity: input.quantity, lotCode: input.lotCode, serials: input.serials, reason: "Approved purchasing receipt", reference: input.reference, financeReceiptId: input.receiptId }, tx);
   const movement = await tx.inventoryMovement.findFirstOrThrow({ where: { organisationId, id: result.movementIds[0] } });
   if (!result.replayed) await tx.auditEntry.create({ data: { organisationId, actorUserId: session.userId, action: "stock.finance_receipt", entityType: "InventoryMovement", entityId: movement.id, after: { receiptId: input.receiptId, receiptLineId: input.receiptLineId, warehouseId: input.warehouseId, quantity: input.quantity, lotCode: input.lotCode ?? null } } });
   return movement;

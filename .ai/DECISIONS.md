@@ -37,6 +37,17 @@ receipt probes. Bind small immutable per-release feature evidence to those SHAs
 under original BOTH locks; missing support stays server-closed. Reader/native writer
 support ships first, feature authoring opens only with compatible rollback. Apply
 this safety requirement to new2C/D artefact formats too, without schema rollback.
+## 11 October 2026 — Supplier receipt date is an operational planning fact
+
+Keep FinanceDocument.expectedReceiptAt distinct from payment dueAt. Only approved/
+part-received physical purchase quantities can cover demand, from their current
+supplier receipt date; subtract all posted received quantities including rejected
+units. Missing/overdue/access-restricted supply is disclosed and excluded. Finance
+owns document/project/tenant access through a Core-typed incomingSupplyProvider.
+Confirmed receipt-date changes require Purchasing management, version check and
+reason/Audit. Stock remains available only after actual accepted goods receipt.
+Guide area links remain supported alongside app grouping and combined search;
+browsing shows apps, with detailed results on search or app selection.
 
 ## 11 October 2026 — Exact stock and Finance-owned manufacturing cost
 
@@ -2676,3 +2687,19 @@ publications remain owned by S&OP. Missing history stays missing; zero is valid.
 This does not establish an automatic customer promise or advanced probabilistic
 forecast. Existing whole-unit stock execution refuses fractional component use;
 it must not silently round decimal clay material quantities into stock facts.
+
+## 11 October 2026 — Separate Finance and Logistics receipt lineage
+
+Inventory movement receiptId remains owned by Logistics Receipt. Approved purchase
+receiving records financeReceiptId to FinanceDocument via its composite tenant FK;
+one-source constraints include both. Do not repurpose the Logistics key or remove
+its FK to accept purchasing documents. Source owners retain their native guards and
+all stock/receipt/value posting stays in the same transaction. This corrects the
+actual central FK failure caught by native purchasing acceptance.
+
+## 11 October 2026 — Area browsing keeps canonical app ownership
+
+Operations includes Finance-owned Procurement; an area must not hide relevant work
+because its owning app has other Business guides. Filter entries within app groups,
+carry area/search into app hubs and back/search navigation, and expose All app
+guides as an explicit choice. Counts describe the currently filtered entries.

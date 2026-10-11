@@ -1,4 +1,5 @@
-import { quantityCostMinor } from "@/core/shared/measurement";
+import { quantityCostMinor, componentQuantity } from "@/core/shared/measurement";
+import { addQuantity } from "@/core/shared/quantity";
 import { operationTime } from "@/modules/products/domain/operation-time";
 import {
   DemandType,
@@ -116,7 +117,7 @@ export class MrpEngine {
       plannedOrders: [...this.plannedOrders.values()].flat(),
       shortages,
       capacityIssues: [],
-      warnings: [...(critical ? [`${critical} critical shortages`] : []), ...([...this.gross.keys()].some(productId => (!this.input.recipes.has(productId) || this.input.recipes.get(productId)?.supply === "BUY") && !this.input.prices.has(productId)) ? ["Material cost estimates are incomplete: Finance carrying value or approved purchase prices are missing or restricted. Sales prices are not used as costs."] : [])],
+      warnings: [...(this.input.supplyWarnings ?? []), ...(critical ? [`${critical} critical shortages`] : []), ...([...this.gross.keys()].some(productId => (!this.input.recipes.has(productId) || this.input.recipes.get(productId)?.supply === "BUY") && !this.input.prices.has(productId)) ? ["Material cost estimates are incomplete: Finance carrying value or approved purchase prices are missing or restricted. Sales prices are not used as costs."] : [])],
       peggingMap: this.peggingMap,
     };
   }
@@ -161,17 +162,20 @@ export class MrpEngine {
     const safetyStock = Math.max(0, this.input.safetyStock.get(productId) ?? 0);
     const existingSupply = Math.max(0, this.input.existingSupply.get(productId) ?? 0);
     let projected = Math.max(0, this.input.inventory.get(productId)?.available ?? 0) + existingSupply;
+    const arrivals = (this.input.datedSupply ?? []).filter(row => row.productId === productId).sort((a, b) => a.availableDate.getTime() - b.availableDate.getTime());
+    let arrivalIndex = 0;
 
     const netRows: NetRequirement[] = [];
     const orderRows: PlannedOrder[] = [];
 
     for (const requirement of requirements) {
-      projected -= requirement.quantity;
-      const netQuantity = Math.max(0, safetyStock - projected);
+      while (arrivalIndex < arrivals.length && arrivals[arrivalIndex].availableDate <= requirement.requiredDate) projected = addQuantity(projected, arrivals[arrivalIndex++].quantity);
+      projected = addQuantity(projected, -requirement.quantity);
+      const netQuantity = Math.max(0, addQuantity(safetyStock, -projected));
       if (!(netQuantity > 0)) continue;
 
       const lots = this.lotQuantities(netQuantity, recipe);
-      projected += lots.reduce((sum, quantity) => sum + quantity, 0);
+      projected = addQuantity(projected, ...lots);
       netRows.push({
         productId,
         quantity: requirement.quantity,
@@ -277,7 +281,7 @@ export class MrpEngine {
    * planner sees which parts are already covered and which are short. */
   private planMaterials(recipe: Recipe, quantity: number, requiredBy: Date, ledgerId: string): PlannedMaterial[] {
     const rows = recipe.components.map((component) => {
-      const needed = quantity * componentPerGoodUnit(component.quantityPerUnit, component.scrapPercent, recipe.yieldPercent);
+      const needed = componentQuantity(quantity, component.quantityPerUnit, component.scrapPercent, recipe.yieldPercent);
       const onHand = Math.max(0, this.input.inventory.get(component.componentProductId)?.available ?? 0);
       const material: PlannedMaterial = {
         productId: component.componentProductId,
@@ -300,7 +304,7 @@ export class MrpEngine {
   private explodePlannedMake(order: PlannedOrder, recipe: Recipe) {
     const ledgerId = `mrp:${order.productId}:${order.requiredDate.toISOString()}:${order.quantity}`;
     for (const component of recipe.components) {
-      const quantity = order.quantity * componentPerGoodUnit(component.quantityPerUnit, component.scrapPercent, recipe.yieldPercent);
+      const quantity = componentQuantity(order.quantity, component.quantityPerUnit, component.scrapPercent, recipe.yieldPercent);
       if (!(quantity > 0) || !Number.isFinite(quantity)) throw new Error(`Invalid BOM quantity for ${component.componentProductId}.`);
       this.addGross({
         productId: component.componentProductId,
@@ -337,7 +341,7 @@ export class MrpEngine {
   private costOf(recipe: Recipe, quantity: number): { totalMinor: number; buckets: CostBuckets } {
     const buckets = emptyBuckets();
     for (const component of recipe.components) {
-      const needed = quantity * componentPerGoodUnit(component.quantityPerUnit, component.scrapPercent, recipe.yieldPercent);
+      const needed = componentQuantity(quantity, component.quantityPerUnit, component.scrapPercent, recipe.yieldPercent);
       const child = this.rolledCost(component.componentProductId, needed, 0);
       for (const key of Object.keys(buckets) as CostKind[]) buckets[key] += child.buckets[key];
     }

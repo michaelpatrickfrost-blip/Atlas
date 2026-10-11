@@ -328,6 +328,8 @@ export interface MrpInput {
   recipes: Map<string, Recipe>;
   prices: Map<string, number | { amountMinor: number; quantity: number }>;
   existingSupply: Map<string, number>;
+  datedSupply?: import("@/core/supply/incoming").DatedSupply[];
+  supplyWarnings?: string[];
   leadTimes: Map<string, number>;
   safetyStock: Map<string, number>;
   names: Map<string, { name: string; code: string }>;

@@ -338,3 +338,34 @@ blocked-material atomic rollback, partial output/WIP/backorders, batch collectio
 actual component genealogy, fractional dispatch/COGS, valued transfers and compatible
 mixed machine load/shared costs. App guide/library and new workspaces are checked at
 three widths. Required final Test-company cleanup is explicitly authorised.
+
+## Accepted Decimal rollback bridge — 11 October 2026
+
+Exact 6e5c39bebe2db2bf76dc9eabf49170f631c3f05b passed candidate/public Supply gates
+and exact public health/login. Three migrations applied after pre-deploy194938.
+Candidate pOGTQm/public KIsVoA private evidence and required fixture backups retained.
+Actual forecast/MRP/Buy/Make/finite/routing execution, guides and new workspaces at
+three widths passed; no browser exceptions. Old runtime aaf9bc3a was retained with
+all compatibility guards active. Accepted Decimal client independently reads
+1.250125 exactly; probe removed. This establishes safe Decimal rollback capability.
+Final unlock/actual fractional execution and authorised all-Test cleanup are pending.
+
+## Fractional candidate correction and dated purchasing — prepared
+
+667d546d candidate stopped on PostgreSQL stock-value nonnegative check during the
+first partial report. No public activation; the report/material/stock/cost transaction
+rolled back. Corrected existing-pool update uses its version instead of inserting a
+negative upsert create. Native checker additionally exercises actual measured purchase
+receipt/damage/value/replay, dated MRP coverage and confirmed late supplier arrival.
+Focused new supply/Finance/guide checks pass; final runtime gate remains pending.
+
+## Purchasing receipt source correction — native acceptance pending
+
+Candidate 4e1cf413 passed decimal receipts, partial output/backorders, physical
+collection, manual serial costs/genealogy, fractional dispatch/transfer and shared
+mixed-load usage. Actual Finance purchasing receipt then hit the existing Logistics
+receipt FK; its complete transaction rolled back. Separate additive Finance receipt
+lineage now retains that Logistics FK, scopes the new FK by tenant and preserves the
+single-source check. Final candidate/public check must demonstrate one posted
+receipt/value entry, damage netting and the owning source link. No live or cleanup
+completion is claimed at this checkpoint.

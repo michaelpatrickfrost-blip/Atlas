@@ -116,6 +116,7 @@ export type ModuleManifest = {
   salesFinanceSourceProvider?: (session:Session,tx:import('@/generated/prisma/client').Prisma.TransactionClient,id:string)=>Promise<import('@/core/finance/connections').SalesFinanceSource>;
   salesFinanceProjectionProvider?: (id:string)=>Promise<import('@/core/finance/connections').SalesFinanceProjection|null>;
   manufacturingCostProvider?: import("@/core/finance/manufacturing").ManufacturingCostProvider;
+  incomingSupplyProvider?: import("@/core/supply/incoming").IncomingSupplyProvider;
   financeReceiptConsumer?: (session:Session,tx:import('@/generated/prisma/client').Prisma.TransactionClient,input:import('@/core/finance/connections').StockReceiptInput)=>Promise<unknown>;
   deliveryInvoiceConsumer?: (session:Session,request:import('@/core/finance/handoff').DeliveredInvoiceRequest)=>Promise<void>;
   expensePostingSourceProvider?: (claimId:string)=>Promise<import('@/core/finance/expense-source').ApprovedExpenseSource>;

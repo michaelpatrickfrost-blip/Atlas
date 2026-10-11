@@ -18,7 +18,9 @@ function invalid(): never { throw new Error("FIELD_STORAGE_INVALID: sealed field
 /** Inspect immutable metadata without impersonating a data principal or executing
  * the field's own condition. Direct current/written field access is checked by
  * callers separately; inspecting dependency graphs does not read their values. */
-export function inspectSealedFieldVersion(registry: CapabilityRegistry, version: StudioDefinitionVersion, organisationId: string, definitionId: string) {
+export function inspectSealedFieldVersion(registry: CapabilityRegistry,
+  version: Pick<StudioDefinitionVersion, "organisationId" | "definitionId" | "schemaVersion" | "payload" | "compiledPlan" | "checksum">,
+  organisationId: string, definitionId: string) {
   if (version.organisationId !== organisationId || version.definitionId !== definitionId) invalid();
   const schema = version.schemaVersion === 1 ? legacyPlan : version.schemaVersion === 2 ? conditionalFieldPlanSchema : null;
   if (!schema) invalid();

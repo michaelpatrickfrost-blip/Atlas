@@ -1,3 +1,37 @@
+## 11 October 2026 — parallel e3e3 CURRENT-settler coverage VERIFIED locally
+
+Explicitly scoped codex/studio-required-receipts worktree preserves54d6188 and adds
+validateRequiredFieldMigrationSettlementCoverage in settlement-coverage.ts; legacy
+closed1 routine unchanged. New entry refreshes genuine transaction authority,
+matches the CURRENT principal/stamp, resolves its support Audit, and allows a
+different current same-company settler without resolving/substituting the original
+creator. Scoped actual company/current/source/target/written metadata is checked
+with inspectSealedFieldVersion (sealed-field.ts now accepts its six-field typed
+Pick, identical runtime verification). Historical full sealed condition plans are
+preserved but not recompiled/evaluated against today's input graph. Schema1 base
+projection compilation enforces current native/field/read-write/reference access;
+only BASE dependency modules must remain available for history, not old condition
+input modules. Complete snapshot/private preflight runs before written-version IDs;
+missing/foreign/hash/schema/substituted versions and unsupported latest settlement
+policy fail closed. Rollback alone delegates root's distinct bounded CURRENT-actor
+review bridge before actual owning rollback coverage. No intent/principal rewrite.
+
+Focused11new cases plus existing coverage/pure cutover/settlement suites:51tests/
+5suites PASS65081; strict TypeScript3229 exit0; scoped ESLint99600 exit0 with no
+warnings; diff check PASS. Tests use real registered owner/base/conditional compiler
+and sealed review2, with mocked authority/storage/rollback bridge. They establish
+coverage sequencing/delegation, not actual SQL/native/private condition/receipt
+activation evidence. Current Tickets same-entity/ref policy cannot express a genuine
+cross-module condition-input fixture; old custom-input read grant absent + later
+active schema1 metadata is tested without today's provider/input reads. Root owns
+actual rollback condition/cohort tests and candidate/public proof. Copied root pure/
+identity/observation/coverage/inspection dependencies remain UNSTAGED and excluded;
+shared dependencies/generated client are symlinked. No build/deploy/DDL/business
+writes or services/activation from this branch. Whole Phase2 remains IN PROGRESS.
+Exact next action: root integrate this scoped coverage/Pick/test checkpoint with its
+actual identity and CURRENT-rollback bridge, review integrated service dispatch, then
+verify original central candidate/public cutover/settlement before enabling closed2.
+
 ## 11 October 2026 — e3e3 current-principal rollback bridge VERIFIED locally
 
 Root distinct authority-taking rollback row/coverage/bounded review entries in

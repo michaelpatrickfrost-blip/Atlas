@@ -684,6 +684,10 @@ async function main() {
       await db.membership.findUniqueOrThrow({ where: { id: qa.membershipId } }),
       original,
     );
+    for (const file of fs.readdirSync(out)) {
+      if (/^(production-handoff|guides-\d+)\.png$/.test(file))
+        fs.rmSync(`${out}/${file}`);
+    }
     await db.$disconnect();
   }
 }

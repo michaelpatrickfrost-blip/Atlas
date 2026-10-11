@@ -2,7 +2,7 @@
 
 import { db } from "@/core/db/client";
 import { readOrderInvoices, readInvoiceQuantities } from "@/core/finance/connections";
-import { isModuleEnabled, getEnabledModuleIds } from "@/core/modules/runtime";
+import { isModuleEnabled } from "@/core/modules/runtime";
 import { requireSession } from "@/core/auth/session";
 import { availabilityPicture, type AvailabilityPicture } from "@/core/availability/picture";
 import { incomingArrivals, type SupplyArrival } from "@/core/availability/stock-promise";

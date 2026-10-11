@@ -24,8 +24,9 @@ async function main() {
     process.env.ATLAS_GUARDIAN_ORGANISATION_ID!,
     process.env.ATLAS_GUARDIAN_USER_ID!,
   );
+  assert(actor, "Existing active QA membership required.");
   assert(
-    actor?.capabilities.has("atlas.companies.manage") &&
+    actor.capabilities.has("atlas.companies.manage") &&
       actor.capabilities.has("atlas.staff.manage"),
     "Existing authorised staff required.",
   );

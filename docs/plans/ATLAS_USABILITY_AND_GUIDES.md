@@ -50,3 +50,19 @@ worktree is the editable source for the scoped release.
 Delivery evidence, discovered blockers and actual checks belong in
 `.ai/CURRENT_STATE.md` and the dated release evidence. This plan is not a claim that
 all ERP master-spec gaps or external-provider integrations are delivered.
+
+## Production handoff and final verification
+
+Added the requested final-operation → holding → Warehouse collection → yard
+flow using canonical stock positions and movements. Partial collections retain
+the remainder in BLOCKED holding; active Quality holds block collection, repeated
+submits are idempotent and stale forms ask users to refresh. Actual linked
+collection history records the booking colleague, destination, quantity and note.
+Available stock and planning exclude held output. Existing production history
+is retained; older completed orders are not silently restaged.
+
+Integrated exact still-live c607e12b Dashboard/account changes and preserved their
+Finance own-request and section guards. Full bounded-worker local suite: 298 files
+passed, 3 skipped; 2,171 tests passed, 22 skipped. Production build and Prisma
+validation passed. Final explicit types/lint, candidate/public native acceptance
+and guarded historical Test cleanup are the remaining release gates.

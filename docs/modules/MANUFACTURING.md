@@ -234,3 +234,9 @@ already actioned proposals) require `manufacturing.cost.read` independently of
 `manufacturing.plan.read`. Planning access retains quantities, readiness and hours;
 restricted users see cost-access guidance rather than hidden totals in page output.
 Supplier spend remains separately governed by Finance's source permissions.
+
+Plant machine configuration and work-centre editing move directly into view on
+opening. Batch routing summaries expose load, cycle, cooling and transfer wait.
+Schedule changes require a released/running parent; closed production stays fixed.
+Actual recipe-editor save/version/eligible-machine acceptance extends the same
+backed-up candidate/public supply gate; results belong in the acceptance record.

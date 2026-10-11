@@ -231,3 +231,31 @@ Demand intelligence. Application auth/forecast logic unchanged. Backup atlas-pre
 deploy-20261011-162844, fixture backup atlas-pre-supply-candidate-20261011-163019,
 evidence /tmp/atlas-supply-candidate-FJmAK4. Test retired/session revoked; public
 still c607e12. Forecast browser save/responsive gate and public activation pending.
+
+11 October 2026 live checkpoint b80f8baad0cc694422981238d201e150b927b522:
+candidate and public supply gates PASS, public login 200, immutable runtime active;
+previous c607e12 retained. Release backup atlas-pre-deploy-20261011-163626; candidate
+fixture backup atlas-pre-supply-candidate-20261011-163801, evidence /tmp/atlas-supply-
+candidate-YikYVo; public fixture backup atlas-pre-supply-public-20261011-163907,
+evidence /tmp/atlas-supply-public-N0Lkfi. Actual MRP Make/Buy→Finance, forecast future
+release, finite compatible full-load/cooling/shift/wait scheduling, stale/locked/
+wrong-machine refusals, atomic cascades, legacy execution/pause/resume/next-ready,
+final component/output stock and replay, Sales seasonal forecast and +10% +5 UI
+save/fixed/override, five routes at three widths, reports/guides/zero browser errors
+PASS. Both Test fixtures suspended/sessions revoked; original QA unchanged. Central
+additive kiln migration applied earlier and retained. Desktop/phone screenshots
+reviewed locally: Plant, Schedule and loaded Forecast fit; detailed recipe screenshot
+was Overview rather than active routing editor. Visual refinement will focus machine
+configuration on opening, tighten assumption labels and show batch timings in the
+read-only routing summary; further active-editor acceptance required for that work.
+Full-suite not rerun; full 173-section process programme remains open as documented.
+
+Post-release visual/source refinement: Plant opens/focuses machine configuration
+and work-centre editing directly in view; Forecast assumption labels have dedicated
+aligned space and explicit select names; read-only routing shows true batch load/
+cycle/cooling/wait instead of zero per-unit run. Scheduler now refuses closed/non-
+released parents, matching execution. Supply gate extends to actual routing UI save
+(version/zero crew/eligible machines/released recipe preservation), closed-parent
+refusals and active routing/configuration views at three widths. Browser write
+allowlist adds only the exact newly owned Test product path. Final local checks and
+new pinned candidate/public gate required; b80f8ba stays the verified live checkpoint.

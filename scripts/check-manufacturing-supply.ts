@@ -51,8 +51,8 @@ async function main(){
   const entity=await db.$transaction(tx=>openBooks(tx,{organisationId:org.id,name:'Fixture books',code:'MAIN',currency:'GBP',startAt:new Date('2026-01-01'),endAt:new Date('2027-12-31'),actorUserId:qa.userId,reason:'Isolated acceptance fixture'}));
   const context=await browser.newContext({baseURL:base.origin,timezoneId:"Europe/London"});
   await context.addCookies([{name:'atlas_session',value:token,url:base.origin,httpOnly:true,secure:base.protocol==='https:',sameSite:'Lax'}]);
-  let writes=0;const errors:string[]=[];
-  await context.route('**/*',route=>{const request=route.request(),url=new URL(request.url());if(url.origin!==base.origin)return route.abort();if(url.pathname==='/api/guardian/telemetry')return route.fulfill({status:204});if(['GET','HEAD','OPTIONS'].includes(request.method()))return route.continue();if(request.method()==='POST'&&['/manufacturing','/manufacturing/planning/planned-orders','/finance/documents/new','/manufacturing/planning/forecast','/manufacturing/plant','/manufacturing/schedule'].includes(url.pathname)){writes++;return route.continue();}return route.abort();});
+  let writes=0;const errors:string[]=[];const ownedWriteRoutes=new Set(['/manufacturing','/manufacturing/planning/planned-orders','/finance/documents/new','/manufacturing/planning/forecast','/manufacturing/plant','/manufacturing/schedule']);
+  await context.route('**/*',route=>{const request=route.request(),url=new URL(request.url());if(url.origin!==base.origin)return route.abort();if(url.pathname==='/api/guardian/telemetry')return route.fulfill({status:204});if(['GET','HEAD','OPTIONS'].includes(request.method()))return route.continue();if(request.method()==='POST'&&ownedWriteRoutes.has(url.pathname)){writes++;return route.continue();}return route.abort();});
   const page=await context.newPage();currentPage=page;page.on('pageerror',error=>errors.push(error.name));
   const noOverflow=async()=>assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'No root horizontal overflow');
   phase='responsive console';
@@ -130,7 +130,7 @@ async function main(){
   await page.goto(`/products/${raw.id}`,{waitUntil:'networkidle'});await expect(page.getByText(/Internal \/ not sellable/)).toBeVisible();
   console.log('PASS internal material stays purchasable/stocked and Sales eligibility rejects it.');
   phase='finite kilns and flexible forecast';
-  await checkManufacturingKilns({context,page,organisationId:org.id,userId:qa.userId,partyId:supplier.id,rawId:raw.id,out});
+  await checkManufacturingKilns({context,page,organisationId:org.id,userId:qa.userId,partyId:supplier.id,rawId:raw.id,out,allowWrite:path=>ownedWriteRoutes.add(path)});
   phase='synthetic balanced Finance report inputs';
   // Report source fixtures use real ledger guards. Approval/payment workflows are not claimed here.
   await db.$transaction(async tx=>{

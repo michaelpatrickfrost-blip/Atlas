@@ -11,7 +11,7 @@ import {
   getModuleNavigation,
 } from "../src/core/modules/runtime";
 import { getImplementedModules, getModule } from "../src/core/modules/registry";
-import { GUIDES, canFollowStep } from "../src/core/guides/catalogue";
+import { visibleGuides, canFollowStep } from "../src/core/guides/catalogue";
 import { wipeCompany } from "../src/core/admin/wipe-company";
 import { openBooks } from "../src/modules/finance/services/books";
 import { collectProductionBatch } from "../src/modules/stock/services/production-handoff";
@@ -602,15 +602,15 @@ async function main() {
       "/stock/handoffs",
       "/sop?view=help",
     ]);
-    for (const module of accessible.filter(
+    for (const entry of accessible.filter(
       (m) =>
         !["connections", "atlas", "analytics-preview"].includes(m.id) &&
         m.id !== "connections",
     ))
-      for (const nav of getModuleNavigation(module, session))
+      for (const nav of getModuleNavigation(entry, session))
         if (nav.href.startsWith("/") && !nav.href.startsWith("/atlas"))
           paths.add(nav.href);
-    for (const guide of GUIDES) {
+    for (const guide of visibleGuides(session.capabilities, ids)) {
       paths.add(`/guides/${guide.id}`);
       for (const step of guide.steps)
         if (canFollowStep(step, session.capabilities, ids))

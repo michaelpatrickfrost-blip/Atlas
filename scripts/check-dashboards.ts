@@ -120,6 +120,7 @@ async function main() {
     await page
       .getByRole("textbox", { name: "Chart title", exact: true })
       .fill("Customer lifecycle");
+    await page.getByRole("button", { name: "Design", exact: true }).click();
     await page
       .getByRole("button", { name: "Number visual", exact: true })
       .click();
@@ -177,6 +178,7 @@ async function main() {
     await page
       .getByRole("textbox", { name: "Chart title", exact: true })
       .fill("Finance · GBP");
+    await page.getByRole("button", { name: "Design", exact: true }).click();
     await page
       .getByRole("button", { name: "Number visual", exact: true })
       .click();
@@ -195,6 +197,56 @@ async function main() {
         .last()
         .getByText("Loading matching data…", { exact: true }),
     ).toHaveCount(0);
+    await page
+      .getByRole("button", { name: "Expand widget 1", exact: true })
+      .click();
+    await expect(
+      page.getByRole("dialog", { name: "Customer lifecycle", exact: true }),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "Values", exact: true }).click();
+    await expect(
+      page
+        .getByRole("dialog")
+        .locator("table, p")
+        .filter({ hasText: /Group|Nothing in this period/ })
+        .first(),
+    ).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await page
+      .getByRole("button", { name: "Configure widget 1", exact: true })
+      .click();
+    await page.getByRole("button", { name: "Focus", exact: true }).click();
+    const selectedGroups: string[] = [];
+    const includeChoices = page.locator(
+      'input[type="checkbox"][aria-label^="Include "]',
+    );
+    for (let i = 0; i < Math.min(2, await includeChoices.count()); i++) {
+      selectedGroups.push(
+        (await includeChoices.nth(i).getAttribute("aria-label"))!.slice(8),
+      );
+      await includeChoices.nth(i).check();
+    }
+    await page
+      .getByRole("spinbutton", { name: "Gauge target", exact: true })
+      .fill("100");
+    await page.getByRole("button", { name: "Design", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Gauge visual", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Close widget settings", exact: true })
+      .click();
+    await page.getByText("Style your canvas", { exact: false }).click();
+    await page
+      .getByRole("button", { name: "Apply After hours theme", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Undo dashboard change", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Apply Prism theme", exact: true })
+      .click();
     await page.getByRole("button", { name: "Save", exact: true }).click();
     await page.waitForURL(/dashboard=/);
     const id = new URL(page.url()).searchParams.get("dashboard")!;
@@ -203,7 +255,14 @@ async function main() {
     });
     assert.equal(readWidgets(stored.widgets).length, 2);
     assert.equal(readBoardSettings(stored.widgets).period, "30");
-    assert.equal(readWidgets(stored.widgets)[0].color, "teal");
+    assert.equal(readWidgets(stored.widgets)[0].color, "violet");
+    assert.equal(readWidgets(stored.widgets)[1].color, "rose");
+    assert.equal(readWidgets(stored.widgets)[0].target, 100);
+    assert.equal(readWidgets(stored.widgets)[0].visual, "gauge");
+    assert.deepEqual(
+      readWidgets(stored.widgets)[0].categories ?? [],
+      selectedGroups,
+    );
     assert.equal(readWidgets(stored.widgets)[1].data?.currency, "GBP");
     await page
       .getByRole("button", { name: "Edit dashboard", exact: true })
@@ -279,7 +338,7 @@ async function main() {
     ).toHaveValue(finance.id);
     assert.deepEqual(errors, []);
     console.log(
-      "PASS Dashboard sidebar, record builder, currency guard, duplicate/undo/redo, personal save/rename/reload, saved period, monitor, desktop/tablet/phone and Reports source.",
+      "PASS Dashboard sidebar, record builder, currency guard, duplicate/undo/redo, personal save/rename/reload, saved period/groups/theme, explorer/table/Escape, monitor, desktop/tablet/phone and Reports source.",
     );
   } finally {
     await browser.close();

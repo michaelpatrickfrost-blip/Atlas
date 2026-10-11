@@ -190,3 +190,14 @@ The app stays task-focused: shared Guides, restrained operational headers, clear
 queues, bounded paging and native guarded actions. Instructions name preparation,
 steps, outcomes, terminology and common blockers; authorised source links stay
 beside the explanation. Use accessible 44px controls and verify 320px layouts.
+
+## 11 October 2026 — Dashboard canvas and exploration
+
+Dashboards uses the shared Nunito/Atlas shell with a decorative gallery canvas,
+compact period/filter shelf, spacious chart cards and a three-section inspector
+(Data, Design, Focus). Four coordinated themes and three layout presets apply to
+existing widgets and support undo. Keep advanced record filters disclosed and
+view mode uncluttered. A centered native chart explorer has chart/aggregate-value
+views, keyboard dismissal and focus restoration. Phone headers stack controls
+below the complete board title; all supported viewports keep overflow within chart
+panels. Inspect geometry and text wrapping visually, not only scroll widths.

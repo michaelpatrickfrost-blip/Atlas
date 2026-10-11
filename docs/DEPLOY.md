@@ -55,6 +55,7 @@ It keeps the same preparation, backup, compatibility and runtime rollback gates.
 For the Manufacturing & Supply console, use `ATLAS_RELEASE_ACCEPTANCE=supply`
 with the pinned scoped branch. Its existing central Test checker runs against the
 sealed smoke candidate and publicly before completion, under this same lock pair.
+
 Both fixture stages take their own database/private-file backup. The original
 clean-tree/pinned push, remote-tip, ancestry, compatibility, immutability, smoke and
 rollback gates remain; public failure restores the previous runtime without a
@@ -64,6 +65,13 @@ Use activate (the default) to complete the whole checked sequence in one run:
 ```bash
 ATLAS_RELEASE_BRANCH=codex/manufacturing-supply-console ATLAS_RELEASE_COMMIT=$(git rev-parse HEAD) ATLAS_RELEASE_ACCEPTANCE=supply npm run deploy:vps
 ```
+
+For Company Settings/user administration, use `ATLAS_RELEASE_ACCEPTANCE=settings`.
+The native checker exercises profiles, individual exceptions, account details,
+password assignment, real login, one-use recovery, and the invoice-view/own-request
+Finance workflow with banking denial, followed by Home acceptance. Runs bracket
+candidate/public revision checks under the deployment locks. Only synthetic central
+Test companies are changed; access is retired and Audit retained in finally.
 
 The server backs up PostgreSQL and configured private Service files into
 `~/backups`, then installs, generates, applies compatible migrations and builds in
@@ -498,3 +506,12 @@ bookings, Maintenance creation, S&OP form discovery, Procurement input, register
 routes/guide links and key responsive workspaces. The exact fixture is wiped in
 finally and the existing QA affiliation remains unchanged. A candidate failure
 prevents activation; public failure retains the normal runtime rollback path.
+
+Explicit cleanup of historical Test companies can accompany the usability release
+with `ATLAS_RELEASE_TEST_CLEANUP=1`. This is off by default and requires the
+operator's specific authorisation. After public acceptance, under both existing
+locks and the public fixture backup, the server-only cleanup checker revalidates
+the live revision and existing staff identity, snapshots at most 1,000 explicitly
+marked CUSTOMER Test companies, and invokes the existing protected atomic wipe.
+It verifies zero Test companies/pending file deletions and retention of every
+ordinary/internal company and the staff identity. Backups and cleanup audit remain.

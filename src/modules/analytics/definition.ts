@@ -51,6 +51,8 @@ export const widgetSchema = z.object({
     .optional(),
   title: z.string().trim().max(100).optional(),
   category: z.string().max(200).optional(),
+  categories: z.array(z.string().max(200)).max(50).optional(),
+  target: z.number().finite().positive().optional(),
   maxCategories: z.number().int().min(1).max(50).optional(),
   borderless: z.boolean().optional(),
   tone: z.enum(["neutral", "blue", "ink"]).optional(),

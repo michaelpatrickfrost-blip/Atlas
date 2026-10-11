@@ -41,7 +41,7 @@ export function Wall({
   const [clock, setClock] = useState("");
   const [updated, setUpdated] = useState("Just loaded");
   const seconds = refreshSeconds;
-  const liveGoals = useLiveGoals(goals, seconds, seconds<=0);
+  const liveGoals = useLiveGoals(goals, seconds, seconds <= 0);
   useEffect(() => {
     document.title = `${name} · Atlas`;
     const tick = () =>
@@ -167,13 +167,16 @@ export function Wall({
                 {widget.title || metric?.name || "Unavailable"}
               </h2>
               <div className={styles.chartBody}>
-              {metric ? (
-                <TileChart metric={metric} widget={widget} />
-              ) : (
-                <p className="py-8 text-sm text-slate-400">
-                  This measure is no longer available.
-                </p>
-              )}
+                {metric ? (
+                  <TileChart
+                    metric={metric}
+                    widget={{ ...widget, tone: "ink" }}
+                  />
+                ) : (
+                  <p className="py-8 text-sm text-slate-400">
+                    This measure is no longer available.
+                  </p>
+                )}
               </div>
               {metric && (
                 <GoalCompare

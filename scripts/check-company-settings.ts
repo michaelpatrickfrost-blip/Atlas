@@ -3,6 +3,11 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { mkdirSync } from "node:fs";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import {
+  createRecoveryCredential,
+  hashRecoveryCode,
+} from "../src/core/auth/recovery";
 import {
   chromium,
   expect,
@@ -29,6 +34,9 @@ async function main() {
     out =
       process.env.ATLAS_SETTINGS_EVIDENCE ?? `/tmp/atlas-settings-${suffix}`;
   mkdirSync(out, { recursive: true, mode: 0o700 });
+  const adminPassword = randomUUID() + "Atlas!",
+    accountPassword = randomUUID() + "Account!";
+  const fixtureHash = await bcrypt.hash(adminPassword, 12);
   const company = await db.organisation.create({
     data: {
       name: `Settings acceptance ${suffix}`,
@@ -85,7 +93,7 @@ async function main() {
         data: {
           name: `${label} ${suffix}`,
           email: `settings-${label.toLowerCase().replaceAll(" ", "-")}-${suffix}@example.test`,
-          passwordHash: "!acceptance-only-no-password",
+          passwordHash: fixtureHash,
         },
       });
       ids.push(user.id);
@@ -389,12 +397,14 @@ async function main() {
       .check();
     const memberSales = await openSales(page);
     const order = memberSales.getByRole("region", {
-      name: "Sales: Order", exact: true,
+      name: "Sales: Order",
+      exact: true,
     });
     await order.locator("summary").click();
     await order.getByLabel("Create", { exact: true }).uncheck();
     const quote = memberSales.getByRole("region", {
-      name: "Sales: Quote", exact: true,
+      name: "Sales: Quote",
+      exact: true,
     });
     await quote.locator("summary").click();
     await quote.getByLabel("Approve", { exact: true }).check();
@@ -448,6 +458,335 @@ async function main() {
     console.log(
       "PASS mixed profiles, explicit grant/denial persistence, session revocation, company restriction precedence and user tenant boundary.",
     );
+    // Actual company-admin details, password assignment, login and one-use recovery.
+    await page.goto(`/settings/users/${target.membership.id}?tab=details`);
+    await page
+      .getByLabel("Full name", { exact: true })
+      .fill(`Updated member ${suffix}`);
+    const newEmail = `updated-member-${suffix}@example.test`;
+    await page.getByLabel("Sign-in email", { exact: true }).fill(newEmail);
+    await page
+      .getByLabel("Confirm your password", { exact: true })
+      .fill("incorrect password");
+    await page
+      .getByRole("button", { name: "Save account details", exact: true })
+      .click();
+    await expect(page.locator('p[role="alert"]')).toContainText(
+      "Confirm your own password",
+    );
+    assert.equal(
+      (await db.user.findUniqueOrThrow({ where: { id: target.user.id } }))
+        .email,
+      target.user.email,
+    );
+    await page
+      .getByLabel("Confirm your password", { exact: true })
+      .fill(adminPassword);
+    await page
+      .getByRole("button", { name: "Save account details", exact: true })
+      .click();
+    await expect
+      .poll(
+        async () =>
+          (await db.user.findUniqueOrThrow({ where: { id: target.user.id } }))
+            .email,
+      )
+      .toBe(newEmail);
+    await page.reload();
+    await db.user.update({
+      where: { id: target.user.id },
+      data: { name: `Concurrent member ${suffix}` },
+    });
+    await page.getByLabel("Full name", { exact: true }).fill("Stale update");
+    await page
+      .getByLabel("Confirm your password", { exact: true })
+      .fill(adminPassword);
+    await page
+      .getByRole("button", { name: "Save account details", exact: true })
+      .click();
+    await expect(page.locator('p[role="alert"]')).toContainText(
+      "account changed",
+    );
+    const oldCode = createRecoveryCredential();
+    const oldReset = await db.passwordReset.create({
+      data: {
+        membershipId: target.membership.id,
+        tokenHash: oldCode.tokenHash,
+        expiresAt: oldCode.expiresAt,
+        createdAt: new Date(Date.now() - 120_000),
+      },
+    });
+    await page.goto(`/settings/users/${target.membership.id}?tab=security`);
+    const assignment = page.locator("form").filter({
+      has: page.getByRole("button", {
+        name: "Set user password",
+        exact: true,
+      }),
+    });
+    await assignment
+      .getByLabel("New user password", { exact: true })
+      .fill(accountPassword);
+    await assignment
+      .getByLabel("Confirm user password", { exact: true })
+      .fill(accountPassword);
+    await assignment
+      .getByLabel("Confirm your password", { exact: true })
+      .fill(adminPassword);
+    await assignment
+      .getByRole("button", { name: "Set user password", exact: true })
+      .click();
+    await expect
+      .poll(async () =>
+        bcrypt.compare(
+          accountPassword,
+          (await db.user.findUniqueOrThrow({ where: { id: target.user.id } }))
+            .passwordHash,
+        ),
+      )
+      .toBe(true);
+    assert(
+      (await db.passwordReset.findUniqueOrThrow({ where: { id: oldReset.id } }))
+        .usedAt,
+    );
+    await target.page.goto("/profile/settings");
+    await expect(target.page).toHaveURL(/\/login(?:\?|$)/);
+    await target.context.clearCookies();
+    await target.page.goto(`/business/${company.slug}/login`);
+    await target.page.getByLabel("Email", { exact: true }).fill(newEmail);
+    await target.page
+      .getByLabel("Password", { exact: true })
+      .fill(accountPassword);
+    await target.page.getByRole("button", { name: /Sign in/ }).click();
+    await expect(target.page).toHaveURL(/\/home$/);
+    await page.reload();
+    const recovery = page.locator("form").filter({
+      has: page.getByRole("button", {
+        name: "Generate recovery code",
+        exact: true,
+      }),
+    });
+    await recovery
+      .getByLabel("Confirm your password", { exact: true })
+      .fill(adminPassword);
+    await recovery
+      .getByRole("button", { name: "Generate recovery code", exact: true })
+      .click();
+    await expect(
+      page.getByRole("heading", { name: "Recovery code ready" }),
+    ).toBeVisible();
+    const code = await page.locator("code").innerText();
+    const ownPassword = randomUUID() + "Recovered!";
+    await target.context.clearCookies();
+    await target.page.goto(`/business/${company.slug}/reset-password`);
+    await target.page.getByLabel("Code", { exact: true }).fill(code);
+    await target.page
+      .getByLabel("New password", { exact: true })
+      .fill(ownPassword);
+    await target.page
+      .getByLabel("Confirm password", { exact: true })
+      .fill(ownPassword);
+    await target.page
+      .getByRole("button", { name: "Save password", exact: true })
+      .click();
+    await expect(target.page).toHaveURL(/\/home$/);
+    assert(
+      (
+        await db.passwordReset.findUniqueOrThrow({
+          where: { tokenHash: hashRecoveryCode(code) },
+        })
+      ).usedAt,
+    );
+    await target.page.goto(`/business/${company.slug}/reset-password`);
+    await target.page.getByLabel("Code", { exact: true }).fill(code);
+    await target.page
+      .getByLabel("New password", { exact: true })
+      .fill(ownPassword);
+    await target.page
+      .getByLabel("Confirm password", { exact: true })
+      .fill(ownPassword);
+    await target.page
+      .getByRole("button", { name: "Save password", exact: true })
+      .click();
+    await expect(target.page.locator('p[role="alert"]')).toBeVisible();
+    const audits = await db.auditEntry.findMany({
+      where: { organisationId: company.id, entityId: target.membership.id },
+    });
+    assert(
+      !JSON.stringify(audits).includes(accountPassword) &&
+        !JSON.stringify(audits).includes(code),
+    );
+    console.log(
+      "PASS account name/email, wrong-password/stale rejection, password assignment, old session/code revocation, actual login and one-use recovery; no credential Audit leakage.",
+    );
+
+    // Build the user's stated example through the profile and assignment forms.
+    await page.goto("/settings?tab=roles");
+    await page
+      .getByRole("button", { name: "New profile", exact: true })
+      .click();
+    await dialog
+      .getByLabel("Profile name", { exact: true })
+      .fill(`Service manager ${suffix}`);
+    await dialog
+      .locator('select[name="sourceRoleId"]')
+      .selectOption("starter:customer-service-manager");
+    await dialog
+      .getByRole("button", { name: "Create profile", exact: true })
+      .click();
+    await expect
+      .poll(async () =>
+        db.role.count({
+          where: {
+            organisationId: company.id,
+            name: `Service manager ${suffix}`,
+          },
+        }),
+      )
+      .toBe(1);
+    await dialog.getByRole("button", { name: "Close dialog" }).click();
+    await page.goto(`/settings/users/${target.membership.id}`);
+    await page.getByLabel(`Service manager ${suffix}`, { exact: true }).check();
+    await page
+      .getByRole("button", { name: "Review access", exact: true })
+      .click();
+    await expect(
+      page.getByRole("region", { name: "Access review" }),
+    ).toContainText("Invoices & customer balances");
+    await page
+      .getByRole("button", { name: "Save user access", exact: true })
+      .click();
+    await expect
+      .poll(async () =>
+        (await sessionForUser(company.id, target.user.id))?.capabilities.has(
+          "finance.request.create",
+        ),
+      )
+      .toBe(true);
+    await db.moduleState.create({
+      data: {
+        organisationId: company.id,
+        moduleId: "finance",
+        enabled: true,
+        entitled: true,
+      },
+    });
+    const entity = await db.financeEntity.create({
+      data: {
+        organisationId: company.id,
+        name: "Acceptance books",
+        code: `QA-${suffix}`,
+        currency: "GBP",
+      },
+    });
+    const invoice = await db.financeDocument.create({
+      data: {
+        organisationId: company.id,
+        entityId: entity.id,
+        kind: "AR_INVOICE",
+        reference: `QA-INVOICE-${suffix}`,
+        title: "Visible customer invoice",
+        creatorUserId: admin.user.id,
+        currency: "GBP",
+        documentDate: new Date(),
+        net: 1000n,
+        gross: 1000n,
+      },
+    });
+    const hidden = await db.financeDocument.create({
+      data: {
+        organisationId: company.id,
+        entityId: entity.id,
+        kind: "REQUEST",
+        reference: `QA-OTHER-${suffix}`,
+        title: "Another user's request",
+        creatorUserId: admin.user.id,
+        currency: "GBP",
+        documentDate: new Date(),
+      },
+    });
+    await signIn(target.context, target.user.id, company.id);
+    await target.page.goto("/finance/receivables");
+    await expect(
+      target.page.getByRole("link", { name: invoice.reference, exact: true }),
+    ).toBeVisible();
+    await target.page.goto(`/finance/documents/${invoice.id}`);
+    await expect(
+      target.page.getByRole("heading", {
+        name: invoice.reference,
+        exact: true,
+      }),
+    ).toBeVisible();
+    await target.page.goto("/finance/banking");
+    await expect(
+      target.page.getByText("Banking is restricted", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      target.page.getByRole("heading", { name: "Banking", exact: true }),
+    ).toHaveCount(0);
+    await target.page.goto("/finance/documents/new");
+    await expect(
+      target.page.getByRole("heading", {
+        name: "Create a financial document",
+        exact: true,
+      }),
+    ).toBeVisible();
+    // Exact label text includes nested option text; the combobox name is the native accessible label.
+    await target.page
+      .getByRole("combobox", { name: "Document", exact: true })
+      .selectOption("REQUEST");
+    await target.page
+      .getByLabel("Description", { exact: true })
+      .fill(`Procurement acceptance ${suffix}`);
+    await target.page
+      .getByLabel("Line 1 description", { exact: true })
+      .fill("Replacement service supplies");
+    await target.page.getByLabel("Unit price", { exact: true }).fill("10.00");
+    await target.page
+      .getByRole("button", { name: "Save draft", exact: true })
+      .click();
+    await expect
+      .poll(() =>
+        db.financeDocument.count({
+          where: {
+            organisationId: company.id,
+            creatorUserId: target.user.id,
+            kind: "REQUEST",
+            title: `Procurement acceptance ${suffix}`,
+          },
+        }),
+      )
+      .toBe(1);
+    const request = await db.financeDocument.findFirstOrThrow({
+      where: {
+        organisationId: company.id,
+        creatorUserId: target.user.id,
+        kind: "REQUEST",
+        title: `Procurement acceptance ${suffix}`,
+      },
+    });
+    await expect(target.page).toHaveURL(
+      new RegExp(`/finance/documents/${request.id}$`),
+    );
+    await expect(
+      target.page.getByRole("heading", {
+        name: request.reference,
+        exact: true,
+      }),
+    ).toBeVisible();
+    await target.page.goto("/finance/spend");
+    await expect(
+      target.page.getByRole("link", { name: request.reference, exact: true }),
+    ).toBeVisible();
+    await expect(
+      target.page.getByText(hidden.reference, { exact: true }),
+    ).toHaveCount(0);
+    await target.page.goto(`/finance/documents/${hidden.id}`);
+    await expect(
+      target.page.getByText(hidden.title, { exact: false }),
+    ).toHaveCount(0);
+    console.log(
+      "PASS service-manager starter and actual assignment: invoice view, procurement draft/save/own request view, banking denial and other-user request isolation.",
+    );
     for (const [label, width, height] of [
       ["desktop", 1440, 1000],
       ["tablet", 1024, 900],
@@ -474,6 +813,21 @@ async function main() {
         path: `${out}/profiles-${label}.png`,
         fullPage: true,
       });
+      for (const userTab of ["access", "details", "security"]) {
+        await page.goto(
+          `/settings/users/${target.membership.id}?tab=${userTab}`,
+        );
+        assert(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth <= innerWidth + 1,
+          ),
+          `${label} user ${userTab} overflow`,
+        );
+        await page.screenshot({
+          path: `${out}/user-${userTab}-${label}.png`,
+          fullPage: true,
+        });
+      }
       await viewer.page.setViewportSize({ width, height });
       await viewer.page.goto("/profile/settings");
       assert(

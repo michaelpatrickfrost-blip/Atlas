@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { EmptyState } from "@/components/ui/empty-state";
 import { delegateApprovals } from "@/core/approvals/actions";
 import { notFound } from "next/navigation";
 import { requireSession } from "@/core/auth/session";
@@ -90,9 +91,38 @@ export default async function Workspace({
     defaultKind: Record<string, string> = {
       receivables: "AR_INVOICE",
       payables: "AP_INVOICE",
-      spend: "REQUEST",
+      spend:
+        session.capabilities.has("finance.spend.read") ||
+        session.capabilities.has("finance.request.create")
+          ? "REQUEST"
+          : "EXPENSE",
       purchases: "PO",
     };
+  const workspaceCaps: Record<string, string> = {
+    accounting: "finance.ledger.read",
+    banking: "finance.bank.read",
+    assets: "finance.asset.read",
+    planning: "finance.planning.read",
+    tax: "finance.tax.read",
+    reporting: "finance.report.read",
+    control: "finance.control.read",
+    suppliers: "finance.payables.read",
+  };
+  if (
+    workspaceCaps[workspace] &&
+    !session.capabilities.has(workspaceCaps[workspace])
+  )
+    return (
+      <EmptyState
+        title={`${titles[workspace]} is restricted`}
+        description="Your access profile does not include this section. Ask your company administrator if you need access."
+      />
+    );
+  const canCreate = DOCUMENT_KINDS.some(
+    (kind) =>
+      kind !== "RECEIPT" &&
+      session.capabilities.has(documentCapability(kind, true)),
+  );
   const heading = (
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div>
@@ -101,12 +131,14 @@ export default async function Workspace({
         </p>
         <h1 className="mt-2 text-3xl font-semibold">{titles[workspace]}</h1>
       </div>
-      <Link
-        href={`/finance/documents/new${defaultKind[workspace] ? `?kind=${defaultKind[workspace]}` : ""}`}
-        className="rounded-full bg-emerald-700 px-5 py-2.5 text-sm font-medium text-white"
-      >
-        New document
-      </Link>
+      {canCreate && (
+        <Link
+          href={`/finance/documents/new${defaultKind[workspace] ? `?kind=${defaultKind[workspace]}` : ""}`}
+          className="rounded-full bg-emerald-700 px-5 py-2.5 text-sm font-medium text-white"
+        >
+          New document
+        </Link>
+      )}
     </div>
   );
   const tabs = (
@@ -117,14 +149,18 @@ export default async function Workspace({
         ["Suppliers", "suppliers"],
         ["Requests & expenses", "spend"],
       ]
-        .filter(([, path]) =>
-          session.capabilities.has(
-            path === "purchases"
-              ? "finance.purchase.read"
-              : path === "spend"
-                ? "finance.spend.read"
-                : "finance.payables.read",
-          ),
+        .filter(
+          ([, path]) =>
+            (path === "spend" &&
+              (session.capabilities.has("finance.request.create") ||
+                session.capabilities.has("finance.expense.create"))) ||
+            session.capabilities.has(
+              path === "purchases"
+                ? "finance.purchase.read"
+                : path === "spend"
+                  ? "finance.spend.read"
+                  : "finance.payables.read",
+            ),
         )
         .map(([name, path]) => (
           <Link
@@ -146,7 +182,12 @@ export default async function Workspace({
           : workspace === "payables"
             ? ["AP_INVOICE", "AP_CREDIT", "AP_DEBIT"]
             : ["PO", "RECEIPT"]
-    ).filter((k) => session.capabilities.has(documentCapability(k, false)));
+    ).filter((k) =>
+      workspace === "spend"
+        ? session.capabilities.has("finance.spend.read") ||
+          session.capabilities.has(documentCapability(k, true))
+        : session.capabilities.has(documentCapability(k, false)),
+    );
     const kind =
       filter.kind && allowedKinds.includes(filter.kind)
         ? filter.kind

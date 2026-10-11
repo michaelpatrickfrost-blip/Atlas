@@ -85,6 +85,12 @@ describe("Dashboard canvas editing and persistence", () => {
       screen.getByRole("button", { name: "Undo dashboard change" }),
     );
     expect(
+      screen.getByRole("combobox", { name: "Measure period" }),
+    ).toHaveProperty("value", "90");
+    fireEvent.click(
+      screen.getByRole("button", { name: "Undo dashboard change" }),
+    );
+    expect(
       (
         screen.getByRole("textbox", {
           name: "Dashboard name",
@@ -160,6 +166,7 @@ describe("Dashboard canvas editing and persistence", () => {
       "value",
       "status",
     );
+    fireEvent.click(screen.getByRole("button", { name: "Design" }));
     fireEvent.change(screen.getByRole("combobox", { name: "Widget width" }), {
       target: { value: "12" },
     });
@@ -192,5 +199,75 @@ describe("Dashboard canvas editing and persistence", () => {
     expect(
       screen.queryByRole("button", { name: "Configure widget 1" }),
     ).toBeNull();
+  });
+});
+
+describe("Exploration stays separate from saved design", () => {
+  it("lets readers focus and inspect values without dirtying or saving the board", () => {
+    render(
+      <Studio
+        metrics={[
+          {
+            ...metric,
+            points: [
+              { label: "Open", value: 4 },
+              { label: "Closed", value: 2 },
+            ],
+          },
+        ]}
+        dashboards={[board]}
+        selectedId="owned"
+        period="90"
+        canManage={false}
+        company="Atlas"
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /01.*Open/ }));
+    expect(screen.getByRole("button", { name: /Focus: Open/ })).toBeTruthy();
+    expect(screen.queryByText(/Unsaved changes/)).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /Focus: Open/ }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Show values for widget 1" }),
+    );
+    expect(screen.getByRole("table")).toBeTruthy();
+    expect(mock.save).not.toHaveBeenCalled();
+  });
+  it("persists several chosen groups and a theme while theme undo restores the data query", async () => {
+    mock.save.mockResolvedValue("owned");
+    render(
+      <Studio
+        metrics={[
+          {
+            ...metric,
+            points: [
+              { label: "Open", value: 4 },
+              { label: "Closed", value: 2 },
+            ],
+          },
+        ]}
+        dashboards={[board]}
+        selectedId="owned"
+        period="90"
+        canManage
+        company="Atlas"
+        startEditing
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Configure widget 1" }));
+    fireEvent.click(screen.getByRole("button", { name: "Focus" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Include Open" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Include Closed" }));
+    fireEvent.click(screen.getByText(/Style your canvas/));
+    fireEvent.click(screen.getByRole("button", { name: "Apply Prism theme" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Undo dashboard change" }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => expect(mock.save).toHaveBeenCalled());
+    expect(mock.save.mock.calls[0][0].widgets[0]).toMatchObject({
+      metricId: "sales",
+      categories: ["Open", "Closed"],
+    });
+    expect(mock.save.mock.calls[0][0].widgets[0].color).toBeUndefined();
   });
 });

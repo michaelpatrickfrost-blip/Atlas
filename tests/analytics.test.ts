@@ -14,3 +14,14 @@ describe("analytics boundaries",()=>{
  it("reads a board refresh setting without treating it as a chart",()=>{const meta=JSON.stringify({kind:"atlas-board",refreshSeconds:15});expect(readWidgets([meta,JSON.stringify(widget)])).toEqual([widget]);expect(readBoardSettings([meta]).refreshSeconds).toBe(15);expect(readBoardSettings([JSON.stringify(widget)]).refreshSeconds).toBe(30);});
  it("keeps short ranges in weekly order",()=>{const now=new Date(2026,9,3);const since=new Date(2026,8,14);const points=timeSeries([new Date(2026,8,16),new Date(2026,8,18),new Date(2026,9,2)],since,now);expect(points.at(-1)?.value).toBe(1);expect(points.reduce((sum,point)=>sum+point.value,0)).toBe(3);expect(points.length).toBeGreaterThan(2);});
 });
+
+
+describe("Bounded dashboard focus and references",()=>{
+  it("round-trips selected categories and a positive personal reference with legacy widgets intact",()=>{
+    const selected={...widget,categories:["Open","Closed"],target:100};
+    expect(readWidgets([JSON.stringify(selected),JSON.stringify(widget)])).toEqual([selected,widget]);
+  });
+  it("rejects unbounded category selections and invalid targets",()=>{
+    for(const patch of [{categories:Array.from({length:51},(_,i)=>String(i))},{categories:["x".repeat(201)]},{target:0},{target:-1},{target:Infinity}]) expect(dashboardSchema.safeParse({name:"View",widgets:[{...widget,...patch}]}).success).toBe(false);
+  });
+});

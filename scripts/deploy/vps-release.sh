@@ -4,6 +4,8 @@ set -euo pipefail
 ROOT="${1:?checkout required}"; REV="${2:?pinned revision required}"; MODE="${3:-activate}"
 SOURCE_BRANCH="${4:-main}"
 ACCEPTANCE="${5:-none}"
+CLEAN_TESTS="${6:-0}"
+[[ "$CLEAN_TESTS" = 0 || ( "$CLEAN_TESTS" = 1 && "$ACCEPTANCE" = usability ) ]] || { echo 'Test cleanup requires an explicitly authorised usability release.' >&2; exit 1; }
 [[ "$ACCEPTANCE" = none || "$ACCEPTANCE" = people || "$ACCEPTANCE" = dashboards || "$ACCEPTANCE" = supply || "$ACCEPTANCE" = studio || "$ACCEPTANCE" = settings || "$ACCEPTANCE" = commercial || "$ACCEPTANCE" = tasks || "$ACCEPTANCE" = usability ]] || { echo 'Unknown release acceptance workflow.' >&2; exit 1; }
 [[ "$SOURCE_BRANCH" = main || "$SOURCE_BRANCH" =~ ^codex/[a-zA-Z0-9._/-]+$ ]] || { echo 'Invalid release source branch.' >&2; exit 1; }
 git check-ref-format "refs/heads/$SOURCE_BRANCH"
@@ -132,6 +134,14 @@ feature_acceptance() {
     fi
   ) > "$evidence/browser.log" 2>&1 || { cat "$evidence/browser.log"; return 1; }
   cat "$evidence/browser.log"
+  if [[ "$ACCEPTANCE" = usability && "$phase" = public && "$CLEAN_TESTS" = 1 ]]; then
+    [[ "$(readlink -f "$CURRENT")" = "$CANDIDATE" && -s "$fixture_backup.dump" ]] || return 1
+    (
+      cd "$CANDIDATE"; set -a; . /etc/atlas/guardian.env; set +a
+      NODE_ENV=production ATLAS_TEST_CLEANUP=1 ATLAS_CLEANUP_BACKUP="$fixture_backup" ATLAS_TEST_REVISION="$REV" node --env-file=.env.local --import tsx scripts/cleanup-atlas-test-data.ts
+    ) > "$evidence/cleanup.log" 2>&1 || { cat "$evidence/cleanup.log"; return 1; }
+    cat "$evidence/cleanup.log"
+  fi
   if [[ "$ACCEPTANCE" = supply || "$ACCEPTANCE" = studio || "$ACCEPTANCE" = commercial || "$ACCEPTANCE" = tasks || "$ACCEPTANCE" = usability ]]; then
     if [[ "$phase" = candidate ]]; then
       [[ "$(readlink -f "$CURRENT")" = "$PREVIOUS" ]] || return 1

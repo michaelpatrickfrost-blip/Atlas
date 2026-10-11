@@ -15,7 +15,15 @@ import {
   capabilityOverrides,
   effectiveRoleCapabilities,
 } from "@/core/permissions/access-levels";
-import { createRecoveryCredential } from "@/core/auth/recovery";
+import {
+  createRecoveryCredential,
+  validNewPassword,
+} from "@/core/auth/recovery";
+import {
+  managedAccountRevision,
+  assertCompanyManagedAccount,
+} from "@/core/auth/managed-account";
+import { PROFILE_STARTERS } from "@/core/permissions/profile-starters";
 import { db } from "@/core/db/client";
 import { revalidatePath } from "next/cache";
 const knownCapabilities = () =>
@@ -25,6 +33,177 @@ const knownCapabilities = () =>
     ...MODULE_CATALOGUE.flatMap((m) => m.capabilities),
   ]);
 const refresh = () => revalidatePath("/", "layout");
+export async function saveManagedUserDetails(form: FormData) {
+  const session = await requireSession();
+  assertCapability(session, CORE_CAPABILITIES.usersManage);
+  return withFormFeedback(async () => {
+    const id = String(form.get("membershipId") ?? "");
+    if (id === session.membershipId)
+      throw new Error("Edit your own details in Personal settings.");
+    const name = String(form.get("name") ?? "").trim();
+    const email = String(form.get("email") ?? "")
+      .trim()
+      .toLowerCase();
+    if (
+      !name ||
+      name.length > 100 ||
+      email.length > 254 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    )
+      throw new Error("Enter a name and valid email.");
+    // Re-authentication protects changes to the sign-in identity.
+    const actor = await db.user.findUniqueOrThrow({
+      where: { id: session.userId },
+      select: { passwordHash: true, authVersion: true },
+    });
+    if (
+      !(await bcrypt.compare(
+        String(form.get("currentPassword") ?? ""),
+        actor.passwordHash,
+      ))
+    )
+      throw new Error("Confirm your own password to change account details.");
+    await db.$transaction(
+      async (tx) => {
+        const currentActor = await tx.user.findUniqueOrThrow({
+          where: { id: session.userId },
+          select: { authVersion: true },
+        });
+        if (currentActor.authVersion !== actor.authVersion)
+          throw new Error("Account changed. Sign in again.");
+        const member = await tx.membership.findFirstOrThrow({
+          where: { id, organisationId: session.organisationId },
+          include: {
+            user: {
+              include: {
+                platformAdmin: true,
+                _count: { select: { memberships: true } },
+              },
+            },
+          },
+        });
+        assertCompanyManagedAccount(member.user);
+        if (
+          String(form.get("accountRevision") ?? "") !==
+          managedAccountRevision(member)
+        )
+          throw new Error("This account changed. Reload before saving.");
+        if (
+          await tx.user.findFirst({
+            where: {
+              email: { equals: email, mode: "insensitive" },
+              id: { not: member.userId },
+            },
+            select: { id: true },
+          })
+        )
+          throw new Error(
+            "This email cannot be used. Choose another email address.",
+          );
+        const emailChanged = email !== member.user.email;
+        await tx.user.update({
+          where: { id: member.userId, authVersion: member.user.authVersion },
+          data: {
+            name,
+            email,
+            ...(emailChanged ? { authVersion: { increment: 1 } } : {}),
+          },
+        });
+        if (emailChanged)
+          await tx.passwordReset.updateMany({
+            where: { membership: { userId: member.userId }, usedAt: null },
+            data: { usedAt: new Date() },
+          });
+        await tx.auditEntry.create({
+          data: {
+            organisationId: session.organisationId,
+            actorUserId: session.userId,
+            action: "account.details.updated",
+            entityType: "Membership",
+            entityId: id,
+            before: { name: member.user.name, email: member.user.email },
+            after: { name, email, sessionsRevoked: emailChanged },
+          },
+        });
+      },
+      { isolationLevel: "Serializable" },
+    );
+    refresh();
+  });
+}
+
+export async function setManagedUserPassword(form: FormData) {
+  const session = await requireSession();
+  assertCapability(session, CORE_CAPABILITIES.usersManage);
+  return withFormFeedback(async () => {
+    const id = String(form.get("membershipId") ?? ""),
+      password = String(form.get("password") ?? "");
+    if (id === session.membershipId)
+      throw new Error("Change your password from your own profile.");
+    if (!validNewPassword(password))
+      throw new Error("Use 12–128 characters, up to 72 UTF-8 bytes.");
+    if (password !== String(form.get("confirmPassword") ?? ""))
+      throw new Error("Passwords do not match.");
+    const actor = await db.user.findUniqueOrThrow({
+      where: { id: session.userId },
+      select: { passwordHash: true, authVersion: true },
+    });
+    if (
+      !(await bcrypt.compare(
+        String(form.get("currentPassword") ?? ""),
+        actor.passwordHash,
+      ))
+    )
+      throw new Error("Confirm your own password to set a user password.");
+    const passwordHash = await bcrypt.hash(password, 12);
+    await db.$transaction(
+      async (tx) => {
+        const currentActor = await tx.user.findUniqueOrThrow({
+          where: { id: session.userId },
+          select: { authVersion: true },
+        });
+        if (currentActor.authVersion !== actor.authVersion)
+          throw new Error("Account changed. Sign in again.");
+        const member = await tx.membership.findFirstOrThrow({
+          where: { id, organisationId: session.organisationId, active: true },
+          include: {
+            user: {
+              include: {
+                platformAdmin: true,
+                _count: { select: { memberships: true } },
+              },
+            },
+          },
+        });
+        assertCompanyManagedAccount(member.user);
+        if (
+          String(form.get("accountRevision") ?? "") !==
+          managedAccountRevision(member)
+        )
+          throw new Error("This account changed. Reload before saving.");
+        await tx.user.update({
+          where: { id: member.userId, authVersion: member.user.authVersion },
+          data: { passwordHash, authVersion: { increment: 1 } },
+        });
+        await tx.passwordReset.updateMany({
+          where: { membership: { userId: member.userId }, usedAt: null },
+          data: { usedAt: new Date() },
+        });
+        await tx.auditEntry.create({
+          data: {
+            organisationId: session.organisationId,
+            actorUserId: session.userId,
+            action: "account.password.assigned",
+            entityType: "Membership",
+            entityId: id,
+          },
+        });
+      },
+      { isolationLevel: "Serializable" },
+    );
+    refresh();
+  });
+}
 export async function saveUserAccess(form: FormData) {
   const session = await requireSession();
   assertCapability(session, CORE_CAPABILITIES.usersManage);
@@ -367,13 +546,22 @@ export async function createRole(form: FormData) {
           })
         )
           throw new Error("A profile with this name already exists.");
-        const capabilities = source
-          ? (
-              await tx.role.findFirstOrThrow({
-                where: { id: source, organisationId: session.organisationId },
-              })
-            ).capabilities
-          : [];
+        const starter = source.startsWith("starter:")
+          ? PROFILE_STARTERS.find(
+              (profile) => "starter:" + profile.id === source,
+            )
+          : undefined;
+        if (source.startsWith("starter:") && !starter)
+          throw new Error("Invalid starting profile.");
+        const capabilities = starter
+          ? [...starter.capabilities]
+          : source
+            ? (
+                await tx.role.findFirstOrThrow({
+                  where: { id: source, organisationId: session.organisationId },
+                })
+              ).capabilities
+            : [];
         const role = await tx.role.create({
           data: {
             name,

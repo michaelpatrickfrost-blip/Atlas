@@ -1,3 +1,31 @@
+## 11 October 2026 — parallel e3d2b bounded execution-review inspection VERIFIED locally, integration pending
+
+Explicitly authorised isolated branch codex/studio-review-inspection adds only the
+trusted execution entry in fields/migrations/inspection.ts and seven focused cases
+in tests/studio-field-required-inspection.test.ts. Reuses refreshed genuine runtime
+authority and strict conditional intent/principal/version identity, separate execution
+coverage/row reader, exact tenant/source-scoped50-row pages, retained row checksum,
+SQL/pure aggregate, uniqueness and immutable review seal. No caller-selected stage,
+publication/preparation fallback, native/value writes, DDL/start/batch/cutover or
+later-phase enablement. Actual own-outcome proof belongs to root's separate executing
+observation reader; these tests explicitly use mocked authority/row/SQL collaborators.
+Final62tests/5actual suites PASS6e64bc; focused14tests covered stage, current principal,
+private access, semantic/native/envelope drift, archive mirrors/strict/order,101-row
+bounded cursors, empty authority, aggregate and uniqueness rejection. Scoped lint and
+diff check PASS15983a, strict TypeScript61006 exit0 with root's observer copied
+read-only and left unstaged. Initial test-only identity/message expectations were
+corrected; production validators unchanged. Earlier types75319 failed only two
+upstream observer issues; root corrected both and refreshed dependency passed. No
+build/deploy from isolated branch; root owns integration/build/live acceptance and
+shared ledger/coverage updates. Dependencies and generated client are symlinked from
+the active root without install/generate/duplicate builds. Only inspection.ts, its
+test and this memory entry belong to this scoped checkpoint; copied observation.ts
+is deliberately excluded. Exact next action: root integrates the observer first,
+then this bounded review entry and the separately owned execution metadata
+inspector; run integrated checks and normal candidate/public acceptance before
+enabling the existing start/batch/representation pathways.
+Whole Phase2 remains IN PROGRESS; no normal conditional execution proof claimed.
+
 ## 11 October 2026 — e3d2b row/outcome observer VERIFIED locally
 
 Existing observation.ts now exposes a separate conditional execution-only row and

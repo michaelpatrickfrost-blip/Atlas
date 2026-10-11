@@ -7,11 +7,11 @@ import { sealFieldMigrationReview, FieldMigrationReviewError, type FieldMigratio
 import { validateFieldMigrationSourceCoverage, type FieldMigrationCoverageStage } from "./coverage";
 import { digestFieldMigrationArchive } from "./archive-digest";
 import type { assertFieldMigrationPolicies } from "./access";
-import { validateRequiredFieldMigrationSourceCoverage, validatePublishedRequiredFieldMigrationSourceCoverage } from "./coverage";
+import { validateRequiredFieldMigrationSourceCoverage, validatePublishedRequiredFieldMigrationSourceCoverage, validateExecutingRequiredFieldMigrationSourceCoverage } from "./coverage";
 import { digestRequiredFieldMigrationArchive } from "./archive-digest";
 import { sealRequiredFieldMigrationIntent, sealRequiredFieldMigrationReview, requiredFieldMigrationObservationSchema,
   requiredFieldMigrationObservationDigest, type RequiredFieldMigrationIntent } from "./required-contracts";
-import { observeRequiredFieldMigrationRecord, observePublishedRequiredFieldMigrationRecord } from "./observation";
+import { observeRequiredFieldMigrationRecord, observePublishedRequiredFieldMigrationRecord, observeExecutingRequiredFieldMigrationRecord } from "./observation";
 import { fieldRuntimeAuthorityInTransaction } from "../runtime-authority";
 import { checksum } from "../../registry/contracts";
 
@@ -42,7 +42,14 @@ export async function inspectPublishedRequiredFieldMigrationReview(context: Reco
   return inspectRequiredReview(context, serverIntent, "publication");
 }
 
-async function inspectRequiredReview(context: RecordContext & { transaction: Prisma.TransactionClient }, serverIntent: RequiredFieldMigrationIntent, stage: "preparation" | "publication") {
+/** Reinspect source-active execution through the retained execution lineage.
+ * The row reader must prove any own target/outcome increment before returning
+ * the original review envelope. No client-selected stage or publication fallback. */
+export async function inspectExecutingRequiredFieldMigrationReview(context: RecordContext & { transaction: Prisma.TransactionClient }, serverIntent: RequiredFieldMigrationIntent) {
+  return inspectRequiredReview(context, serverIntent, "execution");
+}
+
+async function inspectRequiredReview(context: RecordContext & { transaction: Prisma.TransactionClient }, serverIntent: RequiredFieldMigrationIntent, stage: "preparation" | "publication" | "execution") {
   const authority = await fieldRuntimeAuthorityInTransaction(context.session, context.transaction), { session, registry, transaction: tx, stamp } = authority;
   const intent = sealRequiredFieldMigrationIntent(serverIntent).intent;
   if (intent.organisationId !== session.organisationId || intent.principal.userId !== session.userId || intent.principal.membershipId !== session.membershipId
@@ -50,8 +57,10 @@ async function inspectRequiredReview(context: RecordContext & { transaction: Pri
   const company = await tx.organisation.findFirst({ where: { id: session.organisationId }, select: { id: true, kind: true, status: true, archivedAt: true, isTest: true } });
   if (!company) throw new FieldMigrationReviewError("REVIEW_CHANGED");
   const freshContext = { session, transaction: tx };
-  const coverage = stage === "publication" ? validatePublishedRequiredFieldMigrationSourceCoverage : validateRequiredFieldMigrationSourceCoverage;
-  const observe = stage === "publication" ? observePublishedRequiredFieldMigrationRecord : observeRequiredFieldMigrationRecord;
+  const coverage = stage === "execution" ? validateExecutingRequiredFieldMigrationSourceCoverage
+    : stage === "publication" ? validatePublishedRequiredFieldMigrationSourceCoverage : validateRequiredFieldMigrationSourceCoverage;
+  const observe = stage === "execution" ? observeExecutingRequiredFieldMigrationRecord
+    : stage === "publication" ? observePublishedRequiredFieldMigrationRecord : observeRequiredFieldMigrationRecord;
   await coverage(freshContext, registry, company, intent);
   await validateReferenceCoverage(freshContext, registry, intent);
   const stream = requiredFieldMigrationObservationDigest();

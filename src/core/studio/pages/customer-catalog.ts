@@ -8,6 +8,7 @@ import { pagePayloadSchema } from "./schema";
 import { pageApprovalsSchema } from "./approvals";
 import { compilePage } from "./compiler";
 import { pageReadScope } from "./definition-compiler";
+import { pageQueryRequestSchema } from "./owner-contract";
 
 const frame = z.object({ kind: z.literal("page"), schemaVersion: z.literal(1), approvals: pageApprovalsSchema });
 const ref = ({ id, version, schemaHash, contractHash }: { id: string; version: number; schemaHash: string; contractHash: string }) => ({ id, version, schemaHash, contractHash });
@@ -26,7 +27,8 @@ async function screen(authority: FieldRuntimeAuthority, definitionId: string) {
   const sourcePage = ref(stored.approvals.sourcePage);
   const owner = await authority.registry.resolvePageSourcePolicy({ session: authority.session, transaction: authority.transaction }, sourcePage);
   const scope = pageReadScope(compilePage(payload, stored.approvals), owner.policy);
-  return { id: row.id, name: row.name, entityId: owner.source.id, scope, sourcePage, owner };
+  return { id: row.id, name: row.name, definitionRevision: row.revision, versionId: version.id,
+    entityId: owner.source.id, scope, sourcePage, owner };
 }
 
 /** Discovery exposes only current owner-authorised screen names. Configuration
@@ -54,17 +56,23 @@ export async function listCustomerScreens(authenticated: Session) {
 /** Bounded canonical record chooser. It uses the registered closed owner list,
  * including every projection grant and private queue/tenant check, before data. */
 export async function customerScreenRecords(authenticated: Session, input: unknown) {
-  const definitionId = z.uuid().parse(input);
+  const value = z.union([z.uuid().transform(definitionId => ({ definitionId, cursor: null,
+    expectedVersionId: undefined, expectedDefinitionRevision: undefined })), z.strictObject({ definitionId: z.uuid(),
+    cursor: pageQueryRequestSchema.shape.cursor, expectedVersionId: z.uuid(), expectedDefinitionRevision: z.number().int().nonnegative() })]).parse(input);
   return withFieldRuntimeAuthority(authenticated, async authority => {
-    const value = await screen(authority, definitionId);
-    const query = value.owner.policy.queries.find(query => query.scope === "list" && query.purpose === "list");
+    const selected = await screen(authority, value.definitionId);
+    if ((value.expectedVersionId !== undefined && value.expectedVersionId !== selected.versionId)
+      || (value.expectedDefinitionRevision !== undefined && value.expectedDefinitionRevision !== selected.definitionRevision))
+      throw new Error("CONFLICT: this business screen changed. Refresh before choosing more records.");
+    const query = selected.owner.policy.queries.find(query => query.scope === "list" && query.purpose === "list");
     if (!query) throw new Error("This app has not approved a record chooser.");
-    const output = await authority.registry.invokePageRead({ session: authority.session, transaction: authority.transaction }, value.sourcePage,
-      { kind: "list" }, { query: query.query, pageSize: 50, cursor: null });
-    return { name: value.name, scope: value.scope, records: output.output.rows.map(row => {
+    const output = await authority.registry.invokePageRead({ session: authority.session, transaction: authority.transaction }, selected.sourcePage,
+      { kind: "list" }, { query: query.query, pageSize: 50, cursor: value.cursor });
+    return { definitionId: selected.id, definitionRevision: selected.definitionRevision, versionId: selected.versionId,
+      name: selected.name, scope: selected.scope, records: output.output.rows.map(row => {
       const label = [row.values.number, row.values.reference, row.values.subject, row.values.customer_name]
         .filter((value): value is string => typeof value === "string" && !!value).join(" · ");
       return { id: row.id, label: label || "Business record" };
-    }), hasMore: output.output.nextCursor !== null };
+    }), hasMore: output.output.nextCursor !== null, nextCursor: output.output.nextCursor };
   });
 }

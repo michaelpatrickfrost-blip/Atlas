@@ -7,6 +7,13 @@ import { readActiveCustomerPage, prepareVisiblePageActionInTransaction, prepareV
 import { salesStudioContract, salesOrderAcknowledgementResultSchema } from "@/modules/sales/services/studio";
 import { readRecordDefaultCustomerPage, prepareVisibleRecordDefaultActionInTransaction } from "@/core/studio/pages/record-default";
 import { z } from "zod";
+import { customerScreenRecords } from "@/core/studio/pages/customer-catalog";
+
+export async function loadBusinessScreenRecords(input: unknown) {
+  const session = await requireSession();
+  assertCapability(session, "core.profile.self");
+  return customerScreenRecords(session, input);
+}
 
 export async function loadBusinessScreen(input: unknown) {
   const session = await requireSession();

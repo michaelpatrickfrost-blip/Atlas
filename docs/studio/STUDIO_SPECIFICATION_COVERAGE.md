@@ -119,3 +119,18 @@ Current production build19413 EXIT0. Final sequential strict35359/scopedlint1649
 entry. Original c4f6fe59 candidate failed preactivation at exact human denial wording;
 checker corrected without relaxing native permission. Live c385/rollback5b remain
 confirmed; central060/070 applied. Whole Phase2 FAIL/incomplete; no Phase3.
+
+### 12 October — initial type, published target and Analytics source integration
+
+Source7 initial Ticket type selector uses actual native INSERT/assignment/receipt2
+and additive080 original guard.080 compiled centrally under both locks then rolled
+back, no retained change; actual create/type/default proof pending. Customer
+record chooser now uses exact approved bounded cursors and refreshed publication
+assertions instead of stopping at50 records. Original visual fixture checker for
+retained default Page/type/native forms is wired, not yet run. Source24 published
+field target draft preserves current exact source/security/history and uses explicit
+current Tickets9 snapshot/representation compatibility; original preview/control
+UI remains. Source8.1/20.30 additive Sales/Products Analytics finite sources reuse
+original providers,27 localcases PASS; shared view compiler/publisher/renderer
+integration remains. Production83068/strict78429/scopedlint92155 PASS. WholePhase2
+FAIL/incomplete; no later engines or family-tag completion claim.

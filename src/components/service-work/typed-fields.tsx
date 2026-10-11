@@ -75,7 +75,7 @@ export function TicketTypedFields({ manifest, searchReferences }: { manifest: Ti
     form.addEventListener("submit", preventInvalid, true);
     return () => form.removeEventListener("submit", preventInvalid, true);
   }, [invalid]);
-  if (!observed.fields.length) return null;
+  if (!observed.fields.length) return observed.recordTypes ? <input type="hidden" name="studioFields" value={invalid ? "" : json}/> : null;
   return <div ref={root} className="space-y-4 rounded-xl border border-slate-200 bg-slate-50/60 p-4 sm:p-5">
     <div><h3 className="text-sm font-semibold text-slate-900">Additional details</h3><p className="mt-1 text-xs text-slate-500">Set up for your business. {observed.operation === "update" ? "Only your changes will be saved." : "Complete the details that apply to this request."}</p></div>
     <input type="hidden" name="studioFields" value={invalid ? "" : json}/>

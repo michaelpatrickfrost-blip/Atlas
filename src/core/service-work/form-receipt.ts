@@ -11,6 +11,7 @@ import { fieldRuntimeAuthorityInTransaction, type FieldRuntimeAuthority } from "
 import { lockFieldEntitiesInTransaction } from "@/core/studio/fields/entity-lock";
 import { fieldFormPacketSchema, type FieldFormPacket } from "@/core/studio/fields/form-packet";
 import { ticketFieldDefaultOperationId } from "./field-defaults";
+import { inspectTicketCreationTypeReceipt } from "./record-type-creation";
 import { fieldWriteAuditSchema, fieldWriteRequestChecksum } from "@/core/studio/fields/runtime-write-contract";
 import { workScope } from "./access";
 import { TICKET_FORM_RECEIPT_ACTION as ACTION, TICKET_FORM_RECEIPT_ENTITY as ENTITY, ticketFormReceiptKey, ticketFormRequestSchema,
@@ -67,6 +68,9 @@ async function receiptRow(current: FieldRuntimeAuthority, request: TicketFormReq
   const parsed = ticketFormReceiptSchema.safeParse(row.after);
   if (!parsed.success) conflict();
   const receipt = parsed.data;
+  if ((request.operation === "create" && request.typeSelection !== undefined)
+    ? receipt.schemaVersion !== 2 || checksum(receipt.typeSelection) !== checksum(request.typeSelection)
+    : receipt.schemaVersion !== 1) conflict();
   if (row.id !== id || row.organisationId !== session.organisationId || row.action !== ACTION || row.entityType !== ENTITY
     || row.entityId !== receipt.recordId || row.actorUserId !== session.userId || row.before !== null
     || receipt.organisationId !== session.organisationId || receipt.actorUserId !== session.userId
@@ -129,7 +133,8 @@ async function fields(current: FieldRuntimeAuthority, request: TicketFormRequest
       || written.field.storage.type !== row.valueType) conflict();
     if (completed && (definition.revision !== entry.definitionRevision || definition.activeVersionId !== row.versionId || latest.storageGeneration !== row.generationId
       || row.slot.activeValueId !== row.id || row.slot.revision !== row.revision
-      || row.slot.extension.revision !== (request.packet.extensionRevision ?? 0) + ordered.length)) conflict();
+      || row.slot.extension.revision !== (request.packet.extensionRevision ?? 0) + ordered.length
+        + (request.operation === "create" && request.typeSelection ? 1 : 0))) conflict();
     if (defaultIds.has(definitionId)) {
       if (entry.slotRevision !== null || entry.valueRevision !== null || written.field.defaultValue === undefined
         || entry.operationId.toLowerCase() !== ticketFieldDefaultOperationId(request.packet.operationId, definitionId, row.versionId)
@@ -197,6 +202,11 @@ async function replay(authenticated: Session, tx: Prisma.TransactionClient, inpu
   }
   const native = await owningRecord(current, request.operation, receipt.recordId);
   if (native.version < receipt.recordRevision) conflict();
+  if (receipt.schemaVersion === 2) {
+    if (request.operation !== "create" || !request.typeSelection) conflict();
+    await inspectTicketCreationTypeReceipt(current, request.packet.operationId, request.typeSelection,
+      receipt.recordId, receipt.fields.length, false, receipt.typeAssignment);
+  }
   await fields(current, request, receipt, false, receipt);
   return { recordId: receipt.recordId, recordRevision: receipt.recordRevision, replayed: true as const };
 }
@@ -215,11 +225,17 @@ async function complete(authenticated: Session, tx: Prisma.TransactionClient, in
   if (await receiptRow(current, request)) conflict();
   const native = await owningRecord(current, request.operation, result.recordId);
   if (native.version !== result.recordRevision) conflict();
+  // Exact assignment + current/written profile metadata is checked before any
+  // field typed column, after the real owning complete validator has returned.
+  const typeAssignment = request.operation === "create" && request.typeSelection
+    ? await inspectTicketCreationTypeReceipt(current, request.packet.operationId, request.typeSelection,
+      result.recordId, request.packet.fields.length + serverDefaults.length, true) : null;
   const written = await fields(current, request, result, true, undefined, serverDefaults);
-  const receipt = ticketFormReceiptSchema.parse({ schemaVersion: 1, organisationId: current.session.organisationId, actorUserId: current.session.userId,
+  const receipt = ticketFormReceiptSchema.parse({ schemaVersion: typeAssignment ? 2 : 1, organisationId: current.session.organisationId, actorUserId: current.session.userId,
     operationId: request.packet.operationId.toLowerCase(), operation: request.operation, ...result,
     requestRecordRevision: request.operation === "create" ? 1 : request.recordRevision, nativeRequestChecksum: request.nativeRequestChecksum,
-    packetChecksum: ticketFormPacketChecksum(request.packet), fields: written });
+    packetChecksum: ticketFormPacketChecksum(request.packet), fields: written,
+    ...(typeAssignment && request.operation === "create" ? { typeSelection: request.typeSelection, typeAssignment } : {}) });
   await tx.auditEntry.create({ data: { id: ticketFormReceiptKey(request.packet.operationId), organisationId: current.session.organisationId,
     actorUserId: current.session.userId, action: ACTION, entityType: ENTITY, entityId: result.recordId, after: receipt } });
   return { recordId: receipt.recordId, recordRevision: receipt.recordRevision, replayed: false as const };

@@ -22,11 +22,13 @@ import { saveTemplateForSession } from "../../src/core/templates/authoring";
 import { renderTemplate } from "../../src/core/templates/service";
 import { parseBlocks } from "../../src/core/templates/domain";
 import { TICKETING_CAPABILITIES } from "../../src/core/permissions/capabilities";
+import { checkVisualRecordLayouts } from "./check-visual-record-layouts";
 
 const responseSchema = z.object({ error: z.string().optional(), redirect: z.string().optional(), value: z.unknown().optional() });
 const userSelect = { id: true, name: true, email: true, authVersion: true, createdAt: true, updatedAt: true } as const;
 const nativeGrants = ["core.profile.self", "customers.read", "customers.create", "sales.order.read", "sales.order.create", "sales.order.price_override"];
-const authorGrants = [...nativeGrants, "core.contract.manage", TICKETING_CAPABILITIES.ticketRead, TICKETING_CAPABILITIES.ticketManage, ...Object.values(CAP)];
+const authorGrants = [...nativeGrants, "core.contract.manage", TICKETING_CAPABILITIES.ticketRead, TICKETING_CAPABILITIES.ticketManage,
+  TICKETING_CAPABILITIES.ticketCreate, TICKETING_CAPABILITIES.queueManage, ...Object.values(CAP)];
 
 /** Original BOTH-lock central driver only. Compatibility and target revision
  * precede ANY fixture query. Readiness support is not visual acceptance. Native
@@ -320,6 +322,8 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
     await assert.rejects(() => withStudioAuthoringAuthority(currentActor, CAP.edit, undefined, authority => savePageDraftInTransaction(authority,
       { definitionId, revision: recovered.revision, payload: concurrent })), /disabled/);
     await db.moduleState.update({ where: { organisationId_moduleId: { organisationId: a.id, moduleId: "studio" } }, data: { enabled: true } });
+    await checkVisualRecordLayouts(base, page, { organisationId: a.id, slug: a.slug, userId: user.id,
+      membershipId: membership.id, grantedCapabilities: authorGrants, foreignOrganisationId: b.id, freshSession: fresh, call });
     // Screenshots are exactly three, only in the original private release evidence
     // directory. Device canvas width and page geometry are checked, not inferred.
     await page.goto(`${base}/design-studio/${definitionId}`);

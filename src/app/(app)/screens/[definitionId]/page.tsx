@@ -9,6 +9,7 @@ import { loadTicketProgressFormInTransaction } from "@/core/service-work/page-fo
 import { TicketProgressForm } from "@/components/service-work/ticket-progress-form";
 import { readRecordDefaultCustomerPage, prepareVisibleRecordDefaultSurfaceInTransaction } from "@/core/studio/pages/record-default";
 import type { ReactNode } from "react";
+import { BusinessScreenRecordChooser } from "./record-chooser";
 
 export default async function BusinessScreen({ params, searchParams }: {
   params: Promise<{ definitionId: string }>; searchParams: Promise<{ record?: string; size?: string; mode?: string }>;
@@ -24,9 +25,7 @@ export default async function BusinessScreen({ params, searchParams }: {
     const choices = await customerScreenRecords(session, definitionId);
     return <div className="mx-auto max-w-4xl space-y-6"><Link href="/home" className="text-sm text-blue-700">Back to your business</Link>
       <header><h1 className="text-3xl font-semibold tracking-tight">{screen.name}</h1><p className="mt-2 text-sm text-slate-500">Choose a record to open in your business design.</p></header>
-      <div className="grid gap-3">{choices.records.map(record => <Link key={record.id} href={`/screens/${definitionId}?record=${encodeURIComponent(record.id)}`} className="rounded-2xl border bg-white p-5 font-medium text-blue-700">{record.label}</Link>)}</div>
-      {!choices.records.length && <p className="rounded-2xl border bg-white p-6 text-sm text-slate-500">There are no accessible records yet.</p>}
-      {choices.hasMore && <p className="text-sm text-slate-500">Showing the first 50 accessible records. Open other records from their app.</p>}
+      <BusinessScreenRecordChooser initial={choices}/>
     </div>;
   }
   const request = (selected || screen?.scope === "record") && record ? { kind: "record" as const, recordId: record } : { kind: "list" as const };

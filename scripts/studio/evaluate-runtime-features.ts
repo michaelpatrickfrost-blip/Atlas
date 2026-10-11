@@ -41,7 +41,10 @@ async function evaluate() {
   // Absence is only a negative compatibility check. Existing modules must run
   // their actual strict parsers/engines; import or semantic failures are fatal.
   if (await pages(root, source, uuid, hash)) features.push("structuredPages.v1");
-  if (await profiles(root, source, uuid, hash)) features.push("recordProfiles.v1");
+  if (await profiles(root, source, uuid, hash)) {
+    features.push("recordProfiles.v1");
+    if (await typeForms(root, source, uuid, hash, receipt, saved)) features.push("recordTypeForms.v1");
+  }
   return features;
 }
 function available(root: string, paths: string[]) { return paths.every(path => existsSync(resolve(root, path))); }
@@ -129,6 +132,35 @@ async function profiles(root: string, source: (path: string) => string, uuid: st
   assert.throws(() => resolver.resolveEntityProfile(base, [overlay, overlay]));
   await assert.rejects(() => runtime.resolveRecordProfileInTransaction({ session: forgedSession(), stamp: {}, transaction: access.blocked, registry: access.blocked },
     { entity, recordId: "readiness", expectedRevision: 1 }), /FORBIDDEN: genuine current record design authority/);
+  assert.equal(access.accesses(), 0);
+  return true;
+}
+async function typeForms(root: string, source: (path: string) => string, uuid: string, hash: string,
+  receipt: { ticketFormReceiptSchema: { safeParse(value: unknown): { success: boolean }; parse(value: unknown): object } },
+  legacy: { operationId: string; [key: string]: unknown }): Promise<boolean> {
+  // Probe the actual predecessor's receipt parser BEFORE loading optional new
+  // creation modules. A receipt1-only bridge is unsupported, not a broken import.
+  const { checksum } = await import(source("src/core/studio/registry/contracts.ts"));
+  const selection = { schemaVersion: 1, manifestChecksum: hash, definitionId: null };
+  const saved = { ...legacy, schemaVersion: 2, fields: [], typeSelection: selection, typeAssignment: {
+    operationId: uuid, extensionId: uuid, extensionRevision: 1, requestChecksum: hash, checksum: hash, selectionChecksum: checksum(selection) } };
+  if (!receipt.ticketFormReceiptSchema.safeParse(saved).success) return false;
+  if (!available(root, ["src/core/service-work/record-type-creation-contract.ts", "src/core/service-work/record-type-creation.ts"])) return false;
+  const [contract, creation, replay] = await Promise.all([import(source("src/core/service-work/record-type-creation-contract.ts")),
+    import(source("src/core/service-work/record-type-creation.ts")), import(source("src/core/service-work/form-receipt.ts"))]);
+  assert.deepEqual(contract.parseTicketCreationTypeSelection(JSON.stringify(selection)), selection);
+  assert.throws(() => contract.parseTicketCreationTypeSelection(JSON.stringify({ ...selection, organisationId: "forged" })));
+  assert.equal(receipt.ticketFormReceiptSchema.safeParse({ ...saved, operation: "update" }).success, false);
+  assert.equal(receipt.ticketFormReceiptSchema.safeParse({ ...saved, typeAssignment: { ...saved.typeAssignment, selectionChecksum: "b".repeat(64) } }).success, false);
+  assert.equal(Object.hasOwn(receipt.ticketFormReceiptSchema.parse(legacy), "typeSelection"), false);
+  const operation = creation.ticketCreationTypeOperationId(legacy.operationId, null);
+  assert.match(operation, /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-8[a-f0-9]{3}-[a-f0-9]{12}$/);
+  assert.equal(operation, creation.ticketCreationTypeOperationId(legacy.operationId, null));
+  assert.notEqual(operation, creation.ticketCreationTypeOperationId(uuid, null));
+  const access = denyAccess(), session = forgedSession(), authority = { session, stamp: {}, transaction: access.blocked, registry: access.blocked };
+  await assert.rejects(() => creation.inspectTicketCreationTypeReceipt(authority, legacy.operationId, selection, "readiness", 0, false, saved.typeAssignment), /FORBIDDEN/);
+  await assert.rejects(() => replay.replayTicketFormInTransaction(session, access.blocked, { operation: "create", nativeRequestChecksum: hash,
+    typeSelection: selection, packet: { schemaVersion: 1, operationId: legacy.operationId, manifestChecksum: hash, extensionRevision: null, fields: [] } }), /FORBIDDEN/);
   assert.equal(access.accesses(), 0);
   return true;
 }

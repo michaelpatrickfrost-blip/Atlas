@@ -15,6 +15,8 @@ import { lockFieldEntitiesInTransaction } from "@/core/studio/fields/entity-lock
 import { initialiseFieldValueInTransaction, writeFieldValueInTransaction } from "@/core/studio/fields/runtime-write";
 import { parseFieldFormPacketJson, type FieldFormPacket } from "@/core/studio/fields/form-packet";
 import { ticketDefaultFieldEntries } from "./field-defaults";
+import { ticketCreationTypeManifestInTransaction } from "./record-type-creation";
+import { parseTicketCreationTypeSelection } from "./record-type-creation-contract";
 import type { TicketFieldFormControl, TicketFieldFormManifest } from "./field-form-contract";
 import { workScope } from "./access";
 import { WORK_STATUSES } from "./config";
@@ -133,7 +135,8 @@ export async function ticketFieldFormManifestInTransaction(authority: FieldRunti
       value: value && request.operation === "update" ? await readVersionedFieldValueInTransaction(authority, payload, definition.id,
         payload.storageGeneration, slot!.id, request.recordId, value) : null });
   }
-  if (!fields.length) return null;
+  const recordTypes = request.operation === "create" ? await ticketCreationTypeManifestInTransaction(authority) : null;
+  if (!fields.length && !recordTypes) return null;
   const manifestChecksum = checksum({ schemaVersion: 1, organisationId: session.organisationId, actorUserId: session.userId,
     recordId: request.operation === "update" ? request.recordId : null, operation: request.operation, recordRevision, extensionRevision: extension?.revision ?? null,
     owner: { id: owner.id, version: owner.version, schemaHash: owner.schemaHash, contractHash: owner.contractHash },
@@ -143,9 +146,11 @@ export async function ticketFieldFormManifestInTransaction(authority: FieldRunti
     fields: fields.map(field => ({ definitionId: field.definitionId, definitionRevision: field.definitionRevision,
       versionId: field.versionId, generationId: field.generationId, slotRevision: field.slotRevision, valueRevision: field.valueRevision,
       label: field.label, help: field.help, storage: field.storage, required: field.required, conditionalRequired: field.conditionalRequired,
-      ...(field.defaultValue !== undefined ? { defaultValue: field.defaultValue } : {}) })) });
+      ...(field.defaultValue !== undefined ? { defaultValue: field.defaultValue } : {}) })),
+    ...(recordTypes ? { recordTypes } : {}) });
   return { schemaVersion: 1, operation: request.operation, operationId: randomUUID(), recordRevision,
-    extensionRevision: extension?.revision ?? null, manifestChecksum, fields };
+    extensionRevision: extension?.revision ?? null, manifestChecksum, fields,
+    ...(recordTypes ? { recordTypes } : {}) };
 }
 
 /** Genuine server bootstrap; internal Atlas/no-config work keeps its native form.
@@ -186,6 +191,8 @@ export async function stageTicketFieldFormPacket(authority: FieldRuntimeAuthorit
  * derivatives (sequence, SLA clock, parent context) are never client authority or
  * retry identity. Omitted owner assignment differs from explicit unassignment. */
 export function ticketNativeFormChecksum(form: FormData, operation: "create" | "update") {
+  if (form.has("studioRecordType") && (operation !== "create" || form.getAll("studioRecordType").length !== 1))
+    throw new Error("Use the separate business type form to change an existing ticket.");
   const text = (key: string, max = 4000) => z.string().max(max).parse(String(form.get(key) ?? "").trim());
   const required = (key: string, max = 4000) => z.string().min(1).max(max).parse(text(key, max));
   if (operation === "update") return checksum({ operation, recordId: nativeId.parse(required("workId", 100)),
@@ -198,5 +205,6 @@ export function ticketNativeFormChecksum(form: FormData, operation: "create" | "
     requestedForUserId: text("requestedForUserId", 100) || null, subject: required("subject", 250), description: required("description", 20000),
     type: text("type", 60) || "SERVICE_REQUEST", priority: text("priority") || "NORMAL", impact: text("impact") || "INDIVIDUAL",
     urgency: text("urgency") || "NORMAL", priorityReason: text("priorityReason"),
-    context: Object.fromEntries(["asset", "service", "workaround", "problem", "rootCause", "risk", "implementationPlan", "rollbackPlan", "testingPlan", "schedule"].map(key => [key, text(key)])) });
+    context: Object.fromEntries(["asset", "service", "workaround", "problem", "rootCause", "risk", "implementationPlan", "rollbackPlan", "testingPlan", "schedule"].map(key => [key, text(key)])),
+    ...(form.has("studioRecordType") ? { typeSelection: parseTicketCreationTypeSelection(form.get("studioRecordType")) } : {}) });
 }

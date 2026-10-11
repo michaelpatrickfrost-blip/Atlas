@@ -5,15 +5,16 @@ import { writeAudit } from "@/core/audit/log";
 import { Prisma } from "@/generated/prisma/client";
 import type { FieldRuntimeAuthority } from "../fields/runtime-authority";
 import { STUDIO_CAPABILITIES as CAP } from "../permissions";
-import { entityDetailsSchema } from "../registry/entities";
+import { entityDetailsSchema, supportsFieldMigrationIntent, supportsFieldMigrationQueryIntent } from "../registry/entities";
 import { checksum } from "../registry/contracts";
 import { referenceSchema } from "../compiler/reference";
 import { compileDefinitionInTransaction, parseDefinitionPayload } from "../compiler";
-import { customFieldPayloadSchema, fieldStorageSchema, type FieldStorage } from "../fields/schema";
+import { customFieldPayloadSchema, fieldStorageSchema, type FieldStorage, type CustomFieldPayload } from "../fields/schema";
 import { versionedFieldPayloadSchema } from "../fields/required-contract";
 import { inspectSealedFieldVersion } from "../fields/sealed-field";
 import { assertFieldAccess } from "../fields/validation";
-import { fieldDefinitionKey } from "../fields/binding";
+import { assertFieldBinding, fieldDefinitionKey } from "../fields/binding";
+import { analyseRequiredFieldEvolution, createFieldConverter, type FieldConversion } from "../fields/evolution";
 import { entityProfileDefinitionKey } from "../record-types/binding";
 import { entityProfilePayloadSchema, recordTypePayloadSchema, configurationReferenceSchema, entityProfileReferenceSchema, pageReferenceSchema, type EntityProfileReference } from "../record-types/schema";
 import { loadSealedConfigurationVersion } from "../configuration/pins";
@@ -24,6 +25,7 @@ import { prepareRequiredFieldActivationInTransaction } from "../fields/activatio
 import { lockFieldEntitiesInTransaction } from "../fields/entity-lock";
 import { projectAdditionalFieldSetup } from "./field-setup-projection";
 import { additionalFieldSetupSchema, additionalFieldTypeCatalogue, type AdditionalFieldSetup } from "./field-setup-contract";
+import { additionalFieldEvolutionDraftSchema, type FriendlyFieldConversion } from "./field-evolution-contract";
 
 const uuid = z.uuid().transform(value => value.toLowerCase());
 const revision = z.number().int().nonnegative().max(2147483646);
@@ -61,7 +63,8 @@ async function owner(authority: FieldRuntimeAuthority, capability: typeof CAP.re
     || !details.extensionPolicy.recordTypes || !details.record?.fieldPolicy || !details.record.writeCapability) unavailable();
   assertCapability(session, details.record.writeCapability);
   return { entity, classification: approved.classification, readCapability: approved.capability,
-    writeCapability: details.record.writeCapability, fieldPolicy: details.record.fieldPolicy };
+    writeCapability: details.record.writeCapability, fieldPolicy: details.record.fieldPolicy,
+    migrationSnapshot: details.record.migrationSnapshot, migrationRepresentation: details.record.migrationRepresentation };
 }
 const scopedDraft = (authority: FieldRuntimeAuthority, definitionId: string, expectedRevision?: number) => authority.transaction.studioDraft.findFirst({
   where: { definitionId, organisationId: authority.session.organisationId,
@@ -107,11 +110,12 @@ async function create(authority: FieldRuntimeAuthority, key: string, name: strin
   await audit(authority, "studio.draft.created", id, { kind, name });
   return { ...result, revision: 0 };
 }
-async function save(authority: FieldRuntimeAuthority, draft: NonNullable<Awaited<ReturnType<typeof scopedDraft>>>, payload: unknown) {
+async function save(authority: FieldRuntimeAuthority, draft: NonNullable<Awaited<ReturnType<typeof scopedDraft>>>, payload: unknown,
+  sourceHead?: { revision: number; activeVersionId: string }) {
   const compiled = await compileDraft(authority, draft.definitionId, draft.definition.kind, payload);
   await lockFieldEntitiesInTransaction(authority.transaction, authority.session.organisationId, ["tickets.ticket"]);
   const changed = await authority.transaction.studioDraft.updateMany({ where: { id: draft.id, organisationId: authority.session.organisationId,
-    revision: draft.revision, definition: { retiredAt: null } }, data: { payload: compiled.payload, revision: { increment: 1 },
+    revision: draft.revision, definition: { retiredAt: null, ...(sourceHead ?? {}) } }, data: { payload: compiled.payload, revision: { increment: 1 },
     editorUserId: authority.session.userId, validation: Prisma.DbNull } });
   if (changed.count !== 1) conflict();
   await audit(authority, "studio.draft.updated", draft.definitionId, { revision: draft.revision + 1 });
@@ -165,7 +169,8 @@ async function getSetupReferenceTargets(authority: FieldRuntimeAuthority) {
   }
   return targets;
 }
-async function setupStorage(authority: FieldRuntimeAuthority, policy: OwnerPolicy, value: AdditionalFieldSetup, previousStorage?: FieldStorage) {
+async function setupStorage(authority: FieldRuntimeAuthority, policy: OwnerPolicy, value: AdditionalFieldSetup, previousStorage?: FieldStorage,
+  publishedChoices?: { sourceIndexes?: readonly (number | null)[]; draftStorage?: FieldStorage }) {
   if (!policy.fieldPolicy.types.includes(value.type)) unavailable();
   let storage: FieldStorage, initialValue: unknown = value.initialValue;
   switch (value.type) {
@@ -184,10 +189,26 @@ async function setupStorage(authority: FieldRuntimeAuthority, policy: OwnerPolic
     case "url": storage = { type: value.type, protocols: value.settings.allowHttp ? ["https", "http"] : ["https"] }; break;
     case "enum": case "multi_enum": {
       const previous = previousStorage?.type === "enum" || previousStorage?.type === "multi_enum" ? previousStorage : undefined;
-      const options = value.settings.choices.map(label => ({
-        id: previous?.options.find(option => !option.retired && option.label.trim().toLowerCase() === label.trim().toLowerCase())?.id
-          ?? `o_${crypto.randomUUID().replaceAll("-", "")}`, label, retired: false }));
-      storage = fieldStorageSchema.parse({ type: value.type, valueSetVersion: previous?.valueSetVersion ?? 1, options,
+      if (publishedChoices?.sourceIndexes && (!previous || previous.type !== value.type))
+        throw new Error("Match choices only when changing the existing choice field.");
+      const options = value.settings.choices.map((label, index) => {
+        const sourceIndex = publishedChoices?.sourceIndexes?.[index];
+        const retained = sourceIndex === null ? undefined : sourceIndex !== undefined ? previous?.options[sourceIndex]
+          : previous?.options.find(option => !option.retired && option.label.trim().toLowerCase() === label.trim().toLowerCase());
+        if (sourceIndex !== null && sourceIndex !== undefined && (!retained || retained.retired))
+          throw new Error("This previous choice is unavailable for new selection. Its history is kept.");
+        const target = publishedChoices?.draftStorage;
+        const savedNewChoice = target && (target.type === "enum" || target.type === "multi_enum")
+          ? target.options.find(option => !option.retired && !previous?.options.some(old => old.id === option.id)
+            && option.label.trim().toLowerCase() === label.trim().toLowerCase()) : undefined;
+        return { id: retained?.id ?? savedNewChoice?.id ?? `o_${crypto.randomUUID().replaceAll("-", "")}`, label, retired: false };
+      });
+      const retainedOptions = publishedChoices && previous ? [ ...options,
+        ...previous.options.filter(option => !options.some(next => next.id === option.id)).map(option => ({ ...option, retired: true })) ] : options;
+      const byId = (left: { id: string }, right: { id: string }) => left.id < right.id ? -1 : left.id > right.id ? 1 : 0;
+      const choicesChanged = previous && checksum([...previous.options].sort(byId)) !== checksum([...retainedOptions].sort(byId));
+      storage = fieldStorageSchema.parse({ type: value.type, valueSetVersion: previous
+        ? previous.valueSetVersion + (publishedChoices && choicesChanged ? 1 : 0) : 1, options: retainedOptions,
         ...(value.type === "multi_enum" ? { maxSelections: value.settings.maxSelections } : {}) });
       const option = (index: number) => { if (!options[index]) throw new Error("Choose an existing default choice."); return options[index].id; };
       if (value.initialValue !== undefined) initialValue = value.type === "enum" ? option(value.initialValue) : value.initialValue.map(option);
@@ -236,6 +257,96 @@ export async function configureAdditionalFieldDraftInTransaction(authority: Fiel
   delete field.defaultValue;
   return save(authority, draft, { ...previous, field: { ...field, ...configured, label: value.setup.label, help: value.setup.help } });
 }
+function friendlyConversion(rule: FriendlyFieldConversion, target: CustomFieldPayload): FieldConversion {
+  if (rule.kind !== "string_to_enum") return rule;
+  const storage = target.field.storage;
+  if (storage.type !== "enum") throw new Error("Choose one choice as the destination for each existing text.");
+  return { ...rule, mapping: rule.mapping.map(({ from, toChoice }) => {
+    const choice = storage.options[toChoice];
+    if (!choice || choice.retired) throw new Error("A conversion mapping must choose an available target choice.");
+    return { from, to: choice.id };
+  }) };
+}
+
+/** Proposed published-field settings only: no preparation, publication, value
+ * conversion, generation row, pointer activation or migration-state mutation.
+ * Active immutable schemas/values remain untouched. A subsequent explicit
+ * preparation must freshly seal these saved settings and the conversion again. */
+export async function saveAdditionalFieldEvolutionDraftInTransaction(authority: FieldRuntimeAuthority, input: unknown) {
+  const policy = await owner(authority, CAP.edit), value = additionalFieldEvolutionDraftSchema.parse(input), tx = authority.transaction;
+  await lockFieldEntitiesInTransaction(tx, authority.session.organisationId, [policy.entity.id]);
+  await tx.$queryRaw`SELECT d.id FROM studio_definitions d JOIN studio_drafts draft ON draft."definitionId"=d.id AND draft."organisationId"=d."organisationId"
+    WHERE d.id=${value.definitionId}::uuid AND d."organisationId"=${authority.session.organisationId} FOR UPDATE OF d,draft`;
+  const draft = await scopedDraft(authority, value.definitionId, value.revision);
+  if (!draft || draft.definition.kind !== "customField" || draft.definition.id !== value.definitionId
+    || draft.definition.organisationId !== authority.session.organisationId || draft.definition.revision !== value.definitionRevision
+    || draft.definition.activeVersionId !== value.sourceVersionId || draft.definition.latestVersion < 1
+    || draft.baseVersion?.version !== draft.definition.latestVersion) conflict();
+  const version = await tx.studioDefinitionVersion.findFirst({ where: { id: value.sourceVersionId,
+    definitionId: value.definitionId, organisationId: authority.session.organisationId } });
+  if (!version || version.id !== value.sourceVersionId) conflict();
+  const source = inspectSealedFieldVersion(authority.registry, version, authority.session.organisationId, value.definitionId).payload;
+  const previous = versionedFieldPayloadSchema.parse(ticketPayload("customField", draft.payload));
+  await preflightMetadataRead(authority, "customField", source);
+  await preflightMetadataRead(authority, "customField", previous);
+  assertFieldAccess(authority.session, source.field, "write");
+  assertFieldAccess(authority.session, previous.field, "write");
+  if (source.schemaVersion !== 1 || previous.schemaVersion !== 1)
+    throw new Error("Conditional field rules need their reviewed conditional editor. These saved rules are kept.");
+  if (source.entity.id !== policy.entity.id || (checksum(previous.entity) !== checksum(source.entity) && checksum(previous.entity) !== checksum(policy.entity))
+    || previous.field.key !== source.field.key || draft.definition.key !== fieldDefinitionKey(source)) conflict();
+  const security = (payload: CustomFieldPayload) => ({ classification: payload.field.classification,
+    readCapability: payload.field.readCapability, writeCapability: payload.field.writeCapability,
+    required: payload.field.required, indexed: payload.field.indexed, unique: payload.field.unique });
+  if (checksum(security(previous)) !== checksum(security(source)))
+    throw new Error("This saved draft changes access or business rules. Keep its existing reviewed editor.");
+  const representable = projectAdditionalFieldSetup(source, policy.fieldPolicy.referenceEntities.map(id => ({ id })));
+  if (representable.kind === "read_only") throw new Error(representable.reason);
+  if (value.setup.type === "reference" && value.setup.initialValue !== undefined)
+    throw new Error("Choose a starting linked record only through an approved record picker. Its saved rules are kept.");
+  // Target the explicit CURRENT owner protocol; immutable source entity versions
+  // stay exact. Tickets2 has no migration contract, while current Tickets9
+  // explicitly approves retained source2–9. Never infer a compatibility range.
+  for (const [mode, approval] of [["snapshot", policy.migrationSnapshot], ["representation", policy.migrationRepresentation]] as const) {
+    if (!approval || !supportsFieldMigrationIntent(approval, 1) || !approval.sourceVersions.includes(source.entity.version))
+      throw new Error("This previous field version has no approved conversion path. Its live settings are kept.");
+    const metadata = authority.registry.describe(approval.query.id, approval.query.version), approved = await authority.registry.resolve(authority.session,
+      referenceSchema.parse({ id: metadata.id, version: metadata.version, schemaHash: metadata.schemaHash, contractHash: metadata.contractHash }));
+    if (approved.kind !== "query" || approved.ownerModuleId !== "tickets" || approved.capability !== policy.writeCapability
+      || approved.details.transaction !== "required" || !supportsFieldMigrationQueryIntent(approved, policy.entity.id, mode, 1)) unavailable();
+  }
+  await assertFieldBinding(tx, authority.session, value.definitionId, source);
+  const compiledSource = await compileDraft(authority, value.definitionId, "customField", source);
+  if (compiledSource.checksum !== version.checksum) conflict();
+  if (await tx.studioFieldMigrationPublication.findFirst({ where: { organisationId: authority.session.organisationId,
+    definitionId: value.definitionId, state: { in: ["PUBLISHED", "CUTOVER"] } }, select: { preparationId: true } }))
+    throw new Error("Finish or cancel the existing reviewed field change before preparing different settings.");
+  const configured = await setupStorage(authority, policy, value.setup, source.field.storage,
+    { sourceIndexes: value.choiceSourceIndexes, draftStorage: previous.field.storage });
+  const field = { ...source.field };
+  delete field.defaultValue;
+  const candidate = customFieldPayloadSchema.parse({ ...source, entity: policy.entity, field: { ...field,
+    label: value.setup.label, help: value.setup.help, ...configured } });
+  // No-op settings/name/help belong to the existing cosmetic editor. Choice
+  // labels stay stable-ID changes and may use the reviewed path: the ordinary
+  // publisher deliberately cannot rewrite a saved value set in place.
+  const settings = (payload: CustomFieldPayload) => ({ ...payload.field, label: "", help: "" });
+  if (checksum(settings(source)) === checksum(settings(candidate)))
+    throw new Error("Change the name or description using the existing field editor. No conversion is needed.");
+  const existingGeneration = previous.storageGeneration !== source.storageGeneration
+    ? await tx.studioFieldGeneration.findFirst({ where: { id: previous.storageGeneration,
+      organisationId: authority.session.organisationId }, select: { id: true } }) : null;
+  const generation = previous.storageGeneration !== source.storageGeneration && !existingGeneration
+    ? previous.storageGeneration : crypto.randomUUID();
+  const target = customFieldPayloadSchema.parse({ ...candidate, storageGeneration: generation });
+  const analysis = analyseRequiredFieldEvolution(source, target);
+  createFieldConverter(source, target, friendlyConversion(value.conversion, target));
+  const saved = await save(authority, draft, analysis.target, { revision: value.definitionRevision, activeVersionId: value.sourceVersionId });
+  return { revision: saved.revision, definitionRevision: value.definitionRevision, sourceVersionId: value.sourceVersionId,
+    conversion: value.conversion, impact: { index: analysis.indexImpact, uniquenessCheck: analysis.requiresUniquenessCheck,
+      rollbackLimit: analysis.rollbackLimit }, next: "review_existing_records" as const };
+}
+
 /** Presentation-only: storage, security, required/default and stable identity
  * remain the exact server-saved payload. The original binder independently rejects
  * structural changes at publication; this path supplies no migration waiver. */

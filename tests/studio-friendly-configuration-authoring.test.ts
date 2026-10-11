@@ -1,16 +1,16 @@
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Session } from "@/core/auth/session";
 import type { Prisma } from "@/generated/prisma/client";
 import type { FieldRuntimeAuthority } from "@/core/studio/fields/runtime-authority";
 import { buildRegistry } from "@/core/studio/registry/runtime";
 import { compileCustomField } from "@/core/studio/compiler/fields";
-import { customFieldPayloadSchema } from "@/core/studio/fields/schema";
+import { customFieldPayloadSchema, type CustomField } from "@/core/studio/fields/schema";
 import { checksum } from "@/core/studio/registry/contracts";
 import { entityProfilePayloadSchema, recordTypePayloadSchema, configurationReferenceSchema } from "@/core/studio/record-types/schema";
 import { resolveEntityProfile, resolveRecordTypeProfile } from "@/core/studio/record-types/resolver";
 const m = vi.hoisted(() => ({ stamps: new WeakMap<object, object>(), module: vi.fn(), compile: vi.fn(), create: vi.fn(), draft: vi.fn(),
   save: vi.fn(), definition: vi.fn(), version: vi.fn(), versions: vi.fn(), bases: vi.fn(), audit: vi.fn(), lock: vi.fn(),
-  publish: vi.fn(), activate: vi.fn(), required: vi.fn(), definitions: vi.fn() }));
+  publish: vi.fn(), activate: vi.fn(), required: vi.fn(), definitions: vi.fn(), generation: vi.fn(), migration: vi.fn(), raw: vi.fn() }));
 vi.mock("@/core/auth/session", () => ({ sessionAuthorityStamp: (session: object) => m.stamps.get(session) }));
 vi.mock("@/core/audit/log", () => ({ writeAudit: m.audit }));
 vi.mock("@/core/studio/compiler", () => ({ compileDefinitionInTransaction: m.compile, parseDefinitionPayload: (kind: string, payload: unknown) => {
@@ -26,7 +26,8 @@ vi.mock("@/core/studio/fields/activation-coverage", () => ({ prepareRequiredFiel
 import { createAdditionalFieldDraftInTransaction, saveAdditionalFieldDraftInTransaction, createBaseProfileDraftInTransaction,
   saveBaseProfileDraftInTransaction, createRecordTypeDraftInTransaction, saveRecordTypeDraftInTransaction, readConfigurationDraftInTransaction,
   reviewConfigurationDraftInTransaction, publishConfigurationDraftInTransaction, activateConfigurationVersionInTransaction,
-  goLiveConfigurationDraftInTransaction, getSetupCatalogInTransaction, configureAdditionalFieldDraftInTransaction } from "@/core/studio/authoring/configuration";
+  goLiveConfigurationDraftInTransaction, getSetupCatalogInTransaction, configureAdditionalFieldDraftInTransaction,
+  saveAdditionalFieldEvolutionDraftInTransaction } from "@/core/studio/authoring/configuration";
 import { additionalFieldSetupSchema } from "@/core/studio/authoring/field-setup-contract";
 // Real owner metadata, field compiler/constraints, profile schemas/resolver and
 // exact generic immutable pin/edge seals. Profile compiler/SQL/fresh authority,
@@ -39,10 +40,11 @@ const registry = buildRegistry(async () => true), source = registry.describe("ti
 const entity = { id: source.id, version: source.version, schemaHash: source.schemaHash, contractHash: source.contractHash };
 const tx = { moduleState: { findFirst: m.module }, studioDefinition: { create: m.create, findFirst: m.definition, findMany: m.definitions },
   studioDraft: { findFirst: m.draft, updateMany: m.save }, studioDefinitionVersion: { findFirst: m.version, findMany: m.versions },
-  studioProfileBinding: { findMany: m.bases } } as unknown as Prisma.TransactionClient;
+  studioProfileBinding: { findMany: m.bases }, studioFieldGeneration: { findFirst: m.generation },
+  studioFieldMigrationPublication: { findFirst: m.migration }, $queryRaw: m.raw } as unknown as Prisma.TransactionClient;
 const authority: FieldRuntimeAuthority = { session, stamp, transaction: tx, registry };
 let draft: { id: string; definitionId: string; organisationId: string; revision: number; payload: unknown;
-  definition: { id: string; kind: string; organisationId: string; revision: number; activeVersionId: string | null; latestVersion: number }; baseVersion: { version: number } | null };
+  definition: { id: string; key: string; kind: string; organisationId: string; revision: number; activeVersionId: string | null; latestVersion: number }; baseVersion: { version: number } | null };
 let rows: ReturnType<typeof sealed>[];
 function sealed(id: number, kind: string, payload: object, plan: object) {
   const refs = "configurationDependencies" in plan ? configurationReferenceSchema.array().parse(plan.configurationDependencies) : [];
@@ -60,7 +62,7 @@ beforeEach(async () => {
   rows = [sealed(1, "customField", field.payload, field.plan), sealed(2, "entityProfile", base, { kind: "entityProfile", schemaVersion: 1, payload: base,
     resolvedProfile: resolved.profile, dependencies: [], configurationDependencies: [] } as object)];
   draft = { id: "draft", definitionId: uuid(1), organisationId: "business", revision: 3, payload: field.payload,
-    definition: { id: uuid(1), kind: "customField", organisationId: "business", revision: 7, activeVersionId: uuid(11), latestVersion: 1 }, baseVersion: { version: 1 } };
+    definition: { id: uuid(1), key: "tickets.ticket.review_count", kind: "customField", organisationId: "business", revision: 7, activeVersionId: uuid(11), latestVersion: 1 }, baseVersion: { version: 1 } };
   m.draft.mockImplementation(async ({ where }) => where.organisationId === "business" && where.definitionId === draft.definitionId
     && (where.revision === undefined || where.revision === draft.revision) ? draft : null);
   m.definition.mockImplementation(async ({ where }) => { const row = rows.find(row => row.definitionId === where.id && row.organisationId === where.organisationId && row.definition.kind === where.kind);
@@ -77,6 +79,8 @@ beforeEach(async () => {
   m.create.mockResolvedValue({ id: uuid(99) }); m.save.mockResolvedValue({ count: 1 }); m.bases.mockResolvedValue([{ definitionId: uuid(2) }]);
   m.versions.mockResolvedValue(rows); m.definitions.mockResolvedValue([]);
   m.publish.mockResolvedValue({ version: { id: uuid(11) }, versionNumber: 2, draftRevision: 4 }); m.activate.mockResolvedValue({ revision: 9 }); m.required.mockResolvedValue(session);
+  m.generation.mockImplementation(async ({ where }) => where.id === uuid(50) ? { id: uuid(50) } : null);
+  m.migration.mockResolvedValue(null); m.raw.mockResolvedValue([]);
 });
 it.each(["string", "integer", "boolean", "date"])("creates a friendly optional %s draft with server-owned policy/key/generation and no activation", async type => {
   expect(await createAdditionalFieldDraftInTransaction(authority, { label: "  Our detail  ", type })).toMatchObject({ revision: 0 });
@@ -367,4 +371,197 @@ it('offers typed draft settings only from a genuinely never-published saved fiel
   expect(await readConfigurationDraftInTransaction(authority, draft.definitionId)).toMatchObject({ fieldSettings: null });
   draft.definition.latestVersion = 0; m.versions.mockResolvedValue([{ id: uuid(11), version: 1, publishedAt: new Date('2026-10-11T12:00:00Z') }]);
   expect(await readConfigurationDraftInTransaction(authority, draft.definitionId)).toMatchObject({ fieldSettings: null });
+});
+
+describe("friendly published field target settings — no migration lifecycle effects", () => {
+  const request = (changes: Record<string, unknown> = {}) => ({ definitionId: uuid(1), revision: 3,
+    definitionRevision: 7, sourceVersionId: uuid(11), setup: { label: "Count", type: "decimal", settings: { precision: 16, scale: 2 }, initialValue: "0" },
+    conversion: { kind: "integer_to_decimal" }, ...changes });
+  const savedPayload = () => customFieldPayloadSchema.parse(m.save.mock.calls.at(-1)![0].data.payload);
+  async function sourceField(patch: Partial<CustomField>, sourceVersion = 9) {
+    const original = customFieldPayloadSchema.parse(rows[0].payload);
+    const metadata = registry.describe("tickets.ticket", sourceVersion), retainedEntity = { id: metadata.id, version: metadata.version,
+      schemaHash: metadata.schemaHash, contractHash: metadata.contractHash };
+    const compiled = await compileCustomField({ ...session, capabilities: new Set([...session.capabilities, "tickets.secret.read", "tickets.secret.write"]) },
+      { ...original, entity: retainedEntity, field: { ...original.field, ...patch } }, registry);
+    rows[0] = sealed(1, "customField", compiled.payload, compiled.plan); draft.payload = compiled.payload;
+  }
+  it("saves an independently compiled target with new generation and exact active-head/draft CAS, preserving source/security and performing no migration", async () => {
+    await sourceField({ required: true, indexed: true, unique: true });
+    const before = structuredClone(rows[0]);
+    const result = await saveAdditionalFieldEvolutionDraftInTransaction(authority, request());
+    const target = savedPayload(), sourcePayload = customFieldPayloadSchema.parse(rows[0].payload);
+    expect(result).toMatchObject({ revision: 4, sourceVersionId: uuid(11), definitionRevision: 7, next: "review_existing_records",
+      impact: { uniquenessCheck: true, rollbackLimit: "reverse_review_after_target_writes" } });
+    expect(target).toMatchObject({ entity, field: { key: "review_count", required: true, indexed: true, unique: true,
+      classification: "confidential", readCapability: "tickets.ticket.read", writeCapability: "tickets.ticket.manage",
+      storage: { type: "decimal", precision: 16, scale: 2 }, defaultValue: { type: "decimal", value: "0" } } });
+    expect(target.storageGeneration).not.toBe(sourcePayload.storageGeneration); expect(rows[0]).toEqual(before);
+    expect(m.save.mock.calls[0][0].where).toMatchObject({ organisationId: "business", revision: 3,
+      definition: { revision: 7, activeVersionId: uuid(11), retiredAt: null } });
+    expect(m.lock.mock.invocationCallOrder[0]).toBeLessThan(m.raw.mock.invocationCallOrder[0]);
+    expect(m.raw.mock.invocationCallOrder[0]).toBeLessThan(m.draft.mock.invocationCallOrder[0]);
+    expect(m.audit).toHaveBeenCalledOnce(); expect(m.publish).not.toHaveBeenCalled(); expect(m.activate).not.toHaveBeenCalled(); expect(m.create).not.toHaveBeenCalled();
+    expect(result).not.toHaveProperty("payload"); expect(result).not.toHaveProperty("storageGeneration");
+  });
+  it.each([{ type: "integer", initialValue: 0 }, { type: "boolean", initialValue: false }])("preserves explicit $type zero/false target defaults without filling existing values", async setup => {
+    await sourceField({ storage: setup.type === "integer" ? { type: "integer" } : { type: "boolean" } });
+    await saveAdditionalFieldEvolutionDraftInTransaction(authority, request({ setup: { label: "Count", ...setup }, conversion: { kind: "same_type" } }));
+    expect(savedPayload().field.defaultValue).toEqual({ type: setup.type, value: setup.initialValue });
+  });
+  it("upgrades only the target to the explicit current owner conversion protocol, keeping the immutable retained source2 pin exact", async () => {
+    await sourceField({}, 2);
+    const before = structuredClone(rows[0]);
+    await saveAdditionalFieldEvolutionDraftInTransaction(authority, request());
+    expect(savedPayload().entity).toEqual(entity); expect(customFieldPayloadSchema.parse(rows[0].payload).entity.version).toBe(2);
+    expect(rows[0]).toEqual(before); expect(savedPayload().field.key).toBe("review_count");
+  });
+  it("refuses a retained source outside either current owner advertised range instead of guessing a version fallback", async () => {
+    await sourceField({}, 2);
+    const resolve = registry.resolve.bind(registry);
+    vi.spyOn(registry, "resolve").mockImplementation(async (selected, ref) => {
+      const actual = await resolve(selected, ref);
+      if (ref.id !== entity.id || ref.version !== 9) return actual;
+      const details = actual.details as { record: { migrationSnapshot: object; migrationRepresentation: object } };
+      return { ...actual, details: { ...details, record: { ...details.record,
+        migrationSnapshot: { ...details.record.migrationSnapshot, sourceVersions: [9] },
+        migrationRepresentation: { ...details.record.migrationRepresentation, sourceVersions: [9] } } } };
+    });
+    await expect(saveAdditionalFieldEvolutionDraftInTransaction(authority, request())).rejects.toThrow("no approved conversion path");
+    expect(m.save).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+  });
+  it("explicit absent default removes the draft default while immutable live metadata retains zero", async () => {
+    await sourceField({ defaultValue: { type: "integer", value: 0 } });
+    await saveAdditionalFieldEvolutionDraftInTransaction(authority, request({ setup: { label: "Count", type: "integer" }, conversion: { kind: "same_type" } }));
+    expect(savedPayload().field).not.toHaveProperty("defaultValue"); expect(customFieldPayloadSchema.parse(rows[0].payload).field.defaultValue?.value).toBe(0);
+  });
+  it("renames/reorders source choices by explicit ordinal, retires omissions, increments value set, and remaps default index zero to the retained ID", async () => {
+    await sourceField({ storage: { type: "enum", valueSetVersion: 3, options: [
+      { id: "repair", label: "Repair", retired: false }, { id: "delivery", label: "Delivery", retired: false }] } });
+    await saveAdditionalFieldEvolutionDraftInTransaction(authority, request({ setup: { label: "Category", type: "enum", settings: { choices: ["Scheduled delivery", "Install"] }, initialValue: 0 },
+      choiceSourceIndexes: [1, null], conversion: { kind: "same_type" } }));
+    const target = savedPayload();
+    expect(target.field.storage).toMatchObject({ type: "enum", valueSetVersion: 4,
+      options: [{ id: "delivery", label: "Scheduled delivery", retired: false }, { label: "Install", retired: false }, { id: "repair", label: "Repair", retired: true }] });
+    expect(target.field.defaultValue).toEqual({ type: "enum", value: "delivery" });
+  });
+  it("choice reorder alone preserves exact IDs and value-set version while retaining a separate reviewed generation", async () => {
+    await sourceField({ storage: { type: "multi_enum", valueSetVersion: 4, maxSelections: 2,
+      options: [{ id: "repair", label: "Repair", retired: false }, { id: "delivery", label: "Delivery", retired: false }] } });
+    await saveAdditionalFieldEvolutionDraftInTransaction(authority, request({ setup: { label: "Category", type: "multi_enum",
+      settings: { choices: ["Delivery", "Repair"], maxSelections: 2 }, initialValue: [0] }, conversion: { kind: "same_type" } }));
+    expect(savedPayload().field).toMatchObject({ storage: { valueSetVersion: 4, options: [{ id: "delivery" }, { id: "repair" }] },
+      defaultValue: { type: "multi_enum", value: ["delivery"] } });
+  });
+  it("reuses only the existing unpublished target generation and newly introduced target choices on subsequent settings saves", async () => {
+    await sourceField({ storage: { type: "enum", valueSetVersion: 1, options: [{ id: "repair", label: "Repair", retired: false }] } });
+    const next = request({ setup: { label: "Category", type: "enum", settings: { choices: ["Repair", "Install"] } }, conversion: { kind: "same_type" } });
+    await saveAdditionalFieldEvolutionDraftInTransaction(authority, next);
+    const first = savedPayload(); draft.payload = first; draft.revision = 4;
+    await saveAdditionalFieldEvolutionDraftInTransaction(authority, { ...next, revision: 4 });
+    expect(savedPayload()).toEqual(first);
+    const storage = first.field.storage; if (storage.type !== "enum") throw new Error("Expected enum");
+    expect(storage.options[1].id).toMatch(/^o_[a-f0-9]{32}$/);
+    expect(m.generation.mock.calls.at(-1)![0].where).toEqual({ id: first.storageGeneration, organisationId: "business" });
+  });
+  it("never reuses a retained published/cancelled target generation as mutable target storage", async () => {
+    const original = customFieldPayloadSchema.parse(draft.payload);
+    draft.payload = { ...original, storageGeneration: uuid(80), field: { ...original.field, storage: { type: "decimal", precision: 16, scale: 2 } } };
+    m.generation.mockResolvedValue({ id: uuid(80) });
+    await saveAdditionalFieldEvolutionDraftInTransaction(authority, request());
+    expect(savedPayload().storageGeneration).not.toBe(uuid(80)); expect(savedPayload().storageGeneration).not.toBe(uuid(50));
+  });
+  it.each([
+    { storage: { type: "date" } as const, setup: { label: "When", type: "datetime" }, conversion: { kind: "date_to_datetime", timezone: "UTC", time: "start_of_day" } },
+    { storage: { type: "datetime", timezone: "UTC" } as const, setup: { label: "When", type: "date" }, conversion: { kind: "datetime_to_date", timezone: "UTC", loss: "allow_time_loss" } },
+    { storage: { type: "string", minLength: 0, maxLength: 200, multiline: false } as const, setup: { label: "Category", type: "enum", settings: { choices: ["Gold"] }, initialValue: 0 },
+      conversion: { kind: "string_to_enum", mapping: [{ from: "Preferred", toChoice: 0 }], unmapped: "reject" } },
+  ])("accepts only the closed explicit $conversion.kind family using actual shared compiler/converter", async example => {
+    await sourceField({ storage: example.storage });
+    const result = await saveAdditionalFieldEvolutionDraftInTransaction(authority, request({ setup: example.setup, conversion: example.conversion }));
+    expect(savedPayload().field.storage.type).toBe(example.setup.type); expect(result.conversion).toEqual(example.conversion);
+    expect(JSON.stringify(result)).not.toMatch(/o_[a-f0-9]{32}/);
+  });
+  it.each([
+    { setup: { label: "Amount", type: "money", settings: { currencies: ["GBP"] } }, conversion: { kind: "integer_to_decimal" } },
+    { conversion: { kind: "same_type" } },
+    { setup: { label: "Count", type: "decimal", settings: { precision: 2, scale: 3 } } },
+    { conversion: { kind: "date_to_datetime", timezone: "Europe/London", time: "start_of_day" } },
+    { choiceSourceIndexes: [0] },
+    { organisationId: "foreign" }, { storageGeneration: uuid(90) }, { required: false }, { sourceChecksum: "f".repeat(64) },
+  ])("rejects unsupported/coerced/identity-owned target requests before effects %#", async patch => {
+    await expect(saveAdditionalFieldEvolutionDraftInTransaction(authority, request(patch))).rejects.toThrow();
+    expect(m.save).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+  });
+  it("refuses an unallocated text-to-choice mapping and duplicate/raw choice identities", async () => {
+    await sourceField({ storage: { type: "string", minLength: 0, maxLength: 200, multiline: false } });
+    for (const mapping of [[{ from: "Gold", toChoice: 1 }], [{ from: "Gold", to: "client_id" }],
+      [{ from: "Gold", toChoice: 0 }, { from: "Gold", toChoice: 0 }]])
+      await expect(saveAdditionalFieldEvolutionDraftInTransaction(authority, request({ setup: { label: "Category", type: "enum", settings: { choices: ["Gold"] } },
+        conversion: { kind: "string_to_enum", mapping, unmapped: "reject" } }))).rejects.toThrow();
+    expect(m.save).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+  });
+  it("refuses duplicate/out-of-range source choices before history can be deleted or reassigned", async () => {
+    await sourceField({ storage: { type: "enum", valueSetVersion: 1, options: [{ id: "repair", label: "Repair", retired: false }] } });
+    for (const choiceSourceIndexes of [[0, 0], [0, 199]])
+      await expect(saveAdditionalFieldEvolutionDraftInTransaction(authority, request({ setup: { label: "Category", type: "enum", settings: { choices: ["One", "Two"] } },
+        choiceSourceIndexes, conversion: { kind: "same_type" } }))).rejects.toThrow();
+    expect(m.save).not.toHaveBeenCalled();
+  });
+  it.each(["draft", "definition", "active", "tenant", "binding", "seal", "window", "cas"])("denies stale/missing %s before draft/Audit effects", async mode => {
+    let input = request();
+    if (mode === "draft") input = request({ revision: 2 });
+    if (mode === "definition") input = request({ definitionRevision: 6 });
+    if (mode === "active") input = request({ sourceVersionId: uuid(91) });
+    if (mode === "tenant") draft.definition.organisationId = "foreign";
+    if (mode === "binding") m.generation.mockResolvedValue(null);
+    if (mode === "seal") rows[0].checksum = "f".repeat(64);
+    if (mode === "window") m.migration.mockResolvedValue({ preparationId: uuid(90) });
+    if (mode === "cas") m.save.mockResolvedValue({ count: 0 });
+    await expect(saveAdditionalFieldEvolutionDraftInTransaction(authority, input)).rejects.toThrow();
+    if (mode !== "cas") expect(m.save).not.toHaveBeenCalled();
+    expect(m.audit).not.toHaveBeenCalled();
+  });
+  it.each(["forged", "stamp", "studio", "edit", "native_read", "native_manage"])("denies %s authority before protected draft/source reads", async mode => {
+    let current = authority;
+    if (mode === "forged") current = { ...authority, session: { ...session } };
+    else if (mode === "stamp") current = { ...authority, stamp: { ...stamp, sessionVersion: 3 } };
+    else if (mode === "studio") m.module.mockResolvedValue(null);
+    else {
+      const capabilities = new Set(session.capabilities); capabilities.delete(mode === "edit" ? "studio.definition.edit" : `tickets.ticket.${mode === "native_read" ? "read" : "manage"}`);
+      const selected = { ...session, capabilities }; m.stamps.set(selected, stamp); current = { ...authority, session: selected };
+    }
+    await expect(saveAdditionalFieldEvolutionDraftInTransaction(current, request())).rejects.toThrow();
+    expect(m.draft).not.toHaveBeenCalled(); expect(m.version).not.toHaveBeenCalled(); expect(m.save).not.toHaveBeenCalled();
+  });
+  it.each(["source_read", "source_write", "draft_write"])("independently checks %s field grants before source bindings or target effects", async mode => {
+    if (mode !== "draft_write") await sourceField(mode === "source_read" ? { readCapability: "tickets.secret.read" } : { writeCapability: "tickets.secret.write" });
+    else { const previous = customFieldPayloadSchema.parse(draft.payload); draft.payload = { ...previous, field: { ...previous.field, writeCapability: "tickets.secret.write" } }; }
+    await expect(saveAdditionalFieldEvolutionDraftInTransaction(authority, request())).rejects.toThrow("FORBIDDEN");
+    expect(m.generation).not.toHaveBeenCalled(); expect(m.save).not.toHaveBeenCalled();
+  });
+  it("preserves conditional/security drafts and unsupported saved policies rather than converting them into schema1", async () => {
+    const original = customFieldPayloadSchema.parse(draft.payload);
+    for (const replacement of [ { ...original, schemaVersion: 2, requiredIf: { match: "all", predicates: [{ operator: "present", source: { kind: "native", fieldId: "status" } }] } },
+      { ...original, field: { ...original.field, required: true } } ]) {
+      draft.payload = replacement;
+      await expect(saveAdditionalFieldEvolutionDraftInTransaction(authority, request())).rejects.toThrow();
+      expect(draft.payload).toEqual(replacement);
+    }
+    await sourceField({ storage: { type: "string", minLength: 1, maxLength: 10, multiline: false, pattern: "^[A-Z]{1,10}$" } });
+    await expect(saveAdditionalFieldEvolutionDraftInTransaction(authority, request())).rejects.toThrow("character rules");
+    expect(m.save).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+  });
+  it("preflights an existing linked-record default, then refuses dropping it without an approved picker", async () => {
+    await sourceField({ storage: { type: "reference", entity }, defaultValue: { type: "reference", value: "saved-private-ticket" } });
+    const target = vi.spyOn(registry, "authoriseRecord").mockRejectedValueOnce(new Error("FORBIDDEN: private target"));
+    await expect(saveAdditionalFieldEvolutionDraftInTransaction(authority, request())).rejects.toThrow("private target");
+    target.mockResolvedValue({ organisationId: "business", recordId: "saved-private-ticket", revision: 1 });
+    await expect(saveAdditionalFieldEvolutionDraftInTransaction(authority, request())).rejects.toThrow("starting record");
+    expect(m.save).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+  });
+  it("refuses unchanged settings and never creates a pointless migration for a field label edit", async () => {
+    await expect(saveAdditionalFieldEvolutionDraftInTransaction(authority, request({ setup: { label: "New name", type: "integer" }, conversion: { kind: "same_type" } }))).rejects.toThrow("No conversion is needed");
+    expect(m.save).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+  });
 });

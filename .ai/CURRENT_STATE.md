@@ -1,3 +1,46 @@
+## 12 October 2026 — Phase2 native creation integration IN PROGRESS
+
+Reviewed b2c88e8e checkpoint production19413/strict35359/lint16498 passed; original
+both-lock release93673 EXIT1 before activation. Candidate s8EcBB passed original
+native whole-form/private/window/concurrency checks, then configured field-search
+browser check timed out on exact Receiving team accessible label. RequestForm now
+explicitly labels Receiving team and Service / request; native permissions and
+checker assertions are preserved. Source fix still needs actual rerun.
+Readiness features[] against old c385 means Page/profile/default checks DEFERRED.
+Required recovery231358/fixture231546 retained. Fresh SSH12 October confirms
+livec385a2be/rollback5b6390c8 unchanged;145GiB root and1.5GiB tmp free.
+
+Projected independently reviewed1960afd1 genuine initial type selector/INSERT/
+receipt2/creation replay, actual own-loader readiness and additive080 original
+SQL guard. Independent review corrected original no-base replay to check today's
+canonical base and SQL JSON hash/UUID string shapes. Integrated146/6 source tests
+PASS; strict35645 EXIT0. Actual080 rehearsal/application, native HTTP/browser and
+compatible pair gates pending. Old selector absence/packet1/checksum/receipt1
+remain compatible. Existing reassignment redirect preserved.
+
+Customer record chooser now supports original bounded owner cursors, current
+head/version assertions and fresh native/private Read each request, with Next
+records/back-to-first controls. No source business-result cache. Source integration
+checks/build/live pending. Reviewed818c3af4 published-field target source integrated;
+current Tickets9 metadata is used only where it explicitly retains source-version
+migration coverage, preserving exact source/key/security and closed conversions.
+Helpers continue original migration preview, safe Analytics
+source contracts and existing-fixture visual type/default native journey.
+
+080 rehearsal12 October PASS under BOTH original exclusive locks using existing
+valid231358 recovery dump: BEGIN/CREATE FUNCTION/ROLLBACK restored exact guard
+hash43fe3efb; no persistent schema/data change.080 remains NOT APPLIED. Integrated
+creation/evolution264/7 PASS; Analytics27/1 PASS; chooser/visual-prefix42/3 PASS.
+Production83068 and scopedlint92155 EXIT0; strict61444 found test-only unsupported exact role option, corrected; final strict78429 EXIT0. New original
+visual record-layout checkeraf178218 integrated with existing Test A/B/session;
+no new fixture engine. Actual record/default/type checks require compatible readers.
+
+Exact next: final strict result/diff/memory checkpoint, then original pinned reader
+bridge release. Helpers continue original migration preview, approved fact/list
+editor controls and Analytics owner compiler facet. No Stage3 engine work.
+The b2 acceptance has ended; next reviewed checkpoint may advance its branch. WholePhase2
+FAIL/incomplete; no Phase3/new worktrees/dependency copies/ad-hoc dumps.
+
 ## 12 October 2026 — exact record-default layout integration IMPLEMENTED
 
 Root c4f6fe59 friendly setup/Templates/cache checkpoint built/types/lint passed;

@@ -2836,3 +2836,19 @@ queries. No second publisher/template/workflow engine, shared-business-data tabl
 or result cache. New metadata remains unavailable until genuine current/rollback
 reader compatibility is verified. This is a deliberate platform contract extension,
 with ordered workstreams recorded in STUDIO_PHASE_2_PLAN.md.
+
+## 12 October 2026 — Published field targets use explicit current owner coverage
+
+Retaining a Tickets2 entity reference in a new evolution target would prevent the
+existing migration engine from operating: that owner contract has no migration
+snapshot approval. The visual target instead uses current Tickets9 only after both
+registered snapshot and representation contracts explicitly advertise protocol1
+and the exact retained source version. The immutable source version/reference,
+logical field identity, native security and reviewed conversion requirements stay
+unchanged. No inferred version range, new migration engine or conditional waiver.
+
+Initial Ticket business-type selection uses receipt2 only for genuine native
+INSERT plus same-transaction assignment and paired Audit. Old no-selector forms
+retain packet1/receipt1 byte contracts. Additive080 replaces the existing receipt
+guard and requires actual current-transaction INSERT evidence; no business backfill
+or new receipt table. Compatible current/rollback readers precede enablement.

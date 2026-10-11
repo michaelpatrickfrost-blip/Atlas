@@ -131,3 +131,41 @@ The broader source brief still includes future governed relationships/calculated
 expressions, fiscal calendars, exact drill-through, company/team sharing/publication,
 version history, subscriptions/alerts, matrix pivots and external sources. Those
 are not represented as completed by this personal-dashboard redesign.
+
+## Explicit Studio source contracts — Phase2 prerequisite
+
+Existing Sales and Products manifests add owner-approved metric/report descriptors
+and typed query adapters. Native Analytics/Reports providers and existing registry
+contracts remain unchanged. Stable provider IDs form additive `.metric`,
+`.metric.read`, `.report` and `.report.read` logical IDs; labels are not identities.
+Each descriptor records exact query version, owner capability/module, classification,
+complete-result promise, dimensions/column semantics and conservative high query cost.
+Policies are immutable; changed native metadata or reader functions fail closed.
+
+The first family is deliberately small: Sales orders by complete status/type, Quotes
+by status, Products active catalogue by kind, and original paged Sales order/Quote/
+Product catalogue Reports. Original owner readers retain tenant predicates and
+allowlisted projections. Query adapters refresh genuinely issued current identity,
+reject changed auth/session/tenant/membership, and check current owner source grants
+and enabled/entitled modules before native queries. They do not infer native access
+from Studio permissions, metadata or an author's cached Session. An existing supplied
+transaction is used for identity/module metadata only: original provider business
+reads are unchanged, and no new atomic data snapshot is claimed.
+
+Count dimensions accept only declared finite enum labels with nonnegative safe
+integer results; unknown, duplicate, unsafe or overflow output fails rather than
+being sliced. Current snapshots accept only the all period. Record reports retain
+the original 100-row page and typed allowlisted filter/calendar validation, expose
+only requested columns, and include currency when amounts are selected. Monetary
+values retain native decimal numbers or exact large decimal text; this adapter
+performs no aggregation, currency conversion or cross-currency calculation. It never
+requests export mode, runs raw SQL, accepts arbitrary provider/query/tenant input, or
+caches business results.
+
+Sales customer/product/category/time dimensions and truncated 8,000-record trends,
+Finance/posted money, private Service/People/CRM/Goals, Core Customer and generated
+summary datasets are unavailable through these new contracts until separate precise
+owning approvals. Native existing catalogues remain available under their original
+permissions. This checkpoint adds source contracts only; immutable business views,
+publication, customer dashboard selection and runtime compatibility enablement are
+separate workstreams in the original Studio publisher and existing renderer.

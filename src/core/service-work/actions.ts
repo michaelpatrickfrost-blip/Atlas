@@ -23,6 +23,9 @@ import { ticketFieldFormManifestInTransaction, parseTicketFieldFormPacket, stage
 import { replayTicketFormInTransaction, completeTicketFormInTransaction, throwTicketFormReceiptError } from "./form-receipt";
 import type { TicketFormRequest } from "./form-receipt-contract";
 import { withFormFeedback } from "@/core/shared/form-feedback";
+import { parseTicketCreationTypeSelection } from "./record-type-creation-contract";
+import { stageTicketCreationType } from "./record-type-creation";
+import { assertStudioRuntimeFeatureEnabled, STUDIO_RECORD_TYPE_FORM_FEATURE } from "@/core/studio/runtime-features";
 
 const text = (form: FormData, key: string, max = 4000) => z.string().max(max).parse(String(form.get(key) ?? "").trim());
 const need = (form: FormData, key: string, max = 4000) => z.string().min(1, `${key} is required.`).max(max).parse(text(form, key, max));
@@ -49,7 +52,9 @@ export async function createWork(form: FormData) {
     const kind = z.enum(["TICKET", "QUERY"]).parse(text(form, "kind"));
     await requireWork(session, kind, true);
     const id = await db.$transaction(async tx => {
-      if (form.has("studioFields") && kind !== "TICKET") throw new Error("Additional Ticket details cannot be attached to a query.");
+      if ((form.has("studioFields") || form.has("studioRecordType")) && kind !== "TICKET") throw new Error("Additional Ticket details cannot be attached to a query.");
+      if (form.has("studioRecordType") && (!form.has("studioFields") || form.getAll("studioRecordType").length !== 1))
+        throw new Error("The business type needs its complete owning form. Refresh before saving.");
       // Legacy native clients retain non-idempotent create semantics. A customer
       // Ticket with authorised visible defaults still gets the SAME actual INSERT
       // callback; no client operation means a new internal operation per call.
@@ -57,7 +62,8 @@ export async function createWork(form: FormData) {
         where: { id: session.organisationId }, select: { kind: true } }) : null;
       const authority = form.has("studioFields") || company?.kind === "CUSTOMER" ? await fieldRuntimeAuthorityInTransaction(session, tx) : null;
       let request: TicketFormRequest | null = authority && form.has("studioFields") ? { operation: "create", nativeRequestChecksum: ticketNativeFormChecksum(form, "create"),
-        packet: parseTicketFieldFormPacket(authority, form.get("studioFields")) } : null;
+        packet: parseTicketFieldFormPacket(authority, form.get("studioFields")),
+        ...(form.has("studioRecordType") ? { typeSelection: parseTicketCreationTypeSelection(form.get("studioRecordType")) } : {}) } : null;
       if (authority && request) {
         // Priority override is an independent native operation permission today,
         // including a read-only retry after the response was lost.
@@ -66,6 +72,7 @@ export async function createWork(form: FormData) {
         const replay = await replayTicketFormInTransaction(authority.session, tx, request);
         if (replay) return replay.recordId;
       }
+      if (request?.operation === "create" && request.typeSelection) assertStudioRuntimeFeatureEnabled(STUDIO_RECORD_TYPE_FORM_FEATURE);
       const manifest = authority ? await ticketFieldFormManifestInTransaction(authority, { operation: "create" }) : null;
       if (!request && manifest?.fields.some(field => field.defaultValue !== undefined)) request = { operation: "create",
         nativeRequestChecksum: ticketNativeFormChecksum(form, "create"), packet: { schemaVersion: 1, operationId: randomUUID(),
@@ -108,7 +115,11 @@ export async function createWork(form: FormData) {
         definition: service ?? {}, sla, firstResponseDueAt: addBusinessMinutes(now, sla.responseMinutes, sla.calendar), resolutionDueAt: addBusinessMinutes(now, sla.resolutionMinutes, sla.calendar),
       } satisfies import("@/generated/prisma/client").Prisma.ServiceWorkItemUncheckedCreateInput;
       const work = creationRequest ? (await createTicketWithFieldInitialisation({ session, transaction: tx }, data,
-        async (current, work, proof) => { defaultFields = await stageTicketFieldFormPacket(current, manifest, creationRequest.packet, work.id, work.version, proof); })).work
+        async (current, work, proof) => {
+          defaultFields = await stageTicketFieldFormPacket(current, manifest, creationRequest.packet, work.id, work.version, proof);
+          if (creationRequest.operation === "create" && creationRequest.typeSelection)
+            await stageTicketCreationType(current, creationRequest.typeSelection, creationRequest.packet, work.id, work.version, proof);
+        })).work
         : await insertWorkWithFieldReceipt(tx, session, data);
       await workEvent(tx, session, work, "CREATED", `${kind === "QUERY" ? "Cross-team query" : "Internal ticket"} received by ${queue.name}.`, "REQUESTER");
       if (parentCaseId) await tx.serviceCase.updateMany({ where: { id: parentCaseId, organisationId: session.organisationId }, data: { status: "WAITING_INTERNAL" } });

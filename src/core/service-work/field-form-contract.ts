@@ -1,4 +1,5 @@
 import type { FieldStorage, FieldValue } from "@/core/studio/fields/schema";
+import type { TicketCreationTypeManifest } from "./record-type-creation-contract";
 
 /** Display and observed CAS state only. No private rule graph, facts, tenant,
  * owning proof, capability grant or executable client configuration. */
@@ -27,6 +28,8 @@ export type TicketFieldFormManifest = {
   extensionRevision: number | null;
   manifestChecksum: string;
   fields: TicketFieldFormControl[];
+  /** Authorised creation choices only; absent keeps historical manifest shape. */
+  recordTypes?: TicketCreationTypeManifest;
 };
 export type TicketFieldReferenceChoice = { id: string; label: string };
 export type TicketFieldReferenceSearch = (definitionId: string, search: string) => Promise<TicketFieldReferenceChoice[]>;

@@ -16,7 +16,7 @@ import { compileConditionalCustomField } from "@/core/studio/fields/conditional-
 import { registeredRequiredFactMetadata } from "@/core/studio/fields/required-owner";
 import { customFieldPayloadSchema, type CustomFieldPayload, type FieldValue } from "@/core/studio/fields/schema";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
-import { ticketFieldFormManifest, ticketFieldFormManifestInTransaction, stageTicketFieldFormPacket, parseTicketFieldFormPacket } from "@/core/service-work/field-forms";
+import { ticketFieldFormManifest, ticketFieldFormManifestInTransaction, stageTicketFieldFormPacket, parseTicketFieldFormPacket, ticketNativeFormChecksum } from "@/core/service-work/field-forms";
 import type { TicketFieldFormManifest } from "@/core/service-work/field-form-contract";
 import { createTicketWithFieldInitialisation, authoriseNewTicketFields } from "@/core/service-work/studio-create";
 import { cutoverUuid as uuid } from "./fixtures/studio-field-cutover";
@@ -240,4 +240,17 @@ it("reference suggestions require independent current canonical record Read befo
   m.native.mockResolvedValue(null);
   await expect(ticketFieldFormManifestInTransaction(current, { operation: "create" })).rejects.toThrow("Ticket unavailable");
   expect(m.initial).not.toHaveBeenCalled(); expect(m.values).not.toHaveBeenCalled();
+});
+
+it("keeps old absent-selector native request identity and binds only closed creation selection when present", () => {
+  const form = new FormData(); form.set("kind", "TICKET"); form.set("queueId", "queue"); form.set("subject", "Original"); form.set("description", "Details");
+  const original = ticketNativeFormChecksum(form, "create");
+  form.set("studioRecordType", JSON.stringify({ schemaVersion: 1, manifestChecksum: "a".repeat(64), definitionId: null }));
+  expect(ticketNativeFormChecksum(form, "create")).not.toBe(original);
+  const standard = ticketNativeFormChecksum(form, "create");
+  form.set("studioRecordType", JSON.stringify({ schemaVersion: 1, manifestChecksum: "a".repeat(64), definitionId: uuid(2) }));
+  expect(ticketNativeFormChecksum(form, "create")).not.toBe(standard);
+  expect(() => ticketNativeFormChecksum(form, "update")).toThrow("separate business type");
+  form.append("studioRecordType", String(form.get("studioRecordType"))); expect(() => ticketNativeFormChecksum(form, "create")).toThrow();
+  form.delete("studioRecordType"); expect(ticketNativeFormChecksum(form, "create")).toBe(original);
 });

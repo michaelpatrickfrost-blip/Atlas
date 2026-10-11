@@ -5,7 +5,8 @@ import { z } from "zod";
 export const STUDIO_LITERAL_DEFAULT_FEATURE = "literalFieldDefaults.v1" as const;
 export const STUDIO_PAGE_FEATURE = "structuredPages.v1" as const;
 export const STUDIO_PROFILE_FEATURE = "recordProfiles.v1" as const;
-export const studioRuntimeFeatureSchema = z.enum([STUDIO_LITERAL_DEFAULT_FEATURE, STUDIO_PAGE_FEATURE, STUDIO_PROFILE_FEATURE]);
+export const STUDIO_RECORD_TYPE_FORM_FEATURE = "recordTypeForms.v1" as const;
+export const studioRuntimeFeatureSchema = z.enum([STUDIO_LITERAL_DEFAULT_FEATURE, STUDIO_PAGE_FEATURE, STUDIO_PROFILE_FEATURE, STUDIO_RECORD_TYPE_FORM_FEATURE]);
 export type StudioRuntimeFeature = z.infer<typeof studioRuntimeFeatureSchema>;
 export const studioRuntimeFeatureEvidenceSchema = z.strictObject({ schemaVersion: z.literal(1),
   releaseRevision: z.string().regex(/^[a-f0-9]{40}$/), rollbackRevision: z.string().regex(/^[a-f0-9]{40}$/),

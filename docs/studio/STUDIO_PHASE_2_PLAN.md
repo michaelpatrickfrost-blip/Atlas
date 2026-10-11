@@ -11,9 +11,9 @@ Atlas console without the business app/tool shell, and the modern Atlas UI.
 | --- | --- | --- | --- | --- |
 | 2D5 | Native record selects its current profile's exact retained Page, reusing existing visible controls and full owning Ticket form; depends on profiles070/Pages | pages/record-default, customer-selection, screens routes/actions, WorkDetail | None | IMPLEMENTED source; reader/control148/6 PASS, final integrated route/build/live pending |
 | 2E8 | Safely edit never-published all15 field settings and defaults; depends on friendly creation/CAS/compiler | configuration, field-setup-projection, AdditionalFieldSetup, setup editor/actions | None | IMPLEMENTED source; integrated183/5 scoped assertions PASS, actual friendly browser gate added but not run |
-| 2C3 | Genuine initial type choice and atomic original form receipt2; depends on native whole-form receipts/association070 | field-forms, native creator, receipt contract/guard, original profile checker/probe | Additive080 replaces original receipt guard; no new table/reset | IN PROGRESS in existing isolated helper; original-packet1 compatibility and actual gated acceptance mandatory |
+| 2C3 | Genuine initial type choice and atomic original form receipt2; depends on native whole-form receipts/association070 | field-forms, native creator, receipt contract/guard, original profile checker/probe | Additive080 replaces original receipt guard; no new table/reset | IMPLEMENTED source1960; original packet1 compatibility;080 central rehearsal PASS/ROLLBACK; actual gated acceptance pending |
 | 2E9 | Reuse Analytics authoring/query/editor with genuine selected-business authority; shared immutable publication designed separately | Analytics services/editor, Core optional transaction metadata seams | Prerequisite none; publication proposal pending | IN PROGRESS; personal board is not business-wide publication |
-| 2E10 | Visual published field-change target, then authorised bounded review/control through existing migration engine | friendly evolution contracts/configuration, later preview/panel/actions | Existing generation/migration tables; no new DDL expected | IN PROGRESS first target adapter only; existing Test/readiness guards remain |
+| 2E10 | Visual published field-change target, then authorised bounded review/control through existing migration engine | friendly evolution contracts/configuration, later preview/panel/actions | Existing generation/migration tables; no new DDL expected | IMPLEMENTED target818; original bounded preview adapter IN PROGRESS; existing conditional Test/readiness guards remain |
 
 Each checkpoint updates the permanent ledger; no Phase3 feature or duplicate engine.
 
@@ -362,3 +362,16 @@ Database: generic existing Studio metadata tables expected to suffice; verify al
 SQL guards before asserting no migration. Business values/query results never stored
 or cached. No scheduling/alert/Goal/Flow functionality added in Phase2.
 Status: stage1 IN PROGRESS; remaining stages NOT STARTED, no shared Go live claim.
+
+## 12 October — coherent native/layout/evolution/source checkpoint
+
+Originalb2 release preactivationFAIL at exact Receiving team label; explicit native
+labels corrected, actual search rerun pending. Initial type receipt2/080 source,
+bounded native chooser pagination and reviewed published-field target integrated.
+080 both-lock central rehearsal PASS/ROLLBACK with valid existing231358 recovery;
+no retained database change/new dump. Actual original checkeraf178218 integrated
+into existing Test A/B journey; Page/profile/type compatibility before fixture work.
+Registered Analytics finite-source stage1e2e2c61c integrated preserving SalesPage
+contributions; stage2 owner compiler facet in progress, no shared publication yet.
+Creation/evolution264/7, Analytics27/1, chooser/prefix42/3 localPASS. Production83068
+and scopedlint92155 EXIT0; first strict61444 test-only role option corrected; final strict78429 EXIT0. WholePhase2 FAIL/incomplete.

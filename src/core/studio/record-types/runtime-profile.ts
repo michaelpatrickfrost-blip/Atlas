@@ -16,6 +16,7 @@ import { recordTypeAssignmentProvenanceSchema } from "./assignment-contract";
 import { authoredPageFieldPins } from "../pages/definition-compiler";
 import { reconstructPageMetadataInTransaction } from "../pages/server-approvals";
 import { compilePage } from "../pages/compiler";
+import { compileCustomFieldForInitialisation } from "../compiler/fields";
 import { pagePayloadSchema } from "../pages/schema";
 import { pageApprovalsSchema } from "../pages/approvals";
 
@@ -101,6 +102,17 @@ export async function inspectRecordProfileInTransaction(authority: FieldRuntimeA
 
 export async function preflightRecordProfileFields(authority: FieldRuntimeAuthority, profile: EntityProfile | null,
   entityId: string, access: RecordProfileAccess) {
+  return preflightProfileFields(authority, profile, entityId, access);
+}
+
+/** Pure metadata for an authorised owning Create catalogue/retained receipt.
+ * This never supplies record visibility or mints an INSERT proof. Actual creation
+ * and retained-native ownership are independently checked by the owning service. */
+export async function preflightRecordProfileCreationMetadata(authority: FieldRuntimeAuthority, profile: EntityProfile | null, entityId: string) {
+  return preflightProfileFields(authority, profile, entityId, { kind: "creation_metadata" });
+}
+async function preflightProfileFields(authority: FieldRuntimeAuthority, profile: EntityProfile | null,
+  entityId: string, access: RecordProfileAccess | { kind: "creation_metadata" }) {
   if (!profile) return;
   for (const pin of profile.requiredFields) {
     const sealed = await loadSealedConfigurationVersion(authority.session, authority.transaction, pin);
@@ -110,12 +122,15 @@ export async function preflightRecordProfileFields(authority: FieldRuntimeAuthor
     const current = await authority.transaction.studioDefinition.findFirst({ where: { id: pin.definitionId, organisationId: authority.session.organisationId,
       kind: "customField", retiredAt: null }, include: { activeVersion: true } });
     if (!current?.activeVersion || current.activeVersionId !== current.activeVersion.id) invalid();
-    const read = (v: StudioDefinitionVersion) => access.kind === "initial" ? readInitialFieldPlanInTransaction(authority, v, pin.definitionId)
+    const read = (v: StudioDefinitionVersion) => access.kind === "initial" || access.kind === "creation_metadata" ? readInitialFieldPlanInTransaction(authority, v, pin.definitionId)
       : access.kind === "native_validation" ? readNativeFieldPlanInTransaction(authority, v, pin.definitionId, access)
         : readVersionedFieldPlanInTransaction(authority, v, pin.definitionId);
     const pinned = await read(version), active = await read(current.activeVersion);
     if (pinned.entity.id !== entityId || active.entity.id !== entityId || version.schemaVersion !== current.activeVersion.schemaVersion
       || current.key !== `${entityId}.${active.field.key}` || checksum(meaning(pinned)) !== checksum(meaning(active))) invalid();
+    if (access.kind === "creation_metadata") for (const payload of [pinned, active])
+      await compileCustomFieldForInitialisation(authority.session, { schemaVersion: 1, entity: payload.entity,
+        storageGeneration: payload.storageGeneration, field: payload.field }, authority.registry, "write");
   }
 }
 

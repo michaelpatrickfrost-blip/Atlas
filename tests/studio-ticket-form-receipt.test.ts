@@ -17,7 +17,8 @@ import { ticketFormReceiptKey, ticketFormPacketChecksum, ticketFormProcessingOrd
   TICKET_FORM_RECEIPT_ACTION, TICKET_FORM_RECEIPT_ENTITY, type TicketFormRequest, type TicketFormResult, type TicketFormReceipt } from "@/core/service-work/form-receipt-contract";
 
 const m = vi.hoisted(() => ({ authority: vi.fn(), lock: vi.fn(), binding: vi.fn(), module: vi.fn(), work: vi.fn(), queue: vi.fn(),
-  audit: vi.fn(), occupied: vi.fn(), insert: vi.fn(), definitions: vi.fn(), values: vi.fn(), value: vi.fn(), count: vi.fn() }));
+  audit: vi.fn(), occupied: vi.fn(), insert: vi.fn(), definitions: vi.fn(), values: vi.fn(), value: vi.fn(), count: vi.fn(), typeReceipt: vi.fn() }));
+vi.mock("@/core/service-work/record-type-creation", () => ({ inspectTicketCreationTypeReceipt: m.typeReceipt }));
 vi.mock("@/core/studio/fields/runtime-authority", () => ({ fieldRuntimeAuthorityInTransaction: m.authority }));
 vi.mock("@/core/studio/fields/entity-lock", () => ({ lockFieldEntitiesInTransaction: m.lock }));
 vi.mock("@/core/studio/fields/binding", () => ({ assertFieldBinding: m.binding,
@@ -294,4 +295,73 @@ it.each(["current", "written", "reference"])("rechecks independent %s rights for
   } else vi.mocked(registry.authoriseRecord).mockRejectedValue(new Error("Reference unavailable."));
   m.value.mockClear(); await expect(replay()).rejects.toThrow(mode === "reference" ? "Reference unavailable" : "tickets.field.");
   expect(m.value).not.toHaveBeenCalled(); expect(m.insert).toHaveBeenCalledTimes(1);
+});
+
+// The type collaborator's native INSERT/provenance/policy checks have their own
+// suite. These cases verify actual whole-receipt dispatch/order/field pairing.
+function selectionChecksum() {
+  if (request.operation !== "create" || !request.typeSelection) throw new Error("Create fixture required");
+  return checksum(request.typeSelection);
+}
+function selectedType() {
+  if (request.operation !== "create") throw new Error("Create fixture required");
+  request.typeSelection = { schemaVersion: 1, manifestChecksum: "e".repeat(64), definitionId: uuid(800) };
+  const anchor = { operationId: uuid(801), extensionId: uuid(500), extensionRevision: request.packet.fields.length + 1,
+    requestChecksum: "f".repeat(64), checksum: "a".repeat(64), selectionChecksum: selectionChecksum() };
+  m.typeReceipt.mockResolvedValue(anchor);
+  for (const row of values) row.slot.extension.revision++;
+  return anchor;
+}
+it("completes and replays create receipt2 with zero fields under Create-only and exact retained assignment", async () => {
+  const anchor = selectedType(); session.capabilities = new Set(["tickets.ticket.create"]);
+  await complete(); if (request.operation !== "create") throw new Error("Required fixture");
+  expect(receipt).toMatchObject({ schemaVersion: 2, typeAssignment: anchor, typeSelection: request.typeSelection });
+  expect(await replay()).toMatchObject({ replayed: true });
+  expect(m.typeReceipt.mock.calls).toHaveLength(2);
+  expect(m.typeReceipt.mock.calls[0].slice(1)).toEqual([request.packet.operationId, request.typeSelection, "native", 0, true]);
+  expect(m.typeReceipt.mock.calls[1].slice(1)).toEqual([request.packet.operationId, request.typeSelection, "native", 0, false, anchor]);
+  expect(m.value).not.toHaveBeenCalled(); expect(m.insert).toHaveBeenCalledTimes(1);
+});
+it("pairs assignment final envelope after supplied fields and inspects profile before any typed column", async () => {
+  await addField(1); await addField(2); prepareAudits(); selectedType();
+  const order: string[] = [];
+  m.typeReceipt.mockImplementation(async () => { order.push("profile-current-written"); return { operationId: uuid(801), extensionId: uuid(500), extensionRevision: 3,
+    requestChecksum: "f".repeat(64), checksum: "a".repeat(64), selectionChecksum: selectionChecksum() }; });
+  const implementation = m.value.getMockImplementation()!;
+  m.value.mockImplementation(async (...args) => { order.push("typed-column"); return implementation(...args); });
+  await complete(); expect(receipt?.fields.map(field => field.extensionRevision)).toEqual([1, 2]);
+  expect(order[0]).toBe("profile-current-written"); expect(receipt?.schemaVersion).toBe(2);
+  await replay(); expect(m.insert).toHaveBeenCalledTimes(1);
+});
+it.each(["selection", "assignment-baseline", "assignment-checksum", "schema", "omitted"])("rejects receipt2 %s drift before native or typed access", async mode => {
+  selectedType(); await complete(); vi.clearAllMocks();
+  if (request.operation !== "create" || receipt?.schemaVersion !== 2) throw new Error("Required fixture");
+  if (mode === "selection") request.typeSelection!.definitionId = uuid(900);
+  if (mode === "assignment-baseline") receipt.typeAssignment.extensionRevision = 2;
+  if (mode === "assignment-checksum") receipt.typeAssignment.selectionChecksum = "b".repeat(64);
+  if (mode === "schema") Object.assign(receipt, { schemaVersion: 1 });
+  if (mode === "omitted") delete request.typeSelection;
+  await expect(replay()).rejects.toThrow("CONFLICT"); expect(m.work).not.toHaveBeenCalled(); expect(m.value).not.toHaveBeenCalled();
+});
+it.each(["complete", "replay"])("propagates retained/current profile denial on %s before typed reads or receipt effects", async mode => {
+  await addField(1); prepareAudits(); selectedType();
+  if (mode === "replay") await complete();
+  m.typeReceipt.mockRejectedValue(new Error("FORBIDDEN: retained required field Write revoked")); m.value.mockClear(); m.insert.mockClear();
+  await expect(mode === "complete" ? complete() : replay()).rejects.toThrow("FORBIDDEN");
+  expect(m.value).not.toHaveBeenCalled(); expect(m.insert).not.toHaveBeenCalled();
+});
+it("preserves original raw packet hash while linking omitted default plus selected type final envelope", async () => {
+  await addField(1); const original = request.packet.fields.pop()!;
+  const row = values[0], payload = customFieldPayloadSchema.parse(row.schemaVersion.payload);
+  payload.field.defaultValue = { type: "string", value: "Value 1" };
+  const compiled = await compileCustomField(session, payload, registry);
+  Object.assign(row.schemaVersion, { payload: compiled.payload, compiledPlan: compiled.plan, checksum: compiled.checksum });
+  const operationId = ticketFieldDefaultOperationId(request.packet.operationId, original.definitionId, original.versionId);
+  row.id = operationId; row.slot.activeValueId = operationId;
+  const defaultEntry = { ...original, operationId };
+  prepareAudits([defaultEntry]); selectedType();
+  m.typeReceipt.mockResolvedValue({ operationId: uuid(801), extensionId: uuid(500), extensionRevision: 2,
+    requestChecksum: "f".repeat(64), checksum: "a".repeat(64), selectionChecksum: selectionChecksum() });
+  await complete([defaultEntry]); expect(receipt?.packetChecksum).toBe(checksum(request.packet));
+  expect(receipt?.fields[0].defaulted).toBe(true); expect(await replay()).toMatchObject({ replayed: true });
 });

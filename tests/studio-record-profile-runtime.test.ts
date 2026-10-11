@@ -7,7 +7,7 @@ import { compileCustomField } from "@/core/studio/compiler/fields";
 import { customFieldPayloadSchema } from "@/core/studio/fields/schema";
 import { entityProfilePayloadSchema, recordTypePayloadSchema, type ConfigurationReference } from "@/core/studio/record-types/schema";
 import { resolveEntityProfile, resolveRecordTypeProfile } from "@/core/studio/record-types/resolver";
-import { inspectRecordProfileInTransaction, preflightRecordProfileFields, resolveRecordProfileInTransaction } from "@/core/studio/record-types/runtime-profile";
+import { inspectRecordProfileInTransaction, preflightRecordProfileCreationMetadata, preflightRecordProfileFields, resolveRecordProfileInTransaction } from "@/core/studio/record-types/runtime-profile";
 import { recordTypeAssignmentProvenanceSchema } from "@/core/studio/record-types/assignment-contract";
 import type { FieldRuntimeAuthority } from "@/core/studio/fields/runtime-authority";
 import { reconstructPageMetadataInTransaction } from "@/core/studio/pages/server-approvals";
@@ -241,4 +241,27 @@ it("retained field policies retain the explicit native validation proof without 
   await expect(resolveRecordProfileInTransaction({ ...authority, session: native }, request, access)).resolves.toMatchObject({ profile: { requiredFields: [] } });
   expect(policy).toHaveBeenCalledWith({ session: native, transaction: tx }, entity, access.request, access.operation, proof);
   expect(ordinary).not.toHaveBeenCalled(); expect(Object.keys(tx)).not.toContain("studioFieldValue");
+});
+
+it("creation metadata preflights current and pinned Read/Write without native Read or INSERT proof", async () => {
+  const creator = { ...session, capabilities: new Set(["tickets.ticket.create", "tickets.field.read", "tickets.field.write"]) };
+  mocks.stamps.set(creator, stamp); const context = { ...authority, session: creator }, profile = resolveEntityProfile(base.row.payload)!.profile;
+  const ordinary = vi.spyOn(registry, "authoriseRecord"), initial = vi.spyOn(registry, "authoriseCurrentFieldInitialisation");
+  await preflightRecordProfileCreationMetadata(context, profile, entity.id);
+  expect(ordinary).not.toHaveBeenCalled(); expect(initial).not.toHaveBeenCalled();
+  expect(Object.keys(tx)).not.toContain("studioFieldValue");
+  creator.capabilities.delete("tickets.field.write");
+  await expect(preflightRecordProfileCreationMetadata(context, profile, entity.id)).rejects.toThrow("FORBIDDEN");
+});
+it("creation history cannot waive original field grants through incompatible weaker current policy", async () => {
+  const original = customFieldPayloadSchema.parse(field.row.payload);
+  const weaker = { ...original.field }; delete weaker.readCapability; delete weaker.writeCapability;
+  const active = await compileCustomField(session, { ...original, field: weaker }, registry);
+  const current = envelope(20, "customField", active.payload, active.plan); current.row.definitionId = field.pin.definitionId;
+  definition.mockResolvedValue({ activeVersionId: current.row.id, activeVersion: current.row, key: `${entity.id}.count` });
+  for (const revoked of ["tickets.field.read", "tickets.field.write"]) {
+    const creator = { ...session, capabilities: new Set(["tickets.ticket.create", "tickets.field.read", "tickets.field.write"]) };
+    creator.capabilities.delete(revoked); mocks.stamps.set(creator, stamp);
+    await expect(preflightRecordProfileCreationMetadata({ ...authority, session: creator }, resolveEntityProfile(base.row.payload)!.profile, entity.id)).rejects.toThrow(/FORBIDDEN|RECORD_PROFILE_INVALID/);
+  }
 });

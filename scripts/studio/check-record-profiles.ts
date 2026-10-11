@@ -9,7 +9,7 @@ import { sessionForUser, type Session } from "../../src/core/auth/session";
 import { studioRegistry } from "../../src/core/studio/registry/runtime";
 import { checksum } from "../../src/core/studio/registry/contracts";
 import { STUDIO_CAPABILITIES } from "../../src/core/studio/permissions";
-import { readStudioRuntimeFeatureEvidence, STUDIO_PROFILE_FEATURE } from "../../src/core/studio/runtime-features";
+import { readStudioRuntimeFeatureEvidence, STUDIO_PROFILE_FEATURE, STUDIO_RECORD_TYPE_FORM_FEATURE } from "../../src/core/studio/runtime-features";
 import { verifyStudioRuntimeFeaturePair } from "./runtime-feature-probe";
 import { createDraft, updateDraft, publishDraft, activateVersion } from "../../src/core/studio/definitions/service";
 import { customFieldPayloadSchema, type CustomFieldPayload } from "../../src/core/studio/fields/schema";
@@ -25,6 +25,10 @@ import { createTicketWithFieldInitialisation } from "../../src/core/service-work
 import { withValidatedTicketMutation } from "../../src/core/service-work/studio-enforcement";
 import { workScope } from "../../src/core/service-work/access";
 import { workNumber, workEvent, lockWork } from "../../src/core/service-work/engine";
+import { ticketFieldFormManifestInTransaction, stageTicketFieldFormPacket, ticketNativeFormChecksum } from "../../src/core/service-work/field-forms";
+import { stageTicketCreationType } from "../../src/core/service-work/record-type-creation";
+import { completeTicketFormInTransaction, replayTicketFormInTransaction } from "../../src/core/service-work/form-receipt";
+import { ticketFormReceiptKey, ticketFormReceiptSchema, type TicketFormRequest } from "../../src/core/service-work/form-receipt-contract";
 import { raceAtFieldEntityLock } from "./check-field-concurrency";
 
 const cap = { read: "tickets.field.profile_read", write: "tickets.field.profile_write" };
@@ -283,6 +287,88 @@ export async function checkRecordProfiles(base: string, managerUserId: string, c
     const foreignAssignment = await db.studioRecordTypeAssignment.findFirstOrThrow({ where: { organisationId: b.id, recordId: foreignId } });
     await rejected(() => db.$executeRaw`UPDATE studio_extension_records SET "recordTypeAssignmentId"=${foreignAssignment.id}::uuid, revision=revision+1
       WHERE id=${stored.extensionId}::uuid AND "organisationId"=${a.id}`, /matching|head|foreign key|constraint/i);
+    // Receipt2 support is independently sealed for this actual current/rollback
+    // pair. The existing profile fixture runs on the earlier bridge unchanged.
+    if (!evidence.features.includes(STUDIO_RECORD_TYPE_FORM_FEATURE)) {
+      console.log("DEFERRED creation business-type acceptance: the actual pair does not enable recordTypeForms.v1; no creation selector effects exercised.");
+    } else {
+      async function formIntent(): Promise<TicketFormRequest> {
+        return db.$transaction(async tx => {
+          const current = await fieldRuntimeAuthorityInTransaction(await session(a.id, creatorUserId), tx);
+          const manifest = await ticketFieldFormManifestInTransaction(current, { operation: "create" });
+          assert(manifest?.recordTypes); assert(manifest.recordTypes.choices.some(choice => choice.definitionId === type.definitionId));
+          const raw = new FormData(); raw.set("kind", "TICKET"); raw.set("queueId", a.queueId);
+          raw.set("subject", "Initial selected business type receipt"); raw.set("description", "Exact Test creation protocol");
+          const selection = { schemaVersion: 1 as const, manifestChecksum: manifest.recordTypes.manifestChecksum, definitionId: type.definitionId };
+          raw.set("studioRecordType", JSON.stringify(selection));
+          return { operation: "create", nativeRequestChecksum: ticketNativeFormChecksum(raw, "create"), typeSelection: selection,
+            packet: { schemaVersion: 1, operationId: manifest.operationId, manifestChecksum: manifest.manifestChecksum, extensionRevision: null,
+              fields: manifest.fields.map(control => ({ operationId: control.operationId, definitionId: control.definitionId,
+                definitionRevision: control.definitionRevision, versionId: control.versionId, generationId: control.generationId,
+                slotRevision: null, valueRevision: null, value: control.definitionId === zero.definitionId ? { type: "integer", value: 0 }
+                  : control.definitionId === answer.definitionId ? { type: "boolean", value: false } : { type: "string", value: "Initial selected type details" } })) } };
+        }, { isolationLevel: "Serializable", timeout: 20_000 });
+      }
+      async function owningForm(request: TicketFormRequest) {
+        const creator = await session(a.id, creatorUserId);
+        return db.$transaction(async tx => {
+          const existing = await replayTicketFormInTransaction(creator, tx, request); if (existing) return existing;
+          const manifest = await ticketFieldFormManifestInTransaction(await fieldRuntimeAuthorityInTransaction(creator, tx), { operation: "create" });
+          const native = await withValidatedTicketMutation({ session: creator, transaction: tx }, "tickets.ticket.create", async current => {
+            const created = await createTicketWithFieldInitialisation({ session: current, transaction: tx }, { organisationId: a.id, kind: "TICKET",
+              requesterUserId: current.userId, queueId: a.queueId, number: await workNumber(tx, a.id, "STUPRF"),
+              subject: "Initial selected business type receipt", description: "Exact Test creation protocol" }, async (authority, work, proof) => {
+              assert(request.operation === "create" && request.typeSelection);
+              const defaults = await stageTicketFieldFormPacket(authority, manifest, request.packet, work.id, 1, proof); assert.equal(defaults.length, 0);
+              await stageTicketCreationType(authority, request.typeSelection, request.packet, work.id, 1, proof);
+            });
+            await workEvent(tx, current, created.work, "CREATED", "Exact Test initial selected type owning receipt"); return created.work;
+          });
+          return completeTicketFormInTransaction(creator, tx, request, { recordId: native.id, recordRevision: 1, fieldRecordRevision: 1 });
+        }, { isolationLevel: "Serializable", timeout: 20_000 });
+      }
+      const form = await formIntent(), initial = await owningForm(form); assert(!initial.replayed);
+      const saved = await db.auditEntry.findFirstOrThrow({ where: { id: ticketFormReceiptKey(form.packet.operationId), organisationId: a.id, actorUserId: creatorUserId } });
+      const receipt2 = ticketFormReceiptSchema.parse(saved.after); assert.equal(receipt2.schemaVersion, 2);
+      if (receipt2.schemaVersion !== 2) throw new Error("Expected selected type receipt2");
+      assert.equal(receipt2.typeSelection.definitionId, type.definitionId); assert.equal(receipt2.typeAssignment.extensionRevision, form.packet.fields.length + 1);
+      assert.deepEqual(receipt2.fields.map(field => field.extensionRevision), Array.from({ length: form.packet.fields.length }, (_, i) => i + 1));
+      const replaySnapshot = await snapshot(); assert((await owningForm(form)).replayed); assert.deepEqual(await snapshot(), replaySnapshot);
+      await rejected(() => owningForm({ ...form, operation: "create", typeSelection: { ...receipt2.typeSelection, definitionId: null } }), /CONFLICT/);
+      const typeSaved = await db.studioDraft.findFirstOrThrow({ where: { definitionId: type.definitionId, organisationId: a.id } });
+      const typePayload = recordTypePayloadSchema.parse(typeSaved.payload);
+      await updateDraft(await session(), { definitionId: type.definitionId, revision: typeSaved.revision,
+        payload: { ...typePayload, help: "Current cosmetic guidance after original creation" } });
+      const changed = await publish(type.definitionId); await activate(changed);
+      const changedSnapshot = await snapshot(); assert((await owningForm(form)).replayed); assert.deepEqual(await snapshot(), changedSnapshot);
+      for (const revoked of [cap.read, cap.write]) {
+        await db.membership.update({ where: { id: creatorMember.id, organisationId: a.id }, data: { grantedCapabilities: creatorGrants.filter(c => c !== revoked) } });
+        await rejected(() => owningForm(form), /FORBIDDEN/);
+        await db.membership.update({ where: { id: creatorMember.id, organisationId: a.id }, data: { grantedCapabilities: creatorGrants } });
+      }
+      // Receipt guard rejects old-record fabrication with a fresh whole op; no
+      // historical native row or retained assignment is inserted in this TX.
+      const forgedOperation = randomUUID();
+      await rejected(() => db.auditEntry.create({ data: { id: ticketFormReceiptKey(forgedOperation), organisationId: a.id,
+        actorUserId: creatorUserId, action: saved.action, entityType: saved.entityType, entityId: saved.entityId,
+        after: { ...receipt2, operationId: forgedOperation } } }), /assignment|creation|receipt|initial|INSERT|native/i);
+      const retry = await formIntent(), receiptFailure = `studio_type_form_fail_${randomUUID().replaceAll("-", "")}`;
+      for (const value of [receiptFailure, a.id, ticketFormReceiptKey(retry.packet.operationId)]) assert(/^[a-zA-Z0-9_:-]+$/.test(value));
+      let functionCreated = false, triggerCreated = false;
+      try {
+        await db.$executeRawUnsafe(`CREATE FUNCTION "${receiptFailure}"() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+          IF NEW."organisationId"='${a.id}' AND NEW.id='${ticketFormReceiptKey(retry.packet.operationId)}'
+          THEN RAISE EXCEPTION 'Exact Test initial type completion Audit failure'; END IF; RETURN NEW; END $$`); functionCreated = true;
+        await db.$executeRawUnsafe(`CREATE TRIGGER "${receiptFailure}" BEFORE INSERT ON audit_entries FOR EACH ROW EXECUTE FUNCTION "${receiptFailure}"()`); triggerCreated = true;
+        await rejected(() => owningForm(retry), /Exact Test initial type completion Audit failure/);
+      } finally {
+        try { if (triggerCreated) await db.$executeRawUnsafe(`DROP TRIGGER "${receiptFailure}" ON audit_entries`); }
+        finally { if (functionCreated) await db.$executeRawUnsafe(`DROP FUNCTION "${receiptFailure}"()`); }
+      }
+      assert(!(await owningForm(retry)).replayed); const recoveredSnapshot = await snapshot(); assert((await owningForm(retry)).replayed);
+      assert.deepEqual(await snapshot(), recoveredSnapshot);
+      console.log("STUDIO CREATION TYPE FORMS PASS: genuine Create-only manifest, actual INSERT field→assignment→complete owning validator→receipt2, zero/false anchors, exact read-only replay after current type change, current/retained grant denial, real assignment/native SQL guard and completion Audit rollback/recovery. Browser selector rendering and HTTP are separate gates.");
+    }
     console.log("STUDIO RECORD PROFILES PASS: original publisher/activation, complete actual owner cohort, stronger required activation atomic failure and zero/false, exact retained base/current stable type, actual same-TX association/head/Audit/CAS and readonly replay, private/revoked/field/foreign denials, genuine Create-only INSERT and native resulting-state rollback, targeted SQL immutable/head/deferred Audit guards and real same-key activation/creation race. Browser layout/selection and broader record-type UI remain separate gates.");
   } finally {
     if (memberships.length) await db.membership.updateMany({ where: { id: { in: memberships }, organisationId: { in: companies } }, data: { active: false, sessionVersion: { increment: 1 } } });

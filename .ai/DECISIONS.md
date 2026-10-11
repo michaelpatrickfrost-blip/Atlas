@@ -1,3 +1,16 @@
+## 11 October 2026 — Company admins manage company-only identity and credentials
+
+Michael explicitly requests editable user accounts and direct password assignment
+alongside recovery. core.users.manage authorises company-only name/email and
+password changes; own-password confirmation and Serializable public-snapshot
+comparison protect identity/credential writes. No new user creation authority,
+platform grants or shared-account credential control follows. Email/password changes
+invalidate old authentication/codes; never put password hashes or codes in forms,
+generic reads or Audit. Reuse Role/Membership for editable starter profiles and
+personal exceptions. Native section access remains authoritative: Finance entry
+must not expose Service credits without receivables/approval, and request creators
+can read only their own scoped requests unless they also have company spend-read.
+
 ## 11 October 2026 — Dashboard design and exploration are separate
 
 Michael explicitly wants stylish, dynamic dashboards that are easy to build.

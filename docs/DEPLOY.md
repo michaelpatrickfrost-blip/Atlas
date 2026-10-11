@@ -60,6 +60,7 @@ It runs inside the same backed-up central Test fixture and retirement boundary.
 For the Manufacturing & Supply console, use `ATLAS_RELEASE_ACCEPTANCE=supply`
 with the pinned scoped branch. Its existing central Test checker runs against the
 sealed smoke candidate and publicly before completion, under this same lock pair.
+
 Both fixture stages take their own database/private-file backup. The original
 clean-tree/pinned push, remote-tip, ancestry, compatibility, immutability, smoke and
 rollback gates remain; public failure restores the previous runtime without a
@@ -69,6 +70,13 @@ Use activate (the default) to complete the whole checked sequence in one run:
 ```bash
 ATLAS_RELEASE_BRANCH=codex/manufacturing-supply-console ATLAS_RELEASE_COMMIT=$(git rev-parse HEAD) ATLAS_RELEASE_ACCEPTANCE=supply npm run deploy:vps
 ```
+
+For Company Settings/user administration, use `ATLAS_RELEASE_ACCEPTANCE=settings`.
+The native checker exercises profiles, individual exceptions, account details,
+password assignment, real login, one-use recovery, and the invoice-view/own-request
+Finance workflow with banking denial, followed by Home acceptance. Runs bracket
+candidate/public revision checks under the deployment locks. Only synthetic central
+Test companies are changed; access is retired and Audit retained in finally.
 
 The server backs up PostgreSQL and configured private Service files into
 `~/backups`, then installs, generates, applies compatible migrations and builds in

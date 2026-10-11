@@ -4,6 +4,37 @@ Atlas Admin and company administration run on the live server at https://atlassy
 
 ## Settings and access profiles — 10 October 2026
 
+### Company user controls — 11 October 2026
+
+Individual accounts have Access permissions, Account details and Password &
+security tabs. Company user administrators can edit a company-only user's name
+and sign-in email after confirming their own password. Email changes revoke old
+authentication and recovery codes. They can assign a new password directly or
+issue the existing 30-minute one-use recovery code. Direct assignment hashes the
+password, revokes previous sessions/codes and records an audit event without
+credentials. Both new actions compare a public account snapshot inside a
+Serializable transaction and reject stale edits. Own/shared/Atlas staff account
+details and credentials stay with their owner or the platform recovery workflow.
+Company suspension/session controls and HR employee linking remain available.
+
+Access editors explain every native permission, label inherited/extra/removed
+permissions, offer selected/sensitive/personal-exception filters, highlight
+company restrictions and review the current unsaved draft by app and section.
+Workspace-entry prompts help resolve missing native entry permission; the
+administrator chooses explicitly. App licensing, private-record access and
+domain approval rules remain additional checks. Starter profiles are optional,
+editable Role records: Customer service manager (cases, invoice viewing and own
+procurement requests), Logistics coordinator and Invoice viewer. None includes
+banking or platform access. Existing profiles and grants are not migrated.
+
+Finance navigation now uses purchase-read for purchase orders and spend-read or
+own-request/expense capabilities for Requests & expenses. Procurement/expense
+creators can open their own documents through the existing tenant/project/creator
+scope; company-wide spend still requires spend-read. Finance workspace entry alone
+no longer exposes Service credit records; receivables or approval access is needed.
+Home credit queries apply document scope and Money cards respect section access.
+Candidate/public validation and current runtime are recorded in CURRENT_STATE.md.
+
 Company Settings is an administrator control centre with a searchable overview,
 company identity/brand, working rules, users, access profiles, security, apps and
 permitted integrations/import/audit destinations. Only core.modules.manage,
@@ -73,7 +104,7 @@ public workflows, source boundaries and checks; current runtime status lives in
 
 User access administration cannot edit the current administrator's own membership. Role editing preserves their access-administration capabilities. Platform permissions remain independent of company roles.
 
-Company administrators cannot reset platform administrator credentials or globally shared accounts belonging to multiple companies. Recovery of those accounts needs the account owner's self-service flow or a separate platform recovery process.
+Company administrators cannot edit global identity details or reset platform administrator credentials or globally shared accounts belonging to multiple companies. Recovery of those accounts needs the account owner's self-service flow or a separate platform recovery process.
 
 Recovery follows [OWASP password recovery guidance](https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html): random credentials, secure hashes, expiration and one-time use. Codes are shared manually through an approved private channel; there is no configured email service. Passwords have at least 12 characters and avoid bcrypt's 72-byte truncation boundary.
 

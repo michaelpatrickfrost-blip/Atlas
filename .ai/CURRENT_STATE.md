@@ -1,3 +1,99 @@
+## 11 October 2026 — Integrated admin release checks pass with accepted Dashboard
+
+Actual server public Dashboard log ends at exact 50b39151 after all five feature
+checkers; current pointer matches. Exact accepted Dashboard source is preserved.
+Merged Prisma source unchanged; strict TypeScript, 16 focused files/122 tests,
+scoped lint, production build and diff whitespace PASS. Original 09b7b2 waiting
+release exited before backup/build/activation after live source moved; no bypass.
+Source/memory merge conflicts retained both contributor entries and deduplicated
+identical Settings evidence. Next: pinned full Settings candidate/public run with
+correct saved-procurement persistence/URL waits, followed by screenshot review.
+
+## 11 October 2026 — Preserve concurrent live Dashboard source
+
+Observed live runtime advanced to 50b39151 during the final admin retry; Dashboard
+public acceptance was still running under the original shared release locks. Exact
+50b source is merged, retaining both contributors' memory/evidence and every admin
+change. No admin runtime activated. Integrated checks are being rerun before a
+fresh pinned candidate/public Settings release. Original waiting deploy must stop
+at the server ancestry gate; do not bypass it or discard newer Dashboard source.
+
+## 11 October 2026 — Procurement test now waits for persisted record
+
+1448224 candidate passed account/profile/password/recovery/invoice/banking checks.
+Its new save test used a broad record URL regex that also matched /documents/new,
+then queried before the asynchronous save committed. Corrected checker waits for
+one exact synthetic REQUEST, then its exact saved-record URL and own Spend link.
+Strict types/checker lint/whitespace PASS; runtime source remains unchanged.
+Backup atlas-pre-deploy-20261011-154042; evidence
+/tmp/atlas-settings-candidate-Sit9rX. Test access retired/history retained; production
+ad9d5a43 unchanged. Next: fresh complete candidate/public acceptance and visuals.
+
+## 11 October 2026 — Procurement acceptance uses the actual combobox name
+
+2420e30 immutable candidate again passed Settings/profile/member/password/login/
+recovery and native invoice/banking checks. Procurement form selection stopped on
+exact label text, which includes the nested REQUEST option. Local real Chromium
+reproduction confirms exact getByLabel count0 versus native combobox name count1.
+Checker now uses the accessible combobox name and asserts the real saved REQUEST
+reference on its detail and own Spend list. Strict types, checker lint and diff
+PASS; no application/runtime change. Backup atlas-pre-deploy-20261011-153431;
+private evidence /tmp/atlas-settings-candidate-l0QVrS. Test access retired, Audit
+retained and live ad9d5a43 unchanged. Next: fresh pinned full candidate/public proof.
+
+## 11 October 2026 — Company-user candidate stopped on denial-message selector
+
+Pinned 2e95fec candidate built/smoked and passed personal Settings, reusable/mixed
+profiles, stale/self/foreign profile guards, member overrides/session revocation,
+company restrictions, account details, wrong admin-password/stale rejection, direct
+password assignment, real sign-in and one-use recovery with credential-free Audit.
+Native banking denial rendered correctly as an EmptyState paragraph; checker wrongly
+expected a heading and safely stopped before activation. Live ad9d5a43 unchanged.
+Backup atlas-pre-deploy-20261011-153031; private candidate evidence
+/tmp/atlas-settings-candidate-up8yeD. Exact Test access retired, history retained.
+Checker now targets the exact actual denial paragraph. Strict types/checker lint/
+whitespace rerun PASS. Runtime source is unchanged from the locally passed build.
+Next: fresh pinned candidate/public acceptance including procurement and layouts.
+
+## 11 October 2026 — Company account controls and detailed access ready for live acceptance
+
+Company account tabs now expose company-only name/email editing, direct password
+assignment, existing one-use recovery, suspension/session controls and employee
+linking. New audited Serializable actions require admin password confirmation,
+compare public snapshots and protect own/shared/Atlas staff identity/credentials.
+Email/password changes revoke old authentication/recovery codes; credentials are
+never in Audit. New native actions included in central data API allowlist.
+
+Access editor adds permission descriptions, profile inheritance/personal-exception
+badges, sensitive/selected/exception filters, draft review, company-blocked labels
+and explicit missing-workspace-entry prompts. Editable Logistics, invoice-viewer
+and service-manager starter profiles retain native Role/Membership storage.
+Service-manager example grants invoice view and own requests with banking off.
+Finance links/queries now honour those native sections and own-document scope;
+overview alone no longer exposes Service credits. Restricted sections have
+intentional access feedback. No schema/grant migration or local business database.
+
+Checks: 13 focused files/96 tests, strict TypeScript, scoped lint (zero warnings),
+Prisma generation, production build and diff whitespace PASS. Initial local clone
+lacked Playwright; clean npm ci restored locked dependencies. Initial types caught
+PlatformAdministrator key and Testing Library selector issues; corrected and
+rerun PASS. Repo-wide suite not run. Extended native central checker now exercises
+account identity/password/login/recovery and actual invoice/procurement/bank-denial
+flows plus desktop/tablet/phone user tabs. Candidate/public proof remains pending.
+Paths: settings/user-actions and account page; shared AccessEditor/access copy/
+levels/starters; managed-account snapshot; Finance access/queries/navigation;
+check-company-settings and focused suites. Topic docs/DECISIONS/DEPLOY reconciled.
+Next: pin reviewed branch, run original settings acceptance deployment, inspect
+responsive screenshots and record exact public runtime and backups.
+
+## 11 October 2026 — Company user administration source preparation
+
+New company-admin task starts from shared Settings source 5297d519 and merges
+exact live ad9d5a43 to preserve accepted Studio and utility changes. Memory/evidence
+conflicts reconciled with contributor checkpoints retained. No application change
+yet; no checks or new deployment run. Next: account details/password controls and
+clearer per-app access editor, focused checks and pinned candidate/public acceptance.
+
 ## 11 October 2026 — Dynamic Dashboard canvas implemented; live acceptance next
 
 Scoped from exact observed live ad9d5a430e2b92e6b08448a45d11f694f5ce2066 on
@@ -12230,3 +12326,10 @@ New supply harness explicitly exercises actual last-year +10% +5 UI saving,
 seasonal source history, wrong-machine/locked/stale refusal and atomic cascades.
 Public release now 1acc63c; its company administration/Finance access changes must
 be preserved before this scoped release. Earlier product-wide gaps stay open.
+
+Exact accepted live 1acc63c company administration/Finance access source is now
+merged into the Manufacturing branch. Registry reconciliation retains both new
+managed-user actions and all four Manufacturing actions; no allowlist entries
+are removed. Manufacturing in-app demand/schedule instructions are being aligned
+with the delivered assumptions, calendars, downtime and stale-review controls.
+Final checks and locked candidate/public release acceptance remain required.

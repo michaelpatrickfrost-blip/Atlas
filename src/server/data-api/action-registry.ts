@@ -907,11 +907,14 @@ import {saveMoment as action903} from "@/modules/teams/services/commands";
 import {removeMoment as action904} from "@/modules/teams/services/commands";
 import {saveDowntime as kilnSaveDowntime, cancelDowntime as kilnCancelDowntime} from "@/modules/manufacturing/services/plant";
 import {previewDemandForecast as kilnDemandPreview, saveForecastProposal as kilnDemandSave} from "@/modules/manufacturing/services/demand-forecast";
+import {saveManagedUserDetails, setManagedUserPassword} from "@/app/(app)/settings/user-actions";
 export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>=withAdminActionAliases({
 "src/modules/manufacturing/services/demand-forecast:previewDemandForecast":kilnDemandPreview as (...args:never[])=>Promise<unknown>,
 "src/modules/manufacturing/services/demand-forecast:saveForecastProposal":kilnDemandSave as (...args:never[])=>Promise<unknown>,
 "src/modules/manufacturing/services/plant:saveDowntime":kilnSaveDowntime as (...args:never[])=>Promise<unknown>,
 "src/modules/manufacturing/services/plant:cancelDowntime":kilnCancelDowntime as (...args:never[])=>Promise<unknown>,
+"src/app/(app)/settings/user-actions:saveManagedUserDetails":saveManagedUserDetails as (...args:never[])=>Promise<unknown>,
+"src/app/(app)/settings/user-actions:setManagedUserPassword":setManagedUserPassword as (...args:never[])=>Promise<unknown>,
 "src/app/(admin)/atlas/actions:updateCompanyAccount":action0 as (...args:never[])=>Promise<unknown>,
 "src/app/(admin)/atlas/actions:saveCompanyEntitlements":action1 as (...args:never[])=>Promise<unknown>,
 "src/app/(admin)/atlas/actions:createCompanyAccount":action2 as (...args:never[])=>Promise<unknown>,

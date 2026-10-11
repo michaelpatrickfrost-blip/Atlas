@@ -1,7 +1,13 @@
 import { STUDIO_DATA_CAPABILITIES } from "@/core/studio/permissions";
+import { accessSectionName } from "./access-copy";
 
 export type AccessLevel = "none" | "read" | "write" | "admin";
-export type AccessGroup = { id: string; name: string; capabilities: string[] };
+export type AccessGroup = {
+  id: string;
+  name: string;
+  capabilities: string[];
+  entryCapability?: string;
+};
 /** Presets expand into the same granular capabilities enforced by business services. */
 export function capabilityLevel(cap: string): Exclude<AccessLevel, "none"> {
   const action = cap.split(".").at(-1) ?? "";
@@ -52,7 +58,18 @@ export function capabilityLevel(cap: string): Exclude<AccessLevel, "none"> {
 export function presetCapabilities(group: AccessGroup, level: AccessLevel) {
   const rank = { none: 0, read: 1, write: 2, admin: 3 };
   return group.capabilities.filter(
-    (cap) => cap !== STUDIO_DATA_CAPABILITIES.liveTest && rank[capabilityLevel(cap)] <= rank[level],
+    (cap) =>
+      cap !== STUDIO_DATA_CAPABILITIES.liveTest &&
+      rank[capabilityLevel(cap)] <= rank[level],
+  );
+}
+/** Sensitive visibility is highlighted as well as approvals and administration. */
+export function isSensitiveCapability(cap: string) {
+  return (
+    capabilityLevel(cap) === "admin" ||
+    /\.bank\.|\.restricted|\.sensitive\./.test(cap) ||
+    (cap.startsWith("payroll.") && !cap.endsWith(".self")) ||
+    /people\.(conduct|health|salary)\./.test(cap)
   );
 }
 export function effectiveRoleCapabilities(
@@ -73,7 +90,8 @@ export function capabilityOverrides(base: Set<string>, selected: Set<string>) {
 }
 
 export function permissionLabel(value: string) {
-  if (value === STUDIO_DATA_CAPABILITIES.liveTest) return "Use live business data in Studio previews";
+  if (value === STUDIO_DATA_CAPABILITIES.liveTest)
+    return "Use live business data in Studio previews";
   return value
     .split(/[._]/)
     .filter(Boolean)
@@ -94,7 +112,10 @@ export function accessSections(group: AccessGroup): AccessGroup[] {
   }
   return [...sections].map(([id, capabilities]) => ({
     id,
-    name: permissionLabel(id.split(".").slice(1).join(".")) || group.name,
+    name: accessSectionName(
+      id,
+      permissionLabel(id.split(".").slice(1).join(".")) || group.name,
+    ),
     capabilities,
   }));
 }

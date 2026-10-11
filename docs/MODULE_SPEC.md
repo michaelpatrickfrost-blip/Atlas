@@ -503,7 +503,8 @@ server-loaded JSON and verifies canonical hashes/tenant/row identity. It grants 
 owner or data authority. Existing preparation/collection/sealing explicitly route
 1/2 from server metadata with full authority/metadata/owner approval; unknown/coerced/
 missing versions never fall back. Actual format2 owning callbacks/runtime acceptance
-remain a later prerequisite. Legacy publication/execution/cutover wrappers stay1.
+are VERIFIED for normal prepare/collect/seal. Reviewed publication is implemented
+below; execution/cutover remain closed1 until their explicit lineage is delivered.
 
 ### Required migration archive integrity — 11 October 2026
 
@@ -529,9 +530,10 @@ written metadata before archive IDs/counts, then reevaluates actual authorised r
 in bounded pages. Matching conversions/hashes do not waive changed conditions or
 native/global revisions. Pure/SQL archive framing must agree before the existing
 CAS/Audit sealer writes. Reference coverage shares the retained helper. Empty cohorts
-still require actual authority/metadata/owner checks. No public authoring or format2
-publication/execution/settlement/native hooks; actual owner2 callbacks and central
-runtime proof are mandatory before enabling the feature.
+still require actual authority/metadata/owner checks. Actual current-owner normal
+prepare/collect/seal APIs are VERIFIED live a475823. Reviewed publication is now
+implemented below; execution/settlement/native hooks and public conditional authoring
+remain gated.
 
 ## Current Tickets review callback compatibility — 11 October 2026
 
@@ -542,3 +544,15 @@ metadata/receipts or depend on a mutable current draft for historical operations
 Stored intent/review tenant/identity/checksum and exact canonical private/revision
 checks precede approval; packet shape remains strict. Descriptor existence and unit
 fixtures do not prove the normal conditional migration runtime; consult Studio ledger.
+
+## Reviewed conditional publication contract — 11 October 2026
+
+Owning snapshot/private/native/reference and actual condition coverage still precede
+publication. The existing publisher selects closed1/2 from stored intent/review;
+immutable target publication and replay use explicit conditional stage inspection.
+It retains source activation and all native/typed values. Shared metadata publication
+saves the actual plan schemaVersion (2 for conditional rules, 1 for rule removal),
+with reviewed Core binding/CAS/dependencies and both Audits atomically. Ordinary
+conditional authoring stays disabled. Recorded format2 execution cannot replay by
+falling back to source-active publication inspection. Local checks PASS; actual
+central Test publication/replay/cancellation/Audit rollback proof pending release.

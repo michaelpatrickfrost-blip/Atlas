@@ -1,3 +1,32 @@
+## 11 October 2026 — e3c actual conditional publication IMPLEMENTED, runtime gate pending
+
+Existing publisher now derives explicit1/2 from scoped stored intent/review, uses
+genuine conditional preparation/publication inspection and shared metadata compiler.
+Typed trusted reviewed binder persists actual plan schemaVersion2 (rule removal1),
+single CAS/dependency/version/generation/receipt/both-Audit transaction, source active.
+Execution2 replay cannot fall back; ordinary conditional authoring remains gated.
+Four new tests;96cases/9suites PASS12179, strictTS50065/lint58409/build3543 exit0.
+Initial new fixture passed extra cohort/summary keys to strict intent, corrected by
+projection; no production parser relaxed. Existing central checker now covers actual
+normal publication/replay/cancellation, invalid-review denial, native/global/conditions
+inspection and both real Audit-failure rollbacks; restores exact Test draft, retains
+history and original active/native/typed records. No DDL/models/ad-hoc dumps.
+E3b checkpoint01a79ed local65/types/lint/build PASS. Current live8cc2758 exact, original
+95284/candidatezc2knY/publicPK9q8T ALL COMBINED PASS; rollbacka475823. Next: reviewed
+scoped checkpoint and original pinned release; require new central checks in BOTH
+candidate/public logs before VERIFIED. Then explicit conditional execution lineage,
+cutover/settlement/native hooks and remaining fields/record types/pages/visual gate.
+
+## 11 October 2026 — e3c initial plan (superseded above)
+
+E3b saved01a79ed with65focused/types/lint/build PASS; runtime integration pending.
+Next coherent existing publisher dispatch reads actual stored intent/review2, uses
+genuine conditional metadata/inspection, typed internal binder and actual version
+schema2; no ordinary authoring/activation/execution2. Expected source, dependencies,
+DB implications and tests recorded in ledger before coding. Extend exact central
+Test normal API checker for publication/replay and metadata/Audit atomic failures.
+No ad-hoc dumps/new companies/native/values or duplicate publication engine.
+
 ## 11 October 2026 — e3b conditional publication reinspection VERIFIED locally
 
 Existing coverage/observation/inspection now expose separate preparation and

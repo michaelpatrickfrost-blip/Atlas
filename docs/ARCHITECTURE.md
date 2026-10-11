@@ -283,7 +283,8 @@ server-loaded JSON and verifies canonical hashes/tenant/row identity. It grants 
 owner or data authority. Existing preparation/collection/sealing explicitly route
 1/2 from server metadata with full authority/metadata/owner approval; unknown/coerced/
 missing versions never fall back. Actual format2 owning callbacks/runtime acceptance
-remain a later prerequisite. Legacy publication/execution/cutover wrappers stay1.
+are VERIFIED for normal prepare/collect/seal. Reviewed publication is implemented
+below; execution/cutover remain closed1 until their explicit lineage is delivered.
 
 ### Required migration archive integrity — 11 October 2026
 
@@ -309,9 +310,10 @@ written metadata before archive IDs/counts, then reevaluates actual authorised r
 in bounded pages. Matching conversions/hashes do not waive changed conditions or
 native/global revisions. Pure/SQL archive framing must agree before the existing
 CAS/Audit sealer writes. Reference coverage shares the retained helper. Empty cohorts
-still require actual authority/metadata/owner checks. No public authoring or format2
-publication/execution/settlement/native hooks; actual owner2 callbacks and central
-runtime proof are mandatory before enabling the feature.
+still require actual authority/metadata/owner checks. Actual current-owner normal
+prepare/collect/seal APIs are VERIFIED live a475823. Reviewed publication is now
+implemented as described below; execution/settlement/native hooks and public
+conditional authoring remain gated.
 
 ## Studio current Tickets reviewed representation contracts — 11 October 2026
 
@@ -322,3 +324,19 @@ editable draft. Native5 settlement preserves format1 only. Owner approval concer
 representation, not a business mutation or Studio permission grant. Full conditional
 runtime/native writer integration is still gated. See the Studio source coverage map
 and permanent ledger for scope and verification; Phase2 is unfinished.
+
+### Required reviewed publication — 11 October 2026
+
+The existing internal publisher derives closed1/2 from the stored intent and review.
+It refreshes actual owner/private/native/condition evidence before first publication
+and through a separate source-active publication inspector on replay. Same receipt
+shape pins the full sealed review; no protocol guess from target payload (rule
+removal may target schema1). The shared typed publisher accepts conditional plans
+only with the trusted reviewed Core binder and saves the plan's actual schemaVersion.
+Definition/draft CAS, dependency checks, immutable version/generation/publication
+and both Audits share one transaction. The original source stays active; no native
+or typed values change. A recorded format2 execution cannot fall back to publication
+inspection; it remains denied until its outcome/lineage reader is implemented.
+No ordinary conditional authoring or activation is enabled. Local tests/types/lint/
+build PASS; normal central Test publication/replay/cancellation and both Audit-failure
+rollbacks are implemented acceptance checks, pending candidate/public proof.

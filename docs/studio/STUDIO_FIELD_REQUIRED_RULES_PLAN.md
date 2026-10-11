@@ -1,3 +1,21 @@
+## 11 October — e3c actual publication IMPLEMENTED locally
+
+Stored1/2 dispatch/inspection and typed existing publisher/binder now persist actual
+schema2 with atomic metadata/CAS/both Audits, source active and zero native/value
+writes. Execution2 replay denied until lineage implemented; ordinary authoring gated.
+96cases/9suites, strictTS/lint/build PASS. Exact central Test normal publication/replay/
+cancellation and both Audit-failure rollback checks implemented, runtime proof pending.
+Next reviewed checkpoint + original integrated e3b+c candidate/public acceptance,
+then conditional execution/cutover/settlement/native hooks. No DDL/models/dumps.
+
+## 11 October — e3c initial plan (superseded above)
+
+Existing publisher dispatch from stored intent/review2, genuine conditional compiler
+and reviewed binder, actual version schema2. Reuse CAS/generation/receipt/Audit and
+source-active SQL guards; keep execution2 replay and ordinary authoring gated.
+No planned DDL/model/value/native mutation. Central exact Test normal API proof
+must cover publication/replay and metadata/Audit atomic failures before VERIFIED.
+
 ## 11 October — e3b read-only publication reinspection VERIFIED locally
 
 Separate trusted publication2 coverage/row/review entries implemented in existing

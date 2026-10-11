@@ -12,7 +12,10 @@ import { requiredFieldMigrationObservationDigest, sealRequiredFieldMigrationInte
   type RequiredFieldMigrationObservation } from "../../src/core/studio/fields/migrations/required-contracts";
 import { digestRequiredFieldMigrationArchive } from "../../src/core/studio/fields/migrations/archive-digest";
 import { observeRequiredFieldMigrationRecord } from "../../src/core/studio/fields/migrations/observation";
-import { inspectRequiredFieldMigrationReview } from "../../src/core/studio/fields/migrations/inspection";
+import { inspectRequiredFieldMigrationReview, inspectPublishedRequiredFieldMigrationReview } from "../../src/core/studio/fields/migrations/inspection";
+import { publishReviewedFieldMigration } from "../../src/core/studio/fields/migrations/publication";
+import { cancelFieldMigrationPublication } from "../../src/core/studio/fields/migrations/cancellation";
+import { withFieldMigrationAuthority } from "../../src/core/studio/fields/migrations/authority";
 import { startFieldMigrationPreparation } from "../../src/core/studio/fields/migrations/preparation";
 import { collectFieldMigrationBatch } from "../../src/core/studio/fields/migrations/collection";
 import { sealFieldMigrationPreparation } from "../../src/core/studio/fields/migrations/sealing";
@@ -23,8 +26,10 @@ import { Prisma as PrismaRuntime } from "../../src/generated/prisma/client";
  * use actual authorised inputs and negative packets prove SQL shape only.
  * A separate canonical draft seed then exercises actual prepare/collect/seal
  * services, retaining their immutable history and restoring the saved draft.
- * Native/typed values and active metadata must remain unchanged. No customer
- * conditional authoring, publication/execution, new company, permission or dump. */
+ * A second canonical draft proves normal reviewed publication/replay/cancellation
+ * with retained immutable metadata history. Native/typed values and active source
+ * remain unchanged. No customer conditional authoring/execution, new company,
+ * permission or ad-hoc dump. */
 export async function checkRequiredFieldReviewStorage(session: Session, principal: FieldMigrationPrincipal, definitionId: string) {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1");
   const organisationId = session.organisationId, scope = { organisationId };
@@ -42,7 +47,7 @@ export async function checkRequiredFieldReviewStorage(session: Session, principa
       values: await db.studioFieldValue.findMany({ where: scope, orderBy: { id: "asc" } }) };
   }
   const before = await snapshot(), rolledBack = new Error("Exact conditional archive fixture rollback");
-  async function setup(tx: Prisma.TransactionClient) {
+  async function setup(tx: Prisma.TransactionClient, operator: "present" | "absent" = "present") {
     const definition = await tx.studioDefinition.findFirstOrThrow({ where: { id: definitionId, organisationId }, include: { activeVersion: true, draft: true } });
     assert(definition.activeVersion && definition.draft);
     const source = customFieldPayloadSchema.parse(definition.activeVersion.payload), draft = customFieldPayloadSchema.parse(definition.draft.payload);
@@ -51,7 +56,7 @@ export async function checkRequiredFieldReviewStorage(session: Session, principa
     await registry.invokeQueryInTransaction({ session, transaction: tx }, ownerQuery, { mode: "preflight" });
     const proposed = conditionalFieldPayloadSchema.parse({ ...draft, schemaVersion: 2,
       entity: { id: entity.id, version: entity.version, schemaHash: entity.schemaHash, contractHash: entity.contractHash }, storageGeneration: crypto.randomUUID(),
-      requiredIf: { match: "all", predicates: [{ source: { kind: "native", fieldId: "status" }, operator: "present" }] } });
+      requiredIf: { match: "all", predicates: [{ source: { kind: "native", fieldId: "status" }, operator }] } });
     const compiled = await compileFieldMigrationMetadata({ session, transaction: tx }, registry, company, definitionId, proposed);
     // Exact saved canonical draft pin. Privileged Test fixture, rollback-only;
     // production preparation must use edit-authorised CAS/Audit or a saved draft.
@@ -207,6 +212,8 @@ export async function checkRequiredFieldReviewStorage(session: Session, principa
     assert.deepEqual(await sealFieldMigrationPreparation(session, sealRequest), { ...reviewed, replayed: true });
     const final = await archive();
     assert.equal(readStoredFieldMigrationReview(final.review!, organisationId).review.schemaVersion, 2);
+    await assert.rejects(() => publishReviewedFieldMigration(session, { preparationId: operationId, revision: reviewed.revision,
+      reviewChecksum: reviewed.checksum, acknowledgeWarnings: true, acknowledgeLoss: false }), /MIGRATION_INVALID_VALUES/);
     for (const action of ["prepared", "reviewed"])
       assert.equal(final.audits.filter(row => row.action === `studio.field.migration.${action}`).length, 1);
     await assert.rejects(() => collectFieldMigrationBatch(session, { ...firstRequest, revision: reviewed.revision }), /stale|changed/i);
@@ -227,4 +234,77 @@ export async function checkRequiredFieldReviewStorage(session: Session, principa
     assert.deepEqual(after.draft.payload, before.draft.payload); assert.equal(after.draft.revision, before.draft.revision + 2);
   }
   console.log("PASS actual conditional preparation/collection/sealing APIs: server-derived2, exact current-owner pins, bounded actual condition rows including unanchored failures, response replay without duplicate evidence, SQL/pure seal, all three Audit-failure atomic rollbacks and restored draft with retained review history; privileged Test draft seed only, no conditional authoring/publication/execution/native writes.");
+
+  const publicationBefore = await snapshot();
+  const validFixture = await db.$transaction(async tx => {
+    // Every actual canonical ticket has a status: this approved absent rule is
+    // false, including unanchored rows. Actual condition evaluation is still used.
+    const result = await setup(tx, "absent");
+    await tx.auditEntry.create({ data: { organisationId, actorUserId: session.userId,
+      action: "studio.required_publication.test_draft_seeded", entityType: "StudioDefinition", entityId: definitionId } });
+    return result;
+  }, { isolationLevel: "Serializable", timeout: 30_000 });
+  const publicationId = validFixture.intent.id;
+  async function publicationSnapshot() {
+    return { snapshot: await snapshot(),
+      versions: await db.studioDefinitionVersion.findMany({ where: { organisationId, definitionId }, orderBy: { version: "asc" } }),
+      generations: await db.studioFieldGeneration.findMany({ where: { organisationId, definitionId }, orderBy: { id: "asc" } }),
+      publication: await db.studioFieldMigrationPublication.findFirst({ where: { preparationId: publicationId, organisationId } }),
+      audits: await db.auditEntry.findMany({ where: { organisationId, entityId: { in: [definitionId, publicationId] } }, orderBy: { id: "asc" } }) };
+  }
+  try {
+    const prepared = await startFieldMigrationPreparation(session, principal, { operationId: publicationId, definitionId,
+      definitionRevision: validFixture.intent.definitionRevision, draftRevision: validFixture.intent.target.draftRevision, conversion: { kind: "integer_to_decimal" } });
+    let batch = await collectFieldMigrationBatch(session, { preparationId: publicationId, revision: prepared.revision, limit: 2 });
+    for (let page = 0; !batch.cursorExhausted; page++) { assert(page < 100); batch = await collectFieldMigrationBatch(session, { preparationId: publicationId, revision: batch.revision, limit: 2 }); }
+    const reviewed = await sealFieldMigrationPreparation(session, { preparationId: publicationId, revision: batch.revision });
+    assert.equal(reviewed.summary.invalidCount, 0); assert.equal(reviewed.cohort.recordCount, publicationBefore.native.length);
+    const request = { preparationId: publicationId, revision: reviewed.revision, reviewChecksum: reviewed.checksum, acknowledgeWarnings: true, acknowledgeLoss: false };
+    const initial = await publicationSnapshot();
+    await assert.rejects(() => publishReviewedFieldMigration(session, { ...request, schemaVersion: 1 }));
+    await assert.rejects(() => publishReviewedFieldMigration(session, { ...request, organisationId: "foreign" }));
+    await assert.rejects(() => publishReviewedFieldMigration({ ...session, organisationId: "foreign" }, request), /stale|changed/i);
+    for (const [action, entityId] of [["studio.definition.published", definitionId], ["studio.field.migration.published", publicationId]] as const) {
+      const trigger = `studio_required_pub_${crypto.randomUUID().replaceAll("-", "")}`;
+      assert(/^[a-z0-9_]+$/.test(trigger) && /^[a-f0-9-]+$/.test(entityId));
+      try {
+        await db.$executeRawUnsafe(`CREATE FUNCTION ${trigger}() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW."organisationId"='${organisationId}' AND NEW."actorUserId"='${session.userId}' AND NEW."entityId"='${entityId}' AND NEW.action='${action}' THEN RAISE EXCEPTION 'Exact Test required publication Audit failure'; END IF; RETURN NEW; END $$;`);
+        await db.$executeRawUnsafe(`CREATE TRIGGER ${trigger} BEFORE INSERT ON audit_entries FOR EACH ROW EXECUTE FUNCTION ${trigger}();`);
+        await assert.rejects(() => publishReviewedFieldMigration(session, request), /Exact Test required publication Audit failure/);
+        assert.deepEqual(await publicationSnapshot(), initial);
+      } finally {
+        await db.$executeRawUnsafe(`DROP TRIGGER IF EXISTS ${trigger} ON audit_entries;`);
+        await db.$executeRawUnsafe(`DROP FUNCTION IF EXISTS ${trigger}();`);
+      }
+    }
+    const published = await publishReviewedFieldMigration(session, request), current = await publicationSnapshot();
+    const target = current.versions.find(version => version.id === published.targetVersionId)!;
+    assert.equal(target.schemaVersion, 2); assert.equal(checksum(target.compiledPlan), validFixture.intent.target.compiledChecksum);
+    assert.equal(checksum(target.payload), checksum(validFixture.intent.target.payload));
+    assert.equal(current.snapshot.definition.activeVersionId, publicationBefore.definition.activeVersionId);
+    assert.equal(current.snapshot.definition.revision, publicationBefore.definition.revision + 1);
+    assert.equal(current.snapshot.draft.revision, validFixture.intent.target.draftRevision + 1);
+    assert.deepEqual(current.snapshot.native, publicationBefore.native); assert.deepEqual(current.snapshot.slots, publicationBefore.slots); assert.deepEqual(current.snapshot.values, publicationBefore.values);
+    assert.equal(current.generations.length, initial.generations.length + 1); assert.equal(current.versions.length, initial.versions.length + 1);
+    assert.deepEqual(await publishReviewedFieldMigration(session, request), { ...published, replayed: true });
+    assert.deepEqual(await publicationSnapshot(), current);
+    const rechecked = await withFieldMigrationAuthority(session, principal, authority => inspectPublishedRequiredFieldMigrationReview({ session: authority.session, transaction: authority.transaction }, validFixture.intent));
+    assert.equal(rechecked.checksum, reviewed.checksum);
+    assert.equal(current.audits.filter(row => row.entityId === publicationId && row.action === "studio.field.migration.published").length, 1);
+  } finally {
+    const publication = await db.studioFieldMigrationPublication.findFirst({ where: { preparationId: publicationId, organisationId } });
+    if (publication?.state === "PUBLISHED") await cancelFieldMigrationPublication(session, principal, { preparationId: publicationId, revision: publication.revision });
+    await db.$transaction(async tx => {
+      const draft = await tx.studioDraft.findFirstOrThrow({ where: { definitionId, organisationId } });
+      assert.equal(checksum(draft.payload), checksum(validFixture.intent.target.payload));
+      assert.equal((await tx.studioDraft.updateMany({ where: { id: draft.id, organisationId, revision: draft.revision },
+        data: { payload: publicationBefore.draft.payload!, revision: { increment: 1 }, validation: PrismaRuntime.DbNull } })).count, 1);
+      await tx.auditEntry.create({ data: { organisationId, actorUserId: session.userId,
+        action: "studio.required_publication.test_draft_restored", entityType: "StudioDefinition", entityId: definitionId } });
+    }, { isolationLevel: "Serializable" });
+    const after = await snapshot();
+    assert.deepEqual(after.native, publicationBefore.native); assert.deepEqual(after.slots, publicationBefore.slots); assert.deepEqual(after.values, publicationBefore.values);
+    assert.equal(after.definition.activeVersionId, publicationBefore.definition.activeVersionId); assert.deepEqual(after.draft.payload, publicationBefore.draft.payload);
+  }
+  console.log("PASS actual conditional reviewed publication/replay/cancellation APIs: source active, canonical schema2 target/plan/generation and closed review pinned, actual conditions/native/global inspection, no duplicate metadata or Audit, client/tenant and invalid-review denial, both actual Audit-failure atomic rollbacks; restored Test draft and retained immutable metadata/history, zero native/typed writes. Conditional execution/authoring still gated.");
 }

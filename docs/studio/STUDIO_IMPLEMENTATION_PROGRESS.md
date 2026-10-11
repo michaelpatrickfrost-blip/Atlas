@@ -12,6 +12,20 @@ No Phase 3 feature may start before the complete Phase 2 gate passes.
 
 # Current Workstream
 
+2B required-field evolution e3c — actual conditional publication — IMPLEMENTED;
+local checks PASS, central candidate/public proof pending.
+Dependencies: e3b01a79ed local inspection; stored intent/review2; genuine metadata
+provider; existing definition publisher/binder, source-active SQL guards and Audit.
+Expected files: migrations/publication.ts, definitions/publication.ts, existing
+publication suite and conditional storage checker. Database: no planned DDL/model;
+persist actual version schema2, one target generation/version/publication with source
+still active. Tests: server-derived protocol, reviewed2 (including rule removal to
+schema1), strict legacy compatibility, replay, fresh inspection, invalid review denial,
+exact tenant/CAS, publication metadata and Audit atomic failures. Ordinary authoring/
+activation/execution2 remain gated. Deploy coherent e3b+c after checks and prove
+actual normal APIs in exact central Test company under original release gates.
+
+Prior checkpoint:
 2B required-field evolution e3b — conditional publication-stage reinspection —
 VERIFIED locally; real publication API integration remains the next workstream.
 The explicit server publication reader uses genuine authority, exact +1 definition/
@@ -65,6 +79,9 @@ work. No conditional authoring is enabled by this checkpoint.
 
 # Files Changed
 
+E3c: migrations/publication.ts, definitions/publication.ts, existing publication
+suite and check-field-required-review-storage.ts; ARCHITECTURE/MODULE_SPEC,
+.ai/DECISIONS.md, source coverage/required plan/ledger/current state.
 Current e3b: migrations/coverage.ts,observation.ts,inspection.ts and existing required
 observation/inspection suites; progress docs. Current e3a: migrations/publication-contract.ts, its existing focused test suite,
 .ai/DECISIONS.md and progress docs. Prior owner checkpoint: core/service-work/studio.ts; scripts/studio/check-field-required-
@@ -86,6 +103,12 @@ correction preserved its applied checksum/history. No reset/backfill/purge.
 
 # Tests Added
 
+E3c adds four tests for actual typed publisher/binder dispatch, schema2 persistence,
+closed2 rule removal into target1, source-active replay, execution2 denial, protocol/
+tenant/invalid-review checks, both Audit failures and ordinary authoring gate.
+Central checker now exercises normal publication/replay/cancellation, invalid-review
+denial, real closed2 inspection and both actual Audit failures with unchanged source/
+native/slots/values and retained immutable target history. Runtime proof pending.
 E3b adds six cases covering the real coverage/row-reader bodies with explicit unit
 transaction/authority fixtures, stage routing, frozen publication integrity, private
 preflight ordering, source/condition/native/global drift and empty-cohort denial.
@@ -99,6 +122,10 @@ adds4 cases for closed protocol, tamper, readiness and rule removal to schema1.
 
 # Tests Run
 
+E3c:96 tests/9 suites PASS12179; strict TypeScript50065 exit0; scoped ESLint58409
+exit0; production build3543 exit0. Initial four new tests failed from fixture-only
+extra cohort/summary keys on strict intent; corrected by explicit projection.
+Logs /tmp/atlas-studio-required-publication-{tests,types,lint,build}.txt.
 E3b:65 tests/6 suites PASS22326; strict TypeScript78713 exit0; scoped ESLint83710
 exit0; production build73098 exit0; final diff/check PASS. Initial test-only implicit
 types failed24479 and were corrected with explicit registry parameter types.
@@ -153,16 +180,14 @@ No later-phase work started and no complete Studio claim.
 
 # Exact Next Action
 
-Checkpoint e3b with its local evidence, then e3c: derive publication format from the
-actual stored intent/review in migrations/publication.ts. Route explicit2 through
-the genuine conditional preparation/publication inspectors and metadata compiler;
-keep execution2 replay denied until its own lineage is implemented. Extend the
-existing trusted publisher compiled union/binder to persist actual schemaVersion2
-without opening ordinary conditional authoring. Add actual central Test normal
-publication/replay and failed metadata/Audit atomic rollback proof, retaining active
-source and native/value snapshots. Run focused regression/types/lint/build, deploy
-the coherent integrated block under original gates, then execution/cutover/settlement
-and native hooks before remaining2B/2C/2D/2E/2F. Live8cc2758 rollbacka475823.
+Review final e3c diff/check; checkpoint with local evidence; deploy the integrated
+e3b+c block through pinned codex/studio-phase2 original Studio gates. Inspect actual
+conditional publication/replay/cancellation and both Audit rollback success in both
+candidate/public acceptance logs and exact public health. If either fails, diagnose
+the actual service/SQL fixture without weakening lineage or phase requirements.
+Then e3d: explicit conditional execution outcome/lineage inspection before adapting
+start/batch/cutover/settlement; native lock/write-window hooks and remaining2B/2C/2D/
+2E/2F follow. Keep ordinary conditional authoring gated. Live8cc2758 rollbacka475823.
 
 # Historical checkpoint evidence
 

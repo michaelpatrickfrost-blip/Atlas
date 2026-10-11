@@ -78,8 +78,11 @@ STUDIO_VISUAL_BUILDER_REQUIREMENTS.md and are still unfinished Phase 2 work.
 
 ## Exact next checkpoint
 
-Finish the reviewed actual Tickets owner release and central conditional row-review
-proof; then complete conditional migration/native writer integration before 2C
+Actual Tickets owner and normal conditional prepare/collect/seal are VERIFIED live.
+Publication/replay inspection and existing typed publisher integration are implemented
+with96focused/types/lint/build PASS; exact central Test publication/cancellation and
+both Audit-failure proof pending candidate/public release. Complete that gate, then
+conditional execution/cutover/settlement/native writer integration before 2C
 record types,2D page compiler,2E visual authoring/runtime and2F full phase gate.
 Use this matrix and the original relevant sections at each checkpoint. No feature
 may be silently omitted, marked VERIFIED from a file or moved to a later phase

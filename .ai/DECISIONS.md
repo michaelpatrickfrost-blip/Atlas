@@ -1,3 +1,14 @@
+## 11 October 2026 — Reuse the typed publisher and save the actual plan protocol
+
+Reviewed conditional fields use the existing definition publisher/generation binder,
+CAS/dependency/Audit transaction and publication receipt. A trusted internal binder
+is required for conditional plans; ordinary dispatch stays closed1. Persist the
+compiled plan's schemaVersion instead of the legacy hardcoded1, so future current/
+written readers can verify its exact meaning. Review protocol comes from the stored
+intent/review, even when rule removal targets schema1. Recorded execution2 stays
+denied until actual outcome/lineage inspection exists; source-active replay cannot
+approve changed value envelopes. No new engine/model or schema migration required.
+
 ## 11 October 2026 — Conditional publication reinspection is a distinct server entry
 
 Preparation and source-active publication have different immutable metadata/CAS

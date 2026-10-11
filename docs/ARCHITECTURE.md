@@ -339,4 +339,6 @@ or typed values change. A recorded format2 execution cannot fall back to publica
 inspection; it remains denied until its outcome/lineage reader is implemented.
 No ordinary conditional authoring or activation is enabled. Local tests/types/lint/
 build PASS; normal central Test publication/replay/cancellation and both Audit-failure
-rollbacks are implemented acceptance checks, pending candidate/public proof.
+rollbacks VERIFIED on bafa1c2 candidatebseb8V/publicZrTQuH, both ALL COMBINED PASS.
+Pure conditional execution/outcome integrity remains separate from runtime execution;
+actual start/batch/cutover/native hooks and visual Phase2 acceptance are unfinished.

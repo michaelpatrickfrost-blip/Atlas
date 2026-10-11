@@ -555,4 +555,6 @@ saves the actual plan schemaVersion (2 for conditional rules, 1 for rule removal
 with reviewed Core binding/CAS/dependencies and both Audits atomically. Ordinary
 conditional authoring stays disabled. Recorded format2 execution cannot replay by
 falling back to source-active publication inspection. Local checks PASS; actual
-central Test publication/replay/cancellation/Audit rollback proof pending release.
+central Test publication/replay/cancellation/both Audit rollbacks VERIFIED on bafa1c2
+candidatebseb8V/publicZrTQuH, both ALL COMBINED PASS. Actual conditional execution/
+cutover/native writer integration remains unfinished; pure integrity is not execution.

@@ -468,3 +468,10 @@ studio-build-memory-20261011.txt is in maintenance backups. Remove this exact sw
 after no candidate compiler remains and available RAM safely exceeds swap usage;
 hold both original locks, never swapoff under active memory pressure. Record retry
 and cleanup evidence in CURRENT_STATE/Studio ledger before a complete handoff.
+
+11 October1007UTC: retry bafa1c2 original24271 completed full candidatebseb8V/
+publicZrTQuH ALL COMBINED PASS and exit0. Under both original locks/no compiler,
+MemAvailable3511732KiB versus swap-used749308KiB satisfied the1.5GiB safety margin;
+exact temporary swap deactivated/removed93028 exit0. Post-cleanup no swap, root164GiB
+free,2.7GiB RAM available. Livebafa1c2 rollback8cc2758; failed source/logs/recovery
+retained. No application/PostgreSQL configuration or schema was changed for recovery.

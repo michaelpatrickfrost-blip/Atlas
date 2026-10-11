@@ -1,224 +1,187 @@
 # Atlas Studio implementation progress
 
-Updated: 11 October 2026. The current dashboard below supersedes historical next
-steps. Dated evidence remains below; do not treat old plans as current execution.
+Updated: 11 October 2026. This dashboard supersedes historical next steps below.
+The unchanged source is ATLAS_STUDIO_SOURCE.docx; SHA256 matches Michael's original:
+4afb01d98ead51cd70ec4958620eb9d27a19a0298cd0fa1cb8bd0aee69d9198d.
+STUDIO_SPECIFICATION_COVERAGE.md traces the source requirements across all phases.
 
 # Current Phase
 
 Phase 2 — Fields, record types and pages — IN PROGRESS. Phase 0/1 gates PASS.
-The unchanged supplied document defines phases 0–9 in Section 27. Michael resolved
-the original five-phase wording on 9 October: proceed in that document's order.
-No Phase 3 feature may start before the complete Phase 2 gate passes.
+The document defines phases 0–9 in Section27; Michael resolved the original five-
+phase wording on9 October: proceed in the document's order. No Phase3 features
+before the complete Phase2 gate passes. Foundation-first order remains authorised.
 
 # Current Workstream
 
-E3c release a04349c runner33124 failed before candidate acceptance/activation:
-confirmed kernel OOM killed compiler at094911UTC; original live8cc2758 unchanged.
-Under BOTH original locks, failed source/static moved to maintenance backup,
-only its positively identified generated outputs reclaimed, temporary2GiB build
-swap activated (no fstab/database/runtime changes). Original094734 backup/logs
-retained; root163GiB free before temporary allocation. Retry normal pinned release;
-remove temporary swap only after safe available memory and no candidate build.
-Independent next workstream e3d1 — pure conditional execution/outcome integrity —
-VERIFIED locally. Dependencies: sealed review2 and pure publication pin/current native9
-representation2 descriptors. Expected files: existing execution-contract.ts and
-execution-contract suite. Database: none. Preserve receipt schema1 shape/hash for
-retained1; full review/observation checksum binds new conditions. Separate closed2
-helpers, explicit owner+query protocol approval and semantic observation shape;
-no runtime start/batch/cutover or writes. Tests: exact identity/owner/protocol,
-conditional required/null denial, whole evidence checksum, no legacy reinterpretation.
-
-2B required-field evolution e3c — actual conditional publication — IMPLEMENTED;
-local checks PASS, central candidate/public proof pending.
-Dependencies: e3b01a79ed local inspection; stored intent/review2; genuine metadata
-provider; existing definition publisher/binder, source-active SQL guards and Audit.
-Expected files: migrations/publication.ts, definitions/publication.ts, existing
-publication suite and conditional storage checker. Database: no planned DDL/model;
-persist actual version schema2, one target generation/version/publication with source
-still active. Tests: server-derived protocol, reviewed2 (including rule removal to
-schema1), strict legacy compatibility, replay, fresh inspection, invalid review denial,
-exact tenant/CAS, publication metadata and Audit atomic failures. Ordinary authoring/
-activation/execution2 remain gated. Deploy coherent e3b+c after checks and prove
-actual normal APIs in exact central Test company under original release gates.
-
-Prior checkpoint:
-2B required-field evolution e3b — conditional publication-stage reinspection —
-VERIFIED locally; real publication API integration remains the next workstream.
-The explicit server publication reader uses genuine authority, exact +1 definition/
-draft revisions, closed stored review and frozen target/publisher/generation, complete
-private preflight, source-active SQL freshness and actual native/condition/value
-envelopes. Bounded inspection compares every actual row and SQL/pure archive seal.
-No client stage, execution/cutover, DDL or value/native mutation. Legacy entry stays
-closed1. Pure pin8cc2758 is now VERIFIED live: original95284 exit0, candidatezc2knY/
-publicPK9q8T ALL COMBINED PASS, health exact. Current rollback a475823; both-lock
-retention retired inactive ede65ae duplicate runtime only. Required recovery UTC
-092639/092819/093242 only. Runtime conditional publication and authoring remain gated.
+2B required-field evolution e3b/c/d1 — publication reinspection, actual reviewed
+publication and pure execution/outcome integrity. VERIFIED: local checks PASS; actual normal
+conditional publication/replay/cancellation and both Audit-failure rollbacks PASS
+on candidatebseb8V and publicZrTQuH. Original release24271 exit0, both ALL COMBINED
+PASS; exact public bafa1c2d075039c48db99ba589624c29e5c26a94 confirmed. Rollback8cc2758
+retained; original both-lock retention retired inactivea475823 duplicated runtime only. Next e3d2 execution
+inspection is NOT STARTED, with smaller workstreams/dependencies in required-rules
+plan. No execution2 start/batch/authoring enabled. Temporary build swap safely removed
+under BOTH original locks; root164GiB free, no swap/config/database change.
 
 # Overall Status
 
-IN PROGRESS. Registry and metadata kernel passed their gates. Phase 2 delivers
-fields AND record types AND structured pages; safe field services alone cannot
-pass it. The existing capability-set form is foundation tooling, not the visual
-Studio. Source DOCX checksum matches the original attachment exactly:
-4afb01d98ead51cd70ec4958620eb9d27a19a0298cd0fa1cb8bd0aee69d9198d.
-Full source re-read and exact Section 27 / Sections 6–8,18,24–29 mapping reviewed.
+IN PROGRESS. Registry and metadata kernel passed their gates. Phase2 also requires
+record types, structured pages/variants, generated list/detail/form runtime and
+visual authoring. Field services alone cannot pass it. The existing capability-set
+form remains foundation tooling; the noncoder visual designer is unfinished.
+Full source re-read and current architecture/dependency comparison recorded in
+source coverage, phase plan and this ledger. No rewritten specification.
 
 # Completed Workstreams
 
-- Phase 0 registry/adapters and Phase 1 metadata kernel: VERIFIED, gate PASS.
-- Separate Admin console, staff/business login boundaries and administrator business
-  user provisioning: VERIFIED earlier; compatibility remains in release acceptance.
-- Phase 2A owner contracts: VERIFIED.
-- 2B field types, storage, legacy reviewed conversion/batches/cutover/rollback,
-  ordinary current/history reads and atomic value saves: VERIFIED in recorded live
-  checkpoints. Required-if/native integration and customer authoring remain incomplete.
-- Required review routing c3: VERIFIED live e3959624c2ba65f61fcd29bec9b12cc21933670d;
-  candidate ZRGhyd/public suHccl ALL COMBINED PASS. Immediate rollback at that checkpoint was e5ab126. At that checkpoint live ede65ae retained
-  e395962; only inactive e5ab126 duplicate runtime was retired under both locks.
-- Current Tickets native9/query4/representation2/settlement2 callbacks: VERIFIED
-  locally; actual conditional row/coverage/inspection VERIFIED candidate/public
-  ede65ae. Full format2 execution/representation/settlement runtime still gated. All retained descriptors/hashes remain.
+- Phase0 registry/adapters and Phase1 metadata kernel: VERIFIED, gates PASS.
+- Separate Admin console/login, business-specific login URLs and Atlas administrator
+  business-user provisioning: VERIFIED earlier and current release regression PASS.
+- Phase2A owner contracts: VERIFIED.
+- Existing 2B types/storage, legacy reviewed conversion/batches/cutover/rollback/
+  settlement and ordinary current/history reads/atomic saves: VERIFIED in earlier
+  live checkpoints. Required-if/native integration is still incomplete.
+- Current Tickets native9/query4/representation2/settlement2: VERIFIED for actual
+  conditional preparation/row review; retained1/native5 compatibility preserved.
+- Actual format2 prepare/collect/seal APIs: VERIFIED livea475823 and repeated in
+  bafa1c2 candidate/public, including all three Audit-failure rollbacks.
+- E3b conditional publication inspection: VERIFIED locally and actual candidate/
+  public publication reinspection PASS. E3c actual publisher/cancellation/replay:
+  VERIFIED actual candidate/public and combined release PASS.
+- E3d1 pure closed2 execution/outcome integrity: VERIFIED locally; no inference
+  of actual execution runtime from synthetic pure metadata or owner descriptors.
 
 # Current Workstream Detail
 
-Source requirements: 6.5 server required-if, 14 inherited security, 24 reviewed
-resumable evolution, 25 concurrency/compatibility, 26 release recovery. Extend the
-existing owner callbacks; do not create a second engine. Current source versions
-2–9/reference versions1–9; target9; explicitly retained native5 format1 settlement.
-Actual stored preparation/review identity and hashes precede count/row approval;
-private/member/module/Serializable/native revision checks remain. Owner callbacks
-approve representation only. Central rollback-only Test fixture now uses actual
-required observation and inspection instead of synthetic semantic evidence for
-its positive case. Full normal format2 API, publication/execution/cutover/settlement,
-native writer hooks, search, record types and visual pages remain separate unfinished
-work. No conditional authoring is enabled by this checkpoint.
+Existing publication selects format from server-loaded intent/review, never request
+metadata or a target-schema guess. Conditional preparation/publication inspectors
+refresh genuine authority, exact scoped immutable metadata and +1 post-publication
+revisions, complete private preflight, source-active SQL freshness and actual native/
+condition/global/source evidence. Bounded actual rows match archived checksums and
+SQL/pure seal. Shared typed publisher/CAS/dependencies/reviewed binder save actual
+plan schemaVersion2 (rule removal1), generation/version/receipt and both Audits in
+one transaction. Original source remains active; native/typed values unchanged.
+Closed2 pure execution/outcome helpers retain receipt shape and bind full review/
+observation meaning; outcomes require the exact sealed review2. Legacy parsers and
+hashes remain. A recorded execution2 cannot fall back to publication inspection.
+Ordinary conditional authoring, activation, execution, cutover and native hooks
+remain gated until their own integration passes.
 
 # Files Changed
 
-E3d1: existing execution-contract.ts and focused execution-contract suite, progress
-and lasting receipt decision; DEPLOY records confirmed OOM/reversible memory recovery.
-E3c: migrations/publication.ts, definitions/publication.ts, existing publication
-suite and check-field-required-review-storage.ts; ARCHITECTURE/MODULE_SPEC,
-.ai/DECISIONS.md, source coverage/required plan/ledger/current state.
-Current e3b: migrations/coverage.ts,observation.ts,inspection.ts and existing required
-observation/inspection suites; progress docs. Current e3a: migrations/publication-contract.ts, its existing focused test suite,
-.ai/DECISIONS.md and progress docs. Prior owner checkpoint: core/service-work/studio.ts; scripts/studio/check-field-required-
-review-storage.ts; actual current-owner test; required observation/routing and
-legacy owner/creation/cutover fixture tests; architecture/module docs; required-rule
-plan; specification coverage map; this ledger; .ai/CURRENT_STATE.md/DECISIONS.md.
-Inspect git diff/status for the exact paths; shared Desktop checkout is untouched.
+Current integrated blocks: fields/migrations/{coverage,observation,inspection,
+publication,publication-contract,execution-contract}.ts; definitions/publication.ts;
+existing required observation/inspection/publication/execution-contract suites;
+scripts/studio/check-field-required-review-storage.ts; ARCHITECTURE/MODULE_SPEC/
+DEPLOY; source coverage/required rules plan/ledger and .ai/CURRENT_STATE.md/DECISIONS.md.
+Earlier owner checkpoint: core/service-work/studio.ts, actual-owner/compatibility
+suites and central checker. Exact source checkpoints ede65ae,a475823,8cc2758,
+01a79ed,a04349c,bafa1c2. Shared Desktop checkout and visual stash remain untouched.
 
 # Database / Prisma Changes
 
-No new schema/model/DDL in the owner, normal API proof or pure publication pin. Reuse the existing
-archive/value/metadata models and tenant constraints; no native/business writes.
+No new schema/model/DDL for current owner/normal API/publication/integrity blocks.
+Reuse existing tenant-owned archive/generations/metadata/values and SQL guards.
+Immutable target schemaVersion2 is a metadata record, not a database schema change.
+Exact central Test metadata/history and Audits retained; no native/domain/value writes.
+No local business database/cache, reset, backfill or purge.
 
 # Migrations Applied
 
-Previously applied additive 20261011010000 required-review archive and corrective
-20261011020000 JSON precedence guards. The first candidate failed before activation;
-correction preserved its applied checksum/history. No reset/backfill/purge.
+Previously applied additive20261011010000 required-review archive and corrective
+20261011020000 JSON precedence guards. First failed candidate was never activated;
+correction preserved its applied checksum/history. Current block adds no migration.
 
 # Tests Added
 
-E3d1 adds two cases with actual owner9/representation2 descriptors and synthetic
-pure metadata (not runtime proof): explicit2 execution integrity, unchanged receipt
-shape, closed legacy denial, full required evidence checksum, required-null/foreign/
-malformed denial. Outcome helper also requires the exact sealed review2, rejecting
-a legacy execution pin or substituted review. No execution service enabled.
-E3c adds four tests for actual typed publisher/binder dispatch, schema2 persistence,
-closed2 rule removal into target1, source-active replay, execution2 denial, protocol/
-tenant/invalid-review checks, both Audit failures and ordinary authoring gate.
-Central checker now exercises normal publication/replay/cancellation, invalid-review
-denial, real closed2 inspection and both actual Audit failures with unchanged source/
-native/slots/values and retained immutable target history. Runtime proof pending.
-E3b adds six cases covering the real coverage/row-reader bodies with explicit unit
-transaction/authority fixtures, stage routing, frozen publication integrity, private
-preflight ordering, source/condition/native/global drift and empty-cohort denial.
-These fixtures do not prove the actual conditional publisher or central execution.
-Actual current Tickets owner tests: 8 cases, including retained format1/native5,
-stored identity/hash/tenant denial, private preflight, actual immutable reference
-inputs, exact principal/revision, dual-format representation and settlement. The
-positive central archive fixture now calls the actual conditional reader/inspector;
-normal APIs and actual row review passed candidate/public. Pure publication pin
-adds4 cases for closed protocol, tamper, readiness and rule removal to schema1.
+Actual current owner8 cases; E3b6 cases for real coverage/row-reader bodies with
+explicit unit authority/transaction fixtures and stage/evidence drift; E3c4 cases
+for typed publisher/schema2, rule removal1, replay/CAS/Audit and authoring gate;
+E3d1 two cases for pure owner/query protocol and sealed review/semantic outcome
+integrity. Central checker uses actual authorised conditions and normal APIs,
+including real Audit triggers/atomic rollback and retained immutable history.
+Mocks and pure synthetic metadata are never described as normal runtime evidence.
 
 # Tests Run
 
-E3d1:40tests/4suites PASS22772; strict TypeScript29427 and scoped ESLint5823 exit0;
-production build29068 exit0; diff review/check PASS. Logs
-/tmp/atlas-studio-required-execution-pin-{tests,types,lint,build}.txt.
-Existing representation/batch/Tickets regression21tests/3suites PASS61527.
-E3c:96 tests/9 suites PASS12179; strict TypeScript50065 exit0; scoped ESLint58409
-exit0; production build3543 exit0. Initial four new tests failed from fixture-only
-extra cohort/summary keys on strict intent; corrected by explicit projection.
-Logs /tmp/atlas-studio-required-publication-{tests,types,lint,build}.txt.
-E3b:65 tests/6 suites PASS22326; strict TypeScript78713 exit0; scoped ESLint83710
-exit0; production build73098 exit0; final diff/check PASS. Initial test-only implicit
-types failed24479 and were corrected with explicit registry parameter types.
-Logs /tmp/atlas-studio-required-published-inspection-{tests,types,lint,build}.txt.
-138 tests /19 focused suites PASS (53975); strict TypeScript 88342 exit0; scoped
-ESLint 84027 exit0; production build 93836 exit0; final diff review/check PASS.
-Logs: /tmp/atlas-studio-e2b-owner-final-tests.txt and
-/tmp/atlas-studio-e2b-owner-{types,lint,build}.txt.
-Previous c3 release candidate/public ALL COMBINED PASS; exact public release SHA
-confirmed. Current owner ede65ae candidate/public ALL COMBINED PASS; public health exact. Normal API proof strict
-TypeScript61643, scoped lint6756 and production build77619 exit0; real runtime proof
-pending. Current-owner candidate f7uyoR/public DetaCQ ALL COMBINED PASS; release34400 exit0.
+- Owner checkpoint138tests/19suites PASS; strictTS88342/lint84027/build93836 exit0.
+- E3b65tests/6suites PASS22326; strictTS78713/lint83710/build73098 exit0.
+- E3c96tests/9suites PASS12179; strictTS50065/lint58409/build3543 exit0.
+- E3d1 40tests/4suites PASS22772 plus21representation/batch/Tickets regressions
+  PASS61527; strictTS29427/lint5823/build29068 exit0.
+- Final code diffs reviewed and diff --check PASS. Focused counts overlap; do not
+  sum them as distinct coverage. Test-only strict fixture/type failures corrected;
+  no production parser or gate relaxed.
+Logs: /tmp/atlas-studio-required-published-inspection-{tests,types,lint,build}.txt,
+/tmp/atlas-studio-required-publication-{tests,types,lint,build}.txt,
+/tmp/atlas-studio-required-execution-pin-{tests,types,lint,build,regression}.txt.
 
 # Test Results
 
-Owner block VERIFIED locally; actual row-review/coverage/SQL digest and complete
-rollback VERIFIED live. Normal API proof VERIFIED real candidatep46Q3C/public79aa78. Pure publication pin
-39cases/4suites PASS99746, strictTS54579/lint4993/build91430 exit0. A real legacy settlement bug
-was caught by expanded actual model-row selection: retain strict packet parsing
-with explicit review/checksum projection. Obsolete future-owner expectations were
-moved above the newly registered actual versions, not relaxed. The actual native7
-contract hash remains exact. Mocked transactions do not prove central execution.
+Local checks PASS. Previous pure-pin8cc2758 original95284 candidatezc2knY/
+publicPK9q8T ALL COMBINED PASS. A04349c original33124 failed before acceptance/
+activation: private build log and kernel confirm OOM094911UTC; live stayed8cc2758.
+Under BOTH original locks, failed source/static retained in maintenance backups,
+only confirmed failed generated outputs reclaimed, temporary2GiB build swap added.
+Normal retry bafa1c2 original24271 built successfully; candidatebseb8V ALL COMBINED
+PASS. Actual conditional publication/replay/cancellation and both real Audit-failure
+rollbacks PASS in publicZrTQuH too; complete public ALL COMBINED PASS, runner24271
+exit0. Exact bafa1c2 public health and live/rollback pointers verified. Temporary
+build swap safely removed93028 exit0 after MemAvailable3511732KiB versus used749308KiB;
+post-cleanup7.8GiB RAM/2.7GiB available/no swap, root164GiB free. No fstab changes.
+Original required recovery094734 retained; retry095503/095646/100108 only, no ad-hoc
+dump. Logs: /tmp/atlas-studio-required-publication-retry-live-deploy.txt and private
+/tmp/atlas-studio-{candidate-bseb8V,public-ZrTQuH}/acceptance.log. Failed candidate
+source and operational recovery evidence remain in maintenance backups.
 
 # Architecture Decisions
 
-Retain one migration engine and explicit owner/query protocol coverage. Current
-callbacks load immutable intent/review for retained execution/history; never assume
-an editable draft. Native5 settlement delegates the exact old closed format1 path.
-The coverage map traces requirements; it does not rewrite the source or turn its
-whole-system checklist into a claim that later engines belong in Phase 2.
+One existing migration/publication engine; explicit owning protocol coverage and
+closed server-stored format selection. Full sealed review/observation checksums bind
+new semantics while retained receipt shape/old hashes stay unchanged. Save actual
+compiled plan schemaVersion and require reviewed internal binding for conditional
+plans. Source-active publication cannot approve execution envelopes. Exact native/
+global revisions and current permissions are independent of semantic hashes.
+Decisions and rationale recorded in .ai/DECISIONS.md; no silent source divergence.
 
 # Known Issues
 
-Phase 2 gate unpassed. Actual format2 row-review owner proof PASS; normal API proof PASS candidate/public. Format2 publication/execution/cutover/settlement and native create/save lock hooks remain
-unfinished. No customer field editor/search, record types, page compiler/generated
-runtime or accepted visual Studio yet. No blocker justifies weakening requirements.
+Whole Phase2 gate incomplete. Conditional execution/start/batches/cutover/settlement
+and common native create/save/write-window hooks remain. Remaining field aliases/
+defaults/search, record types, page compiler/variants/generated runtime, visual
+preview/publish/dashboard/button integration and final phase acceptance remain.
+Current foundation release and temporary swap cleanup passed; preserve all
+central records, current/rollback/process-pinned runtime and recovery evidence.
 
 # Deferred Items
 
-Phase 3 Decisions/Approvals;4 durable events;5 Flow;6 Automations migration;7 Process;
-8 packages/environments;9 broad adoption. These remain architectural context.
-Phase 2 visual/document/dashboard bespoke builders are required remaining work,
-not deferred to a later phase. Preserved visual stash28243b7 is IN PROGRESS and
-unverified, not active software; do not restore superseded planning entries.
+Phase3 Decisions/Approvals;4 durable events;5 Flow;6 Automations migration;7 Process;
+8 packages/environments;9 broad adoption. Architectural context only, NOT STARTED.
+Visual/document/dashboard builders remain required Phase2 work, not moved to a
+later phase. Reuse existing Templates/Analytics, presets/shared responsive rendering,
+tenant-specific publication and safe domain buttons. Preserved visual stash28243b7
+is IN PROGRESS and unverified; do not restore its superseded planning entries.
 
 # Acceptance Gate Status
 
-Phase 0 PASS; Phase 1 PASS; Phase 2 FAIL (incomplete, not ready for gate evaluation).
-Maintain all Phase 2 workstreams and security/compatibility requirements. Section29
-is whole-system acceptance; source Sections6–8/18/24–28 govern the current layer.
-No later-phase work started and no complete Studio claim.
+Phase0 PASS; Phase1 PASS; Phase2 FAIL (incomplete, not ready for gate evaluation).
+Current foundation release: candidate/public ALL COMBINED PASS; actual changed-
+feature public checks PASS. This is a workstream gate, not complete Phase2. The source whole-system
+Section29 checklist never substitutes for current Phase2 acceptance or authorises
+later-phase features. No complete Studio/visual builder claim.
 
 # Exact Next Action
 
-Checkpoint pure e3d1 and OOM recovery evidence, then retry the integrated
-e3b+c+d1 block through pinned codex/studio-phase2 original Studio gates. Inspect actual
-conditional publication/replay/cancellation and both Audit rollback success in both
-candidate/public acceptance logs and exact public health. If either fails, diagnose
-the actual service/SQL fixture without weakening lineage or phase requirements.
-Then e3d2: explicit conditional execution coverage/row/review inspection, requiring
-actual retained outcomes for own +1 global extension envelope (including formerly
-unanchored rows), exact unchanged source slot/value/native revision and reevaluated
-conditions on every replay. Reuse execution-source SQL and whole review/observation
-checksums; semantic equality never waives arbitrary envelope drift. Only after those
-pass adapt existing start/batch/representation, then cutover/settlement/native hooks
-and remaining2B/2C/2D/2E/2F. Keep ordinary authoring gated. Live8cc2758 rollbacka475823.
+Next e3d2a/b: add explicit conditional execution coverage and actual row/review
+inspection to existing coverage/observation/inspection/execution-inspection services.
+Verify actual retained outcomes for own +1 global extension revision, including
+formerly unanchored records, unchanged source slot/value/native revision, exact target
+representation and reevaluated conditions/independent field Read rights. Bounded
+actual rows and SQL/pure seals must agree; semantic equality never waives arbitrary
+revision drift. Add focused legacy/permission/tenant/own-outcome/drift tests. Only
+then adapt existing start/batch/representation, followed by cutover/settlement/native
+hooks and remaining2B/2C/2D/2E/2F. No ordinary conditional authoring before its gate.
 
 # Historical checkpoint evidence
 

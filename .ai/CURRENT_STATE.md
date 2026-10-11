@@ -1,3 +1,48 @@
+## 11 October 2026 — conditional publication VERIFIED live; cleanup complete1007UTC
+
+Exact public bafa1c2d075039c48db99ba589624c29e5c26a94 confirmed. Original retry24271
+exit0; candidatebseb8V/publicZrTQuH both ALL COMBINED PASS. Actual conditional
+prepare/collect/seal/publish/replay/cancel, source-active closed2 row/condition/native/
+global inspection, invalid/tenant/client denial and all five real Audit-failure atomic
+rollbacks PASS in both stages. Original source/native/typed records unchanged; exact
+Test draft restored, immutable metadata/history retained. Existing Admin/business
+login/provisioning boundaries and Dashboard/Home/Settings/Reports/MRP/Messages/
+private Admin/Supply/Commercial/People checks all PASS. No complete Phase2 claim.
+Local publication96cases/9suites; inspection65/6; pure execution40/4 plus21/3 legacy
+representation/batch/Tickets regressions, strictTS/scoped lint/production builds/diff
+PASS. Counts overlap, not cumulative. Pure closed2 execution/outcome helpers are
+integrity only; actual format2 start/batches/cutover/native authoring remain gated.
+No schema/model/migration added. Existing publisher/CAS/binder/Audit engine reused.
+Prior a04349c OOM before activation was diagnosed, failed source/static preserved
+and only failed generated outputs retired under BOTH original locks. Temporary2GiB
+build swap solved retry and was safely removed93028 exit0 after available RAM safety
+check; no fstab/application/PostgreSQL change. Post-cleanup root164GiB free, no swap,
+2.7GiB available RAM. Currentbafa1c2 rollback8cc2758; original retention retired only
+inactivea475823 duplicate runtime, not source/static/history/data/backups. Required
+094734 failure recovery +095503/095646/100108 retry recovery retained; no ad-hoc dumps.
+Logs /tmp/atlas-studio-required-publication-retry-live-deploy.txt and private stage
+acceptance.log files. Operational evidence studio-build-memory-20261011.txt retained.
+Updated source coverage, architecture/module/deploy docs, required-rules workstreams
+and fresh mandatory ledger dashboard; original DOCX checksum reconfirmed unchanged.
+Next e3d2a/b NOT STARTED: explicit conditional execution coverage and actual row/
+review inspector in existing coverage/observation/inspection/execution-inspection.
+Exact retained outcomes must prove own +1 global extension revision (including new
+anchors), unchanged source slot/value/native and target representation, reevaluated
+conditions/independent Read; bounded actual rows and SQL/pure seal agree. Then
+existing start/batch/representation, cutover/settlement/native hooks and remaining
+fields/record types/pages/visual builder. Phase0/1 PASS; wholePhase2 still IN PROGRESS.
+
+## 11 October 2026 — integrated bafa1c2 retry running; next execution plan saved (superseded above)
+
+Original24271 pinnedbafa1c2, required095503 pre-release recovery only. Original both
+locks acquired after existing verification finished; no bypass/other job interruption.
+Temporary2GiB build swap active after confirmed OOM; candidate/public pending.
+Do not move HEAD. Next e3d2 NOT STARTED subworkstreams in required-rules plan: actual
+execution coverage, conditional row/review inspection, then existing start/batch/
+representation and central proof. Exact own +1 global envelope must be pinned by
+actual outcome (also formerly unanchored rows); current conditions/independent field
+rights and source/native/target lineage remain mandatory. No execution enablement.
+
 ## 11 October 2026 — e3d1 pure integrity VERIFIED locally; release OOM recovery
 
 Explicit closed2 execution/outcome helpers reuse existing receipt shape and exact

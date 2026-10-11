@@ -1,11 +1,40 @@
+## 11 October — next e3d2 execution inspection workstreams (NOT STARTED)
+
+Purpose: adapt the existing reviewed conversion engine to conditional requirements,
+not a Flow engine or a second migration service. Dependencies: actual closed2 review/
+publication proof (bafa1c2 release24271 candidate/public ALL COMBINED PASS), pure closed2 execution/outcome pins,
+current owner9/representation2 and existing execution-source SQL guards. Ordinary
+conditional authoring/activation remains gated throughout these internal steps.
+
+| Workstream | Expected files | Database implications | Required evidence | Status |
+| --- | --- | --- | --- | --- |
+| e3d2a Source-active execution coverage | migrations/coverage.ts and observation.ts; existing required suites | Reuse locked actual RUNNING/READY/FAILED execution, source SQL lineage; no planned DDL | Genuine authority/private/owner policy; exact review/pin/native/source; arbitrary global revision changes denied | NOT STARTED |
+| e3d2b Conditional row/review reinspection | observation.ts,inspection.ts,execution-inspection.ts; existing inspection suites | Read-only actual observation/outcome/target metadata; source remains active | Reevaluate all actual condition inputs; permit own +1 global envelope only through exact retained outcome and source/target mirrors; bounded SQL/pure seal equality | NOT STARTED |
+| e3d3 Start and representation/batches | Existing execution-start.ts,execution-batch.ts,representation.ts; existing suites | Same atomic generation/slot/value/outcome/progress/Audit; additive correction only if actual SQL evidence proves necessary | Stored-format dispatch; explicit owner approval; converted value matches reviewed requirements; response/retry/CAS/failure/Audit atomicity and exact source preservation | NOT STARTED |
+| e3d4 Actual normal execution proof | Extend exact central Test checker, no new company/parallel engine | Original fixture recovery and retained Test history; zero native writes | Real start/bounded batch/replay/resume/private/tenant/failure behaviour, all source-active; original candidate/public gates | NOT STARTED |
+
+Important inspection detail from actual source: every converted row changes the
+global extension envelope once, including creation for a formerly unanchored row.
+Semantic input checksums intentionally exclude this envelope. Never compare only
+semantics, normalize arbitrary revisions, or invoke the source-active publication
+predicate after target slots exist. Verify the actual retained outcome/pin/mirrors,
+exact original source slot/value/native revision and actual target representation
+before reconstructing the archived envelope for comparison. Other conditional
+field inputs must use the current authorised envelope, sealed dependency versions
+and independent Read/reference rights. Empty cohorts still validate metadata/owner.
+Keep legacy services/parsers/hashes unchanged; do not enable start until reinspection
+can safely handle subsequent batches and lost-response replay. Cutover/settlement/
+rollback/native create/save/window integration remain subsequent mandatory work.
+
 ## 11 October — e3c actual publication IMPLEMENTED locally
 
 Stored1/2 dispatch/inspection and typed existing publisher/binder now persist actual
 schema2 with atomic metadata/CAS/both Audits, source active and zero native/value
 writes. Execution2 replay denied until lineage implemented; ordinary authoring gated.
 96cases/9suites, strictTS/lint/build PASS. Exact central Test normal publication/replay/
-cancellation and both Audit-failure rollback checks implemented, runtime proof pending.
-Next reviewed checkpoint + original integrated e3b+c candidate/public acceptance,
+cancellation and both Audit-failure rollback checks VERIFIED candidatebseb8V and
+publicZrTQuH; originalbafa1c2/24271 ALL COMBINED PASS/exit0, exact health.
+Next final evidence checkpoint,
 then conditional execution/cutover/settlement/native hooks. No DDL/models/dumps.
 
 ## 11 October — e3c initial plan (superseded above)

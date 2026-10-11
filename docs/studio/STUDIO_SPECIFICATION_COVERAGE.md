@@ -80,8 +80,11 @@ STUDIO_VISUAL_BUILDER_REQUIREMENTS.md and are still unfinished Phase 2 work.
 
 Actual Tickets owner and normal conditional prepare/collect/seal are VERIFIED live.
 Publication/replay inspection and existing typed publisher integration are implemented
-with96focused/types/lint/build PASS; exact central Test publication/cancellation and
-both Audit-failure proof pending candidate/public release. Complete that gate, then
+with96focused/types/lint/build PASS; exact central Test publication/replay/cancellation
+and both Audit failures VERIFIED on bafa1c2 candidatebseb8V/publicZrTQuH, both ALL
+COMBINED PASS, original24271 exit0 and public health exact. Pure closed2 execution/
+outcome integrity is VERIFIED locally (40focused +21regression/types/lint/build).
+Next actual conditional execution coverage/row/retained-outcome inspection, then
 conditional execution/cutover/settlement/native writer integration before 2C
 record types,2D page compiler,2E visual authoring/runtime and2F full phase gate.
 Use this matrix and the original relevant sections at each checkpoint. No feature

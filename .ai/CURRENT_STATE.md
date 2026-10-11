@@ -12436,3 +12436,17 @@ first tsc attempt; sequential post-build strict tsc rerun passed, with no source
 waiver or skipped validation. Candidate/public end-to-end acceptance is still
 required for actual stock execution and responsive UK-timezone UI. Public remains
 c607e12 at preflight; prior central additive migration/backups retained.
+
+303cf56 candidate build/compatibility/smoke and actual supply/MRP/finite cascade/
+legacy-start/pause/resume/next-ready/final stock posting/replay PASS. Central Sales
+24-month seasonal backtest and correct future month PASS. Browser forecast selector
+timed out because implicit Product label includes option text; failure screenshot
+confirms workbench renders correctly. Harness now scopes the first combobox inside
+Demand intelligence. Application auth/forecast logic unchanged. Backup atlas-pre-
+deploy-20261011-162844, fixture backup atlas-pre-supply-candidate-20261011-163019,
+evidence /tmp/atlas-supply-candidate-FJmAK4. Test retired/session revoked; public
+still c607e12. Forecast browser save/responsive gate and public activation pending.
+
+Forecast harness selector correction: production build, sequential strict TypeScript,
+scoped ESLint and whitespace PASS. App source unchanged from 116-test checkpoint.
+Public preflight confirms c607e12; exact pinned retry required.

@@ -110,7 +110,7 @@ export async function checkManufacturingKilns(input: { context: BrowserContext; 
   const future = demand.months[1]; assert.equal(future.suggested, future.lastYear, 'Statistical suggestion uses the correct future calendar month');
   const workbench = page.locator('section').filter({ has: page.getByRole('heading', { name: 'Demand intelligence', exact: true }) });
   await page.goto('/manufacturing/planning/forecast', { waitUntil: 'networkidle' });
-  await workbench.getByLabel('Product', { exact: true }).selectOption(product.id);
+  await workbench.getByRole('combobox').first().selectOption(product.id);
   await workbench.getByRole('button', { name: 'Review demand', exact: true }).click();
   await expect(workbench.getByLabel('Starting point')).toBeVisible();
   await workbench.getByLabel('Starting point').selectOption('last-year');
@@ -135,7 +135,7 @@ export async function checkManufacturingKilns(input: { context: BrowserContext; 
     for (const path of ['/manufacturing/plant', '/manufacturing/schedule', '/manufacturing/planning/forecast', '/manufacturing/shop-floor', `/products/${product.id}`]) {
       assert.equal((await page.goto(path, { waitUntil: 'networkidle' }))?.status(), 200);
       if (path.endsWith('/plant')) { await expect(page.getByRole('heading', { name: 'Plant & kilns', exact: true })).toBeVisible(); await page.getByRole('button', { name: 'Configure Kiln B', exact: true }).click(); await expect(page.getByRole('region', { name: 'Machine configuration' })).toBeVisible(); }
-      if (path.endsWith('/forecast')) { await workbench.getByLabel('Product', { exact: true }).selectOption(product.id); await workbench.getByRole('button', { name: 'Review demand', exact: true }).click(); await expect(workbench.getByLabel('Starting point')).toBeVisible(); }
+      if (path.endsWith('/forecast')) { await workbench.getByRole('combobox').first().selectOption(product.id); await workbench.getByRole('button', { name: 'Review demand', exact: true }).click(); await expect(workbench.getByLabel('Starting point')).toBeVisible(); }
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${path} fits ${name}`);
       await page.screenshot({ path: `${out}/kilns-${path.endsWith('/plant') ? 'plant' : path.endsWith('/schedule') ? 'schedule' : path.endsWith('/forecast') ? 'forecast' : path.endsWith('/shop-floor') ? 'floor' : 'recipe'}-${name}.png`, fullPage: false });
     }

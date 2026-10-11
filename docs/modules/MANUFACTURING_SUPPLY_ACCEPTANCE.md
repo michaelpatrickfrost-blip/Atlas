@@ -221,3 +221,13 @@ strict TypeScript, scoped ESLint, production build and whitespace PASS. Initial 
 hit generated-route-type regeneration during a concurrent build; sequential
 post-build rerun passed. No type waiver. Fresh pinned candidate/public full flow
 and five-workspace, three-width UK browser acceptance remain pending.
+
+303cf56 candidate build/compatibility/smoke and actual supply/MRP/finite cascade/
+legacy-start/pause/resume/next-ready/final stock posting/replay PASS. Central Sales
+24-month seasonal backtest and correct future month PASS. Browser forecast selector
+timed out because implicit Product label includes option text; failure screenshot
+confirms workbench renders correctly. Harness now scopes the first combobox inside
+Demand intelligence. Application auth/forecast logic unchanged. Backup atlas-pre-
+deploy-20261011-162844, fixture backup atlas-pre-supply-candidate-20261011-163019,
+evidence /tmp/atlas-supply-candidate-FJmAK4. Test retired/session revoked; public
+still c607e12. Forecast browser save/responsive gate and public activation pending.

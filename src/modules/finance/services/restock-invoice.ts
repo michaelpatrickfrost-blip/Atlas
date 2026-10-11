@@ -30,7 +30,7 @@ export async function invoiceWhenBackInStock(session: Session, productIds: strin
     const balances = await db.inventoryBalance.findMany({ where: { organisationId, productId: { in: ids }, quantity: { gt: 0 } }, select: { productId: true, warehouseId: true, quantity: true } });
     const { stockReplenished } = await import("@/core/stock/replenishment");
     for (const balance of balances) {
-      await stockReplenished(session, { productId: balance.productId, warehouseId: balance.warehouseId, requestKey: `balance:restock:${balance.productId}:${balance.warehouseId}:${balance.quantity}` });
+      await stockReplenished(session, { productId: balance.productId, warehouseId: balance.warehouseId, requestKey: `balance:restock:${balance.productId}:${balance.warehouseId}:${Number(balance.quantity)}` });
     }
     return balances.length;
   }
@@ -64,7 +64,7 @@ export async function invoiceWhenBackInStock(session: Session, productIds: strin
   }
   const ready = new Map<string, { line: (typeof waiting)[number]; quantity: number }>();
   for (const [productId, lines] of byProduct) {
-    const ranked = lines.map((line) => ({ id: line.id, remaining: Math.max(0, line.orderedQuantity - line.cancelledQuantity - (invoiced.get(line.id) ?? 0)), line }));
+    const ranked = lines.map((line) => ({ id: line.id, remaining: Math.max(0, Number(line.orderedQuantity) - Number(line.cancelledQuantity) - (invoiced.get(line.id) ?? 0)), line }));
     for (const row of linesReadyToInvoice(free.get(productId) ?? 0, ranked)) ready.set(row.id, { line: row.line, quantity: row.remaining });
   }
   if (!ready.size) return 0;
@@ -78,7 +78,7 @@ export async function invoiceWhenBackInStock(session: Session, productIds: strin
     if (existing.has(duplicateKey)) continue;
     const order = source.order;
     const entity = await booksFor(organisationId, order.currency, session.userId);
-    const whole = source.orderedQuantity - source.cancelledQuantity;
+    const whole = Number(source.orderedQuantity) - Number(source.cancelledQuantity);
     if (row.quantity <= 0 || whole <= 0) continue;
     const treatment = TAX[source.taxCategory ?? ""] ?? TAX.OUTSIDE_SCOPE;
     const lineNet = share(BigInt(source.netAmount), row.quantity, whole);

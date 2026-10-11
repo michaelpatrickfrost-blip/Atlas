@@ -10,12 +10,12 @@ const inventory = { id: "stock", name: "Inventory", launcherConsolidatedInto: "m
 const products = { id: "products", name: "Products", launcherVisible: false, launcherConsolidatedInto: "manufacturing", navigation: [{ label: "Catalogue", href: "/products" }] } as unknown as ModuleManifest;
 beforeEach(() => { state.modules = [parent, inventory, products]; });
 it("keeps included stock/product pages searchable under one workspace name", async () => {
-  const session = {} as Session;
-  expect(await searchAtlas(session, "on hand")).toEqual([expect.objectContaining({ href: "/stock", subtitle: "Manufacturing & Supply" })]);
-  expect(await searchAtlas(session, "catalogue")).toEqual([expect.objectContaining({ href: "/products", subtitle: "Manufacturing & Supply" })]);
+  const session = {capabilities:new Set<string>()} as Session;
+  expect(await searchAtlas(session, "on hand")).toEqual(expect.arrayContaining([expect.objectContaining({ href: "/stock", subtitle: "Manufacturing & Supply" })]));
+  expect(await searchAtlas(session, "catalogue")).toEqual(expect.arrayContaining([expect.objectContaining({ href: "/products", subtitle: "Manufacturing & Supply" })]));
 });
 it("retains standalone inventory search without a console and excludes inaccessible owners", async () => {
   state.modules = [inventory];
-  expect(await searchAtlas({} as Session, "on hand")).toEqual([expect.objectContaining({ href: "/stock", subtitle: "Inventory" })]);
-  expect(await searchAtlas({} as Session, "catalogue")).toEqual([]);
+  expect(await searchAtlas({capabilities:new Set<string>()} as Session, "on hand")).toEqual([expect.objectContaining({ href: "/stock", subtitle: "Inventory" })]);
+  expect(await searchAtlas({capabilities:new Set<string>()} as Session, "catalogue")).toEqual([]);
 });

@@ -1,5 +1,6 @@
 "use server";
 import { db } from "@/core/db/client";
+import { validQuantity } from "@/core/shared/quantity";
 import { requireSession, type Session } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { assertModuleEnabled } from "@/core/modules/access";
@@ -7,7 +8,7 @@ import { QUALITY_CAPABILITIES } from "@/core/permissions/capabilities";
 import { writeAudit } from "@/core/audit/log";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { stockProvider } from "@/modules/stock/services/provider";
+import { quarantineInspectionStock, releaseInspectionStock } from "./stock-holds";
 import { QualityInputError } from "../domain/workspace";
 import { evaluateMeasurement } from "../domain/workflow";
 import { requireSpecification } from "./queries";
@@ -117,8 +118,8 @@ export async function executeInspection(form: FormData) {
   assertCapability(session, QUALITY_CAPABILITIES.checkExecute);
   await requireQuality(session);
   const controlPointId = required(form, "controlPointId", 100);
-  const quantityInspected = Number(field(form, "quantityInspected", 10));
-  if(!Number.isSafeInteger(quantityInspected)||quantityInspected<1||quantityInspected>2147483647)return {error:"Enter a positive whole quantity inspected."};
+  const quantityInspected = Number(field(form, "quantityInspected", 16));
+  if(!validQuantity(quantityInspected)||quantityInspected<=0)return {error:"Enter a positive inspected quantity with up to six decimal places."};
   const lotCode = field(form, "lotCode", 80) || null;
   const warehouseId = field(form, "warehouseId", 100) || null;
   const locationId = field(form, "locationId", 100) || null;
@@ -172,6 +173,7 @@ export async function executeInspection(form: FormData) {
         },
       });
       holdId = hold.id;
+      await quarantineInspectionStock(tx, session, hold);
       const ncrNumber = await nextNumber(tx, session.organisationId, "NCR");
       const failedNames = measurementRows.filter((r) => !r.pass).map((r) => r.name).join(", ") || "Inspection failure";
       const ncr = await tx.nonConformance.create({
@@ -188,23 +190,6 @@ export async function executeInspection(form: FormData) {
     return { inspectionId: inspection.id, result, holdId, ncrId, warehouseId, locationId, productId, lotCode, quantity: quantityInspected };
   }); } catch(error) {if(error instanceof QualityInputError)return {error:error.message};throw error;}
 
-  if (outcome.holdId && outcome.warehouseId) {
-    try {
-      await stockProvider.executeMovement(
-        { organisationId: session.organisationId, userId: session.userId },
-        {
-          requestKey: `quality-hold:${outcome.holdId}`, productId: outcome.productId, warehouseId: outcome.warehouseId,
-          locationId: outcome.locationId ?? undefined, toLocationId: outcome.locationId ?? undefined, lotCode: outcome.lotCode ?? undefined,
-          quantity: outcome.quantity, status: "AVAILABLE", toStatus: "QUARANTINE",
-          reason: "Quality hold — failed inspection", reference: `quality-hold:${outcome.holdId}`,
-        },
-      );
-    } catch {
-      // Stock could not be located/quarantined automatically (e.g. untracked position) — the
-      // QualityHold record remains authoritative and a quality manager can quarantine manually.
-    }
-  }
-
   revalidatePath("/quality", "layout");
   if (outcome.ncrId) redirect(`/quality/ncr/${outcome.ncrId}`);
   redirect(`/quality/checks?inspected=${outcome.inspectionId}`);
@@ -216,26 +201,15 @@ export async function releaseHold(form: FormData) {
   await requireQuality(session);
   const id = required(form, "holdId", 100);
   const note = required(form, "releaseNote", 2000);
-  const hold = await db.qualityHold.findFirst({ where: { id, organisationId: session.organisationId } });
-  if (!hold) throw new Error("Hold not found.");
-  if (hold.status !== "ACTIVE") throw new Error("This hold is already released.");
-  await db.qualityHold.update({ where: { id: hold.id }, data: { status: "RELEASED", releasedByUserId: session.userId, releasedAt: new Date(), releaseNote: note } });
-  if (hold.warehouseId) {
-    try {
-      await stockProvider.executeMovement(
-        { organisationId: session.organisationId, userId: session.userId },
-        {
-          requestKey: `quality-release:${hold.id}`, productId: hold.productId, warehouseId: hold.warehouseId,
-          locationId: hold.locationId ?? undefined, toLocationId: hold.locationId ?? undefined, lotCode: hold.lotCode ?? undefined,
-          quantity: hold.quantity, status: "QUARANTINE", toStatus: "AVAILABLE",
-          reason: "Quality hold released", reference: `quality-release:${hold.id}`,
-        },
-      );
-    } catch {
-      // Position may already have moved; the hold record itself is the authoritative release.
-    }
-  }
-  await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "quality.hold.released", entityType: "QualityHold", entityId: hold.id, after: { note } });
+  await db.$transaction(async tx => {
+    const hold = await tx.qualityHold.findFirst({ where: { id, organisationId: session.organisationId } });
+    if (!hold) throw new QualityInputError("Hold not found.");
+    if (hold.status !== "ACTIVE") throw new QualityInputError("This hold is already released. Refresh its current result.");
+    const changed = await tx.qualityHold.updateMany({ where: { id, organisationId: session.organisationId, status: "ACTIVE" }, data: { status: "RELEASED", releasedByUserId: session.userId, releasedAt: new Date(), releaseNote: note } });
+    if (changed.count !== 1) throw new QualityInputError("Someone else changed this hold. Refresh before continuing.");
+    await releaseInspectionStock(tx, session, { ...hold, status: "RELEASED", releaseNote: note });
+    await writeAudit({ organisationId: session.organisationId, actorUserId: session.userId, action: "quality.hold.released", entityType: "QualityHold", entityId: hold.id, after: { note } }, tx);
+  }, { isolationLevel: "Serializable" });
   revalidatePath("/quality", "layout");
 }
 

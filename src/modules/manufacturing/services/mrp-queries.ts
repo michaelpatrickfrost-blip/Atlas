@@ -253,7 +253,7 @@ export async function demandOutlook(organisationId: string, days: number) {
     const on = line.requestedDeliveryDate ?? line.order.requestedDeliveryDate ?? line.order.promisedDeliveryDate;
     if (!on) continue;
     const key = on.toISOString().slice(0, 10);
-    grouped.set(key, (grouped.get(key) ?? 0) + Math.max(0, line.orderedQuantity - line.cancelledQuantity));
+    grouped.set(key, (grouped.get(key) ?? 0) + Math.max(0, Number(line.orderedQuantity) - Number(line.cancelledQuantity)));
   }
   return [...grouped.entries()]
     .map(([date, quantity]) => ({ date: new Date(date), quantity }))

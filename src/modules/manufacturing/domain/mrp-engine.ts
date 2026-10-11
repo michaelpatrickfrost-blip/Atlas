@@ -1,3 +1,5 @@
+import { quantityCostMinor } from "@/core/shared/measurement";
+import { operationTime } from "@/modules/products/domain/operation-time";
 import {
   DemandType,
   MaterialReadiness,
@@ -114,7 +116,7 @@ export class MrpEngine {
       plannedOrders: [...this.plannedOrders.values()].flat(),
       shortages,
       capacityIssues: [],
-      warnings: critical ? [`${critical} critical shortages`] : [],
+      warnings: [...(critical ? [`${critical} critical shortages`] : []), ...([...this.gross.keys()].some(productId => (!this.input.recipes.has(productId) || this.input.recipes.get(productId)?.supply === "BUY") && !this.input.prices.has(productId)) ? ["Material cost estimates are incomplete: Finance carrying value or approved purchase prices are missing or restricted. Sales prices are not used as costs."] : [])],
       peggingMap: this.peggingMap,
     };
   }
@@ -203,7 +205,7 @@ export class MrpEngine {
     const ledgerId = requirement.parentPlannedId ?? `mrp:${requirement.productId}:${requirement.requiredDate.toISOString()}`;
     const operations = isMade ? this.planOperations(recipe!, quantity) : [];
     const materials = isMade ? this.planMaterials(recipe!, quantity, requirement.requiredDate, ledgerId) : [];
-    const cost = isMade ? this.costOf(recipe!, quantity) : this.buyCost(quantity, recipe);
+    const cost = isMade ? this.costOf(recipe!, quantity) : this.buyCost(productId, quantity);
     const hours = operations.reduce(
       (total, operation) => ({
         setup: total.setup + operation.setupMinutes / 60,
@@ -212,8 +214,14 @@ export class MrpEngine {
       }),
       { setup: 0, run: 0, crew: 0 },
     );
-    const spanMinutes = operations.reduce((sum, operation) => sum + operation.durationMinutes, 0);
+    const spanMinutes = operations.reduce((sum, operation, index) => sum + operation.durationMinutes + (index < operations.length - 1 ? operation.waitMinutes ?? 0 : 0), 0);
     const startDate = new Date(requirement.requiredDate.getTime() - spanMinutes * MINUTE_MS);
+    let routeCursor = startDate;
+    for (const operation of operations) {
+      operation.start = routeCursor;
+      operation.end = new Date(routeCursor.getTime() + operation.durationMinutes * MINUTE_MS);
+      routeCursor = new Date(operation.end.getTime() + (operation.waitMinutes ?? 0) * MINUTE_MS);
+    }
 
     return {
       productId,
@@ -235,13 +243,12 @@ export class MrpEngine {
   }
 
   private planOperations(recipe: Recipe, quantity: number): PlannedOperation[] {
-    const batchQuantity = recipe.batchQuantity > 0 ? recipe.batchQuantity : quantity;
-    const batches = Math.max(1, Math.ceil(quantity / batchQuantity));
     let cursor: Date | null = null;
     return recipe.operations.map((operation, index) => {
-      const setupMinutes = batches * operation.setupMinutes;
-      const runMinutes = quantity * operation.runMinutesPerUnit;
-      const durationMinutes = setupMinutes + runMinutes;
+      const timing = operationTime(operation, quantity, recipe.batchQuantity);
+      const setupMinutes = timing.setupMinutes;
+      const runMinutes = timing.runMinutes;
+      const durationMinutes = timing.durationMinutes;
       const start = cursor;
       const end = cursor ? new Date(cursor.getTime() + durationMinutes * MINUTE_MS) : null;
       cursor = end;
@@ -253,7 +260,8 @@ export class MrpEngine {
         workCentreName: operation.workCentreName,
         resourceId: operation.resourceId,
         resourceName: operation.resourceName,
-        batches,
+        batches: timing.batches,
+        waitMinutes: timing.waitMinutes,
         setupMinutes,
         runMinutes,
         durationMinutes,
@@ -333,16 +341,15 @@ export class MrpEngine {
       const child = this.rolledCost(component.componentProductId, needed, 0);
       for (const key of Object.keys(buckets) as CostKind[]) buckets[key] += child.buckets[key];
     }
-    const batchQuantity = recipe.batchQuantity > 0 ? recipe.batchQuantity : quantity;
-    const batches = Math.max(1, Math.ceil(quantity / batchQuantity));
     for (const operation of recipe.operations) {
-      const setupHours = batches * (operation.setupMinutes / 60);
-      const runHours = quantity * (operation.runMinutesPerUnit / 60);
+      const timing = operationTime(operation, quantity, recipe.batchQuantity);
+      const setupHours = timing.setupMinutes / 60;
+      const runHours = timing.runMinutes / 60;
       const span = setupHours + runHours;
       buckets.machine += span * operation.machineMinorPerHour;
       if (!operation.machineIncludesLabour) buckets.labour += operation.crewSize * span * operation.labourMinorPerHour;
       if (!operation.machineIncludesOverhead) buckets.overhead += span * operation.overheadMinorPerHour;
-      buckets.logistics += batches * operation.logisticsMinorPerBatch;
+      buckets.logistics += timing.batches * operation.logisticsMinorPerBatch;
     }
     if (recipe.supply === "SUBCONTRACT") buckets.subcontract += round(recipe.subcontractMinorPerUnit * quantity);
     for (const key of Object.keys(buckets) as CostKind[]) buckets[key] = round(buckets[key]);
@@ -353,21 +360,21 @@ export class MrpEngine {
   private rolledCost(productId: string, quantity: number, depth: number): { totalMinor: number; buckets: CostBuckets } {
     const recipe = this.input.recipes.get(productId);
     if (!recipe || recipe.supply === "BUY") {
-      const material = round(this.priceOf(productId) * quantity);
+      const material = this.priceCost(productId, quantity);
       return { totalMinor: material, buckets: { ...emptyBuckets(), material } };
     }
     if (depth >= MAX_BOM_DEPTH) throw new Error(`Recipe for ${productId} is nested more than ${MAX_BOM_DEPTH} levels deep.`);
     return this.costOf(recipe, quantity);
   }
 
-  /** Standard price of one bought unit. A made product with no price of its own
-   * costs nothing here; its components carry the cost. */
-  private priceOf(productId: string) {
-    return this.input.prices.get(productId) ?? 0;
+  private priceCost(productId: string, quantity: number) {
+    const basis = this.input.prices.get(productId);
+    if (basis === undefined) return 0;
+    // Existing callers may provide a per-unit estimate; Finance provides an explicit price basis.
+    return typeof basis === "number" ? round(basis * quantity) : Number(quantityCostMinor(Number(quantity.toFixed(6)), BigInt(basis.amountMinor), basis.quantity));
   }
-
-  private buyCost(quantity: number, recipe?: Recipe) {
-    const material = round((recipe ? this.priceOf(recipe.productId) : 0) * quantity);
+  private buyCost(productId: string, quantity: number) {
+    const material = this.priceCost(productId, quantity);
     return { totalMinor: material, buckets: { ...emptyBuckets(), material } };
   }
 

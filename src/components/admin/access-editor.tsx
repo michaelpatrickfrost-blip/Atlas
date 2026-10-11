@@ -1,7 +1,14 @@
 "use client";
 import type { FormFeedback } from "@/core/shared/form-feedback";
 import { useEffect, useState } from "react";
-import { ChevronDown, Search, ShieldCheck, RotateCcw } from "lucide-react";
+import {
+  ChevronDown,
+  Search,
+  ShieldCheck,
+  RotateCcw,
+  Eye,
+  LockKeyhole,
+} from "lucide-react";
 import { ActionForm } from "@/components/ui/action-form";
 import {
   presetCapabilities,
@@ -9,9 +16,13 @@ import {
   selectedAccessLevel,
   permissionLabel,
   remixRoleAccess,
+  effectiveRoleCapabilities,
+  capabilityOverrides,
+  isSensitiveCapability,
   type AccessGroup,
   type AccessLevel,
 } from "@/core/permissions/access-levels";
+import { permissionDescription } from "@/core/permissions/access-copy";
 type Role = { id: string; name: string; capabilities: string[] };
 type Props = {
   groups: AccessGroup[];
@@ -28,6 +39,7 @@ type Props = {
   profileName?: string;
   accessRevision?: string;
   onDirtyChange?: (dirty: boolean) => void;
+  blockedCapabilities?: string[];
 };
 const levels: AccessLevel[] = ["none", "read", "write", "admin"];
 const signature = (
@@ -50,11 +62,26 @@ export function AccessEditor({
   profileName,
   accessRevision,
   onDirtyChange,
+  blockedCapabilities = [],
 }: Props) {
   const [selected, setSelected] = useState(new Set(capabilities)),
     [assigned, setAssigned] = useState(new Set(roleIds)),
     [search, setSearch] = useState(""),
-    [name, setName] = useState(profileName ?? "");
+    [name, setName] = useState(profileName ?? ""),
+    [filter, setFilter] = useState("all"),
+    [review, setReview] = useState(false);
+  const inherited = effectiveRoleCapabilities(
+    roles.filter((role) => assigned.has(role.id)),
+  );
+  const exceptions = capabilityOverrides(inherited, selected);
+  const blocked = new Set(blockedCapabilities);
+  const matchesFilter = (cap: string) =>
+    filter === "all" ||
+    (filter === "selected" && selected.has(cap)) ||
+    (filter === "sensitive" && isSensitiveCapability(cap)) ||
+    (filter === "exceptions" &&
+      (exceptions.grantedCapabilities.includes(cap) ||
+        exceptions.deniedCapabilities.includes(cap)));
   const dirty =
     signature(selected, assigned, name) !==
     signature(capabilities, roleIds, profileName ?? "");
@@ -121,18 +148,26 @@ export function AccessEditor({
     </div>
   );
   const query = search.trim().toLowerCase();
-  const visible = groups.filter((group) =>
-    (
-      group.name +
-      " " +
-      group.capabilities.join(" ") +
-      " " +
-      accessSections(group)
-        .map((s) => s.name)
-        .join(" ")
-    )
-      .toLowerCase()
-      .includes(query),
+  const visible = groups.filter(
+    (group) =>
+      (
+        group.name +
+        " " +
+        group.capabilities.join(" ") +
+        " " +
+        accessSections(group)
+          .map(
+            (s) =>
+              s.name +
+              " " +
+              s.capabilities
+                .map((cap) => permissionDescription(cap, s.name))
+                .join(" "),
+          )
+          .join(" ")
+      )
+        .toLowerCase()
+        .includes(query) && group.capabilities.some(matchesFilter),
   );
   return (
     <ActionForm action={action} className="space-y-5">
@@ -192,6 +227,29 @@ export function AccessEditor({
             </div>
           </section>
         )}
+        {membershipId && (
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              { label: "Assigned profiles", value: assigned.size },
+              {
+                label: "Extra permissions",
+                value: exceptions.grantedCapabilities.length,
+              },
+              {
+                label: "Removed from profiles",
+                value: exceptions.deniedCapabilities.length,
+              },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4"
+              >
+                <p className="text-xl font-semibold">{item.value}</p>
+                <p className="mt-1 text-xs text-slate-500">{item.label}</p>
+              </div>
+            ))}
+          </div>
+        )}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h3 className="flex items-center gap-2 text-base font-semibold">
@@ -218,6 +276,99 @@ export function AccessEditor({
             />
           </label>
         </div>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div
+            className="flex flex-wrap gap-2"
+            role="group"
+            aria-label="Permission filters"
+          >
+            {[
+              ["all", "All permissions"],
+              ["selected", "Selected"],
+              ["sensitive", "Sensitive controls"],
+              ...(membershipId ? [["exceptions", "Personal exceptions"]] : []),
+            ].map(([id, label]) => (
+              <button
+                type="button"
+                key={id}
+                aria-pressed={filter === id}
+                onClick={() => setFilter(id)}
+                className={`min-h-10 rounded-xl px-3 text-xs ${filter === id ? "bg-blue-50 font-semibold text-blue-700" : "bg-slate-50 text-slate-500"}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setReview(!review)}
+            aria-expanded={review}
+            className="flex min-h-10 items-center gap-2 rounded-xl border border-blue-100 px-3 text-xs font-semibold text-blue-600"
+          >
+            <Eye size={15} />
+            {review ? "Close review" : "Review access"}
+          </button>
+        </div>
+        {review && (
+          <section
+            aria-label="Access review"
+            className="rounded-2xl border border-blue-100 bg-blue-50/40 p-5"
+          >
+            <h3 className="text-sm font-semibold">
+              {dirty
+                ? "Preview of your unsaved changes"
+                : "Current configured access"}
+            </h3>
+            <p className="mt-1 text-xs leading-5 text-slate-500">
+              Company app availability, private records and approval rules also
+              apply. This preview does not sign in as the user.
+            </p>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              {groups
+                .filter((group) =>
+                  group.capabilities.some((cap) => selected.has(cap)),
+                )
+                .map((group) => (
+                  <div key={group.id} className="rounded-xl bg-white p-4">
+                    <h4 className="text-xs font-bold">{group.name}</h4>
+                    <div className="mt-2 space-y-2">
+                      {accessSections(group)
+                        .filter((section) =>
+                          section.capabilities.some((cap) => selected.has(cap)),
+                        )
+                        .map((section) => (
+                          <p
+                            key={section.id}
+                            className="text-xs leading-5 text-slate-500"
+                          >
+                            <span className="font-semibold text-slate-700">
+                              {section.name}:{" "}
+                            </span>
+                            {section.capabilities
+                              .filter((cap) => selected.has(cap))
+                              .map(
+                                (cap) =>
+                                  permissionLabel(
+                                    cap.split(".").at(-1) ?? cap,
+                                  ) +
+                                  (blocked.has(cap)
+                                    ? " (blocked by company)"
+                                    : ""),
+                              )
+                              .join(", ")}
+                          </p>
+                        ))}
+                    </div>
+                  </div>
+                ))}
+            </div>
+            {!selected.size && (
+              <p className="mt-4 text-xs text-slate-500">
+                No app permissions selected.
+              </p>
+            )}
+          </section>
+        )}
         <div className="space-y-3">
           {visible.map((group) => {
             const count = group.capabilities.filter((c) =>
@@ -226,7 +377,7 @@ export function AccessEditor({
             return (
               <details
                 key={group.id}
-                open={query ? true : undefined}
+                open={query || filter !== "all" ? true : undefined}
                 className="group rounded-2xl border border-blue-100/80 bg-white"
               >
                 <summary className="flex cursor-pointer list-none flex-wrap items-center gap-3 p-4">
@@ -250,19 +401,43 @@ export function AccessEditor({
                   </span>
                 </summary>
                 <div className="space-y-3 border-t border-blue-50 px-4 pb-4 pt-3">
+                  {group.entryCapability &&
+                    count > 0 &&
+                    !selected.has(group.entryCapability) && (
+                      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-100 bg-amber-50 p-4">
+                        <p className="max-w-md text-xs leading-5 text-amber-800">
+                          Enable workspace entry so this person can open{" "}
+                          {group.name}. Each section keeps its own permissions.
+                        </p>
+                        <button
+                          type="button"
+                          className="min-h-10 rounded-lg bg-white px-3 text-xs font-semibold text-amber-800"
+                          onClick={() => toggle(group.entryCapability!, true)}
+                        >
+                          Include workspace entry
+                        </button>
+                      </div>
+                    )}
                   {accessSections(group)
                     .filter(
                       (section) =>
-                        !query ||
-                        (
-                          group.name +
-                          " " +
-                          section.name +
-                          " " +
-                          section.capabilities.join(" ")
-                        )
-                          .toLowerCase()
-                          .includes(query),
+                        section.capabilities.some(matchesFilter) &&
+                        (!query ||
+                          (
+                            group.name +
+                            " " +
+                            section.name +
+                            " " +
+                            section.capabilities.join(" ") +
+                            " " +
+                            section.capabilities
+                              .map((cap) =>
+                                permissionDescription(cap, section.name),
+                              )
+                              .join(" ")
+                          )
+                            .toLowerCase()
+                            .includes(query)),
                     )
                     .map((section) => (
                       <section
@@ -289,31 +464,70 @@ export function AccessEditor({
                           </div>
                           {levelControls(section)}
                         </div>
-                        <details className="mt-3">
+                        <details
+                          className="mt-3"
+                          open={query || filter !== "all" ? true : undefined}
+                        >
                           <summary className="cursor-pointer text-xs text-blue-600">
                             Individual permissions
                           </summary>
                           <div className="mt-3 grid gap-3 md:grid-cols-2">
-                            {section.capabilities.map((cap) => (
-                              <label
-                                key={cap}
-                                className="flex min-h-9 items-start gap-2 text-xs leading-5 text-slate-600"
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={selected.has(cap)}
-                                  onChange={(e) =>
-                                    toggle(cap, e.target.checked)
-                                  }
-                                  className="mt-1 accent-blue-600"
-                                />
-                                <span>
-                                  {permissionLabel(
-                                    cap.split(".").at(-1) ?? cap,
-                                  )}
-                                </span>
-                              </label>
-                            ))}
+                            {section.capabilities
+                              .filter(matchesFilter)
+                              .map((cap) => (
+                                <label
+                                  key={cap}
+                                  className="flex min-h-11 items-start gap-3 rounded-xl border border-slate-100 bg-white p-3 text-xs leading-5 text-slate-600"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    aria-label={permissionLabel(
+                                      cap.split(".").at(-1) ?? cap,
+                                    )}
+                                    checked={selected.has(cap)}
+                                    onChange={(e) =>
+                                      toggle(cap, e.target.checked)
+                                    }
+                                    className="mt-1 accent-blue-600"
+                                  />
+                                  <span className="min-w-0 flex-1">
+                                    <span className="font-semibold text-slate-700">
+                                      {permissionLabel(
+                                        cap.split(".").at(-1) ?? cap,
+                                      )}
+                                    </span>
+                                    <span className="mt-1 block text-[11px] leading-5 text-slate-500">
+                                      {permissionDescription(cap, section.name)}
+                                    </span>
+                                    <span className="mt-2 flex flex-wrap gap-2 text-[10px]">
+                                      {isSensitiveCapability(cap) && (
+                                        <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 text-amber-700">
+                                          <LockKeyhole size={10} />
+                                          Sensitive control
+                                        </span>
+                                      )}
+                                      {membershipId && (
+                                        <span
+                                          className={`rounded-md px-2 ${inherited.has(cap) && !selected.has(cap) ? "bg-rose-50 text-rose-600" : selected.has(cap) && !inherited.has(cap) ? "bg-blue-50 text-blue-600" : "bg-slate-50 text-slate-500"}`}
+                                        >
+                                          {inherited.has(cap)
+                                            ? selected.has(cap)
+                                              ? "From profile"
+                                              : "Removed for this user"
+                                            : selected.has(cap)
+                                              ? "Extra access"
+                                              : "Not granted"}
+                                        </span>
+                                      )}
+                                      {blocked.has(cap) && (
+                                        <span className="rounded-md bg-amber-50 px-2 text-amber-700">
+                                          Blocked by company
+                                        </span>
+                                      )}
+                                    </span>
+                                  </span>
+                                </label>
+                              ))}
                           </div>
                         </details>
                       </section>
@@ -324,7 +538,7 @@ export function AccessEditor({
           })}
           {!visible.length && (
             <p className="rounded-2xl bg-slate-50 p-6 text-sm text-slate-500">
-              No matching apps or permissions.
+              No matching apps or permissions for this filter.
             </p>
           )}
         </div>

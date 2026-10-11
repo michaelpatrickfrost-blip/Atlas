@@ -1,6 +1,6 @@
 # Manufacturing & Supply
 
-Research and implementation review: 9 October 2026. Microsoft Dynamics 365 Supply
+Research and implementation review: 11 October 2026. Microsoft Dynamics 365 Supply
 Chain Management is the functional benchmark. The console is a connected entry
 point to Atlas's existing owners and central records. It is not a claim of
 Dynamics parity. The [173-section source](MANUFACTURING_SOURCE_REQUIREMENTS.md)
@@ -61,9 +61,10 @@ The rich material-plan action uses `mrp-calculation.ts` and the recursive domain
 engine. It reads confirmed/on-hold open Sales demand, approved S&OP forecast
 publication, manual forecasts, expected usage, active recipes, usable stock,
 reservations, active quality holds and aggregate existing production supply.
-Published S&OP totals consume gross product/month bookings. Manual forecasts
-consume remaining firm demand in the domain engine; review overlapping forecast
-sources and expected usage before committing supply. Saved suggestions retain
+Manual, published S&OP and expected-usage monthly totals consume gross
+product/month bookings, including shipped/closed quantities. Only outstanding
+orders plus the remaining unbooked forecast enter production demand; review
+missing source dates and overlapping forecast sources before committing supply. Saved suggestions retain
 demand, component shortages, routing operations, planned hours/cost and run ID.
 Only completed runs are presented as the current plan.
 
@@ -76,8 +77,50 @@ returns the original order. Release/execution retains its existing controls.
 The current engine aggregates stock across warehouses and existing production
 supply without full dated receipt/location matching. Planning estimates, rough
 capacity and a machine-overlap check do not establish a guaranteed customer date.
-Full finite materials, labour, tooling, maintenance exclusions, CTP, time fences,
+Machine release and reviewed schedule moves now constrain eligible equipment,
+weekly plant-timezone calendars, open bookings and manual maintenance/downtime
+exclusions. Full finite dated materials, labour, tooling, CTP, time fences,
 alternate sourcing and isolated scenario publication remain target work.
+
+## Machines, plant and flexible forecasting
+
+See the [primary research and operational gap review](../plans/MANUFACTURING_KILN_RESEARCH.md).
+Plant & machines configures process areas and general, batch or continuous machines,
+with optional specialist types for drying, forming, packing and kilns. Each machine has a plant timezone and a shift or continuous calendar.
+Existing machines retain continuous operation; new UI entries default to shifts.
+Product operations explicitly define approved machines, per-unit or load/cycle
+work, load size, firing/drying cycle, cooling occupation and transfer wait.
+Partial loads consume full cycles; alternatives share that operation's timings.
+Mixed-product kiln loads and machine-specific alternate timing are still open.
+
+Release reserves the earliest-finishing eligible machine through the complete
+elapsed operation. Batch work is uninterrupted, including cooling; per-unit work
+may span shifts. Downstream moves are previewed against the same finite engine.
+A stale review, displaced fixed/started/paused operation or forced overlap is rejected, and all
+moved work/parent dates/audit commit atomically. Capacity cards expose seven-day
+calendar, booked, downtime and free machine hours plus existing downtime conflicts.
+Adding downtime leaves existing bookings visible for deliberate replanning.
+The Gantt has a selectable timeline timezone and plant-local day edges, including
+23/25-hour daylight-saving days; day moves retain wall-clock time. First work is
+Ready on release, and completion makes the immediate successor Ready atomically.
+Legacy Waiting rows validate the same readiness on start. The floor explains
+future/dependent starts and excludes closed parents. Shop-floor start requires the prior operation/wait, a released parent, an available
+machine, no current downtime and no other running work on that equipment.
+
+The Demand intelligence workbench reads Sales-owned requested-demand history,
+shows monthly gross bookings/outstanding units/residual forecast, compares recent
+3/6-month and seasonal baselines on a common rolling holdout, and exposes WAPE,
+signed bias and short/intermittent-history warnings. Select same month last year
+plus 10%, another percentage, added/subtracted quantity, a recent average, saved
+forecast or fixed target. Override individual months and review before saving.
+Zero is valid; missing history is not invented. Saves retain assumptions and
+quantities, reject stale source fingerprints and protect approved S&OP demand.
+Saving does not release production: run MRP and review its Make/Buy proposals.
+
+Whole-unit stock execution remains a blocker for decimal clay quantities and
+conversions. Final component backflush now rejects fractional consumption instead
+of rounding it up. The full 173-section programme remains open; this checkpoint
+is not evidence of a fully configured or production-ready clay factory.
 
 ## Procurement attached to the plan
 
@@ -191,3 +234,68 @@ already actioned proposals) require `manufacturing.cost.read` independently of
 `manufacturing.plan.read`. Planning access retains quantities, readiness and hours;
 restricted users see cost-access guidance rather than hidden totals in page output.
 Supplier spend remains separately governed by Finance's source permissions.
+
+## 11 October 2026 — Production holding and Warehouse collection
+
+New final-operation good output is received into the production warehouse's
+PROD-HOLD location with BLOCKED stock status and the manufacturing-order lot
+reference. `StockProductionBatch` records its source order/final work step and
+original quantity; it is not a second stock balance. Canonical material issues,
+blocked output, batch creation and completion share one transaction. Earlier
+completed orders keep their existing booking; no historic output is restaged.
+
+Inventory's `/stock/handoffs` is also linked inside Manufacturing & Supply. Warehouse
+can collect a partial or complete quantity and choose an active STORAGE/PICK_FACE/
+BULK destination in the same or another yard/warehouse. The collection updates the
+batch version, moves its BLOCKED lot to AVAILABLE and writes collection/audit
+history in one Serializable transaction. Stale versions, changed repeat keys,
+overcollection, disabled/inactive places and matching active Quality holds are
+rejected. Source identity and collection evidence are immutable in SQL; only the
+protected Test-company wipe may remove synthetic history. Read access and stock
+management remain independent. Production order links require Manufacturing read.
+
+Blocked and in-transit positions are excluded from operational availability, S&OP
+stock projections and rich MRP netting. Replenishment/automatic waiting fulfilment
+runs after Warehouse collection commits. Whole-unit stock execution remains the
+existing limitation; this does not implement repeated production receipts, WIP
+valuation, regulated lot release or all master-spec manufacturing coverage.
+Plant machine configuration and work-centre editing move directly into view on
+opening. Batch routing summaries expose load, cycle, cooling and transfer wait.
+Schedule changes require a released/running parent; closed production stays fixed.
+Actual recipe-editor save/version/eligible-machine acceptance extends the same
+backed-up candidate/public supply gate; results belong in the acceptance record.
+
+## 11 October exact execution upgrade — implemented, live acceptance pending
+
+The execution upgrade uses six-decimal stock/report/warehouse/sales quantities.
+Explicit compatible conversions record entry and base units (mg/g/kg/t, lengths,
+volumes and count aliases); no hidden weight-per-piece assumption. Recipe quantity
+and cost bases are explicit, including a price per 1,000 kg. Serial identities remain
+one per whole unit. Stock-unit/tracking changes with history are guarded.
+
+Each partial output report is immutable and commits progress, actual/backflushed
+issues, material allocations, held finished stock, costs and Audit together. Replays
+must match the entire request. Closing short requires a reason; optional linked
+replacement production uses the actual good shortfall. Unstarted split orders keep
+their frozen recipe/source. A shared machine load requires compatible approved
+profile/timing, resource eligibility and summed physical footprints; one finite
+cycle and actual usage journal are allocated by occupied capacity. Traceability
+follows the actual lot/serial stock allocations and component-to-output reports.
+Quality inspection and hold-release stock moves are atomic with Quality history.
+
+Finance → Manufacturing costs configures warehouse books and six distinct posting
+accounts, approved recipe rates and reviewed opening TOTAL stock value. Weighted
+carrying value flows Inventory → WIP on actual material issue, then WIP → finished
+Inventory/Scrap on output; actual time/energy absorption is recorded separately.
+Partial output leaves proportional remaining WIP; final closure clears every minor
+unit. Dispatch moves the actual shipped value into COGS, and configured warehouse
+transfers preserve quantity/value. Cost estimates use Finance-owned reviewed stock
+or approved purchasing; missing cost remains explicitly incomplete. Financial
+values require the independent cost/ledger capabilities.
+
+App guides live at /guides/apps/manufacturing; /manufacturing/help redirects there.
+Existing detailed routes remain canonical, with worked examples for decimal units,
+partial output, mixed loads, actual costing and blocked work. /guides groups all
+accessible apps and includes detailed Field Service and production-handoff tasks.
+The deployment compatibility bridge and acceptance evidence are recorded in
+MANUFACTURING_SUPPLY_ACCEPTANCE.md. This implementation is not yet publicly accepted.

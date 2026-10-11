@@ -69,8 +69,8 @@ export async function readStockForecast(productId?: string): Promise<ForecastRow
     const first = ledger?._min.createdAt;
     const windowDays = first ? Math.min(USAGE_WINDOW_DAYS, Math.max(14, Math.ceil((today.getTime() - first.getTime()) / 86_400_000))) : USAGE_WINDOW_DAYS;
     const stock = available.get(product.id);
-    const need = Math.ceil(productionNeed.get(product.id) ?? 0);
-    const input = { available: (stock?.available ?? 0) - need, planMonth: planMonth.get(product.id) ?? null, usedInWindow: -(ledger?._sum.delta ?? 0), windowDays, monthlyUsage: product.monthlyUsage, leadTimeDays: product.leadTimeDays, safetyStock: product.safetyStockLevel };
+    const need = productionNeed.get(product.id) ?? 0;
+    const input = { available: (stock?.available ?? 0) - need, planMonth: planMonth.get(product.id) ?? null, usedInWindow: -(Number(ledger?._sum.delta ?? 0)), windowDays, monthlyUsage: product.monthlyUsage == null ? null : Number(product.monthlyUsage), leadTimeDays: product.leadTimeDays, safetyStock: Number(product.safetyStockLevel) };
     return {
       id: product.id,
       code: product.code,
@@ -80,9 +80,9 @@ export async function readStockForecast(productId?: string): Promise<ForecastRow
       available: input.available,
       incoming: stock?.incoming ?? 0,
       openDemand: stock?.openDemand ?? 0,
-      monthlyUsage: product.monthlyUsage,
+      monthlyUsage: product.monthlyUsage == null ? null : Number(product.monthlyUsage),
       leadTimeDays: product.leadTimeDays,
-      safetyStock: product.safetyStockLevel,
+      safetyStock: Number(product.safetyStockLevel),
       supply: recipe.get(product.id)?.supply ?? "BUY",
       definitionId: recipe.get(product.id)?.id ?? null,
       productionNeed: need,

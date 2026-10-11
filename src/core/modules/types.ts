@@ -89,6 +89,8 @@ export type StaffRosterProvider = (session: Session, manage: boolean) => Promise
 }>>;
 
 export type ModuleManifest = {
+  /** Working guides remain owned by their app; Core groups their links into the library. */
+  guides?: import("@/core/guides/library").GuideLibraryEntry[];
   /** Built-in utility; dataset source permissions and licences remain independent. */
   utility?: boolean;
   reportProvider?: import("@/core/reports/types").ReportDataset[];
@@ -113,6 +115,7 @@ export type ModuleManifest = {
   salesCancellationGuard?: (session:Session,tx:import('@/generated/prisma/client').Prisma.TransactionClient,id:string)=>Promise<void>;
   salesFinanceSourceProvider?: (session:Session,tx:import('@/generated/prisma/client').Prisma.TransactionClient,id:string)=>Promise<import('@/core/finance/connections').SalesFinanceSource>;
   salesFinanceProjectionProvider?: (id:string)=>Promise<import('@/core/finance/connections').SalesFinanceProjection|null>;
+  manufacturingCostProvider?: import("@/core/finance/manufacturing").ManufacturingCostProvider;
   financeReceiptConsumer?: (session:Session,tx:import('@/generated/prisma/client').Prisma.TransactionClient,input:import('@/core/finance/connections').StockReceiptInput)=>Promise<unknown>;
   deliveryInvoiceConsumer?: (session:Session,request:import('@/core/finance/handoff').DeliveredInvoiceRequest)=>Promise<void>;
   expensePostingSourceProvider?: (claimId:string)=>Promise<import('@/core/finance/expense-source').ApprovedExpenseSource>;

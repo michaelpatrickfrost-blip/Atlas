@@ -22,4 +22,4 @@ export type BusinessPlanningData = {
  requiredCapabilities:string[]; warnings?:string[];
 };
 export type BusinessPlanningRequest = { startsOn:string; endsOn:string; historyStartsOn:string; search?:string; sourceIds?:string[]; productIds?:string[]; productCodes?:string[]; modules?:string[]; planIds?:string[]; purpose:'picker'|'forecast' };
-export type BusinessPlanningProvider = (session:Session,request:BusinessPlanningRequest)=>Promise<BusinessPlanningData>;
+export type BusinessPlanningProvider = (session:Session,request:BusinessPlanningRequest, client?:import("@/generated/prisma/client").Prisma.TransactionClient)=>Promise<BusinessPlanningData>;

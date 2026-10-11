@@ -1,3 +1,4 @@
+import { validQuantity } from "@/core/shared/quantity";
 import { db } from "@/core/db/client";
 import type { Session } from "@/core/auth/session";
 import { DISPOSITIONS, RETURN_REASONS } from "../domain/operations";
@@ -22,7 +23,7 @@ export async function authoriseReturn(session: Session, returnId: string, approv
 }
 
 export async function receiveReturn(session: Session, lineId: string, input: { quantity: number; condition: string; lotCode?: string; serials?: string[]; requestKey: string }) {
-  if (!Number.isSafeInteger(input.quantity) || input.quantity < 1) throw new Error("Receive a positive whole quantity.");
+  if (!validQuantity(input.quantity) || input.quantity <= 0) throw new Error("Receive a positive quantity with up to six decimal places.");
   if (!["UNKNOWN", "GOOD", "DAMAGED"].includes(input.condition) || !input.requestKey || input.requestKey.length > 120) throw new Error("Choose a valid condition and receipt reference.");
   await db.$transaction(async tx => {
     const prior = await tx.logisticsOperation.findUnique({ where: { organisationId_requestKey: { organisationId: session.organisationId, requestKey: input.requestKey } } });
@@ -33,21 +34,21 @@ export async function receiveReturn(session: Session, lineId: string, input: { q
     }
     const line = await tx.returnLine.findFirst({ where: { id: lineId, organisationId: session.organisationId }, include: { returnAuthorisation: true } });
     if (!line || !["AWAITING_GOODS", "RECEIVED"].includes(line.returnAuthorisation.status) || line.disposition) throw new Error("Authorise this return before receiving uninspected goods.");
-    if (line.receivedQuantity + input.quantity > line.quantity) throw new Error("Received quantity exceeds the authorised return.");
+    if (Number(line.receivedQuantity) + input.quantity > Number(line.quantity)) throw new Error("Received quantity exceeds the authorised return.");
     if (line.productId) {
       const warehouse = await tx.warehouse.findFirst({ where: { organisationId: session.organisationId }, orderBy: { name: "asc" } });
       if (!warehouse) throw new Error("Add a warehouse in Inventory before receiving a return.");
       const provider = await stock();
       await provider.returnStock(session, { requestKey: input.requestKey, productId: line.productId, warehouseId: warehouse.id, quantity: input.quantity, lotCode: input.lotCode, serials: input.serials, status: "QUARANTINE", reason: `Return received · ${line.returnAuthorisation.reference}`, reference: line.returnAuthorisation.reference, sourceId: line.id }, tx);
     }
-    const updated = await tx.returnLine.updateMany({ where: { id: line.id, organisationId: session.organisationId, receivedQuantity: line.receivedQuantity }, data: { receivedQuantity: { increment: input.quantity }, condition: input.condition, lotCode: input.lotCode, serials: input.serials ?? line.serials } });
+    const updated = await tx.returnLine.updateMany({ where: { id: line.id, organisationId: session.organisationId, receivedQuantity: Number(line.receivedQuantity) }, data: { receivedQuantity: { increment: input.quantity }, condition: input.condition, lotCode: input.lotCode, serials: input.serials ?? line.serials } });
     if (!updated.count) throw new Error("Receipt changed. Refresh before receiving.");
     await tx.returnAuthorisation.update({ where: { id: line.returnId }, data: { status: "RECEIVED" } });
     if (line.productId && line.returnAuthorisation.salesOrderId) {
       const fulfilments = await tx.fulfilmentLine.findMany({ where: { organisationId: session.organisationId, productId: line.productId, requirement: { organisationId: session.organisationId, salesOrderId: line.returnAuthorisation.salesOrderId } }, orderBy: { id: "asc" } });
       let remaining = input.quantity;
       for (const fulfilment of fulfilments) {
-        const quantity = Math.min(remaining, Math.max(0, fulfilment.deliveredQuantity - fulfilment.returnedQuantity));
+        const quantity = Math.min(remaining, Math.max(0, Number(fulfilment.deliveredQuantity) - Number(fulfilment.returnedQuantity)));
         if (quantity) await tx.fulfilmentLine.update({ where: { id: fulfilment.id }, data: { returnedQuantity: { increment: quantity } } });
         remaining -= quantity;
       }
@@ -69,7 +70,7 @@ export async function inspectReturn(session: Session, lineId: string, dispositio
     const locations = await provider.getLocations(session, warehouse.id);
     const from = locations.find((location) => location.capabilities.includes("QUARANTINE") || location.capabilities.includes("RETURNS"));
     const to = locations.find((location) => location.capabilities.includes(disposition === "Scrap" ? "SCRAP" : "PICK_FACE"));
-    if (from && to) await provider.executeMovement(session, { requestKey: `return-move:${line.id}:${disposition}`, productId: line.productId, warehouseId: warehouse.id, locationId: from.id, toLocationId: to.id, quantity: line.receivedQuantity, status: "QUARANTINE", toStatus: disposition === "Scrap" ? "SCRAP" : "AVAILABLE", reason: `Return ${disposition.toLowerCase()} · ${line.returnAuthorisation.reference}`, reference: line.returnAuthorisation.reference });
+    if (from && to) await provider.executeMovement(session, { requestKey: `return-move:${line.id}:${disposition}`, productId: line.productId, warehouseId: warehouse.id, locationId: from.id, toLocationId: to.id, quantity: Number(line.receivedQuantity), status: "QUARANTINE", toStatus: disposition === "Scrap" ? "SCRAP" : "AVAILABLE", reason: `Return ${disposition.toLowerCase()} · ${line.returnAuthorisation.reference}`, reference: line.returnAuthorisation.reference });
   }
   await db.returnLine.update({ where: { id: line.id }, data: { disposition, replacementRequirementId } });
   await db.returnAuthorisation.update({ where: { id: line.returnId }, data: { status: "INSPECTING" } });

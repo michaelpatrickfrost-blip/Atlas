@@ -1,7 +1,7 @@
 import {beforeEach,describe,expect,it,vi} from "vitest";
-const state=vi.hoisted(()=>({session:{organisationId:"org",userId:"agent",capabilities:new Set<string>()},tx:{$queryRaw:vi.fn(),serviceWorkItem:{findFirst:vi.fn(),count:vi.fn(),updateMany:vi.fn()},serviceQueue:{findFirstOrThrow:vi.fn()},serviceQueueMember:{findFirst:vi.fn()},serviceFile:{count:vi.fn()},approvalInstance:{findFirst:vi.fn()},serviceWorkEntry:{create:vi.fn()},auditEntry:{create:vi.fn()},domainOutbox:{create:vi.fn()}},enabled:vi.fn()}));
+const state=vi.hoisted(()=>({session:{organisationId:"org",organisationName:"Company",membershipId:"member",userId:"agent",userName:"Agent",userEmail:"agent@example.test",capabilities:new Set<string>()},tx:{$queryRaw:vi.fn(),serviceWorkItem:{findFirst:vi.fn(),count:vi.fn(),updateMany:vi.fn()},serviceQueue:{findFirstOrThrow:vi.fn()},serviceQueueMember:{findFirst:vi.fn()},serviceFile:{count:vi.fn()},approvalInstance:{findFirst:vi.fn()},serviceWorkEntry:{create:vi.fn()},auditEntry:{create:vi.fn()},domainOutbox:{create:vi.fn()}},enabled:vi.fn()}));
 vi.mock("@/core/auth/session",()=>({requireSession:async()=>state.session}));
-vi.mock("@/core/db/client",()=>({db:{$transaction:async(fn:(tx:typeof state.tx)=>unknown)=>fn(state.tx),moduleState:{findFirst:state.enabled}}}));
+vi.mock("@/core/db/client",()=>({db:{$transaction:async(fn:(tx:typeof state.tx)=>unknown)=>fn(state.tx),moduleState:{findFirst:state.enabled,findMany:async()=>await state.enabled()?[{moduleId:"service",enabled:true,entitled:true},{moduleId:"tickets",enabled:true,entitled:true}]:[]}}}));
 // Domain-only collaborators: genuine refreshed identities and the complete
 // resulting-field proof are exercised in studio-ticket-native-proof.test.ts.
 // This suite keeps the owning capability check and tests the original native
@@ -14,7 +14,7 @@ vi.mock("@/core/service-work/studio-enforcement", () => ({
   withValidatedTicketMutation: async (context: {session: typeof state.session}, operation: string,
     callback: (session: typeof state.session) => Promise<unknown>) => {
     const {assertCapability} = await import("@/core/permissions/check");
-    assertCapability(context.session as import("@/core/auth/session").Session, operation);
+    assertCapability(context.session, operation);
     return callback(context.session);
   },
 }));

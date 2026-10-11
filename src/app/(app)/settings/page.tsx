@@ -26,6 +26,7 @@ import { settingsLinks } from "./settings-menu";
 import { accessGroups } from "./access-groups";
 import { redirect } from "next/navigation";
 import { defaultSettingsHref } from "./settings-menu";
+import { PROFILE_STARTERS } from "@/core/permissions/profile-starters";
 const input =
   "mt-2 w-full rounded-xl border border-slate-200 bg-white p-3 text-sm";
 export default async function SettingsPage({
@@ -141,6 +142,13 @@ export default async function SettingsPage({
                 Start from
                 <select name="sourceRoleId" className={input}>
                   <option value="">Empty profile</option>
+                  <optgroup label="Suggested starting points">
+                    {PROFILE_STARTERS.map((profile) => (
+                      <option key={profile.id} value={`starter:${profile.id}`}>
+                        {profile.name}
+                      </option>
+                    ))}
+                  </optgroup>
                   {roles.map((r) => (
                     <option key={r.id} value={r.id}>
                       {r.name}
@@ -148,6 +156,10 @@ export default async function SettingsPage({
                   ))}
                 </select>
               </label>
+              <p className="text-xs leading-5 text-slate-500">
+                Start empty, copy a profile, or use a suggested starting point.
+                Every permission can be changed after creation.
+              </p>
               <button className="rounded-xl bg-blue-600 px-5 py-3 text-xs text-white">
                 Create profile
               </button>
@@ -170,7 +182,7 @@ export default async function SettingsPage({
               { label: "Company users", value: total, icon: Users },
               { label: "Active accounts", value: active, icon: UserCheck },
               {
-                label: "Reusable roles",
+                label: "Access profiles",
                 value: roles.length,
                 icon: ShieldCheck,
               },
@@ -219,7 +231,7 @@ export default async function SettingsPage({
                 defaultValue={role ?? ""}
                 className="rounded-xl border border-slate-200 px-3 py-2 text-xs"
               >
-                <option value="">All roles</option>
+                <option value="">All profiles</option>
                 {roles.map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.name}
@@ -260,7 +272,7 @@ export default async function SettingsPage({
                   <div className="min-w-36">
                     <p className="text-xs text-slate-600">
                       {member.roles.map((r) => r.role.name).join(", ") ||
-                        "No assigned roles"}
+                        "No assigned profiles"}
                     </p>
                     <p className="mt-1 text-[10px] text-slate-400">
                       {member.lastLoginAt
@@ -324,9 +336,10 @@ export default async function SettingsPage({
             <LockKeyhole className="mb-4 text-blue-500" />
             <h3 className="font-semibold">Account recovery</h3>
             <p className="mt-3 text-sm leading-relaxed text-slate-500">
-              Open a user to issue a single-use recovery code. Codes expire
-              after 30 minutes. You must confirm your own password. Passwords
-              need at least 12 characters.
+              Open a user’s Password & security tab to assign a password or
+              issue a single-use recovery code. Codes expire after 30 minutes.
+              Confirm your own password for either operation. New passwords need
+              at least 12 characters.
             </p>
             <p className="mt-3 text-xs leading-relaxed text-slate-400">
               Codes are shared manually; automated email is not configured.

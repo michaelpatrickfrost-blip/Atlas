@@ -112,6 +112,14 @@ the Sales quotes/orders pages for the pattern.
 
 ## Motion & accessibility
 
+Dropdown menu panels use an opaque white background with a subtle border and
+shadow. Page text must not show through open menus; do not rely on backdrop blur
+for readability. The shared `.atlas-float-dropdown` style applies to app navigation
+groups, including Manufacturing & Supply's Demand and Materials menus.
+On phones/tablets, app-navigation menus span the available width below the complete
+navigation bar with 16px side insets. At 1024px and above they align to their own
+trigger. Verify the menu panel itself stays inside the viewport.
+
 Opaque white cards must not apply backdrop filters: these create stacking contexts
 that can trap descendant dropdowns underneath later cards. Reserve backdrop blur
 for intentionally translucent surfaces with explicit overlay layering. Customer
@@ -177,3 +185,27 @@ all drawer widths use a list/detail Back flow, with Escape and focus restoration
 Drawers are at most560px wide, animate entry/exit over240ms and honor reduced
 motion. The shade is light and unblurred so the current workspace remains visible.
 Dashboard and Settings keep their existing page/menu destinations.
+
+## 11 October 2026 — website and working guidance
+
+The private-access introduction at `/` uses a crisp white editorial composition,
+Nunito with a restrained serif accent, muted teal/lilac detail and Atlas blue for
+primary actions. Real ERP illustrations explain Plan → Make → Deliver. There is
+no signup, checkout or public company data. Product scenes, scroll reveals, charts
+and connection paths provide purposeful motion; Pause and reduced-motion support
+stop it. Floating messages retain their own layout space and never cover controls.
+The app stays task-focused: shared Guides, restrained operational headers, clear
+queues, bounded paging and native guarded actions. Instructions name preparation,
+steps, outcomes, terminology and common blockers; authorised source links stay
+beside the explanation. Use accessible 44px controls and verify 320px layouts.
+
+## 11 October 2026 — Dashboard canvas and exploration
+
+Dashboards uses the shared Nunito/Atlas shell with a decorative gallery canvas,
+compact period/filter shelf, spacious chart cards and a three-section inspector
+(Data, Design, Focus). Four coordinated themes and three layout presets apply to
+existing widgets and support undo. Keep advanced record filters disclosed and
+view mode uncluttered. A centered native chart explorer has chart/aggregate-value
+views, keyboard dismissal and focus restoration. Phone headers stack controls
+below the complete board title; all supported viewports keep overflow within chart
+panels. Inspect geometry and text wrapping visually, not only scroll widths.

@@ -15,7 +15,24 @@ import {
   CORE_CAPABILITIES,
   CUSTOMER_CAPABILITIES,
 } from "@/core/permissions/capabilities";
+import { PROFILE_STARTERS } from "@/core/permissions/profile-starters";
 describe("section profiles and mixed exceptions", () => {
+  it("offers a working invoice/request service-manager starting point without bank or platform access", () => {
+    const service = PROFILE_STARTERS.find(
+      (profile) => profile.id === "customer-service-manager",
+    )!;
+    expect(service.capabilities).toContain("finance.overview.read");
+    expect(service.capabilities).toContain("finance.receivables.read");
+    expect(service.capabilities).toContain("finance.request.create");
+    const offered = new Set(
+      accessGroups().flatMap((group) => group.capabilities),
+    );
+    for (const starter of PROFILE_STARTERS)
+      for (const capability of starter.capabilities) {
+        expect(offered.has(capability)).toBe(true);
+        expect(capability).not.toMatch(/bank\.|^atlas\./);
+      }
+  });
   const group = {
     id: "sales",
     name: "Sales",

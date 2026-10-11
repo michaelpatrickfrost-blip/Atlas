@@ -15,7 +15,7 @@ export async function validatePurchase(tx: Prisma.TransactionClient, session: Se
     const line = order.lines.find(line => line.id === salesOrderLineId);
     if ((salesOrderLineId || productId || affectedQuantity) && !line) throw new Error("Select the affected order line.");
     if (line && line.productId !== (productId || null)) throw new Error("The product must come from the selected order line.");
-    if (line && affectedQuantity && affectedQuantity > line.orderedQuantity - line.cancelledQuantity) throw new Error("Affected quantity exceeds the live order line.");
+    if (line && affectedQuantity && affectedQuantity > Number(line.orderedQuantity) - Number(line.cancelledQuantity)) throw new Error("Affected quantity exceeds the live order line.");
     unitOfMeasure = line?.unitOfMeasure ?? "each";
   } else {
     if (salesOrderLineId || shipmentId) throw new Error("Select the customer’s order first.");
@@ -26,7 +26,7 @@ export async function validatePurchase(tx: Prisma.TransactionClient, session: Se
     const shipment = await tx.shipment.findFirst({ where: { id: shipmentId, organisationId: session.organisationId, partyId }, include: { sources: { where: { organisationId: session.organisationId }, include: { line: true } } } });
     const sources = shipment?.sources.filter(source => source.salesOrderId === salesOrderId && (!salesOrderLineId || source.line.salesOrderLineId === salesOrderLineId)) ?? [];
     if (!sources.length) throw new Error("The delivery does not contain this order line.");
-    if (affectedQuantity && affectedQuantity > sources.reduce((sum, source) => sum + source.quantity, 0)) throw new Error("Affected quantity exceeds the quantity on this delivery.");
+    if (affectedQuantity && affectedQuantity > sources.reduce((sum, source) => sum + Number(source.quantity), 0)) throw new Error("Affected quantity exceeds the quantity on this delivery.");
   }
   return { salesOrderId, salesOrderLineId, productId, shipmentId, affectedQuantity, unitOfMeasure, lotCode, purchaseVerified: !!salesOrderId };
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useId, useState, useEffect, useCallback } from "react";
+import { useRef, useId, useState, useEffect, useCallback, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { Button } from "./button";
@@ -16,6 +16,8 @@ function isNavigationSignal(error: unknown): boolean {
     (error as { digest: string }).digest.startsWith("NEXT_REDIRECT")
   );
 }
+
+const subscribe = () => () => {};
 
 export function ConfirmationDialog({
   title,
@@ -40,17 +42,13 @@ export function ConfirmationDialog({
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const id = useId();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(subscribe, () => true, () => false);
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const controlled = controlledOpen !== undefined;
   const open = controlled ? controlledOpen : uncontrolledOpen;
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const setOpen = useCallback(
     (next: boolean) => {

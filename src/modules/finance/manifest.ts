@@ -1,3 +1,4 @@
+import { manufacturingCostProvider } from "./services/manufacturing-values";
 import { reports } from './services/reports';
 import { financeRecordContext, financeRecordRelationships } from "./services/relationships";
 import { salesInvoiceChain, salesInvoiceQuantities } from "./services/order-chain";
@@ -14,6 +15,7 @@ import {FINANCE_CAPABILITIES as C} from './capabilities';
 import { financeAnalytics } from "./services/analytics";
 import { supplySpendProvider } from "./services/supply-spend";
 export const financeManifest:ModuleManifest={reportProvider:reports,
+ manufacturingCostProvider,
  supplySpendProvider,
  recordContextProvider: financeRecordContext, recordRelationshipProvider: financeRecordRelationships,
  salesInvoiceChainProvider: salesInvoiceChain, salesInvoiceQuantitiesProvider: salesInvoiceQuantities,
@@ -24,9 +26,9 @@ export const financeManifest:ModuleManifest={reportProvider:reports,
  {label:'Collections',href:'/finance/collections',capability:C.receivablesRead,group:'Trading'},
  {label:'Credits & adjustments',href:'/finance/credits',capability:C.receivablesRead,group:'Trading'},
  {label:'Purchases & Payables',href:'/finance/payables',capability:C.payablesRead,group:'Trading'},
- {label:'Purchase orders',href:'/finance/purchases',capability:C.payablesRead,group:'Trading'},
+ {label:'Purchase orders',href:'/finance/purchases',capability:C.purchaseRead,group:'Trading'},
  {label:'Suppliers',href:'/finance/suppliers',capability:C.payablesRead,group:'Trading'},
- {label:'Spend',href:'/finance/spend',capability:C.read,group:'Trading'},
+ {label:'Requests & expenses',href:'/finance/spend',anyOf:[C.spendRead,C.request,C.expense],group:'Trading'},
  {label:'Banking',href:'/finance/banking',capability:C.bankRead,group:'Money'},
  {label:'General ledger',href:'/finance/ledger',capability:C.ledgerRead,group:'Money'},
  {label:'Journal approvals',href:'/finance/accounting',capability:C.ledgerRead,group:'Money'},
@@ -36,6 +38,7 @@ export const financeManifest:ModuleManifest={reportProvider:reports,
  {label:'Tax',href:'/finance/tax',capability:C.taxRead,group:'Money'},
  {label:'Reporting',href:'/finance/reporting',capability:C.reportRead,group:'Insights'},
  {label:'Control Centre',href:'/finance/control',capability:C.controlRead,group:'Insights'},
+ {label:'Manufacturing costs',href:'/finance/manufacturing',capability:C.ledgerRead,group:'Insights'},
  {label:'Settings',href:'/finance/settings',capability:C.configure,group:'Insights'},
  {label:'Help',href:'/finance/help',capability:C.read,group:'Insights'},
 ]};

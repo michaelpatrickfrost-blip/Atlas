@@ -44,7 +44,16 @@ export function accessGroups(): AccessGroup[] {
                 capabilities: [...m.capabilities],
               },
             ]
-          : [{ id: m.id, name: m.name, capabilities: [...m.capabilities] }],
+          : [
+              {
+                id: m.id,
+                name: m.name,
+                capabilities: [...m.capabilities],
+                ...(!m.accessAnyOf?.length
+                  ? { entryCapability: m.accessCapability }
+                  : {}),
+              },
+            ],
     ),
   ];
   return groups

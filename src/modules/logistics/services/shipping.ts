@@ -1,3 +1,4 @@
+import { addQuantity } from "@/core/shared/quantity";
 import { db } from "@/core/db/client";
 import type { Session } from "@/core/auth/session";
 import { assessOtif, dispatchMovesToDelivery, matchCarrier, normalisedTracking, postcodeOf, weightVariance } from "../domain/operations";
@@ -9,7 +10,7 @@ export async function createShipment(session: Session, requirementId: string, li
   if (requirement.holdSummary) throw new Error(`Blocked\n\n${requirement.holdSummary}`);
   if (!requirement.partialPolicy && lineQuantities.some((row) => {
     const line = requirement.lines.find((item) => item.id === row.fulfilmentLineId);
-    return line && row.quantity < line.orderedQuantity - line.cancelledQuantity - line.shippedQuantity;
+    return line && row.quantity < Number(line.orderedQuantity) - Number(line.cancelledQuantity) - Number(line.shippedQuantity);
   })) throw new Error("This customer is set to deliver complete. Ship the whole order, or ask Sales to allow a partial delivery.");
   const rules = await db.carrierRule.findMany({ where: { organisationId: session.organisationId, active: true } });
   const units = await db.logisticsPackage.findMany({ where: { organisationId: session.organisationId, requirementId } });
@@ -19,8 +20,8 @@ export async function createShipment(session: Session, requirementId: string, li
     const shipment = await tx.shipment.create({ data: { organisationId: session.organisationId, reference: await nextReference(tx, session.organisationId, "SH", "SH"), partyId: requirement.partyId, shipTo: requirement.shipTo ?? {}, status: "READY", carrierCode: choice.carrierCode, carrierReason: choice.explanation, serviceLevel: requirement.serviceLevel || choice.serviceLevel, plannedDispatchAt: requirement.promisedOn, expectedDeliveryAt: requirement.promisedOn } });
     for (const row of lineQuantities) {
       const line = requirement.lines.find((item) => item.id === row.fulfilmentLineId);
-      const cap = line && line.packedQuantity > 0 ? Math.min(line.pickedQuantity, line.packedQuantity) : line?.pickedQuantity ?? 0;
-      const open = cap - (line?.shippedQuantity ?? 0);
+      const cap = line && Number(line.packedQuantity) > 0 ? Math.min(Number(line.pickedQuantity), Number(line.packedQuantity)) : Number(line?.pickedQuantity ?? 0);
+      const open = cap - (Number(line?.shippedQuantity ?? 0));
       if (!line || row.quantity <= 0 || row.quantity > open) throw new Error("A shipment line is larger than the picked quantity still to ship.");
       await tx.shipmentSource.create({ data: { organisationId: session.organisationId, shipmentId: shipment.id, requirementId, salesOrderId: requirement.salesOrderId, fulfilmentLineId: line.id, quantity: row.quantity } });
     }
@@ -50,7 +51,7 @@ export async function recordWeight(session: Session, packageId: string, actualGr
   const box = await db.logisticsPackage.findFirst({ where: { id: packageId, organisationId: session.organisationId }, include: { contents: true, shipment: true } });
   if (!box) throw new Error("This package no longer exists.");
   const products = await db.product.findMany({ where: { organisationId: session.organisationId, id: { in: box.contents.map((content) => content.productId).filter((id): id is string => Boolean(id)) } } });
-  const expected = box.contents.reduce((sum, content) => sum + (products.find((product) => product.id === content.productId)?.grossWeightGrams ?? 0) * content.quantity, 0);
+  const expected = box.contents.reduce((sum, content) => sum + (products.find((product) => product.id === content.productId)?.grossWeightGrams ?? 0) * Number(content.quantity), 0);
   const variance = weightVariance(expected || null, actualGrams);
   await db.logisticsPackage.update({ where: { id: box.id }, data: { weightGrams: actualGrams, expectedWeightGrams: expected || null } });
   if (variance?.review) throw new Error(`Weight needs a look. Expected ${(expected / 1000).toFixed(1)} kg, actual ${(actualGrams / 1000).toFixed(1)} kg.`);
@@ -69,34 +70,58 @@ export async function labelShipment(session: Session, shipmentId: string) {
 }
 
 export async function dispatchShipment(session: Session, shipmentId: string, requestKey: string) {
-  const prior = await db.logisticsOperation.findUnique({ where: { organisationId_requestKey: { organisationId: session.organisationId, requestKey } } });
-  if (prior) {
-    await deliverIfCompanySaysSo(session, shipmentId);
-    return;
-  }
-  const shipment = await db.shipment.findFirst({ where: { id: shipmentId, organisationId: session.organisationId }, include: { sources: { include: { line: true, requirement: true } }, packages: true, party: true } });
-  if (!shipment) throw new Error("This shipment no longer exists.");
-  if (shipment.status === "DISPATCHED" || shipment.status === "DELIVERED") throw new Error(`This shipment has already been dispatched.\n\n${shipment.reference}${shipment.dispatchedAt ? `\n\nDispatched ${shipment.dispatchedAt.toLocaleString("en-GB")}` : ""}`);
-  if (shipment.sources.some((source) => source.requirement.holdSummary)) throw new Error(`Blocked\n\n${shipment.sources.find((source) => source.requirement.holdSummary)?.requirement.holdSummary}`);
+  if (!requestKey || requestKey.length > 80) throw new Error("A valid dispatch reference is required.");
   const provider = await stock();
-  for (const source of shipment.sources) {
-    if (!source.line.productId || !source.requirement.warehouseId) continue;
-    await provider.shipStock(session, { requestKey: `${requestKey}:${source.id}`, productId: source.line.productId, warehouseId: source.requirement.warehouseId, quantity: source.quantity, lotCode: null, serials: [], reason: `Shipped · ${shipment.reference}`, reference: shipment.reference, sourceId: source.fulfilmentLineId, shipmentId: shipment.id });
-  }
-  await db.$transaction(async (tx) => {
-    await tx.shipment.update({ where: { id: shipment.id }, data: { status: "DISPATCHED", dispatchedAt: new Date(), trackingNumber: shipment.trackingNumber ?? `${shipment.carrierCode}-${shipment.reference}` } });
-    for (const source of shipment.sources) {
-      const line = source.line;
-      const shipped = line.shippedQuantity + source.quantity;
-      const open = line.orderedQuantity - line.cancelledQuantity;
-      await tx.fulfilmentLine.update({ where: { id: line.id }, data: { shippedQuantity: shipped } });
-      await tx.fulfilmentRequirement.update({ where: { id: source.requirementId }, data: { status: shipped >= open ? "SHIPPED" : "PART_SHIPPED" } });
+  const shipment = await db.$transaction(async tx => {
+    const organisationId = session.organisationId;
+    const prior = await tx.logisticsOperation.findUnique({ where: { organisationId_requestKey: { organisationId, requestKey } } });
+    const shipment = await tx.shipment.findFirstOrThrow({ where: { id: shipmentId, organisationId }, include: { sources: { include: { line: true, requirement: true } }, packages: { include: { contents: true } } } });
+    if (prior) {
+      if (prior.action !== "shipment.dispatch" || (prior.result as { shipmentId?:string }).shipmentId !== shipmentId) throw new Error("This dispatch reference belongs to another operation.");
+      return { ...shipment, replayed:true };
     }
-    await tx.trackingEvent.create({ data: { organisationId: session.organisationId, shipmentId: shipment.id, status: "Collected", occurredAt: new Date(), requestKey: `${requestKey}:collected` } });
-    await tx.logisticsOperation.create({ data: { organisationId: session.organisationId, requestKey, action: "shipment.dispatch", result: { shipmentId } } });
-  });
-  await milestone({ organisationId: session.organisationId, actorUserId: session.userId, action: "logistics.shipment.dispatched", entityType: "Shipment", entityId: shipment.id, summary: `${shipment.reference} dispatched`, partyId: shipment.partyId, event: "logisticsShipmentDispatched", eventKey: `logistics.shipment.dispatched:${shipment.id}`, payload: { shipmentId: shipment.id, carrier: shipment.carrierCode } });
-  await deliverIfCompanySaysSo(session, shipment.id);
+    if (["DISPATCHED","DELIVERED","CANCELLED"].includes(shipment.status)) throw new Error("This shipment has already been dispatched or cancelled.");
+    if (!shipment.sources.length) throw new Error("Add the picked quantities before dispatching this shipment.");
+    if (shipment.sources.some(source => source.requirement.holdSummary)) throw new Error(`Blocked: ${shipment.sources.find(source => source.requirement.holdSummary)?.requirement.holdSummary}`);
+    for (const source of shipment.sources) {
+      const line = await tx.fulfilmentLine.findFirstOrThrow({ where: { id:source.line.id,organisationId } });
+      if (addQuantity(Number(line.shippedQuantity),Number(source.quantity)) > Math.min(Number(line.pickedQuantity),addQuantity(Number(line.orderedQuantity),-Number(line.cancelledQuantity)))) throw new Error("The picked quantity changed. Refresh this shipment before dispatching.");
+      if (line.productId) {
+        if (!source.requirement.warehouseId) throw new Error("Choose the source warehouse before dispatching physical products.");
+        const product = await tx.product.findFirstOrThrow({ where: { id:line.productId,organisationId } });
+        const contents = shipment.packages.flatMap(unit => unit.contents).filter(content => content.fulfilmentLineId === line.id && content.productId === line.productId);
+        let selections: Array<{quantity:number;lotCode:string|null;serials:string[]}>;
+        if (contents.length) {
+          selections = contents.map(content => ({quantity:Number(content.quantity),lotCode:content.lotCode,serials:content.serials}));
+          if (selections.reduce((sum,row) => addQuantity(sum,row.quantity),0) !== Number(source.quantity)) throw new Error("The packed batch quantities must exactly match this shipment line.");
+        } else if (product.trackingMode === "SERIAL") {
+          const picks = await tx.warehouseTaskLine.findMany({ where: { organisationId,fulfilmentLineId:line.id,productId:line.productId,task:{organisationId,kind:"PICK",status:"COMPLETE"} }, orderBy:{sequence:"asc"} });
+          const serials = await tx.stockSerial.findMany({ where: { organisationId,productId:line.productId,warehouseId:source.requirement.warehouseId,status:"ON_HAND",serial:{in:picks.flatMap(pick=>pick.serials)} },orderBy:{serial:"asc"} });
+          selections = [{quantity:Number(source.quantity),lotCode:null,serials:serials.slice(0,Number(source.quantity)).map(row=>row.serial)}];
+        } else if (product.trackingMode === "LOT") {
+          const picks = await tx.warehouseTaskLine.findMany({ where: { organisationId,fulfilmentLineId:line.id,productId:line.productId,task:{organisationId,kind:"PICK",status:"COMPLETE"},lotCode:{not:null} },orderBy:{sequence:"asc"} });
+          let remaining = Number(source.quantity);
+          selections = [];
+          for (const pick of picks) { const take=Math.min(remaining,Number(pick.confirmedQuantity));if(take>0)selections.push({quantity:take,lotCode:pick.lotCode,serials:[]});remaining=addQuantity(remaining,-take); }
+          if (remaining>0) throw new Error("Record the picked batches before dispatching this lot-tracked product.");
+        } else selections = [{quantity:Number(source.quantity),lotCode:null,serials:[]}];
+        for (const [index,selection] of selections.entries()) await provider.shipStock(session,{requestKey:`${requestKey}:${source.id}:${index}`,productId:line.productId,warehouseId:source.requirement.warehouseId,...selection,reason:`Shipped · ${shipment.reference}`,reference:shipment.reference,sourceId:line.id,shipmentId:shipment.id},tx);
+      }
+      await tx.fulfilmentLine.update({ where:{id:line.id},data:{shippedQuantity:{increment:Number(source.quantity)}} });
+    }
+    for (const requirementId of new Set(shipment.sources.map(source=>source.requirementId))) {
+      const lines=await tx.fulfilmentLine.findMany({where:{organisationId,requirementId}});
+      const complete=lines.length>0&&lines.every(line=>Number(line.shippedQuantity)>=addQuantity(Number(line.orderedQuantity),-Number(line.cancelledQuantity)));
+      await tx.fulfilmentRequirement.update({where:{id:requirementId},data:{status:complete?"SHIPPED":"PART_SHIPPED"}});
+    }
+    await tx.shipment.update({where:{id:shipment.id},data:{status:"DISPATCHED",dispatchedAt:new Date(),trackingNumber:shipment.trackingNumber??`${shipment.carrierCode}-${shipment.reference}`}});
+    await tx.trackingEvent.create({data:{organisationId,shipmentId:shipment.id,status:"Collected",occurredAt:new Date(),requestKey:`${requestKey}:collected`}});
+    await tx.logisticsOperation.create({data:{organisationId,requestKey,action:"shipment.dispatch",result:{shipmentId}}});
+    await tx.auditEntry.create({data:{organisationId,actorUserId:session.userId,action:"logistics.shipment.dispatched",entityType:"Shipment",entityId:shipment.id,after:{requestKey,sources:shipment.sources.map(source=>({id:source.id,quantity:Number(source.quantity)}))}}});
+    return {...shipment,replayed:false};
+  },{isolationLevel:"Serializable"});
+  if (!shipment.replayed) await milestone({organisationId:session.organisationId,actorUserId:session.userId,action:"logistics.shipment.dispatched",entityType:"Shipment",entityId:shipment.id,summary:`${shipment.reference} dispatched`,partyId:shipment.partyId,event:"logisticsShipmentDispatched",eventKey:`logistics.shipment.dispatched:${shipment.id}`,payload:{shipmentId:shipment.id,carrier:shipment.carrierCode}});
+  await deliverIfCompanySaysSo(session,shipment.id);
 }
 
 async function deliverIfCompanySaysSo(session: Session, shipmentId: string) {
@@ -131,16 +156,16 @@ export async function confirmDelivery(session: Session, shipmentId: string, inpu
     return;
   }
   const deliveredAt = new Date();
-  const ordered = shipment.sources.reduce((sum, source) => sum + (source.line.orderedQuantity - source.line.cancelledQuantity), 0);
-  const delivered = shipment.sources.reduce((sum, source) => sum + source.quantity, 0);
+  const ordered = shipment.sources.reduce((sum, source) => sum + (Number(source.line.orderedQuantity) - Number(source.line.cancelledQuantity)), 0);
+  const delivered = shipment.sources.reduce((sum, source) => sum + Number(source.quantity), 0);
   const otif = assessOtif({ promisedOn: shipment.expectedDeliveryAt ?? shipment.sources[0]?.requirement.promisedOn ?? null, deliveredAt, ordered, delivered: input.outcome === "PARTIAL" ? Math.max(0, delivered - 1) : delivered, fullPercent: policy.otifFullPercent, failureReason: input.failureReason });
   await db.shipment.update({ where: { id: shipment.id }, data: { status: "DELIVERED", deliveredAt, onTime: otif.onTime, inFull: otif.inFull, failureReason: otif.failureReason, pod: { receiver: input.receiver ?? null, note: input.note ?? null, at: deliveredAt.toISOString() } } });
-  for (const source of shipment.sources) await db.fulfilmentLine.update({ where: { id: source.line.id }, data: { deliveredQuantity: { increment: source.quantity } } });
+  for (const source of shipment.sources) await db.fulfilmentLine.update({ where: { id: source.line.id }, data: { deliveredQuantity: { increment: Number(source.quantity) } } });
   if (input.outcome === "DELIVERED") {
     const requirementIds = [...new Set(shipment.sources.map((source) => source.requirementId))];
     for (const requirementId of requirementIds) {
       const lines = await db.fulfilmentLine.findMany({ where: { organisationId: session.organisationId, requirementId } });
-      const complete = lines.length > 0 && lines.every((line) => line.deliveredQuantity >= line.orderedQuantity - line.cancelledQuantity);
+      const complete = lines.length > 0 && lines.every((line) => Number(line.deliveredQuantity) >= Number(line.orderedQuantity) - Number(line.cancelledQuantity));
       if (complete) await db.fulfilmentRequirement.update({ where: { id: requirementId }, data: { status: "DELIVERED" } });
     }
   }
@@ -148,14 +173,14 @@ export async function confirmDelivery(session: Session, shipmentId: string, inpu
   await raiseDeliveryInvoice(session, { ...shipment, deliveredAt });
 }
 
-async function raiseDeliveryInvoice(session: Session, shipment: { id: string; reference: string; deliveredAt: Date | null; sources: Array<{ quantity: number; line: { salesOrderLineId: string }; requirement: { salesOrderId: string } }> }) {
+async function raiseDeliveryInvoice(session: Session, shipment: { id: string; reference: string; deliveredAt: Date | null; sources: Array<{ quantity: number | import("@/generated/prisma/client").Prisma.Decimal; line: { salesOrderLineId: string }; requirement: { salesOrderId: string } }> }) {
   const { handoffDeliveredShipment } = await import("@/core/finance/handoff");
   try {
     await handoffDeliveredShipment(session, {
       shipmentId: shipment.id,
       shipmentReference: shipment.reference,
       deliveredAt: shipment.deliveredAt ?? new Date(),
-      lines: shipment.sources.map((source) => ({ salesOrderId: source.requirement.salesOrderId, salesOrderLineId: source.line.salesOrderLineId, quantity: source.quantity })),
+      lines: shipment.sources.map((source) => ({ salesOrderId: source.requirement.salesOrderId, salesOrderLineId: source.line.salesOrderLineId, quantity: Number(source.quantity) })),
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "The delivery invoice could not be raised.";

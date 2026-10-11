@@ -1,3 +1,4 @@
+import { materialCostBasis } from "@/core/finance/manufacturing";
 import { requireSession } from "@/core/auth/session";
 import { can } from "@/core/permissions/check";
 import { db } from "@/core/db/client";
@@ -23,6 +24,7 @@ export async function loadProductWorkspace(productId: string) {
     seePlan ? db.productionPlanLine.findMany({ where: { organisationId: session.organisationId, productId }, select: { quantity: true, startsOn: true, endsOn: true } }) : Promise.resolve([]),
     seeRecipe ? db.product.findMany({ where: { organisationId: session.organisationId, kind: "PRODUCT" }, select: { id: true, code: true, name: true, categoryCode: true, unitOfMeasure: true, basePriceAmount: true, baseCurrency: true, active: true, netWeightGrams: true, grossWeightGrams: true, lengthMm: true, widthMm: true, heightMm: true, volumeMl: true, unitsPerPack: true, packsPerLayer: true, layersPerPallet: true, stackable: true, originCountry: true, commodityCode: true, customsDescription: true, hazardClass: true, unNumber: true }, orderBy: { name: "asc" } }) : Promise.resolve([]),
   ]);
+  const costBasis = new Map((await materialCostBasis(session)).filter(row => row.currency === product.baseCurrency).map(row => [row.productId, row]));
   const referencedCentres = [...new Set(definitions.flatMap((row) => row.operations.map((operation) => operation.workCentreId).filter((id): id is string => !!id)))];
   const referencedMachines = [...new Set(definitions.flatMap((row) => row.operations.map((operation) => operation.resourceId).filter((id): id is string => !!id)))];
   const [categories, centres, machines] = await Promise.all([
@@ -32,29 +34,29 @@ export async function loadProductWorkspace(productId: string) {
   ]);
   const names = new Map(catalogue.map((item) => [item.id, item]));
   const catalog = new Map<string, MakeDefinition>();
-  for (const item of catalogue) catalog.set(item.id, { productId: item.id, supply: "BUY", batchQuantity: 1, yieldPercent: 100, purchaseMinor: item.basePriceAmount, lines: [], operations: [] });
+  for (const item of catalogue) catalog.set(item.id, { productId: item.id, supply: "BUY", batchQuantity: 1, yieldPercent: 100, purchaseMinor: costBasis.get(item.id)?.amountMinor ?? 0, purchasePriceQuantity: costBasis.get(item.id)?.quantity ?? 1, costBasisMissing: !costBasis.has(item.id), lines: [], operations: [] });
   for (const row of definitions) {
     catalog.set(row.productId, {
       productId: row.productId,
       supply: supplyOf(row.supply),
       batchQuantity: Number(row.batchQuantity),
       yieldPercent: Number(row.yieldPercent),
-      purchaseMinor: names.get(row.productId)?.basePriceAmount ?? product.basePriceAmount,
+      purchaseMinor: costBasis.get(row.productId)?.amountMinor ?? 0, purchasePriceQuantity: costBasis.get(row.productId)?.quantity ?? 1, costBasisMissing: !costBasis.has(row.productId),
       subcontractMinorPerUnit: row.subcontractMinorPerUnit,
-      lines: row.lines.map((line) => ({ componentId: line.componentProductId, quantityPerUnit: Number(line.quantityPerUnit), scrapPercent: Number(line.scrapPercent), notes: line.notes })),
-      operations: row.operations.map((operation) => ({ name: operation.name, setupMinutes: Number(operation.setupMinutes), runMinutesPerUnit: Number(operation.runMinutesPerUnit), crewSize: Number(operation.crewSize), machineMinorPerHour: operation.machineMinorPerHour, labourMinorPerHour: operation.labourMinorPerHour, logisticsMinorPerBatch: operation.logisticsMinorPerBatch, machineIncludesLabour: operation.machineIncludesLabour, workCentre: operation.workCentre, workCentreId: operation.workCentreId, resourceId: operation.resourceId, overheadMinorPerHour: operation.overheadMinorPerHour, machineIncludesOverhead: operation.machineIncludesOverhead })),
+      lines: row.lines.map((line) => ({ componentId: line.componentProductId, quantityPerUnit: Number(line.quantityPerUnit), enteredQuantityPerUnit: Number(line.enteredQuantityPerUnit ?? line.quantityPerUnit), enteredUnit: line.enteredUnit ?? undefined, baseUnit: line.baseUnit ?? undefined, scrapPercent: Number(line.scrapPercent), notes: line.notes })),
+      operations: row.operations.map((operation) => ({ processProfile: operation.processProfile, loadUnit: operation.loadUnit, loadPerUnit: operation.loadPerUnit === null ? null : Number(operation.loadPerUnit), name: operation.name, timingMode: operation.timingMode, batchCapacity: Number(operation.batchCapacity), cycleMinutes: Number(operation.cycleMinutes), coolingMinutes: Number(operation.coolingMinutes), waitMinutes: Number(operation.waitMinutes), eligibleResourceIds: operation.eligibleResourceIds, setupMinutes: Number(operation.setupMinutes), runMinutesPerUnit: Number(operation.runMinutesPerUnit), crewSize: Number(operation.crewSize), machineMinorPerHour: operation.machineMinorPerHour, labourMinorPerHour: operation.labourMinorPerHour, logisticsMinorPerBatch: operation.logisticsMinorPerBatch, machineIncludesLabour: operation.machineIncludesLabour, workCentre: operation.workCentre, workCentreId: operation.workCentreId, resourceId: operation.resourceId, overheadMinorPerHour: operation.overheadMinorPerHour, machineIncludesOverhead: operation.machineIncludesOverhead })),
     });
   }
   const definition = definitions.find((row) => row.productId === productId) ?? null;
   const recipe = catalog.get(productId);
-  const onHand = stock.filter((row) => row.productId === productId).reduce((sum, row) => sum + row.quantity, 0);
+  const onHand = stock.filter((row) => row.productId === productId).reduce((sum, row) => sum + Number(row.quantity), 0);
   const picture = seeStock ? (await readAvailability()).products.find((row) => row.productId === productId) : undefined;
   const available = picture?.available ?? onHand;
-  const confirmed = orders.reduce((sum, line) => sum + Math.max(0, line.orderedQuantity - line.cancelledQuantity), 0);
+  const confirmed = orders.reduce((sum, line) => sum + Math.max(0, Number(line.orderedQuantity) - Number(line.cancelledQuantity)), 0);
   const planned = plans.reduce((sum, line) => sum + Number(line.quantity), 0);
   const gaps = cover(onHand, confirmed, planned);
   if (picture) gaps.orderGap = Math.max(0, -picture.available);
-  let unitMinor = product.basePriceAmount;
+  let unitMinor = costBasis.has(productId) ? Number(costBasis.get(productId)!.amountMinor / costBasis.get(productId)!.quantity) : 0;
   let recipeError = "";
   let unitCost: ReturnType<typeof rolledCost> | null = null;
   try {
@@ -64,7 +66,7 @@ export async function loadProductWorkspace(productId: string) {
     }
   } catch (error) { recipeError = error instanceof Error ? error.message : "The recipe could not be costed."; }
   const coverCost = !recipeError && recipe && recipe.supply !== "BUY" && gaps.orderGap > 0 ? rolledCost(productId, gaps.orderGap, catalog, [], false) : null;
-  const labelPart = (componentId: string) => ({ code: names.get(componentId)?.code ?? "Part", name: names.get(componentId)?.name ?? "Part", unit: names.get(componentId)?.unitOfMeasure ?? "", onHand: stock.filter((row) => row.productId === componentId).reduce((sum, row) => sum + row.quantity, 0) });
+  const labelPart = (componentId: string) => ({ code: names.get(componentId)?.code ?? "Part", name: names.get(componentId)?.name ?? "Part", unit: names.get(componentId)?.unitOfMeasure ?? "", onHand: stock.filter((row) => row.productId === componentId).reduce((sum, row) => sum + Number(row.quantity), 0) });
   let parts: Array<{ componentId: string; quantity: number; code: string; name: string; onHand: number; unit: string; netWeightGrams: number | null; grossWeightGrams: number | null; lengthMm: number | null; widthMm: number | null; heightMm: number | null; volumeMl: number | null; unitsPerPack: number | null; packsPerLayer: number | null; layersPerPallet: number | null; stackable: boolean | null }> = [];
   let stages: Array<{ componentId: string; quantity: number; supply: SupplyPolicy; code: string; name: string; onHand: number; unit: string }> = [];
   try {
@@ -91,7 +93,7 @@ const nameNode = (node: BuildNode): NamedNode => ({
     const quantity = orders.reduce((sum, line) => {
       const when = line.promisedDeliveryDate ?? line.requestedDeliveryDate ?? line.order.promisedDeliveryDate ?? line.order.requestedDeliveryDate;
       if (!when || when < start || when >= end) return sum;
-      return sum + Math.max(0, line.orderedQuantity - line.cancelledQuantity);
+      return sum + Math.max(0, Number(line.orderedQuantity) - Number(line.cancelledQuantity));
     }, 0);
     return { label: start.toLocaleDateString("en-GB", { timeZone: "Europe/London", month: "short" }), quantity };
   });
@@ -113,6 +115,7 @@ const nameNode = (node: BuildNode): NamedNode => ({
     planned,
     gaps,
     unitMinor,
+    costIncomplete: !recipe || recipe.supply === "BUY" ? !costBasis.has(productId) : boughtParts(productId, 1, catalog).some(part => !costBasis.has(part.componentId)),
     unitCost,
     recipeError,
     coverCost,
@@ -123,10 +126,10 @@ const nameNode = (node: BuildNode): NamedNode => ({
     parents: usedBy(productId, catalog).map((id) => ({ id, ...labelPart(id), supply: catalog.get(id)?.supply ?? "MAKE" })),
     months,
     peak: Math.max(1, ...months.map((month) => month.quantity)),
-    warehouses: warehouses.map((warehouse) => ({ ...warehouse, quantity: stock.find((row) => row.warehouseId === warehouse.id && row.productId === productId)?.quantity ?? 0 })),
-    lines: (recipe?.supply === "BUY" ? [] : recipe?.lines ?? []).map((line) => ({ ...line, code: names.get(line.componentId)?.code ?? "", name: names.get(line.componentId)?.name ?? "Former product", unit: names.get(line.componentId)?.unitOfMeasure ?? "", categoryCode: names.get(line.componentId)?.categoryCode ?? "", categoryName: categories.find((category) => category.code === names.get(line.componentId)?.categoryCode)?.name ?? names.get(line.componentId)?.categoryCode ?? "", supply: catalog.get(line.componentId)?.supply ?? "BUY", onHand: stock.filter((row) => row.productId === line.componentId).reduce((sum, row) => sum + row.quantity, 0) })),
+    warehouses: warehouses.map((warehouse) => ({ ...warehouse, quantity: Number(stock.find((row) => row.warehouseId === warehouse.id && row.productId === productId)?.quantity ?? 0) })),
+    lines: (recipe?.supply === "BUY" ? [] : recipe?.lines ?? []).map((line) => ({ ...line, code: names.get(line.componentId)?.code ?? "", name: names.get(line.componentId)?.name ?? "Former product", unit: names.get(line.componentId)?.unitOfMeasure ?? "", categoryCode: names.get(line.componentId)?.categoryCode ?? "", categoryName: categories.find((category) => category.code === names.get(line.componentId)?.categoryCode)?.name ?? names.get(line.componentId)?.categoryCode ?? "", supply: catalog.get(line.componentId)?.supply ?? "BUY", onHand: stock.filter((row) => row.productId === line.componentId).reduce((sum, row) => sum + Number(row.quantity), 0) })),
     operations: (recipe?.supply === "BUY" ? [] : recipe?.operations ?? []).map((operation) => ({ ...operation, centreName: centres.find((centre) => centre.id === operation.workCentreId)?.name ?? operation.workCentre ?? "", machineName: machines.find((machine) => machine.id === operation.resourceId)?.name ?? "" })),
-    choices: catalogue.filter((item) => item.id !== productId && item.active).map((item) => ({ id: item.id, code: item.code, name: item.name, unit: item.unitOfMeasure, categoryCode: item.categoryCode ?? "", categoryName: categories.find((category) => category.code === item.categoryCode)?.name ?? item.categoryCode ?? "", supply: catalog.get(item.id)?.supply ?? "BUY", label: `${item.code} · ${item.name}`, costMinor: item.basePriceAmount, stock: stock.filter((row) => row.productId === item.id).reduce((sum, row) => sum + row.quantity, 0) })),
+    choices: catalogue.filter((item) => item.id !== productId && item.active).map((item) => ({ id: item.id, code: item.code, name: item.name, unit: item.unitOfMeasure, categoryCode: item.categoryCode ?? "", categoryName: categories.find((category) => category.code === item.categoryCode)?.name ?? item.categoryCode ?? "", supply: catalog.get(item.id)?.supply ?? "BUY", label: `${item.code} · ${item.name}`, costMinor: costBasis.get(item.id)?.amountMinor, costPriceQuantity: costBasis.get(item.id)?.quantity, stock: stock.filter((row) => row.productId === item.id).reduce((sum, row) => sum + Number(row.quantity), 0) })),
     categories: categories.filter((category) => category.active || category.code === product.categoryCode),
     categoryName: categories.find((category) => category.code === product.categoryCode)?.name ?? product.categoryCode ?? "",
     plant: centres.map((centre) => ({ ...centre, machines: machines.filter((machine) => machine.workCentreId === centre.id) })),
@@ -145,10 +148,10 @@ async function productLinks(organisationId: string, productId: string) {
   ]);
   const amount = (value: { toString(): string }) => Number(value);
   return {
-    contains: rows.filter((row) => row.productId === productId && row.kind === "CONTAINS").map((row) => ({ relatedProductId: row.relatedProductId, quantity: String(amount(row.quantity)), notes: row.notes })),
-    requires: rows.filter((row) => row.productId === productId && row.kind === "REQUIRES").map((row) => ({ relatedProductId: row.relatedProductId, quantity: String(amount(row.quantity)), notes: row.notes })),
-    packedIn: rows.filter((row) => row.relatedProductId === productId && row.kind === "CONTAINS").map((row) => ({ id: row.product.id, code: row.product.code, name: row.product.name, quantity: amount(row.quantity), packUnit: row.product.packUnit })),
-    neededBy: rows.filter((row) => row.relatedProductId === productId && row.kind === "REQUIRES").map((row) => ({ id: row.product.id, code: row.product.code, name: row.product.name, quantity: amount(row.quantity) })),
+    contains: rows.filter((row) => row.productId === productId && row.kind === "CONTAINS").map((row) => ({ relatedProductId: row.relatedProductId, quantity: String(amount(Number(row.quantity))), notes: row.notes })),
+    requires: rows.filter((row) => row.productId === productId && row.kind === "REQUIRES").map((row) => ({ relatedProductId: row.relatedProductId, quantity: String(amount(Number(row.quantity))), notes: row.notes })),
+    packedIn: rows.filter((row) => row.relatedProductId === productId && row.kind === "CONTAINS").map((row) => ({ id: row.product.id, code: row.product.code, name: row.product.name, quantity: amount(Number(row.quantity)), packUnit: row.product.packUnit })),
+    neededBy: rows.filter((row) => row.relatedProductId === productId && row.kind === "REQUIRES").map((row) => ({ id: row.product.id, code: row.product.code, name: row.product.name, quantity: amount(Number(row.quantity)) })),
     linkChoices: choices.map((item) => ({ id: item.id, code: item.code, name: item.name, unit: item.unitOfMeasure })),
   };
 }

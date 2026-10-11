@@ -1,15 +1,19 @@
+import { quantityCostMinor } from "@/core/shared/measurement";
+import { operationTime, type OperationTiming } from "./operation-time";
 export const COMPONENT_GROUPS = [
   { supply: "WIP", title: "Work in progress", detail: "An intermediate you make and can hold in stock. It has its own bill, and this product consumes it." },
   { supply: "MAKE", title: "Made here", detail: "A subassembly made in this plant, then used on this bill." },
-  { supply: "BUY", title: "Bought materials", detail: "Purchased parts. Their cost is the standard price." },
+  { supply: "BUY", title: "Bought materials", detail: "Purchased parts. Their estimate uses Finance carrying value or an approved purchase price." },
   { supply: "SUBCONTRACT", title: "Sent out", detail: "A supplier makes this component. You may still supply some of its parts." },
 ] as const;
 
 export const SUPPLY = ["MAKE", "BUY", "WIP", "SUBCONTRACT"] as const;
 export type SupplyPolicy = (typeof SUPPLY)[number];
 
-export type MakeLine = { componentId: string; quantityPerUnit: number; scrapPercent: number; notes?: string };
-export type MakeOperation = {
+export type MakeLine = { componentId: string; quantityPerUnit: number; scrapPercent: number; notes?: string; enteredQuantityPerUnit?: number; enteredUnit?: string; baseUnit?: string };
+export type MakeOperation = OperationTiming & {
+ processProfile?: string | null; loadUnit?: string | null; loadPerUnit?: number | null;
+  eligibleResourceIds?: string[];
   name: string;
   setupMinutes: number;
   runMinutesPerUnit: number;
@@ -31,6 +35,8 @@ export type MakeDefinition = {
   batchQuantity: number;
   yieldPercent: number;
   purchaseMinor: number;
+  purchasePriceQuantity?: number;
+  costBasisMissing?: boolean;
   /** Fee paid per good unit when the product is sent out. */
   subcontractMinorPerUnit?: number;
   lines: MakeLine[];
@@ -75,13 +81,13 @@ export function assertRecipe(productId: string, definition: MakeDefinition, cata
 }
 
 function hours(definition: MakeDefinition, quantity: number, spreadSetup: boolean) {
-  const batches = spreadSetup ? quantity / definition.batchQuantity : Math.ceil(quantity / definition.batchQuantity);
   let setup = 0;
   let run = 0;
   let crew = 0;
   for (const operation of definition.operations) {
-    const setupHours = batches * (operation.setupMinutes / 60);
-    const runHours = quantity * (operation.runMinutesPerUnit / 60);
+    const timing = operationTime(operation, quantity, definition.batchQuantity, spreadSetup);
+    const setupHours = timing.setupMinutes / 60;
+    const runHours = timing.runMinutes / 60;
     setup += setupHours;
     run += runHours;
     crew += operation.crewSize * (setupHours + runHours);
@@ -96,14 +102,14 @@ export type BuildNode = { productId: string; supply: SupplyPolicy; quantity: num
 const emptyBuckets = (): CostBuckets => ({ material: 0, machine: 0, labour: 0, overhead: 0, subcontract: 0, logistics: 0 });
 
 function operationCost(definition: MakeDefinition, quantity: number, spreadSetup: boolean) {
-  const batches = spreadSetup ? quantity / definition.batchQuantity : Math.ceil(quantity / definition.batchQuantity);
   const buckets = emptyBuckets();
   let setup = 0;
   let run = 0;
   let crew = 0;
   for (const operation of definition.operations) {
-    const setupHours = batches * (operation.setupMinutes / 60);
-    const runHours = quantity * (operation.runMinutesPerUnit / 60);
+    const timing = operationTime(operation, quantity, definition.batchQuantity, spreadSetup);
+    const setupHours = timing.setupMinutes / 60;
+    const runHours = timing.runMinutes / 60;
     const span = setupHours + runHours;
     setup += setupHours;
     run += runHours;
@@ -111,7 +117,7 @@ function operationCost(definition: MakeDefinition, quantity: number, spreadSetup
     buckets.machine += span * operation.machineMinorPerHour;
     if (!operation.machineIncludesLabour) buckets.labour += operation.crewSize * span * operation.labourMinorPerHour;
     if (!operation.machineIncludesOverhead) buckets.overhead += span * (operation.overheadMinorPerHour ?? 0);
-    buckets.logistics += batches * operation.logisticsMinorPerBatch;
+    buckets.logistics += timing.batches * operation.logisticsMinorPerBatch;
   }
   for (const key of Object.keys(buckets) as CostKind[]) buckets[key] = round(buckets[key]);
   return { buckets, hours: { setup, run, crew } };
@@ -123,7 +129,7 @@ export function rolledCost(productId: string, quantity: number, catalog: Map<str
   if (!(quantity > 0)) return zero;
   const definition = catalog.get(productId);
   if (!definition || definition.supply === "BUY") {
-    const material = round((definition?.purchaseMinor ?? 0) * quantity);
+    const material = Number(quantityCostMinor(Number(quantity.toFixed(6)), BigInt(definition?.purchaseMinor ?? 0), definition?.purchasePriceQuantity ?? 1));
     return { totalMinor: material, buckets: { ...emptyBuckets(), material }, hours: zero.hours };
   }
   if (stack.includes(productId)) throw new Error("This recipe loops. Remove the component that leads back to itself.");
@@ -187,21 +193,21 @@ export function costToMake(productId: string, quantity: number, catalog: Map<str
   if (!(quantity > 0)) return { totalMinor: 0, rows: [], hours: { setup: 0, run: 0, crew: 0 } };
   const definition = catalog.get(productId);
   if (!definition || definition.supply === "BUY") {
-    const minor = round((definition?.purchaseMinor ?? 0) * quantity);
+    const minor = Number(quantityCostMinor(Number(quantity.toFixed(6)), BigInt(definition?.purchaseMinor ?? 0), definition?.purchasePriceQuantity ?? 1));
     return { totalMinor: minor, rows: minor ? [{ label: "Purchase price", kind: "material", minor, detail: `${quantity} at the standard price` }] : [], hours: { setup: 0, run: 0, crew: 0 } };
   }
   const rows: CostRow[] = [];
   for (const line of definition.lines) {
     const needed = quantity * componentPerGoodUnit(line, definition.yieldPercent);
-    const each = standardUnitMinor(line.componentId, catalog, [productId]);
-    const minor = round(needed * each);
+    const minor = rolledCost(line.componentId, needed, catalog, [productId], false).totalMinor;
     rows.push({ label: line.componentId, kind: "material", minor, detail: `${needed} including yield and scrap` });
   }
   const time = hours(definition, quantity, false);
   for (const operation of definition.operations) {
-    const batches = Math.ceil(quantity / definition.batchQuantity);
-    const setupHours = batches * (operation.setupMinutes / 60);
-    const runHours = quantity * (operation.runMinutesPerUnit / 60);
+    const timing = operationTime(operation, quantity, definition.batchQuantity);
+    const batches = timing.batches;
+    const setupHours = timing.setupMinutes / 60;
+    const runHours = timing.runMinutes / 60;
     const machine = round((setupHours + runHours) * operation.machineMinorPerHour);
     if (machine) rows.push({ label: operation.name, kind: "machine", minor: machine, detail: `${batches} setup${batches === 1 ? "" : "s"} and run time` });
     if (!operation.machineIncludesLabour) {

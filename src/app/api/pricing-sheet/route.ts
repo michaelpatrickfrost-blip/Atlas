@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     if (!list) return new Response("Unknown price list", { status: 404 });
     filename = `atlas-${list.name.replace(/[^\w.-]+/g, "-").slice(0, 40)}.csv`;
     const priced = new Set<string>();
-    for (const entry of list.entries.sort((a, b) => (a.productId ?? "").localeCompare(b.productId ?? "") || a.minimumQuantity - b.minimumQuantity)) {
+    for (const entry of list.entries.sort((a, b) => (a.productId ?? "").localeCompare(b.productId ?? "") || Number(a.minimumQuantity) - Number(b.minimumQuantity))) {
       const product = products.find((item) => item.id === entry.productId);
       if (!product || entry.productId == null) continue;
       priced.add(product.id);
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
     if (!agreement) return new Response("Unknown agreement", { status: 404 });
     filename = `atlas-${agreement.number}.csv`;
     const priced = new Set<string>();
-    for (const price of agreement.prices.sort((a, b) => a.productId.localeCompare(b.productId) || a.minimumQuantity - b.minimumQuantity)) {
+    for (const price of agreement.prices.sort((a, b) => a.productId.localeCompare(b.productId) || Number(a.minimumQuantity) - Number(b.minimumQuantity))) {
       const product = products.find((item) => item.id === price.productId);
       if (!product) continue;
       priced.add(product.id);

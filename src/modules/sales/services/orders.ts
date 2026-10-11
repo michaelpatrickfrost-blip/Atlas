@@ -1,4 +1,6 @@
 "use server";
+
+import { validQuantity } from "@/core/shared/quantity";
 import { assertProductsSellable } from "@/core/products/sales-eligibility";
 import {guardFinancialCancellation} from '@/core/finance/connections';
 import {assertSalesTradingLink} from './trading-check';
@@ -112,7 +114,7 @@ export async function addOrderLine(input: AddOrderLineInput) {
   await assertOwnedByOrg(session.organisationId, input.orderId);
   await assertDraft(input.orderId);
 
-  if(!Number.isInteger(input.quantity) || input.quantity<1 || input.quantity>1000000 || (input.discountPercent!=null && (!Number.isFinite(input.discountPercent)||input.discountPercent<0||input.discountPercent>100))) throw new Error("Enter a positive whole quantity and a discount between 0 and 100.");
+  if(!validQuantity(input.quantity) || input.quantity<=0 || input.quantity>1000000 || (input.discountPercent!=null && (!Number.isFinite(input.discountPercent)||input.discountPercent<0||input.discountPercent>100))) throw new Error("Enter a positive quantity with up to six decimal places and a discount between 0 and 100.");
   const order = await db.salesOrder.findUniqueOrThrow({ where: { id: input.orderId } });
   const lineCount = await db.salesOrderLine.count({ where: { orderId: input.orderId } });
 
@@ -284,7 +286,7 @@ export async function confirmOrder(orderId: string) {
       shipmentId: `call-off-release:${orderId}`,
       shipmentReference: confirmed.reference,
       deliveredAt: order.requestedDeliveryDate ?? new Date(),
-      lines: order.lines.flatMap((line) => line.orderedQuantity > line.cancelledQuantity && !["SECTION", "NOTE"].includes(line.type) ? [{ salesOrderId: orderId, salesOrderLineId: line.id, quantity: line.orderedQuantity - line.cancelledQuantity }] : []),
+      lines: order.lines.flatMap((line) => Number(line.orderedQuantity) > Number(line.cancelledQuantity) && !["SECTION", "NOTE"].includes(line.type) ? [{ salesOrderId: orderId, salesOrderLineId: line.id, quantity: Number(line.orderedQuantity) - Number(line.cancelledQuantity) }] : []),
     });
   }
   const { handoffSalesOrder } = await import("@/core/logistics/handoff");
@@ -353,7 +355,7 @@ export async function amendLineQuantity(lineId: string, orderId: string, newQuan
     action: "order.line_quantity_amended",
     entityType: "SalesOrderLine",
     entityId: lineId,
-    before: { orderedQuantity: line.orderedQuantity },
+    before: { orderedQuantity: Number(line.orderedQuantity) },
     after: { orderedQuantity: newQuantity },
   });
   await emit(DOMAIN_EVENTS.salesOrderLineChanged, { orderId, lineId });
@@ -434,7 +436,7 @@ export async function cancelOrder(orderId: string, reason: string) {
     const changed=await tx.salesOrder.updateMany({where:{id:orderId,organisationId:session.organisationId,updatedAt:order.updatedAt},data:{commercialStatus:'CANCELLED',cancelledAt:new Date(),revision:{increment:1},netAmount:0,taxAmount:0,grossAmount:0,discountAmount:0}});
     if(changed.count!==1)throw new Error('This order changed. Reload before cancelling.');
     if(!await tx.salesOrderRevision.findUnique({where:{orderId_revision:{orderId,revision:order.revision}}}))await tx.salesOrderRevision.create({data:{orderId,revision:order.revision,snapshot:commercialSnapshot(order),reason:'Commercial position before cancellation',createdByUserId:session.userId}});
-    for(const line of order.lines)await tx.salesOrderLine.update({where:{id:line.id},data:{cancelledQuantity:line.orderedQuantity,netAmount:0,taxAmount:0}});
+    for(const line of order.lines)await tx.salesOrderLine.update({where:{id:line.id},data:{cancelledQuantity:Number(line.orderedQuantity),netAmount:0,taxAmount:0}});
     const cancelled=await tx.salesOrder.findUniqueOrThrow({where:{id:orderId},include:{lines:true}});
     await tx.salesOrderRevision.create({data:{orderId,revision:cancelled.revision,snapshot:commercialSnapshot(cancelled),reason,createdByUserId:session.userId}});
     await tx.orderChangeEvent.create({data:{orderId,type:'CANCELLATION',changedByUserId:session.userId,fromValue:order.commercialStatus,toValue:'CANCELLED',reason}});
@@ -487,15 +489,15 @@ export async function cancelLineRemaining(lineId: string, orderId: string, cance
   const line = await db.salesOrderLine.findFirstOrThrow({ where: { id: lineId, orderId } });
   const { shippedQuantityForLine } = await import("@/core/logistics/handoff");
   const shippedQuantity = await shippedQuantityForLine(session.organisationId, orderId, lineId);
-  const maxCancellable = line.orderedQuantity - line.cancelledQuantity - shippedQuantity;
+  const maxCancellable = Number(line.orderedQuantity) - Number(line.cancelledQuantity) - shippedQuantity;
   if (cancelQuantity > maxCancellable) {
     throw new Error(`VALIDATION: maximum cancellable quantity is ${maxCancellable}`);
   }
 
-  await db.salesOrderLine.update({ where: { id: lineId }, data: { cancelledQuantity: line.cancelledQuantity + cancelQuantity } });
+  await db.salesOrderLine.update({ where: { id: lineId }, data: { cancelledQuantity: Number(line.cancelledQuantity) + cancelQuantity } });
   await recalcOrderTotals(orderId,session.organisationId);
 
-  await recordChange(orderId, "QUANTITY", String(line.cancelledQuantity), String(line.cancelledQuantity + cancelQuantity), session.userId, reason, lineId);
+  await recordChange(orderId, "QUANTITY", String(line.cancelledQuantity), String(Number(line.cancelledQuantity) + cancelQuantity), session.userId, reason, lineId);
   await emit(DOMAIN_EVENTS.salesOrderLineCancelled, { orderId, lineId });
 
   revalidatePath(`/sales/orders/${orderId}`);

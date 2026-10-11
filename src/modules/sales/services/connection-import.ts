@@ -1,3 +1,4 @@
+import { validQuantity } from "@/core/shared/quantity";
 import type { Prisma } from "@/generated/prisma/client";
 import type { SetupImportInput } from "@/core/setup/apply-import";
 import { resolvePrice } from "@/core/pricing/resolve-price";
@@ -28,7 +29,7 @@ export async function importSalesDrafts(tx: Prisma.TransactionClient, input: Set
   const products = await tx.product.findMany({ where: { organisationId: input.organisationId, code: { in: input.rows.map(row => row.productCode) }, active: true, sellable: true } });
   const groups = new Map<string, Array<{ row: Record<string, string>; index: number }>>();
   for (const [index, row] of input.rows.entries()) {
-    if (!/^\d+$/.test(row.quantity) || Number(row.quantity) < 1 || Number(row.quantity) > 1_000_000) throw new Error(rowIssue(index, "quantity must be a whole number from 1 to 1,000,000."));
+    if (!validQuantity(Number(row.quantity)) || Number(row.quantity) <= 0 || Number(row.quantity) > 1_000_000) throw new Error(rowIssue(index, "quantity must be positive, with up to six decimal places, up to 1,000,000."));
     if ((row.reference || "").length > 64 || (row.notes || "").length > 4000) throw new Error(rowIssue(index, "reference or notes are too long."));
     if (row[dateKey]) importDay(row[dateKey], index);
     if (row.unitPrice && (!/^\d+(\.\d{1,2})?$/.test(row.unitPrice) || Number(row.unitPrice) * 100 > 2147483647)) throw new Error(rowIssue(index, "unit price must be a non-negative amount with up to two decimal places."));

@@ -17,15 +17,17 @@ export async function MakeOrderDialog({ productId, label = "New production order
   const session = await requireSession();
   if (!can(session, "manufacturing.order.create")) return null;
   const made = await db.productDefinition.findMany({ where: { organisationId: session.organisationId, status: "ACTIVE", supply: { not: "BUY" }, product: { active: true, ...(productId ? { id: productId } : {}) } }, select: { batchQuantity: true, product: { select: { id: true, code: true, name: true, unitOfMeasure: true } } }, orderBy: { product: { name: "asc" } } });
+  const warehouses = can(session, "stock.read") ? await db.warehouse.findMany({ where: { organisationId: session.organisationId }, select: { id: true, name: true }, orderBy: { name: "asc" } }) : [];
   if (productId && !made.length) return null;
   return <CreateDialog label={label} title={productId ? `Make ${made[0].product.name}` : "New production order"} variant={variant}><ActionForm action={raiseProductionOrderAction}><div className="space-y-4">
     {productId ? <input type="hidden" name="productId" value={productId} /> : <label className="block text-xs font-medium">Product to make<select name="productId" required className={field}><option value="">{made.length ? "Choose a product" : "No products have a bill or routing yet"}</option>{made.map((row) => <option key={row.product.id} value={row.product.id}>{row.product.code} · {row.product.name} ({row.product.unitOfMeasure})</option>)}</select></label>}
     <div className="grid gap-4 sm:grid-cols-2">
-      <label className="block text-xs font-medium">Quantity{productId ? ` (${made[0].product.unitOfMeasure})` : ""}<input name="quantity" type="number" min={1} step="any" required defaultValue={productId ? Number(made[0].batchQuantity) || 1 : undefined} className={field} /></label>
+      <label className="block text-xs font-medium">Quantity{productId ? ` (${made[0].product.unitOfMeasure})` : ""}<input name="quantity" type="number" min="0.000001" step="0.000001" required defaultValue={productId ? Number(made[0].batchQuantity) || 1 : undefined} className={field} /></label>
       <label className="block text-xs font-medium">Needed by<input name="requiredDate" type="date" className={field} /></label>
     </div>
+    {!!warehouses.length && <label className="block text-xs font-medium">Production warehouse<select name="warehouseId" required className={field}>{warehouses.map(warehouse => <option key={warehouse.id} value={warehouse.id}>{warehouse.name}</option>)}</select></label>}
     <label className="block text-xs font-medium">Note (optional)<input name="notes" maxLength={1000} className={field} /></label>
-    <p className="text-xs text-slate-500">Creates a planned order from the product&apos;s current bill and routing. Releasing it creates a work order for each step; completing the last step uses the components and puts the finished goods into stock.</p>
+    <p className="text-xs text-slate-500">Creates a planned order from the product&apos;s current bill and routing. Releasing it creates a work order for each step; reporting the final step uses materials and stages good output for Warehouse collection. Choose the warehouse whose stock and Finance costs belong to this production.</p>
     {!productId && !made.length ? <Link href="/products" className="text-sm font-medium text-blue-600">Open Products to add a bill →</Link> : <Button type="submit" variant="primary">Create production order</Button>}
   </div></ActionForm></CreateDialog>;
 }

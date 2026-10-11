@@ -1,8 +1,14 @@
-import type { CSSProperties, MouseEvent } from "react";
+import {
+  useId,
+  type CSSProperties,
+  type MouseEvent,
+  type KeyboardEvent,
+} from "react";
 import type { AnalyticsResult } from "@/core/analytics/types";
 import type { StudioWidget } from "@/modules/analytics/definition";
 import { formatMoney } from "@/core/shared/money";
 import styles from "./studio.module.css";
+type PickEvent = MouseEvent | KeyboardEvent;
 
 export const palettes = {
   blue: ["#0071e3", "#3b93ef", "#8ec2f8", "#d7ebfd", "#f3f9ff", "#607089"],
@@ -45,6 +51,7 @@ export function pointsFor(metric: AnalyticsResult, widget: StudioWidget) {
   const filtered = metric.points.filter(
     (point) =>
       (!widget.category || point.label === widget.category) &&
+      (!widget.categories?.length || widget.categories.includes(point.label)) &&
       (widget.minimum === undefined || point.value >= widget.minimum) &&
       (widget.maximum === undefined || point.value <= widget.maximum),
   );
@@ -60,7 +67,8 @@ export function pointsFor(metric: AnalyticsResult, widget: StudioWidget) {
               ? a.value - b.value
               : b.value - a.value,
         );
-  return widget.visual === "kpi"
+  return widget.visual === "kpi" ||
+    (widget.visual === "gauge" && widget.target !== undefined)
     ? ordered
     : ordered.slice(
         0,
@@ -114,12 +122,17 @@ export function TileChart({
 }: {
   metric: AnalyticsResult;
   widget: StudioWidget;
-  onPick?: (label: string, event: MouseEvent) => void;
+  onPick?: (label: string, event: PickEvent) => void;
 }) {
-  const colors = palettes[widget.color ?? "blue"];
+  const colors =
+    widget.tone === "ink"
+      ? palettes[widget.color ?? "blue"].map(
+          (color) => `color-mix(in srgb, ${color} 65%, white)`,
+        )
+      : palettes[widget.color ?? "blue"];
   const points = pointsFor(metric, widget);
   const total = points.reduce((sum, point) => sum + point.value, 0);
-  const pick = (label: string, event: MouseEvent) => {
+  const pick = (label: string, event: PickEvent) => {
     event.stopPropagation();
     onPick?.(label, event);
   };
@@ -171,10 +184,14 @@ export function TileChart({
       />
     );
   if (
-    widget.visual === "kpi" &&
+    (widget.visual === "kpi" ||
+      (widget.visual === "gauge" && widget.target !== undefined)) &&
     metric.calculation === "distinct" &&
     points.length > 1 &&
-    (widget.minimum !== undefined || widget.maximum !== undefined)
+    (widget.minimum !== undefined ||
+      widget.maximum !== undefined ||
+      !!widget.categories?.length ||
+      (widget.visual === "gauge" && metric.overallValue === undefined))
   )
     return (
       <p className="py-8 text-sm text-slate-500">
@@ -189,6 +206,7 @@ export function TileChart({
           ...metric,
           overallValue:
             widget.category ||
+            widget.categories?.length ||
             widget.minimum !== undefined ||
             widget.maximum !== undefined
               ? undefined
@@ -230,7 +248,22 @@ export function TileChart({
     );
   if (widget.visual === "gauge")
     return (
-      <Gauge metric={metric} points={points} total={total} color={colors[0]} />
+      <Gauge
+        metric={{
+          ...metric,
+          overallValue:
+            widget.category ||
+            widget.categories?.length ||
+            widget.minimum !== undefined ||
+            widget.maximum !== undefined
+              ? undefined
+              : metric.overallValue,
+        }}
+        points={points}
+        total={total}
+        color={colors[0]}
+        target={widget.target}
+      />
     );
   if (widget.visual === "funnel")
     return (
@@ -311,11 +344,12 @@ function Trend({
   color: string;
   fill: boolean;
   metric: AnalyticsResult;
-  onPick?: (label: string, event: MouseEvent) => void;
+  onPick?: (label: string, event: PickEvent) => void;
 }) {
+  const gradient = useId();
   const width = 640;
-  const height = 220;
-  const pad = 28;
+  const height = 260;
+  const pad = 45;
   const min = Math.min(0, ...points.map((p) => p.value));
   const max = Math.max(1, ...points.map((p) => p.value));
   const range = max - min;
@@ -347,21 +381,46 @@ function Trend({
     <svg
       viewBox={`0 0 ${width} ${height}`}
       className="mt-4 w-full"
-      role="img"
+      role={onPick ? "group" : "img"}
       aria-label={`${metric.name} over time`}
     >
-      {[0.25, 0.5, 0.75].map((mark) => (
-        <line
-          key={mark}
-          x1={pad}
-          x2={width - pad}
-          y1={height - pad - mark * (height - pad * 2)}
-          y2={height - pad - mark * (height - pad * 2)}
-          stroke="#e6ebf2"
-          strokeWidth="1"
-        />
+      {[0, 0.25, 0.5, 0.75, 1].map((mark) => (
+        <g key={mark}>
+          <text
+            x={pad - 10}
+            y={height - pad - mark * (height - pad * 2) + 4}
+            textAnchor="end"
+            fontSize="10"
+            fill="currentColor"
+            opacity=".5"
+          >
+            {new Intl.NumberFormat("en-GB", {
+              notation: "compact",
+              maximumFractionDigits: 1,
+            }).format(
+              (min + mark * range) / (metric.unit === "money" ? 100 : 1),
+            )}
+          </text>
+          <line
+            key={mark}
+            x1={pad}
+            x2={width - pad}
+            y1={height - pad - mark * (height - pad * 2)}
+            y2={height - pad - mark * (height - pad * 2)}
+            stroke="currentColor"
+            opacity=".08"
+            strokeDasharray="3 5"
+            strokeWidth="1"
+          />
+        </g>
       ))}
-      {fill && <path d={area} fill={color} opacity="0.16" />}
+      <defs>
+        <linearGradient id={gradient} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity=".3" />
+          <stop offset="100%" stopColor={color} stopOpacity=".01" />
+        </linearGradient>
+      </defs>
+      {fill && <path d={area} fill={`url(#${gradient})`} />}
       <path
         d={line}
         fill="none"
@@ -375,8 +434,17 @@ function Trend({
           key={point.label}
           cx={point.x}
           cy={point.y}
-          r="8"
-          fill="white"
+          r="4"
+          tabIndex={onPick ? 0 : undefined}
+          role={onPick ? "button" : undefined}
+          aria-label={`${point.label}: ${formatPoint(point.value, metric)}`}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              onPick?.(point.label, event);
+            }
+          }}
+          fill="var(--chart-surface, white)"
           stroke={color}
           strokeWidth="2"
           className="cursor-pointer"
@@ -415,7 +483,7 @@ function Columns({
   color: string;
   soft: string;
   metric: AnalyticsResult;
-  onPick?: (label: string, event: MouseEvent) => void;
+  onPick?: (label: string, event: PickEvent) => void;
 }) {
   const max = Math.max(1, ...points.map((point) => point.value));
   return (
@@ -474,7 +542,7 @@ function Bars({
   color: string;
   soft: string;
   metric: AnalyticsResult;
-  onPick?: (label: string, event: MouseEvent) => void;
+  onPick?: (label: string, event: PickEvent) => void;
 }) {
   const max = Math.max(1, ...points.map((point) => point.value));
   return (
@@ -527,7 +595,7 @@ function Split({
   colors: string[];
   metric: AnalyticsResult;
   total: number;
-  onPick?: (label: string, event: MouseEvent) => void;
+  onPick?: (label: string, event: PickEvent) => void;
 }) {
   return (
     <div className="mt-6">
@@ -552,7 +620,9 @@ function Split({
           <button
             type="button"
             key={point.label}
-            onClick={(event) => onPick?.(point.label, event)}
+            onClick={(event) => {
+              onPick?.(point.label, event);
+            }}
             className="flex w-full items-center gap-2 text-left text-[12px]"
           >
             <span
@@ -581,7 +651,7 @@ function Funnel({
   points: AnalyticsResult["points"];
   color: string;
   metric: AnalyticsResult;
-  onPick?: (label: string, event: MouseEvent) => void;
+  onPick?: (label: string, event: PickEvent) => void;
 }) {
   const max = Math.max(1, ...points.map((point) => point.value));
   return (
@@ -622,14 +692,30 @@ function Gauge({
   points,
   total,
   color,
+  target,
 }: {
   metric: AnalyticsResult;
   points: AnalyticsResult["points"];
   total: number;
   color: string;
+  target?: number;
 }) {
-  const percent =
-    metric.unit === "percent"
+  const reading =
+    metric.overallValue ??
+    (metric.unit === "percent"
+      ? (points[0]?.value ?? 0)
+      : metric.calculation === "average"
+        ? points.reduce((sum, p) => sum + p.value * (p.sampleSize ?? 1), 0) /
+          points.reduce((sum, p) => sum + (p.sampleSize ?? 1), 0)
+        : metric.calculation === "min"
+          ? Math.min(...points.map((p) => p.value))
+          : metric.calculation === "max"
+            ? Math.max(...points.map((p) => p.value))
+            : total);
+  const actual = target ? Math.round((reading / target) * 100) : undefined;
+  const percent = target
+    ? Math.max(0, Math.min(100, actual!))
+    : metric.unit === "percent"
       ? Math.max(0, Math.min(100, points[0]?.value ?? 0))
       : total
         ? Math.round((points[0].value / total) * 100)
@@ -637,7 +723,11 @@ function Gauge({
   const length = Math.PI * 78;
   return (
     <div className="relative mx-auto mt-2 w-full max-w-[280px]">
-      <svg viewBox="0 0 200 118" role="img" aria-label={`${percent}%`}>
+      <svg
+        viewBox="0 0 200 118"
+        role="img"
+        aria-label={`${actual ?? percent}%`}
+      >
         <path
           d="M 22 100 A 78 78 0 0 1 178 100"
           fill="none"
@@ -655,13 +745,17 @@ function Gauge({
         />
       </svg>
       <div className="absolute inset-x-0 bottom-2 text-center">
-        <p className="text-3xl font-semibold tracking-tight">{percent}%</p>
+        <p className="text-3xl font-semibold tracking-tight">
+          {actual ?? percent}%
+        </p>
         <p className="text-[11px] text-slate-400">
-          {metric.unit === "percent"
-            ? points[0]?.label
-            : points[0]
-              ? `${points[0].label} share`
-              : ""}
+          {target
+            ? `${formatPoint(reading, metric)} / ${formatPoint(target, metric)} target`
+            : metric.unit === "percent"
+              ? points[0]?.label
+              : points[0]
+                ? `${points[0].label} share`
+                : ""}
         </p>
       </div>
     </div>
@@ -679,19 +773,10 @@ function Distribution({
   pie: boolean;
   colors: string[];
   metric: AnalyticsResult;
-  onPick?: (label: string, event: MouseEvent) => void;
+  onPick?: (label: string, event: PickEvent) => void;
 }) {
   const sorted = points.filter((point) => point.value > 0);
-  const groups =
-    sorted.length > 6
-      ? [
-          ...sorted.slice(0, 5),
-          {
-            label: "Other",
-            value: sorted.slice(5).reduce((sum, point) => sum + point.value, 0),
-          },
-        ]
-      : sorted;
+  const groups = sorted;
   const total = groups.reduce((sum, point) => sum + point.value, 0) || 1;
   const slices = groups.map((point, index) => {
     const before = groups
@@ -706,7 +791,7 @@ function Distribution({
     };
   });
   return (
-    <div className="mt-4 grid items-center gap-4 sm:grid-cols-[160px_1fr]">
+    <div className={styles.distribution}>
       <svg
         viewBox="0 0 200 200"
         className="mx-auto w-full max-w-[180px]"
@@ -728,7 +813,9 @@ function Distribution({
               r="78"
               fill={slice.color}
               className="cursor-pointer"
-              onClick={(event) => onPick?.(slice.label, event)}
+              onClick={(event) => {
+                onPick?.(slice.label, event);
+              }}
             >
               <title>{`${slice.label}: ${formatPoint(slice.value, metric, metric.unit === "money" ? slice.label : undefined)}`}</title>
             </circle>
@@ -740,14 +827,22 @@ function Distribution({
               stroke="white"
               strokeWidth="2"
               className="cursor-pointer"
-              onClick={(event) => onPick?.(slice.label, event)}
+              onClick={(event) => {
+                onPick?.(slice.label, event);
+              }}
             >
               <title>{`${slice.label}: ${formatPoint(slice.value, metric, metric.unit === "money" ? slice.label : undefined)}`}</title>
             </path>
           );
         })}
         {!pie && (
-          <circle cx="100" cy="100" r="48" fill="white" pointerEvents="none" />
+          <circle
+            cx="100"
+            cy="100"
+            r="48"
+            fill="var(--chart-surface, white)"
+            pointerEvents="none"
+          />
         )}
       </svg>
       <div className="space-y-2">
@@ -755,7 +850,9 @@ function Distribution({
           <button
             type="button"
             key={point.label}
-            onClick={(event) => onPick?.(point.label, event)}
+            onClick={(event) => {
+              onPick?.(point.label, event);
+            }}
             className="flex w-full items-center gap-2 text-left text-[12px]"
           >
             <span
@@ -782,7 +879,7 @@ function DataTable({
 }: {
   points: AnalyticsResult["points"];
   metric: AnalyticsResult;
-  onPick?: (label: string, event: MouseEvent) => void;
+  onPick?: (label: string, event: PickEvent) => void;
 }) {
   return (
     <div className="mt-4 overflow-x-auto">
@@ -800,7 +897,16 @@ function DataTable({
               className="cursor-pointer border-b border-slate-100 last:border-0"
               onClick={(event) => onPick?.(point.label, event)}
             >
-              <td className="py-2.5">{point.label}</td>
+              <td className="py-2.5">
+                <button
+                  type="button"
+                  className="w-full text-left"
+                  title={point.label}
+                  onClick={(event) => onPick?.(point.label, event)}
+                >
+                  {point.label}
+                </button>
+              </td>
               <td className="py-2.5 text-right font-medium">
                 {formatPoint(
                   point.value,
@@ -818,14 +924,10 @@ function DataTable({
 
 export function MiniVisual({ type }: { type: StudioWidget["visual"] }) {
   return (
-    <svg
-      viewBox="0 0 100 42"
-      aria-hidden="true"
-      className="h-8 w-full text-[var(--color-atlas-blue,#0071e3)]"
-    >
+    <svg viewBox="0 0 100 42" aria-hidden="true" className="h-8 w-full">
       {type === "kpi" ? (
         <text x="8" y="28" fontSize="18" fontWeight="650" fill="currentColor">
-          128
+          #
         </text>
       ) : type === "line" || type === "area" ? (
         <path
@@ -891,7 +993,7 @@ function SignedBars({
   points: AnalyticsResult["points"];
   metric: AnalyticsResult;
   color: string;
-  onPick?: (label: string, event: MouseEvent) => void;
+  onPick?: (label: string, event: PickEvent) => void;
 }) {
   const max = Math.max(1, ...points.map((p) => Math.abs(p.value)));
   return (

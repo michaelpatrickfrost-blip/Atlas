@@ -24,6 +24,15 @@ model AuthenticationRateLimit {
 }
 
 model Organisation {
+  productionBatches StockProductionBatch[]
+  productionCollections StockProductionCollection[]
+ manufacturingReports ManufacturingProductionReport[]
+ manufacturingLoads ManufacturingMachineLoad[]
+ stockMovementAllocations StockMovementAllocation[]
+ manufacturingMaterialUses ManufacturingMaterialUse[]
+ financeManufacturingProfiles FinanceManufacturingProfile[]
+ financeStockValues FinanceStockValue[]
+ financeManufacturingValueEntries FinanceManufacturingValueEntry[]
   studioDefinitions StudioDefinition[]
   studioExtensionRecords StudioExtensionRecord[]
  operationalMeetingEntry MeetingEntry[]
@@ -57,6 +66,7 @@ model Organisation {
   manufacturingPlanningRuns ManufacturingPlanningRun[]
   manufacturingSupplySuggestions ManufacturingSupplySuggestion[]
   manufacturingShifts ManufacturingShift[]
+  manufacturingDowntime ManufacturingDowntime[]
   manufacturingDemandForecasts ManufacturingDemandForecast[]
   schedulingHoursBudgets SchedulingHoursBudget[]
   schedulingWorkTypes SchedulingWorkType[]
@@ -1002,6 +1012,11 @@ enum ProductKind {
 }
 
 model Product {
+  productionBatches StockProductionBatch[]
+ financeStockValues FinanceStockValue[]
+ financeValueEntries FinanceManufacturingValueEntry[]
+ movementAllocations StockMovementAllocation[]
+ manufacturingMaterialUses ManufacturingMaterialUse[]
   planInputs PlanInput[]
   qualitySpecifications QualitySpecification[]
   qualityControlPoints QualityControlPoint[]
@@ -1044,11 +1059,11 @@ model Product {
   /** Sales eligibility is independent of stock, BOM class and make/buy policy. */
   sellable        Boolean    @default(true)
   /** Stock planning. 0 means not set. */
-  safetyStockLevel Int @default(0)
+  safetyStockLevel Decimal @db.Decimal(18,6) @default(0)
   leadTimeDays Int @default(0)
   /** Expected usage per month. Unset means usage is read from the movement ledger. */
-  monthlyUsage Int?
-  averageDailyDemand Int @default(0)
+  monthlyUsage Decimal? @db.Decimal(18,6)
+  averageDailyDemand Decimal @db.Decimal(18,6) @default(0)
   forecastMethod String @default("EXPONENTIAL_SMOOTHING")
   lastForecastDate DateTime?
   createdAt       DateTime   @default(now())
@@ -1113,6 +1128,10 @@ model ProductBomLine {
  definitionId String
  componentProductId String
  quantityPerUnit Decimal @db.Decimal(18,6)
+ enteredQuantityPerUnit Decimal? @db.Decimal(18,6)
+ enteredUnit String?
+ baseUnit String?
+ conversionFactor Decimal? @db.Decimal(24,12)
  scrapPercent Decimal @db.Decimal(8,4) @default(0)
  position Int @default(0)
  notes String @default("")
@@ -1123,6 +1142,9 @@ model ProductBomLine {
  @@map("product_bom_lines")
 }
 model ProductOperation {
+ processProfile String?
+ loadUnit String?
+ loadPerUnit Decimal? @db.Decimal(18,6)
  id String @id @default(cuid())
  organisationId String
  definitionId String
@@ -1130,6 +1152,12 @@ model ProductOperation {
  position Int @default(0)
  setupMinutes Decimal @db.Decimal(18,6) @default(0)
  runMinutesPerUnit Decimal @db.Decimal(18,6) @default(0)
+ timingMode String @default("PER_UNIT")
+ batchCapacity Decimal @db.Decimal(18,6) @default(1)
+ cycleMinutes Decimal @db.Decimal(18,6) @default(0)
+ coolingMinutes Decimal @db.Decimal(18,6) @default(0)
+ waitMinutes Decimal @db.Decimal(18,6) @default(0)
+ eligibleResourceIds String[] @default([])
  crewSize Decimal @db.Decimal(8,2) @default(1)
  machineMinorPerHour Int @default(0)
  labourMinorPerHour Int @default(0)
@@ -1248,7 +1276,7 @@ model PriceListEntry {
   priority Int @default(0)
   active Boolean @default(true)
   unitPriceAmount Int
-  minimumQuantity Int   @default(1)
+  minimumQuantity Decimal @db.Decimal(18,6)   @default(1)
   validFrom   DateTime?
   validTo     DateTime?
 
@@ -1303,7 +1331,7 @@ model AgreementPrice {
   agreementId      String
   productId        String
   unitPriceAmount  Int
-  minimumQuantity  Int    @default(1)
+  minimumQuantity Decimal @db.Decimal(18,6)    @default(1)
 
   agreement CommercialAgreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
   product   Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -2012,7 +2040,7 @@ model SalesAgreementLine {
   lineNumber         Int
   productId          String?
   description        String
-  committedQuantity  Int
+  committedQuantity Decimal @db.Decimal(18,6)
   unitPriceAmount    Int
   unitOfMeasure      String @default("each")
   currency           String @default("GBP")
@@ -2040,7 +2068,7 @@ model QuoteLine {
   netAmount Int @default(0)
   taxAmount Int @default(0)
   description String
-  quantity    Int
+  quantity Decimal @db.Decimal(18,6)
   unitAmount  Int
   currency    String @default("GBP")
   invoiceWhenInStock Boolean @default(false)
@@ -2195,8 +2223,8 @@ model SalesOrderLine {
   descriptionSnapshot   String
   customerProductReference String?
 
-  orderedQuantity   Int     @default(1)
-  cancelledQuantity Int     @default(0)
+  orderedQuantity Decimal @db.Decimal(18,6)     @default(1)
+  cancelledQuantity Decimal @db.Decimal(18,6)     @default(0)
   unitOfMeasure     String  @default("each")
 
   unitPriceAmount Int
@@ -2466,6 +2494,12 @@ model Site {
  @@map("sites")
 }
 model Warehouse {
+ productionBatches StockProductionBatch[] @relation("ProductionBatchWarehouse")
+ productionCollections StockProductionCollection[] @relation("ProductionCollectionWarehouse")
+ manufacturingCostProfiles FinanceManufacturingProfile[]
+ financeStockValues FinanceStockValue[]
+ financeValueEntries FinanceManufacturingValueEntry[]
+ movementAllocations StockMovementAllocation[]
  id String @id @default(cuid())
  organisationId String
  name String
@@ -2485,6 +2519,7 @@ model Warehouse {
  movesTo InternalMove[] @relation("MoveTo")
  @@unique([organisationId,code])
  @@index([organisationId,siteId])
+ @@unique([id,organisationId])
  @@map("warehouses")
 }
 model InventoryBalance {
@@ -2492,7 +2527,7 @@ model InventoryBalance {
  organisationId String
  warehouseId String
  productId String
- quantity Int @default(0)
+ quantity Decimal @db.Decimal(18,6) @default(0)
  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
  warehouse Warehouse @relation(fields:[warehouseId],references:[id])
  product Product @relation(fields:[productId],references:[id])
@@ -2501,6 +2536,11 @@ model InventoryBalance {
  @@map("inventory_balances")
 }
 model InventoryMovement {
+ financeValueEntries FinanceManufacturingValueEntry[]
+ productionReportId String?
+ productionReport ManufacturingProductionReport? @relation(fields:[productionReportId,organisationId],references:[id,organisationId])
+ requestFingerprint String?
+ allocations StockMovementAllocation[]
  id String @id @default(cuid())
  organisationId String
  shipmentId String?
@@ -2509,7 +2549,11 @@ model InventoryMovement {
  workOrderId String?
  warehouseId String
  productId String
- delta Int
+ delta Decimal @db.Decimal(18,6)
+ enteredQuantity Decimal? @db.Decimal(18,6)
+ enteredUnit String?
+ baseUnit String?
+ conversionFactor Decimal? @db.Decimal(24,12)
  reason String
  reference String?
  requestKey String
@@ -2519,6 +2563,7 @@ model InventoryMovement {
  warehouse Warehouse @relation(fields:[warehouseId],references:[id])
  product Product @relation(fields:[productId],references:[id])
  @@unique([organisationId,requestKey])
+ @@unique([id,organisationId])
  @@index([organisationId,createdAt])
  @@map("inventory_movements")
 }
@@ -2531,10 +2576,11 @@ model InternalMove {
  toWarehouseId String
  fromLocationId String?
  toLocationId String?
- quantity Int
+ quantity Decimal @db.Decimal(18,6)
  status String @default("IN_TRANSIT")
  reason String
  requestKey String
+ requestFingerprint String?
  actorUserId String
  createdAt DateTime @default(now())
  receivedAt DateTime?
@@ -3775,6 +3821,10 @@ enum ManufacturingResourceType {
 
 // A specific capacity resource within a work centre (§22–24, §27).
 model ManufacturingResource {
+ loadCapacity Decimal? @db.Decimal(18,6)
+ loadUnit String?
+ processProfiles String[] @default([])
+ machineLoads ManufacturingMachineLoad[]
  id String @id @default(cuid())
  organisationId String
  workCentreId String
@@ -3783,6 +3833,9 @@ model ManufacturingResource {
  nominalUnitsPerHour Decimal? @db.Decimal(18,6)
  planningEfficiencyPercent Decimal @db.Decimal(8,4) @default(100)
  active Boolean @default(true)
+ processKind String @default("GENERAL")
+ calendarMode String @default("CONTINUOUS")
+ timezone String @default("Europe/London")
  createdAt DateTime @default(now())
  updatedAt DateTime @updatedAt
  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
@@ -3790,8 +3843,27 @@ model ManufacturingResource {
  workOrders ManufacturingWorkOrder[]
  recipeSteps ProductOperation[]
  shifts ManufacturingShift[]
+ downtime ManufacturingDowntime[]
+ @@unique([id,organisationId])
  @@index([organisationId,workCentreId,active])
  @@map("manufacturing_resources")
+}
+
+// Planner-entered maintenance/holiday exclusions; central, tenant-bound records.
+model ManufacturingDowntime {
+ id String @id @default(cuid())
+ organisationId String
+ resourceId String
+ startsAt DateTime
+ endsAt DateTime
+ reason String
+ active Boolean @default(true)
+ createdByUserId String
+ createdAt DateTime @default(now())
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ resource ManufacturingResource @relation(fields:[resourceId,organisationId],references:[id,organisationId],onDelete:Cascade)
+ @@index([organisationId,resourceId,active,startsAt],map:"manufacturing_downtime_org_resource_active_start_idx")
+ @@map("manufacturing_downtime")
 }
 
 // §25-27: a real (if simple) working-hours calendar — man-hours and times a
@@ -3836,6 +3908,14 @@ enum ManufacturingOrderStatus {
 // snapshotted by reference to the ProductDefinition used at release so later edits
 // to the live definition never rewrite history for an order already running.
 model ManufacturingOrder {
+ stockBatches StockProductionBatch[]
+ originOrderId String?
+ originRequestKey String?
+ originFingerprint String?
+ originOrder ManufacturingOrder? @relation("ManufacturingOrigin",fields:[originOrderId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ followOnOrders ManufacturingOrder[] @relation("ManufacturingOrigin")
+ financeValueEntries FinanceManufacturingValueEntry[]
+ reports ManufacturingProductionReport[]
  warehouseId String?
  id String @id @default(cuid())
  organisationId String
@@ -3863,10 +3943,12 @@ model ManufacturingOrder {
  sourceSalesOrderLine SalesOrderLine? @relation(fields:[sourceSalesOrderLineId],references:[id],onDelete:SetNull)
  workOrders ManufacturingWorkOrder[]
  @@unique([organisationId,orderNumber])
+ @@unique([id,organisationId])
  @@index([organisationId,status,requiredDate])
  @@index([organisationId,productId])
  @@index([organisationId,sourceSalesOrderLineId])
  @@map("manufacturing_orders")
+ @@unique([organisationId,originRequestKey])
 }
 
 enum ManufacturingWorkOrderStatus {
@@ -3881,6 +3963,24 @@ enum ManufacturingWorkOrderStatus {
 // Shop-floor executable step generated from a routing operation (§66–68).
 // operationName/sequence are a snapshot of ProductOperation at release time.
 model ManufacturingWorkOrder {
+ costBasisCaptured Boolean @default(false)
+ loadedQuantity Decimal? @db.Decimal(18,6)
+ financeValueEntries FinanceManufacturingValueEntry[]
+ machineMinorPerHour Int @default(0)
+ labourMinorPerHour Int @default(0)
+ overheadMinorPerHour Int @default(0)
+ crewSize Decimal @db.Decimal(18,6) @default(0)
+ machineIncludesLabour Boolean @default(false)
+ machineIncludesOverhead Boolean @default(false)
+ processProfile String?
+ loadUnit String?
+ loadPerUnit Decimal? @db.Decimal(18,6)
+ batchCapacity Decimal? @db.Decimal(18,6)
+ cycleMinutes Decimal? @db.Decimal(18,6)
+ coolingMinutes Decimal? @db.Decimal(18,6)
+ reports ManufacturingProductionReport[]
+ machineLoadId String?
+ machineLoad ManufacturingMachineLoad? @relation(fields:[machineLoadId,organisationId],references:[id,organisationId])
  id String @id @default(cuid())
  organisationId String
  productionOrderId String
@@ -3899,6 +3999,9 @@ model ManufacturingWorkOrder {
   plannedMinutes Int @default(0)
   setupMinutes Int @default(0)
   runMinutes Int @default(0)
+  timingMode String @default("PER_UNIT")
+  waitMinutes Int @default(0)
+  eligibleResourceIds String[] @default([])
   // §20 plan-vs-actual: elapsed clock time between actualStart and actualEnd,
   // written when the step completes.
   actualMinutes Int @default(0)
@@ -3914,9 +4017,12 @@ model ManufacturingWorkOrder {
  productionOrder ManufacturingOrder @relation(fields:[productionOrderId],references:[id],onDelete:Cascade)
  workCentre ManufacturingWorkCentre? @relation(fields:[workCentreId],references:[id],onDelete:SetNull)
  resource ManufacturingResource? @relation(fields:[resourceId],references:[id],onDelete:SetNull)
+ @@unique([id,organisationId])
  @@index([organisationId,productionOrderId,sequence])
  @@index([organisationId,workCentreId,status])
  @@map("manufacturing_work_orders")
+ stockBatches StockProductionBatch[]
+ @@unique([id,productionOrderId,organisationId])
 }
 
 // §156: a planning run has its own identity so results can be inspected/compared,
@@ -5101,6 +5207,9 @@ model MarketingExperimentAssignment {
 
 // Finance: central books, operational subledgers and immutable accounting.
 model FinanceEntity {
+ manufacturingProfiles FinanceManufacturingProfile[]
+ stockValues FinanceStockValue[]
+ manufacturingValueEntries FinanceManufacturingValueEntry[]
  id String @id @default(cuid())
  organisationId String
  name String
@@ -5128,6 +5237,12 @@ model FinanceEntity {
  @@map("finance_entities")
 }
 model FinanceAccount {
+ manufacturingInventoryProfiles FinanceManufacturingProfile[] @relation("MfgInventoryAccount")
+ manufacturingWipProfiles FinanceManufacturingProfile[] @relation("MfgWipAccount")
+ manufacturingCogsProfiles FinanceManufacturingProfile[] @relation("MfgCogsAccount")
+ manufacturingScrapProfiles FinanceManufacturingProfile[] @relation("MfgScrapAccount")
+ manufacturingAbsorptionProfiles FinanceManufacturingProfile[] @relation("MfgAbsorptionAccount")
+ manufacturingOpeningProfiles FinanceManufacturingProfile[] @relation("MfgOpeningAccount")
  id String @id @default(cuid())
  organisationId String
  entityId String
@@ -5167,6 +5282,7 @@ model FinancePeriod {
  @@map("finance_periods")
 }
 model FinanceJournal {
+ manufacturingValueEntries FinanceManufacturingValueEntry[]
  id String @id @default(cuid())
  organisationId String
  entityId String
@@ -5320,6 +5436,7 @@ model FinanceDocument {
  @@map("finance_documents")
 }
 model FinanceDocumentLine {
+ priceQuantity Decimal @default(1) @db.Decimal(18,6)
  salesOrderLineId String?
  id String @id @default(cuid())
  organisationId String
@@ -5668,6 +5785,9 @@ model SchedulingCalendarRule {
 // Stock owns locations, lots, serials, positions and reservations.
 // Logistics requests movements; it does not keep a second inventory balance.
 model StockLocation {
+ productionBatches StockProductionBatch[] @relation("ProductionBatchLocation")
+ productionCollections StockProductionCollection[] @relation("ProductionCollectionLocation")
+ movementAllocations StockMovementAllocation[]
  id String @id @default(cuid())
  organisationId String
  warehouseId String
@@ -5685,8 +5805,64 @@ model StockLocation {
  movesFrom InternalMove[] @relation("MoveFromLocation")
  movesTo InternalMove[] @relation("MoveToLocation")
  @@unique([warehouseId,code])
+ @@unique([id,warehouseId,organisationId])
  @@index([organisationId,warehouseId])
  @@map("stock_locations")
+ @@unique([id,organisationId])
+}
+
+// Stock owns the physical production handoff; this is not a second stock balance.
+model StockProductionBatch {
+ id String @id @default(cuid())
+ organisationId String
+ manufacturingOrderId String
+ workOrderId String
+ productId String
+ warehouseId String
+ locationId String
+ requestKey String?
+ productionReportId String?
+ productionReport ManufacturingProductionReport? @relation(fields:[productionReportId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ serials String[] @default([])
+ lotCode String
+ quantity Decimal @db.Decimal(18,6)
+ collectedQuantity Decimal @db.Decimal(18,6) @default(0)
+ fullyCollected Boolean @default(false)
+ version Int @default(1)
+ createdByUserId String
+ createdAt DateTime @default(now())
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ workOrder ManufacturingWorkOrder @relation(fields:[workOrderId,manufacturingOrderId,organisationId],references:[id,productionOrderId,organisationId],onDelete:Restrict)
+ order ManufacturingOrder @relation(fields:[manufacturingOrderId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ product Product @relation(fields:[productId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ warehouse Warehouse @relation("ProductionBatchWarehouse",fields:[warehouseId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ location StockLocation @relation("ProductionBatchLocation",fields:[locationId,warehouseId,organisationId],references:[id,warehouseId,organisationId],onDelete:Restrict)
+ collections StockProductionCollection[]
+ @@index([manufacturingOrderId,organisationId])
+ @@unique([organisationId,requestKey])
+ @@unique([id,organisationId])
+ @@index([organisationId,createdAt])
+ @@map("stock_production_batches")
+}
+model StockProductionCollection {
+ id String @id @default(cuid())
+ organisationId String
+ batchId String
+ warehouseId String
+ locationId String
+ serials String[] @default([])
+ quantity Decimal @db.Decimal(18,6)
+ requestKey String
+ actorUserId String
+ note String
+ createdAt DateTime @default(now())
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
+ batch StockProductionBatch @relation(fields:[batchId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ warehouse Warehouse @relation("ProductionCollectionWarehouse",fields:[warehouseId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ location StockLocation @relation("ProductionCollectionLocation",fields:[locationId,warehouseId,organisationId],references:[id,warehouseId,organisationId],onDelete:Restrict)
+ @@unique([organisationId,requestKey])
+ @@index([organisationId,batchId,createdAt])
+ @@map("stock_production_collections")
 }
 model StockLot {
  id String @id @default(cuid())
@@ -5726,7 +5902,7 @@ model StockPosition {
  productId String
  lotId String @default("")
  status String @default("AVAILABLE")
- quantity Int @default(0)
+ quantity Decimal @db.Decimal(18,6) @default(0)
  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
  warehouse Warehouse @relation(fields:[warehouseId],references:[id],onDelete:Cascade)
  location StockLocation @relation(fields:[locationId],references:[id],onDelete:Restrict)
@@ -5740,7 +5916,7 @@ model StockForecast {
  organisationId String
  productId String
  forecastDate DateTime
- quantity Int
+ quantity Decimal @db.Decimal(18,6)
  method String
  confidence Int @default(80)
  notes String?
@@ -5751,6 +5927,7 @@ model StockForecast {
  @@map("stock_forecasts")
 }
 model StockReservation {
+ requestFingerprint String?
  id String @id @default(cuid())
  organisationId String
  fulfilmentLineId String?
@@ -5758,7 +5935,7 @@ model StockReservation {
  warehouseId String
  locationId String?
  lotId String @default("")
- quantity Int
+ quantity Decimal @db.Decimal(18,6)
  sourceType String
  sourceId String
  requestKey String
@@ -5770,13 +5947,16 @@ model StockReservation {
  @@map("stock_reservations")
 }
 model StockDiscrepancy {
+ enteredQuantity Decimal? @db.Decimal(18,6)
+ enteredUnit String?
+ conversionFactor Decimal? @db.Decimal(24,12)
  id String @id @default(cuid())
  organisationId String
  productId String
  warehouseId String
  locationId String?
- systemQuantity Int
- reportedQuantity Int
+ systemQuantity Decimal @db.Decimal(18,6)
+ reportedQuantity Decimal @db.Decimal(18,6)
  status String @default("OPEN")
  sourceType String
  sourceId String
@@ -5862,14 +6042,14 @@ model FulfilmentLine {
  salesOrderLineId String
  productId String?
  description String
- orderedQuantity Int
- cancelledQuantity Int @default(0)
- allocatedQuantity Int @default(0)
- pickedQuantity Int @default(0)
- packedQuantity Int @default(0)
- shippedQuantity Int @default(0)
- deliveredQuantity Int @default(0)
- returnedQuantity Int @default(0)
+ orderedQuantity Decimal @db.Decimal(18,6)
+ cancelledQuantity Decimal @db.Decimal(18,6) @default(0)
+ allocatedQuantity Decimal @db.Decimal(18,6) @default(0)
+ pickedQuantity Decimal @db.Decimal(18,6) @default(0)
+ packedQuantity Decimal @db.Decimal(18,6) @default(0)
+ shippedQuantity Decimal @db.Decimal(18,6) @default(0)
+ deliveredQuantity Decimal @db.Decimal(18,6) @default(0)
+ returnedQuantity Decimal @db.Decimal(18,6) @default(0)
  allocationStatus String @default("UNALLOCATED")
  shortage Json?
  unitOfMeasure String @default("each")
@@ -5932,8 +6112,8 @@ model WarehouseTaskLine {
  productCode String @default("")
  locationCode String?
  expectedBarcode String?
- requiredQuantity Int
- confirmedQuantity Int @default(0)
+ requiredQuantity Decimal @db.Decimal(18,6)
+ confirmedQuantity Decimal @db.Decimal(18,6) @default(0)
  lotCode String?
  serials String[] @default([])
  status String @default("OPEN")
@@ -6002,7 +6182,7 @@ model PackageContent {
  packageId String
  productId String?
  description String
- quantity Int
+ quantity Decimal @db.Decimal(18,6)
  lotCode String?
  serials String[] @default([])
  fulfilmentLineId String?
@@ -6061,7 +6241,7 @@ model ShipmentSource {
  shipmentId String
  requirementId String
  fulfilmentLineId String
- quantity Int
+ quantity Decimal @db.Decimal(18,6)
  organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Cascade)
  shipment Shipment @relation(fields:[shipmentId],references:[id],onDelete:Cascade)
  requirement FulfilmentRequirement @relation(fields:[requirementId],references:[id],onDelete:Cascade)
@@ -6145,8 +6325,8 @@ model ReceiptLine {
  receiptId String
  productId String?
  description String
- expectedQuantity Int
- receivedQuantity Int @default(0)
+ expectedQuantity Decimal @db.Decimal(18,6)
+ receivedQuantity Decimal @db.Decimal(18,6) @default(0)
  lotCode String?
  serials String[] @default([])
  condition String @default("GOOD")
@@ -6184,8 +6364,8 @@ model ReturnLine {
  returnId String
  productId String?
  description String
- quantity Int
- receivedQuantity Int @default(0)
+ quantity Decimal @db.Decimal(18,6)
+ receivedQuantity Decimal @db.Decimal(18,6) @default(0)
  lotCode String?
  serials String[] @default([])
  condition String?
@@ -7699,7 +7879,7 @@ model QualityInspection {
   locationId        String?
   sourceType        String?
   sourceId          String?
-  quantityInspected Int      @default(1)
+  quantityInspected Decimal @default(1) @db.Decimal(18,6)
   result            QualityInspectionResult @default(PENDING)
   notes             String?
   inspectedByUserId String
@@ -7750,7 +7930,7 @@ model QualityHold {
   lotCode         String?
   warehouseId     String?
   locationId      String?
-  quantity        Int
+  quantity Decimal @db.Decimal(18,6)
   status          QualityHoldStatus @default(ACTIVE)
   reason          String
   inspectionId    String?
@@ -7818,7 +7998,7 @@ model NonConformance {
   specificationId    String?
   inspectionId       String?
   holdId             String?
-  quantityAffected   Int?
+  quantityAffected Decimal? @db.Decimal(18,6)
   defect             String
   containment        String?
   disposition        NonConformanceDisposition @default(PENDING)
@@ -9715,4 +9895,179 @@ model StudioFieldMigrationOutcome {
   @@unique([targetValueId],map:"studio_outcome_value_key")
   @@index([organisationId,definitionId,preparationId],map:"studio_outcome_scope_idx")
   @@map("studio_field_migration_outcomes")
+}
+
+// Immutable reporting events; corrections use a new reviewed transaction.
+model ManufacturingProductionReport {
+ stagedBatches StockProductionBatch[]
+ productionOrder ManufacturingOrder @relation(fields:[productionOrderId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict)
+ materialUses ManufacturingMaterialUse[]
+ movements InventoryMovement[]
+ id String @id @default(cuid())
+ organisationId String
+ workOrderId String
+ productionOrderId String
+ requestKey String
+ fingerprint String
+ goodQuantity Decimal @db.Decimal(18,6)
+ scrapQuantity Decimal @db.Decimal(18,6)
+ enteredUnit String
+ enteredGoodQuantity Decimal @db.Decimal(18,6)
+ enteredScrapQuantity Decimal @db.Decimal(18,6)
+ final Boolean
+ lotCode String?
+ serials String[] @default([])
+ shortCloseReason String?
+ actorUserId String
+ createdAt DateTime @default(now())
+ workOrder ManufacturingWorkOrder @relation(fields:[workOrderId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ @@unique([organisationId,requestKey])
+ @@unique([id,organisationId])
+ @@index([organisationId,productionOrderId,createdAt])
+ @@map("manufacturing_production_reports")
+}
+model StockMovementAllocation {
+ warehouse Warehouse @relation(fields:[warehouseId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ product Product @relation(fields:[productId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ location StockLocation @relation(fields:[locationId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict)
+ materialUses ManufacturingMaterialUse[]
+ id String @id @default(cuid())
+ organisationId String
+ movementId String
+ productId String
+ warehouseId String
+ locationId String
+ lotId String @default("")
+ serials String[] @default([])
+ direction String
+ quantity Decimal @db.Decimal(18,6)
+ status String
+ movement InventoryMovement @relation(fields:[movementId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ @@unique([id,organisationId])
+ @@index([organisationId,lotId])
+ @@index([organisationId,movementId])
+ @@map("stock_movement_allocations")
+}
+model ManufacturingMachineLoad {
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict)
+ resource ManufacturingResource @relation(fields:[resourceId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ id String @id @default(cuid())
+ organisationId String
+ resourceId String
+ reference String
+ processProfile String
+ capacity Decimal @db.Decimal(18,6)
+ unitOfMeasure String
+ occupiedCapacity Decimal @db.Decimal(18,6)
+ startsAt DateTime
+ endsAt DateTime
+ status String @default("PLANNED")
+ version Int @default(1)
+ actorUserId String
+ createdAt DateTime @default(now())
+ workOrders ManufacturingWorkOrder[]
+ @@unique([id,organisationId])
+ @@unique([organisationId,reference])
+ @@index([organisationId,resourceId,status])
+ @@map("manufacturing_machine_loads")
+}
+
+// Finance owns values and journals; physical quantities remain in Inventory.
+model FinanceManufacturingProfile {
+ entity FinanceEntity @relation(fields:[entityId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ warehouse Warehouse @relation(fields:[warehouseId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ inventoryAccount FinanceAccount @relation("MfgInventoryAccount",fields:[inventoryAccountId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ wipAccount FinanceAccount @relation("MfgWipAccount",fields:[wipAccountId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ cogsAccount FinanceAccount @relation("MfgCogsAccount",fields:[cogsAccountId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ scrapAccount FinanceAccount @relation("MfgScrapAccount",fields:[scrapAccountId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ absorptionAccount FinanceAccount @relation("MfgAbsorptionAccount",fields:[absorptionAccountId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ openingAccount FinanceAccount @relation("MfgOpeningAccount",fields:[openingAccountId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict)
+ approvedDefinitionIds String[] @default([])
+ id String @id @default(cuid())
+ organisationId String
+ warehouseId String
+ entityId String
+ inventoryAccountId String
+ wipAccountId String
+ cogsAccountId String
+ scrapAccountId String
+ absorptionAccountId String
+ openingAccountId String
+ energyMinorPerKwh Int @default(0)
+ active Boolean @default(true)
+ version Int @default(1)
+ updatedAt DateTime @updatedAt
+ @@unique([organisationId,warehouseId])
+ @@map("finance_manufacturing_profiles")
+}
+model FinanceStockValue {
+ entity FinanceEntity @relation(fields:[entityId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ warehouse Warehouse @relation(fields:[warehouseId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ product Product @relation(fields:[productId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict)
+ id String @id @default(cuid())
+ organisationId String
+ entityId String
+ warehouseId String
+ productId String
+ quantity Decimal @db.Decimal(18,6) @default(0)
+ valueMinor BigInt @default(0)
+ version Int @default(1)
+ @@unique([organisationId,warehouseId,productId])
+ @@index([organisationId,entityId])
+ @@map("finance_stock_values")
+}
+model FinanceManufacturingValueEntry {
+ entity FinanceEntity @relation(fields:[entityId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ warehouse Warehouse @relation(fields:[warehouseId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ product Product? @relation(fields:[productId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ productionOrder ManufacturingOrder? @relation(fields:[productionOrderId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ workOrder ManufacturingWorkOrder? @relation(fields:[workOrderId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ movement InventoryMovement? @relation(fields:[movementId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ journal FinanceJournal? @relation(fields:[journalId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict)
+ id String @id @default(cuid())
+ organisationId String
+ entityId String
+ warehouseId String
+ productId String?
+ productionOrderId String?
+ workOrderId String?
+ movementId String?
+ journalId String?
+ sourceKey String
+ kind String
+ quantity Decimal @db.Decimal(18,6) @default(0)
+ inventoryMinor BigInt @default(0)
+ wipMinor BigInt @default(0)
+ expenseMinor BigInt @default(0)
+ machineMinutes Decimal? @db.Decimal(18,6)
+ personMinutes Decimal? @db.Decimal(18,6)
+ energyKwh Decimal? @db.Decimal(18,6)
+ fingerprint String?
+ actorUserId String
+ createdAt DateTime @default(now())
+ @@unique([organisationId,sourceKey])
+ @@index([organisationId,productionOrderId,createdAt])
+ @@index([organisationId,movementId])
+ @@map("finance_manufacturing_value_entries")
+}
+
+model ManufacturingMaterialUse {
+ component Product @relation(fields:[componentProductId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ organisation Organisation @relation(fields:[organisationId],references:[id],onDelete:Restrict)
+ id String @id @default(cuid())
+ organisationId String
+ reportId String
+ stockAllocationId String?
+ componentProductId String
+ quantity Decimal @db.Decimal(18,6)
+ report ManufacturingProductionReport @relation(fields:[reportId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ stockAllocation StockMovementAllocation? @relation(fields:[stockAllocationId,organisationId],references:[id,organisationId],onDelete:Restrict)
+ @@index([organisationId,reportId])
+ @@index([organisationId,stockAllocationId])
+ @@map("manufacturing_material_uses")
 }

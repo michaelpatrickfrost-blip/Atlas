@@ -96,7 +96,7 @@ describe("logistics decisions", () => {
   });
 
   it("depends on the stock contract rather than stock internals", () => {
-    expect(Object.keys(stockProvider).sort()).toEqual(["executeMovement", "getAvailability", "getLocations", "getLots", "getReservations", "getSerials", "receiveStock", "releaseReservation", "reportDiscrepancy", "requestReservation", "returnStock", "shipStock"]);
+    expect(Object.keys(stockProvider).sort()).toEqual(["executeMovement", "getAvailability", "getLocations", "getLots", "getReservations", "getSerials", "receiveStock", "releaseReservation", "reportDiscrepancy", "requestReservation", "returnStock", "shipStock", "stageProduction"]);
     const source = ["demand.ts", "work.ts", "shipping.ts", "inbound.ts", "returns.ts"].map((file) => readFileSync(`src/modules/logistics/services/${file}`, "utf8")).join("\n");
     expect(source).not.toContain("@/modules/stock/");
     expect(source).not.toContain("@/modules/finance/");

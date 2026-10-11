@@ -39,8 +39,8 @@ export default async function FulfilPage({ searchParams }: { searchParams: Promi
             <thead className="bg-[var(--color-surface-sunken)] text-xs text-[var(--color-ink-muted)]"><tr><th className="px-4 py-3"></th><th className="px-4 py-3">Order</th><th>Customer PO</th><th>Customer</th><th>Requested</th><th>Promise</th><th>Progress</th><th>Status</th></tr></thead>
             <tbody>
               {board.rows.map((row) => {
-                const required = row.lines.reduce((sum, line) => sum + Math.max(0, line.orderedQuantity - line.cancelledQuantity), 0);
-                const allocated = row.lines.reduce((sum, line) => sum + line.allocatedQuantity, 0);
+                const required = row.lines.reduce((sum, line) => sum + Math.max(0, Number(line.orderedQuantity) - Number(line.cancelledQuantity)), 0);
+                const allocated = row.lines.reduce((sum, line) => sum + Number(line.allocatedQuantity), 0);
                 return (
                   <tr key={row.id} className="border-t border-[var(--color-border)]">
                     <td className="px-4 py-3">{can(session, C.fulfilmentRelease) && <input type="checkbox" disabled={required === 0 || Boolean(row.holdSummary) || row.fulfilmentMode !== "WAREHOUSE"} name="id" value={row.id} aria-label={`Select ${row.reference}`} />}</td>

@@ -2,6 +2,7 @@ import type { Session } from "@/core/auth/session";
 import type { SearchResult } from "@/core/modules/types";
 import { getAccessibleModules, getModuleNavigation } from "@/core/modules/runtime";
 import { searchCustomers } from "@/core/customers/search";
+import { visibleGuides } from '@/core/guides/catalogue';
 
 /**
  * Powers the ⌘K command palette. Combines static navigation matches with each
@@ -37,5 +38,8 @@ export async function searchAtlas(session: Session, query: string): Promise<Sear
       .map((module) => module.searchProvider!({ organisationId: session.organisationId, session, query: trimmed })),
   ]);
 
-  return [...navigationMatches, ...customerResults, ...providerResults.flat()].slice(0, 20);
+  const guideMatches: SearchResult[] = visibleGuides(session.capabilities, new Set(accessible.map(module => module.id)))
+    .filter(guide => `${guide.title} ${guide.summary}`.toLowerCase().includes(trimmed.toLowerCase()))
+    .slice(0, 3).map(guide => ({ id: `guide:${guide.id}`, title: guide.title, subtitle: 'Working guide', href: `/guides/${guide.id}`, group: 'Guides' }));
+  return [...navigationMatches, ...guideMatches, ...customerResults, ...providerResults.flat()].slice(0, 20);
 }

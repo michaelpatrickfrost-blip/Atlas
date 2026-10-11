@@ -16,6 +16,7 @@ import type { Session } from "@/core/auth/session";
 import { TopbarVariant } from "./topbar-variant";
 import { AtlasLogo } from "./atlas-logo";
 import { CompanyMark } from "./company-mark";
+import { ContextGuideLink } from './context-guide-link';
 
 export function Topbar({ session }: { session: Session }) {
   const today = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/London" }).format(new Date());
@@ -27,6 +28,7 @@ export function Topbar({ session }: { session: Session }) {
     <div className="order-3 w-full min-w-0 sm:order-none sm:flex-1 lg:ml-12 lg:max-w-[450px]"><CommandPalette /></div>
     <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-3">
       {can(session, "core.profile.self") && <TasksButton />}
+      <ContextGuideLink canPurchase={session.capabilities.has('finance.purchase.read')} />
       <NoticeBell />
       {can(session, CORE_CAPABILITIES.chatRead) && <ChatDock />}
       <Link href="/profile" aria-label="My work" title="My work" className="flex items-center gap-3 rounded-2xl px-2 py-1.5 transition hover:bg-white/70">
@@ -50,6 +52,7 @@ export function Topbar({ session }: { session: Session }) {
       <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-1.5">
         <NewWindow />
         {can(session, "core.profile.self") && <TasksButton />}
+        <ContextGuideLink canPurchase={session.capabilities.has('finance.purchase.read')} />
       <NoticeBell />
         {can(session, CORE_CAPABILITIES.chatRead) && <ChatDock />}
         <Link href="/profile" aria-label="My work" title="My work" className="rounded-full p-0.5"><Avatar name={session.userName} size="sm" /></Link>

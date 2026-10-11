@@ -1,3 +1,61 @@
+## 11 October 2026 — Exact stock and Finance-owned manufacturing cost
+
+Operational quantities use NUMERIC(18,6), explicit compatible measurement snapshots
+and scaled integer arithmetic; posted monetary values use integer minor units with
+the accounting currency exponent. Metric tonnes are explicit t; ambiguous ton or
+piece-to-mass guesses are refused. Serial-tracked quantities remain whole identities.
+Sale prices must never supply purchase/material cost. Reviewed weighted carrying
+value and approved purchasing can supply estimates; actual stock/WIP/COGS postings
+are a Finance owner contract within the stock/report transaction. Production output
+stays blocked until the physical collection, including partial final output.
+
+Old Prisma Int clients truncate fractional NUMERIC values, confirmed on a private
+empty central schema. Accept the new Decimal-capable runtime while temporary whole-
+quantity checks and legacy output-order uniqueness preserve old rollback behaviour.
+Only then unlock fractional writes/multi-report batches and retain that Decimal
+runtime as rollback. No schema rollback or local business database is used.
+Guides group by the user's accessible apps; consolidated apps collect their source
+workflows through registered guide metadata, while each linked source retains its
+capability/module checks. One canonical owner handbook; app hubs support setup,
+daily work and troubleshooting. Explicit final Test cleanup preserves real data,
+internal/shared staff and required recovery evidence.
+
+## 11 October 2026 — Dropdown readability takes priority over glass styling
+
+Michael requests that dropdowns stop showing page content through their panels.
+Use opaque white menu backgrounds, subtle borders and existing rounded/shadow
+treatment. The shared app-navigation dropdown removes its translucent fill and
+backdrop filter. This supersedes the earlier glass-chrome direction for menu
+panels; other shell surfaces retain their current styling.
+Phone/tablet navigation dropdowns share a panel beneath the full navigation bar with
+side insets, avoiding clipped menus when triggers sit near either screen edge.
+
+## 11 October 2026 — Company admins manage company-only identity and credentials
+
+Michael explicitly requests editable user accounts and direct password assignment
+alongside recovery. core.users.manage authorises company-only name/email and
+password changes; own-password confirmation and Serializable public-snapshot
+comparison protect identity/credential writes. No new user creation authority,
+platform grants or shared-account credential control follows. Email/password changes
+invalidate old authentication/codes; never put password hashes or codes in forms,
+generic reads or Audit. Reuse Role/Membership for editable starter profiles and
+personal exceptions. Native section access remains authoritative: Finance entry
+must not expose Service credits without receivables/approval, and request creators
+can read only their own scoped requests unless they also have company spend-read.
+
+## 11 October 2026 — Dashboard design and exploration are separate
+
+Michael explicitly wants stylish, dynamic dashboards that are easy to build.
+Use Data/Design/Focus inspector sections, disclosed filters, coordinated widget
+looks/layouts and a compact viewing toolbar. Reuse source-owned measures and the
+authorised Reports datasets; do not add another data store or global query layer.
+Click-to-focus, chart/value switching and expanded exploration stay transient,
+including for readers. Saved category selections and positive gauge references
+are validated widget settings; personal references never update company Goals.
+Use complete aggregates/weighted calculations and reject overlapping distinct
+subset totals. Existing central owner/tenant/revision saves and source permissions
+remain authoritative. No new grants, migration or sharing boundary.
+
 ## 11 October 2026 — own native SQL receipts; validate at complete mutation boundary
 
 Use private same-transaction native scopes and actual INSERT/CAS/parent/case-child
@@ -2535,3 +2593,46 @@ pairing; legitimate existing Party/Contact Audit scrubbing remains possible. No
 second form engine, table, permission model or domain mutation API. Helper/DDL are
 IN PROGRESS and unexecuted centrally at this decision; actual atomicity/replay/SQL
 checks and original live release gates remain required before VERIFIED.
+
+the migration architecture. Local verification only until actual central gates.
+
+## 11 October 2026 — white private ERP introduction and physical production handoff
+
+Michael chose crisp white, editorial and professional, with purposeful motion and
+real ERP detail. `/` explains Atlas and links existing users into their workspace;
+there is no public signup or subscription. Generated abstract artwork is excluded.
+Guides remain authenticated and filtered by app/capability, with plain steps and
+native source links; detailed specialist help is reused.
+
+Production completion and Warehouse collection are distinct physical facts. New
+good output enters the canonical stock ledger as BLOCKED production holding;
+Warehouse's guarded partial/all collection makes only collected quantity available
+at its destination. Retain source order/work step, lot and immutable collection
+history, tenant composite foreign keys, version/repeat checks and atomic posting.
+No historic output is restaged, no duplicate stock store and no availability before
+collection. Existing whole-unit execution limits remain explicit.
+## 11 October 2026 — Explicit kiln timing and reviewed finite machine reservations
+
+A product operation chooses per-unit or batch-cycle timing. Full loads, setup,
+cooling occupation and transfer wait use one domain calculation in costing, MRP
+and release. Approved alternatives share that operation's timing; no generic
+machine compatibility or machine-specific cycle parameter is inferred. Plant
+calendars use an explicit timezone and shifts/continuous mode, with audited manual
+downtime. Existing resources default continuous to preserve previous behaviour;
+new UI resources default shifts and must be configured. Release and schedule
+cascades reserve machine spans using serializable central transactions. Reviewed
+fingerprints reject changed sources; force-overlap cannot bypass capacity or
+fixed work. Full material/labour/tool constraints and CTP remain unimplemented.
+
+## 11 October 2026 — Flexible monthly total forecast with explicit consumption
+
+Manual, approved S&OP and expected-usage totals all consume gross monthly Sales
+bookings once, including shipped units. Production demand is outstanding orders
+plus unbooked forecast. Sales-owned requested-date history supports transparent
+backtested baselines and planner choices: last year plus percentage, additive
+quantity, recent averages, saved forecast, fixed targets and individual overrides.
+Assumptions and reviewed values are audited; stale source reviews fail and S&OP
+publications remain owned by S&OP. Missing history stays missing; zero is valid.
+This does not establish an automatic customer promise or advanced probabilistic
+forecast. Existing whole-unit stock execution refuses fractional component use;
+it must not silently round decimal clay material quantities into stock facts.

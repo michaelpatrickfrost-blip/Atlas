@@ -18,7 +18,7 @@ Phase2 2B d4f — typed native Ticket forms — IN PROGRESS. Native d4e foundati
 VERIFIED LIVE ad9d5a430e2b92e6b08448a45d11f694f5ce2066: original exec13566 EXIT0,
 candidate627MN9/publicjY9iVL BOTH ALL COMBINED PASS. Native enforcement/windows/
 concurrency and corrected required activation PASS; existing Admin/business and
-module regressions PASS. Fresh health/current pointer ad9, immediate rollback1f4.
+module regressions PASS. Historical native proof ad9/rollback1f4; latest live reconciliation below supersedes pointers.
 Required recovery UTC142445/142619/143132 retained; Test companies suspended and
 QA unchanged. No new typed form/UI claim from those native engine checks.
 
@@ -33,8 +33,8 @@ Independent source review found one optional Tickets discovery regression on Ser
 Query/case pages; existing isModuleEnabled now gates child form/discovery. Actual
 Ticket action/manifest checks remain mandatory. Closed schema extraction keeps the
 browser dependency graph free of server crypto without changing hashes.
-D4f6 central browser/receipt SQL checker IN PROGRESS in the existing isolated
-worktree; no new migration applied or typed-form live claim. Live ad9 preserved.
+D4f6 central browser/receipt SQL checker022ad6c IMPLEMENTED in the existing isolated
+worktree (localtypes/lintPASS), rootintegration complete, driver call after concurrency; no new migration applied or typed-form live claim. Live ad9 preserved.
 Old84 failed safely before activation; corrected ad9 passed without weakened policy.
 Original locked retention retired redundant generated runtimes only. Two older
 helper worktree archives queued, not confirmed removed. Root unused compiler cache
@@ -75,6 +75,17 @@ source coverage, phase plan and this ledger. No rewritten specification.
 - D4c/d4d/d4e stored1/2 whole windows, native hooks/final validation, ordinary required activation and actual races: VERIFIED live ad9 in original candidate AND public gates.
 
 # Current Workstream Detail
+
+11October concurrent release reconciliation: current publichealth+SSH confirm
+5b6390c874b42571f091a53b1b017aea70121df7, rollback6e5c39bebe2db2bf76dc9eabf49170f631c3f05b,
+Atlas active/root149GiBfree/tmp1.6GiBfree. Merge accepted live5b (containsad9) into94d3
+before sourcepin/deployment; preserve finished303-file Manufacturing/UI/account/docs
+changes and union memory. Native domain-only fixture conflict keeps completeSession/
+new modulelookup plus explicitgenuine-authority/validation collaborators; actualCAS
+engine unchanged. Integrated root212/10 PASS51673, standalone85862/scopedlint9881/regeneration56337/
+production56451 exit0; source/diff reviewed, no deployment/ancestry bypass.
+Parallel2B5 defaults/2B6 search in existinghelpers; source-bound plans recorded.
+
 
 D4c selects the whole bounded tenant Ticket publication set by source OR target
 entity, validates stored1/2 identities before effects, freezes ANY PUBLISHED window
@@ -206,15 +217,15 @@ Later phases remain architectural context only; no complete visual designer clai
 
 # Exact Next Action
 
-Finish scoped final types/lint and d4f6 central checker review; wire it into the
-original check-metadata driver after field concurrency. Checkpoint native typed
-forms/receipt migration/current memory, build exact compatible release, run original
+Checkpoint the accepted-live5b merge with completed originaldriver/f6 integration
+and actual merged212/type/lint/build evidence. Pin cleancompatibleStudio release
+and run original
 candidate/public Studio gates including actual browser forms/SQL guard/rollback and
 responsive checks. Then close actual remaining2B aliases/search/owner defaults from
 source audit, implement2C shallow record-type resolver,2D structured pages and2E
 full-screen visual builder/previews/Templates/dashboard publication/safe buttons.
 Record2F complete acceptance only after real published business runtime passes.
-Preserve livead9/rollback1f4, central history/recovery; no needless dumps or Phase3.
+Preserve latest accepted live5b6390c8/rollback6e5c39be, central history/recovery; no needless dumps or Phase3.
 
 # Historical checkpoint evidence
 

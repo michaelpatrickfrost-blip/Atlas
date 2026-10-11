@@ -63,7 +63,7 @@ async function main() {
     const live = await order("SO-UNIFY-LIVE", 100, "CONFIRMED"), historical = await order("SO-UNIFY-HISTORY", 1000, "CLOSED");
     for (const source of [live, historical]) {
       const quantity = source.id === live.id ? 40 : 1000;
-      await db.fulfilmentRequirement.create({ data: { organisationId, reference: `FF-${source.reference}`, salesOrderId: source.id, partyId: party.id, shipTo: {}, sourceEventKey: `unification-${source.id}`, lines: { create: { organisationId, salesOrderLineId: source.lines[0].id, productId: product.id, description: product.name, orderedQuantity: source.lines[0].orderedQuantity, allocatedQuantity: quantity, shippedQuantity: quantity, deliveredQuantity: source.id === live.id ? 10 : 1000 } } } });
+      await db.fulfilmentRequirement.create({ data: { organisationId, reference: `FF-${source.reference}`, salesOrderId: source.id, partyId: party.id, shipTo: {}, sourceEventKey: `unification-${source.id}`, lines: { create: { organisationId, salesOrderLineId: source.lines[0].id, productId: product.id, description: product.name, orderedQuantity: Number(source.lines[0].orderedQuantity), allocatedQuantity: quantity, shippedQuantity: quantity, deliveredQuantity: source.id === live.id ? 10 : 1000 } } } });
     }
     await db.expectedReceipt.create({ data: { organisationId, reference: "RC-UNIFY", sourceType: "PURCHASE", sourceReference: "PO-UNIFY", warehouseId: warehouse.id, expectedOn: new Date("2026-10-20"), lines: { create: { organisationId, productId: product.id, description: product.name, expectedQuantity: 50, receivedQuantity: 20 } } } });
     const entity = await db.financeEntity.create({ data: { organisationId, code: "UNIFY", name: "Synthetic books" } });
@@ -174,7 +174,7 @@ async function main() {
     check(hasError(rejected), "Actual completion action refuses a later material shortage");
     const afterFailure = await db.manufacturingWorkOrder.findUniqueOrThrow({ where: { id: atomicStep.id } });
     const parentAfterFailure = await db.manufacturingOrder.findUniqueOrThrow({ where: { id: atomicOrder.id } });
-    check(await db.inventoryMovement.count({ where: { organisationId, manufacturingOrderId: atomicOrder.id } }) === 0 && (await db.inventoryBalance.findFirstOrThrow({ where: { organisationId, productId: firstMaterial.id } })).quantity === 10 && afterFailure.status === "RUNNING" && afterFailure.version === 1 && parentAfterFailure.warehouseId === null && parentAfterFailure.version === 1, "Material shortage rolls back all movements, warehouse assignment and both progress versions");
+    check(await db.inventoryMovement.count({ where: { organisationId, manufacturingOrderId: atomicOrder.id } }) === 0 && Number((await db.inventoryBalance.findFirstOrThrow({ where: { organisationId, productId: firstMaterial.id } })).quantity) === 10 && afterFailure.status === "RUNNING" && afterFailure.version === 1 && parentAfterFailure.warehouseId === null && parentAfterFailure.version === 1, "Material shortage rolls back all movements, warehouse assignment and both progress versions");
     check(hasError(await complete(3, "over-report")), "Actual completion rejects quantities above the production order");
     check(hasError(await complete(2, "forbidden", viewerCookie)), "Sales viewer cannot execute manufacturing completion");
     check(hasError(await complete(2, "outside", outsideCookie)), "Another company cannot execute the test production step");
@@ -184,7 +184,7 @@ async function main() {
     const movements = await db.inventoryMovement.findMany({ where: { organisationId, manufacturingOrderId: atomicOrder.id } });
     const parentAfterSuccess = await db.manufacturingOrder.findUniqueOrThrow({ where: { id: atomicOrder.id } });
     const stepAfterSuccess = await db.manufacturingWorkOrder.findUniqueOrThrow({ where: { id: atomicStep.id } });
-    check(movements.length === 3 && movements.filter(item => item.delta === -2).length === 2 && movements.filter(item => item.productId === finishedProduct.id && item.delta === 2).length === 1 && movements.every(item => item.workOrderId === atomicStep.id), "Exactly two material issues and one finished-goods receipt retain order/step lineage");
+    check(movements.length === 3 && movements.filter(item => Number(item.delta) === -2).length === 2 && movements.filter(item => item.productId === finishedProduct.id && Number(item.delta) === 2).length === 1 && movements.every(item => item.workOrderId === atomicStep.id), "Exactly two material issues and one finished-goods receipt retain order/step lineage");
     check(parentAfterSuccess.status === "COMPLETE" && parentAfterSuccess.warehouseId === warehouse.id && stepAfterSuccess.status === "COMPLETE" && Number(stepAfterSuccess.producedQuantity) === 2, "Finished goods and production progress commit together, removing stale open supply");
     check(await db.auditEntry.count({ where: { organisationId, entityId: atomicStep.id, action: "manufacturing.work_order.completed" } }) === 1 && await db.activity.count({ where: { organisationId, entityId: atomicStep.id, type: "manufacturing.work_order.completed" } }) === 1, "Completion retry creates one audit and one activity record");
     check(hasError(await complete(1)), "Completed request keys cannot silently accept changed quantities");

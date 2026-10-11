@@ -1,3 +1,4 @@
+import { SUPPLY_GUIDES } from "./domain/guides";
 import { reports } from './services/reports';
 import { manufacturingAnalytics } from "./services/analytics";
 import { supplyPurchaseProvider } from "./services/purchase-proposals";
@@ -12,6 +13,7 @@ import { manufacturingAttention, searchManufacturing } from "./services/queries"
 // Includes MRP engine, planned orders, material shortage workbench, capacity planning,
 // manufacturing orders, work orders and shop-floor execution.
 export const manufacturingManifest: ModuleManifest = {
+ guides: SUPPLY_GUIDES.map(guide => ({ id: `supply-${guide.id}`, title: guide.title, summary: guide.summary, href: `/manufacturing/help/${guide.id}`, category: ["products-stock", "units", "actual-costs"].includes(guide.id) ? "Setup" : ["blocked-work", "differences"].includes(guide.id) ? "Troubleshooting" : "Daily work", steps: guide.steps.length, searchText: [guide.role, guide.before, ...guide.steps.flatMap(step => [step.title, step.instruction, step.check]), ...guide.exceptions].join(" ") })),
  reportProvider: reports,
  supplyPurchaseProvider,
  analyticsProvider: manufacturingAnalytics,
@@ -33,6 +35,7 @@ export const manufacturingManifest: ModuleManifest = {
   searchProvider: async ({ session, query }) => (session.capabilities.has(C.orderRead) ? searchManufacturing(session, query) : []),
   navigation: [
     { label: "Console", href: "/manufacturing" },
+    { label: "Production handoff", href: "/stock/handoffs", capability: "stock.read" },
     { label: "Production today", href: "/manufacturing/today", capability: C.orderRead },
     { label: "How-to library", href: "/manufacturing/help" },
     { label: "Production plan", href: "/manufacturing/planning", capability: C.planRead, group: "Planning" },
@@ -40,6 +43,8 @@ export const manufacturingManifest: ModuleManifest = {
     { label: "Shortages", href: "/manufacturing/planning/shortages", capability: C.planRead, group: "Planning" },
     { label: "Forecast demand", href: "/manufacturing/planning/forecast", capability: C.planRead, group: "Planning" },
     { label: "Plant", href: "/manufacturing/plant", capability: C.orderRead },
+    { label: "Machine loads", href: "/manufacturing/machine-loads", capability: C.scheduleRead },
+    { label: "Traceability", href: "/manufacturing/traceability", capability: "stock.read" },
     { label: "Schedule", href: "/manufacturing/schedule", capability: C.scheduleRead },
     { label: "Produce", href: "/manufacturing/produce", capability: C.orderRead },
     { label: "Shop Floor", href: "/manufacturing/shop-floor", capability: C.workOrderExecute },

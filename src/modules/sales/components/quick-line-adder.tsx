@@ -121,9 +121,9 @@ export function QuickLineAdder({
           <div className="flex items-center gap-2">
             <input
               ref={qtyInput}
-              type="number"
-              min="1"
-              step="1"
+              type="number" step="0.000001"
+              min="0.000001"
+
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               onKeyDown={(e) => {
@@ -190,7 +190,7 @@ export function QuickLineAdder({
           className="z-[80]"
         >
           <div className="pointer-events-auto rounded-xl border border-slate-200 bg-white p-4 shadow-xl w-96 text-center text-sm text-slate-500">
-            No products match "{query}"
+            No products match &ldquo;{query}&rdquo;
           </div>
         </div>
       )}

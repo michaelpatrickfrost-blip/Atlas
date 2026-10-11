@@ -1,3 +1,4 @@
+import { validQuantity } from "@/core/shared/quantity";
 import { parseCsv } from "@/core/shared/csv";
 
 export type PriceCsvRow = {
@@ -72,8 +73,8 @@ export function readPriceCsv(text: string): { rows: PriceCsvRow[]; skipped: numb
       issues.push({ line, productCode, message: "Enter a price with up to two decimal places." });
       return;
     }
-    if (!Number.isInteger(minimumQuantity) || minimumQuantity < 1 || minimumQuantity > 1_000_000) {
-      issues.push({ line, productCode, message: "Quantity must be a whole number of at least 1." });
+    if (!validQuantity(minimumQuantity) || minimumQuantity <= 0 || minimumQuantity > 1_000_000) {
+      issues.push({ line, productCode, message: "Quantity must be positive with up to six decimal places." });
       return;
     }
     if ((validFrom && !/^\d{4}-\d{2}-\d{2}$/.test(validFrom)) || (validTo && !/^\d{4}-\d{2}-\d{2}$/.test(validTo))) {

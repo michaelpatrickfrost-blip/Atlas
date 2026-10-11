@@ -13,5 +13,5 @@ export const stockManifest:ModuleManifest={
  analyticsProvider: stockAnalytics,
  id:'stock',name:'Inventory',description:'Product stock, warehouses, controlled transfers and traceable movements.',icon:Boxes,version:'0.2.0',minimumCoreVersion:'0.1.0',dependencies:[],capabilities:['stock.read','stock.manage'],rootPath:'/stock',accessCapability:'stock.read',status:'available',stockProvider,
  planningInventoryProvider:inventorySnapshot,
- navigation:[{label:'On hand',href:'/stock'},{label:'Forecast',href:'/stock/forecast'},{label:'Movements',href:'/stock/movements'},{label:'Places',href:'/stock/warehouses'}],
+ navigation:[{label:'Production handoff',href:'/stock/handoffs'},{label:'On hand',href:'/stock'},{label:'Forecast',href:'/stock/forecast'},{label:'Movements',href:'/stock/movements'},{label:'Places',href:'/stock/warehouses'}],
 };

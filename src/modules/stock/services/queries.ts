@@ -15,7 +15,7 @@ export async function inventorySnapshot(session:Session):Promise<InventorySnapsh
   db.site.findMany({where:{organisationId},select:{id:true,code:true,name:true},orderBy:{name:'asc'}}),
  ]);
  const warehouses=places.map(place=>({id:place.id,code:place.code,name:place.name,kind:place.kind,siteId:place.siteId,siteName:place.site?.name??null}));
- return {products,warehouses,balances,sites};
+ return {products,warehouses,balances:balances.map(row=>({...row,quantity:Number(row.quantity)})),sites};
 }
 export async function readInventory() {
  const session=await requireSession();

@@ -15,6 +15,7 @@ export async function HomeNavigation({ session }: { session: Session }) {
           ? [{ name: "Dashboards" as const, href: "/analytics" }]
           : []),
         { name: "Reports", href: "/reports" },
+        { name: "Guides", href: "/guides" },
         { name: "My tasks", href: "/profile#assigned" },
         ...(can(session, CORE_CAPABILITIES.chatRead)
           ? [{ name: "Messages" as const, href: "/chat" }]

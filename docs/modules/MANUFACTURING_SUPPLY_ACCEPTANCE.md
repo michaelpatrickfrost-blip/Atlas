@@ -170,3 +170,171 @@ public-failure runtime rollback remain. No inherited-lock mechanism is included.
 Final exact-source hooked acceptance remains pending. Imported People migration
 EOF whitespace is retained to preserve already-applied checksums; owned diff
 against exact live `36d0d2d` passes whitespace checks.
+
+## 11 October 2026 — Finite kilns and flexible forecast checkpoint (pending live)
+
+Research and remaining programme: docs/plans/MANUFACTURING_KILN_RESEARCH.md.
+Implemented explicit batch/load/cooling/wait timing, eligible alternatives,
+timezone/shift/downtime-constrained release and atomic reviewed cascades, machine
+capacity and plant configuration, backtested Sales-history forecast assumptions
+(last-year percentage/additive/fixed/individual), gross-booking consumption and
+protected S&OP. Whole-unit stock limits stay open; fractional backflush refuses
+rather than rounds. No claim of complete process manufacturing or plant readiness.
+
+Local Prisma generation/validation, strict TypeScript, scoped ESLint, production
+build and whitespace PASS. 16 files/113 focused assertions PASS, including preserved
+live Dashboard, company administration and Finance access. Full suite not rerun.
+New scripts/check-manufacturing-kilns.ts runs from the existing backed-up supply
+Test gate on candidate and public, exercising actual release and forecast UI save,
+wrong-machine/tenant/locked/stale rejection, atomic cascade and three-width layout.
+Migration 20261011120000_manufacturing_finite_kilns is additive; central application,
+browser feature checks, visual review and deployment results remain pending.
+
+Final correction preserves reviewed future start/finish through Make firming and
+finite release; new command/UI acceptance covers forecast proposal→release timing.
+Preserved accepted company phone-header c607e12. Final strict TypeScript, scoped
+ESLint and production build PASS; 16 files/114 assertions PASS. First b2a3891
+activation attempt stopped before backup/migration/candidate while live advanced;
+no first-candidate result or server change claimed. Retry uses the compatible
+live ancestor and same locked supply acceptance, with no force/reset.
+
+73210f8 candidate build/compatibility/smoke succeeded after central backup
+atlas-pre-deploy-20261011-160550; additive kiln migration applied. Candidate supply
+fixture backup atlas-pre-supply-candidate-20261011-160718, evidence
+/tmp/atlas-supply-candidate-iRsczq. Existing console/MRP/Make/Buy/internal checks
+PASS. New Node API helper sent a loopback Origin inconsistent with Next's internal
+request URL and was correctly refused before production release. Remove that
+Node-only Origin header, preserving the existing authenticated desktop API and all
+production guards. Fixture retired/session revoked; QA unchanged. Public activation
+did not occur; c607e12 remains current. Fresh exact pinned gates required.
+
+ef3ef9c candidate: future MRP timing and finite kiln release PASS. New execution
+assertion exposed the historical Waiting/Ready lifecycle gap; fixture cleanup PASS,
+no public switch. Current source makes first/next steps Ready, validates legacy
+Waiting start without bulk updates, keeps paused work fixed, and explains floor
+readiness. Actual central execution/stock-replay gate added. Explicit plant/timeline
+timezones avoid host-dependent rendering/moves; UK browser and DST domain checks
+added. Fresh final local checks and exact candidate/public gate remain required.
+
+Final lifecycle/timezone/occupied-machine source local checks: 16 files/116 tests,
+strict TypeScript, scoped ESLint, production build and whitespace PASS. Initial tsc
+hit generated-route-type regeneration during a concurrent build; sequential
+post-build rerun passed. No type waiver. Fresh pinned candidate/public full flow
+and five-workspace, three-width UK browser acceptance remain pending.
+
+303cf56 candidate build/compatibility/smoke and actual supply/MRP/finite cascade/
+legacy-start/pause/resume/next-ready/final stock posting/replay PASS. Central Sales
+24-month seasonal backtest and correct future month PASS. Browser forecast selector
+timed out because implicit Product label includes option text; failure screenshot
+confirms workbench renders correctly. Harness now scopes the first combobox inside
+Demand intelligence. Application auth/forecast logic unchanged. Backup atlas-pre-
+deploy-20261011-162844, fixture backup atlas-pre-supply-candidate-20261011-163019,
+evidence /tmp/atlas-supply-candidate-FJmAK4. Test retired/session revoked; public
+still c607e12. Forecast browser save/responsive gate and public activation pending.
+
+11 October 2026 live checkpoint b80f8baad0cc694422981238d201e150b927b522:
+candidate and public supply gates PASS, public login 200, immutable runtime active;
+previous c607e12 retained. Release backup atlas-pre-deploy-20261011-163626; candidate
+fixture backup atlas-pre-supply-candidate-20261011-163801, evidence /tmp/atlas-supply-
+candidate-YikYVo; public fixture backup atlas-pre-supply-public-20261011-163907,
+evidence /tmp/atlas-supply-public-N0Lkfi. Actual MRP Make/Buy→Finance, forecast future
+release, finite compatible full-load/cooling/shift/wait scheduling, stale/locked/
+wrong-machine refusals, atomic cascades, legacy execution/pause/resume/next-ready,
+final component/output stock and replay, Sales seasonal forecast and +10% +5 UI
+save/fixed/override, five routes at three widths, reports/guides/zero browser errors
+PASS. Both Test fixtures suspended/sessions revoked; original QA unchanged. Central
+additive kiln migration applied earlier and retained. Desktop/phone screenshots
+reviewed locally: Plant, Schedule and loaded Forecast fit; detailed recipe screenshot
+was Overview rather than active routing editor. Visual refinement will focus machine
+configuration on opening, tighten assumption labels and show batch timings in the
+read-only routing summary; further active-editor acceptance required for that work.
+Full-suite not rerun; full 173-section process programme remains open as documented.
+
+Post-release visual/source refinement: Plant opens/focuses machine configuration
+and work-centre editing directly in view; Forecast assumption labels have dedicated
+aligned space and explicit select names; read-only routing shows true batch load/
+cycle/cooling/wait instead of zero per-unit run. Scheduler now refuses closed/non-
+released parents, matching execution. Supply gate extends to actual routing UI save
+(version/zero crew/eligible machines/released recipe preservation), closed-parent
+refusals and active routing/configuration views at three widths. Browser write
+allowlist adds only the exact newly owned Test product path. Final local checks and
+new pinned candidate/public gate required; b80f8ba stays the verified live checkpoint.
+
+Refined f8364d5e7f038ba1bb6b2057e9280e59ec30adc8 candidate and public supply gates
+PASS; public login 200 and immutable runtime active, previous b80f8ba retained.
+Backup atlas-pre-deploy-20261011-164352; candidate fixture backup atlas-pre-supply-
+candidate-20261011-164534/evidence /tmp/atlas-supply-candidate-Xe8SPS; public fixture
+backup atlas-pre-supply-public-20261011-164703/evidence /tmp/atlas-supply-public-tCZLtu.
+New actual routing UI save validates version 2/load/cycle/cooling/zero crew/eligible
+machines and retains released recipe; closed parents refuse schedule/start. Prior
+full operational acceptance repeats PASS, no browser errors, fixtures retired and
+QA unchanged. Desktop/phone active routing and configuration images reviewed.
+Phone recipe sticky footer was too tall despite fitting width; compact mobile total/
+save controls now retain desktop detail, and active Shop Floor forms wrap. Gate adds
+an actually running Test order, checks its controls at all widths and constrains the
+mobile footer height; Plant verifies focus before screenshots. New local build/type/
+lint and exact candidate/public verification required. Inactive-runtime retirement
+was safely deferred at its lock guard; active/previous pointers and data unaffected.
+
+## 11 October 2026 — Live finite kilns, flexible forecasting and mobile execution
+
+Final runtime b6610512138ba40e16a294fd4e296016d75d03b5 is active at
+https://atlassystem.online; public release endpoint and /opt/atlas-current both
+confirm that exact revision. Previous immutable f8364d5 remains available. Central
+20261011120000_manufacturing_finite_kilns migration confirmed applied; no local
+business database, secret/profile rewrite or production customer fixture created.
+
+Release backup: atlas-pre-deploy-20261011-165006. Candidate fixture backup:
+atlas-pre-supply-candidate-20261011-165141; evidence /tmp/atlas-supply-candidate-binGtS.
+Public fixture backup: atlas-pre-supply-public-20261011-165249; evidence
+/tmp/atlas-supply-public-JYtKfY. Both exact candidate and public backed-up supply
+gates PASS. Actual Make/Buy/Finance values, future MRP firming/release, full kiln
+loads/cooling/eligible alternatives/shifts/downtime/wait, locked/stale/foreign/wrong-
+machine/closed-parent refusals, atomic cascade, legacy execution/pause/resume/
+next-ready, final stock and replay, 24-month Sales backtest, +10% +5/fixed/individual
+forecast controls and central save, actual new recipe version and released-version
+preservation PASS. Plant/Schedule/Forecast/active Shop Floor/active routing editor
+fit 1448/820/390 widths without root overflow; mobile save footer under 140px.
+Zero browser exceptions; reports/guides also PASS. Test companies suspended, fixture
+sessions revoked, audited history retained and original QA identity/permissions
+unchanged. Synthetic screenshot visual review: desktop plant/routing/schedule/
+forecast, tablet forecast, phone active floor/compact routing/configuration.
+
+Latest production build, separate post-build strict TypeScript, scoped ESLint and
+whitespace PASS. Domain/owner regression checkpoint: 16 files/116 tests PASS after
+lifecycle/timezone/source-guard work; final UI-only changes verified by the extended
+candidate/public browser gates. Full suite not rerun; historical unrelated failures
+are not presented as passing. Inactive runtime pruning safely deferred at its lock
+guard; active/previous runtimes and backup evidence preserved.
+
+Relevant source: products operation-time/recipe editor/product view; manufacturing
+finite scheduling/data, release/execution/stock, plant/downtime, schedule and forecast
+services/screens; Sales planning provider; additive Prisma schema/migration and data
+API registry/policy. Research, module guide, full coverage and acceptance reconciled.
+All accepted company/Dashboard evidence merged from main; no new unrelated app
+source imported. Final evidence handoff changes documentation only, so its Git SHA
+differs from the byte-identical accepted runtime. Reviewed implementation and
+shared memory published to origin/main and the scoped branch by atomic fast-forward
+push; dirty Desktop checkout was not modified. Final runtime recheck confirms b661051.
+
+Full process-manufacturing readiness remains OPEN: decimal material/stock/Sales and
+unit conversion, dated site supply/material availability, mixed kiln loads/formula/
+moisture/shrinkage/co-products, production picks/actual issues/partial/reversals,
+lot genealogy/quality gates, skilled labour/tool/energy constraints and protected
+CTP, actual WIP/variance/valuation, telemetry, plant configuration and scale/restore
+acceptance. Detailed programme: docs/plans/MANUFACTURING_KILN_RESEARCH.md and
+MANUFACTURING_COVERAGE.md. This release proves its bounded workflow; it does not
+close all 173 sections or establish £40,000/month commercial readiness.
+
+## 11 October exact execution continuation — not yet live
+
+Full local suite: 306 passed files/2,241 passed tests; 3 skipped files/22 skipped
+opt-in tests. Prisma validate/generate and Data API generation passed; 918 prior
+stable actions retained. Empty central-schema migration rehearsal and rollback-
+compatibility probes passed; old Int client truncation requires a two-stage technical
+release. Bridge and final candidate/public acceptance are pending, not inferred from
+unit tests. The full native checker now covers decimal measured receipts/replay,
+blocked-material atomic rollback, partial output/WIP/backorders, batch collection,
+actual component genealogy, fractional dispatch/COGS, valued transfers and compatible
+mixed machine load/shared costs. App guide/library and new workspaces are checked at
+three widths. Required final Test-company cleanup is explicitly authorised.

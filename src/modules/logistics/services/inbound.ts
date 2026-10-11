@@ -1,3 +1,4 @@
+import { validQuantity } from "@/core/shared/quantity";
 import { db } from "@/core/db/client";
 import type { Session } from "@/core/auth/session";
 import { crossDockSuggestion, overReceiptDecision } from "../domain/operations";
@@ -10,7 +11,7 @@ export async function expectReceipt(session: Session, input: { sourceType: strin
   return db.$transaction(async (tx) => {
     const receipt = await tx.expectedReceipt.create({ data: { organisationId: session.organisationId, reference: await nextReference(tx, session.organisationId, "RC", "RC"), sourceType: input.sourceType, sourceReference: input.sourceReference, partyName: input.partyName, warehouseId: warehouse.id, expectedOn: input.expectedOn } });
     for (const line of input.lines) {
-      if (!Number.isSafeInteger(line.quantity) || line.quantity <= 0) throw new Error("Expected quantities must be whole numbers.");
+      if (!validQuantity(line.quantity) || line.quantity <= 0) throw new Error("Expected quantities must be positive, with up to six decimal places.");
       await tx.receiptLine.create({ data: { organisationId: session.organisationId, receiptId: receipt.id, productId: line.productId, description: line.description, expectedQuantity: line.quantity } });
     }
     return receipt.id;
@@ -20,10 +21,10 @@ export async function expectReceipt(session: Session, input: { sourceType: strin
 export async function receiveLine(session: Session, lineId: string, input: { quantity: number; lotCode?: string; serials?: string[]; condition: string; requestKey: string }) {
   const line = await db.receiptLine.findFirst({ where: { id: lineId, organisationId: session.organisationId }, include: { receipt: true } });
   if (!line) throw new Error("This receipt line no longer exists.");
-  const decision = overReceiptDecision({ expected: line.expectedQuantity, received: line.receivedQuantity + input.quantity, tolerancePercent: 5, mode: "TOLERANCE" });
-  if (!decision.accepted && !decision.needsApproval) throw new Error(`Over-receipt is outside the 5% tolerance. Expected ${line.expectedQuantity}, this would make ${line.receivedQuantity + input.quantity}.`);
+  const decision = overReceiptDecision({ expected: Number(line.expectedQuantity), received: Number(line.receivedQuantity) + input.quantity, tolerancePercent: 5, mode: "TOLERANCE" });
+  if (!decision.accepted && !decision.needsApproval) throw new Error(`Over-receipt is outside the 5% tolerance. Expected ${Number(line.expectedQuantity)}, this would make ${Number(line.receivedQuantity) + input.quantity}.`);
   if (decision.needsApproval) throw new Error("This over-receipt needs a supervisor with receipt override.");
-  const discrepancy = input.quantity + line.receivedQuantity < line.expectedQuantity ? "Short" : input.condition === "DAMAGED" ? "Damaged" : decision.difference > 0 ? "Over" : null;
+  const discrepancy = input.quantity + Number(line.receivedQuantity) < Number(line.expectedQuantity) ? "Short" : input.condition === "DAMAGED" ? "Damaged" : decision.difference > 0 ? "Over" : null;
   if (line.productId) {
     const provider = await stock();
     const status = input.condition === "DAMAGED" || input.condition === "QUARANTINE" ? "QUARANTINE" : "AVAILABLE";
@@ -45,7 +46,7 @@ export async function putAway(session: Session, lineId: string, destinationCode:
   const to = locations.find((location) => location.code === destinationCode.trim());
   if (!from || !to) throw new Error("Scan a destination location in this warehouse.");
   if (from.id === to.id) return;
-  await provider.executeMovement(session, { requestKey, productId: line.productId, warehouseId: line.receipt.warehouseId, locationId: from.id, toLocationId: to.id, quantity: line.receivedQuantity, lotCode: line.lotCode, reason: `Put away · ${line.receipt.reference}`, reference: line.receipt.reference, status: line.condition === "DAMAGED" ? "QUARANTINE" : "AVAILABLE" });
+  await provider.executeMovement(session, { requestKey, productId: line.productId, warehouseId: line.receipt.warehouseId, locationId: from.id, toLocationId: to.id, quantity: Number(line.receivedQuantity), lotCode: line.lotCode, reason: `Put away · ${line.receipt.reference}`, reference: line.receipt.reference, status: line.condition === "DAMAGED" ? "QUARANTINE" : "AVAILABLE" });
   await db.receiptLine.update({ where: { id: line.id }, data: { status: "PUTAWAY" } });
 }
 

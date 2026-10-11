@@ -1,3 +1,4 @@
+import { roundedQuantity } from "@/core/shared/quantity";
 /** Stock cover for one product. Usage comes from the movement ledger unless a
  * monthly figure is set on the product. Nothing here is stored. */
 export type ForecastInput = {
@@ -37,15 +38,15 @@ export function forecastStock(input: ForecastInput, today = new Date()): Forecas
   const usageSource = plan ? "plan" : set ? "set" : history > 0 ? "history" : "none";
   const lead = positive(input.leadTimeDays);
   const safety = positive(input.safetyStock);
-  const reorderPoint = Math.ceil(dailyUsage * lead + safety);
+  const reorderPoint = roundedQuantity(dailyUsage * lead + safety);
   const daysOfCover = dailyUsage > 0 ? Math.max(0, input.available) / dailyUsage : null;
   const runsOutOn = daysOfCover == null ? null : new Date(today.getTime() + Math.floor(daysOfCover) * 86_400_000).toISOString().slice(0, 10);
-  const target = Math.ceil(dailyUsage * (lead + ORDER_COVER_DAYS) + safety);
+  const target = roundedQuantity(dailyUsage * (lead + ORDER_COVER_DAYS) + safety);
   let state: ForecastState;
   if (input.available < 0 || (reorderPoint > 0 && input.available <= reorderPoint)) state = "ORDER_NOW";
   else if (dailyUsage === 0 && safety === 0) state = "NO_USAGE";
   else if (input.available <= reorderPoint + dailyUsage * WARNING_DAYS) state = "ORDER_SOON";
   else state = "COVERED";
   const suggestedOrder = state === "ORDER_NOW" || state === "ORDER_SOON" ? Math.max(0, target - input.available) : 0;
-  return { dailyUsage, usageSource, next30: Math.ceil(dailyUsage * 30), reorderPoint, daysOfCover, runsOutOn, suggestedOrder, state };
+  return { dailyUsage, usageSource, next30: roundedQuantity(dailyUsage * 30), reorderPoint, daysOfCover, runsOutOn, suggestedOrder, state };
 }

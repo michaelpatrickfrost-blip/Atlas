@@ -1,6 +1,60 @@
 // Generated from the application schema.
 export const MODEL_FIELDS = {
   "Organisation": {
+    "productionBatches": {
+      "type": "StockProductionBatch",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "productionCollections": {
+      "type": "StockProductionCollection",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "manufacturingReports": {
+      "type": "ManufacturingProductionReport",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "manufacturingLoads": {
+      "type": "ManufacturingMachineLoad",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "stockMovementAllocations": {
+      "type": "StockMovementAllocation",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "manufacturingMaterialUses": {
+      "type": "ManufacturingMaterialUse",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "financeManufacturingProfiles": {
+      "type": "FinanceManufacturingProfile",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "financeStockValues": {
+      "type": "FinanceStockValue",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "financeManufacturingValueEntries": {
+      "type": "FinanceManufacturingValueEntry",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "studioDefinitions": {
       "type": "StudioDefinition",
       "list": true,
@@ -189,6 +243,12 @@ export const MODEL_FIELDS = {
     },
     "manufacturingShifts": {
       "type": "ManufacturingShift",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "manufacturingDowntime": {
+      "type": "ManufacturingDowntime",
       "list": true,
       "nullable": false,
       "relation": true
@@ -3713,6 +3773,36 @@ export const MODEL_FIELDS = {
     }
   },
   "Product": {
+    "productionBatches": {
+      "type": "StockProductionBatch",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "financeStockValues": {
+      "type": "FinanceStockValue",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "financeValueEntries": {
+      "type": "FinanceManufacturingValueEntry",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "movementAllocations": {
+      "type": "StockMovementAllocation",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "manufacturingMaterialUses": {
+      "type": "ManufacturingMaterialUse",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "planInputs": {
       "type": "PlanInput",
       "list": true,
@@ -3954,7 +4044,7 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "safetyStockLevel": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -3966,13 +4056,13 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "monthlyUsage": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": true,
       "relation": false
     },
     "averageDailyDemand": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -4269,6 +4359,30 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "enteredQuantityPerUnit": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "enteredUnit": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "baseUnit": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "conversionFactor": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
     "scrapPercent": {
       "type": "Decimal",
       "list": false,
@@ -4307,6 +4421,24 @@ export const MODEL_FIELDS = {
     }
   },
   "ProductOperation": {
+    "processProfile": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "loadUnit": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "loadPerUnit": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
     "id": {
       "type": "String",
       "list": false,
@@ -4346,6 +4478,42 @@ export const MODEL_FIELDS = {
     "runMinutesPerUnit": {
       "type": "Decimal",
       "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "timingMode": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "batchCapacity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "cycleMinutes": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "coolingMinutes": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "waitMinutes": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "eligibleResourceIds": {
+      "type": "String",
+      "list": true,
       "nullable": false,
       "relation": false
     },
@@ -4804,7 +4972,7 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "minimumQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -4994,7 +5162,7 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "minimumQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -7076,7 +7244,7 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "committedQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -7204,7 +7372,7 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "quantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -7694,13 +7862,13 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "orderedQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
     },
     "cancelledQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -8681,6 +8849,42 @@ export const MODEL_FIELDS = {
     }
   },
   "Warehouse": {
+    "productionBatches": {
+      "type": "StockProductionBatch",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "productionCollections": {
+      "type": "StockProductionCollection",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "manufacturingCostProfiles": {
+      "type": "FinanceManufacturingProfile",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "financeStockValues": {
+      "type": "FinanceStockValue",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "financeValueEntries": {
+      "type": "FinanceManufacturingValueEntry",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "movementAllocations": {
+      "type": "StockMovementAllocation",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "id": {
       "type": "String",
       "list": false,
@@ -8810,7 +9014,7 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "quantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -8835,6 +9039,36 @@ export const MODEL_FIELDS = {
     }
   },
   "InventoryMovement": {
+    "financeValueEntries": {
+      "type": "FinanceManufacturingValueEntry",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "productionReportId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "productionReport": {
+      "type": "ManufacturingProductionReport",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "requestFingerprint": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "allocations": {
+      "type": "StockMovementAllocation",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "id": {
       "type": "String",
       "list": false,
@@ -8884,9 +9118,33 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "delta": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
+      "relation": false
+    },
+    "enteredQuantity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "enteredUnit": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "baseUnit": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "conversionFactor": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
       "relation": false
     },
     "reason": {
@@ -8988,7 +9246,7 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "quantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -9009,6 +9267,12 @@ export const MODEL_FIELDS = {
       "type": "String",
       "list": false,
       "nullable": false,
+      "relation": false
+    },
+    "requestFingerprint": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
       "relation": false
     },
     "actorUserId": {
@@ -13357,6 +13621,30 @@ export const MODEL_FIELDS = {
     }
   },
   "ManufacturingResource": {
+    "loadCapacity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "loadUnit": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "processProfiles": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "machineLoads": {
+      "type": "ManufacturingMachineLoad",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "id": {
       "type": "String",
       "list": false,
@@ -13405,6 +13693,24 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "processKind": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "calendarMode": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "timezone": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
     "createdAt": {
       "type": "DateTime",
       "list": false,
@@ -13444,6 +13750,80 @@ export const MODEL_FIELDS = {
     "shifts": {
       "type": "ManufacturingShift",
       "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "downtime": {
+      "type": "ManufacturingDowntime",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "ManufacturingDowntime": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "resourceId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "startsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "endsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "reason": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "active": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdByUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "resource": {
+      "type": "ManufacturingResource",
+      "list": false,
       "nullable": false,
       "relation": true
     }
@@ -13541,6 +13921,54 @@ export const MODEL_FIELDS = {
     }
   },
   "ManufacturingOrder": {
+    "stockBatches": {
+      "type": "StockProductionBatch",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "originOrderId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "originRequestKey": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "originFingerprint": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "originOrder": {
+      "type": "ManufacturingOrder",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "followOnOrders": {
+      "type": "ManufacturingOrder",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "financeValueEntries": {
+      "type": "FinanceManufacturingValueEntry",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "reports": {
+      "type": "ManufacturingProductionReport",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "warehouseId": {
       "type": "String",
       "list": false,
@@ -13699,6 +14127,114 @@ export const MODEL_FIELDS = {
     }
   },
   "ManufacturingWorkOrder": {
+    "costBasisCaptured": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "loadedQuantity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "financeValueEntries": {
+      "type": "FinanceManufacturingValueEntry",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "machineMinorPerHour": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "labourMinorPerHour": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "overheadMinorPerHour": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "crewSize": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "machineIncludesLabour": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "machineIncludesOverhead": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "processProfile": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "loadUnit": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "loadPerUnit": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "batchCapacity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "cycleMinutes": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "coolingMinutes": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "reports": {
+      "type": "ManufacturingProductionReport",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "machineLoadId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "machineLoad": {
+      "type": "ManufacturingMachineLoad",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
     "id": {
       "type": "String",
       "list": false,
@@ -13789,6 +14325,24 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "timingMode": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "waitMinutes": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "eligibleResourceIds": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
     "actualMinutes": {
       "type": "Int",
       "list": false,
@@ -13865,6 +14419,12 @@ export const MODEL_FIELDS = {
       "type": "ManufacturingResource",
       "list": false,
       "nullable": true,
+      "relation": true
+    },
+    "stockBatches": {
+      "type": "StockProductionBatch",
+      "list": true,
+      "nullable": false,
       "relation": true
     }
   },
@@ -18843,6 +19403,24 @@ export const MODEL_FIELDS = {
     }
   },
   "FinanceEntity": {
+    "manufacturingProfiles": {
+      "type": "FinanceManufacturingProfile",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "stockValues": {
+      "type": "FinanceStockValue",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "manufacturingValueEntries": {
+      "type": "FinanceManufacturingValueEntry",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "id": {
       "type": "String",
       "list": false,
@@ -18977,6 +19555,42 @@ export const MODEL_FIELDS = {
     }
   },
   "FinanceAccount": {
+    "manufacturingInventoryProfiles": {
+      "type": "FinanceManufacturingProfile",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "manufacturingWipProfiles": {
+      "type": "FinanceManufacturingProfile",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "manufacturingCogsProfiles": {
+      "type": "FinanceManufacturingProfile",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "manufacturingScrapProfiles": {
+      "type": "FinanceManufacturingProfile",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "manufacturingAbsorptionProfiles": {
+      "type": "FinanceManufacturingProfile",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "manufacturingOpeningProfiles": {
+      "type": "FinanceManufacturingProfile",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "id": {
       "type": "String",
       "list": false,
@@ -19155,6 +19769,12 @@ export const MODEL_FIELDS = {
     }
   },
   "FinanceJournal": {
+    "manufacturingValueEntries": {
+      "type": "FinanceManufacturingValueEntry",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "id": {
       "type": "String",
       "list": false,
@@ -19909,6 +20529,12 @@ export const MODEL_FIELDS = {
     }
   },
   "FinanceDocumentLine": {
+    "priceQuantity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
     "salesOrderLineId": {
       "type": "String",
       "list": false,
@@ -21379,6 +22005,24 @@ export const MODEL_FIELDS = {
     }
   },
   "StockLocation": {
+    "productionBatches": {
+      "type": "StockProductionBatch",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "productionCollections": {
+      "type": "StockProductionCollection",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "movementAllocations": {
+      "type": "StockMovementAllocation",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
     "id": {
       "type": "String",
       "list": false,
@@ -21472,6 +22116,250 @@ export const MODEL_FIELDS = {
     "movesTo": {
       "type": "InternalMove",
       "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "StockProductionBatch": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "manufacturingOrderId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "workOrderId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "productId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "warehouseId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "locationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "requestKey": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "productionReportId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "productionReport": {
+      "type": "ManufacturingProductionReport",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "serials": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "lotCode": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "quantity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "collectedQuantity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "fullyCollected": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdByUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "workOrder": {
+      "type": "ManufacturingWorkOrder",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "order": {
+      "type": "ManufacturingOrder",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "product": {
+      "type": "Product",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "warehouse": {
+      "type": "Warehouse",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "location": {
+      "type": "StockLocation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "collections": {
+      "type": "StockProductionCollection",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "StockProductionCollection": {
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "batchId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "warehouseId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "locationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "serials": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "quantity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "requestKey": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "actorUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "note": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "batch": {
+      "type": "StockProductionBatch",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "warehouse": {
+      "type": "Warehouse",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "location": {
+      "type": "StockLocation",
+      "list": false,
       "nullable": false,
       "relation": true
     }
@@ -21650,7 +22538,7 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "quantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -21706,7 +22594,7 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "quantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -21749,6 +22637,12 @@ export const MODEL_FIELDS = {
     }
   },
   "StockReservation": {
+    "requestFingerprint": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
     "id": {
       "type": "String",
       "list": false,
@@ -21792,7 +22686,7 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "quantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -21835,6 +22729,24 @@ export const MODEL_FIELDS = {
     }
   },
   "StockDiscrepancy": {
+    "enteredQuantity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "enteredUnit": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "conversionFactor": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
     "id": {
       "type": "String",
       "list": false,
@@ -21866,13 +22778,13 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "systemQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
     },
     "reportedQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -22276,49 +23188,49 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "orderedQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
     },
     "cancelledQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
     },
     "allocatedQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
     },
     "pickedQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
     },
     "packedQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
     },
     "shippedQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
     },
     "deliveredQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
     },
     "returnedQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -22612,13 +23524,13 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "requiredQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
     },
     "confirmedQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -22948,7 +23860,7 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "quantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -23246,7 +24158,7 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "quantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -23622,13 +24534,13 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "expectedQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
     },
     "receivedQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -23800,13 +24712,13 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "quantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
     },
     "receivedQuantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -30114,7 +31026,7 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "quantityInspected": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -30298,7 +31210,7 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "quantity": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": false,
       "relation": false
@@ -30450,7 +31362,7 @@ export const MODEL_FIELDS = {
       "relation": false
     },
     "quantityAffected": {
-      "type": "Int",
+      "type": "Decimal",
       "list": false,
       "nullable": true,
       "relation": false
@@ -38053,6 +38965,30 @@ export const MODEL_FIELDS = {
       "nullable": false,
       "relation": false
     },
+    "settlementPin": {
+      "type": "Json",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "settlementChecksum": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "settledBy": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "settledAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
     "createdBy": {
       "type": "String",
       "list": false,
@@ -38239,6 +39175,812 @@ export const MODEL_FIELDS = {
       "type": "StudioFieldValue",
       "list": false,
       "nullable": false,
+      "relation": true
+    }
+  },
+  "ManufacturingProductionReport": {
+    "stagedBatches": {
+      "type": "StockProductionBatch",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "productionOrder": {
+      "type": "ManufacturingOrder",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "materialUses": {
+      "type": "ManufacturingMaterialUse",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "movements": {
+      "type": "InventoryMovement",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "workOrderId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "productionOrderId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "requestKey": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "fingerprint": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "goodQuantity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "scrapQuantity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "enteredUnit": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "enteredGoodQuantity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "enteredScrapQuantity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "final": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "lotCode": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "serials": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "shortCloseReason": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "actorUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "workOrder": {
+      "type": "ManufacturingWorkOrder",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "StockMovementAllocation": {
+    "warehouse": {
+      "type": "Warehouse",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "product": {
+      "type": "Product",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "location": {
+      "type": "StockLocation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "materialUses": {
+      "type": "ManufacturingMaterialUse",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    },
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "movementId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "productId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "warehouseId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "locationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "lotId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "serials": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "direction": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "quantity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "status": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "movement": {
+      "type": "InventoryMovement",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "ManufacturingMachineLoad": {
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "resource": {
+      "type": "ManufacturingResource",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "resourceId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "reference": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "processProfile": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "capacity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "unitOfMeasure": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "occupiedCapacity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "startsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "endsAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "status": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "actorUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "workOrders": {
+      "type": "ManufacturingWorkOrder",
+      "list": true,
+      "nullable": false,
+      "relation": true
+    }
+  },
+  "FinanceManufacturingProfile": {
+    "entity": {
+      "type": "FinanceEntity",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "warehouse": {
+      "type": "Warehouse",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "inventoryAccount": {
+      "type": "FinanceAccount",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "wipAccount": {
+      "type": "FinanceAccount",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "cogsAccount": {
+      "type": "FinanceAccount",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "scrapAccount": {
+      "type": "FinanceAccount",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "absorptionAccount": {
+      "type": "FinanceAccount",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "openingAccount": {
+      "type": "FinanceAccount",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "approvedDefinitionIds": {
+      "type": "String",
+      "list": true,
+      "nullable": false,
+      "relation": false
+    },
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "warehouseId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "entityId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "inventoryAccountId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "wipAccountId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "cogsAccountId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "scrapAccountId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "absorptionAccountId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "openingAccountId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "energyMinorPerKwh": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "active": {
+      "type": "Boolean",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "updatedAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    }
+  },
+  "FinanceStockValue": {
+    "entity": {
+      "type": "FinanceEntity",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "warehouse": {
+      "type": "Warehouse",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "product": {
+      "type": "Product",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "entityId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "warehouseId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "productId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "quantity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "valueMinor": {
+      "type": "BigInt",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "version": {
+      "type": "Int",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    }
+  },
+  "FinanceManufacturingValueEntry": {
+    "entity": {
+      "type": "FinanceEntity",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "warehouse": {
+      "type": "Warehouse",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "product": {
+      "type": "Product",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "productionOrder": {
+      "type": "ManufacturingOrder",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "workOrder": {
+      "type": "ManufacturingWorkOrder",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "movement": {
+      "type": "InventoryMovement",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "journal": {
+      "type": "FinanceJournal",
+      "list": false,
+      "nullable": true,
+      "relation": true
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "entityId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "warehouseId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "productId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "productionOrderId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "workOrderId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "movementId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "journalId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "sourceKey": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "kind": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "quantity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "inventoryMinor": {
+      "type": "BigInt",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "wipMinor": {
+      "type": "BigInt",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "expenseMinor": {
+      "type": "BigInt",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "machineMinutes": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "personMinutes": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "energyKwh": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "fingerprint": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "actorUserId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "createdAt": {
+      "type": "DateTime",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    }
+  },
+  "ManufacturingMaterialUse": {
+    "component": {
+      "type": "Product",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "organisation": {
+      "type": "Organisation",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "id": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "organisationId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "reportId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "stockAllocationId": {
+      "type": "String",
+      "list": false,
+      "nullable": true,
+      "relation": false
+    },
+    "componentProductId": {
+      "type": "String",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "quantity": {
+      "type": "Decimal",
+      "list": false,
+      "nullable": false,
+      "relation": false
+    },
+    "report": {
+      "type": "ManufacturingProductionReport",
+      "list": false,
+      "nullable": false,
+      "relation": true
+    },
+    "stockAllocation": {
+      "type": "StockMovementAllocation",
+      "list": false,
+      "nullable": true,
       "relation": true
     }
   }

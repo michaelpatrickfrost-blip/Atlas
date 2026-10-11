@@ -38,8 +38,9 @@ export interface InventoryState {
   productId: string;
   onHand: number; // Physical stock
   allocated: number; // Reserved for stock movements still to go out
-  qualityHeld: number; // Active quality hold
-  available: number; // max(0, onHand - allocated - qualityHeld)
+  restricted?: number; // Production holding and stock in transit
+  qualityHeld: number; // Active quality hold / quarantine, counted once
+  available: number; // max(0, onHand - allocated - qualityHeld - restricted)
   safetyStock: number; // Target safety stock level
 }
 
@@ -56,6 +57,11 @@ export interface RecipeComponent {
 /** One routing step. Machine/labour/overhead rates mirror the Products recipe so
  * the plan and the product page price the same work the same way. */
 export interface RecipeOperation {
+  timingMode?: string;
+  batchCapacity?: number;
+  cycleMinutes?: number;
+  coolingMinutes?: number;
+  waitMinutes?: number;
   position: number;
   name: string;
   setupMinutes: number;
@@ -113,6 +119,7 @@ export type CostBuckets = Record<CostKind, number>;
 
 /** A routing step of a proposed order: the machine, the people and the hours. */
 export interface PlannedOperation {
+  waitMinutes?: number;
   sequence: number;
   name: string;
   workCentreId: string | null;
@@ -319,7 +326,7 @@ export interface MrpInput {
   demand: DemandLine[];
   inventory: Map<string, InventoryState>;
   recipes: Map<string, Recipe>;
-  prices: Map<string, number>;
+  prices: Map<string, number | { amountMinor: number; quantity: number }>;
   existingSupply: Map<string, number>;
   leadTimes: Map<string, number>;
   safetyStock: Map<string, number>;

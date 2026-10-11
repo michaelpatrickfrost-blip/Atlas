@@ -52,9 +52,15 @@ synthetic personal boards/chat fixtures are written; underlying source records
 are read-only, explicit exports audited, and fixtures cleaned/retired in finally.
 It keeps the same preparation, backup, compatibility and runtime rollback gates.
 
+The supply acceptance also invokes `scripts/check-manufacturing-kilns.ts` for
+finite release/cascade, tenant-bound downtime, Sales seasonal history, flexible
+forecast UI saving and plant/schedule/forecast/recipe at three viewport widths.
+It runs inside the same backed-up central Test fixture and retirement boundary.
+
 For the Manufacturing & Supply console, use `ATLAS_RELEASE_ACCEPTANCE=supply`
 with the pinned scoped branch. Its existing central Test checker runs against the
 sealed smoke candidate and publicly before completion, under this same lock pair.
+
 Both fixture stages take their own database/private-file backup. The original
 clean-tree/pinned push, remote-tip, ancestry, compatibility, immutability, smoke and
 rollback gates remain; public failure restores the previous runtime without a
@@ -64,6 +70,13 @@ Use activate (the default) to complete the whole checked sequence in one run:
 ```bash
 ATLAS_RELEASE_BRANCH=codex/manufacturing-supply-console ATLAS_RELEASE_COMMIT=$(git rev-parse HEAD) ATLAS_RELEASE_ACCEPTANCE=supply npm run deploy:vps
 ```
+
+For Company Settings/user administration, use `ATLAS_RELEASE_ACCEPTANCE=settings`.
+The native checker exercises profiles, individual exceptions, account details,
+password assignment, real login, one-use recovery, and the invoice-view/own-request
+Finance workflow with banking denial, followed by Home acceptance. Runs bracket
+candidate/public revision checks under the deployment locks. Only synthetic central
+Test companies are changed; access is retired and Audit retained in finally.
 
 The server backs up PostgreSQL and configured private Service files into
 `~/backups`, then installs, generates, applies compatible migrations and builds in
@@ -485,3 +498,46 @@ Root164GiBfree/no swap/2.6GiB available RAM; no fstab/app/PG/database change. Op
 existing owner-administrator locks as that owner; privileged buffer operations run
 while the owner shell holds them. Initial root opens were denied before mutation;
 never recreate/change lock ownership/inodes to work around sticky-file protection.
+
+## Usability/Guides/production handoff acceptance
+
+Use `ATLAS_RELEASE_ACCEPTANCE=usability` with the exact reviewed release branch/SHA.
+The checked-in `scripts/check-usability-release.ts` exercises the sealed candidate
+and public HTTPS under the existing release locks, taking central backups at both
+stages. It uses the existing QA staff identity and a disposable central Test company,
+checks website scene spacing/navigation/motion at 1440/820/390/320, genuine final
+production completion/partial/full yard collections, stale/replayed/Quality-held
+bookings, Maintenance creation, S&OP form discovery, Procurement input, registered
+routes/guide links and key responsive workspaces. The exact fixture is wiped in
+finally and the existing QA affiliation remains unchanged. A candidate failure
+prevents activation; public failure retains the normal runtime rollback path.
+
+Explicit cleanup of historical Test companies can accompany the usability release
+with `ATLAS_RELEASE_TEST_CLEANUP=1`. This is off by default and requires the
+operator's specific authorisation. After public acceptance, under both existing
+locks and the public fixture backup, the server-only cleanup checker revalidates
+the live revision and existing staff identity, snapshots at most 1,000 explicitly
+marked CUSTOMER Test companies, and invokes the existing protected atomic wipe.
+It verifies zero Test companies/pending file deletions and retention of every
+ordinary/internal company and the staff identity. Backups and cleanup audit remain.
+
+## Decimal manufacturing rollback bridge — 11 October 2026
+
+The retained Int Prisma runtime silently truncates fractional NUMERIC quantities.
+The exact empty-schema probe confirms 1.25 is read as 1. Do not enable fractional
+writes while such a runtime is the rollback target. First deploy/accept the new
+Decimal runtime with the pending decimal/report/WIP migrations, temporary
+atlas_quantity_bridge_* whole-quantity checks and legacy one-batch/order unique
+index retained. The original pinned Supply acceptance must pass candidate AND public.
+Only after that accepted Decimal runtime is retained may the final unlock migration
+remove those temporary checks/index and the full fractional execution checker run.
+Never roll the database back or activate an Int runtime after unlock. All release
+locks, required backups, immutable builds, revision/Studio compatibility and original
+rollback gates remain mandatory. The empty central-schema DDL rehearsal applied all
+three migrations and final unlock then rolled back completely; no business records.
+
+Michael explicitly requests all Test data scrubbed after this completed release.
+Use ATLAS_RELEASE_TEST_CLEANUP=1 on the final accepted release. The existing protected
+cleanup checks exact public revision and required backup, deletes only explicitly
+marked CUSTOMER Test companies, resolves scoped records/files and verifies ordinary/
+internal companies/shared QA identity preserved and no Test/file cleanup pending.

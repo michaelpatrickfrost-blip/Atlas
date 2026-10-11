@@ -1,3 +1,25 @@
+<!-- 11 October checkpoint: root e3d2b row/outcome observer VERIFIED locally,
+51tests/4suites/types/lint/diff PASS; branch inspectors awaiting integration.
+Actual start/batch/representation and central runtime proof remain NOT STARTED. -->
+
+## 11 October — authorised parallel e3d2b delivery
+
+Michael explicitly requested linked parallel branches and correctness. Root owns
+observation.ts actual row/outcome/envelope inspection and final integration; separate
+managed branches own execution-inspection.ts + its focused suite, and inspection.ts
+execution aggregate + existing required inspection suite. Read-only fourth agent
+reviews SQL/security/native compatibility. All branches start at f9bf3cb (live code
+0d315f7); root alone owns shared ledger, final integrated testing and deployment.
+Interfaces agreed before coding: inspectExecutingRequiredFieldMigrationRecord and
+observeExecutingRequiredFieldMigrationRecord(context, storedIntent2, serverAnchor);
+inspectExecutingRequiredFieldMigrationReview(context, storedIntent2);
+inspectRequiredFieldMigrationExecution(authority, storedIntent2). These are internal
+server entries, not client DTOs/stages or new engines. No start/batch/cutover/native
+writes enabled by this read-only workstream. Each branch records its own limited
+verification in CURRENT_STATE; root reconciles shared memory on integration. Reuse
+dependencies rather than duplicate generated outputs; archive temporary worktrees
+with recoverable snapshots after integration. No Phase3 or later implementation.
+
 ## 11 October — e3d2a execution coverage VERIFIED locally
 
 Separate internal stored2 execution coverage implemented in existing coverage.ts.
@@ -21,7 +43,7 @@ conditional authoring/activation remains gated throughout these internal steps.
 | Workstream | Expected files | Database implications | Required evidence | Status |
 | --- | --- | --- | --- | --- |
 | e3d2a Source-active execution coverage | migrations/coverage.ts; existing required observation and coverage suites | Reuse locked actual RUNNING/READY/FAILED execution, source/target SQL lineage; no planned DDL | Refreshed caller authority/private/owner policy; exact review/pin/native/source; arbitrary global revision changes denied | VERIFIED locally:63tests/5suites, strictTS/lint/build/diff PASS; runtime2 NOT enabled |
-| e3d2b Conditional row/review reinspection | observation.ts,inspection.ts,execution-inspection.ts; existing inspection suites | Read-only actual observation/outcome/target metadata; source remains active | Reevaluate all actual condition inputs; permit own +1 global envelope only through exact retained outcome and source/target mirrors; bounded SQL/pure seal equality | NOT STARTED |
+| e3d2b Conditional row/review reinspection | observation.ts,inspection.ts,execution-inspection.ts; existing inspection suites | Read-only actual observation/outcome/target metadata; source remains active | Reevaluate all actual condition inputs; permit own +1 global envelope only through exact retained outcome and source/target mirrors; bounded SQL/pure seal equality | IN PROGRESS |
 | e3d3 Start and representation/batches | Existing execution-start.ts,execution-batch.ts,representation.ts; existing suites | Same atomic generation/slot/value/outcome/progress/Audit; additive correction only if actual SQL evidence proves necessary | Stored-format dispatch; explicit owner approval; converted value matches reviewed requirements; response/retry/CAS/failure/Audit atomicity and exact source preservation | NOT STARTED |
 | e3d4 Actual normal execution proof | Extend exact central Test checker, no new company/parallel engine | Original fixture recovery and retained Test history; zero native writes | Real start/bounded batch/replay/resume/private/tenant/failure behaviour, all source-active; original candidate/public gates | NOT STARTED |
 

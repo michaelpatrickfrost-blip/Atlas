@@ -22,7 +22,7 @@ existing execution/source/target SQL guards reused. No new DDL or writes. Origin
 compatibility/public health exact. Current0d315f7 rollbackbafa1c2; only inactive8cc2758
 duplicate runtime retired. Temporary build swap safely removed49396 exit0 under
 BOTH original lock inodes; root164GiB free/no swap/2.6GiB RAM available.
-Actual conditional row/outcome/review inspection e3d2b is NOT STARTED; no execution2
+Actual conditional row/outcome/review inspection e3d2b is IN PROGRESS; no execution2
 start/batch/cutover or ordinary authoring enabled. Detailed dependencies saved in
 required-rules plan. Unit SQL fixtures are not actual format2 runtime evidence.
 
@@ -57,6 +57,21 @@ source coverage, phase plan and this ledger. No rewritten specification.
   of actual execution runtime from synthetic pure metadata or owner descriptors.
 
 # Current Workstream Detail
+
+E3d2b row/outcome observer VERIFIED locally:51tests/4suites, strictTS/scoped lint/
+diff PASS; independent read-only review no blocking defect. Exact own +1/new-anchor
+outcome mirrors and actual target typed decode precede archive normalization.
+Custom-field conditions use actual post-write envelope/independent Read; revoked
+input and unexplained extra increment denied. Unit authority/SQL/archive fixtures
+are not real execution evidence. Parallel review/execution inspectors next to merge;
+start/batch/representation remains gated. Build/release at integrated usable milestone.
+
+Michael authorised linked parallel work on11 October. Root owns actual row/outcome
+inspection and integration; isolated branches own server execution metadata/pin
+inspection and bounded aggregate review inspection. A fourth read-only review
+checks SQL/native/security gaps. Shared function contracts recorded in required
+rules plan; root alone merges, updates the main ledger and deploys the integrated
+usable milestone. No later phase feature work or duplicate runtime engines.
 
 Execution2 prerequisite now uses actual scoped RUNNING/READY/FAILED execution and
 existing source/outcome/target guards, after complete owning private preflight; exact
@@ -199,7 +214,12 @@ later-phase features. No complete Studio/visual builder claim.
 
 # Exact Next Action
 
-Next e3d2b: add inspectExecutingRequiredFieldMigrationRecord/its archive wrapper
+Merge scoped parallel review/execution inspectors after reviewing their code and
+combined checks, then adapt existing start/batch/representation using actual stored
+protocol, add normal central Test conversion/replay/rollback proof and run original
+combined release. No cutover/settlement/authoring2 enablement from this checkpoint.
+
+Current e3d2b: add inspectExecutingRequiredFieldMigrationRecord/its archive wrapper
 to observation.ts, an explicit execution review entry in inspection.ts, and the
 closed2 server execution inspector in execution-inspection.ts. Reuse e3d2a coverage
 and existing pure pins; source remains active. Do not enable start/batches yet.

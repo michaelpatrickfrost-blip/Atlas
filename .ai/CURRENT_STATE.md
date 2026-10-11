@@ -1,3 +1,47 @@
+## 11 October 2026 — e3d2b row/outcome observer VERIFIED locally
+
+Existing observation.ts now exposes a separate conditional execution-only row and
+archive reader. Genuine authority/private preflight precede actual execution SQL;
+current conditions use actual post-conversion envelope, exact retained outcome
+mirrors explain only own +1/new anchor, source slot/native remain exact, and actual
+typed target decoding/current-written/reference policies precede normalization.
+51 tests/4 suites PASS (includes seven new grouped row cases), strict TypeScript
+and scoped lint/diff PASS; lint retains two existing unused fixture warnings.
+Independent read-only review found no blocking defect; its custom-input post-write
+coverage gap now tested with real input reader/compiler and independent Read denial.
+Tests use explicit authority/SQL/archive fixtures, not actual normal execution2.
+No DDL/business writes/start/batch enabled. Build/deployment deferred to integrated
+usable start/batch milestone per user's grouped-work preference. Next integrate
+bounded review and execution metadata branches, then existing start/batch/typed
+representation and actual central API proof. Live remains exact0d315f7.
+
+## 11 October2026 — user authorised linked parallel Phase2 work
+
+Root owns actual conditional row/outcome observation, integration, permanent ledger
+and final release. Two isolated managed worktrees start at f9bf3cb for server
+execution inspection and bounded review aggregate; fourth agent read-only SQL/native/
+security review. Exact shared internal function interfaces in required-rules plan.
+No later phases or start/batch/cutover enabled early. Branch-local limited checks
+then integrated normal conversion proof; original deployment/backup/ancestry/locks
+retained. Reuse dependencies; archive recoverable temporary worktrees after merging.
+
+## 11 October 2026 — e3d2b actual conditional execution reinspection IN PROGRESS
+
+Recovered exact clean f9bf3cb/0d315f7 live evidence; source Sections6.5,24,25,27 and
+current dependencies re-read. Implement existing observation/review/execution
+inspectors first, then existing start/batch/representation and actual central normal
+API proof as one usable conversion milestone before the next combined release.
+Expected files: observation.ts,inspection.ts,execution-inspection.ts, existing
+required observation/inspection and execution suites; next start/batch/representation
+and existing central checker. Reuse SQL guards; no planned schema/DDL/native changes.
+Require genuine refreshed principal/private preflight, exact stored2 review/target/
+execution pin/outcome mirrors; actual own +1 global envelope and unchanged source/
+native/target before archive comparison; evaluate conditions with current envelope
+and independent Read/reference rights. Bounded rows, SQL/pure digest and empty-cohort
+checks mandatory. No client stage or source-active publication fallback after writes.
+Local checks per coherent workstream; original full combined acceptance at usable
+integrated milestone. Current source-active ordinary operation remains preserved.
+
 ## 11 October 2026 — e3d2a deployed; exact remaining Phase2 scope1032UTC
 
 Original pinned release0d315f770812d2e6b7dc7179992256c1f3461900/46009 exit0.

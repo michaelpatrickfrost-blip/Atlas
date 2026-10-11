@@ -2,7 +2,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 import type { Prisma, StudioDefinitionVersion } from "@/generated/prisma/client";
 import type { Session } from "@/core/auth/session";
 import type { FieldRuntimeAuthority } from "@/core/studio/fields/runtime-authority";
-const m = vi.hoisted(() => ({ refresh: vi.fn(), principal: vi.fn(), raw: vi.fn(), company: vi.fn(), definition: vi.fn(), version: vi.fn(), generation: vi.fn(), extension: vi.fn(), value: vi.fn(), slot: vi.fn(), publication: vi.fn() }));
+const m = vi.hoisted(() => ({ refresh: vi.fn(), principal: vi.fn(), raw: vi.fn(), company: vi.fn(), definition: vi.fn(), version: vi.fn(), generation: vi.fn(), extension: vi.fn(), value: vi.fn(), slot: vi.fn(), publication: vi.fn(), execution: vi.fn(), observation: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: {} }));
 vi.mock("@/core/studio/fields/runtime-authority", () => ({ fieldRuntimeAuthorityInTransaction: m.refresh }));
 vi.mock("@/core/studio/fields/principal", () => ({ resolveFieldMigrationPrincipal: m.principal }));
@@ -13,9 +13,10 @@ import { customFieldPayloadSchema, type FieldStorage } from "@/core/studio/field
 import { conditionalFieldPayloadSchema, type VersionedFieldPayload } from "@/core/studio/fields/required-contract";
 import { compileFieldMigrationMetadata } from "@/core/studio/fields/migrations/metadata";
 import { sealRequiredFieldMigrationIntent, sealRequiredFieldMigrationReview, requiredFieldMigrationObservationDigest, type RequiredFieldMigrationIntent } from "@/core/studio/fields/migrations/required-contracts";
-import { inspectRequiredFieldMigrationRecord, inspectPublishedRequiredFieldMigrationRecord, observePublishedRequiredFieldMigrationRecord, observeRequiredFieldMigrationRecord, observeFieldMigrationRecord } from "@/core/studio/fields/migrations/observation";
+import { inspectRequiredFieldMigrationRecord, inspectPublishedRequiredFieldMigrationRecord, inspectExecutingRequiredFieldMigrationRecord, observeExecutingRequiredFieldMigrationRecord, observePublishedRequiredFieldMigrationRecord, observeRequiredFieldMigrationRecord, observeFieldMigrationRecord } from "@/core/studio/fields/migrations/observation";
 import { reviewedRequiredFieldPublicationPin } from "@/core/studio/fields/migrations/publication-contract";
 import { validatePublishedRequiredFieldMigrationSourceCoverage, validateExecutingRequiredFieldMigrationSourceCoverage, validateRequiredFieldMigrationSourceCoverage, validateFieldMigrationSourceCoverage } from "@/core/studio/fields/migrations/coverage";
+import { createRequiredFieldMigrationExecutionPin, createRequiredFieldMigrationOutcomePin } from "@/core/studio/fields/migrations/execution-contract";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
 const uuid = (n: number) => `00000000-0000-4000-8000-${n.toString().padStart(12, "0")}`;
 const root = uuid(4), inputId = uuid(14);
@@ -26,7 +27,7 @@ const stamp = { organisationId: "company", userId: "actor", membershipId: "membe
 const anchor = { recordId: "record", organisationId: "company", revision: 7 };
 const tx = { $queryRaw: m.raw, organisation: { findFirst: m.company }, studioDefinition: { findFirst: m.definition }, studioDefinitionVersion: { findFirst: m.version, findMany: m.version },
   studioFieldGeneration: { findFirst: m.generation }, studioExtensionRecord: { findFirst: m.extension }, studioFieldValue: { findFirst: m.value }, studioFieldSlot: { findFirst: m.slot },
-  studioFieldMigrationPublication: { findFirst: m.publication } } as unknown as Prisma.TransactionClient;
+  studioFieldMigrationPublication: { findFirst: m.publication }, studioFieldMigrationExecution: { findFirst: m.execution }, studioFieldMigrationObservation: { findFirst: m.observation } } as unknown as Prisma.TransactionClient;
 let registry: CapabilityRegistry, session: Session, intent: RequiredFieldMigrationIntent;
 let sourceVersion: StudioDefinitionVersion, rootRow: { id: string; organisationId: string; kind: string; key: string; retiredAt: null; revision: number; latestVersion: number; activeVersionId: string; activeVersion: StudioDefinitionVersion; draft: { id: string; definitionId: string; organisationId: string; revision: number; baseVersionId: string; payload: Prisma.JsonValue } };
 let fact: ReturnType<typeof vi.spyOn>, native: ReturnType<typeof vi.spyOn>;
@@ -351,4 +352,168 @@ it("keeps current and written field permissions and tenant/owner protocol requir
   });
   m.version.mockResolvedValue([{ ...sourceVersion, payload: written }]);
   await expect(run()).rejects.toThrow("tickets.field.secret"); expect(m.value).not.toHaveBeenCalled();
+});
+
+// Actual observer/codec/compiler/current-owner bodies; authority, transaction and
+// immutable archive/outcomes are explicit unit fixtures, not runtime execution.
+async function executingFixture(mode: "anchored" | "unanchored" | "empty-slot" = "anchored", converted = true) {
+  if (mode === "anchored") await stored(false);
+  if (mode === "empty-slot") m.extension.mockResolvedValue({ id: uuid(7), revision: 4, slots: [] });
+  const { publication, observation } = await publishedFixture();
+  const sealed = { review: publication.review.review, checksum: publication.review.checksum };
+  const owner = registry.describe("tickets.ticket", 9), approval = registry.describe("tickets.ticket.field_representation", 2);
+  const { review: excludedReview, targetVersion, state: excludedState, ...publicationPin } = publication;
+  void excludedReview; void excludedState;
+  const expected = createRequiredFieldMigrationExecutionPin(sealed, { id: targetVersion.id, organisationId: targetVersion.organisationId, definitionId: targetVersion.definitionId,
+    version: targetVersion.version, checksum: targetVersion.checksum, payload: targetVersion.payload, compiledPlan: targetVersion.compiledPlan }, publicationPin, owner, approval);
+  const execution = { preparationId: intent.id, organisationId: "company", definitionId: root, entityId: "tickets.ticket",
+    pin: expected.pin, pinChecksum: expected.checksum, state: "RUNNING", revision: converted ? 1 : 0,
+    cursor: converted ? anchor.recordId : null, processedCount: converted ? 1 : 0, failureCode: null };
+  const row = { id: uuid(30), preparationId: intent.id, organisationId: "company", definitionId: root, entityId: "tickets.ticket",
+    sourceGenerationId: intent.source.payload.storageGeneration, recordId: anchor.recordId, nativeRevision: anchor.revision,
+    extensionId: observation.extension?.id ?? null, extensionRevision: observation.extension?.revision ?? null,
+    slotId: observation.extension?.slot?.id ?? null, slotRevision: observation.extension?.slot?.revision ?? null,
+    valueId: observation.extension?.slot?.value?.id ?? null, observation, outcome: null as unknown };
+  const target = { id: uuid(33), revision: 1, versionId: targetVersion.id,
+    ...encodeFieldValue(intent.target.payload.field, mode === "anchored" ? false : null), schemaVersion: targetVersion };
+  let outcome: ReturnType<typeof createRequiredFieldMigrationOutcomePin> | undefined;
+  if (converted) {
+    outcome = createRequiredFieldMigrationOutcomePin(expected.pin, sealed, { id: row.id, preparationId: row.preparationId,
+      organisationId: row.organisationId, definitionId: row.definitionId, entityId: row.entityId, sourceGenerationId: row.sourceGenerationId,
+      recordId: row.recordId, nativeRevision: row.nativeRevision, observation }, { extensionId: observation.extension?.id ?? uuid(31), slotId: uuid(32), valueId: target.id });
+    row.outcome = { ...outcome, extensionId: outcome.target.extensionId, extensionRevision: outcome.target.extensionRevision,
+      targetSlotId: outcome.target.slotId, targetValueId: outcome.target.valueId, targetFingerprint: outcome.target.fingerprint,
+      targetIsNull: outcome.target.isNull, outcome };
+  }
+  const envelope = { id: outcome?.target.extensionId ?? observation.extension?.id ?? uuid(31), revision: outcome?.target.extensionRevision ?? observation.extension?.revision ?? 1 };
+  m.extension.mockImplementation(async args => {
+    if (!converted && mode === "unanchored") return null;
+    const targetRead = args.select?.slots?.where.generationId === intent.target.payload.storageGeneration;
+    const slots = targetRead ? converted ? [{ id: uuid(32), revision: 1, activeValueId: target.id }] : []
+      : mode === "anchored" ? [{ id: uuid(8), revision: 2, activeValueId: uuid(9) }] : [];
+    return { ...envelope, slots };
+  });
+  m.value.mockImplementation(async args => args.where.generationId === intent.target.payload.storageGeneration ? target : null);
+  // Preserve the actual encoded source/version for metadata and full column reads.
+  if (mode === "anchored") {
+    const written = { ...sourceVersion, schemaVersion: intent.source.payload.schemaVersion };
+    const source = { id: uuid(9), revision: 2, versionId: written.id, ...encodeFieldValue(intent.source.payload.field, false), schemaVersion: written };
+    m.value.mockImplementation(async args => args.where.generationId === intent.target.payload.storageGeneration ? target : source);
+  }
+  m.execution.mockResolvedValue(execution); m.observation.mockResolvedValue(row);
+  const freshness = { fresh: true };
+  m.raw.mockImplementation(async sql => (sql as TemplateStringsArray).join("").includes("atlas_studio_execution_fresh") ? [{ fresh: freshness.fresh }] : []);
+  m.raw.mockClear(); m.value.mockClear(); fact.mockClear();
+  return { row, execution, envelope, target, publication, observation, freshness };
+}
+const inspectExecuting = () => inspectExecutingRequiredFieldMigrationRecord({ session, transaction: tx }, intent, anchor);
+
+it("reinspects unchanged unconverted execution rows under execution freshness without publication fallback", async () => {
+  const fixture = await executingFixture("anchored", false);
+  expect((await inspectExecuting()).observation).toEqual(fixture.observation);
+  expect(await observeExecutingRequiredFieldMigrationRecord({ session, transaction: tx }, intent, anchor)).toEqual(fixture.observation);
+  const sql = m.raw.mock.calls.map(call => (call[0] as TemplateStringsArray).join(""));
+  expect(sql.some(value => value.includes("atlas_studio_execution_fresh"))).toBe(true);
+  expect(sql.some(value => value.includes("atlas_studio_publication_fresh"))).toBe(false);
+  fixture.row.outcome = null; fixture.envelope.revision++;
+  await expect(inspectExecuting()).rejects.toThrow();
+});
+
+it("proves own converted anchored, newly anchored and previously empty-slot envelopes before restoring archive meaning", async () => {
+  for (const mode of ["anchored", "unanchored", "empty-slot"] as const) {
+    m.extension.mockResolvedValue(null); await prepare();
+    const fixture = await executingFixture(mode);
+    const current = await inspectExecuting();
+    expect(current.observation).toEqual(fixture.observation);
+    expect(current.convertedValue).toEqual(mode === "anchored" ? { type: "boolean", value: false } : null);
+    expect(m.value.mock.calls.some(call => call[0].where.generationId === intent.target.payload.storageGeneration && !call[0].select)).toBe(true);
+    fixture.envelope.revision++;
+    await expect(inspectExecuting()).rejects.toThrow("stale or has changed");
+  }
+});
+
+it("rejects missing execution, progress/pin/archive/outcome mirrors and false SQL freshness before accepting lineage", async () => {
+  const fixture = await executingFixture(), savedRow = structuredClone(fixture.row), savedExecution = structuredClone(fixture.execution);
+  const mutations = [() => { fixture.execution.pinChecksum = "f".repeat(64); }, () => { fixture.execution.pin.publication.reviewChecksum = "f".repeat(64); },
+    () => { fixture.execution.processedCount = 2; }, () => { fixture.row.organisationId = "foreign"; }, () => { fixture.row.extensionRevision = 6; },
+    () => { fixture.row.outcome = null; }, () => { (fixture.row.outcome as { observationChecksum: string }).observationChecksum = "f".repeat(64); },
+    () => { (fixture.row.outcome as { outcome: { target: { extensionRevision: number } } }).outcome.target.extensionRevision++; },
+    () => { (fixture.row.outcome as { targetVersionId: string }).targetVersionId = uuid(99); }];
+  for (const mutate of mutations) {
+    Object.assign(fixture.row, structuredClone(savedRow)); Object.assign(fixture.execution, structuredClone(savedExecution)); mutate();
+    await expect(inspectExecuting()).rejects.toThrow();
+  }
+  Object.assign(fixture.row, structuredClone(savedRow)); Object.assign(fixture.execution, structuredClone(savedExecution));
+  m.execution.mockResolvedValueOnce(null); await expect(inspectExecuting()).rejects.toThrow();
+  fixture.freshness.fresh = false; m.value.mockClear(); await expect(inspectExecuting()).rejects.toThrow(); expect(m.value).not.toHaveBeenCalled();
+});
+
+it("independently decodes actual targets and rejects content, written policy, pointer and native/condition drift", async () => {
+  const fixture = await executingFixture(), saved = structuredClone(fixture.target);
+  fixture.target.booleanValue = true; await expect(inspectExecuting()).rejects.toThrow("stale or has changed");
+  Object.assign(fixture.target, structuredClone(saved)); fixture.target.versionId = uuid(99); await expect(inspectExecuting()).rejects.toThrow();
+  Object.assign(fixture.target, structuredClone(saved)); fixture.target.revision = 2; await expect(inspectExecuting()).rejects.toThrow();
+  Object.assign(fixture.target, structuredClone(saved));
+  fact.mockResolvedValue({ ...anchor, fields: { status: "RESOLVED", priority: "NORMAL" } }); await expect(inspectExecuting()).rejects.toThrow();
+  fact.mockResolvedValue({ ...anchor, fields: { status: "NEW", priority: "NORMAL" } });
+  native.mockResolvedValueOnce({ ...anchor, revision: 8 }); await expect(inspectExecuting()).rejects.toThrow();
+  fixture.target.schemaVersion.payload = { ...intent.target.payload, field: { ...intent.target.payload.field, readCapability: "tickets.field.secret" } } as unknown as Prisma.JsonValue;
+  m.value.mockClear(); await expect(inspectExecuting()).rejects.toThrow("tickets.field.secret");
+  const targetCalls = m.value.mock.calls.filter(call => call[0].where.generationId === intent.target.payload.storageGeneration);
+  expect(targetCalls).toHaveLength(1); expect(targetCalls[0][0]).toHaveProperty("select");
+});
+
+it("retains tenant, genuine authority and private preflight denials before execution freshness or typed columns", async () => {
+  await executingFixture();
+  fact.mockRejectedValueOnce(new Error("private cohort denied"));
+  await expect(inspectExecuting()).rejects.toThrow("private cohort denied"); expect(m.value).not.toHaveBeenCalled();
+  expect(m.raw.mock.calls.some(call => (call[0] as TemplateStringsArray).join("").includes("atlas_studio_execution_fresh"))).toBe(false);
+  const exact = session; session = { ...exact, organisationId: "foreign" }; await expect(inspectExecuting()).rejects.toThrow(); session = exact;
+  const actual = await vi.importActual<typeof import("@/core/studio/fields/runtime-authority")>("@/core/studio/fields/runtime-authority");
+  m.refresh.mockImplementation(actual.fieldRuntimeAuthorityInTransaction); m.raw.mockClear();
+  await expect(inspectExecuting()).rejects.toThrow("authenticated company access"); expect(m.raw).not.toHaveBeenCalled();
+});
+
+it("requires exact source pointers and supports conditional rule removal without choosing protocol from the target schema", async () => {
+  await prepare(payload(1), payload(2, false));
+  const fixture = await executingFixture();
+  expect((await inspectExecuting()).observation).toEqual(fixture.observation);
+  expect(fixture.publication.targetVersion.schemaVersion).toBe(1);
+  const extensionRead = m.extension.getMockImplementation()!;
+  m.extension.mockImplementation(async args => {
+    const actual = await extensionRead(args);
+    if (args.select?.slots?.where.generationId === intent.source.payload.storageGeneration && actual) {
+      actual.slots[0].revision++;
+    }
+    return actual;
+  });
+  await expect(inspectExecuting()).rejects.toThrow();
+});
+
+it("evaluates a custom-field condition against the actual converted envelope and its independent Read grant", async () => {
+  const inputPayload = customFieldPayloadSchema.parse({ ...payload(11, false), field: { ...payload(11, false).field,
+    key: "flag", readCapability: "tickets.field.secret", writeCapability: "tickets.field.edit" } });
+  session.capabilities.add("tickets.field.secret"); session.capabilities.add("tickets.field.edit");
+  const compiled = await compileFieldMigrationMetadata({ session, transaction: tx }, registry, company, inputId, inputPayload);
+  const version = { ...sourceVersion, id: uuid(15), definitionId: inputId, payload: compiled.payload as unknown as Prisma.JsonValue,
+    compiledPlan: compiled.plan as unknown as Prisma.JsonValue, checksum: compiled.checksum };
+  const input = { ...rootRow, id: inputId, key: "tickets.ticket.flag", activeVersionId: version.id, activeVersion: version };
+  const inputValue = { id: uuid(19), organisationId: "company", definitionId: inputId, generationId: inputPayload.storageGeneration,
+    slotId: uuid(18), versionId: version.id, revision: 1, ...encodeFieldValue(inputPayload.field, false),
+    createdBy: "actor", createdAt: new Date(), schemaVersion: version };
+  m.definition.mockImplementation(async args => args.where.id === root ? rootRow : args.where.id === inputId ? input : null);
+  m.version.mockResolvedValue(version);
+  m.slot.mockResolvedValue({ id: uuid(18), revision: 1, activeValueId: inputValue.id, activeValue: inputValue });
+  const target = conditionalFieldPayloadSchema.parse({ ...payload(2), requiredIf: { match: "all", predicates: [
+    { source: { kind: "field", definitionId: inputId, versionId: version.id, checksum: version.checksum }, operator: "equals", value: { type: "boolean", value: true } },
+  ] } });
+  await prepare(payload(1, false), target);
+  const fixture = await executingFixture("empty-slot");
+  session.capabilities.delete("tickets.field.edit");
+  expect((await inspectExecuting()).observation).toEqual(fixture.observation);
+  session.capabilities.delete("tickets.field.secret"); m.value.mockClear(); m.slot.mockClear();
+  await expect(inspectExecuting()).rejects.toThrow("tickets.field.secret");
+  expect(m.value).not.toHaveBeenCalled(); expect(m.slot).not.toHaveBeenCalled();
+  session.capabilities.add("tickets.field.secret"); fixture.envelope.revision++;
+  await expect(inspectExecuting()).rejects.toThrow();
 });

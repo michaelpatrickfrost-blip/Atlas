@@ -76,6 +76,13 @@ source coverage, phase plan and this ledger. No rewritten specification.
 
 # Current Workstream Detail
 
+2C1 IMPLEMENTED/pure11 tests; root2C1+2C2a pin metadata32/2 PASS, types/lint PASS.
+New additive ConfigurationDependency model/050000 SQL source reviewed, no central
+DDL yet: original lock safety stopped BEGIN/ROLLBACK attempt before executing SQL.
+Source reader sealed/tenant/kind/edge/graph checks are not per-record authority or
+assignment/activation coverage. Pure2D1 IN PROGRESS, no customer visual UI claimed.
+
+
 Integrated scoped defaults/search checkpoints:223/11 PASS, strict/scopedlint exit0;
 reference rights now checked before protected values, strengthened95/3 PASS. Forward
 040000 receipt guard not yet centrally applied. Defaults/search IMPLEMENTED, not

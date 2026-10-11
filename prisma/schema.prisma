@@ -9565,6 +9565,8 @@ model StudioDefinitionVersion {
   activeFor StudioDefinition[] @relation("StudioActive")
   draftBases StudioDraft[] @relation("StudioDraftBase")
   dependencies StudioDependency[]
+  configurationDependencies StudioConfigurationDependency[] @relation("StudioConfigurationSource")
+  configurationDependants StudioConfigurationDependency[] @relation("StudioConfigurationTarget")
   fieldOrigins StudioFieldBinding[] @relation("StudioFieldOrigin")
   generationOrigins StudioFieldGeneration[] @relation("StudioGenerationOrigin")
   fieldValues StudioFieldValue[] @relation("StudioFieldValueSchema")
@@ -9593,6 +9595,24 @@ model StudioDependency {
   @@unique([versionId,contractId,contractVersion])
   @@index([organisationId,ownerModuleId,contractId])
   @@map("studio_dependencies")
+}
+
+// Exact immutable configuration pins; registry contracts stay in StudioDependency.
+model StudioConfigurationDependency {
+  id String @id @default(uuid()) @db.Uuid
+  organisationId String
+  definitionId String @db.Uuid
+  versionId String @db.Uuid
+  targetDefinitionId String @db.Uuid
+  targetVersionId String @db.Uuid
+  targetKind String
+  targetSchemaVersion Int
+  targetChecksum String
+  version StudioDefinitionVersion @relation("StudioConfigurationSource",fields:[versionId,definitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_configuration_source_fk")
+  targetVersion StudioDefinitionVersion @relation("StudioConfigurationTarget",fields:[targetVersionId,targetDefinitionId,organisationId],references:[id,definitionId,organisationId],onDelete:Restrict,onUpdate:NoAction,map:"studio_configuration_target_fk")
+  @@unique([versionId,targetDefinitionId],map:"studio_configuration_version_target_key")
+  @@index([organisationId,targetDefinitionId,targetVersionId],map:"studio_configuration_target_idx")
+  @@map("studio_configuration_dependencies")
 }
 
 // Studio owns only additional values and canonical references, never business copies.

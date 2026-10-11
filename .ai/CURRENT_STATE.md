@@ -1,3 +1,25 @@
+## 11 October — record-type pure core and configuration pin storage checkpoint
+
+Integrated pure2C1 checkpoint5c06b118: exact tenant-independent pin shapes, one base
+and one overlay, explicit replacements/additive required fields, deterministic
+materialisation and conflicts/self-cycle rejection. New2C2a schema/source: distinct
+StudioConfigurationDependency with both tenant/composite version FKs, immutable
+exact sealed pins, original-transaction complete edge set, depth4/path500 guard.
+Internal metadata reader scopes exact versions to server tenant, validates checksum/
+kind/payload/edge mirror and bounded transitive graph; no data grant/ordinary runtime.
+32 assertions/2 suites PASS, scopedlint83650 and standalone56050 exit0. Prisma
+validate/generate49349 exit0. SQL source independently reviewed; NOT applied/proven.
+Central BEGIN/ROLLBACK syntax attempt safely refused while both original deployment
+locks held by another release; no SQL executed, no business changes/new dump.
+SSH observed public runtime c385a2b while that release held locks; completion/accepted
+source reconciliation must be refreshed, do not call it final based on pointer alone.
+Previous accepted5b history remains. No new type assignment/required profile/page
+runtime/publisher or visual completion implied. Pure2D1 page contracts in helper.
+Runtime-feature source06cb integrated separately awaiting prior-parser import fix;
+new defaults remain unpublished until accepted compatible rollback evidence.
+Exact next: guarded field bridge/type-independent gates and accepted-source merge;
+then2C compiler/publisher/entity binding/assignment/requirement impacts and2D/E.
+
 ## 11 October — defaults/search source integrated; rollback bridge preparation
 
 Imported only owned source/tests from defaults6c50c7a and searchb291e55 into accepted

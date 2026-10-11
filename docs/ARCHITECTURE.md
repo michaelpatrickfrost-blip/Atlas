@@ -434,3 +434,11 @@ additive; ordinary Audit privacy scrubbing remains available. Shared typed contr
 are browser-safe and reusable for later structured previews. This is native form
 integration, not completion of the full visual builder. New migration actual SQL/
 public acceptance is pending in the current execution ledger.
+
+11October Studio configuration-pin prerequisite (IMPLEMENTED/source only): new
+StudioConfigurationDependency is distinct from module-contract StudioDependency.
+It binds exact immutable versions within one tenant; source/schema/checksum mirrors
+and bounded graph are checked by metadata reader and additive SQL guards. Pure
+record-type resolver supports one base/one overlay with explicit replacement and
+additive requirements. This is not yet canonical type assignment, runtime-required
+coverage or published-page delivery; those2C/D integrations remain gated.

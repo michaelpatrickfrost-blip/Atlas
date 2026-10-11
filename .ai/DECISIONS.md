@@ -1,3 +1,17 @@
+## 11 October — exact configuration pins separate from registry dependencies
+
+Keep StudioDependency's module contract semantics intact. StudioConfigurationDependency
+stores immutable tenant-owned source/target version FKs, exact kind/schema/checksum
+and complete sealed edge mirror in original publication transaction. New profiles
+and types use pinned base/page/required-field configuration; old field/kernel plans
+retain absent edge property and hashes. Shallow metadata graph is bounded at4 edges/
+500 traversed paths, with definition-cycle rejection across historical versions.
+One overlay adds required fields; page/eligibility/default choices replace explicitly.
+Incoming base activation does not silently rewrite existing overlay pins: republish
+explicitly. Reserved process/decision shapes do not permit later-phase publication.
+Actual canonical assignment/affected-cohort requirements/current field generation/
+retirement impacts remain mandatory separate2C2 work; no new business entity table.
+
 ## 11 October — configured literal defaults and bounded owner search
 
 Optional typed field.defaultValue and create-only server receipt defaulted:true keep

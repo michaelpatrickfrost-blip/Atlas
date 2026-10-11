@@ -12618,3 +12618,8 @@ and wrapped Shop Floor controls, matching this usability scope. Retained our str
 min-width and quantity labels. Core/domain/data behavior is unchanged from the
 62-test focused passing source. Final build/scoped lint are being checked; central
 acceptance remains pending. Prior queued source stopped at ancestry before writes.
+
+Final responsive source build/scoped lint PASS (zero errors). Server control and
+active revision are b6610512; no other deployment is holding the lock. Clean pinned
+usability release now descends from that exact accepted revision. Next: native
+candidate/public acceptance and the explicitly authorised backed-up Test sweep.

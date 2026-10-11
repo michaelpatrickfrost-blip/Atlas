@@ -1,3 +1,32 @@
+## 11 October 2026 — e3d1 pure integrity VERIFIED locally; release OOM recovery
+
+Explicit closed2 execution/outcome helpers reuse existing receipt shape and exact
+owner/query approval, full review/observation checksums. Conditional outcome also
+requires the sealed review2: old execution/review or mismatched lineage fails. No
+runtime execution/start/batch/cutover/authoring enabled or DDL. Two new meaningful
+tests,40cases/4suites PASS22772; types29427/lint5823/build29068 exit0, diffPASS.
+Existing representation/batch/Tickets regression21cases/3suites PASS61527.
+Original a04349c/33124 failed compiler before acceptance/activation; build log and
+kernel prove OOM094911UTC. Public8cc2758 unchanged. Under original BOTH locks,
+failedsource/static preserved at /opt/atlas-maintenance-backups/failed-a04349c-20261011-094734;
+only confirmed failed generated outputs retired; temporary2GiB /var/tmp/atlas-release-build.swap
+active for retry (no fstab/database/runtime changes). Source operational evidence
+studio-build-memory-20261011.txt; original094734 backup/logs retained, no ad-hoc dump.
+Next: scoped checkpoint+normal pinned integrated release, inspect actual publication
+proof in both candidate/public; safely remove temporary swap after build/memory check.
+Then e3d2 conditional outcome/global-envelope/actual-condition inspection before
+existing start/batch/representation integration, cutover/settlement/native hooks and
+remaining fields/record types/pages/visual builder. WholePhase2 still open.
+
+## 11 October 2026 — a04349c release initial plan (superseded above)
+
+Original release33124 runs a04349c with existing full Studio gates; keep HEAD fixed.
+Required pre-release recovery094734 only. Independent e3d1 plan before code: explicit
+closed2 pure execution/outcome helpers in existing execution-contract and focused
+suite, exact reviewed publication/owner/query and whole semantic observation checksums.
+Retain old receipt shapes/hash and legacy parsers; no DB/runtime start/batch/cutover
+or authoring. Actual publication candidate/public proof pending; no phase PASS.
+
 ## 11 October 2026 — e3c actual conditional publication IMPLEMENTED, runtime gate pending
 
 Existing publisher now derives explicit1/2 from scoped stored intent/review, uses

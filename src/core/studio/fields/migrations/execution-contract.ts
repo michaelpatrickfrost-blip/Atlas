@@ -3,8 +3,9 @@ import { referenceSchema } from "../../compiler/kernel";
 import { canonicalJson, checksum } from "../../registry/contracts";
 import { entityDetailsSchema, supportsFieldMigrationIntent, supportsFieldMigrationQueryIntent } from "../../registry/entities";
 import type { ContractMetadata } from "../../registry/types";
-import { FieldMigrationReviewError, fieldMigrationObservationSchema, readSealedFieldMigrationReview } from "./contracts";
-import { reviewedFieldPublicationPin } from "./publication-contract";
+import { FieldMigrationReviewError, fieldMigrationObservationSchema, readSealedFieldMigrationReview, type FieldMigrationReview } from "./contracts";
+import { readSealedRequiredFieldMigrationReview, requiredFieldMigrationObservationSchema, type RequiredFieldMigrationReview } from "./required-contracts";
+import { reviewedFieldPublicationPin, reviewedRequiredFieldPublicationPin } from "./publication-contract";
 
 const digest = z.string().regex(/^[a-f0-9]{64}$/), count = z.number().int().nonnegative().max(2147483647);
 const recordId = z.string().regex(/^[a-zA-Z0-9_-]{1,100}$/);
@@ -27,6 +28,22 @@ export function createFieldMigrationExecutionPin(storedReview: unknown, serverTa
   const { review } = readSealedFieldMigrationReview(storedReview), publication = canonical(publicationPinSchema, serverPublication);
   const expected = reviewedFieldPublicationPin(storedReview, serverTarget, publication.publisherUserId, publication.acknowledgedLoss);
   if (canonicalJson(expected) !== canonicalJson(publication)) changed();
+  return executionPin(review, publication, serverOwner, serverApproval);
+}
+
+/** Closed2 pure integrity only; no persistence or permission from the pin. The
+ * same receipt seals the full conditional review checksum, while the explicit
+ * owner/query policy must approve protocol2. Legacy entry remains closed1. */
+export function createRequiredFieldMigrationExecutionPin(storedReview: unknown, serverTarget: unknown, serverPublication: unknown,
+  serverOwner: ContractMetadata, serverApproval: ContractMetadata): { pin: FieldMigrationExecutionPin; checksum: string } {
+  const { review } = readSealedRequiredFieldMigrationReview(storedReview), publication = canonical(publicationPinSchema, serverPublication);
+  const expected = reviewedRequiredFieldPublicationPin(storedReview, serverTarget, publication.publisherUserId, publication.acknowledgedLoss);
+  if (canonicalJson(expected) !== canonicalJson(publication)) changed();
+  return executionPin(review, publication, serverOwner, serverApproval);
+}
+
+function executionPin(review: FieldMigrationReview | RequiredFieldMigrationReview, publication: z.infer<typeof publicationPinSchema>,
+  serverOwner: ContractMetadata, serverApproval: ContractMetadata) {
   const details = entityDetailsSchema.parse(serverOwner.details), representation = details.record?.migrationRepresentation;
   const target = review.target.payload.entity;
   if (serverOwner.kind !== "entity" || serverOwner.id !== target.id || serverOwner.version !== target.version
@@ -47,6 +64,7 @@ export function createFieldMigrationExecutionPin(storedReview: unknown, serverTa
 const storedObservationSchema = z.strictObject({ id: z.uuid(), preparationId: z.uuid(), organisationId: z.string().min(1).max(100),
   definitionId: z.uuid(), entityId: z.string(), sourceGenerationId: z.uuid(), recordId, nativeRevision: count.min(1),
   observation: fieldMigrationObservationSchema });
+const storedRequiredObservationSchema = storedObservationSchema.extend({ observation: requiredFieldMigrationObservationSchema });
 export const fieldMigrationOutcomePinSchema = z.strictObject({ schemaVersion: z.literal(1), executionChecksum: digest,
   preparationId: z.uuid(), organisationId: z.string().min(1).max(100), definitionId: z.uuid(), entityId: z.string(),
   sourceGenerationId: z.uuid(), targetGenerationId: z.uuid(), targetVersionId: z.uuid(),
@@ -59,6 +77,25 @@ export type FieldMigrationOutcomePin = z.infer<typeof fieldMigrationOutcomePinSc
  * must commit together. Actual owner/access/source checks are mandatory first. */
 export function createFieldMigrationOutcomePin(serverExecution: unknown, serverObservation: unknown, serverTargetIds: unknown): FieldMigrationOutcomePin {
   const pin = canonical(fieldMigrationExecutionPinSchema, serverExecution), observation = canonical(storedObservationSchema, serverObservation);
+  return outcomePin(pin, observation, serverTargetIds);
+}
+
+/** Closed2 semantic evidence integrity only. The caller must independently prove
+ * the conditional review/owner lineage and re-evaluate actual authorised inputs;
+ * an unchanged receipt body never chooses a protocol or authorises a value write. */
+export function createRequiredFieldMigrationOutcomePin(serverExecution: unknown, storedReview: unknown, serverObservation: unknown, serverTargetIds: unknown): FieldMigrationOutcomePin {
+  const pin = canonical(fieldMigrationExecutionPinSchema, serverExecution), observation = canonical(storedRequiredObservationSchema, serverObservation);
+  const sealed = readSealedRequiredFieldMigrationReview(storedReview), review = sealed.review, publication = pin.publication;
+  if (publication.reviewChecksum !== sealed.checksum || publication.preparationId !== review.id || publication.organisationId !== review.organisationId
+    || publication.definitionId !== review.definitionId || publication.sourceGenerationId !== review.source.payload.storageGeneration
+    || publication.targetGenerationId !== review.target.payload.storageGeneration || publication.targetChecksum !== review.target.compiledChecksum
+    || publication.publisherUserId !== review.principal.userId || pin.sourceVersionId !== review.source.versionId
+    || pin.sourceChecksum !== review.source.versionChecksum || checksum(pin.entity) !== checksum(review.target.payload.entity)
+    || checksum(pin.cohort) !== checksum(review.cohort)) changed();
+  return outcomePin(pin, observation, serverTargetIds);
+}
+
+function outcomePin(pin: FieldMigrationExecutionPin, observation: z.infer<typeof storedRequiredObservationSchema> | z.infer<typeof storedObservationSchema>, serverTargetIds: unknown): FieldMigrationOutcomePin {
   const ids = z.strictObject({ extensionId: z.uuid(), slotId: z.uuid(), valueId: z.uuid() }).parse(serverTargetIds);
   const publication = pin.publication, body = observation.observation;
   if (observation.preparationId !== publication.preparationId || observation.organisationId !== publication.organisationId

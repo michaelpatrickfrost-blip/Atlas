@@ -12,6 +12,22 @@ No Phase 3 feature may start before the complete Phase 2 gate passes.
 
 # Current Workstream
 
+E3c release a04349c runner33124 failed before candidate acceptance/activation:
+confirmed kernel OOM killed compiler at094911UTC; original live8cc2758 unchanged.
+Under BOTH original locks, failed source/static moved to maintenance backup,
+only its positively identified generated outputs reclaimed, temporary2GiB build
+swap activated (no fstab/database/runtime changes). Original094734 backup/logs
+retained; root163GiB free before temporary allocation. Retry normal pinned release;
+remove temporary swap only after safe available memory and no candidate build.
+Independent next workstream e3d1 — pure conditional execution/outcome integrity —
+VERIFIED locally. Dependencies: sealed review2 and pure publication pin/current native9
+representation2 descriptors. Expected files: existing execution-contract.ts and
+execution-contract suite. Database: none. Preserve receipt schema1 shape/hash for
+retained1; full review/observation checksum binds new conditions. Separate closed2
+helpers, explicit owner+query protocol approval and semantic observation shape;
+no runtime start/batch/cutover or writes. Tests: exact identity/owner/protocol,
+conditional required/null denial, whole evidence checksum, no legacy reinterpretation.
+
 2B required-field evolution e3c — actual conditional publication — IMPLEMENTED;
 local checks PASS, central candidate/public proof pending.
 Dependencies: e3b01a79ed local inspection; stored intent/review2; genuine metadata
@@ -79,6 +95,8 @@ work. No conditional authoring is enabled by this checkpoint.
 
 # Files Changed
 
+E3d1: existing execution-contract.ts and focused execution-contract suite, progress
+and lasting receipt decision; DEPLOY records confirmed OOM/reversible memory recovery.
 E3c: migrations/publication.ts, definitions/publication.ts, existing publication
 suite and check-field-required-review-storage.ts; ARCHITECTURE/MODULE_SPEC,
 .ai/DECISIONS.md, source coverage/required plan/ledger/current state.
@@ -103,6 +121,11 @@ correction preserved its applied checksum/history. No reset/backfill/purge.
 
 # Tests Added
 
+E3d1 adds two cases with actual owner9/representation2 descriptors and synthetic
+pure metadata (not runtime proof): explicit2 execution integrity, unchanged receipt
+shape, closed legacy denial, full required evidence checksum, required-null/foreign/
+malformed denial. Outcome helper also requires the exact sealed review2, rejecting
+a legacy execution pin or substituted review. No execution service enabled.
 E3c adds four tests for actual typed publisher/binder dispatch, schema2 persistence,
 closed2 rule removal into target1, source-active replay, execution2 denial, protocol/
 tenant/invalid-review checks, both Audit failures and ordinary authoring gate.
@@ -122,6 +145,10 @@ adds4 cases for closed protocol, tamper, readiness and rule removal to schema1.
 
 # Tests Run
 
+E3d1:40tests/4suites PASS22772; strict TypeScript29427 and scoped ESLint5823 exit0;
+production build29068 exit0; diff review/check PASS. Logs
+/tmp/atlas-studio-required-execution-pin-{tests,types,lint,build}.txt.
+Existing representation/batch/Tickets regression21tests/3suites PASS61527.
 E3c:96 tests/9 suites PASS12179; strict TypeScript50065 exit0; scoped ESLint58409
 exit0; production build3543 exit0. Initial four new tests failed from fixture-only
 extra cohort/summary keys on strict intent; corrected by explicit projection.
@@ -180,14 +207,18 @@ No later-phase work started and no complete Studio claim.
 
 # Exact Next Action
 
-Review final e3c diff/check; checkpoint with local evidence; deploy the integrated
-e3b+c block through pinned codex/studio-phase2 original Studio gates. Inspect actual
+Checkpoint pure e3d1 and OOM recovery evidence, then retry the integrated
+e3b+c+d1 block through pinned codex/studio-phase2 original Studio gates. Inspect actual
 conditional publication/replay/cancellation and both Audit rollback success in both
 candidate/public acceptance logs and exact public health. If either fails, diagnose
 the actual service/SQL fixture without weakening lineage or phase requirements.
-Then e3d: explicit conditional execution outcome/lineage inspection before adapting
-start/batch/cutover/settlement; native lock/write-window hooks and remaining2B/2C/2D/
-2E/2F follow. Keep ordinary conditional authoring gated. Live8cc2758 rollbacka475823.
+Then e3d2: explicit conditional execution coverage/row/review inspection, requiring
+actual retained outcomes for own +1 global extension envelope (including formerly
+unanchored rows), exact unchanged source slot/value/native revision and reevaluated
+conditions on every replay. Reuse execution-source SQL and whole review/observation
+checksums; semantic equality never waives arbitrary envelope drift. Only after those
+pass adapt existing start/batch/representation, then cutover/settlement/native hooks
+and remaining2B/2C/2D/2E/2F. Keep ordinary authoring gated. Live8cc2758 rollbacka475823.
 
 # Historical checkpoint evidence
 

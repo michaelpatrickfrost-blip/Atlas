@@ -453,3 +453,18 @@ original private build/deploy logs, then stop only confirmed non-current compile
 if needed. Preserve applied migration/history/backups; no destructive DB recovery
 or broad service kill. Resolve proven resource cause before next pinned build.
 Current incident/handoff remains in CURRENT_STATE and Studio ledger.
+
+## Confirmed candidate memory failure — 11 October 2026
+
+Unlike the earlier unconfirmed incident, kernel094911UTC proves OOM killed a04349c's
+isolated compiler. Build stopped before acceptance/activation; live8cc2758 and
+rollbacka475823 stayed intact, disk163GiB free. Under both original locks we retained
+failed source/static at /opt/atlas-maintenance-backups/failed-a04349c-20261011-094734,
+retired only that failed candidate's generated outputs and activated a temporary
+2GiB /var/tmp/atlas-release-build.swap for the next normal pinned release. No fstab,
+PostgreSQL, application service, source/build configuration or database changes.
+Original094734 required recovery/logs remain; no ad-hoc dump. Operational evidence
+studio-build-memory-20261011.txt is in maintenance backups. Remove this exact swap
+after no candidate compiler remains and available RAM safely exceeds swap usage;
+hold both original locks, never swapoff under active memory pressure. Record retry
+and cleanup evidence in CURRENT_STATE/Studio ledger before a complete handoff.

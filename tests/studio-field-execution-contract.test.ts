@@ -5,7 +5,12 @@ import type { ContractMetadata } from "@/core/studio/registry/types";
 import { customFieldPayloadSchema } from "@/core/studio/fields/schema";
 import { sealFieldMigrationReview } from "@/core/studio/fields/migrations/contracts";
 import { reviewedFieldPublicationPin } from "@/core/studio/fields/migrations/publication-contract";
-import { createFieldMigrationExecutionPin, createFieldMigrationOutcomePin, fieldMigrationExecutionBatchSchema, readFieldMigrationExecutionProgress } from "@/core/studio/fields/migrations/execution-contract";
+import { reviewedRequiredFieldPublicationPin } from "@/core/studio/fields/migrations/publication-contract";
+import { sealRequiredFieldMigrationReview } from "@/core/studio/fields/migrations/required-contracts";
+import { conditionalFieldPayloadSchema } from "@/core/studio/fields/required-contract";
+import { ticketStudioContract } from "@/core/service-work/studio";
+import { CapabilityRegistry } from "@/core/studio/registry/registry";
+import { createFieldMigrationExecutionPin, createRequiredFieldMigrationExecutionPin, createFieldMigrationOutcomePin, createRequiredFieldMigrationOutcomePin, fieldMigrationExecutionBatchSchema, readFieldMigrationExecutionProgress } from "@/core/studio/fields/migrations/execution-contract";
 const uuid = (value: number) => `00000000-0000-4000-8000-${value.toString().padStart(12, "0")}`;
 const details = entityDetailsSchema.parse({ key: "string", fields: [{ id: "number", type: "string", nullable: false, classification: "confidential", filterable: true, sortable: false, decision: false, template: false }],
   extensionPolicy: { customFields: true, recordTypes: true, pageVariants: true }, record: { writeCapability: "tickets.ticket.manage", detailRoute: "/tickets/{recordId}", labelField: "number",
@@ -82,4 +87,45 @@ it("validates closed bounded CAS requests and explicit failed/ready progress wit
   for (const bad of [{ ...initial, state: "READY", revision: 1 }, { ...initial, state: "FAILED", revision: 1 }, { ...initial, processedCount: 3 },
     { ...initial, revision: 1, processedCount: 1 }, { ...initial, cursor: "ticket_1" }, { ...initial, failureCode: "secret-business-value" }, { ...initial, privileged: true }])
     expect(() => readFieldMigrationExecutionProgress(pin, bad)).toThrow();
+});
+
+function conditionalFixture() {
+  // Actual owning descriptors; synthetic pure metadata is not runtime approval.
+  const registry = new CapabilityRegistry(async () => true); registry.register("tickets", ticketStudioContract);
+  const owner = registry.describe("tickets.ticket", 9), approval = registry.describe("tickets.ticket.field_representation", 2);
+  const required = conditionalFieldPayloadSchema.parse({ ...payload, schemaVersion: 2,
+    entity: { id: owner.id, version: owner.version, schemaHash: owner.schemaHash, contractHash: owner.contractHash },
+    requiredIf: { match: "all", predicates: [{ source: { kind: "native", fieldId: "status" }, operator: "present" }] } });
+  const plan = { kind: "customField", schemaVersion: 2, payload: required, dependencies: [] };
+  const requiredTarget = { ...target, payload: required, compiledPlan: plan, checksum: checksum(plan) };
+  const sealed = sealRequiredFieldMigrationReview({ ...review.review, schemaVersion: 2, target: { ...review.review.target, payload: required, compiledChecksum: requiredTarget.checksum } });
+  const publication = reviewedRequiredFieldPublicationPin(sealed, requiredTarget, "actor", false);
+  const body = { ...observation, observation: { ...observation.observation,
+    requirement: { sourceEvaluationChecksum: "a".repeat(64), targetEvaluationChecksum: "b".repeat(64), targetRequired: true } } };
+  return { registry, owner, approval, target: requiredTarget, sealed, publication, body };
+}
+it("keeps conditional execution receipt shape while binding the full closed2 review and explicit actual owner/query protocol", () => {
+  const f = conditionalFixture(), result = createRequiredFieldMigrationExecutionPin(f.sealed, f.target, f.publication, f.owner, f.approval);
+  expect(result.pin.schemaVersion).toBe(1); expect(result.pin.publication.reviewChecksum).toBe(f.sealed.checksum);
+  expect(result.pin.ownerApproval.version).toBe(2); expect(result.checksum).toBe(checksum(result.pin));
+  expect(Object.keys(result.pin)).toEqual(Object.keys(execution().pin));
+  expect(() => createFieldMigrationExecutionPin(f.sealed, f.target, f.publication, f.owner, f.approval)).toThrow();
+  expect(() => createRequiredFieldMigrationExecutionPin(review, target, publication, owner, approval)).toThrow();
+  expect(() => createRequiredFieldMigrationExecutionPin(f.sealed, f.target, f.publication, f.owner, f.registry.describe("tickets.ticket.field_representation", 1))).toThrow();
+});
+it("binds complete conditional observation evidence to outcomes and rejects missing requirements, required nulls, foreign or legacy reviews", () => {
+  const f = conditionalFixture(), { pin } = createRequiredFieldMigrationExecutionPin(f.sealed, f.target, f.publication, f.owner, f.approval);
+  const result = createRequiredFieldMigrationOutcomePin(pin, f.sealed, f.body, targetIds);
+  expect(result.observationChecksum).toBe(checksum(f.body.observation)); expect(result.target).toEqual(createFieldMigrationOutcomePin(execution().pin, observation, targetIds).target);
+  expect(() => createFieldMigrationOutcomePin(pin, f.body, targetIds)).toThrow();
+  expect(() => createRequiredFieldMigrationOutcomePin(pin, review, f.body, targetIds)).toThrow();
+  expect(() => createRequiredFieldMigrationOutcomePin(execution().pin, f.sealed, f.body, targetIds)).toThrow();
+  for (const invalid of [observation, { ...f.body, organisationId: "foreign" },
+    { ...f.body, observation: { ...f.body.observation, result: { ...f.body.observation.result, isNull: true } } },
+    { ...f.body, observation: { ...f.body.observation, requirement: { ...f.body.observation.requirement, targetRequired: "true" } } }])
+    expect(() => createRequiredFieldMigrationOutcomePin(pin, f.sealed, invalid, targetIds)).toThrow();
+  const changed = { ...f.body, observation: { ...f.body.observation, requirement: { ...f.body.observation.requirement, targetEvaluationChecksum: "c".repeat(64) } } };
+  expect(createRequiredFieldMigrationOutcomePin(pin, f.sealed, changed, targetIds).observationChecksum).not.toBe(result.observationChecksum);
+  // Matching the stored observation to authorised actual input remains runtime's duty.
+  expect(result).not.toHaveProperty("requirement"); expect(result).not.toHaveProperty("value");
 });

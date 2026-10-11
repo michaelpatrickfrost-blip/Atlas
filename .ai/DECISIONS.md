@@ -1,3 +1,13 @@
+## 11 October 2026 — Conditional execution integrity keeps receipts and explicit review meaning
+
+Add separate closed2 pure execution/outcome helpers; keep existing receipt schema1
+shape and old parser/hashes unchanged. The full sealed review checksum binds rules
+and archive semantics; the whole observation checksum binds per-row requirements.
+Require the sealed review2 alongside outcome construction, not infer its format from
+an unchanged execution receipt or accept old review/pin pairs. Actual runtime still
+must prove current owner/query/native/conditions and exact own mutation lineage.
+Pure helper success never authorises data writes or starts execution.
+
 ## 11 October 2026 — Reuse the typed publisher and save the actual plan protocol
 
 Reviewed conditional fields use the existing definition publisher/generation binder,

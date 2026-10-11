@@ -33,7 +33,7 @@ export default async function ShopFloorPage() {
                 <p className="mt-2 text-sm text-[var(--color-ink-muted)]">Target {w.quantity} {w.unitOfMeasure} · Produced so far {w.producedQuantity}</p>
                 <div className="mt-6 flex flex-wrap gap-4">
                   {w.status === "RUNNING" ? (
-                    <ActionForm action={pauseAction} className="flex items-center gap-2">
+                    <ActionForm action={pauseAction} className="flex flex-wrap items-center gap-2">
                       <input type="hidden" name="workOrderId" value={w.id} />
                       <input type="hidden" name="requestKey" value={requestKey} />
                       <select name="reason" className="rounded-full border border-[var(--color-border)] px-4 py-3 text-base" defaultValue="">
@@ -49,7 +49,7 @@ export default async function ShopFloorPage() {
                       <button type="submit" className="rounded-full bg-[var(--color-atlas-blue)] px-8 py-4 text-lg font-semibold text-white">Resume</button>
                     </ActionForm>
                   )}
-                  <ActionForm action={completeAction} className="flex items-center gap-2">
+                  <ActionForm action={completeAction} className="flex flex-wrap items-center gap-2">
                     <input type="hidden" name="workOrderId" value={w.id} />
                     <input type="hidden" name="requestKey" value={`${requestKey}-complete`} />
                     <input name="goodQuantity" type="number" min="0" placeholder="Good qty" className="w-28 rounded-full border border-[var(--color-border)] px-4 py-3 text-base" required />

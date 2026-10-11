@@ -80,6 +80,18 @@ async function main() {
           name: "Your whole business. In motion.",
         }),
       ).toBeVisible();
+      await expect(publicPage.locator(".atlas-website")).toHaveAttribute(
+        "data-motion",
+        "running",
+      );
+      assert(
+        await publicPage.evaluate(() =>
+          document
+            .getAnimations()
+            .some((animation) => animation.playState === "running"),
+        ),
+        "Website motion runs by default.",
+      );
       await publicPage
         .getByRole("button", { name: "Pause motion", exact: true })
         .click();

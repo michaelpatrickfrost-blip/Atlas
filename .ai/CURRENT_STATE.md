@@ -12585,3 +12585,9 @@ Final live integration: f8364d5e completed while our deployment waited for its l
 The ancestry gate stopped safely before any build/data change. Integrated its final
 plant/forecast labels, closed-order scheduler guard and accepted shared evidence;
 rechecking focused manufacturing regressions, build and explicit types.
+
+Final f8364d5e integration checks PASS: five focused files/62 tests, production
+build, explicit TypeScript and scoped lint (zero errors). Native website acceptance
+also asserts real animation runs by default before testing Pause/reduced motion.
+No further app behavior changed after the full 2,197-test passing checkpoint.
+Redeploying the clean pinned descendant with locked candidate/public acceptance.

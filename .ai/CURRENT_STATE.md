@@ -1,3 +1,21 @@
+## 11 October 2026 — Company-user administration publicly accepted; phone polish
+
+Original pinned Settings deployment of 1acc63c6d0b3f62f6cf515029d89490f7f92c2a8
+passed candidate AND exact public revision checks. Actual account name/email edits,
+admin-password/stale guards, direct password assignment/sign-in, one-use recovery,
+profile assignment/review, invoice read, own procurement creation/read and banking/
+other-user denial PASS. User tabs/profiles/Personal Settings at desktop/tablet/phone
+and Home/Apps at four widths PASS without overflow or browser errors. Synthetic
+Test access retired; Audit retained. Backup atlas-pre-deploy-20261011-155056;
+private candidate /tmp/atlas-settings-candidate-JemTBe and public
+/tmp/atlas-settings-public-BqcaSX. Accepted Dashboard source retained; rollback 50b39151.
+
+Actual screenshot review found the phone header status badge squeezed long names.
+User account page now uses a two-column phone header with status below and smaller
+phone title; desktop layout retained. Strict types, page lint, production build and
+diff whitespace PASS. No new permission/data change. Next: pin this visual correction,
+repeat original candidate/public Settings acceptance and inspect the final phone image.
+
 ## 11 October 2026 — Integrated admin release checks pass with accepted Dashboard
 
 Actual server public Dashboard log ends at exact 50b39151 after all five feature

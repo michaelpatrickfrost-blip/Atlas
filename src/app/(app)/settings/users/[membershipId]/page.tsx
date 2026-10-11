@@ -131,7 +131,7 @@ export default async function UserAdministration({
         All users
       </Link>
       <section className="relative overflow-hidden rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-white p-6 sm:p-8">
-        <div className="flex flex-wrap items-center gap-5">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-4 sm:flex sm:flex-wrap sm:items-center sm:gap-5">
           <span className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-sm">
             <UserRound size={28} />
           </span>
@@ -139,7 +139,7 @@ export default async function UserAdministration({
             <p className="text-[10px] font-bold uppercase tracking-[.17em] text-blue-600">
               Company account
             </p>
-            <h2 className="mt-2 break-words text-3xl font-semibold tracking-tight">
+            <h2 className="mt-2 break-words text-2xl font-semibold tracking-tight sm:text-3xl">
               {member.user.name}
               {self && <span className="ml-2 text-sm text-slate-400">You</span>}
             </h2>
@@ -148,7 +148,7 @@ export default async function UserAdministration({
             </p>
           </div>
           <span
-            className={`rounded-full px-4 py-2 text-xs font-semibold ${member.active ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}
+            className={`col-span-2 justify-self-start rounded-full px-4 py-2 text-xs font-semibold ${member.active ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}
           >
             {member.active ? "Active account" : "Suspended"}
           </span>

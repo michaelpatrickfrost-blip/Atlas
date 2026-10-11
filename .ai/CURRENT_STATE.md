@@ -12503,3 +12503,9 @@ timing and readiness guards before releasing this work. Retained staged producti
 output and delayed replenishment alongside all new manufacturing controls. Five
 focused integrated files/62 tests PASS; regenerated Prisma client and 395 descriptors/
 918 native actions. Repeating final suite/build/types against this combined source.
+
+Combined exact-live source final checks PASS: full suite 300 files/2,197 tests
+(3 files/22 tests skipped), production build, explicit TypeScript, scoped ESLint
+on integration/acceptance paths and diff check. Earlier full ESLint had zero errors
+and 29 warnings (existing image/unused notices; removed this task's unused stock
+import afterward). Ready for sealed candidate and public usability acceptance.

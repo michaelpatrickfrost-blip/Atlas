@@ -1,3 +1,12 @@
+## 11 October 2026 — Integrated manufacturing bridge build ready for live gate
+
+Preserved current aaf9bc3a opaque/mobile navigation source and contributor evidence.
+Merged memory without losing historical entries. Integrated strict TypeScript,
+production build, final scoped lint and diff whitespace PASS. Original bridge
+attempt stopped at ancestry before any backup/migration/build/activation. No new
+feature is live yet. Next: pinned integrated candidate/public Supply acceptance,
+then Decimal rollback proof, unlock/full execution, visuals and authorised Test wipe.
+
 ## 11 October 2026 — Decimal manufacturing, actual WIP and app guides prepared
 
 Integrated main 4494f92, current live aaf9bc3a opaque, phone-safe navigation and the

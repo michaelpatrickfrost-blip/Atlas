@@ -1,16 +1,26 @@
 import type { StudioWidget } from "./definition";
 
-export type BoardPick = { metricId: string; visual: StudioWidget["visual"]; span: 4 | 6 | 8 | 12 };
-export type BoardTemplate = { id: string; name: string; description: string; picks: BoardPick[] };
+export type BoardPick = {
+  metricId: string;
+  visual: StudioWidget["visual"];
+  span: 4 | 6 | 8 | 12;
+};
+export type BoardTemplate = {
+  id: string;
+  name: string;
+  description: string;
+  picks: BoardPick[];
+};
 
 export const boardTemplates: BoardTemplate[] = [
   {
     id: "whole-business",
     name: "Whole business",
-    description: "Customers, pipeline, orders, service, people and stock on one wall.",
+    description:
+      "Customers, pipeline, orders, service, people and stock on one wall.",
     picks: [
       { metricId: "customers.lifecycle", visual: "donut", span: 4 },
-      { metricId: "crm.pipeline.value", visual: "column", span: 4 },
+      { metricId: "crm.pipeline.value", visual: "table", span: 4 },
       { metricId: "crm.winrate", visual: "gauge", span: 4 },
       { metricId: "sales.orders.trend", visual: "area", span: 8 },
       { metricId: "crm.pipeline.stages", visual: "funnel", span: 4 },
@@ -23,10 +33,11 @@ export const boardTemplates: BoardTemplate[] = [
   {
     id: "commercial",
     name: "Commercial",
-    description: "Pipeline value, win rate, orders, quotes, prospects and customers.",
+    description:
+      "Pipeline value, win rate, orders, quotes, prospects and customers.",
     picks: [
       { metricId: "crm.winrate", visual: "gauge", span: 4 },
-      { metricId: "crm.pipeline.value", visual: "column", span: 8 },
+      { metricId: "crm.pipeline.value", visual: "table", span: 8 },
       { metricId: "sales.orders.trend", visual: "area", span: 12 },
       { metricId: "sales.orders", visual: "stacked", span: 6 },
       { metricId: "sales.quotes", visual: "donut", span: 6 },
@@ -64,12 +75,25 @@ export const boardTemplates: BoardTemplate[] = [
   },
 ];
 
-export function widgetsFromTemplate(template: BoardTemplate, available: Set<string>): StudioWidget[] {
-  return template.picks.filter((pick) => available.has(pick.metricId)).slice(0, 24).map((pick) => ({
-    id: `${template.id}-${pick.metricId}`,
-    metricId: pick.metricId,
-    visual: pick.visual,
-    wide: pick.span >= 6,
-    span: pick.span,
-  }));
+export function widgetsFromTemplate(
+  template: BoardTemplate,
+  available: Set<string>,
+): StudioWidget[] {
+  return template.picks
+    .filter((pick) => available.has(pick.metricId))
+    .slice(0, 24)
+    .map((pick) => ({
+      id: `${template.id}-${pick.metricId}`,
+      metricId: pick.metricId,
+      visual: pick.visual,
+      wide: pick.span >= 6,
+      span: pick.span,
+      color: (["blue", "teal", "violet"] as const)[
+        template.picks.indexOf(pick) % 3
+      ],
+      height: ["kpi", "donut", "pie", "gauge", "table"].includes(pick.visual)
+        ? "compact"
+        : "standard",
+      tone: pick.visual === "kpi" ? "ink" : "neutral",
+    }));
 }

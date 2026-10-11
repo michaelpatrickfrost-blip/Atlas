@@ -1,3 +1,34 @@
+## 11 October 2026 — Dynamic Dashboard canvas implemented; live acceptance next
+
+Scoped from exact observed live ad9d5a430e2b92e6b08448a45d11f694f5ce2066 on
+codex/dynamic-dashboards-20261011; preserves all accepted owning sources. Gallery
+illustration, compact view/filter shelf, Data/Design/Focus inspector, coordinated
+Atlas blue/Botanical/Prism/After hours looks and three undoable layouts. Starters
+use deliberate colour/height/tone and mixed-currency pipeline tables. Existing
+saved boards retain their own layout. Added bounded saved multi-category choices
+and personal gauge targets; averages/extrema/distinct/currency/complete-target
+calculations retain their semantics. Measure period is now in undo/dirty history.
+Chart focus/value toggles and native expanded chart/aggregate-values/type controls
+remain transient, including for readers. Escape/backdrop/close restore opener focus.
+Responsive title/controls and chart tables corrected through actual visual QA;
+phone explorer shows both category and value. Gradient time plots have axes and
+keyboard-accessible points. Styling no longer refetches source record queries.
+
+Paths: modules/analytics definition/appearance/templates/components, Dashboard
+and People acceptance selectors, chart/workspace/schema regressions. No schema
+migration, grants, raw-row browser/local cache or local business database. Native
+source authority and central personal owner/tenant/revision saves unchanged.
+Analytics/design/decisions guides reconciled; full source brief remains partial.
+
+Checks: 8 focused suites/52 assertions, strict TypeScript, scoped lint (zero errors
+or warnings), production build and diff whitespace PASS on the finished source.
+Playwright synthetic preview interactions and gallery/canvas/inspector/explorer at
+1440/768/390/320 PASS; final phone title/centered modal/opener focus/table values
+PASS with zero page errors. Screenshots visually inspected; local logs and images
+/tmp/atlas-dynamic-*. Full repository suite not run. Next: commit reviewed source,
+preserve shared-main documentation, then original pinned Dashboard candidate AND
+public release acceptance under both locks. No live activation claimed yet.
+
 ## 11 October — native release84f64da FAILED safely before activation
 
 Clean reviewed checkpoint84f64da8 created after local57/4/final types/lint/build/

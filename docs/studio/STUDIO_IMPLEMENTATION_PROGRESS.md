@@ -17,8 +17,9 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 2B e3d2b–4 conditional conversion milestone VERIFIED live. Original pinned release
 88202 exit0; b34ce50bd10fcbb39287444a753879e02044d0cc candidate kT6FVM and public
 qTWEdH BOTH ALL COMBINED PASS. Exact public health confirmed after cleanup.
-E3e1 receipt contracts VERIFIED locally36tests/3suites; e3e2 actual post-cutover
-metadata/row/review IN PROGRESS; no customer conditional
+E3e1 receipt contracts and e3e2 actual post-cutover metadata/row/review VERIFIED
+locally108tests/8suites/types/scopedlint/build/diff. E3e3 current-settler coverage
+IN PROGRESS; no customer conditional
 activation until post-cutover, settlement and native write-window integration pass.
 
 # Overall Status
@@ -76,6 +77,10 @@ Do not claim cleanup or edit those worktrees while archival is pending.
 
 # Files Changed
 
+E3e1/e3e2: cutover-contract/receipt/inspection, settlement-receipt/inspection,
+coverage/observation/inspection, focused required receipt/identity/row/aggregate suites.
+No existing functionality removed; independent review no blockers.
+
 Current milestone additionally changes existing execution-start/batch/representation,
 required-execution-inspection, current row/review inspectors, existing service suites
 and existing central required-review checker; root ledger/coverage/architecture/
@@ -120,6 +125,11 @@ coverage to the existing required observation suite. Mocks and pure synthetic
 metadata are never described as normal runtime evidence.
 
 # Tests Run
+
+E3e1/e3e2 integrated108tests/8suites PASS84436; strictTS42569/scopedlint49724/
+productionbuild20746 exit0. Final diff/check PASS; two existing fixture warnings,
+zero lint errors. Initial strict fixture callback implicit type corrected; no guard
+relaxed. Real SQL/private/native/activation acceptance pending normal services.
 
 Integrated96tests/7suites PASS30539; strictTS96474/scoped lint16281/build74651
 exit0; final diff reviewed/check PASS. Two existing fixture warnings, zero errors.
@@ -189,14 +199,15 @@ later phases. No complete Studio/visual builder claim.
 
 # Exact Next Action
 
-Integrate the isolated e3e2a actual conditional metadata inspectors from
-studio-required-cutover-identity with root e3e2b coverage/observation/inspection
-and tests. Verify full sealed2/ACT/CUTOVER/READY/target-active+2/frozen draft+1 and
-source-target SQL, current conditions/typed target/mandatory own outcome before
-archive normalization; bounded/empty review checks. Root50tests/2suites PASS89803
-with explicit metadata collaborator, not actual SQL identity proof. Run integrated
-strictTS/scoped lint/build/diff and checkpoint; then e3e3 fresh DIFFERENT current
-settler/history coverage. No service/customer activation until subsequent gates.
+Implement root e3e3 current-principal rollback observer/review bridge after the
+verified local cutover checkpoint. New internal rollback entries accept genuine
+FieldMigrationAuthority, check ONLY current principal/stamp/support Audit, retain
+original sealed principal for immutable publisher/createdBy/review lineage, and
+reuse actual target-active+2/CUTOVER/READY conditions/typed target/mandatory outcome.
+Add different-settler/creator-revocation/current-denial and empty-cohort tests.
+Integrate parallel settlement-coverage/sealed-field typed projection and tests,
+then strictTS/scopedlint/build/diff checkpoint. No services/customer activation until
+normal e3e4 and native write windows pass. Live remainsb34ce50.
 
 # Historical checkpoint evidence
 
@@ -3096,6 +3107,10 @@ Deployment must preserve central records, backups and concurrent contributions.
 
 # Files Changed
 
+E3e1/e3e2: cutover-contract/receipt/inspection, settlement-receipt/inspection,
+coverage/observation/inspection, focused required receipt/identity/row/aggregate suites.
+No existing functionality removed; independent review no blockers.
+
 c1 migrations/stored-protocol.ts,collection.ts,sealing.ts; stored-protocol6 +collection/sealing rejection tests; architecture/module/decision/plan/current/ledger memory.
 
 e2b3b: evolution.ts,binding.ts,migrations/access.ts,observation.ts,new observation-source.ts; new required-observation/conversion tests; architecture/module/decision/plan/current/ledger documentation.
@@ -3534,6 +3549,11 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+E3e1/e3e2 integrated108tests/8suites PASS84436; strictTS42569/scopedlint49724/
+productionbuild20746 exit0. Final diff/check PASS; two existing fixture warnings,
+zero lint errors. Initial strict fixture callback implicit type corrected; no guard
+relaxed. Real SQL/private/native/activation acceptance pending normal services.
 
 c1 final28/3 (98717), finalTS81564, lint93007+18722, build38813/diff reviewed PASS. Initial test fixture/header mistakes corrected.
 

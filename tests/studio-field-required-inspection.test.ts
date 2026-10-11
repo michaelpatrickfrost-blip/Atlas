@@ -1,21 +1,22 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import type { Prisma } from "@/generated/prisma/client";
-const m = vi.hoisted(() => ({ authority: vi.fn(), company: vi.fn(), coverage: vi.fn(), publishedCoverage: vi.fn(), executingCoverage: vi.fn(), rows: vi.fn(), observe: vi.fn(), publishedObserve: vi.fn(), executingObserve: vi.fn(), digest: vi.fn() }));
+const m = vi.hoisted(() => ({ authority: vi.fn(), company: vi.fn(), coverage: vi.fn(), publishedCoverage: vi.fn(), executingCoverage: vi.fn(), cutoverCoverage: vi.fn(), rows: vi.fn(), observe: vi.fn(), publishedObserve: vi.fn(), executingObserve: vi.fn(), cutoverObserve: vi.fn(), digest: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: {} }));
 vi.mock("@/core/studio/fields/runtime-authority", () => ({ fieldRuntimeAuthorityInTransaction: m.authority }));
 vi.mock("@/core/studio/fields/migrations/coverage", () => ({ validateFieldMigrationSourceCoverage: vi.fn(), validateRequiredFieldMigrationSourceCoverage: m.coverage,
-  validatePublishedRequiredFieldMigrationSourceCoverage: m.publishedCoverage, validateExecutingRequiredFieldMigrationSourceCoverage: m.executingCoverage }));
-vi.mock("@/core/studio/fields/migrations/observation", () => ({ observeRequiredFieldMigrationRecord: m.observe, observePublishedRequiredFieldMigrationRecord: m.publishedObserve, observeExecutingRequiredFieldMigrationRecord: m.executingObserve }));
+  validatePublishedRequiredFieldMigrationSourceCoverage: m.publishedCoverage, validateExecutingRequiredFieldMigrationSourceCoverage: m.executingCoverage, validateCutoverRequiredFieldMigrationSourceCoverage: m.cutoverCoverage }));
+vi.mock("@/core/studio/fields/migrations/observation", () => ({ observeRequiredFieldMigrationRecord: m.observe, observePublishedRequiredFieldMigrationRecord: m.publishedObserve, observeExecutingRequiredFieldMigrationRecord: m.executingObserve, observeCutoverRequiredFieldMigrationRecord: m.cutoverObserve }));
 vi.mock("@/core/studio/fields/migrations/archive-digest", () => ({ digestFieldMigrationArchive: vi.fn(), digestRequiredFieldMigrationArchive: m.digest }));
 import { retainedCutoverFixture } from "./fixtures/studio-field-cutover";
 import { conditionalFieldPayloadSchema } from "@/core/studio/fields/required-contract";
 import { requiredFieldMigrationObservationDigest, sealRequiredFieldMigrationIntent, type RequiredFieldMigrationIntent,
   type RequiredFieldMigrationObservation } from "@/core/studio/fields/migrations/required-contracts";
-import { inspectRequiredFieldMigrationReview, inspectPublishedRequiredFieldMigrationReview, inspectExecutingRequiredFieldMigrationReview } from "@/core/studio/fields/migrations/inspection";
+import { inspectRequiredFieldMigrationReview, inspectPublishedRequiredFieldMigrationReview, inspectExecutingRequiredFieldMigrationReview, inspectCutoverRequiredFieldMigrationReview } from "@/core/studio/fields/migrations/inspection";
 let fixture: Awaited<ReturnType<typeof retainedCutoverFixture>>, intent: RequiredFieldMigrationIntent, observations: RequiredFieldMigrationObservation[];
 const tx = { organisation: { findFirst: m.company }, studioFieldMigrationObservation: { findMany: m.rows } } as unknown as Prisma.TransactionClient;
 const inspect = () => inspectRequiredFieldMigrationReview({ session: fixture.session, transaction: tx }, intent);
 const inspectPublished = () => inspectPublishedRequiredFieldMigrationReview({ session: fixture.session, transaction: tx }, intent);
+const inspectCutover = () => inspectCutoverRequiredFieldMigrationReview({ session: fixture.session, transaction: tx }, intent);
 const inspectExecuting = () => inspectExecutingRequiredFieldMigrationReview({ session: fixture.session, transaction: tx }, intent);
 function aggregate() { const stream = requiredFieldMigrationObservationDigest(); observations.forEach(row => stream.append(row)); return { ...stream.finish(), duplicateTarget: false }; }
 beforeEach(async () => {
@@ -33,6 +34,7 @@ beforeEach(async () => {
   m.observe.mockImplementation(async (_context, _intent, anchor) => structuredClone(observations.find(row => row.recordId === anchor.recordId)));
   m.publishedObserve.mockImplementation(async (_context, _intent, anchor) => structuredClone(observations.find(row => row.recordId === anchor.recordId)));
   m.executingObserve.mockImplementation(async (_context, _intent, anchor) => structuredClone(observations.find(row => row.recordId === anchor.recordId)));
+  m.cutoverObserve.mockImplementation(async (_context, _intent, anchor) => structuredClone(observations.find(row => row.recordId === anchor.recordId)));
   m.digest.mockImplementation(async () => aggregate());
 });
 it("checks authority and exact owner coverage before bounded archive reads, then compares actual row evidence and SQL/pure framing", async () => {
@@ -171,4 +173,27 @@ it("rejects malformed, duplicate or out-of-order executing archive rows before S
     await expect(inspectExecuting()).rejects.toThrow("The field migration observation is invalid.");
   }
   expect(m.digest).not.toHaveBeenCalled();
+});
+
+it("routes cutover aggregate through only actual post-cutover coverage and row proof in bounded tenant pages", async () => {
+  observations = Array.from({ length: 51 }, (_, n) => ({ ...observations[0], recordId: `record_${n.toString().padStart(3, "0")}` }));
+  expect((await inspectCutover()).review.cohort.recordCount).toBe(51);
+  expect(m.cutoverCoverage).toHaveBeenCalledOnce(); expect(m.cutoverObserve).toHaveBeenCalledTimes(51);
+  expect(m.cutoverCoverage.mock.invocationCallOrder[0]).toBeLessThan(m.rows.mock.invocationCallOrder[0]);
+  expect(m.rows.mock.calls[1][0].where.recordId).toEqual({ gt: "record_049" });
+  expect(m.coverage).not.toHaveBeenCalled(); expect(m.publishedCoverage).not.toHaveBeenCalled(); expect(m.executingCoverage).not.toHaveBeenCalled();
+  expect(m.observe).not.toHaveBeenCalled(); expect(m.publishedObserve).not.toHaveBeenCalled(); expect(m.executingObserve).not.toHaveBeenCalled();
+});
+it("requires current cutover identity/owner access even for empty cohorts and never falls back after denial", async () => {
+  observations = []; m.cutoverCoverage.mockRejectedValueOnce(new Error("actual cutover denied"));
+  await expect(inspectCutover()).rejects.toThrow("actual cutover denied"); expect(m.rows).not.toHaveBeenCalled(); expect(m.digest).not.toHaveBeenCalled();
+  expect((await inspectCutover()).review.cohort.recordCount).toBe(0); expect(m.authority).toHaveBeenCalledTimes(2); expect(m.cutoverObserve).not.toHaveBeenCalled();
+  intent.principal.sessionVersion++; m.rows.mockClear(); await expect(inspectCutover()).rejects.toThrow(); expect(m.rows).not.toHaveBeenCalled();
+});
+it("refuses changed post-cutover row meaning or SQL/pure digest and uniqueness conflicts before resealing", async () => {
+  m.cutoverObserve.mockResolvedValueOnce({ ...observations[0], requirement: { ...observations[0].requirement, targetEvaluationChecksum: "c".repeat(64) } });
+  await expect(inspectCutover()).rejects.toThrow(); expect(m.digest).not.toHaveBeenCalled();
+  m.digest.mockResolvedValueOnce({ ...aggregate(), observationDigest: "d".repeat(64) }); await expect(inspectCutover()).rejects.toThrow();
+  intent = { ...intent, target: { ...intent.target, payload: { ...intent.target.payload, field: { ...intent.target.payload.field, unique: true } } } };
+  m.digest.mockResolvedValueOnce({ ...aggregate(), duplicateTarget: true }); await expect(inspectCutover()).rejects.toThrow("MIGRATION_UNIQUENESS_CONFLICT");
 });

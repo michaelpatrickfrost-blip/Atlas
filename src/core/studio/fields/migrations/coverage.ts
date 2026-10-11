@@ -11,7 +11,7 @@ import { versionedFieldPayloadSchema } from "../required-contract";
 import { assertFieldMigrationPolicies, assertVersionedFieldMigrationPolicies } from "./access";
 import { sealFieldMigrationIntent, FieldMigrationReviewError, type FieldMigrationIntent } from "./contracts";
 import { sealRequiredFieldMigrationIntent, type RequiredFieldMigrationIntent } from "./required-contracts";
-import { inspectFieldMigrationCutoverIdentity } from "./cutover-inspection";
+import { inspectFieldMigrationCutoverIdentity, inspectRequiredFieldMigrationCutoverIdentity } from "./cutover-inspection";
 
 function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"); }
 export type FieldMigrationCoverageStage = "preparation" | "publication" | "execution" | "cutover";
@@ -48,10 +48,17 @@ export async function validateExecutingRequiredFieldMigrationSourceCoverage(cont
   return validateCoverage(context, registry, company, sealRequiredFieldMigrationIntent(serverIntent), "execution");
 }
 
+/** Actual target-active post-cutover prerequisite. Caller owns refreshed authority;
+ * owning private preflight precedes retained source/target freshness inspection.
+ * This is neither a client-selected stage nor settlement/rollback authority. */
+export async function validateCutoverRequiredFieldMigrationSourceCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
+  company: Parameters<typeof assertFieldMigrationPolicies>[1], serverIntent: RequiredFieldMigrationIntent): Promise<void> {
+  return validateCoverage(context, registry, company, sealRequiredFieldMigrationIntent(serverIntent), "cutover");
+}
+
 async function validateCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
   company: Parameters<typeof assertFieldMigrationPolicies>[1], sealed: { intent: FieldMigrationIntent | RequiredFieldMigrationIntent; checksum: string }, stage: FieldMigrationCoverageStage) {
   const intent = sealed.intent, session = context.session, tx = context.transaction;
-  if (intent.schemaVersion === 2 && stage === "cutover") changed();
   if (!tx || intent.organisationId !== session.organisationId || intent.principal.userId !== session.userId || intent.principal.membershipId !== session.membershipId) changed();
   const policies = intent.schemaVersion === 1 ? assertFieldMigrationPolicies : assertVersionedFieldMigrationPolicies;
   policies(session, company, intent.source.payload); policies(session, company, intent.target.payload);
@@ -73,11 +80,12 @@ async function validateCoverage(context: RecordContext & { transaction: Prisma.T
   // Conditional execution freshness examines stored source/target lineage. The
   // owning module must approve complete private access before that inspection;
   // no archive counts, values or IDs are exposed by a denied preflight.
-  if (intent.schemaVersion === 2 && stage === "execution")
+  if (intent.schemaVersion === 2 && (stage === "execution" || stage === "cutover"))
     await registry.invokeQueryInTransaction(context, intent.ownerQuery, { mode: "preflight" });
   // Derive post-cutover coverage solely from actual scoped retained rows; the
   // original preparation/publication/execution predicates remain source-active.
-  const cutover = stage === "cutover" && intent.schemaVersion === 1 ? await inspectFieldMigrationCutoverIdentity(tx, intent) : null;
+  const cutover = stage === "cutover" ? await (intent.schemaVersion === 1
+    ? inspectFieldMigrationCutoverIdentity(tx, intent) : inspectRequiredFieldMigrationCutoverIdentity(tx, intent)) : null;
   const fresh: Array<{ fresh: boolean; ownerApproval?: unknown }> = stage === "preparation" ? await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_migration_fresh(p) AS fresh
     FROM studio_field_migration_preparations p WHERE p.id=${intent.id}::uuid AND p."organisationId"=${session.organisationId}
       AND p."intentChecksum"=${sealed.checksum} AND p.state IN ('PREPARING','REVIEWED')`

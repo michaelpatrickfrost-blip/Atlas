@@ -22,6 +22,7 @@ import { readStoredFieldMigrationReview } from "./stored-protocol";
 import { reviewedRequiredFieldPublicationPin } from "./publication-contract";
 import { createRequiredFieldMigrationExecutionPin, createRequiredFieldMigrationOutcomePin, readFieldMigrationExecutionProgress, type FieldMigrationExecutionPin } from "./execution-contract";
 import type { RequiredFieldMigrationReview } from "./required-contracts";
+import { inspectRequiredFieldMigrationCutoverIdentity } from "./cutover-inspection";
 
 function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"); }
 
@@ -97,8 +98,16 @@ export async function inspectExecutingRequiredFieldMigrationRecord(context: Reco
   return inspectRequiredRecord(context, serverIntent, serverAnchor, "execution");
 }
 
+/** Actual post-cutover row. Target-active metadata, READY receipt and every own
+ * outcome must match before historical comparison; current conditions and typed
+ * source/target access still use the actual envelope. Not settlement authority. */
+export async function inspectCutoverRequiredFieldMigrationRecord(context: RecordContext & { transaction: Prisma.TransactionClient },
+  serverIntent: RequiredFieldMigrationIntent, serverAnchor: RecordAnchor): Promise<{ observation: RequiredFieldMigrationObservation; convertedValue: FieldValue | null }> {
+  return inspectRequiredRecord(context, serverIntent, serverAnchor, "cutover");
+}
+
 async function inspectRequiredRecord(context: RecordContext & { transaction: Prisma.TransactionClient },
-  serverIntent: RequiredFieldMigrationIntent, serverAnchor: RecordAnchor, stage: "preparation" | "publication" | "execution") {
+  serverIntent: RequiredFieldMigrationIntent, serverAnchor: RecordAnchor, stage: "preparation" | "publication" | "execution" | "cutover") {
   const authority = await fieldRuntimeAuthorityInTransaction(context.session, context.transaction), { session, registry, transaction: tx } = authority;
   const intent = sealRequiredFieldMigrationIntent(serverIntent).intent, anchor = recordAnchorSchema.parse(serverAnchor), stamp = authority.stamp;
   if (intent.organisationId !== session.organisationId || anchor.organisationId !== session.organisationId
@@ -116,9 +125,11 @@ async function inspectRequiredRecord(context: RecordContext & { transaction: Pri
   await tx.$queryRaw`SELECT d.id FROM studio_definitions d JOIN studio_drafts draft ON draft."definitionId"=d.id AND draft."organisationId"=d."organisationId"
     WHERE d.id=${intent.definitionId}::uuid AND d."organisationId"=${session.organisationId} FOR SHARE OF d,draft`;
   const definition = await tx.studioDefinition.findFirst({ where: { id: intent.definitionId, organisationId: session.organisationId,
-    kind: "customField", retiredAt: null, revision: intent.definitionRevision + (stage !== "preparation" ? 1 : 0) }, include: { activeVersion: true, draft: true } });
-  const version = definition?.activeVersion, draft = definition?.draft;
-  if (!definition || !version || !draft || definition.activeVersionId !== intent.source.versionId || version.id !== intent.source.versionId
+    kind: "customField", retiredAt: null, revision: intent.definitionRevision + (stage === "cutover" ? 2 : stage !== "preparation" ? 1 : 0) }, include: { activeVersion: true, draft: true } });
+  const version = stage === "cutover" ? await tx.studioDefinitionVersion.findFirst({ where: { id: intent.source.versionId,
+    definitionId: intent.definitionId, organisationId: session.organisationId } }) : definition?.activeVersion;
+  const draft = definition?.draft;
+  if (!definition || !version || !draft || (stage === "cutover" ? definition.activeVersionId !== definition.activeVersion?.id : definition.activeVersionId !== intent.source.versionId) || version.id !== intent.source.versionId
     || version.definitionId !== intent.definitionId || version.organisationId !== session.organisationId || version.schemaVersion !== current.schemaVersion
     || version.checksum !== intent.source.versionChecksum || checksum(version.compiledPlan) !== version.checksum
     || checksum(version.payload) !== checksum(current) || definition.key !== fieldDefinitionKey(current)
@@ -142,19 +153,20 @@ async function inspectRequiredRecord(context: RecordContext & { transaction: Pri
     // Complete owning private preflight before checking source-value freshness.
     await registry.invokeQueryInTransaction(freshContext, intent.ownerQuery, { mode: "preflight" });
     const publication = await tx.studioFieldMigrationPublication.findFirst({ where: { preparationId: intent.id, organisationId: session.organisationId,
-      definitionId: intent.definitionId, state: "PUBLISHED" }, include: { review: true, targetVersion: true } });
+      definitionId: intent.definitionId, state: stage === "cutover" ? "CUTOVER" : "PUBLISHED" }, include: { review: true, targetVersion: true } });
     if (!publication) changed();
     const targetVersion = publication.targetVersion, stored = readStoredFieldMigrationReview(publication.review, session.organisationId);
     const { cohort, summary, ...reviewIntent } = stored.review; void cohort; void summary;
     if (stored.review.schemaVersion !== 2 || stored.review.id !== intent.id || checksum(reviewIntent) !== checksum(intent)
       || draft.baseVersionId !== targetVersion.id || definition.latestVersion !== targetVersion.version
-      || targetVersion.schemaVersion !== target.schemaVersion || targetVersion.createdBy !== session.userId) changed();
+      || targetVersion.schemaVersion !== target.schemaVersion || targetVersion.createdBy !== session.userId
+      || (stage === "cutover" && definition.activeVersionId !== targetVersion.id)) changed();
     const pin = reviewedRequiredFieldPublicationPin({ review: stored.review, checksum: stored.checksum },
       { id: targetVersion.id, organisationId: targetVersion.organisationId, definitionId: targetVersion.definitionId,
         version: targetVersion.version, checksum: targetVersion.checksum, payload: targetVersion.payload, compiledPlan: targetVersion.compiledPlan },
       session.userId, publication.acknowledgedLoss);
     if (Object.entries(pin).some(([key, value]) => publication[key as keyof typeof pin] !== value)) changed();
-    if (stage === "execution") {
+    if (stage === "execution" || stage === "cutover") {
       const representation = targetRecord.migrationRepresentation;
       if (!representation || !supportsFieldMigrationIntent(representation, 2)) changed();
       const describedApproval = registry.describe(representation.query.id, representation.query.version);
@@ -166,17 +178,23 @@ async function inspectRequiredRecord(context: RecordContext & { transaction: Pri
           version: targetVersion.version, checksum: targetVersion.checksum, payload: targetVersion.payload, compiledPlan: targetVersion.compiledPlan },
         pin, targetNative, approval);
       const execution = await tx.studioFieldMigrationExecution.findFirst({ where: { preparationId: intent.id, organisationId: session.organisationId,
-        definitionId: intent.definitionId, entityId: target.entity.id, state: { in: ["RUNNING", "READY", "FAILED"] } } });
+        definitionId: intent.definitionId, entityId: target.entity.id, state: { in: stage === "cutover" ? ["READY"] : ["RUNNING", "READY", "FAILED"] } } });
       if (!execution || execution.pinChecksum !== expected.checksum || canonicalJson(execution.pin) !== canonicalJson(expected.pin)) changed();
       const progress = readFieldMigrationExecutionProgress(expected.pin, { state: execution.state, revision: execution.revision,
         cursor: execution.cursor, processedCount: execution.processedCount, failureCode: execution.failureCode });
       if (progress.state === "CANCELLED") changed();
-      const fresh = await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_execution_fresh(x) AS fresh
+      if (stage === "cutover") {
+        const retained = await inspectRequiredFieldMigrationCutoverIdentity(tx, intent);
+        if (retained.stored.checksum !== sealed.checksum || retained.existing.pinChecksum !== expected.checksum
+          || retained.target.id !== targetVersion.id) changed();
+      } else {
+        const fresh = await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_execution_fresh(x) AS fresh
         FROM studio_field_migration_executions x JOIN studio_field_migration_preparations p ON p.id=x."preparationId"
           AND p."organisationId"=x."organisationId" AND p."definitionId"=x."definitionId"
         WHERE p.id=${intent.id}::uuid AND p."organisationId"=${session.organisationId} AND p."intentChecksum"=${checksum(intent)}
           AND p.state='REVIEWED' AND x.state IN ('RUNNING','READY','FAILED')`;
-      if (fresh.length !== 1 || fresh[0].fresh !== true) changed();
+        if (fresh.length !== 1 || fresh[0].fresh !== true) changed();
+      }
       executionProof = { pin: expected.pin, storedReview: sealed };
     } else {
       const fresh = await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_publication_fresh(pub) AS fresh
@@ -219,6 +237,7 @@ async function inspectRequiredRecord(context: RecordContext & { transaction: Pri
       recordId: anchor.recordId, nativeRevision: anchor.revision }, include: { outcome: true } });
     if (!row) changed();
     const retained = retainedRequiredObservation(row, intent, anchor);
+    if (stage === "cutover" && !row.outcome) changed();
     if (row.outcome) {
       const expected = createRequiredFieldMigrationOutcomePin(executionProof.pin, executionProof.storedReview,
         { id: row.id, preparationId: row.preparationId, organisationId: row.organisationId, definitionId: row.definitionId,
@@ -266,6 +285,10 @@ export async function observePublishedRequiredFieldMigrationRecord(...args: Para
 
 export async function observeExecutingRequiredFieldMigrationRecord(...args: Parameters<typeof inspectExecutingRequiredFieldMigrationRecord>): Promise<RequiredFieldMigrationObservation> {
   return (await inspectExecutingRequiredFieldMigrationRecord(...args)).observation;
+}
+
+export async function observeCutoverRequiredFieldMigrationRecord(...args: Parameters<typeof inspectCutoverRequiredFieldMigrationRecord>): Promise<RequiredFieldMigrationObservation> {
+  return (await inspectCutoverRequiredFieldMigrationRecord(...args)).observation;
 }
 
 function retainedRequiredObservation(row: StudioFieldMigrationObservation, intent: RequiredFieldMigrationIntent, anchor: RecordAnchor) {

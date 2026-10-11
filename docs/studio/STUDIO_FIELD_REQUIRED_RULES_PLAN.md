@@ -1,3 +1,19 @@
+## 11 October — e3e3 current settlement coverage IN PROGRESS (prerequisites only)
+
+After e3e1 pure checkpoint, independent branch owns distinct closed2 settlement
+coverage +focused suite and minimal sealed-field typed projection if necessary.
+Root owns current-principal rollback row/bounded review bridge after e3e2 integration.
+Dependencies: stored immutable settlement identity and actual post-cutover row proof.
+Database implications: none. History/finalization inspect sealed original conditional
+metadata without recompiling it against today's dependency graph or evaluating its
+old condition; enforce CURRENT base active/source/target/written/native/reference
+rights and private owning history coverage. Rollback additionally re-evaluates actual
+original cohort/source/target/conditions under the DIFFERENT current authorised
+settler, never rewriting original intent principal. Genuine session/stamp/support-
+Audit preflight precedes metadata lineage/IDs. Expected branch files settlement-
+coverage.ts,sealed-field.ts,focused suite; root observation/inspection/coverage and
+suites. No service dispatch/business activation until integrated normal API proof.
+
 ## 11 October — e3e2 metadata and post-cutover observation split
 
 E3e1 receipt contracts implemented; focused validation/integration pending. Independent
@@ -35,7 +51,7 @@ PASS, exact health and safe build-buffer cleanup confirmed. Begin e3e1 below.
 | Workstream | Expected files | Dependencies / database implications | Evidence / status |
 | --- | --- | --- | --- |
 | e3e1 Closed2 cutover/settlement receipts | cutover-contract.ts,cutover-receipt.ts,settlement-receipt.ts; existing receipt suites | Actual review2/READY receipt1 lineage; no new storage/shape; old entry closed1 | Full review checksum, publisher/cohort/metadata/CAS/terminal pairing; VERIFIED locally36tests/3suites/types/lint; actual activation gated |
-| e3e2 Actual post-cutover identity and row/review | cutover-inspection.ts,settlement-inspection.ts,observation.ts,inspection.ts,coverage.ts | Actual ACTIVATED/CUTOVER target-active pointer, definition +2/frozen draft, READY receipt; existing source/target SQL; no pretend source-active stage | Current native/field/reference/conditions and decoded own target/source under exact receipt, empty/bounded/hash evidence; NOT STARTED |
+| e3e2 Actual post-cutover identity and row/review | cutover-inspection.ts,settlement-inspection.ts,observation.ts,inspection.ts,coverage.ts | Actual ACTIVATED/CUTOVER target-active pointer, definition +2/frozen draft, READY receipt; existing source/target SQL; no pretend source-active stage | Current native/field/reference/conditions and decoded own target/source under exact receipt, empty/bounded/hash evidence; VERIFIED locally108tests/8suites/types/lint/build; actual activation pending |
 | e3e3 Current settlement coverage | settlement-coverage.ts; existing suites | Fresh DIFFERENT authorised settler allowed; retain original review identity, no borrowed creator grants. Rollback unchanged lineage/rules; history/finalization tolerate later legitimate business/config changes | Current private/native/base/written/reference rights before values; historical metadata sealed without asserting original current fact revisions; NOT STARTED |
 | e3e4 Existing services and actual proof | cutover.ts,settlement.ts; existing central checker | Stored1/2 dispatch, existing activation/CAS/rollback limit/paired Audits; retained history | Test-only cutover/replay/rollback/finalization, different settler, denials and activation/receipt/publication/Audit rollback; NOT STARTED |
 | d4 Native/ordinary required write windows | runtime-write-window.ts,runtime-write.ts,initial writer/required runtime,Tickets mutations | Owner serializable/create-proof bridge; all resulting required rules and affected rollback windows atomic; preserve lock order/domain rules | Relevant native create/update/save/read paths, creation-only actors, rollback-window closure and business invariants; NOT STARTED |

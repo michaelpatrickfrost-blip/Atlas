@@ -2,10 +2,13 @@ import { beforeEach, expect, it, vi } from "vitest";
 import type { Prisma, StudioDefinitionVersion } from "@/generated/prisma/client";
 import type { Session } from "@/core/auth/session";
 import type { FieldRuntimeAuthority } from "@/core/studio/fields/runtime-authority";
-const m = vi.hoisted(() => ({ refresh: vi.fn(), principal: vi.fn(), raw: vi.fn(), company: vi.fn(), definition: vi.fn(), version: vi.fn(), generation: vi.fn(), extension: vi.fn(), value: vi.fn(), slot: vi.fn(), publication: vi.fn(), execution: vi.fn(), observation: vi.fn() }));
+const m = vi.hoisted(() => ({ refresh: vi.fn(), principal: vi.fn(), raw: vi.fn(), company: vi.fn(), definition: vi.fn(), version: vi.fn(), generation: vi.fn(), extension: vi.fn(), value: vi.fn(), slot: vi.fn(), publication: vi.fn(), execution: vi.fn(), observation: vi.fn(), cutover: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: {} }));
 vi.mock("@/core/studio/fields/runtime-authority", () => ({ fieldRuntimeAuthorityInTransaction: m.refresh }));
 vi.mock("@/core/studio/fields/principal", () => ({ resolveFieldMigrationPrincipal: m.principal }));
+vi.mock("@/core/studio/fields/migrations/cutover-inspection", async importOriginal => ({
+  ...await importOriginal<typeof import("@/core/studio/fields/migrations/cutover-inspection")>(), inspectRequiredFieldMigrationCutoverIdentity: m.cutover,
+}));
 import { CapabilityRegistry } from "@/core/studio/registry/registry";
 import { ticketStudioContract } from "@/core/service-work/studio";
 import { checksum } from "@/core/studio/registry/contracts";
@@ -13,9 +16,9 @@ import { customFieldPayloadSchema, type FieldStorage } from "@/core/studio/field
 import { conditionalFieldPayloadSchema, type VersionedFieldPayload } from "@/core/studio/fields/required-contract";
 import { compileFieldMigrationMetadata } from "@/core/studio/fields/migrations/metadata";
 import { sealRequiredFieldMigrationIntent, sealRequiredFieldMigrationReview, requiredFieldMigrationObservationDigest, type RequiredFieldMigrationIntent } from "@/core/studio/fields/migrations/required-contracts";
-import { inspectRequiredFieldMigrationRecord, inspectPublishedRequiredFieldMigrationRecord, inspectExecutingRequiredFieldMigrationRecord, observeExecutingRequiredFieldMigrationRecord, observePublishedRequiredFieldMigrationRecord, observeRequiredFieldMigrationRecord, observeFieldMigrationRecord } from "@/core/studio/fields/migrations/observation";
+import { inspectRequiredFieldMigrationRecord, inspectPublishedRequiredFieldMigrationRecord, inspectExecutingRequiredFieldMigrationRecord, observeExecutingRequiredFieldMigrationRecord, inspectCutoverRequiredFieldMigrationRecord, observeCutoverRequiredFieldMigrationRecord, observePublishedRequiredFieldMigrationRecord, observeRequiredFieldMigrationRecord, observeFieldMigrationRecord } from "@/core/studio/fields/migrations/observation";
 import { reviewedRequiredFieldPublicationPin } from "@/core/studio/fields/migrations/publication-contract";
-import { validatePublishedRequiredFieldMigrationSourceCoverage, validateExecutingRequiredFieldMigrationSourceCoverage, validateRequiredFieldMigrationSourceCoverage, validateFieldMigrationSourceCoverage } from "@/core/studio/fields/migrations/coverage";
+import { validatePublishedRequiredFieldMigrationSourceCoverage, validateExecutingRequiredFieldMigrationSourceCoverage, validateCutoverRequiredFieldMigrationSourceCoverage, validateRequiredFieldMigrationSourceCoverage, validateFieldMigrationSourceCoverage } from "@/core/studio/fields/migrations/coverage";
 import { createRequiredFieldMigrationExecutionPin, createRequiredFieldMigrationOutcomePin } from "@/core/studio/fields/migrations/execution-contract";
 import { encodeFieldValue } from "@/core/studio/fields/codec";
 const uuid = (n: number) => `00000000-0000-4000-8000-${n.toString().padStart(12, "0")}`;
@@ -516,4 +519,89 @@ it("evaluates a custom-field condition against the actual converted envelope and
   expect(m.value).not.toHaveBeenCalled(); expect(m.slot).not.toHaveBeenCalled();
   session.capabilities.add("tickets.field.secret"); fixture.envelope.revision++;
   await expect(inspectExecuting()).rejects.toThrow();
+});
+
+
+// Post-cutover metadata inspector is an explicit unit collaborator. The actual
+// authority/compiler/condition/source/target decoder and own-outcome bodies run;
+// actual SQL/receipt orchestration is verified in the separate identity suite.
+async function cutoverFixture(mode: "anchored" | "unanchored" | "empty-slot" = "anchored") {
+  const f = await executingFixture(mode);
+  f.execution.state = "READY";
+  rootRow.revision++;
+  rootRow.activeVersionId = f.publication.targetVersion.id;
+  rootRow.activeVersion = f.publication.targetVersion;
+  f.publication.state = "CUTOVER";
+  m.version.mockImplementation(async args => args.where.id === sourceVersion.id ? sourceVersion : null);
+  m.cutover.mockResolvedValue({ stored: { review: f.publication.review.review, checksum: f.publication.review.checksum },
+    existing: f.execution, target: f.publication.targetVersion, executionPin: f.execution.pin });
+  return f;
+}
+const inspectCutover = () => inspectCutoverRequiredFieldMigrationRecord({ session, transaction: tx }, intent, anchor);
+it("reinspects actual target-active cutover rows using retained source and all own outcomes without source-active fallback", async () => {
+  for (const mode of ["anchored", "unanchored", "empty-slot"] as const) {
+    m.extension.mockResolvedValue(null); await prepare();
+    const f = await cutoverFixture(mode);
+    expect((await inspectCutover()).observation).toEqual(f.observation);
+    expect(await observeCutoverRequiredFieldMigrationRecord({ session, transaction: tx }, intent, anchor)).toEqual(f.observation);
+    expect(m.definition).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ revision: intent.definitionRevision + 2 }) }));
+    expect(m.version).toHaveBeenCalledWith(expect.objectContaining({ where: { id: intent.source.versionId, definitionId: root, organisationId: "company" } }));
+    expect(m.publication).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ state: "CUTOVER" }) }));
+    expect(m.execution).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ state: { in: ["READY"] } }) }));
+    expect(m.cutover).toHaveBeenCalledWith(tx, intent);
+    expect(m.value.mock.calls.some(call => call[0].where.generationId === intent.target.payload.storageGeneration && !call[0].select)).toBe(true);
+    expect(m.raw.mock.calls.some(call => /atlas_studio_(execution|publication|migration)_fresh\(/.test((call[0] as TemplateStringsArray).join("")))).toBe(false);
+    await expect(inspectExecuting()).rejects.toThrow();
+  }
+});
+it("denies cutover source-active or stale metadata and missing own outcomes rather than normalising an unexplained envelope", async () => {
+  const f = await cutoverFixture(), saved = structuredClone(rootRow);
+  for (const mutate of [() => { rootRow.revision--; }, () => { rootRow.activeVersionId = sourceVersion.id; rootRow.activeVersion = sourceVersion; },
+    () => { rootRow.draft.baseVersionId = uuid(99); }]) {
+    rootRow = structuredClone(saved); mutate(); m.value.mockClear();
+    await expect(inspectCutover()).rejects.toThrow(); expect(m.value).not.toHaveBeenCalled();
+  }
+  rootRow = structuredClone(saved);
+  m.version.mockResolvedValueOnce({ ...sourceVersion, schemaVersion: 2 }); m.value.mockClear();
+  await expect(inspectCutover()).rejects.toThrow(); expect(m.value).not.toHaveBeenCalled();
+  const outcome = f.row.outcome; f.row.outcome = null;
+  await expect(inspectCutover()).rejects.toThrow(); f.row.outcome = outcome;
+  f.envelope.revision++; await expect(inspectCutover()).rejects.toThrow();
+});
+it("requires owning private preflight before cutover freshness and denies retained receipt or native/condition/typed target drift", async () => {
+  const f = await cutoverFixture(); m.value.mockClear();
+  fact.mockRejectedValueOnce(new Error("private cutover preflight denied"));
+  await expect(inspectCutover()).rejects.toThrow("private cutover preflight denied");
+  expect(m.cutover).not.toHaveBeenCalled(); expect(m.value).not.toHaveBeenCalled();
+  m.cutover.mockRejectedValueOnce(new Error("cutover receipt changed"));
+  await expect(inspectCutover()).rejects.toThrow("cutover receipt changed"); expect(m.value).not.toHaveBeenCalled();
+  fact.mockResolvedValue({ ...anchor, fields: { status: "RESOLVED", priority: "NORMAL" } });
+  await expect(inspectCutover()).rejects.toThrow();
+  fact.mockResolvedValue({ ...anchor, fields: { status: "NEW", priority: "NORMAL" } });
+  f.target.booleanValue = true; await expect(inspectCutover()).rejects.toThrow();
+});
+it("keeps cutover protocol2 while removing a source rule into a schema1 target", async () => {
+  await prepare(payload(1), payload(2, false));
+  const f = await cutoverFixture();
+  expect(f.publication.targetVersion.schemaVersion).toBe(1);
+  expect((await inspectCutover()).observation).toEqual(f.observation);
+  session.capabilities.delete("tickets.ticket.manage"); m.value.mockClear();
+  await expect(inspectCutover()).rejects.toThrow("tickets.ticket.manage"); expect(m.value).not.toHaveBeenCalled();
+});
+
+it("keeps cutover coverage private preflight before lineage, exact source SQL and current owning representation approval", async () => {
+  const f = await cutoverFixture();
+  m.raw.mockImplementation(async (strings: TemplateStringsArray) => strings.join("").includes("NOT atlas_studio_execution_source_fresh") ? [{ changed: false }] : []);
+  m.version.mockImplementation(async args => typeof args.where.id === "object" ? [] : args.where.id === sourceVersion.id ? sourceVersion : null);
+  const run = () => validateCutoverRequiredFieldMigrationSourceCoverage({ session, transaction: tx }, registry, company, intent);
+  await expect(run()).resolves.toBeUndefined();
+  const preflight = fact.mock.calls.findIndex((call: Parameters<CapabilityRegistry["invokeQueryInTransaction"]>) => (call[2] as { mode: string }).mode === "preflight");
+  expect(fact.mock.invocationCallOrder[preflight]).toBeLessThan(m.cutover.mock.invocationCallOrder[0]);
+  const sourceSQL = m.raw.mock.calls.find(call => (call[0] as TemplateStringsArray).join("").includes("NOT atlas_studio_execution_source_fresh"));
+  expect(sourceSQL?.[0].join("")).toContain("pub.state='CUTOVER' AND c.state='ACTIVATED'");
+  m.cutover.mockClear(); fact.mockRejectedValueOnce(new Error("cutover private cohort denied"));
+  await expect(run()).rejects.toThrow("cutover private cohort denied"); expect(m.cutover).not.toHaveBeenCalled();
+  const old = registry.describe("tickets.ticket.field_representation", 1);
+  f.execution.pin.ownerApproval = { id: old.id, version: old.version, schemaHash: old.schemaHash, contractHash: old.contractHash };
+  await expect(run()).rejects.toThrow();
 });

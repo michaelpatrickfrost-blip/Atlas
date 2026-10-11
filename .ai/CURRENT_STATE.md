@@ -1,3 +1,27 @@
+## 11 October 2026 — e3e2 actual conditional cutover prerequisites VERIFIED locally
+
+Integrated a9e4b7c/ec6c0c2 metadata inspectors with root coverage/row/bounded review.
+Actual retained source, target-active+2/CUTOVER/READY/frozen draft+1, complete private
+preflight before source/target freshness, immutable schema2-or1/full sealed2 lineage,
+current authorised conditions/typed source+target and every own outcome required.
+No fake PUBLISHED/source-active stage, unexplained global normalization or fallback.
+Settlement identity remains pointer/draft/native-change independent. Old closed1
+bodies/receipt hashes preserved; independent security reviews found no blockers.
+Integrated108tests/8suites PASS84436; strictTS42569/lint49724/build20746 exit0 and
+reviewed diff/check PASS. Two old fixture warnings, zero lint errors. Initial strict
+implicit callback fixture type corrected; no guard relaxation. Unit collaborators
+explicit; actual SQL/actor/runtime activation acceptance still pending normal services.
+No DDL/migration/business writes. Live verifiedb34ce50 unchanged.
+
+E3e3 independent branch owns current settlement coverage and pure sealed metadata
+base-right checks; root now owns rollback-only CURRENT-authority row/review bridge.
+Different authorised settler must not resolve/borrow the original creator's current
+grants; publisher/createdBy remain bound to original sealed history. Add genuine
+currentstamp/supportAudit/private/native/current-written/ref/condition tests including
+creator revoke/different actor/emptycohort; integrate/type/lint/build/checkpoint.
+Customer conditional activation and full Phase2 remain gated. Saved required rules
+plan and implementation ledger updated. No Phase3 work.
+
 ## 11 October 2026 — isolated closed2 cutover/settlement metadata identity VERIFIED locally
 
 Phase2 e3e2a identity slice only: `cutover-inspection.ts` adds separate required

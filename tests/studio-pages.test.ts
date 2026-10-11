@@ -9,7 +9,7 @@ import {
 // registry/tenant/publication authority, owner queries, SQL or a live renderer.
 const hash = "a".repeat(64), uuid = (n: number) => `10000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 const ref = (id: string) => ({ id, version: 1, schemaHash: hash, contractHash: "b".repeat(64) });
-const entity = ref("tickets.ticket"), list = ref("tickets.ticket.list"), factQuery = ref("tickets.ticket.facts"),
+const sourcePage = ref("tickets.ticket.page"), entity = ref("tickets.ticket"), list = ref("tickets.ticket.list"), factQuery = ref("tickets.ticket.facts"),
   metric = ref("tickets.ticket.count"), metricQuery = ref("tickets.ticket.count_read"), command = ref("tickets.ticket.close"),
   surface = ref("tickets.ticket.activity"), surfaceQuery = ref("tickets.ticket.activity_read"), previewQuery = ref("tickets.ticket.close_preview");
 const fieldPin = { kind: "customField" as const, definitionId: uuid(1), versionId: uuid(2), schemaVersion: 2 as const, checksum: hash };
@@ -17,8 +17,9 @@ const forms: PagePayload["formFactors"] = ["desktop", "tablet", "phone"];
 const identity = { ownerModuleId: "tickets", classification: "confidential" as const, capability: "tickets.ticket.read" };
 const approvals = (): PageApprovals => ({
   entity: { ...entity, ...identity, kind: "entity" },
+  sourcePage: { ...sourcePage, ...identity, kind: "surface" }, variants: true,
   recordWriteCapability: "tickets.ticket.manage",
-  nativeFields: [{ id: "subject", classification: "confidential", editable: false }, { id: "private_note", classification: "restricted", capability: "tickets.private.read", editable: false }],
+  nativeFields: [{ id: "subject", classification: "confidential", editable: false, query: factQuery }, { id: "private_note", classification: "restricted", capability: "tickets.private.read", editable: false, query: factQuery }],
   customFields: [{ reference: fieldPin, entity, classification: "restricted", readCapability: "tickets.private.read", writeCapability: "tickets.private.write", editable: true, required: true }],
   facts: [
     { id: "has_owner", contract: entity, query: factQuery, sourceEntityId: entity.id, valueType: "boolean", nullable: false, classification: "confidential", provenance: "owner_native" },
@@ -54,7 +55,7 @@ describe("closed structured page compiler", () => {
     ]);
     const saved = structuredClone(input), plan = compilePage(input, approvals());
     expect(input).toEqual(saved);
-    expect(plan.dependencies.map(value => value.id)).toEqual([entity.id, surface.id, surfaceQuery.id, command.id, previewQuery.id, metric.id, metricQuery.id, list.id].sort());
+    expect(plan.dependencies.map(value => value.id)).toEqual([entity.id, sourcePage.id, factQuery.id, surface.id, surfaceQuery.id, command.id, previewQuery.id, metric.id, metricQuery.id, list.id].sort());
     expect(plan.dependencies.every(value => Object.keys(value).sort().join() === ["id", "version", "schemaHash", "contractHash", "ownerModuleId", "kind", "classification"].sort().join())).toBe(true);
     expect(plan.configurationDependencies).toEqual([]);
     expect(plan.accessMode).toBe("ordinary_read");
@@ -62,7 +63,9 @@ describe("closed structured page compiler", () => {
     expect(plan.approvals.customFields).toEqual([]);
     expect(plan).not.toHaveProperty("versionId");
     expect(plan.base.reads.find(value => value.componentId === "close")?.queries).toEqual([]);
-    expect(plan.base.queryCost).toBe(5);
+    expect(plan.base.queryCost).toBe(6);
+    expect(() => compilePage({ ...input, variants: [{ id: "special", label: "Special", priority: 1, when: cap("tickets.ticket.manage"),
+      patches: [{ operation: "setSection", sectionId: "main", properties: { label: "Special" } }] }] }, { ...approvals(), variants: false })).toThrow("variants");
   });
 
   it("normalizes approval and variant order but preserves actual section/component editing order", () => {
@@ -172,10 +175,11 @@ describe("closed structured page compiler", () => {
     const plan = compilePage(payload([guidance, { ...listComponent, visibleWhen: rule }]), approvals());
     expect(pageVisibilityFactRequests(plan, context(), "phone", "components")).toEqual({ factIds: [], queries: [] });
     expect(resolvePageVariant(plan, context(), "phone").reads.every(value => value.queries.length === 0)).toBe(true);
-    const allowed = context(["tickets.ticket.read", "tickets.ticket.manage"]);
+    const allowed = context(["tickets.ticket.read", "tickets.ticket.manage", "tickets.private.read"]);
     expect(pageVisibilityFactRequests(plan, allowed, "phone", "components")).toEqual({ factIds: ["has_owner"], queries: [factQuery] });
     const hydrated = { ...allowed, facts: new Map([["has_owner", true]]) };
     expect(resolvePageVariant(plan, hydrated, "phone").reads.find(value => value.componentId === "related")?.queries).toEqual([list]);
+    expect(resolvePageVariant(plan, { ...hydrated, capabilities: new Set(["tickets.ticket.read", "tickets.ticket.manage"]) }, "phone").reads.some(value => value.componentId === "related")).toBe(false);
     const privatePlan = compilePage(payload([guidance, { id: "facts", type: "facts", factIds: ["open_count"], formFactors: forms }]), approvals());
     expect(resolvePageVariant(privatePlan, context(), "phone").reads.every(value => value.queries.length === 0)).toBe(true);
     const fields = compilePage(payload([{ ...nativeFields, fields: [{ source: "native", fieldId: "subject", mode: "read" }, { source: "native", fieldId: "private_note", mode: "read" }] }]), approvals());

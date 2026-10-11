@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import type { Session } from "@/core/auth/session";
 import type { Prisma } from "@/generated/prisma/client";
+import type { PageSourceCallbacks } from "../pages/owner-contract";
 
 export type Classification = "public_internal" | "confidential" | "restricted";
 export type ContractKind = "entity" | "query" | "command" | "event" | "surface" | "decisionFact" | "template" | "metric" | "integration";
@@ -137,6 +138,8 @@ export type Contribution = {
   authoriseRecord?: (ctx: RecordContext, request: unknown) => Promise<RecordAnchor>;
   authoriseInitialRecord?: (ctx: RecordContext, proof: object) => Promise<RecordAnchor>;
   authoriseNativeValidationProof?: (ctx: RecordContext, request: NativeValidationRequest, proof: object) => Promise<RecordAnchor>;
+  /** Separate owner page policy. No existing entity or query is broadened. */
+  pageSource?: PageSourceCallbacks;
 };
 export type StudioModuleContract = { contributions: readonly Contribution[] };
 export type ContractReference = { id: string; version: number; schemaHash: string; contractHash: string };

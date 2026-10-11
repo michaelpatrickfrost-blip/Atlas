@@ -16,7 +16,8 @@ function readableFact(plan: CompiledPagePlan, id: string, context: PageSelection
   if (!fact || !granted(context, fact.capability)) return null;
   const query = plan.approvals.queries.find(value => samePageReference(value, fact.query));
   const contract = [plan.approvals.entity, ...plan.approvals.contracts].find(value => samePageReference(value, fact.contract));
-  return query && contract && granted(context, query.capability) && granted(context, contract.capability) ? fact : null;
+  return query && contract && granted(context, query.capability) && query.columns.every(column => granted(context, column.capability))
+    && granted(context, contract.capability) ? fact : null;
 }
 
 export function evaluatePageVisibility(plan: CompiledPagePlan, predicate: VisibilityPredicate, context: PageSelectionContext): boolean {
@@ -43,7 +44,7 @@ export function resolvePageVariant(plan: CompiledPagePlan, context: PageSelectio
   const reads: PageReadRequest[] = [];
   const permittedQuery = (ref: PageRegistryReference) => {
     const approved = plan.approvals.queries.find(value => samePageReference(value, ref));
-    return !!approved && granted(context, approved.capability);
+    return !!approved && granted(context, approved.capability) && approved.columns.every(column => granted(context, column.capability));
   };
   for (const source of layout.sections) {
     if (!source.formFactors.includes(formFactor) || (source.visibleWhen && !evaluatePageVisibility(plan, source.visibleWhen, context))) continue;
@@ -58,13 +59,18 @@ export function resolvePageVariant(plan: CompiledPagePlan, context: PageSelectio
           if (field.source === "native") {
             const approved = plan.approvals.nativeFields.find(value => value.id === field.fieldId);
             if (field.mode === "edit" && (!approved?.editable || !plan.approvals.recordWriteCapability || !granted(context, plan.approvals.recordWriteCapability) || !granted(context, approved.writeCapability))) field.mode = "read";
-            return !!approved && granted(context, approved.capability);
+            return !!approved && granted(context, approved.capability) && permittedQuery(approved.query);
           }
           const approved = plan.approvals.customFields.find(value => value.reference.definitionId === field.reference.definitionId);
           if (field.mode === "edit" && (!approved?.editable || !plan.approvals.recordWriteCapability || !granted(context, plan.approvals.recordWriteCapability) || !granted(context, approved.writeCapability))) field.mode = "read";
           return !!approved && granted(context, approved.readCapability);
         });
         if (!component.fields.length) continue;
+        schedule.queries = [...new Map(component.fields.flatMap(field => {
+          if (field.source !== "native") return [];
+          const approved = plan.approvals.nativeFields.find(value => value.id === field.fieldId)!;
+          return [[`${approved.query.id}@${approved.query.version}`, approved.query] as const];
+        })).values()];
       } else if (component.type === "facts") {
         component.factIds = component.factIds.filter(id => readableFact(plan, id, context));
         if (!component.factIds.length) continue;

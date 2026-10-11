@@ -124,6 +124,9 @@ function applyPatches(base: PageSection[], patches: PagePatch[]): PageSection[] 
 export function compilePage(input: unknown, suppliedApprovals: PageApprovals): CompiledPagePlan {
   const payload = pagePayloadSchema.parse(input), approvals = pageApprovalsSchema.parse(suppliedApprovals);
   if (!samePageReference(payload.entity, approvals.entity)) throw new Error("Page requires the exact approved entity contract.");
+  if (approvals.sourcePage.ownerModuleId !== approvals.entity.ownerModuleId || approvals.sourcePage.capability !== approvals.entity.capability)
+    throw new Error("Page source must preserve its native read owner and capability.");
+  if (payload.variants.length && !approvals.variants) throw new Error("Page variants are not approved by this owner.");
   if (!payload.formFactors.includes("phone")) throw new Error("Page requires a phone representation.");
   assertUnique(payload.variants.map(variant => variant.id), "page variant ID");
   assertUnique(payload.variants.map(variant => String(variant.priority)), "page variant priority");
@@ -133,7 +136,7 @@ export function compilePage(input: unknown, suppliedApprovals: PageApprovals): C
   assertUnique(approvals.facts.map(fact => fact.id), "approved fact");
   approvals.queries.forEach(query => assertUnique(query.columns.map(column => column.id), "approved query column"));
   const contracts = new Map<string, PageRegistryApproval>();
-  for (const contract of [approvals.entity, ...approvals.contracts, ...approvals.queries, ...approvals.commands, ...approvals.metrics, ...approvals.surfaces]) {
+  for (const contract of [approvals.entity, approvals.sourcePage, ...approvals.contracts, ...approvals.queries, ...approvals.commands, ...approvals.metrics, ...approvals.surfaces]) {
     const previous = contracts.get(refKey(contract));
     if (previous) throw new Error("Duplicate approved registry contract.");
     contracts.set(refKey(contract), contract);
@@ -150,6 +153,7 @@ export function compilePage(input: unknown, suppliedApprovals: PageApprovals): C
     return approved;
   };
   resolve(payload.entity, ["entity"]);
+  resolve(approvals.sourcePage, ["surface"]);
   const query = (ref: PageRegistryReference, purpose: ValidatedPageApprovals["queries"][number]["purpose"]) => {
     resolve(ref, ["query"]);
     const approved = approvals.queries.find(value => samePageReference(value, ref));
@@ -194,7 +198,13 @@ export function compilePage(input: unknown, suppliedApprovals: PageApprovals): C
             const approved = selected.source === "native" ? approvals.nativeFields.find(value => value.id === selected.fieldId) : approvals.customFields.find(value =>
               value.reference.definitionId === selected.reference.definitionId && value.reference.versionId === selected.reference.versionId && value.reference.schemaVersion === selected.reference.schemaVersion && value.reference.checksum === selected.reference.checksum);
             if (!approved || (selected.mode === "edit" && (!approved.editable || !approvals.recordWriteCapability))) throw new Error("Field presentation is not approved by its owner.");
-            if (selected.source === "native") nativeUsed.add(selected.fieldId);
+            if (selected.source === "native") {
+              nativeUsed.add(selected.fieldId);
+              const native = approvals.nativeFields.find(value => value.id === selected.fieldId)!;
+              const projection = query(native.query, "fact");
+              if (projection.maxCardinality !== 1 || projection.pagination !== "none") throw new Error("Native fields require a single owner projection.");
+              queries.push(native.query);
+            }
             if (selected.source === "extension") {
               const extension = approvals.customFields.find(value => value.reference.definitionId === selected.reference.definitionId);
               if (!extension || !samePageReference(extension.entity, payload.entity)) throw new Error("Extension field belongs to a different entity contract.");
@@ -252,6 +262,7 @@ export function compilePage(input: unknown, suppliedApprovals: PageApprovals): C
     .sort((left, right) => compare(left.id, right.id) || left.version - right.version);
   const runtimeApprovals: ValidatedPageApprovals = {
     entity: approvals.entity,
+    sourcePage: approvals.sourcePage, variants: approvals.variants,
     ...(approvals.recordWriteCapability ? { recordWriteCapability: approvals.recordWriteCapability } : {}),
     nativeFields: approvals.nativeFields.filter(value => nativeUsed.has(value.id)).sort((left, right) => compare(left.id, right.id)),
     customFields: approvals.customFields.filter(value => configurationDependencies.some(ref => ref.definitionId === value.reference.definitionId))

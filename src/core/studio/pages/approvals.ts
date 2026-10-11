@@ -28,8 +28,10 @@ const queryApprovalSchema = pageRegistryApprovalSchema.extend({
  * its separate owning adapter; replacing Read with Create is not permitted. */
 export const pageApprovalsSchema = z.strictObject({
   entity: pageRegistryApprovalSchema.extend({ kind: z.literal("entity") }),
+  sourcePage: pageRegistryApprovalSchema.extend({ kind: z.literal("surface") }),
+  variants: z.boolean(),
   recordWriteCapability: capability.optional(),
-  nativeFields: z.array(z.strictObject({ ...property, editable: z.boolean(), writeCapability: capability.optional() })).max(100),
+  nativeFields: z.array(z.strictObject({ ...property, editable: z.boolean(), writeCapability: capability.optional(), query: referenceSchema })).max(100),
   customFields: z.array(z.strictObject({ reference: customFieldReferenceSchema, entity: referenceSchema,
     classification, readCapability: capability.optional(), writeCapability: capability.optional(), editable: z.boolean(), required: z.boolean() })).max(100),
   facts: z.array(z.strictObject({ id: pageNodeIdSchema, contract: referenceSchema, query: referenceSchema,

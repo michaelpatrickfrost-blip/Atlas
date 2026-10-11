@@ -4,8 +4,9 @@ import { assertCapability, can } from "@/core/permissions/check";
 import { checksum } from "./contracts";
 import type { ContractMetadata, ContractReference, Contribution, FieldMigrationIntentVersion, NativeValidationRequest, RecordAnchor, RecordContext, StudioModuleContract } from "./types";
 import { entityDetailsSchema, fieldSearchPolicySchema, fieldMigrationQueryPolicySchema, fieldSettlementPolicySchema, nativeValidationPolicySchema, nativeValidationRequestSchema, recordAnchorSchema, recordRequestSchema, supportsFieldMigrationIntent, supportsFieldMigrationQueryIntent } from "./entities";
-
 import { fieldSearchWindowSchema, fieldSearchWindowResultSchema } from "../fields/search-contract";
+import { pageReadAnchorSchema, pageReadRequestSchema, pageQueryOutputSchema, pageQueryRequestSchema, pageSourcePolicySchema } from "../pages/owner-contract";
+import { validatePageSourceRegistration } from "../pages/owner-validation";
 
 const logicalId = /^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/;
 const identity = z.object({ id: z.string().regex(logicalId), version: z.number().int().positive(),
@@ -20,14 +21,15 @@ function freezeJson<T>(value: T): T {
   return value;
 }
 export type ModuleAvailability = (session: Session, ownerModuleId: string) => Promise<boolean>;
+type RegisteredContribution = { metadata: ContractMetadata } & Pick<Contribution, "run" | "authoriseRecord" | "authoriseInitialRecord" | "authoriseNativeValidationProof" | "pageSource">;
 export class CapabilityRegistry {
-  private readonly items = new Map<string, { metadata: ContractMetadata; run?: Contribution["run"]; authoriseRecord?: Contribution["authoriseRecord"]; authoriseInitialRecord?: Contribution["authoriseInitialRecord"]; authoriseNativeValidationProof?: Contribution["authoriseNativeValidationProof"] }>();
+  private readonly items = new Map<string, RegisteredContribution>();
   constructor(private readonly available: ModuleAvailability) {}
 
   register(ownerModuleId: string, bundle: StudioModuleContract): void {
     if (!/^[a-z][a-z0-9_]*$/.test(ownerModuleId)) throw new Error("Invalid Studio contract owner.");
     // Validate an entire bundle before adding anything; duplicate failures are atomic.
-    const additions = new Map<string, { metadata: ContractMetadata; run?: Contribution["run"]; authoriseRecord?: Contribution["authoriseRecord"]; authoriseInitialRecord?: Contribution["authoriseInitialRecord"]; authoriseNativeValidationProof?: Contribution["authoriseNativeValidationProof"] }>();
+    const additions = new Map<string, RegisteredContribution>();
     for (const item of bundle.contributions) {
       const m = identity.parse(item.metadata);
       if (!m.id.startsWith(`${ownerModuleId}.`)) throw new Error("Studio identifier must belong to its owner.");
@@ -47,7 +49,21 @@ export class CapabilityRegistry {
       const snapshot = JSON.parse(JSON.stringify({ ...item.metadata, ownerModuleId })) as Omit<ContractMetadata, "contractHash">;
       const contract = Object.fromEntries(Object.entries(snapshot).filter(([key]) => key !== "label"));
       const metadata = freezeJson({ ...snapshot, contractHash: checksum(contract) });
-      additions.set(key, { metadata, run: item.run, authoriseRecord: item.authoriseRecord, authoriseInitialRecord: item.authoriseInitialRecord, authoriseNativeValidationProof: item.authoriseNativeValidationProof });
+      additions.set(key, { metadata, run: item.run, authoriseRecord: item.authoriseRecord, authoriseInitialRecord: item.authoriseInitialRecord, authoriseNativeValidationProof: item.authoriseNativeValidationProof,
+        ...(item.pageSource ? { pageSource: Object.freeze({ ...item.pageSource }) } : {}) });
+    }
+    const lookup = (id: string, version: number) => (additions.get(`${id}@${version}`) ?? this.items.get(`${id}@${version}`))?.metadata;
+    for (const item of additions.values()) {
+      validatePageSourceRegistration(item.metadata, item.pageSource, lookup);
+      if (item.metadata.details.pageSource === undefined) continue;
+      const policy = pageSourcePolicySchema.parse(item.metadata.details.pageSource);
+      for (const other of [...this.items.values(), ...additions.values()]) {
+        if (other.metadata.details.pageSource === undefined) continue;
+        const otherPolicy = pageSourcePolicySchema.parse(other.metadata.details.pageSource);
+        if ((otherPolicy.entity.id === policy.entity.id && other.metadata.id !== item.metadata.id)
+          || (other.metadata.id === item.metadata.id && otherPolicy.entity.id !== policy.entity.id))
+          throw new Error("One stable page source identifier is allowed per canonical entity.");
+      }
     }
     for (const { metadata: m } of additions.values()) {
       if (m.details.nativeValidation !== undefined) {
@@ -217,6 +233,84 @@ export class CapabilityRegistry {
     await this.allowed(session, m);
     if (reference.schemaHash !== m.schemaHash || reference.contractHash !== m.contractHash) throw new Error("DEPENDENCY_BROKEN: Studio contract changed; republish or restore compatibility");
     return m;
+  }
+  /** Exact metadata reconstruction does not require every authored query/fact
+   * grant. Those grants are checked only before its actual visible read. */
+  describePageSource(reference: ContractReference) {
+    const metadata = this.describe(reference.id, reference.version);
+    if (metadata.kind !== "surface" || metadata.schemaHash !== reference.schemaHash || metadata.contractHash !== reference.contractHash)
+      throw new Error("DEPENDENCY_BROKEN: page source changed.");
+    const current = [...this.items.values()].filter(item => item.metadata.id === metadata.id).sort((a, b) => b.metadata.version - a.metadata.version)[0];
+    const policy = pageSourcePolicySchema.parse(metadata.details.pageSource);
+    // Never fall back to an older supported policy. Label/version-only releases
+    // can retain exact historical pages; a changed policy requires republishing.
+    if (!current?.pageSource || current.metadata.details.pageSource === undefined
+      || checksum(pageSourcePolicySchema.parse(current.metadata.details.pageSource)) !== checksum(policy))
+      throw new Error("DEPENDENCY_BROKEN: current page source requires republishing.");
+    const source = this.describe(policy.entity.id, policy.entity.version);
+    if (source.kind !== "entity" || source.ownerModuleId !== metadata.ownerModuleId || source.capability !== metadata.capability)
+      throw new Error("DEPENDENCY_BROKEN: page source owner is unavailable.");
+    return { metadata, source, policy, currentMetadata: current.metadata };
+  }
+  private genuinePageContext(context: RecordContext): void {
+    const stamp = sessionAuthorityStamp(context.session);
+    if (!context.transaction || !stamp || stamp.userId !== context.session.userId || stamp.organisationId !== context.session.organisationId
+      || stamp.membershipId !== context.session.membershipId)
+      throw new Error("Page reads require a genuine current principal and owning transaction.");
+  }
+  async authorisePageRead(context: RecordContext, reference: ContractReference, input: unknown) {
+    this.genuinePageContext(context);
+    const request = pageReadRequestSchema.parse(input), resolved = this.describePageSource(reference);
+    await this.allowed(context.session, resolved.metadata); await this.allowed(context.session, resolved.currentMetadata); await this.allowed(context.session, resolved.source);
+    const callbacks = this.items.get(`${resolved.currentMetadata.id}@${resolved.currentMetadata.version}`)?.pageSource;
+    if (!callbacks) throw new Error("DEPENDENCY_BROKEN: owning page adapter is unavailable.");
+    const anchor = pageReadAnchorSchema.parse(await callbacks.authoriseRead({ session: context.session, transaction: context.transaction }, request));
+    if (anchor.organisationId !== context.session.organisationId || anchor.kind !== request.kind
+      || (request.kind === "record" && (anchor.kind !== "record" || anchor.recordId !== request.recordId)))
+      throw new Error("FIELD_STORAGE_INVALID: owner returned an invalid page scope.");
+    return { ...resolved, anchor };
+  }
+  /** The only page query gateway. Owner Read is rechecked per invocation; full
+   * projection grants precede protected data, not just selected visual columns. */
+  async invokePageRead(context: RecordContext, reference: ContractReference, sourceRequest: unknown, input: unknown) {
+    this.genuinePageContext(context);
+    const request = pageQueryRequestSchema.parse(input), resolved = this.describePageSource(reference);
+    const approval = resolved.policy.queries.find(value => value.query.id === request.query.id && value.query.version === request.query.version);
+    const parsedSourceRequest = pageReadRequestSchema.parse(sourceRequest);
+    if (!approval || approval.scope !== parsedSourceRequest.kind)
+      throw new Error("DEPENDENCY_BROKEN: query is not approved for this page scope.");
+    const query = this.describe(request.query.id, request.query.version);
+    if (query.kind !== "query" || query.ownerModuleId !== resolved.source.ownerModuleId || query.details.transaction !== "required")
+      throw new Error("DEPENDENCY_BROKEN: owning page query changed.");
+    await this.allowed(context.session, query);
+    for (const column of approval.columns) if (column.capability) assertCapability(context.session, column.capability);
+    for (const fact of resolved.policy.facts.filter(value => value.query.id === query.id && value.query.version === query.version))
+      await this.allowed(context.session, this.describe(fact.contract.id, fact.contract.version));
+    for (const metric of resolved.policy.metrics.filter(value => value.query.id === query.id && value.query.version === query.version))
+      await this.allowed(context.session, this.describe(metric.metric.id, metric.metric.version));
+    for (const surface of resolved.policy.surfaces.filter(value => value.queries.some(ref => ref.id === query.id && ref.version === query.version)))
+      await this.allowed(context.session, this.describe(surface.surface.id, surface.surface.version));
+    const authorised = await this.authorisePageRead(context, reference, parsedSourceRequest);
+    const callbacks = this.items.get(`${authorised.currentMetadata.id}@${authorised.currentMetadata.version}`)!.pageSource!;
+    const ownerContext = { session: context.session, transaction: context.transaction };
+    const single = query.details.pagination === "none";
+    if (single && request.cursor !== null) throw new Error("Page record projections do not accept a cursor.");
+    const boundRequest = { ...request, pageSize: single ? Math.min(1, request.pageSize) : Math.min(request.pageSize, Number(query.details.maxCardinality)) };
+    const boundInput = await callbacks.bindQueryInput(ownerContext, authorised.anchor, boundRequest);
+    const rawOutput = await this.invokeQueryInTransaction(ownerContext, query, boundInput);
+    const output = pageQueryOutputSchema.parse(await callbacks.projectQueryOutput(ownerContext, authorised.anchor, boundRequest, rawOutput));
+    if (output.rows.length > Math.min(boundRequest.pageSize, Number(query.details.maxCardinality))
+      || (single && output.nextCursor !== null) || new Set(output.rows.map(row => row.id)).size !== output.rows.length)
+      throw new Error("FIELD_STORAGE_INVALID: invalid owning page result bounds.");
+    for (const row of output.rows) {
+      if (approval.purpose === "fact" && authorised.anchor.kind === "record" && row.id !== authorised.anchor.recordId)
+        throw new Error("FIELD_STORAGE_INVALID: invalid owning page record projection.");
+      if (Object.keys(row.values).length !== approval.columns.length || approval.columns.some(column => {
+        const value = row.values[column.id];
+        return value === null ? !column.nullable : typeof value !== column.valueType;
+      })) throw new Error("FIELD_STORAGE_INVALID: invalid owning page scalar projection.");
+    }
+    return { anchor: authorised.anchor, output };
   }
   /** Exact live owning-mutation proof substitutes only this record's visibility.
    * Metadata approval happens before any native facts are projected. */

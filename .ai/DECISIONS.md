@@ -1,3 +1,19 @@
+## 11 October — permanent profile identity and explicit Page owner approval
+
+A record design binds permanently to a canonical entity through metadata-only
+StudioProfileBinding. One stable base identity is allowed per tenant/entity, with
+an exact immutable published origin; later versions cannot repurpose the binding.
+This evolves existing Studio definitions and canonical extension records without
+creating module business copies. Additive060000 SQL has only been rehearsed inside
+a rolled-back transaction. Public authoring waits for runtime/coverage integration.
+
+Pages use an explicit owner Page-source contribution and closed, transaction-scoped
+scalar projections. Ordinary native Read remains mandatory, and owner callbacks
+recheck canonical/private scope per query. Existing entity/query contracts and
+hashes are retained; a new Page source declares additional exposure rather than
+silently widening an existing contract. Historical configuration usage shares the
+exact seal verifier and can inspect retired metadata without granting runtime use.
+
 ## 11 October — desktop data API same-origin authority with NextRequest
 
 InstalledNext16.3.8 normalisesloopbackrequest.url hostname127 tolocalhost and uses

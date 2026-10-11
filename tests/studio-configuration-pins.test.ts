@@ -2,7 +2,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 import type { Prisma } from "@/generated/prisma/client";
 import type { Session } from "@/core/auth/session";
 import { checksum } from "@/core/studio/registry/contracts";
-import { inspectConfigurationGraph, inspectConfigurationPin, loadSealedConfigurationVersion,
+import { inspectConfigurationGraph, inspectConfigurationPin, inspectRetainedConfigurationPin, loadSealedConfigurationVersion,
   type SealedConfigurationVersion } from "@/core/studio/configuration/pins";
 import type { ConfigurationReference } from "@/core/studio/record-types";
 
@@ -23,6 +23,25 @@ function version(n: number, dependencies: ConfigurationReference[] = []) {
   return { row, reference };
 }
 beforeEach(() => { find.mockReset(); });
+
+it("retained metadata allows retirement without weakening the current pin policy or rewriting history", () => {
+  const current = version(1), row = structuredClone(current.row);
+  row.definition.retiredAt = new Date("2026-10-11T12:00:00.000Z");
+  const snapshot = structuredClone(row);
+  expect(() => inspectConfigurationPin(session.organisationId, current.reference, row)).toThrow("DEPENDENCY_BROKEN");
+  expect(inspectRetainedConfigurationPin(session.organisationId, current.reference, row).reference).toEqual(current.reference);
+  expect(row).toEqual(snapshot);
+});
+it.each(["tenant", "checksum", "payload", "missing_edge", "edge_tenant"])("retained metadata still rejects %s corruption", mode => {
+  const child = version(2), current = version(1, [child.reference]), row = structuredClone(current.row);
+  row.definition.retiredAt = new Date();
+  if (mode === "tenant") row.organisationId = "business-b";
+  if (mode === "checksum") row.checksum = "f".repeat(64);
+  if (mode === "payload") row.payload = {};
+  if (mode === "missing_edge") row.configurationDependencies = [];
+  if (mode === "edge_tenant") row.configurationDependencies[0].organisationId = "business-b";
+  expect(() => inspectRetainedConfigurationPin(session.organisationId, current.reference, row)).toThrow("DEPENDENCY_BROKEN");
+});
 
 it("loads only the exact immutable version in the authenticated tenant, without business/value columns", async () => {
   const current = version(1); find.mockResolvedValue(current.row);

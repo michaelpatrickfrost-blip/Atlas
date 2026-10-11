@@ -206,3 +206,34 @@ Process/Decision references fail closed; page references stay closed until the
 actual Page compiler adapter is wired. Plan materialises one base/overlay and
 sealed configuration/registry dependencies. Tests foreign/retired/seal/permission/
 owner opt-in/entity/generation/structural-policy failures and deterministic output.
+
+2C2b permanent profile binding — IN PROGRESS, owner root. Purpose: one permanent
+base-profile identity per tenant/canonical entity, immutable record-type owner
+identity and exact first published version. Files Prisma/additive060000 SQL,
+record-types/binding.ts and tests. Depends2C1/2C2a compiler+configuration pins.
+No canonical record copy or assignment yet; binding alone does not enable runtime
+publication/activation. Tests scoped entity/kind/origin, safe repeated publication,
+foreign identity/renaming and base uniqueness. Actual additive DDL must be rehearsed
+under both original locks once release idle; database change is a new metadata table
+and FKs/guards only, no backfill/reset or change to existing business values.
+
+## 11 October — integrated Phase 2 source checkpoint
+
+2C2b permanent profile ownership, 2C2e retained dependency usage, 2D2a explicit
+owner Page-source/query gateway and 2E1 controlled visual editor are IMPLEMENTED
+with focused source tests. Binding/compiler23; integrated owner/usage76 assertions
+across5 suites passed. Production build passed. No saved/live editor claim:
+Page approval factory, runtime/shared renderer, persistence/publication and genuine
+selected-business routes remain next. Original ff91 candidate failed before
+activation on legacy checker selecting a new Sales query; exact adapter selection
+corrected. 060000 migration rehearsed under both original locks and rolled back.
+
+2E authoring session workstream (root): purpose is one explicit audited business
+Studio entry from Atlas Admin, using existing staff affiliation policy and fresh
+server-resolved company membership. Later actions resolve the genuine selected
+business principal without copying metadata contexts or changing customer cookies.
+Expected files: core/studio/authoring context, guarded launch/actions/routes, tests,
+shared memory. Database: existing memberships and Audit only, no new permission
+architecture or customer roles. Validation: staff/tenant/session revocation, customer
+cannot choose another tenant, genuine authoring authority, source capabilities and
+module availability retained. Status NOT STARTED; depends on existing Admin policy.

@@ -44,7 +44,7 @@ async function main() {
     const actor=staff(a), other=staff(b);
     await checkTicketContract(actor, other);
     const registry=studioRegistry();
-    const descriptor=(await registry.discover(actor)).find(d=>d.ownerModuleId==="sales" && d.kind==="query"); assert(descriptor);
+    const descriptor=(await registry.discover(actor)).find(d=>d.id==="sales.template.order.list" && d.version===1 && d.kind==="query"); assert(descriptor);
     const reference={id:descriptor.id,version:descriptor.version,schemaHash:descriptor.schemaHash,contractHash:descriptor.contractHash};
     assert.deepEqual(await registry.invoke(actor,reference,{}),[],"Existing owner provider reads the isolated tenant through the adapter");
     const payload={schemaVersion:1 as const,description:"First accepted version",references:[reference]};

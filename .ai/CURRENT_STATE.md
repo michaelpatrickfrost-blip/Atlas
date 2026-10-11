@@ -1,3 +1,32 @@
+## 11 October — Phase 2 page ownership, configuration impact and profile binding checkpoint
+
+The ff91a303 original Studio release failed before activation: the metadata checker
+selected the first Sales query, now a bounded native projection rather than the
+legacy provider adapter. It now selects exact sales.template.order.list@1 and retains
+the original empty-array compatibility assertion. No acceptance criteria waived.
+Live c385a2be and rollback 5b6390c8 remain the last confirmed accepted runtimes;
+required recovery 211714 and candidate fixture 211859 retained. No new dump for diagnosis.
+
+Integrated explicit owner Page-source contracts efa8b13d and retained configuration
+usage/pin inspection 105d7783. Registry import conflict reconciled, preserving field
+search methods and all existing contract hashes. Impact follows immutable retained
+parents to active ancestors with bounded graph/seal checks, not only direct edges.
+New profile binding source/model/060000 SQL fixes permanent canonical ownership;
+one base definition per tenant/entity, immutable origin and later publication guard.
+Public profile/page dispatch remains closed until runtime and cohort checks are wired.
+
+Binding/compiler 23 focused tests passed. Integrated binding/usage/Page-owner checks
+76 assertions across five suites passed. Prisma validation and generation passed;
+060000 DDL compiled under both original release locks inside BEGIN/ROLLBACK using
+existing recovery backup: no retained schema or data change. Final integrated production build passed (3813); scoped lint passed (93011).
+Final standalone types49291 exit0; integrated editor17 interaction assertions
+passed. Controlled visual editor helper checks also passed;
+actual saved/live business integration and complete Phase 2 acceptance remain pending.
+Exact next action: finish integrated types/build, checkpoint these scoped sources,
+retry original pinned Studio acceptance; connect Page approvals/shared runtime to
+visual editor and original publication, while association/requirements proceed in
+an isolated source-only workstream. Phase 2 FAIL incomplete; no Phase 3 features.
+
 ## 11 October — page/profile/Sales source integration; origin gate corrected
 
 Pinnedbridge0a5fe343 release45875 EXIT1 beforeactivation, privatecandidate nOSYuz.

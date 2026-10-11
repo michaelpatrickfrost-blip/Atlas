@@ -76,6 +76,21 @@ source coverage, phase plan and this ledger. No rewritten specification.
 
 # Current Workstream Detail
 
+Latest ff91a303 release EXIT1 before activation: old metadata checker chose the new
+bounded Sales query. Exact sales.template.order.list@1 selection now preserves the
+legacy adapter assertion. Candidate p3K21h/recovery211714/fixture211859 retained;
+last confirmed live c385/rollback5b unchanged. No extra diagnostic dump.
+
+2C2e configuration usage/sealed retained-history inspection integrated 105d7783;
+2D2a genuine owner Page source/gateway integrated efa8b13d with field-search merge
+preserved. Combined76/5 focused PASS. 2C2b permanent profile ownership model, binder
+and additive060000 SQL IMPLEMENTED; 23 binding/compiler tests PASS, Prisma validate/
+generate PASS, original both-lock central BEGIN/ROLLBACK DDL rehearsal PASS (not
+applied). Integrated production build3813 and scopedlint93011 PASS. Public
+profile/page authoring dispatch remains closed. Finalstandalonetypes49291 PASS;
+integratededitor17 interactions PASS. Full visual editor
+source interaction tests passed in helper; saved/live integration still pending.
+
 0a5fe343 originalrelease45875 EXIT1 beforeactivation atf6unexpectedorigin; actual
 NextRequest loopbacknormalisation confirmed. Strictsameoriginguard52bee corrected
 fromactualHost+requestprotocol, noexception/sessionwaiver; candidate/publicpending.

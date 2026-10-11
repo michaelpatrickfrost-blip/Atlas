@@ -29,9 +29,19 @@ export async function loadSealedConfigurationVersion(session: Session, tx: Prism
 /** Shape, seal and persisted-edge mirror only; no permission impersonation or
  * value read. Artefact-specific compilers must additionally reconstruct the plan. */
 export function inspectConfigurationPin(organisationId: string, input: unknown, version: SealedConfigurationVersion) {
+  return inspectVersionPin(organisationId, input, version, false);
+}
+
+/** Retained history metadata only. Retirement cannot erase a sealed reference
+ * from impact analysis; this does not approve runtime use or grant any access. */
+export function inspectRetainedConfigurationPin(organisationId: string, input: unknown, version: SealedConfigurationVersion) {
+  return inspectVersionPin(organisationId, input, version, true);
+}
+
+function inspectVersionPin(organisationId: string, input: unknown, version: SealedConfigurationVersion, allowRetired: boolean) {
   const ref = configurationReferenceSchema.parse(input), parsed = planFrame.safeParse(version.compiledPlan);
   if (!parsed.success || version.id !== ref.versionId || version.definitionId !== ref.definitionId || version.organisationId !== organisationId
-    || version.definition.kind !== ref.kind || version.definition.retiredAt !== null || version.schemaVersion !== ref.schemaVersion
+    || version.definition.kind !== ref.kind || (!allowRetired && version.definition.retiredAt !== null) || version.schemaVersion !== ref.schemaVersion
     || version.checksum !== ref.checksum || parsed.data.kind !== ref.kind || parsed.data.schemaVersion !== ref.schemaVersion
     || checksum(version.compiledPlan) !== ref.checksum || checksum(version.payload) !== checksum(parsed.data.payload)) broken();
   const declared = normaliseConfigurationReferences(parsed.data.configurationDependencies ?? [], version.definitionId);

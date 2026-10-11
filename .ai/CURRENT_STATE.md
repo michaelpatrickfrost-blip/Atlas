@@ -1,3 +1,31 @@
+## 11 October — page/profile/Sales source integration; origin gate corrected
+
+Pinnedbridge0a5fe343 release45875 EXIT1 beforeactivation, privatecandidate nOSYuz.
+Original existing/native/window/concurrency gates PASS; f6 first directbrowserHTTP
+denial wasunexpectedorigin ratherthanexpectedrequired feedback. Actual installed
+NextRequest rewrites127.0.0.1 URLhost tolocalhost while preservingincomingHost/Origin.
+Scopedguard52bee536 retainsstrictcanonical sameorigin viaactualHost+requestprotocol,
+noforwardedheader exception/alias fallback; independentreview no sourceblocker.
+Actualcandidate/public proxyHTTP proof pending, existinglivec385/rollback5b unchanged.
+Centralmigrationhistory confirms040000/050000 applied bycandidatebuild; no schema
+rollback/businessreset. Recovery210453/fixture210634 retained, Testaccesssuspended.
+
+IntegratedpurePage2D1 b739, canonicalSalesread contractsabf+acknowledgement116823,
+actualsearchchecker9160 intooriginaldriver afterforms/defaults. Root2C2a authoring
+compiler reconstructsexactsealedbase/materialisedoverlay, requiredpin/currentfield
+generation/constraints/security andindependentgrants; pages/process/decisionsclosed
+untilactualcompileradapters. No publicprofiledispatch/assignment/activationenabled.
+Integrated55 assertions/5suitesPASS55649, types66482/lint64314exit0; finalrootprofile
+13PASS14629 afterrecordType-onlyoptinrefinement. Finalorigin/Sales/profile71 assertions/4 suites PASS54270; production48820
+exit0, standalone1787exit0, scopedlint1656exit0. ActualsafeSalesnavigation returnsnativePDFroute only; selected
+Adminsupportauthority NOT transferred tocookiePDFendpoint. Oldtemplatehashesremain.
+PurePage ordinaryRead/source nativeWrite metadata only, noCreategateway oractual
+renderer.2D2a/b genuineownerpagedeclaration/approvals inhelper;2E1controlled visual
+workspace/editor sourceinparallel, sharedpreview/live rendererrequired. FullPhase2
+stillFAILincomplete, noPhase3. Noextra dependencycopies/localDB/ad-hocdumps.
+Exactnext: commitpin/rerunoriginalbridge;
+thenactualdefaults/search gates,2Cbinding/assignment/coverage+2Dactualruntime/editor.
+
 ## 11 October — record-type pure core and configuration pin storage checkpoint
 
 Integrated pure2C1 checkpoint5c06b118: exact tenant-independent pin shapes, one base

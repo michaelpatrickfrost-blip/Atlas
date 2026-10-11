@@ -76,6 +76,19 @@ source coverage, phase plan and this ledger. No rewritten specification.
 
 # Current Workstream Detail
 
+0a5fe343 originalrelease45875 EXIT1 beforeactivation atf6unexpectedorigin; actual
+NextRequest loopbacknormalisation confirmed. Strictsameoriginguard52bee corrected
+fromactualHost+requestprotocol, noexception/sessionwaiver; candidate/publicpending.
+LIVEc385/rollback5b unchanged.040000/050000 nowAPPLIED bycandidatebuild, central
+historyreadconfirmed. Required210453/210634 backupsretained; syntheticaccessclosed.
+
+2C2a authoringcompiler IMPLEMENTED/source13focusedPASS, publicdispatchcloseduntil
+binding/assignment/requiredcohort enforcement. Pure2D1 b739 andSales2E0 abf/116823
+read/nativePDFnavigation contractsintegrated. Combined55/5PASS, strict/lintPASS before
+finalorigin/command projection; Final71/4PASS54270, production48820/standalone1787/scopedlint1656 exit0. Actualsearchchecker9160
+originaldriverwired afterforms/defaults, centralruntimepending.2D2ownerfactory and
+controlled2E1 visualeditor activelyinparallel; no finishedvisual/liveclaim.
+
 Acceptedc385 merge preserves operational/Finance/UI source and shared memory.
 Production77784 PASS; focused70/8 PASS83796; Prisma67043PASS. Initial types sawold
 client during generation, final sequential standalone85658 exit0; scoped merge lint2995 exit0. Actual040000/050000 DDL

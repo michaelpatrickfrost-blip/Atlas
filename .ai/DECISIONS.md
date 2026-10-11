@@ -1,3 +1,14 @@
+## 11 October — desktop data API same-origin authority with NextRequest
+
+InstalledNext16.3.8 normalisesloopbackrequest.url hostname127 tolocalhost and uses
+internal URLsbehindproxy; comparingbrowserOrigin tothatURL alone rejectsactual
+sameoriginrequests. Retainexactdesktopclient marker andcanonicalHTTP(S) Origin;
+comparetheactual incomingHost authority withrequestURLprotocol. Hostparsingrejects
+userinfo/path/lists/whitespace/escapes/noncanonicalaliases. No forwardedHost/proto
+exceptions orloopbackalias expansion. MissingHost fallsbackoriginalURLonly; absent
+Origin preserves existingnativeclient policy. Allowlist/session/domain/tenant guards
+staymandatory. Actual candidate/publicHTTP checks must verifyproxyprotocol.52bee536.
+
 ## 11 October — exact configuration pins separate from registry dependencies
 
 Keep StudioDependency's module contract semantics intact. StudioConfigurationDependency

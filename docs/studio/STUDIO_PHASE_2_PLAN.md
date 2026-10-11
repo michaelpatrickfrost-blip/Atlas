@@ -195,3 +195,14 @@ against actual affected canonical cohort in same owning transaction. Unsupported
 owners and later process/decision refs fail closed. 2C2a pin table/sealed metadata reader IMPLEMENTEDfe915; SQL040/050 compiles in
 central BEGIN/ROLLBACK underbothlocks, no persistent changes. Compiler/publication
 wiring and2C2b–e remain NOT STARTED. Pure2C1 localverified; actualruntime pending.
+
+2C2a next compiler checkpoint — IN PROGRESS, owner root. Purpose: independently
+compile entityProfile/recordType from exact tenant-owned sealed base/required-field
+pins, current registered owner opt-in/capabilities and structurally compatible
+active field generation. Files record-types/compiler.ts and focused compiler tests.
+Dependencies existing2C1/pinreader/sealedfield verifier. No new database changes in
+this checkpoint; no public dispatch/activation/association enabled before2C2b–d.
+Process/Decision references fail closed; page references stay closed until the
+actual Page compiler adapter is wired. Plan materialises one base/overlay and
+sealed configuration/registry dependencies. Tests foreign/retired/seal/permission/
+owner opt-in/entity/generation/structural-policy failures and deterministic output.

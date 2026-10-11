@@ -18,6 +18,7 @@ import { openFieldMigrationSupportContext } from "../../src/core/studio/fields/p
 import { checkFieldConcurrency } from "./check-field-concurrency";
 import { checkTicketForms } from "./check-ticket-forms";
 import { checkTicketDefaults } from "./check-ticket-defaults";
+import { checkFieldSearch } from "./check-field-search";
 
 async function main() {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1", "Explicit server acceptance opt-in required");
@@ -224,6 +225,7 @@ async function main() {
     await checkFieldConcurrency(storedUser.id, ids);
     await checkTicketForms(base, browser, storedUser.id, ids);
     await checkTicketDefaults(base, browser, storedUser.id, ids);
+    await checkFieldSearch(base, browser, storedUser.id, ids);
     // The helper revokes only its new Test affiliation, not the original QA session.
     await context.addCookies([{name:"atlas_session",value:token,url:base,secure:base.startsWith("https"),httpOnly:true,sameSite:"Lax"}]);
     await page.goto(`/atlas/studio/${a.id}`,{waitUntil:"networkidle"});

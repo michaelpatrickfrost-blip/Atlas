@@ -7,6 +7,9 @@ import { entityDetailsSchema, fieldSearchPolicySchema, fieldMigrationQueryPolicy
 import { fieldSearchWindowSchema, fieldSearchWindowResultSchema } from "../fields/search-contract";
 import { pageReadAnchorSchema, pageReadRequestSchema, pageQueryOutputSchema, pageQueryRequestSchema, pageSourcePolicySchema } from "../pages/owner-contract";
 import { validatePageSourceRegistration } from "../pages/owner-validation";
+import { viewSourcePolicySchema, preparedViewSchema, compiledOwnerViewSchema, validateViewSourceRegistration, type ViewSourceApproval } from "../views/owner-contract";
+import { registeredMetricSourceSchema, registeredMetricInputSchema } from "./analytics-source-contracts";
+import { viewJsonSchema } from "../views/schema";
 
 const logicalId = /^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/;
 const identity = z.object({ id: z.string().regex(logicalId), version: z.number().int().positive(),
@@ -21,7 +24,7 @@ function freezeJson<T>(value: T): T {
   return value;
 }
 export type ModuleAvailability = (session: Session, ownerModuleId: string) => Promise<boolean>;
-type RegisteredContribution = { metadata: ContractMetadata } & Pick<Contribution, "run" | "authoriseRecord" | "authoriseInitialRecord" | "authoriseNativeValidationProof" | "pageSource">;
+type RegisteredContribution = { metadata: ContractMetadata } & Pick<Contribution, "run" | "authoriseRecord" | "authoriseInitialRecord" | "authoriseNativeValidationProof" | "pageSource" | "viewSource">;
 export class CapabilityRegistry {
   private readonly items = new Map<string, RegisteredContribution>();
   constructor(private readonly available: ModuleAvailability) {}
@@ -50,11 +53,13 @@ export class CapabilityRegistry {
       const contract = Object.fromEntries(Object.entries(snapshot).filter(([key]) => key !== "label"));
       const metadata = freezeJson({ ...snapshot, contractHash: checksum(contract) });
       additions.set(key, { metadata, run: item.run, authoriseRecord: item.authoriseRecord, authoriseInitialRecord: item.authoriseInitialRecord, authoriseNativeValidationProof: item.authoriseNativeValidationProof,
-        ...(item.pageSource ? { pageSource: Object.freeze({ ...item.pageSource }) } : {}) });
+        ...(item.pageSource ? { pageSource: Object.freeze({ ...item.pageSource }) } : {}),
+        ...(item.viewSource ? { viewSource: Object.freeze({ ...item.viewSource }) } : {}) });
     }
     const lookup = (id: string, version: number) => (additions.get(`${id}@${version}`) ?? this.items.get(`${id}@${version}`))?.metadata;
     for (const item of additions.values()) {
       validatePageSourceRegistration(item.metadata, item.pageSource, lookup);
+      validateViewSourceRegistration(item.metadata, item.viewSource);
       if (item.metadata.details.pageSource === undefined) continue;
       const policy = pageSourcePolicySchema.parse(item.metadata.details.pageSource);
       for (const other of [...this.items.values(), ...additions.values()]) {
@@ -233,6 +238,79 @@ export class CapabilityRegistry {
     await this.allowed(session, m);
     if (reference.schemaHash !== m.schemaHash || reference.contractHash !== m.contractHash) throw new Error("DEPENDENCY_BROKEN: Studio contract changed; republish or restore compatibility");
     return m;
+  }
+  /** Current owner opt-in cannot silently fall back to a historical compiler.
+   * Only label/version releases preserving the exact policy/content schema can
+   * continue to compile retained envelopes through their original owner callback. */
+  describeViewSource(reference: ContractReference) {
+    const metadata = this.describe(reference.id, reference.version);
+    if (metadata.kind !== "surface" || metadata.schemaHash !== reference.schemaHash || metadata.contractHash !== reference.contractHash)
+      throw new Error("DEPENDENCY_BROKEN: the owning view compiler changed.");
+    const policy = viewSourcePolicySchema.parse(metadata.details.viewSource), pinned = this.items.get(`${metadata.id}@${metadata.version}`);
+    const current = [...this.items.values()].filter(item => item.metadata.id === metadata.id).sort((a, b) => b.metadata.version - a.metadata.version)[0];
+    if (!pinned?.viewSource || !current?.viewSource || current.metadata.details.viewSource === undefined
+      || current.metadata.kind !== metadata.kind || current.metadata.capability !== metadata.capability
+      || current.metadata.schemaHash !== metadata.schemaHash || checksum(current.metadata.details.viewSource) !== checksum(policy))
+      throw new Error("DEPENDENCY_BROKEN: current view compiler requires republishing.");
+    return { metadata, policy, currentMetadata: current.metadata, callbacks: pinned.viewSource };
+  }
+  /** Internal metadata-only entry. Caller owns fresh identity locks and the
+   * Serializable transaction; no native/provider query or command can run here. */
+  async compileViewSourceInTransaction(context: RecordContext, reference: ContractReference, content: unknown) {
+    this.genuinePageContext(context);
+    const resolved = this.describeViewSource(reference);
+    await this.allowed(context.session, resolved.metadata); await this.allowed(context.session, resolved.currentMetadata);
+    assertCapability(context.session, resolved.policy.authoringCapability);
+    for (const moduleId of resolved.policy.requiredModules) if (!await this.available(context.session, moduleId))
+      throw new Error(`DEPENDENCY_BROKEN: module ${moduleId} unavailable`);
+    const prepared = preparedViewSchema.parse(resolved.callbacks.prepare(viewJsonSchema.parse(content)));
+    if (new Set(prepared.sources.map(source => `${source.id}@${source.version}`)).size !== prepared.sources.length
+      || prepared.sources.some(source => !resolved.policy.sources.some(approved => approved.id === source.id && approved.version === source.version)))
+      throw new Error("DEPENDENCY_BROKEN: a view source is not explicitly approved.");
+    const approvals: ViewSourceApproval[] = [], dependencies = new Map<string, ContractMetadata>();
+    dependencies.set(`${resolved.metadata.id}@${resolved.metadata.version}`, resolved.metadata);
+    for (const selected of prepared.sources) {
+      const source = this.describe(selected.id, selected.version), policy = registeredMetricSourceSchema.parse(source.details.analyticsSource);
+      const currentSource = [...this.items.values()].filter(item => item.metadata.id === source.id).sort((a, b) => b.metadata.version - a.metadata.version)[0]?.metadata;
+      const query = this.describe(policy.query.id, policy.query.version);
+      const currentQuery = [...this.items.values()].filter(item => item.metadata.id === query.id).sort((a, b) => b.metadata.version - a.metadata.version)[0]?.metadata;
+      if (source.kind !== "metric" || source.id !== `${policy.providerId}.metric` || !policy.providerId.startsWith(`${source.ownerModuleId}.`)
+        || source.capability !== policy.requiredCapabilities[0] || source.classification !== policy.classification
+        || checksum(source.details.references) !== checksum([query.id]) || query.kind !== "query" || query.ownerModuleId !== source.ownerModuleId
+        || query.capability !== source.capability || query.classification !== policy.classification || !policy.requiredModules.includes(source.ownerModuleId)
+        || query.details.pagination !== "none" || query.details.maxCardinality !== policy.maxCardinality || query.details.costClass !== policy.costClass
+        || query.details.transaction !== undefined || checksum(query.inputSchema) !== checksum(z.toJSONSchema(registeredMetricInputSchema(policy), { io: "input" }))
+        || checksum(query.outputSchema) !== checksum(source.outputSchema)
+        || source.schemaHash !== checksum(source.outputSchema) || query.schemaHash !== checksum({ inputSchema: query.inputSchema, outputSchema: query.outputSchema })
+        || !currentSource || currentSource.kind !== source.kind || currentSource.capability !== source.capability
+        || currentSource.schemaHash !== source.schemaHash || checksum(currentSource.details) !== checksum(source.details)
+        || !currentQuery || currentQuery.kind !== query.kind || currentQuery.capability !== query.capability
+        || currentQuery.schemaHash !== query.schemaHash || checksum(currentQuery.details) !== checksum(query.details))
+        throw new Error("DEPENDENCY_BROKEN: the registered metric/query approval changed.");
+      for (const contract of [source, currentSource, query, currentQuery]) await this.allowed(context.session, contract);
+      for (const capability of policy.requiredCapabilities) assertCapability(context.session, capability);
+      for (const moduleId of policy.requiredModules) if (!await this.available(context.session, moduleId))
+        throw new Error(`DEPENDENCY_BROKEN: module ${moduleId} unavailable`);
+      const exact = (metadata: ContractMetadata) => ({ id: metadata.id, version: metadata.version, schemaHash: metadata.schemaHash, contractHash: metadata.contractHash });
+      approvals.push({ source: exact(source), metadata: source, query: exact(query), queryMetadata: query, policy });
+      dependencies.set(`${source.id}@${source.version}`, source); dependencies.set(`${query.id}@${query.version}`, query);
+    }
+    const compiled = compiledOwnerViewSchema.parse(resolved.callbacks.compile(prepared.content, freezeJson(approvals)));
+    if (new Set(compiled.requests.map(request => request.widgetId)).size !== compiled.requests.length
+      || compiled.requests.length > resolved.policy.maxQueries || compiled.requests.length * 3 > resolved.policy.maxQueryCost)
+      throw new Error("The view exceeds its approved query cost budget.");
+    const used = new Set<string>();
+    for (const request of compiled.requests) {
+      const approved = approvals.find(approval => checksum(approval.query) === checksum(request.query));
+      if (!approved || checksum(registeredMetricInputSchema(approved.policy).parse(request.input)) !== checksum(request.input))
+        throw new Error("DEPENDENCY_BROKEN: the compiled view has an unapproved query input or reference.");
+      used.add(`${approved.source.id}@${approved.source.version}`);
+    }
+    if (used.size !== approvals.length) throw new Error("A view cannot retain unused source approvals.");
+    return { content: compiled.content, requests: compiled.requests, dependencies: [...dependencies.values()]
+      .sort((a, b) => a.id.localeCompare(b.id) || a.version - b.version).map(metadata => ({ id: metadata.id, version: metadata.version,
+        schemaHash: metadata.schemaHash, contractHash: metadata.contractHash, ownerModuleId: metadata.ownerModuleId,
+        kind: metadata.kind, classification: metadata.classification })) };
   }
   /** Exact metadata reconstruction does not require every authored query/fact
    * grant. Those grants are checked only before its actual visible read. */

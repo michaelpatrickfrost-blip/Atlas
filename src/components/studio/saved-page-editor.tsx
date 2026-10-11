@@ -24,11 +24,15 @@ export type SavedPageEditorProps = {
     restore(input: { versionId: string; definitionRevision: number }): Promise<{ revision: number; definitionRevision: number; payload: PagePayload; warnings: string[]; activeVersionId?: string; versionLabel?: string }>;
     preview(input: { payload: PagePayload; recordId?: string; formFactor: PageDisplayModel["formFactor"] }): Promise<PageDisplayModel>;
     chooseSample(): Promise<{ id: string; label: string }[]>;
+    compare?(input: { versionId: string; definitionRevision: number; formFactor: PageDisplayModel["formFactor"] }): Promise<{
+      versionId: string; definitionRevision: number; label: string; model: PageDisplayModel;
+    }>;
   };
 };
 const pageKey = (page: PagePayload) => JSON.stringify(page);
 const revision = (value: number) => Number.isSafeInteger(value) && value >= 0;
-type Dialog = { kind: "publish"; review: Review; pageKey: string } | { kind: "restore"; version: Version; definitionRevision: number };
+type Dialog = { kind: "publish"; review: Review; pageKey: string } | { kind: "restore"; version: Version; definitionRevision: number }
+  | { kind: "compare"; label: string; previous: PageDisplayModel; current: PageDisplayModel };
 
 /** Client adapter only. Callbacks come from the trusted client route adapter;
  * no browser metadata grants publication or business-record authority. */
@@ -38,7 +42,7 @@ export function SavedPageEditor(props: SavedPageEditorProps) {
   const [head, setHead] = useState(() => ({ revision: props.draft.revision, definitionRevision: props.draft.definitionRevision, payload: structuredClone(props.draft.payload), warnings: props.draft.warnings }));
   const [versions, setVersions] = useState(props.draft.versions), [activeVersionId, setActiveVersionId] = useState(props.draft.activeVersionId);
   const [review, setReview] = useState<Review | null>(null), [reviewing, setReviewing] = useState(true), [feedback, setFeedback] = useState("");
-  const [operation, setOperation] = useState<"save" | "publish" | "restore" | "preview" | "samples" | null>(null);
+  const [operation, setOperation] = useState<"save" | "publish" | "restore" | "preview" | "samples" | "compare" | null>(null);
   const [dialog, setDialog] = useState<Dialog | null>(null), [acknowledge, setAcknowledge] = useState(false);
   const [selectedVersion, setSelectedVersion] = useState(""), [samples, setSamples] = useState<{ id: string; label: string }[]>([]), [recordId, setRecordId] = useState("");
   const [formFactor, setFormFactor] = useState<PageDisplayModel["formFactor"]>(props.draft.payload.formFactors[0]);
@@ -161,6 +165,20 @@ export function SavedPageEditor(props: SavedPageEditorProps) {
     } catch { setActualPreview(null); setFeedback("This record preview is unavailable. Your design is kept and labelled samples remain available."); }
     finally { setOperation(null); }
   };
+  const compare = async () => {
+    if (busy || !sameIdentity || !selectedVersion || !props.callbacks.compare) return;
+    const captured = structuredClone(current.current.page), key = pageKey(captured), selected = selectedVersion,
+      expectedHead = current.current.head.definitionRevision, size = formFactor;
+    setOperation("compare"); setFeedback("");
+    try {
+      const result = await props.callbacks.compare({ versionId: selected, definitionRevision: expectedHead, formFactor: size });
+      if (current.current.identity !== identity || pageKey(current.current.page) !== key || current.current.head.definitionRevision !== expectedHead) return;
+      if (result.versionId !== selected || result.definitionRevision !== expectedHead || result.model.formFactor !== size) throw new Error("Changed comparison");
+      setDialog({ kind: "compare", label: result.label, previous: result.model,
+        current: createDesignPageDisplayModel(captured, props.catalog, size) });
+    } catch { setFeedback("This published design could not be compared. Your current changes are kept; refresh its saved versions and check your access."); }
+    finally { setOperation(null); }
+  };
   const recheck = () => { if (!busy && sameIdentity) { const epoch = ++reviewEpoch.current; setReviewing(true); setFeedback(""); void applyReview(head, epoch); } };
   const activeLabel = versions.find(version => version.id === activeVersionId)?.label ?? (activeVersionId ? "Published design" : "No published design yet");
   const newSection = { label: "New section", help: "", formFactors: page.formFactors, columns: { desktop: 2 as const, tablet: 2 as const, phone: 1 as const },
@@ -180,13 +198,19 @@ export function SavedPageEditor(props: SavedPageEditorProps) {
         <Button type="button" disabled={busy || !sameIdentity || (props.scope === "record" && !recordId)} onClick={preview}>{operation === "preview" ? "Loading preview…" : "Load actual preview"}</Button>
         {actualPreview && <Button type="button" variant="ghost" onClick={() => { previewEpoch.current++; setActualPreview(null); }}>Use samples</Button>}
         <select aria-label="Previous published design" className="max-w-48 rounded-xl border bg-white px-3 py-2" value={selectedVersion} disabled={busy || !versions.length} onChange={event => setSelectedVersion(event.target.value)}><option value="">Previous designs</option>{versions.map(version => <option key={version.id} value={version.id}>{version.label}{version.id === activeVersionId ? " · Live" : ""}</option>)}</select>
+        {props.callbacks.compare && <Button type="button" disabled={busy || !sameIdentity || !selectedVersion} onClick={compare}>{operation === "compare" ? "Loading comparison…" : "Compare designs"}</Button>}
         <Button type="button" disabled={busy || dirty || !sameIdentity || !selectedVersion || selectedVersion === activeVersionId} onClick={() => { const version = versions.find(version => version.id === selectedVersion); if (version) setDialog({ kind: "restore", version, definitionRevision: head.definitionRevision }); }}>Restore live design</Button>
       </div>
       {(!sameIdentity || feedback) && <p role="status" className="border-b bg-blue-50 px-5 py-3 text-sm text-blue-900">{!sameIdentity ? "This editor belongs to another draft. Reopen the selected business screen before saving." : feedback}</p>}
       <div className="min-h-0 flex-1 [&>main]:h-full"><StudioPageEditor {...editorProps} /></div>
     </div>
-    {dialog && <EditorDialog titleId={titleId} title={dialog.kind === "publish" ? "Make this design live?" : `Restore ${dialog.version.label}?`} busy={operation === "publish" || operation === "restore"} onClose={() => setDialog(null)}>
-      {dialog.kind === "publish" ? <>
+    {dialog && <EditorDialog titleId={titleId} wide={dialog.kind === "compare"} title={dialog.kind === "publish" ? "Make this design live?" : dialog.kind === "compare" ? "Compare your designs" : `Restore ${dialog.version.label}?`} busy={operation === "publish" || operation === "restore"} onClose={() => setDialog(null)}>
+      {dialog.kind === "compare" ? <>
+        <p className="mb-5 text-sm leading-6 text-[var(--color-ink-muted)]">Labelled samples show the layout changes. Your draft and live design are kept. Preview buttons are disabled.</p>
+        <div className="grid gap-6 lg:grid-cols-2"><section aria-label="Previous design preview" className="min-w-0"><h3 className="mb-3 font-semibold">{dialog.label}</h3><PageRenderer model={dialog.previous} interaction="design_only"/></section>
+          <section aria-label="Current draft preview" className="min-w-0"><h3 className="mb-3 font-semibold">Your current draft</h3><PageRenderer model={dialog.current} interaction="design_only"/></section></div>
+        <div className="mt-6 flex justify-end"><Button type="button" onClick={() => setDialog(null)}>Back to editing</Button></div>
+      </> : dialog.kind === "publish" ? <>
         <p className="text-sm leading-6 text-[var(--color-ink-muted)]">This publishes the reviewed saved design to {props.business.name}. Your team will see it on their business screens.</p>
         <h3 className="mt-5 font-semibold">Changes to review</h3><ul className="mt-2 list-disc space-y-2 pl-5 text-sm">{(dialog.review.changes?.length ? dialog.review.changes : [`${dialog.review.payload.sections.length} labelled sections with ${dialog.review.payload.sections.reduce((count, section) => count + section.components.length, 0)} items.`, `Available on ${dialog.review.payload.formFactors.join(", ")}.`]).map((change, index) => <li key={index}>{change}</li>)}</ul>
         {dialog.review.warnings.length > 0 && <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4"><h3 className="font-semibold text-amber-900">Before publishing</h3><ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-amber-900">{dialog.review.warnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul><label className="mt-4 flex items-start gap-2 text-sm"><input type="checkbox" checked={acknowledge} onChange={event => setAcknowledge(event.target.checked)} disabled={busy} />I have reviewed these notes.</label></div>}
@@ -201,11 +225,11 @@ function Canvas({ canvas, catalog, actual, onFormFactor, onAlternateSamples }: {
   const model = !canvas.designVariantId && actual?.formFactor === canvas.formFactor ? actual : createDesignPageDisplayModel(canvas.page, catalog, canvas.formFactor);
   return <PageRenderer model={model} interaction="design_only" selection={canvas.selection} onSelect={canvas.onSelect} />;
 }
-function EditorDialog({ titleId, title, busy, onClose, children }: { titleId: string; title: string; busy: boolean; onClose: () => void; children: ReactNode }) {
+function EditorDialog({ titleId, title, busy, onClose, children, wide = false }: { titleId: string; title: string; busy: boolean; onClose: () => void; children: ReactNode; wide?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => { const previous = document.activeElement; ref.current?.querySelector<HTMLElement>(":is(button,input):not(:disabled)")?.focus(); return () => { if (previous instanceof HTMLElement) previous.focus(); }; }, []);
   return <div className="fixed inset-0 z-[150] flex items-center justify-center bg-slate-950/40 p-4">
-    <div ref={ref} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} className="max-h-[90dvh] w-full max-w-xl overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl" onKeyDown={event => {
+    <div ref={ref} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} className={`max-h-[90dvh] w-full ${wide ? "max-w-7xl" : "max-w-xl"} overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl`} onKeyDown={event => {
       if (event.key === "Escape" && !busy) { event.preventDefault(); onClose(); }
       if (event.key !== "Tab") return;
       const focusable = [...(ref.current?.querySelectorAll<HTMLElement>(":is(button,input,select,a[href]):not(:disabled)") ?? [])];

@@ -89,12 +89,14 @@ export async function checkVisualRecordLayouts(base: string, page: Page, fixture
     const id = new URL(page.url()).pathname.split("/").at(-1)!, first = await draft(id);
     await page.getByRole("complementary", { name: "Selected item properties" }).getByLabel("Display name", { exact: true }).fill(name);
     await page.getByRole("button", { name: "Add Edit ticket", exact: true }).click();
+    await page.getByRole("button", { name: "Add Status at a glance", exact: true }).click();
     await expect(page.getByRole("region", { name: "Design canvas" }).getByRole("button", { name: "Update work", exact: true })).toHaveCount(0);
     await page.getByRole("button", { name: "Save draft", exact: true }).click();
     await expect.poll(async () => (await draft(id)).revision).toBe(first.revision + 1);
     const payload = pagePayloadSchema.parse((await draft(id)).payload);
     assert.equal(payload.sections[0].label, name);
     assert(payload.sections.flatMap(section => section.components).some(component => component.type === "surface" && component.surface.id === "tickets.ticket.progress_form"));
+    assert(payload.sections.flatMap(section => section.components).some(component => component.type === "facts" && component.factIds.includes("status")));
     await publishPage(); const published = await definition(id); assert(published.activeVersionId);
     return { id, name, versionId: published.activeVersionId };
   }
@@ -153,6 +155,7 @@ export async function checkVisualRecordLayouts(base: string, page: Page, fixture
     await expect(progress.locator(`input[name="workId"][value="${recordId}"]`)).toHaveCount(1);
     const actor = await fresh(), request = { mode: "record_default" as const, entityId: "tickets.ticket" as const, recordId, formFactor: "desktop" as const };
     const retained = await readRecordDefaultCustomerPage(actor, request); assert(retained); assert.equal(retained.versionId, specialised.versionId);
+    assert(retained.model.sections.flatMap(section => section.components).some(component => component.type === "facts" && component.cells.some(cell => cell.text === native.status)), "Published summary must show actual authorised native status.");
     // A newer active Page is independently published. Existing type still pins
     // its reviewed historical Page until the profile itself is normally changed.
     await page.goto(`${base}/design-studio/${specialised.id}`);

@@ -92,7 +92,8 @@ export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuth
     catalog.queries.push({ id: query.id, version: query.version, label,
       columns: query.columns.map(column => ({ id: column.id, label: column.label ?? friendly(column.id), ...(column.format ? { format: column.format } : {}) })) });
     if (query.purpose === "list" && query.columns.length) palette.push({ key: `query:${query.id}`, label, description: "Show the app's approved records in a table.",
-      component: { type: "queryList", label, query: ref(query), pageSize: Math.min(20, query.maxCardinality), columns: query.columns.slice(0, 6).map(column => column.id), formFactors: [...forms] } });
+      component: { type: "queryList", label, query: ref(query), pageSize: Math.min(20, query.maxCardinality), columns: query.columns.slice(0, 6).map(column => column.id), formFactors: [...forms] },
+      table: { columns: query.columns.map(column => ({ id: column.id, label: column.label ?? friendly(column.id) })), maxPageSize: Math.min(50, query.maxCardinality) } });
   }
   for (const field of fields) palette.push({ key: field.key, label: field.label, description: "Show this business detail.", component: {
     type: "fields", label: field.label, fields: [field.field], formFactors: [...forms] } });
@@ -109,14 +110,21 @@ export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuth
     palette.push({ key: `surface:${surface.id}`, label, description: "The app's complete authorised form, including additional fields.", component: {
       type: "surface", label, family: surface.family, surface: ref(surface), formFactors: [...surface.formFactors] } });
   }
-  const conditionFacts = approvals.facts.filter(fact => allowed(fact.capability) && readableQueries.has(`${fact.query.id}@${fact.query.version}`))
-    .flatMap(fact => {
+  const readableFacts: typeof approvals.facts = [];
+  for (const fact of approvals.facts) if (allowed(fact.capability) && readableQueries.has(`${fact.query.id}@${fact.query.version}`)
+    && await authorized(fact.contract)) readableFacts.push(fact);
+  for (const fact of readableFacts) {
+    const label = catalog.nativeFields.find(field => field.id === fact.id)?.label ?? friendly(fact.id);
+    catalog.facts.push({ id: fact.id, label });
+    palette.push({ key: `fact:${fact.id}`, label: `${label} at a glance`, description: "Show a read-only summary detail at a glance.", component: {
+      type: "facts", label, factIds: [fact.id], formFactors: [...forms] } });
+  }
+  const conditionFacts = readableFacts.flatMap(fact => {
       const declaration = declaredFacts.find(value => value.fieldId === fact.id);
       const label = catalog.nativeFields.find(field => field.id === fact.id)?.label ?? friendly(fact.id);
       const choices = declaration?.type === "enum" ? declaration.codes?.map(code => ({ value: code, label: friendly(code.toLowerCase()) }))
         : fact.valueType === "boolean" ? [{ value: true, label: "Yes" }, { value: false, label: "No" }] : undefined;
       if (!choices?.length) return [];
-      catalog.facts.push({ id: fact.id, label });
       return [{ id: fact.id, label, choices }];
     });
   return { fields, palette, catalog, scope, conditions: { variantsAllowed: approvals.variants, facts: conditionFacts }, approvalsChecksum: checksum(approvals) };

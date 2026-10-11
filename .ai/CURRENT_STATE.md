@@ -1,3 +1,37 @@
+## 12 October 2026 — Phase2 visual comparison and property controls IN PROGRESS
+
+Root checkpoint65ede12e built/strict/lint passed. Original pinned both-lock release
+19593 EXIT1 BEFORE activation after native whole-form/private/window/concurrency
+checks passed: actual bounded configured-search EXPLAIN chose another usable index
+on the tiny fixture. The exact chosen-index assertion was unsuitable for eligibility;
+source now checks actual PostgreSQL catalogue validity/readiness/key order/default
+operator classes while retaining the authorised bounded ANALYZE query, result and
+permission gates. Independent review agreed; central fingerprint catalogue SQL PASS.
+This is a corrected assertion, not an actual rerun PASS or performance guarantee.
+080 CONFIRMED APPLIED at2026-10-11 23:31:00.28027 UTC; required recovery233012 and
+fixture233203 retained. Last fresh livec385a2be/rollback5b6390c8 unchanged.
+
+Visual previous/current side-by-side sample comparison now implemented source using
+original sealed retained metadata/current compilation and inert shared renderer.
+18tests/2 PASS. Independently reviewed fact/table properties52783cbe integrated:
+friendly summary fields, table columns/order/page size with independent grants
+before labels. Combined index/catalogue/editor41tests/3 PASS. Actual comparison
+checker wired; fact/table runtime journey and current build/types/lint pending.
+No result caches/new dumps/worktrees/dependencies. FullPhase2 FAIL/incomplete.
+
+Integrated independently reviewed preview52b296d5/prepare-collect-seal a8a48963
+and Analytics compiler7c34c70b scoped deltas excluding donor memory. Friendly
+published-field /setup/[definitionId]/change save+preview UI is reachable, preserves
+input on conflict and labels complete scope versus bounded preview counts. Original
+visual checker now verifies persisted table properties/comparison/fact status and
+zero-record friendly preview without review writes. No actual run yet. Integrated
+147tests/8 PASS; lifecycle/UI25tests/2 PASS; production74423 EXIT0. First strict
+43088 caught DOM target narrowing/test mock tuple types; corrected strict85546 EXIT0.
+Post-build strict81285 EXIT0; final scopedlint54348 EXIT0. Next: final strict/diff/
+memory checkpoint, then original pinned release retry. Helpers own original migration lifecycle, native read-only Ticket component
+reuse and existing Analytics publication/readiness. No Phase3 engine work. Disabled
+reader readiness stays DEFERRED and does not pass a feature.
+
 ## 12 October 2026 — Phase2 native creation integration IN PROGRESS
 
 Reviewed b2c88e8e checkpoint production19413/strict35359/lint16498 passed; original

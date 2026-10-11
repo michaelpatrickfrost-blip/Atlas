@@ -38,7 +38,7 @@ Workstream 2E verification must include real selection/configuration, draft prev
 publication and resulting runtime, plus desktop/tablet/phone screenshots and checks
 for permissions, hidden queries, required fields and saved/unsaved state. A screenshot
 or preset selector alone is not a completed builder. Status: requirements recorded;
-visual builder NOT STARTED until 2B–2D dependencies pass their checkpoints.
+visual builder was NOT STARTED at that checkpoint; the 12 October source status below supersedes it.
 
 Michael also requires published designs to reach each business's live dashboards
 and screens, with configurable buttons. The editor must offer clear choices,
@@ -95,3 +95,25 @@ context through existing audited support/company access; never a client tenant I
 or a configuration-granted privilege. Customer Studio remains limited to its own
 business. Publication must affect only the selected business and its approved
 page/audience rules; verify another business and private data remain isolated.
+
+12 October source checkpoint: the standalone shared-renderer designer, original
+draft/review/live actions and Sales/Ticket presets are IMPLEMENTED. The fact-panel
+/table properties slice exposes only permission-filtered approved read-only facts
+and exact query columns/row bounds; labels, field ordering, instructions, buttons,
+preview devices and native Ticket form reuse remain intact. Saved table columns
+and order are preserved; unavailable saved choices remain explicit/read-only.
+These are source/local checks, not whole Phase 2 or live acceptance. Activity,
+documents, relationships, approvals/tasks, existing-stage display and embedded
+metric/chart families still require actual owner adapters. Reuse existing owning
+services and Analytics rendering; no new Process/Approval/Flow engine. Friendly
+type/capability condition choices and visual prior-design comparison remain
+bounded editor work. Root's original candidate/public visual gate owns runtime
+proof, including the new native record-layout journey.
+
+12 October root: previous/current designs render labelled inert side-by-side
+previews from original sealed versions; draft input/live pointers are preserved.
+The additional-field change link opens friendly settings and explicit choice
+matching with save and bounded before/after preview. It deliberately labels page
+counts and preview-only status. Complete reviewed migration controls and compatible
+live browser verification remain required before Phase2 completion. Shared business
+dashboard owner compiler exists, but no live shared dashboard claim.

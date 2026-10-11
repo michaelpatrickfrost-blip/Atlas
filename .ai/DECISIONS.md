@@ -2852,3 +2852,23 @@ INSERT plus same-transaction assignment and paired Audit. Old no-selector forms
 retain packet1/receipt1 byte contracts. Additive080 replaces the existing receipt
 guard and requires actual current-transaction INSERT evidence; no business backfill
 or new receipt table. Compatible current/rollback readers precede enablement.
+
+## 12 October 2026 — Search eligibility and visual comparison evidence
+
+A tiny-fixture EXPLAIN choosing a different usable index cannot establish that the
+expected configured scalar index is invalid. The acceptance gate now verifies the
+actual PostgreSQL index is valid/ready/live, ordinary complete B-tree, exact four
+ordered tenant/definition/generation/scalar keys, default operator classes and
+matching collations; the original authorised bounded ANALYZE query and native
+result/permission assertions stay. No synthetic forced-plan assertion or claim of
+production-scale performance. PostgreSQL18 primary guidance supports this distinction:
+https://www.postgresql.org/docs/18/indexes-examine.html and
+https://www.postgresql.org/docs/18/catalog-pg-index.html. Independent source review
+and actual central fingerprint catalogue query passed; full rerun remains required.
+
+Visual version comparison reconstructs the original sealed retained Page under
+fresh genuine authority and current owner compiler, then renders friendly labelled
+sample metadata beside the unsaved draft through the shared inert design renderer.
+It makes no native record query or activation, preserves unsaved input, and does not
+expose technical payload/hash differences. Current permissions remain independent
+of the retained seal. Actual original browser comparison proof remains pending.

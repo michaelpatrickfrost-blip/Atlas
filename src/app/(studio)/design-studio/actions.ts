@@ -14,6 +14,7 @@ import { readDraftPageInTransaction } from "@/core/studio/pages/runtime";
 import { screenLayouts } from "./layouts";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { comparePageVersionInTransaction } from "@/core/studio/authoring/page-comparison";
 
 const target = z.string().min(1).max(100).optional();
 const text = (form: FormData, name: string) => String(form.get(name) ?? "");
@@ -82,4 +83,9 @@ export async function chooseVisualScreenSample(business: string | undefined, pay
   const actor = await requireSession();
   assertCapability(actor, CAP.read);
   return withStudioAuthoringAuthority(actor, CAP.read, target.parse(business), authority => pagePreviewChoicesInTransaction(authority, payload));
+}
+export async function compareVisualScreen(business: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.read);
+  return withStudioAuthoringAuthority(actor, CAP.read, target.parse(business), authority => comparePageVersionInTransaction(authority, input));
 }

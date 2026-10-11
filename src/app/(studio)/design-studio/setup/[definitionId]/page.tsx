@@ -42,6 +42,7 @@ export default async function SetupEditor({ params, searchParams }: {
       <h1 className="mt-2 text-3xl font-semibold tracking-tight">{draft.name}</h1><p className="mt-3 text-sm text-slate-500">{draft.activeVersionId ? "Your live setup is in use. Changes below stay in the draft until you make them live." : "This draft is saved for your business. Review it before making it live."}</p>
     </header>
     <SetupDraftGuard key={`${draft.id}:${draft.revision}`} editor={<section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8"><h2 className="mb-5 text-xl font-semibold">Design the details</h2>
+        {field && draft.activeVersionId && <Link href={`/design-studio/setup/${draft.id}/change${suffix}`} className="mb-6 block rounded-2xl border border-blue-200 bg-blue-50 p-5 text-sm text-blue-900"><strong>Change settings and preview existing values</strong><span className="mt-2 block leading-6">Adjust the kind of detail, limits or choices using the reviewed field-change workflow.</span></Link>}
         {draft.presentationEditable ? <ActionForm key={draft.revision} action={saveBusinessSetup} label="Save draft">
           <SetupIdentity business={business} kind={draft.kind} id={draft.id} revision={draft.revision}/>
           {field && (initialFieldSettings ? <><input type="hidden" name="fieldSettings" value="on"/><AdditionalFieldSetup fieldTypes={catalogue.fieldTypes} referenceTargets={catalogue.referenceTargets} initial={initialFieldSettings}/></>

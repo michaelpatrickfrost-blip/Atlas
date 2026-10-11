@@ -134,3 +134,15 @@ UI remains. Source8.1/20.30 additive Sales/Products Analytics finite sources reu
 original providers,27 localcases PASS; shared view compiler/publisher/renderer
 integration remains. Production83068/strict78429/scopedlint92155 PASS. WholePhase2
 FAIL/incomplete; no later engines or family-tag completion claim.
+
+## 12 October — visual comparison and field-change checkpoint
+
+Source8/24 friendly authoring now includes approved fact-panel/table controls and
+side-by-side sealed previous-design/sample current-draft comparison. Original actual
+browser checker is extended, not yet passing those journeys. Source24 field-change
+metadata/preview52 adapter and original prepare/collect/seal a8 are integrated;
+reachable friendly target/save/bounded before-after UI source exists. Full control/
+recovery UI and production conversion guards remain required. Source6/8.1/20.30
+Analytics finite source+closed owner compiler are implemented; original publication/
+seal/readiness and genuine shared viewer integration remain open. Phase2 FAIL.
+080 actual migration applied in failed65ede candidate; no activation inferred.

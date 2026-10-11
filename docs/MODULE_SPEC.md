@@ -602,3 +602,17 @@ DocumentTemplate records. Original version CAS and native contract access remain
 selected-business Studio authorisation adds no business privilege. The published
 Page runtime caches only bounded sealed compiled metadata, with fresh owner/grants
 and actual queries each request. Source implementation is not live gate evidence.
+
+## Phase2 registered business view compiler — 12 October 2026
+
+A module may register a closed `viewSource` owner facet with a strict JSON content
+schema, exact approved metric/query dependencies, authoring capability, required
+modules and explicit cost/query bounds. Core dispatches through the registry in a
+genuine current Serializable authoring transaction and never imports the module.
+Prepared source approvals are deeply immutable before the pure owner compiler;
+returned content/requests/dependencies are revalidated and bounded. Native source
+rights remain independent of Studio permission. No source data is read or cached
+by compilation. Analytics `analytics.dashboard.view@1` is the first finite complete
+count-measure family. Original personal Analytics boards/providers remain intact.
+Compiler availability alone grants no publication/readiness: original immutable
+publisher plus compatible customer readers and actual gates are separate work.

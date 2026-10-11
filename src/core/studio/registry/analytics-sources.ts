@@ -9,29 +9,10 @@ import { reportWhere, selectedReportColumns } from "@/core/reports/filters";
 import { checksum, declarative, query } from "./contracts";
 import type { Context, Contribution } from "./types";
 
-const logicalId = z.string().regex(/^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/);
-const memberId = z.string().regex(/^[a-zA-Z][a-zA-Z0-9_]*$/);
-const reference = z.strictObject({ id: logicalId, version: z.number().int().positive() });
-const classification = z.enum(["public_internal", "confidential", "restricted"]);
-const modules = z.array(z.string().regex(/^[a-z][a-z0-9_]*$/)).min(1).max(8);
-const capabilities = z.array(logicalId).min(1).max(8);
-const policyCommon = { schemaVersion: z.literal(1), providerId: logicalId, query: reference,
-  classification, requiredCapabilities: capabilities, requiredModules: modules,
-  costClass: z.literal("high"), complete: z.literal(true) };
-/** Explicit metadata only; ordinary provider catalogues do not opt in implicitly. */
-export const registeredMetricSourceSchema = z.strictObject({ ...policyCommon, kind: z.literal("metric"),
-  unit: z.literal("count"), snapshot: z.boolean(), maxCardinality: z.number().int().min(1).max(50),
-  dimensions: z.array(z.strictObject({ id: memberId, labels: z.array(z.string().min(1).max(200)).min(1).max(50) })).min(1).max(8) });
-export const registeredReportColumnSchema = z.strictObject({ id: memberId, type: z.enum(["text", "enum", "date", "boolean", "money"]),
-  nullable: z.boolean(), classification, currencyKey: memberId.optional(), codes: z.array(z.string().min(1).max(100)).max(50).optional(),
-  filterPath: z.string().regex(/^[a-zA-Z][a-zA-Z0-9_]*(?:\.[a-zA-Z][a-zA-Z0-9_]*)*$/).optional(), searchable: z.boolean() });
-export const registeredReportSourceSchema = z.strictObject({ ...policyCommon, kind: z.literal("report"),
-  pagination: z.literal("page"), pageSize: z.literal(100), maxCardinality: z.literal(100),
-  dateField: memberId.nullable(), moneyRepresentation: z.literal("major_decimal_number_or_exact_text"),
-  columns: z.array(registeredReportColumnSchema).min(1).max(50) });
-export type RegisteredMetricSource = z.infer<typeof registeredMetricSourceSchema>;
-export type RegisteredReportSource = z.infer<typeof registeredReportSourceSchema>;
-export type RegisteredReportColumn = z.infer<typeof registeredReportColumnSchema>;
+import { registeredMetricSourceSchema, registeredReportSourceSchema, registeredMetricInputSchema,
+  type RegisteredMetricSource, type RegisteredReportSource, type RegisteredReportColumn } from "./analytics-source-contracts";
+export { registeredMetricSourceSchema, registeredReportSourceSchema, registeredReportColumnSchema, registeredMetricInputSchema } from "./analytics-source-contracts";
+export type { RegisteredMetricSource, RegisteredReportSource, RegisteredReportColumn } from "./analytics-source-contracts";
 const currentIdentityKeys = ["userId", "organisationId", "membershipId", "authVersion", "sessionVersion"] as const;
 function freezePolicy<T>(value: T): T {
   if (value && typeof value === "object") { Object.values(value).forEach(freezePolicy); Object.freeze(value); }
@@ -78,9 +59,7 @@ export function registeredMetricContributions(owner: string, metric: AnalyticsMe
     || (metric.breakdowns?.length ? policy.dimensions.some(dimension => !metric.breakdowns!.some(item => item.id === dimension.id && item.shape !== "trend"))
       : policy.dimensions.length !== 1 || policy.dimensions[0].id !== "default")) unavailable();
   const expectedMeaning = checksum(meaning), execute = metric.query;
-  const dimension = z.enum(policy.dimensions.map(item => item.id) as [string, ...string[]]);
-  const schema = z.strictObject({ period: policy.snapshot ? z.literal("all") : z.enum(["all", "30", "90", "365"]),
-    dimension: dimension.default(policy.dimensions[0].id) });
+  const schema = registeredMetricInputSchema(policy);
   const point = z.strictObject({ label: z.enum(policy.dimensions.flatMap(item => item.labels) as [string, ...string[]]), value: z.number().int().nonnegative().safe() });
   const output = z.array(point).max(policy.maxCardinality);
   const identity = { version: 1, capability: metric.capability, lifecycle: "active" as const, classification: policy.classification };

@@ -11,13 +11,14 @@ import { lockFieldEntitiesInTransaction } from "../fields/entity-lock";
 import { assertStudioRuntimeFeatureEnabled, studioRuntimeFeaturesForPayload } from "../runtime-features";
 import type { CompiledRecordProfile } from "../record-types/compiler";
 import type { CompiledPageDefinition } from "../pages/definition-compiler";
+import type { CompiledViewDefinition } from "../views/definition-compiler";
 import { bindPublishedProfile } from "../record-types/binding";
 import { inspectConfigurationGraph } from "../configuration/pins";
 import { pagePayloadSchema } from "../pages/schema";
 
 export type PublicationDraft = Prisma.StudioDraftGetPayload<{ include: { definition: true; baseVersion: { select: { version: true } } } }>;
 export type CompiledDefinition = Awaited<ReturnType<typeof compileDefinition>>;
-export type ReviewedCompiledDefinition = CompiledDefinition | Awaited<ReturnType<typeof compileConditionalCustomField>> | CompiledRecordProfile | CompiledPageDefinition;
+export type ReviewedCompiledDefinition = CompiledDefinition | Awaited<ReturnType<typeof compileConditionalCustomField>> | CompiledRecordProfile | CompiledPageDefinition | CompiledViewDefinition;
 type ReviewedFieldBinder = (tx: Prisma.TransactionClient, session: Session, definitionId: string, key: string, versionId: string, payload: VersionedFieldPayload) => Promise<void>;
 function conflict(): never { throw new Error("CONFLICT: another editor changed this definition. Reload and compare your draft before saving."); }
 

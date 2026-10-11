@@ -201,3 +201,63 @@ describe('pure layout operations preserve structure and variant references', () 
     expect(() => removePageNode(one, { kind: 'component', id: 'delivery_note' })).toThrow('at least one item');
   });
 });
+
+describe('approved fact panels and table properties', () => {
+  const query = { id: 'sales.order.page_lines', version: 1, schemaHash: 'e'.repeat(64), contractHash: 'f'.repeat(64) };
+  const factItems: PageEditorProps['palette'] = [
+    { key: 'urgent', label: 'Urgent', description: 'Read-only priority detail', component: { type: 'facts', factIds: ['urgent'], formFactors: forms } },
+    { key: 'score', label: 'Score', description: 'Read-only score', component: { type: 'facts', factIds: ['score'], formFactors: forms } },
+  ];
+  const tableItem: PageEditorProps['palette'][number] = { key: 'lines', label: 'Order lines', description: 'Approved related records', component: { type: 'queryList',
+    query, pageSize: 5, columns: ['reference', 'amount'], formFactors: forms }, table: {
+      columns: [{ id: 'reference', label: 'Reference' }, { id: 'amount', label: 'Amount' }, { id: 'priority', label: 'Priority' }], maxPageSize: 7,
+    } };
+  const designed = (): PagePayload => { const next = page(); next.sections[0].components.push(
+    { id: 'facts', type: 'facts', label: 'At a glance', factIds: ['urgent'], formFactors: forms },
+    { id: 'lines', type: 'queryList', label: 'Order lines', query, pageSize: 3, columns: ['amount', 'reference'], formFactors: forms }); return next; };
+  it('edits approved fact details/order without evaluating rule inputs', () => {
+    const view = mount({ page: designed(), palette: [...palette, ...factItems, tableItem] }); chooseCanvas('At a glance');
+    expect((screen.getByRole('button', { name: 'Remove Urgent from panel' }) as HTMLButtonElement).disabled).toBe(true);
+    change('Add a summary detail', 'score');
+    fireEvent.click(screen.getByRole('button', { name: 'Move Score up' }));
+    expect(view.value().sections[0].components.find(item => item.id === 'facts')).toMatchObject({ factIds: ['score', 'urgent'] });
+    fireEvent.click(screen.getByRole('button', { name: 'Remove Urgent from panel' }));
+    expect(view.value().sections[0].components.find(item => item.id === 'facts')).toMatchObject({ factIds: ['score'] });
+    change('Add a summary detail', 'unapproved');
+    expect(view.value().sections[0].components.find(item => item.id === 'facts')).toMatchObject({ factIds: ['score'] });
+    expect(view.container.textContent).not.toMatch(/schemaHash|sales\.order\.page_lines/);
+  });
+  it('preserves saved table column order and lets approved columns move, leave and return without changing its query', () => {
+    const view = mount({ page: designed(), palette: [...palette, ...factItems, tableItem] }); chooseCanvas('Order lines');
+    expect(view.value().sections[0].components.find(item => item.id === 'lines')).toMatchObject({ columns: ['amount', 'reference'], pageSize: 3 });
+    fireEvent.click(screen.getByRole('button', { name: 'Move Reference column up' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Remove Amount column' })); change('Add a column', 'priority');
+    expect(view.value().sections[0].components.find(item => item.id === 'lines')).toMatchObject({ query, columns: ['reference', 'priority'], pageSize: 3 });
+    change('Add a column', 'arbitrary');
+    expect(view.value().sections[0].components.find(item => item.id === 'lines')).toMatchObject({ columns: ['reference', 'priority'] });
+    expect(screen.getByText('Unsaved changes')).toBeTruthy();
+    expect((screen.getByRole('button', { name: 'Review & publish' }) as HTMLButtonElement).disabled).toBe(true);
+  });
+  it('bounds rows by this actual approved query and prevents removing the final column', () => {
+    const view = mount({ page: designed(), palette: [...palette, ...factItems, tableItem] }); chooseCanvas('Order lines');
+    expect(within(screen.getByLabelText('Rows per page')).getAllByRole('option')).toHaveLength(7);
+    change('Rows per page', '7'); change('Rows per page', '50');
+    expect(view.value().sections[0].components.find(item => item.id === 'lines')).toMatchObject({ pageSize: 7 });
+    fireEvent.click(screen.getByRole('button', { name: 'Remove Amount column' }));
+    expect((screen.getByRole('button', { name: 'Remove Reference column' }) as HTMLButtonElement).disabled).toBe(true);
+  });
+  it.each(['missing-source', 'unknown-column', 'over-bound'])('keeps unsupported saved table %s explicit/read-only without rewriting it', mode => {
+    const initial = designed(), table = initial.sections[0].components.find(item => item.id === 'lines'); if (!table || table.type !== 'queryList') throw new Error('Missing fixture');
+    if (mode === 'unknown-column') table.columns = ['retained_private_column'];
+    if (mode === 'over-bound') table.pageSize = 8;
+    const view = mount({ page: initial, palette: mode === 'missing-source' ? palette : [...palette, tableItem] }); chooseCanvas('Order lines');
+    expect(screen.getByText(/This table's saved choices are currently unavailable/)).toBeTruthy();
+    expect(screen.queryByLabelText('Rows per page')).toBeNull(); expect(screen.queryByLabelText('Add a column')).toBeNull(); expect(view.value()).toEqual(initial);
+  });
+  it('keeps a retained unavailable fact panel unchanged and offers no guessed choices', () => {
+    const initial = designed(), facts = initial.sections[0].components.find(item => item.id === 'facts'); if (!facts || facts.type !== 'facts') throw new Error('Missing fixture');
+    facts.factIds.push('unavailable'); const view = mount({ page: initial, palette: [...palette, ...factItems] }); chooseCanvas('At a glance');
+    expect(screen.getByText(/This panel includes a detail that is currently unavailable/)).toBeTruthy();
+    expect(screen.queryByLabelText('Add a summary detail')).toBeNull(); expect(view.value()).toEqual(initial);
+  });
+});

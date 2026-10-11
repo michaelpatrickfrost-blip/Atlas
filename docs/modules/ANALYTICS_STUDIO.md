@@ -169,3 +169,41 @@ owning approvals. Native existing catalogues remain available under their origin
 permissions. This checkpoint adds source contracts only; immutable business views,
 publication, customer dashboard selection and runtime compatibility enablement are
 separate workstreams in the original Studio publisher and existing renderer.
+
+## Studio business view compiler prerequisite — 12 October 2026
+
+The additive `analytics.dashboard.view@1` descriptor is a closed metadata compiler
+facet. Core accepts only the explicit schema-1 envelope with its exact registered
+source reference and owner content. Original personal Dashboard records, raw native
+board payloads and existing renderer/provider entry points retain their behaviour;
+they are not silently converted into published business configuration.
+
+The owner reuses the native dashboard/widget presentation schemas while removing
+personal record IDs/CAS and rejecting unknown/security/result data. It currently
+approves at most eight widgets from registered complete Sales order/quote and
+Products catalogue count measures. Only their finite approved breakdowns/categories
+are selectable; empty native category/breakdown controls retain their clear/default
+meaning. Record filters and export-based report aggregation remain explicitly
+unavailable in this family. Original personal data views remain available through
+the native app. The eight-query, high-cost budget is recorded in the owner contract.
+
+Compilation refreshes genuine current customer identity in the original Serializable
+transaction, requires current Analytics Read and Manage and independently checks all
+used source capabilities, enabled/entitled modules, support windows and immutable
+source/query schemas/hashes/policies. Unused sources require no grants. Exact source
+approvals are frozen before pure owner callbacks; compiled query inputs/references,
+widget IDs, unused approvals and cost are checked again without executing providers.
+The plan retains exact source/query dependencies and immutable per-widget query
+requests; no business values, record cache, arbitrary SQL, generic query endpoint,
+permission grant or second rendering/publication engine is introduced.
+
+Pure registered source schemas live in `registry/analytics-source-contracts.ts` to
+avoid importing executable providers into registry initialisation. Existing exports
+and source hashes remain stable. `ReviewedCompiledDefinition` has a type-only view
+member; public service kind allowlists, publisher and activation behavior remain
+unchanged. This checkpoint does not enable business GoLive or a customer reader.
+
+Next: integrate explicit view authoring into the ORIGINAL publisher/activation with
+stable owner-origin checks, real candidate/rollback reader-format readiness and
+current-viewer source permission enforcement through the existing Analytics renderer.
+Actual central/SQL/browser/public verification remains mandatory before GoLive.

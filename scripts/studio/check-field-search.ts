@@ -22,6 +22,7 @@ import { publishReviewedFieldMigration } from "../../src/core/studio/fields/migr
 import { startFieldMigrationExecution } from "../../src/core/studio/fields/migrations/execution-start";
 import { executeFieldMigrationBatch } from "../../src/core/studio/fields/migrations/execution-batch";
 import { cutoverReviewedFieldMigration } from "../../src/core/studio/fields/migrations/cutover";
+import { assertFieldSearchIndex, type FieldSearchIndexName } from "./field-search-index";
 
 const cap = { read: "tickets.field.search_read", written: "tickets.field.search_written", write: "tickets.field.search_write" };
 const projection = z.strictObject({ id: z.string(), revision: z.number().int().positive(), href: z.string(),
@@ -251,7 +252,7 @@ export async function checkFieldSearch(base: string, browser: Browser, existingS
     await denied(await readSession(), await request(answer, { operator: "gte", value: { type: "boolean", value: false } }), /FIELD_SEARCH_UNSUPPORTED/);
     // EXPLAIN probes below are bounded exact Test predicates, not forced claims
     // about the planner's chosen production plan. No business column is changed.
-    const explain = async (field: Field, predicate: Prisma.Sql, indexName: string) => {
+    const explain = async (field: Field, predicate: Prisma.Sql, indexName: FieldSearchIndexName) => {
       const definition = await db.studioDefinition.findFirstOrThrow({ where: { organisationId: a.id, id: field.definitionId }, include: { activeVersion: true } });
       assert(definition.activeVersion); const payload = customFieldPayloadSchema.parse(definition.activeVersion.payload);
       const slots = await db.studioFieldSlot.findMany({ where: { organisationId: a.id, definitionId: field.definitionId, generationId: payload.storageGeneration,
@@ -262,17 +263,22 @@ export async function checkFieldSearch(base: string, browser: Browser, existingS
       const actualPlan = await db.$queryRaw<unknown[]>(Prisma.sql`EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) SELECT v.* FROM studio_field_values v
         WHERE ${prefix} AND (${pairs}) AND ${predicate} LIMIT 50`);
       console.log(`Configured-search genuine bounded active-ID ${indexName} predicate plan (tiny fixture may choose SeqScan):`, JSON.stringify(actualPlan));
-      const rollback = new Error("Exact Test EXPLAIN local-settings rollback");
-      await assert.rejects(() => db.$transaction(async tx => {
-        await tx.$executeRaw`SET LOCAL enable_seqscan=off`;
-        // Remove only the already bounded active-ID shortlist to isolate the
-        // existing scalar index prefix. This is eligibility, not the actual plan.
-        const plans = await tx.$queryRaw<unknown[]>(Prisma.sql`EXPLAIN (FORMAT JSON) SELECT v.id FROM studio_field_values v
-          WHERE ${prefix} AND ${predicate} LIMIT 50`);
-        assert(JSON.stringify(plans).includes(indexName), `Existing ${indexName} must be eligible for its tenant/definition/generation scalar prefix.`);
-        console.log(`Configured-search ${indexName} ELIGIBILITY ONLY (local seqscan disabled; rolled back):`, JSON.stringify(plans));
-        throw rollback;
-      }), error => error === rollback);
+      // A cost-based plan can select another index with the same leading keys.
+      // Verify the intended actual index itself rather than claiming a forced
+      // plan on five Test records proves production performance.
+      const indexes = await db.$queryRaw<unknown[]>(Prisma.sql`SELECT c.relname::text AS name, am.amname::text AS method,
+        i.indisvalid AS valid, i.indisready AS ready, i.indislive AS live, NOT i.indcheckxmin AS immediate,
+        i.indexprs IS NULL AS plain, i.indpred IS NULL AS complete, i.indnkeyatts::integer AS "keyCount", i.indnatts::integer AS "attributeCount",
+        ARRAY(SELECT a.attname::text FROM unnest(i.indkey::smallint[]) WITH ORDINALITY k(attnum,position)
+          JOIN pg_attribute a ON a.attrelid=i.indrelid AND a.attnum=k.attnum ORDER BY k.position) AS columns,
+        (SELECT coalesce(bool_and(opc.opcdefault AND opc.opcmethod=c.relam AND opc.opcintype=a.atttypid
+          AND i.indcollation[(k.position-1)::integer]=a.attcollation),false)
+          FROM unnest(i.indkey::smallint[]) WITH ORDINALITY k(attnum,position)
+          JOIN pg_attribute a ON a.attrelid=i.indrelid AND a.attnum=k.attnum
+          JOIN pg_opclass opc ON opc.oid=i.indclass[(k.position-1)::integer]) AS "defaultKeys"
+        FROM pg_index i JOIN pg_class c ON c.oid=i.indexrelid JOIN pg_am am ON am.oid=c.relam
+        WHERE i.indrelid=to_regclass('studio_field_values') AND c.relname=${indexName}`);
+      console.log(`Configured-search ${indexName} actual usable catalogue (not a workload performance claim):`, JSON.stringify(assertFieldSearchIndex(indexes, indexName)));
     };
     const current = await db.studioDefinition.findFirstOrThrow({ where: { organisationId: a.id, id: integer.definitionId }, include: { activeVersion: true } }); assert(current.activeVersion);
     const fingerprint = encodeFieldValue(customFieldPayloadSchema.parse(current.activeVersion.payload).field, 7).fingerprint;
@@ -284,7 +290,7 @@ export async function checkFieldSearch(base: string, browser: Browser, existingS
     assert.equal(await db.serviceWorkItem.count({ where: scope }), 5); assert.deepEqual(browserErrors, []);
     assert.deepEqual(await db.user.findMany({ where: { id: { in: userIds } }, select: userSelect, orderBy: { id: "asc" } }), originalUsers);
     assert.deepEqual(await db.membership.findMany({ where: { userId: { in: userIds }, organisationId: { notIn: tenantIds } }, orderBy: { id: "asc" } }), originalMemberships);
-    console.log("PASS configured Ticket field search: genuine readonly native projections, zero/false/null + ranges/currency, empty continuation, actor/tenant/config cursor, native private/current+written/reference Read, module/stale session denial, reviewed current-generation/history and labelled actual/index-eligible SQL plans");
+    console.log("PASS configured Ticket field search: genuine readonly native projections, zero/false/null + ranges/currency, empty continuation, actor/tenant/config cursor, native private/current+written/reference Read, module/stale session denial, reviewed current-generation/history, labelled actual bounded SQL plans and exact usable typed-index catalogues; no production-scale performance claim");
   } finally {
     // Attempt every independent exact fixture cleanup even if one fails. The
     // original driver also owns registered-company recovery; never touch old

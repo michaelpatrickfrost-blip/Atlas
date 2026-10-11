@@ -65,3 +65,24 @@ export async function restoreBusinessSetup(form: FormData) {
     { definitionId: text(form, "definitionId"), versionId: text(form, "versionId"), definitionRevision: Number(text(form, "definitionRevision")) }));
   refresh();
 }
+
+export async function saveFieldChange(target: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.edit);
+  const selected = z.string().min(1).max(100).optional().parse(target);
+  const { saveAdditionalFieldEvolutionDraftInTransaction } = await import("@/core/studio/authoring/configuration");
+  const { readAdditionalFieldMigrationSetup } = await import("@/core/studio/authoring/field-migration-preview");
+  const { additionalFieldEvolutionDraftSchema } = await import("@/core/studio/authoring/field-evolution-contract");
+  const request = additionalFieldEvolutionDraftSchema.parse(input);
+  await withStudioAuthoringAuthority(actor, CAP.edit, selected, authority => saveAdditionalFieldEvolutionDraftInTransaction(authority, request));
+  refresh();
+  return readAdditionalFieldMigrationSetup(actor, selected, { definitionId: request.definitionId });
+}
+export async function previewFieldChange(target: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.publish);
+  const selected = z.string().min(1).max(100).optional().parse(target);
+  const { resolveAdditionalFieldMigrationContext, previewAdditionalFieldMigration } = await import("@/core/studio/authoring/field-migration-preview");
+  const context = await resolveAdditionalFieldMigrationContext(actor, selected);
+  return previewAdditionalFieldMigration(context.session, context.principal, input);
+}

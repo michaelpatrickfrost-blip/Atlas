@@ -442,3 +442,13 @@ and bounded graph are checked by metadata reader and additive SQL guards. Pure
 record-type resolver supports one base/one overlay with explicit replacement and
 additive requirements. This is not yet canonical type assignment, runtime-required
 coverage or published-page delivery; those2C/D integrations remain gated.
+
+### Studio business views — 12 October 2026
+
+Shared dashboards are immutable Studio view metadata owned by the registered
+Analytics compiler, with independently authorised exact metric/query contracts.
+They reuse the original Analytics editor/renderer and Studio publisher rather than
+cloning personal Dashboard rows or introducing another execution store. Current
+source compiler exists; publication/readiness/customer renderer remain workstreams
+and do not have a live completion claim. See modules/ANALYTICS_STUDIO.md and the
+Studio execution ledger for actual acceptance state.

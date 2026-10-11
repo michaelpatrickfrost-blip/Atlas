@@ -13,7 +13,7 @@ Atlas console without the business app/tool shell, and the modern Atlas UI.
 | 2E8 | Safely edit never-published all15 field settings and defaults; depends on friendly creation/CAS/compiler | configuration, field-setup-projection, AdditionalFieldSetup, setup editor/actions | None | IMPLEMENTED source; integrated183/5 scoped assertions PASS, actual friendly browser gate added but not run |
 | 2C3 | Genuine initial type choice and atomic original form receipt2; depends on native whole-form receipts/association070 | field-forms, native creator, receipt contract/guard, original profile checker/probe | Additive080 replaces original receipt guard; no new table/reset | IMPLEMENTED source1960; original packet1 compatibility;080 central rehearsal PASS/ROLLBACK; actual gated acceptance pending |
 | 2E9 | Reuse Analytics authoring/query/editor with genuine selected-business authority; shared immutable publication designed separately | Analytics services/editor, Core optional transaction metadata seams | Prerequisite none; publication proposal pending | IN PROGRESS; personal board is not business-wide publication |
-| 2E10 | Visual published field-change target, then authorised bounded review/control through existing migration engine | friendly evolution contracts/configuration, later preview/panel/actions | Existing generation/migration tables; no new DDL expected | IMPLEMENTED target818; original bounded preview adapter IN PROGRESS; existing conditional Test/readiness guards remain |
+| 2E10 | Visual published field-change target, then authorised bounded review/control through existing migration engine | friendly evolution contracts/configuration, later preview/panel/actions | Existing generation/migration tables; no new DDL expected | IMPLEMENTED target818, preview52 and prepare/collect/seal a8; reachable friendly target/save/preview UI IMPLEMENTED source; full controls/actual gates pending; conditional guards remain |
 
 Each checkpoint updates the permanent ledger; no Phase3 feature or duplicate engine.
 
@@ -361,7 +361,7 @@ registry/compiler facet, sealed compatibility probe and original Studio routes.
 Database: generic existing Studio metadata tables expected to suffice; verify all
 SQL guards before asserting no migration. Business values/query results never stored
 or cached. No scheduling/alert/Goal/Flow functionality added in Phase2.
-Status: stage1 IN PROGRESS; remaining stages NOT STARTED, no shared Go live claim.
+Status12 October: stage1 finite sources IMPLEMENTED65ede; stage2 closed owner compiler IMPLEMENTED7c34c70b; stage3 original publisher/seal/readiness IN PROGRESS in helper; stage4 actual shared editor/reader pending. No shared Go live claim.
 
 ## 12 October — coherent native/layout/evolution/source checkpoint
 
@@ -375,3 +375,26 @@ Registered Analytics finite-source stage1e2e2c61c integrated preserving SalesPag
 contributions; stage2 owner compiler facet in progress, no shared publication yet.
 Creation/evolution264/7, Analytics27/1, chooser/prefix42/3 localPASS. Production83068
 and scopedlint92155 EXIT0; first strict61444 test-only role option corrected; final strict78429 EXIT0. WholePhase2 FAIL/incomplete.
+
+## 12 October — visual properties/comparison/field-change source checkpoint
+
+2D6 purpose: friendly summary fields, table columns/order/row limits and side-by-side
+previous/current design comparison. Dependencies: current genuine Page catalogue,
+original retained version seal and shared inert renderer. Expected files: catalog,
+page-editor/saved-page-editor/page-comparison/actions, focused UI/seal tests and
+original visual acceptance checker. DB:none. Source checks passed; actual original
+browser property/comparison journey wired, not yet run. IMPLEMENTED.
+
+2E10 Stage2 metadata/preview52b296d5 independently reviewed and integrated. Root
+reachable /design-studio/setup/[definitionId]/change uses all supported controls,
+explicit previous-choice mapping, approved conversions and clear bounded before/
+after examples. Save is original draft CAS/Audit; preview does not persist a review.
+Stage3 a8a48963 delegates prepare/collect/seal to original services after fresh short
+metadata transactions; real original replay seam test confirms support retries.
+Full lifecycle UI, safe recovery/production readiness and actual gates still open.
+No Phase3 engines, alternate converter, publisher, query cache or ad-hoc dump.
+
+65ede12e original release19593 stopped before activation after native checks at an
+exact chosen-index assertion. Actual eligibility now checks genuine PG catalogue;
+bounded ANALYZE/result/permission checks stay.080 was APPLIED by that candidate.
+Fresh lastlivec385/rollback5b unchanged; disabled feature evidence remains DEFERRED.

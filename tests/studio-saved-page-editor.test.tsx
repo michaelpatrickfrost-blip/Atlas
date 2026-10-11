@@ -21,6 +21,11 @@ function fixture() {
     restore: vi.fn<SavedPageEditorProps['callbacks']['restore']>(async input => ({ revision: 1, definitionRevision: 4, payload: saved, warnings: [], activeVersionId: input.versionId })),
     chooseSample: vi.fn<SavedPageEditorProps['callbacks']['chooseSample']>(async () => [{ id: 'record_1', label: 'SO-0001' }]),
     preview: vi.fn<SavedPageEditorProps['callbacks']['preview']>(async input => { const model = createDesignPageDisplayModel(input.payload, catalog, input.formFactor); model.sections[0].components[0] = { id: 'guide', label: 'Actual order', help: '', type: 'instructions', text: 'Approved record content', tone: 'info' }; return model; }),
+    compare: vi.fn<NonNullable<SavedPageEditorProps['callbacks']['compare']>>(async input => {
+      const previous = page(); previous.sections[0].label = 'Previous order overview';
+      return { versionId: input.versionId, definitionRevision: input.definitionRevision, label: 'Version 1',
+        model: createDesignPageDisplayModel(previous, catalog, input.formFactor) };
+    }),
   };
   const props: SavedPageEditorProps = { business: { id: 'company', name: 'Example business', workspaceHref: '/atlas/studio/company' }, draft: { id: 'draft', name: 'Sales order', revision: 1, definitionRevision: 3, activeVersionId: 'current', versions: [{ id: 'old', label: 'Version 1' }, { id: 'current', label: 'Version 2' }], payload: saved, warnings: [] }, catalog, palette: [], fields: [], presets: [], scope: 'record', callbacks };
   return { props, callbacks, ...render(<SavedPageEditor {...props} />) };
@@ -31,6 +36,25 @@ const ready = async () => { await waitFor(() => expect(button('Review & publish'
 const openReview = async () => { await ready(); fireEvent.click(button('Review & publish')); return screen.findByRole('dialog'); };
 
 describe('saved business visual design adapter', () => {
+  it('compares previous and unsaved current designs visually without publishing or replacing the draft', async () => {
+    const f = fixture(); await ready(); edit('My unsaved layout');
+    fireEvent.change(screen.getByLabelText('Previous published design'), { target: { value: 'old' } });
+    fireEvent.click(button('Compare designs'));
+    const dialog = await screen.findByRole('dialog', { name: 'Compare your designs' });
+    expect(within(dialog).getByRole('region', { name: 'Previous design preview' }).textContent).toContain('Previous order overview');
+    expect(within(dialog).getByRole('region', { name: 'Current draft preview' }).textContent).toContain('My unsaved layout');
+    expect(f.callbacks.compare).toHaveBeenCalledWith({ versionId: 'old', definitionRevision: 3, formFactor: 'desktop' });
+    expect(f.callbacks.save).not.toHaveBeenCalled(); expect(f.callbacks.publish).not.toHaveBeenCalled(); expect(f.callbacks.restore).not.toHaveBeenCalled();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Back to editing' }));
+    expect((screen.getByLabelText('Display name') as HTMLInputElement).value).toBe('My unsaved layout');
+  });
+  it('keeps local changes when current access rejects an older design comparison', async () => {
+    const f = fixture(); await ready(); edit('Keep this local layout'); f.callbacks.compare.mockRejectedValueOnce(new Error('FORBIDDEN'));
+    fireEvent.change(screen.getByLabelText('Previous published design'), { target: { value: 'old' } }); fireEvent.click(button('Compare designs'));
+    await waitFor(() => expect(screen.getByRole('status').textContent).toContain('Your current changes are kept'));
+    expect(screen.queryByRole('dialog')).toBeNull(); expect((screen.getByLabelText('Display name') as HTMLInputElement).value).toBe('Keep this local layout');
+    expect(f.callbacks.restore).not.toHaveBeenCalled();
+  });
   it('reviews the exact saved draft and uses the shared labelled design canvas without business reads', async () => {
     const f = fixture(); await ready();
     expect(f.callbacks.review).toHaveBeenCalledWith({ revision: 1 });

@@ -14,13 +14,13 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
-2C3 initial business type creation/receipt2 — IMPLEMENTED source; additive080
-rehearsal PASS/ROLLBACK, source264/7 PASS, actual bridge/live pending.
-2D5 exact retained default Page and chooser pagination — IMPLEMENTED source.
-2E10 published-field target draft — IMPLEMENTED source, original preview adapter
-IN PROGRESS.2E9 Analytics registered finite sources — IMPLEMENTED source27/1 PASS;
-owner compiler facet IN PROGRESS. Actual visual native checkeraf178218 integrated.
-Next editorial fact/list controls proceed in existing helper. No Phase3.
+2D6 visual comparison/fact/table properties — IMPLEMENTED source;18/2 and41/3
+focused tests PASS, actual original checker pending.2E10 published-field evolution
+preview52b296d5 + prepare/collect/seal a8a48963 IMPLEMENTED source; friendly reachable
+target/save/preview UI IMPLEMENTED; full lifecycle UI/actual pending.2E9 Analytics
+owner compiler7c34c70b IMPLEMENTED; original publisher/readiness IN PROGRESS.
+2C3 initial creation/receipt2 additive080 APPLIED; actual compatible reader gates
+pending. Helpers also own native read-only Ticket component reuse. No Phase3.
 
 # Overall Status
 
@@ -97,24 +97,21 @@ record-profile checker and focused tests. No unrelated source removed.
 
 # Database / Prisma Changes
 
-12 October additive080 original Ticket receipt function guard IMPLEMENTED source,
-dependent on070. Original both-lock central BEGIN/CREATE FUNCTION/ROLLBACK rehearsal
-PASS using existing valid231358 recovery backup. Guard hash43fe3efb04615d22d5ecc6732556be3a0bc02542bb358309667c890258950524
-before and after identical; rehearsal candidate hashd4314f9a92c56eaf7ea22d92bd1661fe32f9c14abc06c50cecadb38abc246fb7.
-No retained schema/data changes or extra dump.080 NOT APPLIED; actual receipt2 SQL
-and native behaviour still require original candidate/public acceptance.
-Preserves receipt1, validates receipt2 actual native+assignment INSERT/current head/
-field origins/paired Audit and strict JSON shapes; no new table/model/backfill.
-060 permanent profile binding and070 append-only association APPLIED; tenant FKs,
-immutable lineage/cohort/CAS/Audit guards preserved. Other module changes untouched.
+Additive080 APPLIED by original65ede12e candidate at2026-10-11 23:31:00.28027 UTC,
+after both-lock recovery/rehearsal. Original receipt guard validates receipt2 genuine
+native+assignment INSERT/current head/field origins/paired Audit and JSON shapes;
+receipt1 retained. No new table/model/backfill. Rehearsal restored exact guard
+hash43fe3efb04615d22d5ecc6732556be3a0bc02542bb358309667c890258950524;
+rehearsal hashd4314f9a92c56eaf7ea22d92bd1661fe32f9c14abc06c50cecadb38abc246fb7.
+060/070 APPLIED. Other module migrations untouched. Actual receipt2 HTTP/browser
+requires compatible readers; no business reset, extra dump or local database.
 
 # Migrations Applied
 
-030 receipts/040 defaults/050 dependency edges,060 permanent profile bindings and
-070 append-only associations CONFIRMED APPLIED by fresh central Prisma history
-read on11 October.060 finished21:30:49 UTC;070 finished22:34:20 UTC during earlier
-candidate builds. No destructive reset/rollback. Other concurrent module migrations
-remain untouched. No local business database or diagnostic dump created.
+030/040/050/060/070 and080 CONFIRMED APPLIED by central Prisma history.
+06021:30:49 UTC/07022:34:20 UTC11 October;08023:31:00.28027 UTC11 October.
+Required recovery233012/fixture233203 preserved; no destructive rollback/reset.
+Other concurrent module migrations untouched.
 
 # Tests Added
 
@@ -153,16 +150,19 @@ responsive and candidate/public verification still pending.
 
 # Test Results
 
-Current checkpoint: creation/evolution264/7 PASS; Analytics registered sources27/1
-PASS; chooser/visual gate-prefix42/3 PASS. Production83068 EXIT0, scopedlint92155
-EXIT0. First strict61444 found test-only unsupported exact role option, corrected; final
-strict78429 EXIT0. Source checks do not establish actual central
-receipt2/default/private/browser behaviour.080 rehearsal PASS/ROLLBACK only.
-Originalb2 release93673 EXIT1 BEFORE activation: native whole-form/private/window/
-concurrency checks PASS; configured field-search exact Receiving team label timed
-out. Root explicitly labels both native selectors, original denial/grants/gates
-unchanged; actual rerun pending. Page/profile/default readiness DEFERRED.
-Fresh12 October livec385a2be/rollback5b6390c8 unchanged,145GiB root/1.5GiB tmpfree.
+65ede12e production83068/strict78429/scopedlint92155 EXIT0;264/7 creation-evolution,
+27/1 Analytics sources and42/3 chooser/checker source suites PASS.
+Original release19593 EXIT1 BEFORE activation after native whole-form/private/
+window/concurrency checks PASS. Actual search plan chose usable instant index;
+exact fingerprint index choice assertion failed on small fixture. Corrected source
+retains actual authorised bounded ANALYZE/result/permission gates and checks actual
+catalogue validity/readiness/key order/default keys. Central fingerprint catalogue
+SQL PASS; original actual acceptance rerun pending. Page/profile/default/type
+readiness DEFERRED against old livec385; DEFERRED never means feature PASS.
+Current uncommitted visual comparison18/2 and index/facts/table41/3 source tests PASS;
+original actual comparison/table/fact/zero-record preview wired, not run.
+Integrated147/8 and lifecycle/UI25/2 PASS. Production74423/strict85546/final lint54348
+EXIT0; post-build strict81285 EXIT0. First types DOM/mock tuple issues corrected.
 
 # Architecture Decisions
 
@@ -201,17 +201,17 @@ Later phases remain architectural context only; no complete visual designer clai
 
 # Exact Next Action
 
-Commit reviewed initial type/receipt2, customer chooser pagination, published-field
-target and Analytics-source checkpoint, then run original pinned Studio bridge.
-Production83068/strict78429/scopedlint92155 EXIT0; current scoped tests passed.
-080 both-lock central rehearsal PASS/ROLLBACK; original deployment applies it only
-after additive compatibility/recovery checks. b2 release93673 EXIT1 before activation
-at exact Receiving team label, now corrected in source; actual search rerun remains.
-Fresh livec385/rollback5b unchanged. While original acceptance runs, continue helper
-published-field preview, approved fact/list visual controls and Analytics owner
-compiler facet without advancing pinned root tip. After bridge, compatible actual
-Page/profile/default/type and public visual journeys; DEFERRED cannot PASS a feature.
-Whole Phase2 FAIL/incomplete, no Phase3.
+Final current diff/memory checkpoint, then commit
+visual comparison/facts/table/field target-preview and reviewed migration/compiler
+source.147/8 integration and25/2 lifecycle/UI suites PASS; production74423 EXIT0;
+strict85546/final lint54348 EXIT0. Original properties/comparison/friendly preview
+checker wired, not run. Then original pinned both-lock bridge retry with corrected
+actual catalogue gate.080 APPLIED;19593 ended preactivation, root may advance.
+Keep new pinned tip fixed through acceptance. After accepted bridge, actual compatible
+Page/profile/default/type and customer visual journeys; DEFERRED never PASS.
+Helpers continue original lifecycle/recovery, native Ticket read-only surface
+compatibility and Analytics publisher/readiness. WholePhase2 FAIL; no Phase3 or
+extra source/dependency copies/ad-hoc dumps.
 
 # Historical checkpoint evidence
 

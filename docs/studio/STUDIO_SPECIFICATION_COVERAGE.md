@@ -78,18 +78,16 @@ STUDIO_VISUAL_BUILDER_REQUIREMENTS.md and are still unfinished Phase 2 work.
 
 ## Exact next checkpoint
 
-Conditional prepare/collect/seal/publication and normal start/batch/representation
-are VERIFIED live b34ce50: candidatekT6FVM/publicqTWEdH BOTH ALL COMBINED PASS,
-original88202 exit0, exact health/build-buffer cleanup confirmed. Actual failed-prefix
-recovery, target/outcome/progress/Audit atomicity, own+1/null/zero values, READY/replays
-and cancellation retained history passed both stages; legacy/modules compatible.
-E3e1 explicit closed2 pure cutover/settlement receipt helpers and11newcases integrated:
-36tests/3suites PASS, source helpers strictTS/scopedlint and branch test types PASS,
-independent review no blockers. Actual conditional activation is still gated.
-Next integrate e3e2 actual target-active+2/CUTOVER/READY metadata, row/condition/typed
-outcome and bounded review; e3e3 different current settler/history coverage; e3e4
-normal services/actual central proof; native write windows. Then remaining2B fields,
-2C record types,2D pages,2E visual authoring/runtime and2F full phase gate.
+Conditional cutover/settlement passed original candidate/public gates on live1f4dc79;
+native write integration and ordinary required activation correction are locally
+verified at84f64da8. The original release failed safely before activation at an old
+metadata-only required-field storage fixture; live1f4/rollbackb34 unchanged. Repair
+that fixture without weakening production policy, integrate the two reviewed-but-
+unpublished publication races, then retry original central candidate/public gates.
+Actual native enforcement, whole-window rollback and concurrency remain unverified
+until those gates execute successfully. Next implement the typed native form packet
+and shared controls, then remaining2B aliases/defaults/search,2C record types,2D pages,
+2E visual authoring/runtime and2F complete Phase2 gate. No Phase3 work.
 Use this matrix and original relevant sections at each checkpoint. No silent omission,
 VERIFIED from a file or moving a requirement to a later phase to obtain PASS.
 

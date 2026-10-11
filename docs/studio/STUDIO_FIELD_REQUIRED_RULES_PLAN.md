@@ -1,6 +1,12 @@
 ## 11 October — d4e scoped correction and actual acceptance plan agreed
 
-Next dependent d4f remains NOT STARTED until d4e actual gates: reuse native RequestForm/
+Next dependent d4f runtime/discovery/forms remain NOT STARTED until d4e actual gates.
+Michael authorises parallel work within the active phase: isolated pure closed
+transport-contract preparation is now IN PROGRESS while the original central gate
+runs. It adds no caller, business read/write or customer enablement; root integration
+and final manifest/idempotency design wait for the actual gate. Expected files are
+fields/form-packet.ts and its meaningful malformed/bounds/zero/false/null tests.
+Reuse native RequestForm/
 work-detail ActionForm/service-fields controls for typed fields, then reuse that same
 renderer in visual previews. Normal createWork currently inserts via native receipt,
 not live initial-field callback; updateWork currently stages native final state first.

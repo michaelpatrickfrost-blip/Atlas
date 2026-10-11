@@ -1,3 +1,45 @@
+## 11 October — native release84f64da FAILED safely before activation
+
+Clean reviewed checkpoint84f64da8 created after local57/4/final types/lint/build/
+independent source review. Original pinned deploy started: branchcodex/studio-phase2,
+exact84f64da8, acceptance=studio; local exec75132, private local log
+/tmp/atlas-studio-native-release.txt. Original remote-tip/ancestry/recovery/schema/
+immutable build and candidate/public combined acceptance/rollback locks preserved.
+Exec75132 exited1. Candidate evidence /tmp/atlas-studio-candidate-tfR6dK;
+required original recovery backups UTC140646/140815 retained. Dashboard and Ticket
+owner contracts passed; old field-storage fixture failed the new genuine-principal
+required-activation guard before native/window/concurrency gates. Live1f4dc79 and
+rollbackb34ce50 unchanged; original Test companies suspended/history retained.
+No extra ad-hoc dumps or local DB; no new SQL gate/live activation PASS claimed.
+Storage correction and reviewed-publication races are now implemented below.
+Next save this coherent six-file checkpoint, then retry the original pinned studio
+pipeline; preserve live1f4/rollbackb34, original recovery gates and history.
+Full Phase2 gate remainsFAIL incomplete; no customer packet or Phase3 yet.
+
+Storage fixture correction IMPLEMENTED: scripts/studio/check-field-storage.ts retains
+required:true and every raw SQL guard/history/retirement check. Exact guarded closed
+one-Ticket cohort and private queue; metadata-only denial leaves the full definition
+and activation Audit unchanged. Correct decimal/money codec fingerprints; genuine
+activation after valid coverage through a distinct synthetic non-admin membership
+(publish/read/manage plus default self-profile), exact queue access. Nested finally
+revokes membership and user authority; original QA affiliation untouched. Independent
+read-only review found the default self-profile expectation omission, corrected.
+Standalone types27041 and scoped lint66309 exit0, diffcheck clean. No SQL/runtime
+proof yet; no production code/DDL changes in this correction. Integrated ONLY89691f3
+checker delta against98ad339: actual unpublished closed2 review-publication versus
+native phantom or unrelated-field existing extension drift, no PUBLISHED freeze
+before race. Immutable source/review/history, precise native/typed/Audit effects,
+permitted SSI outcomes, fresh stale-review/freeze consequence and normal cancellation.
+Independent source review caught the native owner's exact MIGRATION_COHORT_CHANGED
+message (not mapped to REVIEW_CHANGED), now accepted only for the native case.
+Root standalone types13889/scoped lint46800 exit0 before that narrow message fix;
+final standalone types92919/scoped lint75951 exit0 afterward, final diffcheck clean.
+No new SQL PASS. Production unchanged from locally built84f64da8; original immutable
+retry will build exact new checkpoint. Original pipeline retry is next.
+Parallel d4f pure closed transport preparation begins in an isolated worktree only;
+no runtime/discovery/forms/enablement or root integration before actual d4e PASS.
+No later-phase work; user authorised parallel active-phase pieces that link.
+
 ## 11 October — d4e local checkpoint verified; central gate next
 
 Integrated correction5b7d136, native enforcement checker5d82090, concurrency source/

@@ -14,6 +14,35 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
+Original pinned84f64da8 release FAILED before activation (exec75132 exit1,
+/tmp/atlas-studio-native-release.txt; candidate /tmp/atlas-studio-candidate-tfR6dK).
+Dashboard/Ticket owner checks passed; old privileged storage fixture hit the new
+genuine-principal required-activation guard. Native/window/concurrency gates were
+not reached. Live1f4/rollbackb34 unchanged; original recovery backups UTC140646/
+140815, locks and Test-company suspension/history preserved. Repair this fixture
+and add reviewed-publication races before a new original-pipeline checkpoint.
+
+Storage fixture correction IMPLEMENTED (not VERIFIED centrally): exact one closed
+Test Ticket/queue; metadata-context denial leaves definition/revision/activation
+Audit unchanged; valid fingerprints use the codec. Required activation runs only
+after complete coverage through a distinct genuine narrow synthetic business
+Session. Cosmetic/rollback/retired checks retain genuine authority; SQL required/null/
+type/precision/unique/history checks retained. Nested finally revokes membership/user,
+original QA affiliation unchanged. Root standalone types27041/scoped lint66309 exit0;
+independent read-only review correction applied. No production/Prisma changes.
+
+Reviewed-publication checker89691f3 integrated ONLY against98ad339: no initial open
+window, genuine compile/prepare/collect/seal and actual same-key two-waiter barrier;
+closed2 publication versus canonical native phantom/other-field existing extension
+revision drift, precise effects and immutable review/source, fresh stale review or
+winning publication freeze, normal cancellation. Review corrected the native owner's
+exact MIGRATION_COHORT_CHANGED expectation; no production guard relaxation. Source
+final standalone types92919/scoped lint75951 exit0 after message-only correction;
+final diffcheck clean. Production unchanged from local build84f64da8; exact retry
+will run the original immutable build and central gates. Actual SQL still pending.
+Parallel d4f pure transport preparation is IN PROGRESS in an isolated worktree;
+runtime/discovery/forms/customer enablement and integration await actual d4e PASS.
+
 Phase 2 2B d4e actual atomic/concurrency acceptance — IN PROGRESS. Ordinary first
 required activation gap corrected locally via5b7d136 (57/4 contributor focused checks,
 strict/scoped lint PASS; no actual SQL yet), integrated with root57/4, final standalone
@@ -230,8 +259,16 @@ remain architectural context only; no complete visual designer claim.
 
 Native hook local checks/source/diff/document reconciliation complete at05f63a1.
 Correction5b7d136/native checker5d82090/concurrency98ad339/root native windows are
-integrated, root57/4/final strict/types/lint/build/source-diff review PASS. Create
-clean coherent checkpoint then run original pinned candidate/public pipeline for actual
+integrated, root57/4/final strict/types/lint/build/source-diff review PASS. Clean
+checkpoint84f64da8 original pinned release exited1 safely before activation. Repair
+check-field-storage.ts: metadata-context activation denial must leave pointer,
+revision and Audit unchanged; valid storage fingerprints use the codec; activate
+after the exact one-Ticket cohort has a valid value using a distinct narrow genuine
+business Session, with guaranteed membership/user revocation. Integrate the reviewed-
+but-unpublished publication-v-native-create and publication-v-other-field-save races.
+Final standalone types92919/scoped lint75951/diffcheck passed. Save the coherent
+six-file checkpoint, then retry the original pinned studio pipeline on exact newHEAD.
+Require original candidate/public pipeline for actual
 atomic/window/Audit/outbox rollback +multi-field initial saves and first-publication/
 no-binding/maxFields/native concurrency proof using existing exact Test fixtures and
 required recovery evidence. Connect typed form packets/conditional writer only after

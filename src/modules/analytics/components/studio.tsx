@@ -26,6 +26,10 @@ import {
   Undo2,
   Redo2,
   X,
+  Palette,
+  SlidersHorizontal,
+  Maximize2,
+  Table2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AnalyticsResult } from "@/core/analytics/types";
@@ -52,6 +56,12 @@ import { GoalCompare } from "@/modules/kpis/components/goal-compare";
 import type { GoalMarker } from "@/modules/kpis/services/workspace";
 import { TileChart, MiniVisual, palettes, visualOptions } from "./charts";
 import styles from "./studio.module.css";
+import { ChartExplorer, DashboardIllustration } from "./explorer";
+import {
+  applyDashboardLook,
+  arrangeDashboard,
+  dashboardLooks,
+} from "../appearance";
 export type SavedBoard = {
   id: string;
   name: string;
@@ -63,6 +73,7 @@ export type SavedBoard = {
 };
 type BoardState = {
   name: string;
+  period: string;
   widgets: StudioWidget[];
   refreshSeconds: number;
   filters: BoardFilters;
@@ -103,6 +114,7 @@ export function Studio({
     template = boardTemplates.find((t) => t.id === templateId);
   const initial: BoardState = {
     name: selected?.name ?? template?.name ?? "Untitled dashboard",
+    period: initialPeriod,
     widgets:
       selected?.widgets ??
       (template
@@ -128,11 +140,18 @@ export function Studio({
     [libraryKind, setLibraryKind] = useState<"measures" | "records">(
       "measures",
     ),
+    [inspectorTab, setInspectorTab] = useState<"data" | "design" | "focus">(
+      "data",
+    ),
+    [filterOpen, setFilterOpen] = useState(false),
+    [exploring, setExploring] = useState<string | null>(null),
+    [exploration, setExploration] = useState<
+      Record<string, { key: string; category: string; table: boolean }>
+    >({}),
     [search, setSearch] = useState(""),
     [subject, setSubject] = useState("All apps"),
     [message, setMessage] = useState(""),
     [dirty, setDirty] = useState(false),
-    [period, setPeriod] = useState(initialPeriod),
     [history, setHistory] = useState<BoardState[]>([]),
     [future, setFuture] = useState<BoardState[]>([]),
     [pending, startTransition] = useTransition(),
@@ -143,6 +162,7 @@ export function Studio({
     >({}),
     [dataLoading, setDataLoading] = useState(false);
   const [loadedKey, setLoadedKey] = useState("");
+  const period = board.period;
   const { metrics, updated, refreshError, refreshing } = useLiveMetrics(
     initialMetrics,
     period,
@@ -150,23 +170,23 @@ export function Studio({
     sample,
     tick,
   );
-  const liveGoals = useLiveGoals(goals, board.refreshSeconds, sample || board.refreshSeconds<=0),
+  const liveGoals = useLiveGoals(
+      goals,
+      board.refreshSeconds,
+      sample || board.refreshSeconds <= 0,
+    ),
     active = board.widgets.find((w) => w.id === focused),
-    activeMetric = active?.data
-      ? data[active.id]
-      : metrics.find((m) => m.id === active?.metricId),
     base = sample ? "/analytics-preview" : "/analytics";
   const queryKey = JSON.stringify({
     widgets: board.widgets.map((w) => ({
       id: w.id,
       metricId: w.metricId,
-      visual: w.visual,
-      wide: w.wide,
       data: w.data,
       breakdown: w.breakdown,
     })),
     filters: board.filters,
   });
+  const activeMetric = active ? resolve(active) : undefined;
   useEffect(() => {
     if (!dirty) return;
     const guard = (e: BeforeUnloadEvent) => {
@@ -242,7 +262,14 @@ export function Studio({
     });
   }
   function patchData(p: Partial<NonNullable<StudioWidget["data"]>>) {
-    if (active?.data) patch(active.id, { data: { ...active.data, ...p } });
+    if (active?.data)
+      patch(active.id, {
+        data: { ...active.data, ...p },
+        ...(p.group !== undefined ? { category: "", categories: [] } : {}),
+        ...(p.measure !== undefined || p.aggregation !== undefined
+          ? { target: undefined }
+          : {}),
+      });
   }
   function undo() {
     const prev = history.at(-1);
@@ -287,6 +314,7 @@ export function Studio({
     };
     change({ ...board, widgets: [...board.widgets, w] });
     setFocused(w.id);
+    setInspectorTab("data");
     setEditing(true);
     setLibrary(false);
   }
@@ -395,16 +423,16 @@ export function Studio({
     return (
       <div className={`${styles.studio} space-y-6 pb-8`}>
         <section className={styles.hero}>
-          <div className="relative z-10 max-w-2xl">
-            <p className={styles.eyebrow}>YOUR WORKSPACE · {company}</p>
+          <div className={styles.heroCopy}>
+            <p className={styles.eyebrow}>A FRESH PERSPECTIVE · {company}</p>
             <h1 className="mt-3 text-4xl font-semibold tracking-[-.04em] sm:text-5xl">
               Your business.
               <br />
               Your perspective.
             </h1>
             <p className="mt-4 max-w-lg text-sm leading-6 text-slate-500">
-              Build dashboards around what matters to you. Bring live data
-              together, explore the details and make every view your own.
+              See the signals. Find the story. Bring your live business data
+              into a space that feels unmistakably yours.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
               {canManage && (
@@ -425,12 +453,7 @@ export function Studio({
               </Link>
             </div>
           </div>
-          <img
-            src="/brand/atlas-mark.png"
-            alt=""
-            aria-hidden="true"
-            className={styles.heroMark}
-          />
+          <DashboardIllustration />
         </section>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -515,10 +538,16 @@ export function Studio({
               Start with a little inspiration
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              {boardTemplates.map((t) => (
+              {boardTemplates.map((t, templateIndex) => (
                 <button
                   key={t.id}
                   className={styles.template}
+                  style={
+                    {
+                      "--preview-accent":
+                        palettes[colours[templateIndex % colours.length]][0],
+                    } as CSSProperties
+                  }
                   onClick={() =>
                     sample
                       ? (setBoard({
@@ -534,7 +563,7 @@ export function Studio({
                       : go(`new=1&template=${t.id}&period=${period}`)
                   }
                 >
-                  <div className="mb-4 flex gap-2 text-blue-600">
+                  <div className={styles.templatePreview}>
                     {t.picks.slice(0, 3).map((w, i) => (
                       <MiniVisual key={i} type={w.visual} />
                     ))}
@@ -630,13 +659,21 @@ export function Studio({
           )}
         </div>
       </header>
-      <div className={styles.filters}>
-        <label>
+      <div className={styles.controlShelf}>
+        <div className={styles.perspectiveLabel}>
+          <ChartNoAxesCombined size={17} />
+          <span>
+            {editing ? "Design your perspective" : "Explore your perspective"}
+          </span>
+        </div>
+        <label className={styles.periodControl}>
           Measure period
           <select
             aria-label="Measure period"
             value={period}
-            onChange={(e) => setPeriod(e.target.value)}
+            onChange={(e) => {
+              change({ ...board, period: e.target.value });
+            }}
           >
             {[
               ["30", "Last 30 days"],
@@ -650,65 +687,84 @@ export function Studio({
             ))}
           </select>
         </label>
-        <label>
-          Records from
-          <input
-            aria-label="Records from"
-            type="date"
-            value={board.filters.from}
-            onChange={(e) =>
-              change({
-                ...board,
-                filters: { ...board.filters, from: e.target.value },
-              })
-            }
-          />
-        </label>
-        <label>
-          Records to
-          <input
-            aria-label="Records to"
-            type="date"
-            value={board.filters.to}
-            onChange={(e) =>
-              change({
-                ...board,
-                filters: { ...board.filters, to: e.target.value },
-              })
-            }
-          />
-        </label>
-        <label className="flex-1">
-          Record search
-          <input
-            aria-label="Record search"
-            placeholder="Customer, reference, product…"
-            value={board.filters.search}
-            maxLength={200}
-            onChange={(e) =>
-              change({
-                ...board,
-                filters: { ...board.filters, search: e.target.value },
-              })
-            }
-          />
-        </label>
-        <Button onClick={() => change({ ...board, filters: emptyFilters })}>
-          Reset
-        </Button>
-        <p className="w-full text-[11px] text-slate-400">
-          Date ranges and search apply to supporting record datasets. Curated
-          measures use the measure period; current snapshots stay current.
-          Widget filters can override the board.
-        </p>
+        <button
+          className={styles.filterToggle}
+          aria-expanded={filterOpen}
+          onClick={() => setFilterOpen(!filterOpen)}
+        >
+          <SlidersHorizontal size={15} /> Record filters
+          {Object.values(board.filters).filter(Boolean).length > 0 && (
+            <span>{Object.values(board.filters).filter(Boolean).length}</span>
+          )}
+        </button>
+        <span className={styles.refreshLabel}>
+          {board.refreshSeconds
+            ? `Refreshes every ${board.refreshSeconds}s`
+            : "Refresh when you choose"}
+        </span>
       </div>
+      {filterOpen && (
+        <div className={styles.filters}>
+          <label>
+            Records from
+            <input
+              aria-label="Records from"
+              type="date"
+              value={board.filters.from}
+              onChange={(e) =>
+                change({
+                  ...board,
+                  filters: { ...board.filters, from: e.target.value },
+                })
+              }
+            />
+          </label>
+          <label>
+            Records to
+            <input
+              aria-label="Records to"
+              type="date"
+              value={board.filters.to}
+              onChange={(e) =>
+                change({
+                  ...board,
+                  filters: { ...board.filters, to: e.target.value },
+                })
+              }
+            />
+          </label>
+          <label className="flex-1">
+            Record search
+            <input
+              aria-label="Record search"
+              placeholder="Customer, reference, product…"
+              value={board.filters.search}
+              maxLength={200}
+              onChange={(e) =>
+                change({
+                  ...board,
+                  filters: { ...board.filters, search: e.target.value },
+                })
+              }
+            />
+          </label>
+          <Button onClick={() => change({ ...board, filters: emptyFilters })}>
+            Reset
+          </Button>
+          <p className="w-full text-[11px] text-slate-400">
+            Date ranges and search apply to supporting record datasets. Curated
+            measures use the measure period; current snapshots stay current.
+            Widget filters can override the board.
+          </p>
+        </div>
+      )}
       {(message || refreshError) && (
         <p role="status" className={styles.notice}>
           {message || refreshError}
         </p>
       )}
       {editing && canManage && (
-        <div className="flex flex-wrap items-center gap-2">
+        <div className={styles.editBar}>
           <Button
             variant="primary"
             disabled={board.widgets.length >= 24}
@@ -778,10 +834,72 @@ export function Studio({
           </span>
         </div>
       )}
+      {editing && canManage && board.widgets.length > 0 && (
+        <details className={styles.canvasOptions}>
+          <summary>
+            <Palette size={16} /> Style your canvas{" "}
+            <span>Themes & layouts</span>
+          </summary>
+          <div className={styles.lookGrid}>
+            {dashboardLooks.map((look) => (
+              <button
+                key={look.id}
+                onClick={() =>
+                  change({
+                    ...board,
+                    widgets: applyDashboardLook(board.widgets, look.id),
+                  })
+                }
+                className={`${styles.look} ${look.tone === "ink" ? styles.lookNight : ""}`}
+                aria-label={`Apply ${look.name} theme`}
+              >
+                <div>
+                  {look.colors.map((color) => (
+                    <i key={color} style={{ background: palettes[color][0] }} />
+                  ))}
+                </div>
+                <b>{look.name}</b>
+                <small>{look.description}</small>
+              </button>
+            ))}
+          </div>
+          <div className={styles.layoutChoices}>
+            <span>Arrange in one click</span>
+            {(["balanced", "spotlight", "compact"] as const).map((layout) => (
+              <button
+                key={layout}
+                className={styles.pill}
+                onClick={() =>
+                  change({
+                    ...board,
+                    widgets: arrangeDashboard(board.widgets, layout),
+                  })
+                }
+              >
+                {layout === "balanced"
+                  ? "Balanced pairs"
+                  : layout === "spotlight"
+                    ? "Hero + supporting"
+                    : "Compact grid"}
+              </button>
+            ))}
+            <small>You can undo any theme or layout.</small>
+          </div>
+        </details>
+      )}
       {editing && library && (
         <section className={styles.library} aria-label="Widget library">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold">What would you like to show?</h2>
+            <div>
+              <p className={styles.eyebrow}>01 · CHOOSE YOUR DATA</p>
+              <h2 className="mt-1 text-lg font-semibold">
+                What would you like to show?
+              </h2>
+              <p className="mt-1 text-xs text-slate-500">
+                Start with a ready-made business measure, or choose fields from
+                your records.
+              </p>
+            </div>
             <button
               onClick={() => setLibrary(false)}
               aria-label="Close widget library"
@@ -874,6 +992,19 @@ export function Studio({
                     </button>
                   ))}
           </div>
+          {!(
+            libraryKind === "measures"
+              ? metrics.map((m) => ({
+                  name: m.name,
+                  source: m.subject,
+                  description: m.definition,
+                }))
+              : datasets
+          ).some((item) => match(item.name, item.source, item.description)) && (
+            <p className={styles.libraryEmpty}>
+              No matching data. Try another search or choose All apps.
+            </p>
+          )}
           {libraryKind === "records" && !datasets.length && (
             <p className="text-sm text-slate-500">
               Record datasets appear when your profile has access to their
@@ -888,6 +1019,23 @@ export function Studio({
         <div className={styles.grid} aria-label="Dashboard canvas">
           {board.widgets.map((w, index) => {
             const m = resolve(w);
+            const interaction =
+              exploration[w.id]?.key === `${queryKey}:${period}`
+                ? exploration[w.id]
+                : undefined;
+            const shown = {
+              ...w,
+              category: interaction?.category || w.category,
+              visual: interaction?.table ? ("table" as const) : w.visual,
+            };
+            const explore = (
+              category = interaction?.category ?? "",
+              table = interaction?.table ?? false,
+            ) =>
+              setExploration((current) => ({
+                ...current,
+                [w.id]: { key: `${queryKey}:${period}`, category, table },
+              }));
             return (
               <section
                 key={w.id}
@@ -925,15 +1073,48 @@ export function Studio({
                     <h2 className="mt-1 text-sm font-semibold">
                       {w.title || m?.name || "Unavailable measure"}
                     </h2>
-                    {w.category && (
+                    {(interaction?.category ||
+                      w.category ||
+                      w.categories?.length) && (
                       <button
-                        className="mt-1 text-xs text-blue-600"
-                        onClick={() => patch(w.id, { category: "" })}
+                        className={styles.focusChip}
+                        onClick={() =>
+                          interaction?.category
+                            ? explore("")
+                            : editing && canManage
+                              ? patch(w.id, { category: "", categories: [] })
+                              : setMessage(
+                                  "This focus is part of the saved chart. Edit its settings to change it.",
+                                )
+                        }
                       >
-                        Focus: {w.category} ×
+                        Focus:{" "}
+                        {interaction?.category ||
+                          w.category ||
+                          `${w.categories?.length} groups`}{" "}
+                        ×
                       </button>
                     )}
                   </div>
+                  <button
+                    className={styles.iconButton}
+                    title="Switch between chart and values"
+                    aria-label={`Show values for widget ${index + 1}`}
+                    aria-pressed={!!interaction?.table}
+                    onClick={() => explore(undefined, !interaction?.table)}
+                  >
+                    <Table2 size={15} />
+                  </button>
+                  {m && (
+                    <button
+                      className={styles.iconButton}
+                      title="Explore this chart"
+                      aria-label={`Expand widget ${index + 1}`}
+                      onClick={() => setExploring(w.id)}
+                    >
+                      <Maximize2 size={15} />
+                    </button>
+                  )}
                   {editing && canManage && (
                     <>
                       <span
@@ -952,7 +1133,7 @@ export function Studio({
                           setFocused(focused === w.id ? null : w.id);
                           setLibrary(false);
                         }}
-                        className="rounded-lg p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-600"
+                        className={styles.iconButton}
                       >
                         <Settings2 size={17} />
                       </button>
@@ -963,11 +1144,9 @@ export function Studio({
                   {m ? (
                     <TileChart
                       metric={m}
-                      widget={w}
+                      widget={shown}
                       onPick={(label) =>
-                        patch(w.id, {
-                          category: w.category === label ? "" : label,
-                        })
+                        explore(interaction?.category === label ? "" : label)
                       }
                     />
                   ) : (
@@ -1040,8 +1219,27 @@ export function Studio({
               </button>
             </div>
             <p className="mt-1 text-xs text-slate-500">
-              Make this view work for you.
+              Choose the data. Make it yours.
             </p>
+            <div
+              className={styles.inspectorTabs}
+              role="group"
+              aria-label="Widget settings sections"
+            >
+              {(["data", "design", "focus"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  aria-pressed={inspectorTab === tab}
+                  onClick={() => setInspectorTab(tab)}
+                >
+                  {tab === "data"
+                    ? "Data"
+                    : tab === "design"
+                      ? "Design"
+                      : "Focus"}
+                </button>
+              ))}
+            </div>
             <Field label="Chart title">
               <input
                 aria-label="Chart title"
@@ -1051,492 +1249,611 @@ export function Studio({
                 onChange={(e) => patch(active.id, { title: e.target.value })}
               />
             </Field>
-            {active.data && inspectorDataset ? (
-              <>
-                <Field label="Dataset">
-                  <select
-                    aria-label="Widget dataset"
-                    value={active.data.dataset}
-                    onChange={(e) =>
-                      patch(active.id, {
-                        data: dataViewSchema.parse({ dataset: e.target.value }),
-                        category: "",
-                      })
-                    }
-                  >
-                    {datasets.map((d) => (
-                      <option key={d.id} value={d.id}>
-                        {d.source} · {d.name}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-                <Field label="Group by">
-                  <select
-                    aria-label="Group by"
-                    value={active.data.group}
-                    onChange={(e) => patchData({ group: e.target.value })}
-                  >
-                    <option value="">All records</option>
-                    {inspectorDataset.columns.map((c) => (
-                      <option key={c.key} value={c.key}>
-                        {c.label}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-                {inspectorDataset.columns.find(
-                  (c) => c.key === active.data?.group,
-                )?.type === "date" && (
-                  <Field label="Date grouping">
-                    <select
-                      aria-label="Date grouping"
-                      value={active.data.bucket}
-                      onChange={(e) =>
-                        patchData({
-                          bucket: e.target.value as "day" | "month" | "year",
-                        })
-                      }
-                    >
-                      <option value="day">Day</option>
-                      <option value="month">Month</option>
-                      <option value="year">Year</option>
-                    </select>
-                  </Field>
-                )}
-                <Field label="Calculation">
-                  <select
-                    aria-label="Calculation"
-                    value={active.data.aggregation}
-                    onChange={(e) =>
-                      patchData({
-                        aggregation: e.target.value as NonNullable<
-                          StudioWidget["data"]
-                        >["aggregation"],
-                        measure: "",
-                      })
-                    }
-                  >
-                    {[
-                      ["count", "Count records"],
-                      ["sum", "Total"],
-                      ["average", "Average"],
-                      ["min", "Lowest value"],
-                      ["max", "Highest value"],
-                      ["distinct", "Count distinct values"],
-                    ].map(([v, l]) => (
-                      <option key={v} value={v}>
-                        {l}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-                {active.data.aggregation !== "count" && (
-                  <Field label="Value field">
-                    <select
-                      aria-label="Value field"
-                      value={active.data.measure}
-                      onChange={(e) => patchData({ measure: e.target.value })}
-                    >
-                      <option value="">Choose a field</option>
-                      {inspectorDataset.columns
-                        .filter(
-                          (c) =>
-                            active.data?.aggregation === "distinct" ||
-                            ["number", "money"].includes(c.type || ""),
-                        )
-                        .map((c) => (
+            {inspectorTab === "data" && (
+              <div className={styles.inspectorSection}>
+                {active.data && inspectorDataset ? (
+                  <>
+                    <Field label="Dataset">
+                      <select
+                        aria-label="Widget dataset"
+                        value={active.data.dataset}
+                        onChange={(e) =>
+                          patch(active.id, {
+                            data: dataViewSchema.parse({
+                              dataset: e.target.value,
+                            }),
+                            category: "",
+                            categories: [],
+                            target: undefined,
+                          })
+                        }
+                      >
+                        {datasets.map((d) => (
+                          <option key={d.id} value={d.id}>
+                            {d.source} · {d.name}
+                          </option>
+                        ))}
+                      </select>
+                    </Field>
+                    <Field label="Group by">
+                      <select
+                        aria-label="Group by"
+                        value={active.data.group}
+                        onChange={(e) => patchData({ group: e.target.value })}
+                      >
+                        <option value="">All records</option>
+                        {inspectorDataset.columns.map((c) => (
                           <option key={c.key} value={c.key}>
                             {c.label}
                           </option>
                         ))}
-                    </select>
-                  </Field>
-                )}
-                {inspectorDataset.columns.find(
-                  (c) => c.key === active.data?.measure,
-                )?.type === "money" &&
-                  active.data.aggregation !== "count" && (
-                    <Field label="Currency">
-                      <input
-                        aria-label="Widget currency"
-                        maxLength={10}
-                        placeholder="GBP"
-                        value={active.data.currency}
-                        onChange={(e) =>
-                          patchData({ currency: e.target.value.toUpperCase() })
-                        }
-                      />
+                      </select>
                     </Field>
-                  )}
-                <details className={styles.details}>
-                  <summary>
-                    Record filters{" "}
-                    <span className="text-slate-400">
-                      ({active.data.filters.length})
-                    </span>
-                  </summary>
-                  <Field label="Search">
-                    <input
-                      aria-label="Widget record search"
-                      maxLength={200}
-                      value={active.data.search}
-                      onChange={(e) => patchData({ search: e.target.value })}
-                      placeholder="Use board search"
-                    />
-                  </Field>
-                  {inspectorDataset.dateField && (
-                    <>
-                      <Field label="From">
-                        <input
-                          type="date"
-                          aria-label="Widget from"
-                          value={active.data.from}
-                          onChange={(e) => patchData({ from: e.target.value })}
-                        />
-                      </Field>
-                      <Field label="To">
-                        <input
-                          type="date"
-                          aria-label="Widget to"
-                          value={active.data.to}
-                          onChange={(e) => patchData({ to: e.target.value })}
-                        />
-                      </Field>
-                    </>
-                  )}
-                  {active.data.filters.map((f, i) => {
-                    const col = inspectorDataset.columns.find(
-                      (c) => c.key === f.field,
-                    );
-                    const update = (p: Partial<typeof f>) =>
-                      patchData({
-                        filters: active.data!.filters.map((v, n) =>
-                          n === i ? { ...v, ...p } : v,
-                        ),
-                      });
-                    return (
-                      <div
-                        key={i}
-                        className="mt-3 space-y-2 rounded-xl bg-slate-50 p-2"
-                      >
+                    {inspectorDataset.columns.find(
+                      (c) => c.key === active.data?.group,
+                    )?.type === "date" && (
+                      <Field label="Date grouping">
                         <select
-                          aria-label={`Filter ${i + 1} field`}
-                          value={f.field}
+                          aria-label="Date grouping"
+                          value={active.data.bucket}
                           onChange={(e) =>
-                            update({
-                              field: e.target.value,
-                              operator: "equals",
-                              value: "",
+                            patchData({
+                              bucket: e.target.value as
+                                "day" | "month" | "year",
                             })
                           }
                         >
+                          <option value="day">Day</option>
+                          <option value="month">Month</option>
+                          <option value="year">Year</option>
+                        </select>
+                      </Field>
+                    )}
+                    <Field label="Calculation">
+                      <select
+                        aria-label="Calculation"
+                        value={active.data.aggregation}
+                        onChange={(e) =>
+                          patchData({
+                            aggregation: e.target.value as NonNullable<
+                              StudioWidget["data"]
+                            >["aggregation"],
+                            measure:
+                              e.target.value === "count"
+                                ? ""
+                                : (inspectorDataset.columns.find(
+                                    (column) =>
+                                      e.target.value === "distinct" ||
+                                      ["number", "money"].includes(
+                                        column.type || "",
+                                      ),
+                                  )?.key ?? ""),
+                          })
+                        }
+                      >
+                        {[
+                          ["count", "Count records"],
+                          ["sum", "Total"],
+                          ["average", "Average"],
+                          ["min", "Lowest value"],
+                          ["max", "Highest value"],
+                          ["distinct", "Count distinct values"],
+                        ].map(([v, l]) => (
+                          <option key={v} value={v}>
+                            {l}
+                          </option>
+                        ))}
+                      </select>
+                    </Field>
+                    {active.data.aggregation !== "count" && (
+                      <Field label="Value field">
+                        <select
+                          aria-label="Value field"
+                          value={active.data.measure}
+                          onChange={(e) =>
+                            patchData({ measure: e.target.value })
+                          }
+                        >
+                          <option value="">Choose a field</option>
                           {inspectorDataset.columns
-                            .filter((c) => c.path)
+                            .filter(
+                              (c) =>
+                                active.data?.aggregation === "distinct" ||
+                                ["number", "money"].includes(c.type || ""),
+                            )
                             .map((c) => (
                               <option key={c.key} value={c.key}>
                                 {c.label}
                               </option>
                             ))}
                         </select>
-                        <select
-                          aria-label={`Filter ${i + 1} operator`}
-                          value={f.operator}
-                          onChange={(e) =>
-                            update({
-                              operator: e.target.value as typeof f.operator,
-                            })
-                          }
-                        >
-                          <option value="equals">Equals</option>
-                          {(!col?.type || col.type === "text") &&
-                            col?.searchable && (
-                              <option value="contains">Contains</option>
-                            )}
-                          {["date", "number", "money"].includes(
-                            col?.type || "",
-                          ) && (
-                            <>
-                              <option value="gte">At least / from</option>
-                              <option value="lte">At most / to</option>
-                            </>
-                          )}
-                        </select>
-                        {col?.values ? (
-                          <select
-                            aria-label={`Filter ${i + 1} value`}
-                            value={f.value}
-                            onChange={(e) => update({ value: e.target.value })}
-                          >
-                            <option value="">Choose value</option>
-                            {col.values.map((v) => (
-                              <option key={v}>{v}</option>
-                            ))}
-                          </select>
-                        ) : (
+                      </Field>
+                    )}
+                    {inspectorDataset.columns.find(
+                      (c) => c.key === active.data?.measure,
+                    )?.type === "money" &&
+                      active.data.aggregation !== "count" && (
+                        <Field label="Currency">
                           <input
-                            aria-label={`Filter ${i + 1} value`}
-                            value={f.value}
-                            type={col?.type === "date" ? "date" : "text"}
-                            maxLength={200}
-                            onChange={(e) => update({ value: e.target.value })}
+                            aria-label="Widget currency"
+                            maxLength={10}
+                            placeholder="GBP"
+                            value={active.data.currency}
+                            onChange={(e) =>
+                              patchData({
+                                currency: e.target.value.toUpperCase(),
+                              })
+                            }
                           />
-                        )}
-                        <button
-                          className="text-xs text-rose-600"
-                          onClick={() =>
-                            patchData({
-                              filters: active.data!.filters.filter(
-                                (_, n) => n !== i,
-                              ),
+                        </Field>
+                      )}
+                    <details className={styles.details}>
+                      <summary>
+                        Record filters{" "}
+                        <span className="text-slate-400">
+                          ({active.data.filters.length})
+                        </span>
+                      </summary>
+                      <Field label="Search">
+                        <input
+                          aria-label="Widget record search"
+                          maxLength={200}
+                          value={active.data.search}
+                          onChange={(e) =>
+                            patchData({ search: e.target.value })
+                          }
+                          placeholder="Use board search"
+                        />
+                      </Field>
+                      {inspectorDataset.dateField && (
+                        <>
+                          <Field label="From">
+                            <input
+                              type="date"
+                              aria-label="Widget from"
+                              value={active.data.from}
+                              onChange={(e) =>
+                                patchData({ from: e.target.value })
+                              }
+                            />
+                          </Field>
+                          <Field label="To">
+                            <input
+                              type="date"
+                              aria-label="Widget to"
+                              value={active.data.to}
+                              onChange={(e) =>
+                                patchData({ to: e.target.value })
+                              }
+                            />
+                          </Field>
+                        </>
+                      )}
+                      {active.data.filters.map((f, i) => {
+                        const col = inspectorDataset.columns.find(
+                          (c) => c.key === f.field,
+                        );
+                        const update = (p: Partial<typeof f>) =>
+                          patchData({
+                            filters: active.data!.filters.map((v, n) =>
+                              n === i ? { ...v, ...p } : v,
+                            ),
+                          });
+                        return (
+                          <div
+                            key={i}
+                            className="mt-3 space-y-2 rounded-xl bg-slate-50 p-2"
+                          >
+                            <select
+                              aria-label={`Filter ${i + 1} field`}
+                              value={f.field}
+                              onChange={(e) =>
+                                update({
+                                  field: e.target.value,
+                                  operator: "equals",
+                                  value: "",
+                                })
+                              }
+                            >
+                              {inspectorDataset.columns
+                                .filter((c) => c.path)
+                                .map((c) => (
+                                  <option key={c.key} value={c.key}>
+                                    {c.label}
+                                  </option>
+                                ))}
+                            </select>
+                            <select
+                              aria-label={`Filter ${i + 1} operator`}
+                              value={f.operator}
+                              onChange={(e) =>
+                                update({
+                                  operator: e.target.value as typeof f.operator,
+                                })
+                              }
+                            >
+                              <option value="equals">Equals</option>
+                              {(!col?.type || col.type === "text") &&
+                                col?.searchable && (
+                                  <option value="contains">Contains</option>
+                                )}
+                              {["date", "number", "money"].includes(
+                                col?.type || "",
+                              ) && (
+                                <>
+                                  <option value="gte">At least / from</option>
+                                  <option value="lte">At most / to</option>
+                                </>
+                              )}
+                            </select>
+                            {col?.values ? (
+                              <select
+                                aria-label={`Filter ${i + 1} value`}
+                                value={f.value}
+                                onChange={(e) =>
+                                  update({ value: e.target.value })
+                                }
+                              >
+                                <option value="">Choose value</option>
+                                {col.values.map((v) => (
+                                  <option key={v}>{v}</option>
+                                ))}
+                              </select>
+                            ) : (
+                              <input
+                                aria-label={`Filter ${i + 1} value`}
+                                value={f.value}
+                                type={col?.type === "date" ? "date" : "text"}
+                                maxLength={200}
+                                onChange={(e) =>
+                                  update({ value: e.target.value })
+                                }
+                              />
+                            )}
+                            <button
+                              className="text-xs text-rose-600"
+                              onClick={() =>
+                                patchData({
+                                  filters: active.data!.filters.filter(
+                                    (_, n) => n !== i,
+                                  ),
+                                })
+                              }
+                            >
+                              Remove filter
+                            </button>
+                          </div>
+                        );
+                      })}
+                      <Button
+                        className="mt-3"
+                        disabled={
+                          active.data.filters.length >= 12 ||
+                          !inspectorDataset.columns.some((c) => c.path)
+                        }
+                        onClick={() =>
+                          patchData({
+                            filters: [
+                              ...active.data!.filters,
+                              {
+                                field: inspectorDataset.columns.find(
+                                  (c) => c.path,
+                                )!.key,
+                                operator: "equals",
+                                value: "",
+                              },
+                            ],
+                          })
+                        }
+                      >
+                        <Plus size={14} />
+                        Add field filter
+                      </Button>
+                    </details>
+                  </>
+                ) : (
+                  <>
+                    <Field label="Business measure">
+                      <select
+                        aria-label="Business measure"
+                        value={active.metricId}
+                        onChange={(e) => {
+                          const m = metrics.find(
+                            (m) => m.id === e.target.value,
+                          );
+                          patch(active.id, {
+                            metricId: e.target.value,
+                            breakdown: m?.breakdowns?.[0]?.id,
+                            category: "",
+                            categories: [],
+                            target: undefined,
+                          });
+                        }}
+                      >
+                        {metrics.map((m) => (
+                          <option key={m.id} value={m.id}>
+                            {m.subject} · {m.name}
+                          </option>
+                        ))}
+                      </select>
+                    </Field>
+                    {activeMetric?.breakdowns && (
+                      <Field label="Show by">
+                        <select
+                          aria-label="Show by"
+                          value={
+                            active.breakdown || activeMetric.breakdowns[0]?.id
+                          }
+                          onChange={(e) =>
+                            patch(active.id, {
+                              breakdown: e.target.value,
+                              category: "",
+                              categories: [],
+                              target: undefined,
                             })
                           }
                         >
-                          Remove filter
-                        </button>
-                      </div>
-                    );
-                  })}
-                  <Button
-                    className="mt-3"
-                    disabled={
-                      active.data.filters.length >= 12 ||
-                      !inspectorDataset.columns.some((c) => c.path)
-                    }
-                    onClick={() =>
-                      patchData({
-                        filters: [
-                          ...active.data!.filters,
-                          {
-                            field: inspectorDataset.columns.find((c) => c.path)!
-                              .key,
-                            operator: "equals",
-                            value: "",
-                          },
-                        ],
-                      })
-                    }
-                  >
-                    <Plus size={14} />
-                    Add field filter
-                  </Button>
-                </details>
-              </>
-            ) : (
-              <>
-                <Field label="Business measure">
-                  <select
-                    aria-label="Business measure"
-                    value={active.metricId}
-                    onChange={(e) => {
-                      const m = metrics.find((m) => m.id === e.target.value);
-                      patch(active.id, {
-                        metricId: e.target.value,
-                        breakdown: m?.breakdowns?.[0]?.id,
-                        category: "",
-                      });
-                    }}
-                  >
-                    {metrics.map((m) => (
-                      <option key={m.id} value={m.id}>
-                        {m.subject} · {m.name}
-                      </option>
+                          {activeMetric.breakdowns.map((b) => (
+                            <option key={b.id} value={b.id}>
+                              {b.label}
+                            </option>
+                          ))}
+                        </select>
+                      </Field>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+            {inspectorTab === "design" && (
+              <div className={styles.inspectorSection}>
+                <div className="mt-5">
+                  <p className={styles.menuLabel}>02 · SHAPE YOUR VIEW</p>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {visualOptions.map((v) => (
+                      <button
+                        key={v.id}
+                        aria-label={`${v.label} visual`}
+                        aria-pressed={active.visual === v.id}
+                        className={`${styles.visualPick} ${active.visual === v.id ? styles.visualOn : ""}`}
+                        onClick={() => patch(active.id, { visual: v.id })}
+                      >
+                        <MiniVisual type={v.id} />
+                        <span>{v.label}</span>
+                      </button>
                     ))}
-                  </select>
-                </Field>
-                {activeMetric?.breakdowns && (
-                  <Field label="Show by">
+                  </div>
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <Field label="Width">
                     <select
-                      aria-label="Show by"
-                      value={active.breakdown || activeMetric.breakdowns[0]?.id}
+                      aria-label="Widget width"
+                      value={widgetSpan(active)}
                       onChange={(e) =>
                         patch(active.id, {
-                          breakdown: e.target.value,
-                          category: "",
+                          span: Number(e.target.value) as 4 | 6 | 8 | 12,
                         })
                       }
                     >
-                      {activeMetric.breakdowns.map((b) => (
-                        <option key={b.id} value={b.id}>
-                          {b.label}
+                      {[
+                        [4, "One third"],
+                        [6, "Half"],
+                        [8, "Two thirds"],
+                        [12, "Full"],
+                      ].map(([v, l]) => (
+                        <option key={v} value={v}>
+                          {l}
                         </option>
                       ))}
                     </select>
                   </Field>
-                )}
-              </>
-            )}
-            <div className="mt-5">
-              <p className={styles.menuLabel}>Visual</p>
-              <div className="grid grid-cols-3 gap-1.5">
-                {visualOptions.map((v) => (
-                  <button
-                    key={v.id}
-                    aria-label={`${v.label} visual`}
-                    aria-pressed={active.visual === v.id}
-                    className={`${styles.visualPick} ${active.visual === v.id ? styles.visualOn : ""}`}
-                    onClick={() => patch(active.id, { visual: v.id })}
+                  <Field label="Height">
+                    <select
+                      aria-label="Widget height"
+                      value={active.height ?? "standard"}
+                      onChange={(e) =>
+                        patch(active.id, {
+                          height: e.target.value as StudioWidget["height"],
+                        })
+                      }
+                    >
+                      <option value="compact">Compact</option>
+                      <option value="standard">Standard</option>
+                      <option value="tall">Tall</option>
+                    </select>
+                  </Field>
+                </div>
+                <div className="mt-4">
+                  <p className={styles.menuLabel}>Colour</p>
+                  <div className="flex gap-2">
+                    {colours.map((c) => (
+                      <button
+                        key={c}
+                        aria-label={`${c} colour`}
+                        aria-pressed={(active.color ?? "blue") === c}
+                        onClick={() => patch(active.id, { color: c })}
+                        className="size-7 rounded-full border-2 border-white outline-offset-2 aria-pressed:outline"
+                        style={{ background: palettes[c][0] }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <Field label="Card style">
+                  <select
+                    aria-label="Card style"
+                    value={active.tone ?? "neutral"}
+                    onChange={(e) =>
+                      patch(active.id, {
+                        tone: e.target.value as StudioWidget["tone"],
+                      })
+                    }
                   >
-                    <MiniVisual type={v.id} />
-                    <span>{v.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <Field label="Width">
-                <select
-                  aria-label="Widget width"
-                  value={widgetSpan(active)}
-                  onChange={(e) =>
-                    patch(active.id, {
-                      span: Number(e.target.value) as 4 | 6 | 8 | 12,
-                    })
-                  }
-                >
-                  {[
-                    [4, "One third"],
-                    [6, "Half"],
-                    [8, "Two thirds"],
-                    [12, "Full"],
-                  ].map(([v, l]) => (
-                    <option key={v} value={v}>
-                      {l}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <Field label="Height">
-                <select
-                  aria-label="Widget height"
-                  value={active.height ?? "standard"}
-                  onChange={(e) =>
-                    patch(active.id, {
-                      height: e.target.value as StudioWidget["height"],
-                    })
-                  }
-                >
-                  <option value="compact">Compact</option>
-                  <option value="standard">Standard</option>
-                  <option value="tall">Tall</option>
-                </select>
-              </Field>
-            </div>
-            <Field label="Sort">
-              <select
-                aria-label="Widget sort"
-                value={active.sort ?? "source"}
-                onChange={(e) =>
-                  patch(active.id, {
-                    sort: e.target.value as StudioWidget["sort"],
-                  })
-                }
-              >
-                <option value="source">Source order</option>
-                <option value="descending">Highest first</option>
-                <option value="ascending">Lowest first</option>
-                <option value="label">Label A–Z</option>
-              </select>
-            </Field>
-            <Field label="Display groups">
-              <input
-                aria-label="Display groups"
-                type="number"
-                min={1}
-                max={50}
-                value={active.maxCategories ?? 8}
-                onChange={(e) =>
-                  patch(active.id, {
-                    maxCategories: Math.max(
-                      1,
-                      Math.min(50, Number(e.target.value)),
-                    ),
-                  })
-                }
-              />
-            </Field>
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              {(
-                [
-                  ["minimum", "Minimum value"],
-                  ["maximum", "Maximum value"],
-                ] as const
-              ).map(([key, label]) => (
-                <Field key={key} label={label}>
+                    <option value="neutral">White</option>
+                    <option value="blue">Soft blue</option>
+                    <option value="ink">Midnight</option>
+                  </select>
+                </Field>
+                <label className="mt-3 flex items-center gap-2 text-xs">
                   <input
-                    aria-label={label}
-                    type="number"
+                    type="checkbox"
+                    checked={active.borderless ?? false}
+                    onChange={(e) =>
+                      patch(active.id, { borderless: e.target.checked })
+                    }
+                  />
+                  Borderless
+                </label>
+              </div>
+            )}
+            {inspectorTab === "focus" && (
+              <div className={styles.inspectorSection}>
+                <Field label="Sort">
+                  <select
+                    aria-label="Widget sort"
                     value={
-                      active[key] === undefined
-                        ? ""
-                        : active[key]! /
-                          (activeMetric?.unit === "money" ? 100 : 1)
+                      active.sort ??
+                      (activeMetric?.shape === "trend"
+                        ? "source"
+                        : "descending")
                     }
                     onChange={(e) =>
                       patch(active.id, {
-                        [key]:
-                          e.target.value === ""
-                            ? undefined
-                            : Number(e.target.value) *
-                              (activeMetric?.unit === "money" ? 100 : 1),
+                        sort: e.target.value as StudioWidget["sort"],
+                      })
+                    }
+                  >
+                    <option value="source">Source order</option>
+                    <option value="descending">Highest first</option>
+                    <option value="ascending">Lowest first</option>
+                    <option value="label">Label A–Z</option>
+                  </select>
+                </Field>
+                <Field label="Display groups">
+                  <input
+                    aria-label="Display groups"
+                    type="number"
+                    min={1}
+                    max={50}
+                    value={
+                      active.maxCategories ??
+                      (activeMetric?.shape === "trend" ? 50 : 8)
+                    }
+                    onChange={(e) =>
+                      patch(active.id, {
+                        maxCategories: Math.max(
+                          1,
+                          Math.min(50, Number(e.target.value)),
+                        ),
                       })
                     }
                   />
                 </Field>
-              ))}
-            </div>
-            <Field label="Focus category">
-              <select
-                aria-label="Focus category"
-                value={active.category ?? ""}
-                onChange={(e) => patch(active.id, { category: e.target.value })}
-              >
-                <option value="">All groups</option>
-                {activeMetric?.points.map((p) => (
-                  <option key={p.label}>{p.label}</option>
-                ))}
-              </select>
-            </Field>
-            <div className="mt-4">
-              <p className={styles.menuLabel}>Colour</p>
-              <div className="flex gap-2">
-                {colours.map((c) => (
-                  <button
-                    key={c}
-                    aria-label={`${c} colour`}
-                    aria-pressed={(active.color ?? "blue") === c}
-                    onClick={() => patch(active.id, { color: c })}
-                    className="size-7 rounded-full border-2 border-white outline-offset-2 aria-pressed:outline"
-                    style={{ background: palettes[c][0] }}
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  {(
+                    [
+                      ["minimum", "Minimum value"],
+                      ["maximum", "Maximum value"],
+                    ] as const
+                  ).map(([key, label]) => (
+                    <Field key={key} label={label}>
+                      <input
+                        aria-label={label}
+                        type="number"
+                        value={
+                          active[key] === undefined
+                            ? ""
+                            : active[key]! /
+                              (activeMetric?.unit === "money" ? 100 : 1)
+                        }
+                        onChange={(e) =>
+                          patch(active.id, {
+                            [key]:
+                              e.target.value === ""
+                                ? undefined
+                                : Number(e.target.value) *
+                                  (activeMetric?.unit === "money" ? 100 : 1),
+                          })
+                        }
+                      />
+                    </Field>
+                  ))}
+                </div>
+                <Field label="Focus category">
+                  <select
+                    aria-label="Focus category"
+                    value={active.category ?? ""}
+                    onChange={(e) =>
+                      patch(active.id, {
+                        category: e.target.value,
+                        categories: [],
+                      })
+                    }
+                  >
+                    <option value="">All groups</option>
+                    {activeMetric?.points.map((p) => (
+                      <option key={p.label}>{p.label}</option>
+                    ))}
+                  </select>
+                </Field>
+                {activeMetric?.points.length ? (
+                  <div className={styles.categoryPicker}>
+                    <p className={styles.menuLabel}>Select several groups</p>
+                    <p className="text-[11px] text-slate-500">
+                      No selection shows every group.
+                    </p>
+                    <div>
+                      {activeMetric.points.slice(0, 50).map((point) => (
+                        <label key={point.label}>
+                          <input
+                            type="checkbox"
+                            aria-label={`Include ${point.label}`}
+                            checked={!!active.categories?.includes(point.label)}
+                            onChange={(event) =>
+                              patch(active.id, {
+                                category: "",
+                                categories: event.target.checked
+                                  ? [...(active.categories ?? []), point.label]
+                                  : active.categories?.filter(
+                                      (label) => label !== point.label,
+                                    ),
+                              })
+                            }
+                          />
+                          <span>{point.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+                <Field label="Gauge target (optional)">
+                  <input
+                    aria-label="Gauge target"
+                    type="number"
+                    min="0"
+                    value={
+                      active.target === undefined
+                        ? ""
+                        : active.target /
+                          (activeMetric?.unit === "money" ? 100 : 1)
+                    }
+                    placeholder="Choose your reference value"
+                    onChange={(event) =>
+                      patch(active.id, {
+                        target:
+                          event.target.value && Number(event.target.value) > 0
+                            ? Number(event.target.value) *
+                              (activeMetric?.unit === "money" ? 100 : 1)
+                            : undefined,
+                      })
+                    }
                   />
-                ))}
+                </Field>
+                <p className="mt-2 text-[11px] leading-5 text-slate-500">
+                  A personal visual reference for gauge charts. It does not
+                  change company goals.
+                </p>
               </div>
-            </div>
-            <Field label="Card style">
-              <select
-                aria-label="Card style"
-                value={active.tone ?? "neutral"}
-                onChange={(e) =>
-                  patch(active.id, {
-                    tone: e.target.value as StudioWidget["tone"],
-                  })
-                }
-              >
-                <option value="neutral">White</option>
-                <option value="blue">Soft blue</option>
-                <option value="ink">Midnight</option>
-              </select>
-            </Field>
-            <label className="mt-3 flex items-center gap-2 text-xs">
-              <input
-                type="checkbox"
-                checked={active.borderless ?? false}
-                onChange={(e) =>
-                  patch(active.id, { borderless: e.target.checked })
-                }
-              />
-              Borderless
-            </label>
+            )}
             <div className="mt-5 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
               <Button
                 aria-label="Move widget earlier"
@@ -1582,6 +1899,19 @@ export function Studio({
           </aside>
         )}
       </div>
+      {exploring &&
+        (() => {
+          const widget = board.widgets.find((w) => w.id === exploring);
+          const metric = widget && resolve(widget);
+          return widget && metric ? (
+            <ChartExplorer
+              key={widget.id}
+              widget={widget}
+              metric={metric}
+              onClose={() => setExploring(null)}
+            />
+          ) : null;
+        })()}
     </fieldset>
   );
 }

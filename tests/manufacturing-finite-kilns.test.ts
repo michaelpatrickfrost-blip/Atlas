@@ -1,6 +1,8 @@
 import { describe,it,expect } from 'vitest';
 import { operationTime } from '@/modules/products/domain/operation-time';
 import { finiteSchedule,finiteSlot,finiteCapacity,type FiniteResource } from '@/modules/manufacturing/domain/finite-scheduling';
+import { MrpEngine } from '@/modules/manufacturing/domain/mrp-engine';
+import { DemandSource,DemandType,type RecipeOperation } from '@/modules/manufacturing/domain/mrp-types';
 import { rolledCost,type MakeDefinition } from '@/modules/products/domain/make';
 import { demandForecast,monthlyDemand,adjustedForecast } from '@/modules/manufacturing/domain/demand-forecast';
 const date=(s:string)=>new Date(s);
@@ -46,5 +48,12 @@ describe('kiln planning and demand',()=>{
   expect(finiteCapacity(r,date('2026-10-12T20:00Z'),date('2026-10-13T08:00Z'))).toEqual({calendarHours:8,bookedHours:4,downtimeHours:2,freeHours:3,conflicts:1});
  });
  it('refuses a machine from another work centre even if stale eligibility lists it',()=>{expect(()=>finiteSchedule([op],date('2026-10-12T08:00Z'),[{...resource(),workCentreId:'other'}])).toThrow('eligible');});
+
+ it('uses kiln cycles, transfer wait and correct operation dates in the material proposal',()=>{
+  const base:RecipeOperation={position:1,name:'Fire',setupMinutes:10,runMinutesPerUnit:0,crewSize:0,workCentreId:'fire',workCentreCode:'FIRE',workCentreName:'Fire',resourceId:'kiln',resourceName:'kiln',resourceType:'MACHINE',machineMinorPerHour:6000,labourMinorPerHour:1000,overheadMinorPerHour:0,logisticsMinorPerBatch:0,machineIncludesLabour:false,machineIncludesOverhead:false};
+  const required=date('2026-11-01T12:00Z');
+  const result=new MrpEngine({demand:[{id:'d',demandType:DemandType.FIRM,source:DemandSource.SALES_ORDER,productId:'p',quantity:150,requiredDate:required,sourceId:'sales'}],inventory:new Map(),recipes:new Map([['p',{productId:'p',definitionId:'r',version:1,supply:'MAKE',batchQuantity:100,yieldPercent:100,subcontractMinorPerUnit:0,components:[],operations:[{...base,timingMode:'BATCH',batchCapacity:100,cycleMinutes:60,coolingMinutes:30,waitMinutes:15},{...base,position:2,name:'Pack',setupMinutes:0,runMinutesPerUnit:1,waitMinutes:99}]}]]),prices:new Map(),existingSupply:new Map(),leadTimes:new Map(),safetyStock:new Map(),names:new Map()}).run();
+  const plan=result.plannedOrders[0];expect(plan.quantity).toBe(200);expect(plan.operations![0].durationMinutes).toBe(200);expect(plan.operations![0].batches).toBe(2);expect(plan.operations![1].start!.getTime()-plan.operations![0].end!.getTime()).toBe(15*60000);expect(plan.operations![1].end).toEqual(required);
+ });
 
 });

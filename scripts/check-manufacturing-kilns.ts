@@ -84,7 +84,7 @@ export async function checkManufacturingKilns(input: { context: BrowserContext; 
   await workbench.getByLabel('Starting point').selectOption('last-year');
   await workbench.getByLabel('Percentage adjustment').fill('10');
   await workbench.getByLabel('Add / subtract units per month').fill('5');
-  const target = future.lastYear! * 1.1 + 5;
+  const target = Math.round((future.lastYear! * 1.1 + 5) * 1e6) / 1e6;
   await expect(workbench.getByLabel(`Forecast ${future.period}`, { exact: true })).toHaveValue(String(target));
   await workbench.getByLabel(`Select ${future.period}`, { exact: true }).check();
   await workbench.getByRole('button', { name: 'Save 1 reviewed months', exact: true }).click();

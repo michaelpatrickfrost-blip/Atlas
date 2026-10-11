@@ -213,8 +213,14 @@ export class MrpEngine {
       }),
       { setup: 0, run: 0, crew: 0 },
     );
-    const spanMinutes = operations.reduce((sum, operation) => sum + operation.durationMinutes + (operation.waitMinutes ?? 0), 0);
+    const spanMinutes = operations.reduce((sum, operation, index) => sum + operation.durationMinutes + (index < operations.length - 1 ? operation.waitMinutes ?? 0 : 0), 0);
     const startDate = new Date(requirement.requiredDate.getTime() - spanMinutes * MINUTE_MS);
+    let routeCursor = startDate;
+    for (const operation of operations) {
+      operation.start = routeCursor;
+      operation.end = new Date(routeCursor.getTime() + operation.durationMinutes * MINUTE_MS);
+      routeCursor = new Date(operation.end.getTime() + (operation.waitMinutes ?? 0) * MINUTE_MS);
+    }
 
     return {
       productId,
@@ -241,7 +247,7 @@ export class MrpEngine {
       const timing = operationTime(operation, quantity, recipe.batchQuantity);
       const setupMinutes = timing.setupMinutes;
       const runMinutes = timing.runMinutes;
-      const durationMinutes = setupMinutes + runMinutes;
+      const durationMinutes = timing.durationMinutes;
       const start = cursor;
       const end = cursor ? new Date(cursor.getTime() + durationMinutes * MINUTE_MS) : null;
       cursor = end;

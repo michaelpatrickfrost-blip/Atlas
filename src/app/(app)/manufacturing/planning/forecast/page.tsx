@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ForecastWorkbench } from "./forecast-workbench";
 import { requireSession } from "@/core/auth/session";
+import { isModuleEnabled } from "@/core/modules/runtime";
 import { assertCapability } from "@/core/permissions/check";
 import { MANUFACTURING_CAPABILITIES as C } from "@/core/permissions/capabilities";
 import { listForecasts } from "@/modules/manufacturing/services/forecast";
@@ -15,10 +16,11 @@ export default async function ForecastPage() {
   const session = await requireSession();
   assertCapability(session, C.planRead);
   const canManage = session.capabilities.has(C.planManage);
-  const [forecasts, products, chain] = await Promise.all([
+  const [forecasts, products, chain, sopEnabled] = await Promise.all([
     listForecasts(session.organisationId),
     manufacturableProducts(session.organisationId),
     readAvailability(),
+    isModuleEnabled(session, "sop"),
   ]);
   const available = new Map(chain.products.map((row) => [row.productId, row]));
 
@@ -34,7 +36,7 @@ export default async function ForecastPage() {
         </p>
       </header>
 
-      {session.capabilities.has("sales.order.read") && session.capabilities.has("customers.read") && session.capabilities.has("core.products.read") && <ForecastWorkbench products={products} canManage={canManage} />}
+      {session.capabilities.has("sales.order.read") && session.capabilities.has("customers.read") && session.capabilities.has("core.products.read") && <ForecastWorkbench products={products} canManage={canManage} canSop={sopEnabled && session.capabilities.has("sop.read")} />}
 
       {canManage && (
         <ActionForm action={setForecastAction} className="flex flex-wrap items-end gap-3 rounded-2xl border border-[var(--color-border)] bg-white px-4 py-4">

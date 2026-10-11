@@ -12219,3 +12219,14 @@ and scoped lint passed on the then-current source. Final module/start guard and
 cost-label edits require rerun; build and central candidate/public acceptance
 remain pending.
 Deployment is required before completed handoff. No claim of factory readiness.
+
+Manufacturing follow-up checkpoint: strict types/scoped lint and build passed on
+the merged Dashboard checkpoint. Final review aligned the correct future month,
+batch handling-cost preview, preferred alternative selection and MRP estimated
+operation dates/transfer wait. 12 files/96 assertions PASS (including independent
+Dashboard/cost access regressions); final strict types caught optional test output
+access, now corrected. Final strict types/build/lint rerun required before release.
+New supply harness explicitly exercises actual last-year +10% +5 UI saving,
+seasonal source history, wrong-machine/locked/stale refusal and atomic cascades.
+Public release now 1acc63c; its company administration/Finance access changes must
+be preserved before this scoped release. Earlier product-wide gaps stay open.

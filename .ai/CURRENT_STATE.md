@@ -1,3 +1,33 @@
+## 11 October 2026 — isolated closed2 cutover/settlement metadata identity VERIFIED locally
+
+Phase2 e3e2a identity slice only: `cutover-inspection.ts` adds separate required
+cutover entry, actual scoped stored2 intent/review/full mirrors/hash and immutable
+source/target schema1-or2/payload/compiled hash/IDs/tenant/publisher helpers.
+Actual ACT/CUTOVER/READY target-active original+2, frozen draft+1 and both existing
+source/target freshness SQL required. `settlement-inspection.ts` adds separate
+required historical identity: exact original review/receipt1/execution/publication
+pairing independent of later legitimate pointer/draft/native/value changes;
+original principal unchanged. Shared open-window helper accepts explicit legacy/
+required union and retains current pointer/draft CAS and rollback-only SQL.
+Old closed1 function bodies mechanically verified unchanged. No permissions inferred
+from retained metadata; caller owns fresh current owner/private/field/reference
+coverage. No service dispatch/activation/rollback grants, DDL, writes or Phase3+.
+
+`tests/studio-field-required-cutover-identity.test.ts`: 11 cases, three source/target
+schema pairings including rule removal, protocol/tenant/full hash/mirror denials,
+actual state/pointer/revision/draft/freshness (false/absent/ambiguous) and retained
+terminal histories after later changes. Synthetic compiled plans/cohort and tx
+mocks use real closed2 seals/current Tickets contracts/receipt1 parsers; no actual
+SQL, native evaluation, current actor authority or runtime acceptance claimed.
+47 tests/5 focused suites PASS; strict TypeScript (`--incremental false`), scoped
+ESLint and diff checks PASS. Build/central fixture/public verification NOT RUN
+(parent owns integration/release). Root three pure helper dependency files copied
+UNSTAGED and excluded from this scoped checkpoint; shared node/client symlinks,
+no install/generate/output duplicates. No known local identity blocker.
+Exact next: integrate after root pure helper checkpoint; parent verifies actual
+conditional row/coverage/aggregate runtime and current-settler authority before
+any eventual service activation. Whole Phase2 and full e3e2a runtime remain open.
+
 ## 11 October 2026 — e3e1 pure receipt contracts VERIFIED locally; e3e2 IN PROGRESS
 
 Root explicit closed2 cutover/identity/receipt/settlement helpers integrated with

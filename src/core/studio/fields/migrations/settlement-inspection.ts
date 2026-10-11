@@ -2,7 +2,9 @@ import type { Prisma } from "@/generated/prisma/client";
 import { canonicalJson, checksum } from "../../registry/contracts";
 import { FieldMigrationReviewError, sealFieldMigrationIntent, fieldMigrationIntentFromReview, readSealedFieldMigrationReview, type FieldMigrationIntent } from "./contracts";
 import { fieldMigrationExecutionPinSchema } from "./execution-contract";
-import { readFieldMigrationSettlementReceipt } from "./settlement-receipt";
+import { readRequiredFieldMigrationSettlementReceipt, readFieldMigrationSettlementReceipt } from "./settlement-receipt";
+import type { RequiredFieldMigrationIntent } from "./required-contracts";
+import { inspectRequiredFieldMigrationStoredIdentity, inspectRequiredFieldMigrationVersions } from "./cutover-inspection";
 
 function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"); }
 const versionSelect = { id: true, organisationId: true, definitionId: true, version: true, payload: true, compiledPlan: true, checksum: true } as const;
@@ -45,10 +47,42 @@ export async function inspectFieldMigrationSettlementIdentity(tx: Prisma.Transac
   return { intent, stored, publication, execution, receipt, definition, source, target, executionPin, ...history };
 }
 
+/** Conditional immutable historical identity. No current pointer/draft/value or
+ * original native revision is asserted; a different current settler's permissions
+ * remain the caller's responsibility. Original principal is never rewritten. */
+export async function inspectRequiredFieldMigrationSettlementIdentity(tx: Prisma.TransactionClient, serverIntent: RequiredFieldMigrationIntent) {
+  const { intent, stored } = await inspectRequiredFieldMigrationStoredIdentity(tx, serverIntent);
+  const scope = { preparationId: intent.id, organisationId: intent.organisationId, definitionId: intent.definitionId };
+  await tx.$queryRaw`SELECT "preparationId" FROM studio_field_migration_publications WHERE "preparationId"=${intent.id}::uuid AND "organisationId"=${intent.organisationId} FOR UPDATE`;
+  await tx.$queryRaw`SELECT "preparationId" FROM studio_field_migration_executions WHERE "preparationId"=${intent.id}::uuid AND "organisationId"=${intent.organisationId} FOR SHARE`;
+  await tx.$queryRaw`SELECT "preparationId" FROM studio_field_migration_cutovers WHERE "preparationId"=${intent.id}::uuid AND "organisationId"=${intent.organisationId} FOR UPDATE`;
+  await tx.$queryRaw`SELECT d.id FROM studio_definitions d JOIN studio_drafts draft ON draft."definitionId"=d.id AND draft."organisationId"=d."organisationId"
+    WHERE d.id=${intent.definitionId}::uuid AND d."organisationId"=${intent.organisationId} FOR UPDATE OF d,draft`;
+  const publication = await tx.studioFieldMigrationPublication.findFirst({ where: scope });
+  const execution = await tx.studioFieldMigrationExecution.findFirst({ where: scope });
+  const receipt = await tx.studioFieldMigrationCutover.findFirst({ where: scope, select: { preparationId: true, organisationId: true, definitionId: true,
+    sourceVersionId: true, targetVersionId: true, pin: true, pinChecksum: true, state: true, revision: true, createdBy: true,
+    settlementPin: true, settlementChecksum: true, settledBy: true, settledAt: true } });
+  const definition = await tx.studioDefinition.findFirst({ where: { id: intent.definitionId, organisationId: intent.organisationId },
+    select: { id: true, organisationId: true, kind: true, activeVersionId: true, revision: true, latestVersion: true, retiredAt: true } });
+  if (!publication || !execution || !receipt || !definition || definition.id !== intent.definitionId || definition.organisationId !== intent.organisationId) changed();
+  const executionPin = fieldMigrationExecutionPinSchema.parse(execution.pin);
+  const published = Object.fromEntries(Object.keys(executionPin.publication).map(key => [key, publication[key as keyof typeof executionPin.publication]]));
+  const history = readRequiredFieldMigrationSettlementReceipt(stored, { preparationId: execution.preparationId, organisationId: execution.organisationId, definitionId: execution.definitionId,
+    entityId: execution.entityId, pin: execution.pin, pinChecksum: execution.pinChecksum, state: execution.state, revision: execution.revision,
+    cursor: execution.cursor, processedCount: execution.processedCount, failureCode: execution.failureCode }, { ...published, state: publication.state, revision: publication.revision },
+    { ...receipt, settledAt: receipt.settledAt?.toISOString() ?? null });
+  const versions = await inspectRequiredFieldMigrationVersions(tx, intent, receipt.sourceVersionId, receipt.targetVersionId, publication.targetVersionNumber, publication.publisherUserId);
+  return { intent, stored, publication, execution, receipt, definition, ...versions, executionPin, ...history };
+}
+
+type SettlementInspection = Awaited<ReturnType<typeof inspectFieldMigrationSettlementIdentity>>
+  | Awaited<ReturnType<typeof inspectRequiredFieldMigrationSettlementIdentity>>;
+
 /** A new one-time settlement needs the exact still-open configuration. Rollback
  * additionally requires unchanged source AND target, not reverse conversion.
  * Finalization only closes the window and does not open domain/value authority. */
-export async function inspectFieldMigrationSettlementWindow(tx: Prisma.TransactionClient, inspected: Awaited<ReturnType<typeof inspectFieldMigrationSettlementIdentity>>,
+export async function inspectFieldMigrationSettlementWindow(tx: Prisma.TransactionClient, inspected: SettlementInspection,
   disposition: "ROLLED_BACK" | "FINALIZED") {
   const { intent, receipt, definition, publication } = inspected;
   if (inspected.state !== "ACTIVATED" || definition.kind !== "customField" || definition.retiredAt !== null

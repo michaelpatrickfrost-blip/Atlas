@@ -119,5 +119,5 @@ export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuth
       catalog.facts.push({ id: fact.id, label });
       return [{ id: fact.id, label, choices }];
     });
-  return { fields, palette, catalog, conditions: { variantsAllowed: approvals.variants, facts: conditionFacts }, approvalsChecksum: checksum(approvals) };
+  return { fields, palette, catalog, scope, conditions: { variantsAllowed: approvals.variants, facts: conditionFacts }, approvalsChecksum: checksum(approvals) };
 }

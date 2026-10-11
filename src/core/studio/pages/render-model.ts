@@ -10,7 +10,7 @@ import type { PageScalar } from "./schema";
 export type PageDisplayCell = { label: string; text: string; unavailable: boolean };
 export type PageDisplayComponent = { id: string; label: string; help: string } & (
   | { type: "fields" | "facts" | "metric"; cells: PageDisplayCell[] }
-  | { type: "queryList"; columns: string[]; rows: { id: string; cells: PageDisplayCell[] }[]; nextCursor: PageQueryOutput["nextCursor"] }
+  | { type: "queryList"; columns: string[]; rows: { id: string; cells: PageDisplayCell[] }[]; nextCursor: PageQueryOutput["nextCursor"]; recordNavigation?: boolean }
   | { type: "instructions" | "callout"; text: string; tone: "info" | "success" | "warning" }
   | { type: "action"; command: ContractReference; confirm: boolean; preview: boolean }
   | { type: "surface"; family: string; surface?: ContractReference; outputs: PageQueryOutput[] }

@@ -172,6 +172,10 @@ export async function resolveRecordProfileInTransaction(authority: FieldRuntimeA
       }
     }
     if ((historicalProfile ? checksum(historicalProfile) : null) !== retained.resolvedProfileChecksum) invalid();
+    // A newer type/base cannot erase the policy of the profile that supplied
+    // this association. Check retained field grants before even an empty current
+    // profile/base return; the actual access mode remains ordinary/INSERT/native.
+    await preflightRecordProfileFields(authority, historicalProfile, request.entity.id, access);
     definitionId = assignment.recordTypeDefinitionId; assignmentId = assignment.id;
   } else if (extension?.recordTypeAssignment) invalid();
   let kind: "entityProfile" | "recordType" = "recordType";

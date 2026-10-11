@@ -586,3 +586,19 @@ reference grants before values. Module-contributed forms reuse existing complete
 native forms/actions and CAS. Design preview shares the runtime display contract but
 cannot invoke commands, navigate, paginate or submit forms. Unsupported owners and
 protected domain edits are unavailable; no generic database or business table API.
+
+## Phase 2 visual setup and native adapters — 11 October 2026
+
+Friendly field setup uses a closed all15-type input contract and server-generated
+stable keys/enum identities/approved reference pins. Published structural changes
+still require the original reviewed migration; cosmetic save cannot alter saved
+security/defaults/required/storage. Record setup resolves canonical active pins on
+the server. Existing-record type selection reuses the original assignment service,
+owner CAS/extension revision/private/current+retained policies and atomic Audit.
+Native progress/reopen remains intact; a sibling selector never nests native forms.
+
+The standalone document editor adapts the existing Templates editor/service and
+DocumentTemplate records. Original version CAS and native contract access remain;
+selected-business Studio authorisation adds no business privilege. The published
+Page runtime caches only bounded sealed compiled metadata, with fresh owner/grants
+and actual queries each request. Source implementation is not live gate evidence.

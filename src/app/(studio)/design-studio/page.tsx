@@ -20,7 +20,11 @@ export default async function StudioWorkspace({ searchParams }: { searchParams: 
     const pages = await authority.transaction.studioDefinition.findMany({ where: { organisationId: authority.session.organisationId,
       kind: "page", retiredAt: null }, select: { id: true, name: true, activeVersionId: true, latestVersion: true, updatedAt: true },
       orderBy: { updatedAt: "desc" }, take: 100 });
-    return { businessName: authority.session.organisationName, layouts, pages, canEdit: authority.session.capabilities.has(CAP.edit) };
+    return { businessName: authority.session.organisationName, layouts, pages, canEdit: authority.session.capabilities.has(CAP.edit),
+      canDesignDocuments: authority.session.capabilities.has("core.contract.manage") && !!await authority.transaction.moduleState.findFirst({
+        where: { organisationId: authority.session.organisationId, moduleId: "templates", enabled: true, entitled: true }, select: { id: true } }),
+      canSetupTickets: authority.session.capabilities.has("tickets.ticket.read") && authority.session.capabilities.has("tickets.ticket.manage")
+        && !!await authority.transaction.moduleState.findFirst({ where: { organisationId: authority.session.organisationId, moduleId: "tickets", enabled: true, entitled: true }, select: { id: true } }) };
   });
   const suffix = business ? `?business=${encodeURIComponent(business)}` : "";
   const back = actor.capabilities.has(ATLAS_CAPABILITIES.staff) ? `/atlas/studio/${business}` : "/home";
@@ -47,8 +51,14 @@ export default async function StudioWorkspace({ searchParams }: { searchParams: 
         </ActionForm>)}</div> : <p className="mt-6 text-sm text-slate-500">{workspace.canEdit ? "Enable an app with an approved screen source to start designing." : "Ask a business administrator for permission to design screens."}</p>}
       </section>
     </div>
-    <div className="mt-6 grid gap-4 md:grid-cols-2">{[{ icon: FileText, title: "Document templates", text: "Use the existing Templates editor for quotations, acknowledgements and other business documents.", href: "/templates" },
-      { icon: LayoutDashboard, title: "Business dashboards", text: "Use the existing Analytics workspace to arrange and publish dashboards.", href: "/analytics" }].map(({ icon: Icon, title, text, href }) => <div key={title} className="rounded-3xl border border-slate-200 bg-white p-6"><Icon className="h-5 w-5 text-blue-600"/><h2 className="mt-3 font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-slate-500">{text}</p>
+    {workspace.canSetupTickets && <Link href={`/design-studio/setup${suffix}`} className="mt-6 flex items-center justify-between gap-5 rounded-3xl border border-blue-200 bg-blue-50 p-6 transition hover:bg-blue-100/60">
+      <div><h2 className="text-lg font-semibold text-blue-900">Set up your business details</h2><p className="mt-2 text-sm text-blue-800">Additional ticket fields, base record setup and different record types — with names your team understands.</p></div><ArrowUpRight className="h-6 w-6 shrink-0 text-blue-600"/>
+    </Link>}
+    <div className="mt-6 grid gap-4 md:grid-cols-2">
+      {workspace.canDesignDocuments && <Link href={`/design-studio/documents${suffix}`} className="group rounded-3xl border border-slate-200 bg-white p-6 transition hover:border-blue-300">
+        <FileText className="h-5 w-5 text-blue-600"/><h2 className="mt-3 font-semibold">Document templates</h2><p className="mt-2 text-sm leading-6 text-slate-500">Design business documents, arrange their sections and preview them with the existing Templates editor.</p><span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-700">Open document designer<ArrowUpRight className="h-4 w-4"/></span>
+      </Link>}
+      {[{ icon: LayoutDashboard, title: "Business dashboards", text: "Your existing Analytics dashboards are available in the business workspace.", href: "/analytics" }].map(({ icon: Icon, title, text, href }) => <div key={title} className="rounded-3xl border border-slate-200 bg-white p-6"><Icon className="h-5 w-5 text-blue-600"/><h2 className="mt-3 font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-slate-500">{text}</p>
         {business ? <p className="mt-4 text-xs font-medium text-slate-500">Open this business&apos;s workspace from Atlas Admin to use its existing editor.</p> : <Link href={href} className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-700">Open {title.toLowerCase()}<ArrowUpRight className="h-4 w-4"/></Link>}</div>)}</div>
   </div>;
 }

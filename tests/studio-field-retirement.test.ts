@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Session } from "@/core/auth/session";
 import { Prisma } from "@/generated/prisma/client";
 
-const mocks = vi.hoisted(() => ({ transaction: vi.fn(), gate: vi.fn(), lock: vi.fn(), available: vi.fn(), change: vi.fn(), audit: vi.fn(), impact: vi.fn() }));
+const mocks = vi.hoisted(() => ({ transaction: vi.fn(), gate: vi.fn(), lock: vi.fn(), available: vi.fn(), change: vi.fn(), audit: vi.fn(), impact: vi.fn(), current: vi.fn() }));
 vi.mock("@/core/db/client", () => ({ db: { $transaction: mocks.transaction } }));
 vi.mock("@/core/modules/access", () => ({ assertModuleEnabled: mocks.gate }));
 vi.mock("@/core/studio/configuration/usage", () => ({ assertNoActiveConfigurationDependantsInTransaction: mocks.impact }));
@@ -13,7 +13,8 @@ const session: Session = { organisationId: "tenant-a", organisationName: "A", us
   capabilities: new Set(["studio.definition.publish"]) };
 beforeEach(() => {
   vi.clearAllMocks(); mocks.gate.mockResolvedValue(undefined); mocks.available.mockResolvedValue({ id: "enabled" }); mocks.change.mockResolvedValue({ count: 1 }); mocks.audit.mockResolvedValue({ id: "audit" });
-  mocks.transaction.mockImplementation(async operation => operation({ $queryRaw: mocks.lock, moduleState: { findFirst: mocks.available }, studioDefinition: { updateMany: mocks.change }, auditEntry: { create: mocks.audit } }));
+  mocks.current.mockResolvedValue({ id: definitionId });
+  mocks.transaction.mockImplementation(async operation => operation({ $queryRaw: mocks.lock, moduleState: { findFirst: mocks.available }, studioDefinition: { findFirst: mocks.current, updateMany: mocks.change }, auditEntry: { create: mocks.audit } }));
 });
 
 describe("Studio field retirement boundary", () => {
@@ -55,6 +56,12 @@ describe("Studio field retirement boundary", () => {
     mocks.change.mockResolvedValue({ count: 0 });
     await expect(retireFieldDefinition(session, { definitionId, revision: 2 })).rejects.toThrow("CONFLICT");
     expect(mocks.audit).not.toHaveBeenCalled();
+  });
+  it("keeps unavailable/stale fields opaque before impact metadata or changes", async () => {
+    mocks.current.mockResolvedValue(null);
+    await expect(retireFieldDefinition(session, { definitionId, revision: 2 })).rejects.toThrow("CONFLICT");
+    expect(mocks.current).toHaveBeenCalledWith({ where: { id: definitionId, organisationId: "tenant-a", kind: "customField", revision: 2, retiredAt: null }, select: { id: true } });
+    expect(mocks.impact).not.toHaveBeenCalled(); expect(mocks.change).not.toHaveBeenCalled(); expect(mocks.audit).not.toHaveBeenCalled();
   });
   it("propagates audit failure so the transaction cannot return successful retirement", async () => {
     mocks.audit.mockRejectedValue(new Error("audit failed"));

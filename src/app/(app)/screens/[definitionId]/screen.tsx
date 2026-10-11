@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import { PageRenderer } from "@/components/studio/page-renderer";
 import type { PageDisplayModel } from "@/core/studio/pages/render-model";
 import type { PageReadRequest, PageQueryOutput } from "@/core/studio/pages/owner-contract";
-import { loadBusinessScreen, executeBusinessScreenButton } from "../actions";
+import { loadBusinessScreen, executeBusinessScreenButton, openBusinessScreenRecord } from "../actions";
 
 type View = { definitionId: string; definitionRevision: number; versionId: string; name: string; model: PageDisplayModel };
 export function PublishedBusinessScreen({ initial, request, surfaces = {} }: { initial: View; request: PageReadRequest; surfaces?: Record<string, ReactNode> }) {
@@ -51,8 +51,17 @@ export function PublishedBusinessScreen({ initial, request, surfaces = {} }: { i
     } catch { setFeedback("This action could not be completed. Refresh the screen and check your access before trying again."); }
     finally { setBusy(false); }
   };
+  const openRecord = async (componentId: string, selectedRecordId: string) => {
+    if (busy) return;
+    setBusy(true); setFeedback("");
+    try { const href = await openBusinessScreenRecord({ definitionId: view.definitionId, request, formFactor: view.model.formFactor,
+      cursors, componentId, selectedRecordId, expectedVersionId: view.versionId, expectedDefinitionRevision: view.definitionRevision });
+      router.push(href);
+    } catch { setFeedback("This record could not be opened. Refresh the list and check your access."); }
+    finally { setBusy(false); }
+  };
   return <div aria-busy={busy}>{feedback && <p role="alert" className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">{feedback}</p>}
-    <PageRenderer model={view.model} interaction="live" onNext={next} onAction={action} renderSurface={component =>
+    <PageRenderer model={view.model} interaction="live" onNext={next} onAction={action} onRecordSelect={openRecord} renderSurface={component =>
       (view.versionId === initial.versionId && view.definitionRevision === initial.definitionRevision
         && view.model.formFactor === initial.model.formFactor ? surfaces[component.id] : undefined)
       ?? <p className="text-sm text-slate-500">This app form has changed. Refresh to load its current version.</p>}/></div>;

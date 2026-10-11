@@ -2771,3 +2771,24 @@ only; they cannot bypass complete-form validation or native CAS. Responsive rout
 changes re-read only currently visible owning forms in SSR, and slots require the
 same Page version/head/device. Preview remains inert. No parallel form/publisher,
 permission system, native data mutation API or client-supplied tenant grants.
+
+## 11 October 2026 — Phase 2 original Templates and metadata-only Page cache
+
+The standalone selected-business Studio adapts the existing TemplateEditor and
+DocumentTemplate renderer/storage. The original save path and Studio use the same
+native authoring service with genuine fresh authority, independent contract access,
+tenant/module scope and version CAS plus Audit in its owning transaction. No second
+document engine or customer-cookie switch is introduced. This satisfies source
+Sections18/20.32 and Michael's request for visual bespoke documents.
+
+Published Pages may cache only pure normalised compiled metadata after exact sealed
+pin loading and freshly reconstructed approvals. Cache is process memory, bounded
+100 entries/five-minute TTL, tenant/version/seal/metadata digest keyed, full checksum
+checked, cloned on return. Current owner/module/private/field/written/reference
+authorisation and actual data queries run on every request. Drafts and business
+values do not enter this cache. This implements Section17 without local data stores.
+
+Existing Ticket type selection is a sibling native form. Current server catalogue
+loads active exact type pins, genuine owner Extend and current/retained policies;
+posted IDs/revisions never grant access. Closed/merged native workflows retain their
+existing progress/reopen form without an unavailable reassignment control.

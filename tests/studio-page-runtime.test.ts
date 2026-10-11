@@ -121,8 +121,8 @@ describe("fresh owning Page runtime and shared renderer", () => {
     expect(model.sections[0].columns).toBe(1);
   });
   it("rejects changed saved plans, client tenant/type claims and copied authority before canonical data", async () => {
-    const f = await fixture(); mock.sealed.mockResolvedValueOnce({ payload: f.plan.payload, compiledPlan: f.plan, checksum: "f".repeat(64) });
-    await expect(readPublishedPageInTransaction(f.authority, f.request)).rejects.toThrow("incompatible");
+    const f = await fixture(); mock.sealed.mockResolvedValueOnce({ id: f.pin.versionId, payload: f.plan.payload, compiledPlan: f.plan, checksum: "f".repeat(64) });
+    await expect(readPublishedPageInTransaction(f.authority, f.request)).rejects.toThrow("DEPENDENCY_BROKEN");
     await expect(readPublishedPageInTransaction(f.authority, { ...f.request, organisationId: "foreign" })).rejects.toThrow();
     await expect(readPublishedPageInTransaction(f.authority, { ...f.request, recordTypeDefinitionId: uuid(3) })).rejects.toThrow();
     await expect(readPublishedPageInTransaction({ ...f.authority, session: { ...f.session } }, f.request)).rejects.toThrow("incompatible");
@@ -138,11 +138,22 @@ describe("fresh owning Page runtime and shared renderer", () => {
     f.authorise.mockResolvedValueOnce({ kind: "record", organisationId: "company", recordId: "order", revision: "4" }).mockResolvedValueOnce({ kind: "record", organisationId: "company", recordId: "order", revision: "5" });
     await expect(readPublishedPageInTransaction(f.authority, f.request)).rejects.toThrow("native page record changed");
   });
+  it("rechecks current owner access and reads real data on a warm compiled metadata cache", async () => {
+    const f = await fixture();
+    await readPublishedPageInTransaction(f.authority, f.request);
+    f.run.mockResolvedValueOnce({ rows: [{ id: "order", values: { subject: "Changed business order", amount: 200, currency: "GBP", urgent: false } }], nextCursor: null });
+    const current = await readPublishedPageInTransaction(f.authority, f.request);
+    expect(JSON.stringify(current)).toContain("Changed business order"); expect(f.run).toHaveBeenCalledTimes(2);
+    f.authorise.mockRejectedValueOnce(new Error("FORBIDDEN: receiving-team access revoked"));
+    await expect(readPublishedPageInTransaction(f.authority, f.request)).rejects.toThrow("receiving-team access revoked");
+    expect(f.run).toHaveBeenCalledTimes(2); expect(mock.sealed).toHaveBeenCalledTimes(3);
+  });
   it("keeps bounded list pagination on the approved list scope, without implying a complete corpus", async () => {
     const f = await fixture("list"), model = await readPublishedPageInTransaction(f.authority, { ...f.request, cursors: { orders: { id: "second" } } });
     const component = model.sections[0].components.find(component => component.type === "queryList");
     expect(component?.type === "queryList" && component.rows[0].id).toBe("second");
     expect(component?.type === "queryList" && component.nextCursor).toEqual({ id: "next" });
+    expect(component?.type === "queryList" && component.recordNavigation).toBe(true);
     expect(f.run).toHaveBeenCalledWith(expect.anything(), { pageSize: 10, cursor: { id: "second" } });
     await expect(readPublishedPageInTransaction(f.authority, { ...f.request, cursors: { guide: null } })).rejects.toThrow("cursor target");
   });
@@ -150,7 +161,7 @@ describe("fresh owning Page runtime and shared renderer", () => {
     const f = await fixture("list"), payload = structuredClone(f.plan.payload), selected = payload.sections[0].components.find(component => component.type === "queryList")!;
     payload.sections[0].components.push({ ...selected, id: "other_orders" });
     const plan = compilePage(payload, f.plan.approvals), pin = { ...f.pin, checksum: checksum(plan) };
-    mock.sealed.mockResolvedValue({ payload: plan.payload, compiledPlan: plan, checksum: pin.checksum });
+    mock.sealed.mockResolvedValue({ id: pin.versionId, payload: plan.payload, compiledPlan: plan, checksum: pin.checksum });
     const model = await readPublishedPageInTransaction(f.authority, { ...f.request, page: pin, cursors: { orders: { id: "first_page" }, other_orders: { id: "other_page" } } });
     const lists = model.sections[0].components.filter(component => component.type === "queryList");
     expect(lists.map(component => component.rows[0].id)).toEqual(["first_page", "other_page"]);
@@ -162,7 +173,7 @@ describe("fresh owning Page runtime and shared renderer", () => {
     const header = payload.sections[0].components.find(component => component.id === "header")!;
     header.visibleWhen = { kind: "capabilities", mode: "all", capabilities: ["example.secret.read"] };
     const plan = compilePage(payload, f.plan.approvals), pin = { ...f.pin, checksum: checksum(plan) };
-    mock.sealed.mockResolvedValueOnce({ payload: plan.payload, compiledPlan: plan, checksum: pin.checksum });
+    mock.sealed.mockResolvedValueOnce({ id: pin.versionId, payload: plan.payload, compiledPlan: plan, checksum: pin.checksum });
     const hidden = await readPublishedPageInTransaction(f.authority, { ...f.request, page: pin });
     expect(hidden.sections[0].components.map(component => component.id)).toEqual(["guide"]); expect(f.run).not.toHaveBeenCalled();
     for (const [currency, expected] of [["JPY", "12,345"], ["KWD", "12.345"], ["XYZ", "Unavailable"]]) {

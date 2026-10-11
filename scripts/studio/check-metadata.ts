@@ -110,7 +110,7 @@ async function main() {
     for (const label of ["Apps","Search apps, people, reports... ⌘K","Open chat","Notifications"]) await expect(page.getByRole("button",{name:label,exact:true})).toHaveCount(0);
     await expect(page.getByRole("link",{name:"My work",exact:true})).toHaveCount(0);
     await expect(page.getByRole("heading",{name:"Business setup",exact:true})).toBeVisible();
-    await expect(page.getByText("Visual designer in development",{exact:true})).toBeVisible();
+    await expect(page.getByText("Visual business designer",{exact:true})).toBeVisible();
     await expect(page.getByLabel("Name",{exact:true})).not.toBeVisible();
     for (const width of [1440,820,390]) {
       await page.setViewportSize({width,height:1000});
@@ -197,7 +197,7 @@ async function main() {
     await customerPage.getByLabel("New password",{exact:true}).fill(password);await customerPage.getByLabel("Confirm password",{exact:true}).fill(password);
     await customerPage.getByRole("button",{name:"Save password",exact:true}).click();await expect(customerPage).toHaveURL(`${base}/home`);
     await customerPage.goto("/studio",{waitUntil:"networkidle"});await expect(customerPage.getByRole("heading",{name:"Business setup",exact:true})).toBeVisible();
-    await expect(customerPage.getByText("Visual designer in development",{exact:true})).toBeVisible();
+    await expect(customerPage.getByText("Visual business designer",{exact:true})).toBeVisible();
     await expect(customerPage.getByLabel("Name",{exact:true})).not.toBeVisible();
     await expect(customerPage.getByText("Browser accepted configuration",{exact:true})).not.toBeVisible();
     await customerPage.locator("#advanced-setup > summary").click();

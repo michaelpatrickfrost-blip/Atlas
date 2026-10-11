@@ -290,3 +290,35 @@ generated identity, cosmetic preservation, exact saved CAS, base/type pin handli
 GoLive atomic publisher/activation, browser setup/runtime behavior. Status IN PROGRESS;
 backend78725538 locally26PASS ready, remaining owner-approved types separate bounded
 extension. Original reviewed migration remains structural post-publication path.
+
+## 11 October — next bounded Phase 2 integration workstreams
+
+2E7 existing Templates adapter — IN PROGRESS. Purpose: the same document builder,
+renderer and tenant-owned DocumentTemplate records inside selected-business visual
+Studio. Dependencies: genuine authoring authority and existing native contract/
+Templates access. Expected files: core/templates/authoring, original save action,
+shared TemplateEditor optional action/library props, design-studio/documents routes,
+focused authoring/reuse tests. DB: none; native version CAS and Audit stay atomic.
+Published templates remain available through existing apps; no duplicate renderer.
+
+2D4 compiled metadata cache — IMPLEMENTED helper6f227a30, integration IN PROGRESS.
+Purpose: avoid recompilation of exact published metadata, bounded100/five-minute
+process-memory entries. Depends sealed loader and fresh approval reconstruction.
+Files pages/compiled-cache/runtime and pure compiler tests. DB: none. No sessions,
+values, grants, queries or disk cache. Every runtime still authorises and reads.
+
+2C3 native type selection — IN PROGRESS existing helper. Slice1 existing-record
+catalogue/server choice/current+retained policy preflight, owner CAS/association/Audit
+and sibling native form. Root owns native detail/Page form-loader integration.
+Slice2 initial creation requires separately versioned optional transport and receipt,
+checksum/replay binding and additive original receipt guard; absence retains old
+hashes. Must prove compatible rollback reader before exposing new receipt writing.
+No actual INSERT proof fabricated during replay. Expected files record-types,
+service-work native writer/form/receipt/checkers and additive migration if required.
+
+2D5 native default Page — IN PROGRESS existing helper. Server resolves genuine
+canonical current profile/assignment and its exact retained Page pin. Native Ticket
+link preserves all original WorkDetail actions. No following a newer active pointer,
+client pins or arbitrary owner IDs. Files page record-default reader/tests and root
+native routes. DB none. Tests tenant/native/profile/retained/current rights, stale
+fingerprint, wrong owner, retired/corrupt pins and legitimate no-Page result.

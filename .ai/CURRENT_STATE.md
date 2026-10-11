@@ -1,3 +1,39 @@
+## 11 October 2026 — Phase 2 friendly visual setup and Templates integration IN PROGRESS
+
+Integrated source now includes noncoder all-15-type additional-field creation,
+base/type Page and required-field choices, saved review/GoLive/restore, unsaved-form
+review guard, and genuine selected-business document library/editor adapting the
+original Templates engine. Published Page compilation uses bounded metadata-only
+process cache after fresh sealed metadata/approval checks; actual grants and reads
+still run per request. Canonical visible list rows open existing native records.
+No extra source/dependency copies, business caches or ad-hoc dumps created.
+
+627beb7d original backed-up release failed BEFORE activation: foreign-tenant field
+retirement hit unavailable impact metadata before its opaque conflict check.
+Retirement now checks tenant/kind/revision/retired state under the existing lock
+before dependency traversal; focused rejection/impact regressions passed. This
+preserves every successful-retirement graph/CAS/Audit gate. Original recovery
+223332 and fixture223524 retained. Last live c385a2be, rollback5b6390c8 unchanged.
+Central history read this checkpoint CONFIRMS 060 and070 applied by candidate builds
+(21:30:49 /22:34:20 UTC); additive migrations remain, no business reset/rollback.
+
+Current coherent root checkpoint: production13758 EXIT0; sequential strict79234
+EXIT0; changed-source lint41989 plus new-route lint EXIT0 (only ignored Markdown
+warnings). Friendly/Templates/cache/retirement155/9 PASS; native type/profile/Page
+forms73/6 PASS. Warm-cache runtime now checks fresh native rights/data.
+Earlier:88/5 boundary suites PASS; friendly setup/dirty7/2 PASS; expanded
+friendly/backend/runtime/rows/dirty105/4 PASS. Final types75788/lint24532 passed
+before latest typed frontend/Templates/cache integration; latest complete source
+build/types/lint and actual original candidate/public run still required. Helper
+cache18/2, all-type frontend28/2 and Templates36/3 passed in their owned source
+checkpoints, not root/live evidence. Full Phase2 FAIL/incomplete, no Phase3.
+
+Exact next: finish native record-type selection/default Page integration, run one
+coherent current focused/build/types/lint checkpoint, then original pinned both-lock
+Studio release bridge and compatible runtime acceptance. Initial type-create receipt
+protocol and business Analytics integration remain separate bounded workstreams.
+See docs/studio/STUDIO_IMPLEMENTATION_PROGRESS.md and coverage for exact gate gaps.
+
 ## 11 October 2026 — Phase 2 visual customer runtime checkpoint IMPLEMENTED
 
 Dedicated /design-studio library/saved editor now uses genuine fresh selected-

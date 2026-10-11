@@ -4,14 +4,16 @@ import { assertCapability } from '@/core/permissions/check';
 import { fieldRuntimeAuthorityInTransaction, withFieldRuntimeAuthority, type FieldRuntimeAuthority } from '@/core/studio/fields/runtime-authority';
 import { workScope } from './access';
 import { ticketFieldFormManifestInTransaction } from './field-forms';
-import { WORK_STATUSES } from './config';
+import { WORK_STATUSES, FINAL_WORK } from './config';
 import type { TicketFieldFormManifest } from './field-form-contract';
+import { readRecordTypeSelectionInTransaction } from '@/core/studio/record-types/selection';
+import type { RecordTypeSelection } from '@/core/studio/record-types/selection-contract';
 
 const inputSchema = z.strictObject({ recordId: z.string().min(1).max(100).regex(/^[a-zA-Z0-9_-]+$/),
   expectedRevision: z.number().int().positive(), expectedUpdatedAt: z.iso.datetime() });
 export type TicketProgressFormRequest = z.infer<typeof inputSchema>;
 export type TicketProgressFormData = { work: { id: string; version: number; status: typeof WORK_STATUSES[number]; ownerUserId: string | null };
-  owners: { id: string; name: string }[]; fieldManifest: TicketFieldFormManifest | null };
+  owners: { id: string; name: string }[]; fieldManifest: TicketFieldFormManifest | null; recordTypeSelection: RecordTypeSelection | null };
 function unavailable(): never { throw new Error('NOT_FOUND: the ticket progress form is unavailable.'); }
 function changed(): never { throw new Error('CONFLICT: the ticket or its business form changed. Refresh before saving.'); }
 
@@ -52,5 +54,9 @@ export async function loadTicketProgressFormInTransaction(supplied: FieldRuntime
     select: { organisationId: true, userId: true, user: { select: { name: true } } }, orderBy: { userId: 'asc' }, take: 501 }) : [];
   const allowed = new Set(queueMembers.map(member => member.userId));
   if (members.length > 500 || new Set(members.map(member => member.userId)).size !== members.length || members.some(member => member.organisationId !== session.organisationId || !allowed.has(member.userId))) unavailable();
-  return { work: { id: work.id, version: work.version, status: status.data, ownerUserId: work.ownerUserId }, owners: members.map(member => ({ id: member.userId, name: member.user.name })), fieldManifest };
+  const source = !FINAL_WORK.includes(status.data) ? authority.registry.describe('tickets.ticket', 9) : null;
+  const recordTypeSelection = source ? await readRecordTypeSelectionInTransaction(session, tx,
+    { id: source.id, version: source.version, schemaHash: source.schemaHash, contractHash: source.contractHash },
+    { recordId: work.id, recordRevision: work.version }) : null;
+  return { work: { id: work.id, version: work.version, status: status.data, ownerUserId: work.ownerUserId }, owners: members.map(member => ({ id: member.userId, name: member.user.name })), fieldManifest, recordTypeSelection };
 }

@@ -157,3 +157,88 @@ it("preflights the real sealed profile in Create-only mode without calling ordin
   expect(ordinary).not.toHaveBeenCalled(); expect(resolve).not.toHaveBeenCalled();
   await expect(resolveRecordProfileInTransaction({ ...authority, session: creator }, request, { kind: "initial", proof: {} })).rejects.toThrow("INSERT proof");
 });
+
+function retainAssignedProfile() {
+  const provenance = recordTypeAssignmentProvenanceSchema.parse({ schemaVersion: 1, operationId: uuid(90), organisationId: "business", entity,
+    recordId: "native", nativeRevision: 7, extensionId: uuid(80), extensionRevision: 2, previousExtensionRevision: 1, previousAssignmentId: null,
+    recordType: type.pin, baseProfile: base.pin, resolvedProfileChecksum: checksum(resolveEntityProfile(base.row.payload)!.profile),
+    requestChecksum: checksum({ operationId: uuid(90), entity, recordId: "native", recordRevision: 7,
+      extensionRevision: 1, recordType: type.pin }), createdBy: "actor" });
+  extension.mockResolvedValue({ id: uuid(80), revision: 4, recordTypeAssignmentId: uuid(90), recordTypeAssignment: { id: uuid(90), extensionId: uuid(80),
+    extensionRevision: 2, nativeRevision: 7, previousAssignmentId: null, organisationId: "business", entityId: entity.id, recordId: "native",
+    createdBy: "actor", provenance, checksum: checksum(provenance), requestChecksum: provenance.requestChecksum,
+    recordTypeDefinitionId: type.pin.definitionId, recordTypeVersionId: type.pin.versionId, baseProfileDefinitionId: base.pin.definitionId, baseProfileVersionId: base.pin.versionId } });
+}
+function replaceCurrentWithEmptyProfile() {
+  const payload = entityProfilePayloadSchema.parse({ schemaVersion: 1, entity, profile: {} });
+  const resolved = resolveEntityProfile(payload)!;
+  const freshBase = envelope(10, "entityProfile", payload, { kind: "entityProfile", schemaVersion: 1, payload,
+    resolvedProfile: resolved.profile, dependencies: [dependency], configurationDependencies: [] });
+  freshBase.pin.definitionId = base.pin.definitionId; freshBase.row.definitionId = base.pin.definitionId;
+  const overlay = recordTypePayloadSchema.parse({ schemaVersion: 1, entity, baseProfile: freshBase.pin, label: "General enquiry", overlay: {} });
+  const materialised = resolveRecordTypeProfile({ reference: freshBase.pin, payload }, overlay, type.pin.definitionId);
+  const freshType = envelope(11, "recordType", overlay, { kind: "recordType", schemaVersion: 1, payload: overlay,
+    resolvedProfile: materialised.profile, dependencies: [dependency], configurationDependencies: materialised.configurationDependencies });
+  freshType.pin.definitionId = type.pin.definitionId; freshType.row.definitionId = type.pin.definitionId;
+  freshType.row.configurationDependencies = freshType.row.configurationDependencies.map(edge => ({ ...edge, definitionId: type.pin.definitionId }));
+  rows.push(freshBase.row, freshType.row);
+  const original = definition.getMockImplementation()!;
+  definition.mockImplementation(async input => input.where.id === type.pin.definitionId
+    ? { ...freshType.row.definition, activeVersionId: freshType.row.id, activeVersion: freshType.row }
+    : original(input));
+}
+it("checks retained required-field Read even after the current assigned type no longer uses that field", async () => {
+  retainAssignedProfile(); replaceCurrentWithEmptyProfile();
+  const reader = { ...session, capabilities: new Set(["tickets.ticket.read", "tickets.ticket.manage"]) };
+  mocks.stamps.set(reader, stamp);
+  await expect(resolveRecordProfileInTransaction({ ...authority, session: reader }, request)).rejects.toThrow("FORBIDDEN");
+  expect(Object.keys(tx)).not.toContain("studioFieldValue");
+  expect(await resolveRecordProfileInTransaction(authority, request)).toMatchObject({ profile: { requiredFields: [] }, assignmentId: uuid(90) });
+});
+it("retained policy reads preserve no-Write ordinary validation and genuine Create-only proof mode", async () => {
+  retainAssignedProfile(); replaceCurrentWithEmptyProfile();
+  const creator = { ...session, capabilities: new Set(["tickets.ticket.create", "tickets.field.read"]) }, proof = {};
+  mocks.stamps.set(creator, stamp);
+  vi.spyOn(registry, "authoriseCurrentFieldInitialisation").mockResolvedValue({ recordId: "native", organisationId: "business", revision: 7 });
+  const ordinary = vi.spyOn(registry, "authoriseRecord");
+  await expect(resolveRecordProfileInTransaction({ ...authority, session: creator }, request, { kind: "initial", proof }))
+    .resolves.toMatchObject({ profile: { requiredFields: [] } });
+  expect(ordinary).not.toHaveBeenCalled(); expect(creator.capabilities.has("tickets.field.write")).toBe(false);
+  const revoked = { ...creator, capabilities: new Set(["tickets.ticket.create"]) }; mocks.stamps.set(revoked, stamp);
+  await expect(resolveRecordProfileInTransaction({ ...authority, session: revoked }, request, { kind: "initial", proof })).rejects.toThrow("FORBIDDEN");
+});
+it("requires retained reference metadata Read even when the current profile drops that reference", async () => {
+  const target = registry.describe("tickets.ticket", 1), ref = { id: target.id, version: target.version, schemaHash: target.schemaHash, contractHash: target.contractHash };
+  const compiled = await compileCustomField(session, customFieldPayloadSchema.parse({ schemaVersion: 1, entity, storageGeneration: uuid(500),
+    field: { key: "count", label: "Related ticket", readCapability: "tickets.field.read", classification: "confidential", storage: { type: "reference", entity: ref } } }), registry);
+  field.row.payload = compiled.payload; field.row.compiledPlan = compiled.plan; field.row.checksum = compiled.checksum; field.pin.checksum = compiled.checksum;
+  // Rebuild sealed profile pin mirrors to retain that actual reference schema.
+  const payload = entityProfilePayloadSchema.parse({ schemaVersion: 1, entity, profile: { requiredFields: [field.pin] } });
+  const resolved = resolveEntityProfile(payload)!;
+  base = envelope(1, "entityProfile", payload, { kind: "entityProfile", schemaVersion: 1, payload,
+    resolvedProfile: resolved.profile, dependencies: [dependency], configurationDependencies: resolved.configurationDependencies });
+  const overlay = recordTypePayloadSchema.parse({ schemaVersion: 1, entity, baseProfile: base.pin, label: "Complaint", overlay: {} });
+  const materialised = resolveRecordTypeProfile({ reference: base.pin, payload }, overlay, uuid(3));
+  type = envelope(3, "recordType", overlay, { kind: "recordType", schemaVersion: 1, payload: overlay,
+    resolvedProfile: materialised.profile, dependencies: [dependency], configurationDependencies: materialised.configurationDependencies });
+  rows = [field.row, base.row, type.row]; retainAssignedProfile(); replaceCurrentWithEmptyProfile();
+  const original = registry.resolve.bind(registry);
+  vi.spyOn(registry, "resolve").mockImplementation(async (current, reference) => {
+    if (reference.id === ref.id && reference.version === ref.version) throw new Error("FORBIDDEN: current reference Read revoked");
+    return original(current, reference);
+  });
+  await expect(resolveRecordProfileInTransaction(authority, request)).rejects.toThrow("reference Read revoked");
+  expect(Object.keys(tx)).not.toContain("studioFieldValue");
+});
+it("retained field policies retain the explicit native validation proof without inventing ordinary record visibility", async () => {
+  retainAssignedProfile(); replaceCurrentWithEmptyProfile();
+  const native = { ...session, capabilities: new Set(["tickets.field.read"]) }, proof = {};
+  mocks.stamps.set(native, stamp);
+  const access = { kind: "native_validation" as const, request: { recordId: "native", expectedRevision: 7 }, operation: "tickets.ticket.update", proof };
+  const policy = vi.spyOn(registry, "resolveNativeValidationFieldPolicy").mockResolvedValue({ source: owner,
+    anchor: { recordId: "native", organisationId: "business", revision: 7 } } as never);
+  const ordinary = vi.spyOn(registry, "authoriseRecord");
+  await expect(resolveRecordProfileInTransaction({ ...authority, session: native }, request, access)).resolves.toMatchObject({ profile: { requiredFields: [] } });
+  expect(policy).toHaveBeenCalledWith({ session: native, transaction: tx }, entity, access.request, access.operation, proof);
+  expect(ordinary).not.toHaveBeenCalled(); expect(Object.keys(tx)).not.toContain("studioFieldValue");
+});

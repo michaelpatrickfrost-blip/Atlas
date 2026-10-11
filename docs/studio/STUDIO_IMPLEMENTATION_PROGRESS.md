@@ -14,9 +14,10 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
-2C2c–d / 2D2b–3 / 2E2–4 — association/activation coverage and standalone saved
-visual Studio/customer runtime — IMPLEMENTED locally; actual integration IN PROGRESS.
-Friendly fields/base/record-type setup78725538 ready for integration next. No Phase3.
+2E6 friendly all-type field/base/type setup and existing Templates editor reuse;
+2D compiled metadata cache and canonical row navigation — IMPLEMENTED source,
+current integrated verification IN PROGRESS. Native type selector/default Page
+and initial creation protocol proceed in existing isolated helpers. No Phase3.
 
 # Overall Status
 
@@ -64,17 +65,21 @@ List/record query anchors stay explicit; related Sales line table stays record s
 Responsive changes SSR-load only selected visible domain forms; changed Page/head/
 device slots cannot reuse stale forms. Private/current/field grants remain server-side.
 
-070 record assignment SQL/source + required profile union/cohort coverage integrated;
-original both-lock DDL rehearsal PASS/ROLLBACK, no 070 retained migration yet. 060
-actual migration history pending read. Current profile metadata-only Page compiler
+070 record assignment SQL/source + required profile union/cohort coverage integrated.
+Original both-lock rehearsal PASS/ROLLBACK; fresh central history now confirms060
+and070 APPLIED by candidate builds. Current profile metadata-only Page compiler
 preserves genuine Create-only authority; no borrowing Read. Exact stored Page source
-refs preserved. Assignment UI/native initial type selector remains unfinished.
+refs preserved. Existing-record selection is implemented and integrated into native detail and Page
+progress forms with genuine owner authority; initial creation selector remains unfinished.
 
 Visual checker13263fa0 independently source-reviewed and original driver wired,
 alongside profile checker25941bed. Strict exact compatible runtime pair/health gates
 precede fixture writes; Sales scoped proof does not claim Ticket private/write proof.
-Original e5bf acceptance failed preactivation at Status label; actual Select named
-label now fixed. No actual current visual/profile central/browser proof yet.
+627beb7d acceptance failed preactivation at foreign-tenant field retirement error
+ordering; opaque current-row conflict now checked before protected impact traversal. No actual current visual/profile central/browser proof yet. Friendly all15 field
+creation/base/type choices, dirty review guard and original Templates selected-
+business reuse are implemented source. Published Page cache stores only bounded
+compiled metadata; current grants/actual values remain independently read each time.
 Last confirmed live c385a2be/rollback5b6390c8; no activation claimed by local tests.
 
 # Files Changed
@@ -97,10 +102,11 @@ using existing213632 recovery evidence; no persistent schema/data change from re
 
 # Migrations Applied
 
-030 receipts/040 defaults/050 configuration edges previously confirmed applied.
-060 may have applied during failed candidate builds: inspect actual history before
-claiming applied.070 NOT APPLIED. Existing central records/backups retained; no
-local business database or additional diagnostic dumps.
+030 receipts/040 defaults/050 dependency edges,060 permanent profile bindings and
+070 append-only associations CONFIRMED APPLIED by fresh central Prisma history
+read on11 October.060 finished21:30:49 UTC;070 finished22:34:20 UTC during earlier
+candidate builds. No destructive reset/rollback. Other concurrent module migrations
+remain untouched. No local business database or diagnostic dump created.
 
 # Tests Added
 
@@ -130,13 +136,14 @@ responsive and candidate/public verification still pending.
 
 # Test Results
 
-Latest source checks actually run: 89 assertions/11 suites,113/7,64/5 PASS; current
-context/read-scope, visual checker gate, native Ticket form/owner and authoring47/5
-PASS. Production41429 exit0 includes current visual routes/conditions/customer/forms.
-Standalone postbuild92519 exit0. Latest34665 strict found the surface reference descriptor type, fixed to registered
-logical IDs; final66403 exit0. Scopedlint72614 exit0.
-Earlier concurrent type/build generated-route race corrected by sequential checks.
-No actual candidate/public visual or profile/070 SQL acceptance outcome inferred.
+Current coherent source: production build13758 EXIT0, sequential standalone types
+79234 EXIT0; changed-source lint41989 and new-route lint EXIT0 (Markdown ignored
+warnings only). Friendly all15 UI/backend/Templates/cache/retirement155 assertions/
+9 suites PASS. Native type selection/profile/Page forms73/6 PASS. Root scoped SQL
+collaborators are not actual central/private/concurrency/browser proof.
+Latest original627 candidate failed before activation at foreign-tenant retirement
+error ordering. Scoped correction tested; actual original release rerun required.
+Earlier local evidence89/11,113/7,64/5 and47/5 retained below. No full-suite claim.
 
 # Architecture Decisions
 
@@ -150,15 +157,14 @@ Decisions and rationale recorded in .ai/DECISIONS.md; no silent source divergenc
 
 # Known Issues
 
-Full Phase2 gate FAIL/incomplete: friendly field/type frontend and assigned-type
-selection/native form proof, existing Templates/Analytics selected-business reuse,
-actual visual/profile/typed forms/defaults/search central candidate/public proof and
-complete source matrix acceptance remain. Surface row navigation minimal safe seam
-being added independently. 070 not applied;060 actual migration history to refresh.
-Last original candidate e5bf failed at Status locator before activation; source fix
-is tested but actual rerun required. Keep current/rollback/central records unchanged
-until original release gates pass. Never mark new Page/Profile feature VERIFIED
-because local files/tests exist or a disabled runtime guard returns DEFERRED.
+Full Phase2 FAIL/incomplete. Actual visual/profile/forms/defaults/search gates,
+native existing/initial record-type UI and default Page integration, business
+Analytics adaptation, structural field-evolution UI and source matrix acceptance
+remain. Current all-type creation/friendly setup/Templates source is implemented,
+not live verified. Never call disabled readiness DEFERRED a PASS.
+627 original release failed before activation on retirement foreign-tenant error
+ordering; scoped conflict-before-impact correction is tested and actual rerun due.
+Last confirmed live c385a2be/rollback5b6390c8. Preserve central records/recovery.
 
 # Deferred Items
 
@@ -177,12 +183,14 @@ Later phases remain architectural context only; no complete visual designer clai
 
 # Exact Next Action
 
-Final strict66403/scopedlint72614 exit0; review complete current diff and checkpoint
-visual foundation/runtime source with this memory. Refresh live/rollback/health and
-migration history; run original clean pinned both-lock Studio candidate/public bridge.
-Then integrate78725538 friendly authoring backend and implement /design-studio/setup
-and typed draft detail UI; add actual assigned-type selector and owning native proof.
-Do not start Phase3. No extra build/dependency copies or diagnostic database dumps.
+Integrate checked native type selector and exact current-profile default Page
+reader into original Ticket routes. Run focused checks for current friendly all-type
+setup, Templates adapter, row gateway, cache and retirement fix, then production
+build, sequential standalone types and scoped lint; review/save coherent checkpoint
+including memory. Retry original pinned both-lock Studio release bridge. New Page/
+Profile acceptance requires compatible actual current and rollback readers before
+fixtures/publication; preserve disabled feature DEFERRED. Do not start Phase3.
+
 
 # Historical checkpoint evidence
 

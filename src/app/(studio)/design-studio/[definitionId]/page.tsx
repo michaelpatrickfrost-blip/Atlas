@@ -13,10 +13,7 @@ export default async function ScreenDesigner({ params, searchParams }: {
   const setup = await withStudioAuthoringAuthority(actor, CAP.edit, business, async authority => {
     const draft = await readPageDraftInTransaction(authority, definitionId);
     const choices = await pageEditorCatalogInTransaction(authority, draft.payload);
-    const source = authority.registry.describePageSourceForEntity(draft.payload.entity);
-    const queryScopes = new Map(source.policy.queries.map(query => [`${query.query.id}@${query.query.version}`, query.scope]));
-    const scope = draft.payload.sections.some(section => section.components.some(component =>
-      component.type === "queryList" && queryScopes.get(`${component.query.id}@${component.query.version}`) === "list")) ? "list" as const : "record" as const;
+    const scope = choices.scope;
     const layouts = (await screenLayouts(authority, draft.payload.entity)).filter(layout => layout.scope === scope);
     return { business: { id: authority.session.organisationId, name: authority.session.organisationName, workspaceHref: `/design-studio${business ? `?business=${encodeURIComponent(business)}` : ""}` },
       draft: { ...draft, versions: draft.versions.map(version => ({ id: version.id, label: `Version ${version.version}`, publishedAt: version.publishedAt })) },

@@ -2,12 +2,14 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Prisma } from '@/generated/prisma/client';
-const mocks = vi.hoisted(() => ({ membership: vi.fn(), transaction: vi.fn(), registry: vi.fn(), manifest: vi.fn(), update: vi.fn(), search: vi.fn() }));
+const mocks = vi.hoisted(() => ({ membership: vi.fn(), transaction: vi.fn(), registry: vi.fn(), manifest: vi.fn(), update: vi.fn(), search: vi.fn(), selection: vi.fn(), changeType: vi.fn() }));
 vi.mock('@/core/db/client', () => ({ db: { membership: { findUnique: mocks.membership }, $transaction: mocks.transaction } }));
 vi.mock('@/core/studio/registry/runtime', () => ({ buildRegistry: mocks.registry }));
 vi.mock('@/core/service-work/field-forms', () => ({ ticketFieldFormManifestInTransaction: mocks.manifest }));
 vi.mock('@/core/service-work/actions', () => ({ updateWork: mocks.update }));
 vi.mock('@/core/service-work/field-form-actions', () => ({ searchTicketFieldReferences: mocks.search }));
+vi.mock('@/core/studio/record-types/selection', () => ({ readRecordTypeSelectionInTransaction: mocks.selection }));
+vi.mock('@/core/service-work/record-type-actions', () => ({ changeTicketBusinessType: mocks.changeType }));
 import { sessionForUser, sessionAuthorityStamp } from '@/core/auth/session';
 import { loadTicketProgressForm, loadTicketProgressFormInTransaction } from '@/core/service-work/page-form';
 import { workScope } from '@/core/service-work/access';
@@ -35,7 +37,9 @@ async function fixture() {
     serviceWorkItem: { findFirst: vi.fn(async (args: { select: { status?: boolean } }) => args.select.status ? { id: 'ticket', organisationId: 'company', version: 4, status: 'NEW', ownerUserId: 'actor' } : row()) },
     serviceQueueMember: { findFirst: vi.fn(async (args: unknown) => { void args; return { id: 'queue-member' }; }), findMany: vi.fn(async () => [{ userId: 'actor' }]) } };
   const transaction = storage as unknown as Prisma.TransactionClient;
-  mocks.registry.mockReturnValue({}); mocks.manifest.mockResolvedValue(manifest()); mocks.transaction.mockImplementation(async (callback: (tx: Prisma.TransactionClient) => Promise<unknown>) => callback(transaction));
+  mocks.registry.mockReturnValue({ describe: () => ({ id: 'tickets.ticket', version: 9, schemaHash: 'a'.repeat(64), contractHash: 'b'.repeat(64) }) });
+  mocks.selection.mockResolvedValue({ operationId: uuid(90), recordId: 'ticket', recordRevision: 4, extensionRevision: 2, currentDefinitionId: null, choices: [] });
+  mocks.manifest.mockResolvedValue(manifest()); mocks.transaction.mockImplementation(async (callback: (tx: Prisma.TransactionClient) => Promise<unknown>) => callback(transaction));
   return { session, member, storage, transaction, authority: { session, stamp: sessionAuthorityStamp(session)!, transaction, registry: {} } as FieldRuntimeAuthority };
 }
 beforeEach(() => vi.resetAllMocks()); afterEach(cleanup);
@@ -85,7 +89,14 @@ describe('owning Ticket Page progress-form render adapter', () => {
   });
   it('allows native no-config forms and closed discovery for an owning reopen without granting Extend', async () => {
     const f = await fixture(); mocks.manifest.mockResolvedValueOnce(null); f.storage.serviceWorkItem.findFirst.mockResolvedValueOnce(row() as never).mockResolvedValueOnce({ id: 'ticket', organisationId: 'company', version: 4, status: 'CLOSED', ownerUserId: 'actor' } as never);
-    const result = await loadTicketProgressForm(f.session, input); expect(result.fieldManifest).toBeNull(); expect(result.work.status).toBe('CLOSED'); expect(mocks.update).not.toHaveBeenCalled();
+    const result = await loadTicketProgressForm(f.session, input); expect(result.fieldManifest).toBeNull(); expect(result.work.status).toBe('CLOSED'); expect(result.recordTypeSelection).toBeNull(); expect(mocks.selection).not.toHaveBeenCalled(); expect(mocks.update).not.toHaveBeenCalled();
+  });
+  it('uses the same genuine native transaction for type choices and propagates retained policy failures', async () => {
+    const f = await fixture(); await loadTicketProgressForm(f.session, input);
+    expect(mocks.selection).toHaveBeenCalledWith(expect.objectContaining({ organisationId: 'company' }), f.transaction,
+      { id: 'tickets.ticket', version: 9, schemaHash: 'a'.repeat(64), contractHash: 'b'.repeat(64) }, { recordId: 'ticket', recordRevision: 4 });
+    mocks.selection.mockRejectedValueOnce(new Error('FORBIDDEN: retained field access revoked'));
+    await expect(loadTicketProgressForm(f.session, input)).rejects.toThrow('retained field access revoked');
   });
   it('bounds the actual queue owner list and rejects foreign membership projections', async () => {
     const f = await fixture(); f.storage.serviceQueueMember.findMany.mockResolvedValueOnce(Array.from({ length: 501 }, (_, index) => ({ userId: String(index) })));

@@ -11,7 +11,8 @@ import { withFieldRuntimeAuthority, type FieldRuntimeAuthority } from "../fields
 import { readVersionedFieldContextInTransaction, readVersionedFieldPlanInTransaction, readVersionedFieldValueInTransaction } from "../fields/runtime-read";
 import type { FieldValue } from "../fields/schema";
 import { compileStructuredPage } from "./definition-compiler";
-import { compilePage, samePageReference, type CompiledPagePlan } from "./compiler";
+import { samePageReference, type CompiledPagePlan } from "./compiler";
+import { getCompiledPage } from "./compiled-cache";
 import { pageApprovalsSchema } from "./approvals";
 import { formFactorSchema, pageNodeIdSchema, pageScalarSchema, pagePayloadSchema, type PageScalar } from "./schema";
 import { pageReadRequestSchema, pageQueryRequestSchema, type PageQueryOutput } from "./owner-contract";
@@ -41,8 +42,8 @@ export async function readPublishedPageInTransaction(authority: FieldRuntimeAuth
   const version = await loadSealedConfigurationVersion(session, transaction, request.page), stored = storedFrame.parse(version.compiledPlan);
   const approvals = await reconstructPageApprovalsInTransaction(authority, { sourcePage: exactRef(stored.approvals.sourcePage),
     customFields: stored.approvals.customFields.map(field => field.reference) });
-  const plan = compilePage(version.payload, approvals);
-  if (checksum(plan) !== version.checksum) broken();
+  const plan = getCompiledPage({ organisationId: session.organisationId, versionId: version.id,
+    checksum: version.checksum, payload: version.payload, approvals });
   return readPlanInTransaction(authority, plan, request);
 }
 
@@ -142,5 +143,11 @@ async function readPlanInTransaction(authority: FieldRuntimeAuthority, plan: Com
     }
     fields.set(current.definition.id, { label: current.payload.field.label, value });
   }
-  return createPageDisplayModel(plan, layout, request.formFactor, outputs, native, facts, fields, componentOutputs);
+  const model = createPageDisplayModel(plan, layout, request.formFactor, outputs, native, facts, fields, componentOutputs);
+  for (const section of model.sections) for (const component of section.components) if (component.type === "queryList") {
+    const authored = layout.sections.flatMap(section => section.components).find(value => value.id === component.id);
+    component.recordNavigation = authored?.type === "queryList" && source.policy.queries.some(query => query.scope === "list"
+      && query.purpose === "list" && query.query.id === authored.query.id && query.query.version === authored.query.version);
+  }
+  return model;
 }

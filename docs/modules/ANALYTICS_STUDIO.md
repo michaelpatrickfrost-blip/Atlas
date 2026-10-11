@@ -91,6 +91,20 @@ rename that same owner/tenant board and check expected `updatedAt` atomically;
 a stale/foreign row cannot fall back to creating or overwriting another board.
 New boards/copies use unique-name creation. No sharing grants are introduced.
 
+The original save now delegates module-owned `services/authoring.ts`: a genuine
+authenticated session refreshes inside the owning Serializable transaction,
+rechecks native Manage/module rights, validates the existing source catalogue and
+data-view contract, and persists owner/tenant timestamp CAS plus Audit atomically.
+Metadata module/catalogue readers accept an optional existing transaction; ordinary
+callers retain their original defaults. No business metric/data query runs during
+save validation. The shared editor accepts a complete optional server-action bundle
+and internal workspace/monitor paths for selected-business authoring; default
+actions/routes and chart/Goal polling remain unchanged. A supplied adapter has no
+fallback into the user's native workspace. This source prerequisite does not
+introduce company-shared publication or change existing personal board ownership.
+Each adapter callback must authenticate its actual selected business independently;
+its server route must key the editor by that business/selection when switching.
+
 Save stores the measure period, record filters and refresh preference (manual,
 15/30/60/120 seconds). Changing period retains the unsaved canvas. Failed saves
 retain edits; editing is disabled during save. Undo covers canvas/settings, including the measure period; internal

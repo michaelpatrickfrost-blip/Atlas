@@ -17,11 +17,16 @@ import { reconstructPageApprovalsInTransaction } from "../../src/core/studio/pag
 import { createSalesOrderPagePresets } from "../../src/modules/sales/services/studio-page-presets";
 import { pagePayloadSchema } from "../../src/core/studio/pages/schema";
 import { readActiveCustomerPage } from "../../src/core/studio/pages/customer-gateway";
+import { customFieldPayloadSchema } from "../../src/core/studio/fields/schema";
+import { saveTemplateForSession } from "../../src/core/templates/authoring";
+import { renderTemplate } from "../../src/core/templates/service";
+import { parseBlocks } from "../../src/core/templates/domain";
+import { TICKETING_CAPABILITIES } from "../../src/core/permissions/capabilities";
 
 const responseSchema = z.object({ error: z.string().optional(), redirect: z.string().optional(), value: z.unknown().optional() });
 const userSelect = { id: true, name: true, email: true, authVersion: true, createdAt: true, updatedAt: true } as const;
-const nativeGrants = ["customers.read", "customers.create", "sales.order.read", "sales.order.create", "sales.order.price_override"];
-const authorGrants = [...nativeGrants, ...Object.values(CAP)];
+const nativeGrants = ["core.profile.self", "customers.read", "customers.create", "sales.order.read", "sales.order.create", "sales.order.price_override"];
+const authorGrants = [...nativeGrants, "core.contract.manage", TICKETING_CAPABILITIES.ticketRead, TICKETING_CAPABILITIES.ticketManage, ...Object.values(CAP)];
 
 /** Original BOTH-lock central driver only. Compatibility and target revision
  * precede ANY fixture query. Readiness support is not visual acceptance. Native
@@ -61,7 +66,7 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
         kind: "CUSTOMER", status: "ACTIVE", isTest: true }, select: { id: true, slug: true } });
       cleanupCompanyIds.push(company.id); companies.push(company);
       assert(await db.organisation.findFirst({ where: { ...company, kind: "CUSTOMER", status: "ACTIVE", archivedAt: null, isTest: true } }));
-      await db.moduleState.createMany({ data: ["studio", "sales"].map(moduleId => ({ organisationId: company.id, moduleId, enabled: true, entitled: true })) });
+      await db.moduleState.createMany({ data: ["studio", "sales", "tickets", "templates"].map(moduleId => ({ organisationId: company.id, moduleId, enabled: true, entitled: true })) });
       members.push(await db.membership.create({ data: { organisationId: company.id, userId: user.id, grantedCapabilities: authorGrants },
         select: { id: true, organisationId: true, userId: true, sessionVersion: true } }));
     }
@@ -231,6 +236,66 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
     const recovered = await withStudioAuthoringAuthority(await fresh(), CAP.publish, undefined, authority => publishPageDraftInTransaction(authority,
       { definitionId, revision: afterConcurrent.revision, acknowledgeWarnings: true }));
     assert.equal((await definition()).activeVersionId, recovered.versionId);
+    // Friendly field setup uses the real saved draft and original review/live
+    // path. No default feature is assumed and no existing customer field changes.
+    await page.goto(`${base}/design-studio/setup`);
+    const fieldForm = page.locator("form").filter({ has: page.locator('input[name="kind"][value="field"]') });
+    await fieldForm.getByLabel("Display name", { exact: true }).fill(`Visit notes ${marker}`);
+    await fieldForm.getByLabel("What kind of detail?", { exact: true }).selectOption("string");
+    await fieldForm.getByLabel("Maximum characters", { exact: true }).fill("300");
+    await fieldForm.getByRole("button", { name: "Create field draft", exact: true }).click();
+    await expect(page).toHaveURL(/\/design-studio\/setup\/[a-f0-9-]{36}$/);
+    const fieldId = new URL(page.url()).pathname.split("/").at(-1)!;
+    const fieldDraft = () => db.studioDraft.findFirstOrThrow({ where: { ...scope, definitionId: fieldId } });
+    const originalFieldPayload = customFieldPayloadSchema.parse((await fieldDraft()).payload), originalField = originalFieldPayload.field;
+    await expect(page.getByLabel("Maximum characters", { exact: true })).toHaveValue("300");
+    await page.getByLabel("Maximum characters", { exact: true }).fill("500");
+    await expect(page.getByRole("button", { name: "Review saved draft", exact: true })).toBeDisabled();
+    await page.getByRole("button", { name: "Save draft", exact: true }).click();
+    await expect.poll(async () => (await fieldDraft()).revision).toBe(1);
+    const editedFieldPayload = customFieldPayloadSchema.parse((await fieldDraft()).payload), editedField = editedFieldPayload.field;
+    assert.equal(editedField.key, originalField.key); assert.equal(editedFieldPayload.storageGeneration, originalFieldPayload.storageGeneration);
+    assert.equal(editedField.storage.type, "string");
+    if (editedField.storage.type !== "string") throw new Error("The field type changed unexpectedly.");
+    assert.equal(editedField.storage.maxLength, 500);
+    await page.getByRole("button", { name: "Review saved draft", exact: true }).click();
+    await expect(page.getByText("Saved draft reviewed", { exact: true })).toBeVisible();
+    await page.getByText("Make this setup live", { exact: true }).click();
+    const fieldLive = page.locator("form").filter({ has: page.getByRole("button", { name: "Go live", exact: true }) });
+    if (await fieldLive.getByRole("checkbox").count()) await fieldLive.getByRole("checkbox").check();
+    await fieldLive.getByRole("button", { name: "Go live", exact: true }).click();
+    await expect.poll(async () => (await db.studioDefinition.findFirstOrThrow({ where: { ...scope, id: fieldId } })).activeVersionId).not.toBeNull();
+    await expect(page.getByLabel("Maximum characters", { exact: true })).toHaveCount(0);
+    // The same native document designer persists, publishes and resolves actual
+    // owner-approved facts. Rendering stays in memory; no duplicate PDF/dump.
+    await page.goto(`${base}/design-studio/documents/new`);
+    const templateName = `Order document ${marker}`;
+    await page.getByLabel("Template name", { exact: true }).fill(templateName);
+    await page.getByLabel("Document title", { exact: true }).fill("Order {{record.reference}} for {{customer.name}}");
+    await page.getByLabel("Section 1 text", { exact: true }).fill("Prepared for {{customer.name}}");
+    await page.getByRole("button", { name: "Save template", exact: true }).click();
+    await expect(page).toHaveURL(/\/design-studio\/documents\/[a-zA-Z0-9_-]+$/);
+    const templateId = new URL(page.url()).pathname.split("/").at(-1)!;
+    const template = () => db.documentTemplate.findFirstOrThrow({ where: { ...scope, id: templateId } });
+    assert.equal((await template()).status, "DRAFT"); assert.equal((await template()).version, 1);
+    await page.getByLabel("Status", { exact: true }).selectOption("PUBLISHED");
+    await page.getByRole("button", { name: "Save template", exact: true }).click();
+    await expect.poll(async () => (await template()).version).toBe(2);
+    const publishedTemplate = await template(); assert.equal(publishedTemplate.status, "PUBLISHED");
+    const renderedDocument = await renderTemplate(await fresh(), templateId, { sourceModule: "sales", sourceType: "order", sourceId: orderId });
+    assert.equal(renderedDocument.title, `Order ${order.reference} for ${customerName}`);
+    assert.equal(renderedDocument.blocks[0].text, `Prepared for ${customerName}`);
+    const foreignTemplateForm = new FormData();
+    for (const [key, value] of Object.entries({ id: templateId, version: "2", name: templateName, titleTemplate: publishedTemplate.titleTemplate,
+      status: "PUBLISHED", blocks: JSON.stringify(parseBlocks(publishedTemplate.blocks)) })) foreignTemplateForm.set(key, value);
+    foreignTemplateForm.append("targetModules", "sales");
+    const templateSnapshot = async () => ({ template: await template(), audits: await db.auditEntry.findMany({ where: scope, orderBy: { id: "asc" } }) });
+    const beforeForeignTemplate = await templateSnapshot();
+    const foreignTemplateActor = await fresh(b.id);
+    await assert.rejects(() => saveTemplateForSession(foreignTemplateActor, foreignTemplateForm), /CONFLICT/);
+    assert.deepEqual(await templateSnapshot(), beforeForeignTemplate);
+    await assert.rejects(() => renderTemplate(foreignTemplateActor, templateId, { sourceModule: "sales", sourceType: "order", sourceId: orderId }), /published template/);
+    console.log("PASS actual friendly field draft creation/settings/save/review/live and original document designer draft/publish/actual Sales source rendering/cross-tenant save and render denial. Published field structural settings remain protected; no business dashboard publication claim.");
     // Current grants are enforced server-side. A configuration cannot turn native
     // Read or authoring back on; customer runtime needs no Studio grants.
     await db.membership.updateMany({ where: membership, data: { grantedCapabilities: nativeGrants } });
@@ -274,7 +339,7 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
     assert.deepEqual(await db.membership.findMany({ where: { userId: user.id, organisationId: { notIn: companies.map(company => company.id) } }, orderBy: { id: "asc" } }), originalMemberships);
     assert.equal(await db.salesOrder.count({ where: scope }), 1); assert.equal(await db.salesOrder.count({ where: { organisationId: b.id } }), 0);
     console.log("PASS actual visual Sales Page slice: real preset/canvas/save/review/preview/publish/customer home+record+list, disabled preview commands, genuine live acknowledgement/PDF without native mutation, independent tenant layout, rollback draft retention, stale save retention, current native/authoring/module denial, activation Audit atomic recovery and desktop/tablet/phone geometry+three private evidence screenshots.");
-    console.log("LIMIT visual Page slice: Sales uses tenant-level Read, no private Sales filter exists; Ticket private/current-written/reference gates remain separate. Native edit integration requires its owning handler acceptance; this check does not claim complete Phase 2, document/dashboard Studio or later engines.");
+    console.log("LIMIT visual Page slice: Sales uses tenant-level Read, no private Sales filter exists; Ticket private/current-written/reference gates remain separate. Native edit integration requires its owning handler acceptance; this check does not claim complete Phase 2, business dashboard publication or later engines.");
   } finally {
     const cleanup = [
       ...await Promise.allSettled(contexts.map(context => context.close())),

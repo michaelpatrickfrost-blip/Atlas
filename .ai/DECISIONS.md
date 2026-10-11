@@ -2792,3 +2792,47 @@ Existing Ticket type selection is a sibling native form. Current server catalogu
 loads active exact type pins, genuine owner Extend and current/retained policies;
 posted IDs/revisions never grant access. Closed/merged native workflows retain their
 existing progress/reopen form without an unavailable reassignment control.
+
+## 12 October 2026 — Canonical profile layouts and safe visual draft settings
+
+A native Ticket opens its current resolved profile's exact retained Page version,
+independent of the Page active pointer. Native/private Read precedes profile and
+Page inspection. Route IDs and posted head/version/profile/native assertions only
+check freshness; they do not select authority. Shared existing visible command/form
+selectors remain the execution seam. Type changes return to the full native Ticket
+so the current layout link resolves again. Original native tools remain available.
+
+All-type settings may change structurally only on a genuinely never-published
+field draft. Unsupported/conditional/retained-choice/reference-default policies
+are explicit read-only projections, not lossy conversions. Matching unpublished
+choice labels retain their server logical IDs; new choices get server IDs, and
+default indexes resolve to those IDs. Published changes require the existing
+reviewed generation/migration path. This preserves Sections6–8/24 requirements.
+
+## 12 October 2026 — Analytics reuse remains personal until reviewed publication
+
+The original Analytics editor uses an optional complete server callback bundle; a
+partial bundle fails before any native-cookie fallback. Native default actions,
+queries, charts, personal ownership and routes remain unchanged. Shared authoring
+save refreshes genuine authority, native Manage/module/source availability and
+owner timestamp CAS, writes paired Audit in the same transaction. Source catalogue
+metadata can use that transaction; business query results are never cached.
+
+A selected-business authoring adapter must independently refresh every callback
+and key the editor by the actual business/selection. Personal Dashboard rows cannot
+be called customer-wide Go live: no per-user cloning or invented sentinel owner.
+A shared immutable publication must reuse the original Studio publisher and
+module-owned approved renderer/query contracts and pass its compatibility gates.
+
+## 12 October 2026 — Business dashboard publication uses original Studio views
+
+A personal Dashboard's mandatory user owner makes it unsuitable as customer-wide
+publication without clones/fake ownership. A typed Analytics-owned view uses the
+existing Studio immutable metadata publisher/activation, original24-widget editor
+and query/chart renderer. Source6 views/8.1 embedded analytics/20.30 Analytics owner
+responsibility are preserved. Core accepts only a closed registry-owned compiler
+facet and exact source dependencies; it never imports a module or accepts generic
+queries. No second publisher/template/workflow engine, shared-business-data table
+or result cache. New metadata remains unavailable until genuine current/rollback
+reader compatibility is verified. This is a deliberate platform contract extension,
+with ordered workstreams recorded in STUDIO_PHASE_2_PLAN.md.

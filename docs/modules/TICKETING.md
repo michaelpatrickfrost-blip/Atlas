@@ -16,3 +16,14 @@ server-owned active immutable pins and original association/CAS/Audit; it never
 accepts client grants/tenant/version plans. Terminal reopen/progress is retained.
 Initial create-type selection and actual candidate/public verification remain open;
 consult Studio ledger rather than inferring runtime acceptance from this source.
+
+## 12 October 2026 — Canonical business layout selection
+
+The native Ticket retains its complete working form/history/tools and exposes
+Open business layout only after current owner/private access and exact canonical
+profile-selected Page metadata resolution. The customer screen reads the profile's
+retained immutable Page pin, independently of that Page's current active pointer.
+Buttons and native form slots assert exact version/head/profile/native revision;
+current grant checks precede each actual data read. Type changes return to the full
+native Ticket to resolve the newly selected layout. Source integration exists;
+actual profile/default-layout/browser acceptance remains pending in the Studio ledger.

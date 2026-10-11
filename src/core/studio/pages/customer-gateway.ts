@@ -10,6 +10,7 @@ import { pageReadRequestSchema, pageQueryRequestSchema } from "./owner-contract"
 import { formFactorSchema, pageNodeIdSchema } from "./schema";
 import { compilePage, samePageReference } from "./compiler";
 import { readPublishedPageInTransaction } from "./runtime";
+import { prepareVisibleCustomerAction, prepareVisibleCustomerSurface } from "./customer-selection";
 
 const uuid = z.uuid().transform(value => value.toLowerCase());
 const revision = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
@@ -122,19 +123,8 @@ export async function prepareVisiblePageRecordInTransaction(authority: FieldRunt
 export async function prepareVisiblePageActionInTransaction(authority: FieldRuntimeAuthority, input: unknown) {
   const request = actionSchema.parse(input), current = await refreshed(authority);
   const { view, sourcePage } = await readCurrent(current, request, { versionId: request.expectedVersionId, definitionRevision: request.expectedDefinitionRevision });
-  const component = view.model.sections.flatMap(section => section.components).find(value => value.id === request.componentId);
-  if (!component || component.type !== "action") unavailable();
-  const owner = await current.registry.authorisePageRead({ session: current.session, transaction: current.transaction }, sourcePage, request.request);
-  const command = await current.registry.resolve(current.session, component.command);
-  const approval = owner.policy.commands.find(value => value.command.id === command.id && value.command.version === command.version);
-  if (command.kind !== "command" || command.ownerModuleId !== owner.source.ownerModuleId || !approval
-    || !approval.formFactors.includes(request.formFactor) || (approval.confirmation === "required" && !component.confirm)
-    || command.details.sideEffect !== "none") unavailable();
-  if (owner.anchor.kind !== request.request.kind || owner.anchor.organisationId !== current.session.organisationId
-    || (request.request.kind === "record" && (owner.anchor.kind !== "record" || owner.anchor.recordId !== request.request.recordId))) unavailable();
-  return { authority: current, definitionId: view.definitionId, definitionRevision: view.definitionRevision, versionId: view.versionId,
-    sourcePage, ownerModuleId: owner.source.ownerModuleId, anchor: owner.anchor,
-    component: { id: component.id, confirm: component.confirm, preview: component.preview }, command: referenceSchema.parse({ id: command.id, version: command.version, schemaHash: command.schemaHash, contractHash: command.contractHash }) };
+  return prepareVisibleCustomerAction({ authority: current, view, sourcePage, request: request.request,
+    formFactor: request.formFactor, componentId: request.componentId });
 }
 
 /** Registered native form seam. Same current-pointer/visible-component/owning
@@ -143,15 +133,6 @@ export async function prepareVisiblePageActionInTransaction(authority: FieldRunt
 export async function prepareVisiblePageSurfaceInTransaction(authority: FieldRuntimeAuthority, input: unknown) {
   const request = actionSchema.parse(input), current = await refreshed(authority);
   const { view, sourcePage } = await readCurrent(current, request, { versionId: request.expectedVersionId, definitionRevision: request.expectedDefinitionRevision });
-  const component = view.model.sections.flatMap(section => section.components).find(value => value.id === request.componentId);
-  if (!component || component.type !== "surface" || !component.surface) unavailable();
-  const owner = await current.registry.authorisePageRead({ session: current.session, transaction: current.transaction }, sourcePage, request.request);
-  const surface = await current.registry.resolve(current.session, component.surface);
-  const approval = owner.policy.surfaces.find(value => value.surface.id === surface.id && value.surface.version === surface.version);
-  if (surface.kind !== "surface" || surface.ownerModuleId !== owner.source.ownerModuleId || !approval
-    || approval.family !== component.family || !approval.formFactors.includes(request.formFactor)
-    || owner.anchor.kind !== "record" || request.request.kind !== "record" || owner.anchor.recordId !== request.request.recordId
-    || owner.anchor.organisationId !== current.session.organisationId) unavailable();
-  return { authority: current, anchor: owner.anchor, surface: referenceSchema.parse({ id: surface.id, version: surface.version,
-    schemaHash: surface.schemaHash, contractHash: surface.contractHash }), ownerModuleId: owner.source.ownerModuleId };
+  return prepareVisibleCustomerSurface({ authority: current, view, sourcePage, request: request.request,
+    formFactor: request.formFactor, componentId: request.componentId });
 }

@@ -153,8 +153,9 @@ export async function checkTicketForms(base: string, browser: Browser, existingS
     }
     async function denied(values: Entries, operation: "create" | "update", expected?: RegExp) {
       const before = await snapshot(), response = await call(`${action}${operation === "create" ? "createWork" : "updateWork"}`, [formData(values)]);
-      assert(response.error, "Rejected form must return explicit feedback."); if (expected) assert.match(response.error, expected);
+      assert(response.error, "Rejected form must return explicit feedback.");
       assert.deepEqual(await snapshot(), before, "Rejected whole form must preserve native/typed/sequence/Audit/outbox/window state.");
+      if (expected) assert.match(response.error, expected);
     }
     await page.goto("/tickets/create", { waitUntil: "networkidle" });
     const createForm = page.locator("form").filter({ has: page.getByRole("button", { name: "Create ticket", exact: true }) });
@@ -239,7 +240,7 @@ export async function checkTicketForms(base: string, browser: Browser, existingS
       try { await denied(originalCreate, "create", /FORBIDDEN|do not have access/); } finally { await db.membership.update({ where: { id: membership.id, organisationId }, data: { deniedCapabilities: [] } }); }
     }
     await db.serviceQueueMember.delete({ where: { id: queueMember.id, organisationId } });
-    try { await denied(reopen, "update", /FORBIDDEN|restricted|unavailable/i); }
+    try { await denied(reopen, "update", /FORBIDDEN|restricted|unavailable|^You do not have access to all the details needed for this change\. Ask your business administrator\.$/i); }
     finally { await db.serviceQueueMember.create({ data: queueMember }); }
     // Access is structural: normal one-record reviewed evolution/new generation
     // preserves the old written schema while the current policy changes.

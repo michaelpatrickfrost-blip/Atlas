@@ -5,6 +5,18 @@ Sections 6.4–8, 14, 17–19, 22, 25–28. Phase 1 gate passed and is retained.
 Michael now requests continued ordered implementation, an administration-only
 Atlas console without the business app/tool shell, and the modern Atlas UI.
 
+## Current bounded integration — 12 October 2026
+
+| ID | Purpose / dependencies | Files | Database | Evidence / state |
+| --- | --- | --- | --- | --- |
+| 2D5 | Native record selects its current profile's exact retained Page, reusing existing visible controls and full owning Ticket form; depends on profiles070/Pages | pages/record-default, customer-selection, screens routes/actions, WorkDetail | None | IMPLEMENTED source; reader/control148/6 PASS, final integrated route/build/live pending |
+| 2E8 | Safely edit never-published all15 field settings and defaults; depends on friendly creation/CAS/compiler | configuration, field-setup-projection, AdditionalFieldSetup, setup editor/actions | None | IMPLEMENTED source; integrated183/5 scoped assertions PASS, actual friendly browser gate added but not run |
+| 2C3 | Genuine initial type choice and atomic original form receipt2; depends on native whole-form receipts/association070 | field-forms, native creator, receipt contract/guard, original profile checker/probe | Additive080 replaces original receipt guard; no new table/reset | IN PROGRESS in existing isolated helper; original-packet1 compatibility and actual gated acceptance mandatory |
+| 2E9 | Reuse Analytics authoring/query/editor with genuine selected-business authority; shared immutable publication designed separately | Analytics services/editor, Core optional transaction metadata seams | Prerequisite none; publication proposal pending | IN PROGRESS; personal board is not business-wide publication |
+| 2E10 | Visual published field-change target, then authorised bounded review/control through existing migration engine | friendly evolution contracts/configuration, later preview/panel/actions | Existing generation/migration tables; no new DDL expected | IN PROGRESS first target adapter only; existing Test/readiness guards remain |
+
+Each checkpoint updates the permanent ledger; no Phase3 feature or duplicate engine.
+
 ## Current source coverage check — 11 October 2026
 
 The full supplied document has been re-read and original checksum confirmed.
@@ -322,3 +334,31 @@ link preserves all original WorkDetail actions. No following a newer active poin
 client pins or arbitrary owner IDs. Files page record-default reader/tests and root
 native routes. DB none. Tests tenant/native/profile/retained/current rights, stale
 fingerprint, wrong owner, retired/corrupt pins and legitimate no-Page result.
+
+## 2E9 shared Analytics adaptation — 12 October architectural checkpoint
+
+Existing Dashboard rows require a personal user owner; creating clones or a fake
+owner for business Go live is unsuitable. Source6 includes views,8.1 registered
+metrics/embedded analytics and20.30 Analytics owns dashboards/report views. Use a
+closed module-owned Analytics view artifact in the ORIGINAL Studio definition/
+draft/version/publisher/activation store; no new dashboard engine or personal-row
+replacement. Preserve the original24-widget editor, data/query/chart renderers.
+
+Ordered workstreams before shared publication:
+1. Explicit additive Analytics metric/report source registry contracts (stable
+   logical IDs, exact schemas/hashes, owner capability/module/classification and
+   bounded query costs/cardinality); original providers/hashes remain unchanged.
+2. Closed registered owner view compiler facet and browser-safe envelope. Core
+   dispatches to the registered owner and never imports Analytics modules. Source
+   content is strictly parsed/normalised; exact source dependencies are persisted.
+3. Original publisher/activation plus sealed compatible current+rollback view
+   reader readiness; publication stays closed until accepted readers support it.
+4. Selected-business shared editor + genuine current customer reader using original
+   loaders/charts and actual two-tenant/current-rights/rollback/browser evidence.
+
+Expected files: Analytics module-owned source/compile/read adapter, original
+registry/compiler facet, sealed compatibility probe and original Studio routes.
+Database: generic existing Studio metadata tables expected to suffice; verify all
+SQL guards before asserting no migration. Business values/query results never stored
+or cached. No scheduling/alert/Goal/Flow functionality added in Phase2.
+Status: stage1 IN PROGRESS; remaining stages NOT STARTED, no shared Go live claim.

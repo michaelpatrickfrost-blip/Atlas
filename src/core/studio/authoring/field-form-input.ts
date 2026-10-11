@@ -44,7 +44,7 @@ export function readAdditionalFieldSetup(form: FormData): AdditionalFieldSetup {
     else if (type === 'address') initialValue = { line1: text('initialValue.line1'), line2: text('initialValue.line2'), city: text('initialValue.city'),
       region: text('initialValue.region'), postalCode: text('initialValue.postalCode'), country: text('initialValue.country').toUpperCase() };
     else if (type === 'datetime') {
-      const value = text('initialValue'); initialValue = /^\d{4}-\d\d-\d\dT\d\d:\d\d$/.test(value) ? `${value}:00.000Z` : value;
+      const value = text('initialValue'); initialValue = /^\d{4}-\d\d-\d\dT\d\d:\d\d(?::\d\d(?:\.\d{1,3})?)?$/.test(value) ? `${value}${value.length === 16 ? ':00.000' : ''}Z` : value;
     } else initialValue = text('initialValue');
   }
   return additionalFieldSetupSchema.parse({ label: text('label'), help: text('help'), type, settings,

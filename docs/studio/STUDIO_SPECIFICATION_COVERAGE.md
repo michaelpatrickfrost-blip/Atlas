@@ -1,6 +1,6 @@
 # Atlas Studio specification coverage
 
-11 October 2026. Execution index for the unchanged supplied
+12 October 2026. Execution index for the unchanged supplied
 `ATLAS_STUDIO_SOURCE.docx`, not a replacement specification. Original and repository
 copy SHA256: `4afb01d98ead51cd70ec4958620eb9d27a19a0298cd0fa1cb8bd0aee69d9198d`.
 The full document was re-read after Michael requested an explicit scope check.
@@ -96,3 +96,26 @@ reference boundary17 passed; build/lint passed, final standalone strict types pa
 fixture. Unit collaborators do not establish PostgreSQL rollback/SSI. Exact
 central checker source and real gates remain before release or conditional typed
 input/customer activation. Whole Phase2 and noncoder visual journey remain incomplete.
+
+### 12 October — exact customer layouts and editable unpublished field settings
+
+Source6–8 record type/default layout is now integrated with the native Ticket:
+current canonical profile chooses its exact retained published Page, current
+native/private rights run before metadata, and buttons/forms assert current
+head/version/profile/native revision through the original shared selectors.
+Default-reader source148/6 PASS; default/settings/gate-prefix integrated183/5 PASS.
+Published/unsupported field settings remain protected; safely representable initial
+drafts reopen all15 settings with stable server choice IDs and0/false defaults.
+Actual native/browser default layout proof remains pending.
+
+Original Analytics prerequisite is integrated;25/4 source checks PASS. It preserves
+personal-owner boards and original chart/data loaders. Customer-wide immutable
+publishing is still a separate planned adaptation, not delivered by this service.
+Original visual central checker now includes friendly field save/review/live and
+shared Templates draft/publish/actual Sales facts plus foreign-tenant denials. Those
+new checks have not run; Page readiness DEFERRED is not feature acceptance.
+
+Current production build19413 EXIT0. Final sequential strict35359/scopedlint16498 EXIT0 at this
+entry. Original c4f6fe59 candidate failed preactivation at exact human denial wording;
+checker corrected without relaxing native permission. Live c385/rollback5b remain
+confirmed; central060/070 applied. Whole Phase2 FAIL/incomplete; no Phase3.

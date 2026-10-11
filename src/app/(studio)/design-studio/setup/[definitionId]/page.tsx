@@ -10,6 +10,7 @@ import { entityProfilePayloadSchema, recordTypePayloadSchema } from "@/core/stud
 import { ActionForm } from "@/components/ui/action-form";
 import { RecordSetupChoices, SetupIdentity, SetupName } from "../choices";
 import { saveBusinessSetup, reviewBusinessSetup, goLiveBusinessSetup, restoreBusinessSetup } from "../actions";
+import { AdditionalFieldSetup } from "@/components/studio/additional-field-setup";
 import { SetupDraftGuard } from "../draft-guard";
 
 const validationSchema = z.object({ validatedRevision: z.number().int().nonnegative(), warnings: z.array(z.string()) });
@@ -32,6 +33,8 @@ export default async function SetupEditor({ params, searchParams }: {
   const chosen = subtype?.overlay ?? profile;
   const fields = (catalogue.groups.find(group => group.kind === "customField")?.definitions ?? [])
     .filter(value => value.activeVersionId && value.presentationEditable).map(value => ({ id: value.id, name: value.name }));
+  const projected = draft.fieldSettings?.kind === "editable" ? draft.fieldSettings.initial : null;
+  const initialFieldSettings = projected && catalogue.fieldTypes.some(type => type.id === projected.type) ? projected : null;
   const title = draft.kind === "customField" ? "Additional field" : draft.kind === "entityProfile" ? "Base record setup" : "Record type";
   return <div className="mx-auto max-w-6xl space-y-7 px-5 py-8 md:px-10 md:py-12">
     <Link href={`/design-studio/setup${suffix}`} className="inline-flex items-center gap-2 text-sm font-medium text-slate-500"><ArrowLeft className="h-4 w-4"/>Back to business setup</Link>
@@ -41,7 +44,8 @@ export default async function SetupEditor({ params, searchParams }: {
     <SetupDraftGuard key={`${draft.id}:${draft.revision}`} editor={<section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8"><h2 className="mb-5 text-xl font-semibold">Design the details</h2>
         {draft.presentationEditable ? <ActionForm key={draft.revision} action={saveBusinessSetup} label="Save draft">
           <SetupIdentity business={business} kind={draft.kind} id={draft.id} revision={draft.revision}/>
-          {field && <><SetupName label={field.label} help={field.help}/><p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-600">This field stores {catalogue.fieldTypes.find(type => type.id === field.storage.type)?.name.toLowerCase() ?? field.storage.type}. Its saved data and rules are kept when you change its name or description.</p></>}
+          {field && (initialFieldSettings ? <><input type="hidden" name="fieldSettings" value="on"/><AdditionalFieldSetup fieldTypes={catalogue.fieldTypes} referenceTargets={catalogue.referenceTargets} initial={initialFieldSettings}/></>
+            : <><SetupName label={field.label} help={field.help}/><p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-600">{draft.fieldSettings?.kind === "read_only" ? draft.fieldSettings.reason : "Its saved data and rules are kept when you change its name or description. Published settings use the reviewed field workflow."}</p></>)}
           {subtype && <SetupName label={subtype.label} help={subtype.help}/>}
           {chosen && <RecordSetupChoices pages={catalogue.pages} fields={fields} page={chosen.page?.definitionId ?? (chosen.page === null ? null : undefined)}
             requiredFields={chosen.requiredFields?.map(pin => pin.definitionId)} inherit={!!subtype}/>}

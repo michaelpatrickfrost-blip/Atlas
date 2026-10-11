@@ -318,3 +318,53 @@ it.each(["latest", "base", "active", "retained"])("published/previously activate
     setup: { label: "Size", type: "integer" } })).rejects.toThrow("MIGRATION_REQUIRED");
   expect(m.save).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
 });
+it('keeps existing ordered choice identities and default references on an unchanged initial-settings save', async () => {
+  draft.definition.latestVersion = 0; draft.definition.activeVersionId = null; draft.baseVersion = null;
+  const original = customFieldPayloadSchema.parse(draft.payload);
+  draft.payload = { ...original, field: { ...original.field, storage: { type: 'enum', valueSetVersion: 3,
+    options: [{ id: 'existing_repair', label: 'Repair', retired: false }, { id: 'existing_delivery', label: 'Delivery', retired: false }] }, defaultValue: { type: 'enum', value: 'existing_repair' } } };
+  await configureAdditionalFieldDraftInTransaction(authority, { definitionId: draft.definitionId, revision: 3,
+    setup: { label: 'Work category', type: 'enum', settings: { choices: ['Repair', 'Delivery'] }, initialValue: 0 } });
+  expect(customFieldPayloadSchema.parse(m.save.mock.calls[0][0].data.payload).field).toMatchObject({ storage: { valueSetVersion: 3,
+    options: [{ id: 'existing_repair', label: 'Repair' }, { id: 'existing_delivery', label: 'Delivery' }] }, defaultValue: { type: 'enum', value: 'existing_repair' } });
+});
+it('retains matching logical draft choices on reorder, and gives only genuinely new choices server-owned identities', async () => {
+  draft.definition.latestVersion = 0; draft.definition.activeVersionId = null; draft.baseVersion = null;
+  const original = customFieldPayloadSchema.parse(draft.payload);
+  draft.payload = { ...original, field: { ...original.field, storage: { type: 'multi_enum', valueSetVersion: 2, maxSelections: 2,
+    options: [{ id: 'existing_repair', label: 'Repair', retired: false }, { id: 'existing_delivery', label: 'Delivery', retired: false }] } } };
+  await configureAdditionalFieldDraftInTransaction(authority, { definitionId: draft.definitionId, revision: 3,
+    setup: { label: 'Work category', type: 'multi_enum', settings: { choices: ['delivery', 'Repair', 'Installation'], maxSelections: 2 }, initialValue: [0, 2] } });
+  const next = customFieldPayloadSchema.parse(m.save.mock.calls[0][0].data.payload).field;
+  if (next.storage.type !== 'multi_enum') throw new Error('Wrong type');
+  expect(next.storage.options.slice(0, 2).map(option => option.id)).toEqual(['existing_delivery', 'existing_repair']);
+  expect(next.storage.options[2].id).toMatch(/^o_[a-f0-9]{32}$/); expect(next.defaultValue).toEqual({ type: 'multi_enum', value: ['existing_delivery', next.storage.options[2].id] });
+});
+it('refuses unsupported existing policies and unavailable saved starting choices before initial-setting writes', async () => {
+  draft.definition.latestVersion = 0; draft.definition.activeVersionId = null; draft.baseVersion = null;
+  const original = customFieldPayloadSchema.parse(draft.payload);
+  for (const changed of [
+    { storage: { type: 'string', pattern: '^[A-Z]{1,10}$' } },
+    { storage: { type: 'reference', entity }, defaultValue: { type: 'reference', value: 'saved-private-ticket' } },
+    { storage: { type: 'enum', valueSetVersion: 1, options: [{ id: 'retained_option', label: 'Original', retired: true }] } },
+  ]) {
+    draft.payload = { ...original, field: { ...original.field, ...changed } };
+    await expect(configureAdditionalFieldDraftInTransaction(authority, { definitionId: draft.definitionId, revision: 3,
+      setup: { label: 'New name', type: 'integer' } })).rejects.toThrow();
+  }
+  expect(m.save).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+});
+it('stale initial-settings CAS cannot change identity, metadata or Audit', async () => {
+  draft.definition.latestVersion = 0; draft.definition.activeVersionId = null; draft.baseVersion = null;
+  await expect(configureAdditionalFieldDraftInTransaction(authority, { definitionId: draft.definitionId, revision: 2,
+    setup: { label: 'Name', type: 'boolean', initialValue: false } })).rejects.toThrow('CONFLICT');
+  expect(m.save).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+});
+it('offers typed draft settings only from a genuinely never-published saved field head', async () => {
+  draft.definition.latestVersion = 0; draft.definition.activeVersionId = null; draft.baseVersion = null; m.versions.mockResolvedValue([]);
+  expect(await readConfigurationDraftInTransaction(authority, draft.definitionId)).toMatchObject({ fieldSettings: { kind: 'editable', initial: { type: 'integer', label: 'Count' } } });
+  draft.definition.latestVersion = 1;
+  expect(await readConfigurationDraftInTransaction(authority, draft.definitionId)).toMatchObject({ fieldSettings: null });
+  draft.definition.latestVersion = 0; m.versions.mockResolvedValue([{ id: uuid(11), version: 1, publishedAt: new Date('2026-10-11T12:00:00Z') }]);
+  expect(await readConfigurationDraftInTransaction(authority, draft.definitionId)).toMatchObject({ fieldSettings: null });
+});

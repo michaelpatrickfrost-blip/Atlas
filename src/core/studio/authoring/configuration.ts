@@ -22,6 +22,7 @@ import { publishCompiledDefinitionInTransaction } from "../definitions/publicati
 import { activateCompiledVersionInTransaction } from "../definitions/activation";
 import { prepareRequiredFieldActivationInTransaction } from "../fields/activation-coverage";
 import { lockFieldEntitiesInTransaction } from "../fields/entity-lock";
+import { projectAdditionalFieldSetup } from "./field-setup-projection";
 import { additionalFieldSetupSchema, additionalFieldTypeCatalogue, type AdditionalFieldSetup } from "./field-setup-contract";
 
 const uuid = z.uuid().transform(value => value.toLowerCase());
@@ -156,7 +157,15 @@ async function referenceTarget(authority: FieldRuntimeAuthority, policy: OwnerPo
   if (target.kind !== "entity" || !entityDetailsSchema.parse(target.details).record) unavailable();
   return { entity: policy.entity, name: target.label };
 }
-async function setupStorage(authority: FieldRuntimeAuthority, policy: OwnerPolicy, value: AdditionalFieldSetup) {
+async function getSetupReferenceTargets(authority: FieldRuntimeAuthority) {
+  const policy = await owner(authority, CAP.read), targets = [];
+  for (const id of policy.fieldPolicy.referenceEntities) {
+    const target = await referenceTarget(authority, policy, id);
+    targets.push({ id: target.entity.id, name: target.name });
+  }
+  return targets;
+}
+async function setupStorage(authority: FieldRuntimeAuthority, policy: OwnerPolicy, value: AdditionalFieldSetup, previousStorage?: FieldStorage) {
   if (!policy.fieldPolicy.types.includes(value.type)) unavailable();
   let storage: FieldStorage, initialValue: unknown = value.initialValue;
   switch (value.type) {
@@ -174,8 +183,11 @@ async function setupStorage(authority: FieldRuntimeAuthority, policy: OwnerPolic
     case "phone": storage = { type: value.type, format: "E164" }; break;
     case "url": storage = { type: value.type, protocols: value.settings.allowHttp ? ["https", "http"] : ["https"] }; break;
     case "enum": case "multi_enum": {
-      const options = value.settings.choices.map(label => ({ id: `o_${crypto.randomUUID().replaceAll("-", "")}`, label, retired: false }));
-      storage = fieldStorageSchema.parse({ type: value.type, valueSetVersion: 1, options,
+      const previous = previousStorage?.type === "enum" || previousStorage?.type === "multi_enum" ? previousStorage : undefined;
+      const options = value.settings.choices.map(label => ({
+        id: previous?.options.find(option => !option.retired && option.label.trim().toLowerCase() === label.trim().toLowerCase())?.id
+          ?? `o_${crypto.randomUUID().replaceAll("-", "")}`, label, retired: false }));
+      storage = fieldStorageSchema.parse({ type: value.type, valueSetVersion: previous?.valueSetVersion ?? 1, options,
         ...(value.type === "multi_enum" ? { maxSelections: value.settings.maxSelections } : {}) });
       const option = (index: number) => { if (!options[index]) throw new Error("Choose an existing default choice."); return options[index].id; };
       if (value.initialValue !== undefined) initialValue = value.type === "enum" ? option(value.initialValue) : value.initialValue.map(option);
@@ -218,7 +230,9 @@ export async function configureAdditionalFieldDraftInTransaction(authority: Fiel
   const previous = customFieldPayloadSchema.parse(ticketPayload("customField", draft.payload));
   if (checksum(previous.entity) !== checksum(policy.entity)) unavailable();
   assertFieldAccess(authority.session, previous.field, "write");
-  const configured = await setupStorage(authority, policy, value.setup), field = { ...previous.field };
+  const representable = projectAdditionalFieldSetup(previous, policy.fieldPolicy.referenceEntities.map(id => ({ id })));
+  if (representable.kind === "read_only") throw new Error(representable.reason);
+  const configured = await setupStorage(authority, policy, value.setup, previous.field.storage), field = { ...previous.field };
   delete field.defaultValue;
   return save(authority, draft, { ...previous, field: { ...field, ...configured, label: value.setup.label, help: value.setup.help } });
 }
@@ -268,7 +282,10 @@ export async function readConfigurationDraftInTransaction(authority: FieldRuntim
   await preflightMetadataRead(authority, draft.definition.kind, payload);
   const versions = await authority.transaction.studioDefinitionVersion.findMany({ where: { definitionId: id, organisationId: authority.session.organisationId },
     select: { id: true, version: true, publishedAt: true }, orderBy: { version: "desc" }, take: 50 });
-  return { id, kind: draft.definition.kind, name: displayName(draft.definition.kind, payload, draft.definition.name), payload, revision: draft.revision,
+  const fieldSettings = draft.definition.kind === "customField" && draft.definition.latestVersion === 0 && draft.baseVersion === null
+    && draft.definition.activeVersionId === null && versions.length === 0
+    ? projectAdditionalFieldSetup(payload, (await getSetupReferenceTargets(authority)).map(target => ({ id: target.id }))) : null;
+  return { id, kind: draft.definition.kind, name: displayName(draft.definition.kind, payload, draft.definition.name), payload, revision: draft.revision, fieldSettings,
     presentationEditable: presentationEditable(authority, draft.definition.kind, payload),
     definitionRevision: draft.definition.revision, activeVersionId: draft.definition.activeVersionId,
     versions: versions.map(version => ({ ...version, publishedAt: version.publishedAt.toISOString() })) };

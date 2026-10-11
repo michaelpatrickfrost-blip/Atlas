@@ -1,6 +1,6 @@
 # Atlas Studio implementation progress
 
-Updated: 11 October 2026. This dashboard supersedes historical next steps below.
+Updated: 12 October 2026. This dashboard supersedes historical next steps below.
 The unchanged source is ATLAS_STUDIO_SOURCE.docx; SHA256 matches Michael's original:
 4afb01d98ead51cd70ec4958620eb9d27a19a0298cd0fa1cb8bd0aee69d9198d.
 STUDIO_SPECIFICATION_COVERAGE.md traces the source requirements across all phases.
@@ -14,10 +14,10 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
-2E6 friendly all-type field/base/type setup and existing Templates editor reuse;
-2D compiled metadata cache and canonical row navigation — IMPLEMENTED source,
-current integrated verification IN PROGRESS. Native type selector/default Page
-and initial creation protocol proceed in existing isolated helpers. No Phase3.
+2D5 exact native record-default Page and2E8 never-published field settings —
+IMPLEMENTED source; integrated183/5 PASS, route/build/live verification IN PROGRESS.
+2C3 initial type receipt2,2E9 original Analytics reuse and2E10 reviewed published
+field-change visual target proceed in existing isolated helpers. No Phase3.
 
 # Overall Status
 
@@ -124,6 +124,11 @@ rollback or SSI; real acceptance checker source is being prepared separately.
 
 # Tests Run
 
+12 October integrated default/settings/checker prefix183/5 PASS. New friendly field
+and original Templates actual browser/source checks added to original visual gate;
+not yet run. First strict route narrowing/checker variable errors corrected; final
+production19413/strict35359/scopedlint16498 EXIT0. Actual gate pending. Helper-only checks stay source evidence.
+
 Root integrated typed packet/writer/read/required110/5 PASS, then packet/writer/read/
 required/manifest/whole-form receipt/renderer182/8 PASS. Build26422 and final24417 exit0, including
 actual browser-safe typed control wiring and final source review corrections. Native regressions60/73 passed with13 stale
@@ -141,8 +146,10 @@ Current coherent source: production build13758 EXIT0, sequential standalone type
 warnings only). Friendly all15 UI/backend/Templates/cache/retirement155 assertions/
 9 suites PASS. Native type selection/profile/Page forms73/6 PASS. Root scoped SQL
 collaborators are not actual central/private/concurrency/browser proof.
-Latest original627 candidate failed before activation at foreign-tenant retirement
-error ordering. Scoped correction tested; actual original release rerun required.
+Originalc4f candidate wBSTZQ passed corrected retirement and prior native/field/
+concurrency checks, then failed before activation at private native reopen wording.
+Exact existing human denial now accepted; state snapshot assertion moved before
+wording. Actual complete form rerun pending, livec385/rollback5b unchanged.
 Earlier local evidence89/11,113/7,64/5 and47/5 retained below. No full-suite claim.
 
 # Architecture Decisions
@@ -183,14 +190,14 @@ Later phases remain architectural context only; no complete visual designer clai
 
 # Exact Next Action
 
-Integrate checked native type selector and exact current-profile default Page
-reader into original Ticket routes. Run focused checks for current friendly all-type
-setup, Templates adapter, row gateway, cache and retirement fix, then production
-build, sequential standalone types and scoped lint; review/save coherent checkpoint
-including memory. Retry original pinned both-lock Studio release bridge. New Page/
-Profile acceptance requires compatible actual current and rollback readers before
-fixtures/publication; preserve disabled feature DEFERRED. Do not start Phase3.
-
+Commit reviewed exact default-layout/settings/original Analytics prerequisite
+checkpoint (183/5+25/4 source checks, production19413/strict35359/lint16498 EXIT0),
+then retry original pinned both-lock Studio bridge with exact native human denial
+matcher. c4 candidate failure was preactivation, not a feature PASS. Continue
+receipt2/080/checker after independent review, published-field target and Analytics
+source contract checkpoints in existing helper worktrees. After bridge, sealed
+compatible customer Page/profile/defaults/type gates and actual visual journeys;
+DEFERRED cannot pass a feature. Whole Phase2 remains FAIL/incomplete; no Phase3.
 
 # Historical checkpoint evidence
 
@@ -3532,6 +3539,11 @@ Registry/adapters/catalogue/compiler/service/admin-context suites; company login
 platform grants and business-user provisioning regression cases.
 
 # Tests Run
+
+12 October integrated default/settings/checker prefix183/5 PASS. New friendly field
+and original Templates actual browser/source checks added to original visual gate;
+not yet run. First strict route narrowing/checker variable errors corrected; final
+production19413/strict35359/scopedlint16498 EXIT0. Actual gate pending. Helper-only checks stay source evidence.
 
 E3e4 final integrated123tests/7suites PASS79973; scopedlint17913/
 productionbuild31793 exit0; FINAL standalone strictTS18897 exit0; earlier root63311 and

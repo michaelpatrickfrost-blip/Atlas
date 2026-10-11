@@ -1,3 +1,4 @@
+import type { Prisma } from "@/generated/prisma/client";
 import type { Session } from '@/core/auth/session';
 import { getImplementedModules } from '@/core/modules/registry';
 import { enabledModulesForSession } from '@/core/modules/runtime';
@@ -7,11 +8,11 @@ import { money } from './records';
 import { customerReports } from './customers';
 import { ReportError, selectedReportColumns } from './filters';
 import { REPORT_PAGE_SIZE, type ReportDataset, type ReportInput, type ReportSpec } from './types';
-export async function reportDatasets(session:Session):Promise<ReportDataset[]> {
- const enabled=await enabledModulesForSession(session);
+export async function reportDatasets(session:Session,transaction?:Prisma.TransactionClient):Promise<ReportDataset[]> {
+ const enabled=await enabledModulesForSession(session,transaction);
  const records=[...customerReports,...getImplementedModules().filter(m=>enabled.has(m.id)).flatMap(m=>m.reportProvider??[])].filter(d=>canAny(session,d.anyOf));
  if(!enabled.has('analytics')||!can(session,'analytics.dashboard.read'))return records;
- const metrics=await getAnalyticsMetrics(session);
+ const metrics=await getAnalyticsMetrics(session,transaction);
  // Finance exposes scoped posted-ledger metrics; broad overview counts are not export sources.
  const summaries:ReportDataset[]=metrics.filter(m=>!m.id.startsWith('finance.')||m.id.startsWith('finance.posted.')).map(m=>({id:`summary.${m.id}`,name:m.name,source:m.subject,description:`${m.definition} ${m.snapshot?'Current snapshot.':'Period runs from the selected start to now.'} ${m.grain}.`,anyOf:[m.capability],summary:true,snapshot:m.snapshot,columns:[{key:'label',label:m.unit==='money'?'Currency':'Group',type:'text'},{key:'value',label:m.unit==='money'?'Amount':m.unit==='hours'?'Hours':m.unit==='percent'?'Percent':'Value',type:m.unit==='money'?'money':'number',currencyKey:m.unit==='money'?'label':undefined}],async read(s,input,exporting){
  selectedReportColumns(this,input);if(input.from||input.to||input.filters.length)throw new ReportError('Summary measures use a period and label search; field and date-range filters apply to record datasets.');if(m.snapshot && input.period!=='all')throw new ReportError('This measure is a current snapshot.');

@@ -1,3 +1,38 @@
+## 12 October 2026 — exact record-default layout integration IMPLEMENTED
+
+Root c4f6fe59 friendly setup/Templates/cache checkpoint built/types/lint passed;
+original candidate wBSTZQ failed BEFORE activation at a private receiving-team
+reopen assertion expecting technical wording. The actual native action returned its
+existing explicit human access denial. Matcher now accepts that exact message;
+unchanged-state snapshot is checked before wording. No production/native permission
+change. Required225444 recovery/225632 fixture retained; original live c385/rollback5b
+remain. This is a checker correction, not a passing whole form/private proof.
+
+Source now integrates exact current profile-selected retained Page target/reader,
+shared existing visible button/native surface selectors, native Open business
+layout link, explicit record_default customer route and full mode/profile/native/
+head/version assertions through pagination/device refresh/forms. Native complete
+Ticket tools remain intact; type change returns to the native record so it resolves
+the newly selected layout instead of refreshing an obsolete address. Reader/control
+148/6 scoped cases PASS. Never-published all-type settings projection integrated:
+explicit read-only unsupported policies, stable server choice IDs, hydrated0/false
+and precise UTC defaults. Integrated183/5 cases PASS. First strict check found route
+narrowing/checker variable issues, corrected; production build19413, sequential strict35359 and scopedlint16498 EXIT0.
+Actual candidate/public feature verification still required. Original Analytics prerequisite dc7e0341 is now integrated: genuine fresh selected-
+business native save/CAS/Audit, same-transaction metadata catalogue and complete
+original editor callbacks.25/4 integrated checks PASS; no shared business publication
+or personal-owner change. Existing helpers continue true initial type receipt2,
+independent review and reviewed published-field target adapter. No Phase3 or extra dependency/build copies. Fresh server pointers remain
+livec385/rollback5b;147GiB free, local92GiB free, this checkout dependencies1.1GB/
+generatedNext303MB before current build. No ad-hoc dumps or storage cleanup needed.
+
+Exact next: checkpoint reviewed current default/settings/Analytics-prerequisite
+source and retry the original pinned both-lock bridge with exact native human
+denial matcher. Then integrate independently reviewed receipt2/080 and its actual
+checker; published field target and Analytics source contracts continue in existing
+helpers. New friendly setup/Templates actual checks are wired, not yet run. Then actual compatible Page/Profile/default/type
+candidate and public gates; never mark missing readiness DEFERRED as PASS.
+
 ## 11 October 2026 — Phase 2 friendly visual setup and Templates integration IN PROGRESS
 
 Integrated source now includes noncoder all-15-type additional-field creation,

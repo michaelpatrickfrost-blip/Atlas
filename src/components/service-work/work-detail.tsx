@@ -16,6 +16,7 @@ import { Field, Select, TextArea } from "@/components/ui/service-fields";
 import { ticketFieldFormManifest } from "@/core/service-work/field-forms";
 import { TicketProgressForm } from "./ticket-progress-form";
 import { ticketRecordTypeSelection } from "@/core/service-work/record-types";
+import { recordDefaultCustomerPageTarget } from "@/core/studio/pages/record-default";
 import { Card } from "@/components/ui/card";
 const label = (value: string) => value.replaceAll("_", " ").toLowerCase();
 export async function WorkDetail({ id, kind = "TICKET" }: { id: string; kind?: string }) {
@@ -40,12 +41,16 @@ export async function WorkDetail({ id, kind = "TICKET" }: { id: string; kind?: s
   const version = <><input name="workId" type="hidden" value={id}/><input name="version" type="hidden" value={work.version}/></>;
   const link = (id: string, kind: string) => `/${kind === "QUERY" ? "service/queries" : "tickets"}/${id}`;
   const queryCreate = session.capabilities.has("service.ticket.create"), ticketCreate = session.capabilities.has("tickets.ticket.create") && await isModuleEnabled(session, "tickets");
-  const [editFields, createFields, recordTypeSelection] = await Promise.all([
+  const [editFields, createFields, recordTypeSelection, businessLayout] = await Promise.all([
     manage && kind === "TICKET" && !work.mergedIntoId ? ticketFieldFormManifest(session, { operation: "update", recordId: id }) : null,
     ticketCreate && !work.mergedIntoId && !FINAL_WORK.includes(work.status) ? ticketFieldFormManifest(session, { operation: "create" }) : null,
     manage && kind === "TICKET" && !work.mergedIntoId && !FINAL_WORK.includes(work.status) ? ticketRecordTypeSelection(session, id, work.version) : null,
+    kind === "TICKET" && !work.mergedIntoId ? recordDefaultCustomerPageTarget(session,
+      { mode: "record_default", entityId: "tickets.ticket", recordId: id, formFactor: "desktop" }) : null,
   ]);
   return <div className="space-y-6"><Link className="text-xs text-teal-700" href={kind === "QUERY" ? "/service/queries" : "/tickets"}>← {kind === "QUERY" ? "Queries" : "Tickets"}</Link><div className="flex flex-wrap justify-between gap-4"><div><p className="text-xs font-semibold tracking-widest text-teal-700">{work.number} · {work.queue.name}</p><h2 className="mt-2 text-3xl font-semibold tracking-tight">{work.subject}</h2><p className="mt-2 text-sm text-slate-500">{names.get(work.requesterUserId) ?? "Colleague"} · {label(work.type)} · {label(work.priority)} priority</p></div><span className="h-fit rounded-full bg-slate-100 px-4 py-2 text-xs font-medium capitalize">{label(work.status)}</span></div>
+    {businessLayout && <Link className="flex items-center justify-between gap-4 rounded-2xl border border-blue-200 bg-blue-50 p-5 text-sm text-blue-900 hover:bg-blue-100/60"
+      href={`/screens/${businessLayout.definitionId}?mode=record_default&record=${encodeURIComponent(id)}`}><span><strong>Open business layout</strong><span className="mt-1 block text-xs">{businessLayout.name}</span></span><span aria-hidden="true">→</span></Link>}
     {work.mergedIntoId && <div className="rounded-xl border border-teal-200 bg-teal-50 p-4 text-sm">This reference was merged. <Link className="font-semibold underline" href={link(work.mergedIntoId, kind)}>Open the continuing record</Link>. Original history and evidence remain below.</div>}
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1.8fr)_minmax(300px,1fr)]"><div className="space-y-5">
       <Card className="p-6"><h3 className="font-semibold">Request</h3><p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-slate-600">{work.description}</p>{definition.fields?.length ? <dl className="mt-5 grid gap-3 sm:grid-cols-2">{definition.fields.map(field => <div key={field.key}><dt className="text-xs text-slate-400">{field.label}</dt><dd className="mt-1 text-sm">{String((context.answers as Record<string, unknown>)?.[field.key] ?? "—")}</dd></div>)}</dl> : null}{["asset", "service", "problem", "workaround", "rootCause", "risk", "implementationPlan", "rollbackPlan", "testingPlan", "schedule"].filter(key => context[key]).map(key => <div className="mt-4" key={key}><p className="text-xs font-medium capitalize text-slate-400">{key.replaceAll(/([A-Z])/g, " $1")}</p><p className="mt-1 whitespace-pre-wrap text-sm">{String(context[key])}</p></div>)}</Card>

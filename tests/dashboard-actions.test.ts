@@ -8,8 +8,11 @@ const m = vi.hoisted(() => ({
   create: vi.fn(),
   update: vi.fn(),
   remove: vi.fn(),
+  transaction: vi.fn(), refresh: vi.fn(), module: vi.fn(), audit: vi.fn(),
 }));
-vi.mock("@/core/auth/session", () => ({ requireSession: m.session }));
+vi.mock("@/core/auth/session", () => ({ requireSession: m.session, sessionAuthorityStamp: () => ({}) }));
+vi.mock("@/core/studio/fields/runtime-authority", () => ({ nativeFieldMutationSessionInTransaction: m.refresh }));
+vi.mock("@/core/audit/log", () => ({ writeAudit: m.audit }));
 vi.mock("@/core/permissions/check", () => ({ assertCapability: m.cap }));
 vi.mock("@/core/modules/access", () => ({ assertModuleEnabled: m.enabled }));
 vi.mock("@/core/analytics/catalogue", () => ({
@@ -19,6 +22,7 @@ vi.mock("@/core/reports/catalogue", () => ({ reportDatasets: m.sources }));
 vi.mock("@/core/db/client", () => ({
   db: {
     dashboard: { create: m.create, updateMany: m.update, deleteMany: m.remove },
+    $transaction: m.transaction,
   },
 }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
@@ -29,7 +33,7 @@ import {
   saveAnalyticsDashboard,
   deleteAnalyticsDashboard,
 } from "@/app/(app)/analytics/actions";
-const s = { organisationId: "company", userId: "owner" },
+const s = { organisationId: "company", userId: "owner", capabilities: new Set(["analytics.dashboard.manage"]) },
   input = {
     name: "Renamed",
     id: "board",
@@ -39,6 +43,9 @@ const s = { organisationId: "company", userId: "owner" },
 beforeEach(() => {
   vi.clearAllMocks();
   m.session.mockResolvedValue(s);
+  const tx = { dashboard: { create: m.create, updateMany: m.update }, moduleState: { findFirst: m.module } };
+  m.transaction.mockImplementation(async callback => callback(tx)); m.refresh.mockResolvedValue({ session: s });
+  m.module.mockResolvedValue({ id: "enabled" }); m.audit.mockResolvedValue(undefined);
   m.cap.mockReturnValue(undefined);
   m.enabled.mockResolvedValue(undefined);
   m.metrics.mockResolvedValue([

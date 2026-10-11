@@ -6,7 +6,7 @@ import { assertCapability } from "@/core/permissions/check";
 import { STUDIO_CAPABILITIES as CAP } from "@/core/studio/permissions";
 import { withStudioAuthoringAuthority } from "@/core/studio/authoring/context";
 import { createAdditionalFieldDraftInTransaction, createBaseProfileDraftInTransaction, createRecordTypeDraftInTransaction,
-  saveAdditionalFieldDraftInTransaction, saveBaseProfileDraftInTransaction, saveRecordTypeDraftInTransaction,
+  saveAdditionalFieldDraftInTransaction, configureAdditionalFieldDraftInTransaction, saveBaseProfileDraftInTransaction, saveRecordTypeDraftInTransaction,
   reviewConfigurationDraftInTransaction, goLiveConfigurationDraftInTransaction, activateConfigurationVersionInTransaction } from "@/core/studio/authoring/configuration";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -36,7 +36,9 @@ export async function saveBusinessSetup(form: FormData) {
   assertCapability(actor, CAP.edit);
   const target = business(form), kind = z.enum(["customField", "entityProfile", "recordType"]).parse(text(form, "kind"));
   await withStudioAuthoringAuthority(actor, CAP.edit, target, authority => kind === "customField"
-    ? saveAdditionalFieldDraftInTransaction(authority, { ...identity(form), label: text(form, "label"), help: text(form, "help") })
+    ? form.get("fieldSettings") === "on"
+      ? configureAdditionalFieldDraftInTransaction(authority, { ...identity(form), setup: readAdditionalFieldSetup(form) })
+      : saveAdditionalFieldDraftInTransaction(authority, { ...identity(form), label: text(form, "label"), help: text(form, "help") })
     : kind === "entityProfile" ? saveBaseProfileDraftInTransaction(authority, { ...identity(form), ...selection(form) })
     : saveRecordTypeDraftInTransaction(authority, { ...identity(form), label: text(form, "label"), help: text(form, "help"), ...selection(form, true) }));
   refresh();

@@ -18,11 +18,15 @@ asset errors, 27 non-read requests blocked. Initial probe assumed grouped menus
 on Settings/Logistics; actual navigation differs, so corrected its selected pages.
 Visual screenshot review found existing phone panels extending past the viewport,
 which the initial page-overflow assertion missed. FloatingModuleNav now anchors
-phone menus beneath the entire navigation bar with 16px side insets; wider menus
+phone/tablet menus beneath the entire navigation bar with 16px side insets; desktop menus
 retain their trigger alignment. Panel-bound assertions added to disposable probe.
 Correction production build, strict TypeScript, scoped component lint and final
-diff whitespace PASS. Next: deploy this correction and verify full panel bounds/
-screenshots. Full repository suite/lint not run; final phone acceptance pending.
+diff whitespace PASS. Phone correction aaf9bc3a deployed (backup
+atlas-pre-deploy-20261011-194501); stronger bounds probe caught the same existing
+clipping at 768px Production. Extended shared below-bar placement to tablets
+(below 1024px). Final build, strict types, scoped lint and whitespace PASS.
+Next: deploy and repeat panel bounds/screenshots.
+Full repository suite/lint not run; final responsive acceptance pending.
 
 ## 11 October 2026 — Finished company-user administration deployed and verified
 

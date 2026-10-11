@@ -17,7 +17,7 @@ readiness or close the existing 173-section acceptance programme.
 | [Odoo work centres](https://www.odoo.com/documentation/19.0/applications/inventory_and_mrp/manufacturing/advanced_configuration/using_work_centers.html) and [manufacturing](https://www.odoo.com/documentation/19.0/applications/inventory_and_mrp/manufacturing.html) | Work-centre setup, alternatives, calendars, shop-floor execution and planning are connected workflows. Merely adding equipment labels is insufficient. |
 | [European Commission ceramic manufacturing reference](https://bureau-industrial-transformation.jrc.ec.europa.eu/reference/ceramic-manufacturing-industry) | Clay preparation, forming, drying and firing need distinct process areas and routings. Kiln cycle/cooling and product compatibility matter. This research reads the reference page, not the linked BREF PDFs, and makes no claim of plant-specific parameters or environmental compliance. |
 
-## This implementation checkpoint
+## Live implementation checkpoint — b661051, 11 October 2026
 
 - One shared operation-time function serves recipes/costs, MRP and release.
   Per-unit throughput and batch/load cycles are explicit. A partial load reserves

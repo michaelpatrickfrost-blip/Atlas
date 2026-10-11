@@ -52,6 +52,14 @@ purchase link `20261009220000_mrp_purchase_link` are applied centrally. The conn
 console passed candidate and public acceptance on 2690c26; exact backups and
 limits belong in the acceptance record. Preserve all prior release evidence.
 
+The kiln/forecast upgrade is live on b661051 (11 October): additive timing/resource/
+downtime schema applied centrally, exact candidate/public supply acceptance PASS,
+including actual routing UI saving, finite execution/stock, flexible forecast saving
+and active production/routing/configuration at three widths. See the acceptance
+record for full SHA, backups and evidence. This confirms machinery-constrained
+forward scheduling and reviewed baseline forecasts; the open process/unit/material/
+quality/WIP/CTP requirements above remain binding.
+
 ## Next work
 
 Follow the complete seven-part programme in [Manufacturing & Supply](MANUFACTURING.md).

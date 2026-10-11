@@ -1,0 +1,177 @@
+import type { Prisma } from "@/generated/prisma/client";
+import { assertCapability } from "@/core/permissions/check";
+import type { RecordContext } from "../../registry/types";
+import type { CapabilityRegistry } from "../../registry/registry";
+import { checksum } from "../../registry/contracts";
+import { compileFieldMigrationMetadata } from "./metadata";
+import { referenceSchema } from "../../compiler/kernel";
+import { entityDetailsSchema, supportsFieldMigrationIntent, supportsFieldMigrationQueryIntent } from "../../registry/entities";
+import { customFieldPayloadSchema } from "../schema";
+import { versionedFieldPayloadSchema } from "../required-contract";
+import { assertFieldMigrationPolicies, assertVersionedFieldMigrationPolicies } from "./access";
+import { sealFieldMigrationIntent, FieldMigrationReviewError, type FieldMigrationIntent } from "./contracts";
+import { sealRequiredFieldMigrationIntent, type RequiredFieldMigrationIntent } from "./required-contracts";
+import { inspectFieldMigrationCutoverIdentity, inspectRequiredFieldMigrationCutoverIdentity } from "./cutover-inspection";
+import type { FieldMigrationAuthority } from "./authority";
+import type { FieldMigrationPrincipal } from "../principal-contract";
+import { fieldRuntimeAuthorityInTransaction } from "../runtime-authority";
+import { resolveFieldMigrationPrincipal } from "../principal";
+
+function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"); }
+export type FieldMigrationCoverageStage = "preparation" | "publication" | "execution" | "cutover";
+
+/** Internal coverage prerequisite. Caller supplies a refreshed/locked authority
+ * transaction. No value decoding, counts, reference approval or sealed review.
+ */
+export async function validateFieldMigrationSourceCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
+  company: Parameters<typeof assertFieldMigrationPolicies>[1], serverIntent: FieldMigrationIntent, stage: FieldMigrationCoverageStage = "preparation"): Promise<void> {
+  return validateCoverage(context, registry, company, sealFieldMigrationIntent(serverIntent), stage);
+}
+
+/** Explicit conditional preparation coverage only. Other stages require their
+ * own retained lineage, never a caller-selected stage. */
+export async function validateRequiredFieldMigrationSourceCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
+  company: Parameters<typeof assertFieldMigrationPolicies>[1], serverIntent: RequiredFieldMigrationIntent): Promise<void> {
+  return validateCoverage(context, registry, company, sealRequiredFieldMigrationIntent(serverIntent), "preparation");
+}
+
+/** Server publication replay prerequisite only. The shared SQL predicate proves
+ * the actual source-active PUBLISHED row and frozen target lineage. No client
+ * stage selection, execution/cutover approval or permission from a checksum. */
+export async function validatePublishedRequiredFieldMigrationSourceCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
+  company: Parameters<typeof assertFieldMigrationPolicies>[1], serverIntent: RequiredFieldMigrationIntent): Promise<void> {
+  return validateCoverage(context, registry, company, sealRequiredFieldMigrationIntent(serverIntent), "publication");
+}
+
+/** Internal execution prerequisite, under the caller's refreshed/locked authority.
+ * Actual RUNNING/READY/FAILED source-active execution and target lineage replace
+ * publication freshness after own target writes. This does not inspect actual
+ * conditional rows, approve a batch, enable start or permit cutover. */
+export async function validateExecutingRequiredFieldMigrationSourceCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
+  company: Parameters<typeof assertFieldMigrationPolicies>[1], serverIntent: RequiredFieldMigrationIntent): Promise<void> {
+  return validateCoverage(context, registry, company, sealRequiredFieldMigrationIntent(serverIntent), "execution");
+}
+
+/** Actual target-active post-cutover prerequisite. Caller owns refreshed authority;
+ * owning private preflight precedes retained source/target freshness inspection.
+ * This is neither a client-selected stage nor settlement/rollback authority. */
+export async function validateCutoverRequiredFieldMigrationSourceCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
+  company: Parameters<typeof assertFieldMigrationPolicies>[1], serverIntent: RequiredFieldMigrationIntent): Promise<void> {
+  return validateCoverage(context, registry, company, sealRequiredFieldMigrationIntent(serverIntent), "cutover");
+}
+
+/** Rollback-only coverage under the CURRENT genuine principal, even when the
+ * original creator's login has since changed. Stored intent/hashes stay original;
+ * no client principal/stage or borrowed creator permissions. */
+export async function validateRollbackRequiredFieldMigrationSourceCoverage(authority: FieldMigrationAuthority, serverIntent: RequiredFieldMigrationIntent): Promise<void> {
+  const refreshed = await fieldRuntimeAuthorityInTransaction(authority.session, authority.transaction), { session, transaction: tx, registry, stamp } = refreshed;
+  const principal = authority.principal;
+  if (principal.organisationId !== session.organisationId || principal.userId !== session.userId || principal.membershipId !== session.membershipId
+    || principal.authVersion !== stamp.authVersion || principal.sessionVersion !== stamp.sessionVersion) changed();
+  await resolveFieldMigrationPrincipal(principal);
+  const company = await tx.organisation.findFirst({ where: { id: session.organisationId }, select: { id: true, kind: true, status: true, archivedAt: true, isTest: true } });
+  if (!company) changed();
+  return validateCoverage({ session, transaction: tx }, registry, company, sealRequiredFieldMigrationIntent(serverIntent), "cutover", principal);
+}
+
+async function validateCoverage(context: RecordContext & { transaction: Prisma.TransactionClient }, registry: CapabilityRegistry,
+  company: Parameters<typeof assertFieldMigrationPolicies>[1], sealed: { intent: FieldMigrationIntent | RequiredFieldMigrationIntent; checksum: string }, stage: FieldMigrationCoverageStage,
+  currentPrincipal?: FieldMigrationPrincipal) {
+  const intent = sealed.intent, session = context.session, tx = context.transaction;
+  const principal = currentPrincipal ?? intent.principal;
+  if (currentPrincipal && (intent.schemaVersion !== 2 || stage !== "cutover")) changed();
+  if (!tx || intent.organisationId !== session.organisationId || principal.organisationId !== session.organisationId
+    || principal.userId !== session.userId || principal.membershipId !== session.membershipId) changed();
+  const policies = intent.schemaVersion === 1 ? assertFieldMigrationPolicies : assertVersionedFieldMigrationPolicies;
+  policies(session, company, intent.source.payload); policies(session, company, intent.target.payload);
+  const current = await compileFieldMigrationMetadata(context, registry, company, intent.definitionId, intent.source.payload), target = await compileFieldMigrationMetadata(context, registry, company, intent.definitionId, intent.target.payload);
+  if (current.checksum !== intent.source.versionChecksum || target.checksum !== intent.target.compiledChecksum) changed();
+  const owner = await registry.resolve(session, intent.target.payload.entity), record = entityDetailsSchema.parse(owner.details).record, policy = record?.migrationSnapshot;
+  const sourceOwner = await registry.resolve(session, intent.source.payload.entity), sourceRecord = entityDetailsSchema.parse(sourceOwner.details).record;
+  if (!record || !sourceRecord?.fieldPolicy) changed();
+  // Replays retain the same native write prerequisites as source observation;
+  // a newer owner contract cannot substitute for a revoked source-version grant.
+  assertCapability(session, sourceRecord.writeCapability); assertCapability(session, record.writeCapability);
+  const query = await registry.resolve(session, intent.ownerQuery);
+  if (!policy || !supportsFieldMigrationIntent(policy, intent.schemaVersion) || !policy.sourceVersions.includes(intent.source.payload.entity.version) || policy.query.id !== intent.ownerQuery.id || policy.query.version !== intent.ownerQuery.version
+    || query.kind !== "query" || query.details.transaction !== "required" || query.ownerModuleId !== owner.ownerModuleId) changed();
+  if (intent.schemaVersion === 2 && (query.capability !== record.writeCapability
+    || !supportsFieldMigrationQueryIntent(query, owner.id, "snapshot", 2))) changed();
+  if ((stage === "execution" || stage === "cutover") && (!supportsFieldMigrationIntent(record?.migrationRepresentation, intent.schemaVersion) || !record?.migrationRepresentation?.sourceVersions.includes(intent.source.payload.entity.version))) changed();
+  await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${intent.id}::uuid AND "organisationId"=${session.organisationId} FOR UPDATE`;
+  // Conditional execution freshness examines stored source/target lineage. The
+  // owning module must approve complete private access before that inspection;
+  // no archive counts, values or IDs are exposed by a denied preflight.
+  if (intent.schemaVersion === 2 && (stage === "execution" || stage === "cutover"))
+    await registry.invokeQueryInTransaction(context, intent.ownerQuery, { mode: "preflight" });
+  // Derive post-cutover coverage solely from actual scoped retained rows; the
+  // original preparation/publication/execution predicates remain source-active.
+  const cutover = stage === "cutover" ? await (intent.schemaVersion === 1
+    ? inspectFieldMigrationCutoverIdentity(tx, intent) : inspectRequiredFieldMigrationCutoverIdentity(tx, intent)) : null;
+  const fresh: Array<{ fresh: boolean; ownerApproval?: unknown }> = stage === "preparation" ? await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_migration_fresh(p) AS fresh
+    FROM studio_field_migration_preparations p WHERE p.id=${intent.id}::uuid AND p."organisationId"=${session.organisationId}
+      AND p."intentChecksum"=${sealed.checksum} AND p.state IN ('PREPARING','REVIEWED')`
+    : stage === "publication" ? await tx.$queryRaw<Array<{ fresh: boolean }>>`SELECT atlas_studio_publication_fresh(pub) AS fresh
+      FROM studio_field_migration_publications pub JOIN studio_field_migration_preparations p ON p.id=pub."preparationId"
+        AND p."organisationId"=pub."organisationId" AND p."definitionId"=pub."definitionId"
+      WHERE p.id=${intent.id}::uuid AND p."organisationId"=${session.organisationId} AND p."intentChecksum"=${sealed.checksum}
+        AND p.state='REVIEWED' AND pub.state='PUBLISHED'`
+      : stage === "execution" ? await tx.$queryRaw<Array<{ fresh: boolean; ownerApproval: unknown }>>`SELECT atlas_studio_execution_fresh(x) AS fresh, x.pin->'ownerApproval' AS "ownerApproval"
+        FROM studio_field_migration_executions x JOIN studio_field_migration_preparations p ON p.id=x."preparationId" AND p."organisationId"=x."organisationId" AND p."definitionId"=x."definitionId"
+        WHERE p.id=${intent.id}::uuid AND p."organisationId"=${session.organisationId} AND p."intentChecksum"=${sealed.checksum}
+          AND p.state='REVIEWED' AND x.state IN ('RUNNING','READY','FAILED')`
+        : cutover ? [{ fresh: true, ownerApproval: cutover.executionPin.ownerApproval }] : changed();
+  if (fresh.length !== 1 || fresh[0].fresh !== true) changed();
+  if (stage === "execution" || stage === "cutover") {
+    const reference = referenceSchema.parse(fresh[0].ownerApproval), approval = await registry.resolve(session, reference);
+    const declared = record!.migrationRepresentation!.query;
+    if (reference.id !== declared.id || reference.version !== declared.version || approval.kind !== "query"
+      || approval.ownerModuleId !== owner.ownerModuleId || approval.capability !== record!.writeCapability || approval.details.transaction !== "required") changed();
+    if (intent.schemaVersion === 2 && !supportsFieldMigrationQueryIntent(approval, owner.id, "representation", 2)) changed();
+  }
+  // Owner rejects incomplete native/private access before any archive count/IDs.
+  await registry.invokeQueryInTransaction(context, intent.ownerQuery, { mode: "coverage", preparationId: intent.id });
+  await tx.$queryRaw`SELECT count(*)::text FROM (SELECT e.id FROM studio_extension_records e WHERE e."organisationId"=${session.organisationId} AND e."entityId"=${intent.source.payload.entity.id}
+    AND EXISTS (SELECT 1 FROM studio_field_migration_observations o WHERE o."preparationId"=${intent.id}::uuid AND o."organisationId"=e."organisationId" AND o."recordId"=e."recordId") FOR SHARE OF e) locked`;
+  await tx.$queryRaw`SELECT count(*)::text FROM (SELECT s.id FROM studio_field_slots s WHERE s."organisationId"=${session.organisationId} AND s."definitionId"=${intent.definitionId}::uuid
+    AND s."generationId"=${intent.source.payload.storageGeneration}::uuid
+    AND EXISTS (SELECT 1 FROM studio_field_migration_observations o WHERE o."preparationId"=${intent.id}::uuid AND o."organisationId"=s."organisationId" AND o."extensionId"=s."extensionId") FOR SHARE OF s) locked`;
+  const source = stage === "cutover" ? await tx.$queryRaw<Array<{ changed: boolean }>>`SELECT NOT atlas_studio_execution_source_fresh(pub) AS changed
+    FROM studio_field_migration_publications pub JOIN studio_field_migration_cutovers c ON c."preparationId"=pub."preparationId" AND c."organisationId"=pub."organisationId" AND c."definitionId"=pub."definitionId"
+    WHERE pub."preparationId"=${intent.id}::uuid AND pub."organisationId"=${session.organisationId} AND pub."definitionId"=${intent.definitionId}::uuid
+      AND pub.state='CUTOVER' AND c.state='ACTIVATED'`
+    : stage === "execution" ? await tx.$queryRaw<Array<{ changed: boolean }>>`SELECT NOT atlas_studio_execution_source_fresh(pub) AS changed
+    FROM studio_field_migration_publications pub JOIN studio_field_migration_executions x ON x."preparationId"=pub."preparationId" AND x."organisationId"=pub."organisationId" AND x."definitionId"=pub."definitionId"
+    WHERE pub."preparationId"=${intent.id}::uuid AND pub."organisationId"=${session.organisationId} AND pub."definitionId"=${intent.definitionId}::uuid
+      AND pub.state='PUBLISHED' AND x.state IN ('RUNNING','READY','FAILED')`
+    : await tx.$queryRaw<Array<{ changed: boolean }>>`SELECT EXISTS (
+    SELECT 1 FROM studio_field_migration_observations o
+    LEFT JOIN studio_extension_records e ON e."organisationId"=o."organisationId" AND e."entityId"=o."entityId" AND e."recordId"=o."recordId"
+    LEFT JOIN studio_field_slots s ON s."organisationId"=o."organisationId" AND s."extensionId"=e.id AND s."definitionId"=o."definitionId" AND s."generationId"=o."sourceGenerationId"
+    LEFT JOIN studio_field_values v ON v.id=s."activeValueId" AND v."organisationId"=o."organisationId" AND v."slotId"=s.id
+    WHERE o."preparationId"=${intent.id}::uuid AND o."organisationId"=${session.organisationId} AND (
+      e.id IS DISTINCT FROM o."extensionId" OR e.revision IS DISTINCT FROM o."extensionRevision"
+      OR s.id IS DISTINCT FROM o."slotId" OR s.revision IS DISTINCT FROM o."slotRevision" OR s."activeValueId" IS DISTINCT FROM o."valueId"
+      OR (o."valueId" IS NOT NULL AND (v.id IS NULL OR v.revision IS DISTINCT FROM s.revision
+        OR v."definitionId" IS DISTINCT FROM o."definitionId" OR v."generationId" IS DISTINCT FROM o."sourceGenerationId"
+        OR v."versionId"::text IS DISTINCT FROM o.observation->'extension'->'slot'->'value'->>'versionId'
+        OR v.fingerprint IS DISTINCT FROM o.observation->'extension'->'slot'->'value'->>'fingerprint'))
+    )) AS changed`;
+  if (source.length !== 1 || source[0].changed !== false) changed();
+  // Immutable schema metadata only; never fetch business columns to establish
+  // the written policy. Reference target checks remain the final sealer's duty.
+  const versions = await tx.$queryRaw<Array<{ versionId: string }>>`SELECT DISTINCT v."versionId" FROM studio_field_values v
+    JOIN studio_field_migration_observations o ON o."valueId"=v.id AND o."organisationId"=v."organisationId"
+    WHERE o."preparationId"=${intent.id}::uuid AND v."organisationId"=${session.organisationId}
+      AND v."definitionId"=${intent.definitionId}::uuid AND v."generationId"=${intent.source.payload.storageGeneration}::uuid`;
+  const schemas = await tx.studioDefinitionVersion.findMany({ where: { id: { in: versions.map(row => row.versionId) }, organisationId: session.organisationId, definitionId: intent.definitionId },
+    select: { id: true, payload: true, checksum: true, compiledPlan: true } });
+  if (schemas.length !== versions.length) changed();
+  for (const row of schemas) {
+    const written = intent.schemaVersion === 1 ? customFieldPayloadSchema.parse(row.payload) : versionedFieldPayloadSchema.parse(row.payload);
+    if (written.storageGeneration !== intent.source.payload.storageGeneration) changed();
+    policies(session, company, intent.source.payload, written);
+    const compiled = await compileFieldMigrationMetadata(context, registry, company, intent.definitionId, written);
+    if (compiled.checksum !== row.checksum || checksum(row.compiledPlan) !== row.checksum) changed();
+  }
+}

@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
 import type { CommandDescriptor, ContractIdentity, Contribution, DeclarativeDescriptor, EntityDescriptor, QueryDescriptor } from "./types";
-import { entityDetailsSchema, recordAnchorSchema, recordRequestSchema } from "./entities";
+import { entityDetailsSchema, fieldMigrationQueryPolicySchema, fieldSettlementPolicySchema, nativeValidationPolicySchema, nativeValidationRequestSchema, recordAnchorSchema, recordRequestSchema } from "./entities";
 
 export function canonicalJson(value: unknown): string {
   if (value === null || typeof value !== "object") {
@@ -20,12 +20,27 @@ function identity(d: ContractIdentity): ContractIdentity {
     ...(d.supportedUntil ? { supportedUntil: d.supportedUntil } : {}), classification: d.classification };
 }
 export function query<I, O>(d: QueryDescriptor<I, O>): Contribution {
+  const requiresTransaction = d.transaction === "required";
+  const nativeValidation = d.nativeValidation && (() => {
+    const { authorise, ...policy } = d.nativeValidation;
+    if (typeof authorise !== "function") throw new Error("Native validation requires an owner proof callback.");
+    return { authorise, policy: nativeValidationPolicySchema.parse(policy) };
+  })();
   const inputSchema = z.toJSONSchema(d.input, { io: "input" });
   const outputSchema = z.toJSONSchema(d.output, { io: "output" });
   return { metadata: { ...identity(d), kind: d.kind, inputSchema, outputSchema,
     schemaHash: checksum({ inputSchema, outputSchema }),
-    details: { pagination: d.pagination, maxCardinality: d.maxCardinality, costClass: d.costClass } },
-    run: async (ctx, value) => d.output.parseAsync(await d.execute(ctx, await d.input.parseAsync(value))) };
+    details: { pagination: d.pagination, maxCardinality: d.maxCardinality, costClass: d.costClass,
+      ...(d.transaction ? { transaction: d.transaction } : {}),
+      ...(d.fieldMigration ? { fieldMigration: fieldMigrationQueryPolicySchema.parse(d.fieldMigration) } : {}),
+      ...(d.fieldSettlement ? { fieldSettlement: fieldSettlementPolicySchema.parse(d.fieldSettlement) } : {}),
+      ...(nativeValidation ? { nativeValidation: nativeValidation.policy } : {}) } },
+    ...(nativeValidation ? { authoriseNativeValidationProof: async (ctx, request, proof) =>
+      recordAnchorSchema.parseAsync(await nativeValidation.authorise(ctx, nativeValidationRequestSchema.parse(request), proof)) } : {}),
+    run: async (ctx, value) => {
+      if (requiresTransaction && !ctx.transaction) throw new Error("This owner query requires a shared server transaction.");
+      return d.output.parseAsync(await d.execute(ctx, await d.input.parseAsync(value)));
+    } };
 }
 export function command<I, O>(d: CommandDescriptor<I, O>): Contribution {
   const inputSchema = z.toJSONSchema(d.input, { io: "input" });
@@ -40,9 +55,16 @@ export function entity(d: EntityDescriptor): Contribution {
     ...(d.record ? { record: { writeCapability: d.record.writeCapability, detailRoute: d.record.detailRoute,
       labelField: d.record.labelField, listQuery: d.record.listQuery, getQuery: d.record.getQuery,
       ...(d.record.fieldPolicy ? { fieldPolicy: d.record.fieldPolicy } : {}),
+      ...(d.record.requiredFacts ? { requiredFacts: d.record.requiredFacts } : {}),
+      ...(d.record.requiredCoverage ? { requiredCoverage: d.record.requiredCoverage } : {}),
+      ...(d.record.initialisation ? { initialisation: { capability: d.record.initialisation.capability,
+        ...(d.record.initialisation.acceptedFieldVersions ? { acceptedFieldVersions: d.record.initialisation.acceptedFieldVersions } : {}) } } : {}),
+      ...(d.record.migrationSnapshot ? { migrationSnapshot: d.record.migrationSnapshot } : {}),
+      ...(d.record.migrationRepresentation ? { migrationRepresentation: d.record.migrationRepresentation } : {}),
       nativeFields: "read_only", revision: "owner_positive_integer" } } : {}) });
   return { metadata: { ...identity(d), kind: d.kind, details, schemaHash: checksum(details) },
-    ...(d.record ? { authoriseRecord: async (ctx, value) => recordAnchorSchema.parseAsync(await d.record!.authorise(ctx, recordRequestSchema.parse(value))) } : {}) };
+    ...(d.record ? { authoriseRecord: async (ctx, value) => recordAnchorSchema.parseAsync(await d.record!.authorise(ctx, recordRequestSchema.parse(value))) } : {}),
+    ...(d.record?.initialisation ? { authoriseInitialRecord: async (ctx, proof) => recordAnchorSchema.parseAsync(await d.record!.initialisation!.authorise(ctx, proof)) } : {}) };
 }
 export function declarative(d: DeclarativeDescriptor): Contribution {
   const outputSchema = z.toJSONSchema(d.schema);

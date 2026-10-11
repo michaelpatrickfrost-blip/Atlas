@@ -25,10 +25,12 @@ describe("Studio metadata security and draft concurrency",()=>{
   });
   it("reports optimistic conflict before audit when the submitted draft revision lost",async()=>{
     const updateMany=vi.fn().mockResolvedValue({count:0});
-    const audit=vi.fn();mocks.transaction.mockImplementation(async cb=>cb({studioDefinition:{findFirst:vi.fn().mockResolvedValue({kind:"capabilitySet",key:"x"})},studioDraft:{updateMany},auditEntry:{create:audit}}));
+    const raw=vi.fn().mockResolvedValue([]),audit=vi.fn();mocks.transaction.mockImplementation(async cb=>cb({$queryRaw:raw,studioDefinition:{findFirst:vi.fn().mockResolvedValue({kind:"capabilitySet",key:"x"})},studioDraft:{updateMany},auditEntry:{create:audit}}));
     await expect(updateDraft(s,{definitionId:id,revision:3,payload:{schemaVersion:1,description:"",references:[]}})).rejects.toThrow("CONFLICT");
     expect(updateMany.mock.calls[0][0].where).toMatchObject({organisationId:"tenant-a",revision:3});
     expect(audit).not.toHaveBeenCalled();
+    expect(raw.mock.calls[0].slice(1)).toEqual([s.organisationId,id]);
+    expect(raw.mock.invocationCallOrder[0]).toBeLessThan(updateMany.mock.invocationCallOrder[0]);
   });
   it("requires module access independently of permission strings",async()=>{
     mocks.moduleGate.mockRejectedValue(new Error("disabled"));
@@ -38,7 +40,8 @@ describe("Studio metadata security and draft concurrency",()=>{
 
 it("publishes sealed dependencies through Prisma-inferred tenant keys and audits in the same transaction",async()=>{
  const payload={schemaVersion:1,description:"Sources",references:[{id:"sales.order.get",version:1,schemaHash:"a".repeat(64),contractHash:"b".repeat(64)}]};
- mocks.findFirst.mockResolvedValue({id:"draft",payload,definition:{kind:"capabilitySet",revision:0,latestVersion:0},baseVersion:null});
+ mocks.findFirst.mockResolvedValue({id:"draft",organisationId:s.organisationId,definitionId:id,revision:0,payload,
+   definition:{id,organisationId:s.organisationId,kind:"capabilitySet",revision:0,latestVersion:0},baseVersion:null});
  const create=vi.fn().mockResolvedValue({id:"version"}),audit=vi.fn().mockResolvedValue({id:"audit"});
  mocks.transaction.mockImplementation(async cb=>cb({moduleState:{count:vi.fn().mockResolvedValue(1)},studioDefinition:{updateMany:vi.fn().mockResolvedValue({count:1})},studioDraft:{updateMany:vi.fn().mockResolvedValue({count:1})},studioDefinitionVersion:{create},auditEntry:{create:audit}}));
  expect(await publishDraft(s,{definitionId:id,revision:0,acknowledgeWarnings:true})).toEqual({versionId:"version",version:1,revision:1});
@@ -46,4 +49,16 @@ it("publishes sealed dependencies through Prisma-inferred tenant keys and audits
  expect(data.organisationId).toBe(s.organisationId);
  expect(data.dependencies.create).toEqual([{ownerModuleId:"sales",contractId:"sales.order.get",contractVersion:1,schemaHash:"a".repeat(64),contractHash:"b".repeat(64)}]);
  expect(audit).toHaveBeenCalledWith(expect.objectContaining({data:expect.objectContaining({organisationId:s.organisationId,actorUserId:s.userId,action:"studio.definition.published"})}));
+});
+
+it("the shared publisher rejects a foreign/inconsistent draft before module counts, CAS, versions or audit",async()=>{
+ const payload={schemaVersion:1,description:"",references:[]};
+ const count=vi.fn(),update=vi.fn(),create=vi.fn();
+ mocks.transaction.mockImplementation(async cb=>cb({moduleState:{count},studioDefinition:{updateMany:update},studioDefinitionVersion:{create}}));
+ for(const change of [{organisationId:"other"},{definitionId:"different"},{revision:1}]){
+   mocks.findFirst.mockResolvedValue({id:"draft",organisationId:s.organisationId,definitionId:id,revision:0,payload,
+     definition:{id,organisationId:s.organisationId,kind:"capabilitySet",revision:0,latestVersion:0},baseVersion:null,...change});
+   await expect(publishDraft(s,{definitionId:id,revision:0,acknowledgeWarnings:true})).rejects.toThrow("CONFLICT");
+ }
+ expect(count).not.toHaveBeenCalled();expect(update).not.toHaveBeenCalled();expect(create).not.toHaveBeenCalled();
 });

@@ -1,5 +1,5 @@
 import {beforeEach,describe,expect,it,vi} from "vitest";
-const state=vi.hoisted(()=>({session:{organisationId:"org",userId:"agent",capabilities:new Set<string>()},tx:{serviceWorkItem:{findFirst:vi.fn(),count:vi.fn(),updateMany:vi.fn()},serviceQueue:{findFirstOrThrow:vi.fn()},serviceQueueMember:{findFirst:vi.fn()},serviceFile:{count:vi.fn()},approvalInstance:{findFirst:vi.fn()},serviceWorkEntry:{create:vi.fn()},auditEntry:{create:vi.fn()},domainOutbox:{create:vi.fn()}},enabled:vi.fn()}));
+const state=vi.hoisted(()=>({session:{organisationId:"org",userId:"agent",capabilities:new Set<string>()},tx:{$queryRaw:vi.fn(),serviceWorkItem:{findFirst:vi.fn(),count:vi.fn(),updateMany:vi.fn()},serviceQueue:{findFirstOrThrow:vi.fn()},serviceQueueMember:{findFirst:vi.fn()},serviceFile:{count:vi.fn()},approvalInstance:{findFirst:vi.fn()},serviceWorkEntry:{create:vi.fn()},auditEntry:{create:vi.fn()},domainOutbox:{create:vi.fn()}},enabled:vi.fn()}));
 vi.mock("@/core/auth/session",()=>({requireSession:async()=>state.session}));
 vi.mock("@/core/db/client",()=>({db:{$transaction:async(fn:(tx:typeof state.tx)=>unknown)=>fn(state.tx),moduleState:{findFirst:state.enabled}}}));
 vi.mock("next/cache",()=>({revalidatePath:vi.fn()}));vi.mock("next/navigation",()=>({redirect:vi.fn()}));

@@ -1,5 +1,7 @@
 'use server';
 import { db } from '@/core/db/client';
+import { withValidatedTicketMutation } from '@/core/service-work/studio-enforcement';
+import { reparentCaseWorkWithFieldReceipts } from '@/core/service-work/studio-native';
 import { DOMAIN_EVENTS } from '@/core/events/bus';
 import { requireSession, type Session } from '@/core/auth/session';
 import { assertCapability } from '@/core/permissions/check';
@@ -232,10 +234,10 @@ export async function mergeCases(form:FormData){
  const session=await requireSession();
  assertCapability(session,'service.case.assign');
  await requireService(session);
- await db.$transaction(async tx=>{const source=await getCase(tx,session,required(form,'caseId',100));const target=await tx.serviceCase.findFirst({where:{AND:[serviceCaseScope(session),{number:required(form,'targetNumber',40),mergedIntoId:null,status:{in:[...ACTIVE_STATUSES]}}]}});
+ await db.$transaction(async tx=>withValidatedTicketMutation({session,transaction:tx},'service.case.assign',async session=>{const source=await getCase(tx,session,required(form,'caseId',100));const target=await tx.serviceCase.findFirst({where:{AND:[serviceCaseScope(session),{number:required(form,'targetNumber',40),mergedIntoId:null,status:{in:[...ACTIVE_STATUSES]}}]}});
  if(!target||source.id===target.id||source.partyId!==target.partyId||source.security!==target.security||source.mergedIntoId)throw new Error('Choose a different active case for the same customer and security level.');const reason=required(form,'reason',2000);
  const changed=await tx.serviceCase.updateMany({where:{id:source.id,organisationId:session.organisationId,version:version(form)},data:{mergedIntoId:target.id,status:'CLOSED',resolutionCode:'DUPLICATE',resolutionSummary:reason,resolvedAt:new Date(),closedAt:new Date(),version:{increment:1}}});if(!changed.count)throw new Error('Case changed. Refresh before merging.');
- await tx.serviceTicket.updateMany({where:{organisationId:session.organisationId,caseId:source.id,status:{notIn:['COMPLETE','CANCELLED']}},data:{caseId:target.id,version:{increment:1}}});await tx.serviceWorkItem.updateMany({where:{organisationId:session.organisationId,parentCaseId:source.id,status:{notIn:['RESOLVED','CLOSED','CANCELLED']}},data:{parentCaseId:target.id,version:{increment:1}}});await tx.serviceCase.update({where:{id:target.id},data:{version:{increment:1}}});
+ await tx.serviceTicket.updateMany({where:{organisationId:session.organisationId,caseId:source.id,status:{notIn:['COMPLETE','CANCELLED']}},data:{caseId:target.id,version:{increment:1}}});await reparentCaseWorkWithFieldReceipts(tx,session,source.id,target.id);await tx.serviceCase.update({where:{id:target.id},data:{version:{increment:1}}});
  await event(tx,session,source,'CASE_MERGED',`Merged into ${target.number}. ${reason}`);await event(tx,session,target,'MERGE_RECEIVED',`${source.number} merged here. Original timeline, evidence and financial links are retained on the historical reference.`);
- },{isolationLevel:'Serializable'});revalidatePath('/service','layout');
+ }),{isolationLevel:'Serializable'});revalidatePath('/service','layout');
 }

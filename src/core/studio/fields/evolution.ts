@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { checksum } from "../registry/contracts";
 import { customFieldPayloadSchema, fieldKeySchema, type CustomFieldPayload, type FieldValue } from "./schema";
+import { versionedFieldPayloadSchema, type VersionedFieldPayload, type RequiredFactSource } from "./required-contract";
 import { validateFieldConstraints, validateFieldValue } from "./validation";
 
 /** Pure analysis only. Reviewed publication, owner access and durable jobs follow. */
@@ -16,10 +17,10 @@ export const fieldConversionSchema = z.discriminatedUnion("kind", [
   z.strictObject({ kind: z.literal("datetime_to_date"), timezone: z.literal("UTC"), loss: z.enum(["reject", "allow_time_loss"]) }),
 ]);
 export type FieldConversion = z.infer<typeof fieldConversionSchema>;
-export type FieldEvolution = {
+export type FieldEvolution<Payload = CustomFieldPayload> = {
   kind: "cosmetic" | "migration";
-  source: CustomFieldPayload;
-  target: CustomFieldPayload;
+  source: Payload;
+  target: Payload;
   indexImpact: string[];
   requiresUniquenessCheck: boolean;
   rollbackLimit: "unchanged_representation" | "reverse_review_after_target_writes";
@@ -31,7 +32,7 @@ function checkedPayload(input: unknown) {
   return payload;
 }
 
-function withoutPresentation(payload: CustomFieldPayload) {
+function withoutPresentation(payload: VersionedFieldPayload) {
   const storage = payload.field.storage;
   return { ...payload, field: { ...payload.field, label: "", help: "",
     storage: storage.type === "enum" || storage.type === "multi_enum"
@@ -41,6 +42,11 @@ function withoutPresentation(payload: CustomFieldPayload) {
 
 export function analyseFieldEvolution(sourceInput: unknown, targetInput: unknown): FieldEvolution {
   const source = checkedPayload(sourceInput), target = checkedPayload(targetInput);
+  return analyseCheckedEvolution(source, target);
+}
+
+/** Shared structural rules, preserving the legacy analyser's exact result. */
+function analyseCheckedEvolution<Payload extends VersionedFieldPayload>(source: Payload, target: Payload): FieldEvolution<Payload> {
   if (source.entity.id !== target.entity.id || source.field.key !== target.field.key)
     throw new Error("Published field/entity identity cannot change; create a new field.");
   const from = source.field.storage, to = target.field.storage;
@@ -71,6 +77,65 @@ export function analyseFieldEvolution(sourceInput: unknown, targetInput: unknown
     rollbackLimit: kind === "cosmetic" ? "unchanged_representation" : "reverse_review_after_target_writes" };
 }
 
+export type RequiredFieldEvolution = FieldEvolution<VersionedFieldPayload> & {
+  requirementImpact: {
+    unconditional: "unchanged" | "enabled" | "disabled";
+    condition: "none" | "added" | "removed" | "changed" | "unchanged";
+    addedInputs: RequiredFactSource[];
+    removedInputs: RequiredFactSource[];
+    repinnedInputs: { source: RequiredFactSource; target: RequiredFactSource }[];
+    requiresCanonicalReview: boolean;
+    requiresConditionalValidation: boolean;
+  };
+};
+
+function conditionInputs(payload: VersionedFieldPayload) {
+  const inputs = new Map<string, RequiredFactSource>();
+  if (payload.schemaVersion === 2) for (const { source } of payload.requiredIf.predicates) {
+    const identity = source.kind === "native" ? `native:${source.fieldId}` : `field:${source.definitionId}`;
+    // Multiple predicates may use one input. Different immutable pins for that
+    // same field cannot silently collapse into one impact row.
+    const previous = inputs.get(identity);
+    if (previous && checksum(previous) !== checksum(source))
+      throw new Error("FIELD_REQUIREMENT_INVALID: one condition input has conflicting version pins.");
+    inputs.set(identity, source);
+  }
+  return new Map([...inputs].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0));
+}
+
+/** Pure v1/v2 impact analysis for the upcoming reviewed migration protocol.
+ * No conversion, owner approval, business values or publication authority. The
+ * legacy analyser/converter/receipts deliberately still accept only v1.
+ * Rule syntax/pins remain part of structural identity; even removing a rule
+ * requires a reviewed new generation rather than changing published history.
+ */
+export function analyseRequiredFieldEvolution(sourceInput: unknown, targetInput: unknown): RequiredFieldEvolution {
+  function checked(input: unknown): VersionedFieldPayload {
+    const payload = versionedFieldPayloadSchema.parse(input);
+    payload.field = validateFieldConstraints(payload.field);
+    return payload;
+  }
+  const source = checked(sourceInput), target = checked(targetInput);
+  const fromInputs = conditionInputs(source), toInputs = conditionInputs(target);
+  const analysis = analyseCheckedEvolution(source, target);
+  const fromCondition = source.schemaVersion === 2 ? source.requiredIf : null;
+  const toCondition = target.schemaVersion === 2 ? target.requiredIf : null;
+  const condition = fromCondition === null ? toCondition === null ? "none" : "added"
+    : toCondition === null ? "removed" : checksum(fromCondition) === checksum(toCondition) ? "unchanged" : "changed";
+  return { ...analysis, requirementImpact: {
+    unconditional: source.field.required === target.field.required ? "unchanged" : target.field.required ? "enabled" : "disabled",
+    condition,
+    addedInputs: [...toInputs].filter(([id]) => !fromInputs.has(id)).map(([, input]) => input),
+    removedInputs: [...fromInputs].filter(([id]) => !toInputs.has(id)).map(([, input]) => input),
+    repinnedInputs: [...toInputs].flatMap(([id, input]) => {
+      const previous = fromInputs.get(id);
+      return previous && checksum(previous) !== checksum(input) ? [{ source: previous, target: input }] : [];
+    }),
+    requiresCanonicalReview: analysis.kind === "migration",
+    requiresConditionalValidation: source.schemaVersion === 2 || target.schemaVersion === 2,
+  } };
+}
+
 export class FieldConversionError extends Error {
   constructor(public readonly code: "INVALID_SOURCE" | "INVALID_TARGET" | "UNMAPPED_VALUE" | "LOSS_REQUIRES_REVIEW") {
     super({ INVALID_SOURCE: "The source value does not satisfy its schema.", INVALID_TARGET: "The converted value does not satisfy the target schema.",
@@ -79,9 +144,28 @@ export class FieldConversionError extends Error {
   }
 }
 
+export class FieldRequirementConversionError extends Error {
+  readonly code = "FIELD_REQUIRED";
+  constructor() { super("The converted value is absent under its evaluated target requirement."); }
+}
+
 /** No coercion, rounding, currency inference or arbitrary executable conversion. */
 export function createFieldConverter(sourceInput: unknown, targetInput: unknown, ruleInput: unknown) {
-  const analysis = analyseFieldEvolution(sourceInput, targetInput), rule = fieldConversionSchema.parse(ruleInput);
+  const convert = checkedConverter(analyseFieldEvolution(sourceInput, targetInput), ruleInput);
+  return (raw: unknown) => convert(raw);
+}
+
+/** Internal conversion after actual authorised source/target rule evaluation.
+ * Shares every legacy type/mapping/loss check. Evaluations can only strengthen
+ * unconditional requirements; they cannot relax them or approve an operation. */
+export function createRequiredFieldConverter(sourceInput: unknown, targetInput: unknown, ruleInput: unknown) {
+  const convert = checkedConverter(analyseRequiredFieldEvolution(sourceInput, targetInput), ruleInput);
+  const requirements = z.strictObject({ sourceRequired: z.boolean(), targetRequired: z.boolean() });
+  return (raw: unknown, evaluated: z.infer<typeof requirements>) => convert(raw, requirements.parse(evaluated));
+}
+
+function checkedConverter(analysis: FieldEvolution<VersionedFieldPayload>, ruleInput: unknown) {
+  const rule = fieldConversionSchema.parse(ruleInput);
   const source = analysis.source.field, target = analysis.target.field;
   const from = source.storage.type, to = target.storage.type;
   const compatible = rule.kind === "same_type" ? from === to
@@ -98,9 +182,9 @@ export function createFieldConverter(sourceInput: unknown, targetInput: unknown,
   const historicalSource = source.storage.type === "enum" || source.storage.type === "multi_enum"
     ? { ...source, storage: { ...source.storage, options: source.storage.options.map(option => ({ ...option, retired: false })) } }
     : source;
-  return (raw: unknown): { value: FieldValue | null; lossy: boolean } => {
+  return (raw: unknown, evaluated?: { sourceRequired: boolean; targetRequired: boolean }): { value: FieldValue | null; lossy: boolean } => {
     let value: FieldValue | null;
-    try { value = validateFieldValue(historicalSource, raw); }
+    try { value = validateFieldValue(evaluated ? { ...historicalSource, required: source.required || evaluated.sourceRequired } : historicalSource, raw); }
     catch { throw new FieldConversionError("INVALID_SOURCE"); }
     let converted: unknown = value?.value ?? null, lossy = false;
     if (value) {
@@ -121,7 +205,10 @@ export function createFieldConverter(sourceInput: unknown, targetInput: unknown,
     const retainedTarget = rule.kind === "same_type" && (target.storage.type === "enum" || target.storage.type === "multi_enum")
       ? { ...target, storage: { ...target.storage, options: target.storage.options.map(option => ({ ...option, retired: false })) } }
       : target;
-    try { return { value: validateFieldValue(retainedTarget, converted), lossy }; }
+    const required = target.required || Boolean(evaluated?.targetRequired);
+    if (evaluated && required && (converted === null || converted === undefined || converted === ""
+      || (target.storage.type === "multi_enum" && Array.isArray(converted) && converted.length === 0))) throw new FieldRequirementConversionError();
+    try { return { value: validateFieldValue(evaluated ? { ...retainedTarget, required } : retainedTarget, converted), lossy }; }
     catch { throw new FieldConversionError("INVALID_TARGET"); }
   };
 }

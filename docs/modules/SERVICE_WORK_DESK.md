@@ -65,3 +65,37 @@ snapshot. Incomplete coverage fails without private IDs/counts; final/merged and
 unanchored records remain part of coverage. It grants no conversion write and
 retains sealed v1/v2 and normal final/merged extension restrictions. See the Studio
 ledger for local versus central/public verification status.
+
+Tickets entity v3 declares a read-only migration snapshot policy for source entity
+versions 2/3. Its new `tickets.ticket.field_migration@1` query requires the same
+server-owned SERIALIZABLE transaction as Studio archive work. Actual active
+target-company membership and complete native/private access precede all returned
+anchors/counts. Snapshot pages include final/merged and unanchored canonical
+TICKET rows; archive coverage rejects missing/extra IDs and changed native
+revisions, including equal-count substitutions. It does not read business field
+values or authorise conversion writes. Existing v1/v2 descriptors, legacy cohort
+query and ordinary final/merged extension restrictions remain unchanged.
+
+Studio reference review opt-in (Phase 2): Tickets entity v4 pins field_migration
+query v2, typed source versions 2–4 and same-canonical-entity reference read versions
+1–4. Query v2 adds reference_coverage: actual member/active customer/Serializable,
+source entitlement, native read/manage and complete private/work scope first, then
+scoped immutable query-v2/target-v4 preparation and actual canonical target tenant/
+kind/existence plus written reference versions. It returns only coverage truth,
+never referenced IDs/counts or mutations. Versioned descriptors preserve v1–v3
+entity/query-v1 hashes and ordinary final/merged write restrictions. Studio still
+checks current/written field policies and exact source before invocation; metadata
+alone gives no access. Reference seal/central proof VERIFIED on 32ee77e and preserved
+in complete candidate/public 64361cb acceptance.
+
+
+Tickets representation approval (2B3e3 IMPLEMENTED, actual not run): new entity v5
+pins snapshot/reference query v3 with typed sources 2–5/read versions 1–5, and a
+separate `tickets.ticket.field_representation@1` owner query. It reloads scoped stored
+publication/review/observation, checks current initiating membership/auth versions,
+complete native/private access, source entitlement and actual native revision under
+Serializable FOR UPDATE. Only a representation anchor returns; final/merged native work
+is untouched and normal extension editing still requires reopening. Existing entity
+v1–v4/query v1–v2 metadata and reference-v2 defaults remain. Studio still checks field/
+written/reference rights and exact source/target before conversion. Local 35 files/
+204 assertions/types/lint/build PASS; pending execution DDL and actual row proof remain.

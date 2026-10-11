@@ -67,11 +67,11 @@ export function CommandPalette({ variant = "default" }: { variant?: "default" | 
     <>
       <button
         onClick={() => setOpen(true)}
-        className={`flex w-full min-w-0 items-center gap-3 rounded-full border text-[#6e6e73] shadow-sm transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${variant === "workspace" ? "h-11 border-black/[0.06] bg-white px-3 text-sm sm:h-14 sm:gap-4 sm:px-5 sm:text-lg" : "h-10 border-white/80 bg-white/70 px-4 text-sm backdrop-blur-xl"}`}
+        className={`flex w-full min-w-0 items-center gap-3 rounded-full border text-[#6e6e73] shadow-sm transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${variant === "workspace" ? "h-9 border-black/[0.08] bg-[#fafbfc] px-3 text-sm sm:h-10 sm:gap-2.5 sm:px-3.5" : "h-10 border-white/80 bg-white/70 px-4 text-sm backdrop-blur-xl"}`}
       >
-        <Search size={variant === "workspace" ? 22 : 15} aria-hidden="true" className="shrink-0" />
+        <Search size={variant === "workspace" ? 18 : 15} aria-hidden="true" className="shrink-0" />
         <span className="min-w-0 flex-1 truncate text-left">Search apps, people, reports...</span>
-        <kbd className={`hidden shrink-0 rounded-md border border-[var(--color-border-strong)] bg-[var(--color-surface)] text-xs sm:inline ${variant === "workspace" ? "px-2 py-1.5" : "px-1.5 py-0.5"}`}>⌘K</kbd>
+        <kbd className={`hidden shrink-0 rounded-md border border-[var(--color-border-strong)] bg-[var(--color-surface)] text-xs sm:inline ${variant === "workspace" ? "px-1.5 py-0.5" : "px-1.5 py-0.5"}`}>⌘K</kbd>
       </button>
 
       {open && (

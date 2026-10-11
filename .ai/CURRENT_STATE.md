@@ -1,4 +1,4809 @@
+## 11 October 2026 — Company user administration source preparation
+
+New company-admin task starts from shared Settings source 5297d519 and merges
+exact live ad9d5a43 to preserve accepted Studio and utility changes. Memory/evidence
+conflicts reconciled with contributor checkpoints retained. No application change
+yet; no checks or new deployment run. Next: account details/password controls and
+clearer per-app access editor, focused checks and pinned candidate/public acceptance.
+
+## 11 October — native release84f64da FAILED safely before activation
+
+Clean reviewed checkpoint84f64da8 created after local57/4/final types/lint/build/
+independent source review. Original pinned deploy started: branchcodex/studio-phase2,
+exact84f64da8, acceptance=studio; local exec75132, private local log
+/tmp/atlas-studio-native-release.txt. Original remote-tip/ancestry/recovery/schema/
+immutable build and candidate/public combined acceptance/rollback locks preserved.
+Exec75132 exited1. Candidate evidence /tmp/atlas-studio-candidate-tfR6dK;
+required original recovery backups UTC140646/140815 retained. Dashboard and Ticket
+owner contracts passed; old field-storage fixture failed the new genuine-principal
+required-activation guard before native/window/concurrency gates. Live1f4dc79 and
+rollbackb34ce50 unchanged; original Test companies suspended/history retained.
+No extra ad-hoc dumps or local DB; no new SQL gate/live activation PASS claimed.
+Storage correction and reviewed-publication races are now implemented below.
+Next save this coherent six-file checkpoint, then retry the original pinned studio
+pipeline; preserve live1f4/rollbackb34, original recovery gates and history.
+Full Phase2 gate remainsFAIL incomplete; no customer packet or Phase3 yet.
+
+Storage fixture correction IMPLEMENTED: scripts/studio/check-field-storage.ts retains
+required:true and every raw SQL guard/history/retirement check. Exact guarded closed
+one-Ticket cohort and private queue; metadata-only denial leaves the full definition
+and activation Audit unchanged. Correct decimal/money codec fingerprints; genuine
+activation after valid coverage through a distinct synthetic non-admin membership
+(publish/read/manage plus default self-profile), exact queue access. Nested finally
+revokes membership and user authority; original QA affiliation untouched. Independent
+read-only review found the default self-profile expectation omission, corrected.
+Standalone types27041 and scoped lint66309 exit0, diffcheck clean. No SQL/runtime
+proof yet; no production code/DDL changes in this correction. Integrated ONLY89691f3
+checker delta against98ad339: actual unpublished closed2 review-publication versus
+native phantom or unrelated-field existing extension drift, no PUBLISHED freeze
+before race. Immutable source/review/history, precise native/typed/Audit effects,
+permitted SSI outcomes, fresh stale-review/freeze consequence and normal cancellation.
+Independent source review caught the native owner's exact MIGRATION_COHORT_CHANGED
+message (not mapped to REVIEW_CHANGED), now accepted only for the native case.
+Root standalone types13889/scoped lint46800 exit0 before that narrow message fix;
+final standalone types92919/scoped lint75951 exit0 afterward, final diffcheck clean.
+No new SQL PASS. Production unchanged from locally built84f64da8; original immutable
+retry will build exact new checkpoint. Original pipeline retry is next.
+Parallel d4f pure closed transport preparation begins in an isolated worktree only;
+no runtime/discovery/forms/enablement or root integration before actual d4e PASS.
+No later-phase work; user authorised parallel active-phase pieces that link.
+
+## 11 October — d4e local checkpoint verified; central gate next
+
+Integrated correction5b7d136, native enforcement checker5d82090, concurrency source/
+minimal driver patch98ad339 and root native-window checker+runtime-write wiring.
+Preserved principal's existing fifth customerUserId argument during donor integration
+(old donor would have dropped conditional cutover regression); no unrelated removal.
+Independent source reviews found no blocker in activation/enforcement/windows/barrier.
+Root57/4 activation regressions64795 PASS; build92457/scoped lint67426 PASS; initial
+strict46426 failed only new checker captured Session|null narrowing, corrected explicit
+Session local; final standalone98624 exit0 and final window lint26292 exit0. NoSQL
+from static verification. Logs /tmp/atlas-studio-d4e-{activation-tests,types,final-types,
+lint,final-window-lint,build}.txt. Source/diff reviewed and diffcheck clean.
+Actual pg barrier clears ONLY local activity stats cache each poll (official PG docs),
+requires both real lock waits/snapshots, and checks permitted failure before recovery.
+Retains true100 field-limit fixture history including retired bindings; original
+cleanup registry/suspension plus explicit new synthetic membership revocation.
+NoDDL/newdump/deploy yet. Readonly server: health1f4/current1f4/rollbackb34,163GiBfree,
+4.3GiB available memory/no swap, original recovery backups123218/122723 retained.
+Phase2 stillFAIL incomplete; packet/control/visual prerequisites recorded in plan,
+not implemented. Next clean checkpoint then original pinned studio candidate/public
+acceptance; fix actual failures before activation, no skipped gates.
+
+## 11 October — d4e activation correction integrated; native-window acceptance source
+
+Projected5b7d136 ordinary required activation prerequisite/service/tests; contributor
+57 tests/4 suites +strict75622/scoped lint/diff PASS, source review in progress.
+NoSQL/build/deployment proof. Root added check-field-native-windows +runtime-write
+wiring after existing staff finalization/module restoration: two real optional
+sources (A populated via public writer for nonempty history), closed1 CUTOVER A /
+closed2 PUBLISHED B freeze unrelated C ordinary save and actual native write/create;
+normal cancellation/reviewed second cutover; native double-finalization then deliberate
+rollback, later-sort finalization Audit failure atomicity, real-barrier different-
+record public value finalizers, exact source history and original native preservation.
+Conditional draft seed privileged exact Test only, no customer dispatch. Native
+customer lacks authoring and B Write; full source/table snapshots cover effects.
+Source not SQL executed, barrier dependency awaits parallel contributor; lint93038
+pending/inspect log before claiming. Plan/ledger/ARCHITECTURE/DECISIONS updated.
+NoDDL/newdump/livechange. Next merge bounded concurrency source and review, integrated
+types/lint/build then pinned original candidate/public acceptance.
+
+## 11 October — d4e activation correction and actual acceptance in parallel
+
+Agreed minimal ordinary required activation prerequisite: genuinely refresh current
+field authority before same-tx sealed binding/version/revision/coverage checks and
+pointer CAS. No client waiver/Admin impersonation or new grants. Exact already-active
+or sealed same-generation cosmetic equality only may skip cohort coverage; shared
+reviewed cutover/rollback unchanged. Metadata DTO denied; genuine authorised target
+business Session allowed. Existing audited support opening may supply its genuine
+target Session, ordinary Session-only API does not assert durable support audit proof.
+Isolated activation contributor implementing; root owns ledger/plan/decisions.
+
+Integrated5d82090 new check-field-native-enforcement +principal wiring:13 rollback-only
+central SQL probes source; contributor strict62919/lint66ee3e PASS; independent source
+review no blocker/no checks. These actual engine/provider/initial-writer probes do
+not prove public action transition/SLA/approval or open windows/concurrency. NoSQL run.
+Parallel bounded concurrency source planned: dedicated exact central Test company
+registered original cleanup set, real pg_locks barrier, empty/no-binding first required
+activation-v-nativecreation +true maxFields−1 different-first-publisher race/retained
+retired limit. Synthetic access revoked/company suspended; history preserved.
+NoDDL/newdump/deploy; live1f4/rollbackb34 unchanged. Next integrate corrected activation
+and real checker source, open-window probes then original candidate/public gates.
+
+## 11 October — d4e confirmed first required-field activation gap (IN PROGRESS)
+
+Read-only source inspection confirms ordinary first required=true schema1 activation
+performs binding/module/CAS/Audit but no whole canonical cohort requirement check.
+Compiler allows that payload. Advisory locks cannot reject a legal serialization
+native-before-activation that leaves existing values missing; SSI alone is not proof
+of required-state correctness without reciprocal cohort reads. This is a pre-existing
+ordinary activation gap, identified before release of current native hooks.
+Reviewed required migration/cutover do read exact native/extension cohort/revisions;
+their race edges and maxFields/count predicate still require actual central evidence.
+
+Proposed minimum correction: require current genuine same-tx owner coverage before
+ordinary required target pointer change, reusing validateCandidateFieldCoverage;
+no metadata-only Admin context converted into a data principal/grants. Valid empty
+cohort permitted; nonempty incomplete records block activation. Optional→populate→
+reviewed required evolution remains safe. Retained already-active/cosmetic/rollback
+policy and explicit audited support target authority must be reconciled before code.
+Concurrency inspector is preparing exact files/interfaces/race probes; no edits/SQL
+or coverage PASS yet. Do not deploy native integration or enable conditional inputs
+before this confirmed gap and actual atomic/concurrency gate are resolved.
+
+## 11 October 2026 — Studio native hooks local verification complete; d4e next
+
+D4d2d source integration VERIFIED locally:157distincttests/11 suites PASS25380,
+exact four-reference native boundary17repeatPASS92194, production57180exit0,
+scoped lint +unusedimport correction90228exit0, final standalone strict tsc35364
+exit0 after incomplete test Session fixture correction. Independent source review
+found no blocker in hooks/mode; reviewer ran no checks. CurrentPhase2 gateFAIL
+incomplete, visual designer/recordtypes/pages stillrequired. Updatedledger/current
+plan/sourcecoverage/ARCHITECTURE with implementation vsSQL/live limits. NoDDL/
+extra dumps/deploy; currentlive1f4/rollbackb34/recovery unchanged.
+
+Next d4e: review new real-native checker source in progress and actual SSI/first-
+publication/maxFields/no-binding/native race plan; bounded existing exact Test
+fixtures/original recovery/release gates must establish real atomic/security/
+concurrency before conditional typed input activation or compatible live release.
+
+## 11 October 2026 — actual native hooks IMPLEMENTED; integrated local gates
+
+Phase2 d4d2d current; no Phase3 or finished visual claim. Integratedc330e447 explicit
+native-validation compiler/provider/current-pinned-written readers and metadata-
+only whole-set preflight; independent field/native-fact/reference grants preserved.
+Integrated5f6eca9 actual engine CAS/parent receipts and creation INSERT delegation;
+distinct creation proof retained. Seven Work actions +Service mergeCases now use
+fresh owning callback Session, same original Serializable tx, full affected windows
+and final all-active validation. Update/comment refresh before stored-kind discovery
+then re-read under scope. Case guards/legacy tickets/SLA/approval/events/Audit/Outbox
+remain. New wrapper projects exact four-field references (full descriptor would
+fail strict input schema); final boundary test now enforces that shape.
+
+157tests/11suites PASS25380; final native17boundary repeatPASS92194; build57180exit0;
+scoped lint94775 had one unused old lock import removed/final90228exit0. Types76508
+failed only incomplete Session test fixture; fixed, standalone35364 pending. Source
+review found no blocker, no checks run by reviewer. No actual SQL rollback/SSI proof
+from collaborators. Ledger/plan/coverage/architecture reconciled. NoDDL/newdumps/
+deployment/customer conditional activation; live1f4/rollbackb34 unchanged.
+Next finish stricttypes/checkpoint; integrate real central-native checker and atomic/
+concurrency gates before typed packet/conditional customer activation/release.
+
+## 11 October — d4d2d owning action/engine enforcement IN PROGRESS
+
+Registry/receipt prerequisites04aa7f8 locally verified. Next native integration
+owns studio-enforcement.ts and seven ServiceWork actions +Service mergeCases;
+isolated engine/creation contributor owns CAS/parent/INSERT delegation. Wrapper
+uses exact existing operation capability, same Serializable tx and fresh callback
+Session for every domain/private/approval/SLA/event check. Update/comment discover
+stored kind only after genuine current refresh, then re-read under owning scope;
+never client-kind operation choice. Preserve legacy Query Watch/Merge capabilities.
+Only actual changed Tickets reach final boundary; server describes canonical typed
+Ticket9, closes full affected window set with generated operation UUID, then calls
+explicit native resulting validator for final frozen anchors. Existing domain errors
+propagate with typed/window/Audit/Outbox atomic transaction. Query-only/no-config
+native/internal paths unchanged. Queue config/member access coordination remains
+separate (no fabricated Ticket receipts). Case merge uses exact bounded actual
+source-child reparent helper while preserving Service-owned case/legacy ticket
+eligibility and records. No UI/schema/conditional write activation in this block.
+Creation forms' typed initial packet still needs explicit later integration before
+customer enabling; existing owning creation proof and native proof stay distinct.
+
+## 11 October 2026 — Studio d4c/d4d native prerequisites VERIFIED locally
+
+Phase2 remains IN PROGRESS; no Phase3 or complete visual designer claim. Integrated
+402786a/e4e29c0 stored1/2 whole affected Ticket windows; ordinary writer now closes
+all affected windows and public single-save validates complete staged required
+state after typed CAS/Audit. Exact replay stays read-only; initial/internal writers
+stage all fields before caller final validation. Integrated0b2aa19 proof-bound
+registry policies and actual seven Ticket validation queries; sealed old entity/
+facts/migration hashes unchanged. New service-work/studio-native.ts collects actual
+INSERT/CAS/linked-parent/case-child SQL receipts; private live token binds genuine
+refreshed principal/exact original tx/operation/final changed Ticket revisions.
+Required internal fourth validator callback, finally cleanup, frozen copied anchors.
+No-config internal platform authority/QUERY-only behavior preserved; configured
+Ticket effects retain strict CUSTOMER field authority. No actual native hooks yet.
+
+Root118 tests/11 distinct suites PASS (93/7 operation/window/writer +25/4 unchanged
+compatibility), strict tsc31849/lint42593/build9091 exit0. Genuine sessions/owner
+registry/private receipt implementation with explicit storage collaborators; no
+actual SQL atomic rollback/SSI claim. Final query/writer source review found no blocker; previous
+scoped review also no blocker. Ledger/plan/ARCHITECTURE/DECISIONS updated. No DDL/new
+dumps/local business DB/deploy; live1f4dc79/rollbackb34ce50/recovery unchanged.
+Next: explicit shared native_validation mode with independent current/pinned/
+written field/native fact rights +ordinary references, then actual engine/actions/
+Service hooks using fresh callback session, whole affected windows and complete
+resulting validator; real atomic/concurrency gate before customer activation.
+
+## 11 October 2026 — isolated d4c2 all affected Ticket windows VERIFIED locally
+
+New internal closeAffectedFieldWriteWindows(authority,cause:FieldWindowMutationCause)
+with exact registered entity reference/operation UUID and ordinary_field_save/native_
+record_write/native_record_creation trigger. Cause is server constructed only after
+actual owning operation rights/private/CAS and earlier Ticket coordination; it grants
+nothing and is not an endpoint. Genuine sessionAuthorityStamp WeakMap evidence must
+match authority stamp/auth+session versions and Session identity BEFORE SQL; caller
+transaction must SHOW Serializable. Describe-only canonical Tickets versions2–9,
+exact kind/tickets owner/schema+contract hashes/current fieldPolicy bound, no native
+Read/other-field/Studio resolution. Explicit complete-cohort snapshot queries1–4
+must match kind/owner/hashes/transaction; retained protocol2 uses query4. Future
+entity/query/partial-cohort impact needs explicit opt-in, not inferred support.
+
+Bounded maxFields+1 tenant source OR target entity publication selector, stable
+field/preparation ordering, minimal both-generation identity/type metadata. Complete
+set validates malformed/scalar/tenant/generation mirrors, duplicates and overflow;
+ANY PUBLISHED freezes before ANY preparation/inspector/support/CAS/Audit. All CUTOVER
+windows then undergo matching stored1/2 immutable identity and exact FINALIZED
+configuration/draft checks; generation types/refs pair actual intents before ANY
+settlement. Private inspectWindow/finalizeWindow reused by unchanged single-field
+request wrapper. Current customer/support stamp/purpose evidence, pure receipt1
+pins, receipt/publication CAS and paired Audit remain one caller transaction. No
+source/other-field/cohort/native/value reads or source/target pointer/value changes.
+Tickets full-cohort/global extension impact covers unrelated field writes and newly
+created unobserved Tickets; later same-tx calls naturally no-op after COMPLETED.
+
+New affected suite18 +single-field13 +ordinary writer7 +required identity12:50 tests/
+4 suites PASS. Real registry/closed compilers/stored seals/pure pins; genuine stamp
+issuance/immutable inspectors/visibility and SQL rows/mutations explicitly mocked.
+Mixed-state complete preflight and later metadata denial permit zero settlements;
+second receipt/pub/Audit/support failures propagate for caller rollback. No real
+owning permission, SQL freshness/cohort/concurrency or DB rollback proof claimed.
+Strict TypeScript --noEmit --incremental false, scoped ESLint/final diff PASS.
+No DDL/native/value writes/dumps/install/generate/build/deploy/customer conditional
+write enablement; parent dependencies remain UNSTAGED/excluded. No known local
+blocker; independent review requested/pending. Whole d4c/d4/Phase2 gate remains open.
+Exact next: parent project this three-file checkpoint, wire ordinary/native actual
+Ticket mutation causes (exact replay and QUERY-only/no-Ticket effects do not close
+windows), combine all-active required enforcement then run integrated build and real
+PostgreSQL native/value/window/Audit rollback +contention candidate/public acceptance.
+
+## 11 October 2026 — d4d2 native-validation contract recorded before coding
+
+Read-only owning/reviewer evidence accepted and recorded in required plan/DECISIONS:
+separate latest operation-capability query policies (seven stable IDs), explicit
+metadata proof gateway +proof-only actual fact query; old entities1–9/query/migration
+hashes unchanged. Private actual-owning-SQL receipt scope, final actual Ticket
+revisions including Query parents/Service case children, exact session/tx/lifetime;
+not a creation grant or caller-ID mint. Explicit validator mode substitutes only
+proved record visibility, independent current/pinned/written/native-fact/ref Read;
+no-config/internal staff preserved, strict configured customer authority unchanged.
+Scopes: isolated registry/gateway/tests, root actual receipts/owner query/auth bridge,
+then shared validator mode and actual native hooks/atomic gate. No code/SQL/runtime
+completion claim from reconnaissance. Next: implement scoped query registry contract
+and actual owning receipt helpers in parallel; keep conditional writes unenabled.
+
+## 11 October 2026 — d4d1 single-save validator boundary recorded
+
+Public single-field write will run existing all-active resulting-state validator in
+same actual transaction after typed CAS/Audit and before commit; exact replay stays
+read-only. Internal ordinary/initial staging primitives require caller validation
+AFTER complete native+typed batch, not after each initial value (several required
+fields need staging together). Private single-write choice only, no client bypass.
+Root writer/tests scope; native-proof/query contract still under review, no hooks or
+conditional enablement. All-affected windows implementing in separate existing-engine
+scope. Exact next: add public final validation/order/failure/replay regression, then
+link all-affected helper and finish native proof contract before native integration.
+
+## 11 October 2026 — d4c2 server cause / complete Ticket cohort contract recorded
+
+D4c1 402786a source/tests projected, local32/3/type/lint PASS; root integrated check
+pending. New all-affected internal cause/selection recorded before coding in required-
+rules plan/DECISIONS. Actual Ticket canonical reviews include final/merged/unanchored:
+new rows/global extension/native changes affect all open entity windows. Complete
+bounded metadata-only PUBLISHED preflight precedes all strict CUTOVER finalizers;
+current actor/genuine stamp/Serializable/ref identity, no borrowed B/nativeRead/Publish
+or source/cohort values. Explicit Tickets versions2–9 only; future partial cohorts
+require owner contract. No actual native hooks/conditional writes/customer enablement.
+Root d4b checkpoint21825bd local76/6/types/lint/build/review PASS, not yet live.
+Next: isolated existing-window agent implements reusable inspected finalizer/all-
+affected helper/tests; root wires ordinary writer after policy/CAS before persistence.
+Native operation-proof design remains under review before d4d coding.
+
+## 11 October 2026 — isolated d4c1 single-field versioned window VERIFIED locally
+
+runtime-write-window.ts closeFieldWriteWindow signature unchanged. Actual server
+preparation readStoredFieldMigrationIntent selects closed1/2, matching immutable
+settlement inspector. Explicit initial publication/preparation/intent tenant/field/
+generation mirrors and locked inspected intent/publication/definition/receipt/source/
+target IDs, tenants, definition IDs and checksums pair request before support/CAS/
+Audit. Source version comes sealed intent/receipt (publication has no sourceVersionId).
+Strict existing FINALIZED target/draft/current config checks and source/PUBLISHED
+freezes remain. Pure settlement receipt1/transition, receipt/publication CAS and paired
+Audit unchanged; current runtime stamp/support evidence retained, original creator
+unmodified, no Studio Publish or full-cohort/source-data grants required/inferred.
+No values/native/config pointer mutation or conditional activation/write enablement.
+
+Window suite13 cases (9 new) plus ordinary writer7 and required identity12:32 tests/
+3 suites PASS. Real conditional compiler, closed2 intent/review seals and pure pins
+cover conditional target2 and source2-to-target1 rule removal/current different actor,
+current audited support/companies denial, malformed unknown/foreign/checksum and
+scalar mirrors, strict stale target/draft guards/freezes, inspector/support/receipt/
+publication/Audit error propagation. Immutable/window inspectors and transaction
+writes are bounded mocks; no real SQL freshness, authenticated tenant/native access
+or atomic database rollback proof claimed. Legacy normal behaviour retained.
+Strict TypeScript --noEmit --incremental false, scoped ESLint/final diff PASS.
+No schema/DDL/native/value writes, dumps/install/generate/build/deploy; parent copied
+dependencies remain UNSTAGED/excluded. No known local blocker. Whole d4c/d4/Phase2
+acceptance remains open; this closes only the directly saved field's existing window.
+
+Minimum later extraction: keep single-field selector/request checks; share only
+already-locked inspected-window finalization (current stamp/support +pure pin +receipt/
+publication CAS +Audit) after parent records server-selected affected windows, mutation
+cause and current authority contract. Do not invent a signature now, treat a native/
+input/cohort cause as target-write authority, borrow old creator authority or weaken
+strict target/draft/config rules. Exact next: parent project this three-file checkpoint,
+record observed-record/cohort/PUBLISHED freeze selection and safe mutation cause, then
+extract shared finalization and implement all-affected windows before native hooks.
+Integrated build/candidate/public rollback and required writes remain parent-owned.
+
+## 11 October 2026 — integrated d4b bridges VERIFIED locally
+
+Root projected sealed versioned reader 7b6c6aa and initial-only affa55c patch onto
+c9e44e9 ordinary transaction extraction; existing writer/test dependency preserved.
+One shared writer, live genuine INSERT proof/actual still-NEW facts, independent
+Read+Write/reference, strict initial current-slot replay, public sealed schema1/2
+current/written/origin base reads and legacy closed1 writer behavior retained.
+Conditional writes/native hooks remain gated. No DDL, domain rows, dumps or release.
+Root 49tests/4suites85265 + owning proof/lock27/2 14426 PASS (76 distinct tests/six
+suites), standalone strictTS42536/scopedlint60530/productionbuild3522 exit0; independent
+source review/no blocker and diff check PASS. Build skips types; standalone tsc is
+actual evidence. Explicit storage/window collaborators, no actual SQL/race claim.
+Root d4a/d4b source not yet live; verified live1f4/rollbackb34/resource cleanup intact.
+Next: integrate d4c1 402786a; record server-owned all-affected Ticket window cause/
+selection and existing-record narrow native validation proof, then implement windows/
+hooks. Whole Phase2 FAIL incomplete; designer still required, no Phase3 work.
+
+## 11 October 2026 — d4b3 opaque initial writer VERIFIED locally (closed1)
+
+Supersedes the d4b3 signature proposal below. runtime-write.ts adds internal
+initialiseFieldValueInTransaction(authority,input,proof), delegating the SAME private
+write engine as ordinary writeFieldValueInTransaction. Proof stays a separate server
+parameter; absent/invented/copied/foreign/expired proofs fail closed, never fall back.
+Initial context retains genuine owning INSERT proof plus independent field Read and
+compileCustomFieldForInitialisation(...,"write"); ordinary reference Read remains
+mandatory. Actual owning invokeInitialRecordFacts checks still-NEW version1/requester/
+unmerged native state even for schema1 BEFORE stored-value lookup/persistence.
+Current definition revision/version/generation must match even on replay; native
+revision1 and null initial slot/value revisions are required. Occupied slots cannot
+be overwritten through creation. Extension CAS may advance across different initial
+fields. Exact operation replay additionally requires the actual current slot still
+owns that value and exact tenant/entity/generation/slot mirrors and paired saved
+Audit; it permits another initial field's later extension revision. Original ordinary
+historical replay remains intact. Reuses codec, window, value/slot/extension CAS,
+uniqueness, Audit and sanitized conflict propagation; no nested transaction. Sealed
+conditional schema2 initial writes explicitly deny until owning enforcement exists.
+
+New12case studio-field-initial-write.test.ts uses genuine authenticated sessions,
+registered actual owner/compiler and live WeakMap creation proofs, with explicit
+storage/window stubs. Covers zero/false/null, sequential extension CAS, independent
+field Read/Write/reference rights, actual native drift, copied/expired proofs,
+closed requests/current metadata/fresh slot, current-only replay/Audit pairing,
+source schema/tenant/hash corruption and window/value/slot/extension/Audit/unique
+failure propagation with callback proof revocation. Final48tests/4suites PASS12372
+(new12, ordinary9, creation8, native lock19); strictTypeScript76053 exit0; scoped
+ESLint28487 exit0/no warnings; diff check PASS. Unit mocks do NOT establish actual
+PostgreSQL atomic rollback/concurrency or complete affected-window behaviour.
+
+Root d4b1 extracted runtime source/test copied solely for dependency; existing writer
+test remains UNSTAGED/excluded along with prior copied migration/helper dependencies.
+Scoped commit contains runtime-write.ts/new initial suite/this memory only; narrow
+initial source diff against root extraction saved for integration at
+/tmp/atlas-studio-initial-write-from-extraction.patch. No hooks/all-active validator/
+windows/DDL/install/build/push/deploy/customer enablement or dumps from this branch.
+Whole Phase2 remains IN PROGRESS; root owns shared docs/ledger/integration/release.
+Exact next action: root integrate the narrow initial-mode diff with its extracted
+ordinary writer, review integrated source/types/tests/build, then d4c/d4d implement
+all-active resulting-state validation and affected rollback-window closure before
+owning Ticket create/update form hooks and actual central atomic acceptance.
+
+## 11 October 2026 — e3e4 VERIFIED LIVE1f4; temporary resources safely retired
+
+Original clean pinned release64598 exit0. CandidateDXZ53J AND publicytFEJs BOTH
+ALL COMBINED PASS: actual conditional READY activation/replay, paired cutover/
+rollback Audit failures, genuine independent customer settlement/original creator
+revoked, current-private/field/module/session/tenant denials, global drift blocks
+rollback but allows finalization/history/replay and later pointer/retirement history.
+Legacy Studio/value/migration/native, separate private Admin/business login/user
+provisioning/Templates/Sales/Manufacturing/Home/settings/Reports/MRP/Messages/Supply/
+commercial/People regressions pass BOTH stages. Health/current exact1f4dc79d10e1017a-
+203a5f181e8afa459376cc25, immediate rollbackb34ce50, login200. Original122720/122723/
+123218 recovery retained; no ad-hoc dump. Automatic original retention retired only
+inactive0d315f7 duplicated runtime; source/static/history/data/recovery preserved.
+
+Temporary buffer82954 exit0: under BOTH original administrator lock inodes29187/
+13754, no compiler/checker/release; MemAvailable5120372KiB > exact bufferUsed621224
++1572864 margin. Exact2GiB swapoff/file removed, no swap/fstab/app/PG changes; later
+4.4GiB RAM available,163GiB rootfree,/tmp50%used/2GiBfree, health1f4. Maintenance
+history /opt/atlas-maintenance-backups/studio-build-memory-20261011.txt. Previously
+97%full tmp/cache pressure resolved; cause of browser traps not proven.
+
+Rootd4a checkpoint006d2a4 locally verified206/15/finaltypes/lint/build/review, not yet
+live. D4b1 writer extraction implemented and focused9tests52491/type56102/lint5682
+PASS; uses caller tx, closed1 CAS/replay/codec/window/pairedAudit and error mapping
+unchanged, no native result validator bypass/endpoint. Production rebuild deferred
+to combined d4b integration. Parallel7b6c6aa sealed versioned reader source/tests
+projected, branch36/3/type/lint PASS, root integration pending. D4b3 initial writer
+agreed separate initialiseFieldValueInTransaction(authority,input,proof), ONE private
+core, live exact same-tx creation proof/current active/freshslot/version1/actualstill-
+NEW facts/current-owned replay. Independent fieldRead+Write/referenceRead, no native
+Read/Manage/Publish borrowing; conditional initial writes stay gated until d4c/d4d.
+Exact next: checkpoint extracted writer, integrate initial/read work and final
+focused/type/lint/build/review; implement affected windows then owning required hooks.
+
+## 11 October 2026 — isolated d4b2 versioned public field reads VERIFIED locally
+
+runtime-read.ts public current/history gateways now use existing sealed schema1/2
+base-policy readers for current, written and generation-origin versions. New typed
+readVersionedFieldHistoryContextInTransaction resolves retired history without
+changing the existing current alias signature. Ordinary writer closed1 plan/context/
+value aliases, initial/candidate readers and public response shapes unchanged.
+No rule inputs/evaluation or write/Studio privileges required by ordinary reads;
+tenant/native/private/read/reference, binding/seal/pointer/history bounds/retirement
+checks retained. Conditional activation remains Test-only; no native hook/writer/
+compiler/authoring/window/schema/customer enablement changes.
+
+Existing runtime-read suite25 cases PASS: real conditional compiler/sealed metadata
+with read-only actor/private condition dependency, mixed written schema1/2 and
+origin1/2, retained schema2 history after current schema1/retirement, independent
+current/written/origin/reference grants, pagination sentinel, unknown/corrupt/foreign
+metadata, native/module denials, pointer/binding/fingerprint/value identity and strict
+client request checks. Existing read-compiler4 and ordinary-write7 regressions PASS:
+36 tests/3 suites. Fixed only read-compiler synthetic reference/query @7 fixture to
+@99 because genuine Ticket v7 now occupies @7. Fixture current pointer/generation
+lookup now mirror selected metadata. Authority, record visibility and transaction
+rows are bounded mocked collaborators, not real SQL/tenant contention or live proof.
+Strict TypeScript --noEmit --incremental false, scoped ESLint and final diff PASS.
+No DDL/native/domain/value writes, dumps/install/generate/build/deployment. Copied
+parent dependencies remain UNSTAGED/excluded; no known local read blocker. Whole
+d4b/d4 and Phase2 gates remain open. Exact next: parent integrates this four-file
+read checkpoint with ordinary writer bridge, completes creation bridge/native hooks/
+windows in dependency order, then runs integrated build plus real candidate/public
+read and native-write acceptance before customer conditional enablement.
+
+
+## 11 October 2026 — shared d4a ordering VERIFIED locally, checkpoint ready
+
+Projected c1b79bdd native and714157a lifecycle scope only, contributor memory retained;
+root helper +metadata publication/activation/draft/retirement/value ordering linked.
+Final integrated206tests/15suites58370 PASS, final strictTS88441 exit0,
+scopedlint66840/build50380 exit0, independent review/diff check PASS. Build skips
+source types; standalone tsc is actual type evidence. Separate counts overlap.
+No domain/security/typed/CAS/Audit logic removed, DDL or native required/window/customer
+enablement. Locks grant no access or refreshed snapshot; actual SSI/CAS concurrency
+proof remains d4e. D4b contracts recorded before coding; initial proof proposal saved
+on contributor23a8666, actual still-NEW same-tx facts before fresh slot/current replay.
+
+Unchanged original1f4 release64598 candidateDXZ53J ALL COMBINED PASS after disposable
+cache maintenance; publicytFEJs running, public health exact1f4, immediate rollback
+b34ce50. Both earlier failed attempts never activated. Original122720/122723/123218
+recovery retained, no ad-hoc dump; temp2GiB buffer remains through final gates.
+Exact next: checkpoint d4a without moving remote tip until old release finishes;
+normal transaction writer +versioned reader, then native windows/all-active hooks.
+Record final public gate/health and safely remove temporary buffer under both locks.
+
+## 11 October 2026 — d4a integration reviewed; d4b contracts recorded
+
+Projected only scoped nativec1b79bdd and lifecycle714157a source/tests, preserved
+both contributor memory entries, helper/root metadata/value/draft/retirement added.
+Independent review reports no new blocker: one key/order across nine migration
+services/ten callbacks, native QUERY/Case parents, first publication, saved draft,
+retirement and ordinary value; no permissions/domain logic or conditional enablement
+change. Integrated19suites/strict types running, final lint/build next; no SQL race
+or snapshot freshness claim. Recorded d4b normal in-transaction writer extraction
+and existing sealed versioned current/history reader split before coding; creation
+proof writer signature still to agree. No DDL, new engine or native validation yet.
+Exact next: finish d4a checks/checkpoint, typed extraction/versioned reads in isolated
+scopes; monitor old pinned1f4 original64598 candidate/public gate after cache cleanup.
+
+## 11 October 2026 — isolated d4a migration lifecycle early locks VERIFIED locally
+
+Nine lifecycle services now acquire shared tenant/entity advisory coordination at
+all TEN withFieldMigrationAuthority callback entries after genuine current auth/
+company/module validation, before definition/draft/preparation/publication/execution/
+receipt/native protected row locks: preparation, collection, sealing, publication,
+execution-start, execution-batch (normal AND separate sparse recordFailure),
+cancellation, cutover, settlement (rollback/finalization including replay).
+Preparation uses server tenant/definition binding helper. Stored1/2 operations lock
+complete source/target PRIMARY owning entity IDs (currently same Ticket) sorted/
+unique through root helper's unchanged compact JSON/seed0 key. Cancellation loads
+only scoped actual publication definitionId, takes bound entity lock, then existing
+publication lock/re-read and immutable definition equality before replay/CAS/Audit.
+No client entity/tenant derivation, grants or new engine. Capability/private preflight/
+actual predicates/CAS/Audit/Test-only activation gates retained. Low-level inspectors/
+representation remain caller-owned collaborators; only other receipt/publication
+mutation site found is root-owned ordinary runtime-write-window.ts. Collection's
+existing atlas_studio_migration_fresh SQL checks metadata only, not private values.
+
+New studio-field-migration-lock-order.test.ts29 cases exercise real shared helpers
+and every service boundary, stored1/2 rule removal, sparse failure transaction,
+server scoping/dedup and authority denial. Bounded authority/inspector mocks stop
+before protected work; no PostgreSQL contention or snapshot freshness proof claimed.
+Existing cancellation suite adds actual definition re-read drift denial/order;
+settlement suite supplies required raw-query tx collaborator. 123 tests/9 lifecycle
+suites PASS; strict TypeScript (no incremental), scoped ESLint/final diff PASS.
+No schema/DDL, native/domain/value writes, required validators/window/conditional
+customer enablement, dumps/install/generate/build/deployment. Root entity-lock.ts
+copied UNTRACKED dependency excluded from commit; prior root dependencies remain
+UNSTAGED. No known local lifecycle blocker. Serializable snapshots can predate lock
+wait; existing SSI/updated-row/freshness guards still required, never lock-only proof.
+Exact next: parent integrates scoped lifecycle checkpoint AFTER shared helper, links
+ordinary/native early locks and runs integrated checks/build plus actual same-tenant
+contention, cross-tenant/entity independence and no-binding/first-publication/runtime
+candidate/public acceptance. Whole d4a/d4 and Phase2 gate remain open.
+
+
+## 11 October 2026 — parallel d4a native early entity-lock entries VERIFIED locally
+
+Scoped isolated codex/studio-required-receipts branch preserves54d6188/a047b6e.
+service-work/actions.ts acquires root's shared Tickets logical entity advisory key
+in all nine mutation transactions before native/sequence/parent/case mutation locks,
+including QUERY paths that can update a Ticket parent. Dynamic update/comment first
+perform the existing accessible Work Item read and kind-specific owner capability
+check (no explicit tuple lock), then acquire coordination before private/team checks
+and writes. Other known owner grants precede callback entry. studio-create.ts locks
+after genuine refreshed Create/scope validation before the actual INSERT. Service
+commands.ts mergeCases locks at transaction entry before Case lookup/mutations and
+bulk Work Item parentCaseId/version changes. comment/watch/requestApproval now use
+Serializable; other domain rules, narrow capabilities, SLA/transitions, intake,
+membership/private checks, CAS, Audits, parent feeds and Outbox are unchanged.
+
+New19case studio-native-entity-lock.test.ts suite uses the real SQL helper with unit
+storage stubs: entry ordering, Query parent coordination, exact server-session tenant key,
+narrow public reply grants, three isolation options, paired Case history and existing
+customer/security denials, lock/capability failure before writes. Existing creation
+proof suite asserts lock before INSERT; old action fixture adds required raw-query
+stub. Final62tests/5suites PASS81538 (focused ordering, existing actions, creation,
+result validator and Service workflow). Final strictTypeScript15957 exit0. Scoped
+ESLint7916 exit0/no warnings; diff check
+PASS. These mocks do not prove actual PostgreSQL blocking/concurrency. Root owns
+integrated lock/candidate/public verification and shared plan/ledger/decision update.
+entity-lock.ts copied solely as an UNCOMMITTED dependency; previous copied root
+dependencies remain unstaged/excluded. Shared node_modules/client symlinks reused;
+no install/build/push/deploy/DDL/data/dumps or conditional validator/writer/window/
+authoring changes from this branch. Whole Phase2 and complete d4 remain IN PROGRESS.
+Exact next action: root integrate this native-entry checkpoint with the exact helper
+and metadata/lifecycle early locks, run integrated order/types/build and actual central
+lock/concurrency/no-config acceptance, then proceed d4b transactional typed writers.
+
+
+## 11 October 2026 — temporary filesystem pressure resolved; unchanged release gate running
+
+Retry14880 candidateSl9slY again FAIL before activation, after new conditional
+services/native proofs PASS; browser Compositor trap at personal Settings. Actual
+/tmp tmpfs97% full (135MiB free), generated tsx UID0/1000 caches2060439552bytes,
+no OOM finding. Under ORIGINAL administrator lock inodes29187/13754 and no active
+node --import tsx/checker/release, removed ONLY disposable numeric/hash cache files
+in /tmp/tsx-0,/tmp/tsx-1000; preserved directories/socket paths, all source/releases/
+business/private/recovery/acceptance evidence. /tmp now48%used/2.1GiBfree, livehealth
+b34ce50 unchanged. Maintenance evidence /opt/atlas-maintenance-backups/studio-build-
+memory-20261011.txt; no new dump by maintenance. This confirms pressure, not a
+proven browser crash cause; unchanged original gate64598 candidateDXZ53J pending.
+Existing original backup122720/predeploy and122723/candidate required; no duplicate
+install/build, remote tip1f4 unchanged. Temporary2GiB buffer remains through gates.
+
+D4a root early lock helper/publication/activation/binding/ordinary value/retirement/
+saved draft edits IMPLEMENTED; targeted tests running9386, no runtime/concurrency
+or snapshot-freshness claim. Two isolated branches own lifecycle and native entries;
+review caught retirement/draft trigger inversion, both root paths now coordinated.
+Lock is coordination only: pre-wait Serializable snapshots may stay stale; existing
+CAS/row locks/SSI and actual first-publication/no-binding/max-field races must pass
+before required native/customer enablement. Exact next: monitor64598, integrate
+scoped d4a agents and review/check, then implement d4b typed in-transaction writers.
+
+## 11 October 2026 — d4a lock foundation IN PROGRESS alongside unchanged release retry
+
+Recorded exact shared lock/API/order and parallel ownership in required-rules plan
+before code. Root helper uses existing tenant/entity compact JSON/seed0 advisory key;
+bound helper server-derives entity from existing scoped binding. Locks grant no
+access. Metadata/native/field writes acquire before configuration/receipt/native/
+sequence/parent locks, keeping owner capability/CAS/Audit rules and tenant boundaries.
+Coarse same-entity serialisation is initially chosen for correctness; no global lock
+across businesses. d4 native validation/writers/windows and customer enablement remain
+NOT STARTED/gated. No new schema or Query field support. Existing candidate1f4dc79
+normal conditional service proof PASS, combined original retry14880 candidateSl9slY
+running; commercial crash first attempt kernel trap, no OOM evidence. Preserve old
+liveb34ce50/current rollback/tempbuffer/required recovery; no additional dumps/builds.
+Exact next: root helper/shared early lock, parallel lifecycle/native lock entries,
+review integrated order and checks while monitor14880; don't claim full gate PASS.
+
+## 11 October 2026 — real conditional candidate proof PASS; combined release retry running
+
+Clean pinned1f4dc79 deploy33109 exited1 BEFORE activation. Sealed candidateYJIweS
+actual required cutover/settlement service proof PASS: normal READY activation/replay,
+paired cutover/rollback Audit atomic failures, genuine independent current customer
+concurrent exact-once rollback while original creator revoked, stale current principal/
+private/field denial, source restored, later global drift blocks rollback but finalizes/
+replays, history survives later pointer/checker-only retirement, native/source unchanged.
+Legacy Studio/runtime/save/migration/native contracts, Admin/business portals, Home,
+settings, Reports/MRP, Messages, private Admin, Supply and commercial core workflows
+passed. Commercial responsive browser then page-crashed at candidate /crm/accounts;
+People/full combined/public checks NOT passed/run. Exact fixture access suspended,
+audited history/recovery retained. Do NOT mark combined release/Phase2 PASS.
+
+Kernel121540UTC confirms Compositor chrome-headless-shell trap int3, not an OOM
+finding; no OOM observed in inspected1210-onward window. Root160GiB free, /dev/shm
+1.1MiB of3.9GiB, postfailure RAMavailable3682MiB/swapused1229MiB. Live health still
+b34ce50, previous0d315f7 untouched. Required original121004 predeploy/121141 candidate
+backups retained; no ad-hoc dumps, config/source changes or gate weakening.
+One unchanged pinned original pipeline retry started, reusing sealed1f4 candidate
+without duplicate install/build; pending local /tmp/atlas-studio-required-cutover-retry.txt.
+Temporary buffer54220 remains active through acceptance; remove after no compiler/
+safe RAM check. Exact next: monitor retry, preserve full gates, record actual result,
+then native shared lock/API workstream; d4 reconnaissance saved, code NOT STARTED.
+
+## 11 October 2026 — integrated conditional cutover/settlement source VERIFIED locally
+
+Root integrated76377d8/a047b6e current settlement coverage plus scoped7727ed4 normal
+services and4b611f0 replay-order correction. Stored closed1/2 dispatch, original
+publisher/intent retained, CURRENT independent settlement principal, actual target-
+active identity/condition/source/target/outcome rollback and sealed base-policy
+history checks linked. First conditional cutover and conditional-source rollback
+activation are Test-only until native required/write-window hooks pass. Ordinary
+public authoring remains closed1. Existing shared typed activation/CAS/paired Audits
+and legacy paths retained; no second engine, DDL/migration or native mutation path.
+
+Root dedicated check-field-required-cutover-service.ts called through existing
+principal/review/storage driver uses its existing fresh Test account/definition.
+Keeps earlier cancellation proof; adds normal Test cutover/replay, both paired Audit
+rollback snapshots, CURRENT different customer's concurrent exact-once rollback
+while original creator affiliation revoked, private/field/current-principal denials,
+legitimate global drift blocking rollback but allowing finalization/history, and
+current history module/field denials. Original native/source values unchanged;
+immutable target/outcome/review history retained. Exact checker-only finalized
+conditional definition retires via CAS/Audit, draft restored monotonically; temporary
+grants/private affiliations restore finally and outer driver suspends Test access
+on failure. Actual database proof NOT RUN yet; no user/company/native row added.
+
+Final integrated123tests/7suites PASS79973, scopedlint17913/productionbuild31793
+exit0, FINAL standalone strictTS18897 exit0, reviewed diff/check PASS. Build skips
+source type validation via existing ignoreBuildErrors; standalone check is the
+actual current type evidence. Independent review found replay freshness SQL before
+private preflight:4b611f0 fixes actual registered owner preflight first, meaningful
+ordering/denial regression passes; reviewer confirms no remaining blocker. Earlier
+root/branch counts overlap, not summed. Architecture/decisions/source coverage/plan/
+ledger updated. All intended7727ed4/4b611f0 files projected because root checker and
+memory work was active; their contributor entries preserved, no unrelated edits.
+
+Read-only d4 mutation inventory saved: shared existing entity advisory lock order,
+ordinary schema2 readers/transaction+initial proof writer, all-active requirements
+and all affected rollback windows; native create/update/merge/approvals, comment/
+watch/requestApproval Serializable gaps, workEvent parent revision, Service mergeCases
+Ticket parentCaseId/version. Agree interfaces before parallel coding; no Query field
+support or blanket Manage/Publish grant. Full Phase2 and visual designer unfinished.
+Exact temporary2GiB build buffer54220 enabled under BOTH original locks/no compiler;
+locks administrator600/inodes29187/13754 unchanged, disk164GiB free, no fstab/app/PG
+change or ad-hoc dump. Operational log retained. Exact next: save/push coherent clean
+checkpoint then original pinned combined Studio candidate/public acceptance; record
+actual SQL result and remove exact build buffer after safe RAM/no-compiler check.
+Live remainsb34ce50 until successful activation; d4 next before customer authoring.
+
+## 11 October 2026 — conditional replay private preflight ordering VERIFIED locally
+
+Independent security review found e3e4 replay inspected retained required identity
+(including protected source/target freshness SQL) before owner private preflight.
+cutover.ts now invokes actual registered owner query preflight with refreshed
+initiating session/transaction BEFORE conditional receipt identity. Legacy branch
+unchanged; all identity/current review/compiler/dependency/freshness checks retained.
+No grant, native/value mutation, DDL/build/deployment or additional service changes.
+
+Existing execution-start suite22 tests PASS, including new denial/normal ordering
+case: denied preflight permits only minimal receipt-existence lookup, never full
+preparation/version/identity freshness/current review/compiler/Audits; normal
+preflight precedes actual identity and protected freshness predicates. Owner
+callback is explicitly mocked for ordering; real private/native/SQL acceptance
+remains parent-owned. Strict TypeScript (no incremental), scoped ESLint and diff
+checks PASS. Independent read-only reviewer confirms reported defect resolved;
+reviewer ran no checks. Copied root dependencies remain UNSTAGED/excluded.
+Exact next: parent integrates this three-file correction on top of its7727ed4
+projection before integrated build and real backed-up Test candidate/public proof.
+Full e3e4 runtime/Phase2 gate remains open; customer conditional activation gated.
+
+## 11 October 2026 — isolated e3e4 existing service adaptation VERIFIED locally
+
+Existing migrations/cutover.ts and settlement.ts select only actual stored1/2
+through the closed stored reader plus scalar definition mirror. Cutover preserves
+original initiating authority and explicit required READY/pin/metadata branches;
+replay uses actual target-active identity/current conditional review. Closed2 FIRST
+cutover is gated to genuine refreshed company.isTest with
+STUDIO_FIELD_REQUIRED_NOT_READY until native required hooks/write windows verified.
+Settlement uses CURRENT server principal, required retained identity/current coverage
+and original receipt1/confirmation/window/CAS/Audits. New rollback activating schema2
+source also Test-only; schema1 rollback, finalization and terminal history/replays
+retain current policy without a blanket activation gate. Rule removal target1 stays
+stored protocol2. No original-principal rewrite or fake pre-cutover state.
+
+Definitions/publication.ts exports its existing ReviewedCompiledDefinition union;
+activation.ts accepts that type in the existing INTERNAL primitive only. Ordinary
+compiler/authoring/public activation dispatch unchanged. Existing generation/module/
+expected-pointer/definition CAS and paired activation/migration Audits retained.
+No DDL, native/domain/value mutation paths, second engine, dump, install/generate,
+build or deploy performed. All root pure/identity/row/review/coverage/sealed metadata
+dependencies copied UNSTAGED only and excluded from this checkpoint.
+
+Existing execution-start and settlement-service suites add 12 conditional cases:
+normal source1→target2/source2→target1 cutover/replay and current-different-settler
+rollback, source2 Test gate, non-Test finalization/history, later-current-actor replay,
+scalar/client/coverage/compiler denial, receipt/publication/activation/both Audit
+failure restore and retry. Legacy fixtures now include actual review row mirrors
+and explicit selected version schema/publisher projections. Real compilers/closed
+parsers/actual cutover identity/shared activation run in snapshot tx mocks;
+settlement identity/coverage/activation remain documented collaborators. These are
+local orchestration checks, not real PostgreSQL/current-policy/runtime acceptance.
+39 tests/3 service+ordinary activation suites PASS; strict TypeScript (no incremental),
+scoped ESLint and final diff checks PASS. No known local blocker; full e3e4 runtime
+and Phase2 gate remain open. Exact next: parent cherry-picks this scoped checkpoint
+after76377d8, runs integrated build and existing backed-up Test candidate/public
+checker for real cutover/different-current-settler rollback/finalization/paired-Audit
+atomicity; native hooks/write-window gate remains before customer activation.
+
+## 11 October 2026 — e3e4 normal services and central proof IN PROGRESS
+
+Integrated scoped a047b6e as76377d8, preserving both contributor memory entries.
+Required coverage refreshes current authority, checks full sealed metadata and base
+current/source/target/written/native/reference rights, private preflight before IDs;
+rollback uses current-actor bounded bridge, history avoids old condition graph.
+Branch51tests/5suites/types/lint PASS; independent final review and integrated actual
+service/runtime checks pending. No live/whole-phase completion inferred.
+Parallel branch owns existing cutover/settlement services/internal activation type;
+root owns dedicated actual Test checker plus existing caller customer-ID plumbing.
+No new Test user/company/domain records, DDL, duplicate engine or ad-hoc dump.
+Existing cancellation proof retained, temporary exact Test customer grants/private
+memberships restored, metadata/values/history retained. Finalized fresh checker-only
+conditional definition retires via CAS/Audit to keep later fixture checks safe.
+Plan/ledger updated before implementation. Exact next: implement normal Test flow,
+merge service branch, integrated tests/types/lint/build/review then original release.
+Customer conditional authoring remains gated until native hooks; liveb34ce50.
+
+## 11 October 2026 — parallel e3e3 CURRENT-settler coverage VERIFIED locally
+
+Explicitly scoped codex/studio-required-receipts worktree preserves54d6188 and adds
+validateRequiredFieldMigrationSettlementCoverage in settlement-coverage.ts; legacy
+closed1 routine unchanged. New entry refreshes genuine transaction authority,
+matches the CURRENT principal/stamp, resolves its support Audit, and allows a
+different current same-company settler without resolving/substituting the original
+creator. Scoped actual company/current/source/target/written metadata is checked
+with inspectSealedFieldVersion (sealed-field.ts now accepts its six-field typed
+Pick, identical runtime verification). Historical full sealed condition plans are
+preserved but not recompiled/evaluated against today's input graph. Schema1 base
+projection compilation enforces current native/field/read-write/reference access;
+only BASE dependency modules must remain available for history, not old condition
+input modules. Complete snapshot/private preflight runs before written-version IDs;
+missing/foreign/hash/schema/substituted versions and unsupported latest settlement
+policy fail closed. Rollback alone delegates root's distinct bounded CURRENT-actor
+review bridge before actual owning rollback coverage. No intent/principal rewrite.
+
+Focused11new cases plus existing coverage/pure cutover/settlement suites:51tests/
+5suites PASS65081; strict TypeScript3229 exit0; scoped ESLint99600 exit0 with no
+warnings; diff check PASS. Tests use real registered owner/base/conditional compiler
+and sealed review2, with mocked authority/storage/rollback bridge. They establish
+coverage sequencing/delegation, not actual SQL/native/private condition/receipt
+activation evidence. Current Tickets same-entity/ref policy cannot express a genuine
+cross-module condition-input fixture; old custom-input read grant absent + later
+active schema1 metadata is tested without today's provider/input reads. Root owns
+actual rollback condition/cohort tests and candidate/public proof. Copied root pure/
+identity/observation/coverage/inspection dependencies remain UNSTAGED and excluded;
+shared dependencies/generated client are symlinked. No build/deploy/DDL/business
+writes or services/activation from this branch. Whole Phase2 remains IN PROGRESS.
+Exact next action: root integrate this scoped coverage/Pick/test checkpoint with its
+actual identity and CURRENT-rollback bridge, review integrated service dispatch, then
+verify original central candidate/public cutover/settlement before enabling closed2.
+
+## 11 October 2026 — e3e3 current-principal rollback bridge VERIFIED locally
+
+Root distinct authority-taking rollback row/coverage/bounded review entries in
+observation/coverage/inspection.ts refresh genuine current identity/stamp and resolve
+ONLY the current principal/support Audit. Original sealed intent/principal/publisher/
+createdBy/pins remain immutable; revoked original creator no longer blocks a different
+properly authorised settler. Actual target-active+2/CUTOVER/READY, private preflight,
+source/cohort/current rules/typed source+target and every own outcome still required.
+Earlier entries remain creator-bound. No client stage/identity override, borrowed
+creator grants, service dispatch, activation, DDL or value/native mutations.
+Root55tests/2suites PASS94197, strictTS61617/scopedlint20361 exit0; two old fixture
+warnings/zero errors, independent diff security review no blocker. Five meaningful
+new cases prove current actor/creator revoke/original publisher, current stamp/support/
+private/native denial, current strict source guard and empty-cohort aggregate. These
+unit collaborators do not prove actual different-user SQL/runtime settlement.
+
+Parallel required settlement coverage/sealed metadata base-right suite remains IN
+PROGRESS. Root review requested base compiled dependencies for historical module
+checks, so legitimate changed old condition inputs/modules do not block history;
+full sealed original metadata and base/native/reference rights remain checked.
+Exact next: integrate that scoped source/tests, run integrated strictTS/lint/build/
+diff checkpoint; then adapt EXISTING cutover/settlement services with stored1/2
+selection and normal central Test proof. Customer conditional activation remains
+withheld until required native write-window hooks. Full Phase2 gate incomplete;
+latest actual live remainsb34ce50. Plan/ledger updated.
+
+## 11 October 2026 — e3e2 actual conditional cutover prerequisites VERIFIED locally
+
+Integrated a9e4b7c/ec6c0c2 metadata inspectors with root coverage/row/bounded review.
+Actual retained source, target-active+2/CUTOVER/READY/frozen draft+1, complete private
+preflight before source/target freshness, immutable schema2-or1/full sealed2 lineage,
+current authorised conditions/typed source+target and every own outcome required.
+No fake PUBLISHED/source-active stage, unexplained global normalization or fallback.
+Settlement identity remains pointer/draft/native-change independent. Old closed1
+bodies/receipt hashes preserved; independent security reviews found no blockers.
+Integrated108tests/8suites PASS84436; strictTS42569/lint49724/build20746 exit0 and
+reviewed diff/check PASS. Two old fixture warnings, zero lint errors. Initial strict
+implicit callback fixture type corrected; no guard relaxation. Unit collaborators
+explicit; actual SQL/actor/runtime activation acceptance still pending normal services.
+No DDL/migration/business writes. Live verifiedb34ce50 unchanged.
+
+E3e3 independent branch owns current settlement coverage and pure sealed metadata
+base-right checks; root now owns rollback-only CURRENT-authority row/review bridge.
+Different authorised settler must not resolve/borrow the original creator's current
+grants; publisher/createdBy remain bound to original sealed history. Add genuine
+currentstamp/supportAudit/private/native/current-written/ref/condition tests including
+creator revoke/different actor/emptycohort; integrate/type/lint/build/checkpoint.
+Customer conditional activation and full Phase2 remain gated. Saved required rules
+plan and implementation ledger updated. No Phase3 work.
+
+## 11 October 2026 — isolated closed2 cutover/settlement metadata identity VERIFIED locally
+
+Phase2 e3e2a identity slice only: `cutover-inspection.ts` adds separate required
+cutover entry, actual scoped stored2 intent/review/full mirrors/hash and immutable
+source/target schema1-or2/payload/compiled hash/IDs/tenant/publisher helpers.
+Actual ACT/CUTOVER/READY target-active original+2, frozen draft+1 and both existing
+source/target freshness SQL required. `settlement-inspection.ts` adds separate
+required historical identity: exact original review/receipt1/execution/publication
+pairing independent of later legitimate pointer/draft/native/value changes;
+original principal unchanged. Shared open-window helper accepts explicit legacy/
+required union and retains current pointer/draft CAS and rollback-only SQL.
+Old closed1 function bodies mechanically verified unchanged. No permissions inferred
+from retained metadata; caller owns fresh current owner/private/field/reference
+coverage. No service dispatch/activation/rollback grants, DDL, writes or Phase3+.
+
+`tests/studio-field-required-cutover-identity.test.ts`: 11 cases, three source/target
+schema pairings including rule removal, protocol/tenant/full hash/mirror denials,
+actual state/pointer/revision/draft/freshness (false/absent/ambiguous) and retained
+terminal histories after later changes. Synthetic compiled plans/cohort and tx
+mocks use real closed2 seals/current Tickets contracts/receipt1 parsers; no actual
+SQL, native evaluation, current actor authority or runtime acceptance claimed.
+47 tests/5 focused suites PASS; strict TypeScript (`--incremental false`), scoped
+ESLint and diff checks PASS. Build/central fixture/public verification NOT RUN
+(parent owns integration/release). Root three pure helper dependency files copied
+UNSTAGED and excluded from this scoped checkpoint; shared node/client symlinks,
+no install/generate/output duplicates. No known local identity blocker.
+Exact next: integrate after root pure helper checkpoint; parent verifies actual
+conditional row/coverage/aggregate runtime and current-settler authority before
+any eventual service activation. Whole Phase2 and full e3e2a runtime remain open.
+
+## 11 October 2026 — e3e1 pure receipt contracts VERIFIED locally; e3e2 IN PROGRESS
+
+Root explicit closed2 cutover/identity/receipt/settlement helpers integrated with
+scoped54d6188 test contribution. Old entries stay closed1; unchanged receipt1
+whole-review hashes including source2→target1 rule removal, historical settlement
+independent of today's pointer/different settler. Independent review no blockers.
+Root36tests/3suites PASS57899; earlier root helper strictTS3139/scoped lint45085 exit0;
+branch final strictTS48812/scoped lint/diff PASS. Fixed legacy hash/regressions PASS.
+No DDL/business writes/service dispatch or customer conditional activation. Usable
+integrated release/build remains after actual coverage/services, not each pure helper.
+
+E3e2a isolated metadata inspectors and identity suites IN PROGRESS. Root e3e2b adds
+actual target-active+2/CUTOVER/READY row/coverage/bounded review with mandatory own
+outcome and current conditions/typed decoder, no fake source-active fallback.
+Root50tests/2suites PASS89803 using explicitly mocked metadata inspector; actual
+metadata SQL suite/integrated strictTS/lint/build pending agent merge. Initial one
+fixture findMany returnednull; corrected fixture for empty version set, no guard
+relaxed. E3e2 production/tests remain unstaged while coherent e3e1 checkpoint saved.
+Exact next: integrate actual metadata dependency, run integrated checks/checkpoint,
+then DIFFERENT fresh settler/history and native write windows before enabling
+conditional activation. Whole Phase2 incomplete; live remains verifiedb34ce50.
+
+## 11 October 2026 — parallel e3e1 conditional cutover/settlement receipt tests VERIFIED locally
+
+Explicitly scoped new isolated codex/studio-required-receipts branch/base5f9f210 adds
+one narrow tests/studio-field-required-receipts.test.ts suite. Genuine conditional
+compiler and sealed review2 fixtures cover adding rule/target2 and source2 rule removal/
+target1 under approved native9/query4/representation2. No forced schema2 cast of old
+review; synthetic READY/row projections are pure integrity, not native/SQL/permission/
+activation evidence. Eleven cases cover unchanged receipt1/full review2 binding,
+old/new four-entry closed-protocol rejection, unknown/coerced metadata, re-sealed
+changed condition plus rechecksummed execution still denied by original review pin,
+invalid required-null review summary/unacknowledged loss, exact READY/empty/source-active
+CAS/reserved bounds, native/cohort/source/generation/tenant/publisher identity, strict
+actual target-active+2 receipt, open pairing and terminal rollback/finalization history
+with different original creator/current settler and no today's-pointer inference.
+Fixed original legacy cutover checksum d70e0f4d9a4680b0a4e371ecf4e8d723483386a8ede0a01468366569492db988
+and legacy READY/source-active equality are included. Final36tests/3suites PASSd9c02c
+(11 new+25 existing), strictTypeScript48812 exit0, scoped lint/diff3d1f21 PASS. Initial
+snapshot update330404 only wrote the reviewed inline hash; final run did not update.
+Root's cutover-contract/cutover-receipt/settlement-receipt copied read-only solely for
+dependency checks, left UNSTAGED and excluded from this test/memory checkpoint. No
+install/generate/build/deploy/DDL/business writes or services/cutover enablement from
+this branch; root owns integrated source/docs/gates. Shared dependencies/generated
+client symlinked, no duplicated generated outputs. Exact next action: root integrate
+this scoped test checkpoint with its three explicit pure wrappers; verify integrated
+legacy/types/build, then implement actual post-cutover and CURRENT-settler coverage
+before stored2 cutover/settlement service dispatch and original central candidate/public
+proof. Whole Phase2 still IN PROGRESS; customer conditional activation remains gated.
+
+## 11 October 2026 — e3e1 pure conditional receipt integrity IN PROGRESS
+
+Root owns cutover-contract/cutover-receipt/settlement-receipt.ts explicit closed2
+entries; isolated studio-required-receipts branch owns focused pure suites, independent
+review is read-only. Preserve old closed1 entries/hashes, receipt1 shape, READY/source-
+active pre and actual target-active +2 post transitions. Settlement history stays
+pointer-independent and different fresh authorised settler remains allowed. No DDL,
+service dispatch/business activation or native writes. Dependencies: b34ce50 live
+conversion and required-contracts parser. Checks not yet run; exact next: implement
+private shared validation with separately selected sealed parsers, integrate tests,
+strictTS/scoped lint/diff and checkpoint. Full Phase2 remains incomplete.
+
+## 11 October 2026 — conditional conversion VERIFIED live b34ce50; next closed2 receipts
+
+Original88202 exit0: b34ce50bd10fcbb39287444a753879e02044d0cc candidatekT6FVM
+and publicqTWEdH BOTH ALL COMBINED PASS. Immutable build/smoke, dependency
+compatibility, login200 and exact public health PASS. Actual normal closed2 start,
+second-row target failure/sparse FAILED/resume, outcome/progress/paired batch and
+failure Audit rollback, typed zero/null/new-anchor own+1, READY/replays and normal
+cancellation passed both stages. Source/native unchanged; immutable target/history
+retained and draft restored monotonically. Legacy Studio/current-history/save/
+migration/cutover/settlement and existing private Admin/business provisioning,
+Templates/module regressions passed. Local96tests/7suites/types/lint/build/diff PASS.
+Two old unused fixture warnings, zero errors; no schema/DDL/new engine.
+
+Original required recovery111129/111308/111743 only; no ad-hoc dumps. Currentb34ce50,
+rollback0d315f7 and process-pinned runtimes preserved; original retention retired
+only inactivebafa1c2 duplicate outputs, preserving source/static/history/business
+records/backups. Temporary2GiB build swap safely removed43583 exit0 under BOTH
+original locks/no compiler: available3481564KiB, used935480KiB, margin1572864KiB.
+No swap/root164GiB free/2.5GiB RAM available; no fstab/app/PG change; administrator
+lock inodes29187/13754 mode600 unchanged. Operational evidence retained in
+/opt/atlas-maintenance-backups/studio-build-memory-20261011.txt.
+
+Temporary review/execution worktree archive requests returned queued; actual removal
+unverified, about25MiB source each/shared dependencies. Do not race pending archival
+or claim removal. Shared Desktop work/unverified visual stash preserved.
+Next e3e1 separate closed2 cutover/settlement receipt entries +focused suites, preserving
+receipt1/closed1 lineage. Saved plan in STUDIO_FIELD_REQUIRED_RULES_PLAN.md includes
+actual post-cutover +2/target-active inspection, different fresh authorised settler,
+history/rollback distinction and required native write windows. Customer conditional
+activation remains withheld. Whole Phase2 gate incomplete; no Phase3.
+Log /tmp/atlas-studio-required-normal-execution-deploy.txt and original stage
+acceptance.log files. Historical notes below describe earlier checkpoint states.
+
+## 11 October 2026 — usable conditional conversion milestone IMPLEMENTED; live proof pending
+
+Parallel root06eeda1/review13fe331/execution45c6896 integrated; scoped service tests
+from1beafb4 and existing central checker froma160372 reviewed/integrated with root
+start/batch/representation. Actual stored intent selects closed1/2; same owner query,
+claim/extension/typed slot/value/outcome/progress/Audit transaction, bounded failure/
+resume and no client format. Actual target decoder/current conditions and full own
+outcome lineage precede archive normalization. Independent SQL/native/security
+reviews found no blockers. No new engine/schema/migration or source/native mutation.
+Combined96tests/7suites PASS30539, strictTS96474/scoped lint16281/build74651 exit0,
+diff reviewed/check PASS. Two existing unused mock warnings, zero lint errors.
+Initial legacy batch fixture lacked actual scalar organisationId; fixture corrected,
+selector unchanged and all28 legacy service cases +ten conditional cases PASS.
+Local collaborators are explicit authority/transaction fixtures; real normal API
+proof still pending. Existing central checker adds real start/target/outcome/progress/
+paired Audit rollback, FAILED resume, own +1/null/zero values, READY/replays and
+cancellation retaining immutable targets/history and exact source/native/draft.
+No central invocation yet. Current public remains0d315f7. Next clean pinned original
+studio combined candidate/public release; use existing required recovery gates only,
+temporary build-memory buffer under BOTH original locks, then safely remove it and
+archive recoverable parallel worktrees. Conditional cutover/settlement/native hooks,
+remaining fields/record types/pages/visual builder and full Phase2 gate remain open.
+
+## 11 October 2026 — isolated conditional execution central checker IMPLEMENTED
+
+Extended existing check-field-required-review-storage.ts only, on its same valid
+absent-rule publication/retained Test definition/company/records. Existing normal
+start/batch APIs derive stored2; root owns their adaptation. Checker adds exact
+execution/outcome/global-extension snapshots, start Audit rollback, second-row target
+failure/sparse FAILED and normal resumed prefix, second-row outcome/late progress/
+paired batch and recovery Audit rollback, bounded READY and response/start replay.
+Verifies actual closed2 observations and unchanged receipt1 outcomes, typed zero/null,
+written target version/pointers/fingerprint, own +1 global envelope including new
+anchors, immutable outcome/execution denial, actual READY reinspection and retained
+cancellation prefix/history. Every source/native row preserved, exact draft payload
+restored with monotonic revision; no new native records/entities/definitions/company/
+grants, schema migration, cutover/settlement or authoring. Scoped temporary SQL triggers
+follow existing failure-injection policy and always drop in finally. READY/cleanup
+PASS messages emit only after normal cancellation/restoration finishes.
+Strict TypeScript12814/scoped lint89784 exit0, final diff reviewed/check PASS, using
+root observation/review/start/batch/representation files copied solely UNSTAGED for
+integration verification (excluded from scoped commit). No central invocation,
+write, test backup/dump, build or deployment run here. Runtime checks are IMPLEMENTED,
+not VERIFIED: original runner must first prove real PostgreSQL/API behaviour after
+root service integration, with mandatory existing recovery policy. Earlier pure
+script compilation passed82600; final checks include current root service types.
+Known integration risk: converting originally unanchored Test records retains new
+inactive target anchors; inspected later checks are field-specific and appear
+compatible, but original full combined acceptance remains mandatory. Source keeps
+its active pointer; target/outcome/history/global revisions cannot be deleted or
+rewound merely to clean this fixture. Conditional publication replay after existing
+execution remains separately gated and is not exercised here.
+Next: root cherry-picks scoped checker/memory, runs original single candidate/public
+central acceptance after conditional execution service integration, confirms each
+failure/replay/cancellation proof, and records exact live evidence or failing guard.
+
+## 11 October 2026 — parallel conditional start/batch/representation suites VERIFIED locally; integration pending
+
+Root owns service dispatch; isolated codex/studio-review-inspection adds ten meaningful
+closed2 cases to existing execution-start/execution-batch/representation suites, keeping
+all28 prior cases. Actual conditional compiler/native9/query4/approval2 and closed2
+review/publication/execution/outcome helpers are used; native/whole-cohort row inspection
+and transactional database collaborators are explicitly unit fixtures. Start covers
+stored2 dispatch, exact receipt1/fullreview2 binding, current denied replay, unknown/
+legacy/client override rejection and Audit rollback/retry. Batch covers bounded exact
+prefix, stale/READY replay, sparse failure/resume and batch+failure Audit rollback.
+Representation covers owner2/row2 dispatch before claim, complete conditional checksum,
+exact large decimal encoding, unanchored and anchored-without-source-slot optional null,
+semantic/condition/fingerprint/read/required absence denial, sealed review and extension
+CAS. Canonical initial preparation fixture now includes organisationId required by the
+shared stored selector; production selector remains strict. Final38cases/3suites PASS
+6bd2be and scoped lint/diff aafdb6 PASS. Initial writer fixture return shape and test
+union-correlation typing corrected without production relaxation. Strict TypeScript
+87992 exit0; earlier55826 failed only two test fixture union-correlation assignments.
+Root services/observer/execution inspector copied read-only for dependency verification
+and left unstaged; commit only these three assigned suites plus this memory entry.
+No production build/deploy, DDL, native/business writes, cutover/settlement or later-phase
+enablement from this branch. Exact next action: root integrate this scoped checkpoint
+with its dispatch and inspect integrated results; normal central start/
+batch/replay/resume/owner/Audit proof in BOTH candidate/public remains mandatory.
+Whole Phase2 remains IN PROGRESS; unit fixtures do not establish normal live execution.
+
+## 11 October 2026 — parallel inspectors integrated; normal execution IN PROGRESS
+
+Root06eeda1, bounded review13fe331 (from0cf00ea), execution metadata45c6896
+(from6a49ca2) reviewed/integrated, preserving every branch memory entry. Combined
+86tests/7suites and strictTS PASS; no normal format2 execution inferred. Existing
+start/batch now select closed1/2 from server-loaded intent; existing representation
+chooses corresponding row/outcome parser and codec with unchanged owning query/
+claim/typed writes/CAS/progress/Audit transaction. No new engine/model/DDL. Core
+service changes IN PROGRESS; isolated branches now own focused existing service
+suites and existing central checker proof. Build and original combined release at
+usable integrated milestone; actual cutover/settlement/native authoring still gated.
+
+## 11 October 2026 — isolated conditional execution metadata inspection VERIFIED locally
+
+Parallel branch codex/studio-execution-inspection adds only the separate
+inspectRequiredFieldMigrationExecution in existing execution-inspection.ts and
+its focused required-execution-inspection suite. Genuine runtime authority and
+full stored principal/support Audit resolve before migration metadata; exact scoped
+stored2 preparation/review, actor/schema1-or2 immutable target, current compiled
+metadata/module locks, actual published-versus-executing review selection and
+unchanged receipt1 owner/query2 pin/progress validation. Legacy closed1 body remains
+unchanged. No start/batch/cutover/native/authoring dispatch, values, DDL or migrations.
+Eight focused orchestration cases plus existing pin/start/batch suites:38 tests/4
+files PASS (94159); strict TypeScript63463 exit0; scoped lint96328 exit0; reviewed
+scoped diff/check PASS. Authority/compiler/row inspection/SQL fixtures are explicit
+mocks, not genuine authority or normal central execution acceptance. Rule removal
+retains stored2 inspection despite a schema1 target. Support uses the exact retained
+Audit principal. Initial type check was blocked by the absent upstream inspector;
+final check uses root's fixed observation.ts and review agent's inspection.ts copied
+solely for unstaged dependency verification, as root authorised. Those dependency
+files are excluded from this scoped commit; root integrates them before this block.
+No build/deployment run here: root owns single integrated build/release and permanent
+progress ledger. Generated dependency paths are symlinks to root, no install/Prisma
+regeneration/new business database/dump or duplicated generated runtime.
+Next: root integrates verified observation/review dependency checkpoints then this
+scoped source/test/memory checkpoint, runs the combined checks/build/live gates,
+and continues existing start/representation/batch integration only after actual
+conditional row/outcome inspection evidence is accepted. Whole Phase2 remains open.
+
+## 11 October 2026 — parallel e3d2b bounded execution-review inspection VERIFIED locally, integration pending
+
+Explicitly authorised isolated branch codex/studio-review-inspection adds only the
+trusted execution entry in fields/migrations/inspection.ts and seven focused cases
+in tests/studio-field-required-inspection.test.ts. Reuses refreshed genuine runtime
+authority and strict conditional intent/principal/version identity, separate execution
+coverage/row reader, exact tenant/source-scoped50-row pages, retained row checksum,
+SQL/pure aggregate, uniqueness and immutable review seal. No caller-selected stage,
+publication/preparation fallback, native/value writes, DDL/start/batch/cutover or
+later-phase enablement. Actual own-outcome proof belongs to root's separate executing
+observation reader; these tests explicitly use mocked authority/row/SQL collaborators.
+Final62tests/5actual suites PASS6e64bc; focused14tests covered stage, current principal,
+private access, semantic/native/envelope drift, archive mirrors/strict/order,101-row
+bounded cursors, empty authority, aggregate and uniqueness rejection. Scoped lint and
+diff check PASS15983a, strict TypeScript61006 exit0 with root's observer copied
+read-only and left unstaged. Initial test-only identity/message expectations were
+corrected; production validators unchanged. Earlier types75319 failed only two
+upstream observer issues; root corrected both and refreshed dependency passed. No
+build/deploy from isolated branch; root owns integration/build/live acceptance and
+shared ledger/coverage updates. Dependencies and generated client are symlinked from
+the active root without install/generate/duplicate builds. Only inspection.ts, its
+test and this memory entry belong to this scoped checkpoint; copied observation.ts
+is deliberately excluded. Exact next action: root integrates the observer first,
+then this bounded review entry and the separately owned execution metadata
+inspector; run integrated checks and normal candidate/public acceptance before
+enabling the existing start/batch/representation pathways.
+Whole Phase2 remains IN PROGRESS; no normal conditional execution proof claimed.
+
+## 11 October 2026 — e3d2b row/outcome observer VERIFIED locally
+
+Existing observation.ts now exposes a separate conditional execution-only row and
+archive reader. Genuine authority/private preflight precede actual execution SQL;
+current conditions use actual post-conversion envelope, exact retained outcome
+mirrors explain only own +1/new anchor, source slot/native remain exact, and actual
+typed target decoding/current-written/reference policies precede normalization.
+51 tests/4 suites PASS (includes seven new grouped row cases), strict TypeScript
+and scoped lint/diff PASS; lint retains two existing unused fixture warnings.
+Independent read-only review found no blocking defect; its custom-input post-write
+coverage gap now tested with real input reader/compiler and independent Read denial.
+Tests use explicit authority/SQL/archive fixtures, not actual normal execution2.
+No DDL/business writes/start/batch enabled. Build/deployment deferred to integrated
+usable start/batch milestone per user's grouped-work preference. Next integrate
+bounded review and execution metadata branches, then existing start/batch/typed
+representation and actual central API proof. Live remains exact0d315f7.
+
+## 11 October2026 — user authorised linked parallel Phase2 work
+
+Root owns actual conditional row/outcome observation, integration, permanent ledger
+and final release. Two isolated managed worktrees start at f9bf3cb for server
+execution inspection and bounded review aggregate; fourth agent read-only SQL/native/
+security review. Exact shared internal function interfaces in required-rules plan.
+No later phases or start/batch/cutover enabled early. Branch-local limited checks
+then integrated normal conversion proof; original deployment/backup/ancestry/locks
+retained. Reuse dependencies; archive recoverable temporary worktrees after merging.
+
+## 11 October 2026 — e3d2b actual conditional execution reinspection IN PROGRESS
+
+Recovered exact clean f9bf3cb/0d315f7 live evidence; source Sections6.5,24,25,27 and
+current dependencies re-read. Implement existing observation/review/execution
+inspectors first, then existing start/batch/representation and actual central normal
+API proof as one usable conversion milestone before the next combined release.
+Expected files: observation.ts,inspection.ts,execution-inspection.ts, existing
+required observation/inspection and execution suites; next start/batch/representation
+and existing central checker. Reuse SQL guards; no planned schema/DDL/native changes.
+Require genuine refreshed principal/private preflight, exact stored2 review/target/
+execution pin/outcome mirrors; actual own +1 global envelope and unchanged source/
+native/target before archive comparison; evaluate conditions with current envelope
+and independent Read/reference rights. Bounded rows, SQL/pure digest and empty-cohort
+checks mandatory. No client stage or source-active publication fallback after writes.
+Local checks per coherent workstream; original full combined acceptance at usable
+integrated milestone. Current source-active ordinary operation remains preserved.
+
+## 11 October 2026 — e3d2a deployed; exact remaining Phase2 scope1032UTC
+
+Original pinned release0d315f770812d2e6b7dc7179992256c1f3461900/46009 exit0.
+CandidateMTZpXy/publicVvzibi BOTH ALL COMBINED PASS, compatibility PASS, exact public
+health confirmed. Real normal conditional review/publication/replay/cancellation,
+all five real Audit rollbacks and existing Admin/business login/module checks PASS
+both stages. New execution coverage body VERIFIED locally63tests/5suites plus
+strictTS/scoped lint/build/diff; deployed regression proof does not enable or prove
+normal execution2. Actual conditional row/outcome/review inspector e3d2b NOT STARTED.
+Current0d315f7 rollbackbafa1c2; original retention retired only inactive8cc2758 runtime
+outputs, retaining source/static/history/central/private/backups. Required original
+recovery101917/candidate102050/public102515 only; no ad-hoc dumps or new DDL/models.
+Temporary2GiB build-memory file restored under BOTH original locks to avoid the
+confirmed earlier OOM; safely removed49396 exit0 after available4008312KiB versus
+used1381080KiB/no compiler. Root164GiBfree, no swap,2.6GiB RAM available; no fstab/app/
+PG/database configuration change. Lock inodes29187/13754 and permissions retained.
+Initial root lock opens denied before mutation; owner administrator holds original
+locks while privileged buffer operations run. Operational evidence retained.
+Updated source coverage, architecture/module/deploy docs, required-rules plan,
+ledger and decisions. Phase0/1 PASS; Phase2 IN PROGRESS/gate incomplete, visual
+builder remains mandatory and unfinished. Next: add executing conditional row/review
+inspection to observation.ts/inspection.ts/execution-inspection.ts, validating actual
+retained outcomes for own +1 envelope (including new anchors), exact source/native/
+target lineage and current conditions/independent field Read before digest comparison.
+Then existing start/batch/representation, cutover/settlement/native hooks, remaining
+fields/record types/pages/visual builder and complete Phase2 gate. No Phase3 work.
+
+## 11 October 2026 — e3d2a execution coverage VERIFIED locally; release pending (superseded above)
+
+Existing coverage.ts now has a separate internal stored2 execution-only entry,
+current representation/query2 support and complete owning private preflight before
+source/target SQL freshness. Reuses actual RUNNING/READY/FAILED execution and
+existing exact source/outcome/target guards; old entry stays closed1, conditional
+cutover stays denied. No actual row/condition inspection or start/batch enabled.
+Three meaningful cases added to existing required observation suite. 63tests/5suites
+PASS97635; strictTS99973/scoped lint26699/build97017 exit0, diff reviewed/check PASS.
+Lint has two pre-existing unused mock-argument warnings, zero errors. Test SQL/private
+fixtures verify service bodies and actual owner descriptors, not normal format2
+execution. No DB/model/migration/value/native changes. Exact public bafa1c2 remains
+live; next reviewed checkpoint and original combined release, then e3d2b actual
+conditional row/outcome/envelope/review reinspection before start/representation.
+
+## 11 October 2026 — e3d2a source-active execution coverage IN PROGRESS
+
+Plan saved before code: existing coverage.ts and required observation/coverage
+suites; explicit server execution-only entry for stored2, current owner/query2
+approval and private preflight before actual execution/source/target SQL freshness.
+Reuse existing guards; no planned DDL, values/native writes, runtime start/batch/
+cutover or authoring enablement. Caller still owns refreshed locked authority.
+E3d2b actual row/outcome/condition reinspection remains NOT STARTED. Local tests
+and original candidate/public regression required; runtime2 not claimed from fixtures.
+
+## 11 October 2026 — conditional publication VERIFIED live; cleanup complete1007UTC
+
+Exact public bafa1c2d075039c48db99ba589624c29e5c26a94 confirmed. Original retry24271
+exit0; candidatebseb8V/publicZrTQuH both ALL COMBINED PASS. Actual conditional
+prepare/collect/seal/publish/replay/cancel, source-active closed2 row/condition/native/
+global inspection, invalid/tenant/client denial and all five real Audit-failure atomic
+rollbacks PASS in both stages. Original source/native/typed records unchanged; exact
+Test draft restored, immutable metadata/history retained. Existing Admin/business
+login/provisioning boundaries and Dashboard/Home/Settings/Reports/MRP/Messages/
+private Admin/Supply/Commercial/People checks all PASS. No complete Phase2 claim.
+Local publication96cases/9suites; inspection65/6; pure execution40/4 plus21/3 legacy
+representation/batch/Tickets regressions, strictTS/scoped lint/production builds/diff
+PASS. Counts overlap, not cumulative. Pure closed2 execution/outcome helpers are
+integrity only; actual format2 start/batches/cutover/native authoring remain gated.
+No schema/model/migration added. Existing publisher/CAS/binder/Audit engine reused.
+Prior a04349c OOM before activation was diagnosed, failed source/static preserved
+and only failed generated outputs retired under BOTH original locks. Temporary2GiB
+build swap solved retry and was safely removed93028 exit0 after available RAM safety
+check; no fstab/application/PostgreSQL change. Post-cleanup root164GiB free, no swap,
+2.7GiB available RAM. Currentbafa1c2 rollback8cc2758; original retention retired only
+inactivea475823 duplicate runtime, not source/static/history/data/backups. Required
+094734 failure recovery +095503/095646/100108 retry recovery retained; no ad-hoc dumps.
+Logs /tmp/atlas-studio-required-publication-retry-live-deploy.txt and private stage
+acceptance.log files. Operational evidence studio-build-memory-20261011.txt retained.
+Updated source coverage, architecture/module/deploy docs, required-rules workstreams
+and fresh mandatory ledger dashboard; original DOCX checksum reconfirmed unchanged.
+Next e3d2a/b NOT STARTED: explicit conditional execution coverage and actual row/
+review inspector in existing coverage/observation/inspection/execution-inspection.
+Exact retained outcomes must prove own +1 global extension revision (including new
+anchors), unchanged source slot/value/native and target representation, reevaluated
+conditions/independent Read; bounded actual rows and SQL/pure seal agree. Then
+existing start/batch/representation, cutover/settlement/native hooks and remaining
+fields/record types/pages/visual builder. Phase0/1 PASS; wholePhase2 still IN PROGRESS.
+
+## 11 October 2026 — integrated bafa1c2 retry running; next execution plan saved (superseded above)
+
+Original24271 pinnedbafa1c2, required095503 pre-release recovery only. Original both
+locks acquired after existing verification finished; no bypass/other job interruption.
+Temporary2GiB build swap active after confirmed OOM; candidate/public pending.
+Do not move HEAD. Next e3d2 NOT STARTED subworkstreams in required-rules plan: actual
+execution coverage, conditional row/review inspection, then existing start/batch/
+representation and central proof. Exact own +1 global envelope must be pinned by
+actual outcome (also formerly unanchored rows); current conditions/independent field
+rights and source/native/target lineage remain mandatory. No execution enablement.
+
+## 11 October 2026 — e3d1 pure integrity VERIFIED locally; release OOM recovery
+
+Explicit closed2 execution/outcome helpers reuse existing receipt shape and exact
+owner/query approval, full review/observation checksums. Conditional outcome also
+requires the sealed review2: old execution/review or mismatched lineage fails. No
+runtime execution/start/batch/cutover/authoring enabled or DDL. Two new meaningful
+tests,40cases/4suites PASS22772; types29427/lint5823/build29068 exit0, diffPASS.
+Existing representation/batch/Tickets regression21cases/3suites PASS61527.
+Original a04349c/33124 failed compiler before acceptance/activation; build log and
+kernel prove OOM094911UTC. Public8cc2758 unchanged. Under original BOTH locks,
+failedsource/static preserved at /opt/atlas-maintenance-backups/failed-a04349c-20261011-094734;
+only confirmed failed generated outputs retired; temporary2GiB /var/tmp/atlas-release-build.swap
+active for retry (no fstab/database/runtime changes). Source operational evidence
+studio-build-memory-20261011.txt; original094734 backup/logs retained, no ad-hoc dump.
+Next: scoped checkpoint+normal pinned integrated release, inspect actual publication
+proof in both candidate/public; safely remove temporary swap after build/memory check.
+Then e3d2 conditional outcome/global-envelope/actual-condition inspection before
+existing start/batch/representation integration, cutover/settlement/native hooks and
+remaining fields/record types/pages/visual builder. WholePhase2 still open.
+
+## 11 October 2026 — a04349c release initial plan (superseded above)
+
+Original release33124 runs a04349c with existing full Studio gates; keep HEAD fixed.
+Required pre-release recovery094734 only. Independent e3d1 plan before code: explicit
+closed2 pure execution/outcome helpers in existing execution-contract and focused
+suite, exact reviewed publication/owner/query and whole semantic observation checksums.
+Retain old receipt shapes/hash and legacy parsers; no DB/runtime start/batch/cutover
+or authoring. Actual publication candidate/public proof pending; no phase PASS.
+
+## 11 October 2026 — e3c actual conditional publication IMPLEMENTED, runtime gate pending
+
+Existing publisher now derives explicit1/2 from scoped stored intent/review, uses
+genuine conditional preparation/publication inspection and shared metadata compiler.
+Typed trusted reviewed binder persists actual plan schemaVersion2 (rule removal1),
+single CAS/dependency/version/generation/receipt/both-Audit transaction, source active.
+Execution2 replay cannot fall back; ordinary conditional authoring remains gated.
+Four new tests;96cases/9suites PASS12179, strictTS50065/lint58409/build3543 exit0.
+Initial new fixture passed extra cohort/summary keys to strict intent, corrected by
+projection; no production parser relaxed. Existing central checker now covers actual
+normal publication/replay/cancellation, invalid-review denial, native/global/conditions
+inspection and both real Audit-failure rollbacks; restores exact Test draft, retains
+history and original active/native/typed records. No DDL/models/ad-hoc dumps.
+E3b checkpoint01a79ed local65/types/lint/build PASS. Current live8cc2758 exact, original
+95284/candidatezc2knY/publicPK9q8T ALL COMBINED PASS; rollbacka475823. Next: reviewed
+scoped checkpoint and original pinned release; require new central checks in BOTH
+candidate/public logs before VERIFIED. Then explicit conditional execution lineage,
+cutover/settlement/native hooks and remaining fields/record types/pages/visual gate.
+
+## 11 October 2026 — e3c initial plan (superseded above)
+
+E3b saved01a79ed with65focused/types/lint/build PASS; runtime integration pending.
+Next coherent existing publisher dispatch reads actual stored intent/review2, uses
+genuine conditional metadata/inspection, typed internal binder and actual version
+schema2; no ordinary authoring/activation/execution2. Expected source, dependencies,
+DB implications and tests recorded in ledger before coding. Extend exact central
+Test normal API checker for publication/replay and metadata/Audit atomic failures.
+No ad-hoc dumps/new companies/native/values or duplicate publication engine.
+
+## 11 October 2026 — e3b conditional publication reinspection VERIFIED locally
+
+Existing coverage/observation/inspection now expose separate preparation and
+source-active publication2 server entries. Exact closed review/target/publisher/
+generation, +1 definition/draft revisions, genuine refreshed authority and complete
+private preflight precede actual SQL/native/conditions/source value freshness.
+Bounded rows compare actual evidence with archived envelopes and SQL/pure seal.
+No execution/cutover, DDL, native/value writes or conditional authoring enabled.
+Six new meaningful cases;65cases/6suites PASS22326, strictTS78713/lint83710/build73098
+exit0, diff review/check PASS. Test-only implicit types failed first, fixed explicitly.
+Unit transaction/authority fixtures are not real conditional publisher acceptance.
+Pure pin8cc2758 now VERIFIED live: original95284 exit0, candidatezc2knY/publicPK9q8T
+ALL COMBINED PASS; exact health8cc2758. Rollbacka475823 retained, both-lock retention
+retired inactiveede65ae duplicate runtime only; required092639/092819/093242 backups.
+Next e3c: actual stored-format publication dispatch + typed conditional metadata
+publisher/binder and central normal API replay/Audit rollback proof; no new engine.
+Whole Phase2 remains open, source coverage retains record types/pages/visual builders.
+
+## 11 October 2026 — e3b conditional publication reinspection initial plan (superseded above)
+
+Pure pin8cc2758 original95284 running; keep HEAD fixed. Actual normal review APIs
+VERIFIED livea475823, no phase gate claim. Next coherent read-only block: explicit
+publication coverage wrapper and conditional row/review inspection in existing
+coverage/observation/inspection services. Derive stage from trusted server entry,
+never request metadata; require source-active PUBLISHED freshness, exact +1 revisions,
+immutable target payload/plan/generation/version and publisher/closed review identity.
+No DDL, values/native writes, execution/cutover or public conditional authoring.
+Tests and precise dependencies recorded in ledger before coding. Source full
+publisher/CAS/Audit and native writer integration remain mandatory afterward.
+
+## 11 October 2026 — Pure conditional reviewed publication pin VERIFIED locally
+
+Existing publication-contract.ts now has an explicit closed2 helper alongside the
+unchanged closed1 helper. Both use one integrity/readiness check and retain the
+same receipt body, binding the full review checksum, target plan/payload/generation,
+tenant/definition/version and publisher. Rule removal may have a v1 target but still
+requires a closed2 review parser; do not infer protocol from target schema alone.
+No runtime/publication/activation/native/value enablement or DDL. Four meaningful
+cases added to the existing suite;39cases/4suites PASS99746, strictTS54579/scoped
+lint4993 exit0, diffPASS; production build91430 exit0. Dependencies: actual normal2
+review APIs PASS candidatep46Q3C, candidatep46Q3C/public79aa78 ALL COMBINED PASS; original55798 exit0.
+Exact publica475823 confirmed; rollbackede65ae retained, original both-lock retention
+retired inactivee395962 duplicate runtime only. Required091118/091258/091718 recovery.
+Next: reviewed scoped checkpoint;
+then server-derived conditional publication-stage metadata/coverage/inspection in
+existing services before enabling its runtime. Full execution/native/visual gaps
+remain in source map and ledger; wholePhase2 unpassed.
+
+## 11 October 2026 — Conditional normal APIs PASS candidate; pure publication pin IN PROGRESS
+
+Original55798/a475823 remains pinned; candidatep46Q3C real prepare/collect/seal APIs
+PASS, including all three actual Audit-failure rollbacks, bounded actual conditions,
+immutable replay/archive seal and finally restored draft with retained Test evidence.
+Whole combined/public gate pending; do not move HEAD. Required UTC091118/091258
+recovery only. Next coherent e3a block: closed pure conditional reviewed publication
+pin in existing publication-contract.ts + focused suite, no runtime enablement/DDL.
+Existing receipt body can retain its exact meaning and shape: it pins review checksum
+(which binds explicit intent/condition/archive2), target compiled checksum/generations
+and publisher. Old helper stays closed1; new helper explicitly parses closed2. No
+historical metadata/default/hash changes, no grant from pure pins. Exact tests and
+remaining runtime/native gate are in ledger. Phase2 incomplete; no later phase.
+
+## 11 October 2026 — Normal conditional review API proof IMPLEMENTED, not runtime verified
+
+Actual-owner ede65ae original release34400 exit0; candidatef7uyoR/publicDetaCQ
+ALL COMBINED PASS, public health exact. Current rollback e395962; both-lock
+retention retired only inactive e5ab126 duplicate runtime, not source/data/history. Required UTC085820 pre-release/085957 candidate backups only.
+Extended existing check-field-required-review-storage.ts: exact Test draft seed
+only (public conditional authoring still gated), then actual prepare/collect/seal
+APIs with server-derived2, bounded actual rows, CAS/response replay, SQL/pure archive
+seal, real Audit failures at all three stages, exact native/typed/active metadata
+unchanged. Finally restores saved draft payload with monotonically advanced revision,
+retains immutable review evidence and explicit fixture seed/restore Audit. No new
+company, domain/value write, permission engine, schema/DDL or dump.
+StrictTS61643/scoped lint6756/build77619 exit0; central execution pending, not VERIFIED.
+Current owner actual conditional rows/coverage/SQL digest/rollback PASS candidate;
+public original gates PASS (required UTC090416 fixture recovery).
+Next: current release outcome, review/build/pinned normal API fixture release, then
+existing publication/execution/cutover/settlement conditional support and native hooks.
+
+## 11 October 2026 — Studio source audit and actual Tickets owner locally VERIFIED
+
+Michael clarified that time is acceptable; complete adherence to the supplied
+specification matters. Re-read full unchanged source; original/repository SHA256
+4afb01d98ead51cd70ec4958620eb9d27a19a0298cd0fa1cb8bd0aee69d9198d matches.
+New docs/studio/STUDIO_SPECIFICATION_COVERAGE.md maps source phases0–9, all Phase2
+requirements and cross-cutting/later requirements, without rewriting the source.
+Ledger now starts with all mandatory current headings; old checkpoint notes are
+explicitly historical. Preserve foundation-first order; no Phase3, phase2 gateFAIL
+(incomplete), visual/designer not yet delivered. Do not infer completed field
+services mean completed Phase2 or complete Studio.
+
+c3 e3959624c2ba65f61fcd29bec9b12cc21933670d VERIFIED live: original40543 completed
+Deployed; candidateZRGhyd/publicsuHccl ALL COMBINED PASS; exactpublicSHA confirmed.
+Required UTC083206/083340/083751 recovery only; rollbacke5ab126 retained, original
+both-lock retention retired cdec6c6 duplicate runtime only.
+
+Current owner checkpoint: actual Tickets native9/snapshot4/representation2/settlement2
+supports explicit1/2 with retained old descriptors/hashes and native5format1 history.
+Private/member/module/Serializable preflight, exact stored source/review hashes and
+identity, principal/queue/revision checks preserved. Ordinary protected native data
+is not mutated. Central positive archive fixture uses actual required row observation
+and inspection; synthetic negative shape cases prove SQL integrity only. Actual
+central proof still pending, no format2 authoring/publication/execution claim.
+Local138 tests/19suites PASS53975, strictTS88342/lint84027/build93836 exit0/diffPASS.
+Legacy settlement packet projection bug caught/fixed; old native7hash exact.
+No newDDL/schema/models/business data/dumps. Main/Desktop and visual stash unchanged.
+Exact next: reviewed commit/pinned original Studio deployment; inspect real positive
+conditional fixture/rollback evidence before claiming live VERIFIED; finish normal
+format2 review/execution/native-hook coverage, then2C/D/E and wholePhase2gate.
+
+## 11 October 2026 — e2b3d actual owner callbacks IN PROGRESS
+
+C3e395962 is pinned in runner40543 (UTC083206 required pre-release recovery);
+keep HEAD fixed. Next coherent owner block modifies core/service-work/studio.ts
+only after examining actual snapshot/reference/representation/settlement/creation
+contracts. Add new query4/representation2/settlement2 and native9 together, only
+with implemented support for retained1 + explicit2. Keep every old descriptor,
+array, callback branch/hash intact. New source versions2–9 and references1–9;
+current settlement covers old native5 plus new9 targets, never falls back. New
+current creation/candidate coverage explicitly retains2–8 and adds9. No DDL or
+native/domain/value mutation; owning queries approve scoped immutable representation
+only. Tests: actual callback/private/tenant/Serializable/source/review/hash/revision
+and legacy compatibility, plus current creation/candidate/no fallback. Core format2
+execution/publication/authoring remains gated; real central review proof follows.
+Status IN PROGRESS. Exact next: implement trusted stored preparation/review selection
+in the existing owner callbacks and the new explicit descriptors, then focused tests.
+WholePhase2 remains unpassed; no later phase or visual2E jump.
+
+## 11 October 2026 — c2 archive integrity VERIFIED live e5ab126
+
+Original runner37255 exit0; candidateRDpurM/publicv8yyRV ALL COMBINED PASS.
+Actual central format2 SQL fixture passed both stages: exact source refs, malformed/
+unknown/coerced/raw metadata denials, required-null/result shape, sealed append
+rejection, ordered SQL/pure digest equality, unchanged native/typed/draft/metadata/
+Audit snapshots after full rollback. Existing legacy field/native/module/Admin/
+business-login/browser compatibility passed. This verifies archive integrity only;
+synthetic semantic hashes are not actual format2 owning/runtime execution approval.
+
+Both additive migrations20261011010000 and20261011020000 applied. Initial d297576
+candidate failed on JSON operator precedence, caught before public switch; correction
+preserves applied history/checksum. Readonly exact SQL reproduction84624 PASS,
+production correction build44301 exit0. Original runtime e5ab126 activated; rollback
+cdec6c6 retained. Original both-lock retention retired only6ca2ac2/d297576 duplicate
+runtime, preserving source/static/evidence/private records/business backups.
+Required UTC082105/082245/082658 recovery only; no ad-hoc dumps or local data copies.
+
+C3 local66/7/TS74927/lint59309/build55330/diff PASS. Exact next: commit/pin/release
+c3 five migration services + required-contract comment and focused tests/docs under
+original Studio gates; then actual dual-format Tickets callbacks/new current owner.
+WholePhase2 gate remains unpassed. Visual stash28243b7 unchanged for2E.
+
+## 11 October 2026 — c3 routing VERIFIED locally; actual owner2 still required
+
+Existing preparation/collection/coverage/sealing now route explicit1/2 from actual
+saved source/draft or stored intent, never a client format override. Conditional
+preparation requires canonical saved draft exactly, full metadata/binding/native
+write and callback intent approval. Required preparation inspection refreshes genuine
+authority even for empty cohorts, validates full owner/source/written coverage before
+IDs/counts, reevaluates real rows in pages50, compares semantic evidence and native/
+global envelopes, and requires pure/SQL archive equality before CAS/Audit sealing.
+Reference coverage shares one helper; legacy wrappers/stages/receipts remain closed1.
+No new schema/domain writes/public authoring/publication/execution/settlement hooks.
+Actual owning callback supporting2 remains absent; future owner unit fixtures and
+simulated transactions prove orchestration only, not real central2 runtime acceptance.
+
+66 cases/7 suites PASS67311; strict TS74927/scoped lint59309/build55330 exit0;
+final diff review/check PASS. Added required-inspection5 and required-routing3 cases;
+two old format-denial expectations now test actual copied/genuine authority denial.
+Initial routing fixture omitted legacy source coverage required by its inherited
+representation contract; fixed test fixture, no registry relaxation. Earlier initial
+42/44 failures were obsolete assertions, not missing production authority checks.
+C3 five-file stash8a77e82 restored selectively; visual28243b7 still unchanged.
+
+C2 correctione5ab126 original release37255 still pinned, candidateRDpurM actual
+SQL fixture PASS: closed2/reference guards, required-null and sealed denials, SQL/
+pure framing match, complete native/typed/draft/metadata/Audit rollback. Whole
+candidate/public gate still pending. Do not move HEAD until original runner ends.
+Exact next: finish correction public gates, record live proof, commit/pin/release
+c3 under same gates; then implement actual Tickets snapshot owner/query supporting
+both retained1 and explicit2 (e2b3d), preserving every old descriptor/hash and private/
+canonical/final/merged/unanchored/revision/empty cohort policies. WholePhase2 unpassed.
+
+## 11 October 2026 — c2 central gate FAIL; additive precedence correction IMPLEMENTED
+
+Original runner59086/d297576 exit1 at candidateDBHdhF: actual positive format2
+preparation raised invalid JSON syntax. No public switch; live cdec6c6 preserved.
+Migration20261011010000 was already applied, so never edit its checksum/history.
+Confirmed source/target object subtraction lacked parentheses around JSON -> access;
+add20261011020000_studio_required_review_json_precedence replacing only preparation
+function with (intent->source/target)-keys. Legacy/state/FKs/freshness unchanged.
+No business writes, reset/backfill or new models. Existing native/schema fixture
+finally suspended Test companies and retained audit/history. Required UTC081542/
+081715 backups only. Readonly actual SQL probe84624 exit0 reproduces failure and confirms corrected
+object expression returns exact expected JSON; no business reads/writes/files.
+Production build44301 exit0; scoped SQL diff reviewed/check PASS. Full central
+gate remains pending, not VERIFIED.
+
+C3 WIP preserved in exact stash8a77e82ca157197a7564e6aedb04102ede364d19 (five
+migration service files only). Strict TS39215 exit0; 42/44 legacy cases PASS68296,
+two obsolete early-format gate expectations fail because genuine authority now runs
+instead. C3 has not been committed/released, actual owner2 remains absent. Original
+visual stash28243b7 untouched. Exact next: verify readonly SQL correction probe,
+review/build/commit/release correction via original Studio gate, prove actual central
+archive integrity, then restore only c3 five files and complete focused routing tests.
+WholePhase2 IN PROGRESS, gate not passed; no Phase3 or public conditional authoring.
+
+## 11 October 2026 — c3 preparation/review routing IN PROGRESS
+
+c2d297576 is pinned in runner59086; candidateDBHdhF has started after original
+required UTC081542/081715 recovery backups. Keep HEAD fixed until release ends.
+C3 extends the existing preparation/collection/coverage/sealer, not a second engine.
+Format derives only from actual source/draft or stored server intent. Dependencies:
+c2 SQL proof before release; actual owner format2 approval remains absent/mandatory.
+Expected files preparation,collection,coverage,inspection,sealing and focused tests.
+No new DB schema, authoring, publication/execution/settlement or native mutation.
+Require exact saved canonical draft, full metadata/policies/owner coverage before
+archive reads; bounded actual row reevaluation compares semantic evidence and exact
+revision envelopes before sealing. Keep old1 wrappers/stages/receipts unchanged.
+Status IN PROGRESS, tests not yet run. Exact next: implement the shared closed routing
+and required preparation-only inspection, then focused orchestration/regression checks.
+WholePhase2 gate remains unpassed; visual2E follows prerequisites.
+
+## 11 October 2026 — c2 archive integrity IMPLEMENTED; central proof pending
+
+c1 cdec6c6 original runner78290 exit0: candidateOfcY48/publicqyEgPq ALL COMBINED
+PASS, activated exact pinned release; rollback6ca2ac2 retained. Both-lock retention
+retired a99b75b duplicate runtime only, preserving source/static/evidence/private
+records/business backups. Required UTC11Oct080037/080213/080626 backups only.
+
+c2 additive migration20261011010000_studio_required_field_reviews replaces only
+preparation/observation guard functions; closed2 requirement/result integrity,
+immutable refs/history/FKs/CAS and exact saved draft equality retained. Shared SQL
+aggregate keeps legacy frame1 exact; required entry verifies real stored parent
+before frame2. Central Test fixture exercises actual SQL/pure digest equality and
+malformed/sealed denials, rolling every attempt back and checking native/typed/
+draft/metadata/Audit unchanged. Synthetic semantic hashes are integrity evidence,
+not real format2 condition/owner/engine approval. No Prisma model/reset/backfill.
+31 tests/4 suites PASS62571; strict TS52977/scoped lint10209 exit0. Production build31019 exit0; final diff reviewed/check PASS.
+Migration not applied; central fixture not yet run. Exact next: finish build,
+review/commit scoped c2, deploy under original Studio gates/required recovery,
+verify actual SQL and legacy compatibility; only then implement c3 routing.
+WholePhase2 IN PROGRESS, visual stash28243b7 unchanged for2E.
+
+## 11 October 2026 — Row checkpoint6ca2ac2 VERIFIED live
+
+Original pinned runner95743 exit0. CandidateffFOlj/publicblRJed ALL COMBINED PASS;
+actual canonical fields/native/required-result/creation/history/tenant/private/Audit
+rollback and separate Admin/existing modules/browser compatibility passed. Exact
+packaged readonly authority48406 PASS: copied DTO denied before queries; no DB/
+files/facts/values. Public health6ca2ac2, login200, service active. Previousa99b75b
+retained; original retention under both locks retired duplicate41e9432 runtime only,
+source/static/evidence/private records/business backups kept. Root166GiB free/15%.
+Required UTC11Oct pre-release074848/candidate075033/public075449 backups only;
+no ad-hoc dumps or development copies. Row scope is readonly internal preparation
+inspection, not new owner/SQL v2 persistence/execution/authoring.
+
+c1 selector VERIFIED locally28/3/TS/lint/build/diff. Exact next: commit/pin/release
+c1, then additive preparation/observation JSON guards and version2 SQL digest,
+actual central rollback-only fixture proof; preserve v1 receipts/exact draft pins.
+Phase2 IN PROGRESS; whole gate not passed, visual stash28243b7 preserved for2E.
+
+## 11 October 2026 — c1 stored protocol selector VERIFIED locally
+
+Stored intent/review formats are selected only from closed server-loaded JSON;
+full canonical/parser/hash/tenant/row identity checks retained, unknown/coerced/
+missing headers rejected without fallback. Existing collection/sealing use the
+selector but explicitly reject v2 before principal resolution/transaction/values.
+This is integrity plumbing, not v2 durable review or owner approval.
+28 cases/3 suites PASS (98717); final strict TS81564/scoped lint93007+18722/build38813
+exit0, diff review/check PASS. Initial tests used the wrong fixture property and
+hashed non-JSON undefined instead of omitting the missing header; corrected, no
+production relaxation. New stored-protocol suite6, legacy collection/sealing each
+add one explicit unsupported-format test. No schema/DDL/archive writes/new callbacks.
+Files migrations/stored-protocol.ts,collection.ts,sealing.ts; three focused suites;
+architecture/module/decision/plan/current/ledger memory. WholePhase2 IN PROGRESS.
+
+Row6ca2ac2 original release95743 remains pinned; candidateffFOlj ALL COMBINED PASS,
+publicblRJed ongoing, health exact6ca. Readonly actual packaged bridge48406 PASS,
+copied-session denial before queries, no DB/files/values. Do not move HEAD yet.
+Exact next: finish original row public gates, save proof and commit this stored
+selector checkpoint; then additive preparation/observation JSON guards and v2
+SQL archive digest, keeping exact saved draft pins and old v1 branches/receipts.
+Original central rollback-only fixture proof required before enabling routing.
+No public authoring before owner/e3/d4/d5. Visual stash28243b7 preserved for2E.
+
+## 11 October 2026 — e2b3c1 stored protocol selector IN PROGRESS
+
+Row checkpoint6ca2ac2 is pinned in original runner95743; candidateffFOlj running.
+Readonly exact packaged authority probe48406 PASS: copied DTO denied before queries;
+no files/facts/values/records read or written. Do not move HEAD during this release.
+Next small persistence block c1 adds an integrity-only closed selector for server-
+loaded intent/review JSON and wires legacy collection/sealing reads through it while
+explicitly retaining their v1-only gate. Expected migrations/stored-protocol.ts,
+collection.ts,sealing.ts,new stored-protocol test. No DB/schema/archive writes or
+conditional service dispatch; owner/metadata/current authority remain separate.
+Then c2 additive SQL guards/digest and c3 existing engine routing, actual owner c/d
+and central proof e before execution/native gates. Tests not yet run for c1.
+
+## 11 October 2026 — e2b3b per-row requirement review VERIFIED locally
+
+The existing observation layer now has an internal preparation-only v2 row reviewer:
+genuine Serializable authority/current customer or audited support identity; server
+company/source/draft reload and full source/normalised-target/written compilation;
+exact owner/query format opt-in; native/current/pinned/written/reference rights;
+actual source and target rule inputs; null/empty multi absent, false/zero present.
+Shared source decoder and structural converter retain v1 behavior. Evaluations only
+strengthen unconditional required; missing source is INVALID_SOURCE, evaluated
+missing target FIELD_REQUIRED. Archives contain refs/semantic checksums/presence
+meaning only, with native/global revision envelopes checked independently. Equal
+semantic evidence never waives drift. No client facts, copied-session authority,
+DB/schema/archive writes, new native owner/callback/hooks or authoring dispatch.
+
+47 focused cases/6 suites PASS (47330) +44 existing preparation/collection/coverage/
+execution/representation cases/5 PASS (35586). Strict TS66672 exit0, scoped lint87046
+exit0, production build44612 exit0, final diff reviewed/check PASS. Initial test
+failures included invalid fixture status/expectations and one real draft normalization
+comparison issue: now compile the server-loaded draft and compare its normalised
+payload/full checksum against the pinned intent; do not equate raw draft ordering
+with compiled meaning. Earlier test-only TS callback typing corrected. Runtime
+bridge copied-session denial tested through actual implementation; positive row
+checks use test-only protocol owner and transaction/authority fixtures, not a real
+new owner or durable v2 engine. Original live candidate/public verification pending.
+
+Files fields/evolution.ts,binding.ts,migrations/access.ts,observation.ts,new
+observation-source.ts; new required-observation (14) and required-conversion (2)
+suites; architecture/module/decisions/required-rules/ledger/current memory.
+Exact next: commit/pin/release this readonly row checkpoint with original Studio
+gates, then e2b3c: strict server-stored intent format selector, additive preparation/
+observation guards and exact v2 archive digest in the existing engine; preserve v1
+receipts and all unknown-version/extra-field denials. Owner callbacks supporting
+both formats follow e2b3d; real central v2 proof e2b3e before execution e3/native d4.
+Whole Phase2 remains IN PROGRESS. No full baseline suite/lint repeat, ad-hoc dumps
+or development copies. Visual stash28243b7 remains untouched for2E.
+
+## 11 October 2026 — e2b3b real record review IN PROGRESS
+
+Live remains a99b75b; clean f02d4f3 starting tree. Begin readonly row review using
+full source/target compilation and shared authorised condition/value readers.
+Expected migrations/observation.ts + observation-source.ts, shared evolution converter,
+structural reference/binding types and focused tests. No DB/schema/archive writes,
+activation/native hooks or visual changes. Tests not yet run for this block.
+Exact next: implement shared source observation decoder and evaluated conversion,
+then genuine per-row conditional review against server-locked current source/draft.
+Whole Phase2 remains IN PROGRESS; no Phase3. Visual stash28243b7 preserved.
+
+## 11 October 2026 — Shared metadata/input inspection VERIFIED live
+
+Live a99b75b70c358a4878c265b2decc999f0c156639; original runner32194 exit0.
+Candidate reVg0w/public oiTds0 ALL COMBINED PASS. Actual canonical field/native/
+required-result/creation/runtime/history/tenant/Audit rollback plus separate Admin,
+existing Sales/Templates/Manufacturing/Dashboards/Home/Settings/Reports/MRP/Messages/
+Commercial/People checks passed. Exact candidate readonly metadata1938 PASS:
+unchanged v1 compilation, actual copied-session conditional denial before queries;
+no DB/files/business values. Public health exacta99b75b, login200, Atlas active.
+Previous41e9432 retained. Original retention under both locks retired duplicate
+f83e889 runtime only; source/static/evidence/private records/business backups kept.
+Root166GiB free/15%. Required UTC10Oct pre-release234721/candidate234857/public235312
+fixture backups only; no ad-hoc dumps or extra source copies.
+
+Internal owner protocol e2b1 VERIFIED live41e9432. Shared metadata e2b2 and authorised
+input extraction e2b3a VERIFIED for their internal/runtime/compatibility scope:53/6
+migration/source +38/3 runtime/result/creation unique focused cases, final strict
+TS32804/scoped lint46206/build39766/diff PASS. No DDL/Prisma/schema/migrations/
+backfills/native hooks or v2 authoring/persistence. No full baseline suite/lint repeat.
+Legacy engine/parser/hash/receipt and ordinary revision-envelope meaning preserved.
+Source/target actual conditional migration review/execution remains unfinished.
+Visual draft28243b7 preserved untested/unreleased; foundation-first order unchanged.
+
+Current Phase2 IN PROGRESS. Current workstream e2b3b real per-row requirement
+inspection — NOT STARTED; concrete b–e plan/files/DB/tests recorded in required-rules
+plan. Exact next: implement `inspectRequiredFieldMigrationRecord` in the existing
+migration observation layer using the shared full metadata compiler and authorised
+input/value readers. Enforce genuine current principal/tenant/native/current/pinned/
+written/reference rights, evaluate actual source and compiled-target requirements,
+classify decoded/converted null and empty multi-selection as absent (false/zero are
+present), archive semantic checksums/references only and retain separate native/global
+revision envelopes. Keep v1 entry closed; focused denial/drift/presence tests. Then
+stored-intent2 selection/additive SQL guards and owner callbacks implementing both
+formats1/2/retained legacy coverage. No conditional authoring before e3/d4/d5 gates.
+Files delivered: registry owner-protocol types/schema/registration; migration metadata
+and legacy policy/call-site checks; required-inputs/runtime; focused owner/metadata/
+required-runtime suites; architecture/module/decision/plan/current/ledger memory.
+Whole Phase2 gate NOT PASSED; no Phase3 work. No external blocker introduced.
+
+## 11 October 2026 — New-current-owner legacy compatibility prerequisite
+
+Source-confirmed: v2 intents require a conditional payload, so a future native9
+format2-only migration policy would strand v1-only evolution; latest settlement2
+format2-only would strand retained legacy history because no fallback is intentional.
+Record e2b3d requirement for actual callbacks supporting both trusted formats1/2,
+old native5 settlement coverage plus new targets and explicit legacy creation/
+candidate coverage. No new callbacks/owner/ranges implemented or activated.
+Shared a99b75b release32194 remains pinned; candidate Studio checks PASS, combined/
+public pending. Exact next remains final release proof then real per-row e2b3b.
+
+## 11 October 2026 — Shared inspection release pinned; next row blocks recorded
+
+Pinned a99b75b70c358a4878c265b2decc999f0c156639 original runner32194 running.
+Candidate reVg0w started; readonly exact candidate metadata1938 PASS (unchanged
+v1 compilation and actual copied-session conditional denial before tx queries),
+no DB/files/values. Shared local checks53/6 +38/3, final TS/lint/build/diff PASS.
+Concrete e2b3b–e row/evidence/persistence/owner/central-proof blocks recorded in
+STUDIO_FIELD_REQUIRED_RULES_PLAN.md with dependencies/files/DB/tests/status.
+No new row/SQL/owner/authoring implementation started. Exact next: finish original
+candidate/public release without moving HEAD, save actual proof, then e2b3b real
+source/compiled-target per-row required/presence/semantic inspection using shared
+reader and genuine authority. Preserve exact original/own-outcome revision lineage.
+
+## 11 October 2026 — Owner live VERIFIED; shared inspection VERIFIED locally
+
+Original pinned41e94326a7dda0c04cb94a99e0bed41bc647eb3c runner79926 exit0.
+CandidatehbS16y/publicShi5mu ALL COMBINED PASS, including actual ordinary/native/
+canonical field/tenant/history and separate Admin/business/browser compatibility.
+Readonly exact owner protocol runtime85450 exit0, no DB/files/values. Public health
+exact41e9432, login200/Atlas active. Previousf83e889 retained; original retention
+under both locks retired duplicate18bd031 runtime only, source/static/evidence/
+private records/business backups retained. Root166GiB free/15%. Required UTC10Oct
+pre-release233637/candidate233814/public234231 fixture backups only, no ad-hoc dumps.
+
+Shared metadata/input block e2b2/3a VERIFIED locally:53 unique/6 migration/source
+cases plus38/3 runtime/result/creation cases PASS; final strict TS32804 exit0, final
+scoped lint46206 exit0, production build39766 exit0 and final diff review/check PASS.
+No Prisma/DDL/migration/backfill/activation/native hook/conditional dispatch. Old
+v1 packet parser/hash/compiler and ordinary envelope retained. New helper uses full
+locked v2 metadata, fresh authoring policy and shared authorised actual-input reads;
+creation facts come from actual opaque owner proof, never a supplied fact payload.
+Semantic evidence does not waive native/global revision drift. Actual v2 preparation/
+row review/persistence/execution remains unfinished. Visual stash28243b7 untouched.
+
+Files migrations/access.ts,metadata.ts,preparation.ts,collection.ts,coverage.ts,
+observation.ts; fields/required-inputs.ts,required-runtime.ts; new metadata and
+extended runtime tests; architecture/module/decision/plan/ledger/current memory.
+Next: commit/pin/release this coherent shared inspection checkpoint under original
+Studio gates. Then e2b3b actual source/compiled-target per-row required/presence/
+semantic-evidence inspection, followed by stored-intent2 selection and additive
+SQL guard/cohort/digest proof. e3/d4/d5 mandatory before v2 authoring; Phase2 open.
+
+## 11 October 2026 — d3e2b3a shared rule-input reader IMPLEMENTED
+
+Existing authorised resulting-value and condition-input reads extracted into
+required-inputs.ts and reused by required-runtime. Native/private/current/pinned/
+written/reference checks retained; actual opaque creation gateway supplies native
+facts, no fact payload argument accepted. Full inspected/compiled metadata and
+fresh authority remain prerequisites. Ordinary fingerprints/revision envelopes keep
+their original shape/meaning. New identity checks deny wrong root/owner before data.
+Semantic condition evidence stays equal for unchanged inputs at a later global
+revision; ordinary envelope fingerprint changes, actual input drift changes semantic
+evidence and wrong extension envelope still fails. No drift exception or v2 engine
+persistence granted by the component.
+
+38 cases/3 runtime/result/creation suites PASS (76448:24;62181:14), production build
+39766 exit0, source-only lint17422 exit0, final expanded lint46206 exit0 and diff
+review/check PASS. Final strict TS32804 pending; earlier source TS65501 passed before
+final test edits. e2b2 local53/6 checks/build/strict TS passed, no DDL/Prisma/backfill/
+owner callbacks/authoring/native hooks. Owner41e9432 candidate combined PASS; public
+combined still running, readonly exact-release protocol probe85450 exit0. No dumps
+or copies created for that readonly probe. No moved HEAD while release79926 is active.
+
+Next: finish final strict TS and owner public release; record proof, commit e2b2/3a
+shared inspection checkpoint and deploy it with original Studio gates. Then e2b3b
+real source/compiled-target per-row requirement evaluation and presence classification;
+e2b3c stored intent2 selector/additive preparation/observation SQL; full reviewed
+coverage/digest proof before e3 and d4 writer/lock safety. Conditional authoring closed.
+
+## 11 October 2026 — d3e2b3a shared authorised rule-input reader IN PROGRESS
+
+While owner41e9432 remains pinned, take the first real-row integration prerequisite:
+extract the existing required-runtime input reader/resulting-value reader unchanged
+into one internal component, then call it from ordinary validation. Future migration
+source and compiled-target evaluation will reuse this reader rather than implementing
+another private/native/reference data path. Preserve exact ordinary fingerprint,
+revision envelope, creation proof and all current/pinned/written rights. Expected
+fields/required-inputs.ts, required-runtime.ts and existing transactional runtime/
+creation suites. No database, persistence, v2 dispatcher, conversion or native hook.
+Full compiled/inspected metadata is a caller prerequisite; component is internal,
+not a client fact/plan API. Consolidate this and e2b2 into one next live release after
+original owner runner ends; no moved pinned HEAD or duplicate recovery dumps.
+
+## 11 October 2026 — d3e2b2 shared migration metadata VERIFIED locally
+
+One internal version-aware compiler reuses exact v1 compilation/policy and full v2
+conditional compilation through the genuine-principal Serializable locked source
+provider and its registry. Preparation/collection/coverage/written-row inspection
+use it while retaining closed v1 intent/payload parsers. v2 compilation inspects
+all current/pinned metadata/graph/read rights even with no rows; it invokes no
+business fact/value queries. Refreshed Publish/field/live-test policy remains checked.
+No v2 preparation/observation persistence, new owner callback/version, SQL/Prisma/
+backfill/native hook/authoring dispatch. No second engine or native mutation.
+
+53 unique cases/6 focused suites PASS: initial75741 had52 pass plus a mistaken
+literal capability assertion; corrected to the existing capability constant, final
+metadata suite20673 six PASS. Initial TS95347 found a test union narrowing issue;
+closed conditional-plan parsing fixed it; strict TS57272 exit0. Scoped lint60934
+and final edited test74899 exit0; production build46981 exit0; diff review/check PASS.
+Existing parser/hash/native/private/tenant checks retained. Full baseline suite/lint
+not repeated. Expected files migrations/access.ts,metadata.ts, preparation.ts,
+collection.ts,coverage.ts,observation.ts; metadata test and architecture/module/plan/
+ledger/current memory. No database change/migration applied.
+
+Owner block41e9432 original release79926 is still pinned/running. Candidate Studio
+actual native/typed/history/tenant/ordinary/runtime/Admin/browser acceptance passed;
+remaining combined/public gates pending. Do not move branch HEAD until runner ends.
+Next: record owner live proof, commit/pin shared metadata block and deploy original
+Studio gates. Then e2b3: extract the existing authorised rule-input reader for source
+and compiled-target migration evaluation, seal semantic checksums independently of
+native/global revision envelopes (recognise only exact own outcome increments),
+add actual stored-intent2 selection and additive preparation/observation SQL guards.
+No v2 dispatch until e3 execution/cutover/settlement and d4 writer/lock safety pass.
+
+## 11 October 2026 — d3e2b2 shared migration metadata inspection IN PROGRESS
+
+Owner protocol block41e9432 is pinned in original release79926; do not move HEAD
+until it finishes. Next coherent block reuses the full conditional compiler and
+existing genuine-principal locked metadata provider in one internal version-aware
+compiler. Existing preparation/collection/coverage/row inspection still parse only
+v1 packets, but share this compiler for exact metadata checks. Version2 support is
+internal preparation for the later stored-intent selector; it grants no persistence
+or dispatch. Preserve original closed policy parser; separately typed version-aware
+policy check for the compiler. Dependencies e2b1, d3b/c/d. Expected migrations/access
+and metadata helper, existing call sites, focused metadata/source regressions.
+No DB/Prisma/migration, owner version, public route, fact/value reads or native write.
+Check full condition/input seals, genuine authority refusal, per-field/native rights,
+empty-cohort dependency inspection, exact legacy compilation and no value queries.
+Next: actual stored-intent/row evaluation + version2 SQL guards (e2b3), then e3/d4.
+
+## 11 October 2026 — d3e2b1 owner protocol approval VERIFIED locally
+
+Closed optional intent-version contracts and independently hashed canonical owner
+query protocols implemented. Atomic registry rejects mismatched purpose/owner/
+capability/transaction/version; representation support is a snapshot subset.
+Legacy preparation/collection/observation/coverage/execution/settlement checks now
+reject explicitly format2-only policies. Newest settlement does not fall back.
+Tickets1–8 and existing query ranges/hashes retained; no owner9/new callback/DDL/
+Prisma/backfill/route/native hook/conditional dispatch added. Existing v1 packet
+parsers and engine stay closed. Future callbacks still need real implementation.
+
+72 cases/10 focused suites PASS (72989:31;19558:41), strict TypeScript62504 exit0,
+scoped ESLint33784 exit0, production build48191 exit0, diff review/check PASS.
+No full baseline suite/lint repeated. Local standalone import of service-work/studio
+hit its circular bootstrap entry; no runtime/source change claimed from that
+unsuitable diagnostic. Focused registered-owner tests and production build passed.
+Files registry types/entities/contracts/registry, seven existing migration policy
+checks, studio-migration-protocol-owner test and architecture/module/decision/plan/
+ledger/current memory. No unrelated functionality removed.
+Next: commit/pin this block and release under original Studio acceptance gates;
+while pinned release runs, prepare shared full version-aware metadata inspection
+(e2b2), keep actual v2 authoring/persistence disabled. Live proof pending.
+
+## 11 October 2026 — d3e2b1 owner protocol approval IN PROGRESS
+
+Continue foundation-first Phase2. First coherent block adds closed intent-version
+approval to migration snapshot/representation and current settlement contracts.
+Absent means legacy1 without writing a default into retained metadata/hashes.
+An explicit v2 entity opt-in must also match a newly declared transactional owner
+query protocol; old callbacks cannot acquire v2 authority by changing an entity
+array. Preserve all Tickets1–8/query ranges, v1 hashes and closed packet parsers.
+Dependencies e1/e2a and d3d VERIFIED. Expected registry types/entities/contracts/
+registration, existing legacy migration policy checks and focused owner tests.
+No Prisma/DDL/backfill/routes/new owner version/conditional dispatch in this block.
+Verify malformed/duplicate/unknown approvals, same owner/capability/transaction,
+atomic failure, old hashes, latest-policy fail-closed and existing migration regressions.
+Next after this block: shared genuine-principal v1/v2 metadata inspection using
+locked provider, then actual row evaluation and additive SQL guards (e2b2/3).
+
+## 10 October 2026 — e1/e2a release compatibility and pure runtime VERIFIED
+
+Livef83e8894fdde55164b70427159eb0aabcd567cc6; original runner33757 exit0.
+CandidateTTfVUe/publicr6k3E7 ALL COMBINED PASS, including d3d actual canonical
+coverage/native/config/value/Audit rollback and existing business/Admin checks.
+Public health exactf83e889, login200, Atlas active; previous18bd031 retained.
+Root166GiB free/14%; redundant6b3d03f runtime retired by the original utility under
+both locks, source/static/evidence/private records/backups preserved. Mandatory
+pre-release161612/candidate161746/public162157 backups only; no ad-hoc dumps.
+
+32 focused cases/4 suites, strict TS, scoped lint, production build passed. Readonly
+pure runtime probe81957 exit0 on exact release: rule impact, v2 intent/review/digest,
+required failure representation and closed v1 boundary; synthetic metadata only,
+no DB access/files. First diagnostic used ESM stdin against this CommonJS project;
+corrected to its actual module mode and passed, no application/source fix needed.
+Scope is pure e1/e2a integrity plus release compatibility, NOT working v2 business
+migration or conditional authoring. No DDL/migrations/schema/backfill/native hooks.
+Visual draft remains unverified/unreleased stash28243b7; foundation-first order.
+
+Current Phase2 IN PROGRESS. Next workstream d3e2b — NOT STARTED (source exploration
+recorded). Exact next: add explicit intent-version approval to newly versioned owner
+migration contracts (absent means legacy1; preserve all old hashes/ranges), then
+shared genuine-principal full v1/v2 migration metadata inspection in preparation/
+collection/coverage. Add real per-row source/target rule checks and additive version2
+SQL guards, recognising only exact migration-owned revision increments. Continue
+existing execution/cutover/settlement (e3), shared native locks/writer/window safety
+(d4), feature gate(d5), remaining2B/C/D then visual2E. No Phase3 work or fullPhase2 PASS.
+
+## 10 October 2026 — d3d live VERIFIED; d3e1/e2a locally VERIFIED
+
+Pinned release18bd031058490e939edebf7128b5f910e16117b4 completed original runner
+22055 exit0. CandidateSY7gok/public1Fu5KU ALL COMBINED PASS, including actual full
+canonical final/merged/unanchored coverage, missing/fill/false-clear requirements,
+unchanged activation and exact native/typed/config/Audit rollback snapshots. Public
+health exact18bd031, Atlas active/login200; previous6b3d03f retained. Root167GiB
+free/14%; duplicate0925bb5 runtime retired through original retention locks. Existing
+source/static/history/private records/backups retained. Required pre-release160328
+and candidate160510/public160925 fixture backups used; no ad-hoc dumps.
+
+Next pure foundation checkpoint: shared v1/v2 evolution impact and explicit v2
+migration intent/observation/review packets. Rule additions/changes/removals need
+reviewed new generations; labels/enum labels remain cosmetic. Reports input changes/
+immutable repins, canonical review, uniqueness and rollback impact. v2 observation
+archives only references and source/target requirement evaluation checksums, exact
+native/global extension revisions, target-required validity and ordered v2 digest.
+Old v1 parser/converter/digest/receipts and owner approval ranges remain closed.
+No v2 persistence, native/authoring dispatch, SQL guard widening or privilege grant.
+No DDL/backfills/schema/data changes. e2a is integrity only, not a complete migration.
+
+32 focused checks/4 suites PASS (67952 exit0), strict TypeScript29481 exit0, scoped
+ESLint9999 exit0, production build79552 exit0 and diff check PASS. Source reviewed;
+legacy structural logic reused unchanged. Full npm test/lint not repeated (known
+baseline unrelated failures). New helpers are local until next pinned release.
+Files fields/evolution.ts, required-contract.ts, migrations/required-contracts.ts,
+two focused suites, required-rules plan, architecture/module docs and repository
+memory. Visual draft remains unverified saved stash28243b7; foundation order intact.
+Exact next: commit/pin this coherent e1/e2a checkpoint and release original Studio
+compatibility gates. Then e2b: add explicit owner-versioned conditional migration
+approval, real source/target requirement inspection and version-aware preparation/
+observation/coverage to the existing engine, with additive SQL guards preserving
+v1 packet equality. Do not enable dispatch before e3/d4 native/lock/window safety.
+
+## 10 October 2026 — d3e1 locally checked; d3e2a integrity packet IN PROGRESS
+
+Evolution impact and legacy regression25/3 PASS; strict TS32680 exit0, scoped ESLint
+34058 exit0, diff check PASS. Build not repeated yet; consolidate with e2a packet.
+Add explicit v2 reviewed intent/observation/review integrity to existing migration
+directory, fingerprints/references only, closed legacy v1 unchanged. No DDL or
+execution/dispatch grant. Original d3d release18bd031 remains pinned/running.
+
+## 10 October 2026 — d3e1 evolution impact IN PROGRESS
+
+Pinned d3d release18bd031 is running; do not move the branch during that runner.
+Meanwhile inspect/build the next pure foundation block: reuse existing evolution
+analysis for v1/v2 impact, requiring a new reviewed generation for rule addition,
+change/removal. Existing v1 conversion/receipts remain closed. Expected evolution
+helper and focused suite; no DDL/dispatch/business-value reads. d3e2/3 and d4 remain
+pending; visual draft remains saved in stash28243b7. Run focused legacy/new impact
+checks and types/lint, then consolidate build/release after a coherent block.
+
+## 10 October 2026 — foundation-first order restored; visual draft preserved
+
+Michael's latest instruction: “the foundations are important so if they need to
+happen first do them stick to the plan”. Keep Phase 2 in its dependency order;
+focused integrity checks per coherent block, consolidated release gates. This
+supersedes the brief visual-first reprioritisation. The unfinished visual Templates
+adapter/editor is safely saved in Git stash
+`28243b7fbe1bccd0458d770177aee24ce9607aec` (tracked and untracked source).
+It is IN PROGRESS, untested and unreleased. Restore visual source selectively for
+2E after foundations; do not restore its superseded planning/memory entries.
+No additional worktree, business cache or database dump was created.
+
+Foundation checkpoint `efdc889` is IMPLEMENTED locally: 95 focused checks/10
+suites, final 27/2 review checks, production build, strict post-build TypeScript,
+scoped ESLint and diff checks passed. Existing live remains `6b3d03f` until the
+original pinned deployment and candidate/public guarded central SQL proof pass.
+No schema/migration changes; no conditional authoring/native dispatch enabled.
+Exact next: pin the clean checkpoint plus this memory update, run the original
+Studio release gates, record central proof, then implement d3e reviewed rule
+evolution before d4 shared locks/native writer/window integration. No Phase 3.
+
+## 10 October 2026 — d3d local checkpoint ready for pinned release
+
+95 focused assertions/10 suites PASS; reviewed owner/cursor cases27/2 PASS after
+final test improvements. Production build, strict post-build TS (65022 exit0),
+scoped ESLint and git diff --check PASS. Source diff reviewed; old v1–7 hashes/
+migration ranges preserved. Central rollback-only probe reuses existing extension
+anchors without overwriting values and restores the Test principal grants in finally.
+No DDL/dumps/native/publication hooks. Read-only server health confirmed current6b3d03f,
+previous0925bb5, active and167GiB free. Next commit/pin consolidated d3d release,
+verify original candidate/public combined gates; do not mark central proof VERIFIED
+until executed. Large-cohort durable reviewed evolution remains d3e; common mutation
+locks/native writer/window safety remains d4 before dispatch. Visual2E NOT STARTED.
+
+## 10 October 2026 — d3d complete canonical candidate coverage IMPLEMENTED locally
+
+Explicit owner policy/query and readonly same-transaction coverage helper delivered.
+Tickets v8 approves field versions2–8; old v1–7 hashes/ranges preserved. Full private
+preflight,50-row pages, exact count/cursor/native revisions, final/merged/unanchored
+records, server candidate/real activation pointer, current source graph and actual
+required target values. Empty sets still validate dependencies and target rights.
+No DDL, new datastore, grants, durable approval or publication/native dispatch.
+13 new meaningful owner/cohort cases;95 focused checks/10 suites, production build,
+initial strict TS, scoped ESLint/diff PASS. One new test initially expected the final
+root read on call4 instead of3; corrected fixture timing, production policy unchanged.
+Strict post-build TS PASS (runner65022 exit0). Guarded Test rollback-only server probe added using
+existing fixture/backup gates: actual final/merged/unanchored coverage, missing/fill/
+false-clear target states, no activation, stale CAS and native/config/typed/Audit
+snapshot equality. Central probe NOT RUN; live6b3d03f unchanged until release.
+Expected next review/commit pinned consolidated d3d release and verify candidate/
+public central probe. Then d3e reviewed required-rule evolution followed by d4
+shared mutation lock order/native hooks/initial writer/rollback-window closure.
+Full Phase2 gate NOT PASSED; visual2E NOT STARTED.
+
+## 10 October 2026 — d3d full canonical candidate coverage IN PROGRESS
+
+Recovered clean5767f22 checkpoint. Implement explicit newest-owner required-
+coverage opt-in and query reusing canonical snapshots, then same-Serializable-
+transaction complete candidate validation (all final/merged/unanchored records,
+private-access preflight, exact count/cursor/revisions, source graph and values).
+No DDL/publication dispatch/native hooks. Old v1–7 contracts stay sealed. Expected
+registry/Tickets owner, required-coverage helper, focused tests and topic/ledger.
+Next finish owner policy + complete coverage; then d3e reviewed evolution and d4
+common-lock/native/initial-writer/window prerequisites before conditional authoring.
+Live6b3d03f remains verified; visual2E NOT STARTED.
+
+## 10 October 2026 — d3d candidate-version checks IMPLEMENTED locally
+
+Server-loaded candidate context/required target validation preserves the real
+active pointer, including first publication with no active version and reviewing
+an old candidate against a newer optional active schema. Uses the same sealed
+metadata and current/pinned/written/native/ref value checks, exact revisions and
+strict input; no temporary activation, copied schema, client plan/facts or grants.
+4 new cases;36 focused candidate/current/creation/ordinary read-write assertions,
+production build, strict post-build types, scoped lint/diff PASS (runner74048
+exit0). Central candidate coverage and publication hooks NOT RUN/NOT ENABLED.
+Files runtime-read/required-runtime, required-runtime suite, architecture/module/
+permissions and plan/ledger/current/decisions. No DDL; candidate helper not live.
+Live remains VERIFIED6b3d03f; current/previous exact health confirmed, Atlas active,
+167GiB free/14% root use. Phase2 IN PROGRESS; visual designer NOT STARTED.
+
+Exact next: add explicit owner-versioned required-coverage policy/query reusing the
+existing canonical snapshot implementation (do not widen old migration ranges),
+then implement complete candidate coverage in the owning Serializable transaction
+with genuine company/audited support identity, bounded pages/count reconciliation,
+final/unanchored/private/access/current value/required target checks. Keep authoring
+dispatch gated until d4 native/common-lock/initial-writer/window integration.
+
+## 10 October 2026 — c2 live VERIFIED; d3d candidate coverage IN PROGRESS
+
+Exact6b3d03fce4096b965385ce1d5ae45a4f50146410 candidate0ozZHm/publicQhQzoM
+ALL COMBINED PASS, original runner85809 exit0. Actual current v7/legacy create-only
+proof + staged field/required target checks pass; propagated required failure leaves
+native/typed/config/Audit snapshots unchanged; real deferred FK/pointer guards pass.
+Both existing native business regressions and Studio/Admin separation pass; synthetic
+Test companies suspended/grants restored/QA unchanged. Required backups144033,
+144221/144632 reused through original release gates; no ad-hoc dumps. Current6b3d03f,
+previous0925bb5 retained; inactive62201ae duplicate runtime retired under both locks,
+source/static/evidence/private records/backups retained.54 local/build/strict TS/lint
+checks previously PASS. Full Phase2 IN PROGRESS; no conditional publication/native
+hooks or visual designer completion implied; existing conditional full gate still d5.
+
+Current d3d first block: server-loaded candidate version context/required target
+validation without changing the active pointer or accepting client facts/plans.
+Reuse sealed base/value and genuine native/current/pinned/written/ref policies;
+closed ordinary v1 gateways intact. Expected runtime-read/required-runtime, focused
+candidate suite and plan/ledger/current state; no DDL or publication dispatch.
+Next run focused candidate/current/creation/read regressions + types/lint, then
+complete canonical snapshot coverage using genuine company/audited support principal
+(including final/unanchored/private records), and integrate only after d4 prerequisites.
+Visual2E remains NOT STARTED; remaining2B/2C/D precede designer previews/publishing.
+
+## 10 October 2026 —2B4d3c2b resulting-state validator IMPLEMENTED locally
+
+Proof-aware metadata/base/value readers now use explicit newest-owner creation
+coverage without ordinary Read/Manage grants; current/pinned/written field policies
+and independent reference access remain. The internal validator reads actual native
+and typed rows in the owning Serializable transaction, checks every active required
+rule/target, preserves unconditional requirements and accepts false/zero as present.
+Optional unconditional private fields impose no unrelated value reads. Returns only
+internal revisions/fingerprint, no raw facts; no writer, native hook or publication.
+8 new focused cases;54 assertions/7 suites, production build, strict post-build TS,
+scoped lint/diff PASS. A changed-reference fixture initially left an obsolete pin;
+corrected its sealed rule, final checks PASS without production policy relaxation.
+Added exact guarded Test server probe: genuine read compilation before create-only
+rights, rollback-only v1/v2 metadata/typed rows, current v7/legacy creation coverage,
+missing/fill/false/clear states and actual deferred FK/current-pointer checks. A
+propagated required failure must roll back native/typed/configuration/Audit rows;
+all are compared with the original snapshot. Central probe NOT RUN yet; unit mocks
+do not prove SQL rollback. No DDL/extra data dump/local database. Live0925bb5 unchanged.
+Next review/checkpoint and pin consolidated c2 release, run candidate/public central
+proof, then d3d canonical publication/activation coverage. Shared native lock order,
+initial typed writes/rollback-window closure and d4 hooks remain mandatory. Visual2E
+NOT STARTED; complete remaining2B,2C/D then visual preview/publish before Phase2 gate.
+
+## 10 October 2026 —2B4d3c2b actual resulting-state validation IN PROGRESS
+
+4d9528e c2a checkpoint saved. Extend shared metadata/base/value readers with explicit
+current creation proof path, then validate all active requirements and required
+values from actual uncommitted native/typed rows. No caller-native facts, borrowed
+read/manage grants, nested transaction or new staging datastore. Independent field
+and reference permissions persist. Ordinary v1 gateways remain unchanged. Expected
+required-owner/source/runtime and shared read helpers, focused proof/result tests;
+no DDL/native hooks. Initial typed writer/window closure/common locks remain d4
+integration prerequisites. Exact next finish proof-aware evaluator/result validation
+and focused checks, then consolidated production build/central proof checkpoint.
+
+## 10 October 2026 —2B4d3c2a creation contracts IMPLEMENTED
+
+Tickets v7 explicitly covers legacy field entity versions2–7 and adds a distinct
+same-transaction proof-bound NEW/version1/requester scoped fact query. Generic query
+invocation never forwards a proof; normal read/manage remain denied for creators.
+Current registry creation coverage uses the latest policy, exact source hashes and
+no fallback. Initialisation base compiler retains explicit field/reference rights.
+Conditional v7 plans seal creation-query hashes without demanding author Create.
+Exact captured v1–6 and ordinary fact-query contract hashes remain unchanged;
+old migration ranges untouched.5 new assertions;46 focused tests/6 suites, types,
+scoped lint/diff PASS. Initial expected cap set omitted existing core.profile.self;
+fixed test to compare actual starting grants, no production grants changed. New
+production build/central proof not run yet; consolidate c2b feature gate. No DDL/
+native action hook/publication. Standalone direct module CLI hit existing catalogue
+import cycle; canonical registry bootstrap succeeded for hash capture. Use canonical
+registry entry for scripts; no unrelated module rewrite. Files registry types/
+schemas/contracts/runtime, Tickets v7/query, field compilers/sealed inspection,
+three focused suites, module/security/architecture and shared memory. Live0925bb5.
+Next c2b proof-aware metadata/value reading and all-active resulting requirements
+against real uncommitted native/typed rows; common native lock order still d4.
+
+## 10 October 2026 —2B4d3c2a current creation policy IN PROGRESS
+
+4f44a49 c1 checkpoint saved. Add versioned owner policy declaring approved legacy
+field entity versions and separate proof-bound native creation fact query. Preserve
+v1–6 hashes/query1/migration ranges. Registry current initialization resolves exact
+source metadata plus newest explicit owner coverage; no fallback/read/manage grant.
+New conditional plans seal the initialization query too, using metadata-only sealing
+without demanding native create permission from authors. Expected registry types/
+schemas/contracts/registry, Tickets v7/query, focused proof/compiler tests and docs;
+no DDL/native action hook. c2b resulting-state enforcement follows. Shared lock order
+and central proof mandatory before enabling publication/native changes. Next build
+owner contracts and initialization field compiler, then focused checks as one block.
+Live0925bb5 unchanged; no extra dumps or development copies.
+
+## 10 October 2026 —2B4d3c1 existing-record reader VERIFIED locally
+
+Transactional requirement reader now resolves every current/pinned source policy
+before business input reads, invokes only the approved owner fact query at exact
+native revision, and checks current/written field/native/reference policies and
+immutable slot/fingerprint integrity. Missing authorised value differs from
+unavailable/denied input. Unconditional required OR condition; no permission short
+circuit. Returns internal outcome/fingerprint, no raw facts. Shared versioned base/
+value primitives inspect v2 values without executing their private source rules;
+ordinary v1 gateways/checksums remain unchanged.8 new tests and34 focused assertions
+including old read/write suites PASS; production build, strict post-build TS,
+scoped lint/diff PASS. Initial TS exposed overly narrow key-helper input; generalized
+only its entity/field shape, no identity behavior changed. Broad regression not
+repeated per Michael; real central evidence/creation/staged coverage still d5/c2.
+Files required-runtime/runtime-read/binding, focused suite and plan/ledger/current/
+DECISIONS. No DDL/native hooks/publication. Live0925bb5 unchanged. Next c2: explicit
+current owner creation/fact policy for legacy fields, then validate real uncommitted
+resulting values under that opaque proof. Preserve create-only rights and all
+owning domain validation; no arbitrary supplied native facts or broad grants.
+
+## 10 October 2026 —2B4d3c1 transactional inputs IN PROGRESS
+
+765028e metadata checkpoint saved. Build existing-record requirement evaluation
+using shared versioned base-field/value integrity (ordinary v1 gateways unchanged),
+locked current/pinned/written source read/native/reference policies, exact native
+revision and approved owning fact query. Return internal outcome/fingerprint only;
+no raw facts, mutations, publishing or DDL. c2 staged and create-only native proof
+support remains separate; never borrow ordinary read/manage for a new record.
+Expected runtime-read shared primitives, required-runtime helper and focused tests.
+Do not repeat broad suites per small edit; focused data/security checks and full
+feature/phase gate remain mandatory. Live0925bb5 unchanged; visual2E still pending.
+
+## 10 October 2026 —2B4d3b2 source metadata VERIFIED locally
+
+Internal genuine-principal Serializable provider now locks tenant root/source
+metadata and bindings/generations, inspects immutable v1/v2 payload/plan hashes,
+checks exact current/pinned meaning and direct read policies, and derives bounded
+current graph closure (100 nodes/20 depth, memoized heights). Historical pins cannot
+hide current cycles. Labels/help may change; policy/storage/generation cannot.
+Integrity inspection never evaluates a source's own rule or reads private inputs;
+actual evaluation still authorises each fact. No query/value read/publication/DDL.
+10 new security/integrity/graph tests;25 focused assertions/3 suites, TypeScript,
+scoped lint and diff PASS. Initial restricted-author fixture lacked grants; corrected
+fixture, no production policy change. Full regression/build not repeated after the
+recent71files446/build checkpoint, following Michael's testing instruction; central
+lock/runtime evidence remains the d5 gate. Source required-source/sealed-field and
+shared evaluator inspection extraction, focused suite, plan/ledger/current state/
+DECISIONS. Next d3c1 transactional existing-record fact/value reader, then d3c2
+staged/new-record paths and canonical coverage/native hooks. Live0925bb5 unchanged.
+
+## 10 October 2026 —2B4d3b2 locked source metadata IN PROGRESS
+
+33a9c18 isolated v2 compiler checkpoint saved;71files446/build/strict post-build
+TS/lint/diff PASS. Implement sealed v1/v2 integrity inspection without executing
+conditions; server-owned Serializable metadata provider locks tenant definitions,
+current/pinned versions and canonical bindings/generations, checks direct current
+and pinned read policy and bounded current dependency cycles. No business values,
+query execution, publication dispatch or DDL. Expected sealed-field/required-source
+helpers, evaluator inspection extraction and focused tests. Keep caller lock-order
+integration separate until d4; helper is internal and unwired. Michael requests
+larger coherent implementation with focused security checks and full testing at
+gates; do not repeatedly rerun the full regression for every small edit. Next build
+provider/inspection then focused corruption, tenant, pin, graph and privacy tests.
+Live0925bb5 unchanged; visual2E mandatory and Phase2 gate pending.
+
+## 10 October 2026 —2B4d3b1 full isolated compiler VERIFIED locally
+
+Full conditional v2 field plan now seals native entity/query hashes and exact field
+UUID/version/checksum dependencies, canonical rule metadata and typed base field.
+Default target write intent preserved; explicit read intent omits target write
+while retaining every source read/owner/classification check. Native metadata must
+exactly match registered approved facts, not just a supplied code set. No native
+query/command invocation, field data read, definition dispatch or conditional
+publication.6 new compiler tests +29 focused PASS;71files446 regression/build/
+scoped lint/diff and strict post-build TS PASS (exit0).
+One dependency-order test caught delimiter sorting; changed to existing id/version
+ordering and focused/full reruns PASS. Source conditional-compiler/required-compiler,
+focused suite, plan/ledger/current state. No DDL/native hooks. Next checkpoint, then d3b2 locked current/pinned source metadata/graph provider. Live0925bb5.
+
+## 10 October 2026 —2B4d3b1 isolated v2 field compiler IN PROGRESS
+
+72dd1cc evaluator checkpoint saved, pushed successfully. Purpose: full v2 field
+plan with native query hashes and exact field-version dependencies, explicit target
+read/write metadata intent, unchanged v1 and no definition dispatch. Source metadata
+resolver remains trusted server-only, implemented separately in d3b2. Expected
+required compiler, conditional field compiler/schema tests; no DDL/native reads.
+Current root/compiler access and source fact grants are checked. An ordinary value
+view must validate its sealed field plan/current+written read policy without
+executing a condition or fetching unrelated private inputs; actual rule evaluation
+checks all inputs independently in d3c. Next implement full plan and tests, then
+locked current/pinned provider and bounded current graph closure. Live0925bb5.
+
+## 10 October 2026 —2B4d3a pure evaluator VERIFIED locally
+
+70files440 regression tests, final production build, strict post-build TypeScript,
+scoped lint and diff PASS.9 evaluator tests cover all/any/typed precision, no access
+short circuit, explicit absent vs unavailable/false/zero, retained selections/
+reference-owner denial, plan/fact tampering and raw/default-insertion integrity.
+No data access, grants, DDL, native hooks or conditional publication. Source required
+compiler plan schema/normalizer + required-evaluator, focused suite, required plan/
+ledger/current state/DECISIONS. Public d2 remains0925bb5 verified in both complete
+stages; current/previous/healthy/167GiBfree/idle locks confirmed. d3a is a pure helper,
+not complete native enforcement. Exact next checkpoint, then d3b1 add read-intent
+conditional metadata compilation and full isolated v2 field plan with native query/
+field version dependencies; d3b2 locked current/pinned source provider and bounded
+current graph closure. Keep definition dispatch off until d4 native enforcement.
+Evidence /tmp/atlas-studio-d3a-{regression,build,postbuild-types,lint}.txt.
+
+## 10 October 2026 —2B4d2 VERIFIED live1319UTC; d3a evaluator IMPLEMENTED
+
+Exact0925bb54b1a337a10df399592c50221904b2af9e candidateytkpaL/publicsZJ2uA
+ALL COMBINED PASS, runner40775 exit0. Actual canonical facts/private/foreign/stale,
+genuine create-only INSERT/proof/no existing access/expired/unsafe and native/Audit
+rollback PASS in both stages. All native suites PASS; zero reported browser errors.
+69files431/build/strictpostbuildTS/lint/diff PASS. No DDL/model/backfill/reset/hook.
+Mandatory backup130807/fixtures130936/131345, no ad-hoc dumps. Exact current0925bb5,
+previous62201ae retained; Atlas active, PG18main online, login200,167GiBfree/14%used,
+original locks idle. Only inactive53c05ae duplicate runtime outputs retired;
+source/static/history/records/backups preserved. Evidence d2-live-deploy log.
+Pure d3a evaluator implemented: all declared facts resolve before aggregation, typed
+codecs, explicit null/empty vs unavailable, false/zero present, canonical plan and
+fact fingerprint; no data access/grants or conditional publication.22 focused tests
+PASS; full regression/build/latest strict types/lint pending. Exact next finish d3a
+checks/review/checkpoint then d3b sealed dependencies/closure/versioned compiler.
+Visual2E and wholePhase2 gate still outstanding; no Phase3 work.
+
+## 10 October 2026 — d2 candidate gate PASS; d3a pure evaluator IN PROGRESS
+
+Pinned0925bb5 complete candidateytkpaL ALL COMBINED PASS, actual new native helper
+PASS. PublicsZJ2uA (fixture131345) in progress; no completed public/live claim yet.
+Independent d3a pure evaluator over verified d1 subplans starts within Phase2;
+closed plan/checksum, typed facts, all/any without authorization short circuit,
+presence/zero/false and no silent unavailable fact. No DDL, record reads, native
+hooks or conditional publication. Saved ordered d3a–e plan. Existing migration
+native/global extension revisions can capture rule-input drift; metadata dependency
+closure and canonical required coverage remain d3b–e. Next implement/test pure
+evaluator while public gate completes; do not move pinned branch.
+
+## 10 October 2026 —2B4d2 pinned release IN PROGRESS
+
+Exact0925bb54b1a337a10df399592c50221904b2af9e release runner40775 active;
+candidateytkpaL under full Studio acceptance. Mandatory predeploy backup130807,
+fixture130936. First incorrect manual SHA was rejected by local pin gate before
+SSH/backup; corrected exact HEAD. Candidate build/schema/compatibility passed;
+ordinary read proof PASS, writer/new native-contract/full candidate/public checks
+still pending. Live remains62201ae at latest check; Atlas active,166GiB free during
+candidate build. No branch movement until runner exits. d3 exploration confirms
+existing observations capture native+global extension revisions and existing owner
+snapshot includes final/unanchored rows; no new cohort engine is needed. d3 NOT
+STARTED. Next finish new actual contract helper and full candidate/public gate,
+then record exact health/evidence and begin d3 dependency/coverage workstreams.
+
+## 10 October 2026 —2B4d2 owner/native contracts IMPLEMENTED; live gate pending
+
+31c2fad pure rule compiler checkpoint saved/pushed. d2 extracts genuine identity,
+versions, tenant/module locks into a caller-owned Serializable refresh, preserving
+existing ordinary wrapper and native policy. Tickets v6 adds explicit hashed
+status/priority facts through a transaction-required owner read query and opt-in
+new-record initialisation; v1–5/query hashes preserved by regression. The creation
+bridge owns the actual native INSERT and issues a private opaque transaction/
+principal proof valid only during its callback; no native read/manage grant, no
+existing-record or client/JSON proof. Normal createWork is not hooked yet (d4).
+Canonical cohort access reuses existing complete owner snapshot; required-value
+coverage and field dependency provider remain d3.37 focused assertions/69files431
+regression tests/build/strict post-build TS/scoped lint/diff PASS. No DDL/schema/
+reset/backfill. Exact Test helper adds actual read/private/foreign/stale facts and
+rolled-back create-only native INSERT/Audit/expired/unsafe proof; NOT RUN live.
+Synthetic grants/temporary queue membership restored. Existing central backups and
+pinned candidate/public release gates retained; no ad-hoc dumps. Next review/checkpoint
+and pinned full Studio acceptance, then d3 canonical requirements/runtime provider.
+Files runtime-authority; registry types/entities/contracts/registry; service-work
+studio/studio-create; required-owner; two new suites/authority suite; exact helper/
+principal driver; module/security/architecture and shared memory. Live still62201ae.
+Evidence /tmp/atlas-studio-d2-{contract-tests,regression,build,postbuild-types,contract-lint,helper-lint}.txt.
+
+## 10 October 2026 —2B4d2 shared native transaction authority IN PROGRESS
+
+Depends on locally verified31c2fad pure compiler and live622 ordinary runtime.
+Extract existing genuine identity/version/tenant/module refresh into an internal
+transaction primitive; caller-owned transactions must prove Serializable before
+refresh. Keep the existing wrapper and native/field policy unchanged. Expected
+runtime-authority and focused tests; no DDL, hook or new conditional publication.
+Next implement extraction and no-nested-transaction/non-Serializable/revocation tests,
+then owner fact/cohort/new-record contracts. No broad native create/read/manage grants.
+
+## 10 October 2026 —2B4d1 pure rule compiler VERIFIED locally; d2 next
+
+Closed bounded conditional v2 contract/compiler preserves sealed v1 definitions.
+Checks current owner/field/fact permissions, tenant/entity/native approvals and pins,
+sensitivity, typed literal codec normalization, duplicate predicates and cycles.
+67 files/416 regression tests, production build, strict post-build TypeScript,
+scoped lint and diff PASS. First TS found narrowing/fixture errors; corrected and
+rerun PASS. No DDL/native writes/client endpoint/conditional publication/provider.
+Source required-contract/required-compiler, two test suites, required-rules plan,
+phase plans/ledger/DECISIONS/current state. Live remains verified62201ae; d1 helpers
+are intentionally unwired until d2–4 native/canonical enforcement is complete.
+Exact next: shared transaction authority refresh, then registered owner facts and
+new-record creation proof contracts under d2. Visual2E and wholePhase2 remain.
+Evidence /tmp/atlas-studio-d1-{regression,build,postbuild-types,compiler-lint}.txt.
+
+## 10 October 2026 —2B4c VERIFIED live1235UTC; d1 pure grammar started
+
+Exact62201ae508ea6b6e594e343082188e0696adb9db candidateckDSFP/public9CdV2F
+ALL COMBINED ACCEPTANCE PASS; runner75784 exit0. Actual customer/no-authoring
+reference/value writes, uniqueness/CAS/current+written restrictions, source freeze,
+both target Audit failures/concurrent exactly once/history replay, genuine affiliated
+staff support Audit failure with authoring disabled, retirement/history/native
+snapshots PASS in both stages. All native suites PASS; zero reported browser errors.
+65files402/build/strictpostbuildTS/lint/diff PASS. No DDL/model/native/UI mutation.
+Backup122418, fixtures122557/123008; no ad-hoc dumps. Current/public62201ae,
+previous53c05ae retained; Atlas active, PG18main online, login200, root167GiBfree/
+14%used, both original locks idle. Retention retired only inactivea527ccd runtime
+output; source/static/history/data/backups preserved. Evidence b4c-live-deploy log.
+Nextd1 bounded typed required-if grammar/v2 contract is IN PROGRESS:12 focused
+assertions (3 files) and lint PASS, initial strict TS failed (compiler narrowing/fixture typing), corrected; strict post-build TS PASS. No definition dispatch/native
+hooks/new condition publication. d1 compiler implemented, 67 files/416 tests and production build PASS; final types/checkpoint next, then
+owner facts/new-record create policy and canonical/native d2–5 gates. Visual2E and
+wholePhase2 gate still outstanding; no later phase begins.
+
+## 10 October 2026 —2B4d1 pure required-if contract IN PROGRESS
+
+2B4c actual candidate/public feature helper PASS; remaining public native suites
+still running under pinned62201ae, no branch movement. Next independent pure
+contract work is part of2B4d1: closed bounded typed predicates and versioned field
+payload preservingv1. Expected fields/required-contract + focused tests then pure
+compiler; no DDL/native hook/definition dispatch. Do NOT allow publication of new
+conditional payload until d2–4 canonical/native enforcement is complete. Native
+facts and other field versions must be owner/server-approved, no client fact grants.
+Next implement pure grammar/schema and backward-hash tests, then compiler metadata
+resolution. Follow saved STUDIO_FIELD_REQUIRED_RULES_PLAN.md. No later phase engine.
+
+## 10 October 2026 —2B4c actual candidate proof PASS; public pending
+
+Pinned62201ae508ea6b6e594e343082188e0696adb9db full candidateckDSFP ALL
+COMBINED PASS; actual ordinary value helper PASS including reference writes,
+uniqueness/CAS/current+written, migration source freeze, both target Audits fail
+atomically, concurrent exactly once/history replay, true affiliated staff support
+Audit failure and authoring disabled, retirement/native preservation. Public9CdV2F
+running; not VERIFIED until runner75784 exit0/fullpublic/exacthealth. Backup122418,
+fixtures122557/123008. No DDL or native mutation; local65files402/build/types/lint.
+Source Section6.5/24/27 re-read and owner mutation paths inspected: createWork,
+lockWork transitions/merge/comment/watch/approval/file events; linked parent version
+updates and service-case reassociation preserve facts. Required-rule ordered d1–5
+plan saved at docs/studio/STUDIO_FIELD_REQUIRED_RULES_PLAN.md; no conditional/native
+implementation yet. Corrected top Phase2 plan/fields stale rollback/value-read claims.
+Next finish public release, then d1 versioned bounded condition contracts/compiler;
+keep them unwired to publication until canonical/native coverage works.
+
+## 10 October 2026 —2B4c local release checkpoint ready
+
+Internal ordinary save service: current native extend/current+written field and
+reference authority; closed revision/generation CAS, immutable operation ID and
+normalised request fingerprint replay, server uniqueness/required validation,
+atomic value/pointer/extension/Audit. First valid post-cutover target save atomically
+finalizes the exact window with customer or purpose-audited affiliated staff; both
+Audits share the value transaction. No publish/source/cohort grant or native writes.
+No client/native endpoint before2B4d required coverage.65files402/build/scopedlint/
+strict post-build TS/diff PASS. TS caught nullable captured helper sessions; helper
+now explicitly returns non-null current Session, strict rerun PASS. Actual Test
+helper coded but NOT RUN: permitted/foreign/missing reference writes, uniqueness,
+stale/revoked/native/config/extension/slot/tenant, source freeze, real migration
+both-Audit failures/concurrency, old-operation policy/history replay, staff support
+Audit failure with authoring disabled, retirement and native preservation.
+No DDL/model/backfill/reset. Live remains53c05ae. Exact next checkpoint/pinned full
+Studio candidate/public writer acceptance, then2B4d closed required-if/native coverage.
+Files runtime-write/contract/window/shared read helpers, two suites, exactcentral
+helper/principal driver, PERMISSIONS/decisions/field plan/ledger/current state.
+Logs /tmp/atlas-studio-b4c-{tests,build,postbuild-types,lint,helper-lint}.txt.
+
+## 10 October 2026 —2B4a/b VERIFIED live;2B4c IMPLEMENTED locally
+
+Exact53c05ae9adaa80887ec72f1d633c6a346380bbf0 candidate1rQ6MH/publiccmZ7bt
+ALL COMBINED ACCEPTANCE PASS; runner68174 exit0. Actual customer without Studio/
+write grants reads typed active values and every retained generation; real valid/
+missing/foreign references, disabled authoring/source, private/current membership/
+capability/session/auth/tenant denials; native/value snapshots unchanged. All native
+Dashboard/Home/Settings/Reports/MRP/Messages/private Admin/Supply/Commercial/People
+checks PASS, zero reported browser errors.63files390/build/strictpostbuildTS/lint.
+No DDL. Backup120654, fixtures120830/121232. Current/public exact53c05ae; previous
+a527ccd retained, Atlas active, PG18main online, login200, root167GiBfree/14%used,
+both originallocks idle. Retention retired only inactivef1a9bf1 runtime output;
+source/static/history/records/backups preserved. No ad-hoc dumps.
+2B4c internal ordinary save/one-time window closure/request/CAS/idempotency/Audit
+and real Test helper implemented;65files402/TS/scopedlint/diff PASS, build pending.
+No endpoint/native hook until2B4d coverage. Actual writer Test NOT RUN yet. Next
+finish build/strictpostbuildTS/diff, checkpoint and pinned full writer acceptance.
+Evidence /tmp/atlas-studio-b4ab-live-deploy.txt; c4 local logs /tmp/atlas-studio-b4c-*.
+WholePhase2 still IN PROGRESS; required-if/hooks/record types/pages/visual2E remain.
+
+## 10 October 2026 —2B4c ordinary atomic saves design IN PROGRESS
+
+2B4a/b immutable53c05ae candidate/public release is running; do not move pinned
+branch until it finishes. Current livea527ccd. Independent next runtime substream
+uses existing native owner extend authorisation and shared typed storage/Audit/CAS.
+Expected runtime-write/closed request/internal read helpers/window helper, focused
+and exact Test proof; no DDL. No UI/native endpoint until required native-hook
+coverage is verified in2B4d. Normal customers need native/field write, not Studio
+publish. First valid post-cutover save may atomically close rollback eligibility
+with actual actor evidence; it cannot activate/reverse data or borrow publisher/
+whole-cohort grants. Exact unchanged window and ordinary owner policies remain.
+Tests stale native/config/extension/slot, current+written restrictions/reference/
+unique/required, operation replay, paired Audit rollback and concurrent saves.
+Next implement bounded request/shared reads, metadata-only window closure and
+atomic extension/value/pointer/Audit transaction. Real acceptance still pending.
+
+## 10 October 2026 —2B4a/b local release checkpoint ready
+
+Ordinary current/history gateway implemented on refreshed Session authority. Native
+access precedes extension lookup; current+written read policies, exact compiled
+checksums/generation/binding and typed fingerprint, independently authorised written
+reference targets, bounded pagination and retired/obsolete history. No source/native/
+value mutations. 63 files390 assertions, production build, strict post-build TS,
+scoped lint and reviewed diff PASS. Actual central customer helper now checks active
+Decimal/current and every retained generation, non-null valid/missing/foreign refs,
+disabled authoring/source/private/revocation/tenant and unchanged snapshots; NOT RUN
+live yet. No DDL/model/backfill/reset. Exact next commit scoped checkpoint and run
+pinned full Studio candidate/public acceptance; current live remainsa527ccd.
+Files fields/runtime-read, focused suite, helper, PERMISSIONS/decisions/field plan/
+ledger/current state. Evidence /tmp/atlas-studio-b4{a,b}-*.txt. No ad-hoc dumps.
+
+## 10 October 2026 —2B4b current/history reads IN PROGRESS
+
+2B4a checkpointf3783e1 passed62files382/build/strictpostbuildTS/lint/diff; live
+proof pending. Purpose read gateway over real refreshed authority, no authoring/write
+requirements. Expected fields/runtime-read, focused suite and exactcentralhelper;
+no DDL/native/value writes. Both current+written read policies, native/private and
+reference access, immutable checksum/binding/generation/fingerprint; retired fields
+and obsolete generations history only; bounded revision history. Tests owner-first
+no-value-leak, current/written denial, empty/native/final/history/corruption/reference/
+foreign scope. Exact next implement current/history gateway and focused/real proof.
+
+## 10 October 2026 —2B4a IMPLEMENTED locally; real acceptance pending
+
+Private server Session stamps/transaction refresh, tenant module locks and registry,
+and separate read compiler implemented. Original author plan/checksum unchanged.
+62 files382 assertions, production build, scoped lint and diff checks PASS; strict
+post-build TS PASS. Real exact Test helper implemented but NOT RUN: customer
+without authoring/write grants, disabled authoring, owner/private/fresh revocation/
+foreign denials and unchanged native snapshots. Synthetic grants/queues/module
+switches restored; only Test auth/session versions increment. No DDL/value endpoint.
+Files auth/session, compiler/fields, fields/runtime-authority, two test suites,
+central helper/principal driver, PERMISSIONS, decisions/ledger/current state.
+Next: save coherent checkpoint, then2B4b current/history gateway
+with native/current+written/reference checks before any value is returned. Live
+remainsa527ccd; this workstream is not yet VERIFIED live. No ad-hoc dumps.
+
+## 10 October 2026 —2B4a ordinary runtime authority/read compiler IN PROGRESS
+
+Depends on verifieda527ccd. Expected auth/session minimal server-only stamp/optional
+transaction reader, fields/runtime-authority, compiler/fields and focused/real Test
+checks. No DB/model/UI/value endpoint. Purpose: ordinary operators require current
+native/field read authority, not Studio authoring or field-write grants. Preserve
+existing author compilation/checksums. Stamp actual server-resolved Session identity
+and auth/session versions privately; refresh same membership/roles/user/platform
+inside the short serializable transaction, reject cloned metadata context/foreign/
+revoked scope. Retain signed cookies, capability architecture and existing consumers.
+Next16 local data-security/authentication/cookies docs read before auth changes.
+Tests: same sealed plan read vs author, separate read/write restrictions, native
+module/ref security, unstamped/forged/revoked versions/current roles/company;
+actual customer without Studio grants and disabled authoring retains permitted
+runtime compilation. No business values or native operations enabled by this step.
+
+## 10 October 2026 — f4c/d VERIFIED live1146UTC; next2B4a
+
+Exacta527ccdf3832c16da541e6a0df650b06e90d1e8e full candidate1qikYT/publicWMNUWf
+ALL COMBINED PASS; runner96792 exit0. Actual retained/open/terminal/post-cosmetic
+inspector, independent-current-customer rollback/finalize, both rollback Audit
+failures and finalization Audit failure, concurrent exactly-once CAS/Audit, fresh
+revocation/private/module/tenant/session checks, changed-extension rollback denial
+but finalization, continued cosmetics/writes/new-publication history replay and
+source-first freeze PASS in both stages. Native snapshots unchanged. Dashboards/
+Home/Settings/Reports/MRP/Messages/private Admin/Supply/Commercial/People allPASS;
+no reported browser errors.60files372/build/strict post-build TS/scoped lint/diff
+PASS. No schema/model/migration/backfill/reset/native/UI changes in this checkpoint.
+Required backup113558, fixtures113732/114133; no ad-hoc dumps. Retention retired
+only inactive666efeb runtime output; source/static/history/data/backups retained.
+Current/public exacta527ccd, previousf1a9bf1, atlas active, PG18main online/login200,
+root168GiBfree/14%used. Original locks idle verified using read-only file descriptors
+after plain flock open was denied; neither original file removed/replaced.
+Files: shared cutover identity; settlement receipt/inspector/coverage/services;
+registry owner policy and Tickets query; Test helpers/fixtures/five focused suites;
+MODULE_SPEC/decisions/field plan/ledger/current state. Source checkpoints35d471a,
+fa100f7,a527ccd. Evidence /tmp/atlas-studio-f4cd-live-deploy.txt and private stage dirs.
+Phase2 remains IN PROGRESS: ordinary values, required-if/native hooks, record types/
+pages/search and visual business/Sales/document/dashboard builder still outstanding.
+Exact next:2B4a ordinary operator authority and read compiler, then2B4b scoped
+current/history gateway. Preserve write/source/module/native/current+written checks;
+operators must not require authoring/write grants to read permitted fields.
+
+## 10 October 2026 — next2B4 workstreams saved; no source implementation yet
+
+Recorded ordered normal runtime authority/read/write/required-if/canonical coverage/
+native-hook/operator-form/search/central-gate workstreams in STUDIO_PHASE_2_FIELDS
+and ledger. Expected files, dependencies, database implications and tests recorded.
+Existing ordinary read compiler requires field write grants; new runtime read must
+check current+written read grants independently of authoring/write privileges.
+Published required/unique policy must survive disabling Studio authoring. Native
+create/save hooks and missing-anchor coverage require proof before ordinary writes
+open. These remain planned, no source/runtime completion claim. f4c/d pinned full
+release still running; finish current acceptance first.
+
+## 10 October 2026 — f4c/d actual candidate feature proof PASS; full release pending
+
+Pinned a527ccdf3832c16da541e6a0df650b06e90d1e8e runner96792 active. Candidate
+1qikYT actual nested ACT/terminal/post-cosmetic inspector and independent-current-
+customer rollback/finalization service PASS: both rollback Audit failures, finalize
+Audit failure, concurrent CAS/single Audit, revoked/stale/private/module/tenant,
+changed-extension rollback denial/finalization and post-cosmetic/new-publication
+history replay; all native snapshots retained. Current server remainsf1a9bf1 until
+all candidate native/browser gates PASS; full public acceptance also mandatory.
+Required backup113558/fixture113732. No ad-hoc dumps or schema changes. Local
+60 files372/build/strict post-build TS/lint PASS. Not VERIFIED until complete
+runner exit0 and exact public revision/pointers/health. Next: remaining native
+candidate checks then public; prepare2B4 scoped ordinary value access design.
+
+## 10 October 2026 — f4c/d local release checkpoint ready
+
+60 files/372 assertions, production build, strict post-build TypeScript, scoped
+lint and reviewed diff PASS. Reserved module lint issue corrected before checks.
+New settlement/coverage/helper tests and all existing Studio/native regressions
+passed. No schema/model/migration/backfill/reset/native-domain/UI change. Actual
+Test both-Audit failure/concurrency/independent-current-actor/history/finalization
+helper implemented but NOT RUN live yet. Current server remains exactf1a9bf1,
+previous666efeb, active/login healthy and168GiBfree. Next: commit reviewed helper
+and evidence, pinned full Studio candidate/public release under original locks.
+Logs /tmp/atlas-studio-f4d-{tests,build,postbuild-types,lint}.txt.
+
+## 10 October 2026 — f4d acceptance IMPLEMENTED locally; release pending
+
+Actual exact Test helper now settles staff-prepared migration using a different
+current customer principal, scoped temporary grants/queue affiliations restored in
+finally. Exercises both rollback Audit failures and finalization Audit failure,
+concurrent CAS/single receipt+Audit, lost-response replay, post-cosmetic/new-review
+history, stale/client/tenant/module/private/field/member/session denials, changed
+extension rollback denial and finalization. Continued-generation helper now uses
+real finalization service instead of a Test-only SQL settlement; retained history,
+new source freeze and native snapshots remain checked. No schema/DDL/native/UI
+change or ordinary value API. Extra real current/written policy regression suite
+added. Runtime acceptance NOT RUN yet; Phase2 gate remains IN PROGRESS.
+Local reserved module variable lint issue corrected to sourceModule before checkpoint.
+Next: finish full local regression/build/strict post-build types/lint/diff, save
+coherent checkpoint, pinned full Studio candidate/public release; investigate actual
+failure without relaxing guards. Required release/fixture backups only.
+
+## 10 October 2026 — f4c2 IMPLEMENTED locally; d actual service proof next
+
+Separate rollback/finalize internal commands use current captured customer/audited
+support authority, exact open CAS, closed confirmation, current active/source/target/
+written policies and registered owner history/reference coverage. Rollback requires
+unchanged native cohort/source/target and shared source activation; finalization
+keeps target and permits unrelated revision drift. Receipt/publication/Audit commit
+together; rollback also uses existing activation Audit. Terminal replay reports
+recorded actor/receipt and rechecks current access without today's pointer claim.
+New hashed owner query policy validates ownership/versions/native capability; all
+sealed older descriptors preserved. No schema/DDL/reset/native/value/UI changes.
+59 files/368 assertions, production build, scoped lint and strict post-build TS PASS. Current live remainsf1a9bf1; no VERIFIED runtime claim.
+Files: registry types/entities/contracts/runtime, service-work/studio owner query,
+settlement-coverage/service, two focused suites, MODULE_SPEC/decisions/ledger/memory.
+Next: actual exact Test both-Audit failures, concurrent CAS/current independent
+actor, changed-extension finalization, retained post-cosmetic/new-publication replay
+and permission/tenant denials; then pinned full candidate/public release.
+
+## 10 October 2026 — f4c2 IN PROGRESS: refreshed commands and owner coverage
+
+Purpose/dependencies: f4c1 retained/open inspection plus existing current principal,
+shared activator and0007/8 guards. Expected registry types/entities/contracts/runtime,
+service-work/studio owner query, settlement-coverage/service and focused tests;
+real Test service helper in d. No schema/migration/backfill. Closed owner settlement
+coverage preserves all sealed earlier hashes; independent current actor, exact
+rollback/native/private/reference/source/target proof; finalization/replay permit
+unrelated native/extension drift without changing domains. Current active and written
+field restrictions remain mandatory. Tests: registration ownership/compatibility,
+revocation/module/private/tenant, strict request/CAS/replay, atomic paired Audit,
+changed-data finalization and historical replay. c2 IN PROGRESS; d NOT STARTED.
+Next: register closed owner settlement policy and implement current coverage,
+then separate rollback/finalize commands and real failure/concurrency acceptance.
+
+## 10 October 2026 — f4c1 IMPLEMENTED locally; c2 starts next
+
+Shared immutable cutover lineage now serves a closed ACT/terminal receipt reader
+and actual tenant-scoped locked settlement inspector. Existing strict f3 ACT/current
+pointer predicates remain unchanged. Exact open definition/draft CAS is separate
+from retained history; rollback requires both source/target freshness; finalization
+may close after unrelated extension drift. Actual nested Test helper now exercises
+open/terminal/post-cosmetic reads and closed windows; live runtime proof pending.
+57 files/356 assertions, production build, scoped lint and strict post-build TS PASS.
+No DB/schema/migration/native/UI change. Files: cutover-receipt, settlement-receipt/
+inspection, tests/fixtures+two focused suites, settlement-storage acceptance helper.
+Logs /tmp/atlas-studio-f4c1-{tests,build,lint,postbuild-types}.txt. Diff reviewed;
+no unrelated work removed. Next: current-actor settlement coverage and separate
+rollback/finalize commands, paired Audit/CAS and real Test proof before combined
+candidate/public release. Phase2 gate remains IN PROGRESS, c1 not VERIFIED live.
+
 # Atlas current state
+
+## 10 October 2026 — continuous Phase2 implementation: f4c1 IN PROGRESS
+
+Michael explicitly requires continued ordered implementation through all phases.
+Recovered clean29c9d45/livef1a9bf1. F4c workstreams before coding:
+- c1 retained receipt identity/scoped inspector: factor shared original lineage
+  validation without relaxing strict f3 window; validate ACT/terminal pairing and
+  immutable review/execution/version history independently of today's pointer.
+  Expected cutover-receipt,settlement-receipt,settlement-inspection and tests/helpers.
+- c2 refreshed authority/owner coverage + separate rollback/finalize server commands:
+  exact open CAS, unchanged rollback source/target/native; finalization does not
+  require unrelated extension freshness. Current active and written field/private/
+  reference/module policies apply to replay; paired Audit and shared activation.
+- d actual Test Audit failure/concurrent CAS/lost-response/post-cosmetic history
+  replay/revocation/tenant/changed-data proof and full candidate/public deployment.
+Dependencies: verified0006/7/8, existing authority/review/activation primitives.
+No new schema/backfill/reset planned, no normal value API or later-phase engine.
+Status c1 IN PROGRESS; c2/d NOT STARTED. Exact next: shared immutable receipt
+identity + closed terminal reader tests, then actual scoped inspector.
+
+## 10 October 2026 — f4b2b VERIFIED live; full candidate/public PASS
+
+F4b2b VERIFIED1109UTC on exactf1a9bf155ba703e73a7ce8a1b9a00db3a36dc236.
+Runner65486 exit0; candidatezDzdGq/publici1zMEw both ALL COMBINED PASS. Actual
+both-terminal label/help publish+activate and owner-authorised active-value fixture,
+retained source/target/version/generation/receipt history, schema/tenant denials;
+real later reviewed publication freezes an earlier COMPLETED target, cancellation
+resumes approved active generation and obsolete target remains closed. Native
+snapshots unchanged. Existing Dashboards/Home/Settings/Reports/MRP/Messages/private
+Admin/Supply/Commercial/People gates PASS in both stages; zero reported browser errors.
+Current/public exactf1a9bf1, previous666efeb, atlas active/PG18main online, login200;
+root168GiBfree/14%used. Retention retired only inactive1d7f558 runtime output, keeping
+source/static/config/history/data/backups/current/rollback. Required backup105904,
+fixtures110037/110434; no ad-hoc business dumps. Additive0008 APPLIED, no model/table/
+backfill/reset/native rewrite.55files343 assertions/build/strict post-build types/
+scoped lint/diff PASS (async helper TS1308 fixed before checkpoint).
+Files:0008 SQL, generation-storage/continuation helpers, cutover-service/storage,
+settlement-storage/execution integration and data-model/field plans/ledger/memory.
+Evidence /tmp/atlas-studio-f4b2b-live-deploy.txt and private candidate/public dirs.
+No production settlement/value API or visual-designer completion claim. Phase2
+remains IN PROGRESS; f4c/d,2B4,2C/D and visual2E are outstanding. No blocker for
+next workstream. Exact next: f4c1 scoped settlement inspection (see ledger).
+
+## 10 October 2026 — f4b2b candidate PASS; public IN PROGRESS
+
+1105UTC: candidatezDzdGq ALL COMBINED PASS on exactf1a9bf1, including new
+terminal/generation SQL helpers and all native browser suites. Pipeline activated
+f1a9bf155ba703e73a7ce8a1b9a00db3a36dc236 and publici1zMEw full acceptance is
+running (mandatory fixture backup110434). Do not mark VERIFIED yet; automatic
+rollback to666efeb retained on public failure. Exact next: public continuation
+and every native gate, runner65486 exit status and current/previous/health checks.
+
+## 10 October 2026 — f4b2b new candidate continuation PASS
+
+CandidatezDzdGq actual new helper runtime PASS: both nested ROLLED_BACK/FINALIZED
+label/help publish+activate and owner-authorised active-value fixture, retained old
+values/generations/receipts and schema/tenant denials; actual finalization fixture
+followed by new real reviewed publication proves source freeze wins over earlier
+COMPLETED target, cancellation resumes approved active values and obsolete target
+stays closed. Native snapshots unchanged. Full remaining candidate/public native
+gates pending; not VERIFIED. Mandatory fixture backup110037. Exact next: finish
+all native candidate gates, activate only on fullPASS, repeat public and check exit.
+
+## 10 October 2026 — f4b2b0008 applied, build IN PROGRESS
+
+1100UTC: deployer APPLIED additive20261010080000 successfully after mandatory
+105904 backup. Production current/health still666efeb; isolated candidate build
+running. SQL/helper candidate/public runtime proof pending, not VERIFIED. No
+Prisma model/backfill/reset or native record rewrite. Exact next: await candidate
+build and actual RB/FINAL/source-first continuation, then full public gate.
+
+## 10 October 2026 — f4b2b release IN PROGRESS
+
+Pinned f1a9bf155ba703e73a7ce8a1b9a00db3a36dc236 release runner65486 started
+105904UTC; mandatory recovery backup105904. Original lock pair and full Studio
+candidate/public gate retained. Source branch pinned; do not move tip while running.
+New migration/helper runtime acceptance pending, not VERIFIED. Existing666efeb
+current/1d7f558 rollback retained until candidate PASS. Local evidence
+/tmp/atlas-studio-f4b2b-live-deploy.txt. Exact next: inspect candidate migration/build
+and new SQL/owner continuation assertions, then all public native gates/exit status.
+
+## 10 October 2026 — f4b2b IMPLEMENTED locally, runtime gate pending
+
+Forward0008 integrity functions only: source-first freeze/definition locking,
+completed-source/obsolete-target retention, approved active schema and same-generation
+label/help activation; original cutover/terminal proofs unchanged. Added actual nested
+RB/FINAL continuation and subsequent real reviewed-publication Test helpers; no
+production settlement/value endpoint.55files343/build/scoped lint/strict post-build
+types/diff PASS; central fullDDL BEGIN/ROLLBACK compatibility and cosmetic/structure/
+generation/malformed checks PASS, rollback complete. Existing083210 backup preserved,
+no new dump/reset. See ledger/field-plan/data-model and DECISIONS. Next reviewed clean
+checkpoint and full pinned candidate/public/native release; not VERIFIED yet.
+
+## 10 October 2026 — next-action f4b2b IN PROGRESS
+
+Recovered clean3cf7671; live exact666efeb/current and previous1d7f558, atlas active,
+root168GiBfree. Read0005/6/7, authority and publication/activation/storage source.
+Implement forward0008 source-first history/approved-schema and cosmetic guards,
+then exact Test terminal/subsequent-publication acceptance, local checks and full
+pinned candidate/public release. No schema model change/backfill/reset or production
+settlement/value API. Phase2 remains IN PROGRESS. Workstreams/dependencies/files/
+tests saved in Studio ledger before coding. Exact next: implement0008 SQL, keeping
+original cutover and one-time terminal CAS/commit proofs intact.
+
+## 10 October 2026 — f4b2a VERIFIED live; full retry candidate/public PASS
+
+Pinned666efeb42b9e34f39bf5f58b66e2c25eda949ef5 runner42586 completed exit0. Candidate
+JPiKeZ/publicSgP6a7 both ALL COMBINED PASS, including real cancelled-source cosmetic
+publish/activate, obsolete target descendant publication/activation denial, unchanged
+cancelled receipt/native rows, all settlement SQL and existing module/browser suites.
+Messages identical viewport limits pass desktop/tablet/phone with bounded entrance-
+animation retry; no product layout/security changes. Earlier04ff458 public failure
+and automatic runtime rollback retained as historical evidence, now RESOLVED.
+Current/public exact666efeb, previous1d7f558, login200/atlas active/PG18main online,
+root168GiBfree/14%used verified0842UTC. Retention hook retired only inactive04ff458
+and97ceb35 output, retaining source/static/history/current/immediate rollback.
+No new migration in f4b2a; prior0007 retained. Required backup083210, fixtures083340/
+083738; no ad-hoc business dumps.55 files343 assertions/build/strict TS/scoped lint
+PASS;9 overlapping drawer/chat assertions and build/types/lint rerun PASS.
+Files: fields/binding.ts, studio-field-binding tests, check-field-publication.ts,
+check-messages.ts and shared field/Phase2 plans, ledger/CURRENT_STATE/DECISIONS.
+Evidence /tmp/atlas-studio-f4b2a-retry-live-deploy.txt and private acceptance dirs.
+Phase2 IN PROGRESS, not passed; visual designer and later phases remain outstanding.
+Exact next: f4b2b forward0008 source-first generation/history and same-active-schema
+cosmetic activation guards, with exact Test terminal and subsequent real reviewed-
+publication proof; no production settlement/value endpoint orPhase3. Preserve old
+applied0006/0007 and all history; no native rewrite/backfill/reset.
+
+## 10 October 2026 — f4b2a retry candidate IN PROGRESS
+
+Pinned666efeb42b9e34f39bf5f58b66e2c25eda949ef5 retry runner42586 started083210UTC;
+required recovery backup083210. Build/compatibility PASS, candidateJPiKeZ running
+complete acceptance (fixture backup083340). Current1d7f558 preserved; no new DDL.
+Candidate/public runtime proof pending; keep remote branch pinned and do not begin
+f4b2b. Local log /tmp/atlas-studio-f4b2a-retry-live-deploy.txt.
+
+## 10 October 2026 — f4b2a release-check retry ready
+
+Retry checks PASS: production build, strict post-build TypeScript, scoped Messages
+ESLint,9 focused drawer/chat assertions and diff. Earlier55 files343 binding/native
+assertions retained (overlapping focused rerun is not343+9 unique tests). No product
+Messages or DB change; identical geometry criteria and5s bounded retry only.
+Next checkpoint and full pinned Studio candidate/public release. Logs
+/tmp/atlas-studio-f4b2a-{retry-build,retry-types,retry-ui-tests,messages-lint}.txt.
+
+## 10 October 2026 — f4b2a public gate FAIL; safe runtime rollback verified
+
+04ff458 runner89594 exit1: full candidatejxZA04 PASS and public Studio/source
+cosmetics/tenant/native foundations PASS; public Messages failed immediate dialog
+bounding-box assertion (check-messages.ts:292), after real chat/send/search checks.
+Normal deployer restored current1d7f558 automatically; previous97ceb35, atlas active,
+PGonline confirmed; no database rollback. No new migrations. Evidence public7NFIpk/
+messages.log, private messages1HI8CE and localf4b2a-live-deploy.txt. F4b2a remains
+IMPLEMENTED, not VERIFIED; f4b2b NOT STARTED. Current panel has a240ms entrance
+animation; old assertion samples visibility before geometry settles. Adjusted only
+the test to retry the identical bounds criteria for up to5s, preserving persistent
+overflow failure and returning rectangle diagnostics. No product layout or security
+change. Confirm through repeated actual candidate/public checks; do not assert the
+cause proven from one failure. Next lint/types/build and reviewed checkpoint, full
+pinned release; do not bypass public Messages or any other native gate.
+
+## 10 October 2026 — f4b2a candidate PASS; public acceptance IN PROGRESS
+
+F4b2a candidatejxZA04 ALL COMBINED PASS; pinned04ff458 now running public
+acceptance7NFIpk (fixture backup082646). Actual candidate cancelled-source cosmetics
+publish/activate and obsolete-target rejection passed. Health reports04ff458 after
+switch; full public gate/runner completion still pending, not VERIFIED. Keep pin.
+
+## 10 October 2026 — f4b2a pinned release IN PROGRESS
+
+Pinned04ff458 f4b2a release started082108UTC, runner89594; local log
+/tmp/atlas-studio-f4b2a-live-deploy.txt. Required pre-deploy recovery backup082108.
+No new migrations expected. Current1d7f558/previous97ceb35 unchanged at preflight;
+root168GiBfree, eligible retirement candidates0. Candidate/public exact continuation
+and native gates running; no VERIFIED claim. Do not advance pinned remote branch
+while runner operates. Inspect actual failure before retry; b remains NOT STARTED.
+
+## 10 October 2026 — f4b2a cosmetic binding IMPLEMENTED; live proof pending
+
+Splitf4b2 into a active-schema binder/cancellation continuation then b additive0008
+generation/open-freeze/terminal cosmetic guards. a changes fields/binding.ts to use
+tenant-owned active payload (immutable origin before first activation only), never
+latest cancelled/rolled-back target; missing scoped baseline fails closed. Three
+new binding cases;55 files343 assertions and scoped ESLint PASS. Actual Test
+publication checker requires obsolete target descendant publication denial and real
+approved-source label/help publish/activate, retaining cancelled receipt/native rows.
+No schema/migration/production settlement/value API. Production build and strict
+post-build TypeScript PASS; full pinned candidate/public/native acceptance pending
+before VERIFIED.
+DECISIONS/Phase2 plan/field plan/ledger and final diff reviewed; no unrelated changes.
+Next checkpoint and deploy exact compatible Studio candidate with Studio acceptance;
+b NOT STARTED until a gate. Logs /tmp/atlas-studio-f4b2a-{tests,lint,build,types}.txt.
+
+## 10 October 2026 — f4b1 VERIFIED live; temporary access blocker resolved
+
+Original deploy runner20133 completed exit0. Exact1d7f558bf35c02941bca732daffbe61288cdb044
+candidate7jm5KC and public acceptance both ALL COMBINED PASS. Actual nested Test
+SQL proves closed settlement/CAS/principal/tenant, standalone transition denial,
+paired rollback/finalization, immutable receipt/publication history and changed
+extension rollback denial with metadata-only finalization. Native/module suites
+passed; synthetic Test companies suspended and sessions revoked, history retained.
+Additive0007 applied under required backup074339; no reset/backfill/native purge.
+Public revision/current exact1d7f558, previous97ceb35, login200, atlas active and
+PG18main online. Root168GiBfree/13%used, load0.08 at0810UTC. Retirement hook actually
+ran after acceptance and safely retired only inactive1bf0e2c runtime outputs.
+The temporary0747UTC SSH/HTTPS blocker is RESOLVED; provider console no longer
+needed. Kernel journal0740–0812UTC contains no OOM/hung-task matches; cause unknown,
+not a confirmed memory failure. Compiler cancellation never executed.
+55 local files340 assertions/build/strict TS/scoped lint remain PASS. Evidence:
+/tmp/atlas-studio-f4b1-live-deploy.txt, candidate7jm5KC and retained recovery backup.
+Phase2 NOT PASSED; visual designer still required. Next f4b2: active-vs-latest cosmetic
+binding and additive0008 generation priority/history guards, unit and exact rollback-
+only Test continuation proof; f4c/d current-authority settlement follows. NoPhase3.
+
+## 10 October 2026 — Historical f4b1 access blocker (RESOLVED above)
+
+Cleanup VERIFIED: root168GiBfree after final retirement, Mac master5.6GiB/build2.6GiB;
+no unnecessary business dumps created. User's no-unneeded-dumps preference saved
+in project instructions and requested personal memory note. Resumed phases and
+preserved accepted live97ceb35 ancestry.55 local files340 assertions/build/strict
+TS/scoped lint PASS; exact1d7f558 candidate started074339 with required recovery
+backup. Additive0007 successfully APPLIED; no customer data purge/reset/restore.
+
+From0747UTC, HTTPS TLS/health and SSH banner exchange repeatedly time out; TCP22
+accepts. Existing SSH monitors stall; stopped only stale local read-only monitors,
+not the deployment. Exact compiler-only cancellation attempt failed before SSH
+execution. Resource pressure is suspected, unconfirmed; last7.8GiB RAM/no swap,
+root167GiBfree during build. Last confirmed current97ceb35/previous1bf0e2c; no
+activation or candidate/public acceptance logged. Cannot presently confirm live
+health, running build status or PG state. Do not claim new Studio LIVE or VERIFIED.
+No accessible provider-management connector/console was found. Asked Michael for
+hosting provider/control-panel URL; no password requested. This is a genuine
+external access/health blocker, separate from resolved disk capacity.
+
+Exact next: open independent Atlas VPS provider console, inspect kernel/memory/
+process state and candidate compiler1d7f558, verify current/previous pointers and
+original lock owner before scoped stop/recovery. Restore SSH/app/PG health; inspect
+runner20133/074339 logs and migration state; address proven build-resource cause
+then complete full candidate/public Studio+native gates normally. Do not beginf4b2/
+Phase3, reset DB, restore backups or blindly kill services. Applied0007 and recovery
+backup retained. Local evidence /tmp/atlas-studio-f4b1-live-deploy.txt, server-load-
+recheck{,-2,-3}.txt and scoped-build-cancel.txt. Local memory checkpoint does not
+advance remote pinned codex/studio-phase2 tip1d7f558.
+
+## 10 October 2026 — f4b1 build health investigation IN PROGRESS
+
+Pinned1d7f558 runner20133 remains in server build after successful additive0007.
+From0747UTC public HTTPS TLS/health times out; port22 TCP accepts but new SSH banner
+exchange times out. Existing monitoring SSH commands also stalled; no candidate/
+public acceptance or activation logged. Last confirmed current97ceb35, previous
+1bf0e2c; current health cannot presently be verified. Disk capacity resolved (last
+167GiBfree); resource pressure during compilation is suspected, not confirmed.
+Last server telemetry7.8GiB RAM/no swap. Do not claim site healthy/new Studio live.
+Attempted exact candidate compiler-only SIGTERM recovery via SSH, guarded against
+current/previous pointers; SSH banner timed out, so cancellation did NOT execute. Local evidence
+/tmp/atlas-studio-server-load-recheck{,-2}.txt and scoped-build-cancel.txt, deploy log.
+Next recover SSH/live health; inspect exact build/process/locks before safe stop or
+retry. Preserve applied0007/required074339 backup; no reset/restore/global kill or
+Phase3 work. Branch tip remains pinned; memory updates pending checkpoint after
+runner completes or confirmed external blocker.
+
+## 10 October 2026 — Pinned f4b1 release IN PROGRESS; additive0007 applied
+
+Exact1d7f558 codex/studio-phase2 deploy runner20133 started074339UTC; log
+/tmp/atlas-studio-f4b1-live-deploy.txt. Required private pre-deploy backup074339;
+Prisma generation and additive20261010070000_studio_field_settlements applied
+successfully. Candidate production build in progress; current97ceb35 unchanged at
+preparation. Actual nested Test SQL and all candidate/public native gates pending,
+not VERIFIED. Preserve original0006/source/history/backups; no backfill/record purge.
+Do not advance Git branch tip while runner operates. Next inspect completion/failure
+and update real evidence; no f4b2 until this coherent gate passes. Phase2 NOT PASSED.
+
+## 10 October 2026 — Recovered f4b1 candidate checks PASS; exact release next
+
+Combined47 files294 assertions plus8 compatibility files46 assertions PASS
+(55 files340 total). Production build with inherited unused-cache setting, strict
+post-build TS, scoped helper/retirement ESLint and diff PASS. Updated cutover
+cancellation denial assertion to recognise the exact new one-time-settlement guard;
+no permission/SQL guard was weakened. Capacity168GiBfree, original locks free,
+server control/current/public97ceb35 and previous1bf0e2c at preflight. Reviewed0007
+remains unapplied; earlier central rollback-only DDL proof retained. Next run normal
+exact pinned codex/studio-phase2 release with Studio acceptance; required pre-deploy/
+fixture backups only. Do not move branch tip while runner operates. Live f4b1 actual
+nested Test SQL/native gate still pending; Phase2 NOT PASSED.
+
+## 10 October 2026 — Studio recovery preserves current drawer runtime ancestry
+
+Merged exact live97ceb35b069845f637a43811d8200a99b9ade306 after retirement95a64b2,
+preserving shared SidePanel/Tasks/Messages, unused build-cache correction and all
+concurrent memory. Conflicts were documentation-only; both entries retained. Current
+97ceb35/previous1bf0e2c verified via public health/pointers; this does not assert
+another task's complete gate. Root168GiBfree after checked final prune; eligible0.
+Phase2 f4b1 actual SQL/native acceptance remains pending;0007 not yet applied.
+Next: combined affected tests/build/types/lint, pinned Studio candidate/public release.
+
+## 10 October 2026 — Software retention VERIFIED; Studio capacity blocker resolved
+
+User authorised cleanup of redundant development/release copies and explicitly
+requested avoiding unnecessary dump files; both rules saved in AGENTS/DEPLOY and
+DECISIONS. Initial audit:130 release folders181GiB, VPS root full, Mac master32GiB
+(build29GiB) plus four obsolete installed1.4GiB packages. Current launcher3.3MiB;
+PostgreSQL cluster140MiB. Under BOTH original locks, retired118 inactive dependency/
+non-static build output sets, retained current/rollback/process pins/source/static/
+config/readiness-history/private files/backups. Mac59 generated/package paths
+removed; source/concurrent worktrees untouched. Master5.6GiB/build2.6GiB; root reached
+168GiBfree/14%used after final retirement of newly superseded845456e and legacy
+maintenance dependency/non-static output copies. Final eligible output sets0.
+See docs/SOFTWARE_RETENTION.md for evidence/commands/limits.
+
+New checked retirement utility installed root-owned on server; busy-lock refusal
+confirmed during another release. Current/public97ceb35b069845f637a43811d8200a99b9ade306,
+previous1bf0e2c1c69803906ac087ce6ba634fe6033c365, login200, atlas active, PG18main online.
+No cleanup SQL/schema/migrations/restores/resets/app restart/business record purge.
+Six retirement tests PASS; Node/bash syntax, scoped ESLint, production build and
+strict post-build TypeScript PASS. Deployer retention hook added after all public
+acceptance/pointer updates; activates on next compatible release including it.
+No claim that pending Studio source is deployed. Necessary recovery backups stay;
+read-only audits/retirement generate no business dump.
+
+Files: scripts/deploy/prune-releases.{mjs,d.mts,sh}, vps-release.sh,
+tests/release-retirement.test.ts, docs/SOFTWARE_RETENTION.md, DEPLOY, AGENTS,
+CURRENT_STATE/DECISIONS and Studio ledger. The earlier expansion recommendation is
+superseded: duplicated software retention was the capacity cause.
+
+Exact next: checkpoint retirement, then recover Studio f4b1/Phase2; inspect and merge
+new accepted live97ceb35 ancestry, recheck locks/status/capacity and run the exact
+pinned Studio release with ATLAS_RELEASE_ACCEPTANCE=studio. Forward0007 must pass
+actual nested Test SQL plus complete candidate/public native suites before VERIFIED.
+Phase2 NOT PASSED; visual designer still required; no Phase3 work yet.
+
+## 10 October 2026 — Historical Studio capacity blocker (RESOLVED by software retention below)
+
+Preserved source checkpoints adfc357 (pure settlement contracts), dc5d508 (forward
+0007/storage/nested exact Test helper) and f7ed95f (observed live1bf0e2c ancestry).
+Combined48 files300 assertions, production build, strict post-build TS and scoped
+settlement/helper lint/diff PASS. Central backed-up0007 DDL rollback PASS071007:
+five oldACT receipts compatible; principal shape checks pass; zero new columns
+after rollback. Actual nested Test guard proof and complete candidate/public/native
+release checks NOT RUN: no new migration applied or Studio release activated.
+First SQL syntax issue was corrected before checkpoint and full DDL rerun passed.
+
+Safe capacity cleanup under both original locks reclaimed ONLY inactive task-owned
+1f2ab97/74fab2d Turbopack caches and npm download cache. Accepted source/dependencies/
+compiled server/static/readiness/history/backups, current1bf0e2c and previous845456e
+retained. Inventory maintenance-backups/studio-settlement-capacity-20261010.txt;
+local log /tmp/atlas-studio-settlement-capacity.txt. Root remains3.2Gfree/99%used;
+200G disk/vda1 198.9G fully allocated, PG18main online, no swap. Remaining compiler
+caches belong to current/previous only. Read-only exact public health1bf0e2c verified.
+Recent separate Tasks/Apps builds repeatedly failed ENOSPC on this same volume.
+Current release dependencies+Next alone occupy~2.2G before npm cache/temporary build
+outputs; proceeding would leave insufficient headroom for shared production data.
+No reset, restore, destructive cleanup, lock bypass or server build attempted.
+
+Historical unblock recommendation (superseded by the software-retention audit):
+increase VPS disk capacity/free safe build space (at least8GB free
+for the immediate candidate and further sequential checkpoints), then re-read
+ledger/status/current health and merge any newer accepted live ancestry. Run the
+normal pinned Studio release with ATLAS_RELEASE_ACCEPTANCE=studio; it applies
+reviewed additive0007 and executes actual nested SQL proof plus all candidate/public
+native checks under original locks/backups. Fix any failure before markingf4b1
+VERIFIED. Then f4b2 generation/cosmetic continuation, f4c current-authority settlement,
+f4d actual service/Audit/replay proof;2B4 values,2C/2D,2E visual business designer.
+Phase2 NOT PASSED; no visual designer/publish-to-dashboard completion claim.
+Ledger mandatory current detail/files/database/tests/results sections reconciled;
+earlier pending entries explicitly retained as superseded checkpoint history.
+
+## 10 October 2026 — Preserve observed live Apps/Tasks ancestry for Studio
+
+Merged exact public/current1bf0e2c1c69803906ac087ce6ba634fe6033c365 (previous845456e)
+into Studio branch after f4b1dc5d508 checkpoint. Preserved all concurrent Apps/Tasks
+source and both shared-memory/decision entries; conflicts were memory-only.
+New Studio0007 remains unapplied/actual nested Test proof pending. Recheck combined
+build/types/native compatibility and safe capacity before pinned candidate release.
+No assertion of another task’s final acceptance from health alone.
+
+## 10 October 2026 — F4b1 additive settlement storage IMPLEMENTED; actual Test proof pending
+
+F4a adfc357 locally verified (18 focused/45files292/build/lint/strict TS PASS).
+Forward0007/schema adds nullable settlement pin/hash/actor/time and guarded
+one-time ACT0→ROLLED_BACK/FINALIZED1, paired publication state and deferred pointer
+proof. Original0006 insertion/source-active READY proof unchanged; original
+identities/values/native rows retained. Exact Test nested rollback-only helper
+checks both outcomes/standalone denial/history/changed extension; not a production
+service. Ordinary value opening and generation/cosmetic continuation remainf4b2/2B4.
+Schema validate/generate,41 Studio files268 regression,7 compatibility files48,
+production build/strict postbuildTS/scoped helper lint/diff PASS. Central backed-up
+DDL rolled back PASS (071007): five oldACT receipts compatible, closed actor shape
+valid/grants/fake support rejected; settlement columns after rollback0, PG18 online.
+First SQL syntax failure corrected and full DDL rerun; original locks never bypassed.
+No applied0007 or new Studio deployment. Logs /tmp/atlas-studio-settlement-{ddl,
+storage-*}.txt. Public/current now1bf0e2c (previous845456e), both separate concurrent
+releases to preserve; read-only root2.0G. Exact next: checkpoint reviewed f4b1,
+merge exact current live ancestry, safely reclaim only eligible disposable task
+caches under bothlocks if needed, then full pinned candidate/public acceptance.
+No capacity or actual runtime proof claim yet. FullPhase2 NOT PASSED; designer required.
+
+## 10 October 2026 — F4a closed settlement contract implemented, no mutation authority
+
+New fields/migrations/settlement-contract and six cases in existing cutover-contract
+suite pin retained original cutover, independent same-company current principal,
+closed confirmations/CAS and source rollback vs retained-target window finalization.
+No tenant/mode/target/grants from client, checksum/pin not permission/readiness,
+historical transition not today's pointer. 18 focused/45 files292 regressions/build/
+scoped lint/diff PASS; strict post-build TS PASS (session89249 exit0). Logs /tmp/atlas-
+studio-settlement-contract-{tests,regression,build,types,lint}.txt. DECISIONS rationale/
+field plan/ledger updated. No DB/service/native/value/pointer mutation; live74fab2d
+verified and unchanged. F4b–d and2B4/2C–E remain. F4a strict TS PASS/checkpoint adfc357; current next is additive0007 lifecycle/deferred/history/generation guards
+with original0006 preserved. FullPhase2 NOT PASSED; visual builder still required.
+
+## 10 October 2026 — Business setup/readable comparison VERIFIED live
+
+Exact74fab2d1983b3d16d68f481fb783332335e5fc0a full candidate/public ALL COMBINED
+PASS, runner56399 exit0; current/public health exact, previous1f2ab97 retained. Candidate
+saTKTd/publicJubgPA, backup063716/fixture backups063910/064311; local
+/tmp/atlas-studio-business-setup-deploy.txt. Actual business setup/advanced/technical
+ID disclosures, unchanged save/conflict/check/publish/activate, stored validation
+checksum, readable two-version comparison, customer/Admin/tenant separation and all
+native suites PASS. Desktop/tablet/phone overflow/captures pass; desktop/phone images
+visually inspected and existing live pages read-only inspected in temporary background
+tab, then closed. Original user tab/unsaved input preserved. 45 files/286 local
+assertions/build/strict post-build TS/scoped lint/diff PASS. No DB or migration change.
+This verifies the clarity companion, NOT the visual screen/template/dashboard builder.
+FullPhase2 NOT PASSED; those remain2E after2B–D. Root4.6G/PGonline last checked.
+
+Next: f4a closed settlement identity/confirmation/derived-transition contracts and
+negative tests; pure integrity only, no new DB/service/grant/native writes. F4 plan
+is in STUDIO_FIELD_EVOLUTION_PLAN; retain original applied0006 and current strict
+ACT/source-active predicates. Forward storage, rollback authority and normal owner
+gateway remain later bounded workstreams within Phase2.
+
+## 10 October 2026 — Candidate business setup/readable comparison PASS
+
+Candidate74fab2d metadata/business-setup/readable comparison/Admin/customer checks
+PASS; desktop/tablet/phone captures /tmp/atlas-studio-business-setup-57d1e1ba-*.png.
+Full native candidate/public repeat still running, runner56399; no VERIFIED claim yet.
+Backup063716/fixtures063910, evidence /tmp/atlas-studio-candidate-saTKTd and local
+/tmp/atlas-studio-business-setup-deploy.txt. Root4.6G/PGonline, current1f2 unchanged.
+Keep exact pinned branch tip until runner completes; preserve user's unsaved tab.
+
+
+
+## 10 October 2026 — Drawer candidate UI PASS, Messages evidence-path fix
+
+Exacte050647 builds successfully with unused compiler persistence off. Candidate
+I1I3xY Tasks/Messages drawers PASS all four widths, native Escape/X/backdrop/focus,
+Back flow/reduced motion, central assignment/notes/attachments/status guards/saves.
+Real Messages creation/send/order attachment/details/history/paging PASS, then its
+legacy fixed screenshot path /tmp/atlas-messages-desktop.png failed EACCES (owned
+by an earlier root-run check). Production remains1bf0e2c; no live claim. Preserve
+historic screenshots; check-messages now uses unique0700 private evidence folder
+per run. Candidate screenshots bYrmhi and backup072449/fixture072639 retained.
+Next: scoped checker types/lint, exact immutable retry, complete Messages plus
+Tasks candidate/public and screenshot inspection, then safely remove temp512MBswap.
+
+
+## 10 October 2026 — Drawer build capacity correction (candidate)
+
+160efb1 server compiled but page collection failed ENOSPC before activation.
+Runtime remains accepted1bf0e2c; backup071840/full source/logs retained. Own inactive
+unready dependencies/partial Next output reclaimed under both original locks.
+Installed Next16.3 guide explicitly recommends turbopackFileSystemCacheForBuild:
+false when cache is not carried into builds. Atlas immutable candidates always
+build cold, so next.config disables only unused build compiler persistence; dev
+cache/runtime/data are unaffected. Local production build with this flag PASS.
+Temporary swap reduced1GB to512MB to release disk space while preserving build
+headroom; no fstab change, remove after acceptance. Inventory utility-drawer-
+capacity-20261010.txt. Next: post-build types, exact reviewed retry, full candidate/
+public Tasks plus Messages acceptance and screenshot review. No live claim yet.
+
+
+## 10 October 2026 — Tasks and Messages consistent slide-out drawers (candidate)
+
+User explicitly narrows this redesign to Tasks and Chat; Dashboard/Settings retain
+existing destinations. Added shared native SidePanel, right-anchored560px maximum,
+phone viewport inset,240ms entry/exit with a light unblurred shade and reduced-motion
+support. Native focus trapping/return, Escape/backdrop/X close and cancellation of
+stale animation finishes; task cleanup waits until exit completes, saving guard
+retained. Task list/detail and chat conversation/thread use a compact Back flow at
+all drawer widths. Full-page Chat and per-conversation/company/user drafts remain.
+Nested chat pickers keep their keyboard focus scope. No data/action/schema/profile
+change. Preserves exact accepted Apps1bf0e2c and Tasks845456e source/memory.
+
+Paths: shell/side-panel.tsx, my-tasks.tsx, chat/chat-dock.tsx, globals.css;
+tests/side-panel + chat-workspace; check-my-tasks extends drawer/back/focus/reduced
+motion and Messages at four widths. Existing tasks release selector now also runs
+full real check-messages under original locks and per-stage central fixture backup.
+Checks: final local production build/strict types PASS;36 focused tests PASS,
+then12 affected panel/chat tests rerun after the final interrupted-animation guard
+PASS. Scoped lint0errors (one existing chat image warning); shell syntax/whitespace
+PASS. Capacity setup reclaims only inactive74fab2/1f2 compiler caches, preserving
+source/assets/dependencies/backups; temporary1GB swap, no fstab change. Inventory
+maintenance-backups/utility-drawer-capacity-20261010.txt. Actual central candidate/
+public acceptance pending. Next: capacity setup under original locks,
+exact scoped release build/acceptance, review live screenshots and remove temp swap.
+
+
+## 10 October 2026 — Task/chat drawer work preserves accepted Apps release
+
+Merged exact live1bf0e2c into codex/utility-slide-outs, preserving its compact Apps
+menu, topbar and all concurrent memory. User narrows redesign to Tasks/Messages;
+Dashboards and Settings retain their existing destinations. Implementation and
+checks pending; no new release claimed.
+
+## 10 October 2026 — Tasks pop-out and notification controls LIVE, verified
+
+Activated exact845456e366cc59e373bd7de3d6d9ee120fd00e9b at public Atlas, retaining
+accepted Studio74fab2 as source/rollback. My tasks header/rail opens the polished
+native pop-out; canonical assigned Project/People tasks, search/filter/paging,
+notes/discussion, authorized record links and native guarded status lifecycle.
+Tasks open-count badge and Messages unread-count badges in header/utility rail.
+Both controls fit the320px workspace header; native Escape/focus restore verified.
+
+Complete candidate65Takc/publicemn61U acceptance PASS under both original locks:
+assigned-only search, notes, discussion, linked Sales record, blocked premature
+completion, actual persisted IN_PROGRESS/DONE, four widths320/390/820/1448,
+header controls, Escape/focus and exact revision. Screenshots HVSoox/WbQjBO under
+/tmp/atlas-tasks-browser-*; public phone/desktop visually reviewed. Synthetic task
+fixtures retained canceled; existing records/profiles and other modules preserved.
+Local production build/strict post-build types/scoped lint0errors (3 existing
+image warnings), shell syntax/whitespace PASS; 22 focused panel/access/source-phase/
+atomic completion/project-domain tests PASS. Extra test lint PASS. No schema,
+profile grants, local business cache or external deliveries.
+
+Backup070139; fixture backups070330/070349. Failed earlier candidates/source/logs
+and every backup retained; only positively identified disposable outputs/package
+caches reclaimed under original locks. Temporary2GB reduced to1GB then safely
+disabled/removed after acceptance, no fstab edit. Capacity inventory at
+/opt/atlas-maintenance-backups/tasks-capacity-20261010.txt; root4.5GBfree, no swap,
+central/runtime unchanged after cleanup. No deployment blocker. Prior pending and
+capacity entries below are historical/superseded. Evidence/tests-only commit may
+be newer than runtime; source on codex/my-tasks-popout. Shared Desktop checkout is
+concurrently dirty; integration must preserve its unrelated edits.
+
+## 10 October 2026 — Compact Apps popup and polished header
+
+Latest user steering requires every app visible without scrolling and a slimmer
+header. AppMenu now up to 900px wide; AppDirectory uses four desktop/three tablet/
+three phone columns, compact labels/icons/28–36px links, no internal scrolling.
+Phone popup clears the full header. Workspace header 60px desktop/96px phone,
+36px Apps/company/back controls and 40px search. Home directory unchanged.
+Design docs/decision supersede earlier wide-menu and initial scrolling directions.
+Paths: shell app-menu/app-directory/topbar/command-palette/workspace-back,
+globals.css, Home acceptance checker, design docs/shared decisions.
+Checks: corrected production build, scoped ESLint (zero errors/two existing image
+warnings), diff PASS. Existing checker asserts no panel overflow, all authorised
+links, responsive fit, anchoring, dismissal and navigation. Public checks pending.
+Preserved concurrent live Studio 74fab2d. Prior candidate passed popup dimensions/
+Escape/all links then caught phone search overlap; corrected. Later preparation
+failed with VPS disk full; live unchanged. Reclaimed only this task's inactive candidate .next/node_modules and npm download
+cache under both original locks; source/backups/live/previous retained. Desktop/
+tablet no-scroll candidate PASS; phone two-column overflow reproduced. Three-column
+phone correction read-only diagnostic: all 33 authorised links, 390px/320px fit
+without scrolling (461/479px popup heights); 320px screenshot visually inspected.
+Corrected production build/scoped lint/diff PASS; final pinned acceptance pending.
+
+## 10 October 2026 — Tasks capacity retry with smaller temporary swap
+
+69dbc60 server compile again passed but page collection failed ENOSPC; accepted
+runtime remains Studio74fab2. A concurrent Apps candidate2ad27f also built and
+failed its separate acceptance, consuming the shared volume. Retained all source,
+logs and backups065845; reclaimed only own unready69dbc60 dependencies/partial
+Next output and disposable npm/APT package caches under both original locks.
+Temporary swap is being reduced to1GB (no fstab change), preserving RAM headroom
+while releasing build disk space. Next exact docs-only retry has identical tested
+application code to8bf4417; candidate/public acceptance still required, then remove
+all task-build swap files safely and record exact evidence.
+
+
+## 10 October 2026 — Task release retry after capacity failure
+
+Final local build/types/scoped lint (0 errors)/19 focused tests PASS. Candidate
+8bf4417 server compile passed, then page collection failed ENOSPC; production
+remains accepted Studio74fab2. Backup065424 and full failed source/logs retained.
+Reclaimed only that inactive/unready candidate's partial dependencies/Next output,
+following 7e9cc2 acceptance-failed disposable cleanup; all accepted runtimes,
+central records/backups and historical source retained. Capacity inventory:
+maintenance-backups/tasks-capacity-20261010.txt. Temporary2GB swap remains enabled
+for build only, no fstab edit; remove safely after deployment. Next: exact reviewed
+new retry commit, complete candidate/public Tasks acceptance and visual review.
+
+
+## 10 October 2026 — Assigned Tasks pop-out and task/chat notification controls (candidate)
+
+My tasks opens a native modal from the utility rail and header, preserving the
+current workspace. Search/filter/paging, task notes/discussion, authorized attached
+records and immediate status changes use canonical ProjectTask/EmployeeTask.
+Open assignment counts appear on the header/rail; Messages keeps its unread badge
+and publishes it to the rail. Company/user keyed shell, native modal focus/Escape,
+source module/capability/tenant/privacy scopes and read-only state are preserved.
+Project status delegates to its original checklist/dependency/version/recurrence/
+automation/audit lifecycle with fresh assigned-work authorization in a serializable
+transaction. Employee completion is own-assignment scoped, audited and atomic.
+No business cache, schema changes, profile grants or external messages.
+
+Paths: shell/my-tasks.tsx, task-notifications.tsx, workspace-navigation/topbar,
+app layout, profile/task-actions.ts, projects/actions.ts, chat actions/dock,
+projects/people services/assigned-tasks.ts, core/shared/my-tasks.ts.
+Checks: production build PASS; strict types PASS; scoped lint 0 errors (3 existing
+image warnings); 19 focused panel/access/project-domain tests PASS. Added central
+scripts/check-my-tasks.ts and `tasks` acceptance in existing deployment gates.
+First sealed 7e9cc2 candidate built successfully; real notes/attachments, assigned
+filter and blocked/valid status persistence passed at four widths. Final Escape
+assertion raced the protected save; harness now waits until saving finishes.
+Phone/desktop task screenshots visually inspected, layout is polished. Narrow
+320px workspace header now hides the Back control to fit both notification buttons.
+Candidate yNEZV7/browser DQfH8S; backup065030/fixture065230 retained.
+Server candidate/public acceptance still pending; do not call
+this task live yet. Merged exact accepted live Studio74fab2 parent, preserving its source and memory. Next: deploy
+reviewed scope, run candidate/public acceptance under original locks.
+
+
+## 10 October 2026 — Customer menu correction live and verified
+
+Activated 1f2ab97f3ee954ac9829d2c3ea1d4681ce5320e5 at public Atlas, preserving
+accepted Studio9aad1fc as source/rollback. Shared opaque cards no longer create
+backdrop-filter stacking contexts; Actions/Manage Record stay above page content.
+Both customer menus anchor left on phones/right on wider screens. Exact candidate
+AND public commercial acceptance PASS under both original release locks: every
+menu item hit-test and entire-menu viewport bounds at desktop/tablet/phone, full
+commercial workflows, access/tenant checks and zero browser errors. Synthetic Test
+access retired; records/audit retained. Public desktop/phone screenshots visually
+reviewed. Local build/strict types/scoped lint/shell syntax/whitespace PASS. No new
+schema, business data conversion, grants or external deliveries.
+
+Deploy backup20261010-062119;
+fixture backups062311/062352. Candidate /tmp/atlas-commercial-candidate-Jr4lLj,
+public /tmp/atlas-commercial-public-Rqc3v3; screenshots tQrf18/pK3QrB under
+/tmp/atlas-commercial-acceptance-*. Exact final public health confirms 1f2ab97.
+Temporary 2GB swap disabled/removed safely after checks under both locks, no fstab
+edit; central PostgreSQL/runtime preserved. Failed/stopped candidate sources/logs
+and all backups retained; only identified disposable outputs/caches reclaimed.
+No live deployment blocker remains. Evidence/source held on codex/menu-layering-fix;
+shared Desktop main remains concurrently dirty, so integration must preserve that
+work. All earlier menu pending/blocker entries below are historical and superseded.
+## 10 October 2026 — Final readable business-setup companion checks PASS
+
+45 files/286 assertions, production build, strict post-build TypeScript/scoped
+ESLint/diff PASS after final readable comparison/check changes. Logs /tmp/atlas-
+studio-business-setup-{tests,build,types,lint}.txt. No DB/migration/native action or
+compiler change. Original user browser was read-only inspected, not reloaded or
+mutated; preserve unsaved edits. UI companion IMPLEMENTED, real candidate/public
+and three-size screenshot review pending before VERIFIED. Root7.0G/PGonline,
+current1f2/prior9aad confirmed; next exact reviewed commit and pinned complete
+Studio acceptance, then f4 rollback contracts. FullPhase2 NOT PASSED; bespoke
+screen/document/dashboard designer and custom button delivery remain required.
+
+## 10 October 2026 — Plain-language comparison/check results implemented
+
+Michael states he is not a coder and needs visual modular setup. Companion now
+replaces raw reference-version JSON/hashes with readable before/after descriptions,
+named selections and additions/removals/changed-reference summary. Draft checks
+show readiness/review and human reference labels; persisted validation is parsed.
+New modules/studio/reference-comparison plus definition-view; existing tenant-scoped
+comparison/service unchanged. Actual central checker now verifies real two-version
+comparison, no raw pre, phone overflow and preserved stored checksum. ATLAS_ADMIN
+and visual requirements/ledger updated. Final build/types/lint rerun pending after
+these last changes; prior45 files/286 assertions PASS. Real layout previews/comparison
+remain unimplemented2E. Next: final checks/coherent checkpoint then pinned full
+candidate/public and screenshot inspection, f4 afterwards. FullPhase2 NOT PASSED.
+
+## 10 October 2026 — Business setup entry clarity implemented; safe capacity recovered
+
+Studio now leads with selected-business setup and explicit designer-in-development
+status; named capability-reference forms/history are under closed Advanced setup,
+technical IDs separately disclosed. Existing saved definitions and publish/activate/
+conflict semantics preserved; no template/screen/dashboard builder claim. Files:
+modules/studio/{library,definition-view,manifest}; real check-metadata adds existing
+Admin/customer disclosure/responsive assertions/screenshots while retaining prior
+security/history/Audit checks. Local45 files/286 assertions/build/scoped lint PASS;
+strict post-build types result pending; actual pinned candidate/public next. No DB
+change. FullPhase2 NOT PASSED; dependent visual integration remains required.
+
+Failedaea disposable outputs reclaimed exit0 under BOTH original locks/pinned
+current1f2/prior9aad. Full failed source/readiness/envlink retained; only inactive5f/
+080 Turbopack caches also reclaimed, accepted assets/dependencies/backups/central
+records unchanged. Inventory maintenance-backups/studio-failed-cutover-reclaim-
+20261010.txt; /tmp/atlas-studio-reclaim-failed-cutover.{sh,txt}. Root7.0G/PGonline
+confirmed. Supersedes blocked attempts. Next: exact local types/lint/diff checkpoint
+and pinned full candidate/public Studio acceptance, then f4 lifecycle contract.
+
+## 10 October 2026 — Preserve completed concurrent commercial release
+
+Current exact public1f2ab97f3ee954ac9829d2c3ea1d4681ce5320e5 includes Studio9aad1fc
+and the other contributor's customer phone-menu fix/commercial acceptance selector.
+Merged that existing live source into codex/studio-phase2; preserved both memory
+entries, native styling and original release locks/gates. Current previous9aad1fc;
+phase2 remains IN PROGRESS. Read-only root4.2G/PGonline. Clarity companion next;
+no UI edits yet. Earlier9aad current/prior claims are historical snapshots.
+
+## 10 October 2026 — Cutover service VERIFIED live; Studio must lead with business setup
+
+Exact9aad1fc30a33179b73a994ad2db683101b7658d2 complete candidatehHdOrk/publicibWIZD
+ALL COMBINED PASS, runner54052 exit0; public health/current exact, previous5f5fce5
+retained. Actual current-authority READY/native/private/field/module/member/stale/
+tenant checks, both paired-Audit failure rollbacks, concurrent CAS/raw conflict,
+one activation, fresh receipt replay and source/target/history/native compatibility
+PASS. All native suites/Admin/company login/metadata PASS. 45 files/286 local
+assertions/build/strict post-build types/scoped lint/diff PASS. No new DDL;0006 remains
+applied. Backup060827/fixtures061011/061415; /tmp/atlas-studio-cutover-conflict-deploy.txt.
+Supersedes earlier pending entries; f3a–c VERIFIED. Full Phase2 NOT PASSED.
+
+Michael confirms the business's bespoke software setup must be the primary Studio
+experience; naming a capability set is not acceptable as the main journey. Existing
+Templates has a section/sample preview editor, but Admin metadata target context is
+not owner business-record authority. Do not link it into the wrong tenant or claim
+it is the complete Studio. Bounded entry-point clarity companion planned in ledger;
+full designer/Sales/document/dashboard/button integration remains2E after2B–D.
+Root2.2G/PGonline last checked; another operator intermittently holds both deployment
+locks. Failedaea reclaim guarded attempts exit1 at lock acquisition; no deletion
+confirmed. Preserve current/prior/history/backups; do not bypass locks or start an
+unsafe build. Next: implement/check clarity companion, recover safe disposable
+capacity under original locks, exact candidate/public acceptance; then f4 contracts.
+
+## 10 October 2026 — Actual public cutover service passes; native repeat pending
+
+PublicibWIZD actual explicit cutover service PASS plus Studio metadata/principals/
+Admin/company-login, fixture061415. It proves both paired-Audit failure rollback,
+concurrent CAS/raw conflict and one activation, fresh receipt-derived replay, current
+member/field/module/private revocation, source/target/history retained and both
+native snapshots unchanged. Remaining native public suites/runner exit0 still
+pending, session54052. Exact public health9aad1fc confirmed. No f4 code yet;
+Phase2 NOT PASSED and visual/dashboard/button work remains. Root2.3G/PGonline.
+
+## 10 October 2026 — Combined candidate passes; public proof starts
+
+9aad1fc full combined candidate PASS and exact runtime switched; previous5f5fce5
+retained. Public ibWIZD acceptance starting, fixture061415; backup060827 and
+candidatehHdOrk/fixture061011. /tmp/atlas-studio-cutover-conflict-deploy.txt,
+session54052 running. Actual candidate cutover/concurrency/current authority/paired
+Audit/replay/history/native proof PASS plus all native suites. Complete public
+repeat/exact health/runner exit0 still required before f3 VERIFIED/f4. No new DDL.
+Failedaea5ef1 source/dependency reclaim script prepared and syntax checked only,
+NOT executed; wait both locks after runner, preserve current9aad/prior5f and all
+accepted assets/backups. Free2.3G/PGonline last checked. Phase2 NOT PASSED.
+
+## 10 October 2026 — Actual corrected candidate cutover service passes
+
+9aad1fc candidatehHdOrk actual explicit cutover service PASS: current READY/owner/
+private/field/module/member checks, stale/client/tenant denial, both actual paired-
+Audit failures roll back, concurrent CAS one activation/raw conflict mapped, fresh
+receipt-derived replay, retained source/target/history and both native snapshots
+unchanged. Studio metadata/principals/Admin/business login PASS; fixture061011.
+Remaining native candidate/public full acceptance pending, session54052 active.
+Backup060827, free2.3G/PGonline; no new DDL. Do not advance pinned branch. Full f3
+VERIFIED still pending public and runner exit0. F4 dependency inspection only saved
+in field evolution plan; no rollback/value-window code or final design yet.
+
+## 10 October 2026 — Corrected concurrency candidate running
+
+9aad1fc corrected full combined Studio release running (session54052, backup060827,
+/tmp/atlas-studio-cutover-conflict-deploy.txt). Actual raw40001 concurrency mapping
+and full fresh service replay proof pending. No new migration. Before runner free
+6.7G, during candidate install/build3.3G; PGonline/live5f5fce5 remains. Monitor space
+and preserve accepted current/prior/backups; do not advance pinned branch tip.
+285 original local plus conflict test:45 files/286 assertions/build/types/lint PASS.
+
+## 10 October 2026 — Customer phone menu alignment corrected before activation
+
+f58d5a5 candidate commercial acceptance PASS: both customer menus above content at
+1448/820/390px plus full commercial workflows; /tmp/atlas-commercial-staging-pHDQuM,
+screenshots /tmp/atlas-commercial-acceptance-AMJR29, backup061823. Visual screenshot
+inspection then found phone menu extending left offscreen, missed by centre-only
+hit-testing. Both customer menus now anchor left on phones/right from sm upward;
+checker also requires entire menu within viewport. Local production build, strict TypeScript and scoped
+lint PASS. bea1861 deployment intentionally stopped before
+activation, private backup/logs061900 and source retained; disposable outputs/cache
+reclaimed under both locks. Studio9aad1fc complete candidate/public PASS and current
+exact; its source is merged. npx execution cache and two inactive compiler caches
+reclaimed with source/static/runtime/readiness/central data/backups retained.
+Next: exact pinned commercial candidate/public gate and final visual review.
+Temporary swap stays until release/builds complete safely; no persistent swap edit.
+
+## 10 October 2026 — Menu release retry and continuous commercial acceptance
+
+Reclaimed only failed 05d0098 dependencies/.next and npm package cache under both
+release locks, retaining source/logs/backups and active/rollback releases. Fresh
+f58d5a5 build/smoke/compatibility PASS; backup 20261010-060628. A temporary 2GB swap
+at /opt/atlas-maintenance-backups/menu-build-20261010.swap is active (no fstab edit)
+to protect further server builds; remove when deployment/builds finish safely.
+Candidate commercial check queued behind concurrent Studio 9aad1fc release.
+Added explicit commercial acceptance selector to existing deploy hook, with both
+locks retained across candidate/activation/public checks, fixture-stage backups,
+exact revisions and normal rollback. Shell syntax/whitespace PASS. No lock bypass.
+Merged Studio 9aad1fc source after combined candidate PASS and live activation;
+its public repeat is running. Reconciled build, strict types, scoped checker lint
+and shell syntax PASS. Preserve both contributors' memory entries. Next: wait for
+public Studio proof, run pinned commercial release and capture public menu checks.
+Menu correction still not publicly activated.
+
+## 10 October 2026 — Shared card/menu layering correction
+
+Customer Actions appeared underneath tabs and overview cards because the global
+solid-white card rule applied backdrop-filter, creating nested stacking contexts.
+Removed that unnecessary filter in src/app/globals.css across all matching cards;
+intentional translucent navigation styles remain. Commercial acceptance now checks
+every Actions/Manage Record item with browser hit-testing and captures both open
+menus at desktop/tablet/phone sizes. No business records or permissions change.
+Production build, strict TypeScript, scoped checker lint and whitespace PASS.
+Local Chromium stacking reproduction: old blur hides menu items, corrected rule
+passes all-item hit-testing at 1448/820/390px. This is a minimal layering fixture,
+not authenticated live feature acceptance. Scoped release starts at live 5f5fce5
+to preserve concurrent accepted work. Candidate 05d0098 preparation FAILED: kernel
+OOM killed next-build during page-data collection after compilation. Production
+pointer stayed 5f5fce5. Backup/logs retained at server
+/home/administrator/backups/atlas-pre-deploy-20261010-060017-*; incomplete candidate
+retained, no ready marker. Server has no swap and only 7.6GB disk free; concurrent
+Studio aea5ef1 preparation then held the normal deployment lock. No server cleanup,
+lock bypass or resource reconfiguration attempted. Customer menu fix NOT DEPLOYED.
+Next: resolve build resource pressure, reconcile latest accepted live ancestor,
+prepare a fresh pinned candidate, run updated commercial acceptance, activate and
+repeat public acceptance. Shared Desktop main is dirty; scoped branch is preserved
+for integration without overwriting concurrent work.
+## 10 October 2026 — Actual raw concurrency conflict corrected; gate rerun next
+
+aea5ef1 candidate S9EZeD FAILED before live switch, session9476 exit1; backup
+060208/fixtures060350, /tmp/atlas-studio-cutover-service-deploy.txt. Actual tests
+reached concurrent cutover after both paired-Audit rollback checks, but raw locked
+query SQLSTATE40001 surfaced as Prisma P2010 instead of mapped conflict. Full
+service/replay/history gate NOT PASSED. Test companies suspended/access retired,
+scoped grant/trigger finally restored. Live/current5f5fce5 confirmed exact health,
+prior080e4d7 retained, PGonline/free6.7G. No schema reset/repair/new migration.
+Fix shared migration authority narrowly maps P2010 exact40001/40P01 (direct or
+driver cause metadata) to existing REVIEW_CHANGED; guard/Audit/unrelated/missing
+codes remain unchanged. Additional mapping/negative assertion test, final45 files/
+286 assertions/build/strict post-build types/lint/diff PASS. Logs /tmp/atlas-studio-
+cutover-conflict-{regression,build,types,lint}.txt. Checkpoint then exact new full
+candidate/public rerun; do not weaken concurrency assertion or advance f4 yet.
+
+## 10 October 2026 — Cutover service candidate running
+
+aea5ef1 full combined Studio release running (session9476, backup060208,
+/tmp/atlas-studio-cutover-service-deploy.txt). F3a/b actual service proof pending;
+no new DDL. Accepted live5f5fce5/prior080e4d7 retained, PGonline/free9.7G before
+runner. Do not advance pinned branch tip. Exact Test helper includes real receipt
+activation/paired Audit/concurrent/replay/current field/private/module/member
+denials/history/native checks; local45 files/285 assertions/build/types/lint PASS.
+Wait for actual full candidate/public before marking f3 VERIFIED or beginning f4.
+
+## 10 October 2026 — Cutover service checked; actual candidate proof next
+
+F3b3 current-authority cutover IMPLEMENTED / checked locally. Strict confirmations,
+locked READY reinspection/f1 pin/f2 receipt/publication CAS then shared f3a source
+pointer activation and paired Audit in one Serializable authority transaction.
+Lost-response replay uses actual scoped receipt/target-active metadata and fresh
+owning native/private/current/written/reference/unique coverage; no duplicate
+writes/Audit. Seven new service tests plus receipt/coverage tests: final 45 files/
+285 assertions PASS (Studio/Admin/module/permission/template compatibility); production
+build, strict post-build TypeScript, scoped lint/diff PASS. Logs /tmp/atlas-studio-
+cutover-service-{tests,regression,build,types,postbuild-types,lint}.txt. No new schema/
+migration/public endpoint, normal values, rollback or native mutation. New f3c exact
+Test helper prepared: separate field lifecycle, real paired-Audit failures/concurrent
+CAS/fresh replay/member/field/private/module revocation/history/native snapshots.
+It is NOT RUN yet. Test-only affiliation grant/failure triggers restored in finally;
+old execution cancellation acceptance retained. Accepted live5f5fce5 unchanged;
+PostgreSQL online/free9.7G. Checkpoint then pinned full candidate/public acceptance.
+Phase 2 NOT PASSED; required visual designer/customer dashboard/buttons incomplete.
+
+## 10 October 2026 — Receipt-derived current coverage checkpoint
+
+F3b2 actual receipt-derived review coverage IMPLEMENTED / checked locally: 3 files/
+31 assertions, strict types, scoped lint and diff PASS; logs /tmp/atlas-studio-
+cutover-coverage-{tests,types,lint}.txt. Identity reader reloads locked tenant review,
+publication/execution/receipt/target-active definition, immutable source/target and
+exact draft; existing SQL source/target representation checks remain required.
+New internal cutover review stage reuses owning current native/private coverage,
+source/target and written field policies plus exact current owner approval. Old
+source-active preparation/publication/execution predicates unchanged, no client
+stage/fake pointer/grants. No DB change/public hook or value/native mutation.
+Integrated build/live proof pending f3b3/f3c; accepted live5f5fce5 retained.
+Next f3b3 explicit READY cutover/paired Audit and fresh receipt-derived replay.
+
+## 10 October 2026 — Actual cutover receipt identity checkpoint
+
+F3b1 closed actual ACTIVATED receipt reader IMPLEMENTED, checked locally: 12
+cutover identity assertions (four new replay identity tests), strict TypeScript,
+scoped lint and diff PASS. Receipt binds actual CUTOVER publication/target active
+CAS and unchanged READY execution/review; no simulated source pointer or grant.
+No DB/migration, public hook or writes. Logs /tmp/atlas-studio-cutover-receipt-
+{tests,types,lint}.txt. Build/live proof pending integrated f3b2/3 and f3c release.
+Accepted live 5f5fce5 retained, Phase 2 NOT PASSED. Next f3b2 actual receipt-derived
+review inspection with current native/private/current/written/reference policies.
+
+## 10 October 2026 — Shared activation checked; authorised cutover next
+
+F3a IMPLEMENTED / VERIFIED locally: definitions/activation.ts extracts the existing
+compiler/checksum/generation-binding/source-module/CAS/activation-Audit transaction.
+Public activateVersion delegates with unchanged request/result, Serializable
+boundary and existing guards; scoped version identity and optional server source
+pointer CAS added. No receipt service, client hook or bypass. Five new helper tests,
+12 focused existing/new assertions,42 files/262 scoped assertions, production build,
+strict post-build types/scoped lint/diff PASS; /tmp/atlas-studio-activation-shared-
+{tests,regression,build,types,postbuild-types,lint}.txt. Actual refactor proof pending
+next full combined release. No schema or permission changes. Accepted 5f5fce5 retained.
+Also under both release locks reclaimed only f5bb914/8d6eb9e/64361cb superseded
+incremental compiler caches after ready/path/no-process checks. Current 5f5fce5 and
+rollback 080e4d7 excluded; all source/dependencies/server/static/readiness/records/
+backups/evidence retained. Inventory /opt/atlas-maintenance-backups/studio-superseded-
+compiler-cache-reclaim-20261010.txt; /tmp/atlas-studio-reclaim-superseded-cache.{sh,txt},
+exit 0. PostgreSQL online, 11G free. Next checkpoint then f3b current-authority cutover
+and receipt-derived fresh replay; honest rollback remains f4/2B4. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Receipt storage accepted live; shared activator starts
+
+5f5fce5535765066068eb0e21ecbad10fe745a50 complete candidate/public PASS;
+deploy81942 exit 0, exact public health confirmed. Candidate J150ZK/public AZyW6v,
+backup052619/fixtures052817/053216; /tmp/atlas-studio-cutover-storage-deploy.txt.
+20261010060000 APPLIED and actual storage guard lifecycle VERIFIED: exact atomic
+triple tested then deliberately rolled back, standalone/tampered/foreign/stale/
+history/cancel/source/draft bypasses rejected, both native snapshots unchanged.
+All native/Admin/business-login suites PASS; prior080e4d7 retained. No SQL repair.
+Begin f3a shared activation transaction extraction and tests, preserving existing
+compiler/checksum/binding/module/CAS/Audit rules. Then f3b authorised cutover/replay,
+f3c actual service proof; f4 honest rollback/value window follows. Phase 2 NOT PASSED;
+visual editor/customer dashboard publication/buttons remain required and incomplete.
+
+## 10 October 2026 — Public receipt proof passed; final native repeat running
+
+5f5fce5 full combined candidate PASS and exact runtime switched; previous080e4d7
+retained. Public AZyW6v actual cutover storage/identity/execution/principals/Admin/
+customer login PASS, fixture053216. Remaining native public suites pending; session
+81942 still active, no pinned branch advance. No f3 activator/f4 rollback/value API.
+
+## 10 October 2026 — Actual receipt guards passed candidate; combined proof pending
+
+5f5fce5 candidate J150ZK actual cutover storage PASS: exact triple passes deferred
+proof then deliberate rollback; standalone receipt/publication, foreign/tampered/
+stale identity, history mutation, cancellation/old-source activation/draft/source
+save bypasses denied. Source and both native snapshots unchanged; no permanent
+activation/service. Studio execution/principals/Admin/customer-login PASS. Remaining
+native suites/public repeat pending; session81942 running, fixtures052817/backup052619.
+0006 APPLIED, guard candidate evidence confirmed; full public acceptance still needed.
+Space9.3G, PostgreSQL online. Do not advance pinned tip; no f3 code yet.
+
+## 10 October 2026 — Cutover storage migration applied; actual proof pending
+
+5f5fce5 receipt storage release running (session81942, backup052619,
+/tmp/atlas-studio-cutover-storage-deploy.txt). Normal deploy successfully applied
+20261010060000_studio_field_cutovers; production candidate compiled, build/acceptance
+still running. Migration APPLIED, actual guard lifecycle NOT VERIFIED. Prior live
+080e4d7 retained; no branch advance during runner. No f3 activator or f4 rollback.
+
+## 10 October 2026 — Cutover receipt storage checked locally; actual proof pending
+
+2B3f2 IMPLEMENTED, not runtime VERIFIED. Additive StudioFieldMigrationCutover
+scoped execution/source/target FKs, immutable closed pin/history and deferred receipt+
+CUTOVER publication+exact target pointer proof. Forward 20261010060000 retains old
+source-active predicates, denies cancellation/descendant bypass and freezes CUTOVER
+source/target/draft/configuration until f4/2B4. No production activator/rollback service.
+Prisma validate/generate, 392 model descriptors/unchanged 905 action allowlist,
+41 files/257 assertions incl generic receipt reads/counts denied, production build,
+strict post-build TypeScript/scoped lint/diff PASS. Central DDL BEGIN/ROLLBACK PASS
+under both original release locks, fresh atlas-cutover-ddl-20261010-0520.dump retained;
+/tmp/atlas-studio-cutover-storage-{ddl,validate,generate,catalogue,tests,build,types,
+postbuild-types,lint}.txt. Migration NOT APPLIED; actual guard lifecycle pending.
+Existing exact Test execution driver now runs rollback-only storage checks: standalone
+receipt/publication, foreign/tampered/stale identity denied; complete triple passes
+immediate deferred proof then deliberate rollback; receipt mutation, cancellation,
+old-source activation/draft/source saves denied. Not executed yet. Accepted 080e4d7.
+Checkpoint then full pinned candidate/public Studio proof; no f3 or Phase 2 gate yet.
+
+## 10 October 2026 — Cutover identity accepted live; receipt storage starts
+
+080e4d741e0e05d6c763a540900cc81b10b1147d complete candidate/public PASS;
+deploy session 67437 exit 0, exact public health confirmed. Candidate AAnFme/public
+SmVNla, backup 050933, fixtures 051132/051535; /tmp/atlas-studio-cutover-contract-
+deploy.txt. Exact pure cutover identity derives from actual owner-authorised READY
+rows while source stays active and normal target activation remains denied. All
+native/Admin/customer login suites PASS. Prior 8d6eb9e runtime retained. 2B3f1 VERIFIED.
+Begin 2B3f2 additive tenant receipt/publication/atomic-pointer proof; no f2 code yet.
+Keep source/target/config saves frozen until f4/2B4 reviewed paths. Phase 2 NOT PASSED;
+visual designer/customer dashboard publication/buttons still mandatory and incomplete.
+
+## 10 October 2026 — Cutover contract candidate complete; public repeat running
+
+080e4d7 full combined candidate PASS, exact runtime switched; previous8d6eb9e
+retained. Public SmVNla repeat running, fixture051535; session 67437 active. Actual
+candidate pure identity and complete native suites PASS. Do not advance pinned tip.
+Source-active metadata SQL remains unchanged; no f2 code/schema/activation path yet.
+
+## 10 October 2026 — Actual cutover identity passed candidate; release pending
+
+080e4d7 candidate AAnFme actual execution/pure cutover identity PASS: derived pin
+from freshly inspected READY tenant rows, exact source/target/CAS and explicit
+rollback policy; source stays active, ordinary target activation denied and native
+snapshots unchanged. Remaining candidate native suites/public repeat pending;
+fixture 051132/backup 050933, session 67437. Do not advance pinned tip. No f2 DDL yet.
+
+## 10 October 2026 — Cutover contract release running; storage guards inspected
+
+Pinned 080e4d7 contract release running, session 67437, backup 050933,
+/tmp/atlas-studio-cutover-contract-deploy.txt. Do not advance branch during runner.
+Saved f2 inspection detail: exact receipt/publication/pointer deferred proof; source
+saves cannot open merely from closing publication (typed SQL checks written schema,
+not active pointer). Source/target/config stays frozen until reviewed f4/2B4 paths.
+No f2 schema/SQL/service code yet; accepted 8d6eb9e retained. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Closed cutover identity checked; actual proof pending
+
+2B3f1 IMPLEMENTED / VERIFIED locally: closed cutover pin binds freshly inspected
+READY execution, retained review/publication identity, source-active definition CAS
+and rollback policy unchanged_reviewed_representation. No client tenant/pin/grants,
+coercion, reverse-conversion promise, DDL, pointer mutation or public endpoint.
+Eight new focused tests PASS; Studio/Admin/sign-in regression 41 files/257 assertions,
+production build, strict post-build TypeScript and changed-file lint/diff PASS.
+Logs /tmp/atlas-studio-cutover-contract-{tests,regression,build,postbuild-types,lint}.txt.
+Existing central execution helper now derives this pure pin from real authorised
+rows without activation; runtime proof pending next pinned candidate/public release.
+Accepted live 8d6eb9e; checkpoint and deploy f1, then f2 additive receipt/atomic pointer
+proof. Phase 2 NOT PASSED; visual/customer dashboard/button work still incomplete.
+
+## 10 October 2026 — Execution recovery accepted live; cutover identity starts
+
+8d6eb9e626ca91ee37a97e211e374e9c456fe8be full combined candidate/public PASS;
+deploy39964 exit 0, exact public health confirmed. Candidate0GPKVw/publicCy0qcR,
+backup045515, fixtures045720/050126; /tmp/atlas-studio-postgres-recovery-deploy.txt.
+Actual RUNNING batch+failure-marker Audit rollback proved; all native suites passed.
+PostgreSQL recovery backup retained; no reset/restore/SQL repair. Prior f5bb914 kept.
+2B3e6 VERIFIED. Begin 2B3f1 closed cutover contract/tests only (no DDL/runtime grant),
+then f2 receipt/atomic pointer guards under existing activation. Phase 2 NOT PASSED;
+visual designer/customer publication/buttons remain required and unimplemented.
+
+## 10 October 2026 — Central PostgreSQL recovered; release retry pending
+
+352835c final recovery release stopped before backup/acceptance (session 25961,
+exit 1): pg_dump could not connect. PostgreSQL 18/main had stopped during ENOSPC
+at 04:42:41 UTC and remained down after cache recovery. Started the existing central
+cluster with pg_ctlcluster 18 main start; automatic WAL recovery/checkpoint completed
+and connections resumed at 04:51:38 UTC. No reset, restore or replacement database.
+Confirmed online/accepting, pg_is_in_recovery=false, execution migration still applied,
+and complete pg_dump with readable pg_restore archive index at backups/atlas-post-
+disk-recovery-20261010-0452.dump (.list retained). Startup alone is not a full integrity
+claim; combined native/runtime acceptance must run. Evidence /tmp/atlas-studio-postgres-
+recovery.txt and /tmp/atlas-studio-execution-final-deploy.txt. Free space remains 16G.
+Last accepted source f5bb914; no candidate activation. 229 local assertions/build/
+strict types/lint remain PASS. Saved inspected 2B3f1–f5 plan; implementation NOT STARTED.
+Checkpoint this recovery, then retry full pinned candidate/public Studio release.
+Phase 2 NOT PASSED; visual designer/customer publication/buttons remain required.
+
+
+## 10 October 2026 — Disposable cache recovery preserves Atlas and backups
+
+bef1a4010c40e93bc017f5e0bbc554544e0ecc31 preparation stopped in npm ci with
+ENOSPC before generate/migrate/build/acceptance; session 82519 exit 1, backup 044203.
+Running/accepted f5bb914 unchanged. Root was 193G/193G. Under both release locks,
+removed only npm _cacache and this task's failed 6d2f5a9/36c211b/bef1a40 generated
+node_modules/.next; retained their complete source/readiness history/environment
+symlinks in /opt/atlas-maintenance-backups/failed-studio-source-<SHA>-20261010.
+Then reclaimed only Turbopack incremental compiler caches from 22 inactive ready
+releases, excluding current f5bb914/rollback 64361cb. All source/dependencies/compiled
+server/static assets/readiness markers, central records/files/backups and evidence
+are retained. Cache inventory /opt/atlas-maintenance-backups/studio-inactive-compiler-
+cache-reclaim-20261010.txt; local /tmp/atlas-studio-reclaim-{disposable,compiler-cache}.
+{sh,txt}. First root lock open stopped before mutation (Linux protected regular file);
+read-only opening of the same lock inode permits exclusive flock without recreating it.
+Both cleanup runs exit 0. Free space 16G; actual public health still exact f5bb914.
+No business DDL/reset/data operation. Save recovery/docs, then rerun full pinned
+candidate/public final recovery proof (229 local assertions/build/types/lint PASS).
+Phase 2 NOT PASSED; cutover and visual editor/dashboard/button work remains pending.
+
+
+## 10 October 2026 — Reviewed execution accepted live; final recovery checkpoint
+
+f5bb914641b6f32d55898330c7c56760c76ba18f complete combined candidate/public
+acceptance PASS, deploy session 21591 exit 0; actual public health exact source
+confirmed. Execution persistence/owner/writer/batches are live with real deferred,
+mid-batch/Audit rollback, forced process death/new-process resume, private/tenant/
+history/cancel/source/native compatibility proof. Candidate 8v9Xza/public R2N3mY,
+backup 043032, fixtures 043235/043638; /tmp/atlas-studio-execution-policy-deploy.txt,
+ALL COMBINED lines 135/265. Additive 20261010050000 already applied under backup
+042335; no SQL repair/reset. Prior 64361cb retained. Local final recovery checkpoint
+adds actual RUNNING batch+failure Audit rollback and reserves cancellation revision;
+38 files/229 assertions, production build, strict post-build TS/scoped lint/diff PASS.
+Commit it with this evidence, then pin full candidate/public repeat before moving
+to 2B3f. Phase 2 NOT PASSED; cutover/value gateway/designer/live dashboards/buttons
+remain pending. All exact synthetic companies suspended/access revoked, history kept.
+
+
+## 10 October 2026 — Combined candidate passed; public repeat running
+
+f5bb914 full combined candidate acceptance PASS; immutable runtime switched
+and public /api/health/release confirmed exact f5bb914. Complete public repeat is
+running (R2N3mY, fixture backup 043638), not accepted yet. Candidate 8v9Xza, backup
+043032/fixtures 043235; all native suites passed. Prior 64361cb retained for normal
+rollback. Deploy session 21591 remains active; do not advance pinned tip. Phase 2
+NOT PASSED. Local 229-assertion recovery proof awaits checkpoint after runner ends.
+
+
+## 10 October 2026 — Actual candidate conversion proof passed
+
+f5bb914641b6f32d55898330c7c56760c76ba18f candidate Studio helper PASS:
+actual owner final/unanchored/scalar representation, exact SQL lineage/deferred
+progress/mid-batch/start/batch Audit rollback, SIGKILL before commit/new-process
+resume/replay, private/tenant/CAS/history/cancel/source readability and unchanged
+native snapshots. Candidate 8v9Xza, backup 043032, fixtures 043235; complete native
+suite/public repeat still pending, deploy session 21591. Public accepted source
+remains 64361cb until combined runner finishes. No applied SQL repair was needed.
+Local next correction (RUNNING recovery-Audit proof + cancellation revision reserve)
+passed 38 files/229 assertions, build/strict post-build TS/scoped lint/diff; logs
+/tmp/atlas-studio-execution-recovery-proof-{all-tests,types,build,postbuild-types,lint}.txt.
+Do not advance pinned branch during current runner. Phase 2 NOT PASSED; next full
+release must actually exercise the additional RUNNING recovery-Audit case.
+
+
+## 10 October 2026 — Complete running failure and revision recovery proof
+
+While f5bb914 remains pinned, e6 review adds actual RUNNING batch+recovery
+Audit failure proof (the existing FAILED-resume case cannot exercise a new failure
+marker). Also reserve the final SQL revision for cancellation: stop progress/resume
+before exhausting it and do not let failure recording consume it. Add regression
+for RUNNING/FAILED limit boundaries; no DDL change. Changes remain local until the
+pinned runner finishes; next release must include and actually run these checks.
+
+
+## 10 October 2026 — Confirmed native final guard and corrected assertion
+
+36c211b candidate IatJ7l stopped before activation exactly at the anticipated
+message assertion: actual native final-row guard rejected with "Reopen active ticket
+work before changing extension values." The local test now matches that confirmed
+domain rule. Strict TypeScript/scoped lint/diff PASS; /tmp/atlas-studio-execution-final-
+policy-{types,lint}.txt. App/DDL unchanged; 228 assertions/build retained. Backup 042738,
+fixtures 042930, deploy session 39039 exit 1. No row lifecycle/process proof reached.
+Synthetic Test access suspended/history retained; public accepted 64361cb unchanged.
+Commit corrected assertion and rerun the full pinned combined release now.
+
+
+## 10 October 2026 — Match actual final-record policy evidence
+
+Pinned correction 36c211b940fa3a2fa9fc5142185c79b397839a39 running under
+backup 20261010-042738, deploy session 39039, /tmp/atlas-studio-execution-revision-
+deploy.txt. Before its acceptance, source inspection confirmed the ordinary final
+Ticket guard says "Reopen active ticket work before changing extension values."
+Prepare a local assertion for that exact domain rule (not the earlier generic
+final/closed text); do not modify immutable candidate or advance branch during
+runner. Migration remains applied, public accepted 64361cb, execution NOT VERIFIED.
+
+
+## 10 October 2026 — Candidate proof corrected before activation
+
+Corrected one-line acceptance check: strict TypeScript/scoped lint/diff PASS; /tmp/atlas-studio-execution-proof-revision-{types,lint}.txt. App code unchanged; previous 228 assertions/local build retained, next pinned server build and actual proof required.
+
+Pinned 6d2f5a9 candidate failed before activation at the new final-record
+negative check: test omitted mandatory expectedRevision and hit request validation,
+not native final-write policy. Correct the test with actual observed native revision;
+no permission weakening or DDL change. Actual start/paired Audit/pin proof had passed;
+row/deferred/process proof not reached. Candidate 35nN6y, backup 042335, fixture 042536,
+deploy session 73316 exit 1. Exact synthetic companies suspended/history retained.
+Public health confirmed unchanged accepted 64361cb. Applied 20261010050000 remains
+additive; do not edit its checksum or reset data. Rerun local checks and pinned full
+candidate/public acceptance after corrected checkpoint.
+
+
+## 10 October 2026 — Execution migration applied during preparation
+
+Central preparation migrate log confirms 20261010050000_studio_field_executions
+applied successfully under backup 20261010-042335. Candidate build in progress;
+public still prior accepted 64361cb. Actual trigger/owner/process lifecycle is not
+verified yet. Do not edit applied migration SQL; any defect needs a safe additive
+forward repair and full rerun after the current pinned runner finishes.
+
+
+## 10 October 2026 — Pinned execution release running
+
+Pinned 6d2f5a9aba1064c76ea48cf8638cad2ff2ee9c74 combined release started,
+deploy session 73316, /tmp/atlas-studio-execution-deploy.txt. Backup 20261010-042335.
+Public health still 64361cb during preparation. Candidate/public actual acceptance
+pending; do not advance branch tip while the pinned runner owns release locks.
+Do not claim migration applied or execution VERIFIED until actual logs prove it.
+
+
+## 10 October 2026 — Actual conversion proof ready for pinned release
+
+2B3e6 helper IMPLEMENTED, actual NOT RUN: exact fresh v5 reviewed Test field,
+owner historical approval/normal final-write denial, real start/mid-batch/Audit and
+deferred-progress rollback, process SIGKILL before commit/fresh-process resume,
+lost response and post-conversion publication replay through shared exact inspector;
+private/tenant/CAS/history/activation/cancel checks, exact precision/null values and
+both native tenant snapshots. Child helper is explicit Test/Linux-only, no worker or
+public endpoint. 38 Studio files/228 assertions, production build, strict post-build
+TS/scoped lint/diff PASS; /tmp/atlas-studio-execution-proof-{all-tests,types,build,
+postbuild-types,lint}.txt. Old zero-target publication predicate unchanged; only
+actual stored execution selects execution inspection. Pending 20261010050000 NOT
+APPLIED. Commit and pin full combined candidate/public release next. Accepted live
+64361cb; Phase 2 NOT PASSED, visual designer/dashboards/buttons still pending.
+
+
+## 10 October 2026 — Publication replay compatibility under execution
+
+e6 compatibility follow-up before release: publication lost-response replay
+must remain valid after its own recorded target writes. Derive replay inspection
+from the scoped actual execution row and reuse the shared exact execution inspector;
+never relax the original zero-target publication predicate or accept a caller stage.
+Add focused delegation/stale tests and actual post-restart publication replay.
+
+
+## 10 October 2026 — Actual conversion acceptance begun
+
+2B3e6 IN PROGRESS before code: extend the existing exact synthetic central Test
+principal/combined acceptance runner with a v5 reviewed target and actual owner/SQL
+execution proof. Source fixture only through normal active native extend; final and
+unanchored records approved representation-only, ordinary final extend still denied.
+Actual start Audit rollback, mid-batch SQL rollback, retained failure prefix, lost
+response, forced child termination before commit/new-process resume, private/source/
+tenant guards, exact typed values/outcome/FK/CAS/history/source compatibility,
+premature activation denial and cancellation retention. Compare both native tenant
+snapshots. Child helper has strict Linux/explicit opt-in/Test-slug/preparation scope,
+no public endpoint. Expected check-field-execution/process helper/principal driver
+and docs; pending DDL ships only with pinned combined candidate/public release.
+
+
+## 10 October 2026 — Bounded execution locally checked
+
+2B3e5 IMPLEMENTED/local checks PASS: 1–50-row canonical SQL cursor, stored CAS,
+shared current execution inspection, atomic target outcomes/progress/Audit; lost
+responses/READY replay write nothing. FAILED resume explicitly transitions through
+RUNNING. Rollback recovery can record only exact unchanged RUNNING prefix with
+closed generic failure and Audit; revocation/Audit outage reports failureRecorded=false
+without invented state. Audit excludes native IDs/cursor/value/counts. 38 Studio
+files/227 assertions, production build, strict post-build TS/scoped lint/diff PASS;
+/tmp/atlas-studio-execution-batch-{focused,all-tests,types,build,postbuild-types,lint}.txt.
+Initial mock writer returned id rather than actual observationId, corrected; all
+final checks passed. No actual SQL/row proof yet; pending 20261010050000 unapplied,
+accepted live 64361cb. Phase 2 NOT PASSED. Next e6 actual Test execution/failure/
+process termination/restart/replay/SQL/permissions/cancel/native compatibility proof
+through combined candidate/public release before marking execution VERIFIED.
+
+
+## 10 October 2026 — Bounded execution begun
+
+2B3e5 IN PROGRESS before code: closed 1–50-row request, stored canonical cursor
+and execution CAS; shared exact inspection before progress or values, all row outcomes/
+targets/progress/Audit in one short Serializable transaction. Lower revision is gated
+no-write replay; READY replay writes nothing. FAILED current revision explicitly
+resumes through RUNNING then commits bounded progress; no automatic worker/Flow.
+After a rolled-back attempt, a separate sparse current-publisher transaction may
+record only generic failure/CAS with the same committed prefix and Audit. It returns
+no business progress; if membership/Studio authority or Audit is unavailable, it
+cannot claim to record failure, and the original prefix remains intact. Stale/foreign
+requests cannot alter a newer cursor. Expected execution-batch/tests and docs; no
+new schema beyond pending 20261010050000. Actual failure/restart/SQL proof follows e6.
+
+
+## 10 October 2026 — Exact target writer locally checked
+
+2B3e4b IMPLEMENTED/local checks PASS: one shared source inspector/converter now
+supplies converted values only inside the server transaction; archive observation
+wrapper stays unchanged and redacted. Exact owner representation approval precedes
+source columns, full sealed row/fingerprint/null/loss comparison precedes immutable
+outcome claim, then existing extension CAS+1/new1, target slot0/value1/DbNull and
+pointer1/unique token. No native writes; caller must pair progress/Audit, and deferred
+SQL forbids committing targets alone. 37 Studio files/219 assertions, production
+build, strict post-build TS/scoped lint/diff PASS; /tmp/atlas-studio-representation-
+writer-{focused,all-tests,types,build,postbuild-types,lint}.txt. Source observation
+regressions preserved. Actual SQL NOT RUN, pending 20261010050000 unapplied.
+Accepted live 64361cb, Phase 2 NOT PASSED. Next e5 bounded CAS/progress/Audit batches,
+retained-prefix failure recovery and fresh lost-response replay; then e6 actual proof.
+
+
+## 10 October 2026 — Exact target writer started
+
+2B3e4b IN PROGRESS before code: reuse the existing authorised source inspector
+and converter rather than a second decode/permission path. Internal inspection may
+return the converted value only inside the owning transaction; existing observation
+API stays references/fingerprints only. Require exact running execution, server-loaded
+observation and registered owner representation approval before source columns.
+Compare full sealed observation/result, then claim immutable outcome before its
+deferred target FK writes. Existing extension CAS +1 (or new revision 1), new slot0,
+exact typed value1/DbNull, slot pointer1/unique token. Caller must atomically update
+batch progress and Audit; database deferred guards forbid committing row alone.
+Expected observation refactor/representation writer/tests; no native/domain changes,
+no new schema or public endpoint. Actual lifecycle remains pending e5/e6.
+
+
+## 10 October 2026 — Execution start locally checked
+
+2B3e4a2 IMPLEMENTED/local checks PASS: shared exact locked execution inspector
+reloads reviewed preparation/publication/immutable target, current compiler and
+owner-query hashes, current module/native/private/written/reference coverage.
+Start saves RUNNING/zero progress and existing Audit atomically; no target/native
+write. Lost-response replay reinspects current authority, verifies exact saved pin
+and closed progress, and duplicates neither operation nor Audit. 36 Studio files/
+213 assertions, production build, strict post-build TypeScript, scoped lint/diff
+PASS; /tmp/atlas-studio-execution-start-{all-tests,build,postbuild-types,lint}.txt.
+Actual SQL NOT RUN, pending 20261010050000 unapplied, accepted live 64361cb.
+Phase 2 NOT PASSED. Next e4b reuses one authorised source observation/decoder to
+compare the sealed row and atomically claim/write its exact target representation;
+then e5 batches and e6 central interruption/failure/replay evidence.
+
+
+## 10 October 2026 — Exact execution start begun
+
+2B3e4a2 IN PROGRESS before code: one shared locked inspection for execution
+start/replay and later batches. Derive stage from the actual scoped execution row;
+recheck immutable reviewed publication/target/compiler and native/private/written/
+reference authority, then derive exact owner approval pin. Strict start input contains
+only preparation ID, publication revision and review checksum; no client tenant,
+pin or stage. Save initial RUNNING/zero progress and Audit atomically; retries return
+only gated progress with no second row/Audit. No target/native writes or public UI.
+Expected migrations/execution-inspection and execution-start plus focused tests;
+reuse pending execution schema unchanged. Actual SQL proof remains e6.
+
+
+## 10 October 2026 — Execution inspection locally checked
+
+2B3e4a1 IMPLEMENTED/local checks PASS: the shared inspector has an internal
+execution stage with persisted owner-query hash/opt-in and exact publication,
+outcome-owned source revisions, native/private/written/reference authority. Old
+preparation/publication freshness is unchanged. Current source and target native
+write grants are both required before archive access. 35 Studio files/207 assertions,
+production build, strict post-build TypeScript, scoped lint and diff PASS; logs
+/tmp/atlas-studio-execution-inspection-{all-tests,build,postbuild-types,lint}.txt.
+Pending SQL retains the existing generic target-write denial text for compatibility;
+its exact outcome requirement is unchanged. No target writes/start or DDL application;
+actual execution remains NOT VERIFIED. Accepted live 64361cb, Phase 2 NOT PASSED.
+Next e4a2 shared exact execution inspection/start service and atomic Audit, then
+e4b one-row writer, e5 bounded batches and e6 actual central lifecycle proof.
+
+
+## 10 October 2026 — Exact execution inspection started
+
+2B3e4a1 IN PROGRESS before code: extend the single source/review inspector with
+an internal execution stage derived from a scoped actual execution. Require target
+owner explicit representation opt-in and persisted approval query hash resolution,
+exact intent/publication/execution freshness and the same native/private/written/
+reference policies. Account only outcome-recorded own extension increments through
+separate execution-source proof; original preparation/publication queries remain
+unchanged. No stage in client input, no target writes/start/activation. Files coverage/
+inspection plus focused execution-stage regressions. Then shared start service e4a2.
+Pending DDL remains unapplied; last accepted live 64361cb, Phase 2 NOT PASSED.
+
+## 10 October 2026 — Tickets representation approval locally checked
+
+2B3e3 IMPLEMENTED/local checks PASS, actual owner SQL NOT RUN: Tickets entity v5
+explicitly opts into source versions 2–5, snapshot/reference query v3/read 1–5 and
+representation approval query v1. Existing descriptors and v2 defaults unchanged;
+normal final/merged extend still denied. Complete current native/private/member/module
+access precedes scoped stored review/publication/observation, initiating actor and
+current membership/auth-version checks, exact metadata freshness and FOR UPDATE native
+revision. Output only scoped representation anchor, no values/counts/native mutation.
+35 Studio files/204 assertions, production build, strict post-build TypeScript,
+scoped lint/diff PASS; /tmp/atlas-studio-ticket-representation-{all-tests,build,
+postbuild-types,lint}.txt. Initial TS caught an assumed User.active column (actual
+model uses membership active/authVersion) and local never-function narrowing; fixed
+before final checks. Pending 20261010050000 NOT APPLIED; no row writer yet. Accepted
+live 64361cb; Phase 2 NOT PASSED. Next e4a shared execution inspection/start service,
+then exact one-row writer, bounded batches and actual owner/SQL recovery proof.
+
+## 10 October 2026 — Explicit Tickets representation approval started
+
+2B3e3 IN PROGRESS before code: new Tickets entity v5, snapshot query v3 and
+representation approval query v1. Preserve sealed v1–v4/query v1–v2 descriptors and
+normal read/extend final/merged guards. Full current member/private/module/native
+access precedes scoped reviewed publication/observation metadata; exact initiating
+principal/current auth+session versions and native row revision under Serializable
+FOR UPDATE. Output only scoped representation anchor, no values/counts/native writes.
+New snapshot/reference coverage explicitly approves versions 2–5/read 1–5; old
+reference query defaults remain unchanged. Expected service-work/studio, focused
+owner tests and module docs. Pending e2b SQL remains NOT APPLIED; actual owner/
+writer/SQL proof follows e4–e6 before release. Last accepted live 64361cb.
+
+## 10 October 2026 — Protocol release accepted; execution persistence locally checked
+
+64361cbb60f0a1e3b9e131856867976531373bf1 complete combined candidate/public
+acceptance PASS, deploy session 31720 exit 0 and actual public release health exact
+SHA confirmed. e1/e2a pure contracts/encoder deployed; existing sealed owners/native
+Atlas and prior reviewed publication/freeze/cancellation checks preserved. Evidence
+50jeOW/6lZOTh, backup 033432, fixtures 033632/034025, log /tmp/atlas-studio-execution-
+contract-deploy.txt; previous ea27b2f retained. No new DDL at this release. Phase 2
+NOT PASSED; visual designer/live dashboards/buttons and actual conversion remain open.
+
+2B3e2b IMPLEMENTED locally; actual row execution NOT VERIFIED. Additive execution/
+outcome models and tenant/immutable pin/CAS/bounded prefix guards, exact source and
+target lineage, deferred atomic target/progress constraints and sparse cancellation
+cascade. Original preparation/publication predicates unchanged; normal source and
+premature target activation remain blocked. Generic models/counts denied; generated
+catalogue regenerated by existing script, 905 action allowlist unchanged. Initial
+Prisma validation required explicit compound unique for one-to-one observation FK;
+corrected before final validate/generate/types/tests/lint/build. 34 files/197 assertions,
+production build, strict post-build TS/scoped lint/diff PASS; logs /tmp/atlas-studio-
+execution-schema-{validate,generate,data-api,tests,build,postbuild-types,lint}.txt.
+After pinned release finished, entire pending SQL was parsed on central Postgres
+inside BEGIN/ROLLBACK with 2s lock/20s statement limits and no business DML. Metadata
+checksum parity and null-scoped helper compilation PASS; table absence after rollback
+confirmed. /tmp/atlas-studio-execution-schema-rollback.{sql,txt}. This verifies syntax,
+not actual trigger lifecycle/authority/outcomes. Migration 20261010050000 NOT APPLIED;
+source/target data and schema remain at accepted 64361cb. Need e3 owner approval and
+actual e4–e6 failure/replay/commit evidence before execution is VERIFIED or deployed.
+
+## 10 October 2026 — Execution persistence started
+
+2B3e2b IN PROGRESS before code: additive execution and immutable success-outcome
+models. Execution pins publication/review/approved owner contract with CAS progress;
+lookup remains private. Outcome tenant-FKs bind stored observation and exact target
+extension/slot/value. Deferred FKs/commit guards permit one atomic claim→typed value→
+pointer→outcome transaction, never an outcome without its target or vice versa.
+Initial execution requires unchanged publication proof/no targets. Separate execution
+freshness accounts only exact outcome-owned extension increments and checks unchanged
+source pointers plus complete target lineage. Existing preparation/publication freshness
+stay unchanged; normal source and target activation remain blocked. Target writes need
+an exact RUNNING outcome claim; no caller flag. State cursor/count is exact immutable
+outcome prefix, max 50 new rows per CAS; failure retains prior committed state. Receipt
+cancellation atomically cancels execution without data reads, retaining outcomes/source.
+Native owner/private/field/reference authorisation remains mandatory in e3–e5 services;
+SQL metadata is never native permission. Files schema/additive migration/model catalogue/
+archive denial tests/docs. No applied DDL or writer until actual central acceptance.
+
+## 10 October 2026 — Closed execution protocol locally verified
+
+2B3e2a VERIFIED locally, pure integrity only: execution pin reuses exact sealed
+review and publication target, approved target owner metadata/transactional query,
+explicit source opt-in and canonical checksums. Success lineage pins actual stored
+observation, native revision, distinct target slot/value and own extension increment
+(observed+1/new=1); overflow/substitution/invalid rows rejected. Closed bounded
+request/progress and generic failure codes; READY requires exact cohort count.
+34 Studio files/197 assertions, production build, strict post-build TypeScript,
+scoped lint/diff PASS; /tmp/atlas-studio-execution-contract-{all-tests,build,
+postbuild-types,lint}.txt. No DB/owner query/runner/target write authority. e1/e2a
+checkpoint not deployed yet; last accepted live ea27b2f. Phase 2 NOT PASSED.
+Next additive execution/outcome persistence with immutable lineage and atomic
+commit guards, then explicit Tickets approval and the actual bounded writer.
+
+## 10 October 2026 — Closed execution protocol started
+
+2B3e2a IN PROGRESS before code: closed pure execution pin derived from the actual
+sealed review/publication/immutable target and explicitly approved target owner
+metadata/query. Closed success outcome binds actual stored observation checksum,
+record/native revision and exact target extension/slot/value identity; own revision
+is observed+1 (or new=1), never a generic revision exemption. Progress validates
+bounded CAS/cursor/count and READY completeness, failure codes contain no values.
+No persistence/authority/runner/DDL; source remains active. Files migrations/execution-
+contract and focused tests. Additive deferred target/outcome guards follow e2b.
+
+## 10 October 2026 — Representation contract and encoder locally verified
+
+2B3e1 VERIFIED locally, pure contract/encoder only: optional representation
+metadata validates explicit snapshot-supported sources and a registered same-owner
+transactional query/native write capability atomically. Existing absent contracts
+and all owner hash regression tests pass; normal read/extend remains unchanged.
+Normal encoder uses current selections; representation revalidates canonical typed
+converter output and retains known retired IDs only, with exact 15-family roundtrip,
+null/zero/false/required, decimal/money, UTC and rejection/fingerprint evidence.
+33 Studio files/191 assertions PASS; production build, strict post-build TypeScript,
+scoped lint and diff PASS. Logs /tmp/atlas-studio-representation-contract-{all-tests,
+build,postbuild-types,lint}.txt. An initial quoted Vitest glob selected no tests;
+corrected to the supported filename filter and all 33 files ran successfully.
+No DDL or owner execution enabled. Accepted live ea27b2f, Phase 2 NOT PASSED.
+Next 2B3e2a closed execution/outcome protocol and tests before additive persistence.
+
+## 10 October 2026 — Reviewed publication deployed and verified
+
+ea27b2ffa32ec484f90a27ad28faaa1d78dd4aff complete combined candidate/public
+acceptance PASS, deploy session 42364 exit 0 and public /api/health/release exact
+SHA confirmed. 2B3d1–d4 VERIFIED: real scoped receipt/immutability/CAS/source-draft
+freeze, premature target/descendant activation denial, paired Audit rollback/fresh
+replay, private revocation, sparse cancellation and source/draft editing recovery.
+No target values/native mutation/cutover. Native Atlas acceptance all PASS; exact
+synthetic Test companies suspended/access revoked, QA originals/history retained.
+Evidence xkustF/tSM6C9, backup 031634, fixtures 031832/032224; migrate log confirms
+20261010040000 applied successfully. Previous 32ee77e retained. Deployment log
+/tmp/atlas-studio-publication-deploy.txt. Phase 2 NOT PASSED; designer, dashboard
+publication/custom buttons and row conversion remain pending. Current 2B3e1 local
+policy/encoder checks in progress, then additive execution/outcome schema 2B3e2.
+
+## 10 October 2026 — Representation policy and encoder started
+
+2B3e1 IN PROGRESS before code: optional owner representation policy points to
+registered same-owner transactional query/native write capability and explicit
+snapshot-supported typed source versions. Old absent metadata/hashes and ordinary
+read/extend intents stay unchanged; no owner execution is enabled yet. Pure normal
+and representation encoder reuse strict validation, exact typed columns/fingerprints;
+representation retains only converter-approved retired choice IDs. Files registry
+contracts/types/entities/registration, fields/codec and focused tests; no DDL/native
+writes/runner/UI. d4 candidate and public Studio helper PASS, full public native
+runner pending. Run focused tests/types/lint/build, review diff and update memory.
+
+## 10 October 2026 — Reviewed publication candidate accepted; execution plan saved
+
+ea27b2ffa32ec484f90a27ad28faaa1d78dd4aff candidate combined acceptance PASS;
+actual reviewed publication/freeze/cancellation/paired Audit rollback and native
+unchanged checks passed. Candidate xkustF, backup 031634, fixtures 031832.
+Additive migration 20261010040000 applied during preparation (candidate runtime
+exercised new table/guards); public tSM6C9/032224 still running, not yet accepted.
+Last accepted live remains 32ee77e until full public runner exits successfully.
+2B3e bounded workstream plan saved before code, execution NOT STARTED; no designer
+or customer-dashboard publishing claim. Phase 2 gate NOT PASSED.
+
+## 10 October 2026 — Actual reviewed publication proof ready for release
+
+d4 helper IMPLEMENTED, actual NOT RUN: fresh exact Test source/review uses shared
+publisher, real paired Audit failure/rollback/replay, source active/history and
+receipt identities. Tenant/immutable/CAS/freeze/draft/retirement/source-target save/
+premature activation SQL guards, private queue denial/recovery, sparse cancellation
+and source/draft editing recovery; cancelled target/cosmetic descendant still blocked.
+Source-only privileged owner-guarded 42→43 fixture, no target/native writes, both
+native tenant snapshots compared. 26 files/160 assertions, production build, strict
+post-build TS/scoped lint/diff PASS; /tmp/atlas-studio-publication-proof-{tests,build,
+postbuild-types,lint}.txt. Initial helper guessed retirement path; corrected to
+existing fields/retirement before final checks. No broken checkpoint/deployment.
+Pending migration 20261010040000 not applied; pin full candidate/public release next.
+Accepted live 32ee77e, Phase 2 NOT PASSED; no row executor/cutover/visual builder yet.
+
+## 10 October 2026 — Actual publication acceptance started
+
+d4 IN PROGRESS before code: fresh exact Test integer source/decimal v3 review after
+reference helper, normal structural publish denial, paired Audit SQL failure/rollback,
+reviewed exact source-active publication/receipt/replay, real FKs/history/CAS/freeze/
+retirement/draft/premature activation and target-write denial. Private queue revocation
+must reject replay, then restore only exact Test member. Cancellation/replay releases
+normal source/draft editing; a cancelled target and its cosmetic descendant still
+cannot activate. Owner-guarded privileged source 42→43 fixture only; no target values/
+native changes, both tenants' native snapshots preserved. Files check-field-publication
+plus principal integration/docs. Pending migration applied only in pinned candidate,
+full normal/native/public suites required before VERIFIED.
+
+## 10 October 2026 — Publication cancellation locally checked
+
+d3b3 IMPLEMENTED/local checks PASS: current captured/explicit company principal,
+Studio publish, scoped locked publication CAS and existing Audit cancel/replay.
+Sparse state/revision output, no native count/value/record reads or old creator
+grants; no live-data privilege needed for metadata cancellation. Four files/21
+assertions, production build, strict post-build TS/scoped lint/diff PASS, /tmp/atlas-
+studio-publication-cancellation-{tests,build,postbuild-types,lint}.txt. Target remains
+blocked; SQL source/draft freeze release awaits actual central d4. No new engine/
+public endpoint; pending migration NOT APPLIED. Accepted live 32ee77e, Phase 2 NOT
+PASSED. Next exact Test publication/freeze/rollback/cancel proof plus pinned release.
+
+## 10 October 2026 — Current-principal cancellation started
+
+d3b3 IN PROGRESS before code: sparse metadata-only cancel service with fresh
+current company principal and Studio publish, locked publication CAS and Audit.
+Current authorised publisher can cancel a stopped creator's operation; never
+replay revoked creator grants or read native IDs/counts/values. Cancelled target
+stays unusable, source/draft editing unfreezes by existing SQL. Replays verify
+current authority and audit nothing twice. Files migrations/cancellation + focused
+tests, docs/memory/decision. No new migration/engine; actual central proof d4 next.
+
+## 10 October 2026 — Reviewed publisher locally checked
+
+d3b2 IMPLEMENTED/local checks PASS: publishReviewedFieldMigration refreshes exact
+initiating principal and REVIEWED revision/checksum, shared native/source/written/
+reference/digest inspection before invalid/loss consent checks. Existing publisher
+and checked permanent binding create only new target generation/version plus exact
+receipt and paired Audit atomically; source stays active, no target values. Fresh
+lost-response replay uses real target/receipt stage and no writes. 25 files/156
+assertions, production build, strict post-build TS/scoped lint/diff PASS; logs
+/tmp/atlas-studio-reviewed-publication-{full-tests,build,postbuild-types,lint}.txt.
+Real SQL/Audit/freeze/lifecycle proof not run; pending migration NOT APPLIED. Next
+sparse current-principal cancellation, then d4 exact Test candidate/public proof.
+Accepted live 32ee77e; Phase 2 NOT PASSED, visual/customer publishing still planned.
+
+## 10 October 2026 — Reviewed target publication started
+
+d3b2 IN PROGRESS before code: strict prep/review revision/checksum + warning/loss
+acknowledgements only; reload actual REVIEWED source and initiating principal.
+Lock preparation, shared inspector (stage derived from scoped publication row),
+exact review checksum. New target uses existing publisher with checked permanent
+binding/source generation and new target generation; exact receipt + paired Audit
+atomic, source active/no target values. Fresh replay validates actual immutable
+target/receipt under same policies and writes nothing. Invalid/loss consent checks
+before publication. Files migrations/publication and publication-contract helper,
+service tests; pending DDL not applied. Cancellation and actual central proof follow.
+
+## 10 October 2026 — Shared review inspection locally checked
+
+d3b1 IMPLEMENTED/local checks PASS: one exact review inspector reused by sealer;
+source/written/native/reference/access guards precede v1 digest/uniqueness. Closed
+server-only coverage stage; preparation predicate unchanged, publication requires
+scoped exact receipt/intent checksum and its separate post-publication freshness.
+Fresh receipt cannot substitute for current private/native/source/written access.
+Eight files/60 assertions, production build, strict post-build TypeScript/scoped
+lint/diff PASS, /tmp/atlas-studio-review-inspection-{tests,build,postbuild-types,
+lint}.txt. Receipt SQL still NOT APPLIED/actual not run, no publisher/target writes.
+Next d3b2 reviewed service/atomic receipt/Audit/replay and d3b3 cancellation, then
+d4 actual constraints/lifecycle release. Accepted live 32ee77e; Phase 2 NOT PASSED.
+
+## 10 October 2026 — Shared reviewed inspection started
+
+2B3d3b1 IN PROGRESS before code: extract exact source/written/native/reference/
+digest/uniqueness inspection from sealer into one internal review inspector.
+Coverage stage is closed server-only preparation/publication: default old SQL
+freshness unchanged; publication requires scoped receipt + exact intent checksum
+and atlas_studio_publication_fresh before the same native/source/written checks.
+No client stage, copied values, target writes or permission widening. Files shared
+inspection, sealing/coverage and focused coverage tests; no new DDL beyond pending
+d2. d3b2 reviewed publication and d3b3 cancellation follow after checkpoint.
+
+## 10 October 2026 — Single publisher transaction locally checked
+
+2B3d3a IMPLEMENTED/local checks PASS: extracted existing publishDraft transaction
+into Core definitions/publication.ts. Normal module count, definition CAS/version/
+dependencies, ordinary binder, draft CAS and Audit/result retained; typed internal
+binder callback only. Tenant/kind/draft checks before writes; normal foreign/stale
+input denied. Four files/22 assertions, production build, strict post-build TS/
+scoped lint/diff PASS; /tmp/atlas-studio-publisher-extraction-{tests,build,postbuild-
+types,lint}.txt. No reviewed service yet; additive d2 migration still NOT APPLIED.
+Accepted live 32ee77e; Phase 2 NOT PASSED. Next d3b shared review inspector and
+publication/replay/cancellation through existing publisher, then d4 actual proof.
+
+## 10 October 2026 — Shared publisher extraction started
+
+2B3d3a IN PROGRESS before code: extract publishDraft's existing transaction into
+Core definitions/publication.ts, preserving module availability, definition CAS,
+immutable version/dependency creation, normal field binding, draft CAS and Audit.
+Keep normal public result and structural denial. Internal typed binding callback
+only, no use-server/client handler. Add tenant/kind checks before mutations; tests
+must use actual scoped draft shape rather than incomplete mocks. Files service,
+publication helper and definitions tests. No DDL application or reviewed publisher
+runtime yet; type/lint/build + native publication regressions required.
+
+## 10 October 2026 — Reference verified live; publication receipt locally checked
+
+32ee77e7b1c684ab9c6b5f898eb641cebf0ae3f9 full combined candidate/public PASS,
+deploy exit 0 and actual public health exact match. Reference c1–c4 VERIFIED:
+existing hashes/native guards preserved, real approved final target read, actual
+collection/shared seal/SQL–Node parity/Audit rollback/replay, private revocation,
+missing/foreign target denial without approved failure summary. All native Atlas
+checks passed. Evidence izKehB/wXodWM, backup 024145, fixtures 024333/024724; prior
+fc9b80f retained. /tmp/atlas-studio-reference-deploy.txt. Phase 2 NOT PASSED; visual
+builder/live customer dashboards/custom buttons remain authorised Phase 2 work.
+
+2B3d2 IMPLEMENTED/local checks PASS, actual SQL NOT RUN: additive publication
+receipt with tenant review/generation/version FKs, immutable identity/CAS cancellation,
+one PUBLISHED operation per field, exact post-publication freshness distinct from
+unchanged preparation freshness. Source stays active; metadata/draft and normal
+source saves frozen while open; pending/cancelled target activation/value writes
+denied. No native table modifications. Migration 20261010040000_studio_field_
+publications is NOT APPLIED. Schema validate/generate, 24 files/146 assertions,
+production build, strict post-build TypeScript/scoped lint/diff PASS. Initial TS
+caught stale generated data-service catalogue; regenerated with existing script,
+action allowlist unchanged, archive reads/counts remain denied. Logs /tmp/atlas-
+studio-publication-schema-{validate,generate,data-api,tests,build,postbuild-types,
+lint}.txt. Ship with d3 shared publisher and d4 actual acceptance before VERIFIED.
+
+Next d3 extract existing publication transaction helper without changing normal
+behaviour, then exact reviewed publisher/replay/cancellation and actual d4 helper.
+
+## 10 October 2026 — Reviewed publication persistence planned
+
+2B3d2 IN PROGRESS before code: additive StudioFieldMigrationPublication, keyed by
+sealed review/preparation, exact source/target generations and immutable target
+version/checksum/number, publisher/loss acknowledgement; tenant FKs and one open
+publication per field. Identity/history immutable; initial PUBLISHED and only CAS
+PUBLISHED→CANCELLED permitted here. Cancellation service and execution transitions
+remain d3/e, not silently enabled. No existing rows/backfills/resets.
+
+SQL guards reject pending target activation (including cosmetic descendants),
+changes to open field publication/activation/retirement/draft, normal source writes
+while PUBLISHED and any normal target-generation writes. Native domain tables and
+operations unchanged. Receipt insert validates the exact reviewed publication
+transition (source remains active; definition/draft revisions +1, target latest/
+base/payload/checksum and zero target slots). This does not relax old preparation
+freshness. Files Prisma schema/additive SQL, archive API denial test, docs/memory.
+Local schema/generate/types/lint/build and actual DB guards required before VERIFIED;
+new migration not applied until d3 shared publisher/acceptance candidate is ready.
+
+## 10 October 2026 — Reviewed publication integrity contract locally checked
+
+2B3d1 IMPLEMENTED/local VERIFIED pure contract: exact sealed review and immutable
+target tenant/definition/payload/plan/checksum/generation plus initiating publisher
+pin, no privileges/activation. Invalid rows require source resolution/new review;
+reviewed conversion loss needs explicit recorded acknowledgement. Four files/23
+assertions, production build, strict post-build TypeScript/scoped lint PASS. Logs
+/tmp/atlas-studio-publication-contract-{tests,build,postbuild-types,lint}.txt.
+No DDL or publication runtime. Reviewed target receipt/DB guards d2 next.
+32ee77e full candidate combined PASS; public wXodWM running, fixture 024724;
+accepted prior fc9b80f retained, no complete public claim yet. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Reference candidate feature proof passed; publication plan
+
+32ee77e candidate actual reference/source/seal/Audit/replay/private/missing/foreign
+proof PASS in izKehB (backup 024145, fixture 024333); full combined native/public
+pending, accepted live fc9b80f. Saved 2B3d workstreams before code: pure integrity
+pin, additive receipt/pending-generation guards, reuse publisher, real acceptance.
+No source activation/row execution/cutover yet; Phase 2 NOT PASSED.
+
+## 10 October 2026 — Actual reference proof ready for pinned release
+
+c4 helper IMPLEMENTED, actual NOT RUN: good approved closed native target read
+plus active-parent extend, real collector and existing shared SQL–Node seal/Audit
+rollback/replay helper, private queue revocation/recovery. Missing/foreign stored
+source fixtures explicitly privileged negatives; collector must abort with zero
+observations, separate invalid archive frame must fail actual owner protocol and
+canonical seal, no approved failure summaries. Foreign exact Test native fixture
+created before baseline; both tenants' native snapshots preserved. No new DDL,
+target/native mutations by review, permission grants or parallel engine.
+Checks: c3 scoped 21 files/136 assertions retained; c4 production build, strict
+post-build TypeScript, scoped lint/diff PASS, /tmp/atlas-studio-reference-proof-
+{build,postbuild-types,lint}.txt. Pin c1–c4 through full candidate/public combined
+suite next; fc9b80f accepted current. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Actual reference proof planned
+
+c4 IN PROGRESS before code: exact Test reference helper after uniqueness proof.
+Good source reference uses approved native read and normal active-parent extend;
+actual shared preparation/collector/seal/Audit rollback/replay then private queue
+revocation denial. Missing/foreign source fixtures are explicitly privileged
+negative storage cases, cannot collect or seal; a separate single invalid archive
+frame must be denied by owner query v2 before counts. Synthetic foreign ticket is
+created before baseline; compare native snapshots unchanged after checks. Reuse
+existing sealer actual helper, no duplicate engine/DDL, no target/native writes.
+Expected files check-field-reference-sealing.ts, principal driver/sealing checker,
+plan/ledger/state. Build/types/lint and full pinned combined candidate/public proof
+required; accepted live fc9b80f, Phase 2 NOT PASSED.
+
+## 10 October 2026 — Reference final seal locally checked
+
+c3 IMPLEMENTED: single generic sealFieldMigrationPreparation replaces internal
+scalar name, exact source/written/native checks then explicit owner reference
+versions/protocol before digest/review/CAS/Audit, including fresh replay. Missing
+opt-in/legacy protocol, unsupported versions and private/target changes deny before
+summary. 21 files/136 assertions, production build, strict post-build TypeScript,
+scoped lint/diff PASS. Initial unsupported-version test invalidated only one side
+of immutable intent; corrected both sides, final PASS. Logs /tmp/atlas-studio-
+reference-sealing-{full-tests,build,postbuild-types,lint}.txt. No DDL/target/native
+writes/public endpoint. Updated DATA_MODEL/plan/ledger; accepted live fc9b80f.
+Next c4 exact Test reference/Audit rollback/replay/private/missing/foreign proof,
+then pinned full candidate/public release. Phase 2 NOT PASSED; visual designer and
+customer dashboard/button publishing remain authorised planned Phase 2 work.
+
+## 10 October 2026 — Final reference review integration planned
+
+c3 plan before code: one generic seal function replaces internal scalar name,
+current/written/source/native validation then explicit owner referenceVersions and
+pinned reference_coverage truth before existing digest/unique/review/CAS/Audit.
+Missing opt-in, legacy protocol or denied references remain fail closed. No new
+engine, DDL or target/native writes. Files sealing + callers/tests; c4 actual
+reference proof follows. c2 locally checked 132 assertions/build/types/lint; live
+fc9b80f remains accepted scalar/source checkpoint, Phase 2 NOT PASSED.
+
+## 10 October 2026 — Owner reference protocol locally checked
+
+c6b2b3c2 Tickets entity v4/query v2 declares source versions 2–4 and same-entity
+reference read versions 1–4. Complete native/private/current-member/Serializable
+checks precede exact scoped query-v2/target-v4 preparation and canonical target
+existence/tenant/kind/written-version proof. No reference IDs/counts or writes.
+Extracted old snapshot logic preserves exact entity v1/v2/v3/query v1 hashes and
+ordinary final/merged extension guards. 21 files/132 assertions, production build,
+strict post-build TypeScript/scoped lint and diff review PASS. Logs /tmp/atlas-
+studio-reference-owner-{tests,build,postbuild-types,lint}.txt. New protocol actual
+central helper not yet run; ship with c3 reference final-review integration.
+No DDL; accepted live fc9b80f. Next c3 current/written/source checks then invoke
+pinned owner reference_coverage before shared digest/review/CAS/Audit; actual
+reference/private/missing/foreign/stale proof required. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Source coverage/scalar reviews verified live
+
+fc9b80f863bba6f89a351c065663072e1e2ff8be full combined candidate/public PASS,
+deploy exit 0 and actual public health match. Source coverage, exact SQL–Node v1
+parity, actual review/CAS/Audit rollback/replay/sealed append denial and non-null
+uniqueness denial VERIFIED. Current/written/native/tenant guards, final/unanchored
+coverage and native rows preserved; source-only normal-owner Test fixtures distinct
+from formatter-only fake anchors that cannot seal. No new DDL or target/native
+writes. Evidence AhVC2R/OmmiXM; backup 015932, fixture 020129/020518; previous
+96834f5 retained. Native Settings/Dashboards/People/Supply/Commercial/etc all passed.
+Reference c1 foundation local VERIFIED; c2 owner query/entity in progress, not yet
+verified, no final reference seal. Phase 2 NOT PASSED; later UI/publishing remains.
+
+## 10 October 2026 — Owner reference query implementation started
+
+c2 plan saved: Tickets query v2/entity v4 approve same-entity reference read
+versions 1–4, actual canonical target tenant/kind/existence and complete private/
+native membership access before reference coverage result. Preserve query v1 and
+entity v1–v3 exact hashes; extract old snapshot execution unchanged. New query
+returns no referenced IDs/counts or write authority. Files service-work/studio
+and tests; no DDL. Final sealer c3 remains blocked until owner checks pass.
+Current sealed scalar fc9b80f full candidate PASS; public OmmiXM pending.
+
+## 10 October 2026 — Reference opt-in contracts locally checked
+
+c6b2b3c1 optional same-entity referenceVersions validates approved reference type/
+entity and registered native read versions atomically. Old absence/hashes retained;
+no runtime reference authority/query yet. Seven files/44 assertions, production
+build, strict post-build TypeScript, scoped lint and diff review PASS. Initial two
+unknown metadata accesses in tests corrected with existing entity schema parser;
+final strict check PASS. Live fc9b80f pure registry hashes for entity v1/v2/v3 and
+query v1 captured and pinned as regression assertions; no business reads. CLI
+inspection must bootstrap db then registry/runtime (direct owner import hit a
+cycle; normal supported entry works). Logs /tmp/atlas-studio-reference-contract-
+{tests,build,postbuild-types,lint}.txt. Next c2 new owner v4/query v2, then c3
+reference sealing; current reference seal remains blocked. fc9b80f full candidate
+PASS, public OmmiXM running, fixture 020518; no final live acceptance claim yet.
+
+## 10 October 2026 — Scalar actual candidate proof passed; reference contract planned
+
+fc9b80f candidate actual source coverage/scalar seal/uniqueness PASS: exact Node–SQL
+v1 parity including formatter invalid/lossy/empty/duplicates, real Audit rollback,
+fresh replay/sealed append denial and unchanged canonical native rows. Full native/
+public still pending; evidence AhVC2R, backup 015932, fixture 020129. Not globally
+VERIFIED yet. c6b2b3c1 plan before code: optional same-entity referenceVersions on
+owner migration snapshot, registered-native-reference/version/field-policy validation
+and immutable old hashes. Files registry types/entities/validation/tests/docs; no
+DDL or new native privileges. c2 new owner query/entity versions, then c3 final
+reference seal integration and actual proof. Existing scalar path remains fail
+closed for references until those pass. No Phase 2 gate claim.
+
+## 10 October 2026 — Scalar review seal locally checked, central proof pending
+
+c6b2b3b internal scalar sealing performs fresh source/native/written checks before
+SQL v1 digest/closed summary, target uniqueness denial, immutable review/state CAS
+and existing Audit. Fresh replay is read-only; references fail closed until required
+owner reference checkpoint. No target publication/activation/native writes/DDL.
+19 files/117 assertions, production build, strict post-build TypeScript/scoped lint
+and diff review PASS. Logs /tmp/atlas-studio-sealing-{tests,build,postbuild-types,
+lint}.txt. Actual helper NOT RUN: Node/SQL parity (empty/invalid/lossy/duplicates
+and nested source refs), actual Audit rollback/replay/sealed append denial, source
+revision invalidation and actual whole-cohort unique denial. Formatter-only invented
+anchors cannot seal. Two active Test tickets created before native baseline; source
+fixtures use normal owner extend and preserve native/final/history. Next pin
+coverage + scalar seal for full backed-up combined candidate/public acceptance.
+Accepted live 96834f5; Phase 2 NOT PASSED, references/UI/publication/buttons remain.
+
+## 10 October 2026 — Bounded collector verified live
+
+96834f5d3b463503371391fd90b3479c64d0bc90 complete combined candidate/public
+PASS, deploy exit 0 and actual public health match. Existing full native suite
+passed, previous 9183e53 retained. Actual collector interrupt/resume/replay and
+PostgreSQL Audit rollback, exact canonical final/unanchored anchors, tenant/input/
+publish/stale draft denial VERIFIED. No native/target/value mutation, no DDL.
+Evidence candidate 2sYQ63/public zvyF2n; backup 014016, fixtures 014215/014603.
+Source coverage d553052 local only; scalar SQL digest/review seal in progress.
+Next tests/Node–SQL parity/Audit/CAS/replay actual proof; references remain an
+explicit required Phase 2 owner checkpoint. Designer/buttons/publication not built.
+
+## 10 October 2026 — Scalar review seal plan before implementation
+
+c6b2b3b atomically seal authorised scalar cohort with existing v1 canonical digest,
+closed summary, unique conflict check, review/preparation CAS and Audit. Native
+PostgreSQL sha256 verified with empty digest; actual Node/SQL parity required.
+No DDL or values/target/native writes. References fail closed until next owner
+reference coverage checkpoint, required for Phase 2 gate. Files archive digest,
+sealing service/tests/actual helper. Source coverage d553052 local only; collector
+96834f5 public suite still pending. No phase completion or final seal claim yet.
+
+## 10 October 2026 — Collector candidate complete; source coverage locally checked
+
+96834f5d3b463503371391fd90b3479c64d0bc90 complete combined candidate PASS,
+including actual bounded collection/resume/replay/Audit rollback and native
+regressions. Public acceptance running zvyF2n, fixture backup 014603; no final
+public acceptance claim. c6b2b3a coverage helper locally checked: 17 files/109
+assertions, build, strict post-build TypeScript, scoped lint and diff review PASS.
+Locks archive/source, delegates exact native set/revisions to owner, compares all
+current extension/slot/value refs and authorises distinct immutable written schemas.
+No values/counts/approval returned. Actual exact-Test source revision fixture
+added, NOT RUN. No new DDL or native/target/value writes. Next finish collector
+public proof; implement final review digest/summary/unique/reference/CAS/Audit
+sealing, then ship coverage and review together. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Source coverage prerequisite planned
+
+c6b2b3a validate exact current extension/slot/value references against immutable
+observations after owner native coverage, then written-schema ACL/checksums.
+Existing preparation/source locks and metadata-only reads; no DDL/value/count/
+approval. Files migrations/coverage.ts and focused tests; actual fixture follows.
+Plan saved before implementation, independent of sealed 96834f5 collector release
+whose full central/public checks remain pending. Final review reference/unique/
+digest/state/Audit is not delivered by this prerequisite.
+
+## 10 October 2026 — Collector release pinned for actual central proof
+
+96834f5 collector plus 86a4804 shared authority pinned; backed-up combined
+candidate/public acceptance running under original locks. Backup
+atlas-pre-deploy-20261010-014016; local log /tmp/atlas-studio-collection-deploy.txt.
+Actual collector helper/full suite/public still pending; accepted live 9183e53.
+No new migration/reset or protected native writes. Preserve sealed pin while
+reviewing exact source/coverage sealing dependency; no Phase 2 completion claim.
+
+## 10 October 2026 — Bounded observation collector locally checked
+
+c6b2b2 internal collectFieldMigrationBatch uses fresh stored actor/source/draft/
+compiler/owner/module/policy locks, trusted saved cursor and 1–50 records. Atomic
+immutable observations/preparation revision CAS/Audit; stale replay writes nothing.
+Source/private/reference/Audit failure aborts whole batch; no review/target/native
+writes. Files migrations/collection.ts, tests/studio-field-collection.test.ts,
+check-field-collection.ts and preparation checker integration. No new DDL/public
+endpoint. 16 files/103 tests, production build, strict post-build TypeScript, scoped
+lint and diff review PASS. Logs /tmp/atlas-studio-collection-{tests,build,postbuild-
+types,lint}.txt. Central helper NOT RUN; do not claim VERIFIED. Next pin scoped
+checkpoint and full backed-up combined candidate/public proof, then exact review
+sealing. Accepted live 9183e53; Phase 2 NOT PASSED and designer/buttons/publication
+remain outstanding. Shared authority 86a4804 included in this next release.
+
+## 10 October 2026 — Observation verified live; bounded collection started
+
+9183e53aa7051b7cf3147f454a2f7f3bc22cd4c9 full combined candidate/public PASS,
+deploy exit 0 and actual public health match. Evidence 4iNlVJ/YyoY5c; backup
+012617, fixture 012812/013155; previous e309ff8 retained. Actual source observation
+VERIFIED, no target or native mutation. Historical pending notes superseded.
+Next c6b2b2 bounded append using shared refreshed authority and existing immutable
+archive. Plan saved before code: source/draft/compiler/policy/module freshness,
+trusted owner cursor, 1–50 rows, atomic observation/CAS/Audit, stale replay no-write.
+Files collection service/tests/central helper/docs; no schema change or public API.
+Sealing remains separate. Phase 2 NOT PASSED; visual design, buttons and customer
+publication remain required subsequent workstreams.
+
+## 10 October 2026 — Actual observation proof passed on sealed candidate
+
+9183e53 candidate real source observation PASS: absent slot and exact integer/
+decimal decode through owner-checked synthetic source fixture, immutable schema/
+slot/value refs plus fingerprint only, zero collector/target/native mutation.
+Preparation/archive/principal/Admin/business checks PASS; full native/public suite
+still pending. Evidence /tmp/atlas-studio-candidate-4iNlVJ, deployment backup
+20261010-012617 and fixture 012812. No Phase 2 gate claim.
+c6b2b1 shared withFieldMigrationAuthority extraction locally verified: 5 files/34
+assertions, production build, strict post-build TS/scoped lint and diff review PASS.
+Preparation uses same identity/profile/platform/Studio locks and error semantics;
+no DDL or new public endpoint. Logs /tmp/atlas-studio-authority-{tests,build,types,
+lint}.txt. Ship extraction with bounded collector; current accepted live e309ff8.
+Next confirm full observation release proof, then implement bounded observation
+append/revision CAS with fresh frozen source/draft before sealing workstream.
+
+## 10 October 2026 — Observation source pinned; shared authority extraction planned
+
+Exact 9183e53 one-row observation checkpoint pinned; backed-up combined candidate/
+public acceptance running, log /tmp/atlas-studio-observation-deploy.txt. Actual
+observation helper pending, accepted live e309ff8. c6b2b1 independent extraction
+planned before coding: reuse verified preparation transaction/principal locks in
+one typed internal authority wrapper, preserving current behavior and tests. No
+DDL, public endpoint, target values or collector yet. Next actual observation proof,
+then bounded resumable batches under the same authority. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Preparation verified live; source observation locally implemented
+
+Exact e309ff8a3d6b56560cceca1d5174327735a057eb full combined candidate/public
+PASS, deploy exit 0, actual public health match; prior 5d101da retained. c6b1
+VERIFIED: real refreshed support/source/draft/owner pins, identical replay with one
+Audit, client/tenant/publish/stale denial and actual Audit-failure rollback. Exact
+Test trigger/function removed in finally; native rows unchanged, access retired.
+Evidence candidate 1U6TU8/public lnCkpF; deployment backup 20261010-011430, fixture
+backups candidate 011622/public 012007. No persistent migration or automatic grant.
+c6b2a IMPLEMENTED locally: one authorised source observation, written schema metadata
+policy before business columns, owner anchor/version/protocol, stored schema/gen/
+fingerprint validation, referenced-owner denial propagates; only immutable refs and
+closed result hash/class returned. No row writes/collector/target activation. Nine
+files/64 assertions, production build, strict post-build TS/scoped lint PASS; diff
+reviewed. Central helper added but NOT RUN: absent slot and owner-checked privileged
+synthetic integer source fixture, exact decimal observation; native unchanged.
+Next pin observation checkpoint and actual combined proof, then bounded collector
+and sealed exact review. Phase 2 NOT PASSED; visual builder/publication/buttons remain.
+
+## 10 October 2026 — Corrected support lock checkpoint checked locally
+
+SELECT userId now matches PlatformAdministrator schema; support refresh/revocation
+case added. Corrected 10 files/53 assertions, production build, strict post-build
+TypeScript, changed-source lint and diff review PASS. Evidence /tmp/atlas-studio-
+preparation-corrected-{tests,build,types,lint}.txt. New actual candidate/public
+verification required; prior 4e4a0e8 failure retained, accepted live 5d101da unchanged.
+Next pin correction and repeat backed-up combined acceptance before collection.
+
+## 10 October 2026 — Preparation candidate caught wrong platform primary key
+
+4e4a0e8 build and earlier owner/archive checks passed, actual support preparation
+failed on SQL 42703: PlatformAdministrator primary key is userId, not id. Release
+stopped before activation; deploy exit 1, public remains exact accepted 5d101da.
+No temporary Audit test trigger reached. Exact Test companies retired/history
+retained. Backup atlas-pre-deploy-20261010-010940; fixture 011138; log /tmp/atlas-
+studio-preparation-deploy.txt. Corrected SELECT userId in platform grant lock and
+added support refresh/revocation regression. Rerun tests/build/types/lint then pin
+new source and repeat combined acceptance; no preparation VERIFIED claim.
+c6b2a observation plan recorded but code NOT STARTED; keep preparation active.
+
+## 10 October 2026 — Preparation release running; source observation contract next
+
+Exact 4e4a0e8 preparation/c6a source pinned; combined backed-up candidate/public
+acceptance running, backup atlas-pre-deploy-20261010-010940, log /tmp/atlas-studio-
+preparation-deploy.txt. Actual service proof pending; live remains 5d101da until
+confirmed. c6b2a independent one-row observation plan recorded before code: owner
+anchor/policies/written schema before value decode, refs/fingerprints, closed results
+without raw copies; no public endpoint/worker/DDL. Batch collection and sealing
+remain c6b2b, with source pointer and exact owner coverage before review.
+
+## 10 October 2026 — Snapshot checkpoint live; preparation service locally checked
+
+Exact 5d101daec0618fee623e15b9c639d6afb4d581d6 complete combined candidate/public
+PASS, deployment exit 0 and public health match. Previous 8780a07 retained. c5a/c5b
+VERIFIED: exact real owner snapshots/coverage, membership/private/isolation and
+canonical native preservation plus metadata/archive/Admin/business and native
+Dashboard/Settings/Home/Reports/MRP/Messages/private Admin/Supply/Commercial/People.
+Evidence candidate m4iKXU/public ubk7cv; deployment backup 20261010-005837 and
+fixture backups candidate 010035/public 010423. No new migration.
+c6b1 IMPLEMENTED locally: startFieldMigrationPreparation pins actual source/draft/
+owner query, refreshes principal under company/member/user/profile/platform locks,
+requires current field policy/native preflight, identical operation replay and
+atomic Audit. Existing field-access validator reused. Ten files/52 assertions,
+build, strict post-build TypeScript and scoped lint PASS; diff reviewed. Central
+service helper added, NOT RUN: includes exact Test/operation/actor temporary Audit
+failure trigger with finally cleanup to prove rollback. No persistent schema/grant
+change, decoded values, target publication or public preview. Next pin and run
+combined service acceptance; then bounded observation collector. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Preparation service workstream recorded before code
+
+c6a pure contract checkpoint cbaf908 local only; c6b1 IN PROGRESS. Plan records
+idempotent server-loaded source/draft preparation, fresh stored principal/matching
+actor under locks, current field policies, target owner opt-in/native preflight,
+source generation and atomic Audit. No DDL, decoded values, target publication or
+public endpoint. Full c5b combined candidate/public still running under original
+locks. Next implement/test bounded preparation service, then actual central proof.
+
+## 10 October 2026 — Actual snapshot owner proof passed on sealed candidate
+
+5d101da candidate owner checks PASS: real bounded canonical/final/unanchored
+snapshots, actual membership and SERIALIZABLE required, private denial before IDs/
+counts, exact complete/missing/equal-count substituted/stale native revision/
+foreign/missing/cancelled archive coverage. Canonical native rows unchanged.
+Metadata/archive/principal/Admin/business checks PASS; full native suite/public
+proof still pending. Private evidence /tmp/atlas-studio-candidate-m4iKXU; fixture
+backup atlas-pre-studio-candidate-20261010-010035. No whole Phase 2 gate claim.
+Independent c6a contract: 4 files/18 assertions, build/types/scoped lint PASS, no
+DDL or existing grants. Registered live-data cap excluded from roles/staff/presets;
+current/written field and reference policies tested locally. No collector yet.
+Next finish complete candidate/public suite and implement bounded preparation
+service with fresh principal/pinned source/draft/atomic audit.
+
+## 10 October 2026 — Snapshot release pinned; independent data policy contract started
+
+Exact 5d101da c5a/c5b backed-up combined deployment running; new central owner
+proof pending. Backup atlas-pre-deploy-20261010-005837, log /tmp/atlas-studio-
+snapshot-deploy.txt. Live still 8780a07 until confirmed. c6a scoped plan recorded:
+separate explicitly granted live-data test capability, current/written field policy
+and owner-authorised reference checks. No automatic roles/staff/preset grant, DDL
+or preview endpoint. This independent prerequisite does not use unverified owner
+snapshot service. Next finish c5b actual proof and test c6a contracts. Phase 2 NOT
+PASSED; customer visual builder/publication/buttons remain outstanding.
+
+## 10 October 2026 — Tickets shared snapshot implemented, central proof pending
+
+c5b IMPLEMENTED locally: transaction-only owner preflight/bounded snapshots/exact
+archive set and native revision coverage, entity v3 read-only opt-in. Actual active
+target membership, SERIALIZABLE isolation, native/private/source gates precede
+returned IDs/counts. Sealed v1/v2 and normal final/merged guards retained. Registry
+atomic opt-in validation plus owner/compatibility/archive regressions: 9 files/51
+assertions PASS; production build, TypeScript and scoped lint PASS. Final diff
+reviewed. Central exact-Test helper now challenges full/missing/equal-count extra/
+stale/cancelled coverage and real private/membership/isolation, but NOT RUN yet.
+No database migration, value gateway, preview service or visual builder. Live
+remains 8780a07. Next pin and deploy under combined candidate/public checks; only
+mark c5b VERIFIED after actual owner proof. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Tickets owner snapshot checkpoint started
+
+c5a registry opt-in verified locally; c5b IN PROGRESS. Plan specifies one required-
+transaction query with preflight/snapshot/exact-set coverage and entity v3 read-only
+approval; actual membership/Serializable/native/private/source guards. Preserve
+sealed v1/v2 and ordinary final writes; no value access/conversion/preview endpoint.
+No database change. Current live archive remains accepted 8780a07; next implement
+and test owner contracts, then central candidate/public proof. Phase 2 NOT PASSED.
+
+## 10 October 2026 — Review archive VERIFIED on candidate/public and live
+
+Exact 8780a07b92654a9d2649b8b6518d609a9b431adb complete combined candidate/public
+PASS and deploy exit 0; final public health/current matches, previous immutable
+1646316 retained. Evidence /tmp/atlas-studio-candidate-yWPgWM and /tmp/atlas-studio-
+public-6U4Ohy; backup atlas-pre-deploy-20261010-003320, fixture backups
+atlas-pre-studio-candidate-20261010-003501/public-20261010-003850. Actual archive
+FKs/absence/stored references/immutability/stale draft/CAS/audit rollback PASS,
+plus all metadata/Admin/business/owner and native Dashboard/Settings/Home/Reports/
+MRP/Messages/private Admin/Supply/Commercial/People. Exact Test access retired,
+history retained; QA identity/grants unchanged. Additive migration finished centrally.
+2B3c3 pure review contracts and c4 archive constraints VERIFIED; not a public
+preview/conversion feature. Phase 2 NOT PASSED. c5a registry transaction-required
+query implementation has 6 files/30 local assertions, build and scoped lint PASS;
+strict TypeScript PASS. Next checkpoint c5a, then implement
+owner bounded canonical snapshots and exact stored-set/revision coverage.
+
+## 10 October 2026 — Archive full candidate passed; public and registry checkpoint
+
+8780a07 full combined candidate PASS, including new archive and native Settings/
+Dashboard/Home/Reports/MRP/Messages/Admin/Supply/Commercial/People. Exact runtime
+switched for public checks under original locks; previous accepted 1646316 retained.
+Public fixture backup atlas-pre-studio-public-20261010-003850; private evidence
+/tmp/atlas-studio-public-6U4Ohy. Public result pending; no Phase 2 gate claim.
+2B3c5a IN PROGRESS: explicit transaction-required query descriptor and typed registry
+entry point, preserving old hashes and command boundaries. No new schema/owner
+mutation/executor. Next finish public proof and test the isolated registry change.
+
+## 10 October 2026 — Studio archive candidate database checks PASS
+
+8780a07 candidate actual archive checks PASS, including tenant/source/draft FKs,
+missing anchors and stored values, immutable pins, sealed append denial, CAS/state
+and stale-draft/audit rollback. Metadata/Admin/business/principals, Dashboard and
+Settings checks PASS so far; remaining full suite still running. Additive migration
+20261010030000_studio_field_reviews confirmed finished centrally in Prisma history.
+Backup atlas-pre-deploy-20261010-003320; fixture backup atlas-pre-studio-candidate-
+20261010-003501; private evidence /tmp/atlas-studio-candidate-yWPgWM. No public archive
+proof or whole Phase 2 gate claim. Next wait for complete candidate/public results;
+c5 transaction/owner snapshot coverage plan recorded NOT STARTED.
+
+## 10 October 2026 — Studio review archive release preparation in progress
+
+Exact 8780a07b92654a9d2649b8b6518d609a9b431adb pinned on codex/studio-phase2;
+backed-up combined deployment running. Backup atlas-pre-deploy-20261010-003320;
+local log /tmp/atlas-studio-review-archive-deploy.txt. Candidate/public SQL archive
+checks not confirmed yet; production previously verified 1646316 Settings. No
+Phase 2 completion or public preview/designer claim. Next inspect exact candidate
+result, fix any real failure on a new pin, then confirm public revision and proof.
+
+## 10 October 2026 — Integrated Studio archive candidate source checked
+
+Preserved exact accepted Settings 1646316 with all six release modes; combined
+Studio runner also invokes real Settings acceptance with a private fixture backup.
+Prisma/gateway generation, 37 files/197 focused assertions (Studio, permissions,
+Settings, company boundaries, Admin/provisioning/login), production build, strict
+post-build TypeScript and changed-source lint PASS. Shell syntax and all six mode
+dispatch probes PASS; final diff reviewed. Local evidence /tmp/atlas-studio-review-
+integrated-{tests,build,types,lint}.txt and review-admin-tests.txt. Central review
+migration NOT APPLIED; new archive helper NOT RUN. Next pin this reviewed source
+and run backed-up combined candidate/public acceptance; no Phase 2 completion.
+
+## 10 October 2026 — Studio archive preserves exact accepted Settings source
+
+Merged only observed live 1646316ac10cab292196d8e71397be82cb541fbf; source
+preserves 931a600 Studio and modern Dashboard/People/Supply/Commercial. Actual
+Settings candidate f2TezE/public 020SLN private browser logs end in PASS at exact
+1646316, including Settings and Home; current/previous pointers 1646316/931a600.
+Both closed acceptance modes retained. Shared memory conflict preserves both
+contributors entries. Studio archive migration remains NOT APPLIED; new helper
+NOT RUN. Next regenerate gateway, run integrated security/regression checks/build
+and candidate/public archive acceptance without deploying unrelated main edits.
+
+## 10 October 2026 — Field preparation/review persistence implemented, central proof pending
+
+2B3c4 IMPLEMENTED: three additive preparation/review/observation models and SQL
+guards. Frozen intent, same-operation immutable review, source/draft freshness,
+tenant/generation/slot/value FKs, observation reference checks, sealed append denial
+and revision/state transitions. Only PREPARING/REVIEWED/CANCELLED; no conversion
+executor, target publication or public data API. Generic desktop access denied.
+Schema validation/client+gateway generation PASS. Central DDL executed inside BEGIN/
+ROLLBACK successfully; migration NOT applied. Five files/34 focused assertions,
+production build, strict post-build TypeScript and scoped lint PASS. Exact-Test
+helper added after actual support principal capture; real constraints not run yet.
+Migration: 20261010030000_studio_field_reviews; no native tables/backfill/reset.
+Observed current live 1646316 Settings has preserved 931a600; public Settings/Home
+evidence PASS. Next preserve its exact accepted source, validate integrated build,
+then candidate/public combined acceptance including the new SQL archive checks.
+Phase 2 NOT PASSED; visual design/publication/custom buttons remain outstanding.
+
+## 10 October 2026 — Field review contracts locally verified; persistence started
+
+2B3c3 pure contracts: four files/32 assertions, production build, strict TypeScript
+and changed-file lint PASS. Current principal behavior unchanged by pure contract
+extraction. No review endpoint/executor/schema change in that checkpoint.
+2B3c4 IN PROGRESS: three additive preparation/review/observation tables, tenant/source
+FKs and immutable/CAS guards; plan records files/database/tests. No business-data
+conversion. Next implement additive schema/SQL and central constraint tests.
+Phase 2 NOT PASSED; visual builder/publication/buttons remain active 2E requirements.
+
+## 10 October 2026 — Immutable field review contract workstream started
+
+2B3c3 IN PROGRESS: closed server-stored source/target/draft/principal/observation
+identity before additive persistence. Plan records purpose, dependencies, expected
+files, no database implications in this checkpoint and required security/digest
+tests. Previous 931a600 complete candidate/public acceptance remains VERIFIED live.
+No checksum or client count grants data access; no preview endpoint/worker/final-
+record conversion yet. Phase 2 NOT PASSED. Next implement and test contracts.
+
+## 10 October 2026 — Studio cohort/decoder combined acceptance VERIFIED live
+
+Exact 931a6009dfc24f20ceddc2403bf01b21aa4f2950 passed both complete combined
+candidate and public HTTPS acceptance, then deployment completed. Both PASS stamps
+and final `Deployed.` confirmed in /tmp/atlas-studio-people-initial-deploy.txt;
+public release health/current pointer match, previous immutable b57ba720 retained.
+Evidence: candidate /tmp/atlas-studio-candidate-Ww5GqF; public
+/tmp/atlas-studio-public-qqYkvj. Backups: atlas-pre-deploy-20261010-000049,
+atlas-pre-studio-candidate-20261010-000232, atlas-pre-studio-public-20261010-000600.
+Actual checks covered private/final/unanchored native cohort, refreshed principals,
+retirement, SQL decoder, metadata/Admin/business provisioning/307, native Dashboard,
+Home, Reports, MRP, Messages, private Admin, Supply, Commercial and People (90→95%
+scorecard plus payroll/rota/team guards). Synthetic Test companies suspended and
+sessions revoked; immutable workflow evidence retained. No new Studio migration.
+2B3c2a–c foundations VERIFIED; Phase 2 NOT PASSED. Visual designer, company dashboard
+publication, custom buttons and owner value API remain unimplemented. Next create
+the immutable review contract checkpoint before review/job/row persistence; no
+final-record conversion or later-phase engines are authorised by this proof.
 
 ## 10 October 2026 — Company Settings and access profiles deployed and verified
 

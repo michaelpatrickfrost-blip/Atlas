@@ -161,3 +161,19 @@ Explicit CSV downloads from Planning, Inventory, Sales, Logistics and Audit may 
 user-chosen location. This supersedes the blanket native-download prohibition;
 authoritative shared records remain server-side, and no local database, offline
 store or automatic business-data cache is permitted. See `.ai/PROJECT_MEMORY.md`.
+
+## Software-output retention — 10 October 2026
+
+Michael authorised cleanup of redundant development/release copies. Preserve the
+live runtime, immediate rollback and all process-pinned candidates. Older release
+source/static/configuration/evidence stays; duplicated dependencies and compiled
+outputs may retire through `scripts/deploy/prune-releases.sh` under BOTH original
+locks. Do not keep every historical runtime runnable indefinitely. Preserve all
+central records/private files/business backups. Generated Mac build outputs may
+be removed after source/process checks; never clean unrelated worktrees or source.
+See `docs/SOFTWARE_RETENTION.md` and `docs/DEPLOY.md`.
+
+Michael also explicitly requires avoiding unnecessary dump files. Check existing
+recovery backups/evidence before creating another dump; do not create ad-hoc dumps
+for read-only work. Required pre-migration/release fixture backups remain mandatory.
+Do not bypass recovery gates or delete business records to save space.

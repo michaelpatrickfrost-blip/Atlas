@@ -69,12 +69,12 @@ tracking-tight`), body copy readable at `text-sm`, tabular data uses
   `AppDirectory` still uses `getNavigableModules` for both the launcher and workspace
   Apps menu; counts reflect authorised entries. App labels/descriptions wrap and
   keyboard focus remains visible. Attention/goals stay below the app directory.
-- **Workspace Apps menu** — follows Michael's second 9 October reference: a wide,
-  rounded white panel with Customers, Operations, People and Business across the
-  first desktop row, then More and Company. Larger grey outline icons and readable
-  text replace the narrow six-column dropdown. Tablet uses two columns; phone uses
-  two where space allows and one below 360px, with internal vertical scrolling,
-  wrapped labels and 44px targets. Escape returns focus to Apps; outside clicks,
+- **Workspace Apps menu** — Michael's 10 October correction uses a compact,
+  wider popup with every authorised app visible without internal scrolling.
+  Up to 900px wide, it uses four desktop columns, three tablet columns and three
+  phone columns with compact labels/icons. Phones place it below the full header.
+  The workspace header is 60px on desktop, with restrained 36–40px controls;
+  phone search stays on a second row within a 96px header. Escape returns focus to Apps; outside clicks,
   chosen links and route changes close it. All entries retain server permission
   and app-availability filtering. Atlas Admin/Console and Connections are absent
   from both business directories, including staff support workspaces.
@@ -111,6 +111,12 @@ Pick `tone` deliberately per `StatusPill` usage — see `STATUS_TONE` maps in
 the Sales quotes/orders pages for the pattern.
 
 ## Motion & accessibility
+
+Opaque white cards must not apply backdrop filters: these create stacking contexts
+that can trap descendant dropdowns underneath later cards. Reserve backdrop blur
+for intentionally translucent surfaces with explicit overlay layering. Customer
+record menus align left on phones and right on wider screens; verify their entire
+bounds within the viewport as well as item hit-testing above page content.
 
 `globals.css` honours `prefers-reduced-motion`. All interactive primitives
 have visible focus rings (`focus-visible:outline-2 outline-[var(--color-atlas-blue)]`).
@@ -162,3 +168,12 @@ searchable overview cards and section navigation (collapsed browser on smaller
 screens). Company access profiles have a searchable selector and one mounted
 editor; each app expands into source sections with RWA and fine-grained controls.
 Personal Settings is a separate own-account page without company controls.
+
+Tasks and Messages use a shared native right-hand drawer, opened directly from their header icons or
+utility rail. Header/rail badges show open assignments; Messages badges show
+unread chats. Task detail uses progressive disclosure for notes, linked records,
+checklist and status. Native dialog top-layer positioning prevents card overlap;
+all drawer widths use a list/detail Back flow, with Escape and focus restoration.
+Drawers are at most560px wide, animate entry/exit over240ms and honor reduced
+motion. The shade is light and unblurred so the current workspace remains visible.
+Dashboard and Settings keep their existing page/menu destinations.

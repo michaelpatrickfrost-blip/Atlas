@@ -173,8 +173,7 @@ describe("Modern chat composer", () => {
     render(<ChatDock />);
     fireEvent.click(screen.getByRole("button", { name: "Open messages" }));
     expect(
-      screen
-        .getByRole("dialog", { name: "Messages" })
+      (await screen.findByRole("dialog", { name: "Messages" }))
         .getAttribute("aria-modal"),
     ).toBe("true");
     fireEvent.click(await screen.findByRole("button", { name: /Blair/ }));

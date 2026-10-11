@@ -64,15 +64,15 @@ export async function AppDirectory({ session, variant = "menu" }: { session: Ses
     </nav>
   );
   return (
-    <nav aria-label="Apps" className="grid grid-cols-1 gap-x-6 gap-y-8 min-[360px]:grid-cols-2 sm:gap-x-10 sm:gap-y-10 lg:grid-cols-4 lg:gap-y-12">
+    <nav aria-label="Apps" className="grid grid-cols-3 gap-x-2 gap-y-2 sm:grid-cols-3 sm:gap-x-4 sm:gap-y-4 lg:grid-cols-4">
       {columns.map(([area, entries]) => (
         <section key={area} aria-label={area} className="min-w-0">
-          <h2 className="px-2 text-sm font-medium text-[#86868b] sm:px-3 sm:text-base">{area}</h2>
-          <ul className="mt-3 space-y-1 sm:mt-4 sm:space-y-2">
+          <h2 className="px-1 text-[10px] font-semibold text-[#86868b] sm:px-2 sm:text-xs">{area}</h2>
+          <ul className="mt-1">
             {entries.map((entry) => (
               <li key={entry.id}>
-                <Link href={entry.href} prefetch={false} className="flex min-h-11 items-center gap-3 rounded-xl px-2 py-2 text-sm leading-5 text-[#1d1d1f] transition-colors hover:bg-black/[0.045] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:gap-3.5 sm:px-3 sm:text-[18px] sm:leading-6 xl:gap-4 xl:text-xl">
-                  <entry.icon size={22} strokeWidth={1.75} aria-hidden="true" className="size-5 shrink-0 text-[#77777d] sm:size-[22px]" />
+                <Link href={entry.href} prefetch={false} className="flex min-h-7 items-center gap-1.5 rounded-lg px-1 py-[3px] text-[11px] leading-[14px] sm:min-h-9 sm:gap-2 sm:px-2 sm:text-sm sm:leading-5 text-[#1d1d1f] transition-colors hover:bg-black/[0.045] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                  <entry.icon size={22} strokeWidth={1.75} aria-hidden="true" className="hidden shrink-0 sm:block sm:size-[18px] text-[#77777d]" />
                   <span className="min-w-0 break-words">{entry.name}</span>
                 </Link>
               </li>

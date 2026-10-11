@@ -9,9 +9,13 @@ import { STUDIO_CAPABILITIES as CAP } from "../permissions";
 import { kernelPayloadSchema } from "../compiler/kernel";
 import { compileDefinition, parseDefinitionPayload } from "../compiler";
 import { customFieldPayloadSchema } from "../fields/schema";
-import { assertFieldBinding, bindPublishedField, fieldDefinitionKey } from "../fields/binding";
+import { assertFieldBinding, fieldDefinitionKey } from "../fields/binding";
+import { publishCompiledDefinitionInTransaction } from "./publication";
+import { activateCompiledVersionInTransaction } from "./activation";
 import { studioRegistry } from "../registry/runtime";
 import { checksum } from "../registry/contracts";
+import { lockBoundFieldEntityInTransaction } from "../fields/entity-lock";
+import { prepareRequiredFieldActivationInTransaction } from "../fields/activation-coverage";
 const uuid = z.uuid();
 const revision = z.number().int().nonnegative();
 const identity = { key: z.string().regex(/^[a-z][a-z0-9_.-]{0,99}$/), name: z.string().min(1).max(150) };
@@ -54,6 +58,7 @@ export async function updateDraft(session: Session, input: unknown) {
   await assertModuleEnabled(session, "studio");
   const value = updateSchema.parse(input);
   return db.$transaction(async tx => {
+    await lockBoundFieldEntityInTransaction(tx, session.organisationId, value.definitionId);
     const definition = await tx.studioDefinition.findFirst({ where: { id: value.definitionId, organisationId: session.organisationId, retiredAt: null }, select: { kind: true, key: true } });
     if (!definition) conflict();
     const payload = parseDefinitionPayload(definition.kind, value.payload);
@@ -91,22 +96,8 @@ export async function publishDraft(session: Session, input: unknown) {
   const compiled = await compileDefinition(session, draft.definition.kind, draft.payload, studioRegistry());
   if (compiled.warnings.length && !value.acknowledgeWarnings) throw new Error("Acknowledge publication warnings first.");
   if (draft.definition.latestVersion !== (draft.baseVersion?.version ?? 0)) conflict();
-  return db.$transaction(async tx => {
-    const modules = [...new Set(compiled.plan.dependencies.map(d => d.ownerModuleId))];
-    const available = await tx.moduleState.count({ where: { organisationId: session.organisationId, moduleId: { in: modules }, enabled: true, entitled: true } });
-    if (available !== modules.length) throw new Error("DEPENDENCY_BROKEN: source module unavailable");
-    const changed = await tx.studioDefinition.updateMany({ where: { id: value.definitionId, organisationId: session.organisationId, revision: draft.definition.revision, latestVersion: draft.definition.latestVersion, retiredAt: null }, data: { latestVersion: { increment: 1 }, revision: { increment: 1 } } });
-    if (changed.count !== 1) conflict();
-    const number = draft.definition.latestVersion + 1;
-    const version = await tx.studioDefinitionVersion.create({ data: { organisationId: session.organisationId, definitionId: value.definitionId, version: number, semanticVersion: `1.0.${number - 1}`, schemaVersion: 1,
-      payload: compiled.payload, compiledPlan: compiled.plan, checksum: compiled.checksum, createdBy: session.userId,
-      dependencies: { create: compiled.plan.dependencies.map(ref => ({ ownerModuleId: ref.ownerModuleId, contractId: ref.id, contractVersion: ref.version, schemaHash: ref.schemaHash, contractHash: ref.contractHash } satisfies Prisma.StudioDependencyCreateWithoutVersionInput)) } } });
-    if (compiled.plan.kind === "customField") await bindPublishedField(tx, session, value.definitionId, draft.definition.key, version.id, compiled.plan.payload);
-    const updated = await tx.studioDraft.updateMany({ where: { id: draft.id, organisationId: session.organisationId, revision: value.revision }, data: { revision: { increment: 1 }, baseVersionId: version.id, validation: { checksum: compiled.checksum, warnings: compiled.warnings, validatedRevision: value.revision } } });
-    if (updated.count !== 1) conflict();
-    await audit(session, "studio.definition.published", value.definitionId, { versionId: version.id, version: number, checksum: compiled.checksum, warnings: compiled.warnings }, tx);
-    return { versionId: version.id, version: number, revision: value.revision + 1 };
-  }, { isolationLevel: "Serializable" });
+  const published = await db.$transaction(tx => publishCompiledDefinitionInTransaction(tx, session, draft, value.revision, compiled), { isolationLevel: "Serializable" });
+  return { versionId: published.version.id, version: published.versionNumber, revision: published.draftRevision };
 }
 export async function activateVersion(session: Session, input: unknown) {
   assertCapability(session, CAP.publish);
@@ -115,15 +106,12 @@ export async function activateVersion(session: Session, input: unknown) {
   const version = await db.studioDefinitionVersion.findFirst({ where: { id: value.versionId, definitionId: value.definitionId, organisationId: session.organisationId }, include: { definition: { select: { kind: true } } } });
   if (!version) throw new Error("This Studio version is unavailable.");
   const compiled = await compileDefinition(session, version.definition.kind, version.payload, studioRegistry());
-  if (version.checksum !== checksum(version.compiledPlan) || version.checksum !== compiled.checksum) throw new Error("DEPENDENCY_BROKEN: published Studio plan changed or is incompatible");
   return db.$transaction(async tx => {
-    if (compiled.plan.kind === "customField") await assertFieldBinding(tx, session, value.definitionId, compiled.plan.payload);
-    const modules = [...new Set(compiled.plan.dependencies.map(d => d.ownerModuleId))];
-    if (await tx.moduleState.count({ where: { organisationId: session.organisationId, moduleId: { in: modules }, enabled: true, entitled: true } }) !== modules.length) throw new Error("DEPENDENCY_BROKEN: source module unavailable");
-    const changed = await tx.studioDefinition.updateMany({ where: { id: value.definitionId, organisationId: session.organisationId, revision: value.revision, retiredAt: null }, data: { activeVersionId: version.id, revision: { increment: 1 } } });
-    if (changed.count !== 1) conflict();
-    await audit(session, "studio.definition.activated", value.definitionId, { versionId: version.id, version: version.version }, tx);
-    return { revision: value.revision + 1 };
+    const current = compiled.plan.kind === "customField" && compiled.plan.payload.field.required
+      ? await prepareRequiredFieldActivationInTransaction(session, tx, { definitionId: value.definitionId, versionId: value.versionId, definitionRevision: value.revision },
+        { plan: compiled.plan, payload: compiled.plan.payload, checksum: compiled.checksum, warnings: compiled.warnings })
+      : session;
+    return activateCompiledVersionInTransaction(tx, current, value.definitionId, value.revision, version, compiled);
   }, { isolationLevel: "Serializable" });
 }
 /** Read an active metadata plan; recheck owner availability and contracts every time. */

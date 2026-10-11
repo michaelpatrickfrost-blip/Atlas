@@ -120,7 +120,11 @@ async function main() {
           `Website scene spacing at ${width}: ${JSON.stringify(layout)}`,
         );
       }
-      if (width < 850) {
+      if (
+        await publicPage
+          .getByRole("button", { name: "Open navigation" })
+          .isVisible()
+      ) {
         await publicPage
           .getByRole("button", { name: "Open navigation" })
           .click();
@@ -132,6 +136,10 @@ async function main() {
           .click();
         await expect(
           publicPage.getByRole("button", { name: "Open navigation" }),
+        ).toBeVisible();
+      } else {
+        await expect(
+          publicPage.getByRole("navigation", { name: "Website" }),
         ).toBeVisible();
       }
       await publicPage

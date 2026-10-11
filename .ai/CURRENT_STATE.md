@@ -12623,3 +12623,10 @@ Final responsive source build/scoped lint PASS (zero errors). Server control and
 active revision are b6610512; no other deployment is holding the lock. Clean pinned
 usability release now descends from that exact accepted revision. Next: native
 candidate/public acceptance and the explicitly authorised backed-up Test sweep.
+
+Candidate 58e83d0 built, migrated, sealed and passed Studio compatibility; native
+check stopped before fixture creation/activation because its tablet test assumed
+the phone menu at 820px. Actual CSS uses full navigation there and the menu below
+580px. Corrected checker to exercise whichever control is visible and require
+visible full navigation otherwise. Production remains exact accepted b6610512;
+no ordinary data changed. Backup atlas-pre-deploy-20261011-165521 retained.

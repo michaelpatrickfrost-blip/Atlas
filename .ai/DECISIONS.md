@@ -7,7 +7,9 @@ provider, validation write, Audit, merge or publication approval. Immediate shap
 feedback and debounced metadata checks bind payload plus actual observed draft/head
 revisions; stale replies are ignored. Compare current saved and unsaved layouts;
 explicit Keep adopts only the observed CAS baseline, Use replaces local state, and
-Back preserves the original baseline. Any later save retains original server CAS.
+Back preserves the original baseline. Exact comparison adoption suppresses the
+pre-existing automatic persisted review for that head; explicit Recheck and genuine
+next Save/Restore retain original review. Any later save retains original server CAS.
 Presentation choices must refresh through the original current-authorised catalogue
 when adopting a newer design; they grant no rights or saved-review approval.
 

@@ -265,7 +265,7 @@ export async function checkFieldSearch(base: string, browser: Browser, existingS
       const beforeDeniedUi = await snapshot(), response = await customerSearchAction(currentZero);
       assert.equal(response.status, 403); assert.match(response.body.error ?? "", /FORBIDDEN/); assert.doesNotMatch(response.body.error ?? "", /unsupported action/i);
       await readPage.goto("/tickets", { waitUntil: "networkidle" });
-      await expect(readPage.getByRole("heading", { name: "Tickets", exact: true })).toBeVisible();
+      await expect(readPage.getByRole("heading", { name: "Tickets", exact: true, level: 2 })).toBeVisible();
       await expect(readPage.getByText("Find by additional details", { exact: true })).toHaveCount(0);
       await expect(readPage.getByRole("option", { name: "Search count clarified", exact: true })).toHaveCount(0);
       assert.deepEqual(await snapshot(), beforeDeniedUi, "Revoked current/written Read must deny action and choices without side effects.");

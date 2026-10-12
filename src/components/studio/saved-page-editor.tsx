@@ -38,6 +38,7 @@ export type SavedPageEditorProps = {
   };
 };
 const pageKey = (page: PagePayload) => JSON.stringify(page);
+const reviewHeadKey = (head: { revision: number; definitionRevision: number; payload: PagePayload }) => `${head.revision}:${head.definitionRevision}:${pageKey(head.payload)}`;
 const revision = (value: number) => Number.isSafeInteger(value) && value >= 0;
 type Dialog = { kind: "publish"; review: Review; pageKey: string } | { kind: "restore"; version: Version; definitionRevision: number }
   | { kind: "savedDraft"; saved: SavedDraftComparison; local: PageDisplayModel; localKey: string; expectedRevision: number; expectedDefinitionRevision: number }
@@ -59,7 +60,7 @@ export function SavedPageEditor(props: SavedPageEditorProps) {
   const [actualPreview, setActualPreview] = useState<{ key: string; recordId: string; model: PageDisplayModel } | null>(null);
   const [alternateSamples, setAlternateSamples] = useState(false);
   const current = useRef({ page, head, identity, formFactor }), reviewEpoch = useRef(0), previewEpoch = useRef(0);
-  const inspectionEpoch = useRef(0), comparisonEpoch = useRef(0);
+  const inspectionEpoch = useRef(0), comparisonEpoch = useRef(0), comparedHeadWithoutReview = useRef<string | null>(null);
   const [inspection, setInspection] = useState<{ key: string; message: string; warnings: string[] } | null>(null);
   useEffect(() => { current.current = { page, head, identity: `${props.business.id}:${props.draft.id}`, formFactor }; }, [page, head, props.business.id, props.draft.id, formFactor]);
   const dirty = pageKey(page) !== pageKey(head.payload), busy = operation !== null;
@@ -108,7 +109,9 @@ export function SavedPageEditor(props: SavedPageEditorProps) {
     } finally { if (!cancelled() && epoch === reviewEpoch.current && current.current.identity === identity) setReviewing(false); }
   };
   useEffect(() => {
-    if (!sameIdentity) return;
+    // A comparison choice only adopts client state. The original saved review
+    // persists validation, so it must remain an explicit action for this head.
+    if (!sameIdentity || comparedHeadWithoutReview.current === reviewHeadKey(head)) return;
     const epoch = ++reviewEpoch.current;
     let cancelled = false;
     void Promise.resolve().then(async () => {
@@ -119,7 +122,7 @@ export function SavedPageEditor(props: SavedPageEditorProps) {
     return () => { cancelled = true; };
     // Each exact acknowledged saved head is checked once. Edits cannot mutate it.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [head.revision, head.payload, sameIdentity, props.callbacks.review]);
+  }, [head.revision, head.definitionRevision, head.payload, sameIdentity, props.callbacks.review]);
   const change = (next: PagePayload) => {
     current.current.page = next; setPage(next); setDialog(null); setReview(null); setActualPreview(null); setFeedback("");
     reviewEpoch.current++; previewEpoch.current++; setReviewing(false);
@@ -249,6 +252,7 @@ export function SavedPageEditor(props: SavedPageEditorProps) {
     const saved = dialog.saved, next = { revision: saved.revision, definitionRevision: saved.definitionRevision,
       payload: structuredClone(saved.payload), warnings: saved.warnings };
     comparisonEpoch.current++; inspectionEpoch.current++; reviewEpoch.current++; previewEpoch.current++;
+    comparedHeadWithoutReview.current = reviewHeadKey(next); setReviewing(false);
     current.current.head = next; setHead(next); setPresentation(keepLocal ? saved.presentation.local : saved.presentation.saved); setActiveVersionId(saved.activeVersionId); setReview(null); setInspection(null); setActualPreview(null); setDialog(null);
     if (!keepLocal) { const nextPage = structuredClone(saved.payload); current.current.page = nextPage; setPage(nextPage); }
     setFeedback(keepLocal ? "Your changes are kept alongside the latest saved draft. Save when ready; the server will check for any further changes."

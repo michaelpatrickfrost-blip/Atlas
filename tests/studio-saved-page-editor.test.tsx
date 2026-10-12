@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SavedPageEditor, type SavedPageEditorProps } from '@/components/studio/saved-page-editor';
 import { createDesignPageDisplayModel } from '@/core/studio/pages/design-model';
@@ -62,13 +62,56 @@ describe('saved business visual design adapter', () => {
     const dialog = await screen.findByRole('dialog'); fireEvent.click(within(dialog).getByRole('button', { name: 'Keep my changes' }));
     expect((screen.getByLabelText('Display name') as HTMLInputElement).value).toBe('My deliberate replacement');
     expect(f.callbacks.save).not.toHaveBeenCalled(); expect(f.callbacks.publish).not.toHaveBeenCalled(); expect(button('Review & publish').disabled).toBe(true);
-    await waitFor(() => expect(f.callbacks.review).toHaveBeenCalledWith({ revision: 2 }));
+    expect(f.callbacks.review).not.toHaveBeenCalledWith({ revision: 2 });
     f.callbacks.save.mockRejectedValueOnce(new Error('CONFLICT: somebody saved again'));
     fireEvent.click(button('Save draft')); await waitFor(() => expect(f.callbacks.save).toHaveBeenCalledTimes(1));
     expect(f.callbacks.save.mock.calls[0][0]).toMatchObject({ revision: 2, payload: { sections: [{ label: 'My deliberate replacement' }] } });
     await screen.findByText(/Saving could not be confirmed/);
     expect((screen.getByLabelText('Display name') as HTMLInputElement).value).toBe('My deliberate replacement');
     expect(f.callbacks.publish).not.toHaveBeenCalled();
+  });
+  it.each(['Back to editing', 'Keep my changes', 'Use saved draft'])('does not persist saved review after comparison choice %s; explicit Recheck still uses the original review', async choice => {
+    const f = fixture(); await ready(); edit('Preserve my local design');
+    const response = await f.callbacks.compareSavedDraft.getMockImplementation()!({ revision: 1, definitionRevision: 3, payload: page(), formFactor: 'desktop' });
+    f.callbacks.compareSavedDraft.mockResolvedValueOnce(response);
+    const before = f.callbacks.review.mock.calls.length;
+    fireEvent.click(button('Compare saved draft'));
+    const dialog = await screen.findByRole('dialog', { name: 'Compare the saved draft' });
+    await act(async () => { fireEvent.click(within(dialog).getByRole('button', { name: choice })); });
+    expect(f.callbacks.review).toHaveBeenCalledTimes(before);
+    expect(f.callbacks.save).not.toHaveBeenCalled(); expect(f.callbacks.publish).not.toHaveBeenCalled(); expect(f.callbacks.restore).not.toHaveBeenCalled();
+    expect(button('Review & publish').disabled).toBe(true);
+    const revision = choice === 'Back to editing' ? 1 : 2;
+    f.callbacks.review.mockImplementationOnce(async () => ({ revision, payload: revision === 1 ? page() : response.payload, warnings: [] }));
+    fireEvent.click(button('Recheck saved draft'));
+    await waitFor(() => expect(f.callbacks.review).toHaveBeenCalledTimes(before + 1));
+    expect(f.callbacks.review.mock.calls.at(-1)?.[0]).toEqual({ revision });
+    if (choice === 'Use saved draft') await waitFor(() => expect(button('Review & publish').disabled).toBe(false));
+    else expect(button('Review & publish').disabled).toBe(true);
+    expect(f.callbacks.publish).not.toHaveBeenCalled();
+  });
+  it('keeps automatic review for a genuinely saved head after comparison adoption', async () => {
+    const f = fixture(); await ready(); edit('Intended new draft'); fireEvent.click(button('Compare saved draft'));
+    const dialog = await screen.findByRole('dialog'); await act(async () => { fireEvent.click(within(dialog).getByRole('button', { name: 'Keep my changes' })); });
+    expect(f.callbacks.review).toHaveBeenCalledTimes(1);
+    fireEvent.click(button('Save draft'));
+    await waitFor(() => expect(f.callbacks.review).toHaveBeenCalledWith({ revision: 3 }));
+    await ready(); expect(f.callbacks.publish).not.toHaveBeenCalled();
+  });
+  it('reviews a legitimately restored newer definition head even when its draft revision is unchanged', async () => {
+    const f = fixture(); await ready(); edit('Local design');
+    const response = await f.callbacks.compareSavedDraft.getMockImplementation()!({ revision: 1, definitionRevision: 3, payload: page(), formFactor: 'desktop' });
+    f.callbacks.compareSavedDraft.mockResolvedValueOnce(response); fireEvent.click(button('Compare saved draft'));
+    const compared = await screen.findByRole('dialog'); await act(async () => { fireEvent.click(within(compared).getByRole('button', { name: 'Use saved draft' })); });
+    expect(f.callbacks.review).toHaveBeenCalledTimes(1);
+    f.callbacks.restore.mockResolvedValueOnce({ revision: 2, definitionRevision: 5, payload: response.payload, warnings: [], activeVersionId: 'old' });
+    f.callbacks.review.mockImplementationOnce(async () => ({ revision: 2, payload: response.payload, warnings: [] }));
+    fireEvent.change(screen.getByLabelText('Previous published design'), { target: { value: 'old' } });
+    fireEvent.click(button('Restore live design'));
+    fireEvent.click(await screen.findByRole('button', { name: 'Restore this live design' }));
+    await waitFor(() => expect(f.callbacks.review).toHaveBeenCalledTimes(2));
+    expect(f.callbacks.restore).toHaveBeenCalledWith({ versionId: 'old', definitionRevision: 4 });
+    await ready(); expect(f.callbacks.publish).not.toHaveBeenCalled();
   });
   it('clears the prior passed check after Keep my changes until the rebased saved head has been inspected', async () => {
     const f = fixture(); await ready();

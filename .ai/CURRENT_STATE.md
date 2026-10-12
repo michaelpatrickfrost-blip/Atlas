@@ -1,3 +1,25 @@
+## 12 October 2026 — 5e7472 stopped on revoked-search heading; narrow retry
+
+Original79927/5e7472c2ccb1c8a87d1fcde546f9d7c0b9ed01c5 EXIT1 before activation.
+CandidateXeTyrZ actual typed customer zero/No/null/range/money filters and callback
+200 succeeded; changed configuration/current-cursor CONFLICT negative reached and
+passed without prior expiry. Revoked current/written action403 succeeded; subsequent
+page-loaded assertion matched BOTH shell h1 and body h2 Tickets. Narrow selector now
+asserts actual h2 body; existing hidden choices/unchanged snapshot expectation remains.
+Complete search footer/index-plan/profile/visual/public gates NOT reached. Original
+native/concurrency/forms/defaults PASS; cleanup suspended Test companies/audited
+history retained/QA unchanged. Live75977/rollbackc385 retained; no activation or DDL.
+Recovery025314/fixture025512 retained. No HEAD pin remains.
+
+Root separately traced comparison adoption → old automatic saved review → persisted
+validation/updatedAt. Integrated c96a0049 suppresses only exact adopted-head automatic
+review. Back/Keep/Use make no review call; explicit Recheck and genuine next Save or
+Restore preserve original saved review and publication/CAS checks. Root50/2 tests
+PASS52149; strict27689/lint35246/production96254 EXIT0. No server service/publisher weakened.
+Exact next: review/save narrow checkpoint, run original compatible
+bridge candidate/public gates. After accepted bridge, required new-family positive
+compatible pair remains before whole Phase2 PASS. No Phase3/extra dump/worktree/data.
+
 ## 12 October 2026 — b602 bridge stopped; editor quality integration
 
 Original43011/b6029f8ae9681206bbc6a51bde913dae3661a6c8 FAILED before activation.
@@ -29,10 +51,37 @@ saved/local previews and explicit Back/Keep/Use preservation without auto-save.
 Final157/9 source assertions PASS79259; strict3332/scopedlint99527 EXIT0; production
 15077 EXIT0. Final checker strict/lint2842 EXIT0, early gates43/2 PASS98489.
 No new schema/migration/dependency/runtime/worktree/dump/local database. Mac92GiB
-free; latest server147GB. Exact next: commit this reviewed checkpoint, run original
-pinned compatible bridge candidate/public gates and fix genuine failures. Then a
+free; latest server147GB. Exact next: keep5e7472 HEAD pinned during original79927 compatible candidate/public
+gates; read actual search/profile/visual results and fix genuine failures. Then a
 compatible pair must positively exercise newer KPI/panel/View/embedded/non-Test
 conditional families before whole Phase2 PASS. No Phase3 engine.
+
+## 12 October 2026 — comparison adoption automatic-review side effect identified
+
+Root inspected the integration effect: changing the observed head after Keep/Use
+runs the pre-existing automatic saved review, which updates draft validation and
+updatedAt. Comparison service is read-only, but this UI side effect violates the
+new full-draft unchanged assertion. Bounded helper fix IN PROGRESS: suppress only
+automatic review for exact explicitly adopted comparison head; explicit Recheck
+and genuine next Save/Restore retain original review. New callback-count regression
+required. No permission, compiler, original CAS or publication gate is relaxed.
+Original79927/5e7472 still pinned running; native forms/default/concurrency PASS,
+search/profile/visuals pending. Do not modify its immutable candidate or HEAD.
+Exact next: obtain narrow fix, preserve it as WIP; original run must complete or
+fail safely, then checkpoint/build and original compatible retry if required.
+
+## 12 October 2026 — original 5e7472 compatible bridge running
+
+Checkpoint5e7472c2ccb1c8a87d1fcde546f9d7c0b9ed01c5 reviewed/clean/pushed.
+Original release79927 IN PROGRESS; HEAD pinned until completion. Mandatory recovery
+/home/administrator/backups/atlas-pre-deploy-20261012-025314 created by original
+both-lock pipeline. Local production15077 and original server025314 build PASS;157/9 source checks
+and43/2 early gates PASS. CandidateXeTyrZ original acceptance IN PROGRESS; fixture
+backup025512 retained. Actual pair enables literal defaults/Pages/profiles/typeforms
+only against75977. Native owner first gate PASS; later gates pending, no activation. Live remains
+75977 at dispatch; no new DDL or ad-hoc dump. Exact next: read original candidate
+search/profile/visual outcomes; fix genuine failure safely. Accepted bridge must
+then be followed by compatible-pair positive new-family acceptance before Phase2PASS.
 
 ## 12 October 2026 — visual/search closure checkpoint preparing compatible release
 

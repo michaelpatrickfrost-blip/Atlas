@@ -15,6 +15,7 @@ import { screenLayouts } from "./layouts";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { comparePageVersionInTransaction } from "@/core/studio/authoring/page-comparison";
+import { inspectPageDraftInTransaction } from "@/core/studio/authoring/page-inspection";
 
 const target = z.string().min(1).max(100).optional();
 const text = (form: FormData, name: string) => String(form.get(name) ?? "");
@@ -56,6 +57,11 @@ export async function reviewVisualScreen(business: string | undefined, input: un
     const parsed = z.object({ revision: z.number().int().nonnegative() }).parse(input);
     return { ...result, revision: parsed.revision };
   });
+}
+export async function inspectVisualScreen(business: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.edit);
+  return withStudioAuthoringAuthority(actor, CAP.edit, target.parse(business), authority => inspectPageDraftInTransaction(authority, input));
 }
 export async function publishVisualScreen(business: string | undefined, input: unknown) {
   const actor = await requireSession();

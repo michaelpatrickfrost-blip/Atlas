@@ -1,3 +1,39 @@
+## 12 October 2026 — b602 bridge stopped; editor quality integration
+
+Original43011/b6029f8ae9681206bbc6a51bde913dae3661a6c8 FAILED before activation.
+Candidate702L2U native enforcement/concurrency/forms/defaults PASS; configured-search
+browser reached the new panel then could not select its exact Detail label. Profiles
+and visual gates were not reached. The earlier required CONFLICT/deadline negative
+was not reached; no runtime success inferred. Live75977/rollbackc385 retained,
+server147GB free; recovery022612/fixture022806 retained. No HEAD pin remains.
+
+Root added explicit accessible names to Detail/Comparison/Currency and a real
+integer-to-money selector test:34/3 PASS32850. Signed-out standalone Studio now
+redirects through existing /login; unselected staff goes to guarded /atlas/studio
+business chooser. Source entry/context/Admin/early gates36/4 PASS29113, lint60810
+EXIT0; actual anonymous redirect assertion added for next release. Current public
+75977 still exhibited anonymous Studio error4102440422; live fix pending.
+
+Source6.2/18.2 remaining editor quality work is parallel in existing worktrees:
+continuous unsaved Page validation through original compiler, visual comparison
+with current saved draft preserving local input, and logical stable business-type
+predicate impact through original retained metadata authority. No new workflow
+engine, version edge, schema, dependencies, local database, worktree or dump.
+Integrated c46b121/97c85/3fc63/8445 plus head regression0a228 and fresh-presentation
+042937/def651. Review defects corrected: inspection result binds actual head and
+payload; deliberate adoption refreshes separate original saved/local catalogues,
+fields/palette/conditions with exact selected pins and server business navigation.
+Two new allowlist entries only; no existing action keys changed. Same original
+browser fixtures now check dirty compiler feedback/no metadata effects, current
+saved/local previews and explicit Back/Keep/Use preservation without auto-save.
+Final157/9 source assertions PASS79259; strict3332/scopedlint99527 EXIT0; production
+15077 EXIT0. Final checker strict/lint2842 EXIT0, early gates43/2 PASS98489.
+No new schema/migration/dependency/runtime/worktree/dump/local database. Mac92GiB
+free; latest server147GB. Exact next: commit this reviewed checkpoint, run original
+pinned compatible bridge candidate/public gates and fix genuine failures. Then a
+compatible pair must positively exercise newer KPI/panel/View/embedded/non-Test
+conditional families before whole Phase2 PASS. No Phase3 engine.
+
 ## 12 October 2026 — visual/search closure checkpoint preparing compatible release
 
 Integrated native source/usage cff6acdd and owning indexed-search fix2c9c721c;

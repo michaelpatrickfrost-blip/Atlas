@@ -1,3 +1,24 @@
+## 12 October 2026 — visual draft checks and explicit conflict recovery
+
+Source6.2/18.2 requires concurrent draft recovery and continuous builder feedback.
+Reuse the original Page compiler under freshly resolved business authority for
+unsaved checks and current-saved-draft comparison. These read metadata only: no
+provider, validation write, Audit, merge or publication approval. Immediate shape
+feedback and debounced metadata checks bind payload plus actual observed draft/head
+revisions; stale replies are ignored. Compare current saved and unsaved layouts;
+explicit Keep adopts only the observed CAS baseline, Use replaces local state, and
+Back preserves the original baseline. Any later save retains original server CAS.
+Presentation choices must refresh through the original current-authorised catalogue
+when adopting a newer design; they grant no rights or saved-review approval.
+
+Stable business-type UUID predicates are logically independent of immutable type
+version pins. Show their impact separately using original sealed/current-authorised
+Page metadata, not fabricated StudioDependency edges or changed compiler hashes.
+Bound the tenant scan to500 (501 means explicit failure), display25 per page, and
+bind independent continuation to actual principal, exact target and whole metadata
+snapshot. Metadata-only source links still return before usage scans. No DDL or
+later-phase execution engine is introduced.
+
 ## 12 October 2026 — approved native source and usage review
 
 Native fields/facts/queries/actions/measures/panels expose metadata navigation through

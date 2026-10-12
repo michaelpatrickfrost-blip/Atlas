@@ -52,6 +52,9 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
   assert.deepEqual(verifyStudioRuntimeFeaturePair(root, join(releases, evidence.rollbackRevision), revision), evidence);
   const health = z.object({ revision: z.string() }).parse(await (await fetch(`${base}/api/health/release`)).json());
   assert.equal(health.revision, revision, "Visual checks must target the exact sealed compatible release.");
+  const anonymousEntry = await fetch(`${base}/design-studio`, { redirect: "manual" });
+  assert.equal(anonymousEntry.status, 307, "A signed-out Studio visit must reach sign-in instead of a server error.");
+  assert.equal(new URL(anonymousEntry.headers.get("location")!, base).pathname, "/login");
   assert(process.env.SESSION_SECRET && process.env.SESSION_SECRET.length >= 32);
   const output = process.env.ATLAS_STUDIO_EVIDENCE;
   assert(output && isAbsolute(output), "The original driver must supply its private release evidence directory for three visual screenshots.");
@@ -124,6 +127,15 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
     await properties.getByLabel("Add a column", { exact: true }).selectOption("discount_percent");
     await properties.getByRole("button", { name: "Move Description column down", exact: true }).click();
     await properties.getByLabel("Rows per page", { exact: true }).selectOption("5");
+    await expect(page.getByRole("button", { name: "Review & publish", exact: true })).toBeDisabled();
+    const beforeInspection = { draft: await draft(), definition: await definition(),
+      versions: await db.studioDefinitionVersion.findMany({ where: { ...scope, definitionId }, orderBy: { id: "asc" } }),
+      audits: await db.auditEntry.findMany({ where: scope, orderBy: { id: "asc" } }) };
+    await expect(page.getByRole("region", { name: "Draft check", exact: true })).toContainText("Draft checks passed. Save this design before reviewing and publishing.");
+    assert.deepEqual({ draft: await draft(), definition: await definition(),
+      versions: await db.studioDefinitionVersion.findMany({ where: { ...scope, definitionId }, orderBy: { id: "asc" } }),
+      audits: await db.auditEntry.findMany({ where: scope, orderBy: { id: "asc" } }) }, beforeInspection,
+    "Continuous unsaved checks cannot save, review or publish metadata.");
     await expect(page.getByRole("button", { name: "Review & publish", exact: true })).toBeDisabled();
     await page.getByRole("button", { name: "Save draft", exact: true }).click();
     await expect.poll(async () => (await draft()).revision).toBe(initial.revision + 1);
@@ -248,6 +260,31 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
     await expect(page.getByText(/Your changes are kept\. The saved draft may have changed/)).toBeVisible();
     await expect(properties.getByLabel("Display name", { exact: true })).toHaveValue("Local unsaved design stays here");
     assert.deepEqual(await draft(), afterConcurrent);
+    const comparisonBefore = { draft: await draft(), definition: await definition(),
+      audits: await db.auditEntry.findMany({ where: scope, orderBy: { id: "asc" } }) };
+    await page.getByRole("button", { name: "Compare saved draft", exact: true }).click();
+    const savedComparison = page.getByRole("dialog", { name: "Compare the saved draft", exact: true });
+    await expect(savedComparison.getByRole("region", { name: "Unsaved draft preview", exact: true })
+      .getByRole("heading", { name: "Local unsaved design stays here", exact: true })).toBeVisible();
+    await expect(savedComparison.getByRole("region", { name: "Saved draft preview", exact: true }))
+      .toContainText("A second saved editor revision");
+    assert.deepEqual({ draft: await draft(), definition: await definition(),
+      audits: await db.auditEntry.findMany({ where: scope, orderBy: { id: "asc" } }) }, comparisonBefore,
+    "Comparing current and local designs cannot overwrite the draft or write Audit.");
+    await savedComparison.getByRole("button", { name: "Back to editing", exact: true }).click();
+    await expect(properties.getByLabel("Display name", { exact: true })).toHaveValue("Local unsaved design stays here");
+    assert.deepEqual(await draft(), afterConcurrent);
+    await page.getByRole("button", { name: "Compare saved draft", exact: true }).click();
+    await savedComparison.getByRole("button", { name: "Keep my changes", exact: true }).click();
+    await expect(properties.getByLabel("Display name", { exact: true })).toHaveValue("Local unsaved design stays here");
+    await expect(page.getByText("Your changes are kept alongside the latest saved draft. Save when ready; the server will check for any further changes.", { exact: true })).toBeVisible();
+    assert.deepEqual(await draft(), afterConcurrent, "Keeping local changes cannot automatically save them.");
+    await page.getByRole("button", { name: "Compare saved draft", exact: true }).click();
+    await savedComparison.getByRole("button", { name: "Use saved draft", exact: true }).click();
+    await expect(properties.getByLabel("Display name", { exact: true })).toHaveValue(pagePayloadSchema.parse(afterConcurrent.payload).sections[0].label!);
+    assert.deepEqual({ draft: await draft(), definition: await definition(),
+      audits: await db.auditEntry.findMany({ where: scope, orderBy: { id: "asc" } }) }, comparisonBefore,
+    "All explicit comparison choices change editor state only.");
     const snapshot = async () => ({
       definitions: await db.studioDefinition.findMany({ where: scope, orderBy: { id: "asc" } }),
       drafts: await db.studioDraft.findMany({ where: scope, orderBy: { id: "asc" } }),

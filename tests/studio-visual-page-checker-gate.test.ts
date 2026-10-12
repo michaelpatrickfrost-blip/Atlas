@@ -32,7 +32,8 @@ beforeEach(() => {
   m.database.mockImplementation(() => { throw new Error("Central fixture access is forbidden in local gate tests."); });
   m.browser.mockImplementation(() => { throw new Error("No actual browser permitted in local gate tests."); });
   m.evidence.mockReturnValue(sealed()); m.pair.mockImplementation(() => sealed());
-  vi.stubGlobal("fetch", vi.fn(async () => Response.json({ revision: release })));
+  vi.stubGlobal("fetch", vi.fn(async (url: string) => url.endsWith("/design-studio")
+    ? new Response(null, { status: 307, headers: { location: "/login" } }) : Response.json({ revision: release })));
 });
 afterEach(() => {
   Object.defineProperty(process, "platform", platform); vi.unstubAllEnvs(); vi.unstubAllGlobals(); vi.restoreAllMocks();
@@ -92,6 +93,13 @@ it("checks the actual HTTP revision before fixture access", async () => {
 it("requires the existing authentication secret before fixture access", async () => {
   await expect(checkVisualPages("http://127.0.0.1:3210", browser, "manager", [])).rejects.toThrow();
   expect(fetch).toHaveBeenCalled(); untouched();
+});
+it("rejects a server-error entry or an unexpected sign-in destination before fixture access", async () => {
+  for (const response of [new Response(null, { status: 500 }), new Response(null, { status: 307, headers: { location: "/home" } })]) {
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => url.endsWith("/design-studio") ? response : Response.json({ revision: release })));
+    await expect(checkVisualPages("http://127.0.0.1:3210", browser, "manager", [])).rejects.toThrow();
+    untouched();
+  }
 });
 it.each(["", "relative/evidence", "other-release"])("requires the original private release evidence directory: %s", async path => {
   vi.stubEnv("SESSION_SECRET", "s".repeat(32));

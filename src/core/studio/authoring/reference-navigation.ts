@@ -12,6 +12,7 @@ import { compileCustomFieldForRead } from "../compiler/fields";
 import { assertFieldBinding, fieldDefinitionKey } from "../fields/binding";
 import { pageApprovalsSchema, pageDependencySchema } from "../pages/approvals";
 import { compilePage } from "../pages/compiler";
+import { authoredPageRecordTypeSelectors } from "../pages/definition-compiler";
 import { materialiseCompiledView } from "../views/definition-compiler";
 import { viewPayloadSchema } from "../views/schema";
 import { entityProfilePayloadSchema, recordTypePayloadSchema } from "../record-types/schema";
@@ -19,7 +20,8 @@ import { resolveEntityProfile, resolveRecordTypeProfile, normaliseConfigurationR
 import { designReferenceSchema, designReferenceLinks, type ReferenceNavigationContext } from "./reference-links";
 
 const cursorSchema = z.strictObject({ after: z.string().regex(/^[a-f0-9-]{36}@[a-f0-9-]{36}$/), checksum: z.string().regex(/^[a-f0-9]{64}$/) });
-export const designReferenceRequestSchema = z.strictObject({ reference: designReferenceSchema, cursor: cursorSchema.optional() });
+export const designReferenceRequestSchema = z.strictObject({ reference: designReferenceSchema, cursor: cursorSchema.optional(), logicalCursor: cursorSchema.optional() })
+  .refine(value => !value.logicalCursor || value.reference.kind === "recordType", "Business-type paging requires a business type.");
 const frameSchema = z.object({ dependencies: z.array(pageDependencySchema).max(100) });
 function broken(): never { throw new Error("DEPENDENCY_BROKEN: saved design reference metadata changed or is unavailable."); }
 const forbidden = (error: unknown) => error instanceof Error && error.message.startsWith("FORBIDDEN:");
@@ -28,6 +30,8 @@ export type ReferenceUsageModel = {
   usages: { name: string; kind: "Screen" | "Business type" | "Business setup" | "Dashboard" | "Additional field";
     status: "Live" | "Saved version" | "Retired"; direct: boolean; href: string | null }[];
   nextHref: string | null;
+  logicalNextHref?: string | null;
+  logicalUsages?: { name: string; version: number; status: "Live" | "Saved version" | "Retired"; href: string | null }[];
 };
 
 /** Metadata navigation only. Original seals/edges/usage engine remain authoritative.
@@ -170,10 +174,77 @@ async function readDesignReferenceInTransaction(supplied: FieldRuntimeAuthority,
     usages.push({ name: item.name, kind: labels[kind], status: item.retiredAt ? "Retired" : item.active ? "Live" : "Saved version",
       direct: item.depth === 1, href: canOpenEditor && item.retiredAt === null ? `/design-studio/${destination}${item.definitionId}${suffix}` : null });
   }
+  let logicalNextHref: string | null | undefined;
+  let logicalUsages: ReferenceUsageModel["logicalUsages"];
+  if (request.reference.kind === "recordType") {
+    // Logical UUID predicates never pinned a type version. Scan immutable Page
+    // metadata separately; do not invent version edges or alter exact cursors.
+    const candidates = await tx.studioDefinitionVersion.findMany({ where: { organisationId: session.organisationId,
+      definition: { organisationId: session.organisationId, kind: "page" } },
+      select: { ...sealedConfigurationVersionSelection, version: true, definition: { select: {
+        id: true, organisationId: true, name: true, kind: true, retiredAt: true, activeVersionId: true,
+        activeVersion: { select: { id: true, organisationId: true, definitionId: true } },
+      } } }, orderBy: [{ definitionId: "asc" }, { id: "asc" }], take: 501 });
+    if (candidates.length > 500) broken();
+    const identities = new Set<string>(), targetEntity = recordTypePayloadSchema.parse(target.payload).entity.id;
+    const matches: { identity: string; item: NonNullable<ReferenceUsageModel["logicalUsages"]>[number] }[] = [];
+    for (const row of candidates) {
+      const identity = `${row.definitionId}@${row.id}`;
+      if (identities.has(identity) || row.organisationId !== session.organisationId
+        || row.definition.organisationId !== session.organisationId || row.definition.id !== row.definitionId
+        || row.definition.kind !== "page" || !Number.isInteger(row.version) || row.version < 1
+        || (row.definition.activeVersionId === null) !== (row.definition.activeVersion === null)) broken();
+      identities.add(identity);
+      const active = row.definition.activeVersion;
+      if (active && (active.id !== row.definition.activeVersionId || active.organisationId !== session.organisationId
+        || active.definitionId !== row.definitionId)) broken();
+      const reference = configurationDependencyReferenceSchema.parse({ kind: "page", definitionId: row.definitionId,
+        versionId: row.id, schemaVersion: row.schemaVersion, checksum: row.checksum });
+      inspectRetainedConfigurationPin(session.organisationId, reference, row);
+      if (!authoredPageRecordTypeSelectors(row.payload).includes(request.reference.definitionId)) continue;
+      // The owning logical entity must agree; a same-company UUID alone cannot
+      // manufacture a cross-domain type association or access to its source.
+      const payload = z.object({ entity: z.object({ id: z.string() }) }).parse(row.payload);
+      if (payload.entity.id !== targetEntity) broken();
+      cache.set(identity, row);
+      try { await authorise(reference); }
+      catch (error) { if (forbidden(error)) continue; throw error; }
+      // No candidate name or current-head state leaves the server before its
+      // full original sealed/current native+field+projection policies pass.
+      matches.push({ identity, item: { name: row.definition.name, version: row.version,
+        status: row.definition.retiredAt ? "Retired" : row.definition.activeVersionId === row.id ? "Live" : "Saved version",
+        href: canOpenEditor && row.definition.retiredAt === null ? `/design-studio/${row.definitionId}${suffix}` : null } });
+    }
+    // A continuation belongs to this genuine reader and the WHOLE bounded
+    // immutable/current metadata snapshot, including inaccessible/nonmatches.
+    // Permission or history changes require an explicit fresh impact review.
+    const seal = checksum({ organisationId: session.organisationId, principal: authority.stamp,
+      capabilities: [...session.capabilities].sort(), target: request.reference, definition,
+      versions: candidates.map(row => ({ id: row.id, definitionId: row.definitionId,
+        schemaVersion: row.schemaVersion, version: row.version, checksum: row.checksum, definition: row.definition })),
+      allowed: matches.map(value => value.identity) });
+    let start = 0;
+    if (request.logicalCursor) {
+      if (request.logicalCursor.checksum !== seal) throw new Error("CONFLICT: business-type screen references changed. Refresh this review.");
+      const previous = matches.findIndex(value => value.identity === request.logicalCursor!.after);
+      if (previous < 0) throw new Error("CONFLICT: business-type screen references changed. Refresh this review.");
+      start = previous + 1;
+    }
+    const page = matches.slice(start, start + 25), last = page.at(-1);
+    logicalUsages = page.map(value => value.item);
+    const next = start + 25 < matches.length && last ? new URL(links.whereUsedHref, "https://atlas.invalid") : null;
+    if (next && last) {
+      next.searchParams.set("logicalAfter", last.identity); next.searchParams.set("logicalCursorChecksum", seal);
+      if (request.cursor) { next.searchParams.set("after", request.cursor.after); next.searchParams.set("cursorChecksum", request.cursor.checksum); }
+    }
+    logicalNextHref = next ? `${next.pathname}${next.search}` : null;
+  }
   const next = usage.next ? new URL(links.whereUsedHref, "https://atlas.invalid") : null;
-  if (next && usage.next) { next.searchParams.set("after", usage.next.after); next.searchParams.set("cursorChecksum", usage.next.checksum); }
+  if (next && usage.next) { next.searchParams.set("after", usage.next.after); next.searchParams.set("cursorChecksum", usage.next.checksum);
+    if (request.logicalCursor) { next.searchParams.set("logicalAfter", request.logicalCursor.after); next.searchParams.set("logicalCursorChecksum", request.logicalCursor.checksum); } }
   return { name: definition.name, sourceHref: canOpenEditor && definition.retiredAt === null ? links.sourceHref : null, retired: definition.retiredAt !== null,
-    usages, nextHref: next ? `${next.pathname}${next.search}` : null, whereUsedHref: links.whereUsedHref };
+    usages, nextHref: next ? `${next.pathname}${next.search}` : null, whereUsedHref: links.whereUsedHref,
+    ...(logicalUsages === undefined ? {} : { logicalUsages, logicalNextHref }) };
 }
 
 /** Exact retained metadata and current rights, without reading usage counts or
@@ -186,5 +257,6 @@ export async function readDesignReferenceMetadataInTransaction(authority: FieldR
 export async function readDesignReferenceUsageInTransaction(authority: FieldRuntimeAuthority, input: unknown,
   navigation: ReferenceNavigationContext = {}): Promise<ReferenceUsageModel> {
   const result = await readDesignReferenceInTransaction(authority, input, navigation);
-  return { name: result.name, sourceHref: result.sourceHref, retired: result.retired, usages: result.usages, nextHref: result.nextHref };
+  return { name: result.name, sourceHref: result.sourceHref, retired: result.retired, usages: result.usages, nextHref: result.nextHref,
+    ...(result.logicalUsages === undefined ? {} : { logicalUsages: result.logicalUsages, logicalNextHref: result.logicalNextHref }) };
 }

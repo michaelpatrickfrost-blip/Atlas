@@ -6,7 +6,7 @@ import { checksum } from "@/core/studio/registry/contracts";
 import { pagePayloadSchema } from "@/core/studio/pages/schema";
 const m = vi.hoisted(() => ({ compile: vi.fn(), draft: vi.fn(), create: vi.fn(), update: vi.fn(), versions: vi.fn(), version: vi.fn(),
   audit: vi.fn(), publish: vi.fn(), activate: vi.fn(), lock: vi.fn() }));
-vi.mock("@/core/studio/pages/definition-compiler", () => ({ compileStructuredPage: m.compile }));
+vi.mock("@/core/studio/pages/definition-compiler", () => ({ compileStructuredPage: m.compile, compileRetainedStructuredPage: m.compile }));
 vi.mock("@/core/studio/definitions/publication", () => ({ publishCompiledDefinitionInTransaction: m.publish }));
 vi.mock("@/core/studio/definitions/activation", () => ({ activateCompiledVersionInTransaction: m.activate }));
 vi.mock("@/core/studio/fields/entity-lock", () => ({ lockFieldEntitiesInTransaction: m.lock }));
@@ -21,10 +21,10 @@ const authority = { session, transaction } as FieldRuntimeAuthority;
 const payload = pagePayloadSchema.parse({ schemaVersion: 1, entity: { id: "sales.order", version: 1, schemaHash: "a".repeat(64), contractHash: "b".repeat(64) },
   formFactors: ["desktop", "tablet", "phone"], sections: [{ id: "main", label: "Order", columns: { desktop: 2, tablet: 2, phone: 1 },
     formFactors: ["desktop", "tablet", "phone"], components: [{ id: "guide", type: "instructions", text: "Help", formFactors: ["desktop", "tablet", "phone"] }] }] });
-let compiled: { payload: typeof payload; plan: { kind: string; payload: typeof payload; dependencies: []; configurationDependencies: [] }; checksum: string; warnings: string[] };
+let compiled: { payload: typeof payload; plan: { kind: string; schemaVersion: number; payload: typeof payload; dependencies: []; configurationDependencies: [] }; checksum: string; warnings: string[] };
 beforeEach(() => {
   vi.clearAllMocks();
-  const plan = { kind: "page", payload, dependencies: [] as [], configurationDependencies: [] as [] };
+  const plan = { kind: "page", schemaVersion: 1, payload, dependencies: [] as [], configurationDependencies: [] as [] };
   compiled = { payload, plan, checksum: checksum(plan), warnings: [] };
   m.compile.mockResolvedValue(compiled); m.create.mockResolvedValue({ id }); m.update.mockResolvedValue({ count: 1 });
   m.draft.mockResolvedValue({ id: "draft", organisationId: "business-a", definitionId: id, revision: 3, payload,
@@ -80,10 +80,12 @@ it("warned publications and activation failures cannot return successful go-live
   await expect(publishPageDraftInTransaction(authority, { definitionId: id, revision: 3, acknowledgeWarnings: true })).rejects.toThrow("runtime pair");
 });
 it("restoring an earlier screen requires its tenant seal and fresh compiler before original activation", async () => {
-  m.version.mockResolvedValue({ id: versionId, compiledPlan: compiled.plan, checksum: "f".repeat(64), payload });
+  const sealed = { id: versionId, definitionId: id, organisationId: session.organisationId, schemaVersion: 1,
+    payload, compiledPlan: compiled.plan, configurationDependencies: [], definition: { kind: "page", retiredAt: null } };
+  m.version.mockResolvedValue({ ...sealed, checksum: "f".repeat(64) });
   await expect(restorePageVersionInTransaction(authority, { definitionId: id, versionId, definitionRevision: 9 })).rejects.toThrow("DEPENDENCY_BROKEN");
   expect(m.activate).not.toHaveBeenCalled();
-  m.version.mockResolvedValue({ id: versionId, compiledPlan: compiled.plan, checksum: compiled.checksum, payload });
+  m.version.mockResolvedValue({ ...sealed, checksum: compiled.checksum });
   await restorePageVersionInTransaction(authority, { definitionId: id, versionId, definitionRevision: 9 });
   expect(m.version.mock.calls[1][0].where).toMatchObject({ organisationId: "business-a", definitionId: id, id: versionId });
   expect(m.activate).toHaveBeenCalledWith(transaction, session, id, 9, expect.objectContaining({ id: versionId }), compiled);

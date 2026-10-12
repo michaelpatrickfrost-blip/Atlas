@@ -10,7 +10,9 @@ Customer field search and five-kind setup/type reference controls are IMPLEMENTE
 source. Friendly initial searchable/unique scalar settings preserve published rules.
 Exact saved navigation retains its pins and corrupt references fail closed. Native
 capability navigation is IMPLEMENTED source; logical business-type condition impact
-remains a bounded metadata-only workstream. Actual compatible
+now has a separate bounded metadata-only usage list. Continuous unsaved compiler
+checks/current saved-draft comparison and explicit recovery are IMPLEMENTED source.
+Actual compatible
 candidate/public acceptance remains. These reuse original
 registry/metadata graph/field_search/Templates engine, no new schema or later engines.
 

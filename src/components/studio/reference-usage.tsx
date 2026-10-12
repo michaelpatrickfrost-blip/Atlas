@@ -19,6 +19,15 @@ export function ReferenceUsagePanel({ model, workspaceHref }: { model: Reference
         </li>)}</ul>}
     </section>
     {model.nextHref && <div className="mt-5 flex justify-end"><Link href={model.nextHref} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700">More references</Link></div>}
+    {model.logicalUsages !== undefined && <section aria-label="Screens using this business type" className="mt-7 rounded-2xl border border-slate-200 bg-white p-5">
+      <h2 className="font-semibold text-slate-900">Screens using this business type in conditions</h2>
+      <p className="mt-2 text-sm leading-6 text-slate-500">These visibility rules choose the business type itself, independently of its published version. They are separate from the saved-version references above.</p>
+      {model.logicalUsages.length ? <ul className="mt-4 divide-y divide-slate-100">{model.logicalUsages.map((item, index) => <li key={`${item.href}:${item.version}:${index}`} className="flex flex-wrap items-center justify-between gap-3 py-4">
+        <div><p className="font-semibold text-slate-800">{item.name}</p><p className="mt-1 text-sm text-slate-500">Screen · Version {item.version} · {item.status} · Uses this type in a condition</p></div>
+        {item.href && <Link href={item.href} className="text-sm font-semibold text-blue-600">Go to source · current draft</Link>}
+      </li>)}</ul> : <p className="mt-4 text-sm text-slate-500">No accessible saved screen conditions use this business type.</p>}
+      {model.logicalNextHref && <div className="mt-4 flex justify-end"><Link href={model.logicalNextHref} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">More screen conditions</Link></div>}
+    </section>}
     <p className="mt-5 text-xs leading-5 text-slate-500">This review covers saved configuration references. Draft changes and individual business records are not included.</p>
   </main>;
 }

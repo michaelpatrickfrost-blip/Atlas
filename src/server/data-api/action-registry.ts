@@ -1,4 +1,6 @@
 // Generated allowlist: public calls still enforce their own server capabilities.
+import {inspectVisualScreen} from "@/app/(studio)/design-studio/actions";
+import {compareSavedVisualScreen} from "@/app/(studio)/design-studio/draft-comparison-actions";
 import {withAdminActionAliases} from "./action-aliases";
 import {findTicketAdditionalDetailReferences} from "@/core/service-work/field-search-actions";
 import {findTicketsByAdditionalDetail} from "@/core/service-work/field-search-actions";
@@ -935,6 +937,8 @@ import {savePlace as action926} from "@/modules/teams/services/commands";
 import {saveMoment as action927} from "@/modules/teams/services/commands";
 import {removeMoment as action928} from "@/modules/teams/services/commands";
 export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>=withAdminActionAliases({
+"src/app/(studio)/design-studio/actions:inspectVisualScreen":inspectVisualScreen as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/draft-comparison-actions:compareSavedVisualScreen":compareSavedVisualScreen as (...args:never[])=>Promise<unknown>,
 "src/core/service-work/field-search-actions:findTicketAdditionalDetailReferences":findTicketAdditionalDetailReferences as (...args:never[])=>Promise<unknown>,
 "src/core/service-work/field-search-actions:findTicketsByAdditionalDetail":findTicketsByAdditionalDetail as (...args:never[])=>Promise<unknown>,
 "src/app/(studio)/design-studio/documents/actions:previewStudioDocument":previewStudioDocument as (...args:never[])=>Promise<unknown>,

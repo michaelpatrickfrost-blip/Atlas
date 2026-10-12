@@ -56,6 +56,18 @@ it("preserves money currency and explicit UTC/duration/enum range contracts", ()
 it("renders no search when no readable indexed fields are configured", () => {
   const { container } = render(<TicketAdditionalDetailSearch fields={[]} search={vi.fn()} searchReferences={vi.fn()}/>); expect(container.innerHTML).toBe("");
 });
+it("exposes stable exact names for each filter and changes the selected typed detail", async () => {
+  const second = { ...field({ type: "money", currencies: ["GBP", "EUR"] }), definitionId: uuid(4), label: "Charge" };
+  const search = vi.fn(async () => empty);
+  render(<TicketAdditionalDetailSearch fields={[field(), second]} search={search} searchReferences={vi.fn()}/>);
+  fireEvent.change(screen.getByRole("combobox", { name: "Detail" }), { target: { value: uuid(4) } });
+  fireEvent.change(screen.getByRole("combobox", { name: "Comparison" }), { target: { value: "gte" } });
+  fireEvent.change(screen.getByRole("combobox", { name: "Currency" }), { target: { value: "EUR" } });
+  fireEvent.change(screen.getByLabelText("Search value", { exact: true }), { target: { value: "1.50" } });
+  fireEvent.click(screen.getByRole("button", { name: "Find tickets" }));
+  await waitFor(() => expect(search).toHaveBeenCalledOnce());
+  expect(search.mock.calls[0]).toMatchObject([{ definitionId: uuid(4), filter: { operator: "gte", value: { type: "money", value: { amount: "1.50", currency: "EUR" } } } }]);
+});
 
 it("ignores an obsolete result after the user changes a filter", async () => {
   let resolve!: (result: typeof empty) => void; const search = vi.fn(() => new Promise<typeof empty>(done => { resolve = done; }));

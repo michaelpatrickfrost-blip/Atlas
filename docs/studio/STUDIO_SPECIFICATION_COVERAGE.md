@@ -42,7 +42,7 @@ related provider or service to adapt.
 | 8;8.2 | Default/conditional variants, shallow inspectable inheritance, capability/record-type/approved fact selection | Deterministic shallow variants/compiler/runtime and approved fact visual conditions IMPLEMENTED;113 integrated assertions PASS | Actual conditional customer/private/hidden-query behavior; do not build Phase3 Decisions early |
 | 8.3 | Buttons reference approved commands, typed modal/preview/result/navigation | Current visible Page/head/device/owner command gateway and Sales native PDF action IMPLEMENTED; shared preview inert | Original actual visual/PDF permission/tenant gate; later Process/Flow commands unavailable |
 | 17;17.1 | Compile/cache by tenant/version; bounded costs/cardinality/pagination; avoid N+1 | Registry costs/cardinality, bounded related reads and combined visible embedded query reservations; Page tenant/version/seal+fresh approval metadata cache IMPLEMENTED; original533 authorised search/index checker PASS | Latest connected Page/nested View actual runtime acceptance; tiny-fixture/index evidence is not a production-scale performance claim |
-| 18;18.2 | Catalogue/editor/properties; persistent draft/live context; guided presets; test/preview; keyboard/accessibility; where-used/impact | Standalone visual library/editor/presets/properties/conditional layouts/shared previews/save/review/GoLive/restore and customer home/screens IMPLEMENTED; build41429/local interaction checks PASS | Friendly field/type/rule controls, selected-business original Templates editor, native Analytics company dashboard designer and embedded dashboard palette/display IMPLEMENTED source; compatible actual tenant/permission/publish/restore journeys pending |
+| 6.2;18;18.2 | Concurrent saved draft comparison/continuous feedback; catalogue/editor/properties; persistent draft/live context; guided presets; test/preview; keyboard/accessibility; where-used/impact | Standalone visual library/editor/presets/properties/conditional layouts/shared previews/save/review/GoLive/restore and customer home/screens IMPLEMENTED; unsaved compiler checks/current draft comparison/logical type usage IMPLEMENTED source; build41429/local interaction checks PASS | Friendly field/type/rule controls, selected-business original Templates editor, native Analytics company dashboard designer and embedded dashboard palette/display IMPLEMENTED source; compatible actual tenant/permission/publish/restore journeys pending |
 | 19;22 | Service-only mutations, server validation/compilation, CAS/dependencies/risk/classification/cycles | Original metadata/field publisher, record-type/Page/View compilers, bounded immutable dependency graph and active reverse-usage/assignment guards IMPLEMENTED; existing registry deployment gate verified | Actual connected publication/activation/retirement/current-permission evidence for latest artefacts and reference navigation; no new publisher or generic table API |
 | 25–28 | Tenant/security/concurrency/failure/compatibility evidence, additive safe release, live verification | Each delivered field checkpoint has scoped tests/build and combined candidate/public acceptance; source ledger retains exact evidence | Whole Phase 2 gate requires representative noncoder create/design/preview/publish/live/rollback journey, two tenants, denied actor, native module regressions, all remaining rows above |
 
@@ -110,9 +110,11 @@ global rules, and Page edits reuse canonical owner forms. Shallow variants use
 approved facts/capabilities/current canonical record types; native panel reuse is
 not a Process/Approval/Flow engine. Page compiled-cache stores metadata only, and
 query budgets/pagination/visible nested View preflight remain owner-controlled.
-No additional later-phase engine is needed to close Phase2. Remaining feature
-work is the recorded customer search/native-reference usage and friendly typed
-reference/type controls, plus actual compatible publication/runtime journeys.
+No additional later-phase engine is needed to close Phase2. The earlier customer search/native-reference usage and friendly typed controls are
+now IMPLEMENTED source. Final6.2/18.2 audit identified continuous unsaved compiler
+checks, current saved-draft visual conflict comparison and logical type-condition
+usage; these are IMPLEMENTED source. Current compatible publication/runtime
+journeys remain pending; source checks cannot establish a complete phase gate.
 The Template saved-version/current-publication context gap was identified and
 handed to the parent for a visible label; its editable Status choice alone must
 not imply unsaved changes are live. Reuse the existing Template save/version

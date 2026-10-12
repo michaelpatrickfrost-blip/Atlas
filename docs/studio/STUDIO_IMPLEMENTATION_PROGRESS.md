@@ -14,11 +14,20 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
-Original5f1a45380 FAILED beforeactivation on configured-search default5s transaction
-expiry; required CONFLICT expectation unchanged. Profiles/visuals not reached.
+Originalb60243011 compatible bridge FAILED before activation. Candidate702L2U native
+enforcement/concurrency/forms/defaults PASS; configured-search panel opened but exact
+Detail selector failed. Profiles/visuals and required CONFLICT negative not reached.
+Root explicit selector labels and integer-to-money interaction34/3 PASS; actual
+retry pending. No HEAD pin remains. Original5f1a45380 FAILED beforeactivation on configured-search default5s
+expiry; required CONFLICT expectation unchanged. Live75977/rollbackc385 retained.
 Customer search+initial search/duplicate-value, five-kind and native reference
 controls IMPLEMENTED source; actual verification IN PROGRESS. Logical type-condition
-impact IN PROGRESS as bounded metadata-only follow-up.
+impact, continuous unsaved checks and current saved-draft visual conflict comparison
+IMPLEMENTED through original metadata/compiler services; final source157/9 PASS79259, strict3332/lint99527/build15077 EXIT0. Inspection
+feedback binds payload+actual head; explicit adoption refreshes independent original
+saved/local catalogues/fields/palette/conditions. Final checker strict/lint2842 EXIT0.
+Original candidate/public retry next; no actual full-phase PASS inferred. Signed-out/unselected-staff
+entry fix IMPLEMENTED source,36/4 tests/scopedlint PASS; full types/build/live pending.
 
 2D/E visual Templates/type conditions/field+View reference inspection IMPLEMENTED;
 source checks PASS, actual verification IN PROGRESS. Current original actual document
@@ -66,9 +75,18 @@ source coverage, phase plan and this ledger. No rewritten specification.
 
 # Current Workstream Detail
 
+Final source quality audit6.2/18.2: bounded original-compiler current unsaved inspection
+and original human structural comparison against latest saved draft; explicit
+adoption refreshes saved/local authorised presentation independently. Epoch/CAS guards
+preserve local edits and unsaved validation never authorises publication. Logical
+type-condition impact is separate from exact version edges, metadata-only bounded
+retained Page scan/pagination/current rights. Entry routing fixes anonymous500 and
+guides staff to original company chooser; no automatic support membership. Helpers
+use existing worktrees/dependencies only; no Phase3 engine.
+
 Bounded visual closure workstreams (no metadata schema changes; separate exact SQL guard repair):
 
-- Reference navigation / Where used: IMPLEMENTED five-kind setup/type/native controls; logical type-condition impact IN PROGRESS. Exact retained pins/current Read/seals/original graph; only FORBIDDEN omitted, corruption fails closed. No provider access. Native usages25page/500scan and current exact query-column grants precede labels.
+- Reference navigation / Where used: IMPLEMENTED five-kind setup/type/native controls; logical type-condition impact IMPLEMENTED source; actual gate pending. Exact retained pins/current Read/seals/original graph; only FORBIDDEN omitted, corruption fails closed. No provider access. Native usages25page/500scan and current exact query-column grants precede labels.
 - Record-type conditions: IMPLEMENTED source, actual verification IN PROGRESS; depends on original authorised choice resolver and canonical record assignment; friendly condition picker/catalogue, new-publication USED selector preflight; tests same tenant/entity/current required-field Read and retained seal stability.
 - Customer additional-field search: IMPLEMENTED source; existing typed field_search registry/query, bounded customer Tickets consumer; current field/native/private access/typed result tests PASS; actual browser gate pending.
 - Document visual editing: IMPLEMENTED source, focused verification PASS, actual verification IN PROGRESS; depends on existing Templates parser/merge/provider/render and selected-business authority; protected friendly detail pieces, editable table cells, authorised actual source preview; existing save/version/Audit retained; tests hidden-token preservation, no preview writes, current source/tenant rights and original generated snapshots.
@@ -99,6 +117,12 @@ friendly dispatch projected; a29004a adds strict sparse1/2 recovery/cancel throu
 original service, without labels/counts/native/progress. New non-Test conditional activation now requires immutable paired conditionalFields.v1 evidence; original Test behavior remains. Actual positive fresh isolated non-Test fixture acceptance is pending. No later workflow engine.
 
 # Files Changed
+
+Latest bounded closure: standalone entry/layout, customer field-search accessible
+selectors, Page inspection/comparison actions and original allowlist, SavedPageEditor,
+original reference reader/route/panel and same-fixture visual checkers; focused tests.
+CURRENT_STATE/DECISIONS/phase plan/coverage/visual requirements updated. Original
+source/providers/domain services and all existing action keys preserved. No new DDL.
 
 Connected source: Core original Page/View compiler, approvals/runtime/profile,
 registry source compatibility/feature evaluator, exact Sales/Ticket owner@2/@3,
@@ -140,6 +164,12 @@ Other concurrent module migrations untouched.
 
 # Tests Added
 
+Continuous compiler checks/current-head/tenant/right denial; explicit latest-draft
+comparison/Back/Keep/Use/current CAS; logical stable-type usage seals/current rights/
+500 overflow/25 pagination; anonymous/staff entry and actual typed selector labels.
+Original browser fixture now asserts continuous checks/comparison do not write drafts,
+versions/pointers/Audit, preserves local edits and known logical type usage.
+
 Meaningful current tests cover exact retained Page/profile compiler, owner@3
 compatibility/paired semantic readiness, embedded pin/graph/budget/current rights,
 pure zero/escaping display, saved conversion retention, friendly conditional rule
@@ -148,6 +178,17 @@ and fresh isolated production conditional checkers in progress; no live inferenc
 from mocked SQL/authority collaborators.
 
 # Tests Run
+
+Final integrated closure157 assertions/9 suites PASS79259; strict3332/scopedlint99527
+and production15077 EXIT0. Initial root checker syntax and DOM test option typing
+corrected before final passes. Inspection-head regression0a228 and fresh adopted
+presentation042937/def651 included. Final actual-checker strict/lint2842 EXIT0 and early gates43/2 PASS98489;
+next original compatible candidate/public run pending. No central runtime inference.
+
+Current entry source36/4 PASS29113 and scopedlint60810 EXIT0; selector interaction
+34/3 PASS32850. Actual anonymous redirect assertion is for next release. Original
+b60243011 FAILED before activation: native/concurrency/forms/defaults PASS, production
+conditional DEFER, search selector failure; profiles/visuals/public not reached.
 
 Final source104/8 PASS85069 and actual-checker early gates57/3 PASS78972;
 native review helper29PASS +independent source-only review no further concrete defect.
@@ -175,6 +216,15 @@ Original75977 candidate+public ALL COMBINED PASS28119; new feature families DEFE
 against old paired reader, not verified. New dependency SQL rehearsal PASS_ROLLBACK.
 
 # Test Results
+
+## 12 October 2026 — b602 bridge search selector failure
+
+Original43011 EXIT1 before activation. Candidate702L2U native field/contracts/
+concurrency/HTTP forms/literal defaults PASS. New search panel opened, exact Detail
+selector timed out before later negative/profile/visual gates. Explicit labels
+corrected and typed two-detail selection source passed. Live75977/rollbackc385
+retained;147GB server free and92GiB Mac free. Original recovery022612/fixture022806
+retained; no new ad-hoc dump or local database. Actual retry remains mandatory.
 
 ## 12 October 2026 —5f1a bridge preactivation failure and search controls
 
@@ -285,9 +335,11 @@ finish the bounded visual workstreams and run compatible original acceptance.
 
 
 Live original75977 verified health/pointer; rollbackc385. Current visual source
-checks PASS as detailed above, integrated strict/lint/build and actual latest
-Page/profile/default/type/dashboard/conditional gates still pending. Root default-layout regression56/1 PASS after5d747336 projection. Rehearsal
-rolled back exactly; forward dependency migration NOT APPLIED. Phase2 gate FAIL.
+checks PASS as detailed above; integrated latest types/build and actual required
+Page/profile/type/dashboard/conditional gates remain pending. Originalb602 actual
+defaults PASS but search stopped before visual/public. Dependency CHECK12010000 and
+assignment guard12020000 forward APPLIED; no new DDL in current editor changes.
+Root default-layout regression56/1 PASS after5d747336. Phase2 gate FAIL.
 
 # Architecture Decisions
 
@@ -327,7 +379,11 @@ journeys mandatory. No later phase starts.
 
 # Exact Next Action
 
-Commit the reviewed connected source checkpoint and run original pinned compatible bridge candidate/public acceptance. Preserve
+Commit the reviewed integrated editor checkpoint (source checks/types/lint/build
+passed), then run original pinned compatible bridge candidate/public gates. Keep
+HEAD fixed during the run, read actual search/profile/visual results and fix genuine
+failures without weakening expectations. After accepted bridge, run next compatible
+pair for positive new-family candidate/public acceptance. Preserve
 all original recovery/locks/actual checks; new families deferred against75977 require
 next compatible pair positive candidate/public acceptance. Integrate bounded customer
 field-search and five-kind setup/type reference controls, then close the complete

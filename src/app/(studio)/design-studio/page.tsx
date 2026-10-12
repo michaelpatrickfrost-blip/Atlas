@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, FileText, LayoutDashboard, PanelsTopLeft, Plus } from "lucide-react";
-import { requireSession } from "@/core/auth/session";
+import { getSession } from "@/core/auth/session";
+import { redirect } from "next/navigation";
+import { assertCapability } from "@/core/permissions/check";
 import { STUDIO_CAPABILITIES as CAP } from "@/core/studio/permissions";
 import { withStudioAuthoringAuthority } from "@/core/studio/authoring/context";
 import { discoverPageScreensInTransaction } from "@/core/studio/authoring/catalog";
@@ -11,7 +13,12 @@ import { ActionForm } from "@/components/ui/action-form";
 import { inputClass } from "@/components/ui/service-fields";
 
 export default async function StudioWorkspace({ searchParams }: { searchParams: Promise<{ business?: string }> }) {
-  const actor = await requireSession(), business = (await searchParams).business;
+  const actor = await getSession(), business = (await searchParams).business;
+  if (!actor) redirect("/login");
+  if (actor.capabilities.has(ATLAS_CAPABILITIES.staff) && business === undefined) {
+    assertCapability(actor, ATLAS_CAPABILITIES.companies);
+    redirect("/atlas/studio");
+  }
   const workspace = await withStudioAuthoringAuthority(actor, CAP.read, business, async authority => {
     const sources = await discoverPageScreensInTransaction(authority);
     const layouts = [];

@@ -117,7 +117,7 @@ export async function checkVisualRecordLayouts(base: string, page: Page, fixture
   }
   // Reuse the original page; link targets open new tabs for users, but this
   // acceptance read navigates the same fixture page without creating a context.
-  async function inspectReferenceNavigation(navigation: Locator, expected: DesignReference, name: string, incoming?: string) {
+  async function inspectReferenceNavigation(navigation: Locator, expected: DesignReference, name: string, incoming?: string, logicalIncoming?: string) {
     const pin = designReferenceSchema.parse(expected), origin = page.url();
     const source = navigation.getByRole("link", { name: /Go to source · current draft/ });
     const usage = navigation.getByRole("link", { name: /Where used · saved version/ });
@@ -135,6 +135,11 @@ export async function checkVisualRecordLayouts(base: string, page: Page, fixture
     await expect(page.getByRole("heading", { name, exact: true }).first()).toBeVisible();
     await expect(page.getByText("This review covers saved configuration references. Draft changes and individual business records are not included.", { exact: true })).toBeVisible();
     if (incoming) await expect(page.getByRole("region", { name: "Saved references" }).getByText(incoming, { exact: true })).toBeVisible();
+    if (logicalIncoming) {
+      const logical = page.getByRole("region", { name: "Screens using this business type", exact: true });
+      await expect(logical.getByText(logicalIncoming, { exact: true })).toBeVisible();
+      await expect(logical.getByText("These visibility rules choose the business type itself, independently of its published version. They are separate from the saved-version references above.", { exact: true })).toBeVisible();
+    }
     await page.goto(origin);
   }
   async function exactReference(kind: "page" | "entityProfile" | "recordType", definitionId: string, versionId: string) {
@@ -221,8 +226,8 @@ export async function checkVisualRecordLayouts(base: string, page: Page, fixture
     const typeCondition = page.locator("details").filter({ has: page.locator("summary").filter({ hasText: /^When to use / }) });
     await typeCondition.locator("summary").click();
     // Stable type predicates do not fabricate a versioned dependency edge. The
-    // type source review is exact approved metadata, not claimed record impact.
-    await inspectReferenceNavigation(typeCondition.getByRole("navigation", { name: "Business record type references" }), typePin, typeDefinition.name);
+    // exact source pin and separate logical screen usage must both be truthful.
+    await inspectReferenceNavigation(typeCondition.getByRole("navigation", { name: "Business record type references" }), typePin, typeDefinition.name, undefined, standard.name);
     assert.deepEqual(await snapshot(), configurationBeforeInvalid, "Source/usage navigation must be metadata read-only.");
     const savedConditional = await draft(standard.id), unknown = structuredClone(conditionalPayload);
     unknown.variants[0].when = { kind: "recordType", definitionId: randomUUID() };

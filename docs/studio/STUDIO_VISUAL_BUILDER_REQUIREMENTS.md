@@ -5,7 +5,12 @@ search and duplicate-value controls; published settings remain under the origina
 reviewed migration rules. Customer Tickets offers typed additional-detail search
 through the existing indexed query and native private-record permissions. Screens,
 business setup, types, additional fields and dashboards have exact saved-version
-Where used links and separately labelled current-draft source links. These are
+Where used links and separately labelled current-draft source links. Logical
+business-type condition usage is shown separately from exact version references.
+The screen editor checks unsaved designs through the original compiler and compares
+current saved/unsaved layouts with explicit choices that preserve original save CAS.
+Anonymous standalone Studio visits reach sign-in; staff without a selected business
+reach the original guarded company chooser. These are
 IMPLEMENTED source, with actual compatible browser/release verification pending;
 consult the execution ledger for the whole Phase2 gate.
 

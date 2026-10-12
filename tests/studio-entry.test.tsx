@@ -1,11 +1,12 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import type { Session } from "@/core/auth/session";
 const state = vi.hoisted(() => ({ session: null as Session | null, authoring: vi.fn() }));
-vi.mock("@/core/auth/session", () => ({ getSession: async () => state.session }));
+vi.mock("@/core/auth/session", () => ({ getSession: async () => state.session, requireSession: async () => { if (!state.session) throw new Error("UNAUTHENTICATED"); return state.session; } }));
 vi.mock("next/navigation", () => ({ redirect: (url: string) => { throw new Error(`REDIRECT:${url}`); } }));
 vi.mock("@/core/studio/authoring/context", () => ({ withStudioAuthoringAuthority: state.authoring }));
 vi.mock("@/app/(studio)/design-studio/actions", () => ({ createVisualScreen: vi.fn() }));
 vi.mock("@/app/(studio)/design-studio/layouts", () => ({ screenLayouts: vi.fn() }));
+import CustomerStudioEntry from "@/app/(app)/studio/page";
 import StudioLayout from "@/app/(studio)/design-studio/layout";
 import StudioWorkspace from "@/app/(studio)/design-studio/page";
 import { STUDIO_CAPABILITIES as CAP } from "@/core/studio/permissions";
@@ -43,4 +44,14 @@ it("passes explicit staff selection and a customer's own workspace to the existi
   state.session = actor([CAP.read]);
   await StudioWorkspace({ searchParams: Promise.resolve({}) });
   expect(state.authoring).toHaveBeenLastCalledWith(state.session, CAP.read, undefined, expect.any(Function));
+});
+
+it("opens the standalone visual designer from the customer's existing Studio app entry", async () => {
+  state.session = actor([CAP.read]);
+  await expect(CustomerStudioEntry()).rejects.toThrow("REDIRECT:/design-studio");
+  expect(state.authoring).not.toHaveBeenCalled();
+  state.session = actor([]);
+  await expect(CustomerStudioEntry()).rejects.toThrow("FORBIDDEN");
+  state.session = actor([CAP.read, "atlas.staff.manage", "atlas.companies.manage"]);
+  await expect(CustomerStudioEntry()).rejects.toThrow("REDIRECT:/atlas/studio");
 });

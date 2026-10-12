@@ -3020,3 +3020,17 @@ sample metadata beside the unsaved draft through the shared inert design rendere
 It makes no native record query or activation, preserves unsaved input, and does not
 expose technical payload/hash differences. Current permissions remain independent
 of the retained seal. Actual original browser comparison proof remains pending.
+
+## 12 October 2026 — Visual Studio entry and exact original evidence binding
+
+Customer /studio keeps its original manifest/root/permission boundary but opens the
+standalone /design-studio workspace, so customer setup begins visually. Staff remains
+in separate /atlas/studio selected-business administration; old definition routes
+and foundation library remain compatible.
+
+The original release driver creates a private random mktemp directory, so a pathname
+SHA requirement is unsuitable. Its checked-in acceptance script now creates a private
+non-overwriting exact-revision marker after pinned readiness, loaded environment and
+HTTP health verification. Visual acceptance checks a regular non-symlink private file
+containing exact SHA plus newline before fixtures. Original pair/health/locks/recovery
+checks remain; no additional evidence directory/copy or environment bypass.

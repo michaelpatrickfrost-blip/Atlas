@@ -1,7 +1,7 @@
 import { checkVisualDocuments } from "./check-visual-documents";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
-import { realpathSync, statSync } from "node:fs";
+import { realpathSync, statSync, lstatSync, readFileSync } from "node:fs";
 import { basename, dirname, isAbsolute, join } from "node:path";
 import jwt from "jsonwebtoken";
 import { expect, type Browser } from "@playwright/test";
@@ -59,7 +59,11 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
   const output = process.env.ATLAS_STUDIO_EVIDENCE;
   assert(output && isAbsolute(output), "The original driver must supply its private release evidence directory for three visual screenshots.");
   const evidenceDirectory = realpathSync(output); assert(statSync(evidenceDirectory).isDirectory());
-  assert(evidenceDirectory.includes(revision), "Visual evidence must belong to this release, not a new development copy.");
+  const evidenceMarker = join(evidenceDirectory, ".atlas-release-revision"), evidenceStat = lstatSync(evidenceMarker);
+  assert(evidenceStat.isFile() && !evidenceStat.isSymbolicLink() && (evidenceStat.mode & 0o077) === 0,
+    "The original release evidence marker must be a private regular file.");
+  assert.equal(readFileSync(evidenceMarker, "utf8"), `${revision}\n`,
+    "Visual evidence must belong to the exact checked release.");
   const user = await db.user.findFirstOrThrow({ where: { id: managerSyntheticUserId, platformAdmin: null,
     email: { startsWith: "studio-check-", endsWith: "@example.test" } }, select: userSelect });
   const originalMemberships = await db.membership.findMany({ where: { userId: user.id }, orderBy: { id: "asc" } });
@@ -108,7 +112,8 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
     const order = await db.salesOrder.findFirstOrThrow({ where: { id: orderId, ...scope }, include: { lines: true, party: { select: { name: true } } } });
     assert.equal(order.party.name, customerName); assert.equal(order.lines.length, 1); assert.equal(order.netAmount, 2468);
     assert.equal(await db.salesOrder.count({ where: scope }), 1);
-    await page.goto(`${base}/design-studio`);
+    await page.goto(`${base}/studio`);
+    await expect(page).toHaveURL(`${base}/design-studio`);
     await expect(page.getByRole("heading", { name: "Make this business feel like itself.", exact: true })).toBeVisible();
     const create = page.locator("form").filter({ has: page.locator('input[name="layout"][value="sales_order_overview"]') });
     await expect(create).toHaveCount(1); await create.getByLabel("Screen name", { exact: true }).fill(screenName);

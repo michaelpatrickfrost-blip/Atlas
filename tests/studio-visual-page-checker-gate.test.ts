@@ -1,4 +1,4 @@
-import { mkdtempSync, mkdirSync, realpathSync, rmSync, symlinkSync } from "node:fs";
+import { mkdtempSync, mkdirSync, realpathSync, rmSync, symlinkSync, writeFileSync, chmodSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
@@ -26,8 +26,9 @@ beforeEach(() => {
   vi.stubEnv("SESSION_SECRET", ""); vi.stubEnv("ATLAS_STUDIO_EVIDENCE", "");
   fixture = realpathSync(mkdtempSync(join(tmpdir(), "studio-visual-gate-")));
   root = join(fixture, "atlas-releases", release); rollbackRoot = join(fixture, "atlas-releases", rollback);
-  output = join(fixture, "evidence", release); current = join(fixture, "atlas-current");
+  output = join(fixture, "evidence", "original-random-candidate"); current = join(fixture, "atlas-current");
   for (const path of [root, rollbackRoot, output]) mkdirSync(path, { recursive: true });
+  writeFileSync(join(output, ".atlas-release-revision"), `${release}\n`, { mode: 0o600 });
   symlinkSync(rollbackRoot, current); vi.spyOn(process, "cwd").mockReturnValue(root);
   m.database.mockImplementation(() => { throw new Error("Central fixture access is forbidden in local gate tests."); });
   m.browser.mockImplementation(() => { throw new Error("No actual browser permitted in local gate tests."); });
@@ -104,6 +105,16 @@ it("rejects a server-error entry or an unexpected sign-in destination before fix
 it.each(["", "relative/evidence", "other-release"])("requires the original private release evidence directory: %s", async path => {
   vi.stubEnv("SESSION_SECRET", "s".repeat(32));
   const directory = path === "other-release" ? fixture : path; vi.stubEnv("ATLAS_STUDIO_EVIDENCE", directory);
+  await expect(checkVisualPages("http://127.0.0.1:3210", browser, "manager", [])).rejects.toThrow(); untouched();
+});
+it.each(["missing", "wrong", "malformed", "symlink", "public"])("rejects an unbound evidence marker before fixtures: %s", async kind => {
+  vi.stubEnv("SESSION_SECRET", "s".repeat(32)); vi.stubEnv("ATLAS_STUDIO_EVIDENCE", output);
+  const marker = join(output, ".atlas-release-revision");
+  if (kind === "missing") rmSync(marker);
+  if (kind === "wrong") writeFileSync(marker, `${rollback}\n`);
+  if (kind === "malformed") writeFileSync(marker, release);
+  if (kind === "public") chmodSync(marker, 0o644);
+  if (kind === "symlink") { rmSync(marker); const target = join(fixture, "copied-marker"); writeFileSync(target, `${release}\n`, { mode: 0o600 }); symlinkSync(target, marker); }
   await expect(checkVisualPages("http://127.0.0.1:3210", browser, "manager", [])).rejects.toThrow(); untouched();
 });
 it("a valid prefix reaches only the deliberately denied original identity query, never a browser or a pass", async () => {

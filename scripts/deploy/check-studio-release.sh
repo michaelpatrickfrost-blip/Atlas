@@ -14,6 +14,10 @@ verify_revision() {
   curl --max-time 20 -fsS "$STUDIO_URL/api/health/release" | node -e 'let b="";process.stdin.on("data",v=>b+=v);process.stdin.on("end",()=>{if(JSON.parse(b).revision!==process.argv[1])process.exit(1)})' "$STUDIO_REV"
 }
 verify_revision
+[[ "${ATLAS_RELEASE_REVISION:?}" = "$STUDIO_REV" ]]
+# Original fresh private evidence directory; bind it to the checked release
+# without assuming mktemp embeds the SHA, overwriting evidence or copying files.
+(umask 077; set -o noclobber; printf '%s\n' "$STUDIO_REV" > "$STUDIO_EVIDENCE/.atlas-release-revision")
 ATLAS_DASHBOARD_CHECK=1 ATLAS_DASHBOARD_URL="$STUDIO_URL" node --env-file=.env.local --import tsx scripts/check-dashboards.ts > "$STUDIO_EVIDENCE/dashboards.log" 2>&1 || { cat "$STUDIO_EVIDENCE/dashboards.log"; exit 1; }
 cat "$STUDIO_EVIDENCE/dashboards.log"
 ATLAS_STUDIO_LIVE_TEST=1 ATLAS_STUDIO_TEST_URL="$STUDIO_URL" ATLAS_STUDIO_EVIDENCE="$STUDIO_EVIDENCE" node --env-file=.env.local --import tsx scripts/studio/check-metadata.ts > "$STUDIO_EVIDENCE/acceptance.log" 2>&1 || { cat "$STUDIO_EVIDENCE/acceptance.log"; exit 1; }

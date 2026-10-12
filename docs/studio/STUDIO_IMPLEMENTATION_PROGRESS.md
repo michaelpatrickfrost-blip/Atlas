@@ -14,6 +14,15 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
+Original a1acebf6/74238 FAILED before activation. Complete configured Ticket search,
+Create-only type forms and record profiles actual PASS. Visual fixture access was
+not reached because original random mktemp evidence path contains no SHA. Correct
+binding is a private original-driver exact revision marker, checked before fixtures.
+Customer /studio now opens standalone visual designer; staff retains Admin selector.
+Source IMPLEMENTED;34/3 PASS55076, strict40549/scopedlint31902/build93411 EXIT0.
+No HEAD pin. Recovery030433/fixture030629 retained; live75977/rollbackc385 unchanged.
+Next original compatible candidate/public retry required; whole Phase2 still FAIL.
+
 Original5e7472/79927 FAILED before activation: typed customer search/HTTP200 and
 required configuration-cursor CONFLICT succeeded; revoked action403 succeeded then
 page-loaded heading assertion matched both shell h1/body h2. Actual body h2 selector
@@ -82,6 +91,16 @@ source coverage, phase plan and this ledger. No rewritten specification.
 - D4c/d4d/d4e stored1/2 whole windows, native hooks/final validation, ordinary required activation and actual races: VERIFIED live ad9 in original candidate AND public gates.
 
 # Current Workstream Detail
+
+Customer launch follow-up IMPLEMENTED: existing /studio customer entry redirects
+standalone designer through original session/Read boundary; staff original Admin
+business selector retained. Manifest rootPath/legacy deep routes/guards remain.
+Original checker verifies the real customer entry. No database implications.
+Original evidence repair IMPLEMENTED: private regular non-symlink SHA+newline
+marker written without overwrite after original readiness/environment/HTTP health
+checks; validated before central fixture access. Random original path accepted,
+wrong/missing/malformed/public/symlink markers rejected. No new copy/dump/engine.
+Source34/3 PASS55076, strict40549/scopedlint31902/production93411 EXIT0; actual retry next.
 
 Final source quality audit6.2/18.2: bounded original-compiler current unsaved inspection
 and original human structural comparison against latest saved draft; explicit
@@ -187,6 +206,9 @@ from mocked SQL/authority collaborators.
 
 # Tests Run
 
+Customer visual entry/private original evidence marker34 assertions/3 suites PASS55076;
+strict40549/scopedlint31902/production93411 EXIT0. bash syntax and diff checked.
+
 Final integrated closure157 assertions/9 suites PASS79259; strict3332/scopedlint99527
 and production15077 EXIT0. Initial root checker syntax and DOM test option typing
 corrected before final passes. Inspection-head regression0a228 and fresh adopted
@@ -224,6 +246,15 @@ Original75977 candidate+public ALL COMBINED PASS28119; new feature families DEFE
 against old paired reader, not verified. New dependency SQL rehearsal PASS_ROLLBACK.
 
 # Test Results
+
+## 12 October 2026 — a1 preactivation and bounded retry
+
+Original74238 EXIT1: complete configured field search, genuine create-only forms
+and record profiles PASS. Visual fixture/browser/public gates NOT reached: original
+random evidence path was incorrectly assumed to contain SHA. Original marker repair
+retains exact pair/current-pointer/readiness/health and denies unbound evidence before
+fixtures. Mandatory030433/030629 recovery retained, Test access retired/QA unchanged.
+No live activation. Customer default visual entry source also checked as above.
 
 ## 12 October 2026 — 5e7472 preactivation ambiguous heading
 
@@ -398,15 +429,16 @@ journeys mandatory. No later phase starts.
 
 # Exact Next Action
 
-Review/save the checked exact-adopted-head automatic-review suppression and actual
-Ticket body heading selector checkpoint, then original
-pinned compatible candidate/public retry; read search/profile/visual outcomes and
-fix genuine failures without weakening expectations. After accepted bridge, run next compatible
-pair for positive new-family candidate/public acceptance. Preserve
-all original recovery/locks/actual checks; new families deferred against75977 require
-next compatible pair positive candidate/public acceptance. Integrate bounded customer
-field-search and five-kind setup/type reference controls, then close the complete
-Phase2 source/runtime gate. Do not begin Phase3.
+Save the reviewed visual customer-entry/private evidence binding checkpoint, then
+run original pinned compatible candidate/public bridge with both original locks,
+mandatory recovery and unchanged acceptance expectations. Read actual visual/editor/
+document/type/profile outcomes, fix concrete failures. After accepted bridge, next
+compatible pair must positively exercise new KPI/panels/View/embedding/non-Test
+conditional families before whole Phase2 PASS. No Phase3/local business database.
+
+# Historical checkpoint evidence
+
+The candidate notes below are superseded by the current dashboard above.
 
 ## 12 October 2026 — comparison adoption automatic-review side effect identified
 
@@ -434,8 +466,6 @@ only against75977. Native owner first gate PASS; later gates pending, no activat
 75977 at dispatch; no new DDL or ad-hoc dump. Exact next: read original candidate
 search/profile/visual outcomes; fix genuine failure safely. Accepted bridge must
 then be followed by compatible-pair positive new-family acceptance before Phase2PASS.
-
-# Historical checkpoint evidence
 
 The following dated notes record what was known at their checkpoints. Next actions,
 running sessions and live pointers here may be superseded by the dashboard above.

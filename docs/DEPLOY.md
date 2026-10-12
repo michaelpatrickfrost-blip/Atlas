@@ -385,6 +385,11 @@ existing business records and QA identity/profile grants are preserved. No local
 business database or new permission system. Default/People/Supply selectors retain
 their behavior. Candidate/public evidence stays private in reported /tmp paths.
 A partial checkpoint acceptance is not the full Phase 2 gate or visual builder.
+The original acceptance script binds each fresh random private evidence directory
+using a private `.atlas-release-revision` file after checking readiness, loaded release
+revision and HTTP health. Visual acceptance validates its exact SHA plus newline,
+private permissions and regular non-symlink type before fixture access. Do not create
+or copy this marker manually; the existing release driver creates it without overwrite.
 
 Literal Studio field defaults use immutable `.studio-runtime-features.json`
 evidence prepared before sealing by the original build pipeline. The candidate

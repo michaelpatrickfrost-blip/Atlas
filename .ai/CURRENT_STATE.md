@@ -1,3 +1,30 @@
+## 12 October 2026 — customer visual entry and original evidence binding retry
+
+Original a1acebf6/74238 FAILED before activation. Actual configured Ticket search
+(including customer HTTP/current denial/index catalogues/full snapshots), Create-only
+type forms and record profiles PASS. Visual fixtures were not reached: the checker
+incorrectly required a SHA in the original driver's random mktemp evidence pathname.
+Recovery030433/fixture030629 retained; cleanup suspended Test access/audited history
+retained/QA unchanged. Live75977/rollbackc385 remain. No HEAD pin remains.
+
+Customer /studio now redirects to /design-studio after original session/Read checks;
+staff continues to /atlas/studio business selector. Manifest rootPath/legacy deep
+links/guards and Admin foundation library remain. Original actual customer checker
+starts through /studio. No database changes. Focused34/3 PASS55076, strict40549,
+scopedlint31902 and production93411 EXIT0. Initial duplicate checker variable was
+corrected before those final passes; no runtime evidence inferred from local checks.
+
+Original release checker now writes a private non-overwriting exact-revision marker
+only after original pinned/readiness/environment/HTTP health verification. Visual
+checker validates regular non-symlink private file and exact SHA plus newline before
+any fixture access. Random original path is permitted; missing/wrong/malformed/
+symlink/public markers fail before database/browser. Original pair/health/recovery/
+locks and all actual acceptance expectations remain. No extra evidence copy, dump,
+worktree, dependencies or local database. Independent read-only safety review agrees.
+Exact next: save reviewed checkpoint and run original compatible candidate/public
+bridge. After its acceptance, positively exercise all newly compatible feature
+families on the next pair before whole Phase2 PASS. No Phase3 engines.
+
 ## 12 October 2026 — 5e7472 stopped on revoked-search heading; narrow retry
 
 Original79927/5e7472c2ccb1c8a87d1fcde546f9d7c0b9ed01c5 EXIT1 before activation.

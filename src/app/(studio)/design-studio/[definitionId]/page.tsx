@@ -12,7 +12,7 @@ export default async function ScreenDesigner({ params, searchParams }: {
   const actor = await requireSession(), { definitionId } = await params, { business } = await searchParams;
   const setup = await withStudioAuthoringAuthority(actor, CAP.edit, business, async authority => {
     const draft = await readPageDraftInTransaction(authority, definitionId);
-    const choices = await pageEditorCatalogInTransaction(authority, draft.payload);
+    const choices = await pageEditorCatalogInTransaction(authority, draft.payload, business === undefined ? {} : { business });
     const scope = choices.scope;
     const layouts = (await screenLayouts(authority, draft.payload.entity)).filter(layout => layout.scope === scope);
     return { business: { id: authority.session.organisationId, name: authority.session.organisationName, workspaceHref: `/design-studio${business ? `?business=${encodeURIComponent(business)}` : ""}` },

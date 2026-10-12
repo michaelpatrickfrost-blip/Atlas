@@ -34,16 +34,16 @@ related provider or service to adapt.
 | --- | --- | --- | --- |
 | 6.4;27 | Explicit owner opt-in; aliases vs extension storage vs record types vs native domain fields | Registry entity policy, reserved keys, typed compiler; Tickets canonical ServiceWorkItem owner; protected native columns read-only to fields | Friendly setup distinguishes additional details/base/type; exact customer/native visual evidence pending |
 | 6.4;6.1 | Immutable keys/identity, mutable labels, retained history | Permanent field binding, immutable versions/generations/value history; same-generation cosmetics verified live | Friendly all15 typed creation now generates stable keys/choice IDs server-side; actual customer setup/create/publication evidence remains |
-| 6.5 | Approved typed constraints including decimal/money/currency/enum versions/reference policy | Closed field/storage/value schemas, server validators, typed SQL families/constraints and atomic ordinary saves verified | Usable owner form inputs/approved defaults and presentation aliases, configured field search/filter/sort runtime, complete native writer integration |
-| 6.5;14 | Required-if on every write; hiding never waives validation; sensitivity/capabilities narrow access | Typed condition compiler/evaluator, authorised input reader, current-owner coverage and actual row observation; no arbitrary code/SQL | Native hooks/final validation/required activation VERIFIED live ad9 with actual candidate/public atomicity/windows/concurrency proof; usable typed native form inputs remain incomplete |
+| 6.5 | Approved typed constraints including decimal/money/currency/enum versions/reference policy | Closed field/storage/value schemas, server validators, typed SQL families/constraints and atomic ordinary saves verified; native whole-form controls/receipts/defaults and configured indexed search IMPLEMENTED | Latest533 candidate form/default/search journeys PASS before unrelated profile failure; public/latest connected field setup, customer search controls and native reference usage verification remain |
+| 6.5;14 | Required-if on every write; hiding never waives validation; sensitivity/capabilities narrow access | Typed condition compiler/evaluator, authorised input reader, current-owner coverage and actual row observation; native hooks/final validation/required activation VERIFIED live ad9 with atomicity/windows/concurrency proof; native typed forms IMPLEMENTED | Paired non-Test conditional readiness/checker IMPLEMENTED; positive production activation requires compatible actual candidate/public evidence, preserving liveTest/current native/field/reference guards |
 | 24;24.1 | Review counts/examples/failures/index/rollback limits; resumable/idempotent conversion; compatible rolling reads; explicit cutover | Existing legacy review/publication/batches/cutover/rollback/finalization and current/history services verified live | Friendly settings, review/conversion/live/history controls IMPLEMENTED source; closed2 adapter integration185/5 PASS, non-Test conditional readiness and compatible visual gates pending. Conditional cutover/settlement verified actual candidate/public1f4 (independent current settler, original creator revoked, Audit atomicity, drift/history/replay); whole affected native window integration VERIFIED live ad9 candidate/public; usable UI remains; format2 conversion/recovery/cancel also verified |
-| 7;7.1–2 | Canonical record types, base + one overlay, deterministic resolution, explicit conflict policy, compiled result | Compiler/base binding/one overlay/exact version pins/assignment070/required union/cohort services IMPLEMENTED; focused source checks PASS | Friendly setup, existing-record selector and initial receipt2 creation IMPLEMENTED source;070/080 APPLIED; compatible actual profile/default/type journey pending, no shadow records or grants |
-| 8;8.1 | Structured approved components and registered record surfaces, bounded queries/metrics/actions | Strict Page schema/compiler, owner sources/approvals/shared runtime, Sales/Tickets list/detail and Tickets native form surface IMPLEMENTED; local checks/build PASS | Native Ticket panels/Sales KPI and exact Analytics embedding owner@3 IMPLEMENTED; compatible actual Page/form/default/embedded journey and View-edge forward CHECK pending; unsupported later engines absent |
+| 7;7.1–2 | Canonical record types, base + one overlay, deterministic resolution, explicit conflict policy, compiled result | Compiler/base binding/one overlay/exact version pins/assignment070/required union/cohort services, friendly setup, existing-record selector and initial receipt2 IMPLEMENTED;070/080 APPLIED | Latest533 genuine association failed on070 JSON operator precedence; additive12020000 function-only repair and parent actual rehearsal PASS_ROLLBACK, forward application and original profile/default/type journey still required |
+| 8;8.1 | Structured approved components and registered record surfaces, bounded queries/metrics/actions | Strict Page schema/compiler, owner sources/approvals/shared runtime, Sales/Tickets list/detail and Tickets native form surface IMPLEMENTED; native panels/KPI/exact Analytics embedding owner@3 IMPLEMENTED; View-edge20261012010000 CHECK APPLIED in original147 candidate | Compatible actual Page/form/default/embedded candidate/public journey; unsupported later engines absent |
 | 8;8.2 | Default/conditional variants, shallow inspectable inheritance, capability/record-type/approved fact selection | Deterministic shallow variants/compiler/runtime and approved fact visual conditions IMPLEMENTED;113 integrated assertions PASS | Actual conditional customer/private/hidden-query behavior; do not build Phase3 Decisions early |
 | 8.3 | Buttons reference approved commands, typed modal/preview/result/navigation | Current visible Page/head/device/owner command gateway and Sales native PDF action IMPLEMENTED; shared preview inert | Original actual visual/PDF permission/tenant gate; later Process/Flow commands unavailable |
-| 17;17.1 | Compile/cache by tenant/version; bounded costs/cardinality/pagination; avoid N+1 | Registry cost/cardinality and dependency checks exist | Page bounded query-budget enforcement and tenant/version/seal compiled metadata cache IMPLEMENTED source; actual performance/search/index evidence remains |
+| 17;17.1 | Compile/cache by tenant/version; bounded costs/cardinality/pagination; avoid N+1 | Registry costs/cardinality, bounded related reads and combined visible embedded query reservations; Page tenant/version/seal+fresh approval metadata cache IMPLEMENTED; original533 authorised search/index checker PASS | Latest connected Page/nested View actual runtime acceptance; tiny-fixture/index evidence is not a production-scale performance claim |
 | 18;18.2 | Catalogue/editor/properties; persistent draft/live context; guided presets; test/preview; keyboard/accessibility; where-used/impact | Standalone visual library/editor/presets/properties/conditional layouts/shared previews/save/review/GoLive/restore and customer home/screens IMPLEMENTED; build41429/local interaction checks PASS | Friendly field/type/rule controls, selected-business original Templates editor, native Analytics company dashboard designer and embedded dashboard palette/display IMPLEMENTED source; compatible actual tenant/permission/publish/restore journeys pending |
-| 19;22 | Service-only mutations, server validation/compilation, CAS/dependencies/risk/classification/cycles | Metadata and field services enforce scope/CAS/Audit, compile-on-publish; registry deployment gate verified | Artefact-specific record-type/page compiler and dependency impact; compatibility checks for new payloads and UI flows |
+| 19;22 | Service-only mutations, server validation/compilation, CAS/dependencies/risk/classification/cycles | Original metadata/field publisher, record-type/Page/View compilers, bounded immutable dependency graph and active reverse-usage/assignment guards IMPLEMENTED; existing registry deployment gate verified | Actual connected publication/activation/retirement/current-permission evidence for latest artefacts and reference navigation; no new publisher or generic table API |
 | 25–28 | Tenant/security/concurrency/failure/compatibility evidence, additive safe release, live verification | Each delivered field checkpoint has scoped tests/build and combined candidate/public acceptance; source ledger retains exact evidence | Whole Phase 2 gate requires representative noncoder create/design/preview/publish/live/rollback journey, two tenants, denied actor, native module regressions, all remaining rows above |
 
 ## Cross-cutting source rules retained throughout
@@ -82,12 +82,34 @@ Original75977 full candidate/public combined release PASS and health/pointer ver
 WholePhase2 remains incomplete: original old paired reader deferred new visual families.
 Root connected original company View publication/readers, opt-in immutable embedding,
 retained Page/profile/default pin fixes, plain required-rule target/control workflow.
-Integrated strict82160/lint43058/build92610 EXIT0;185/5 rule cases and56/1 default
-regression PASS. Actual View-edge CHECK rehearsal PASS_ROLLBACK, forward NOT APPLIED.
-Next checkpoint: original immutable reader bridge, then exact compatible candidate/
-public visual/profile/type/default/dashboard/conditional runtime gates. Complete
+Integrated source checks are recorded in the permanent ledger. Actual View-edge
+CHECK20261012010000 APPLIED in original147 candidate. Original533 candidate stopped
+before activation on070 assignment JSON extraction/subtraction precedence; exact
+additive12020000 repair source and parent SQL rehearsal PASS_ROLLBACK are available.
+Live75977/rollbackc385 remain. Latest533 candidate form/default/search checks passed;
+new production conditional pair was DEFERRED before fixture writes, never PASS.
+Next checkpoint: apply the additive repair through the original immutable release,
+then exact compatible candidate/public visual/profile/type/dashboard/conditional
+runtime gates. Complete
 fresh synthetic non-Test conditional readiness without changing existing tenants or
 relaxing native/liveTest authority. No Phase3; reuse unchanged source and ledger.
+
+### 12 October — bounded source6.4–8/17–18/27 coverage audit
+
+Actual source inspection confirms presentation aliases stay separate from storage,
+all15 approved field types use server validation, profile requirements add to
+global rules, and Page edits reuse canonical owner forms. Shallow variants use
+approved facts/capabilities/current canonical record types; native panel reuse is
+not a Process/Approval/Flow engine. Page compiled-cache stores metadata only, and
+query budgets/pagination/visible nested View preflight remain owner-controlled.
+No additional later-phase engine is needed to close Phase2. Remaining feature
+work is the recorded customer search/native-reference usage and friendly typed
+reference/type controls, plus actual compatible publication/runtime journeys.
+The Template saved-version/current-publication context gap was identified and
+handed to the parent for a visible label; its editable Status choice alone must
+not imply unsaved changes are live. Reuse the existing Template save/version
+engine. This audit ran no tests/SQL/browser or
+deployment; rehearsal and candidate results above are parent-recorded evidence.
 
 ### 11 October — source6.5 native write integration checkpoint
 

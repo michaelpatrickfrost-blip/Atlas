@@ -1,3 +1,4 @@
+import { checkVisualDocuments } from "./check-visual-documents";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { realpathSync, statSync } from "node:fs";
@@ -18,9 +19,6 @@ import { createSalesOrderPagePresets } from "../../src/modules/sales/services/st
 import { pagePayloadSchema } from "../../src/core/studio/pages/schema";
 import { readActiveCustomerPage } from "../../src/core/studio/pages/customer-gateway";
 import { customFieldPayloadSchema } from "../../src/core/studio/fields/schema";
-import { saveTemplateForSession } from "../../src/core/templates/authoring";
-import { renderTemplate } from "../../src/core/templates/service";
-import { parseBlocks } from "../../src/core/templates/domain";
 import { TICKETING_CAPABILITIES } from "../../src/core/permissions/capabilities";
 import { checkVisualRecordLayouts } from "./check-visual-record-layouts";
 import { checkVisualBusinessDashboards } from "./check-visual-business-dashboards";
@@ -306,36 +304,9 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
     await expect(fieldPreview.getByText(/They are not the complete review/)).toBeVisible();
     assert.equal(await db.studioFieldMigrationPreparation.count({ where: { ...scope, definitionId: fieldId } }), 0, "A friendly preview must not persist a review.");
     assert.equal((await fieldDraft()).revision, evolutionDraft.revision);
-    // The same native document designer persists, publishes and resolves actual
-    // owner-approved facts. Rendering stays in memory; no duplicate PDF/dump.
-    await page.goto(`${base}/design-studio/documents/new`);
-    const templateName = `Order document ${marker}`;
-    await page.getByLabel("Template name", { exact: true }).fill(templateName);
-    await page.getByLabel("Document title", { exact: true }).fill("Order {{record.reference}} for {{customer.name}}");
-    await page.getByLabel("Section 1 text", { exact: true }).fill("Prepared for {{customer.name}}");
-    await page.getByRole("button", { name: "Save template", exact: true }).click();
-    await expect(page).toHaveURL(/\/design-studio\/documents\/[a-zA-Z0-9_-]+$/);
-    const templateId = new URL(page.url()).pathname.split("/").at(-1)!;
-    const template = () => db.documentTemplate.findFirstOrThrow({ where: { ...scope, id: templateId } });
-    assert.equal((await template()).status, "DRAFT"); assert.equal((await template()).version, 1);
-    await page.getByLabel("Status", { exact: true }).selectOption("PUBLISHED");
-    await page.getByRole("button", { name: "Save template", exact: true }).click();
-    await expect.poll(async () => (await template()).version).toBe(2);
-    const publishedTemplate = await template(); assert.equal(publishedTemplate.status, "PUBLISHED");
-    const renderedDocument = await renderTemplate(await fresh(), templateId, { sourceModule: "sales", sourceType: "order", sourceId: orderId });
-    assert.equal(renderedDocument.title, `Order ${order.reference} for ${customerName}`);
-    assert.equal(renderedDocument.blocks[0].text, `Prepared for ${customerName}`);
-    const foreignTemplateForm = new FormData();
-    for (const [key, value] of Object.entries({ id: templateId, version: "2", name: templateName, titleTemplate: publishedTemplate.titleTemplate,
-      status: "PUBLISHED", blocks: JSON.stringify(parseBlocks(publishedTemplate.blocks)) })) foreignTemplateForm.set(key, value);
-    foreignTemplateForm.append("targetModules", "sales");
-    const templateSnapshot = async () => ({ template: await template(), audits: await db.auditEntry.findMany({ where: scope, orderBy: { id: "asc" } }) });
-    const beforeForeignTemplate = await templateSnapshot();
-    const foreignTemplateActor = await fresh(b.id);
-    await assert.rejects(() => saveTemplateForSession(foreignTemplateActor, foreignTemplateForm), /CONFLICT/);
-    assert.deepEqual(await templateSnapshot(), beforeForeignTemplate);
-    await assert.rejects(() => renderTemplate(foreignTemplateActor, templateId, { sourceModule: "sales", sourceType: "order", sourceId: orderId }), /published template/);
-    console.log("PASS actual friendly field draft creation/settings/save/review/live and original document designer draft/publish/actual Sales source rendering/cross-tenant save and render denial. Published field structural settings remain protected; no business dashboard publication claim.");
+    await checkVisualDocuments(base, page, { organisationId: a.id, foreignOrganisationId: b.id,
+      orderId, orderReference: order.reference, customerName, membershipId: membership.id,
+      grantedCapabilities: authorGrants, freshSession: fresh });
     // Current grants are enforced server-side. A configuration cannot turn native
     // Read or authoring back on; customer runtime needs no Studio grants.
     await db.membership.updateMany({ where: membership, data: { grantedCapabilities: nativeGrants } });

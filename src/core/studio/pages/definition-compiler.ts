@@ -12,6 +12,8 @@ import { sessionAuthorityStamp } from "@/core/auth/session";
 import { isStudioRuntimeFeatureEnabled, STUDIO_TICKET_PANEL_FEATURE, STUDIO_SALES_PAGE_METRIC_FEATURE, STUDIO_PAGE_EMBEDDED_VIEW_FEATURE } from "../runtime-features";
 import type { ContractReference } from "../registry/types";
 import { z } from "zod";
+import { assertRecordTypeMetadataSelectorsInTransaction } from "../record-types/selection";
+import type { VisibilityPredicate } from "./schema";
 import { reconstructPageApprovalsInTransaction } from "./server-approvals";
 import type { PageSourcePolicy } from "./owner-contract";
 
@@ -67,7 +69,8 @@ export function pageReadScope(plan: Pick<CompiledPagePlan, "dependencies">, poli
 export async function compileStructuredPage(authority: FieldRuntimeAuthority, input: unknown): Promise<CompiledPageDefinition> {
   const payload = pagePayloadSchema.parse(input);
   const source = resolveAuthoringPageSource(authority, payload.entity);
-  return compileAgainstSource(authority, payload, source);
+  await assertRecordTypeMetadataSelectorsInTransaction(authority, payload.entity, authoredPageRecordTypeSelectors(payload));
+  return compileAgainstSource(authority, payload, source, true);
 }
 
 /** Authoring alone can select an independently approved retained source while
@@ -101,12 +104,14 @@ export async function compileRetainedStructuredPage(authority: FieldRuntimeAutho
   return compiled;
 }
 async function compileAgainstSource(authority: FieldRuntimeAuthority, payload: ReturnType<typeof pagePayloadSchema.parse>,
-  source: ReturnType<FieldRuntimeAuthority["registry"]["describePageSource"]>): Promise<CompiledPageDefinition> {
+  source: ReturnType<FieldRuntimeAuthority["registry"]["describePageSource"]>, newlyAuthored = false): Promise<CompiledPageDefinition> {
   const metadata = source.metadata;
   const sourcePage = { id: metadata.id, version: metadata.version, schemaHash: metadata.schemaHash, contractHash: metadata.contractHash };
   const approvals = await reconstructPageApprovalsInTransaction(authority, { sourcePage, customFields: authoredPageFieldPins(payload), embeddedViews: authoredPageViewPins(payload) });
   const plan = compilePage(payload, approvals);
-  pageReadScope(plan, source.policy);
+  const scope = pageReadScope(plan, source.policy);
+  if (newlyAuthored && scope === "list" && authoredPageRecordTypeSelectors(payload).length)
+    throw new Error("Business record-type conditions require a record screen.");
   for (const view of plan.approvals.embeddedViews ?? [])
     await inspectSealedViewForReadInTransaction(authority, view.reference, view.sourceView.id);
   for (const reference of plan.dependencies) await authority.registry.resolve(authority.session, reference);
@@ -129,4 +134,30 @@ async function compileAgainstSource(authority: FieldRuntimeAuthority, payload: R
     }
   }
   return { payload: plan.payload, plan, checksum: checksum(plan), warnings: plan.warnings };
+}
+
+
+/** Stable logical selectors are not immutable version edges. Collect the full
+ * authored envelope, including inserted/overridden variant visibility; no
+ * client record-type hint is ever used by the live runtime. */
+export function authoredPageRecordTypeSelectors(input: unknown) {
+  const page = pagePayloadSchema.parse(input), ids = new Set<string>();
+  const predicate = (value: VisibilityPredicate | null | undefined) => {
+    if (!value) return;
+    if (value.kind === "recordType") ids.add(value.definitionId);
+    else if (value.kind === "all" || value.kind === "any") value.predicates.forEach(predicate);
+  };
+  const component = (value: PageComponent) => predicate(value.visibleWhen);
+  const section = (value: typeof page.sections[number]) => { predicate(value.visibleWhen); value.components.forEach(component); };
+  page.sections.forEach(section);
+  for (const variant of page.variants) {
+    predicate(variant.when);
+    for (const patch of variant.patches) {
+      if (patch.operation === "addSection") section(patch.section);
+      else if (patch.operation === "addComponent") component(patch.component);
+      else if (patch.operation === "setSection" || patch.operation === "setComponent") predicate(patch.properties.visibleWhen);
+    }
+  }
+  if (ids.size > 100) throw new Error("A screen exceeds its approved business-type condition limit.");
+  return [...ids].sort();
 }

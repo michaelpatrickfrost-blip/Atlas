@@ -1,5 +1,7 @@
 // Generated allowlist: public calls still enforce their own server capabilities.
 import {withAdminActionAliases} from "./action-aliases";
+import {previewStudioDocument} from "@/app/(studio)/design-studio/documents/actions";
+import {listStudioDocumentPreviewRecords} from "@/app/(studio)/design-studio/documents/actions";
 import { searchTicketFieldReferences } from "@/core/service-work/field-form-actions";
 import {updateCompanyAccount as action0} from "@/app/(admin)/atlas/actions";
 import {saveCompanyEntitlements as action1} from "@/app/(admin)/atlas/actions";
@@ -931,6 +933,8 @@ import {savePlace as action926} from "@/modules/teams/services/commands";
 import {saveMoment as action927} from "@/modules/teams/services/commands";
 import {removeMoment as action928} from "@/modules/teams/services/commands";
 export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>=withAdminActionAliases({
+"src/app/(studio)/design-studio/documents/actions:previewStudioDocument":previewStudioDocument as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/documents/actions:listStudioDocumentPreviewRecords":listStudioDocumentPreviewRecords as (...args:never[])=>Promise<unknown>,
 "src/core/service-work/field-form-actions:searchTicketFieldReferences":searchTicketFieldReferences as (...args:never[])=>Promise<unknown>,
 "src/app/(admin)/atlas/actions:updateCompanyAccount":action0 as (...args:never[])=>Promise<unknown>,
 "src/app/(admin)/atlas/actions:saveCompanyEntitlements":action1 as (...args:never[])=>Promise<unknown>,

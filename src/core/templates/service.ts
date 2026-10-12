@@ -24,13 +24,13 @@ export async function templateRecords(session:Session,module:string,type:string)
  const registry=templateRegistry();
  return templateRecordSchema.array().parse(await registry.invoke(session,registry.describe(`${module}.template.${type}.list`,1),{}));
 }
-export async function renderTemplate(session:Session,id:string,input:{sourceModule?:string;sourceType?:string;sourceId?:string;partyId?:string;values?:Record<string,string>}){
+export type TemplateContextInput = {sourceModule?:string;sourceType?:string;sourceId?:string;partyId?:string;values?:Record<string,string>};
+/** Shared original Templates source resolution. Preview and generated documents
+ * use these same approved providers and canonical customer/contact identities. */
+export async function resolveTemplateContext(session:Session,input:TemplateContextInput){
  assertCapability(session,'core.contract.manage');await requireTemplateWorkspace(session);
- const template=await db.documentTemplate.findFirst({where:{id,organisationId:session.organisationId,status:'PUBLISHED'}});
- if(!template)throw new Error('Choose a published template.');
  const source=input.sourceModule&&input.sourceType&&input.sourceId?await templateRecord(session,input.sourceModule,input.sourceType,input.sourceId):null;
  if(input.sourceModule&&!source)throw new Error('Choose a source record.');
- if(source&&!template.targetModules.includes(input.sourceModule!))throw new Error('This template is not published for that app.');
  const partyId=source?.partyId??input.partyId;
  const party=partyId?await db.party.findFirst({where:{id:partyId,organisationId:session.organisationId,identityScrubbed:false},select:{id:true,name:true,customerCode:true,addresses:{take:1,orderBy:{isDefaultBilling:'desc'}}}}):null;
  if(partyId&&!party)throw new Error('Choose an active customer.');
@@ -39,6 +39,14 @@ export async function renderTemplate(session:Session,id:string,input:{sourceModu
  const fields:Record<string,string>={'company.name':brand.name,'customer.name':party?.name??'','customer.code':party?.customerCode??'','customer.address':address?[address.line1,address.line2,address.city,address.postcode,address.country].filter(Boolean).join(', '):'','contact.name':contact?`${contact.firstName} ${contact.surname}`:'','contact.email':contact?.email??'','date.today':new Date().toLocaleDateString('en-GB',{timeZone:'Europe/London'}),...source?.fields};
  // Only user-defined fields can override source facts.
  for(const [key,value] of Object.entries(input.values??{}))if(/^custom\.[a-z][a-z0-9_]{0,49}$/.test(key)){if(value.length>4000)throw new Error('A custom field is too long.');fields[key]=value.trim();}
+ return {fields,partyId:party?.id??null,contactId:contact?.id??null,source,brand};
+}
+export async function renderTemplate(session:Session,id:string,input:TemplateContextInput){
+ assertCapability(session,'core.contract.manage');await requireTemplateWorkspace(session);
+ const template=await db.documentTemplate.findFirst({where:{id,organisationId:session.organisationId,status:'PUBLISHED'}});
+ if(!template)throw new Error('Choose a published template.');
+ if(input.sourceModule&&!template.targetModules.includes(input.sourceModule))throw new Error('This template is not published for that app.');
+ const {fields,partyId,contactId,source,brand}=await resolveTemplateContext(session,input);
  const blocks=parseBlocks(template.blocks).map(b=>({...b,text:merge(b.text,fields)})),title=merge(template.titleTemplate,fields);
- return {template,blocks,title,partyId:party?.id??null,contactId:contact?.id??null,source,brand};
+ return {template,blocks,title,partyId,contactId,source,brand};
 }

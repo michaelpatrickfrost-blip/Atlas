@@ -6,7 +6,7 @@ import { withStudioAuthoringAuthority } from "@/core/studio/authoring/context";
 import { requireTemplateWorkspace } from "@/core/templates/service";
 import { parseBlocks } from "@/core/templates/domain";
 import { TemplateEditor } from "@/modules/templates/components/editor";
-import { saveStudioDocument } from "../actions";
+import { saveStudioDocument, listStudioDocumentPreviewRecords, previewStudioDocument } from "../actions";
 
 export default async function DocumentDesigner({ params, searchParams }: {
   params: Promise<{ templateId: string }>; searchParams: Promise<{ business?: string }>;
@@ -21,5 +21,5 @@ export default async function DocumentDesigner({ params, searchParams }: {
   });
   const suffix = business ? `?business=${encodeURIComponent(business)}` : "";
   return <div className="mx-auto max-w-7xl px-5 py-8 md:px-10"><p className="mb-5 text-sm text-slate-500">Designing for {workspace.name}</p>
-    <TemplateEditor key={workspace.template.version} initial={workspace.template} saveAction={saveStudioDocument.bind(null, business)} libraryHref={`/design-studio/documents${suffix}`}/></div>;
+    <TemplateEditor key={workspace.template.version} initial={workspace.template} saveAction={saveStudioDocument.bind(null, business)} listPreviewRecords={listStudioDocumentPreviewRecords.bind(null, business)} previewRecord={previewStudioDocument.bind(null, business)} libraryHref={`/design-studio/documents${suffix}`}/></div>;
 }

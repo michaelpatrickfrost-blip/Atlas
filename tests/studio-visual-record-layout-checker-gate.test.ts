@@ -10,6 +10,10 @@ vi.mock("@/core/studio/runtime-features", () => ({ STUDIO_PAGE_FEATURE: "structu
   STUDIO_RECORD_TYPE_FORM_FEATURE: "recordTypeForms.v1", readStudioRuntimeFeatureEvidence: m.evidence }));
 vi.mock("../scripts/studio/runtime-feature-probe", () => ({ verifyStudioRuntimeFeaturePair: m.pair }));
 vi.mock("@/core/studio/pages/record-default", () => ({ readRecordDefaultCustomerPage: vi.fn() }));
+vi.mock("@/core/studio/pages/customer-gateway", () => ({ readActiveCustomerPage: vi.fn() }));
+vi.mock("@/core/studio/authoring/context", () => ({ withStudioAuthoringAuthority: vi.fn() }));
+vi.mock("@/core/studio/authoring/pages", () => ({ createPageDraftInTransaction: vi.fn(), savePageDraftInTransaction: vi.fn() }));
+vi.mock("@/core/studio/registry/runtime", () => ({ studioRegistry: vi.fn() }));
 import { checkVisualRecordLayouts, type VisualRecordLayoutFixture } from "../scripts/studio/check-visual-record-layouts";
 const platform = Object.getOwnPropertyDescriptor(process, "platform")!, release = "a".repeat(40), rollback = "b".repeat(40);
 const features = ["structuredPages.v1", "recordProfiles.v1", "recordTypeForms.v1"];
@@ -67,10 +71,12 @@ it("checks actual HTTP revision before fixture access", async () => {
   vi.stubGlobal("fetch", vi.fn(async () => Response.json({ revision: rollback })));
   await expect(checkVisualRecordLayouts("http://127.0.0.1:3210", page, fixture)).rejects.toThrow("exact sealed compatible release"); untouched();
 });
-it.each(["same-tenant", "not-Test-prefix", "missing-create", "missing-queue"])("rejects unsafe fixture %s before database/browser access", async mode => {
+it.each(["same-tenant", "not-Test-prefix", "missing-create", "missing-queue", "missing-read", "missing-publish"])("rejects unsafe fixture %s before database/browser access", async mode => {
   const supplied = { ...fixture, grantedCapabilities: [...fixture.grantedCapabilities] };
   if (mode === "same-tenant") supplied.foreignOrganisationId = fixture.organisationId;
   if (mode === "not-Test-prefix") supplied.slug = "customer-business";
+  if (mode === "missing-read") supplied.grantedCapabilities = supplied.grantedCapabilities.filter(cap => cap !== "tickets.ticket.read");
+  if (mode === "missing-publish") supplied.grantedCapabilities = supplied.grantedCapabilities.filter(cap => cap !== STUDIO_CAPABILITIES.publish);
   if (mode === "missing-create") supplied.grantedCapabilities = supplied.grantedCapabilities.filter(cap => cap !== "tickets.ticket.create");
   if (mode === "missing-queue") supplied.grantedCapabilities = supplied.grantedCapabilities.filter(cap => cap !== "tickets.queue.manage");
   await expect(checkVisualRecordLayouts("http://127.0.0.1:3210", page, supplied)).rejects.toThrow(); untouched();

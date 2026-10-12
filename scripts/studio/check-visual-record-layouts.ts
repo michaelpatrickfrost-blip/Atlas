@@ -17,6 +17,10 @@ import { recordTypeAssignmentProvenanceSchema } from "../../src/core/studio/reco
 import { readRecordDefaultCustomerPage } from "../../src/core/studio/pages/record-default";
 import { checksum } from "../../src/core/studio/registry/contracts";
 import { createdTicketUrl } from "./ticket-urls";
+import { readActiveCustomerPage } from "../../src/core/studio/pages/customer-gateway";
+import { withStudioAuthoringAuthority } from "../../src/core/studio/authoring/context";
+import { createPageDraftInTransaction, savePageDraftInTransaction } from "../../src/core/studio/authoring/pages";
+import { studioRegistry } from "../../src/core/studio/registry/runtime";
 
 export type VisualRecordLayoutFixture = {
   organisationId: string; slug: string; userId: string; membershipId: string; grantedCapabilities: readonly string[];
@@ -112,7 +116,13 @@ export async function checkVisualRecordLayouts(base: string, page: Page, fixture
   const snapshot = async () => ({ native: await db.serviceWorkItem.findMany({ where: scope, orderBy: { id: "asc" } }),
     extensions: await db.studioExtensionRecord.findMany({ where: scope, orderBy: { id: "asc" } }), assignments: await db.studioRecordTypeAssignment.findMany({ where: scope, orderBy: { id: "asc" } }),
     slots: await db.studioFieldSlot.findMany({ where: scope, orderBy: { id: "asc" } }), values: await db.studioFieldValue.findMany({ where: scope, orderBy: { id: "asc" } }),
-    audits: await db.auditEntry.findMany({ where: scope, orderBy: { id: "asc" } }) });
+    audits: await db.auditEntry.findMany({ where: { organisationId: { in: [fixture.organisationId, fixture.foreignOrganisationId] } }, orderBy: { id: "asc" } }),
+    entries: await db.serviceWorkEntry.findMany({ where: scope, orderBy: { id: "asc" } }),
+    outbox: await db.domainOutbox.findMany({ where: scope, select: { id: true, eventKey: true, eventName: true, payload: true, createdAt: true }, orderBy: { id: "asc" } }),
+    definitions: await db.studioDefinition.findMany({ where: { organisationId: { in: [fixture.organisationId, fixture.foreignOrganisationId] } }, orderBy: { id: "asc" } }),
+    drafts: await db.studioDraft.findMany({ where: { organisationId: { in: [fixture.organisationId, fixture.foreignOrganisationId] } }, orderBy: { id: "asc" } }),
+    versions: await db.studioDefinitionVersion.findMany({ where: { organisationId: { in: [fixture.organisationId, fixture.foreignOrganisationId] } }, orderBy: { id: "asc" } }),
+    edges: await db.studioConfigurationDependency.findMany({ where: { organisationId: { in: [fixture.organisationId, fixture.foreignOrganisationId] } }, orderBy: [{ versionId: "asc" }, { targetVersionId: "asc" }] }) });
   try {
     const nativeBeforeDesign = await db.serviceWorkItem.count({ where: scope });
     const standard = await createLayout(baseName), specialised = await createLayout(typeName);
@@ -130,6 +140,59 @@ export async function checkVisualRecordLayouts(base: string, page: Page, fixture
     await typeForm.getByRole("button", { name: "Create record type draft", exact: true }).click(); await expect(page).toHaveURL(/\/design-studio\/setup\/[a-f0-9-]{36}$/);
     const typeId = new URL(page.url()).pathname.split("/").at(-1)!, typePayload = recordTypePayloadSchema.parse((await draft(typeId)).payload);
     assert.equal(typePayload.overlay.page?.versionId, specialised.versionId); await goLiveSetup(typeId);
+    // Same existing Page/type fixture, original browser and actual palette. The
+    // stable type UUID stays internal; the editor offers only the approved label.
+    const originalBaseVersion = await db.studioDefinitionVersion.findFirstOrThrow({ where: { ...scope, definitionId: standard.id, id: standard.versionId } });
+    const conditionalLabel = `Customer issue focus ${marker}`, conditionalNote = `Customer issue guidance ${marker}`;
+    await page.goto(`${base}/design-studio/${standard.id}`);
+    const properties = page.getByRole("complementary", { name: "Selected item properties" });
+    await page.getByRole("button", { name: "Add Helpful note", exact: true }).click();
+    await properties.getByLabel("Display name", { exact: true }).fill(conditionalNote);
+    await properties.getByLabel("Message", { exact: true }).fill("Use the customer issue procedure for this business type.");
+    await properties.getByLabel("Show this item", { exact: true }).selectOption("when");
+    await properties.getByLabel("Business detail 1", { exact: true }).selectOption({ label: "Business record type" });
+    await properties.getByLabel("Is equal to 1", { exact: true }).selectOption({ label: businessType });
+    await page.getByRole("button", { name: "Add conditional layout", exact: true }).click();
+    const when = page.locator("details").filter({ has: page.locator("summary").filter({ hasText: /^When to use / }) });
+    await when.locator("summary").click();
+    await when.getByLabel("Business detail 1", { exact: true }).selectOption({ label: "Business record type" });
+    await when.getByLabel("Is equal to 1", { exact: true }).selectOption({ label: businessType });
+    await when.getByLabel("Layout name", { exact: true }).fill("Customer issue view");
+    await page.getByRole("region", { name: "Design canvas" }).getByRole("button", { name: `${baseName} · Alternative layout`, exact: true }).click();
+    await properties.getByLabel("Display name", { exact: true }).fill(conditionalLabel);
+    await expect(page.getByText(typeId, { exact: true })).toHaveCount(0);
+    const beforeConditionalSave = await draft(standard.id);
+    await page.getByRole("button", { name: "Save draft", exact: true }).click();
+    await expect.poll(async () => (await draft(standard.id)).revision).toBe(beforeConditionalSave.revision + 1);
+    const conditionalPayload = pagePayloadSchema.parse((await draft(standard.id)).payload);
+    assert.equal(conditionalPayload.variants.length, 1); const conditionalVariant = conditionalPayload.variants[0];
+    assert.deepEqual(conditionalVariant.when, { kind: "recordType", definitionId: typeId });
+    const typedNote = conditionalPayload.sections.flatMap(section => section.components).find(component => component.label === conditionalNote);
+    assert(typedNote?.type === "callout"); assert.deepEqual(typedNote.visibleWhen, { kind: "recordType", definitionId: typeId });
+    await publishPage(); const conditionalVersionId = (await definition(standard.id)).activeVersionId; assert(conditionalVersionId);
+    assert.notEqual(conditionalVersionId, standard.versionId);
+    const retainedBaseVersion = await db.studioDefinitionVersion.findFirstOrThrow({ where: { ...scope, definitionId: standard.id, id: standard.versionId } });
+    assert.equal(retainedBaseVersion.checksum, originalBaseVersion.checksum); assert.deepEqual(retainedBaseVersion.compiledPlan, originalBaseVersion.compiledPlan);
+    assert.equal(checksum(retainedBaseVersion.compiledPlan), originalBaseVersion.checksum);
+    assert.equal(entityProfilePayloadSchema.parse((await draft(baseId)).payload).profile.page?.versionId, standard.versionId);
+    const configurationBeforeInvalid = await snapshot();
+    const savedConditional = await draft(standard.id), unknown = structuredClone(conditionalPayload);
+    unknown.variants[0].when = { kind: "recordType", definitionId: randomUUID() };
+    const invalidAuthor = await fresh();
+    await assert.rejects(() => withStudioAuthoringAuthority(invalidAuthor, STUDIO_CAPABILITIES.edit, undefined, authority =>
+      savePageDraftInTransaction(authority, { definitionId: standard.id, revision: savedConditional.revision, payload: unknown })), /RECORD_PROFILE_INVALID|unavailable|incompatible/i);
+    const foreignAuthor = await fresh(fixture.foreignOrganisationId);
+    await assert.rejects(() => withStudioAuthoringAuthority(foreignAuthor, STUDIO_CAPABILITIES.edit, undefined, authority =>
+      createPageDraftInTransaction(authority, { name: "Denied cross-business type", payload: conditionalPayload })), /RECORD_PROFILE_INVALID|unavailable|incompatible/i);
+    const listMetadata = studioRegistry().describe("tickets.ticket.page.list", 1);
+    const listPayload = pagePayloadSchema.parse({ ...conditionalPayload, variants: [], sections: [{ ...conditionalPayload.sections[0], visibleWhen: undefined,
+      components: [typedNote, { id: "always_guidance", type: "instructions", text: "Always available guidance.", formFactors: conditionalPayload.formFactors },
+        { id: "records", type: "queryList", query: { id: listMetadata.id, version: listMetadata.version, schemaHash: listMetadata.schemaHash, contractHash: listMetadata.contractHash },
+          columns: ["subject"], pageSize: 1, formFactors: conditionalPayload.formFactors }] }] });
+    const currentAuthor = await fresh();
+    await assert.rejects(() => withStudioAuthoringAuthority(currentAuthor, STUDIO_CAPABILITIES.edit, undefined, authority =>
+      createPageDraftInTransaction(authority, { name: "Denied type-filtered list", payload: listPayload })), /record screen/i);
+    assert.deepEqual(await snapshot(), configurationBeforeInvalid);
     const queueName = `Visual layout private team ${marker}`, queue = new FormData(); queue.set("name", queueName); queue.set("department", "Exact Test acceptance"); queue.set("restricted", "on");
     await fixture.call("src/core/service-work/actions:saveDeskQueue", [queue]);
     const receiving = await db.serviceQueue.findFirstOrThrow({ where: { ...scope, name: queueName, restricted: true } });
@@ -153,6 +216,26 @@ export async function checkVisualRecordLayouts(base: string, page: Page, fixture
     const progress = page.locator("form").filter({ has: page.getByRole("button", { name: "Update work", exact: true }) });
     await expect(progress.getByRole("combobox", { name: "Status", exact: true })).toBeVisible();
     await expect(progress.locator(`input[name="workId"][value="${recordId}"]`)).toHaveCount(1);
+    const activeRequest = { definitionId: standard.id, request: { kind: "record" as const, recordId }, formFactor: "desktop" as const };
+    const beforeActiveRead = await snapshot(), activeTyped = await readActiveCustomerPage(await fresh(), activeRequest);
+    assert.equal(activeTyped.versionId, conditionalVersionId); assert.equal(activeTyped.model.variantId, conditionalVariant.id);
+    assert(activeTyped.model.sections.some(section => section.label === conditionalLabel));
+    assert(activeTyped.model.sections.flatMap(section => section.components).some(component => component.id === typedNote.id));
+    assert.deepEqual(await snapshot(), beforeActiveRead);
+    await db.membership.update({ where: { id: fixture.membershipId, ...scope }, data: { grantedCapabilities: ["tickets.ticket.read"] } });
+    const typedReader = await fresh(), typedReadOnly = await readActiveCustomerPage(typedReader, activeRequest);
+    assert.equal(typedReadOnly.model.variantId, conditionalVariant.id);
+    assert(typedReadOnly.model.sections.flatMap(section => section.components).some(component => component.id === typedNote.id));
+    assert(!typedReadOnly.model.sections.flatMap(section => section.components).some(component => component.type === "surface"));
+    assert(![...typedReader.capabilities].some(capability => capability.startsWith("studio.")));
+    await page.goto(`${base}/screens/${standard.id}?record=${recordId}`);
+    await expect(page.getByRole("heading", { name: conditionalLabel, exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Update work", exact: true })).toHaveCount(0);
+    assert.deepEqual(await snapshot(), beforeActiveRead);
+    await db.membership.update({ where: { id: fixture.membershipId, ...scope }, data: { grantedCapabilities: membership.grantedCapabilities } });
+    await page.goto(`${base}/screens/${standard.id}?record=${recordId}`);
+    await expect(page.getByRole("heading", { name: conditionalLabel, exact: true })).toBeVisible(); await expect(page.getByText(conditionalNote, { exact: true })).toBeVisible();
+    await page.goto(`${base}/screens/${specialised.id}?mode=record_default&record=${recordId}`);
     const actor = await fresh(), request = { mode: "record_default" as const, entityId: "tickets.ticket" as const, recordId, formFactor: "desktop" as const };
     const retained = await readRecordDefaultCustomerPage(actor, request); assert(retained); assert.equal(retained.versionId, specialised.versionId);
     assert(retained.model.sections.flatMap(section => section.components).some(component => component.type === "facts" && component.cells.some(cell => cell.text === native.status)), "Published summary must show actual authorised native status.");
@@ -172,15 +255,25 @@ export async function checkVisualRecordLayouts(base: string, page: Page, fixture
     await page.getByRole("link", { name: new RegExp(`Open business layout.*${baseName}`) }).click();
     await expect(page).toHaveURL(new RegExp(`/screens/${standard.id}\\?mode=record_default&record=${recordId}$`));
     const selected = await readRecordDefaultCustomerPage(await fresh(), request); assert(selected); assert.equal(selected.versionId, standard.versionId); assert.equal(selected.recordTypeDefinitionId, null);
+    const activeDefault = await readActiveCustomerPage(await fresh(), activeRequest);
+    assert.equal(activeDefault.versionId, conditionalVersionId); assert.equal(activeDefault.model.variantId, null);
+    assert(activeDefault.model.sections.some(section => section.label === baseName));
+    assert(!activeDefault.model.sections.flatMap(section => section.components).some(component => component.id === typedNote.id));
+    await page.goto(`${base}/screens/${standard.id}?record=${recordId}`);
+    await expect(page.getByRole("heading", { name: baseName, exact: true })).toBeVisible(); await expect(page.getByText(conditionalNote, { exact: true })).toHaveCount(0);
     const beforeDenied = await snapshot();
     for (const hint of [{ expectedProfileFingerprint: retained.profileFingerprint }, { expectedVersionId: randomUUID() }, { expectedNativeRevision: native.version + 1 }])
       await assert.rejects(() => readRecordDefaultCustomerPage(actor, { ...request, ...hint }), /CONFLICT/);
     const foreignActor = await fresh(fixture.foreignOrganisationId);
     await assert.rejects(() => readRecordDefaultCustomerPage(foreignActor, request), /unavailable|NOT_FOUND|FORBIDDEN/i);
+    await assert.rejects(() => readActiveCustomerPage(foreignActor, activeRequest), /unavailable|NOT_FOUND|FORBIDDEN/i);
     assert.deepEqual(await snapshot(), beforeDenied);
     for (const revoked of ["tickets.ticket.read", "tickets.ticket.manage"]) {
       await db.membership.update({ where: { id: fixture.membershipId, ...scope }, data: { grantedCapabilities: membership.grantedCapabilities.filter(capability => capability !== revoked) } });
-      if (revoked === "tickets.ticket.read") await assert.rejects(() => readRecordDefaultCustomerPage(actor, request), /FORBIDDEN|unavailable|NOT_FOUND/i);
+      if (revoked === "tickets.ticket.read") {
+        await assert.rejects(() => readRecordDefaultCustomerPage(actor, request), /FORBIDDEN|unavailable|NOT_FOUND/i);
+        await assert.rejects(() => readActiveCustomerPage(actor, activeRequest), /FORBIDDEN|unavailable|NOT_FOUND/i);
+      }
       else {
         const view = await readRecordDefaultCustomerPage(await fresh(), request); assert(view);
         assert(!view.model.sections.flatMap(section => section.components).some(component => component.type === "surface"), "Revoked native Manage must not expose the owning form.");
@@ -188,7 +281,7 @@ export async function checkVisualRecordLayouts(base: string, page: Page, fixture
       assert.deepEqual(await snapshot(), beforeDenied);
       await db.membership.update({ where: { id: fixture.membershipId, ...scope }, data: { grantedCapabilities: membership.grantedCapabilities } });
     }
-    console.log("STUDIO VISUAL RECORD LAYOUTS PASS: actual Ticket preset/surface save/publish, friendly base/type setup, native selector INSERT and SQL receipt2, full owning form, reassignment/native return, retained Page versus newer active version, stale/current/foreign access denial. Create-only, field/reference rights, concurrency and atomic failure remain original independent gates.");
+    console.log("STUDIO VISUAL RECORD LAYOUTS PASS: actual Ticket preset/surface save/publish, friendly base/type setup and condition selector, actual alternate/hidden-component selection from canonical assignment, new-publication foreign/unknown/list denial with unchanged sealed history, native selector INSERT and SQL receipt2, full owning form, reassignment/native return, retained Page versus newer active version, stale/current/foreign access denial. Create-only, field/reference rights, concurrency and atomic failure remain original independent gates.");
     return { recordId, baseId, typeId, basePageId: standard.id, typePageId: specialised.id };
   } finally {
     await db.membership.update({ where: { id: fixture.membershipId, ...scope, userId: fixture.userId }, data: { grantedCapabilities: membership.grantedCapabilities } });

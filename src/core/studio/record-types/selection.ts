@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { Session } from "@/core/auth/session";
+import { sessionAuthorityStamp, type Session } from "@/core/auth/session";
 import type { Prisma } from "@/generated/prisma/client";
 import type { ContractReference } from "../registry/types";
 import { checksum } from "../registry/contracts";
@@ -92,4 +92,51 @@ export async function reassignRecordTypeInTransaction(authenticated: Session, tx
   return assignRecordTypeInTransaction(authority.session, tx, { operationId: request.operationId, entity,
     recordId: request.recordId, recordRevision: request.recordRevision,
     extensionRevision: request.extensionRevision, recordType: selected?.pin ?? null });
+}
+
+
+/** Metadata-only choices for a genuine current owning Read catalogue. This
+ * reuses the original immutable choice/current-field policy path but supplies
+ * no record visibility, Extend grant, value projection or assignment proof. */
+export async function readRecordTypeMetadataChoicesInTransaction(authority: FieldRuntimeAuthority, entity: ContractReference) {
+  await metadataOwner(authority, entity);
+  const bindings = await authority.transaction.studioProfileBinding.findMany({ where: {
+    organisationId: authority.session.organisationId, entityId: entity.id, kind: "recordType" },
+    select: { organisationId: true, entityId: true, kind: true, definitionId: true },
+    orderBy: { definitionId: "asc" }, take: maximum + 1 });
+  if (bindings.length > maximum || new Set(bindings.map(row => row.definitionId)).size !== bindings.length) invalid();
+  const result: { id: string; label: string }[] = [];
+  for (const binding of bindings) {
+    if (binding.organisationId !== authority.session.organisationId || binding.entityId !== entity.id || binding.kind !== "recordType") invalid();
+    const approved = await choice(authority, entity, binding.definitionId, true);
+    if (approved) result.push({ id: binding.definitionId, label: approved.label });
+  }
+  return result;
+}
+
+/** New authored stable selectors must name approved active types. Retained Page
+ * seals deliberately do not call this: their equality predicate never pinned a
+ * type version, and retirement cannot rewrite a sealed historical Page. */
+export async function assertRecordTypeMetadataSelectorsInTransaction(authority: FieldRuntimeAuthority,
+  entity: ContractReference, definitionIds: readonly string[]) {
+  if (!definitionIds.length) return;
+  if (definitionIds.length > maximum || new Set(definitionIds).size !== definitionIds.length) invalid();
+  await metadataOwner(authority, entity);
+  for (const id of definitionIds) {
+    const definitionId = recordTypeReferenceSchema.shape.definitionId.parse(id);
+    const binding = await authority.transaction.studioProfileBinding.findFirst({ where: {
+      organisationId: authority.session.organisationId, entityId: entity.id, kind: "recordType", definitionId },
+      select: { organisationId: true, entityId: true, kind: true, definitionId: true } });
+    if (!binding || binding.organisationId !== authority.session.organisationId || binding.entityId !== entity.id
+      || binding.kind !== "recordType" || binding.definitionId !== definitionId || !await choice(authority, entity, definitionId)) invalid();
+  }
+}
+async function metadataOwner(authority: FieldRuntimeAuthority, entity: ContractReference) {
+  const stamp = sessionAuthorityStamp(authority.session);
+  if (!stamp || stamp !== authority.stamp || stamp.organisationId !== authority.session.organisationId
+    || stamp.userId !== authority.session.userId || stamp.membershipId !== authority.session.membershipId)
+    throw new Error("FORBIDDEN: genuine current business-type metadata authority is required.");
+  const source = await authority.registry.resolve(authority.session, entity);
+  const details = source.kind === "entity" ? entityDetailsSchema.parse(source.details) : null;
+  if (!details?.extensionPolicy.recordTypes || !details.record?.fieldPolicy) invalid();
 }

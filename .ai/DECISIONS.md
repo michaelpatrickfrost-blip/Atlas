@@ -1,3 +1,35 @@
+## 12 October 2026 — Assignment JSON extraction needs explicit grouping
+
+PostgreSQL gives binary subtraction higher precedence than generic JSON extraction
+operators, even when overloaded for JSONB. The070 assignment guard expression
+`p->'entity'-ARRAY[...]` therefore does not select the entity object before removing
+permitted keys. The original candidate's real assignment failed, and parent
+read-only central SQL reproduced the invalid JSON entity token. Additive12020000
+replaces the exact guard body with `((p->'entity')-ARRAY[...])`; applied migrations
+remain immutable and every provenance/security/CAS/checksum check stays identical.
+This is a parser correction, not a waiver of assignment or required-field gates.
+Existing020 already corrected the older review guard's same precedence issue.
+Primary rule: https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-PRECEDENCE.
+Source preservation tests are not actual database acceptance; original central
+association/head/Audit/replay checker and rollback rehearsal remain mandatory.
+
+## 12 October 2026 — friendly document controls and stable record-type conditions
+
+Original Templates text/merge/table/PDF engine remains authoritative. Named protected
+UI pieces and a cell grid serialize the exact original format; historical token spelling
+remains untouched until explicit edits. Studio actual preview reuses original approved
+source/context resolver with current independent native rights and no writes. Source
+snapshots live only in component memory and clear before refresh/access failure.
+No duplicate template versions/store/renderer or client-supplied source facts.
+
+Record-type visibility is a stable logical equality selector, not a version-pinned
+configuration edge. Only newly authored Page compilation checks USED active same-tenant,
+same-entity types through original sealed profile/current field Read policy. Retained
+Page compilation continues the original sealed grammar/hash; current active/retired
+type versions are never substituted into historical Page checksums. Live selection
+uses genuine canonical assignment, never client type hints. Catalogue type choices
+reuse original metadata policy and confer no record/Extend/write authority.
+
 ## 12 October 2026 — paired production conditional activation readiness
 
 Keep original Test reviewed2 publication/activation and historical replay behavior.

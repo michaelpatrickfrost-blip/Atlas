@@ -2,12 +2,16 @@ import { pagePayloadSchema, type PagePayload, type PageScalar, type VisibilityPr
 import { applyPagePatches } from '@/core/studio/pages/patches';
 import { changePageNode, selectedPageNode, type PageEditorNode, type PageEditorSelection } from './page-editor-model';
 
-export type PageEditorConditions = { variantsAllowed: boolean; facts: readonly { id: string; label: string; choices: readonly { label: string; value: PageScalar }[] }[] };
+export type PageEditorConditions = { variantsAllowed: boolean; facts: readonly { id: string; label: string; choices: readonly { label: string; value: PageScalar }[] }[]; recordTypes?: readonly { id: string; label: string }[] };
 export type FactRule = Extract<VisibilityPredicate, { kind: 'fact' }>;
-export function editableRules(condition: VisibilityPredicate | undefined, catalog: PageEditorConditions): { mode: 'all' | 'any'; rules: FactRule[] } | null {
+export type RecordTypeRule = Extract<VisibilityPredicate, { kind: 'recordType' }>;
+export type SimplePageRule = FactRule | RecordTypeRule;
+export function editableRules(condition: VisibilityPredicate | undefined, catalog: PageEditorConditions): { mode: 'all' | 'any'; rules: SimplePageRule[] } | null {
   if (!condition) return { mode: 'all', rules: [] };
   const rules = condition.kind === 'all' || condition.kind === 'any' ? condition.predicates : [condition];
-  if (!rules.every((rule): rule is FactRule => rule.kind === 'fact' && rule.operator === 'equals' && rule.values.length === 1 && catalog.facts.some(fact => fact.id === rule.factId && fact.choices.some(choice => choice.value === rule.values[0])))) return null;
+  if (rules.length > 8 || !rules.every((rule): rule is SimplePageRule => rule.kind === 'recordType'
+    ? !!catalog.recordTypes?.some(type => type.id === rule.definitionId)
+    : rule.kind === 'fact' && rule.operator === 'equals' && rule.values.length === 1 && catalog.facts.some(fact => fact.id === rule.factId && fact.choices.some(choice => choice.value === rule.values[0])))) return null;
   return { mode: condition.kind === 'any' ? 'any' : 'all', rules };
 }
 export function factRule(catalog: PageEditorConditions, factId?: string, choiceIndex = 0): FactRule {
@@ -16,7 +20,16 @@ export function factRule(catalog: PageEditorConditions, factId?: string, choiceI
   if (!fact || !choice) throw new Error('Choose an approved business condition.');
   return { kind: 'fact', factId: fact.id, operator: 'equals', values: [choice.value] };
 }
-export function conditionFromRules(mode: 'all' | 'any', rules: FactRule[]): VisibilityPredicate | undefined {
+export function recordTypeRule(catalog: PageEditorConditions, definitionId?: string): RecordTypeRule {
+  const type = definitionId ? catalog.recordTypes?.find(value => value.id === definitionId) : catalog.recordTypes?.[0];
+  if (!type) throw new Error('Choose an approved business record type.');
+  return { kind: 'recordType', definitionId: type.id };
+}
+export const hasConditionChoices = (catalog: PageEditorConditions) => catalog.facts.some(fact => fact.choices.length) || !!catalog.recordTypes?.length;
+export function firstConditionRule(catalog: PageEditorConditions): SimplePageRule {
+  return catalog.facts.some(fact => fact.choices.length) ? factRule(catalog) : recordTypeRule(catalog);
+}
+export function conditionFromRules(mode: 'all' | 'any', rules: SimplePageRule[]): VisibilityPredicate | undefined {
   if (rules.length > 8) throw new Error('Use at most eight conditions.');
   return rules.length === 0 ? undefined : rules.length === 1 ? rules[0] : { kind: mode, predicates: rules };
 }
@@ -32,7 +45,7 @@ export function addConditionalVariant(page: PagePayload, catalog: PageEditorCond
   const priorities = new Set(page.variants.map(value => value.priority));
   const priority = Array.from({ length: 1000 }, (_, index) => index + 1).find(value => !priorities.has(value));
   if (priority === undefined) throw new Error('Choose another layout priority.');
-  return pagePayloadSchema.parse({ ...page, variants: [...page.variants, { id, label: 'Alternative layout', priority, when: factRule(catalog), patches: [{ operation: 'setSection', sectionId: page.sections[0].id, properties: { label: `${page.sections[0].label.slice(0, 76)} · Alternative layout` } }] }] });
+  return pagePayloadSchema.parse({ ...page, variants: [...page.variants, { id, label: 'Alternative layout', priority, when: firstConditionRule(catalog), patches: [{ operation: 'setSection', sectionId: page.sections[0].id, properties: { label: `${page.sections[0].label.slice(0, 76)} · Alternative layout` } }] }] });
 }
 export function patchVariantNode(page: PagePayload, id: string, selection: PageEditorSelection, change: (node: PageEditorNode) => PageEditorNode): PagePayload {
   const variant = page.variants.find(value => value.id === id);

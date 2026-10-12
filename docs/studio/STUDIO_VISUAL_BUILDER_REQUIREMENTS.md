@@ -145,3 +145,12 @@ Analytics chart adapter. Default-layout integration and actual compatible browse
 proof are still pending. The friendly required-detail editor saves plain conditions
 and connects the existing reviewed migration controls; current production readiness
 fences remain. Source implemented is distinct from Phase2 gate acceptance.
+
+
+12 October: shared original Templates editor now uses protected plain-language detail
+pieces, per-document custom detail creation and editable table cells. Draft actual
+preview resolves genuine current permitted records through original owning providers;
+no preview writes/store/PDF. Saved version/current publication remains visible while
+unsaved status changes wait for Save. Original parser/merge/PDF and native save/version
+engine remain authoritative. Focused checks passed; latest actual compatible visual
+journeys pending, so this source checkpoint does not pass the Phase2 gate.

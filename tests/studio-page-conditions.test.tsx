@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { StudioPageEditor, type PageEditorCanvasProps } from '@/components/studio/page-editor';
-import { addConditionalVariant, editableRules, factRule, moveConditionalVariant, patchVariantNode, variantDesignPage, type PageEditorConditions } from '@/components/studio/page-conditions-model';
+import { addConditionalVariant, editableRules, factRule, recordTypeRule, moveConditionalVariant, patchVariantNode, variantDesignPage, type PageEditorConditions } from '@/components/studio/page-conditions-model';
 import { PageConditionControls } from '@/components/studio/page-conditions';
 import { pagePayloadSchema, type PagePayload, type VisibilityPredicate } from '@/core/studio/pages/schema';
 import { applyPagePatches } from '@/core/studio/pages/patches';
@@ -103,4 +103,32 @@ describe('approved visual conditions and alternate layouts', () => {
     expect(() => applyPagePatches(base.sections, [{ operation: 'setSection', sectionId: 'main', properties: { label: 'One' } }, { operation: 'setSection', sectionId: 'main', properties: { label: 'Two' } }])).toThrow(/Conflicting/);
     const absent: VisibilityPredicate = { kind: 'fact', factId: 'unknown', operator: 'equals', values: [false] }; expect(editableRules(absent, catalog)).toBeNull();
   });
+});
+
+
+const typeId = (n: number) => `40000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
+const typedCatalog: PageEditorConditions = { ...catalog, recordTypes: [{ id: typeId(1), label: 'Customer complaint' }, { id: typeId(2), label: 'Equipment issue' }] };
+it('visually selects business record types alongside native facts with All/Any and no technical names', () => {
+  const f = mount(page(), typedCatalog); choose('Show this item', 'when'); choose('Business detail 1', '__record_type__');
+  expect(f.value().sections[0].visibleWhen).toEqual(recordTypeRule(typedCatalog));
+  choose('Is equal to 1', '1'); expect(f.value().sections[0].visibleWhen).toEqual(recordTypeRule(typedCatalog, typeId(2)));
+  fireEvent.click(button('Add condition')); choose('Business detail 2', 'urgent'); choose('Match conditions', 'any');
+  expect(f.value().sections[0].visibleWhen).toEqual({ kind: 'any', predicates: [recordTypeRule(typedCatalog, typeId(2)), factRule(typedCatalog, 'urgent')] });
+  expect(f.container.textContent).toContain('Customer complaint'); expect(f.container.textContent).not.toMatch(/definitionId|40000000|schemaHash|stable key/);
+  choose('Business detail 1', 'score'); expect(f.value().sections[0].visibleWhen).toMatchObject({ predicates: [{ values: [0] }, { values: [false] }] });
+});
+it('adds a conditional layout for a type-only owner catalogue using the same shallow patch engine', () => {
+  const conditions = { ...typedCatalog, facts: [] }, f = mount(page(), conditions); fireEvent.click(button('Add conditional layout'));
+  expect(f.value().variants[0].when).toEqual(recordTypeRule(conditions)); expect(button('Remove condition 1').disabled).toBe(true);
+  choose('Is equal to 1', '1'); expect(f.value().variants[0].when).toEqual(recordTypeRule(conditions, typeId(2)));
+  choose('Display name', 'Equipment view'); expect(variantDesignPage(f.value(), 'variant_1').sections[0].label).toBe('Equipment view');
+  expect(f.value().sections[0].label).toBe('Ticket overview');
+});
+it('preserves saved unknown, retired or unavailable type conditions until explicit replacement', () => {
+  const initial = page(); initial.sections[1].visibleWhen = { kind: 'recordType', definitionId: typeId(90) };
+  const f = mount(initial, typedCatalog); fireEvent.click(within(screen.getByTestId('canvas')).getByRole('button', { name: 'More details' }));
+  expect(screen.getByText(/advanced conditions/)).toBeTruthy(); expect(f.value().sections[1].visibleWhen).toEqual(initial.sections[1].visibleWhen);
+  expect(() => recordTypeRule(typedCatalog, typeId(90))).toThrow(/approved business record type/);
+  fireEvent.click(button('Replace with a simple condition')); expect(f.value().sections[1].visibleWhen).toEqual(factRule(typedCatalog));
+  expect(editableRules({ kind: 'any', predicates: [recordTypeRule(typedCatalog), { kind: 'capabilities', mode: 'all', capabilities: ['tickets.ticket.manage'] }] }, typedCatalog)).toBeNull();
 });

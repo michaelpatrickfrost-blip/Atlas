@@ -1,3 +1,4 @@
+import { designReferenceLinks, type ReferenceNavigationContext } from "./reference-links";
 import type { FieldRuntimeAuthority } from "../fields/runtime-authority";
 import type { ContractMetadata } from "../registry/types";
 import { reconstructPageApprovalsInTransaction } from "../pages/server-approvals";
@@ -14,6 +15,7 @@ import { STUDIO_CAPABILITIES } from "../permissions";
 import { assertCapability } from "@/core/permissions/check";
 import { entityDetailsSchema } from "../registry/entities";
 import { inspectSealedFieldVersion } from "../fields/sealed-field";
+import { readRecordTypeMetadataChoicesInTransaction } from "../record-types/selection";
 
 const ref = ({ id, version, schemaHash, contractHash }: Pick<ContractMetadata, "id" | "version" | "schemaHash" | "contractHash">) => ({ id, version, schemaHash, contractHash });
 const friendly = (id: string) => id.replace(/_/g, " ").replace(/^./, value => value.toUpperCase());
@@ -40,7 +42,7 @@ export async function discoverPageScreensInTransaction(authority: FieldRuntimeAu
 /** A presentation-only catalogue. Only currently authorised choices leave the
  * server; it contains no stored grants, private facts or business record data.
  */
-export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuthority, page: PagePayload) {
+export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuthority, page: PagePayload, navigation: ReferenceNavigationContext = {}) {
   assertCapability(authority.session, STUDIO_CAPABILITIES.read);
   const source = resolveAuthoringPageSource(authority, page.entity), metadata = source.metadata;
   const selected = authoredPageFieldPins(page);
@@ -85,7 +87,7 @@ export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuth
     const label = version.definition.name;
     customLabels.push({ definitionId: field.reference.definitionId, label });
     fields.push({ key: `field:${field.reference.definitionId}`, label, field: { source: "extension", reference: field.reference, mode: "read" },
-      editable: false, required: field.required });
+      editable: false, required: field.required, ...designReferenceLinks(field.reference, navigation) });
   }
   const palette: PageEditorPaletteItem[] = [
     { key: "instructions", label: "Instructions", description: "Add clear guidance for your team.", component: { type: "instructions", text: "Add helpful instructions here.", formFactors: [...forms] } },
@@ -102,7 +104,8 @@ export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuth
       component: { type: "queryList", label, query: ref(query), pageSize: Math.min(20, query.maxCardinality), columns: query.columns.slice(0, 6).map(column => column.id), formFactors: [...forms] },
       table: { columns: query.columns.map(column => ({ id: column.id, label: column.label ?? friendly(column.id) })), maxPageSize: Math.min(50, query.maxCardinality) } });
   }
-  for (const field of fields) palette.push({ key: field.key, label: field.label, description: "Show this business detail.", component: {
+  for (const field of fields) palette.push({ key: field.key, label: field.label, description: "Show this business detail.",
+    ...(field.sourceHref ? { sourceHref: field.sourceHref, whereUsedHref: field.whereUsedHref } : {}), component: {
     type: "fields", label: field.label, fields: [field.field], formFactors: [...forms] } });
   for (const command of approvals.commands) if (scope === "record" && await authorized(command)) {
     const label = authority.registry.describe(command.id, command.version).label;
@@ -131,12 +134,22 @@ export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuth
           schemaVersion: version.schemaVersion, checksum: version.checksum });
         const approval = await reconstructEmbeddedViewApproval(authority, pin, source.policy);
         await inspectSealedViewForReadInTransaction(authority, pin, approval.sourceView.id);
-        palette.push({ key: `view:${definition.id}`, label: definition.name, description: "Add this saved dashboard version. Its figures use each viewer's current access.",
+        palette.push({ key: `view:${definition.id}`, label: definition.name, ...designReferenceLinks(pin, navigation), description: "Add this saved dashboard version. Its figures use each viewer's current access.",
           component: { type: "analyticsView", label: definition.name, view: pin, formFactors: [...forms] } });
       } catch (error) {
         if (!(error instanceof Error) || !/^(FORBIDDEN|DEPENDENCY_BROKEN|NOT_FOUND):/.test(error.message)) throw error;
       }
     }
+  }
+  for (const saved of approvals.embeddedViews ?? []) {
+    if (palette.some(item => item.component.type === "analyticsView" && checksum(item.component.view) === checksum(saved.reference))) continue;
+    await inspectSealedViewForReadInTransaction(authority, saved.reference, saved.sourceView.id);
+    const definition = await authority.transaction.studioDefinition.findFirst({ where: { id: saved.reference.definitionId,
+      organisationId: authority.session.organisationId, kind: "view" }, select: { name: true } });
+    if (!definition) throw new Error("DEPENDENCY_BROKEN: the selected saved dashboard is unavailable.");
+    palette.push({ key: `saved-view:${saved.reference.definitionId}`, label: definition.name,
+      ...designReferenceLinks(saved.reference, navigation), description: "The saved dashboard version selected in this screen.",
+      component: { type: "analyticsView", label: definition.name, view: saved.reference, formFactors: [...forms] } });
   }
   const declaredFacts = entityDetailsSchema.parse(source.source.details).record?.requiredFacts?.facts ?? [];
   for (const surface of approvals.surfaces) if (scope === "record" && await authorized(surface)) {
@@ -162,5 +175,7 @@ export async function pageEditorCatalogInTransaction(authority: FieldRuntimeAuth
       if (!choices?.length) return [];
       return [{ id: fact.id, label, choices }];
     });
-  return { fields, palette, catalog, scope, conditions: { variantsAllowed: approvals.variants, facts: conditionFacts }, approvalsChecksum: checksum(approvals) };
+  const recordTypes = scope === "record" && entityDetailsSchema.parse(source.source.details).extensionPolicy.recordTypes
+    ? await readRecordTypeMetadataChoicesInTransaction(authority, page.entity) : [];
+  return { fields, palette, catalog, scope, conditions: { variantsAllowed: approvals.variants, facts: conditionFacts, recordTypes }, approvalsChecksum: checksum(approvals) };
 }

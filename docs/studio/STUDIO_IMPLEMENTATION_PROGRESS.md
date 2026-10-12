@@ -14,14 +14,14 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
-2D/E connected visual integration IMPLEMENTED source, verification IN PROGRESS.
-Original75977 full candidate/public combined acceptance PASS; live exact75977,
-rollbackc385. New owner@3/Page embedding/business dashboards/required-rule controls
-await compatible actual gates. Friendly closed2 adapters eb077b8b projected; original
-engine/current permissions retained. Default Page embedded-pin correction5d747336 integrated.
-2F integrated release gates IN PROGRESS. Connected checkpoint147ed original
-candidateYnTE0D stopped preactivation at default-checker error wording; latest source retry required. New nested checker46/2 and empty-count44/3
-source cases PASS, actual new families still deferred. WholePhase2 FAIL/incomplete.
+2D/E visual Templates/type conditions/field+View reference inspection IMPLEMENTED;
+source checks PASS, actual verification IN PROGRESS. Current original actual document
+and type checkers retain native generation/tenant/permissions/CAS/Audit expectations.
+2F guard repair/release bridge IN PROGRESS: original533 stopped preactivation at070
+JSON grouping defect; additive12020000 exact function-only repair rehearsed under
+both locks PASS_ROLLBACK, forward NOT APPLIED. Live75977/rollbackc385 retained.
+Customer field search and five-kind setup/type reference controls are bounded parallel
+workstreams. Whole Phase2 FAIL/incomplete, no Phase3 engine.
 
 # Overall Status
 
@@ -40,7 +40,7 @@ source coverage, phase plan and this ledger. No rewritten specification.
 - Phase2A owner contracts: VERIFIED.
 - Existing 2B types/storage, legacy reviewed conversion/batches/cutover/rollback/
   settlement and ordinary current/history reads/atomic saves: VERIFIED in earlier
-  live checkpoints. Native required-if integration verified live ad9; usable typed native form input remains incomplete.
+  live checkpoints. Native required-if integration verified live ad9; native typed inputs IMPLEMENTED and original533 candidate forms/default/search PASS; latest public/profile gate pending.
 - Current Tickets native9/query4/representation2/settlement2: VERIFIED for actual
   conditional preparation/row review; retained1/native5 compatibility preserved.
 - Actual format2 prepare/collect/seal APIs: VERIFIED livea475823 and repeated in
@@ -59,12 +59,12 @@ source coverage, phase plan and this ledger. No rewritten specification.
 
 # Current Workstream Detail
 
-Bounded remaining visual workstreams (no schema changes):
+Bounded visual closure workstreams (no metadata schema changes; separate exact SQL guard repair):
 
-- Reference navigation / Where used: IN PROGRESS; depends on original full seals/current Read policies and graph; owned read-only authoring wrapper, optional catalogue hrefs, standalone source/usage UI; tests current grants/retained metadata/foreign tenant/no provider access.
-- Record-type conditions: IN PROGRESS; depends on original authorised choice resolver and canonical record assignment; friendly condition picker/catalogue, new-publication USED selector preflight; tests same tenant/entity/current required-field Read and retained seal stability.
-- Customer additional-field search: NOT STARTED; depends on existing typed field_search registry/query; bounded customer Tickets consumer; tests current field/native/private access and typed results.
-- Document visual editing: NOT STARTED; depends on existing Templates parser/merge/provider/render and selected-business authority; protected friendly detail pieces, editable table cells, authorised actual source preview; existing save/version/Audit retained; tests hidden-token preservation, no preview writes, current source/tenant rights and original generated snapshots.
+- Reference navigation / Where used: IMPLEMENTED field/View source; five-kind setup/type controls IN PROGRESS; depends on original full seals/current Read policies and graph; owned read-only authoring wrapper, optional catalogue hrefs, standalone source/usage UI; tests current grants/retained metadata/foreign tenant/no provider access.
+- Record-type conditions: IMPLEMENTED source, actual verification IN PROGRESS; depends on original authorised choice resolver and canonical record assignment; friendly condition picker/catalogue, new-publication USED selector preflight; tests same tenant/entity/current required-field Read and retained seal stability.
+- Customer additional-field search: IN PROGRESS; depends on existing typed field_search registry/query; bounded customer Tickets consumer; tests current field/native/private access and typed results.
+- Document visual editing: IMPLEMENTED source, focused verification PASS, actual verification IN PROGRESS; depends on existing Templates parser/merge/provider/render and selected-business authority; protected friendly detail pieces, editable table cells, authorised actual source preview; existing save/version/Audit retained; tests hidden-token preservation, no preview writes, current source/tenant rights and original generated snapshots.
 
 
 Standalone screen designer uses original saved/review/live/restore engine, shared
@@ -104,6 +104,8 @@ Matching CURRENT_STATE/DECISIONS/phase plan/visual and Analytics docs updated.
 
 # Database / Prisma Changes
 
+20261012020000 replaces ONLY original070 assignment INSERTguard function with explicit JSON extraction parentheses. Original applied070 untouched; exact full body retained apart from grouping. Actual central both-lock rehearsal43295 PASS_ROLLBACK: entire function set restored, constraints/triggers unchanged, assignment/extension/version/value counts unchanged; genuine four-key extraction empty and extra-key retained. Existing013014 recovery pg_restore --list verified; no additional dump. Forward NOT APPLIED. Evidence /tmp/atlas-assignment-guard-rehearsal-result.txt.
+
 030/040/050/060/070/080 applied as recorded below. New20261012010000 widens only
 existing dependency target-kind CHECK to allow exact immutable View edges; all
 foreign keys/history/graph guards remain. Actual both-lock central rehearsal
@@ -112,6 +114,8 @@ restored exactly. Forward20261012010000 APPLIED by original147ed candidate build
 Evidence /tmp/atlas-page-view-rehearsal-result.txt; no additional dump.
 
 # Migrations Applied
+
+20261012020000 NOT APPLIED; exact function-only source repair and actual rolled-back rehearsal passed. Forward original release migration pending.
 
 20261012010000 CONFIRMED APPLIED by original147ed candidate build, successful
 mandatory /home/administrator/backups/atlas-pre-deploy-20261012-011303-migrate.log.
@@ -133,6 +137,11 @@ from mocked SQL/authority collaborators.
 
 # Tests Run
 
+Latest integrated visual closure105tests/8suites PASS63978; reference/type/guard89/7
+PASS18546; final saved-context/retired destination29/2 PASS31886; scopedlint84118 EXIT0.
+Strict88583 and production17803 EXIT0; final context/destination strict54090 and
+production6464 EXIT0.
+
 Current root120/8 owner@3/probe/embedding/profile suites PASS;101/5 rule workflow/
 authoring/editor/conversion/display suites PASS;20/3 retained profile/display/
 conversion PASS. Catalogue1/1 PASS after additions-only snapshot review/update.
@@ -143,6 +152,55 @@ Original75977 candidate+public ALL COMBINED PASS28119; new feature families DEFE
 against old paired reader, not verified. New dependency SQL rehearsal PASS_ROLLBACK.
 
 # Test Results
+
+## 12 October 2026 — visual Templates, type conditions and reference inspection checkpoint
+
+Original Templates now offers protected named business details, custom document details,
+editable table cells, sample/current authorised record preview and persistent saved
+version/publication context. Original save/version/PDF/provider engine retained; previews
+clear before current-access failure, perform no writes, and stale saves preserve input.
+Record-type condition choices and USED-selector new-publication validation reuse genuine
+canonical types; retained Page seals unchanged. Exact field/View reference inspection
+uses existing sealed usage graph/current native/field Read; retired editors omitted.
+Original actual document/type browser checkers extended, not yet run on this candidate.
+Root105/8 and89/7 focused checks PASS; final context/retired navigation29/2 PASS;
+scoped lint84118 EXIT0; strict88583 and production17803 EXIT0. Final saved-context strict54090/build6464 EXIT0; production build succeeds. Original data-action registry adds ONLY the two preview callbacks; full generator
+drift was reviewed and excluded to preserve all existing model/action entries. Final
+local build precedes this four-line allowlist wiring; original candidate rebuild
+remains mandatory. No new dependencies/worktrees/local data/adhoc dumps.12020000 function-only guard rehearsal PASS_ROLLBACK;
+forward NOT APPLIED. Original533 preactivation failure/live75977 rollbackc385 preserved.
+Parallel remaining: customer field search and five-kind friendly setup/type reference
+controls. Phase2 FAIL/incomplete. Exact next: commit reviewed checkpoint, then original pinned bridge migration/candidate/public acceptance.
+
+
+## 12 October 2026 — visual closure source and genuine assignment guard failure
+
+Original533b08c7 bridge36222 EXIT1 BEFORE activation at check-record-profiles genuine
+association: applied070 INSERTguard has unparenthesized JSON extraction/subtraction,
+so PostgreSQL evaluates text as JSON before required validation. Root read-only SQL
+reproduced Tokenentity error. Existing live75977/rollbackc385 preserved; new migration
+20261012020000 exact function-only forward repair implemented and actual rehearsal PASS_ROLLBACK (never edit applied070).
+Original candidateRTF6rm recovery013014/fixture013213 retained; defaults actual PASS,
+configured-search PASS, new non-Test conditional DEFER beforefixtures; no wholePASS.
+
+Root visual Templates replaces raw editable merge syntax with protected friendly
+pieces, per-document detail creation, real table cells and side-by-side preview.
+Shared original resolveTemplateContext serves original rendering and current authorised
+read-only draft preview; no second engine/store/PDF or preview writes. Selected-business
+Studio actions refresh independent native rights and preserve stale edits with explicit
+feedback. Current values clear before refresh/failure. Independent review found stale
+caret after chip/row removal; safe boundary/reset fixed and meaningful regressions added.
+Root105tests/8suites PASS63978; strict21352 EXIT0 (before finalreference/recordchecker).
+
+Projected d7a7e242 friendly record-type conditions, USED-selector validation only for
+new publication; retained Page compilers/seals unchanged. Projected70b6d323 original
+actual record-layout checker extension. Projected976461402 retained reference/usage UI
+and exact catalogue href patch, preserving the type choices; actual gates pending.
+Projected a6c5278f original Template acceptance helper, reused same visual fixture/order.
+Typed customer field search consumer remains next parallelworkstream. Phase2 FAIL.
+Exact next: rehearse additive guard repair under original locks with existing recovery,
+finish search/reference controls and run scoped checks/build before original release.
+
 
 ## 12 October 2026 — paired readiness and visual retry checkpoint
 
@@ -187,6 +245,8 @@ Decisions and rationale recorded in .ai/DECISIONS.md; no silent source divergenc
 
 # Known Issues
 
+- Original533b bridge failed beforeactivation: applied070 assignmentguard extraction/subtraction operator precedence. Read-only SQL reproduced; additive function-only repair implemented, actual rehearsal PASS_ROLLBACK; forward/actual gates pending. No business rows/history altered.
+
 WholePhase2 incomplete: compatible actual visual/profile/type/default/dashboard
 publication/runtime journeys pending; retained-default embedded approval omission
 fixed in source5d747336; actual route proof pending. Production non-Test conditional activation/rollback still requires
@@ -211,10 +271,12 @@ journeys mandatory. No later phase starts.
 
 # Exact Next Action
 
-Deploy the reviewed paired-readiness/visual retry bridge through the original pinned
-candidate/public driver. Then finish the four bounded visual workstreams above,
-review/merge their exact deltas, and run the next compatible pair's actual new-family
-acceptance. Do not start Phase3; no wholePhase2 PASS without complete runtime evidence.
+Commit this reviewed visual/type/reference/additive guard checkpoint with paired
+memory, then run original pinned bridge release. Preserve
+all original recovery/locks/actual checks; new families deferred against75977 require
+next compatible pair positive candidate/public acceptance. Integrate bounded customer
+field-search and five-kind setup/type reference controls, then close the complete
+Phase2 source/runtime gate. Do not begin Phase3.
 
 # Historical checkpoint evidence
 
@@ -1211,8 +1273,8 @@ Bounded remaining visual workstreams (no schema changes):
 
 - Reference navigation / Where used: IN PROGRESS; depends on original full seals/current Read policies and graph; owned read-only authoring wrapper, optional catalogue hrefs, standalone source/usage UI; tests current grants/retained metadata/foreign tenant/no provider access.
 - Record-type conditions: IN PROGRESS; depends on original authorised choice resolver and canonical record assignment; friendly condition picker/catalogue, new-publication USED selector preflight; tests same tenant/entity/current required-field Read and retained seal stability.
-- Customer additional-field search: NOT STARTED; depends on existing typed field_search registry/query; bounded customer Tickets consumer; tests current field/native/private access and typed results.
-- Document visual editing: NOT STARTED; depends on existing Templates parser/merge/provider/render and selected-business authority; protected friendly detail pieces, editable table cells, authorised actual source preview; existing save/version/Audit retained; tests hidden-token preservation, no preview writes, current source/tenant rights and original generated snapshots.
+- Customer additional-field search: IN PROGRESS; depends on existing typed field_search registry/query; bounded customer Tickets consumer; tests current field/native/private access and typed results.
+- Document visual editing: IMPLEMENTED source, verification IN PROGRESS; depends on existing Templates parser/merge/provider/render and selected-business authority; protected friendly detail pieces, editable table cells, authorised actual source preview; existing save/version/Audit retained; tests hidden-token preservation, no preview writes, current source/tenant rights and original generated snapshots.
 
 
 ## 11 October 2026 — e2b3b per-row requirement review VERIFIED locally
@@ -3334,6 +3396,8 @@ source copy, contract inventory, phase completion report, this ledger, CURRENT_S
 
 # Database / Prisma Changes
 
+20261012020000 replaces ONLY original070 assignment INSERTguard function with explicit JSON extraction parentheses. Original applied070 untouched; exact full body retained apart from grouping. Actual central both-lock rehearsal43295 PASS_ROLLBACK: entire function set restored, constraints/triggers unchanged, assignment/extension/version/value counts unchanged; genuine four-key extraction empty and extra-key retained. Existing013014 recovery pg_restore --list verified; no additional dump. Forward NOT APPLIED. Evidence /tmp/atlas-assignment-guard-rehearsal-result.txt.
+
 12 October additive080 original Ticket receipt function guard is IMPLEMENTED source
 only, dependent on070: preserves receipt1, validates receipt2 actual native+type
 assignment INSERT/current head/field origins/paired Audit and strict JSON shapes.
@@ -3421,6 +3485,8 @@ metadata tables/indexes/composite tenant foreign keys/constraints/guards. No exi
 business records changed, no local business databases, no destructive reset.
 
 # Migrations Applied
+
+20261012020000 NOT APPLIED; exact function-only source repair and actual rolled-back rehearsal passed. Forward original release migration pending.
 
 c1 NONE. c2 additive JSON guards/digest not started.
 
@@ -3785,6 +3851,35 @@ Document structure/phase searches; repository status/diff/source inspection.
 
 # Test Results
 
+## 12 October 2026 — visual closure source and genuine assignment guard failure
+
+Original533b08c7 bridge36222 EXIT1 BEFORE activation at check-record-profiles genuine
+association: applied070 INSERTguard has unparenthesized JSON extraction/subtraction,
+so PostgreSQL evaluates text as JSON before required validation. Root read-only SQL
+reproduced Tokenentity error. Existing live75977/rollbackc385 preserved; new migration
+20261012020000 exact function-only forward repair implemented and actual rehearsal PASS_ROLLBACK (never edit applied070).
+Original candidateRTF6rm recovery013014/fixture013213 retained; defaults actual PASS,
+configured-search PASS, new non-Test conditional DEFER beforefixtures; no wholePASS.
+
+Root visual Templates replaces raw editable merge syntax with protected friendly
+pieces, per-document detail creation, real table cells and side-by-side preview.
+Shared original resolveTemplateContext serves original rendering and current authorised
+read-only draft preview; no second engine/store/PDF or preview writes. Selected-business
+Studio actions refresh independent native rights and preserve stale edits with explicit
+feedback. Current values clear before refresh/failure. Independent review found stale
+caret after chip/row removal; safe boundary/reset fixed and meaningful regressions added.
+Root105tests/8suites PASS63978; strict21352 EXIT0 (before finalreference/recordchecker).
+
+Projected d7a7e242 friendly record-type conditions, USED-selector validation only for
+new publication; retained Page compilers/seals unchanged. Projected70b6d323 original
+actual record-layout checker extension. Projected976461402 retained reference/usage UI
+and exact catalogue href patch, preserving the type choices; actual gates pending.
+Projected a6c5278f original Template acceptance helper, reused same visual fixture/order.
+Typed customer field search consumer remains next parallelworkstream. Phase2 FAIL.
+Exact next: rehearse additive guard repair under original locks with existing recovery,
+finish search/reference controls and run scoped checks/build before original release.
+
+
 ## 12 October 2026 — paired readiness and visual retry checkpoint
 
 Projected reviewed helper3fea58ee: conditionalFields.v1 actual semantic reader probe,
@@ -3993,6 +4088,8 @@ Gate checklists below derive from the supplied sections rather than renumbering 
 rewriting the specification. Implementation decisions recorded in DECISIONS.
 
 # Known Issues
+
+- Original533b bridge failed beforeactivation: applied070 assignmentguard extraction/subtraction operator precedence. Read-only SQL reproduced; additive function-only repair implemented, actual rehearsal PASS_ROLLBACK; forward/actual gates pending. No business rows/history altered.
 
 Persistence must retain exact SQL draft equality; c3 requires a canonical saved conditional draft or an explicitly authorised CAS normalization, never a equality waiver. V2 engine/native/visual gates remain open.
 

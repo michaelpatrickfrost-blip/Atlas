@@ -1,3 +1,64 @@
+## 12 October 2026 — visual Templates, type conditions and reference inspection checkpoint
+
+Original Templates now offers protected named business details, custom document details,
+editable table cells, sample/current authorised record preview and persistent saved
+version/publication context. Original save/version/PDF/provider engine retained; previews
+clear before current-access failure, perform no writes, and stale saves preserve input.
+Record-type condition choices and USED-selector new-publication validation reuse genuine
+canonical types; retained Page seals unchanged. Exact field/View reference inspection
+uses existing sealed usage graph/current native/field Read; retired editors omitted.
+Original actual document/type browser checkers extended, not yet run on this candidate.
+Root105/8 and89/7 focused checks PASS; final context/retired navigation29/2 PASS;
+scoped lint84118 EXIT0; strict88583 and production17803 EXIT0. Final saved-context strict54090/build6464 EXIT0; production build succeeds. Original data-action registry adds ONLY the two preview callbacks; full generator
+drift was reviewed and excluded to preserve all existing model/action entries. Final
+local build precedes this four-line allowlist wiring; original candidate rebuild
+remains mandatory. No new dependencies/worktrees/local data/adhoc dumps.12020000 function-only guard rehearsal PASS_ROLLBACK;
+forward NOT APPLIED. Original533 preactivation failure/live75977 rollbackc385 preserved.
+Parallel remaining: customer field search and five-kind friendly setup/type reference
+controls. Phase2 FAIL/incomplete. Exact next: commit reviewed checkpoint, then original pinned bridge migration/candidate/public acceptance.
+
+## 12 October 2026 — actual assignment guard rehearsal
+
+Projected7e909e34 additive12020000 exact070function grouping repair; no applied-history
+edit/table/reset. Root original both-lock central43295 EXIT0 PASS_ROLLBACK, existing
+mandatory013014 recovery verified via pg_restore --list (no new dump). Actual fixed
+JSON four-key extraction={} and extra-key retention proven. All Studio function set,
+assignment/extension constraints/triggers restored exactly; assignment/extension/
+version/value counts unchanged. Function hash before57b0cacd3d9630de65076af0d5d8b77f695431221060c7bf342340e6ff66b5dd,
+rehearsedf81defea3ef0fc2758068fc42b5f64955bfd2ff9c93b3d5e63976e976c268edf.
+Forward NOT APPLIED. Original genuine assignment/head/Audit/replay gate remains
+mandatory; no actual pass inferred from scalar/source tests.533b preactivationFAIL,
+live75977/rollbackc385 retained. Exact next: integrated source checks/build and
+original pinned bridge with new visual controls and function-only migration.
+
+## 12 October 2026 — visual closure source and genuine assignment guard failure
+
+Original533b08c7 bridge36222 EXIT1 BEFORE activation at check-record-profiles genuine
+association: applied070 INSERTguard has unparenthesized JSON extraction/subtraction,
+so PostgreSQL evaluates text as JSON before required validation. Root read-only SQL
+reproduced Tokenentity error. Existing live75977/rollbackc385 preserved; new migration
+20261012020000 exact function-only forward repair planned (never edit applied070).
+Original candidateRTF6rm recovery013014/fixture013213 retained; defaults actual PASS,
+configured-search PASS, new non-Test conditional DEFER beforefixtures; no wholePASS.
+
+Root visual Templates replaces raw editable merge syntax with protected friendly
+pieces, per-document detail creation, real table cells and side-by-side preview.
+Shared original resolveTemplateContext serves original rendering and current authorised
+read-only draft preview; no second engine/store/PDF or preview writes. Selected-business
+Studio actions refresh independent native rights and preserve stale edits with explicit
+feedback. Current values clear before refresh/failure. Independent review found stale
+caret after chip/row removal; safe boundary/reset fixed and meaningful regressions added.
+Root105tests/8suites PASS63978; strict21352 EXIT0 (before finalreference/recordchecker).
+
+Projected d7a7e242 friendly record-type conditions, USED-selector validation only for
+new publication; retained Page compilers/seals unchanged. Projected70b6d323 original
+actual record-layout checker extension. Projected976461402 retained reference/usage UI
+and exact catalogue href patch, preserving the type choices; actual gates pending.
+Projected a6c5278f original Template acceptance helper, reused same visual fixture/order.
+Typed customer field search consumer remains next parallelworkstream. Phase2 FAIL.
+Exact next: rehearse additive guard repair under original locks with existing recovery,
+finish search/reference controls and run scoped checks/build before original release.
+
 ## 12 October 2026 — paired readiness and visual retry checkpoint
 
 Projected reviewed helper3fea58ee: conditionalFields.v1 actual semantic reader probe,

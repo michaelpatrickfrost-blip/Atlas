@@ -1,3 +1,23 @@
+## 12 October 2026 — d7206f5c stopped on superseded customer landing assertion
+
+Original19653/d7206f5c EXIT1 before activation. Candidate8kFHIW actual Dashboard,
+Tickets owner/storage/metadata lifecycle/Admin setup/draft CAS checks PASS. Original
+customer-provisioning journey reached /studio but expected old Business setup heading;
+customer landing intentionally now standalone designer. No later field/profile/visual
+or public PASS inferred for this run. Original revision marker creation succeeded.
+Recovery031819/fixture032017 retained; Test companies suspended/Audit history retained,
+QA unchanged. Live75977/rollbackc385 retained. No HEAD pin remains.
+
+Bounded checker correction verifies actual /studio→/design-studio, selected business
+heading, no Admin/Apps controls, no technical reference list; then reads original
+/studio/<definition> deep route and saved description for backwards compatibility.
+All existing wrong-business recovery/login and customer Admin denial remain. No app
+source/DDL change or extra dump/copy. Strict92257/scopedlint35957 EXIT0; source application production93411 and original
+server031819 build PASS, no application change since. Actual retry required.
+Exact next: review narrow checker checkpoint with actual original candidate/public
+run. After accepted bridge, next compatible pair must positively exercise new panels/
+KPI/View/embedding/non-Test conditional families before Phase2 PASS.
+
 ## 12 October 2026 — customer visual entry and original evidence binding retry
 
 Original a1acebf6/74238 FAILED before activation. Actual configured Ticket search

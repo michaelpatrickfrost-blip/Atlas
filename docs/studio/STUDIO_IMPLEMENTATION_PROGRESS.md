@@ -14,6 +14,13 @@ before the complete Phase2 gate passes. Foundation-first order remains authorise
 
 # Current Workstream
 
+Original d7206f5c/19653 FAILED before activation. Actual Dashboard/Tickets owner,
+storage/metadata lifecycle/Admin setup/draft CAS PASS. New customer landing reached;
+old Business setup assertion stopped run. Original marker creation succeeded. Narrow
+checker correction tests visual landing and old saved deep-route compatibility,
+preserving Admin/tenant/login denials. Strict92257/scopedlint35957 EXIT0; original app/server builds PASS. Recovery031819/fixture032017
+retained; live75977/rollbackc385 unchanged, no HEAD pin. WholePhase2 still FAIL.
+
 Original a1acebf6/74238 FAILED before activation. Complete configured Ticket search,
 Create-only type forms and record profiles actual PASS. Visual fixture access was
 not reached because original random mktemp evidence path contains no SHA. Correct
@@ -247,6 +254,15 @@ against old paired reader, not verified. New dependency SQL rehearsal PASS_ROLLB
 
 # Test Results
 
+## 12 October 2026 — d720 old customer landing assertion
+
+Original19653 EXIT1 preactivation: Dashboard/native owner/storage/metadata lifecycle/
+Admin draft CAS PASS. Customer user provisioning reached new visual landing; checker
+still expected old reference library heading. Corrected to visual selected business/
+no Admin or Apps/technical records, then original saved reference deep route retained.
+Later field/profile/visual/public gates not reached. Marker creation succeeded, no
+fixture recovery removed;031819/032017 retained and Test access suspended.
+
 ## 12 October 2026 — a1 preactivation and bounded retry
 
 Original74238 EXIT1: complete configured field search, genuine create-only forms
@@ -429,12 +445,11 @@ journeys mandatory. No later phase starts.
 
 # Exact Next Action
 
-Save the reviewed visual customer-entry/private evidence binding checkpoint, then
-run original pinned compatible candidate/public bridge with both original locks,
-mandatory recovery and unchanged acceptance expectations. Read actual visual/editor/
-document/type/profile outcomes, fix concrete failures. After accepted bridge, next
-compatible pair must positively exercise new KPI/panels/View/embedding/non-Test
-conditional families before whole Phase2 PASS. No Phase3/local business database.
+Finish strict/scopedlint for original customer-landing checker correction, review
+and checkpoint it, then rerun original pinned compatible candidate/public bridge.
+Preserve all original locks/recovery/permission/backwards-compatibility expectations.
+After accepted bridge, positively exercise new KPI/panels/View/embedding/non-Test
+conditional families on next compatible pair before whole Phase2 PASS. No Phase3.
 
 # Historical checkpoint evidence
 

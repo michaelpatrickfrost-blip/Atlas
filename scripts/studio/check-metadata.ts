@@ -197,12 +197,19 @@ async function main() {
     await customerPage.getByLabel("Code",{exact:true}).fill(setupCode);
     await customerPage.getByLabel("New password",{exact:true}).fill(password);await customerPage.getByLabel("Confirm password",{exact:true}).fill(password);
     await customerPage.getByRole("button",{name:"Save password",exact:true}).click();await expect(customerPage).toHaveURL(`${base}/home`);
-    await customerPage.goto("/studio",{waitUntil:"networkidle"});await expect(customerPage.getByRole("heading",{name:"Business setup",exact:true})).toBeVisible();
-    await expect(customerPage.getByText("Visual business designer",{exact:true})).toBeVisible();
+    await customerPage.goto("/studio",{waitUntil:"networkidle"});
+    await expect(customerPage).toHaveURL(`${base}/design-studio`);
+    await expect(customerPage.getByRole("heading",{name:"Make this business feel like itself.",exact:true})).toBeVisible();
+    await expect(customerPage.getByText(`Atlas Studio · ${a.name}`,{exact:true})).toBeVisible();
+    await expect(customerPage.locator('[data-atlas-console="admin"]')).toHaveCount(0);
+    await expect(customerPage.getByRole("button",{name:"Apps",exact:true})).toHaveCount(0);
     await expect(customerPage.getByLabel("Name",{exact:true})).not.toBeVisible();
     await expect(customerPage.getByText("Browser accepted configuration",{exact:true})).not.toBeVisible();
-    await customerPage.locator("#advanced-setup > summary").click();
-    await expect(customerPage.getByText("Browser accepted configuration",{exact:true})).toBeVisible();
+    // The visual landing no longer lists technical reference records. Their
+    // original scoped deep routes remain readable for backwards compatibility.
+    await customerPage.goto(`/studio/${browserDefinitionId}`,{waitUntil:"networkidle"});
+    await expect(customerPage.getByRole("heading",{name:"Browser accepted configuration",exact:true})).toBeVisible();
+    await expect(customerPage.getByLabel("Description",{exact:true})).toHaveValue("First editor saved this revision");
     // Browser navigation preserves the real Secure session on trusted loopback;
     // APIRequestContext omits that cookie on HTTP and would test anonymous 404.
     const deniedAdminResponse = customerPage.waitForResponse(response => new URL(response.url()).pathname === "/atlas/studio" && response.request().isNavigationRequest());

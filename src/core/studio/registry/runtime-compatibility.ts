@@ -1,5 +1,5 @@
 import type { PrismaClient } from "@/generated/prisma/client";
-import { studioRuntimeFeaturesForCompiledDefinition, type StudioRuntimeFeature } from "../runtime-features";
+import { studioRuntimeFeaturesForCompiledDefinition, STUDIO_CONDITIONAL_FIELD_FEATURE, type StudioRuntimeFeature } from "../runtime-features";
 
 /** Metadata only, including immutable retained versions: history readers also
  * need their payload schemas. No native records, extension values or receipts are
@@ -16,7 +16,12 @@ export async function scanStudioRuntimeFeatureCompatibility(client: PrismaClient
     for (const row of rows) {
       const company = row.definition.organisation;
       if (company.isTest && company.status === "SUSPENDED") continue;
-      for (const feature of studioRuntimeFeaturesForCompiledDefinition(row.definition.kind, row.payload, row.compiledPlan))
+      const features = studioRuntimeFeaturesForCompiledDefinition(row.definition.kind, row.payload, row.compiledPlan);
+      // Production conditional histories retain reader requirements even after
+      // suspension. Existing Test bridge behavior remains unchanged.
+      if (!company.isTest && row.definition.kind === "customField" && row.payload !== null && typeof row.payload === "object"
+        && "schemaVersion" in row.payload && row.payload.schemaVersion === 2) features.push(STUDIO_CONDITIONAL_FIELD_FEATURE);
+      for (const feature of features)
         if (!supported.includes(feature)) issues.push(`${row.definitionId}@${row.id}: unsupported Studio metadata feature ${feature}`);
     }
     cursor = rows[rows.length - 1].id;

@@ -22,7 +22,7 @@ export type VisualBusinessDashboardFixture = {
   foreignOrganisationId: string; grantedCapabilities: readonly string[];
   freshSession: (organisationId?: string) => Promise<Session>;
 };
-const requiredGrants = ["analytics.dashboard.read", "analytics.dashboard.manage", "sales.order.read", CAP.read, CAP.edit, CAP.publish];
+const requiredGrants = ["analytics.dashboard.read", "analytics.dashboard.manage", "sales.order.read", "sales.quote.read", CAP.read, CAP.edit, CAP.publish];
 
 /** Nested in the original both-lock central visual fixture. These are actual UI
  * journeys only when executed there; local tests prove early deny/defer ordering.
@@ -71,6 +71,7 @@ export async function checkVisualBusinessDashboards(base: string, page: Page, fi
   await fresh();
   const nativeBefore = await db.salesOrder.findMany({ where: scope, orderBy: { id: "asc" } });
   const marker = randomUUID().slice(0, 8), firstName = `Business overview ${marker}`, savedName = `Order overview ${marker}`;
+  const zeroTitle = `Current quotations ${marker}`;
   const firstTitle = `Current orders ${marker}`, secondTitle = `Orders by status ${marker}`;
   let definitionId = "";
   const draft = () => db.studioDraft.findFirstOrThrow({ where: { ...scope, definitionId } });
@@ -111,6 +112,12 @@ export async function checkVisualBusinessDashboards(base: string, page: Page, fi
     await inspector.getByLabel("Chart title", { exact: true }).fill(firstTitle);
     await inspector.getByRole("button", { name: "Design", exact: true }).click();
     await inspector.getByRole("button", { name: "Number visual", exact: true }).click();
+    await page.getByRole("button", { name: "Add widget", exact: true }).click();
+    await page.getByRole("region", { name: "Widget library" }).getByRole("button").filter({ has: page.getByText("Quotations", { exact: true }) }).click();
+    await page.getByRole("button", { name: "Configure widget 2", exact: true }).click();
+    await inspector.getByLabel("Chart title", { exact: true }).fill(zeroTitle);
+    await inspector.getByRole("button", { name: "Design", exact: true }).click();
+    await inspector.getByRole("button", { name: "Number visual", exact: true }).click();
     await expect(page.getByRole("button", { name: "Review saved design", exact: true })).toBeDisabled();
     await expect(page.getByRole("button", { name: "Go live for this business", exact: true })).toBeDisabled();
     const dialog = page.waitForEvent("dialog"), leaving = page.getByRole("button", { name: "← Business dashboards", exact: true }).click();
@@ -126,6 +133,9 @@ export async function checkVisualBusinessDashboards(base: string, page: Page, fi
     const version1 = await live(), first = await view(); assert.equal(first.view.versionId, version1);
     assert.equal(first.content.widgets[0].title, firstTitle);
     assert.equal(first.dataByWidget[first.content.widgets[0].id].points.reduce((sum, point) => sum + point.value, 0), 1);
+    const zeroWidget = first.content.widgets.find(widget => widget.metricId === "sales.quotes"); assert(zeroWidget);
+    assert.equal(zeroWidget.title, zeroTitle);
+    assert.equal(first.dataByWidget[zeroWidget.id].points.reduce((sum, point) => sum + point.value, 0), 0);
     for (const action of ["studio.definition.published", "studio.definition.activated"])
       assert.equal(await db.auditEntry.count({ where: { ...scope, actorUserId: fixture.userId, entityId: definitionId, action } }), 1);
     const customer = await page.context().newPage(); pages.push(customer);
@@ -163,7 +173,7 @@ export async function checkVisualBusinessDashboards(base: string, page: Page, fi
       await expect(refresh).toBeVisible(); await refresh.scrollIntoViewIfNeeded();
       assert(await refresh.evaluate(element => { const bounds = element.getBoundingClientRect(), hit = document.elementFromPoint(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2); return hit === element || !!hit && element.contains(hit); }), "Refresh must be reachable on the customer device.");
     }
-    const viewerCaps = ["core.profile.self", "analytics.dashboard.read", "sales.order.read"];
+    const viewerCaps = ["core.profile.self", "analytics.dashboard.read", "sales.order.read", "sales.quote.read"];
     await db.membership.update({ where: { id: membership.id, ...scope, userId: fixture.userId }, data: { grantedCapabilities: viewerCaps } });
     const reader = await fresh(); assert(!reader.capabilities.has("analytics.dashboard.manage") && ![...reader.capabilities].some(cap => cap.startsWith("studio.")));
     await customer.goto(`${base}/home`); await expect(customer.getByRole("link", { name: savedName, exact: true })).toBeVisible();

@@ -1,13 +1,11 @@
 "use client";
 
-import { z } from "zod";
 import React from "react";
 import type { AnalyticsResult } from "@/core/analytics/types";
 import type { EmbeddedViewOutput } from "@/core/studio/pages/embedded-views";
-import { analyticsBusinessViewContentSchema, type PublishedBusinessView } from "../services/business-view-contract";
+import { analyticsBusinessViewContentSchema, businessViewCountData, type PublishedBusinessView } from "../services/business-view-contract";
 import { BusinessViewCharts } from "./business-view-charts";
 
-const pointsSchema = z.array(z.strictObject({ label: z.string().min(1).max(200), value: z.number().int().nonnegative().safe() })).max(50);
 const measures = {
   "sales.orders": { name: "Orders received", subject: "Sales", href: "/sales/orders", snapshot: false },
   "sales.quotes": { name: "Quotations", subject: "Sales", href: "/sales/quotes", snapshot: false },
@@ -27,7 +25,7 @@ export function embeddedBusinessViewDisplay(output: EmbeddedViewOutput): Pick<Pu
     if (!Object.hasOwn(measures, widget.metricId)) throw new Error("This measure has no approved chart display.");
     const measure = measures[widget.metricId as keyof typeof measures];
     dataByWidget[widget.id] = { ...measure, id: widget.metricId, definition: "Approved complete count for the saved period and breakdown.",
-      grain: "Record", shape: "breakdown", unit: "count", points: pointsSchema.parse(output.dataByWidget[widget.id]) };
+      grain: "Record", shape: "breakdown", unit: "count", ...businessViewCountData(output.dataByWidget[widget.id]) };
   }
   return { content, dataByWidget };
 }

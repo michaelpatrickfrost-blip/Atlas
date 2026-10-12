@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
 
+export const STUDIO_CONDITIONAL_FIELD_FEATURE = "conditionalFields.v1" as const;
 export const STUDIO_LITERAL_DEFAULT_FEATURE = "literalFieldDefaults.v1" as const;
 export const STUDIO_PAGE_FEATURE = "structuredPages.v1" as const;
 export const STUDIO_PROFILE_FEATURE = "recordProfiles.v1" as const;
@@ -10,7 +11,7 @@ export const STUDIO_TICKET_PANEL_FEATURE = "ticketRecordPanels.v1" as const;
 export const STUDIO_SALES_PAGE_METRIC_FEATURE = "salesPageMetrics.v1" as const;
 export const STUDIO_ANALYTICS_VIEW_FEATURE = "analyticsBusinessViews.v1" as const;
 export const STUDIO_PAGE_EMBEDDED_VIEW_FEATURE = "pageEmbeddedAnalytics.v1" as const;
-export const studioRuntimeFeatureSchema = z.enum([STUDIO_LITERAL_DEFAULT_FEATURE, STUDIO_PAGE_FEATURE, STUDIO_PROFILE_FEATURE, STUDIO_RECORD_TYPE_FORM_FEATURE, STUDIO_ANALYTICS_VIEW_FEATURE, STUDIO_TICKET_PANEL_FEATURE, STUDIO_SALES_PAGE_METRIC_FEATURE, STUDIO_PAGE_EMBEDDED_VIEW_FEATURE]);
+export const studioRuntimeFeatureSchema = z.enum([STUDIO_CONDITIONAL_FIELD_FEATURE, STUDIO_LITERAL_DEFAULT_FEATURE, STUDIO_PAGE_FEATURE, STUDIO_PROFILE_FEATURE, STUDIO_RECORD_TYPE_FORM_FEATURE, STUDIO_ANALYTICS_VIEW_FEATURE, STUDIO_TICKET_PANEL_FEATURE, STUDIO_SALES_PAGE_METRIC_FEATURE, STUDIO_PAGE_EMBEDDED_VIEW_FEATURE]);
 export type StudioRuntimeFeature = z.infer<typeof studioRuntimeFeatureSchema>;
 export const studioRuntimeFeatureEvidenceSchema = z.strictObject({ schemaVersion: z.literal(1),
   releaseRevision: z.string().regex(/^[a-f0-9]{40}$/), rollbackRevision: z.string().regex(/^[a-f0-9]{40}$/),

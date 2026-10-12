@@ -1,3 +1,21 @@
+## 12 October 2026 — paired production conditional activation readiness
+
+Keep original Test reviewed2 publication/activation and historical replay behavior.
+Only NEW non-Test reviewed2 cutover and source2 rollback require immutable
+conditionalFields.v1 accepted candidate/rollback reader evidence. First bridge
+remains closed; the next compatible candidate must pass original backed-up actual
+acceptance before promotion. The gate grants no liveTest/native/private/field/
+reference permission and accepts no client/env boolean or tenant isTest toggle.
+Generic payload classification stays unchanged to preserve first-bridge Test gates;
+metadata compatibility additionally requires conditional support for ALL retained
+non-Test schema2 versions, including suspended synthetic histories. Never exempt
+those immutable histories or claim a parser probe establishes native writes.
+Actual positive proof uses one fresh synthetic non-Test CUSTOMER, genuine current
+nonstaff liveTest principals, original friendly Save→Prepare/compiler/review/
+conversion/cutover/settlement/native form engine, exact paired Audit failures and
+retained source/private/current-right checks. Its finally independently suspends
+and revokes only that new fixture; no production business records are deleted.
+
 ## 12 October 2026 — explicit immutable dashboard embedding and registry composition
 
 Pages may embed a saved View only through an explicit owning Page policy opt-in

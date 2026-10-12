@@ -7,7 +7,7 @@ import { join, dirname } from "node:path";
 
 it("the actual own-loader verifies defaults, strict page/profile engines and forged-principal denial without records", () => {
   // Uses this actual worktree's own tsx loader. No database, SQL or marker writes.
-  expect(probeStudioRuntimeFeatures(process.cwd())).toEqual(["literalFieldDefaults.v1", "structuredPages.v1", "ticketRecordPanels.v1", "salesPageMetrics.v1", "recordProfiles.v1", "recordTypeForms.v1", "analyticsBusinessViews.v1", "pageEmbeddedAnalytics.v1"]);
+  expect(probeStudioRuntimeFeatures(process.cwd())).toEqual(["literalFieldDefaults.v1", "conditionalFields.v1", "structuredPages.v1", "ticketRecordPanels.v1", "salesPageMetrics.v1", "recordProfiles.v1", "recordTypeForms.v1", "analyticsBusinessViews.v1", "pageEmbeddedAnalytics.v1"]);
 }, 20000);
 
 it("a genuine legacy strict field parser returns unsupported before absent newer receipt modules", () => {
@@ -59,12 +59,12 @@ it("a literal-default bridge without either new reader remains unsupported for p
   });
 }, 20000);
 it("supports each reader independently without treating an absent sibling as a positive result", () => {
-  withReaderTree({ [pageReader]: null }, root => expect(probeStudioRuntimeFeatures(root)).toEqual(["literalFieldDefaults.v1", "recordProfiles.v1", "recordTypeForms.v1"]));
+  withReaderTree({ [pageReader]: null }, root => expect(probeStudioRuntimeFeatures(root)).toEqual(["literalFieldDefaults.v1", "conditionalFields.v1", "recordProfiles.v1", "recordTypeForms.v1"]));
   withReaderTree({ [profileReader]: null }, root => expect(probeStudioRuntimeFeatures(root)).toEqual(["literalFieldDefaults.v1", "structuredPages.v1", "ticketRecordPanels.v1", "salesPageMetrics.v1"]));
 }, 30000);
 it("reader file presence with no actual published entry point is unsupported", () => {
   withReaderTree({ [pageReader]: "export const unsupported = true;" }, root => {
-    expect(probeStudioRuntimeFeatures(root)).toEqual(["literalFieldDefaults.v1", "recordProfiles.v1", "recordTypeForms.v1"]);
+    expect(probeStudioRuntimeFeatures(root)).toEqual(["literalFieldDefaults.v1", "conditionalFields.v1", "recordProfiles.v1", "recordTypeForms.v1"]);
   });
 }, 20000);
 it("a present reader that accepts a forged principal fails the probe rather than declaring support", () => {
@@ -93,7 +93,7 @@ it("a reader touching transaction metadata before denying forged authority fails
 it("a real receipt1 predecessor cannot claim creation selection support even when newer helper files exist", () => {
   const receipt = "src/core/service-work/form-receipt-contract.ts";
   const old = execFileSync("git", ["show", "38a1113b:" + receipt], { cwd: process.cwd(), encoding: "utf8" });
-  withReaderTree({ [receipt]: old }, root => expect(probeStudioRuntimeFeatures(root)).toEqual(["literalFieldDefaults.v1", "structuredPages.v1", "ticketRecordPanels.v1", "salesPageMetrics.v1", "recordProfiles.v1"]));
+  withReaderTree({ [receipt]: old }, root => expect(probeStudioRuntimeFeatures(root)).toEqual(["literalFieldDefaults.v1", "conditionalFields.v1", "structuredPages.v1", "ticketRecordPanels.v1", "salesPageMetrics.v1", "recordProfiles.v1"]));
 }, 20000);
 it("a creation receipt inspector accepting forged authority cannot claim compatibility", () => {
   const actual = JSON.stringify(join(process.cwd(), "src/core/service-work/record-type-creation.ts"));
@@ -137,3 +137,14 @@ it("immutable reader acceptance or early metadata access for a forged principal 
       expect(() => probeStudioRuntimeFeatures(root)).toThrow("Studio runtime readiness probe failed");
     });
 }, 30000);
+
+it("a present native conditional boundary that accepts forged authority blocks readiness", () => {
+  withReaderTree({ "src/core/service-work/studio-enforcement.ts": "export async function withValidatedTicketMutation() { return {}; }" }, root => {
+    expect(() => probeStudioRuntimeFeatures(root)).toThrow("Studio runtime readiness probe failed");
+  });
+}, 20000);
+it("a present production conditional fence that accepts an absent paired marker blocks readiness", () => {
+  withReaderTree({ "src/core/studio/fields/conditional-readiness.ts": "export function assertConditionalFieldActivationReady() {}" }, root => {
+    expect(() => probeStudioRuntimeFeatures(root)).toThrow("Studio runtime readiness probe failed");
+  });
+}, 20000);

@@ -7,7 +7,7 @@ import { createViewDraftInTransaction, readViewDraftInTransaction, saveViewDraft
   publishViewDraftInTransaction, restoreViewVersionInTransaction } from "@/core/studio/authoring/views";
 import { readPublishedViewInTransaction, readPublishedViewMetadataInTransaction, readSealedViewInTransaction } from "@/core/studio/views/runtime";
 import { registeredMetricSourceSchema } from "@/core/studio/registry/analytics-source-contracts";
-import { businessViewCreateSchema, businessViewSaveSchema, businessViewReviewSchema, businessViewPublishSchema, businessViewRestoreSchema,
+import { businessViewCreateSchema, businessViewSaveSchema, businessViewReviewSchema, businessViewPublishSchema, businessViewRestoreSchema, businessViewCountData,
   type BusinessViewContent, type BusinessViewDraft, type PublishedBusinessView } from "./business-view-contract";
 
 const owner = "analytics.dashboard.view", sources = ["sales.orders", "sales.quotes", "products.catalogue"] as const;
@@ -27,7 +27,7 @@ async function current(authority: FieldRuntimeAuthority) {
 function nativeResult(metric: AnalyticsMetric, input: unknown): AnalyticsResult {
   const { query, goalQuery, capability, ...display } = metric;
   void query; void goalQuery; void capability;
-  return { ...display, shape: "breakdown", unit: "count", points: pointsSchema.parse(input) };
+  return { ...display, shape: "breakdown", unit: "count", ...businessViewCountData(input) };
 }
 async function catalogue(authority: FieldRuntimeAuthority) {
   return (await getAnalyticsMetrics(authority.session, authority.transaction)).filter(metric => sources.some(id => id === metric.id));

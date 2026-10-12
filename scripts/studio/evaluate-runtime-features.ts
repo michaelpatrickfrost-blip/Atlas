@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { probeConditionalFieldReaders } from "./probe-conditional-readiness";
 import { resolve } from "node:path";
 import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
@@ -39,6 +40,7 @@ async function evaluate() {
   const legacySavedField = { ...savedField }; Reflect.deleteProperty(legacySavedField, "defaulted");
   assert.equal(Object.hasOwn(receipt.ticketFormReceiptSchema.parse({ ...saved, fields: [legacySavedField] }).fields[0], "defaulted"), false);
   const features = ["literalFieldDefaults.v1"];
+  if (await probeConditionalFieldReaders(root)) features.push("conditionalFields.v1");
   // Absence is only a negative compatibility check. Existing modules must run
   // their actual strict parsers/engines; import or semantic failures are fatal.
   if (await pages(root, source, uuid, hash)) {

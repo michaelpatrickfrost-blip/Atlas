@@ -1,3 +1,4 @@
+import { assertConditionalFieldActivationReady } from "../conditional-readiness";
 import { lockFieldEntitiesInTransaction } from "../entity-lock";
 import type { Session } from "@/core/auth/session";
 import { db } from "@/core/db/client";
@@ -49,9 +50,8 @@ async function settle(session: Session, serverPrincipal: FieldMigrationPrincipal
         settledBy: inspected.receipt.settledBy, sourceVersionId: inspected.receipt.sourceVersionId, targetVersionId: inspected.receipt.targetVersionId };
     }
     // History/replay and finalization grant no activation. Only a new rollback
-    // that reactivates a conditional source remains Test-only before native hooks.
-    if (disposition === "ROLLED_BACK" && intent.source.payload.schemaVersion === 2 && !company.isTest)
-      throw new Error("STUDIO_FIELD_REQUIRED_NOT_READY: conditional rollback activation is available only in a Test company until native required safeguards are verified.");
+    // that reactivates a conditional source requires accepted paired runtime evidence.
+    if (disposition === "ROLLED_BACK" && intent.source.payload.schemaVersion === 2) assertConditionalFieldActivationReady(company);
     await inspectFieldMigrationSettlementWindow(tx, inspected, disposition);
     await coverage(disposition === "ROLLED_BACK" ? "rollback" : "history");
     const transition = fieldMigrationSettlementTransition(packet.pin), scope = { preparationId: intent.id, organisationId: fresh.organisationId, definitionId: intent.definitionId };

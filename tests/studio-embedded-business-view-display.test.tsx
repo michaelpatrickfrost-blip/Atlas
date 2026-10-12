@@ -37,3 +37,18 @@ it("passes supplied actual-preview figures to charts while keeping design action
   expect(screen.getByText("0", { exact: true })).toBeTruthy(); expect(screen.getByRole("button", { name: "Send" }).hasAttribute("disabled")).toBe(true);
   expect(action).not.toHaveBeenCalled();
 });
+
+it("shows a genuine empty complete count as zero without fabricating a grouping", () => {
+  const empty = structuredClone(output); empty.dataByWidget.orders = [];
+  const display = embeddedBusinessViewDisplay(empty);
+  expect(display.dataByWidget.orders).toMatchObject({ points: [], overallValue: 0 });
+  render(<EmbeddedBusinessView output={empty}/>);
+  expect(screen.getByText("0", { exact: true })).toBeTruthy();
+  expect(screen.queryByText("Nothing in this period yet.")).toBeNull();
+});
+it("rejects an unsafe total or duplicate complete groups", () => {
+  for (const points of [[{ label: "A", value: Number.MAX_SAFE_INTEGER }, { label: "B", value: 1 }], [{ label: "A", value: 1 }, { label: "A", value: 2 }]]) {
+    const broken = structuredClone(output); broken.dataByWidget.orders = points;
+    expect(() => embeddedBusinessViewDisplay(broken)).toThrow();
+  }
+});

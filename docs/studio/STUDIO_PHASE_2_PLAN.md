@@ -1,3 +1,11 @@
+## 12 October 2026 — bounded visual closure workstreams
+
+Phase2 remains IN PROGRESS/FAIL. Paired conditional bridge is implemented and locally
+checked, actual acceptance pending. Complete reference navigation/where-used,
+friendly record-type conditions, typed customer field search, and noncoder Templates
+editing/actual preview as listed in the execution ledger. These reuse original
+registry/metadata graph/field_search/Templates engine, no new schema or later engines.
+
 # Studio Phase 2 workstreams and Admin separation checkpoint
 
 9 October 2026. Source: unchanged ATLAS_STUDIO_SOURCE.docx, Section 27 Phase 2,

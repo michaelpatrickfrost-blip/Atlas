@@ -1,3 +1,4 @@
+import { assertConditionalFieldActivationReady } from "../conditional-readiness";
 import { lockFieldEntitiesInTransaction } from "../entity-lock";
 import type { Session } from "@/core/auth/session";
 import { db } from "@/core/db/client";
@@ -70,11 +71,10 @@ export async function cutoverReviewedFieldMigration(session: Session, input: unk
       if (current.checksum !== inspected.stored.checksum) changed();
       return result(inspected.pin, true);
     }
-    // Conditional activation is internal Test proof only until every native
-    // required hook and ordinary write-window integration is verified. Replay
+    // Conditional activation requires accepted paired runtime evidence outside
+    // Test companies. Every current native/field/window guard remains. Replay
     // above never activates and still requires exact current cutover coverage.
-    if (intent.schemaVersion === 2 && !company.isTest)
-      throw new Error("STUDIO_FIELD_REQUIRED_NOT_READY: conditional cutover is available only in a Test company until native required safeguards are verified.");
+    if (intent.schemaVersion === 2) assertConditionalFieldActivationReady(company);
     const inspected = intent.schemaVersion === 2
       ? await inspectRequiredFieldMigrationExecution(authority, intent) : await inspectFieldMigrationExecution(authority, intent);
     const x = inspected.existing;

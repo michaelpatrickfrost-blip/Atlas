@@ -175,3 +175,12 @@ describe("Gauge calculation semantics", () => {
     expect(screen.getByText("80%")).toBeTruthy();
   });
 });
+
+it("shows an explicit complete empty KPI reading while keeping filtered or unreported emptiness clear", () => {
+  const { rerender } = render(<TileChart metric={{ ...metric, unit: "count", points: [], overallValue: 0 }} widget={widget}/>);
+  expect(screen.getByText("0", { exact: true })).toBeTruthy();
+  rerender(<TileChart metric={{ ...metric, points: [], overallValue: 8 }} widget={{ ...widget, categories: ["missing"] }}/>);
+  expect(screen.getByText("Nothing in this period yet.")).toBeTruthy(); expect(screen.queryByText("8", { exact: true })).toBeNull();
+  rerender(<TileChart metric={{ ...metric, points: [] }} widget={widget}/>);
+  expect(screen.getByText("Nothing in this period yet.")).toBeTruthy();
+});

@@ -139,9 +139,9 @@ it.each([[false, true], [true, false]])("normal required rollback uses a differe
   expect(m.audit.mock.calls.map(([arg]) => arg.action)).toEqual(["studio.definition.activated", "studio.field.migration.rolled_back"]);
   expect(rf.intent.principal).toEqual(originalPrincipal); expect(rf.source).toEqual(source); expect(rf.target).toEqual(target);
 });
-it("Test gate restricts only new conditional-source activation, preserving ordinary source rollback and finalization", async () => {
+it("Paired readiness restricts only new production conditional-source activation, preserving ordinary source rollback and finalization", async () => {
   await useRequired(true, false); authority.company.isTest = false;
-  await expect(call()).rejects.toThrow("STUDIO_FIELD_REQUIRED_NOT_READY");
+  await expect(call()).rejects.toThrow("STUDIO_RUNTIME_FEATURE_UNAVAILABLE");
   expect(m.window).not.toHaveBeenCalled(); expect(m.requiredCoverage).not.toHaveBeenCalled(); expect(m.receipt).not.toHaveBeenCalled(); expect(m.activate).not.toHaveBeenCalled();
   expect(await call(false)).toMatchObject({ state: "FINALIZED", replayed: false }); expect(m.requiredCoverage).toHaveBeenCalledWith(authority, f.registry, expect.anything(), "history"); expect(m.activate).not.toHaveBeenCalled();
   await useRequired(false, true); expect(await call()).toMatchObject({ state: "ROLLED_BACK", replayed: false });

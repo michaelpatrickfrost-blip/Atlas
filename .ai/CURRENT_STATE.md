@@ -1,3 +1,70 @@
+## 12 October 2026 — paired readiness and visual retry checkpoint
+
+Projected reviewed helper3fea58ee: conditionalFields.v1 actual semantic reader probe,
+immutable paired evidence, ALL retained non-Test schema2 compatibility (including
+suspended histories), and ONLY new non-Test cutover/source2 rollback guards. Original
+liveTest/native/private/field/current authority/CAS/Audit/history remain. Original
+check-metadata now invokes the exact fresh isolated non-Test conditional checker;
+unsupported pair defers before fixture writes. No actual positive inference yet.
+Root integrated109tests/7suites PASS92081; standalone strict1875, scopedlint75098,
+production99527 EXIT0. Latest nested46/2, zero-count44/3, sparse71/3 and original
+cancel5/1 PASS. Strict47398 EXIT0. Corrected actual defaults checker requires genuine
+strict schema rejection, canonical public feedback and unchanged full snapshot.
+147ed release EXIT1 preactivation; CHECK20261012010000 APPLIED, live75977/rollbackc385.
+
+Next original pinned bridge retains all recovery/locks and candidate/public checks;
+new visual/production families remain deferred against75977. After accepted bridge,
+a compatible pair must actually prove them. No extra ad-hoc dumps/worktrees/dependencies.
+Remaining Phase2 visual workstreams: friendly record-type condition selection and
+new-publication semantic validation; current-authorised exact reference navigation/
+where-used; customer additional-field search consumer; noncoder document details/
+cell tables/authorised actual preview through original Templates renderer/resolver.
+Each owns bounded files/tests and no schema; sources must integrate before actual
+gates. Phase2 FAIL/incomplete, no Phase3. Exact next: deploy reviewed bridge, then
+finish the bounded visual workstreams and run compatible original acceptance.
+
+## 12 October 2026 — conditional metadata recovery and applied View edge CHECK
+
+Projected reviewed a29004a original friendly sparse1/2 recovery/cancelled-status/
+cancel validation over eb077. Exact retained intent/review and source/target/
+publisher/tenant mirrors, current Publish first, no labels/counts/native/progress
+read. Different genuine current publisher delegates to original neutral Cancel
+fresh authority/CAS/Audit/replay. Root integrated71/3 sparse/control/UI cases PASS99980; original cancellation suite pending; helper73/3/types/
+lint PASS remain source evidence. No engine or non-Test activation waiver.
+Original147ed release92006 EXIT1 BEFORE activation at actual default-checker error wording: strict forged-marker request was rejected with safe public validator feedback. Checker now explicitly verifies strict schema rejection and exact canonical feedback plus unchanged full native/typed/sequence/Audit/outbox/window snapshot. Actual retry required.
+Original147ed candidate build confirms20261012010000 forward CHECK APPLIED in
+mandatory011303-migrate.log. Rehearsal counts/constraints restored before migration;
+no models/backfill/reset. Candidate stopped beforeactivation; live75977/rollbackc385 remain. EvidenceYnTE0D and mandatory011303/011459 preserved.
+Next: root combined sparse/control/UI cases, integrate paired conditional checker,
+then original compatible visual/production acceptance. Phase2 remains FAIL.
+
+## 12 October 2026 — visual reader bridge147ed and empty-count correction
+
+Coherent connected source147ed34fae79b329481434b5dd3416f5fd032222 committed with
+memory/architecture/module/coverage docs. Integrated strict82160/lint43058/build92610
+EXIT0;185/5 rule adapter/UI cases and retained-default56/1 PASS. Original pinned
+release92006 running candidateYnTE0D under both locks;011303 recovery/011459 fixture
+backups retained. Source bridge accepts legacy Page/profile/receipt families; new
+Dashboard/native-panel/KPI/embedded families correctly absent against rollback75977.
+No actual new-family or Phase2 PASS; HEAD stays pinned until originalrun ends.
+
+Nested actual dashboard checker06af1021 projected and wired after original saved
+Dashboard result, reusing same fixture/browser/native order. It adds actual Orders1
+and Quotes0 widget to same Dashboardv1, verifies immutable pins/current rights/no
+business writes and device reachability. Root46/2 early-gate cases PASS; actual SQL/
+browser new journey pending. Current Read-only fixture retains actual quote Read.
+Source review found grouped empty[] count displayed an empty message before KPI.
+Shared owning count projection now preserves[] and supplies bounded safe overall0;
+existing chart shows explicit complete unfiltered KPI reading, keeps filtered/
+unreported emptiness clear. No invented grouping or new provider. Root44/3 display/
+original chart/runtime cases PASS. Latest additions need scoped types/lint/build.
+
+Parallel existing helpers finish exact closed2 sparse metadata recovery/cancel and
+strict paired non-Test conditional readiness/actual original checker. No new
+worktrees/dependencies/localDB/ad-hoc dumps. WholePhase2 FAIL; no Phase3 work.
+Next: finish original bridge, integrate reviewed helper deltas, checkpoint latest
+actual checker/display/required readiness and run exact compatible visual gates.
+
 ## 12 October 2026 — connected visual Phase2 recovery checkpoint
 
 Original75977b02dcb3355863788e968d839ec2481fa79a release28119 EXIT0: ALL COMBINED

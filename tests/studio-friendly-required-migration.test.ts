@@ -169,12 +169,19 @@ it.each(["private", "write", "written", "seal", "target_seal"])("status %s failu
   expect(m.history2).not.toHaveBeenCalled(); expect(m.execution2).not.toHaveBeenCalled();
   if (mode !== "written") expect(m.count).not.toHaveBeenCalled();
 });
-it("closed2 sparse recovery/cancellation remain unavailable before native/counts/engines; no recovery fallback", async () => {
-  await expect(readAdditionalFieldMigrationRecoveryStatus(session, undefined, scope)).rejects.toThrow("Conditional");
-  await expect(cancelAdditionalFieldMigration(session, undefined, { ...scope, revision: 0 })).rejects.toThrow("Conditional");
-  m.publication.mockResolvedValue({ ...scope, organisationId: "company", state: "CANCELLED", revision: 1 });
-  await expect(readAdditionalFieldMigrationStatus(session, undefined, scope)).rejects.toThrow("Conditional");
-  expect(m.count).not.toHaveBeenCalled(); expect(m.cancel).not.toHaveBeenCalled(); expect(m.execution2).not.toHaveBeenCalled();
+it.each([false, true])("closed2 sparse recovery/cancellation use original metadata engine without condition/count/progress evaluation (rule removal=%s)", async removal => {
+  if (removal) saved = (await fixture(true, false)).saved;
+  expect(await readAdditionalFieldMigrationRecoveryStatus(session, undefined, scope)).toEqual({ ...scope, preparationState: "REVIEWED", publicationState: null, publicationRevision: null });
+  await expect(cancelAdditionalFieldMigration(session, undefined, { ...scope, revision: 0 })).rejects.toMatchObject({ code: "REVIEW_CHANGED" });
+  const publication = { ...scope, organisationId: "company", state: "PUBLISHED", revision: 0, reviewChecksum: saved.review.checksum,
+    sourceGenerationId: saved.sourceGenerationId, targetGenerationId: saved.targetGenerationId, targetChecksum: saved.intent.target.compiledChecksum, publisherUserId: principal.userId };
+  m.publication.mockResolvedValue(publication);
+  m.cancel.mockImplementation(engine({ id: scope.preparationId, state: "CANCELLED", revision: 1, replayed: false }));
+  await cancelAdditionalFieldMigration(session, undefined, { ...scope, revision: 0 });
+  expect(m.cancel).toHaveBeenCalledWith(session, principal, { preparationId: scope.preparationId, revision: 0 });
+  m.publication.mockResolvedValue({ ...publication, state: "CANCELLED", revision: 1 });
+  expect(await readAdditionalFieldMigrationStatus(session, undefined, scope)).toMatchObject({ publication: { state: "CANCELLED", revision: 1 }, review: null, execution: null, fieldLabel: null });
+  expect(m.count).not.toHaveBeenCalled(); expect(m.native).not.toHaveBeenCalled(); expect(m.execution2).not.toHaveBeenCalled();
 });
 it.each(["protocol", "checksum", "generation", "creator", "revision"])("closed2 %s drift rejects before original lifecycle effect", async mode => {
   if (mode === "protocol") await expect(publishAdditionalFieldMigration(session, undefined, { ...publishRequest, schemaVersion: 2 })).rejects.toThrow();

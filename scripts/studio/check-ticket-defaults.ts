@@ -165,9 +165,10 @@ export async function checkTicketDefaults(base: string, browser: Browser, existi
       const feedback = z.object({ error: z.string() }).safeParse(decoded);
       return { status: response.status, redirect: parsed.redirect, error: parsed.error ?? (feedback.success ? feedback.data.error : undefined) };
     }
-    async function denied(values: Entries, operation: "createWork" | "updateWork", pattern?: RegExp) {
+    async function denied(values: Entries, operation: "createWork" | "updateWork", pattern?: RegExp | string) {
       const before = await snapshot(), response = await call(operation, values); assert(response.error);
-      if (pattern) assert.match(response.error, pattern);
+      if (typeof pattern === "string") assert.equal(response.error, pattern);
+      else if (pattern) assert.match(response.error, pattern);
       assert.deepEqual(await snapshot(), before, "Rejected default operation must preserve every native/typed/sequence/Audit/outbox/window scalar.");
     }
     async function replay(values: Entries, recordId: string) {
@@ -232,7 +233,11 @@ export async function checkTicketDefaults(base: string, browser: Browser, existi
     assert.equal(await integer(third.recordId), 5);
     const untrusted = JSON.parse(JSON.stringify(packet(third.values))) as { fields: Record<string, unknown>[] };
     untrusted.fields[0].defaulted = true;
-    await denied(third.values.map(([key, value]) => [key, key === "studioFields" ? JSON.stringify(untrusted) : value]), "createWork", /invalid|unrecognized|unknown|schema|configuration/i);
+    assert(!fieldFormPacketSchema.safeParse(untrusted).success, "A client cannot forge a server-applied default marker.");
+    // Production withFormFeedback deliberately redacts non-domain validator
+    // errors. Verify that exact public feedback and the unchanged full snapshot,
+    // rather than require technical schema details to reach the customer.
+    await denied(third.values.map(([key, value]) => [key, key === "studioFields" ? JSON.stringify(untrusted) : value]), "createWork", "Could not save these changes. Refresh and try again; if this continues, contact your administrator.");
     assert.equal(thirdReceipt.fields.find(field => field.definitionId === zero.definitionId)?.defaulted, undefined);
     assert.equal(thirdReceipt.fields.find(field => field.definitionId === answer.definitionId)?.defaulted, true);
     assert.deepEqual(thirdReceipt.fields.map(field => field.extensionRevision), [1, 2]);

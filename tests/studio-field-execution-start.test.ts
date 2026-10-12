@@ -27,6 +27,7 @@ import { customFieldPayloadSchema } from "@/core/studio/fields/schema";
 import { sealFieldMigrationIntent, sealFieldMigrationReview } from "@/core/studio/fields/migrations/contracts";
 import { checksum } from "@/core/studio/registry/contracts";
 import { reviewedFieldPublicationPin } from "@/core/studio/fields/migrations/publication-contract";
+vi.mock("@/core/studio/configuration/impact", () => ({ assertFieldConfigurationCompatibilityInTransaction: vi.fn() }));
 import { cutoverReviewedFieldMigration } from "@/core/studio/fields/migrations/cutover";
 import { startFieldMigrationExecution } from "@/core/studio/fields/migrations/execution-start";
 const uuid = (n: number) => `00000000-0000-4000-8000-${n.toString().padStart(12, "0")}`;
@@ -291,10 +292,10 @@ it.each([[false, true], [true, false]])("normal required cutover/replay preserve
   expect(m.requiredCutoverReview).toHaveBeenCalledOnce(); expect(m.inspect).not.toHaveBeenCalled();
   for (const mock of [m.receiptCreate, m.publicationUpdate, m.definitionUpdate, m.audit]) expect(mock).not.toHaveBeenCalled();
 });
-it("gates normal conditional first activation from refreshed Test-company status before execution proof or writes", async () => {
+it("gates normal production conditional activation without accepted paired readiness before execution proof or writes", async () => {
   const input = await readyRequiredCutover(); m.requiredInspect.mockClear();
   m.company.mockResolvedValue({ id: "company", kind: "CUSTOMER", status: "ACTIVE", archivedAt: null, isTest: false });
-  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("STUDIO_FIELD_REQUIRED_NOT_READY");
+  await expect(cutoverReviewedFieldMigration(session, input)).rejects.toThrow("STUDIO_RUNTIME_FEATURE_UNAVAILABLE");
   expect(m.requiredInspect).not.toHaveBeenCalled(); expect(m.receiptCreate).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
   expect(definition.activeVersionId).toBe(sourceVersion.id); expect(publication.state).toBe("PUBLISHED");
 });

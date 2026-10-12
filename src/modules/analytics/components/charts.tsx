@@ -142,7 +142,8 @@ export function TileChart({
         {metric.error}
       </p>
     );
-  if (!points.length)
+  if (!points.length && !(widget.visual === "kpi" && metric.overallValue !== undefined
+    && !widget.category && !widget.categories?.length && widget.minimum === undefined && widget.maximum === undefined))
     return (
       <p className="py-10 text-sm text-slate-400">
         Nothing in this period yet.

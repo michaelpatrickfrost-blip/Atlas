@@ -28,7 +28,7 @@ import { assertFieldMigrationPolicies, assertVersionedFieldMigrationPolicies } f
 type Scope = { definitionId: string; preparationId: string };
 type Context = Awaited<ReturnType<typeof resolveAdditionalFieldMigrationContext>>;
 function changed(): never { throw new FieldMigrationReviewError("REVIEW_CHANGED"); }
-async function storedOperation(authority: FieldMigrationAuthority, request: Scope, sparse = false) {
+async function storedOperation(authority: FieldMigrationAuthority, request: Scope) {
   const { session, transaction: tx } = authority;
   await lockBoundFieldEntityInTransaction(tx, session.organisationId, request.definitionId);
   await tx.$queryRaw`SELECT id FROM studio_field_migration_preparations WHERE id=${request.preparationId}::uuid
@@ -37,17 +37,54 @@ async function storedOperation(authority: FieldMigrationAuthority, request: Scop
     organisationId: session.organisationId }, include: { review: true } });
   if (!row || row.id !== request.preparationId || row.definitionId !== request.definitionId || row.organisationId !== session.organisationId) changed();
   const stored = readStoredFieldMigrationIntent(row, session.organisationId), intent = stored.intent;
-  if (sparse && intent.schemaVersion !== 1) throw new Error("Conditional field changes are not supported by this visual workflow yet. Use their existing reviewed workflow.");
   if (intent.definitionId !== request.definitionId || row.entityId !== intent.source.payload.entity.id || row.sourceVersionId !== intent.source.versionId
     || row.sourceGenerationId !== intent.source.payload.storageGeneration || row.targetGenerationId !== intent.target.payload.storageGeneration || row.draftId !== intent.target.draftId) changed();
   return { row, stored, intent };
 }
+type StoredOperation = Awaited<ReturnType<typeof storedOperation>>;
+type Publication = NonNullable<Awaited<ReturnType<FieldMigrationAuthority["transaction"]["studioFieldMigrationPublication"]["findFirst"]>>>;
+/** Sealed metadata identity only: neither old creator rights nor private native
+ * coverage are required for stopping a publication. Never expose review totals. */
+function sparseReview(operation: StoredOperation, organisationId: string) {
+  const { row, stored, intent } = operation;
+  if (!row.review) {
+    if (row.state === "REVIEWED") changed();
+    return null;
+  }
+  const sealed = readStoredFieldMigrationReview(row.review, organisationId);
+  if (sealed.review.schemaVersion !== intent.schemaVersion || sealed.review.id !== intent.id
+    || sealed.review.definitionId !== intent.definitionId
+    || checksum(sealed.review.schemaVersion === 1 ? fieldMigrationIntentFromReview(sealed.review)
+      : requiredFieldMigrationIntentFromReview(sealed.review)) !== stored.checksum) changed();
+  return sealed;
+}
+function sparsePublication(operation: StoredOperation, organisationId: string, publication: Publication | null) {
+  const { row, intent } = operation, review = sparseReview(operation, organisationId);
+  if (publication && (!review || row.state !== "REVIEWED" || publication.preparationId !== intent.id
+    || publication.definitionId !== intent.definitionId || publication.organisationId !== organisationId
+    || publication.reviewChecksum !== review.checksum || publication.sourceGenerationId !== intent.source.payload.storageGeneration
+    || publication.targetGenerationId !== intent.target.payload.storageGeneration || publication.targetChecksum !== intent.target.compiledChecksum
+    || publication.publisherUserId !== intent.principal.userId)) changed();
+}
+async function readSparsePublication(authority: FieldMigrationAuthority, operation: StoredOperation) {
+  const { session, transaction: tx } = authority, { intent } = operation;
+  await tx.$queryRaw`SELECT "preparationId" FROM studio_field_migration_publications WHERE "preparationId"=${intent.id}::uuid
+    AND "definitionId"=${intent.definitionId}::uuid AND "organisationId"=${session.organisationId} FOR SHARE`;
+  const publication = await tx.studioFieldMigrationPublication.findFirst({ where: {
+    preparationId: intent.id, definitionId: intent.definitionId, organisationId: session.organisationId } });
+  sparsePublication(operation, session.organisationId, publication);
+  return publication;
+}
 async function authoriseOperation(context: Context, request: Scope, creator: boolean, metadata = true, expectedExecution?: "RUNNING" | "FAILED", requestRevision?: number) {
   await withFieldMigrationAuthority(context.session, context.principal, async authority => {
-    const { row, intent } = await storedOperation(authority, request, !metadata);
+    if (!metadata) assertCapability(authority.session, STUDIO_CAPABILITIES.publish);
+    const operation = await storedOperation(authority, request), { row, intent } = operation;
     if (creator) retainAdditionalFieldMigrationCreator(authority.principal, intent.principal);
     if (metadata) await (creator ? authoriseAdditionalFieldMigrationMetadata : authoriseAdditionalFieldMigrationHistoricalMetadata)(authority, request.definitionId, intent.source.payload, intent.target.payload);
     if (row.state !== "REVIEWED") changed();
+    if (!metadata && intent.schemaVersion === 2) {
+      if (!await readSparsePublication(authority, operation)) changed();
+    }
     if (expectedExecution) {
       const progress = await authority.transaction.studioFieldMigrationExecution.findFirst({ where: { preparationId: intent.id,
         definitionId: request.definitionId, organisationId: authority.session.organisationId }, select: { state: true, revision: true } });
@@ -122,13 +159,7 @@ export async function readAdditionalFieldMigrationStatus(actor: Session, target:
     const empty = { ...request, preparationState: row.state, preparationRevision: row.revision, fieldLabel: null, review: null,
       publication: publication ? { state: publication.state, revision: publication.revision } : null, execution: null, cutover: null, currentHead: null };
     if (publication?.state === "CANCELLED") {
-      if (intent.schemaVersion !== 1) throw new Error("Conditional field recovery is not supported by this sparse visual workflow yet.");
-      if (!row.review) changed();
-      const retained = readStoredFieldMigrationReview(row.review, session.organisationId);
-      if (retained.review.schemaVersion !== 1 || checksum(fieldMigrationIntentFromReview(retained.review)) !== stored.checksum
-        || publication.reviewChecksum !== retained.checksum || publication.sourceGenerationId !== intent.source.payload.storageGeneration
-        || publication.targetGenerationId !== intent.target.payload.storageGeneration || publication.targetChecksum !== intent.target.compiledChecksum
-        || publication.publisherUserId !== intent.principal.userId) changed();
+      sparsePublication({ row, stored, intent }, session.organisationId, publication);
       return contract.additionalFieldMigrationStatusSchema.parse(empty);
     }
     const historical = intent.schemaVersion === 2 && publication !== null && publication.state !== "PUBLISHED";
@@ -210,24 +241,8 @@ export async function readAdditionalFieldMigrationRecoveryStatus(actor: Session,
   const request = contract.readAdditionalFieldMigrationRecoveryStatusSchema.parse(input), context = await resolveAdditionalFieldMigrationContext(actor, target);
   return withFieldMigrationAuthority(context.session, context.principal, async authority => {
     assertCapability(authority.session, STUDIO_CAPABILITIES.publish);
-    const { transaction: tx, session } = authority, { row, stored, intent } = await storedOperation(authority, request, true);
-    let review = null;
-    if (row.review) {
-      const sealed = readStoredFieldMigrationReview(row.review, session.organisationId);
-      if (sealed.review.schemaVersion !== 1 || sealed.review.id !== intent.id || sealed.review.definitionId !== request.definitionId
-        || checksum(fieldMigrationIntentFromReview(sealed.review)) !== stored.checksum) changed();
-      review = sealed;
-    }
-    if (row.state === "REVIEWED" && !review) changed();
-    await tx.$queryRaw`SELECT "preparationId" FROM studio_field_migration_publications WHERE "preparationId"=${intent.id}::uuid
-      AND "definitionId"=${request.definitionId}::uuid AND "organisationId"=${session.organisationId} FOR SHARE`;
-    const publication = await tx.studioFieldMigrationPublication.findFirst({ where: {
-      preparationId: intent.id, definitionId: request.definitionId, organisationId: session.organisationId } });
-    if (publication && (!review || row.state !== "REVIEWED" || publication.preparationId !== intent.id
-      || publication.definitionId !== request.definitionId || publication.organisationId !== session.organisationId
-      || publication.reviewChecksum !== review.checksum || publication.sourceGenerationId !== intent.source.payload.storageGeneration
-      || publication.targetGenerationId !== intent.target.payload.storageGeneration || publication.targetChecksum !== intent.target.compiledChecksum
-      || publication.publisherUserId !== intent.principal.userId)) changed();
+    const operation = await storedOperation(authority, request), { row } = operation;
+    const publication = await readSparsePublication(authority, operation);
     return contract.additionalFieldMigrationRecoveryStatusSchema.parse({ ...request, preparationState: row.state,
       publicationState: publication?.state ?? null, publicationRevision: publication?.revision ?? null });
   });

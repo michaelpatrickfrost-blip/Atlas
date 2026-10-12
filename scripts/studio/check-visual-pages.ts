@@ -24,6 +24,7 @@ import { parseBlocks } from "../../src/core/templates/domain";
 import { TICKETING_CAPABILITIES } from "../../src/core/permissions/capabilities";
 import { checkVisualRecordLayouts } from "./check-visual-record-layouts";
 import { checkVisualBusinessDashboards } from "./check-visual-business-dashboards";
+import { checkVisualPageDashboards } from "./check-visual-page-dashboards";
 
 const responseSchema = z.object({ error: z.string().optional(), redirect: z.string().optional(), value: z.unknown().optional() });
 const userSelect = { id: true, name: true, email: true, authVersion: true, createdAt: true, updatedAt: true } as const;
@@ -361,8 +362,11 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
     await db.moduleState.update({ where: { organisationId_moduleId: { organisationId: a.id, moduleId: "studio" } }, data: { enabled: true } });
     await checkVisualRecordLayouts(base, page, { organisationId: a.id, slug: a.slug, userId: user.id,
       membershipId: membership.id, grantedCapabilities: authorGrants, foreignOrganisationId: b.id, freshSession: fresh, call });
-    await checkVisualBusinessDashboards(base, page, { organisationId: a.id, slug: a.slug, userId: user.id,
+    const dashboard = await checkVisualBusinessDashboards(base, page, { organisationId: a.id, slug: a.slug, userId: user.id,
       membershipId: membership.id, grantedCapabilities: authorGrants, foreignOrganisationId: b.id, freshSession: fresh });
+    if (dashboard) await checkVisualPageDashboards(base, page, { organisationId: a.id, slug: a.slug, userId: user.id,
+      membershipId: membership.id, grantedCapabilities: authorGrants, foreignOrganisationId: b.id, freshSession: fresh,
+      pageDefinitionId: definitionId, orderId, dashboard });
     // Screenshots are exactly three, only in the original private release evidence
     // directory. Device canvas width and page geometry are checked, not inferred.
     await page.goto(`${base}/design-studio/${definitionId}`);

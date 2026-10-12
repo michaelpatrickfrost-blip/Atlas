@@ -1,6 +1,16 @@
 import { z } from "zod";
 import type { AnalyticsResult } from "@/core/analytics/types";
 import { boardFiltersSchema, dashboardSchema, widgetSchema } from "../definition";
+const countPointsSchema = z.array(z.strictObject({ label: z.string().min(1).max(200), value: z.number().int().nonnegative().safe() })).max(50);
+/** Display only for this complete registered count family. An empty grouped
+ * response is a complete zero count, not an invented group or missing reading. */
+export function businessViewCountData(input: unknown): Pick<AnalyticsResult, "points" | "overallValue"> {
+  const points = countPointsSchema.parse(input);
+  if (new Set(points.map(point => point.label)).size !== points.length) throw new Error("This count contains duplicate groups.");
+  const overallValue = points.reduce((total, point) => total + point.value, 0);
+  if (!Number.isSafeInteger(overallValue)) throw new Error("This complete count exceeds its safe display limit.");
+  return { points, overallValue };
+}
 const { id: personalId, expectedUpdatedAt: personalCAS, ...boardShape } = dashboardSchema.shape;
 void personalId; void personalCAS;
 /** Native display controls reused with a closed business metadata boundary.

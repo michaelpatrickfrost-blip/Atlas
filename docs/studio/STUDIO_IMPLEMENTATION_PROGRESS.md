@@ -19,7 +19,9 @@ Original75977 full candidate/public combined acceptance PASS; live exact75977,
 rollbackc385. New owner@3/Page embedding/business dashboards/required-rule controls
 await compatible actual gates. Friendly closed2 adapters eb077b8b projected; original
 engine/current permissions retained. Default Page embedded-pin correction5d747336 integrated.
-2F integrated release gates IN PROGRESS. WholePhase2 FAIL/incomplete.
+2F integrated release gates IN PROGRESS. Connected checkpoint147ed original
+candidateYnTE0D stopped preactivation at default-checker error wording; latest source retry required. New nested checker46/2 and empty-count44/3
+source cases PASS, actual new families still deferred. WholePhase2 FAIL/incomplete.
 
 # Overall Status
 
@@ -57,6 +59,14 @@ source coverage, phase plan and this ledger. No rewritten specification.
 
 # Current Workstream Detail
 
+Bounded remaining visual workstreams (no schema changes):
+
+- Reference navigation / Where used: IN PROGRESS; depends on original full seals/current Read policies and graph; owned read-only authoring wrapper, optional catalogue hrefs, standalone source/usage UI; tests current grants/retained metadata/foreign tenant/no provider access.
+- Record-type conditions: IN PROGRESS; depends on original authorised choice resolver and canonical record assignment; friendly condition picker/catalogue, new-publication USED selector preflight; tests same tenant/entity/current required-field Read and retained seal stability.
+- Customer additional-field search: NOT STARTED; depends on existing typed field_search registry/query; bounded customer Tickets consumer; tests current field/native/private access and typed results.
+- Document visual editing: NOT STARTED; depends on existing Templates parser/merge/provider/render and selected-business authority; protected friendly detail pieces, editable table cells, authorised actual source preview; existing save/version/Audit retained; tests hidden-token preservation, no preview writes, current source/tenant rights and original generated snapshots.
+
+
 Standalone screen designer uses original saved/review/live/restore engine, shared
 sample/actual rendering, desktop/tablet/phone controls, presets/palette/properties,
 permission-filtered facts/table columns and registered safe buttons. Tickets native
@@ -78,9 +88,8 @@ review on edits. Required-rule workflow uses plain native/detail choices and ori
 saved target2 CAS/impact, full reviewed preparation/collection/seal/publication/
 conversion/activation/settlement. Initial optional1 activation remains explicit.
 Open published reviews resume without reading business values on GET. Full closed2
-friendly dispatch projected; sparse2 recovery remains closed. Current Test-only
-production conditional guards remain until actual paired-reader proof/fresh isolated
-non-Test fixture acceptance. No later workflow engine.
+friendly dispatch projected; a29004a adds strict sparse1/2 recovery/cancel through
+original service, without labels/counts/native/progress. New non-Test conditional activation now requires immutable paired conditionalFields.v1 evidence; original Test behavior remains. Actual positive fresh isolated non-Test fixture acceptance is pending. No later workflow engine.
 
 # Files Changed
 
@@ -99,10 +108,14 @@ Matching CURRENT_STATE/DECISIONS/phase plan/visual and Analytics docs updated.
 existing dependency target-kind CHECK to allow exact immutable View edges; all
 foreign keys/history/graph guards remain. Actual both-lock central rehearsal
 PASS_ROLLBACK with existing verified003336 recovery; counts/constraints/triggers
-restored exactly. Forward migration NOT APPLIED. No tables/models/backfill/reset.
+restored exactly. Forward20261012010000 APPLIED by original147ed candidate build (mandatory011303-migrate.log confirms success); no activation inferred. No tables/models/backfill/reset.
 Evidence /tmp/atlas-page-view-rehearsal-result.txt; no additional dump.
 
 # Migrations Applied
+
+20261012010000 CONFIRMED APPLIED by original147ed candidate build, successful
+mandatory /home/administrator/backups/atlas-pre-deploy-20261012-011303-migrate.log.
+Only existing View-edge kind CHECK widened; original recovery/rehearsal retained.
 
 030/040/050/060/070 and080 CONFIRMED APPLIED by central Prisma history.
 06021:30:49 UTC/07022:34:20 UTC11 October;08023:31:00.28027 UTC11 October.
@@ -130,6 +143,32 @@ Original75977 candidate+public ALL COMBINED PASS28119; new feature families DEFE
 against old paired reader, not verified. New dependency SQL rehearsal PASS_ROLLBACK.
 
 # Test Results
+
+## 12 October 2026 — paired readiness and visual retry checkpoint
+
+Projected reviewed helper3fea58ee: conditionalFields.v1 actual semantic reader probe,
+immutable paired evidence, ALL retained non-Test schema2 compatibility (including
+suspended histories), and ONLY new non-Test cutover/source2 rollback guards. Original
+liveTest/native/private/field/current authority/CAS/Audit/history remain. Original
+check-metadata now invokes the exact fresh isolated non-Test conditional checker;
+unsupported pair defers before fixture writes. No actual positive inference yet.
+Root integrated109tests/7suites PASS92081; standalone strict1875, scopedlint75098,
+production99527 EXIT0. Latest nested46/2, zero-count44/3, sparse71/3 and original
+cancel5/1 PASS. Strict47398 EXIT0. Corrected actual defaults checker requires genuine
+strict schema rejection, canonical public feedback and unchanged full snapshot.
+147ed release EXIT1 preactivation; CHECK20261012010000 APPLIED, live75977/rollbackc385.
+
+Next original pinned bridge retains all recovery/locks and candidate/public checks;
+new visual/production families remain deferred against75977. After accepted bridge,
+a compatible pair must actually prove them. No extra ad-hoc dumps/worktrees/dependencies.
+Remaining Phase2 visual workstreams: friendly record-type condition selection and
+new-publication semantic validation; current-authorised exact reference navigation/
+where-used; customer additional-field search consumer; noncoder document details/
+cell tables/authorised actual preview through original Templates renderer/resolver.
+Each owns bounded files/tests and no schema; sources must integrate before actual
+gates. Phase2 FAIL/incomplete, no Phase3. Exact next: deploy reviewed bridge, then
+finish the bounded visual workstreams and run compatible original acceptance.
+
 
 Live original75977 verified health/pointer; rollbackc385. Current visual source
 checks PASS as detailed above, integrated strict/lint/build and actual latest
@@ -172,13 +211,10 @@ journeys mandatory. No later phase starts.
 
 # Exact Next Action
 
-Integrate minimal record-default exact embeddedView pins/regression and original
-nested dashboard visual checker; run latest integrated strict/lint/production build,
-review and checkpoint coherent connected source + memory. Release original first
-compatible-reader bridge with rehearsed20261012010000, then repeat exact paired
-candidate/public visual/profile/type/default/dashboard/required gates. Complete
-fresh isolated non-Test conditional readiness slice under original permissions/
-recovery/locks. Re-read everyPhase2 gate before reporting PASS. No extra copies/dumps.
+Deploy the reviewed paired-readiness/visual retry bridge through the original pinned
+candidate/public driver. Then finish the four bounded visual workstreams above,
+review/merge their exact deltas, and run the next compatible pair's actual new-family
+acceptance. Do not start Phase3; no wholePhase2 PASS without complete runtime evidence.
 
 # Historical checkpoint evidence
 
@@ -1170,6 +1206,14 @@ actual facts/create-only/native/Audit rollback proof, runner40775 exit0.
 | 2B3c6b1 Authenticated pinned preparation | VERIFIED | e309ff8 full candidate/public actual service idempotency/tenant/source/draft/owner/permissions and Audit rollback; no conversion. |
 
 # Current Workstream Detail
+
+Bounded remaining visual workstreams (no schema changes):
+
+- Reference navigation / Where used: IN PROGRESS; depends on original full seals/current Read policies and graph; owned read-only authoring wrapper, optional catalogue hrefs, standalone source/usage UI; tests current grants/retained metadata/foreign tenant/no provider access.
+- Record-type conditions: IN PROGRESS; depends on original authorised choice resolver and canonical record assignment; friendly condition picker/catalogue, new-publication USED selector preflight; tests same tenant/entity/current required-field Read and retained seal stability.
+- Customer additional-field search: NOT STARTED; depends on existing typed field_search registry/query; bounded customer Tickets consumer; tests current field/native/private access and typed results.
+- Document visual editing: NOT STARTED; depends on existing Templates parser/merge/provider/render and selected-business authority; protected friendly detail pieces, editable table cells, authorised actual source preview; existing save/version/Audit retained; tests hidden-token preservation, no preview writes, current source/tenant rights and original generated snapshots.
+
 
 ## 11 October 2026 — e2b3b per-row requirement review VERIFIED locally
 
@@ -3740,6 +3784,32 @@ Document structure/phase searches; repository status/diff/source inspection.
 `npm ci --no-audit --no-fund` completed; isolated worktree dependencies installed.
 
 # Test Results
+
+## 12 October 2026 — paired readiness and visual retry checkpoint
+
+Projected reviewed helper3fea58ee: conditionalFields.v1 actual semantic reader probe,
+immutable paired evidence, ALL retained non-Test schema2 compatibility (including
+suspended histories), and ONLY new non-Test cutover/source2 rollback guards. Original
+liveTest/native/private/field/current authority/CAS/Audit/history remain. Original
+check-metadata now invokes the exact fresh isolated non-Test conditional checker;
+unsupported pair defers before fixture writes. No actual positive inference yet.
+Root integrated109tests/7suites PASS92081; standalone strict1875, scopedlint75098,
+production99527 EXIT0. Latest nested46/2, zero-count44/3, sparse71/3 and original
+cancel5/1 PASS. Strict47398 EXIT0. Corrected actual defaults checker requires genuine
+strict schema rejection, canonical public feedback and unchanged full snapshot.
+147ed release EXIT1 preactivation; CHECK20261012010000 APPLIED, live75977/rollbackc385.
+
+Next original pinned bridge retains all recovery/locks and candidate/public checks;
+new visual/production families remain deferred against75977. After accepted bridge,
+a compatible pair must actually prove them. No extra ad-hoc dumps/worktrees/dependencies.
+Remaining Phase2 visual workstreams: friendly record-type condition selection and
+new-publication semantic validation; current-authorised exact reference navigation/
+where-used; customer additional-field search consumer; noncoder document details/
+cell tables/authorised actual preview through original Templates renderer/resolver.
+Each owns bounded files/tests and no schema; sources must integrate before actual
+gates. Phase2 FAIL/incomplete, no Phase3. Exact next: deploy reviewed bridge, then
+finish the bounded visual workstreams and run compatible original acceptance.
+
 
 c1 final scoped28/3/types/lint/build/diff PASS. No runtime positive v2 storage/execution claim. Row live candidateffFOlj combined PASS; public pending.
 

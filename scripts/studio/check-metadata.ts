@@ -21,6 +21,7 @@ import { checkTicketDefaults } from "./check-ticket-defaults";
 import { checkFieldSearch } from "./check-field-search";
 import { checkRecordProfiles } from "./check-record-profiles";
 import { checkVisualPages } from "./check-visual-pages";
+import { checkConditionalProduction } from "./check-conditional-production";
 import { readStudioRuntimeFeatureEvidence, STUDIO_PROFILE_FEATURE } from "../../src/core/studio/runtime-features";
 
 async function main() {
@@ -228,6 +229,7 @@ async function main() {
     await checkFieldConcurrency(storedUser.id, ids);
     await checkTicketForms(base, browser, storedUser.id, ids);
     await checkTicketDefaults(base, browser, storedUser.id, ids);
+    await checkConditionalProduction(base, browser, storedUser.id, ids);
     await checkFieldSearch(base, browser, storedUser.id, ids);
     const profileEvidence = readStudioRuntimeFeatureEvidence(process.cwd(), process.env.ATLAS_RELEASE_REVISION);
     const profileCreator = profileEvidence?.features.includes(STUDIO_PROFILE_FEATURE)

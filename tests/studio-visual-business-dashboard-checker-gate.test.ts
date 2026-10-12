@@ -14,7 +14,7 @@ const release = "a".repeat(40), rollback = "b".repeat(40), sealed = () => ({ sch
   rollbackRevision: rollback, features: ["analyticsBusinessViews.v1"] });
 const page = new Proxy({}, { get: () => m.browser }) as Page;
 const fixture: VisualBusinessDashboardFixture = { organisationId: "company", slug: "studio-check-visual-owned", userId: "actor", membershipId: "member",
-  foreignOrganisationId: "other-company", grantedCapabilities: ["analytics.dashboard.read", "analytics.dashboard.manage", "sales.order.read",
+  foreignOrganisationId: "other-company", grantedCapabilities: ["analytics.dashboard.read", "analytics.dashboard.manage", "sales.order.read", "sales.quote.read",
     STUDIO_CAPABILITIES.read, STUDIO_CAPABILITIES.edit, STUDIO_CAPABILITIES.publish], freshSession: m.session };
 let directory: string, root: string, current: string;
 // Boundary tests do NOT prove browser/SQL/permission/publication acceptance.

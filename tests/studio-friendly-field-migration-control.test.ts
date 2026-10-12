@@ -150,7 +150,7 @@ it.each(["foreign", "definition", "checksum", "creator", "native_rights"])("deni
   if (kind === "native_rights") m.context.mockResolvedValue({ session: { ...session, capabilities: new Set(["studio.definition.publish", "tickets.ticket.read"]) }, principal });
   await expect(publishAdditionalFieldMigration(session, undefined, publishRequest)).rejects.toThrow(); expect(m.publish).not.toHaveBeenCalled();
 });
-it("a compiled conditional seal cannot manufacture genuine current runtime authority; sparse recovery remains closed1", async () => {
+async function requiredStored() {
   const payload = conditionalFieldPayloadSchema.parse({ ...target, schemaVersion: 2,
     requiredIf: { match: "all", predicates: [{ source: { kind: "native", fieldId: "status" }, operator: "present" }] } });
   const compiled = await compileConditionalCustomField({ session, registry, definitionId: scope.definitionId, resolveMetadata: async fact => fact.kind === "native"
@@ -158,11 +158,72 @@ it("a compiled conditional seal cannot manufacture genuine current runtime autho
   const sealed = sealRequiredFieldMigrationIntent({ ...saved.intent, schemaVersion: 2,
     target: { ...saved.intent.target, payload: compiled.payload, compiledChecksum: compiled.checksum } });
   const review = sealRequiredFieldMigrationReview({ ...sealed.intent, cohort: { recordCount: 3, observationDigest: "b".repeat(64) }, summary: { validCount: 3, invalidCount: 0, lossyCount: 0 } });
-  m.preparation.mockResolvedValue({ ...saved, intent: sealed.intent, intentChecksum: sealed.checksum, review: { ...saved.review, review: review.review, checksum: review.checksum } });
+  return { ...saved, intent: sealed.intent, intentChecksum: sealed.checksum, review: { ...saved.review, review: review.review, checksum: review.checksum } };
+}
+it("a compiled conditional seal cannot manufacture genuine data authority; sparse recovery returns only reviewed metadata", async () => {
+  const conditional = await requiredStored(); m.preparation.mockResolvedValue(conditional);
   await expect(publishAdditionalFieldMigration(session, undefined, publishRequest)).rejects.toThrow("current authenticated");
   await expect(readAdditionalFieldMigrationStatus(session, undefined, scope)).rejects.toThrow("current authenticated");
-  await expect(readAdditionalFieldMigrationRecoveryStatus(session, undefined, scope)).rejects.toThrow("Conditional field changes");
+  expect(await readAdditionalFieldMigrationRecoveryStatus(session, undefined, scope)).toEqual({ ...scope, preparationState: "REVIEWED", publicationState: null, publicationRevision: null });
   expect(m.publish).not.toHaveBeenCalled(); expect(m.preflight).not.toHaveBeenCalled();
+});
+function requiredPublication(preparation: Awaited<ReturnType<typeof requiredStored>>) {
+  const { intent } = preparation;
+  return { ...scope, organisationId: intent.organisationId, state: "PUBLISHED", revision: 0,
+    reviewChecksum: preparation.review.checksum, sourceGenerationId: intent.source.payload.storageGeneration,
+    targetGenerationId: intent.target.payload.storageGeneration, targetChecksum: intent.target.compiledChecksum, publisherUserId: intent.principal.userId };
+}
+it("closed2 sparse recovery/cancellation and CANCELLED status permit a different current publisher without native/private/count/progress disclosure", async () => {
+  const conditional = await requiredStored(); m.preparation.mockResolvedValue(conditional);
+  const publication = requiredPublication(conditional); m.publication.mockResolvedValue(publication);
+  // Fixture construction queried its mocked metadata. Calls below belong only
+  // to the three sparse public adapter operations under review.
+  for (const protectedRead of [m.preflight, m.nativeDefault, m.version, m.versions, m.definition, m.progress, m.inspect, m.history, m.coverage]) protectedRead.mockClear();
+  m.preflight.mockRejectedValue(new Error("FORBIDDEN: private cohort unavailable"));
+  const current = { ...session, userId: "recovery", membershipId: "fresh-member", capabilities: new Set(["studio.definition.publish"]) },
+    now = { ...principal, userId: current.userId, membershipId: current.membershipId, authVersion: 5 };
+  m.context.mockResolvedValue({ session: current, principal: now });
+  expect(await readAdditionalFieldMigrationRecoveryStatus(current, undefined, scope)).toEqual({ ...scope, preparationState: "REVIEWED", publicationState: "PUBLISHED", publicationRevision: 0 });
+  expect(await cancelAdditionalFieldMigration(current, undefined, { ...scope, revision: 0 })).toEqual({ preparationId: scope.preparationId, state: "CANCELLED", revision: 1, replayed: false });
+  expect(m.cancel).toHaveBeenCalledWith(current, now, { preparationId: scope.preparationId, revision: 0 });
+  m.publication.mockResolvedValue({ ...publication, state: "CANCELLED", revision: 1 });
+  const status = await readAdditionalFieldMigrationStatus(current, undefined, scope);
+  expect(status).toEqual({ ...scope, preparationState: "REVIEWED", preparationRevision: 2, fieldLabel: null, review: null,
+    publication: { state: "CANCELLED", revision: 1 }, execution: null, cutover: null, currentHead: null });
+  expect(JSON.stringify(status)).not.toMatch(/affected|valid|principal|generation|value|cursor/);
+  for (const protectedRead of [m.preflight, m.nativeDefault, m.version, m.versions, m.definition, m.progress, m.inspect, m.history, m.coverage]) expect(protectedRead).not.toHaveBeenCalled();
+  expect(m.raw.mock.calls.every(([query]) => !query.join("?").match(/studio_field_values|studio_field_migration_observations|service_work_items|studio_field_migration_outcomes/))).toBe(true);
+  expect(m.publish).not.toHaveBeenCalled(); expect(m.cutover).not.toHaveBeenCalled();
+});
+it.each(["intent", "source", "draft", "review", "review_protocol", "publisher", "target", "tenant", "publication_definition"])("closed2 sparse %s corruption denies recovery and cancellation before original engine", async mode => {
+  const conditional = await requiredStored(), publication = requiredPublication(conditional);
+  if (mode === "intent") conditional.intentChecksum = "f".repeat(64);
+  if (mode === "source") conditional.sourceGenerationId = uuid(90);
+  if (mode === "draft") conditional.draftId = uuid(90);
+  if (mode === "review") conditional.review.checksum = "f".repeat(64);
+  if (mode === "review_protocol") Object.assign(conditional, { review: saved.review });
+  if (mode === "publisher") publication.publisherUserId = "other";
+  if (mode === "target") publication.targetChecksum = "f".repeat(64);
+  if (mode === "tenant") publication.organisationId = "foreign";
+  if (mode === "publication_definition") publication.definitionId = uuid(90);
+  m.preparation.mockResolvedValue(conditional); m.publication.mockResolvedValue(publication);
+  await expect(readAdditionalFieldMigrationRecoveryStatus(session, undefined, scope)).rejects.toThrow();
+  await expect(cancelAdditionalFieldMigration(session, undefined, { ...scope, revision: 0 })).rejects.toThrow();
+  expect(m.cancel).not.toHaveBeenCalled(); expect(m.preflight).not.toHaveBeenCalled(); expect(m.progress).not.toHaveBeenCalled();
+});
+it("closed2 sparse controls retain strict request/current Publish and genuine principal boundary failures", async () => {
+  const conditional = await requiredStored(); m.preparation.mockResolvedValue(conditional); m.publication.mockResolvedValue(requiredPublication(conditional));
+  for (const extra of [{ organisationId: "foreign" }, { principal }, { schemaVersion: 1 }, { reviewChecksum: hash }]) {
+    await expect(readAdditionalFieldMigrationRecoveryStatus(session, undefined, { ...scope, ...extra })).rejects.toThrow();
+    await expect(cancelAdditionalFieldMigration(session, undefined, { ...scope, revision: 0, ...extra })).rejects.toThrow();
+  }
+  expect(m.context).not.toHaveBeenCalled();
+  m.context.mockResolvedValue({ session: { ...session, capabilities: new Set() }, principal });
+  await expect(readAdditionalFieldMigrationRecoveryStatus(session, undefined, scope)).rejects.toThrow("studio.definition.publish");
+  await expect(cancelAdditionalFieldMigration(session, undefined, { ...scope, revision: 0 })).rejects.toThrow("studio.definition.publish");
+  m.authority.mockRejectedValue(new Error("FORBIDDEN: genuine current principal changed"));
+  await expect(cancelAdditionalFieldMigration(session, undefined, { ...scope, revision: 0 })).rejects.toThrow("genuine");
+  expect(m.cancel).not.toHaveBeenCalled(); expect(m.preflight).not.toHaveBeenCalled();
 });
 it("PUBLISHED status uses full original execution inspection after private preflight and omits cursor/IDs/principal", async () => {
   m.publication.mockResolvedValue({ ...scope, organisationId: "business", state: "PUBLISHED", revision: 0 });

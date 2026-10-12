@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button";
 import { inputClass } from "@/components/ui/service-fields";
 import { Studio, type AnalyticsStudioActions } from "@/modules/analytics/components/studio";
 import type { AnalyticsResult } from "@/core/analytics/types";
+import type { BusinessMeasureReference } from '@/modules/analytics/services/business-view-inspection-contract';
 import type { BusinessViewDraft } from "@/modules/analytics/services/business-view-contract";
 import { saveBusinessDashboard, reviewBusinessDashboard, publishBusinessDashboard,
-  restoreBusinessDashboard, loadBusinessDashboardMetrics, loadBusinessDashboardSlice } from "../actions";
+  restoreBusinessDashboard, loadBusinessDashboardMetrics, loadBusinessDashboardSlice, inspectBusinessDashboard, compareSavedBusinessDashboard } from "../actions";
 
 const emptyDataRequest = z.strictObject({ widgets: z.array(z.never()).max(0),
   filters: z.strictObject({ from: z.literal(""), to: z.literal(""), search: z.literal("") }) });
@@ -23,15 +24,17 @@ function feedback(error: unknown) {
   if (error instanceof Error && /RUNTIME.*NOT_READY|runtime.*support|compatible.*runtime/i.test(error.message)) return "Dashboard publication is waiting for the compatible platform update. Your saved design is kept.";
   return error instanceof Error ? error.message : "The dashboard could not be updated. Your design is kept.";
 }
-export function BusinessDashboardEditor({ draft, metrics, company, business, canEdit, canPublish }: {
-  draft: BusinessViewDraft; metrics: AnalyticsResult[]; company: string; business?: string; canEdit: boolean; canPublish: boolean;
+export function BusinessDashboardEditor({ draft, metrics, company, business, canEdit, canPublish, measureReferences = [] }: {
+  draft: BusinessViewDraft; metrics: AnalyticsResult[]; measureReferences?: BusinessMeasureReference[]; company: string; business?: string; canEdit: boolean; canPublish: boolean;
 }) {
   const router = useRouter();
+  const [observed, setObserved] = useState({ revision: draft.revision, definitionRevision: draft.definitionRevision, activeVersionId: draft.activeVersionId });
   const [dirty, setDirty] = useState(false), [review, setReview] = useState<{ revision: number; warnings: string[] } | null>(null);
   const [acknowledge, setAcknowledge] = useState(false), [versionId, setVersionId] = useState("");
   const [confirmRestore, setConfirmRestore] = useState(false), [message, setMessage] = useState(""), [error, setError] = useState("");
   const [pending, start] = useTransition();
   const onDirtyChange = useCallback((changed: boolean) => { setDirty(changed); if (changed) { setReview(null); setAcknowledge(false); } }, []);
+  const adoptHead = useCallback((head: typeof observed) => { setObserved(head); setReview(null); setAcknowledge(false); setConfirmRestore(false); }, []);
   const actions = useMemo<AnalyticsStudioActions>(() => ({
     saveAction: async () => { throw new Error("Use Save draft for this business dashboard."); },
     deleteAction: async () => { throw new Error("This is a versioned business dashboard."); },
@@ -44,24 +47,35 @@ export function BusinessDashboardEditor({ draft, metrics, company, business, can
     },
     loadGoalsAction: async () => [],
   }), [business]);
-  const controls = useMemo(() => ({ definitionId: draft.definitionId, revision: draft.revision, business, maxWidgets: 8,
-    saveDraft: (input: Parameters<typeof saveBusinessDashboard>[1]) => saveBusinessDashboard(business, {
-      ...(typeof input === "object" && input !== null ? input : {}), definitionId: draft.definitionId }), onDirtyChange }), [business, draft.definitionId, draft.revision, onDirtyChange]);
+  const controls = useMemo(() => ({ definitionId: draft.definitionId, revision: observed.revision, definitionRevision: observed.definitionRevision, business, maxWidgets: 8, measureReferences,
+    inspect: async (input: Parameters<typeof inspectBusinessDashboard>[1]) => {
+      const result = await inspectBusinessDashboard(business, { ...(typeof input === 'object' && input !== null ? input : {}), definitionId: draft.definitionId });
+      if ('error' in result) throw new Error(result.error); return result;
+    },
+    compareSavedDraft: async (input: Parameters<typeof compareSavedBusinessDashboard>[1]) => {
+      const result = await compareSavedBusinessDashboard(business, { ...(typeof input === 'object' && input !== null ? input : {}), definitionId: draft.definitionId });
+      if ('error' in result) throw new Error(result.error); return result;
+    },
+    onSavedHeadChange: adoptHead,
+    saveDraft: async (input: Parameters<typeof saveBusinessDashboard>[1]) => {
+      const result = await saveBusinessDashboard(business, { ...(typeof input === "object" && input !== null ? input : {}), definitionId: draft.definitionId });
+      if ('error' in result) throw new Error(result.error); return result;
+    }, onDirtyChange }), [business, draft.definitionId, observed.revision, observed.definitionRevision, onDirtyChange, adoptHead, measureReferences]);
   function run(operation: "review" | "publish" | "restore") {
-    if (pending || dirty || (operation === "publish" && review?.revision !== draft.revision)) return;
+    if (pending || dirty || (operation === "publish" && review?.revision !== observed.revision)) return;
     setError(""); setMessage("");
     start(async () => {
       try {
         if (operation === "review") {
-          const checked = await reviewBusinessDashboard(business, { definitionId: draft.definitionId, revision: draft.revision });
-          setReview({ revision: draft.revision, warnings: checked.warnings }); setAcknowledge(false);
+          const checked = await reviewBusinessDashboard(business, { definitionId: draft.definitionId, revision: observed.revision });
+          setReview({ revision: observed.revision, warnings: checked.warnings }); setAcknowledge(false);
           setMessage(checked.warnings.length ? "Review the notes before making this design live." : "The saved dashboard is ready to publish.");
         } else if (operation === "publish") {
-          await publishBusinessDashboard(business, { definitionId: draft.definitionId, revision: draft.revision, acknowledgeWarnings: acknowledge });
+          await publishBusinessDashboard(business, { definitionId: draft.definitionId, revision: observed.revision, acknowledgeWarnings: acknowledge });
           setReview(null); setMessage(`Published to ${company}'s Home.`); router.refresh();
         } else {
           if (!versionId || !confirmRestore) return;
-          await restoreBusinessDashboard(business, { definitionId: draft.definitionId, versionId, definitionRevision: draft.definitionRevision });
+          await restoreBusinessDashboard(business, { definitionId: draft.definitionId, versionId, definitionRevision: observed.definitionRevision });
           setConfirmRestore(false); setReview(null); setMessage("The selected previous design is live again."); router.refresh();
         }
       } catch (failure) { setError(feedback(failure)); }
@@ -88,7 +102,7 @@ export function BusinessDashboardEditor({ draft, metrics, company, business, can
         {review.warnings.length > 0 && <><ul className="mt-3 space-y-2 text-sm text-blue-900">{review.warnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul>
           <label className="mt-4 flex gap-2 text-sm"><input type="checkbox" checked={acknowledge} onChange={event => setAcknowledge(event.target.checked)}/>I have reviewed these notes.</label></>}</div>}
       <div className="mt-5 flex flex-wrap gap-3">{canEdit && <Button disabled={pending || dirty} onClick={() => run("review")}>Review saved design</Button>}
-        {canPublish && <Button variant="primary" disabled={pending || dirty || review?.revision !== draft.revision || (!!review?.warnings.length && !acknowledge)} onClick={() => run("publish")}><Globe size={16}/>Go live for this business</Button>}
+        {canPublish && <Button variant="primary" disabled={pending || dirty || review?.revision !== observed.revision || (!!review?.warnings.length && !acknowledge)} onClick={() => run("publish")}><Globe size={16}/>Go live for this business</Button>}
         {!business && draft.activeVersionId && <Link className="inline-flex items-center rounded-xl px-3 text-sm font-medium text-blue-600" href={`/business-dashboards/${draft.definitionId}`}>Open live dashboard</Link>}</div>
       {draft.versions.length > 0 && canPublish && <details className="mt-7 border-t border-slate-100 pt-5"><summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold"><History size={16}/>Previous published designs</summary>
         <div className="mt-4 grid max-w-xl gap-4"><label className="grid gap-2 text-sm">Choose a design<select className={inputClass} value={versionId} onChange={event => { setVersionId(event.target.value); setConfirmRestore(false); }}><option value="">Choose a published version</option>{draft.versions.map(version => <option key={version.id} value={version.id}>Version {version.version}{version.id === draft.activeVersionId ? " · currently live" : ""}</option>)}</select></label>

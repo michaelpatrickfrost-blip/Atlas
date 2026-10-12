@@ -1,3 +1,102 @@
+## 12 October 2026 — reviewed Phase2 builder/native checkpoint ready for original gate
+
+Root final integrated198/8 PASS54541; actual-checker early99/4 PASS26261; native
+classifier/parity/Page boundaries35/3 PASS80144. Final strict35946/scopedlint56633
+and production5279 EXIT0 after guarded43forward imports. One test-variable ESLint
+name corrected before final pass; no app/schema change. Native69d946e2 projected
+only original prepare-runtime +pure same-file refresh classifier +focused test.
+All old source direct-refresh cases retained by helper source audit. No generation/
+installation/local businessDB/deps/new worktree/ad-hoc dump. Installed Mac runtime
+not verified; original same-field fixture now includes genuine native HTTP inspection
+and unchanged metadata/native/Audit snapshot, execution pending.
+
+Reviewed exact source diff and independent setup/gallery/dashboard reviews: original
+native service/publisher/compiler/CAS/current permissions preserved; no unrelated
+removals. Docs native boundary stale Mac-only claim corrected to explicit7October
+standing live-site requirement; current contracts/decisions/Analytics/phase plan/
+visual requirements/ledger updated. WholePhase2 remains FAIL. No Phase3 engine.
+Exact next: save this reviewed coherent checkpoint; run original pinned Studio
+candidate/public bridge. Keep HEAD fixed while original locks/recovery/gates run.
+Then next compatible pair must positively exercise all new visual/conditional/staff
+families before phase completion. Live75977/rollbackc385 remain prior verified state.
+
+## 12 October 2026 — final integrated builder source checks PASS
+
+Integrated198/8 PASS54541; strict65950/scopedlint96549/production10526 EXIT0.
+Original visual early99/4 PASS26261. Two independent read-only reviews found no
+concrete setup/gallery or dashboard/current-reference blocker. No actual runtime
+acceptance inferred. Additional confirmed native closure:43missing original guarded
+Studio forwards now added preserving every old key/alias;1export-to-exact-binding
+parity assertion PASS, no model metadata regeneration. Final native helper-refresh
+classification still in progress; build/strict rerun after this import change required.
+No DDL/deps/new copies/localDB/dump. Live75977 remains; wholePhase2 FAIL.
+Exact next: integrate bounded native generator checkpoint, final relevant checks/
+build, review/save source and memory, original candidate/public bridge then required
+new-family compatible positive pair.
+
+## 12 October 2026 — confirmed native Studio compatibility workstream
+
+Additional confirmed Phase2 desktop closure (recorded before coding): IN PROGRESS.
+Original web build does not regenerate checked-in actionallowlist:43current Phase2
+actions missing, although direct web Next actions bypass it. Existing native staging
+generator detects only direct revalidatePath and misses shared refresh() in Studio
+actions, leaving local saved form/revision stale. Scope: add only missing six Studio
+module imports/keys preserving all oldaliases, export/parity test (root); existing
+prepare-runtime revalidation classification + meaningful focused test (existing
+execution helper). No model metadata regeneration/schema/dependencies/new copies.
+Original actual installed runtime revisions remain unverified; source audit only.
+
+Exact next: scope original allowlist and forwarding refresh correction, then integrated
+checks/build and original pinned release. WholePhase2 still FAIL.
+
+## 12 October 2026 — Phase2 visual closure integrated, actual release next
+
+Dashboard checkpointa608dfe4 projected only15owned code/test/checker paths; staff
+57034d7 and panel/KPI190273 integrated. Dashboard current selected-business read-only
+compiler checks/visual compare/explicit Back Keep Use/current save CAS, approved View
+measure source/usage links share original registry preflight and sealed25/500 reverse
+index. Personal boards/old Page URLs/seals/providers retained. New inspection actions
+in original allowlist; expected feedback uses existing FormFeedback. Staff checker
+reuses original QA token restored before visual entry and same actual existing A/B
+fixtures; actual launch/three writers/customer delivery/current/foreign denials, exact
+new-affiliation cleanup and QA/native snapshots. No DDL/deps/new copy/database/dump.
+
+Helper107/7 source regression PASS47554; final11/1 metadata and16/2 UI follow-ups
+PASS; strict95603/scopedlint EXIT0. Root144/3 setup/gallery PASS84830, strict4271/
+lint78816 and original visual99/4 PASS26261, prior build65872 EXIT0. Those are source
+checks; integrated strict/lint/build now pending. Actual candidate/public original
+journeys not yet run for this closure. WholePhase2 FAIL. Live75977/rollbackc385 retained.
+Shared decisions/Architecture/Module/Analytics/visual requirements/plan/ledger reconciled.
+Exact next: final integrated checks/build, reviewed checkpoint, original compatible
+bridge candidate/public; next pair must exercise all new families including actual
+staff authoring before Phase2 PASS. No Phase3 engine or grant/recovery gate waiver.
+
+## 12 October 2026 — actual a3 candidate failure and Phase2 visual closure
+
+Original40390/a3d9ad8 EXIT1 before activation. Actual Dashboard, Tickets owner/storage/
+metadata lifecycle/Admin setup/draft CAS PASS. Customer /studio correctly redirects
+/design-studio but Sales gallery500: direct latest source3 conflicts with the original
+compatible source1 pair and strict preset factory. Recovery032339/fixture032540
+retained; Test access suspended/Audit history retained/QA unchanged. Live75977/rollback
+c385 retained. No HEAD pin. WholePhase2 FAIL; no public/visual PASS inferred.
+
+Gallery now reuses original gated authoring source resolution and accepts exactly
+approved Sales sources1/2/3 with all original compilation/owner/reference checks.
+Local9tests PASS. Setup unsaved feedback/current saved comparison uses original
+current authority/compiler and strict FormData, no save/review/providers/Audit.
+Back/Keep preserve input, explicit Use reloads actual saved form; saved review/live
+remain disabled while dirty and original save CAS retained. Production feedback uses
+existing explicit FormFeedback convention. Same original field fixture now checks
+continuous feedback/three choices/unchanged full metadata+records+Audit before its
+original real Save/Review/Live. No DDL/deps/copies/localDB/ad-hoc dump.
+
+Root integrated192/5 source tests PASS17082, strict3912/scopedlint79451/build65872
+EXIT0 before final feedback/checker additions. New staff/dashboard source closure is
+still in progress in existing helper worktrees; panel/KPI checker190273 projected.
+Exact next: integrate reviewed helper source/checkers, complete scoped checks and
+production build, checkpoint and run original candidate/public bridge. After acceptance,
+all new-family positive compatible pair remains mandatory before Phase2 PASS.
+
 ## 12 October 2026 — d7206f5c stopped on superseded customer landing assertion
 
 Original19653/d7206f5c EXIT1 before activation. Candidate8kFHIW actual Dashboard,

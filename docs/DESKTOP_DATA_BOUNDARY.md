@@ -1,9 +1,12 @@
 # Desktop software and central data
 
-User requirement: Atlas software and screens run on the Mac. User/business records
-remain in one central server PostgreSQL database. Every module uses that same data
-boundary. A minimal secured data service executes authorised persistence operations;
-it serves no Atlas UI pages. The former remotely hosted Atlas app is superseded.
+Current standing requirement (7 October 2026): every finished Atlas change must also
+be deployed and verified at https://atlassystem.online. This supersedes the earlier
+Mac-only/software-local requirement. Optional native Mac software still forwards
+protected operations through the secured central service; business records remain
+in one server PostgreSQL database. No per-module/local business database is permitted.
+The procedures below describe that optional native runtime boundary; docs/DEPLOY.md
+and AGENTS.md govern the required live website release.
 
 ## Source and package ownership
 
@@ -68,3 +71,15 @@ Use `scripts/build-mac-client.sh` for packaging and `scripts/install-mac-client.
 The standard builder and installer each hold an exclusive lock. Installation consumes an already complete isolated package, so it can proceed while a separate future package builds. Packaging and signing occur in a unique `/tmp` directory outside iCloud Desktop, and output is published only after complete runtime/signature checks. Installation stages and verifies the entire package before moving the previous installed app into a recoverable backup. It refuses to replace a running Atlas: preserve unsaved work and quit through the app first. Do not bypass these steps with concurrent in-place copies. `scripts/check-installed-pages.mjs` performs read-only authenticated smoke checks using the existing verification profile, with its short-lived session held only in memory.
 
 Topbar must not acquire a backdrop filter or transform: fixed chat/search overlays inside it must remain relative to the viewport. Logistics forms use `ActionForm` so expected validation failures are displayed beside the form, while redirect errors remain redirects.
+
+## Phase2 native Studio compatibility — 12 October 2026
+
+A web release uses its checked-in actionallowlist; native/data staging regenerates
+its own from the exact original server exports. Current Studio authoring, migration,
+document and customer screen/dashboard exports must be present in the deployed
+server map and retain their genuine current session/tenant/capability guards. The
+export-to-binding parity check prevents a web-only visual journey from hiding a
+missing native forward. Shared same-file refresh helpers are recognised statically
+by the original staging builder, so successful forwarded saves refresh local forms
+and observed revisions. There is no imported helper execution or second data store.
+Source checks alone do not establish the installed Mac runtime's revision or behavior.

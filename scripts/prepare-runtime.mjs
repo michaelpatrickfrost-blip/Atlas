@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import ts from 'typescript';
+import {desktopActionRevalidation} from './desktop-action-revalidation.mjs';
 
 // Generated build workspaces, never a second editable project or a user-data store.
 const mode=process.argv[2];
@@ -23,13 +24,13 @@ if(mode==='desktop'){
  const actions=JSON.parse(fs.readFileSync(path.join(stage,'build/data-actions.json'),'utf8'));
  const grouped=new Map();for(const action of actions){if(!grouped.has(action.file))grouped.set(action.file,[]);grouped.get(action.file).push(action);}
  for(const [file,entries]of grouped){
-  const filename=path.join(stage,file),source=fs.readFileSync(filename,'utf8'),ast=ts.createSourceFile(file,source,ts.ScriptTarget.Latest,true),edits=[];
+  const filename=path.join(stage,file),source=fs.readFileSync(filename,'utf8'),ast=ts.createSourceFile(file,source,ts.ScriptTarget.Latest,true),edits=[],revalidation=desktopActionRevalidation(ast);
   for(const node of ast.statements){
    if(!ts.isFunctionDeclaration(node)||!node.name||!node.body)continue;
    const action=entries.find(a=>a.name===node.name.text);if(!action)continue;
    // Retain original types/inferred return types, but forward before any mutation.
    if(node.parameters.some(p=>!ts.isIdentifier(p.name)))throw new Error(`Unsupported action parameter: ${action.key}`);
-   const shouldRevalidate=/\brevalidatePath\s*\(/.test(node.body.getText(ast));
+   const shouldRevalidate=revalidation.get(node.name.text)===true;
    const args=node.parameters.map(p=>`${p.dotDotDotToken?'...':''}${p.name.text}`).join(',');
    edits.push({at:node.body.getStart(ast)+1,text:`\nif(process.env.ATLAS_RUNTIME==='desktop')return await atlasRemoteAction(${JSON.stringify(action.key)},[${args}],${shouldRevalidate}) as never;\n`});
   }

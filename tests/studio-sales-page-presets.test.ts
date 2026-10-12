@@ -1,9 +1,13 @@
 import { analyticsBusinessViewContract } from "@/modules/analytics/services/studio-view";
 import { describe, expect, it, vi } from 'vitest';
-const mocked = vi.hoisted(() => ({ current: vi.fn() }));
+const mocked = vi.hoisted(() => ({ current: vi.fn(), source: vi.fn(), approvals: vi.fn() }));
 vi.mock('@/core/db/client', () => ({ db: {} }));
 vi.mock('@/core/modules/access', () => ({ assertModuleEnabled: mocked.current }));
 vi.mock('@/core/studio/fields/runtime-authority', () => ({ nativeFieldMutationSessionInTransaction: mocked.current }));
+vi.mock('@/core/studio/pages/definition-compiler', () => ({ resolveAuthoringPageSource: mocked.source }));
+vi.mock('@/core/studio/pages/server-approvals', () => ({ reconstructPageApprovalsInTransaction: mocked.approvals }));
+import { screenLayouts } from '@/app/(studio)/design-studio/layouts';
+import type { FieldRuntimeAuthority } from '@/core/studio/fields/runtime-authority';
 import type { ContractMetadata } from '@/core/studio/registry/types';
 import { CapabilityRegistry } from '@/core/studio/registry/registry';
 import { pageApprovalsSchema } from '@/core/studio/pages/approvals';
@@ -17,11 +21,11 @@ import { createSalesOrderPagePresets } from '@/modules/sales/services/studio-pag
 const reference = ({ id, version, schemaHash, contractHash }: ContractMetadata) => ({ id, version, schemaHash, contractHash });
 const approval = (metadata: ContractMetadata) => ({ ...reference(metadata), ownerModuleId: metadata.ownerModuleId, kind: metadata.kind,
   classification: metadata.classification, capability: metadata.capability });
-function approved() {
+function approved(sourceVersion = 1) {
   const registry = new CapabilityRegistry(async () => true);
   registry.register('analytics', analyticsBusinessViewContract);
   registry.register('sales', { contributions: [...salesStudioContract.contributions, ...salesOrderPageContract.contributions] });
-  const entity = registry.describe('sales.order', 1), sourcePage = registry.describe('sales.order.page', 1), header = registry.describe('sales.order.page.header', 1);
+  const entity = registry.describe('sales.order', 1), sourcePage = registry.describe('sales.order.page', sourceVersion), header = registry.describe('sales.order.page.header', 1);
   const fields = entity.details.fields as Array<{ id: string; label: string; classification: string }>;
   const columns = salesOrderPagePolicy.queries.find(q => q.query.id === header.id)!.columns;
   const approvals = pageApprovalsSchema.parse({ entity: approval(entity), sourcePage: approval(sourcePage), variants: false, fieldSourceVersions: [],
@@ -88,7 +92,7 @@ describe('pure approved Sales editor presets', () => {
     const original = approved().approvals;
     for (const mutate of [
       (value: typeof original) => { value.entity.id = 'tickets.ticket'; },
-      (value: typeof original) => { value.sourcePage.version = 2; },
+      (value: typeof original) => { value.sourcePage.version = 4; },
       (value: typeof original) => { value.sourcePage.ownerModuleId = 'other'; },
       (value: typeof original) => { value.variants = true; },
       (value: typeof original) => { value.nativeFields = value.nativeFields.filter(field => field.id !== 'customer_name'); },
@@ -104,4 +108,17 @@ describe('pure approved Sales editor presets', () => {
     if (component.type !== 'fields') throw new Error('Missing fields'); component.fields[0].mode = 'edit';
     expect(() => compilePage(edited, approvals)).toThrow();
   });
+});
+
+it.each([1, 2, 3])('uses the genuine gated authoring source @%i for Sales gallery presets', async version => {
+  const { registry, approvals } = approved(version), source = registry.describe('sales.order.page', version);
+  mocked.source.mockReturnValue({ metadata: source }); mocked.approvals.mockResolvedValue(approvals);
+  const bypass = vi.fn(() => { throw new Error('Latest source cannot bypass authoring readiness.'); });
+  const authority = { registry: { describePageSourceForEntity: bypass } } as unknown as FieldRuntimeAuthority;
+  const entity = reference(registry.describe('sales.order', 1));
+  const layouts = await screenLayouts(authority, entity);
+  expect(mocked.source).toHaveBeenLastCalledWith(authority, entity);
+  expect(mocked.approvals).toHaveBeenLastCalledWith(authority, { sourcePage: reference(source), customFields: [] });
+  expect(layouts).toHaveLength(3); expect(bypass).not.toHaveBeenCalled();
+  for (const layout of layouts) expect(compilePage(layout.page, approvals).approvals.sourcePage.version).toBe(version);
 });

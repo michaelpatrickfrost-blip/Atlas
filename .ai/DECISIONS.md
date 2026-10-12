@@ -1,3 +1,54 @@
+## 12 October 2026 — native Studio forwards share original guarded exports
+
+Ordinary web releases do not regenerate the checked-in desktop actionallowlist.
+Add only missing current Phase2 exports from six original Studio/customer source
+modules, preserving existing aliases/keys and enforcing exact export binding parity.
+The exports independently require genuine sessions/current business/native capabilities;
+forwarding adds no permission or generic table endpoint. Avoid broad regeneration
+of unrelated metadata/actions. Native staging must also recognise the original local
+shared refresh helper; a remote successful save otherwise leaves the old local form
+revision. Keep the original proxy/redirect/revalidation flow with bounded static
+same-file helper analysis, no dynamic execution or imported call graph. Source checks
+and actual installed-runtime evidence remain distinct.
+
+## 12 October 2026 — business dashboard metadata feedback and native measure navigation
+
+Reuse the original registered View compiler for both unsaved continuous checks and
+saved/local visual comparison, with actual selected-business authority and the
+server-loaded original owner envelope. Keep/Use adopt only a local observed head;
+original draft CAS and publication review remain mandatory. No second diff storage,
+query/renderer/publisher or automatic merge. Preserve production guidance through
+original explicit withFormFeedback error transport. Personal dashboards stay on
+their original behavior and signatures.
+
+Native measure source navigation reuses one unchanged private extraction of the
+original complete compiler approval block; the additive metadata-only method
+requires the View's explicit declared metric, genuine transaction, exact current
+source/query hashes/support/modules and independent Read capabilities, without
+compiler callbacks or provider invocation. An explicit sourceView reference branch
+shares the existing bounded reverse index/full immutable edge mirrors and incoming
+configuration authoriser. Page-source grammar/URLs/grants remain intact. This
+satisfies source6.2/18.2 without inventing a generic data/query endpoint or engine.
+
+## 12 October 2026 — reuse gated page sources and metadata-only setup checks
+
+Visual preset selection must use the same original paired-compatible authoring
+source resolution as saved Page authoring. Direct latest owner metadata may expose
+a newer source while the immediate rollback only supports an older approved one.
+Sales preset factories accept only explicitly approved source versions1/2/3 and
+retain all original exact entity/owner/field/query/component compiler checks.
+This fixes the actual a3 customer gallery failure without changing owner contracts
+or weakening the compatible runtime gate.
+
+Extend the original setup draft candidate/compiler seam to metadata-only inspection
+and current-saved comparison. Resolve genuine current business/native/field authority
+before summaries; retained policies stay server-owned. Original Save retains locks,
+CAS and Audit; inspection/Back/Keep/Use never save/review/publish/invoke providers.
+Keep explicitly adopts only the observed revision, Use reloads the saved form, Back
+keeps the baseline. Continuous replies bind captured FormData and head; expected
+production errors use the existing FormFeedback convention. No separate publisher,
+configuration engine, storage, permission architecture or later-phase workflow.
+
 ## 12 October 2026 — visual draft checks and explicit conflict recovery
 
 Source6.2/18.2 requires concurrent draft recovery and continuous builder feedback.

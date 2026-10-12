@@ -1,3 +1,17 @@
+## 12 October 2026 — visual closure and genuine selected-business proof
+
+Additional source6.2/18.2 workstreams: original setup continuous metadata inspection
+and friendly saved/local comparison (root), original Analytics business-dashboard
+feedback/comparison/approved measure navigation (existing helper), actual Atlas staff
+launch→selected business→Page/Template/Dashboard→customer publication (existing
+original fixture/QA), native Ticket panels and exact currency KPI proof (existing
+helper). No DDL/deps/new worktrees/databases/workflow engines. Expected paths and
+checks are detailed in permanent ledger. Root setup/gallery source IMPLEMENTED;
+source tests/build pass, actual same-field continuous/comparison unchanged snapshot
+checker added but runtime pending. Helpers source reviews in progress. All original
+pair/readiness/tenant/native/current-permission/CAS/Audit/release gates retained.
+Actual a3 gallery failure preserves live75977; original gate retry next. Phase2 FAIL.
+
 ## 12 October 2026 — bounded visual closure workstreams
 
 Phase2 remains IN PROGRESS/FAIL. Paired conditional bridge is implemented and locally

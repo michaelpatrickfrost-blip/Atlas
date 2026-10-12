@@ -618,6 +618,18 @@ Compiler availability alone grants no publication/readiness: original immutable
 publisher plus compatible customer readers and actual gates are separate work.
 
 
+## Approved View measure navigation — 12 October 2026
+
+The registry's `authoriseViewSourceReferenceInTransaction` reuses the original
+complete metric/query approval preflight for one explicitly declared source.
+It validates genuine current context, exact owner/source hashes, current contracts,
+required capabilities and enabled/entitled modules before returning metadata.
+It invokes no View compiler callback or business provider. Original View compilation
+uses the same extracted preflight without changing hashes or semantics. Friendly
+measure links use an explicit View-source branch; old Page URLs stay identical.
+Reverse usage retains the existing tenant-owned sealed dependency index,500 scan
+limit and25 displayed entries. Navigation never grants access or reads figures.
+
 ## Page owners embedding saved Views — 12 October 2026
 
 A Page-source policy can opt in to a finite exact `embeddedViewSources` list. A

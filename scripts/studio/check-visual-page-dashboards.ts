@@ -3,6 +3,7 @@ import { realpathSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { expect, type Page } from "@playwright/test";
 import { z } from "zod";
+import { formatMoney } from "@/core/shared/money";
 import { db } from "@/core/db/client";
 import { sessionAuthorityStamp, type Session } from "@/core/auth/session";
 import { STUDIO_CAPABILITIES as CAP } from "@/core/studio/permissions";
@@ -149,8 +150,15 @@ export async function checkVisualPageDashboards(base: string, page: Page, fixtur
     const zeroWidget = viewContent.widgets.find(widget => widget.metricId === "sales.quotes"); assert(zeroWidget);
     assert.equal(z.array(z.object({ value: z.number() })).parse(embedded.output.dataByWidget[zeroWidget.id]).reduce((sum, point) => sum + point.value, 0), 0);
     assert(nodes.some(node => node.type === "metric" && node.cells.some(cell => !cell.unavailable && cell.text !== "—")), "Native Order total must remain live alongside the embedded dashboard.");
+    const metricComponent = saved.sections.flatMap(section => section.components).find(node => node.type === "metric" && node.metric.id === "sales.order.page.total_metric" && node.metric.version === 1); assert(metricComponent);
+    const total = nodes.find(node => node.id === metricComponent.id); assert(total?.type === "metric");
+    const owningOrder = nativeBefore[0][0], expectedTotal = formatMoney(owningOrder.grossAmount, owningOrder.currency);
+    assert.deepEqual(total.cells, [{ label: "Order total", text: expectedTotal, unavailable: false }, { label: "Currency", text: owningOrder.currency, unavailable: false }],
+      "Sales KPI must use the exact canonical order minor amount and explicit currency alongside the embedded View.");
     await page.goto(`${base}/screens/${fixture.pageDefinitionId}?record=${encodeURIComponent(fixture.orderId)}`);
     await expect(page.getByRole("heading", { name: title, exact: true })).toBeVisible();
+    const totalCard = page.locator("div").filter({ has: page.getByRole("heading", { name: total.label, exact: true }) }).filter({ has: page.locator("dl") }).last();
+    await expect(totalCard.locator("dd")).toHaveText([expectedTotal, owningOrder.currency]);
     const unchanged = await snapshot();
     // Original publisher restore changes only the View active head; the Page
     // continues to use its exact retained version and SQL dependency edge.

@@ -10,7 +10,7 @@ import { createAdditionalFieldDraftInTransaction, createBaseProfileDraftInTransa
   reviewConfigurationDraftInTransaction, goLiveConfigurationDraftInTransaction, activateConfigurationVersionInTransaction } from "@/core/studio/authoring/configuration";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import type { FormFeedback } from "@/core/shared/form-feedback";
+import { withFormFeedback, type FormFeedback } from "@/core/shared/form-feedback";
 import { readAdditionalFieldSetup } from "@/core/studio/authoring/field-form-input";
 import { prepareAdditionalFieldMigration, collectAdditionalFieldMigration,
   sealAdditionalFieldMigration } from "@/core/studio/authoring/field-migration-lifecycle";
@@ -171,4 +171,27 @@ export async function finalizeFieldChange(target: string | undefined, input: unk
   const actor = await requireSession();
   assertCapability(actor, CAP.publish);
   return finalizeAdditionalFieldMigration(actor, target, input);
+}
+
+
+export async function inspectBusinessSetup(form: FormData) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.edit);
+  const { readSetupDraftEdit } = await import("@/core/studio/authoring/setup-edit-input");
+  const { inspectConfigurationDraftEditInTransaction } = await import("@/core/studio/authoring/configuration");
+  return withFormFeedback(() => withStudioAuthoringAuthority(actor, CAP.edit, business(form), authority => inspectConfigurationDraftEditInTransaction(authority,
+    { definitionRevision: Number(text(form, "definitionRevision")), edit: readSetupDraftEdit(form) })));
+}
+export async function compareSavedBusinessSetup(form: FormData) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.edit);
+  const { readSetupDraftEdit } = await import("@/core/studio/authoring/setup-edit-input");
+  const { inspectConfigurationDraftEditInTransaction } = await import("@/core/studio/authoring/configuration");
+  return withFormFeedback(async () => {
+  const result = await withStudioAuthoringAuthority(actor, CAP.edit, business(form), authority => inspectConfigurationDraftEditInTransaction(authority,
+    { definitionRevision: Number(text(form, "definitionRevision")), edit: readSetupDraftEdit(form) }, true));
+  if (!("savedSummary" in result) || !result.savedSummary || !result.localSummary || !result.changes)
+    throw new Error("The saved draft could not be compared. Your changes are kept.");
+  return { ...result, savedSummary: result.savedSummary, localSummary: result.localSummary, changes: result.changes };
+  });
 }

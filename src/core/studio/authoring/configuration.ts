@@ -250,15 +250,18 @@ export async function configureAdditionalFieldDraftInTransaction(authority: Fiel
     || await authority.transaction.studioDefinitionVersion.findFirst({ where: { definitionId: draft.definitionId,
       organisationId: authority.session.organisationId }, select: { id: true } }))
     throw new Error("MIGRATION_REQUIRED: published fields need reviewed evolution. Their labels and help can still be edited.");
-  const previous = customFieldPayloadSchema.parse(ticketPayload("customField", draft.payload));
+  return save(authority, draft, await configuredFieldPayload(authority, policy, draft.payload, value.setup));
+}
+async function configuredFieldPayload(authority: FieldRuntimeAuthority, policy: OwnerPolicy, input: unknown, setup: AdditionalFieldSetup) {
+  const previous = customFieldPayloadSchema.parse(ticketPayload("customField", input));
   if (checksum(previous.entity) !== checksum(policy.entity)) unavailable();
   assertFieldAccess(authority.session, previous.field, "write");
   const representable = projectAdditionalFieldSetup(previous, policy.fieldPolicy.referenceEntities.map(id => ({ id })));
   if (representable.kind === "read_only") throw new Error(representable.reason);
-  const configured = await setupStorage(authority, policy, value.setup, previous.field.storage), field = { ...previous.field };
+  const configured = await setupStorage(authority, policy, setup, previous.field.storage), field = { ...previous.field };
   delete field.defaultValue;
-  return save(authority, draft, { ...previous, field: { ...field, ...configured, indexed: value.setup.indexed ?? previous.field.indexed,
-    unique: value.setup.unique ?? previous.field.unique, label: value.setup.label, help: value.setup.help } });
+  return { ...previous, field: { ...field, ...configured, indexed: setup.indexed ?? previous.field.indexed,
+    unique: setup.unique ?? previous.field.unique, label: setup.label, help: setup.help } };
 }
 function friendlyConversion(rule: FriendlyFieldConversion, target: CustomFieldPayload): FieldConversion {
   if (rule.kind !== "string_to_enum") return rule;
@@ -522,4 +525,89 @@ export async function getSetupCatalogInTransaction(authority: FieldRuntimeAuthor
   }
   return { groups, pages: screenChoices, fieldTypes: additionalFieldTypeCatalogue.filter(type => policy.fieldPolicy.types.includes(type.id)
     && (type.id !== "reference" || referenceTargets.length > 0)), referenceTargets };
+}
+
+
+const editRequest = z.discriminatedUnion("mode", [
+  fieldConfigure.extend({ mode: z.literal("fieldSettings") }), fieldSave.extend({ mode: z.literal("fieldPresentation") }),
+  baseSave.extend({ mode: z.literal("base") }), typeSave.extend({ mode: z.literal("type") }),
+]);
+const inspectSetupRequest = z.strictObject({ definitionRevision: revision, edit: editRequest });
+/** Read-only current metadata checks. No lock/write/Audit/provider, saved review or
+ * publication approval. The original save and publisher independently repeat all
+ * validation. Compare permits an older observed head, never a fabricated future. */
+export async function inspectConfigurationDraftEditInTransaction(authority: FieldRuntimeAuthority, input: unknown, compare = false) {
+  const policy = await owner(authority, CAP.edit), value = inspectSetupRequest.parse(input), edit = value.edit;
+  const draft = await scopedDraft(authority, edit.definitionId);
+  if (!draft || edit.revision > draft.revision || value.definitionRevision > draft.definition.revision
+    || (!compare && (edit.revision !== draft.revision || value.definitionRevision !== draft.definition.revision))) conflict();
+  const expectedKind = edit.mode === "base" ? "entityProfile" : edit.mode === "type" ? "recordType" : "customField";
+  if (draft.definition.kind !== expectedKind || !presentationEditable(authority, expectedKind, draft.payload)) unavailable();
+  const saved = ticketPayload(expectedKind, draft.payload);
+  if (expectedKind === "customField") {
+    const field = versionedFieldPayloadSchema.parse(saved).field;
+    assertFieldAccess(authority.session, field, "read"); assertFieldAccess(authority.session, field, "write");
+  }
+  let payload: unknown;
+  if (edit.mode === "fieldSettings") {
+    if (draft.definition.latestVersion !== 0 || draft.baseVersion !== null || draft.definition.activeVersionId !== null
+      || await authority.transaction.studioDefinitionVersion.findFirst({ where: { definitionId: draft.definitionId,
+        organisationId: authority.session.organisationId }, select: { id: true } }))
+      throw new Error("MIGRATION_REQUIRED: published fields need reviewed evolution.");
+    if (edit.setup.type === "reference" && edit.setup.initialValue !== undefined)
+      throw new Error("Choose linked-record starting values through an approved record picker.");
+    payload = await configuredFieldPayload(authority, policy, saved, edit.setup);
+  } else if (edit.mode === "fieldPresentation") {
+    const previous = customFieldPayloadSchema.parse(saved);
+    payload = { ...previous, field: { ...previous.field, label: edit.label, help: edit.help } };
+  } else if (edit.mode === "base") {
+    const previous = entityProfilePayloadSchema.parse(saved);
+    payload = { ...previous, profile: { ...previous.profile, ...await choices(authority, edit) } };
+  } else {
+    const previous = recordTypePayloadSchema.parse(saved), selected = await choices(authority, edit);
+    const overlay = { ...previous.overlay, requiredFields: selected.requiredFields };
+    if (selected.page === undefined) delete overlay.page; else overlay.page = pageReferenceSchema.nullable().parse(selected.page);
+    payload = { ...previous, label: edit.label, help: edit.help, overlay };
+  }
+  const compiled = await compileDraft(authority, draft.definitionId, expectedKind, payload);
+  if (!compare) return { revision: draft.revision, definitionRevision: draft.definition.revision, warnings: compiled.warnings };
+  await compileDraft(authority, draft.definitionId, expectedKind, saved);
+  const summary = async (input: unknown) => {
+    const rows: { label: string; value: string }[] = [], add = (label: string, value: string) => rows.push({ label, value });
+    if (expectedKind === "customField") {
+      const field = versionedFieldPayloadSchema.parse(input).field, storage = field.storage;
+      add("Display name", field.label); add("Helpful description", field.help || "No description");
+      add("Kind of detail", additionalFieldTypeCatalogue.find(type => type.id === storage.type)?.name ?? "Additional detail");
+      add("Search", field.indexed ? "Available in search" : "Not included in search");
+      add("Duplicate values", field.unique ? "Prevented" : "Allowed"); add("Always required", field.required ? "Yes" : "No");
+      const labels: Record<string, string> = { minLength: "Minimum characters", maxLength: "Maximum characters", min: "Smallest value", max: "Largest value",
+        precision: "Maximum total digits", scale: "Maximum decimal places", maxSelections: "Maximum choices", currencies: "Allowed currencies", countries: "Allowed countries" };
+      for (const [key, label] of Object.entries(labels)) if (key in storage) {
+        const value = Object.entries(storage).find(([name]) => name === key)?.[1];
+        add(label, Array.isArray(value) ? value.join(", ") : String(value));
+      }
+      if (storage.type === "enum" || storage.type === "multi_enum") add("Available choices", storage.options.filter(option => !option.retired).map(option => option.label).join(", "));
+      if (field.defaultValue) {
+        const initial = field.defaultValue;
+        const choice = (id: string) => storage.type === "enum" || storage.type === "multi_enum" ? storage.options.find(option => option.id === id)?.label ?? "Unavailable choice" : "Selected choice";
+        add("Starting value", initial.type === "reference" ? "Configured linked record" : initial.type === "boolean" ? initial.value ? "Yes" : "No"
+          : initial.type === "enum" ? choice(initial.value) : initial.type === "multi_enum" ? initial.value.map(choice).join(", ")
+          : initial.type === "money" ? `${initial.value.amount} ${initial.value.currency}` : initial.type === "address"
+            ? [initial.value.line1, initial.value.line2, initial.value.city, initial.value.region, initial.value.postalCode, initial.value.country].filter(Boolean).join(", ") : String(initial.value));
+      } else add("Starting value", "No starting value");
+    } else {
+      const typed = expectedKind === "recordType" ? recordTypePayloadSchema.parse(input) : null;
+      const profile = typed?.overlay ?? entityProfilePayloadSchema.parse(input).profile;
+      if (typed) { add("Display name", typed.label); add("Helpful description", typed.help || "No description"); }
+      const name = async (pin: unknown) => (await readDesignReferenceMetadataInTransaction(authority, configurationReferenceSchema.parse(pin))).name;
+      add("Record screen", profile.page ? await name(profile.page) : typed && profile.page === undefined ? "Use the business's base screen" : "Use the app's standard screen");
+      const fields: string[] = []; for (const pin of profile.requiredFields ?? []) fields.push(await name(pin));
+      add("Required additional fields", fields.length ? fields.join(", ") : "No additional required fields");
+      if (typed) add("Base record setup", await name(typed.baseProfile));
+    }
+    return rows;
+  };
+  const savedSummary = await summary(saved), localSummary = await summary(compiled.payload);
+  return { revision: draft.revision, definitionRevision: draft.definition.revision, warnings: compiled.warnings, savedSummary, localSummary,
+    changes: localSummary.filter(row => !savedSummary.some(saved => saved.label === row.label && saved.value === row.value)).map(row => `${row.label} is different in your changes.`) };
 }

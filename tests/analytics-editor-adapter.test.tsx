@@ -80,7 +80,7 @@ it("saves a business draft with its exact revision, retaining failed edits and a
   await screen.findByText("The saved draft changed");
   expect(screen.getByRole("textbox", { name: "Dashboard name" })).toHaveProperty("value", "Business overview");
   expect(m.refresh).not.toHaveBeenCalled();
-  fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Save draft" }));
   await screen.findByText("Draft saved. Review it before making it live for your business.");
   expect(saveDraft).toHaveBeenLastCalledWith(expect.objectContaining({ revision: 3, name: "Business overview", widgets: board.widgets }));
   expect(m.refresh).toHaveBeenCalledOnce(); expect(m.save).not.toHaveBeenCalled(); expect(m.nativeSave).not.toHaveBeenCalled();
@@ -104,4 +104,26 @@ it("requires the complete saved business adapter and respects the approved widge
   render(<Studio {...props} selectedId="owned" startEditing serverActions={actions} businessDraft={businessDraft}/>);
   expect(screen.getByRole("button", { name: "Add widget" }).hasAttribute("disabled")).toBe(true);
   expect(screen.getByText("1/1 widgets")).toBeTruthy();
+});
+
+it.each(["same", "newer"])("business comparison against %s head deliberately preserves local input and later saves exact adopted revision", async headMode => {
+  const actualRevision = headMode === "same" ? 3 : 4, actualDefinitionRevision = headMode === "same" ? 5 : 7;
+  const inspect = vi.fn().mockImplementation(async input => ({ definitionId: "owned", revision: input.revision, definitionRevision: input.definitionRevision, content: input.content, warnings: [], measures: [] }));
+  const compare = vi.fn().mockImplementation(async input => ({ definitionId: "owned", revision: actualRevision, definitionRevision: actualDefinitionRevision, activeVersionId: null,
+    local: input.content, saved: { ...input.content, name: "Saved overview" }, warnings: [], changes: ["The dashboard name differs."], measures: [] }));
+  const saveDraft = vi.fn().mockResolvedValue({ definitionId: "owned", revision: actualRevision + 1 }), head = vi.fn();
+  render(<Studio {...props} selectedId="owned" startEditing serverActions={actions}
+    businessDraft={{ definitionId: "owned", revision: 3, definitionRevision: 5, maxWidgets: 8, saveDraft,
+      inspect, compareSavedDraft: compare, onSavedHeadChange: head,
+      measureReferences: [{ id: "orders", name: "Orders", sourceHref: "/design-studio/capabilities/orders", whereUsedHref: "/design-studio/capabilities/orders?view=usage" }] }}/>);
+  fireEvent.change(screen.getByRole("textbox", { name: "Dashboard name" }), { target: { value: "My local dashboard" } });
+  fireEvent.click(screen.getByRole("button", { name: "Compare saved draft" })); await screen.findByRole("dialog");
+  fireEvent.click(screen.getByRole("button", { name: "Keep my changes against this saved draft" }));
+  expect(screen.getByRole("textbox", { name: "Dashboard name" })).toHaveProperty("value", "My local dashboard");
+  expect(head).toHaveBeenCalledWith({ revision: actualRevision, definitionRevision: actualDefinitionRevision, activeVersionId: null });
+  expect(saveDraft).not.toHaveBeenCalled(); expect(m.refresh).not.toHaveBeenCalled();
+  await waitFor(() => expect(screen.getByRole("button", { name: "Save draft" }).hasAttribute("disabled")).toBe(false));
+  fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+  await waitFor(() => expect(saveDraft).toHaveBeenCalledWith(expect.objectContaining({ revision: actualRevision, name: "My local dashboard" })));
+  expect(m.nativeSave).not.toHaveBeenCalled(); expect(m.save).not.toHaveBeenCalled();
 });

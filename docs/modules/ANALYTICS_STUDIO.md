@@ -301,3 +301,31 @@ Page contracts without opt-in retain their seals. Module-owned pure chart displa
 uses the same original Analytics renderer; Core imports no Analytics module service.
 The palette exposes only authorised published choices. Source is implemented;
 forward View-edge CHECK and compatible actual Page/default/customer gates pending.
+
+## Business draft feedback and native measure references — 12 October 2026
+
+The standalone business dashboard adapter continuously checks its strict shared
+content schema, then uses the original module-owned View compiler under freshly
+selected authority. Metadata-only inspection does not run measure providers,
+save validation, write Audit, publish or alter native records. Current saved and
+local designs are separately compiled with the actual saved owner envelope;
+old/future/foreign identities or revoked source rights fail before labels.
+
+Compare saved draft displays inert native chart illustrations, plain setting
+changes and explicit Back, Keep my changes against this saved draft, and Use
+saved draft choices. Keep changes only the locally observed draft/definition
+head; Use deliberately loads current saved content. Both invalidate previous
+publication review and preserve original CAS for later saves. No automatic
+merge/save/publish happens. Original expected-error feedback is returned explicitly
+so production error redaction does not conceal a stale-save/current-access notice.
+
+Authorised registered measure choices provide Go to source and Where used through
+an explicit View-source metadata reference branch. It shares the original exact
+registry source/query/current-hash/module/capability guards and persisted native
+reverse index (25 per page, maximum 500 saved versions with stable scoped cursor).
+No native query/provider/action runs. Page-source reference URL and grant semantics
+remain unchanged. Original personal Dashboard persistence, chart data refresh,
+query adapters and publication/renderer engines stay the same. Focused source/DOM
+checks do not establish candidate/public acceptance; the original fixture now
+adds current checks and all three choices with unchanged metadata/Audit/native
+snapshots for its actual execution gate.

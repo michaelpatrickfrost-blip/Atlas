@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { realpathSync, statSync, lstatSync, readFileSync } from "node:fs";
 import { basename, dirname, isAbsolute, join } from "node:path";
 import jwt from "jsonwebtoken";
-import { expect, type Browser } from "@playwright/test";
+import { expect, type Browser, type Page } from "@playwright/test";
 import { z } from "zod";
 import { db } from "../../src/core/db/client";
 import { sessionForUser, type Session } from "../../src/core/auth/session";
@@ -24,6 +24,7 @@ import { TICKETING_CAPABILITIES } from "../../src/core/permissions/capabilities"
 import { checkVisualRecordLayouts } from "./check-visual-record-layouts";
 import { checkVisualBusinessDashboards } from "./check-visual-business-dashboards";
 import { checkVisualPageDashboards } from "./check-visual-page-dashboards";
+import { checkVisualStaffAuthoring } from "./check-visual-staff-authoring";
 
 const responseSchema = z.object({ error: z.string().optional(), redirect: z.string().optional(), value: z.unknown().optional() });
 const userSelect = { id: true, name: true, email: true, authVersion: true, createdAt: true, updatedAt: true } as const;
@@ -36,7 +37,8 @@ const authorGrants = [...nativeGrants, "core.contract.manage", "analytics.dashbo
  * Party/order use existing authenticated owning actions; all history is retained.
  * Local gate tests mock only disabled/failed pre-fixture boundaries, never a pass.
  */
-export async function checkVisualPages(base: string, browser: Browser, managerSyntheticUserId: string, cleanupCompanyIds: string[]) {
+export async function checkVisualPages(base: string, browser: Browser, managerSyntheticUserId: string, cleanupCompanyIds: string[],
+  staff?: { page: Page; actor: Session }) {
   assert(process.platform === "linux" && process.env.ATLAS_STUDIO_LIVE_TEST === "1");
   assert(base === "https://atlassystem.online" || /^http:\/\/127\.0\.0\.1:\d+$/.test(base));
   const root = realpathSync(process.cwd()), revision = process.env.ATLAS_RELEASE_REVISION;
@@ -333,8 +335,38 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
     assert.equal(originalField.indexed, true);
     await expect(page.getByRole("checkbox", { name: "Make this detail available in search", exact: true })).toBeChecked();
     await expect(page.getByLabel("Maximum characters", { exact: true })).toHaveValue("300");
+    const setupBeforeChecks = await snapshot();
+    const nativeSetupValues = await page.locator("form").filter({ has: page.getByRole("button", { name: "Save draft", exact: true }) })
+      .evaluate(element => [...new FormData(element as HTMLFormElement).entries()].map(([key, value]) => {
+        if (typeof value !== "string") throw new Error("The setup inspection requires text form values."); return [key, value] as [string, string];
+      }));
+    const nativeSetupForm = new FormData(); for (const [key, value] of nativeSetupValues) nativeSetupForm.append(key, value);
+    nativeSetupForm.set("definitionRevision", String(setupBeforeChecks.definitions.find(value => value.id === fieldId)!.revision));
+    const nativeSetupCheck = await call("src/app/(studio)/design-studio/setup/actions:inspectBusinessSetup", [nativeSetupForm]);
+    const nativeChecked = z.object({ revision: z.number(), definitionRevision: z.number(), warnings: z.array(z.string()) }).parse(nativeSetupCheck.value);
+    assert.equal(nativeChecked.revision, (await fieldDraft()).revision);
+    assert.deepEqual(await snapshot(), setupBeforeChecks, "The actual native-forward setup inspection cannot save or grant publication.");
     await page.getByLabel("Maximum characters", { exact: true }).fill("500");
+    await expect(page.getByRole("region", { name: "Setup draft check" })).toContainText("Draft checks passed");
     await expect(page.getByRole("button", { name: "Review saved draft", exact: true })).toBeDisabled();
+    const compareSetup = async () => {
+      await page.getByRole("button", { name: "Compare saved draft", exact: true }).click();
+      const dialog = page.getByRole("dialog", { name: "Compare business setup", exact: true });
+      await expect(dialog).toBeVisible();
+      await expect(dialog.getByRole("region", { name: "Saved draft", exact: true })).toContainText("300");
+      await expect(dialog.getByRole("region", { name: "Your changes", exact: true })).toContainText("500");
+      return dialog;
+    };
+    await (await compareSetup()).getByRole("button", { name: "Back to editing", exact: true }).click();
+    await expect(page.getByLabel("Maximum characters", { exact: true })).toHaveValue("500");
+    await (await compareSetup()).getByRole("button", { name: "Keep my changes", exact: true }).click();
+    await expect(page.getByLabel("Maximum characters", { exact: true })).toHaveValue("500");
+    await expect(page.getByRole("button", { name: "Review saved draft", exact: true })).toBeDisabled();
+    await (await compareSetup()).getByRole("button", { name: "Use saved draft", exact: true }).click();
+    await expect(page.getByLabel("Maximum characters", { exact: true })).toHaveValue("300");
+    assert.deepEqual(await snapshot(), setupBeforeChecks, "Continuous setup checks and all comparison choices must leave metadata, records, review and Audit unchanged.");
+    await page.getByLabel("Maximum characters", { exact: true }).fill("500");
+    await expect(page.getByRole("region", { name: "Setup draft check" })).toContainText("Draft checks passed");
     await page.getByRole("button", { name: "Save draft", exact: true }).click();
     await expect.poll(async () => (await fieldDraft()).revision).toBe(1);
     const editedFieldPayload = customFieldPayloadSchema.parse((await fieldDraft()).payload), editedField = editedFieldPayload.field;
@@ -382,7 +414,7 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
     await expect(fieldPreview.getByText(/They are not the complete review/)).toBeVisible();
     assert.equal(await db.studioFieldMigrationPreparation.count({ where: { ...scope, definitionId: fieldId } }), 0, "A friendly preview must not persist a review.");
     assert.equal((await fieldDraft()).revision, evolutionDraft.revision);
-    await checkVisualDocuments(base, page, { organisationId: a.id, foreignOrganisationId: b.id,
+    const documents = await checkVisualDocuments(base, page, { organisationId: a.id, foreignOrganisationId: b.id,
       orderId, orderReference: order.reference, customerName, membershipId: membership.id,
       grantedCapabilities: authorGrants, freshSession: fresh });
     // Current grants are enforced server-side. A configuration cannot turn native
@@ -416,6 +448,10 @@ export async function checkVisualPages(base: string, browser: Browser, managerSy
     if (dashboard) await checkVisualPageDashboards(base, page, { organisationId: a.id, slug: a.slug, userId: user.id,
       membershipId: membership.id, grantedCapabilities: authorGrants, foreignOrganisationId: b.id, freshSession: fresh,
       pageDefinitionId: definitionId, orderId, dashboard });
+    if (staff && documents && dashboard) await checkVisualStaffAuthoring(base, staff.page, page, {
+      staffActor: staff.actor, organisationId: a.id, foreignOrganisationId: b.id, slug: a.slug,
+      pageDefinitionId: definitionId, templateId: documents.templateId, dashboardDefinitionId: dashboard.definitionId,
+      orderId, orderReference: order.reference, customerName, freshCustomerSession: fresh });
     // Screenshots are exactly three, only in the original private release evidence
     // directory. Device canvas width and page geometry are checked, not inferred.
     await page.goto(`${base}/design-studio/${definitionId}`);

@@ -443,6 +443,17 @@ record-type resolver supports one base/one overlay with explicit replacement and
 additive requirements. This is not yet canonical type assignment, runtime-required
 coverage or published-page delivery; those2C/D integrations remain gated.
 
+### Studio metadata-only builder checks — 12 October 2026
+
+Setup and registered business dashboards share their original candidate/compiler
+and genuine selected-business authority for continuous unsaved checks and current
+saved/local comparison. They read metadata only; original Save CAS, separate saved
+review, immutable publication and activation stay authoritative. Explicit comparison
+choices alter the editor and observed baseline, never save or make a design live.
+Approved View measure source/usage navigation shares original registry preflight
+and bounded tenant dependency metadata; it runs no data provider or extra engine.
+Actual candidate/public acceptance remains distinct from source implementation.
+
 ### Studio business views — 12 October 2026
 
 Shared dashboards are immutable Studio view metadata owned by the registered

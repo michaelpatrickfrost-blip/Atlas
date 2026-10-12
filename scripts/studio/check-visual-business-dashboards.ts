@@ -130,6 +130,32 @@ export async function checkVisualBusinessDashboards(base: string, page: Page, fi
     await expect(page.getByRole("button", { name: "Review saved design", exact: true })).toBeEnabled();
     const saved = await content(); assert.equal(saved.name, savedName); assert.equal(saved.widgets[0].title, firstTitle); assert.equal(saved.widgets[0].visual, "kpi");
     await page.reload(); await expect(page.getByLabel("Dashboard name", { exact: true })).toHaveValue(savedName);
+    // Same existing fixture, no extra records: genuine current inspection and
+    // all three deliberate conflict-review choices must remain read-only.
+    const beforeComparison = await snapshot(), comparisonTitle = `Unsaved comparison ${marker}`;
+    await page.getByRole("button", { name: "Configure widget 1", exact: true }).click();
+    await inspector.getByLabel("Chart title", { exact: true }).fill(comparisonTitle);
+    await expect(page.getByRole("region", { name: "Dashboard design checks" })).toContainText("Design checked against your current business access.");
+    const compare = page.getByRole("button", { name: "Compare saved draft", exact: true });
+    const comparison = page.getByRole("dialog", { name: "Compare dashboard designs", exact: true });
+    await compare.click(); await expect(comparison).toBeVisible();
+    await expect(comparison.getByRole("region", { name: "Current saved draft", exact: true })).toContainText(firstTitle);
+    await expect(comparison.getByRole("region", { name: "Your local changes", exact: true })).toContainText(comparisonTitle);
+    await comparison.getByRole("button", { name: "Back to my design", exact: true }).click();
+    await expect(inspector.getByLabel("Chart title", { exact: true })).toHaveValue(comparisonTitle);
+    assert.deepEqual(await snapshot(), beforeComparison, "Continuous check and Back must not save, publish, Audit or mutate native records.");
+    await compare.click(); await expect(comparison).toBeVisible();
+    await comparison.getByRole("button", { name: "Keep my changes against this saved draft", exact: true }).click();
+    await expect(inspector.getByLabel("Chart title", { exact: true })).toHaveValue(comparisonTitle);
+    await expect(page.getByRole("button", { name: "Save draft", exact: true })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Review saved design", exact: true })).toBeDisabled();
+    assert.deepEqual(await snapshot(), beforeComparison, "Keep adopts only a local baseline; no automatic merge, save or publication.");
+    await compare.click(); await expect(comparison).toBeVisible();
+    await comparison.getByRole("button", { name: "Use saved draft", exact: true }).click();
+    await page.getByRole("button", { name: "Configure widget 1", exact: true }).click();
+    await expect(inspector.getByLabel("Chart title", { exact: true })).toHaveValue(firstTitle);
+    await expect(page.getByRole("button", { name: "Review saved design", exact: true })).toBeEnabled();
+    assert.deepEqual(await snapshot(), beforeComparison, "Use saved loads the existing design locally; no new persisted effects.");
     const version1 = await live(), first = await view(); assert.equal(first.view.versionId, version1);
     assert.equal(first.content.widgets[0].title, firstTitle);
     assert.equal(first.dataByWidget[first.content.widgets[0].id].points.reduce((sum, point) => sum + point.value, 0), 1);
@@ -194,7 +220,7 @@ export async function checkVisualBusinessDashboards(base: string, page: Page, fi
     assert.deepEqual(await snapshot(), beforeDenied, "Source/tenant/authoring denials may not alter versions, Audit or native records.");
     assert.deepEqual(await db.salesOrder.findMany({ where: scope, orderBy: { id: "asc" } }), nativeBefore);
     assert.deepEqual(browserErrors, []); assert.deepEqual(failedAssets, []);
-    console.log("PASS visual business dashboards: genuine business-author native chart edit/save/dirty guard/review/live, Home/current figures, immutable version restore, stale-head clearing, ordinary Read-only customer, independent revoked Sales source and tenant/authoring denial, phone geometry. Limited registered count family; staff support selection, cross-provider snapshots and whole Phase2 completion are not inferred.");
+    console.log("PASS visual business dashboards: genuine business-author native chart edit/save/dirty guard/continuous metadata checks/visual comparison Back Keep Use with unchanged snapshots/review/live, Home/current figures, immutable version restore, stale-head clearing, ordinary Read-only customer, independent revoked Sales source and tenant/authoring denial, phone geometry. Limited registered count family; staff support selection, cross-provider snapshots and whole Phase2 completion are not inferred.");
     return { definitionId, version1, version2 };
   } finally {
     try {

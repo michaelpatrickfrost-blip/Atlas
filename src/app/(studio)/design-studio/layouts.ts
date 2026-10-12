@@ -4,9 +4,10 @@ import { pagePayloadSchema, type PagePayload } from "@/core/studio/pages/schema"
 import { compilePage } from "@/core/studio/pages/compiler";
 import { createSalesOrderPagePresets } from "@/modules/sales/services/studio-page-presets";
 import type { ContractReference } from "@/core/studio/registry/types";
+import { resolveAuthoringPageSource } from "@/core/studio/pages/definition-compiler";
 
 export async function screenLayouts(authority: FieldRuntimeAuthority, entity: ContractReference) {
-  const source = authority.registry.describePageSourceForEntity(entity).metadata;
+  const source = resolveAuthoringPageSource(authority, entity).metadata;
   const approvals = await reconstructPageApprovalsInTransaction(authority, { sourcePage: {
     id: source.id, version: source.version, schemaHash: source.schemaHash, contractHash: source.contractHash }, customFields: [] });
   if (entity.id === "sales.order") return createSalesOrderPagePresets(approvals);

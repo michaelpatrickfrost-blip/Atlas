@@ -137,6 +137,7 @@ export async function checkVisualDocuments(base: string, page: Page, fixture: Vi
     await assert.rejects(() => fixture.freshSession(fixture.foreignOrganisationId).then(session => renderTemplate(session, templateId, { sourceModule: "sales", sourceType: "order", sourceId: fixture.orderId })), /published template/);
     assert.deepEqual(await snapshot(), beforeForeign);
     console.log("PASS original document designer: protected friendly details, per-document inputs/table cells/sample+authorised actual preview, current source denial clears prior values, stale editor retention, template Audit atomicity, native generated PDF+version snapshot preserved after later edits, cross-tenant denial. No sharing/signing/email or second template engine.");
+    return { templateId };
   } finally {
     const cleanup = await Promise.allSettled([second?.close() ?? Promise.resolve(),
       db.membership.update({ where: membership, data: { grantedCapabilities: originalMembership.grantedCapabilities, deniedCapabilities: originalMembership.deniedCapabilities } })]);

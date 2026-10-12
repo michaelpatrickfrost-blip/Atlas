@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+import { withFormFeedback } from "@/core/shared/form-feedback";
 import { requireSession } from "@/core/auth/session";
 import { assertCapability } from "@/core/permissions/check";
 import { STUDIO_CAPABILITIES as CAP } from "@/core/studio/permissions";
@@ -9,6 +10,7 @@ import { createBusinessViewDraftInTransaction, saveBusinessViewDraftInTransactio
   reviewBusinessViewDraftInTransaction, publishBusinessViewDraftInTransaction,
   restoreBusinessViewVersionInTransaction, loadBusinessViewMetricsInTransaction,
   loadBusinessViewSliceInTransaction } from "@/modules/analytics/services/studio-business-view";
+import { inspectBusinessViewDraftInTransaction, compareBusinessViewDraftInTransaction } from '@/modules/analytics/services/studio-business-view-inspection';
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -30,8 +32,10 @@ export async function createBusinessDashboard(form: FormData) {
 export async function saveBusinessDashboard(business: string | undefined, input: unknown) {
   const actor = await requireSession();
   assertCapability(actor, CAP.edit);
-  const result = await withStudioAuthoringAuthority(actor, CAP.edit, selected(business), authority => saveBusinessViewDraftInTransaction(authority, input));
-  refresh(); return result;
+  return withFormFeedback(async () => {
+    const result = await withStudioAuthoringAuthority(actor, CAP.edit, selected(business), authority => saveBusinessViewDraftInTransaction(authority, input));
+    refresh(); return result;
+  });
 }
 export async function reviewBusinessDashboard(business: string | undefined, input: unknown) {
   const actor = await requireSession();
@@ -59,4 +63,17 @@ export async function loadBusinessDashboardSlice(business: string | undefined, i
   const actor = await requireSession();
   assertCapability(actor, CAP.read);
   return withStudioAuthoringAuthority(actor, CAP.read, selected(business), authority => loadBusinessViewSliceInTransaction(authority, input));
+}
+
+export async function inspectBusinessDashboard(business: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.edit);
+  const target = selected(business);
+  return withFormFeedback(() => withStudioAuthoringAuthority(actor, CAP.edit, target, authority => inspectBusinessViewDraftInTransaction(authority, input, { business: target })));
+}
+export async function compareSavedBusinessDashboard(business: string | undefined, input: unknown) {
+  const actor = await requireSession();
+  assertCapability(actor, CAP.read);
+  const target = selected(business);
+  return withFormFeedback(() => withStudioAuthoringAuthority(actor, CAP.read, target, authority => compareBusinessViewDraftInTransaction(authority, input, { business: target })));
 }

@@ -38,55 +38,61 @@ export async function readNativeDesignReferenceInTransaction(supplied: FieldRunt
   assertCapability(session, STUDIO_CAPABILITIES.read);
   const request = nativeDesignReferenceRequestSchema.parse(input);
   if (mode === 'source' && request.cursor) unavailable();
-  const source = await registry.resolvePageSourcePolicy({ session, transaction: tx }, request.sourcePage);
-  const metadata = await registry.resolve(session, request.reference);
-  if (metadata.ownerModuleId !== source.source.ownerModuleId) unavailable();
-  const policy = source.policy, entity = entityDetailsSchema.parse(source.source.details);
-  const sameApproved = (left: ContractReference, right: { id: string; version: number }) => same(left, reference(registry.describe(right.id, right.version)));
-  let approved = false, detail: string | null = null;
-  const queries = new Map<string, ContractReference>();
-  const requireQuery = (ref: { id: string; version: number }) => {
-    const query = policy.queries.find(item => item.query.id === ref.id && item.query.version === ref.version);
-    if (!query) unavailable();
-    for (const column of query.columns) if (column.capability) assertCapability(session, column.capability);
-    queries.set(`${ref.id}@${ref.version}`, reference(registry.describe(ref.id, ref.version)));
-  };
-  if (request.focus?.kind === 'field') {
-    const field = entity.fields.find(item => item.id === request.focus?.id);
-    const native = policy.nativeFields.find(item => item.id === request.focus?.id);
-    if (!field || !native || !sameApproved(request.reference, policy.entity)) unavailable();
-    if (field.capability) assertCapability(session, field.capability);
-    requireQuery(native.query); approved = true;
-    const column = policy.queries.find(item => item.query.id === native.query.id && item.query.version === native.query.version)?.columns.find(item => item.id === native.columnId);
-    if (!column) unavailable();
-    detail = field.label ?? column.label ?? friendly(field.id);
-  } else if (request.focus?.kind === 'fact') {
-    const fact = policy.facts.find(item => item.id === request.focus?.id);
-    if (!fact || !sameApproved(request.reference, fact.contract)) unavailable();
-    if (fact.capability) assertCapability(session, fact.capability);
-    const field = entity.fields.find(item => item.id === fact.id);
-    if (field?.capability) assertCapability(session, field.capability);
-    requireQuery(fact.query); approved = true;
-    detail = field?.label ?? friendly(fact.id);
-  } else if (sameApproved(request.reference, policy.entity)) approved = true;
-  else if (policy.queries.some(item => sameApproved(request.reference, item.query))) { requireQuery(request.reference); approved = true; }
-  else {
-    const command = policy.commands.find(item => sameApproved(request.reference, item.command));
-    const metric = policy.metrics.find(item => sameApproved(request.reference, item.metric));
-    const surface = policy.surfaces.find(item => sameApproved(request.reference, item.surface));
-    if (command) { if (command.previewQuery) requireQuery(command.previewQuery); approved = true; }
-    if (metric) { requireQuery(metric.query); approved = true; }
-    if (surface) { for (const query of surface.queries) requireQuery(query); approved = true; }
+  let metadata: ContractMetadata, detail: string | null = null;
+  if ('sourceView' in request) {
+    const approved = await registry.authoriseViewSourceReferenceInTransaction({ session, transaction: tx }, request.sourceView, request.reference);
+    metadata = approved.metadata;
+  } else {
+    const source = await registry.resolvePageSourcePolicy({ session, transaction: tx }, request.sourcePage);
+    metadata = await registry.resolve(session, request.reference);
+    if (metadata.ownerModuleId !== source.source.ownerModuleId) unavailable();
+    const policy = source.policy, entity = entityDetailsSchema.parse(source.source.details);
+    const sameApproved = (left: ContractReference, right: { id: string; version: number }) => same(left, reference(registry.describe(right.id, right.version)));
+    let approved = false;
+    const queries = new Map<string, ContractReference>();
+    const requireQuery = (ref: { id: string; version: number }) => {
+      const query = policy.queries.find(item => item.query.id === ref.id && item.query.version === ref.version);
+      if (!query) unavailable();
+      for (const column of query.columns) if (column.capability) assertCapability(session, column.capability);
+      queries.set(`${ref.id}@${ref.version}`, reference(registry.describe(ref.id, ref.version)));
+    };
+    if (request.focus?.kind === 'field') {
+      const field = entity.fields.find(item => item.id === request.focus?.id);
+      const native = policy.nativeFields.find(item => item.id === request.focus?.id);
+      if (!field || !native || !sameApproved(request.reference, policy.entity)) unavailable();
+      if (field.capability) assertCapability(session, field.capability);
+      requireQuery(native.query); approved = true;
+      const column = policy.queries.find(item => item.query.id === native.query.id && item.query.version === native.query.version)?.columns.find(item => item.id === native.columnId);
+      if (!column) unavailable();
+      detail = field.label ?? column.label ?? friendly(field.id);
+    } else if (request.focus?.kind === 'fact') {
+      const fact = policy.facts.find(item => item.id === request.focus?.id);
+      if (!fact || !sameApproved(request.reference, fact.contract)) unavailable();
+      if (fact.capability) assertCapability(session, fact.capability);
+      const field = entity.fields.find(item => item.id === fact.id);
+      if (field?.capability) assertCapability(session, field.capability);
+      requireQuery(fact.query); approved = true;
+      detail = field?.label ?? friendly(fact.id);
+    } else if (sameApproved(request.reference, policy.entity)) approved = true;
+    else if (policy.queries.some(item => sameApproved(request.reference, item.query))) { requireQuery(request.reference); approved = true; }
+    else {
+      const command = policy.commands.find(item => sameApproved(request.reference, item.command));
+      const metric = policy.metrics.find(item => sameApproved(request.reference, item.metric));
+      const surface = policy.surfaces.find(item => sameApproved(request.reference, item.surface));
+      if (command) { if (command.previewQuery) requireQuery(command.previewQuery); approved = true; }
+      if (metric) { requireQuery(metric.query); approved = true; }
+      if (surface) { for (const query of surface.queries) requireQuery(query); approved = true; }
+    }
+    if (!approved) unavailable();
+    for (const query of queries.values()) await registry.resolve(session, query);
   }
-  if (!approved) unavailable();
-  for (const query of queries.values()) await registry.resolve(session, query);
   const categories: Partial<Record<ContractMetadata['kind'], string>> = {
     entity: 'Native record', query: 'Approved record query', command: 'Approved app action', decisionFact: 'Approved read-only fact',
     metric: 'Approved measure', surface: 'Native app area',
   };
   const category = categories[metadata.kind]; if (!category) unavailable();
-  const links = nativeDesignReferenceLinks({ sourcePage: request.sourcePage, reference: request.reference,
-    ...(request.focus ? { focus: request.focus } : {}) }, navigation);
+  const links = nativeDesignReferenceLinks('sourceView' in request ? { sourceView: request.sourceView, reference: request.reference }
+    : { sourcePage: request.sourcePage, reference: request.reference, ...(request.focus ? { focus: request.focus } : {}) }, navigation);
   const model: NativeReferenceModel = { name: metadata.label, owner: friendly(metadata.ownerModuleId), version: metadata.version,
     category, detail, ...links, usage: mode === 'usage', usages: [], nextHref: null };
   if (mode === 'source') return model;
@@ -113,7 +119,8 @@ export async function readNativeDesignReferenceInTransaction(supplied: FieldRunt
     versions.add(version.id);
   }
   const snapshot = checksum({ organisationId: session.organisationId, actor: session.userId, membership: session.membershipId,
-    request: { sourcePage: request.sourcePage, reference: request.reference, ...(request.focus ? { focus: request.focus } : {}) },
+    request: 'sourceView' in request ? { sourceView: request.sourceView, reference: request.reference }
+      : { sourcePage: request.sourcePage, reference: request.reference, ...(request.focus ? { focus: request.focus } : {}) },
     edges: edges.map(edge => ({ ...edge, version: { ...edge.version,
       definition: { ...edge.version.definition, retiredAt: edge.version.definition.retiredAt?.toISOString() ?? null } } })) });
   let start = 0;

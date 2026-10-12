@@ -270,6 +270,47 @@ export class CapabilityRegistry {
   async authoriseViewReadInTransaction(context: RecordContext, reference: ContractReference, content: unknown) {
     return this.compileViewSource(context, reference, content, "read");
   }
+  /** One explicitly declared View source's original complete native read
+   * preflight, for metadata navigation. No compiler callback, content, business
+   * query or provider runs. Current incompatible/disabled versions fail closed. */
+  async authoriseViewSourceReferenceInTransaction(context: RecordContext, owner: ContractReference, selected: ContractReference) {
+    this.genuinePageContext(context);
+    const resolved = this.describeViewSource(owner);
+    await this.allowed(context.session, resolved.metadata); await this.allowed(context.session, resolved.currentMetadata);
+    for (const moduleId of resolved.policy.requiredModules) if (!await this.available(context.session, moduleId))
+      throw new Error(`DEPENDENCY_BROKEN: module ${moduleId} unavailable`);
+    if (!resolved.policy.sources.some(source => source.id === selected.id && source.version === selected.version))
+      throw new Error("DEPENDENCY_BROKEN: this View does not approve the selected measure.");
+    const approved = await this.approveViewMetricSource(context, selected, "read", metadata => this.allowed(context.session, metadata));
+    if (checksum(approved.source) !== checksum(selected)) throw new Error("DEPENDENCY_BROKEN: the registered measure changed.");
+    return approved;
+  }
+  private async approveViewMetricSource(context: RecordContext, selected: { id: string; version: number },
+    mode: "authoring" | "read" | "metadata", check: (metadata: ContractMetadata) => Promise<void>): Promise<ViewSourceApproval> {
+    const source = this.describe(selected.id, selected.version), policy = registeredMetricSourceSchema.parse(source.details.analyticsSource);
+    const currentSource = [...this.items.values()].filter(item => item.metadata.id === source.id).sort((a, b) => b.metadata.version - a.metadata.version)[0]?.metadata;
+    const query = this.describe(policy.query.id, policy.query.version);
+    const currentQuery = [...this.items.values()].filter(item => item.metadata.id === query.id).sort((a, b) => b.metadata.version - a.metadata.version)[0]?.metadata;
+    if (source.kind !== "metric" || source.id !== `${policy.providerId}.metric` || !policy.providerId.startsWith(`${source.ownerModuleId}.`)
+      || source.capability !== policy.requiredCapabilities[0] || source.classification !== policy.classification
+      || checksum(source.details.references) !== checksum([query.id]) || query.kind !== "query" || query.ownerModuleId !== source.ownerModuleId
+      || query.capability !== source.capability || query.classification !== policy.classification || !policy.requiredModules.includes(source.ownerModuleId)
+      || query.details.pagination !== "none" || query.details.maxCardinality !== policy.maxCardinality || query.details.costClass !== policy.costClass
+      || query.details.transaction !== undefined || checksum(query.inputSchema) !== checksum(z.toJSONSchema(registeredMetricInputSchema(policy), { io: "input" }))
+      || checksum(query.outputSchema) !== checksum(source.outputSchema)
+      || source.schemaHash !== checksum(source.outputSchema) || query.schemaHash !== checksum({ inputSchema: query.inputSchema, outputSchema: query.outputSchema })
+      || !currentSource || currentSource.kind !== source.kind || currentSource.capability !== source.capability
+      || currentSource.schemaHash !== source.schemaHash || checksum(currentSource.details) !== checksum(source.details)
+      || !currentQuery || currentQuery.kind !== query.kind || currentQuery.capability !== query.capability
+      || currentQuery.schemaHash !== query.schemaHash || checksum(currentQuery.details) !== checksum(query.details))
+      throw new Error("DEPENDENCY_BROKEN: the registered metric/query approval changed.");
+    for (const contract of [source, currentSource, query, currentQuery]) await check(contract);
+    if (mode !== "metadata") for (const capability of policy.requiredCapabilities) assertCapability(context.session, capability);
+    for (const moduleId of policy.requiredModules) if (!await this.available(context.session, moduleId))
+      throw new Error(`DEPENDENCY_BROKEN: module ${moduleId} unavailable`);
+    const exact = (metadata: ContractMetadata) => ({ id: metadata.id, version: metadata.version, schemaHash: metadata.schemaHash, contractHash: metadata.contractHash });
+    return { source: exact(source), metadata: source, query: exact(query), queryMetadata: query, policy };
+  }
   private async compileViewSource(context: RecordContext, reference: ContractReference, content: unknown, mode: "authoring" | "read" | "metadata") {
     this.genuinePageContext(context);
     const metadataAvailable = async (metadata: ContractMetadata) => {
@@ -290,30 +331,10 @@ export class CapabilityRegistry {
     const approvals: ViewSourceApproval[] = [], dependencies = new Map<string, ContractMetadata>();
     dependencies.set(`${resolved.metadata.id}@${resolved.metadata.version}`, resolved.metadata);
     for (const selected of prepared.sources) {
-      const source = this.describe(selected.id, selected.version), policy = registeredMetricSourceSchema.parse(source.details.analyticsSource);
-      const currentSource = [...this.items.values()].filter(item => item.metadata.id === source.id).sort((a, b) => b.metadata.version - a.metadata.version)[0]?.metadata;
-      const query = this.describe(policy.query.id, policy.query.version);
-      const currentQuery = [...this.items.values()].filter(item => item.metadata.id === query.id).sort((a, b) => b.metadata.version - a.metadata.version)[0]?.metadata;
-      if (source.kind !== "metric" || source.id !== `${policy.providerId}.metric` || !policy.providerId.startsWith(`${source.ownerModuleId}.`)
-        || source.capability !== policy.requiredCapabilities[0] || source.classification !== policy.classification
-        || checksum(source.details.references) !== checksum([query.id]) || query.kind !== "query" || query.ownerModuleId !== source.ownerModuleId
-        || query.capability !== source.capability || query.classification !== policy.classification || !policy.requiredModules.includes(source.ownerModuleId)
-        || query.details.pagination !== "none" || query.details.maxCardinality !== policy.maxCardinality || query.details.costClass !== policy.costClass
-        || query.details.transaction !== undefined || checksum(query.inputSchema) !== checksum(z.toJSONSchema(registeredMetricInputSchema(policy), { io: "input" }))
-        || checksum(query.outputSchema) !== checksum(source.outputSchema)
-        || source.schemaHash !== checksum(source.outputSchema) || query.schemaHash !== checksum({ inputSchema: query.inputSchema, outputSchema: query.outputSchema })
-        || !currentSource || currentSource.kind !== source.kind || currentSource.capability !== source.capability
-        || currentSource.schemaHash !== source.schemaHash || checksum(currentSource.details) !== checksum(source.details)
-        || !currentQuery || currentQuery.kind !== query.kind || currentQuery.capability !== query.capability
-        || currentQuery.schemaHash !== query.schemaHash || checksum(currentQuery.details) !== checksum(query.details))
-        throw new Error("DEPENDENCY_BROKEN: the registered metric/query approval changed.");
-      for (const contract of [source, currentSource, query, currentQuery]) await check(contract);
-      if (mode !== "metadata") for (const capability of policy.requiredCapabilities) assertCapability(context.session, capability);
-      for (const moduleId of policy.requiredModules) if (!await this.available(context.session, moduleId))
-        throw new Error(`DEPENDENCY_BROKEN: module ${moduleId} unavailable`);
-      const exact = (metadata: ContractMetadata) => ({ id: metadata.id, version: metadata.version, schemaHash: metadata.schemaHash, contractHash: metadata.contractHash });
-      approvals.push({ source: exact(source), metadata: source, query: exact(query), queryMetadata: query, policy });
-      dependencies.set(`${source.id}@${source.version}`, source); dependencies.set(`${query.id}@${query.version}`, query);
+      const approval = await this.approveViewMetricSource(context, selected, mode, check);
+      approvals.push(approval);
+      dependencies.set(`${approval.metadata.id}@${approval.metadata.version}`, approval.metadata);
+      dependencies.set(`${approval.queryMetadata.id}@${approval.queryMetadata.version}`, approval.queryMetadata);
     }
     const compiled = compiledOwnerViewSchema.parse(resolved.callbacks.compile(prepared.content, freezeJson(approvals)));
     if (new Set(compiled.requests.map(request => request.widgetId)).size !== compiled.requests.length

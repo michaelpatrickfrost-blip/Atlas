@@ -1,5 +1,17 @@
 # Visual builders and easy setup
 
+12 October latest closure: initial business setup now shares original metadata-only
+continuous draft checks and friendly saved/local comparison. Back keeps input/head,
+Keep deliberately adopts the observed baseline, Use reloads saved settings. Original
+Save/Review/Live remains authoritative; comparison is not publication. Sales gallery
+uses the original compatible source resolver rather than bypassing the paired reader.
+Same original field fixture asserts all choices leave metadata/records/Audit unchanged.
+The original staff visual checker now launches selected-business Studio from Admin,
+edits actual screens/templates/dashboard and checks ordinary customer publication,
+foreign selection/current affiliation denial and unchanged QA login/native data.
+These journeys are IMPLEMENTED source, actual compatible release evidence pending.
+No extra engine/copy/database/dump. Dashboard parallel closure is being integrated.
+
 12 October source checkpoint: initial scalar additional details expose understandable
 search and duplicate-value controls; published settings remain under the original
 reviewed migration rules. Customer Tickets offers typed additional-detail search

@@ -1,4 +1,49 @@
 // Generated allowlist: public calls still enforce their own server capabilities.
+import {openVisualStudio as studioForwardAction0} from "@/app/(studio)/design-studio/actions";
+import {createVisualScreen as studioForwardAction1} from "@/app/(studio)/design-studio/actions";
+import {saveVisualScreen as studioForwardAction2} from "@/app/(studio)/design-studio/actions";
+import {reviewVisualScreen as studioForwardAction3} from "@/app/(studio)/design-studio/actions";
+import {publishVisualScreen as studioForwardAction4} from "@/app/(studio)/design-studio/actions";
+import {restoreVisualScreen as studioForwardAction5} from "@/app/(studio)/design-studio/actions";
+import {previewVisualScreen as studioForwardAction6} from "@/app/(studio)/design-studio/actions";
+import {chooseVisualScreenSample as studioForwardAction7} from "@/app/(studio)/design-studio/actions";
+import {compareVisualScreen as studioForwardAction8} from "@/app/(studio)/design-studio/actions";
+import {createBusinessSetup as studioForwardAction9} from "@/app/(studio)/design-studio/setup/actions";
+import {saveBusinessSetup as studioForwardAction10} from "@/app/(studio)/design-studio/setup/actions";
+import {reviewBusinessSetup as studioForwardAction11} from "@/app/(studio)/design-studio/setup/actions";
+import {goLiveBusinessSetup as studioForwardAction12} from "@/app/(studio)/design-studio/setup/actions";
+import {restoreBusinessSetup as studioForwardAction13} from "@/app/(studio)/design-studio/setup/actions";
+import {saveFieldChange as studioForwardAction14} from "@/app/(studio)/design-studio/setup/actions";
+import {previewFieldChange as studioForwardAction15} from "@/app/(studio)/design-studio/setup/actions";
+import {saveFieldRequirementChange as studioForwardAction16} from "@/app/(studio)/design-studio/setup/actions";
+import {prepareFieldChange as studioForwardAction17} from "@/app/(studio)/design-studio/setup/actions";
+import {collectFieldChange as studioForwardAction18} from "@/app/(studio)/design-studio/setup/actions";
+import {sealFieldChange as studioForwardAction19} from "@/app/(studio)/design-studio/setup/actions";
+import {readFieldChangeStatus as studioForwardAction20} from "@/app/(studio)/design-studio/setup/actions";
+import {readFieldChangeRecovery as studioForwardAction21} from "@/app/(studio)/design-studio/setup/actions";
+import {publishFieldChange as studioForwardAction22} from "@/app/(studio)/design-studio/setup/actions";
+import {startFieldChange as studioForwardAction23} from "@/app/(studio)/design-studio/setup/actions";
+import {executeFieldChange as studioForwardAction24} from "@/app/(studio)/design-studio/setup/actions";
+import {applyFieldChange as studioForwardAction25} from "@/app/(studio)/design-studio/setup/actions";
+import {cancelFieldChange as studioForwardAction26} from "@/app/(studio)/design-studio/setup/actions";
+import {rollbackFieldChange as studioForwardAction27} from "@/app/(studio)/design-studio/setup/actions";
+import {finalizeFieldChange as studioForwardAction28} from "@/app/(studio)/design-studio/setup/actions";
+import {createBusinessDashboard as studioForwardAction29} from "@/app/(studio)/design-studio/dashboards/actions";
+import {saveBusinessDashboard as studioForwardAction30} from "@/app/(studio)/design-studio/dashboards/actions";
+import {reviewBusinessDashboard as studioForwardAction31} from "@/app/(studio)/design-studio/dashboards/actions";
+import {publishBusinessDashboard as studioForwardAction32} from "@/app/(studio)/design-studio/dashboards/actions";
+import {restoreBusinessDashboard as studioForwardAction33} from "@/app/(studio)/design-studio/dashboards/actions";
+import {loadBusinessDashboardMetrics as studioForwardAction34} from "@/app/(studio)/design-studio/dashboards/actions";
+import {loadBusinessDashboardSlice as studioForwardAction35} from "@/app/(studio)/design-studio/dashboards/actions";
+import {saveStudioDocument as studioForwardAction36} from "@/app/(studio)/design-studio/documents/actions";
+import {loadBusinessScreenRecords as studioForwardAction37} from "@/app/(app)/screens/actions";
+import {loadBusinessScreen as studioForwardAction38} from "@/app/(app)/screens/actions";
+import {loadRecordBusinessScreen as studioForwardAction39} from "@/app/(app)/screens/actions";
+import {openBusinessScreenRecord as studioForwardAction40} from "@/app/(app)/screens/actions";
+import {executeBusinessScreenButton as studioForwardAction41} from "@/app/(app)/screens/actions";
+import {refreshPublishedBusinessDashboard as studioForwardAction42} from "@/app/(app)/business-dashboards/actions";
+import {inspectBusinessDashboard,compareSavedBusinessDashboard} from "@/app/(studio)/design-studio/dashboards/actions";
+import {inspectBusinessSetup,compareSavedBusinessSetup} from "@/app/(studio)/design-studio/setup/actions";
 import {inspectVisualScreen} from "@/app/(studio)/design-studio/actions";
 import {compareSavedVisualScreen} from "@/app/(studio)/design-studio/draft-comparison-actions";
 import {withAdminActionAliases} from "./action-aliases";
@@ -937,6 +982,53 @@ import {savePlace as action926} from "@/modules/teams/services/commands";
 import {saveMoment as action927} from "@/modules/teams/services/commands";
 import {removeMoment as action928} from "@/modules/teams/services/commands";
 export const DATA_ACTIONS:Record<string,(...args:never[])=>Promise<unknown>>=withAdminActionAliases({
+"src/app/(studio)/design-studio/actions:openVisualStudio":studioForwardAction0 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/actions:createVisualScreen":studioForwardAction1 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/actions:saveVisualScreen":studioForwardAction2 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/actions:reviewVisualScreen":studioForwardAction3 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/actions:publishVisualScreen":studioForwardAction4 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/actions:restoreVisualScreen":studioForwardAction5 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/actions:previewVisualScreen":studioForwardAction6 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/actions:chooseVisualScreenSample":studioForwardAction7 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/actions:compareVisualScreen":studioForwardAction8 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:createBusinessSetup":studioForwardAction9 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:saveBusinessSetup":studioForwardAction10 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:reviewBusinessSetup":studioForwardAction11 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:goLiveBusinessSetup":studioForwardAction12 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:restoreBusinessSetup":studioForwardAction13 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:saveFieldChange":studioForwardAction14 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:previewFieldChange":studioForwardAction15 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:saveFieldRequirementChange":studioForwardAction16 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:prepareFieldChange":studioForwardAction17 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:collectFieldChange":studioForwardAction18 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:sealFieldChange":studioForwardAction19 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:readFieldChangeStatus":studioForwardAction20 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:readFieldChangeRecovery":studioForwardAction21 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:publishFieldChange":studioForwardAction22 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:startFieldChange":studioForwardAction23 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:executeFieldChange":studioForwardAction24 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:applyFieldChange":studioForwardAction25 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:cancelFieldChange":studioForwardAction26 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:rollbackFieldChange":studioForwardAction27 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:finalizeFieldChange":studioForwardAction28 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/dashboards/actions:createBusinessDashboard":studioForwardAction29 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/dashboards/actions:saveBusinessDashboard":studioForwardAction30 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/dashboards/actions:reviewBusinessDashboard":studioForwardAction31 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/dashboards/actions:publishBusinessDashboard":studioForwardAction32 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/dashboards/actions:restoreBusinessDashboard":studioForwardAction33 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/dashboards/actions:loadBusinessDashboardMetrics":studioForwardAction34 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/dashboards/actions:loadBusinessDashboardSlice":studioForwardAction35 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/documents/actions:saveStudioDocument":studioForwardAction36 as (...args:never[])=>Promise<unknown>,
+"src/app/(app)/screens/actions:loadBusinessScreenRecords":studioForwardAction37 as (...args:never[])=>Promise<unknown>,
+"src/app/(app)/screens/actions:loadBusinessScreen":studioForwardAction38 as (...args:never[])=>Promise<unknown>,
+"src/app/(app)/screens/actions:loadRecordBusinessScreen":studioForwardAction39 as (...args:never[])=>Promise<unknown>,
+"src/app/(app)/screens/actions:openBusinessScreenRecord":studioForwardAction40 as (...args:never[])=>Promise<unknown>,
+"src/app/(app)/screens/actions:executeBusinessScreenButton":studioForwardAction41 as (...args:never[])=>Promise<unknown>,
+"src/app/(app)/business-dashboards/actions:refreshPublishedBusinessDashboard":studioForwardAction42 as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/dashboards/actions:inspectBusinessDashboard":inspectBusinessDashboard as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/dashboards/actions:compareSavedBusinessDashboard":compareSavedBusinessDashboard as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:inspectBusinessSetup":inspectBusinessSetup as (...args:never[])=>Promise<unknown>,
+"src/app/(studio)/design-studio/setup/actions:compareSavedBusinessSetup":compareSavedBusinessSetup as (...args:never[])=>Promise<unknown>,
 "src/app/(studio)/design-studio/actions:inspectVisualScreen":inspectVisualScreen as (...args:never[])=>Promise<unknown>,
 "src/app/(studio)/design-studio/draft-comparison-actions:compareSavedVisualScreen":compareSavedVisualScreen as (...args:never[])=>Promise<unknown>,
 "src/core/service-work/field-search-actions:findTicketAdditionalDetailReferences":findTicketAdditionalDetailReferences as (...args:never[])=>Promise<unknown>,

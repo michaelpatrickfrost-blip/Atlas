@@ -1,5 +1,6 @@
 "use client";
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -56,6 +57,8 @@ import { GoalCompare } from "@/modules/kpis/components/goal-compare";
 import type { GoalMarker } from "@/modules/kpis/services/workspace";
 import { TileChart, MiniVisual, palettes, visualOptions } from "./charts";
 import styles from "./studio.module.css";
+import { BusinessDraftFeedback, type BusinessDraftFeedbackControls } from './business-draft-feedback';
+import type { BusinessMeasureReference, BusinessViewComparison } from '../services/business-view-inspection-contract';
 import { ChartExplorer, DashboardIllustration } from "./explorer";
 import {
   applyDashboardLook,
@@ -105,6 +108,11 @@ export type BusinessDraftControls = {
     revision: number;
   }>;
   onDirtyChange?(dirty: boolean): void;
+  definitionRevision?: number;
+  measureReferences?: BusinessMeasureReference[];
+  inspect?: BusinessDraftFeedbackControls['inspect'];
+  compareSavedDraft?: BusinessDraftFeedbackControls['compareSavedDraft'];
+  onSavedHeadChange?(head: { revision: number; definitionRevision: number; activeVersionId: string | null }): void;
 };
 const emptyFilters: BoardFilters = { from: "", to: "", search: "" };
 const colours = Object.keys(palettes) as NonNullable<StudioWidget["color"]>[];
@@ -209,6 +217,26 @@ export function Studio({
   const [loadedKey, setLoadedKey] = useState("");
   const onDirtyChange = businessDraft?.onDirtyChange;
   useEffect(() => { onDirtyChange?.(dirty); }, [dirty, onDirtyChange]);
+  const [businessHead, setBusinessHead] = useState({ revision: businessDraft?.revision ?? 0, definitionRevision: businessDraft?.definitionRevision ?? 0 });
+  const [measureReferences, setMeasureReferences] = useState(businessDraft?.measureReferences ?? []);
+  const [designValid, setDesignValid] = useState(false);
+  const continuous = businessDraft?.inspect && businessDraft.compareSavedDraft && businessDraft.definitionRevision !== undefined;
+  const replaceReferences = useCallback((value: BusinessMeasureReference[]) => setMeasureReferences(value), []);
+  const setValidation = useCallback((valid: boolean) => setDesignValid(valid), []);
+  function adoptComparison(value: BusinessViewComparison, mode: 'keep' | 'saved') {
+    setBusinessHead({ revision: value.revision, definitionRevision: value.definitionRevision });
+    setMeasureReferences(value.measures); setHistory([]); setFuture([]);
+    if (mode === 'saved') { setBoard(value.saved); setFocused(null); setDirty(false); }
+    else setDirty(true);
+    setDesignValid(true);
+    businessDraft?.onSavedHeadChange?.({ revision: value.revision, definitionRevision: value.definitionRevision, activeVersionId: value.activeVersionId });
+    setMessage(mode === 'saved' ? 'Saved design loaded. No changes have been saved or published.' : 'Your changes are kept against the reviewed saved draft. Save when you are ready.');
+  }
+  function measureLinks(id: string) {
+    const item = measureReferences.find(reference => reference.id === id);
+    if (!item || ![item.sourceHref, item.whereUsedHref].every(href => href.startsWith('/design-studio/capabilities/') && !href.includes('\\'))) return null;
+    return <div className="mt-2 flex flex-wrap gap-3 text-xs text-blue-600"><Link href={item.sourceHref} target="_blank" rel="noopener noreferrer">Go to source</Link><Link href={item.whereUsedHref} target="_blank" rel="noopener noreferrer">Where used</Link></div>;
+  }
   const period = board.period;
   const { metrics, updated, refreshError, refreshing } = useLiveMetrics(
     initialMetrics,
@@ -440,8 +468,8 @@ export function Studio({
       try {
         if (businessDraft) {
           if (asCopy) throw new Error("Create another business dashboard from its design library.");
-          const saved = await businessDraft.saveDraft({ ...board, revision: businessDraft.revision });
-          if (saved.definitionId !== businessDraft.definitionId || saved.revision !== businessDraft.revision + 1)
+          const saved = await businessDraft.saveDraft({ ...board, revision: businessHead.revision });
+          if (saved.definitionId !== businessDraft.definitionId || saved.revision !== businessHead.revision + 1)
             throw new Error("This saved draft changed. Your entries are still here; reopen it to compare.");
           setDirty(false);
           setMessage("Draft saved. Review it before making it live for your business.");
@@ -710,7 +738,7 @@ export function Studio({
           {canManage && !sample && (
             <Button
               variant="primary"
-              disabled={pending || !board.widgets.length}
+              disabled={pending || !board.widgets.length || (!!continuous && !designValid)}
               onClick={() => save()}
             >
               <Save size={15} />
@@ -719,6 +747,9 @@ export function Studio({
           )}
         </div>
       </header>
+      {businessDraft && continuous && <BusinessDraftFeedback content={board} references={measureReferences}
+        controls={{ definitionId: businessDraft.definitionId, ...businessHead, inspect: businessDraft.inspect!, compareSavedDraft: businessDraft.compareSavedDraft! }}
+        onReferences={replaceReferences} onValidation={setValidation} onAdopt={adoptComparison}/>}
       <div className={styles.controlShelf}>
         <div className={styles.perspectiveLabel}>
           <ChartNoAxesCombined size={17} />
@@ -1013,8 +1044,7 @@ export function Studio({
               ? metrics
                   .filter((m) => match(m.name, m.subject, m.definition))
                   .map((m) => (
-                    <button
-                      key={m.id}
+                    <div key={m.id}><button
                       className={styles.metric}
                       onClick={() => add(m)}
                     >
@@ -1028,7 +1058,7 @@ export function Studio({
                         </span>
                       </span>
                       <Plus size={17} className="shrink-0 text-blue-600" />
-                    </button>
+                    </button>{businessDraft && measureLinks(m.id)}</div>
                   ))
               : datasets
                   .filter((d) => match(d.name, d.source, d.description))
@@ -1950,6 +1980,7 @@ export function Studio({
                 <Trash2 size={15} />
               </button>
             </div>
+            {businessDraft && activeMetric && measureLinks(activeMetric.id)}
             <p className="mt-4 text-[11px] leading-5 text-slate-400">
               {activeMetric?.definition || inspectorDataset?.description}{" "}
               {active.data

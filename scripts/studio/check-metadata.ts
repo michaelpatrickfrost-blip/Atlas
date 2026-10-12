@@ -243,7 +243,10 @@ async function main() {
       ? await db.user.create({ data: { name: "Studio profile Create-only acceptance", email: `studio-check-profile-creator-${suffix}@example.test`,
         passwordHash: "!studio-acceptance-login-disabled" }, select: { id: true } }) : { id: crypto.randomUUID() };
     await checkRecordProfiles(base, storedUser.id, profileCreator.id, ids);
-    await checkVisualPages(base, browser, storedUser.id, ids);
+    // Reuse the identical original QA login after the earlier owning support
+    // check revoked its newly created Test affiliation; do not issue a token.
+    await context.addCookies([{name:"atlas_session",value:token,url:base,secure:base.startsWith("https"),httpOnly:true,sameSite:"Lax"}]);
+    await checkVisualPages(base, browser, storedUser.id, ids, { page, actor: originalStaff });
     // The helper revokes only its new Test affiliation, not the original QA session.
     await context.addCookies([{name:"atlas_session",value:token,url:base,secure:base.startsWith("https"),httpOnly:true,sameSite:"Lax"}]);
     await page.goto(`/atlas/studio/${a.id}`,{waitUntil:"networkidle"});

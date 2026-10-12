@@ -27,7 +27,7 @@ import { createAdditionalFieldDraftInTransaction, saveAdditionalFieldDraftInTran
   saveBaseProfileDraftInTransaction, createRecordTypeDraftInTransaction, saveRecordTypeDraftInTransaction, readConfigurationDraftInTransaction,
   reviewConfigurationDraftInTransaction, publishConfigurationDraftInTransaction, activateConfigurationVersionInTransaction,
   goLiveConfigurationDraftInTransaction, getSetupCatalogInTransaction, configureAdditionalFieldDraftInTransaction,
-  saveAdditionalFieldEvolutionDraftInTransaction } from "@/core/studio/authoring/configuration";
+  saveAdditionalFieldEvolutionDraftInTransaction, inspectConfigurationDraftEditInTransaction } from "@/core/studio/authoring/configuration";
 import { additionalFieldSetupSchema } from "@/core/studio/authoring/field-setup-contract";
 // Real owner metadata, field compiler/constraints, profile schemas/resolver and
 // exact generic immutable pin/edge seals. Profile compiler/SQL/fresh authority,
@@ -582,5 +582,42 @@ describe("friendly published field target settings — no migration lifecycle ef
   it("refuses unchanged settings and never creates a pointless migration for a field label edit", async () => {
     await expect(saveAdditionalFieldEvolutionDraftInTransaction(authority, request({ setup: { label: "New name", type: "integer" }, conversion: { kind: "same_type" } }))).rejects.toThrow("No conversion is needed");
     expect(m.save).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled();
+  });
+});
+
+describe("read-only unsaved setup checks and current-draft comparison", () => {
+  const input = () => ({ definitionRevision: 7, edit: { mode: "fieldPresentation", definitionId: draft.definitionId, revision: 3, label: "Our package count", help: "Enter the count" } });
+  const unchanged = () => { expect(m.save).not.toHaveBeenCalled(); expect(m.audit).not.toHaveBeenCalled(); expect(m.create).not.toHaveBeenCalled();
+    expect(m.publish).not.toHaveBeenCalled(); expect(m.activate).not.toHaveBeenCalled(); expect(m.lock).not.toHaveBeenCalled(); };
+  it("compiles current unsaved metadata without persisting validation, Audit or native writes", async () => {
+    const before = structuredClone(draft);
+    expect(await inspectConfigurationDraftEditInTransaction(authority, input())).toMatchObject({ revision: 3, definitionRevision: 7, warnings: [] });
+    expect(m.compile).toHaveBeenCalledTimes(1); expect(draft).toEqual(before); unchanged();
+  });
+  it("compares an older observation with the actual saved draft using friendly complete details", async () => {
+    const request = input(); request.edit.revision = 2; request.definitionRevision = 6;
+    const result = await inspectConfigurationDraftEditInTransaction(authority, request, true);
+    expect(result).toMatchObject({ revision: 3, definitionRevision: 7 });
+    expect(result.savedSummary).toContainEqual({ label: "Display name", value: "Count" });
+    expect(result.localSummary).toContainEqual({ label: "Display name", value: "Our package count" });
+    expect(result.changes).toContain("Display name is different in your changes.");
+    expect(JSON.stringify(result)).not.toContain(draft.definitionId); expect(m.compile).toHaveBeenCalledTimes(2); unchanged();
+  });
+  it.each(["stale", "future", "definition", "foreign", "invalid", "read", "write"])("denies %s checks while retaining all original metadata", async mode => {
+    const request = input(), before = structuredClone(draft); let a = authority;
+    if (mode === "stale") request.edit.revision = 2;
+    if (mode === "future") request.edit.revision = 4;
+    if (mode === "definition") request.definitionRevision = 8;
+    if (mode === "foreign") request.edit.definitionId = uuid(88);
+    if (mode === "invalid") request.edit.label = "";
+    if (mode === "read" || mode === "write") { const capabilities = new Set(session.capabilities); capabilities.delete(`tickets.ticket.${mode === "read" ? "read" : "manage"}`);
+      const current = { ...session, capabilities }; m.stamps.set(current, stamp); a = { ...a, session: current }; }
+    await expect(inspectConfigurationDraftEditInTransaction(a, request)).rejects.toThrow(); expect(draft).toEqual(before); unchanged();
+  });
+  it("never lets comparison bypass future observations or published structural migration rules", async () => {
+    const request = input(); request.edit.revision = 4;
+    await expect(inspectConfigurationDraftEditInTransaction(authority, request, true)).rejects.toThrow("CONFLICT");
+    await expect(inspectConfigurationDraftEditInTransaction(authority, { definitionRevision: 7, edit: { mode: "fieldSettings", definitionId: draft.definitionId,
+      revision: 3, setup: { label: "Count", type: "integer", settings: {} } } }, true)).rejects.toThrow("MIGRATION_REQUIRED"); unchanged();
   });
 });

@@ -1,14 +1,14 @@
 // @vitest-environment jsdom
 import React from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { BusinessViewDraft, PublishedBusinessView } from "@/modules/analytics/services/business-view-contract";
 const m = vi.hoisted(() => ({ refresh: vi.fn(), review: vi.fn(), publish: vi.fn(), restore: vi.fn(), save: vi.fn(),
-  metrics: vi.fn(), slice: vi.fn(), current: vi.fn(), studio: vi.fn() }));
+  metrics: vi.fn(), slice: vi.fn(), inspect: vi.fn(), compare: vi.fn(), current: vi.fn(), studio: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: m.refresh }) }));
 vi.mock("@/app/(studio)/design-studio/dashboards/actions", () => ({ saveBusinessDashboard: m.save,
   reviewBusinessDashboard: m.review, publishBusinessDashboard: m.publish, restoreBusinessDashboard: m.restore,
-  loadBusinessDashboardMetrics: m.metrics, loadBusinessDashboardSlice: m.slice }));
+  loadBusinessDashboardMetrics: m.metrics, loadBusinessDashboardSlice: m.slice, inspectBusinessDashboard: m.inspect, compareSavedBusinessDashboard: m.compare }));
 vi.mock("@/app/(app)/business-dashboards/actions", () => ({ refreshPublishedBusinessDashboard: m.current }));
 vi.mock("@/modules/analytics/components/studio", () => ({ Studio: (props: { businessDraft: { onDirtyChange(value: boolean): void } }) => {
   m.studio(props); return <button onClick={() => props.businessDraft.onDirtyChange(true)}>Change design</button>;
@@ -23,7 +23,7 @@ const draft: BusinessViewDraft = { definitionId: id, name: "Overview", updatedAt
   definitionRevision: 2, activeVersionId: version, content, warnings: [], versions: [{ id: version, version: 1, publishedAt: "2026-10-12T00:00:00.000Z" }] };
 const live: PublishedBusinessView = { definitionId: id, name: "Overview", definitionRevision: 2, content,
   view: { versionId: version, version: 1, checksum: hash }, dataByWidget: {} };
-beforeEach(() => { vi.resetAllMocks(); m.review.mockResolvedValue({ warnings: [] }); m.current.mockResolvedValue(live); });
+beforeEach(() => { vi.resetAllMocks(); m.save.mockResolvedValue({ definitionId: id, revision: 4 }); m.review.mockResolvedValue({ warnings: [] }); m.current.mockResolvedValue(live); });
 afterEach(cleanup);
 it("binds all native loaders and draft saving to the selected business and refuses record-data fallback", async () => {
   render(<BusinessDashboardEditor draft={draft} metrics={[]} company="Selected business" business="selected" canEdit canPublish/>);
@@ -64,4 +64,29 @@ it.each(["denial", "different head"])("clears displayed customer figures after %
   fireEvent.click(screen.getByRole("button", { name: "Refresh figures" })); await screen.findByRole("alert");
   expect(screen.queryByText("Charts for Overview")).toBeNull();
   expect(m.current).toHaveBeenCalledWith({ definitionId: id, expectedHead: { versionId: version, definitionRevision: 2, checksum: hash } });
+});
+
+it("explicit comparison adoption invalidates prior review and uses actual adopted heads for subsequent review/publication", async () => {
+  render(<BusinessDashboardEditor draft={draft} metrics={[]} company="Business" canEdit canPublish/>);
+  fireEvent.click(screen.getByRole("button", { name: "Review saved design" }));
+  await waitFor(() => expect(screen.getByRole("button", { name: "Go live for this business" }).hasAttribute("disabled")).toBe(false));
+  act(() => m.studio.mock.calls.at(-1)![0].businessDraft.onSavedHeadChange({ revision: 4, definitionRevision: 8, activeVersionId: version }));
+  expect(screen.getByRole("button", { name: "Go live for this business" }).hasAttribute("disabled")).toBe(true);
+  fireEvent.click(screen.getByRole("button", { name: "Review saved design" }));
+  await waitFor(() => expect(m.review).toHaveBeenLastCalledWith(undefined, { definitionId: id, revision: 4 }));
+  await waitFor(() => expect(screen.getByRole("button", { name: "Go live for this business" }).hasAttribute("disabled")).toBe(false));
+  fireEvent.click(screen.getByRole("button", { name: "Go live for this business" }));
+  await waitFor(() => expect(m.publish).toHaveBeenCalledWith(undefined, { definitionId: id, revision: 4, acknowledgeWarnings: false }));
+});
+
+it("unwraps original explicit expected-error feedback for production metadata checks/comparison/save without losing the local editor", async () => {
+  render(<BusinessDashboardEditor draft={draft} metrics={[]} company="Business" business="selected" canEdit canPublish/>);
+  const controls = m.studio.mock.calls.at(-1)![0].businessDraft;
+  m.inspect.mockResolvedValue({ error: "FORBIDDEN: current source access revoked" });
+  await expect(controls.inspect({ content, revision: 3, definitionRevision: 2 })).rejects.toThrow("FORBIDDEN");
+  m.compare.mockResolvedValue({ error: "CONFLICT: saved head changed" });
+  await expect(controls.compareSavedDraft({ content, revision: 3, definitionRevision: 2 })).rejects.toThrow("CONFLICT");
+  m.save.mockResolvedValue({ error: "CONFLICT: newer saved draft" });
+  await expect(controls.saveDraft({ ...content, revision: 3 })).rejects.toThrow("CONFLICT");
+  expect(m.refresh).not.toHaveBeenCalled(); expect(m.publish).not.toHaveBeenCalled();
 });

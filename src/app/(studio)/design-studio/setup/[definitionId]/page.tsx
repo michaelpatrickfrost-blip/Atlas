@@ -9,7 +9,7 @@ import { versionedFieldPayloadSchema } from "@/core/studio/fields/required-contr
 import { entityProfilePayloadSchema, recordTypePayloadSchema } from "@/core/studio/record-types/schema";
 import { ActionForm } from "@/components/ui/action-form";
 import { RecordSetupChoices, SetupIdentity, SetupName } from "../choices";
-import { saveBusinessSetup, reviewBusinessSetup, goLiveBusinessSetup, restoreBusinessSetup } from "../actions";
+import { saveBusinessSetup, reviewBusinessSetup, goLiveBusinessSetup, restoreBusinessSetup, inspectBusinessSetup, compareSavedBusinessSetup } from "../actions";
 import { AdditionalFieldSetup } from "@/components/studio/additional-field-setup";
 import { SetupDraftGuard } from "../draft-guard";
 
@@ -42,7 +42,7 @@ export default async function SetupEditor({ params, searchParams }: {
     <header><p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">{title} · {setup.name}</p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight">{draft.name}</h1><p className="mt-3 text-sm text-slate-500">{draft.activeVersionId ? "Your live setup is in use. Changes below stay in the draft until you make them live." : "This draft is saved for your business. Review it before making it live."}</p>
     </header>
-    <SetupDraftGuard key={`${draft.id}:${draft.revision}`} editor={<section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8"><h2 className="mb-5 text-xl font-semibold">Design the details</h2>
+    <SetupDraftGuard key={`${draft.id}:${draft.revision}`} definitionRevision={draft.definitionRevision} inspect={draft.presentationEditable ? inspectBusinessSetup : undefined} compare={draft.presentationEditable ? compareSavedBusinessSetup : undefined} editor={<section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8"><h2 className="mb-5 text-xl font-semibold">Design the details</h2>
         {field && draft.activeVersionId && <Link href={`/design-studio/setup/${draft.id}/change${suffix}`} className="mb-6 block rounded-2xl border border-blue-200 bg-blue-50 p-5 text-sm text-blue-900"><strong>Change settings and preview existing values</strong><span className="mt-2 block leading-6">Adjust the kind of detail, limits or choices using the reviewed field-change workflow.</span></Link>}
         {field && draft.activeVersionId && <Link href={`/design-studio/setup/${draft.id}/requirements${suffix}`} className="mb-6 block rounded-2xl border border-violet-200 bg-violet-50 p-5 text-sm text-violet-900"><strong>Choose when this detail is required</strong><span className="mt-2 block leading-6">Use simple conditions, then review existing records before making your rules live.</span></Link>}
         {draft.presentationEditable ? <ActionForm key={draft.revision} action={saveBusinessSetup} label="Save draft">

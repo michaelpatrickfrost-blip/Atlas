@@ -7,7 +7,7 @@ import { z } from "zod";
 import { db } from "../../src/core/db/client";
 import { sessionAuthorityStamp, type Session } from "../../src/core/auth/session";
 import { STUDIO_CAPABILITIES } from "../../src/core/studio/permissions";
-import { STUDIO_PAGE_FEATURE, STUDIO_PROFILE_FEATURE, STUDIO_RECORD_TYPE_FORM_FEATURE, readStudioRuntimeFeatureEvidence } from "../../src/core/studio/runtime-features";
+import { STUDIO_PAGE_FEATURE, STUDIO_PROFILE_FEATURE, STUDIO_RECORD_TYPE_FORM_FEATURE, STUDIO_TICKET_PANEL_FEATURE, readStudioRuntimeFeatureEvidence } from "../../src/core/studio/runtime-features";
 import { verifyStudioRuntimeFeaturePair } from "./runtime-feature-probe";
 import { pagePayloadSchema } from "../../src/core/studio/pages/schema";
 import { entityProfilePayloadSchema, recordTypePayloadSchema } from "../../src/core/studio/record-types/schema";
@@ -22,6 +22,7 @@ import { withStudioAuthoringAuthority } from "../../src/core/studio/authoring/co
 import { createPageDraftInTransaction, savePageDraftInTransaction } from "../../src/core/studio/authoring/pages";
 import { designReferenceSchema, type DesignReference } from "../../src/core/studio/authoring/reference-links";
 import { readDesignReferenceMetadataInTransaction } from "../../src/core/studio/authoring/reference-navigation";
+import { ticketPanelKinds, ticketPanelLabels, ticketPanelSurface, parseTicketPanel } from "../../src/core/service-work/page-panel-contract";
 import { studioRegistry } from "../../src/core/studio/registry/runtime";
 
 export type VisualRecordLayoutFixture = {
@@ -341,6 +342,79 @@ export async function checkVisualRecordLayouts(base: string, page: Page, fixture
       }
       assert.deepEqual(await snapshot(), beforeDenied);
       await db.membership.update({ where: { id: fixture.membershipId, ...scope }, data: { grantedCapabilities: membership.grantedCapabilities } });
+    }
+    // Extend this same retained native Ticket and its existing specialised Page
+    // only after the original form/profile/permission assertions. An unsupported
+    // bridge still runs those assertions; it must not claim panel acceptance.
+    if (!evidence.features.includes(STUDIO_TICKET_PANEL_FEATURE)) {
+      console.log("DEFERRED visual Ticket native panels: the actual paired reader is not enabled; existing record-layout checks retained.");
+    } else {
+      await page.goto(`${base}/design-studio/${specialised.id}`);
+      const previousPanelDraft = await draft(specialised.id), previousPanelPayload = pagePayloadSchema.parse(previousPanelDraft.payload);
+      for (const kind of ticketPanelKinds)
+        await page.getByRole("button", { name: `Add ${ticketPanelLabels[kind]}`, exact: true }).click();
+      await expect(page.getByRole("region", { name: "Design canvas" }).getByText("Reopened 0 times", { exact: false })).toHaveCount(0);
+      await page.getByRole("button", { name: "Save draft", exact: true }).click();
+      await expect.poll(async () => (await draft(specialised.id)).revision).toBe(previousPanelDraft.revision + 1);
+      const panelPayload = pagePayloadSchema.parse((await draft(specialised.id)).payload);
+      for (const node of previousPanelPayload.sections.flatMap(section => section.components))
+        assert(panelPayload.sections.some(section => section.components.some(actual => checksum(actual) === checksum(node))), "Adding panels must preserve every prior component.");
+      for (const kind of ticketPanelKinds)
+        assert(panelPayload.sections.flatMap(section => section.components).some(node => node.type === "surface" && node.surface.id === ticketPanelSurface(kind).id && node.surface.version === 1));
+      await publishPage();
+      await expect(page.getByRole("button", { name: "Recheck saved draft", exact: true })).toBeEnabled();
+      const panelDefinition = await definition(specialised.id), panelVersion = await db.studioDefinitionVersion.findFirstOrThrow({ where: { ...scope, id: panelDefinition.activeVersionId!, definitionId: specialised.id } });
+      const panelFrame = z.object({ approvals: z.object({ sourcePage: z.object({ id: z.literal("tickets.ticket.page"), version: z.union([z.literal(2), z.literal(3)]), ownerModuleId: z.literal("tickets") }) }) }).parse(panelVersion.compiledPlan);
+      assert(panelFrame.approvals.sourcePage.version >= 2); assert.equal(checksum(panelVersion.compiledPlan), panelVersion.checksum);
+      const panelRequest = { definitionId: specialised.id, request: { kind: "record" as const, recordId }, formFactor: "desktop" as const };
+      const panelActor = await fresh(), panelNative = await db.serviceWorkItem.findFirstOrThrow({ where: { ...scope, id: recordId, kind: "TICKET" } });
+      const panelBefore = await snapshot(), panelRead = await readActiveCustomerPage(panelActor, panelRequest);
+      assert.equal(panelRead.versionId, panelVersion.id);
+      const surfaces = panelRead.model.sections.flatMap(section => section.components).filter(node => node.type === "surface");
+      const output = (kind: typeof ticketPanelKinds[number]) => {
+        const selected = surfaces.filter(node => node.surface?.id === ticketPanelSurface(kind).id && node.surface.version === 1);
+        assert.equal(selected.length, 1); assert.equal(selected[0].outputs.length, 1);
+        return selected[0].outputs[0];
+      };
+      const statusRows = parseTicketPanel("status", output("status"));
+      assert.equal(statusRows.length, 1); assert.equal(statusRows[0].id, recordId);
+      assert.equal(statusRows[0].values.status, panelNative.status); assert.equal(statusRows[0].values.reopen_count, panelNative.reopenCount); assert.equal(panelNative.reopenCount, 0);
+      assert.equal(statusRows[0].values.first_response_due, panelNative.firstResponseDueAt?.toISOString() ?? null);
+      assert.equal(statusRows[0].values.resolution_due, panelNative.resolutionDueAt?.toISOString() ?? null);
+      const activityRows = parseTicketPanel("activity", output("activity")); assert(activityRows.length > 0);
+      const actualEntries = await db.serviceWorkEntry.findMany({ where: { ...scope, workId: recordId }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], take: 50 });
+      assert.deepEqual(activityRows.map(row => ({ id: row.id, body: row.values.body, kind: row.values.kind, visibility: row.values.visibility })),
+        actualEntries.map(entry => ({ id: entry.id, body: entry.body, kind: entry.kind, visibility: entry.visibility })));
+      assert.equal(await db.serviceFile.count({ where: { ...scope, workId: recordId } }), 0);
+      assert.deepEqual(parseTicketPanel("documents", output("documents")), []);
+      assert.deepEqual(parseTicketPanel("relationships", output("relationships")), []);
+      assert.deepEqual(parseTicketPanel("outstanding_work", output("outstanding_work")), []);
+      assert.equal(panelNative.approvalId, null); assert.deepEqual(parseTicketPanel("approval", output("approval")), []);
+      assert.deepEqual(await snapshot(), panelBefore, "All six native panel reads must preserve native/configuration/Audit history.");
+      await page.goto(`${base}/screens/${specialised.id}?record=${recordId}`);
+      for (const kind of ticketPanelKinds) await expect(page.getByRole("heading", { name: ticketPanelLabels[kind], exact: true })).toBeVisible();
+      await expect(page.getByText("Reopened 0 times", { exact: false })).toBeVisible();
+      for (const text of ["No evidence attached.", "No linked work.", "No outstanding linked work.", "No approval requested."])
+        await expect(page.getByText(text, { exact: true })).toBeVisible();
+      await db.membership.update({ where: { id: fixture.membershipId, ...scope }, data: { grantedCapabilities: ["tickets.ticket.read"] } });
+      const ordinary = await fresh(), ordinaryPanels = await readActiveCustomerPage(ordinary, panelRequest);
+      assert(![...ordinary.capabilities].some(capability => capability.startsWith("studio.")));
+      const ordinarySurfaces = ordinaryPanels.model.sections.flatMap(section => section.components).filter(node => node.type === "surface");
+      for (const kind of ticketPanelKinds.filter(kind => kind !== "approval"))
+        assert(ordinarySurfaces.some(node => node.surface?.id === ticketPanelSurface(kind).id), "Ordinary native Read must retain its authorised read-only panels.");
+      assert(!ordinarySurfaces.some(node => node.surface?.id === "tickets.ticket.progress_form" || node.surface?.id === ticketPanelSurface("approval").id));
+      await page.goto(`${base}/screens/${specialised.id}?record=${recordId}`);
+      await expect(page.getByRole("heading", { name: ticketPanelLabels.status, exact: true })).toBeVisible();
+      await expect(page.getByRole("heading", { name: ticketPanelLabels.approval, exact: true })).toHaveCount(0);
+      await expect(page.getByRole("button", { name: "Update work", exact: true })).toHaveCount(0);
+      assert.deepEqual(await snapshot(), panelBefore);
+      await db.membership.update({ where: { id: fixture.membershipId, ...scope }, data: { grantedCapabilities: [] } });
+      await assert.rejects(() => readActiveCustomerPage(ordinary, panelRequest), /FORBIDDEN|unavailable|NOT_FOUND/i);
+      const foreignPanelActor = await fresh(fixture.foreignOrganisationId);
+      await assert.rejects(() => readActiveCustomerPage(foreignPanelActor, panelRequest), /FORBIDDEN|unavailable|NOT_FOUND/i);
+      assert.deepEqual(await snapshot(), panelBefore);
+      await db.membership.update({ where: { id: fixture.membershipId, ...scope }, data: { grantedCapabilities: membership.grantedCapabilities } });
+      console.log("PASS visual Ticket native panels: same private-queue native record, all six actual owner projections, status zero/history plus legitimate empty evidence/links/approval, live UI and ordinary Read panels with Manage-only form/approval hidden, current native Read and tenant denial, unchanged native/configuration/Audit snapshots. INTERNAL file/name filtering and nonempty linked/approval records remain separate owner regression evidence.");
     }
     console.log("STUDIO VISUAL RECORD LAYOUTS PASS: actual Ticket preset/surface save/publish, friendly base/type setup and condition selector, actual Page/base/type source-and-retained-usage links with no native effects, actual alternate/hidden-component selection from canonical assignment, new-publication foreign/unknown/list denial with unchanged sealed history, native selector INSERT and SQL receipt2, full owning form, reassignment/native return, retained Page versus newer active version, stale/current/foreign access denial. Create-only, field/reference rights, concurrency and atomic failure remain original independent gates.");
     return { recordId, baseId, typeId, basePageId: standard.id, typePageId: specialised.id };

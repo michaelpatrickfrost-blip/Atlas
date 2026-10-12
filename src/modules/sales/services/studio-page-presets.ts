@@ -13,7 +13,7 @@ const reference = ({ id, version, schemaHash, contractHash }: PageRegistryApprov
 export function createSalesOrderPagePresets(input: PageApprovals): SalesOrderPagePreset[] {
   const approvals = pageApprovalsSchema.parse(input);
   if (approvals.entity.id !== 'sales.order' || approvals.entity.version !== 1 || approvals.entity.ownerModuleId !== 'sales'
-    || approvals.sourcePage.id !== 'sales.order.page' || approvals.sourcePage.version !== 1 || approvals.sourcePage.ownerModuleId !== 'sales'
+    || approvals.sourcePage.id !== 'sales.order.page' || ![1, 2, 3].includes(approvals.sourcePage.version) || approvals.sourcePage.ownerModuleId !== 'sales'
     || approvals.entity.capability !== 'sales.order.read' || approvals.sourcePage.capability !== 'sales.order.read' || approvals.variants)
     throw new Error('Sales presets require the current approved read-only Sales order screen.');
   const entity = reference(approvals.entity);
